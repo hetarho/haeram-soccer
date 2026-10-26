@@ -313,7 +313,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T410 | Gameplay read of the released model over ten seasons | MATCH ARCH | T286 T433 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -330,9 +329,10 @@
 ## next
 - update-ssot MATCH: reconcile MATCH-13/26/30 with grid/record.ts COUNTER_ZONES (high turnovers: 40 m specified, 35 m counted; PPDA: own 60% specified, two-thirds counted) and aggregate/ledger.ts (line-breaking needs a higher band; detailed record.test.ts:356 counts 55→65 m across the midfield line within one band). update-ssot ARCH: ARCH-23 requires one pinned toolchain, but netlify.toml pins Node 24.12.0 while .node-version and package.json require 24.22.1. These discrepancies were checked, not changed by doc-review.
 - Existing handoffs: ideation save-storage-and-fast-pace 계속 (after T433, T434, T410): settle its open questions, then create-ssot/update-ssot SAVE ARCH WEB; f6d2 completed the adopted development-feedback cleanup T459–T462; CI 40262705063 failed Firefox business:266 / season-flow:135 / stable-controls-and-pacing:209; evidence is handed to T458 and reports/261026-f6d2 (WebKit 1/2 still pending). The owner restarts the stopped session afterward; existing football tasks retain their scope.; v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428; k5n2 (261026, autopilot until 09:30 KST): T458 and T435 integrated, group gates passed on 9e54c848 and 4b8c42af (Chromium 274 each); main pushed 111581e7, then 3c003b7d+docs with the CI budgets for five journeys slow CI runners timed out (branch CI 40243569140). The CI of that last push (run 40247530947) closes T458 and T286; if it fails, fix it first. 605e985f covers the match-eve race (the next eve opening under a click on a slow runner) behind WebKit live-state:20 and Firefox season-flow:135
-- end of work (q7m3): one full batch, one main push, one CI read; T433, T434 and T410 run as 20 m gameplay reads (owner 261026): T433 and T434 done, T410 next
+- end of work (q7m3): one full batch, one main push, one CI read; T433, T434 and T410 run as 20 m gameplay reads (owner 261026): T433, T434 and T410 done; T410's five named calibration follow-ups (CALIBRATION.md T410 section) wait for the owner's calibration pass
 
 ## log
+- 261026 T410 done (q7m3): 10-season gameplay read of the released model, indicative: top tier 2.91 goals, H/D/A 43.7/21.2/35.2, margins 11–12 every season, champions 2.32 PPG, top scorer 26.8, hat-tricks 0.040; 80 observed fixtures 3.39 goals, 20/37 MATCH-23 rows inside; five follow-ups named, no engine change
 - 261026 fix playback test: T433 settles candidate-et-0 in 90 minutes; use candidate-et-1 (2–2 at 90) to retain the four-period last-action assertions. The concurrent 10-season checkpoint timeout passes unchanged in an isolated retry.
 - 261026 T434 done (q7m3): own-club edge probe on the released model, 1960 쉬움 10-season career, 30 fixtures × 10 seeds, indicative: detailed 1.09 / aggregate 1.99 / neutral 1.46 / 2.44 points a match (261023: 2.51 / 1.70 / 2.06 / 1.35); engine gap reversed (~−0.9), context ~0.4; ideation recommends C
 - 261026 doc-review ARCH KIT MATCH PLAYER SAVE WEB tidied (rev unchanged); docs→artifacts, 17 obsolete prose documents and 2 one-off editing utilities removed; retained evidence unchanged, consumers migrated; code discrepancies in next. Checks: typecheck/lint/format and 65 focused tests passed; full spec lint fails on concurrently completed T433 still in tasks/ rather than tasks/done/ (no SSOT structural errors).
@@ -352,4 +352,3 @@
 - 261026 ARCH r21 + T459–T462 (f6d2): adopted feedback-cost review; preserve coverage and baseline, isolate caches/test tiers/engine leaves/measurement reuse; other start-vibe session stopped by owner
 - 261026 development-feedback start (f6d2): owner stopped the other session and adopted the architectural audit; preserve historical measurements, implement the complete feedback-cost cleanup, run one final verification, no new century benchmark
 - 261026 review-code development-feedback-261026 complete — 79-module engine cycle, 222/280 dependency-affected tests, fixture/benchmark invalidation and integration-tier hand-offs; no findings adopted
-- 261026 review-code development-feedback-261026 start — inspect dependency reach, test tiers, fixture invalidation and simulation costs; application changes remain owned by the existing sessions

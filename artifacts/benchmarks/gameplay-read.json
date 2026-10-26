@@ -1,0 +1,3819 @@
+{
+  "task": "T410",
+  "indicative": "one founding, 10 seasons, 5 fixtures a pairing; no MATCH-28 equivalence claimed",
+  "founding": {
+    "country": "ENG",
+    "name": "Gameplay Town",
+    "color": "#3A7BC2",
+    "seed": "gameplay-read",
+    "level": "normal"
+  },
+  "identity": {
+    "algorithm": "sha256",
+    "sha256": "d55caf63a753a1bc18f5585500bc2367f7af0c925f63decf0a8f6b7c13bdf805",
+    "files": 163,
+    "entry": "scripts/gameplay-read.ts",
+    "scope": "runtime dependency closure and declared inputs"
+  },
+  "model": "continuous-aggregate-2",
+  "seasons": [
+    {
+      "year": 1950,
+      "tiers": [
+        {
+          "tier": 0,
+          "matches": 2670,
+          "goalsPerMatch": 2.91,
+          "homeDrawAway": [
+            45.06,
+            20.37,
+            34.57
+          ],
+          "nilNil": 5.28,
+          "biggestMargin": 11,
+          "champions": [
+            {
+              "groupKey": "ENG:0:0",
+              "clubs": 20,
+              "points": 89,
+              "lead": 5,
+              "topScorer": 27
+            },
+            {
+              "groupKey": "ESP:0:0",
+              "clubs": 20,
+              "points": 83,
+              "lead": 5,
+              "topScorer": 36
+            },
+            {
+              "groupKey": "GER:0:0",
+              "clubs": 18,
+              "points": 83,
+              "lead": 7,
+              "topScorer": 30
+            },
+            {
+              "groupKey": "ITA:0:0",
+              "clubs": 20,
+              "points": 89,
+              "lead": 7,
+              "topScorer": 32
+            },
+            {
+              "groupKey": "FRA:0:0",
+              "clubs": 18,
+              "points": 77,
+              "lead": 12,
+              "topScorer": 27
+            },
+            {
+              "groupKey": "POR:0:0",
+              "clubs": 18,
+              "points": 80,
+              "lead": 14,
+              "topScorer": 21
+            },
+            {
+              "groupKey": "NED:0:0",
+              "clubs": 18,
+              "points": 78,
+              "lead": 7,
+              "topScorer": 21
+            },
+            {
+              "groupKey": "BEL:0:0",
+              "clubs": 18,
+              "points": 84,
+              "lead": 6,
+              "topScorer": 26
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 964,
+              "stronger": 44.92,
+              "draws": 23.55
+            },
+            {
+              "gap": "5-15",
+              "matches": 1344,
+              "stronger": 59.52,
+              "draws": 19.27
+            },
+            {
+              "gap": "15+",
+              "matches": 226,
+              "stronger": 80.09,
+              "draws": 11.06
+            }
+          ]
+        },
+        {
+          "tier": 1,
+          "matches": 2902,
+          "goalsPerMatch": 2.72,
+          "homeDrawAway": [
+            43.25,
+            22.95,
+            33.8
+          ],
+          "nilNil": 7.72,
+          "biggestMargin": 8,
+          "champions": [
+            {
+              "groupKey": "ENG:1:0",
+              "clubs": 24,
+              "points": 90,
+              "lead": 4,
+              "topScorer": 30
+            },
+            {
+              "groupKey": "ESP:1:0",
+              "clubs": 22,
+              "points": 84,
+              "lead": 4,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "GER:1:0",
+              "clubs": 18,
+              "points": 74,
+              "lead": 12,
+              "topScorer": 20
+            },
+            {
+              "groupKey": "ITA:1:0",
+              "clubs": 20,
+              "points": 71,
+              "lead": 0,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "FRA:1:0",
+              "clubs": 18,
+              "points": 64,
+              "lead": 1,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "POR:1:0",
+              "clubs": 18,
+              "points": 68,
+              "lead": 4,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "NED:1:0",
+              "clubs": 20,
+              "points": 72,
+              "lead": 6,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "BEL:1:0",
+              "clubs": 15,
+              "points": 55,
+              "lead": 5,
+              "topScorer": 15
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1604,
+              "stronger": 45.64,
+              "draws": 22.69
+            },
+            {
+              "gap": "5-15",
+              "matches": 1038,
+              "stronger": 55.59,
+              "draws": 22.74
+            },
+            {
+              "gap": "15+",
+              "matches": 10,
+              "stronger": 70,
+              "draws": 10
+            }
+          ]
+        },
+        {
+          "tier": 2,
+          "matches": 2378,
+          "goalsPerMatch": 2.6,
+          "homeDrawAway": [
+            43.86,
+            22.2,
+            33.94
+          ],
+          "nilNil": 7.15,
+          "biggestMargin": 9,
+          "champions": [
+            {
+              "groupKey": "ENG:2:0",
+              "clubs": 24,
+              "points": 85,
+              "lead": 3,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "GER:2:0",
+              "clubs": 20,
+              "points": 74,
+              "lead": 3,
+              "topScorer": 21
+            },
+            {
+              "groupKey": "ITA:2:0",
+              "clubs": 20,
+              "points": 75,
+              "lead": 0,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "ITA:2:1",
+              "clubs": 20,
+              "points": 77,
+              "lead": 9,
+              "topScorer": 27
+            },
+            {
+              "groupKey": "ITA:2:2",
+              "clubs": 20,
+              "points": 75,
+              "lead": 9,
+              "topScorer": 28
+            },
+            {
+              "groupKey": "FRA:2:0",
+              "clubs": 18,
+              "points": 68,
+              "lead": 1,
+              "topScorer": 22
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1420,
+              "stronger": 41.9,
+              "draws": 23.52
+            },
+            {
+              "gap": "5-15",
+              "matches": 746,
+              "stronger": 52.82,
+              "draws": 20.24
+            },
+            {
+              "gap": "15+",
+              "matches": 0,
+              "stronger": 0,
+              "draws": 0
+            }
+          ]
+        },
+        {
+          "tier": 3,
+          "matches": 552,
+          "goalsPerMatch": 2.51,
+          "homeDrawAway": [
+            44.38,
+            24.82,
+            30.8
+          ],
+          "nilNil": 9.24,
+          "biggestMargin": 6,
+          "champions": [
+            {
+              "groupKey": "ENG:3:0",
+              "clubs": 24,
+              "points": 87,
+              "lead": 2,
+              "topScorer": 31
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 308,
+              "stronger": 44.16,
+              "draws": 25
+            },
+            {
+              "gap": "5-15",
+              "matches": 184,
+              "stronger": 55.43,
+              "draws": 24.46
+            },
+            {
+              "gap": "15+",
+              "matches": 0,
+              "stronger": 0,
+              "draws": 0
+            }
+          ]
+        },
+        {
+          "tier": 4,
+          "matches": 240,
+          "goalsPerMatch": 2.49,
+          "homeDrawAway": [
+            40.83,
+            22.5,
+            36.67
+          ],
+          "nilNil": 10.42,
+          "biggestMargin": 5,
+          "champions": [
+            {
+              "groupKey": "lower",
+              "clubs": 16,
+              "points": 58,
+              "lead": 9,
+              "topScorer": 24
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 120,
+              "stronger": 40.83,
+              "draws": 22.5
+            },
+            {
+              "gap": "5-15",
+              "matches": 98,
+              "stronger": 52.04,
+              "draws": 21.43
+            },
+            {
+              "gap": "15+",
+              "matches": 0,
+              "stronger": 0,
+              "draws": 0
+            }
+          ]
+        }
+      ],
+      "hatTricks": {
+        "matches": 2670,
+        "perMatch": 0.03932584269662921,
+        "count": 105
+      },
+      "seconds": 42.598
+    },
+    {
+      "year": 1951,
+      "tiers": [
+        {
+          "tier": 0,
+          "matches": 2670,
+          "goalsPerMatch": 2.96,
+          "homeDrawAway": [
+            44.23,
+            20.22,
+            35.54
+          ],
+          "nilNil": 5.24,
+          "biggestMargin": 12,
+          "champions": [
+            {
+              "groupKey": "ENG:0:0",
+              "clubs": 20,
+              "points": 80,
+              "lead": 2,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "ESP:0:0",
+              "clubs": 20,
+              "points": 84,
+              "lead": 11,
+              "topScorer": 28
+            },
+            {
+              "groupKey": "GER:0:0",
+              "clubs": 18,
+              "points": 73,
+              "lead": 4,
+              "topScorer": 21
+            },
+            {
+              "groupKey": "ITA:0:0",
+              "clubs": 20,
+              "points": 90,
+              "lead": 11,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "FRA:0:0",
+              "clubs": 18,
+              "points": 75,
+              "lead": 5,
+              "topScorer": 19
+            },
+            {
+              "groupKey": "POR:0:0",
+              "clubs": 18,
+              "points": 84,
+              "lead": 9,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "NED:0:0",
+              "clubs": 18,
+              "points": 81,
+              "lead": 1,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "BEL:0:0",
+              "clubs": 18,
+              "points": 76,
+              "lead": 7,
+              "topScorer": 29
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 912,
+              "stronger": 45.39,
+              "draws": 22.7
+            },
+            {
+              "gap": "5-15",
+              "matches": 1354,
+              "stronger": 57.16,
+              "draws": 19.94
+            },
+            {
+              "gap": "15+",
+              "matches": 254,
+              "stronger": 76.77,
+              "draws": 11.02
+            }
+          ]
+        },
+        {
+          "tier": 1,
+          "matches": 2902,
+          "goalsPerMatch": 2.76,
+          "homeDrawAway": [
+            43.28,
+            22.57,
+            34.15
+          ],
+          "nilNil": 7.41,
+          "biggestMargin": 10,
+          "champions": [
+            {
+              "groupKey": "ENG:1:0",
+              "clubs": 24,
+              "points": 89,
+              "lead": 11,
+              "topScorer": 30
+            },
+            {
+              "groupKey": "ESP:1:0",
+              "clubs": 22,
+              "points": 88,
+              "lead": 9,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "GER:1:0",
+              "clubs": 18,
+              "points": 76,
+              "lead": 5,
+              "topScorer": 22
+            },
+            {
+              "groupKey": "ITA:1:0",
+              "clubs": 20,
+              "points": 70,
+              "lead": 2,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "FRA:1:0",
+              "clubs": 18,
+              "points": 80,
+              "lead": 11,
+              "topScorer": 21
+            },
+            {
+              "groupKey": "POR:1:0",
+              "clubs": 18,
+              "points": 63,
+              "lead": 2,
+              "topScorer": 22
+            },
+            {
+              "groupKey": "NED:1:0",
+              "clubs": 20,
+              "points": 74,
+              "lead": 2,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "BEL:1:0",
+              "clubs": 15,
+              "points": 51,
+              "lead": 1,
+              "topScorer": 19
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1540,
+              "stronger": 45.52,
+              "draws": 21.88
+            },
+            {
+              "gap": "5-15",
+              "matches": 1124,
+              "stronger": 53.11,
+              "draws": 23.84
+            },
+            {
+              "gap": "15+",
+              "matches": 32,
+              "stronger": 59.38,
+              "draws": 18.75
+            }
+          ]
+        },
+        {
+          "tier": 2,
+          "matches": 2378,
+          "goalsPerMatch": 2.63,
+          "homeDrawAway": [
+            41.25,
+            24.56,
+            34.19
+          ],
+          "nilNil": 8.2,
+          "biggestMargin": 9,
+          "champions": [
+            {
+              "groupKey": "ENG:2:0",
+              "clubs": 24,
+              "points": 97,
+              "lead": 7,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "GER:2:0",
+              "clubs": 20,
+              "points": 73,
+              "lead": 3,
+              "topScorer": 27
+            },
+            {
+              "groupKey": "ITA:2:0",
+              "clubs": 20,
+              "points": 66,
+              "lead": 4,
+              "topScorer": 21
+            },
+            {
+              "groupKey": "ITA:2:1",
+              "clubs": 20,
+              "points": 81,
+              "lead": 7,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "ITA:2:2",
+              "clubs": 20,
+              "points": 72,
+              "lead": 4,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "FRA:2:0",
+              "clubs": 18,
+              "points": 69,
+              "lead": 0,
+              "topScorer": 21
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1218,
+              "stronger": 41.95,
+              "draws": 24.71
+            },
+            {
+              "gap": "5-15",
+              "matches": 996,
+              "stronger": 52.81,
+              "draws": 24.8
+            },
+            {
+              "gap": "15+",
+              "matches": 4,
+              "stronger": 75,
+              "draws": 0
+            }
+          ]
+        },
+        {
+          "tier": 3,
+          "matches": 552,
+          "goalsPerMatch": 2.58,
+          "homeDrawAway": [
+            40.04,
+            23.91,
+            36.05
+          ],
+          "nilNil": 8.15,
+          "biggestMargin": 8,
+          "champions": [
+            {
+              "groupKey": "ENG:3:0",
+              "clubs": 24,
+              "points": 85,
+              "lead": 1,
+              "topScorer": 28
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 268,
+              "stronger": 44.78,
+              "draws": 25
+            },
+            {
+              "gap": "5-15",
+              "matches": 244,
+              "stronger": 56.15,
+              "draws": 22.13
+            },
+            {
+              "gap": "15+",
+              "matches": 4,
+              "stronger": 75,
+              "draws": 25
+            }
+          ]
+        },
+        {
+          "tier": 4,
+          "matches": 240,
+          "goalsPerMatch": 2.48,
+          "homeDrawAway": [
+            37.92,
+            26.67,
+            35.42
+          ],
+          "nilNil": 12.08,
+          "biggestMargin": 7,
+          "champions": [
+            {
+              "groupKey": "lower",
+              "clubs": 16,
+              "points": 56,
+              "lead": 5,
+              "topScorer": 25
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 110,
+              "stronger": 38.18,
+              "draws": 30
+            },
+            {
+              "gap": "5-15",
+              "matches": 90,
+              "stronger": 46.67,
+              "draws": 23.33
+            },
+            {
+              "gap": "15+",
+              "matches": 18,
+              "stronger": 55.56,
+              "draws": 27.78
+            }
+          ]
+        }
+      ],
+      "hatTricks": {
+        "matches": 2670,
+        "perMatch": 0.04644194756554307,
+        "count": 124
+      },
+      "seconds": 39.68
+    },
+    {
+      "year": 1952,
+      "tiers": [
+        {
+          "tier": 0,
+          "matches": 2670,
+          "goalsPerMatch": 2.94,
+          "homeDrawAway": [
+            44.34,
+            20.52,
+            35.13
+          ],
+          "nilNil": 6.85,
+          "biggestMargin": 12,
+          "champions": [
+            {
+              "groupKey": "ENG:0:0",
+              "clubs": 20,
+              "points": 97,
+              "lead": 18,
+              "topScorer": 31
+            },
+            {
+              "groupKey": "ESP:0:0",
+              "clubs": 20,
+              "points": 85,
+              "lead": 3,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "GER:0:0",
+              "clubs": 18,
+              "points": 81,
+              "lead": 2,
+              "topScorer": 19
+            },
+            {
+              "groupKey": "ITA:0:0",
+              "clubs": 20,
+              "points": 76,
+              "lead": 0,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "FRA:0:0",
+              "clubs": 18,
+              "points": 72,
+              "lead": 4,
+              "topScorer": 22
+            },
+            {
+              "groupKey": "POR:0:0",
+              "clubs": 18,
+              "points": 98,
+              "lead": 26,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "NED:0:0",
+              "clubs": 18,
+              "points": 81,
+              "lead": 8,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "BEL:0:0",
+              "clubs": 18,
+              "points": 85,
+              "lead": 13,
+              "topScorer": 29
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 972,
+              "stronger": 44.86,
+              "draws": 23.05
+            },
+            {
+              "gap": "5-15",
+              "matches": 1334,
+              "stronger": 57.5,
+              "draws": 19.64
+            },
+            {
+              "gap": "15+",
+              "matches": 264,
+              "stronger": 74.24,
+              "draws": 15.15
+            }
+          ]
+        },
+        {
+          "tier": 1,
+          "matches": 2902,
+          "goalsPerMatch": 2.72,
+          "homeDrawAway": [
+            42.38,
+            22.95,
+            34.67
+          ],
+          "nilNil": 8.13,
+          "biggestMargin": 7,
+          "champions": [
+            {
+              "groupKey": "ENG:1:0",
+              "clubs": 24,
+              "points": 97,
+              "lead": 5,
+              "topScorer": 36
+            },
+            {
+              "groupKey": "ESP:1:0",
+              "clubs": 22,
+              "points": 93,
+              "lead": 2,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "GER:1:0",
+              "clubs": 18,
+              "points": 68,
+              "lead": 8,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "ITA:1:0",
+              "clubs": 20,
+              "points": 73,
+              "lead": 5,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "FRA:1:0",
+              "clubs": 18,
+              "points": 82,
+              "lead": 7,
+              "topScorer": 29
+            },
+            {
+              "groupKey": "POR:1:0",
+              "clubs": 18,
+              "points": 57,
+              "lead": 1,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "NED:1:0",
+              "clubs": 20,
+              "points": 76,
+              "lead": 2,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "BEL:1:0",
+              "clubs": 15,
+              "points": 57,
+              "lead": 2,
+              "topScorer": 20
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1396,
+              "stronger": 41.76,
+              "draws": 23.21
+            },
+            {
+              "gap": "5-15",
+              "matches": 1272,
+              "stronger": 53.77,
+              "draws": 23.35
+            },
+            {
+              "gap": "15+",
+              "matches": 52,
+              "stronger": 73.08,
+              "draws": 9.62
+            }
+          ]
+        },
+        {
+          "tier": 2,
+          "matches": 2378,
+          "goalsPerMatch": 2.61,
+          "homeDrawAway": [
+            40.62,
+            23.25,
+            36.12
+          ],
+          "nilNil": 8.33,
+          "biggestMargin": 9,
+          "champions": [
+            {
+              "groupKey": "ENG:2:0",
+              "clubs": 24,
+              "points": 85,
+              "lead": 2,
+              "topScorer": 29
+            },
+            {
+              "groupKey": "GER:2:0",
+              "clubs": 20,
+              "points": 79,
+              "lead": 8,
+              "topScorer": 27
+            },
+            {
+              "groupKey": "ITA:2:0",
+              "clubs": 20,
+              "points": 74,
+              "lead": 5,
+              "topScorer": 22
+            },
+            {
+              "groupKey": "ITA:2:1",
+              "clubs": 20,
+              "points": 82,
+              "lead": 2,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "ITA:2:2",
+              "clubs": 20,
+              "points": 83,
+              "lead": 3,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "FRA:2:0",
+              "clubs": 18,
+              "points": 66,
+              "lead": 3,
+              "topScorer": 22
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1224,
+              "stronger": 46,
+              "draws": 23.53
+            },
+            {
+              "gap": "5-15",
+              "matches": 940,
+              "stronger": 52.34,
+              "draws": 23.09
+            },
+            {
+              "gap": "15+",
+              "matches": 22,
+              "stronger": 81.82,
+              "draws": 13.64
+            }
+          ]
+        },
+        {
+          "tier": 3,
+          "matches": 552,
+          "goalsPerMatch": 2.56,
+          "homeDrawAway": [
+            40.22,
+            25.54,
+            34.24
+          ],
+          "nilNil": 9.78,
+          "biggestMargin": 6,
+          "champions": [
+            {
+              "groupKey": "ENG:3:0",
+              "clubs": 24,
+              "points": 92,
+              "lead": 10,
+              "topScorer": 26
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 216,
+              "stronger": 39.35,
+              "draws": 22.22
+            },
+            {
+              "gap": "5-15",
+              "matches": 290,
+              "stronger": 43.1,
+              "draws": 28.97
+            },
+            {
+              "gap": "15+",
+              "matches": 4,
+              "stronger": 50,
+              "draws": 50
+            }
+          ]
+        },
+        {
+          "tier": 4,
+          "matches": 240,
+          "goalsPerMatch": 2.41,
+          "homeDrawAway": [
+            44.17,
+            24.17,
+            31.67
+          ],
+          "nilNil": 10.83,
+          "biggestMargin": 9,
+          "champions": [
+            {
+              "groupKey": "lower",
+              "clubs": 16,
+              "points": 62,
+              "lead": 3,
+              "topScorer": 20
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 110,
+              "stronger": 41.82,
+              "draws": 23.64
+            },
+            {
+              "gap": "5-15",
+              "matches": 100,
+              "stronger": 52,
+              "draws": 26
+            },
+            {
+              "gap": "15+",
+              "matches": 14,
+              "stronger": 85.71,
+              "draws": 7.14
+            }
+          ]
+        }
+      ],
+      "hatTricks": {
+        "matches": 2670,
+        "perMatch": 0.040074906367041196,
+        "count": 107
+      },
+      "seconds": 42.874
+    },
+    {
+      "year": 1953,
+      "tiers": [
+        {
+          "tier": 0,
+          "matches": 2670,
+          "goalsPerMatch": 2.87,
+          "homeDrawAway": [
+            42.1,
+            22.28,
+            35.62
+          ],
+          "nilNil": 6.22,
+          "biggestMargin": 11,
+          "champions": [
+            {
+              "groupKey": "ENG:0:0",
+              "clubs": 20,
+              "points": 74,
+              "lead": 3,
+              "topScorer": 28
+            },
+            {
+              "groupKey": "ESP:0:0",
+              "clubs": 20,
+              "points": 79,
+              "lead": 3,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "GER:0:0",
+              "clubs": 18,
+              "points": 73,
+              "lead": 2,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "ITA:0:0",
+              "clubs": 20,
+              "points": 91,
+              "lead": 9,
+              "topScorer": 27
+            },
+            {
+              "groupKey": "FRA:0:0",
+              "clubs": 18,
+              "points": 79,
+              "lead": 2,
+              "topScorer": 28
+            },
+            {
+              "groupKey": "POR:0:0",
+              "clubs": 18,
+              "points": 84,
+              "lead": 12,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "NED:0:0",
+              "clubs": 18,
+              "points": 87,
+              "lead": 5,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "BEL:0:0",
+              "clubs": 18,
+              "points": 74,
+              "lead": 4,
+              "topScorer": 21
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 942,
+              "stronger": 42.99,
+              "draws": 23.57
+            },
+            {
+              "gap": "5-15",
+              "matches": 1308,
+              "stronger": 57.42,
+              "draws": 21.71
+            },
+            {
+              "gap": "15+",
+              "matches": 290,
+              "stronger": 75.17,
+              "draws": 17.24
+            }
+          ]
+        },
+        {
+          "tier": 1,
+          "matches": 2902,
+          "goalsPerMatch": 2.84,
+          "homeDrawAway": [
+            43.83,
+            22.67,
+            33.49
+          ],
+          "nilNil": 6.75,
+          "biggestMargin": 9,
+          "champions": [
+            {
+              "groupKey": "ENG:1:0",
+              "clubs": 24,
+              "points": 93,
+              "lead": 8,
+              "topScorer": 33
+            },
+            {
+              "groupKey": "ESP:1:0",
+              "clubs": 22,
+              "points": 97,
+              "lead": 10,
+              "topScorer": 30
+            },
+            {
+              "groupKey": "GER:1:0",
+              "clubs": 18,
+              "points": 64,
+              "lead": 3,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "ITA:1:0",
+              "clubs": 20,
+              "points": 81,
+              "lead": 14,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "FRA:1:0",
+              "clubs": 18,
+              "points": 65,
+              "lead": 2,
+              "topScorer": 19
+            },
+            {
+              "groupKey": "POR:1:0",
+              "clubs": 18,
+              "points": 70,
+              "lead": 3,
+              "topScorer": 20
+            },
+            {
+              "groupKey": "NED:1:0",
+              "clubs": 20,
+              "points": 79,
+              "lead": 8,
+              "topScorer": 20
+            },
+            {
+              "groupKey": "BEL:1:0",
+              "clubs": 15,
+              "points": 61,
+              "lead": 13,
+              "topScorer": 20
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1348,
+              "stronger": 43.77,
+              "draws": 23.59
+            },
+            {
+              "gap": "5-15",
+              "matches": 1292,
+              "stronger": 54.8,
+              "draws": 20.9
+            },
+            {
+              "gap": "15+",
+              "matches": 54,
+              "stronger": 74.07,
+              "draws": 11.11
+            }
+          ]
+        },
+        {
+          "tier": 2,
+          "matches": 2378,
+          "goalsPerMatch": 2.66,
+          "homeDrawAway": [
+            44.49,
+            23.21,
+            32.3
+          ],
+          "nilNil": 6.9,
+          "biggestMargin": 8,
+          "champions": [
+            {
+              "groupKey": "ENG:2:0",
+              "clubs": 24,
+              "points": 96,
+              "lead": 12,
+              "topScorer": 30
+            },
+            {
+              "groupKey": "GER:2:0",
+              "clubs": 20,
+              "points": 79,
+              "lead": 0,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "ITA:2:0",
+              "clubs": 20,
+              "points": 78,
+              "lead": 9,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "ITA:2:1",
+              "clubs": 20,
+              "points": 89,
+              "lead": 13,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "ITA:2:2",
+              "clubs": 20,
+              "points": 76,
+              "lead": 1,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "FRA:2:0",
+              "clubs": 18,
+              "points": 78,
+              "lead": 16,
+              "topScorer": 23
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1118,
+              "stronger": 41.23,
+              "draws": 23.61
+            },
+            {
+              "gap": "5-15",
+              "matches": 1066,
+              "stronger": 54.69,
+              "draws": 23.55
+            },
+            {
+              "gap": "15+",
+              "matches": 36,
+              "stronger": 77.78,
+              "draws": 11.11
+            }
+          ]
+        },
+        {
+          "tier": 3,
+          "matches": 552,
+          "goalsPerMatch": 2.47,
+          "homeDrawAway": [
+            42.21,
+            23.19,
+            34.6
+          ],
+          "nilNil": 8.7,
+          "biggestMargin": 6,
+          "champions": [
+            {
+              "groupKey": "ENG:3:0",
+              "clubs": 24,
+              "points": 91,
+              "lead": 8,
+              "topScorer": 29
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 248,
+              "stronger": 37.5,
+              "draws": 23.39
+            },
+            {
+              "gap": "5-15",
+              "matches": 280,
+              "stronger": 46.07,
+              "draws": 23.93
+            },
+            {
+              "gap": "15+",
+              "matches": 4,
+              "stronger": 50,
+              "draws": 0
+            }
+          ]
+        },
+        {
+          "tier": 4,
+          "matches": 240,
+          "goalsPerMatch": 2.58,
+          "homeDrawAway": [
+            41.25,
+            26.25,
+            32.5
+          ],
+          "nilNil": 8.33,
+          "biggestMargin": 6,
+          "champions": [
+            {
+              "groupKey": "lower",
+              "clubs": 16,
+              "points": 58,
+              "lead": 3,
+              "topScorer": 22
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 108,
+              "stronger": 43.52,
+              "draws": 23.15
+            },
+            {
+              "gap": "5-15",
+              "matches": 106,
+              "stronger": 45.28,
+              "draws": 28.3
+            },
+            {
+              "gap": "15+",
+              "matches": 14,
+              "stronger": 64.29,
+              "draws": 14.29
+            }
+          ]
+        }
+      ],
+      "hatTricks": {
+        "matches": 2670,
+        "perMatch": 0.03745318352059925,
+        "count": 100
+      },
+      "seconds": 43.633
+    },
+    {
+      "year": 1954,
+      "tiers": [
+        {
+          "tier": 0,
+          "matches": 2670,
+          "goalsPerMatch": 2.89,
+          "homeDrawAway": [
+            44.38,
+            21.2,
+            34.42
+          ],
+          "nilNil": 6.03,
+          "biggestMargin": 10,
+          "champions": [
+            {
+              "groupKey": "ENG:0:0",
+              "clubs": 20,
+              "points": 79,
+              "lead": 1,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "ESP:0:0",
+              "clubs": 20,
+              "points": 84,
+              "lead": 3,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "GER:0:0",
+              "clubs": 18,
+              "points": 74,
+              "lead": 9,
+              "topScorer": 27
+            },
+            {
+              "groupKey": "ITA:0:0",
+              "clubs": 20,
+              "points": 85,
+              "lead": 0,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "FRA:0:0",
+              "clubs": 18,
+              "points": 82,
+              "lead": 5,
+              "topScorer": 28
+            },
+            {
+              "groupKey": "POR:0:0",
+              "clubs": 18,
+              "points": 86,
+              "lead": 17,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "NED:0:0",
+              "clubs": 18,
+              "points": 80,
+              "lead": 7,
+              "topScorer": 19
+            },
+            {
+              "groupKey": "BEL:0:0",
+              "clubs": 18,
+              "points": 89,
+              "lead": 25,
+              "topScorer": 21
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 932,
+              "stronger": 44.1,
+              "draws": 25.21
+            },
+            {
+              "gap": "5-15",
+              "matches": 1314,
+              "stronger": 59.28,
+              "draws": 18.49
+            },
+            {
+              "gap": "15+",
+              "matches": 294,
+              "stronger": 73.81,
+              "draws": 14.97
+            }
+          ]
+        },
+        {
+          "tier": 1,
+          "matches": 2902,
+          "goalsPerMatch": 2.7,
+          "homeDrawAway": [
+            42.8,
+            23.67,
+            33.53
+          ],
+          "nilNil": 7.99,
+          "biggestMargin": 9,
+          "champions": [
+            {
+              "groupKey": "ENG:1:0",
+              "clubs": 24,
+              "points": 97,
+              "lead": 6,
+              "topScorer": 29
+            },
+            {
+              "groupKey": "ESP:1:0",
+              "clubs": 22,
+              "points": 93,
+              "lead": 10,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "GER:1:0",
+              "clubs": 18,
+              "points": 65,
+              "lead": 2,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "ITA:1:0",
+              "clubs": 20,
+              "points": 75,
+              "lead": 4,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "FRA:1:0",
+              "clubs": 18,
+              "points": 74,
+              "lead": 13,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "POR:1:0",
+              "clubs": 18,
+              "points": 76,
+              "lead": 14,
+              "topScorer": 27
+            },
+            {
+              "groupKey": "NED:1:0",
+              "clubs": 20,
+              "points": 81,
+              "lead": 4,
+              "topScorer": 32
+            },
+            {
+              "groupKey": "BEL:1:0",
+              "clubs": 15,
+              "points": 53,
+              "lead": 5,
+              "topScorer": 18
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1412,
+              "stronger": 42.92,
+              "draws": 23.65
+            },
+            {
+              "gap": "5-15",
+              "matches": 1240,
+              "stronger": 52.5,
+              "draws": 23.55
+            },
+            {
+              "gap": "15+",
+              "matches": 44,
+              "stronger": 70.45,
+              "draws": 11.36
+            }
+          ]
+        },
+        {
+          "tier": 2,
+          "matches": 2378,
+          "goalsPerMatch": 2.73,
+          "homeDrawAway": [
+            43.9,
+            22.37,
+            33.73
+          ],
+          "nilNil": 7.02,
+          "biggestMargin": 8,
+          "champions": [
+            {
+              "groupKey": "ENG:2:0",
+              "clubs": 24,
+              "points": 91,
+              "lead": 3,
+              "topScorer": 29
+            },
+            {
+              "groupKey": "GER:2:0",
+              "clubs": 20,
+              "points": 76,
+              "lead": 0,
+              "topScorer": 27
+            },
+            {
+              "groupKey": "ITA:2:0",
+              "clubs": 20,
+              "points": 79,
+              "lead": 3,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "ITA:2:1",
+              "clubs": 20,
+              "points": 87,
+              "lead": 2,
+              "topScorer": 27
+            },
+            {
+              "groupKey": "ITA:2:2",
+              "clubs": 20,
+              "points": 90,
+              "lead": 13,
+              "topScorer": 34
+            },
+            {
+              "groupKey": "FRA:2:0",
+              "clubs": 18,
+              "points": 62,
+              "lead": 1,
+              "topScorer": 18
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1104,
+              "stronger": 44.38,
+              "draws": 22.19
+            },
+            {
+              "gap": "5-15",
+              "matches": 1064,
+              "stronger": 57.33,
+              "draws": 22.56
+            },
+            {
+              "gap": "15+",
+              "matches": 66,
+              "stronger": 62.12,
+              "draws": 18.18
+            }
+          ]
+        },
+        {
+          "tier": 3,
+          "matches": 552,
+          "goalsPerMatch": 2.59,
+          "homeDrawAway": [
+            41.67,
+            23.37,
+            34.96
+          ],
+          "nilNil": 7.79,
+          "biggestMargin": 9,
+          "champions": [
+            {
+              "groupKey": "ENG:3:0",
+              "clubs": 24,
+              "points": 96,
+              "lead": 11,
+              "topScorer": 29
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 240,
+              "stronger": 42.5,
+              "draws": 24.58
+            },
+            {
+              "gap": "5-15",
+              "matches": 264,
+              "stronger": 55.68,
+              "draws": 22.35
+            },
+            {
+              "gap": "15+",
+              "matches": 20,
+              "stronger": 60,
+              "draws": 15
+            }
+          ]
+        }
+      ],
+      "hatTricks": {
+        "matches": 2670,
+        "perMatch": 0.03670411985018727,
+        "count": 98
+      },
+      "seconds": 48.837
+    },
+    {
+      "year": 1955,
+      "tiers": [
+        {
+          "tier": 0,
+          "matches": 2670,
+          "goalsPerMatch": 2.92,
+          "homeDrawAway": [
+            43.67,
+            20.15,
+            36.18
+          ],
+          "nilNil": 5.43,
+          "biggestMargin": 11,
+          "champions": [
+            {
+              "groupKey": "ENG:0:0",
+              "clubs": 20,
+              "points": 88,
+              "lead": 2,
+              "topScorer": 29
+            },
+            {
+              "groupKey": "ESP:0:0",
+              "clubs": 20,
+              "points": 79,
+              "lead": 2,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "GER:0:0",
+              "clubs": 18,
+              "points": 74,
+              "lead": 10,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "ITA:0:0",
+              "clubs": 20,
+              "points": 82,
+              "lead": 1,
+              "topScorer": 28
+            },
+            {
+              "groupKey": "FRA:0:0",
+              "clubs": 18,
+              "points": 87,
+              "lead": 18,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "POR:0:0",
+              "clubs": 18,
+              "points": 84,
+              "lead": 3,
+              "topScorer": 29
+            },
+            {
+              "groupKey": "NED:0:0",
+              "clubs": 18,
+              "points": 87,
+              "lead": 19,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "BEL:0:0",
+              "clubs": 18,
+              "points": 91,
+              "lead": 15,
+              "topScorer": 27
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 882,
+              "stronger": 41.27,
+              "draws": 23.47
+            },
+            {
+              "gap": "5-15",
+              "matches": 1374,
+              "stronger": 60.48,
+              "draws": 19.58
+            },
+            {
+              "gap": "15+",
+              "matches": 312,
+              "stronger": 76.92,
+              "draws": 12.82
+            }
+          ]
+        },
+        {
+          "tier": 1,
+          "matches": 2902,
+          "goalsPerMatch": 2.72,
+          "homeDrawAway": [
+            44.18,
+            22.88,
+            32.94
+          ],
+          "nilNil": 7.48,
+          "biggestMargin": 9,
+          "champions": [
+            {
+              "groupKey": "ENG:1:0",
+              "clubs": 24,
+              "points": 96,
+              "lead": 2,
+              "topScorer": 29
+            },
+            {
+              "groupKey": "ESP:1:0",
+              "clubs": 22,
+              "points": 93,
+              "lead": 12,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "GER:1:0",
+              "clubs": 18,
+              "points": 63,
+              "lead": 2,
+              "topScorer": 21
+            },
+            {
+              "groupKey": "ITA:1:0",
+              "clubs": 20,
+              "points": 71,
+              "lead": 5,
+              "topScorer": 22
+            },
+            {
+              "groupKey": "FRA:1:0",
+              "clubs": 18,
+              "points": 72,
+              "lead": 5,
+              "topScorer": 19
+            },
+            {
+              "groupKey": "POR:1:0",
+              "clubs": 18,
+              "points": 67,
+              "lead": 1,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "NED:1:0",
+              "clubs": 20,
+              "points": 80,
+              "lead": 7,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "BEL:1:0",
+              "clubs": 15,
+              "points": 58,
+              "lead": 7,
+              "topScorer": 22
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1256,
+              "stronger": 44.03,
+              "draws": 23.65
+            },
+            {
+              "gap": "5-15",
+              "matches": 1406,
+              "stronger": 52.42,
+              "draws": 22.76
+            },
+            {
+              "gap": "15+",
+              "matches": 54,
+              "stronger": 70.37,
+              "draws": 18.52
+            }
+          ]
+        },
+        {
+          "tier": 2,
+          "matches": 2378,
+          "goalsPerMatch": 2.71,
+          "homeDrawAway": [
+            42.89,
+            23.72,
+            33.39
+          ],
+          "nilNil": 7.06,
+          "biggestMargin": 9,
+          "champions": [
+            {
+              "groupKey": "ENG:2:0",
+              "clubs": 24,
+              "points": 82,
+              "lead": 0,
+              "topScorer": 30
+            },
+            {
+              "groupKey": "GER:2:0",
+              "clubs": 20,
+              "points": 76,
+              "lead": 5,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "ITA:2:0",
+              "clubs": 20,
+              "points": 77,
+              "lead": 7,
+              "topScorer": 29
+            },
+            {
+              "groupKey": "ITA:2:1",
+              "clubs": 20,
+              "points": 77,
+              "lead": 3,
+              "topScorer": 22
+            },
+            {
+              "groupKey": "ITA:2:2",
+              "clubs": 20,
+              "points": 87,
+              "lead": 6,
+              "topScorer": 28
+            },
+            {
+              "groupKey": "FRA:2:0",
+              "clubs": 18,
+              "points": 62,
+              "lead": 3,
+              "topScorer": 20
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1206,
+              "stronger": 44.28,
+              "draws": 23.88
+            },
+            {
+              "gap": "5-15",
+              "matches": 1006,
+              "stronger": 52.29,
+              "draws": 23.36
+            },
+            {
+              "gap": "15+",
+              "matches": 22,
+              "stronger": 90.91,
+              "draws": 9.09
+            }
+          ]
+        },
+        {
+          "tier": 3,
+          "matches": 552,
+          "goalsPerMatch": 2.51,
+          "homeDrawAway": [
+            43.12,
+            24.09,
+            32.79
+          ],
+          "nilNil": 8.33,
+          "biggestMargin": 8,
+          "champions": [
+            {
+              "groupKey": "ENG:3:0",
+              "clubs": 24,
+              "points": 95,
+              "lead": 9,
+              "topScorer": 30
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 284,
+              "stronger": 39.79,
+              "draws": 25.35
+            },
+            {
+              "gap": "5-15",
+              "matches": 206,
+              "stronger": 54.85,
+              "draws": 20.87
+            },
+            {
+              "gap": "15+",
+              "matches": 20,
+              "stronger": 65,
+              "draws": 15
+            }
+          ]
+        },
+        {
+          "tier": 4,
+          "matches": 240,
+          "goalsPerMatch": 2.6,
+          "homeDrawAway": [
+            41.67,
+            20.42,
+            37.92
+          ],
+          "nilNil": 8.33,
+          "biggestMargin": 6,
+          "champions": [
+            {
+              "groupKey": "lower",
+              "clubs": 16,
+              "points": 64,
+              "lead": 6,
+              "topScorer": 25
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 114,
+              "stronger": 37.72,
+              "draws": 27.19
+            },
+            {
+              "gap": "5-15",
+              "matches": 106,
+              "stronger": 57.55,
+              "draws": 15.09
+            },
+            {
+              "gap": "15+",
+              "matches": 8,
+              "stronger": 62.5,
+              "draws": 12.5
+            }
+          ]
+        }
+      ],
+      "hatTricks": {
+        "matches": 2670,
+        "perMatch": 0.042322097378277156,
+        "count": 113
+      },
+      "seconds": 49.261
+    },
+    {
+      "year": 1956,
+      "tiers": [
+        {
+          "tier": 0,
+          "matches": 2670,
+          "goalsPerMatch": 2.92,
+          "homeDrawAway": [
+            44.01,
+            22.06,
+            33.93
+          ],
+          "nilNil": 6.52,
+          "biggestMargin": 10,
+          "champions": [
+            {
+              "groupKey": "ENG:0:0",
+              "clubs": 20,
+              "points": 88,
+              "lead": 4,
+              "topScorer": 27
+            },
+            {
+              "groupKey": "ESP:0:0",
+              "clubs": 20,
+              "points": 84,
+              "lead": 2,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "GER:0:0",
+              "clubs": 18,
+              "points": 77,
+              "lead": 8,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "ITA:0:0",
+              "clubs": 20,
+              "points": 90,
+              "lead": 17,
+              "topScorer": 22
+            },
+            {
+              "groupKey": "FRA:0:0",
+              "clubs": 18,
+              "points": 81,
+              "lead": 5,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "POR:0:0",
+              "clubs": 18,
+              "points": 83,
+              "lead": 3,
+              "topScorer": 22
+            },
+            {
+              "groupKey": "NED:0:0",
+              "clubs": 18,
+              "points": 78,
+              "lead": 2,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "BEL:0:0",
+              "clubs": 18,
+              "points": 83,
+              "lead": 9,
+              "topScorer": 21
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 904,
+              "stronger": 45.46,
+              "draws": 24.67
+            },
+            {
+              "gap": "5-15",
+              "matches": 1384,
+              "stronger": 58.02,
+              "draws": 20.95
+            },
+            {
+              "gap": "15+",
+              "matches": 250,
+              "stronger": 76.4,
+              "draws": 16.4
+            }
+          ]
+        },
+        {
+          "tier": 1,
+          "matches": 2902,
+          "goalsPerMatch": 2.7,
+          "homeDrawAway": [
+            44.11,
+            23.29,
+            32.6
+          ],
+          "nilNil": 6.96,
+          "biggestMargin": 9,
+          "champions": [
+            {
+              "groupKey": "ENG:1:0",
+              "clubs": 24,
+              "points": 107,
+              "lead": 22,
+              "topScorer": 30
+            },
+            {
+              "groupKey": "ESP:1:0",
+              "clubs": 22,
+              "points": 101,
+              "lead": 16,
+              "topScorer": 34
+            },
+            {
+              "groupKey": "GER:1:0",
+              "clubs": 18,
+              "points": 63,
+              "lead": 2,
+              "topScorer": 20
+            },
+            {
+              "groupKey": "ITA:1:0",
+              "clubs": 20,
+              "points": 80,
+              "lead": 9,
+              "topScorer": 30
+            },
+            {
+              "groupKey": "FRA:1:0",
+              "clubs": 18,
+              "points": 68,
+              "lead": 6,
+              "topScorer": 22
+            },
+            {
+              "groupKey": "POR:1:0",
+              "clubs": 18,
+              "points": 66,
+              "lead": 4,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "NED:1:0",
+              "clubs": 20,
+              "points": 77,
+              "lead": 3,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "BEL:1:0",
+              "clubs": 15,
+              "points": 56,
+              "lead": 4,
+              "topScorer": 17
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1350,
+              "stronger": 43.19,
+              "draws": 24.81
+            },
+            {
+              "gap": "5-15",
+              "matches": 1324,
+              "stronger": 55.59,
+              "draws": 21.53
+            },
+            {
+              "gap": "15+",
+              "matches": 50,
+              "stronger": 74,
+              "draws": 10
+            }
+          ]
+        },
+        {
+          "tier": 2,
+          "matches": 2378,
+          "goalsPerMatch": 2.68,
+          "homeDrawAway": [
+            45.12,
+            22.96,
+            31.92
+          ],
+          "nilNil": 7.99,
+          "biggestMargin": 9,
+          "champions": [
+            {
+              "groupKey": "ENG:2:0",
+              "clubs": 24,
+              "points": 95,
+              "lead": 2,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "GER:2:0",
+              "clubs": 20,
+              "points": 73,
+              "lead": 2,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "ITA:2:0",
+              "clubs": 20,
+              "points": 79,
+              "lead": 12,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "ITA:2:1",
+              "clubs": 20,
+              "points": 87,
+              "lead": 10,
+              "topScorer": 31
+            },
+            {
+              "groupKey": "ITA:2:2",
+              "clubs": 20,
+              "points": 81,
+              "lead": 10,
+              "topScorer": 27
+            },
+            {
+              "groupKey": "FRA:2:0",
+              "clubs": 18,
+              "points": 67,
+              "lead": 0,
+              "topScorer": 28
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1116,
+              "stronger": 45.43,
+              "draws": 22.94
+            },
+            {
+              "gap": "5-15",
+              "matches": 1068,
+              "stronger": 51.03,
+              "draws": 22.57
+            },
+            {
+              "gap": "15+",
+              "matches": 26,
+              "stronger": 76.92,
+              "draws": 19.23
+            }
+          ]
+        },
+        {
+          "tier": 3,
+          "matches": 552,
+          "goalsPerMatch": 2.61,
+          "homeDrawAway": [
+            41.67,
+            23.01,
+            35.33
+          ],
+          "nilNil": 9.06,
+          "biggestMargin": 6,
+          "champions": [
+            {
+              "groupKey": "ENG:3:0",
+              "clubs": 24,
+              "points": 100,
+              "lead": 15,
+              "topScorer": 30
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 258,
+              "stronger": 44.96,
+              "draws": 24.42
+            },
+            {
+              "gap": "5-15",
+              "matches": 262,
+              "stronger": 52.29,
+              "draws": 21.37
+            },
+            {
+              "gap": "15+",
+              "matches": 6,
+              "stronger": 50,
+              "draws": 16.67
+            }
+          ]
+        },
+        {
+          "tier": 4,
+          "matches": 240,
+          "goalsPerMatch": 2.47,
+          "homeDrawAway": [
+            36.25,
+            29.58,
+            34.17
+          ],
+          "nilNil": 9.17,
+          "biggestMargin": 7,
+          "champions": [
+            {
+              "groupKey": "lower",
+              "clubs": 16,
+              "points": 64,
+              "lead": 8,
+              "topScorer": 22
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 138,
+              "stronger": 43.48,
+              "draws": 29.71
+            },
+            {
+              "gap": "5-15",
+              "matches": 80,
+              "stronger": 45,
+              "draws": 27.5
+            },
+            {
+              "gap": "15+",
+              "matches": 0,
+              "stronger": 0,
+              "draws": 0
+            }
+          ]
+        }
+      ],
+      "hatTricks": {
+        "matches": 2670,
+        "perMatch": 0.03857677902621723,
+        "count": 103
+      },
+      "seconds": 41.705
+    },
+    {
+      "year": 1957,
+      "tiers": [
+        {
+          "tier": 0,
+          "matches": 2670,
+          "goalsPerMatch": 2.9,
+          "homeDrawAway": [
+            43.86,
+            21.39,
+            34.76
+          ],
+          "nilNil": 6.07,
+          "biggestMargin": 10,
+          "champions": [
+            {
+              "groupKey": "ENG:0:0",
+              "clubs": 20,
+              "points": 86,
+              "lead": 2,
+              "topScorer": 28
+            },
+            {
+              "groupKey": "ESP:0:0",
+              "clubs": 20,
+              "points": 82,
+              "lead": 10,
+              "topScorer": 27
+            },
+            {
+              "groupKey": "GER:0:0",
+              "clubs": 18,
+              "points": 74,
+              "lead": 2,
+              "topScorer": 30
+            },
+            {
+              "groupKey": "ITA:0:0",
+              "clubs": 20,
+              "points": 89,
+              "lead": 6,
+              "topScorer": 29
+            },
+            {
+              "groupKey": "FRA:0:0",
+              "clubs": 18,
+              "points": 76,
+              "lead": 6,
+              "topScorer": 28
+            },
+            {
+              "groupKey": "POR:0:0",
+              "clubs": 18,
+              "points": 86,
+              "lead": 7,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "NED:0:0",
+              "clubs": 18,
+              "points": 78,
+              "lead": 6,
+              "topScorer": 20
+            },
+            {
+              "groupKey": "BEL:0:0",
+              "clubs": 18,
+              "points": 76,
+              "lead": 4,
+              "topScorer": 26
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 892,
+              "stronger": 42.38,
+              "draws": 25.56
+            },
+            {
+              "gap": "5-15",
+              "matches": 1304,
+              "stronger": 58.51,
+              "draws": 20.17
+            },
+            {
+              "gap": "15+",
+              "matches": 332,
+              "stronger": 72.89,
+              "draws": 13.86
+            }
+          ]
+        },
+        {
+          "tier": 1,
+          "matches": 2902,
+          "goalsPerMatch": 2.79,
+          "homeDrawAway": [
+            43.18,
+            22.29,
+            34.53
+          ],
+          "nilNil": 7.13,
+          "biggestMargin": 11,
+          "champions": [
+            {
+              "groupKey": "ENG:1:0",
+              "clubs": 24,
+              "points": 95,
+              "lead": 3,
+              "topScorer": 28
+            },
+            {
+              "groupKey": "ESP:1:0",
+              "clubs": 22,
+              "points": 89,
+              "lead": 6,
+              "topScorer": 29
+            },
+            {
+              "groupKey": "GER:1:0",
+              "clubs": 18,
+              "points": 65,
+              "lead": 2,
+              "topScorer": 16
+            },
+            {
+              "groupKey": "ITA:1:0",
+              "clubs": 20,
+              "points": 68,
+              "lead": 0,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "FRA:1:0",
+              "clubs": 18,
+              "points": 69,
+              "lead": 9,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "POR:1:0",
+              "clubs": 18,
+              "points": 73,
+              "lead": 8,
+              "topScorer": 20
+            },
+            {
+              "groupKey": "NED:1:0",
+              "clubs": 20,
+              "points": 87,
+              "lead": 5,
+              "topScorer": 29
+            },
+            {
+              "groupKey": "BEL:1:0",
+              "clubs": 15,
+              "points": 59,
+              "lead": 6,
+              "topScorer": 15
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1368,
+              "stronger": 43.93,
+              "draws": 22.51
+            },
+            {
+              "gap": "5-15",
+              "matches": 1302,
+              "stronger": 55.22,
+              "draws": 21.66
+            },
+            {
+              "gap": "15+",
+              "matches": 50,
+              "stronger": 64,
+              "draws": 20
+            }
+          ]
+        },
+        {
+          "tier": 2,
+          "matches": 2378,
+          "goalsPerMatch": 2.73,
+          "homeDrawAway": [
+            43.23,
+            23.17,
+            33.6
+          ],
+          "nilNil": 6.48,
+          "biggestMargin": 8,
+          "champions": [
+            {
+              "groupKey": "ENG:2:0",
+              "clubs": 24,
+              "points": 98,
+              "lead": 11,
+              "topScorer": 35
+            },
+            {
+              "groupKey": "GER:2:0",
+              "clubs": 20,
+              "points": 80,
+              "lead": 4,
+              "topScorer": 28
+            },
+            {
+              "groupKey": "ITA:2:0",
+              "clubs": 20,
+              "points": 71,
+              "lead": 1,
+              "topScorer": 27
+            },
+            {
+              "groupKey": "ITA:2:1",
+              "clubs": 20,
+              "points": 76,
+              "lead": 2,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "ITA:2:2",
+              "clubs": 20,
+              "points": 82,
+              "lead": 5,
+              "topScorer": 28
+            },
+            {
+              "groupKey": "FRA:2:0",
+              "clubs": 18,
+              "points": 66,
+              "lead": 6,
+              "topScorer": 30
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1196,
+              "stronger": 41.47,
+              "draws": 24.75
+            },
+            {
+              "gap": "5-15",
+              "matches": 988,
+              "stronger": 55.67,
+              "draws": 20.85
+            },
+            {
+              "gap": "15+",
+              "matches": 30,
+              "stronger": 83.33,
+              "draws": 13.33
+            }
+          ]
+        },
+        {
+          "tier": 3,
+          "matches": 552,
+          "goalsPerMatch": 2.55,
+          "homeDrawAway": [
+            40.94,
+            23.37,
+            35.69
+          ],
+          "nilNil": 7.61,
+          "biggestMargin": 8,
+          "champions": [
+            {
+              "groupKey": "ENG:3:0",
+              "clubs": 24,
+              "points": 95,
+              "lead": 2,
+              "topScorer": 35
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 296,
+              "stronger": 47.97,
+              "draws": 22.97
+            },
+            {
+              "gap": "5-15",
+              "matches": 206,
+              "stronger": 52.43,
+              "draws": 23.3
+            },
+            {
+              "gap": "15+",
+              "matches": 6,
+              "stronger": 33.33,
+              "draws": 50
+            }
+          ]
+        },
+        {
+          "tier": 4,
+          "matches": 240,
+          "goalsPerMatch": 2.39,
+          "homeDrawAway": [
+            41.25,
+            31.25,
+            27.5
+          ],
+          "nilNil": 8.33,
+          "biggestMargin": 8,
+          "champions": [
+            {
+              "groupKey": "lower",
+              "clubs": 16,
+              "points": 50,
+              "lead": 1,
+              "topScorer": 20
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 154,
+              "stronger": 37.01,
+              "draws": 29.87
+            },
+            {
+              "gap": "5-15",
+              "matches": 72,
+              "stronger": 38.89,
+              "draws": 34.72
+            },
+            {
+              "gap": "15+",
+              "matches": 0,
+              "stronger": 0,
+              "draws": 0
+            }
+          ]
+        }
+      ],
+      "hatTricks": {
+        "matches": 2670,
+        "perMatch": 0.04082397003745318,
+        "count": 109
+      },
+      "seconds": 46.837
+    },
+    {
+      "year": 1958,
+      "tiers": [
+        {
+          "tier": 0,
+          "matches": 2670,
+          "goalsPerMatch": 2.85,
+          "homeDrawAway": [
+            40.79,
+            22.13,
+            37.08
+          ],
+          "nilNil": 6.89,
+          "biggestMargin": 10,
+          "champions": [
+            {
+              "groupKey": "ENG:0:0",
+              "clubs": 20,
+              "points": 86,
+              "lead": 6,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "ESP:0:0",
+              "clubs": 20,
+              "points": 88,
+              "lead": 14,
+              "topScorer": 28
+            },
+            {
+              "groupKey": "GER:0:0",
+              "clubs": 18,
+              "points": 75,
+              "lead": 2,
+              "topScorer": 27
+            },
+            {
+              "groupKey": "ITA:0:0",
+              "clubs": 20,
+              "points": 89,
+              "lead": 14,
+              "topScorer": 28
+            },
+            {
+              "groupKey": "FRA:0:0",
+              "clubs": 18,
+              "points": 79,
+              "lead": 10,
+              "topScorer": 22
+            },
+            {
+              "groupKey": "POR:0:0",
+              "clubs": 18,
+              "points": 85,
+              "lead": 12,
+              "topScorer": 24
+            },
+            {
+              "groupKey": "NED:0:0",
+              "clubs": 18,
+              "points": 76,
+              "lead": 10,
+              "topScorer": 21
+            },
+            {
+              "groupKey": "BEL:0:0",
+              "clubs": 18,
+              "points": 79,
+              "lead": 0,
+              "topScorer": 25
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 930,
+              "stronger": 43.98,
+              "draws": 24.3
+            },
+            {
+              "gap": "5-15",
+              "matches": 1348,
+              "stronger": 58.68,
+              "draws": 21.36
+            },
+            {
+              "gap": "15+",
+              "matches": 272,
+              "stronger": 75,
+              "draws": 16.91
+            }
+          ]
+        },
+        {
+          "tier": 1,
+          "matches": 2902,
+          "goalsPerMatch": 2.71,
+          "homeDrawAway": [
+            42.59,
+            23.64,
+            33.77
+          ],
+          "nilNil": 7.24,
+          "biggestMargin": 9,
+          "champions": [
+            {
+              "groupKey": "ENG:1:0",
+              "clubs": 24,
+              "points": 91,
+              "lead": 3,
+              "topScorer": 30
+            },
+            {
+              "groupKey": "ESP:1:0",
+              "clubs": 22,
+              "points": 92,
+              "lead": 8,
+              "topScorer": 31
+            },
+            {
+              "groupKey": "GER:1:0",
+              "clubs": 18,
+              "points": 74,
+              "lead": 9,
+              "topScorer": 19
+            },
+            {
+              "groupKey": "ITA:1:0",
+              "clubs": 20,
+              "points": 76,
+              "lead": 11,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "FRA:1:0",
+              "clubs": 18,
+              "points": 62,
+              "lead": 1,
+              "topScorer": 21
+            },
+            {
+              "groupKey": "POR:1:0",
+              "clubs": 18,
+              "points": 59,
+              "lead": 1,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "NED:1:0",
+              "clubs": 20,
+              "points": 72,
+              "lead": 4,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "BEL:1:0",
+              "clubs": 15,
+              "points": 56,
+              "lead": 4,
+              "topScorer": 17
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1438,
+              "stronger": 42.63,
+              "draws": 24.27
+            },
+            {
+              "gap": "5-15",
+              "matches": 1150,
+              "stronger": 54.52,
+              "draws": 22.87
+            },
+            {
+              "gap": "15+",
+              "matches": 70,
+              "stronger": 60,
+              "draws": 27.14
+            }
+          ]
+        },
+        {
+          "tier": 2,
+          "matches": 2378,
+          "goalsPerMatch": 2.71,
+          "homeDrawAway": [
+            42.68,
+            23.42,
+            33.89
+          ],
+          "nilNil": 6.81,
+          "biggestMargin": 8,
+          "champions": [
+            {
+              "groupKey": "ENG:2:0",
+              "clubs": 24,
+              "points": 89,
+              "lead": 9,
+              "topScorer": 31
+            },
+            {
+              "groupKey": "GER:2:0",
+              "clubs": 20,
+              "points": 74,
+              "lead": 1,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "ITA:2:0",
+              "clubs": 20,
+              "points": 88,
+              "lead": 11,
+              "topScorer": 29
+            },
+            {
+              "groupKey": "ITA:2:1",
+              "clubs": 20,
+              "points": 93,
+              "lead": 19,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "ITA:2:2",
+              "clubs": 20,
+              "points": 86,
+              "lead": 13,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "FRA:2:0",
+              "clubs": 18,
+              "points": 77,
+              "lead": 6,
+              "topScorer": 26
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1096,
+              "stronger": 42.15,
+              "draws": 24.09
+            },
+            {
+              "gap": "5-15",
+              "matches": 1092,
+              "stronger": 55.4,
+              "draws": 22.8
+            },
+            {
+              "gap": "15+",
+              "matches": 42,
+              "stronger": 76.19,
+              "draws": 9.52
+            }
+          ]
+        },
+        {
+          "tier": 3,
+          "matches": 552,
+          "goalsPerMatch": 2.46,
+          "homeDrawAway": [
+            40.76,
+            23.37,
+            35.87
+          ],
+          "nilNil": 7.61,
+          "biggestMargin": 8,
+          "champions": [
+            {
+              "groupKey": "ENG:3:0",
+              "clubs": 24,
+              "points": 98,
+              "lead": 4,
+              "topScorer": 30
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 278,
+              "stronger": 46.04,
+              "draws": 24.1
+            },
+            {
+              "gap": "5-15",
+              "matches": 220,
+              "stronger": 55.45,
+              "draws": 22.73
+            },
+            {
+              "gap": "15+",
+              "matches": 6,
+              "stronger": 83.33,
+              "draws": 0
+            }
+          ]
+        },
+        {
+          "tier": 4,
+          "matches": 240,
+          "goalsPerMatch": 2.36,
+          "homeDrawAway": [
+            37.92,
+            27.92,
+            34.17
+          ],
+          "nilNil": 12.92,
+          "biggestMargin": 5,
+          "champions": [
+            {
+              "groupKey": "lower",
+              "clubs": 16,
+              "points": 66,
+              "lead": 11,
+              "topScorer": 20
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 154,
+              "stronger": 39.61,
+              "draws": 27.92
+            },
+            {
+              "gap": "5-15",
+              "matches": 66,
+              "stronger": 40.91,
+              "draws": 30.3
+            },
+            {
+              "gap": "15+",
+              "matches": 0,
+              "stronger": 0,
+              "draws": 0
+            }
+          ]
+        }
+      ],
+      "hatTricks": {
+        "matches": 2670,
+        "perMatch": 0.04456928838951311,
+        "count": 119
+      },
+      "seconds": 41.268
+    },
+    {
+      "year": 1959,
+      "tiers": [
+        {
+          "tier": 0,
+          "matches": 2670,
+          "goalsPerMatch": 2.93,
+          "homeDrawAway": [
+            44.04,
+            21.57,
+            34.38
+          ],
+          "nilNil": 6.63,
+          "biggestMargin": 11,
+          "champions": [
+            {
+              "groupKey": "ENG:0:0",
+              "clubs": 20,
+              "points": 89,
+              "lead": 8,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "ESP:0:0",
+              "clubs": 20,
+              "points": 81,
+              "lead": 3,
+              "topScorer": 21
+            },
+            {
+              "groupKey": "GER:0:0",
+              "clubs": 18,
+              "points": 78,
+              "lead": 6,
+              "topScorer": 21
+            },
+            {
+              "groupKey": "ITA:0:0",
+              "clubs": 20,
+              "points": 82,
+              "lead": 1,
+              "topScorer": 26
+            },
+            {
+              "groupKey": "FRA:0:0",
+              "clubs": 18,
+              "points": 79,
+              "lead": 3,
+              "topScorer": 33
+            },
+            {
+              "groupKey": "POR:0:0",
+              "clubs": 18,
+              "points": 83,
+              "lead": 20,
+              "topScorer": 22
+            },
+            {
+              "groupKey": "NED:0:0",
+              "clubs": 18,
+              "points": 75,
+              "lead": 3,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "BEL:0:0",
+              "clubs": 18,
+              "points": 83,
+              "lead": 8,
+              "topScorer": 37
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 990,
+              "stronger": 45.25,
+              "draws": 23.23
+            },
+            {
+              "gap": "5-15",
+              "matches": 1298,
+              "stronger": 58.01,
+              "draws": 21.65
+            },
+            {
+              "gap": "15+",
+              "matches": 238,
+              "stronger": 77.73,
+              "draws": 15.13
+            }
+          ]
+        },
+        {
+          "tier": 1,
+          "matches": 2902,
+          "goalsPerMatch": 2.69,
+          "homeDrawAway": [
+            43.25,
+            22.5,
+            34.25
+          ],
+          "nilNil": 7.44,
+          "biggestMargin": 9,
+          "champions": [
+            {
+              "groupKey": "ENG:1:0",
+              "clubs": 24,
+              "points": 102,
+              "lead": 12,
+              "topScorer": 27
+            },
+            {
+              "groupKey": "ESP:1:0",
+              "clubs": 22,
+              "points": 86,
+              "lead": 2,
+              "topScorer": 30
+            },
+            {
+              "groupKey": "GER:1:0",
+              "clubs": 18,
+              "points": 67,
+              "lead": 2,
+              "topScorer": 20
+            },
+            {
+              "groupKey": "ITA:1:0",
+              "clubs": 20,
+              "points": 74,
+              "lead": 8,
+              "topScorer": 23
+            },
+            {
+              "groupKey": "FRA:1:0",
+              "clubs": 18,
+              "points": 66,
+              "lead": 3,
+              "topScorer": 20
+            },
+            {
+              "groupKey": "POR:1:0",
+              "clubs": 18,
+              "points": 68,
+              "lead": 7,
+              "topScorer": 18
+            },
+            {
+              "groupKey": "NED:1:0",
+              "clubs": 20,
+              "points": 84,
+              "lead": 13,
+              "topScorer": 29
+            },
+            {
+              "groupKey": "BEL:1:0",
+              "clubs": 15,
+              "points": 60,
+              "lead": 6,
+              "topScorer": 19
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1410,
+              "stronger": 43.62,
+              "draws": 22.77
+            },
+            {
+              "gap": "5-15",
+              "matches": 1238,
+              "stronger": 55.17,
+              "draws": 21.49
+            },
+            {
+              "gap": "15+",
+              "matches": 62,
+              "stronger": 66.13,
+              "draws": 27.42
+            }
+          ]
+        },
+        {
+          "tier": 2,
+          "matches": 2378,
+          "goalsPerMatch": 2.73,
+          "homeDrawAway": [
+            42.51,
+            24.43,
+            33.05
+          ],
+          "nilNil": 8.2,
+          "biggestMargin": 10,
+          "champions": [
+            {
+              "groupKey": "ENG:2:0",
+              "clubs": 24,
+              "points": 105,
+              "lead": 14,
+              "topScorer": 35
+            },
+            {
+              "groupKey": "GER:2:0",
+              "clubs": 20,
+              "points": 76,
+              "lead": 2,
+              "topScorer": 33
+            },
+            {
+              "groupKey": "ITA:2:0",
+              "clubs": 20,
+              "points": 94,
+              "lead": 23,
+              "topScorer": 28
+            },
+            {
+              "groupKey": "ITA:2:1",
+              "clubs": 20,
+              "points": 68,
+              "lead": 5,
+              "topScorer": 25
+            },
+            {
+              "groupKey": "ITA:2:2",
+              "clubs": 20,
+              "points": 75,
+              "lead": 2,
+              "topScorer": 22
+            },
+            {
+              "groupKey": "FRA:2:0",
+              "clubs": 18,
+              "points": 62,
+              "lead": 0,
+              "topScorer": 25
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 1072,
+              "stronger": 41.42,
+              "draws": 26.4
+            },
+            {
+              "gap": "5-15",
+              "matches": 1102,
+              "stronger": 55.17,
+              "draws": 22.6
+            },
+            {
+              "gap": "15+",
+              "matches": 54,
+              "stronger": 64.81,
+              "draws": 24.07
+            }
+          ]
+        },
+        {
+          "tier": 3,
+          "matches": 552,
+          "goalsPerMatch": 2.65,
+          "homeDrawAway": [
+            41.67,
+            22.28,
+            36.05
+          ],
+          "nilNil": 6.34,
+          "biggestMargin": 8,
+          "champions": [
+            {
+              "groupKey": "ENG:3:0",
+              "clubs": 24,
+              "points": 92,
+              "lead": 3,
+              "topScorer": 32
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 228,
+              "stronger": 46.49,
+              "draws": 20.61
+            },
+            {
+              "gap": "5-15",
+              "matches": 268,
+              "stronger": 54.48,
+              "draws": 22.39
+            },
+            {
+              "gap": "15+",
+              "matches": 12,
+              "stronger": 58.33,
+              "draws": 25
+            }
+          ]
+        },
+        {
+          "tier": 4,
+          "matches": 240,
+          "goalsPerMatch": 2.56,
+          "homeDrawAway": [
+            42.5,
+            22.92,
+            34.58
+          ],
+          "nilNil": 10.83,
+          "biggestMargin": 6,
+          "champions": [
+            {
+              "groupKey": "lower",
+              "clubs": 16,
+              "points": 56,
+              "lead": 0,
+              "topScorer": 20
+            }
+          ],
+          "strongerWins": [
+            {
+              "gap": "0-5",
+              "matches": 140,
+              "stronger": 45,
+              "draws": 25
+            },
+            {
+              "gap": "5-15",
+              "matches": 90,
+              "stronger": 46.67,
+              "draws": 22.22
+            },
+            {
+              "gap": "15+",
+              "matches": 0,
+              "stronger": 0,
+              "draws": 0
+            }
+          ]
+        }
+      ],
+      "hatTricks": {
+        "matches": 2670,
+        "perMatch": 0.038202247191011236,
+        "count": 102
+      },
+      "seconds": 48.841
+    }
+  ],
+  "detailed": {
+    "pairings": 16,
+    "perPairing": 5,
+    "matches": 80,
+    "shots": 29.88,
+    "xg": 3.33,
+    "passes": 818.71,
+    "goals": 3.39,
+    "bands": [
+      {
+        "label": "passes attempted (team)",
+        "band": [
+          430,
+          520
+        ],
+        "value": 409.36,
+        "inBand": false
+      },
+      {
+        "label": "pass completion %",
+        "band": [
+          76,
+          84
+        ],
+        "value": 78.57,
+        "inBand": true
+      },
+      {
+        "label": "pass forward %",
+        "band": [
+          30,
+          40
+        ],
+        "value": 42.54,
+        "inBand": false
+      },
+      {
+        "label": "pass lateral %",
+        "band": [
+          45,
+          55
+        ],
+        "value": 43.83,
+        "inBand": false
+      },
+      {
+        "label": "pass back %",
+        "band": [
+          12,
+          18
+        ],
+        "value": 13.63,
+        "inBand": true
+      },
+      {
+        "label": "possessions (team)",
+        "band": [
+          85,
+          105
+        ],
+        "value": 88.84,
+        "inBand": true
+      },
+      {
+        "label": "median passes per possession",
+        "band": [
+          2,
+          4
+        ],
+        "value": 4,
+        "inBand": true
+      },
+      {
+        "label": "possessions ending in a shot %",
+        "band": [
+          10,
+          15
+        ],
+        "value": 15.14,
+        "inBand": false
+      },
+      {
+        "label": "shots (team)",
+        "band": [
+          11,
+          14
+        ],
+        "value": 14.94,
+        "inBand": false
+      },
+      {
+        "label": "on target %",
+        "band": [
+          30,
+          37
+        ],
+        "value": 27.62,
+        "inBand": false
+      },
+      {
+        "label": "xG per shot",
+        "band": [
+          0.09,
+          0.12
+        ],
+        "value": 0.11,
+        "inBand": true
+      },
+      {
+        "label": "shots from goal area %",
+        "band": [
+          6,
+          9
+        ],
+        "value": 8.08,
+        "inBand": true
+      },
+      {
+        "label": "shots from rest of box %",
+        "band": [
+          48,
+          58
+        ],
+        "value": 56.99,
+        "inBand": true
+      },
+      {
+        "label": "shots from outside %",
+        "band": [
+          32,
+          42
+        ],
+        "value": 34.94,
+        "inBand": true
+      },
+      {
+        "label": "mean shot distance m",
+        "band": [
+          15,
+          18
+        ],
+        "value": 15.43,
+        "inBand": true
+      },
+      {
+        "label": "shots from 30 m+ %",
+        "band": [
+          0,
+          10
+        ],
+        "value": 6.65,
+        "inBand": true
+      },
+      {
+        "label": "shots from own half %",
+        "band": [
+          0,
+          0.5
+        ],
+        "value": 0,
+        "inBand": true
+      },
+      {
+        "label": "crosses (team)",
+        "band": [
+          13,
+          20
+        ],
+        "value": 11.8,
+        "inBand": false
+      },
+      {
+        "label": "cross completion %",
+        "band": [
+          20,
+          30
+        ],
+        "value": 21.72,
+        "inBand": true
+      },
+      {
+        "label": "take-ons (team)",
+        "band": [
+          14,
+          20
+        ],
+        "value": 22.29,
+        "inBand": false
+      },
+      {
+        "label": "take-on success %",
+        "band": [
+          40,
+          60
+        ],
+        "value": 57.75,
+        "inBand": true
+      },
+      {
+        "label": "tackles + interceptions (team)",
+        "band": [
+          22,
+          30
+        ],
+        "value": 25.24,
+        "inBand": true
+      },
+      {
+        "label": "throw-ins (team)",
+        "band": [
+          17,
+          23
+        ],
+        "value": 15.98,
+        "inBand": false
+      },
+      {
+        "label": "corners (team)",
+        "band": [
+          4,
+          6
+        ],
+        "value": 4.47,
+        "inBand": true
+      },
+      {
+        "label": "goal kicks (team)",
+        "band": [
+          7,
+          9
+        ],
+        "value": 11.4,
+        "inBand": false
+      },
+      {
+        "label": "fouls (team)",
+        "band": [
+          10,
+          13
+        ],
+        "value": 10.54,
+        "inBand": true
+      },
+      {
+        "label": "offsides (team)",
+        "band": [
+          1.7,
+          1.9
+        ],
+        "value": 1.08,
+        "inBand": false
+      },
+      {
+        "label": "yellow cards (match)",
+        "band": [
+          3.3,
+          4.3
+        ],
+        "value": 3.43,
+        "inBand": true
+      },
+      {
+        "label": "red cards (match)",
+        "band": [
+          0.08,
+          0.15
+        ],
+        "value": 0.09,
+        "inBand": true
+      },
+      {
+        "label": "goals (match)",
+        "band": [
+          2.6,
+          2.9
+        ],
+        "value": 3.39,
+        "inBand": false
+      },
+      {
+        "label": "set-piece goals (no pens) %",
+        "band": [
+          20,
+          28
+        ],
+        "value": 12.18,
+        "inBand": false
+      },
+      {
+        "label": "penalty goals %",
+        "band": [
+          6,
+          9
+        ],
+        "value": 11.07,
+        "inBand": false
+      },
+      {
+        "label": "headed goals %",
+        "band": [
+          14,
+          20
+        ],
+        "value": 9.96,
+        "inBand": false
+      },
+      {
+        "label": "goals by FW %",
+        "band": [
+          50,
+          60
+        ],
+        "value": 48.34,
+        "inBand": false
+      },
+      {
+        "label": "goals by MF %",
+        "band": [
+          27,
+          37
+        ],
+        "value": 42.44,
+        "inBand": false
+      },
+      {
+        "label": "goals by DF %",
+        "band": [
+          8,
+          15
+        ],
+        "value": 9.23,
+        "inBand": true
+      },
+      {
+        "label": "ball in play (min)",
+        "band": [
+          54,
+          58
+        ],
+        "value": 56.79,
+        "inBand": true
+      }
+    ],
+    "seconds": 47.153
+  },
+  "seconds": {
+    "seasons": 446.822,
+    "detailed": 47.153
+  }
+}
