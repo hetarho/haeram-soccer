@@ -93,6 +93,8 @@ describe('contextual home match access', () => {
     // The content stays laid out under the moment, unseen, so the card keeps its size.
     expect(markup).toMatch(/<section class="[^"]*momentOn[^"]*"/);
     expect(markup).toContain('전술·선발 준비');
+    // It comes last: the themes style the card's first child, which stays its content.
+    expect(markup.indexOf('next-match-moment')).toBeGreaterThan(markup.indexOf('전술·선발 준비'));
     const idle = renderToStaticMarkup(
       createElement(NextMatchCard, { w: world(), onPrepare: vi.fn() }),
     );

@@ -44,12 +44,6 @@ export function NextMatchCard({
       aria-label="다음 경기"
       data-home-part="fixture"
     >
-      {/* The content keeps its place, hidden, so the card and the home layout keep their size. */}
-      {moment && (
-        <span className={s.moment} data-testid="next-match-moment" aria-hidden="true">
-          <i className={s.momentBall} />
-        </span>
-      )}
       <div className={s.fixtureInfo}>
         <small>
           NEXT MATCH
@@ -82,6 +76,13 @@ export function NextMatchCard({
           전술·선발 준비
         </button>
       </div>
+      {/* Last, so the themes' first-child rules still reach the content, which keeps its place
+          hidden: the card and the home layout keep their size. */}
+      {moment && (
+        <span className={s.moment} data-testid="next-match-moment" aria-hidden="true">
+          <i className={s.momentBall} />
+        </span>
+      )}
     </section>
   );
 }
