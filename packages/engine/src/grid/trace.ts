@@ -1,5 +1,5 @@
 /** The touch-by-touch trace playback is built from. Only kept when the match is observed. */
-import { MOTION_STATES, OBSERVATION_STATES } from './observation';
+import { MOTION_STATES, OBSERVATION_STATES, SAMPLING } from './observation';
 import { attackFrame, cellOf, clamp, PITCH, toEngine } from './pitch';
 import type { Outcome, ShotOutcome } from './resolve';
 import type { EndedIntention, Intention, IntentionKind } from './intentions';
@@ -104,6 +104,14 @@ export interface TraceEntry {
    * pre-feature path.
    */
   kick?: TraceKick;
+  /**
+   * Candidate model only (T477, →MATCH-12): on a restart prepared on the clock of an observed
+   * match, every slot as the walk-in starts, then every `SAMPLING.spacing` match seconds while
+   * anyone still moves, and at the step everyone came to stand (`settled`, absent when someone was
+   * still moving at the kick). Absent where `kick` is, and on older traces.
+   */
+  walk?: TraceKick[];
+  settled?: number;
 }
 
 /**
@@ -336,6 +344,14 @@ export class Tracer {
   };
   /** The kick of the restart under way, for its entry. */
   private kicked?: TraceKick;
+  /** The walk-in of the restart under way (T477): its samples, the last one's time, everyone's last places and whether all stand. */
+  private walking?: {
+    samples: TraceKick[];
+    last: number;
+    at: number;
+    places: number[];
+    settled?: number;
+  };
 
   constructor(
     private readonly on: boolean,
@@ -366,6 +382,46 @@ export class Tracer {
     };
   };
 
+  /**
+   * A restart's walk-in at match second `at` (`prepareRestart`, T477): its start, then after each
+   * movement step. Samples every slot at the start, every `SAMPLING.spacing` seconds while anyone
+   * moves faster than `SAMPLING.settle`, and at the step where everyone came to stand; after that
+   * nothing until the kick. It only reads the state.
+   */
+  readonly walk = (s: GridState, at: number): void => {
+    if (!this.on) return;
+    const places: number[] = [];
+    for (const side of s.players)
+      for (const gp of side) if (onPitch(gp)) places.push(gp.pos[0], gp.pos[1]);
+    const sample = (): TraceKick => ({
+      elapsed: at,
+      ...slotsNow(s, (ended) => !this.traced.has(ended)),
+    });
+    const w = this.walking;
+    if (!w) {
+      this.walking = { samples: [sample()], last: at, at, places };
+      return;
+    }
+    if (w.settled !== undefined) return;
+    // Fastest anyone moved since the last step; a player entering or leaving starts a new count.
+    let moved = places.length === w.places.length ? 0 : Infinity;
+    for (let i = 0; moved < Infinity && i < places.length; i += 2)
+      moved = Math.max(
+        moved,
+        s.math.hypot(places[i]! - w.places[i]!, places[i + 1]! - w.places[i + 1]!),
+      );
+    const dt = at - w.at;
+    w.at = at;
+    w.places = places;
+    if (moved <= SAMPLING.settle * dt) {
+      w.settled = at;
+      w.samples.push(sample());
+    } else if (at - w.last >= SAMPLING.spacing - 1e-9) {
+      w.last = at;
+      w.samples.push(sample());
+    }
+  };
+
   push(
     s: GridState,
     side: 0 | 1,
@@ -378,6 +434,7 @@ export class Tracer {
     const shot = snapshot(s, this.totals(), this.fresh);
     const at = { elapsed: s.elapsed, period: s.period, t: s.t };
     const kick = this.kicked;
+    const walk = this.walking;
     this.entries.push({
       ...at,
       side,
@@ -388,9 +445,12 @@ export class Tracer {
       ...this.detail,
       ...shot,
       ...(kick ? { kick } : {}),
+      ...(walk ? { walk: walk.samples } : {}),
+      ...(walk?.settled !== undefined ? { settled: walk.settled } : {}),
     });
     this.detail = {};
     this.kicked = undefined;
+    this.walking = undefined;
     const held = this.held ?? [];
     this.held = undefined;
     for (const n of held)

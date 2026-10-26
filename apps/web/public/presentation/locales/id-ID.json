@@ -146,6 +146,10 @@
     "match.goal.side": "{team} mencetak gol",
     "match.goal.scorer": "{team} · {player} mencetak gol",
     "match.possession.side": "Penguasaan bola",
-    "match.possession.word": "Penguasaan"
+    "match.possession.word": "Penguasaan",
+    "match.stoppage.yellow": "Kartu kuning · {player}",
+    "match.stoppage.red": "Kartu merah · {player}",
+    "match.stoppage.injury": "Cedera · {player}",
+    "match.stoppage.sub": "Pergantian · {out} → {in}"
   }
 }

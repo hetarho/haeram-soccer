@@ -149,6 +149,10 @@
     "match.goal.side": "{team} score",
     "match.goal.scorer": "{team} · {player} scores",
     "match.possession.side": "Ball possession",
-    "match.possession.word": "Possession"
+    "match.possession.word": "Possession",
+    "match.stoppage.yellow": "Yellow card · {player}",
+    "match.stoppage.red": "Red card · {player}",
+    "match.stoppage.injury": "Injury · {player}",
+    "match.stoppage.sub": "Substitution · {out} → {in}"
   }
 }

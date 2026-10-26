@@ -1,12 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import type {
+  FrameStoppage,
   MatchEvent,
   MatchFrame,
-  MatchMotionSample,
   MatchRecord,
 } from '../../../../packages/contracts/src/types';
 import { seekGoalFeedback } from './goalFeedback';
 import {
+  beatAt,
+  beatCaptions,
+  DEAD_BALL_CONFIG,
+  deadBallBeats,
   locate,
   presentationAdvance,
   presentationMs,
@@ -14,12 +18,9 @@ import {
   runningLength,
   runningRate,
   runningTime,
-  SET_PIECE_PREPARATION_MS,
-  setPiecePreparations,
   WATCH_DEFAULT_SPEED,
   WATCH_MINUTE_MS,
   WATCH_SPEEDS,
-  type Preparation,
 } from './presentationClock';
 import { archivePlayback } from './replay';
 
@@ -122,7 +123,7 @@ describe('presentation clock (→WEB-32)', () => {
     // Minute 1 holds a 30-second dead ball (10–40) without a set piece after it; minute 2 30
     // seconds of open play (70–100).
     const at = (i: number, t: number) => runningTime(i, frames[i]!, t, 0);
-    const preparations = setPiecePreparations(frames);
+    const preparations = deadBallBeats(frames);
     expect(preparations).toEqual([]);
     expect(presentationMs(at(0, 10), at(0, 40), 1, preparations)).toBeCloseTo(6000, 9);
     expect(presentationMs(at(1, 70), at(1, 100), 1, preparations)).toBeCloseTo(6000, 9);
@@ -245,12 +246,12 @@ describe('presentation clock (→WEB-32)', () => {
     expect(decoded.times).toEqual([15, 30, 45, 60]);
     expect(decoded.trackTimes).toEqual([30, 60]);
     // Legacy frames carry no events, so the whole match runs at the selected speed.
-    expect(setPiecePreparations(legacy)).toEqual([]);
+    expect(deadBallBeats(legacy)).toEqual([]);
     expect(presentationMs(0, runningLength(legacy.length), 1)).toBeCloseTo(90 * WATCH_MINUTE_MS, 6);
   });
 });
 
-/** A recorded event `t` seconds into its minute: only what the preparation reads is filled. */
+/** A recorded event `t` seconds into its minute: only what the beat reads is filled. */
 const event = (
   t: number,
   kind: MatchEvent['kind'],
@@ -258,372 +259,171 @@ const event = (
   extra: Partial<MatchEvent> = {},
 ): MatchEvent => ({ t, kind, side: 0, actor, from: [50, 50], to: [50, 50], text: '', ...extra });
 
-/** A timed minute with its events, holders and samples (`[t, phase]`, seconds into the minute). */
-function eventFrame(
-  index: number,
-  events: MatchEvent[],
-  holders: [number, string][] = [],
-  samples: [number, MatchMotionSample['phase'], [number, number]?][] = [[60, 'possession']],
-  period: 1 | 2 = 1,
-): MatchFrame {
-  const start = index * 60;
-  return {
-    ...timedFrame(
-      index + 1,
-      period,
-      start,
-      samples.map(([t]) => start + t),
-      samples.map(([t], k) => [start + t, k * 10, 50, 0]),
-    ),
-    events,
-    holders,
-    // The drawn ball sits on the events' default spot unless a sample says otherwise.
-    motion: samples.map(([t, phase, ball = [50, 50]]) => ({
-      elapsedSeconds: start + t,
-      ball,
-      players: [[], []],
-      phase,
-    })),
-  };
-}
-
-/**
- * Pre-feature corner (seed `probe-pace`, 51′): the ball goes out at 9.8 s, the trace holds the whole
- * preparation in the restart's step, the taker has the ball at 41.8 s, kicks at 43 s, and the
- * restart event is timed at the delivery's arrival, 45 s: a 32 s dead interval and a 3.2 s kick.
- */
-const preFeatureCorner = () => [
-  eventFrame(
-    0,
-    [
-      event(6.1, 'pass', 'a8', { side: 1 }),
-      event(9.8, 'pass', 'a14', { side: 1, ok: false, lost: true }),
-      event(45, 'restart', 'h10', { restart: 'corner', receiver: 'h9' }),
-      event(48, 'cross', 'h9'),
-    ],
-    [
-      [0, ''],
-      [6.1, 'a14'],
-      [6.5, ''],
-      [41.8, 'h10'],
-      [43, ''],
-      [45, 'h9'],
-      [47.7, ''],
-    ],
-    [
-      [6.06, 'possession'],
-      [9.76, 'restart'],
-      [16.51, 'restart'],
-      [41.76, 'possession'],
-      [42.98, 'restart'],
-      [44.96, 'possession'],
-      [60, 'restart'],
-    ],
-  ),
-];
-
-/**
- * Candidate corner (seed `set-piece-defence-2`, 4′–5′): a blocked shot goes out at 45.4 s of one
- * minute, the participants walk in and wait, the kick is recorded as its own restart sample 17.43 s
- * into the next minute, and the restart event is timed at the delivery's landing with the receiver,
- * 19.7 s: a 32.03 s dead interval across the minute boundary. The taker never appears as a holder.
- */
-const candidateCorner = () => [
-  eventFrame(
-    0,
-    [
-      event(43.3, 'pass', 'a9', { side: 1, receiver: 'a7' }),
-      event(45.4, 'shot', 'a7', { side: 1, outcome: 'block' }),
-    ],
-    [
-      [43.3, 'a7'],
-      [45.1, ''],
-    ],
-    [
-      [43.29, 'possession'],
-      [45.43, 'restart'],
-      [53.58, 'restart'],
-      [60, 'restart'],
-    ],
-  ),
-  eventFrame(
-    1,
-    [
-      event(19.7, 'restart', 'a8', { side: 1, restart: 'corner', receiver: 'a10' }),
-      event(22.1, 'pass', 'a10', { side: 1, receiver: 'a5' }),
-    ],
-    [
-      [0, ''],
-      [19.7, 'a10'],
-      [21, ''],
-      [22.1, 'a5'],
-    ],
-    [
-      [17.43, 'restart'],
-      [19.73, 'possession'],
-      [22.12, 'possession'],
-      [60, 'possession'],
-    ],
-  ),
-];
-
-describe('set-piece preparation (→WEB-32, MATCH-12)', () => {
-  it('reads where a corner preparation begins and ends on each model', () => {
-    // Pre-feature: from the ball going out to the taker on the ball, before the restart's arrival.
-    const pre = setPiecePreparations(preFeatureCorner());
-    expect(pre).toHaveLength(1);
-    expect(pre[0]!.from).toBeCloseTo(9.8, 9);
-    expect(pre[0]!.to).toBeCloseTo(41.8, 9);
-    // Candidate: from the blocked shot to the recorded kick sample, in the next minute.
-    const candidate = setPiecePreparations(candidateCorner());
-    expect(candidate).toHaveLength(1);
-    expect(candidate[0]!.from).toBeCloseTo(45.4, 9);
-    expect(candidate[0]!.to).toBeCloseTo(77.43, 9);
-    // A taker who plays the ball to himself is a holder at the landing, not at the kick.
-    const tapped = [
-      eventFrame(
-        0,
-        [
-          event(4, 'foul', 'a4', { side: 1, opponent: 'h5' }),
-          event(30, 'restart', 'h5', { restart: 'freeKick', receiver: 'h5' }),
-        ],
-        [
-          [3, 'h5'],
-          [4, ''],
-          [30, 'h5'],
-        ],
-        [
-          [6, 'restart'],
-          [27, 'restart'],
-          [30, 'possession'],
-        ],
-      ),
-    ];
-    expect(setPiecePreparations(tapped)).toEqual([{ from: 4, to: 27 }]);
-  });
-
-  it('a delivery sampled in the air at a minute end is not the kick', () => {
-    // A candidate corner kicked at 58.6 s from its spot (100, 0): the delivery flies in the restart
-    // phase, the minute's end samples it in the air at 60 s, and it lands 1.4 s into the next
-    // minute. The preparation ends at the kick, so the whole delivery keeps running speed.
-    const spot: [number, number] = [100, 0];
-    const frames = [
-      eventFrame(
-        0,
-        [event(20, 'shot', 'h9', { outcome: 'block' })],
-        [],
-        [
-          [20.1, 'restart', [100, 20]],
-          [40, 'restart', spot],
-          [58.6, 'restart', spot],
-          [60, 'restart', [92, 22]],
-        ],
-      ),
-      eventFrame(
+/** Timed minutes `0…count - 1` (samples every 10 s); `stoppages` and `events` go to the minute they name. */
+function stoppageFrames(
+  count: number,
+  stoppages: [number, FrameStoppage][] = [],
+  events: [number, MatchEvent][] = [],
+): MatchFrame[] {
+  return Array.from({ length: count }, (_, i) => {
+    const start = i * 60;
+    const mine = stoppages.filter(([at]) => at === i).map(([, st]) => st);
+    return {
+      ...timedFrame(
+        i + 1,
         1,
-        [event(1.4, 'restart', 'h7', { restart: 'corner', receiver: 'h9', from: spot })],
-        [[1.4, 'h9']],
-        [[1.43, 'possession', [88, 40]]],
+        start,
+        [10, 20, 30, 40, 50, 60].map((t) => start + t),
+        [[start + 60, 50, 50, 0]],
       ),
-    ];
-    const [preparation] = setPiecePreparations(frames) as [Preparation];
-    expect(preparation.from).toBeCloseTo(20, 9);
-    expect(preparation.to).toBeCloseTo(58.6, 9);
-    expect(presentationMs(58.6, 61.4, 1, [preparation])).toBeCloseTo(2.8 / runningRate(1), 6);
+      events: events.filter(([at]) => at === i).map(([, e]) => e),
+      ...(mine.length ? { stoppages: mine } : {}),
+    };
+  });
+}
+const stop = (
+  kind: FrameStoppage['kind'],
+  dead: number,
+  settled: number,
+  kick: number,
+): FrameStoppage => ({ kind, dead, settled, kick });
+
+describe('dead-ball beat (→WEB-32, MATCH-12)', () => {
+  const C = DEAD_BALL_CONFIG;
+  it('a throw-in rushes at twice running speed then holds its beat', () => {
+    const frames = stoppageFrames(1, [[0, stop('throwIn', 10, 14, 26)]]);
+    const beats = deadBallBeats(frames);
+    expect(beats).toEqual([
+      { from: 10, to: 14, factor: C.rushFactor, ms: C.rushMaxMs },
+      {
+        from: 14,
+        to: 26,
+        factor: 1,
+        ms: C.beatMs.throwIn,
+        beat: { kind: 'throwIn', incidents: [] },
+      },
+    ]);
+    // The rush: 4 s at twice the running rate; the beat: 12 s of standing in 0.4 s.
+    expect(presentationMs(10, 14, 1, beats)).toBeCloseTo(4 / (2 * runningRate(1)), 6);
+    expect(presentationMs(14, 26, 1, beats)).toBeCloseTo(C.beatMs.throwIn, 6);
+    // Running play around it keeps its speed.
+    expect(presentationMs(0, 10, 1, beats)).toBeCloseTo(10 / runningRate(1), 6);
+    expect(presentationMs(26, 60, 1, beats)).toBeCloseTo(34 / runningRate(1), 6);
   });
 
-  it('a free kick recorded as the foul its delivery ended in keeps its preparation', () => {
-    // The engine names the fouler as the entry's actor, so the kick comes from the restart sample
-    // with the ball on the free kick's spot, not from a taker's take.
-    const frames = [
-      eventFrame(
-        0,
-        [
-          event(5, 'foul', 'a4', { side: 1, opponent: 'h5' }),
-          event(31, 'foul', 'a2', { side: 1, opponent: 'h9', restart: 'freeKick' }),
-        ],
-        [
-          [4, 'h5'],
-          [5, ''],
-          [29.5, 'h9'],
-        ],
-        [
-          [8, 'restart'],
-          [28, 'restart'],
-          [31, 'restart', [70, 30]],
-        ],
-      ),
-    ];
-    expect(setPiecePreparations(frames)).toEqual([{ from: 5, to: 28 }]);
+  it('the rush is capped at 1.5 s at 1x and halves at 2x', () => {
+    // The ball went dead 20 s before this minute; everyone stood 40 s later.
+    const frames = stoppageFrames(2, [[1, stop('corner', -20, 20, 32)]]);
+    const beats = deadBallBeats(frames);
+    expect(beats[0]).toMatchObject({ from: 40, to: 80 });
+    expect(C.rushMaxMs).toBe(1500);
+    expect(presentationMs(40, 80, 1, beats)).toBeCloseTo(1500, 6);
+    expect(presentationMs(40, 80, 2, beats)).toBeCloseTo(750, 6);
+    expect(presentationAdvance(40, 1500, 1, runningLength(frames.length), beats)).toBeCloseTo(
+      80,
+      6,
+    );
   });
 
-  it('a 32 s corner preparation takes 1.5 real s at 1x and 2x', () => {
-    const frames = preFeatureCorner();
-    const preparations = setPiecePreparations(frames);
-    const [{ from, to }] = preparations as [Preparation];
-    const length = runningLength(frames.length);
-    expect(SET_PIECE_PREPARATION_MS).toBe(1500);
-    for (const speed of [1, 2]) {
-      expect(presentationMs(from, to, speed, preparations)).toBeCloseTo(1500, 6);
-      expect(presentationAdvance(from, 1500, speed, length, preparations)).toBeCloseTo(to, 6);
-      // One factor for the whole interval: half the real time is half the walk-in.
-      expect(presentationAdvance(from, 750, speed, length, preparations)).toBeCloseTo(
-        (from + to) / 2,
-        6,
-      );
-      // The kick and delivery (3.2 s to the arrival) and the play before it keep running speed.
-      expect(presentationMs(to, 45, speed, preparations)).toBeCloseTo(3.2 / runningRate(speed), 6);
-      expect(presentationMs(0, from, speed, preparations)).toBeCloseTo(
-        from / runningRate(speed),
-        6,
-      );
-    }
-    // The same on the candidate's 32 s across a minute boundary, its delivery at running speed.
-    const candidate = setPiecePreparations(candidateCorner());
-    for (const speed of [1, 2]) {
-      expect(presentationMs(45.4, 77.43, speed, candidate)).toBeCloseTo(1500, 6);
-      expect(presentationMs(77.43, 79.7, speed, candidate)).toBeCloseTo(
-        2.27 / runningRate(speed),
-        6,
-      );
+  it('beats by kind at 1x and 2x', () => {
+    const kinds = Object.keys(C.beatMs).filter((k) => k !== 'incident') as FrameStoppage['kind'][];
+    for (const kind of kinds) {
+      const beats = deadBallBeats(stoppageFrames(1, [[0, stop(kind, 5, 10, 40)]]));
+      expect(beats[1]!.beat!.kind).toBe(kind);
+      for (const speed of [1, 2])
+        expect(presentationMs(10, 40, speed, beats)).toBeCloseTo(C.beatMs[kind] / speed, 6);
     }
   });
 
-  it('at 16x a preparation shorter at running speed keeps running speed', () => {
-    const preparations = setPiecePreparations(preFeatureCorner());
-    const [{ from, to }] = preparations as [Preparation];
-    // 32 s at 16x take 400 ms of running play, already under 1.5 s.
-    expect(presentationMs(from, to, 16, preparations)).toBeCloseTo(400, 6);
-    expect(presentationMs(from, to, 16, preparations)).toBeCloseTo(presentationMs(from, to, 16), 9);
-    // 4x and 8x of a 32 s preparation: 1.6 s is drawn in 1.5 s, 0.8 s stays 0.8 s.
-    expect(presentationMs(from, to, 4, preparations)).toBeCloseTo(1500, 6);
-    expect(presentationMs(from, to, 8, preparations)).toBeCloseTo(800, 6);
-    // A preparation longer than 1.5 s at 16x (150 s) is still drawn in 1.5 s.
-    const long = [{ from: 0, to: 150 }];
-    expect(presentationMs(0, 150, 16, long)).toBeCloseTo(1500, 6);
-  });
-
-  it('throw-ins, kick-offs and penalties keep running speed', () => {
-    const frames = [
-      eventFrame(0, [
-        event(10, 'shot', 'h9', { outcome: 'goal' }),
-        event(40, 'restart', 'a10', { side: 1, restart: 'kickoff' }),
-        event(45, 'pass', 'a10', { side: 1, ok: false, lost: true }),
-        event(52, 'restart', 'h2', { restart: 'throwIn' }),
-        event(55, 'foul', 'a4', { side: 1, opponent: 'h9' }),
-        event(58, 'restart', 'h9', { restart: 'penalty' }),
-      ]),
-    ];
-    expect(setPiecePreparations(frames)).toEqual([]);
-    expect(presentationMs(0, 60, 1, setPiecePreparations(frames))).toBeCloseTo(12000, 9);
-    // A card shown after a foul keeps running speed: the free kick's preparation starts after it.
-    const booked = [
-      eventFrame(
-        0,
-        [
-          event(5, 'foul', 'a4', { side: 1, opponent: 'h5' }),
-          event(8, 'card', 'a4', { side: 1, card: 'yellow' }),
-          event(30, 'restart', 'h5', { restart: 'freeKick' }),
-        ],
-        [
-          [4, 'h5'],
-          [5, ''],
-          [28, 'h5'],
-        ],
-      ),
-    ];
-    expect(setPiecePreparations(booked)).toEqual([{ from: 8, to: 28 }]);
-    // A goal kick ends its preparation at its recorded kick sample; without a recorded kick (an
-    // older playback) the restart keeps running speed.
-    const goalKick = (samples?: [number, MatchMotionSample['phase']][]) => [
-      eventFrame(
-        0,
-        [
-          event(20, 'shot', 'a9', { side: 1, outcome: 'miss' }),
-          event(46, 'restart', 'h1', { restart: 'goalKick' }),
-        ],
-        [],
-        samples,
-      ),
-    ];
-    expect(
-      setPiecePreparations(
-        goalKick([
-          [22, 'restart'],
-          [44, 'restart'],
-          [46.5, 'possession'],
-        ]),
-      ),
-    ).toEqual([{ from: 20, to: 44 }]);
-    expect(setPiecePreparations(goalKick())).toEqual([]);
-  });
-
-  it('a speed change inside a preparation keeps the match second', () => {
-    const frames = preFeatureCorner();
-    const preparations = setPiecePreparations(frames);
-    const [{ from, to }] = preparations as [Preparation];
-    const length = runningLength(frames.length);
-    const inside = presentationAdvance(from, 500, 1, length, preparations);
-    expect(inside).toBeCloseTo(from + (to - from) / 3, 6);
-    // No real time has passed, so a new speed leaves the presented second where it was.
+  it('a stoppage shorter than its beat plays at running speed', () => {
+    const beats = deadBallBeats(stoppageFrames(1, [[0, stop('throwIn', 10, 10.5, 11)]]));
+    // Half a second of standing is 100 ms at running speed, under the 400 ms beat.
+    expect(presentationMs(10.5, 11, 1, beats)).toBeCloseTo(0.5 / runningRate(1), 6);
     for (const speed of WATCH_SPEEDS)
-      expect(presentationAdvance(inside, 0, speed, length, preparations)).toBe(inside);
-    // 2x keeps the preparation's own rate; 16x runs on at its faster running rate.
-    expect(presentationAdvance(inside, 500, 2, length, preparations)).toBeCloseTo(
-      from + (2 * (to - from)) / 3,
-      6,
-    );
-    expect(presentationAdvance(inside, 100, 16, length, preparations)).toBeCloseTo(inside + 8, 6);
-    // Leaving the preparation mid-update continues at running speed for the rest of the real time.
-    expect(presentationAdvance(inside, 1500, 1, length, preparations)).toBeCloseTo(
-      to + 500 * runningRate(1),
-      6,
-    );
+      expect(presentationMs(10, 11, speed, beats)).toBeLessThanOrEqual(
+        presentationMs(10, 11, speed) + 1e-6,
+      );
   });
 
-  it('seeking into a preparation lands on that match second', () => {
-    const frames = preFeatureCorner();
-    const preparations = setPiecePreparations(frames);
-    const [{ from, to }] = preparations as [Preparation];
-    const { samples } = presentationSamples(frames);
-    // The walk-in sample at 16.51 s lies inside the preparation; a seek goes to its match second.
-    const walk = samples.find((sample) => sample.time > from && sample.time < to)!;
-    expect(walk.time).toBeCloseTo(16.51, 9);
-    const sought = seekGoalFeedback([], walk.time);
-    expect(sought.seconds).toBe(walk.time);
-    // Playback resumes from there at the preparation's rate, reaching the kick in its share of 1.5 s.
-    const left = ((to - walk.time) / (to - from)) * SET_PIECE_PREPARATION_MS;
-    expect(presentationMs(sought.seconds, to, 1, preparations)).toBeCloseTo(left, 6);
+  it('an injury in a stoppage takes the incident beat and its caption', () => {
+    const frames = stoppageFrames(
+      1,
+      [[0, stop('dropBall', 10, 15, 40)]],
+      [
+        [0, event(10, 'card', 'a4', { card: 'yellow' })],
+        [0, event(12, 'injury', 'h7')],
+        [0, event(12, 'sub', 'h7', { receiver: 'h15' })],
+        [0, event(50, 'card', 'a5', { card: 'red' })],
+      ],
+    );
+    const beats = deadBallBeats(frames);
+    const [, beat] = beats;
+    expect(beat!.ms).toBe(C.beatMs.incident);
+    expect(beat!.beat!.incidents.map((e) => e.kind)).toEqual(['card', 'injury', 'sub']);
+    expect(presentationMs(15, 40, 1, beats)).toBeCloseTo(C.beatMs.incident, 6);
+    // The caption shows through the beat, not during the rush.
+    expect(beatAt(beats, 12)).toBeUndefined();
+    expect(beatAt(beats, 20)).toBe(beat);
+    expect(beatAt(beats, 40)).toBeUndefined();
+    const names = new Map([
+      ['a4', '김수비'],
+      ['h7', '이공격'],
+      ['h15', '박교체'],
+    ]);
+    expect(beatCaptions(beat, (id) => names.get(id) ?? '')).toEqual([
+      { key: 'match.stoppage.yellow', params: { player: '김수비' } },
+      { key: 'match.stoppage.injury', params: { player: '이공격' } },
+      { key: 'match.stoppage.sub', params: { out: '이공격', in: '박교체' } },
+    ]);
+  });
+
+  it('frames without stoppages run at running speed', () => {
+    const frames = stoppageFrames(2);
+    expect(deadBallBeats(frames)).toEqual([]);
+    expect(presentationMs(0, 120, 1, deadBallBeats(frames))).toBeCloseTo(2 * WATCH_MINUTE_MS, 6);
+  });
+
+  it('a speed change inside a beat keeps the match second', () => {
+    const frames = stoppageFrames(1, [[0, stop('corner', 5, 10, 40)]]);
+    const beats = deadBallBeats(frames);
+    const length = runningLength(frames.length);
+    const inside = presentationAdvance(10, 500, 1, length, beats);
+    expect(inside).toBeCloseTo(10 + (30 * 500) / C.beatMs.corner, 6);
+    for (const speed of WATCH_SPEEDS)
+      expect(presentationAdvance(inside, 0, speed, length, beats)).toBe(inside);
+    // At 2x the rest of the beat takes half its real time.
+    const rest = presentationMs(inside, 40, 2, beats);
+    expect(rest).toBeCloseTo((C.beatMs.corner - 500) / 2, 6);
+  });
+
+  it('seeking into a beat lands on that match second', () => {
+    const frames = stoppageFrames(1, [[0, stop('freeKick', 5, 12, 36)]]);
+    const beats = deadBallBeats(frames);
+    const sought = seekGoalFeedback([], 20);
+    expect(sought.seconds).toBe(20);
+    const left = ((36 - 20) / (36 - 12)) * C.beatMs.freeKick;
+    expect(presentationMs(sought.seconds, 36, 1, beats)).toBeCloseTo(left, 6);
     expect(
-      presentationAdvance(sought.seconds, left, 1, runningLength(frames.length), preparations),
-    ).toBeCloseTo(to, 6);
+      presentationAdvance(sought.seconds, left, 1, runningLength(frames.length), beats),
+    ).toBeCloseTo(36, 6);
   });
 
   it('frames, samples and ball times are read, never changed', () => {
-    for (const frames of [preFeatureCorner(), candidateCorner()]) {
-      const before = JSON.stringify(frames);
-      const timed = presentationSamples(frames);
-      const preparations = setPiecePreparations(frames);
-      const length = runningLength(frames.length);
-      for (let seconds = 0; seconds < length;)
-        seconds = presentationAdvance(seconds, 16, 1, length, preparations);
-      presentationMs(0, length, 2, preparations);
-      expect(JSON.stringify(frames)).toBe(before);
-      // Samples and ball knots keep their recorded match seconds; only the real time drawn changes.
-      const recorded = (times: number[], i: number, frame: MatchFrame) =>
-        times.map((t) => i * 60 + t - frame.startSeconds!);
-      const samples = frames.flatMap((f, i) =>
-        recorded(
-          f.motion!.map((m) => m.elapsedSeconds),
-          i,
-          f,
-        ),
-      );
-      const knots = frames.flatMap((f, i) => recorded(f.ballTimes!, i, f));
-      expect(timed.times).toHaveLength(samples.length);
-      timed.times.forEach((t, k) => expect(t).toBeCloseTo(samples[k]!, 9));
-      expect(timed.trackTimes).toHaveLength(knots.length);
-      timed.trackTimes.forEach((t, k) => expect(t).toBeCloseTo(knots[k]!, 9));
-    }
+    const frames = stoppageFrames(
+      2,
+      [
+        [0, stop('goalKick', 5, 9, 20)],
+        [1, stop('kickoff', -10, 5, 15)],
+      ],
+      [[0, event(30, 'sub', 'h2', { receiver: 'h14' })]],
+    );
+    const before = JSON.stringify(frames);
+    const beats = deadBallBeats(frames);
+    const length = runningLength(frames.length);
+    for (let seconds = 0; seconds < length;)
+      seconds = presentationAdvance(seconds, 16, 1, length, beats);
+    presentationMs(0, length, 2, beats);
+    presentationSamples(frames);
+    expect(JSON.stringify(frames)).toBe(before);
   });
 });

@@ -149,6 +149,10 @@
     "match.goal.side": "{team} gol attı",
     "match.goal.scorer": "{team} · {player} gol attı",
     "match.possession.side": "Topa sahip olma",
-    "match.possession.word": "Topa sahip"
+    "match.possession.word": "Topa sahip",
+    "match.stoppage.yellow": "Sarı kart · {player}",
+    "match.stoppage.red": "Kırmızı kart · {player}",
+    "match.stoppage.injury": "Sakatlık · {player}",
+    "match.stoppage.sub": "Oyuncu değişikliği · {out} → {in}"
   }
 }

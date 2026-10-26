@@ -161,6 +161,10 @@
     "match.goal.side": "هدف لصالح {team}",
     "match.goal.scorer": "{team} · هدف سجله {player}",
     "match.possession.side": "الاستحواذ على الكرة",
-    "match.possession.word": "الاستحواذ"
+    "match.possession.word": "الاستحواذ",
+    "match.stoppage.yellow": "بطاقة صفراء · {player}",
+    "match.stoppage.red": "بطاقة حمراء · {player}",
+    "match.stoppage.injury": "إصابة · {player}",
+    "match.stoppage.sub": "تبديل · خروج {out}، دخول {in}"
   }
 }

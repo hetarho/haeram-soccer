@@ -10,7 +10,8 @@ import { boxBackLine, boxGuardTarget, boxMarkPoint, defendingBox } from './box';
 import { disciplineScale, freedomPlan, looseness } from './freedom';
 import { coverShadow } from './lanes';
 import type { GridPlayer, GridState } from './state';
-import { minutesOn, onPitch, other, skill, slotOf } from './state';
+import { minutesOn, onPitch, other, regMinute, skill, slotOf } from './state';
+import { modelAtLeast } from './rules';
 import { ROLE_SHIFT, SPOTS } from './spots';
 
 /** Initial values; T215 and T216 tune them. */
@@ -144,8 +145,42 @@ export const SHAPE_CONFIG = {
       [101.5, 37],
       [100.5, 34],
     ],
-    /** Outfielders of the defending side who stay upfield for the counter. */
+    /** Outfielders of the defending side who stay upfield for the counter (revisions 1–3). */
     stayUp: 1,
+    /**
+     * Revision 4 (T480, →MATCH-18): a corner's numbers, each `[least, most]` drawn per corner — the
+     * attacking side's outfielders kept back as rest defence and the defending side's left up as
+     * outlets — and from `lateMinute` (regulation) the score's: a side behind sends more up, a side
+     * ahead keeps more back and, defending, brings everyone into the box. In added time of the last
+     * period a side one goal behind sends its keeper to `keeperSpot`. The rest stand at `restX`
+     * goal-side of the outlets (`outletX`, `outletY`, in their own half) and at `restCoverX`
+     * when there are more of them; more attackers up take `extraBox`, more defenders back
+     * `extraZonal`. The extra spots and the keeper's lie more than `zone` m from every zonal one,
+     * so no zone starts on a runner. Attack-frame metres of the corner's side.
+     */
+    numbers: {
+      rest: [2, 3],
+      outlets: [1, 2],
+      lateMinute: 80,
+      chasingRest: [1, 2],
+      protectingRest: [3, 4],
+      chasingOutlets: [2, 2],
+      protectingOutlets: [0, 0],
+      restX: 50,
+      restCoverX: 45,
+      outletX: 55,
+      outletY: [24, 44],
+      keeperSpot: [94, 30.5],
+      extraBox: [
+        [97, 27.5],
+        [97, 40.5],
+        [91, 34],
+      ],
+      extraZonal: [
+        [101.5, 40],
+        [101.5, 28],
+      ],
+    },
     /** Seconds after the delivery the players who went up hold their spots for the second ball. */
     stay: 8,
     /**
@@ -681,6 +716,11 @@ export interface SetPieceScene {
   up: { gp: GridPlayer; to: [number, number] }[];
   marks: { gp: GridPlayer; to: [number, number]; opponent?: GridPlayer }[];
   keeper?: GridPlayer;
+  /**
+   * Revision 4's corner (T480): both sides' players who stay away from the box — the attacking
+   * side's rest defence, each naming the outlet he marks, and the defending side's outlets.
+   */
+  rest?: { gp: GridPlayer; to: [number, number]; opponent?: GridPlayer }[];
 }
 
 /**
@@ -689,7 +729,13 @@ export interface SetPieceScene {
  * line and the edge, and the most advanced stay upfield. Only players on the pitch take part, so a dismissed
  * player neither goes up nor is marked. Reads the state and moves nobody.
  */
-export function setPieceTargets(s: GridState, side: 0 | 1, taker: number): SetPieceScene {
+export function setPieceTargets(
+  s: GridState,
+  side: 0 | 1,
+  taker: number,
+  r?: () => number,
+): SetPieceScene {
+  if (r && modelAtLeast(s.setup, 4)) return cornerScene(s, side, taker, r);
   const P = SHAPE_CONFIG.setPiece;
   const foe = other(side);
   const outfield = (sd: 0 | 1) =>
@@ -726,6 +772,104 @@ export function setPieceTargets(s: GridState, side: 0 | 1, taker: number): SetPi
     }),
     ...(keeper ? { keeper } : {}),
   };
+}
+
+/**
+ * Revision 4's corner (T480, →MATCH-18): `setPieceTargets` with its numbers drawn from `r` and set
+ * by the late score (`SHAPE_CONFIG.setPiece.numbers`). The least aerial attackers stay back as rest
+ * defence, goal-side of the outlets; the rest go up by aerial order to the box spots, the edge and
+ * the extra box spots, the keeper too in added time one goal behind. The defending side's most
+ * advanced stay up as outlets; the others mark every attacker who went up, then take the zones
+ * and the extra zones.
+ */
+function cornerScene(s: GridState, side: 0 | 1, taker: number, r: () => number): SetPieceScene {
+  const P = SHAPE_CONFIG.setPiece;
+  const N = P.numbers;
+  const foe = other(side);
+  const outfield = (sd: 0 | 1) =>
+    s.players[sd].filter((gp) => onPitch(gp) && lineOfSlot(s, gp) !== 'GK');
+  const keeperOf = (sd: 0 | 1) =>
+    s.players[sd].find((gp) => onPitch(gp) && lineOfSlot(s, gp) === 'GK');
+  const count = ([least, most]: readonly [number, number]) =>
+    least === most ? least : least + Math.min(most - least, Math.floor(r() * (most - least + 1)));
+  const lead = s.score[side] - s.score[foe];
+  const late = regMinute(s) >= N.lateMinute;
+  const restCount = count(
+    late && lead < 0 ? N.chasingRest : late && lead > 0 ? N.protectingRest : N.rest,
+  );
+  const outletCount = count(
+    late && lead > 0 ? N.chasingOutlets : late && lead < 0 ? N.protectingOutlets : N.outlets,
+  );
+  const byAerial = (a: GridPlayer, b: GridPlayer) =>
+    aerialOf(s, b) - aerialOf(s, a) || a.idx - b.idx;
+  const attackers = outfield(side)
+    .filter((gp) => gp.idx !== taker)
+    .sort(byAerial);
+  const kept = Math.min(restCount, attackers.length);
+  const up = attackers.slice(0, attackers.length - kept);
+  const back = attackers.slice(attackers.length - kept);
+  const spots = [...P.box, P.edge, ...N.extraBox] as readonly Point[];
+  const scene: SetPieceScene = {
+    up: up.slice(0, spots.length).map((gp, i) => ({ gp, to: toEngine(side, spots[i]!) })),
+    marks: [],
+    rest: [],
+  };
+  // In added time of the last period, one goal behind: the keeper joins the attack.
+  const added = (s.period === 2 && s.t >= 45 * 60) || (s.period === 4 && s.t >= 15 * 60);
+  const keeper = keeperOf(side);
+  if (keeper && added && lead === -1)
+    scene.up.push({ gp: keeper, to: toEngine(side, N.keeperSpot) });
+  // The defending side: its most advanced stay up as outlets, in their own half.
+  const defenders = outfield(foe).sort(
+    (a, b) => attackFrame(side, b.pos)[0] - attackFrame(side, a.pos)[0] || a.idx - b.idx,
+  );
+  const outlets = defenders.slice(0, Math.min(outletCount, defenders.length));
+  const ys = outlets.length === 1 ? [PITCH.width / 2] : N.outletY;
+  outlets.forEach((gp, i) =>
+    scene.rest!.push({ gp, to: toEngine(side, [N.outletX, ys[i] ?? PITCH.width / 2]) }),
+  );
+  // The rest defence: one goal-side of each outlet, the others behind them in the middle.
+  back.forEach((gp, i) => {
+    const outlet = outlets[i];
+    const covers = [PITCH.width / 2, N.outletY[0], N.outletY[1]];
+    const to: Point = outlet
+      ? [N.restX, ys[i] ?? PITCH.width / 2]
+      : [N.restCoverX, covers[(i - outlets.length) % covers.length]!];
+    scene.rest!.push({ gp, to: toEngine(side, to), ...(outlet ? { opponent: outlet } : {}) });
+  });
+  // Every attacker who went up is marked first (the box spots', the extra ones, the edge's), then
+  // the zones and the extra zones take whoever is left.
+  const markers = defenders.slice(outlets.length).sort(byAerial);
+  const onBox = scene.up.filter(({ gp }) => gp !== keeper).slice(0, P.box.length);
+  const atEdge = scene.up[P.box.length];
+  const extra = scene.up.slice(P.box.length + 1);
+  const places: { to: Point; opponent?: GridPlayer }[] = [
+    ...onBox.map((u, i) => ({
+      to: [P.box[i]![0] + P.mark, P.box[i]![1]] as Point,
+      opponent: u.gp,
+    })),
+    ...extra.map((u) => {
+      const [x, y] = attackFrame(side, u.to);
+      return { to: [x + P.mark, y] as Point, opponent: u.gp };
+    }),
+    ...(atEdge && atEdge.gp !== keeper
+      ? [{ to: [P.edge[0] + P.mark, P.edge[1]] as Point, opponent: atEdge.gp }]
+      : []),
+    ...(P.zonal as readonly Point[]).map((to) => ({ to })),
+    ...(N.extraZonal as readonly Point[]).map((to) => ({ to })),
+  ];
+  markers.forEach((gp, i) => {
+    const place = places[i];
+    if (!place) return;
+    scene.marks.push({
+      gp,
+      to: toEngine(side, place.to),
+      ...(place.opponent ? { opponent: place.opponent } : {}),
+    });
+  });
+  const theirs = keeperOf(foe);
+  if (theirs) scene.keeper = theirs;
+  return scene;
 }
 
 /** The attackers who went up hold their box spots until `until` (match seconds) for the second ball. */

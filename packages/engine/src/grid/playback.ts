@@ -8,6 +8,7 @@ export { stampAt } from './clock';
  */
 import { NEUTRAL_FRAME_PACE, type IntentionObservation } from '../../../contracts/src/match-model';
 import type {
+  FrameStoppage,
   Manager,
   MatchEvent,
   MatchFrame,
@@ -29,7 +30,7 @@ import type { GridSetup } from './setup';
 import { SPOTS } from './spots';
 import type { TraceEntry, TraceKick } from './trace';
 
-import { MOTION_STATES, OBSERVATION_STATES } from './observation';
+import { MOTION_STATES, OBSERVATION_STATES, SAMPLING } from './observation';
 export { MOTION_STATES } from './observation';
 export const PLAYBACK_CONFIG = {
   /** Motion seconds a match minute takes at pace 1, and its regular ball track points. */
@@ -89,10 +90,11 @@ export const PLAYBACK_CONFIG = {
   takerSpeed: 6,
   /**
    * Candidate traces: match seconds at least between drawn player samples. Players move straight
-   * between snapshots (a restart's kick among them, T359) and waypoints; breakpoints closer than
-   * this share a sample, but a restart's kick is always drawn.
+   * between snapshots (a restart's kick and its walk-in samples among them, T359, T477) and
+   * waypoints; breakpoints closer than this share a sample, but a restart's kick and walk-in
+   * samples are always drawn.
    */
-  sampleSpacing: 2,
+  sampleSpacing: SAMPLING.spacing,
   /**
    * Pre-feature traces: match seconds at least between drawn player samples, taken at every
    * snapshot (always drawn) and wherever the ball changes segment (a kick, a restart's rest), so
@@ -362,6 +364,47 @@ function placeIn(
 const kickAfter = (a: TraceEntry, b: TraceEntry | undefined): TraceKick | undefined =>
   b?.kick && b.kick.elapsed > a.elapsed && b.kick.elapsed < b.elapsed ? b.kick : undefined;
 
+/** Restart kinds as a frame's stoppages name them (→WEB-32): an indirect free kick is a free kick. */
+const STOPPAGE_KIND: Partial<Record<string, FrameStoppage['kind']>> = {
+  throwIn: 'throwIn',
+  goalKick: 'goalKick',
+  corner: 'corner',
+  freeKick: 'freeKick',
+  indirectFreeKick: 'freeKick',
+  penalty: 'penalty',
+  kickoff: 'kickoff',
+  dropBall: 'dropBall',
+};
+
+/**
+ * The stoppages kicked in the candidate minute starting at match second `start` (the last minute
+ * also takes those past its end), in seconds from its start, as `MatchFrame.stoppages`.
+ */
+function stoppagesIn(
+  all: readonly FrameStoppage[],
+  start: number,
+  last: boolean,
+): Pick<MatchFrame, 'stoppages'> {
+  const mine = all.filter((st) => st.kick >= start && (last || st.kick < start + 60));
+  return mine.length
+    ? {
+        stoppages: mine.map((st) => ({
+          kind: st.kind,
+          dead: tenth(st.dead - start),
+          settled: tenth(st.settled - start),
+          kick: tenth(st.kick - start),
+        })),
+      }
+    : {};
+}
+
+/** A player's places through the walk-in of the restart entry `b` (T477), each at its sample's time. */
+const walkIn = (b: TraceEntry, side: 0 | 1, idx: number): [number, Units][] =>
+  (b.walk ?? []).flatMap((w): [number, Units][] => {
+    const at = placeIn(w, side, idx);
+    return at ? [[w.elapsed, at]] : [];
+  });
+
 /**
  * The snapshot a sample at `time` shows the players' targets, states and intentions from: the
  * last entry's at or before it, except during a restart recorded with its kick (T359,
@@ -408,10 +451,18 @@ function positionAt(P: Period, side: 0 | 1, idx: number, time: number): Units | 
     }
     return lerp(path.at, there, (time - path.kick) / (b.elapsed - path.kick));
   }
-  if (kick && kicked)
-    return time <= kick.elapsed
-      ? lerp(here, kicked, (time - a.elapsed) / (kick.elapsed - a.elapsed))
-      : lerp(kicked, there, (time - kick.elapsed) / (b.elapsed - kick.elapsed));
+  if (kick && kicked) {
+    if (time > kick.elapsed)
+      return lerp(kicked, there, (time - kick.elapsed) / (b.elapsed - kick.elapsed));
+    // The walk-in (T477): he hurries to his place and stands there until the kick.
+    let t0 = a.elapsed,
+      p0 = here;
+    for (const [t1, p1] of walkIn(b, side, idx)) {
+      if (time <= t1) return t1 > t0 ? lerp(p0, p1, (time - t0) / (t1 - t0)) : p1;
+      [t0, p0] = [t1, p1];
+    }
+    return kick.elapsed > t0 ? lerp(p0, kicked, (time - t0) / (kick.elapsed - t0)) : kicked;
+  }
   return lerp(here, there, (time - a.elapsed) / (b.elapsed - a.elapsed));
 }
 
@@ -851,9 +902,10 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
     const moves = candidate
       ? [...P.times, ...P.paths.flatMap((path) => path?.route?.map(([t]) => t) ?? [])]
       : [...P.times, ...P.starts];
-    // Every restart's recorded kick is drawn as its own sample, however close (T359), and so is the
-    // kick that ends an in-stride carry, so the page draws the carry (T426); on a pre-feature trace
-    // every snapshot is, so a receiver is drawn where the ball reaches him.
+    // Every restart's recorded kick is drawn as its own sample, however close (T359), and so are
+    // its walk-in samples (T477) and the kick that ends an in-stride carry, so the page draws the
+    // carry (T426); on a pre-feature trace every snapshot is, so a receiver is drawn where the ball
+    // reaches him.
     const kicks = candidate
       ? entries.flatMap((e, k) => {
           const kick = k ? kickAfter(entries[k - 1]!, e) : undefined;
@@ -861,10 +913,27 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
           const stride = knots.findIndex(
             (knot, i) => knot.kind === 'kick' && knots[i - 1]?.kind === 'carry',
           );
-          return [...(kick ? [kick.elapsed] : []), ...(stride > 0 ? [knots[stride]!.at] : [])];
+          return [
+            ...(kick ? [kick.elapsed, ...(e.walk ?? []).map((w) => w.elapsed)] : []),
+            ...(stride > 0 ? [knots[stride]!.at] : []),
+          ];
         })
       : P.times;
     const knots = candidate ? entries.flatMap((e) => e.knots?.map((knot) => knot.at) ?? []) : [];
+    // The stoppages (T477, →WEB-32): each restart prepared on the clock, from the end of the last
+    // action before it (incidents in the stoppage lie inside) through everyone standing to its kick.
+    const stoppages = candidate
+      ? entries.flatMap((e, k) => {
+          const kick = k ? kickAfter(entries[k - 1]!, e) : undefined;
+          const kind = e.spot === undefined ? undefined : STOPPAGE_KIND[e.action];
+          if (!kick || !kind) return [];
+          let j = k - 1;
+          while (j > 0 && entries[j]!.outcome === 'incident') j--;
+          const dead = Math.min(entries[j]!.elapsed, kick.elapsed);
+          const settled = Math.min(Math.max(dead, e.settled ?? kick.elapsed), kick.elapsed);
+          return [{ kind, dead, settled, kick: kick.elapsed }];
+        })
+      : [];
     let minuteStart = P.start;
     const mirror = (u: Units): Units => (p % 2 === 0 ? [100 - u[0], 100 - u[1]] : u);
     const length = LENGTH[p - 1]!;
@@ -1158,6 +1227,7 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
         startSeconds: start,
         ballTimes: trackTimes.map(drawnAt),
         holders,
+        ...stoppagesIn(stoppages, start, m === minutes - 1),
         period: p,
         label: at.added ? `${at.minute}+${at.added}` : String(at.minute),
         pace: candidate ? NEUTRAL_FRAME_PACE : 0,

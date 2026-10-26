@@ -149,6 +149,10 @@
     "match.goal.side": "Doelpunt voor {team}",
     "match.goal.scorer": "{team} · Doelpunt van {player}",
     "match.possession.side": "Balbezit",
-    "match.possession.word": "Bezit"
+    "match.possession.word": "Bezit",
+    "match.stoppage.yellow": "Gele kaart · {player}",
+    "match.stoppage.red": "Rode kaart · {player}",
+    "match.stoppage.injury": "Blessure · {player}",
+    "match.stoppage.sub": "Wissel · {out} → {in}"
   }
 }

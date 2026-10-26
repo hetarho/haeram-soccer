@@ -152,6 +152,10 @@
     "match.goal.side": "But de {team}",
     "match.goal.scorer": "{team} · But de {player}",
     "match.possession.side": "Possession du ballon",
-    "match.possession.word": "Possession"
+    "match.possession.word": "Possession",
+    "match.stoppage.yellow": "Carton jaune · {player}",
+    "match.stoppage.red": "Carton rouge · {player}",
+    "match.stoppage.injury": "Blessure · {player}",
+    "match.stoppage.sub": "Remplacement · {out} → {in}"
   }
 }

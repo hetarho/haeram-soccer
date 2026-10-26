@@ -1,4 +1,5 @@
 import type {
+  FrameStoppage,
   MatchEvent,
   MatchFrame,
   MatchMotionSample,
@@ -11,19 +12,35 @@ export const WATCH_DEFAULT_SPEED = 2;
 /** Real ms one match minute of running playback lasts at 1x (→WEB-32, MATCH-12). */
 export const WATCH_MINUTE_MS = 12000;
 /**
- * Real ms a set-piece preparation is drawn in at every speed, unless running speed is quicker
- * (→WEB-32, MATCH-12); the only number for the preparation, reviewed by the owner in play.
+ * The dead-ball beat (→WEB-32, MATCH-12), the only place its numbers live, reviewed by the owner in
+ * play: real ms at 1x, divided by the speed. The rush — the ball fetched and the players to their
+ * places — runs at least `rushFactor` times the running rate and lasts at most `rushMaxMs`; then
+ * the players stand still for their kind's beat, or the incident beat when a card, injury or
+ * substitution falls in the stoppage, and never slower than running speed.
  */
-export const SET_PIECE_PREPARATION_MS = 1500;
-/** The restarts whose dead interval before the kick is a set-piece preparation (→WEB-32). */
-const PREPARED_RESTARTS: readonly MatchEvent['restart'][] = ['corner', 'freeKick', 'goalKick'];
+export const DEAD_BALL_CONFIG = {
+  rushFactor: 2,
+  rushMaxMs: 1500,
+  beatMs: {
+    throwIn: 400,
+    goalKick: 600,
+    kickoff: 800,
+    corner: 1000,
+    freeKick: 1000,
+    dropBall: 1000,
+    penalty: 1500,
+    incident: 2000,
+  },
+} as const;
+/** The events a dead-ball beat names in its caption (→WEB-32). */
+const INCIDENTS: readonly MatchEvent['kind'][] = ['card', 'injury', 'sub'];
 
 /**
  * The presentation clock (→WEB-32) runs on running match seconds, uniform through build-up, chances,
  * every restart's kick and delivery, added time and extra time. Every frame is one match minute of
  * running play, so frame `i` covers running seconds 60·i to 60·(i + 1); the gap between periods and
  * a seek are transitions, never running play. Frame `pace` is not read, so no situation in running
- * play slows the match down or speeds it up; only a set-piece preparation is drawn faster.
+ * play slows the match down or speeds it up; only a dead-ball beat is drawn at its own rate.
  */
 export function runningLength(frames: number) {
   return Math.max(0, frames) * 60;
@@ -34,87 +51,93 @@ export function runningRate(speed: number) {
   return (speed * 60) / WATCH_MINUTE_MS;
 }
 
-/** A set-piece preparation (→WEB-32) on the presentation clock: running seconds `from` to `to`. */
+/**
+ * A dead-ball beat's segment (→WEB-32) on the presentation clock: running seconds `from` to `to`,
+ * drawn at least `factor` times the running rate and in at most `ms` real ms at 1x (less at higher
+ * speeds). A still beat names its stoppage's kind and the cards, injuries and substitutions in it.
+ */
 export interface Preparation {
   from: number;
   to: number;
+  factor: number;
+  ms: number;
+  beat?: { kind: FrameStoppage['kind']; incidents: MatchEvent[] };
 }
 
-/** A moment `t` seconds into frame `index` (an event's or a holder change's time) in running seconds. */
-const minuteTime = (index: number, t: number) => index * 60 + Math.min(60, Math.max(0, t));
-
-/** An event's time is recorded to a tenth of a second: a take or sample that close is its landing. */
-const EVENT_TIME_STEP = 0.1;
-/** How far (pitch units) a drawn ball may lie from a restart's spot and still be on it. */
-const SPOT_REACH = 0.5;
-
 /**
- * The set-piece preparations of a playback (→WEB-32, MATCH-12): before the kick of each corner, free
- * kick or goal kick, the dead interval from the end of the last event before it — the ball going
- * dead — to the kick, where the restart is played and the players stand on their places. Every
- * entry carrying such a `restart` counts, including a free kick or goal kick whose delivery the
- * engine records as the foul or offside it ended in. The entry is timed where its delivery lands, so
- * the kick is read from what precedes it: on the pre-feature trace, which holds the interval in the
- * restart's step, the taker (the actor of a `kind: 'restart'` entry) taking the ball by the recorded
- * holders; on the candidate, which walks the participants in and records the kick as its own
- * sample, the last restart-phase sample with the ball still on the restart's spot (`from`) — the
- * delivery flies in the same phase, and a minute's end can sample it in the air. A restart without
- * either keeps running speed, as do throw-ins, kick-offs and penalties, and cards, injuries and
- * substitutions recorded after the ball went dead. Frames are read only.
+ * The dead-ball beats of a playback (→WEB-32, MATCH-12): each stoppage a frame lists (T477) as a
+ * rush from the ball going dead to everyone standing on his place and a still beat from there to
+ * the kick, in running seconds of the frame that lists it. The beat carries the cards, injuries and
+ * substitutions recorded from the ball going dead to the kick. Frames without stoppages (older
+ * playback, the pre-feature model) keep running speed throughout. Frames are read only.
  */
-export function setPiecePreparations(frames: readonly MatchFrame[]) {
-  const preparations: Preparation[] = [];
-  let dead: { at: number; frame: number } | undefined;
+export function deadBallBeats(frames: readonly MatchFrame[]) {
+  const C = DEAD_BALL_CONFIG;
+  const beats: Preparation[] = [];
   frames.forEach((frame, i) => {
-    for (const event of frame.events ?? []) {
-      const at = minuteTime(i, event.t);
-      if (
-        PREPARED_RESTARTS.includes(event.restart) &&
-        dead &&
-        frames[dead.frame]!.period === frame.period
-      ) {
-        const kick = restartKick(frames, dead, i, at, event);
-        if (kick !== undefined && dead.at >= (preparations.at(-1)?.to ?? 0))
-          preparations.push({ from: dead.at, to: kick });
-      }
-      dead = { at, frame: i };
+    for (const stoppage of frame.stoppages ?? []) {
+      const kick = i * 60 + Math.min(60, stoppage.kick);
+      const settled = Math.min(kick, i * 60 + stoppage.settled);
+      const dead = Math.min(settled, i * 60 + stoppage.dead);
+      // A stoppage inside the last one (never recorded) keeps running speed.
+      if (dead < (beats.at(-1)?.to ?? 0)) continue;
+      const incidents: MatchEvent[] = [];
+      for (let j = Math.max(0, Math.floor(dead / 60)); j <= i; j++)
+        for (const event of frames[j]?.events ?? []) {
+          const at = j * 60 + event.t;
+          if (INCIDENTS.includes(event.kind) && at >= dead && at <= kick) incidents.push(event);
+        }
+      if (settled > dead)
+        beats.push({ from: dead, to: settled, factor: C.rushFactor, ms: C.rushMaxMs });
+      if (kick > settled)
+        beats.push({
+          from: settled,
+          to: kick,
+          factor: 1,
+          ms: incidents.length ? C.beatMs.incident : C.beatMs[stoppage.kind],
+          beat: { kind: stoppage.kind, incidents },
+        });
     }
   });
-  return preparations;
+  return beats;
+}
+
+/** The still beat under way at running second `seconds`, if any (→WEB-32's caption). */
+export function beatAt(beats: readonly Preparation[], seconds: number) {
+  const beat = beats[preparationAfter(beats, seconds)];
+  return beat?.beat && beat.from <= seconds ? beat : undefined;
+}
+
+/** One caption line: a locale key and the names it shows. */
+export interface Caption {
+  key: string;
+  params: Record<string, string>;
 }
 
 /**
- * The kick of `restart`, whose delivery lands at `landing` (frame `index`), after the ball went dead
- * at `dead`: its taker's last recorded take of the ball, else the last restart-phase sample with the
- * ball on its spot, either clear of the landing (a taker can play the ball to himself).
+ * A still beat's caption lines (→WEB-32): one per card, injury or substitution in its stoppage, in
+ * order, as locale keys with the players' names (`name` resolves an ID).
  */
-function restartKick(
-  frames: readonly MatchFrame[],
-  dead: { at: number; frame: number },
-  index: number,
-  landing: number,
-  restart: MatchEvent,
-) {
-  const before = (time: number) => time > dead.at && time < landing - EVENT_TIME_STEP;
-  // Only a restart entry's actor is its taker; a foul or offside names who ended the delivery.
-  const taker = restart.kind === 'restart' ? restart.actor : undefined;
-  let held: number | undefined;
-  let snapshot: number | undefined;
-  for (let j = dead.frame; j <= index; j++) {
-    const frame = frames[j]!;
-    for (const [t, holder] of frame.holders ?? []) {
-      const time = minuteTime(j, t);
-      if (taker && holder === taker && before(time)) held = time;
-    }
-    frame.motion?.forEach((motion, k) => {
-      const time = runningTime(j, frame, motion.elapsedSeconds, (k + 1) / frame.motion!.length);
-      const onSpot =
-        Math.hypot(motion.ball[0] - restart.from[0], motion.ball[1] - restart.from[1]) <=
-        SPOT_REACH;
-      if (motion.phase === 'restart' && onSpot && before(time)) snapshot = time;
-    });
-  }
-  return held ?? snapshot;
+export function beatCaptions(
+  beat: Preparation | undefined,
+  name: (id: string) => string,
+): Caption[] {
+  return (beat?.beat?.incidents ?? []).map((event): Caption =>
+    event.kind === 'sub'
+      ? {
+          key: 'match.stoppage.sub',
+          params: { out: name(event.actor), in: name(event.receiver ?? '') },
+        }
+      : {
+          key:
+            event.kind === 'injury'
+              ? 'match.stoppage.injury'
+              : event.card === 'red'
+                ? 'match.stoppage.red'
+                : 'match.stoppage.yellow',
+          params: { player: name(event.actor) },
+        },
+  );
 }
 
 /** The first preparation that has not ended by running second `seconds`. */
@@ -129,15 +152,17 @@ function preparationAfter(preparations: readonly Preparation[], seconds: number)
   return low;
 }
 
-/** The clock's rate inside `preparation` at `speed`: its whole span in the set time at most. */
+/** The clock's rate inside `preparation` at `speed`: its least multiple of running, its span in its time at most. */
 const preparationRate = (preparation: Preparation, speed: number) =>
-  Math.max(runningRate(speed), (preparation.to - preparation.from) / SET_PIECE_PREPARATION_MS);
+  Math.max(
+    preparation.factor * runningRate(speed),
+    ((preparation.to - preparation.from) * speed) / preparation.ms,
+  );
 
 /**
  * The running seconds after `elapsedMs` of real time at `speed` from `seconds`, held between
- * kick-off and `length`. Running play advances at `runningRate(speed)`; inside a preparation the
- * clock runs at the larger of that and the preparation's span over `SET_PIECE_PREPARATION_MS`, so
- * every route in it is scaled by one factor. The multiplier applies to the clock's advance only, so
+ * kick-off and `length`. Running play advances at `runningRate(speed)`; inside a dead-ball segment
+ * the clock runs at its own rate (`preparationRate`), so every route in it is scaled by one factor. The multiplier applies to the clock's advance only, so
  * changing it never moves the match time, and real time never runs it backwards.
  */
 export function presentationAdvance(

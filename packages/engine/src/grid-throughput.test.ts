@@ -88,7 +88,11 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * T444's deliveries into the zones, for T445's shots through the bodies in front of goal and
  * their second balls, for T437's recalibration, for T446's lofted deliveries over the crowd and
  * for T447's box zone depths, for T432's freedom on revision 2, for T433's tendencies in
- * revision 2's movement and for T466's revision 3, the first tie of each kind; T433's were 3/0,
+ * revision 2's movement, for T466's revision 3, for T479's revision 4, for T480's corner numbers
+ * for T481's shot choice and for T482's recalibration, the first tie of each kind; T481's were
+ * 10/19, 3/11 and 0/6, T480's were 14/6, 8/4 and 9/0, T479's
+ * were 7/4, 7/6 and 0/1, T466's were 9/2, 7/5 and 4/3
+ * (revision 3's, `REVISION_3_CASES`), T433's were 3/0,
  * 3/1 and 0/4 (revision 2's, `REVISION_2_CASES`), T432's were 1/5, 36/3 and 3/0,
  * T345's were 20/4,
  * 1/16 and 9/5, T348's 7/10,
@@ -99,9 +103,9 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * and 5/15, T446's 0/1, 0/3 and 2/0, T447's 4/2, 2/5 and 16/0 — revision 1's, `REVISION_1_CASES`).
  */
 const CASES = {
-  1975: { extraTime: 9, shootout: 2 },
-  1995: { extraTime: 7, shootout: 5 },
-  2024: { extraTime: 4, shootout: 3 },
+  1975: { extraTime: 6, shootout: 31 },
+  1995: { extraTime: 5, shootout: 29 },
+  2024: { extraTime: 7, shootout: 11 },
 } as const;
 type Year = keyof typeof CASES;
 
@@ -277,15 +281,91 @@ interface CandidateDigests {
  * manager's context, (ability − 50)/4 with morale at the neutral 60, in place of a flat 4) moved
  * every value and the knockout ties (rescanned above); before it, the values now revision 2's
  * (`REVISION_2`). Revision 1's and the pre-feature facts did not move.
+ * T477's dead-time samples (an observed restart's walk-in traced until everyone stands, drawn
+ * as breakpoints, and each frame's stoppages) moved every positions digest, revisions 1 and 2's
+ * included, and no facts; before it, positions 1975 10ad6b49f08d73dc, 35f00b617b2f4839, 1995
+ * de62286ac131c1d6, 3f1734fb59d796bd, 2024 9c5ff17e9b20f6c8, 2e32d3618014ec18; revision 1's 1975
+ * 07c822b4e9c902d3, 10e90c63b1226de8, 1995 fa795c0e24ba2c5e, d026d8cfaaeca681, 2024
+ * b9e0c5c071922d28, d79ba1087cbcb882; revision 2's 1975 35ea868b9affb3e0, f1d6631c1d314de5, 1995
+ * 0e8dbc974f1dcff7, 3c3ee0b9d2f5d65e, 2024 b8bf30012f3c2629, 9be27ba543464172.
+ * T479's match-model revision 4 (a free kick played as a pass goes to the nearest suitable player,
+ * in the own third a centre-back or the keeper, instead of the named taker) moved every value and
+ * the knockout ties (rescanned above); before it, the values now revision 3's (`REVISION_3`).
+ * Revisions 1 and 2's and the pre-feature facts did not move.
+ * T480's corner numbers on revision 4 (2–3 attackers kept back near halfway and 1–2 defenders left
+ * up, drawn per corner and set by the late score, every attacker who went up marked before the
+ * zones, the keeper up in added time one goal behind; 16 observed fixtures: attackers within 25 m
+ * of goal at the kick, taker included, 9+ in 36 → 2% of corners, the rest 41 → 55 m from that goal
+ * line) moved every value and the knockout ties
+ * (rescanned above); before it, facts 1975 a93fcdd189f1175e, dbec53b6a91fa171, ab92e4705856f241,
+ * 1995 6bc7ffbc47956777, 53b8998bb26840e0, 63c73ad5aadab90d, 2024 ac7984e59c1cede7,
+ * 46fd46c2c7f3b25f, abe627a2f695a167 and positions 1975 32d3b1b9ecd8b4ba, b48043fac882d662, 1995
+ * 0f174a70f94a52ca, 2e34d67e0cf48ddf, 2024 a3d5c6d968b99691, 62ae7d2c1a33703f. Revisions 1–3's
+ * and the pre-feature facts did not move.
+ * T481's shot choice on revision 4 (the lines' shot weights FW 1, MF 0.8, DF 0.5 at scale 0.25
+ * in place of FW 0.3, MF 22.5, DF 4.5 at 0.37, playmaker roles ×0.85; 600 matches: shots 13.61 a
+ * team, goals 3.13 a match, goals by FW 81.5%) moved every value and the knockout ties (rescanned
+ * above); before it, facts 1975 9b3a3006cb467519, 92395b9ae0e41692, e63fa618c748d9e6, 1995
+ * 81f04a94d8ac724c, 875423ce84d7bd5e, 1728583de8753114, 2024 0d0e15edcd7ac7a4, 7937eb6693d0cf0b,
+ * c6d191e579678129 and positions 1975 0a16aa50c06a78c3, 10862565d43d799a, 1995 7fe1b323ff875d52,
+ * 34e1d2abf2b0fc14, 2024 f313e4ccd5caf956, d18c0625cef7e1b7. Revisions 1–3's and the
+ * pre-feature facts did not move.
+ * T482's recalibration of revision 4 (its own shot quality, a clear chance raising the shot weight
+ * up to twice, a pass's threat gain weighed 0.3, `shotScale` 0.28, a crossed delivery's base
+ * chance 0.7 and fouls ×1.5; 600 matches: shots 13.6 → 11.3 a team, goals 3.13 → 2.86 a match,
+ * passes 413 → 426 with their directions inside MATCH-23, 20 → 25 of 37 rows inside) moved every
+ * value and the knockout ties (rescanned
+ * above); before it, facts 1975 159035b84cb548cd, 21cfba3e5c5f1f55, 2f43f802be361e54, 1995
+ * 9d0a6acb0d907276, d75d74e1cdce2a32, 49fa0b2cfaf84949, 2024 d138fbf81acf98d3, 140894b11d21f6d3,
+ * a45d7c8cb4c77f08 and positions 1975 c0d0476ad7a8ae16, 6cca4859d84475d4, 1995 e65c183acd9804d3,
+ * 7c6fa52fd295e59b, 2024 482f9597e9f50715, a0fed57e39fcef7a. Revisions 1–3's and the
+ * pre-feature facts did not move.
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
+  1975: {
+    facts: {
+      league: 'ff3ee324036397fb',
+      extraTime: '9123874a456d7917',
+      shootout: 'c036d50bc978b2c4',
+    },
+    positions: { observed: '3027c05259d2646b', shootout: '5ff631fdd68c210e' },
+  },
+  1995: {
+    facts: {
+      league: '6beeda0cca168bbf',
+      extraTime: 'b3260a6423ff14ed',
+      shootout: 'de436ce27ba0ad83',
+    },
+    positions: { observed: '54d2da5ba8a53970', shootout: '876491fde6062150' },
+  },
+  2024: {
+    facts: {
+      league: 'eb70938375c3edca',
+      extraTime: '2792f74cd4b0c753',
+      shootout: '42be4633359152e7',
+    },
+    positions: { observed: '90d5b37b1bc714fd', shootout: '6a8baa3681c8f7ec' },
+  },
+};
+
+/**
+ * Revision 3's knockout ties and digests (T479): T466's values with T477's positions, the football
+ * revision 3 plays before revision 4. Their facts never move again (→SAVE-23); a presentation-only
+ * change re-records their positions.
+ */
+const REVISION_3_CASES = {
+  1975: { extraTime: 9, shootout: 2 },
+  1995: { extraTime: 7, shootout: 5 },
+  2024: { extraTime: 4, shootout: 3 },
+} as const satisfies Record<Year, { extraTime: number; shootout: number }>;
+const REVISION_3: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
       league: '72876a33da257df1',
       extraTime: '086a1810c411e442',
       shootout: 'b1ed4b997d8479e7',
     },
-    positions: { observed: '10ad6b49f08d73dc', shootout: '35f00b617b2f4839' },
+    positions: { observed: '44f653394e8e0ebb', shootout: '661e258a3624763f' },
   },
   1995: {
     facts: {
@@ -293,7 +373,7 @@ const CANDIDATE: Record<Year, CandidateDigests> = {
       extraTime: '696fbe7ef4736ce9',
       shootout: '0f3bc5b875ddb3c7',
     },
-    positions: { observed: 'de62286ac131c1d6', shootout: '3f1734fb59d796bd' },
+    positions: { observed: 'd8a8072fb4089b4f', shootout: 'f3e35ac622f94edf' },
   },
   2024: {
     facts: {
@@ -301,13 +381,14 @@ const CANDIDATE: Record<Year, CandidateDigests> = {
       extraTime: '22a1209ed63b73c5',
       shootout: '324328c61352294c',
     },
-    positions: { observed: '9c5ff17e9b20f6c8', shootout: '2e32d3618014ec18' },
+    positions: { observed: '76b4318919a285f9', shootout: 'eb3a424e772bd1fa' },
   },
 };
 
 /**
  * Revision 2's knockout ties and digests (T466): T433's values, the football revision 2 plays
- * before revision 3's context. They never move again (→SAVE-23).
+ * before revision 3's context. Their facts never move again (→SAVE-23); a presentation-only
+ * change re-records their positions (T477).
  */
 const REVISION_2_CASES = {
   1975: { extraTime: 3, shootout: 0 },
@@ -321,7 +402,7 @@ const REVISION_2: Record<Year, CandidateDigests> = {
       extraTime: '96ff5a32e01d4bf8',
       shootout: '7521661b980cdeff',
     },
-    positions: { observed: '35ea868b9affb3e0', shootout: 'f1d6631c1d314de5' },
+    positions: { observed: '9422a01ee585338c', shootout: '6c62a0170468fb44' },
   },
   1995: {
     facts: {
@@ -329,7 +410,7 @@ const REVISION_2: Record<Year, CandidateDigests> = {
       extraTime: '9127b370c79b51e2',
       shootout: '2245959519f7889b',
     },
-    positions: { observed: '0e8dbc974f1dcff7', shootout: '3c3ee0b9d2f5d65e' },
+    positions: { observed: '4157fe10bef7e72a', shootout: '46f860a8d7e120df' },
   },
   2024: {
     facts: {
@@ -337,14 +418,15 @@ const REVISION_2: Record<Year, CandidateDigests> = {
       extraTime: '30e249776a77fcb4',
       shootout: '64b50a8346f097fd',
     },
-    positions: { observed: 'b8bf30012f3c2629', shootout: '9be27ba543464172' },
+    positions: { observed: 'c289738186db96f1', shootout: '02199a0d1cbbd758' },
   },
 };
 
 /**
  * Revision 1's knockout ties and digests (T432): the football revision 2 played until T432 moved
  * it, its facts labelled continuous-aggregate-1 (T435's values before its label) and its positions
- * as T447 recorded them. They never move again (→SAVE-23).
+ * as T447 recorded them. Their facts never move again (→SAVE-23); a presentation-only change
+ * re-records their positions (T477).
  */
 const REVISION_1_CASES = {
   1975: { extraTime: 4, shootout: 2 },
@@ -358,7 +440,7 @@ const REVISION_1: Record<Year, CandidateDigests> = {
       extraTime: 'a74abb8cfd489a58',
       shootout: 'cb404e2c025fb3f4',
     },
-    positions: { observed: '07c822b4e9c902d3', shootout: '10e90c63b1226de8' },
+    positions: { observed: '9b1d1e4afec99290', shootout: 'c90e40263ab74f4a' },
   },
   1995: {
     facts: {
@@ -366,7 +448,7 @@ const REVISION_1: Record<Year, CandidateDigests> = {
       extraTime: 'dad4ff2e8fdfcf1a',
       shootout: 'd84decf0069941c7',
     },
-    positions: { observed: 'fa795c0e24ba2c5e', shootout: 'd026d8cfaaeca681' },
+    positions: { observed: 'f538dd78ce911d58', shootout: 'b50fddc754adbfa7' },
   },
   2024: {
     facts: {
@@ -374,7 +456,7 @@ const REVISION_1: Record<Year, CandidateDigests> = {
       extraTime: '7a6282dbe15f7b44',
       shootout: 'e9132add2a2297e4',
     },
-    positions: { observed: 'b9e0c5c071922d28', shootout: 'd79ba1087cbcb882' },
+    positions: { observed: '419426637e81823d', shootout: '922abdcf670b682e' },
   },
 };
 
@@ -415,9 +497,9 @@ describe('detailed engine throughput (T325)', () => {
         positions: { observed: positionsOf(watched), shootout: positionsOf(pens) },
       };
       expect(got, `${year} candidate digests on ${HOST}`).toEqual(CANDIDATE[year]);
-      // Revisions 1 and 2 play as they did before later revisions moved (→SAVE-23): their matches
+      // Revisions 1–3 play as they did before later revisions moved (→SAVE-23): their matches
       // replay under them.
-      const earlier = (revision: 0 | 1, cases: { extraTime: number; shootout: number }) => {
+      const earlier = (revision: 0 | 1 | 2, cases: { extraTime: number; shootout: number }) => {
         const on = (id: string, opts: Parameters<typeof play>[2] = {}) =>
           play(kit, id, { ...opts, model: MATCH_MODEL_REVISIONS[revision] });
         const pens = on(`knockout-${year}-${cases.shootout}`, { decide: LEVEL, observe: true });
@@ -436,6 +518,9 @@ describe('detailed engine throughput (T325)', () => {
       );
       expect(earlier(1, REVISION_2_CASES[year]), `${year} revision-2 digests`).toEqual(
         REVISION_2[year],
+      );
+      expect(earlier(2, REVISION_3_CASES[year]), `${year} revision-3 digests`).toEqual(
+        REVISION_3[year],
       );
       const recorded = PRE_FEATURE[HOST]?.[year];
       if (recorded === undefined)

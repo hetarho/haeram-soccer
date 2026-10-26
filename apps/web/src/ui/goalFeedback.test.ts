@@ -258,9 +258,9 @@ describe('goal feedback', () => {
     expect(length).toBe(frames.length * 60);
   });
 
-  it('a set-piece preparation before a goal is drawn faster and the hold stays real time', () => {
-    // A 120 s preparation from 10 s to 130 s ahead of the 2′ 30 s goal: 1.5 s instead of 24 s at 1x.
-    const preparations = [{ from: 10, to: 130 }];
+  it('a dead-ball rush before a goal is drawn faster and the hold stays real time', () => {
+    // A 120 s rush from 10 s to 130 s ahead of the 2′ 30 s goal: 1.5 s instead of 24 s at 1x.
+    const preparations = [{ from: 10, to: 130, factor: 2, ms: 1500 }];
     const toGoal = presentationMs(0, 150, 1, preparations);
     expect(toGoal).toBeCloseTo(10 / runningRate(1) + 1500 + 20 / runningRate(1), 6);
     const input = { speed: 1, length, running: true, preparations };

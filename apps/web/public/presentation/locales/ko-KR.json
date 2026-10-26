@@ -140,6 +140,10 @@
     "match.goal.side": "{team} 득점",
     "match.goal.scorer": "{team} · {player} 득점",
     "match.possession.side": "볼 소유",
-    "match.possession.word": "소유"
+    "match.possession.word": "소유",
+    "match.stoppage.yellow": "경고 · {player}",
+    "match.stoppage.red": "퇴장 · {player}",
+    "match.stoppage.injury": "부상 · {player}",
+    "match.stoppage.sub": "교체 · {out} → {in}"
   }
 }

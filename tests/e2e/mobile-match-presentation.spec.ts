@@ -7,11 +7,11 @@ import { expectStablePossessionLayout, horizontalOverflow } from './layout';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
 import {
-  WATCH_DEFAULT_SPEED,
-  WATCH_MINUTE_MS,
+  deadBallBeats,
   presentationMs,
   runningLength,
-  setPiecePreparations,
+  WATCH_DEFAULT_SPEED,
+  WATCH_MINUTE_MS,
 } from '../../apps/web/src/ui/presentationClock';
 import { textContrast } from './contrast';
 
@@ -172,9 +172,9 @@ function goalWorld() {
     country: 'ENG',
     name: 'Goal Feedback',
     color: '#224466',
-    // On match-model revision 3 goal-feedback-0's first match opens 2′ home, then 59′ and 67′ away
-    // (goal-feedback-5's first goal moved to 28′ with the named-manager context).
-    seed: 'goal-feedback-0',
+    // On match-model revision 4 goal-feedback-1's first match opens 5′ home, then 33′ away and 79′
+    // home (goal-feedback-0's, 2′ then 59′ and 67′ on revision 3, kept only two goals after T482).
+    seed: 'goal-feedback-1',
     level: 'easy',
   });
   world.settings!.responsibilities.sales = 'delegated';
@@ -281,12 +281,7 @@ for (const viewport of [
     if (viewport.width !== 360) return;
     // Include actual added time and every goal hold using the presentation clock's own rule.
     const restMs =
-      presentationMs(
-        0,
-        runningLength(playback.frames.length),
-        16,
-        setPiecePreparations(playback.frames),
-      ) +
+      presentationMs(0, runningLength(playback.frames.length), 16, deadBallBeats(playback.frames)) +
       expected.highlights.length * GOAL_FEEDBACK_CONFIG.holdMs +
       5000;
     test.info().setTimeout(test.info().timeout + restMs);

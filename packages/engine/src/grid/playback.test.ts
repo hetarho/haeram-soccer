@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   frameTimeIssues,
   MATCH_MODEL_REVISION,
+  MATCH_MODEL_REVISIONS,
   NEUTRAL_FRAME_PACE,
+  type MatchModelRevision,
 } from '../../../contracts/src/match-model';
 import type { MatchFrame, MatchMotionSample } from '../../../contracts/src/types';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
@@ -30,7 +32,13 @@ const w = createWorld(
 const [home, away] = w.clubs.filter(
   (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
 );
-const setupFor = (id: string, observe = true, candidate = false, decide?: DecideRule) =>
+/** `candidate` plays the current revision, or the one it names. */
+const setupFor = (
+  id: string,
+  observe = true,
+  candidate: boolean | MatchModelRevision = false,
+  decide?: DecideRule,
+) =>
   buildGridSetup(
     w,
     { ...w.fixtures[0]!, id, home: home!.id, away: away!.id },
@@ -38,11 +46,15 @@ const setupFor = (id: string, observe = true, candidate = false, decide?: Decide
       observe,
       recordPlayers: true,
       tactics: ['press', 'possession'],
-      ...(candidate ? { model: MATCH_MODEL_REVISION } : {}),
+      ...(candidate ? { model: candidate === true ? MATCH_MODEL_REVISION : candidate } : {}),
       ...(decide ? { decide } : {}),
     },
   );
-const watch = (id: string, candidate = false, decide?: DecideRule) => {
+const watch = (
+  id: string,
+  candidate: boolean | MatchModelRevision = false,
+  decide?: DecideRule,
+) => {
   const setup = setupFor(id, true, candidate, decide);
   const result = playGrid(setup);
   return { setup, result, frames: buildFrames(result, setup, w.seed) };
@@ -279,6 +291,73 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
     expect(watched.result.record).toEqual(playGrid(setupFor('candidate-1', false, true)).record);
   });
 
+  it('draws dead time as a hurry to the places and a wait for the kick (T477)', () => {
+    const samples = watched.frames.flatMap((f) => f.motion!);
+    // Pitch metres between two drawn positions (units are percent of 105 × 68 m).
+    const metres = (a: readonly number[], b: readonly number[]) =>
+      Math.hypot(((a[0]! - b[0]!) * PITCH.length) / 100, ((a[1]! - b[1]!) * PITCH.width) / 100);
+    const speeds: number[] = [];
+    let creep = 0;
+    for (const f of watched.frames)
+      for (const st of f.stoppages ?? []) {
+        const [dead, kick] = [f.startSeconds! + st.dead, f.startSeconds! + st.kick];
+        const inside = samples.filter(
+          (m) => m.elapsedSeconds >= dead - 1e-6 && m.elapsedSeconds <= kick + 1e-6,
+        );
+        if (inside.length < 2) continue;
+        for (const side of [0, 1] as const)
+          for (const { id } of inside[0]!.players[side]) {
+            const track = inside.map((m) => ({
+              t: m.elapsedSeconds,
+              at: m.players[side].find((p) => p.id === id)?.position,
+            }));
+            if (track.some((x) => !x.at)) continue;
+            const end = track.at(-1)!.at!;
+            const distance = metres(track[0]!.at!, end);
+            if (distance <= 3) continue;
+            // He arrives at the first sample from which he stays where the kick finds him.
+            let arrive = track.length - 1;
+            while (arrive > 0 && metres(track[arrive - 1]!.at!, end) < 0.2) arrive--;
+            speeds.push(distance / Math.max(1e-9, track[arrive]!.t - track[0]!.t));
+            for (let i = arrive + 1; i < track.length; i++)
+              creep = Math.max(creep, metres(track[i]!.at!, track[arrive]!.at!));
+          }
+      }
+    speeds.sort((a, b) => a - b);
+    expect(speeds.length).toBeGreaterThan(200);
+    // Walking pace or slower before T477 (0.10–0.78 m per match second by restart kind).
+    expect(speeds[Math.floor(speeds.length / 2)]).toBeGreaterThanOrEqual(2);
+    expect(creep).toBeLessThan(0.2);
+  });
+
+  it('lists every restart prepared on the clock as a stoppage of the minute it is kicked in (T477)', () => {
+    const restarts = trace.filter(
+      (e, n) =>
+        n > 0 &&
+        e.spot !== undefined &&
+        e.kick !== undefined &&
+        e.kick.elapsed > trace[n - 1]!.elapsed &&
+        e.kick.elapsed < e.elapsed,
+    );
+    const listed = watched.frames.flatMap((f) =>
+      (f.stoppages ?? []).map((st) => ({ ...st, at: f.startSeconds! + st.kick })),
+    );
+    expect(restarts.length).toBeGreaterThan(50);
+    expect(listed).toHaveLength(restarts.length);
+    listed.forEach((st, i) => {
+      const e = restarts[i]!;
+      expect(st.kind).toBe(e.action === 'indirectFreeKick' ? 'freeKick' : e.action);
+      expect(st.at).toBeCloseTo(e.kick!.elapsed, 1);
+      expect(st.dead).toBeLessThanOrEqual(st.settled);
+      expect(st.settled).toBeLessThanOrEqual(st.kick);
+      // Kicked in this minute (the last minute of a period also takes later kicks).
+      expect(st.kick).toBeGreaterThanOrEqual(0);
+    });
+    // A period's opening kick-off is a transition; only kick-offs after a goal are stoppages.
+    const goals = watched.result.record.score.home + watched.result.record.score.away;
+    expect(listed.filter((st) => st.kind === 'kickoff').length).toBeLessThanOrEqual(goals);
+  });
+
   it('draws every flight from its kick to its arrival at the recorded times', () => {
     let flights = 0;
     for (const e of knotted) {
@@ -326,8 +405,8 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
 
   it("ends each period's last action inside its final minute, so it is drawn", () => {
     let periods = 0;
-    // Revision 3's named-manager context: this fixture is 1–1 after 90 minutes,
-    // so the timing assertions below cover both extra-time periods too.
+    // Revision 4's recalibration (T482): this fixture is level after 90 minutes, so the timing
+    // assertions below cover both extra-time periods too.
     const extraTimeId = 'candidate-et-2';
     for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', extraTimeId]) {
       const extraTime = id === extraTimeId;
@@ -555,6 +634,8 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
     if (!m) matches.set(id, (m = watch(id, true)));
     return m;
   };
+  /** Revision 3's observed match `id` (T481): its corners take today's numbers. */
+  const match3 = (id: string) => watch(id, MATCH_MODEL_REVISIONS[2]);
   /**
    * Enough observed matches for both attacking directions, both corner touchlines and a
    * delivered free kick by each side.
@@ -727,9 +808,13 @@ describe('candidate set pieces in playback (→MATCH-12, MATCH-18, T348)', () =>
     // mark and an urgent press (T371: its restart and finishing settings left no scene match with
     // an urgent mark at a kick).
     const more = Array.from({ length: 40 }, (_, i) => `set-piece-${i + 4}`);
-    for (const id of [...SCENES, ...more]) {
+    // Revision 4 marks every attacker who goes up for a corner (T480), so a runner nobody marks at a
+    // kick, which an urgent mark answers, is rare there; revision 3's same fixtures still give one,
+    // and playback draws every revision alike.
+    const earlier = more.map((id) => `${id}@3`);
+    for (const id of [...SCENES, ...more, ...earlier]) {
       if (SCENES.indexOf(id) < 0 && kinds.includes('mark') && kinds.includes('press')) break;
-      const played = match(id);
+      const played = id.endsWith('@3') ? match3(id.slice(0, -2)) : match(id);
       const ids = (side: 0 | 1) => played.setup.rosters[side].map((p) => p.id);
       for (const { e, next, prepared, since, window } of deliveries(played)) {
         const att = e.side;

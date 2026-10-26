@@ -149,6 +149,10 @@
     "match.goal.side": "Tor für {team}",
     "match.goal.scorer": "{team} · Tor von {player}",
     "match.possession.side": "Ballbesitz",
-    "match.possession.word": "Besitz"
+    "match.possession.word": "Besitz",
+    "match.stoppage.yellow": "Gelbe Karte · {player}",
+    "match.stoppage.red": "Rote Karte · {player}",
+    "match.stoppage.injury": "Verletzung · {player}",
+    "match.stoppage.sub": "Wechsel · {out} → {in}"
   }
 }

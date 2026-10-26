@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
 import type { PlayerMotion, World } from '../../packages/contracts/src/types';
 import { advanceToNextMatch, createWorld } from '../../packages/engine/src/index';
-import { presentationSamples, setPiecePreparations } from '../../apps/web/src/ui/presentationClock';
+import { presentationSamples } from '../../apps/web/src/ui/presentationClock';
 import { withCandidateModel } from '../fixtures/worlds';
 import { horizontalOverflow } from './layout';
-import { expectCompressedPreparation } from './preparation';
+import { expectCompressedPreparation, stoppages } from './preparation';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { chooseOption } from './select';
 import { watchNext } from './watch';
@@ -121,12 +121,9 @@ function recordedScene(seed: string) {
         ];
       };
       if (kick < 0 || !scene(kick).every(placed)) continue;
-      // Only a delivered set piece whose set-piece preparation ends at its kick (→WEB-32)
-      // qualifies; the search moves on past any other. After T443's football the first seed's
-      // first candidate was a free kick in minute 17 whose restart samples still show the ball on
-      // its spot 2 s after the recorded kick: the clock's preparation ends at that sample, so none
-      // ends at the kick.
-      const preparation = setPiecePreparations(playback.frames).find(
+      // Only a delivered set piece whose stoppage (its rush and still beat, →WEB-32) ends at its
+      // kick qualifies; the search moves on past any other.
+      const preparation = stoppages(playback).find(
         ({ to }) => Math.abs(to - samples[kick]!.time) <= 0.1,
       );
       if (!preparation) continue;
@@ -137,7 +134,7 @@ function recordedScene(seed: string) {
       }
       let walk = kick;
       while (walk > 0 && scene(walk - 1).every(placed)) walk--;
-      // The walk-in lies inside that preparation: the part of the timeline drawn in about 1.5 s.
+      // The walk-in lies inside that stoppage: the part of the timeline drawn as its rush and beat.
       for (let i = walk; i <= kick; i++) {
         expect(samples[i]!.time).toBeGreaterThanOrEqual(preparation.from);
         expect(samples[i]!.time).toBeLessThanOrEqual(preparation.to + 0.1);
@@ -235,9 +232,9 @@ for (const viewport of [
         [scene.guard, '상대 마크'],
         [scene.keeper, '골문 보호'],
       ]);
-    // Played from just before the ball went dead, the walk-in to this kick is drawn in about
-    // 1.5 real seconds at 1x with the players still travelling (→WEB-32, MATCH-12).
-    expect(scene.preparation, 'the delivery has a set-piece preparation').toBeDefined();
+    // Played from just before the ball went dead, the walk-in to this kick is drawn as its rush
+    // and still beat at 1x with the players still travelling (→WEB-32, MATCH-12).
+    expect(scene.preparation, 'the delivery has a stoppage').toBeDefined();
     if (viewport.name === 'phone')
       await expectCompressedPreparation(page, scene.playback, scene.preparation!);
   });

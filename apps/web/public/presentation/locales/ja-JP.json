@@ -146,6 +146,10 @@
     "match.goal.side": "{team}が得点",
     "match.goal.scorer": "{team} · {player}が得点",
     "match.possession.side": "ボール保持",
-    "match.possession.word": "保持"
+    "match.possession.word": "保持",
+    "match.stoppage.yellow": "警告 · {player}",
+    "match.stoppage.red": "退場 · {player}",
+    "match.stoppage.injury": "負傷 · {player}",
+    "match.stoppage.sub": "交代 · {out} → {in}"
   }
 }

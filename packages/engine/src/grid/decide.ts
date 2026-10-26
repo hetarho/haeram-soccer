@@ -1,5 +1,5 @@
 /** What the player on the ball does and where he plays it: the real-data mix of his cell, bent by role, traits, tactic, tags, score and head (→MATCH-8, MATCH-16). */
-import type { Position } from '../../../contracts/src/player';
+import type { Position, RoleId } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
 import { lineOf } from '../player';
 import { actionWeight } from '../match-weights';
@@ -21,6 +21,7 @@ import {
 } from './pitch';
 import { reachOnPath } from './lanes';
 import { chanceXg, shotBlockers, unblocked } from './resolve';
+import { modelAtLeast } from './rules';
 import { offsideLine } from './shape';
 import { onPitch, other, skill, slotOf, type GridPlayer, type GridState } from './state';
 import { TAG_CONFIG, type Tags } from './tags';
@@ -152,6 +153,36 @@ export const DECISION_CONFIG = {
      * 13.6 a team, goals 3.09 → 2.75 a match (calibration round 74, core 600 matches).
      */
     shotScale: 0.37,
+    /**
+     * Revision 4 (T481, →MATCH-16), in place of `shotLine` and `shotScale` (which revisions 1–3
+     * keep): the lines' shot weights in the order a forward ≥ a midfielder ≥ a defender, since the
+     * lines' shares of goals come from where they get the ball, never from suppressing a line's
+     * shot choice (FW 0.3, MF 22.5, DF 4.5 left an unmarked striker shooting 5–8% of his central
+     * box chances against a midfielder's 86%). The playmaker roles look a little more for the pass.
+     * T482: `shotScale` 0.25 → 0.28 with its own `shotQuality` (clear chances taken more) and
+     * `gain` (passes weigh the receiver's threat less, so the ball returns to midfield more often):
+     * 600 matches, shots 13.6 → 11.3 a team, goals 3.13 → 2.86, pass directions inside MATCH-23, an
+     * unmarked striker's goal-area chance taken 41–45 → 61–65% of the time, forwards' decisions in
+     * front of the box 141 → 107 a team a match.
+     */
+    revision4: {
+      shotLine: { GK: 0, DF: 0.5, MF: 0.8, FW: 1 },
+      shotScale: 0.28,
+      playmakerShot: 0.85,
+      /**
+       * In place of `shotQuality` (T482): a clear chance raises the shot weight up to `most`
+       * times, a poor one lowers it, so the chance itself decides more of whether he shoots.
+       */
+      shotQuality: { ref: 0.25, power: 1, most: 2 },
+      /** In place of `gain` (T482): the pull of a pass's expected-threat gain. */
+      gain: 0.3,
+      playmakers: [
+        'regista',
+        'deepLyingPlaymaker',
+        'trequartista',
+        'widePlaymaker',
+      ] as readonly RoleId[],
+    },
     /**
      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
      * `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+.
@@ -365,16 +396,18 @@ export function actionMix(
   mix.takeOn *=
     clamp(profile.takeOnPerPass / C.takeOnPerPass, C.factorRange[0], C.factorRange[1]) *
     (candidate && !inBox(c) ? C.candidate.takeOnScale : 1);
+  // Revision 4 (T481, T482): its own lines and shot scale.
+  const r4 = candidate && modelAtLeast(s.setup, 4) ? C.candidate.revision4 : undefined;
   const crossFactor =
     clamp(profile.crossShare / C.crossShare, C.factorRange[0], C.factorRange[1]) *
     (candidate ? C.candidate.crossScale : C.crossScale);
   mix.cross *= crossFactor;
   mix.cutBack *= crossFactor;
+  // Revision 4 (T481): the lines in the order forward ≥ midfielder ≥ defender.
+  const shotLine = C.candidate.shotPosition[slot.position] ?? line;
   mix.shot *=
-    (candidate
-      ? C.candidate.shotLine[C.candidate.shotPosition[slot.position] ?? line]
-      : C.shotLine[line]) *
-    (candidate ? C.candidate.shotScale : C.shotScale) *
+    (r4 ? r4.shotLine[shotLine] : candidate ? C.candidate.shotLine[shotLine] : C.shotLine[line]) *
+    (r4 ? r4.shotScale : candidate ? C.candidate.shotScale : C.shotScale) *
     (tags.band === 6 ? (candidate ? C.candidate.shotBox : C.shotBox) : 1) *
     s.math.exp(
       -Math.max(0, goalDistance(c, s.math) - C.longShot.from) /
@@ -382,6 +415,7 @@ export function actionMix(
     );
   // Role and traits.
   mix.shot *= actionWeight(slot.role, traits, 'shot');
+  if (r4?.playmakers.includes(slot.role)) mix.shot *= r4.playmakerShot;
   mix.takeOn *= actionWeight(slot.role, traits, 'dribble');
   mix.cross *= actionWeight(slot.role, traits, 'cross');
   mix.cutBack *= actionWeight(slot.role, traits, 'cross');
@@ -408,7 +442,7 @@ export function actionMix(
   mix.shot *= (1 + bend.shot / 20) * (1 - oppBend.defense / 20);
   // The situation.
   if (candidate && inBox(c)) {
-    const Q = C.candidate.shotQuality;
+    const Q = r4 ? r4.shotQuality : C.candidate.shotQuality;
     // The bodies between the ball and the goal (T445, →MATCH-35): the share of the chance nobody
     // in its path blocks, to the power 1/his temperature, so a sharp head passes up a blocked view
     // more surely and pressure on a shaky one less (→MATCH-16); at temperature 1 it is the share.
@@ -604,11 +638,13 @@ export function passOptions(
   const settled = rule && c[0] <= rule.upTo ? rule : undefined;
   const candidate = s.setup.model !== undefined;
   const past = DECISION_CONFIG.candidate.past;
+  const gainWeight = !candidate
+    ? 1
+    : modelAtLeast(s.setup, 4)
+      ? DECISION_CONFIG.candidate.revision4.gain
+      : DECISION_CONFIG.candidate.gain;
   return candidates.map(({ gp, p, dist, dir }) => {
-    const gain =
-      (CELL_BASELINES[cellOf(p)]!.xT - xt0) *
-      100 *
-      (candidate ? DECISION_CONFIG.candidate.gain : 1);
+    const gain = (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100 * gainWeight;
     let nearest = Infinity,
       risk = 0;
     const dx = p[0] - c[0],

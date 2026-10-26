@@ -108,6 +108,32 @@
   font-size: 13px;
   overflow-wrap: anywhere;
 }
+/* A dead-ball beat's caption (→WEB-32) along the top of the pitch, clear of the corner controls. */
+.stoppageSlot {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  justify-items: center;
+  align-items: start;
+  padding-top: 10px;
+  pointer-events: none;
+}
+.stoppage {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  max-width: calc(100% - 120px);
+  padding: 4px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--control-radius);
+  color: var(--text);
+  background: rgba(16, 19, 20, 0.86);
+  font-family: var(--display);
+  font-size: 13px;
+  text-align: center;
+  overflow-wrap: anywhere;
+  animation: goal-cue 180ms ease-out;
+}
 @keyframes goal-cue {
   from {
     opacity: 0;
@@ -116,7 +142,8 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .goalScore,
-  .goalCue {
+  .goalCue,
+  .stoppage {
     animation: none;
   }
 }

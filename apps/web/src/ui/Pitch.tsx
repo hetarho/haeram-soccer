@@ -51,10 +51,13 @@ import {
 import { useLocale } from '../presentation/react';
 import { possessionKey, resolvePossessionCue, type PossessionCue } from './possessionCue';
 import {
+  beatAt,
+  beatCaptions,
+  deadBallBeats,
   locate,
   presentationSamples,
   runningLength,
-  setPiecePreparations,
+  type Preparation,
   WATCH_DEFAULT_SPEED,
   WATCH_SPEEDS,
 } from './presentationClock';
@@ -168,6 +171,8 @@ export function Pitch({
   const [sampleMatchId, setSampleMatchId] = useState(p?.record.id);
   // The held goal's cue and the goals shown so far, mirrored from the clock for rendering.
   const [cue, setCue] = useState<number>();
+  // The still beat under way (→WEB-32), for its caption.
+  const [beat, setBeat] = useState<Preparation>();
   const [shownGoals, setShownGoals] = useState(0);
   // Who has the ball at the presented instant, shared by the scoreboard and the pitch (→WEB-95).
   const [possession, setPossession] = useState<PossessionCue>({ state: 'unknown' });
@@ -182,8 +187,8 @@ export function Pitch({
   const timed = useMemo(() => presentationSamples(p?.frames ?? []), [p]);
   const { samples, track } = timed;
   const length = runningLength(p?.frames.length ?? 0);
-  // The dead intervals before corners, free kicks and goal kicks, drawn faster (→WEB-32).
-  const preparations = useMemo(() => setPiecePreparations(p?.frames ?? []), [p]);
+  // Every stoppage's rush and still beat, drawn at their own rates (→WEB-32).
+  const preparations = useMemo(() => deadBallBeats(p?.frames ?? []), [p]);
   const goals = useMemo(() => {
     if (!p) return [];
     const starts: number[] = [];
@@ -199,6 +204,7 @@ export function Pitch({
     () => new Map(p?.squads.flatMap((squad) => squad.map((player) => [player.id, player.name]))),
     [p],
   );
+  const captions = beatCaptions(beat, (id) => names.get(id) ?? '');
   // What both sides wore, from the record's own snapshot only (KIT-12): resolved once per record,
   // so editing a club's design while watching never repaints this match.
   const look = useMemo(() => (p ? matchLook(p.record) : undefined), [p]);
@@ -353,6 +359,7 @@ export function Pitch({
         });
         // Only a new cue or goal re-renders; a held goal keeps one cue however often this runs.
         setCue(clock.current.cue?.goal);
+        setBeat(beatAt(preparations, clock.current.seconds));
         setShownGoals(goalsShown(clock.current));
       }
       const now = clock.current.seconds;
@@ -752,6 +759,21 @@ export function Pitch({
                       team: (heldGoal.side === 0 ? home : away)?.name ?? '',
                     })}
               </span>
+            </div>
+          )}
+        </div>
+        {/* A still beat's cards, injuries and substitutions (→WEB-32), named once per stoppage. */}
+        <div className={t.stoppageSlot} aria-live="polite">
+          {captions.length > 0 && (
+            <div
+              key={beat!.from}
+              className={t.stoppage}
+              data-ui="stoppage-caption"
+              data-testid="stoppage-caption"
+            >
+              {captions.map((caption, i) => (
+                <span key={i}>{tr(caption.key, caption.params)}</span>
+              ))}
             </div>
           )}
         </div>

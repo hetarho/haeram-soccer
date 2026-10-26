@@ -86,8 +86,8 @@ export interface GoalFeedbackState {
 }
 
 /**
- * Advances the presentation clock by `elapsedMs` of real time at `speed` — set-piece preparations
- * drawn faster (→WEB-32) — and stops at the earliest recorded goal it crosses (→WEB-94). A held goal
+ * Advances the presentation clock by `elapsedMs` of real time at `speed` — dead-ball beats drawn
+ * at their own rates (→WEB-32) — and stops at the earliest recorded goal it crosses (→WEB-94). A held goal
  * spends real time only, the same at every speed, and the clock stays put meanwhile, so nothing
  * beyond the goal shows and no catch-up builds; when the hold ends the rest of that update runs on.
  * A clock that is not running (paused, hidden) keeps its remaining hold.
