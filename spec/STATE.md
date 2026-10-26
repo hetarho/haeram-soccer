@@ -10,7 +10,15 @@
 - docs: en  # doc language
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
+## active
+| tag | host | mode | since | at | doing |
+|---|---|---|---|---|---|
+| k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
+
 ## inbox
+- 261027 decided WEB-32 ideation/dead-balls-and-finishing: the owner set the rush at ≥ 2× running play and beats per kind tied to speed, leaving numbers for review in play → the rush also caps at 1.5 real s at 1x, and starting beats at 1x are throw-in 0.4, goal kick 0.6, kick-off after a goal 0.8, corner/free kick/drop ball 1.0, penalty 1.5, card/injury/substitution 2.0 s with a caption (alt: no cap, so a long walk-in at exactly 2× | one beat for every kind, rejected by the owner)
+- 261027 decided MATCH-16 ideation/dead-balls-and-finishing: how to make the owner’s forward > midfielder > defender shooting order checkable → in the same unpressured chance with a clear view a forward shoots at least as often as a midfielder and a midfielder as a defender in every cell, and goals by line are never held by suppressing a line’s shot choice (alt: an order in the box only | no measurable order)
+- 261027 decided MATCH-18 ideation/dead-balls-and-finishing: scope of the late-score corner rule → corners only, the keeper up in added time when one goal behind; delivered free kicks keep the default numbers (alt: also delivered free kicks | keeper up from the 90th minute at any deficit)
 - 261027 decided T473 T474 T475 T476 ARCH-30: CI observation reached its 60-minute default while WebKit installation alone took 39–51 minutes → allow one additional bounded 30-minute observation of the same run (alt: leave CI unconfirmed); eight of nine jobs have passed, the final WebKit shard is running tests, and no step has failed. No new code push or test rerun is needed
 - 261026 decided T473 T474 T475 T476 ARCH-30: fresh Codex workers could not install dependencies because their network sandbox returned registry ENOTFOUND → use the available Claude acceptEdits headless provider with the existing pnpm allow rule after its successful install/typecheck probe (alt: park implementation); retain the Codex sandbox and every verification gate
 - 261026 decided T473 T474 T475 T476 ARCH-30: the owner requested all remaining tasks in parallel autopilot after the earlier deadline → finish the four refactors in three disjoint units, keep T473 and T475 in worker-reads, and use separate facility/motion architecture test files (alt: serialize every task through architecture.test.ts); preserve acceptance scope and run one final batch before the configured main push
@@ -304,17 +312,16 @@
 | save-storage-and-fast-pace | ready@261026 |
 | match-day-progress | ready@261026 |
 | calibration-pass | open@261026 |
-| dead-balls-and-finishing | ready@261027 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 22 | 22 | - | 2 |
-| WEB | 156 | 156 | - | 0 |
+| WEB | 157 | 155 |WEB-32✎ WEB-1✎ WEB-90✎ | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 32 | 32 | - | 0 |
+| MATCH | 33 | 32 | MATCH-12✎ MATCH-16✎ MATCH-18✎ | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 35 | 35 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -350,13 +357,15 @@
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 
 ## next
-- update-ssot WEB MATCH from ideation/dead-balls-and-finishing (dead-ball rhythm, free-kick takers, shot choice and recalibration, corner numbers), then create-task.
+- create-task WEB MATCH (WEB@156 MATCH@33: dead-ball beat, free-kick takers, shot choice and recalibration, corner numbers), then implement; autopilot k2d7 pushes main once after the final gate.
 - T473 T474 T475 T476 are complete; no implementation task remains.
 - module-1026 passed the final ARCH-30 gate on 5afd5956; main b050ce93 passed CI 40336122845 on every browser. Parked product ideations remain parked.
 
 ## log
-- 261027 T477 start; create-task WEB r156 consumed into eleven language packs and resource-level verification
-- 261027 update-ssot WEB start: expand the shared message inventory to football-audience languages
+- 261027 T477 start: WEB-1/90 r157 adds eleven language packs in an isolated checkout; other WEB r156 / MATCH r33 planning remains pending
+- 261027 ideation dead-balls-and-finishing converted
+- 261027 update-ssot WEB r156 MATCH r33 (autopilot k2d7, ideation dead-balls-and-finishing): WEB-32 dead-ball beat for every stoppage tied to speed; MATCH-12 no straight-line glide in dead time; MATCH-16 shot choice from the chance bent by position, role, traits, tactic and school; MATCH-18 free-kick taker by place, corner numbers drawn and score-dependent late
+- 261027 update-ssot WEB MATCH start
 - 261027 ideation dead-balls-and-finishing ready (owner): every stoppage rush ≥ 2× → still beat by kind, both tied to speed; named free-kick taker only in shooting/crossing range; shot choice from the chance bent by position (FW > MF > DF, role), school and tactic, traits, then recalibrated; corners 2–3 back / 1–2 up drawn, score from 80′, keeper up in added time one behind
 - 261027 m6p4 closed: T473 T474 T475 T476 complete on main b050ce93; final local batch and all nine jobs of CI 40336122845 passed, including every browser; API confirmed success after the observer HTML fallback could not read completed conclusions
 - 261027 ideation dead-balls-and-finishing start (owner): dead balls crawl, forwards walk back for free kicks, forwards pass up open goals, corners crowd — measured diagnosis recorded
@@ -373,5 +382,3 @@
 - 261026 fix spec format: restore legacy converted ideations to ready pending coverage audit, normalize domain notation and park them; preserve all questions and SSOT policy
 - 261026 T469 done (owner's go): visible steps one day, ≥ 2 s match-day moment on own fixture days (NEXT MATCH card, bottom slot elsewhere), optional 경기 결과 알림; task checks passed, batch before the main push
 - 261026 review-code module-boundaries-261026 start: remaining engine cycles, runtime responsibilities and presentation boundaries; preserve current edits and exclude T469 touches
-- 261026 fix e2e (q7m3): revision 3 moved three seeded scenes: mobile goal cue plays goal-feedback-0 (2′ home), the continuity journey searches ten seeds (full-model-continuity-4), manager-history imports its prepared career upgraded as the writer holds it; Chromium 21/21 on 863bfa4c + fix; batch integration timeouts (calendar ×3, long-career) pass alone, 149 s
-- 261026 T470 done (owner): large view parts publish as inner patches; match-day delta 0.6–1 MB → 77–202 KB, rebuilt view unchanged
