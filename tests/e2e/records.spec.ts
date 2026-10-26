@@ -150,15 +150,22 @@ for (const [label, viewport] of [
       await row.evaluate((element) => element.scrollIntoView({ block: 'center' }));
       await row.click();
       await expect(page).toHaveURL(/\/history\?season=1950/);
-      const contextButtons = [
-        page.getByRole('button', { name: '← 시즌 목록으로', exact: true }),
+      // The season is a sub-screen: the records tabs give way to its navigator bar (→WEB-54).
+      await expect(page.getByRole('tablist', { name: '기록실 보기' })).toHaveCount(0);
+      const navigator = page.getByRole('navigation', { name: '시즌 기록 이동', exact: true });
+      await expect(navigator.getByRole('heading')).toHaveText('1950/51 · 구단 시즌 기록');
+      const back = navigator.getByRole('button', { name: '← 시즌별 기록', exact: true });
+      const links = [
         page.getByRole('button', { name: '이 시즌 리그 순위표', exact: true }),
         page.getByRole('button', { name: '이 시즌 컵 대회 기록', exact: true }),
       ];
-      const buttonBounds = await Promise.all(contextButtons.map((button) => button.boundingBox()));
+      const backBounds = (await back.boundingBox())!;
+      const buttonBounds = await Promise.all(links.map((button) => button.boundingBox()));
+      expect(backBounds.height).toBeGreaterThanOrEqual(44);
       expect(buttonBounds.every((box) => box && box.height >= 44)).toBe(true);
       expect(buttonBounds.every((box) => box!.y === buttonBounds[0]!.y)).toBe(true);
-      for (const button of contextButtons) {
+      expect(backBounds.y).toBeLessThan(buttonBounds[0]!.y);
+      for (const button of [back, ...links]) {
         expect(await button.evaluate((element) => getComputedStyle(element).borderTopWidth)).toBe(
           '0px',
         );
@@ -171,8 +178,9 @@ for (const [label, viewport] of [
       await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('1950/51');
       await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('Haeram');
       await page.getByRole('button', { name: '← 돌아가기 · 클럽 시즌 기록', exact: true }).click();
+      await expect(navigator).toBeVisible();
+      await back.click();
       await expect(tab('시즌별 기록')).toHaveAttribute('aria-selected', 'true');
-      await page.getByRole('button', { name: '← 시즌 목록으로', exact: true }).click();
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
       // The arrow keys move between the tabs, and the tab goes into the address.
@@ -267,6 +275,12 @@ for (const [label, viewport] of [
       await expect(boards.getByRole('button')).toHaveText(['출전', '득점', '도움', '선방']);
       const apps = page.getByRole('table', { name: '역대 최다 출전' });
       await expect(apps.getByRole('row')).toHaveCount(11);
+      // 더 보기 adds the next ten places while the board has more players (→WEB-54).
+      const more = page.getByRole('button', { name: /^더 보기 · 11–\d+위$/ });
+      await expect(more).toBeVisible();
+      const label = (await more.innerText()).match(/11–(\d+)위/)!;
+      await more.click();
+      await expect(apps.getByRole('row')).toHaveCount(Number(label[1]) + 1);
       const link = apps.getByRole('button', { name: / 선수 기록$/ }).first();
       const name = (await link.getAttribute('aria-label'))!.replace(/ 선수 기록$/, '');
       await link.click();

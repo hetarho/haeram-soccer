@@ -357,7 +357,6 @@
 | T480 | Corner numbers drawn per corner and set by the late score | MATCH | T479 | todo |
 | T481 | Shot choice from the chance, bent by position, role and manager | MATCH | T479 | todo |
 | T482 | Recalibrate revision 4 scoring without suppressing a line (explore 3h) | MATCH | T480 T481 | todo |
-| T493 | Records season sub-screen with a navigator bar, player totals up to 100 | WEB | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -374,11 +373,12 @@
 
 ## next
 - implement-task T477, then T478 T479 T480 T481 T482 in order; autopilot k2d7 runs the final batch gate and pushes main once.
-- autopilot o7h4 on work/o7h4: implement-task T493; final batch gate and one push to main.
+- autopilot o7h4 on work/o7h4: T490–T493 done; final batch gate (ARCH-30) on the merged tree, then one push to main.
 - T473 T474 T475 T476 are complete; no implementation task remains.
 - module-1026 passed the final ARCH-30 gate on 5afd5956; main b050ce93 passed CI 40336122845 on every browser. Parked product ideations remain parked.
 
 ## log
+- 261027 T493 done (o7h4): records season sub-screen with a top navigator bar; 선수 통산 더 보기 ten at a time to 100
 - 261027 T491 T492 done (o7h4): focused 구단주 사무실 from home with the clock stopped inside, lobby of six areas, 결재 라인; office-aware e2e helpers across 20 specs, browser specs left to the batch
 - 261027 T490 done (o7h4): home season card with round·rank·record, strength tile leads team state, 10px below the HUD; task checks passed, browser specs left to the batch
 - 261027 create-task WEB r158 (autopilot o7h4): T490 home season card and strength tile, T491 focused office and clock, T492 office lobby and 결재 라인, T493 records season screen and player totals to 100
@@ -398,4 +398,3 @@
 - 261026 module-1026 complete: T473 T474 T475 T476 independently reviewed and integrated; final unit/integration/contract checks and 277 Chromium journeys passed on 5afd5956
 - 261026 T473 T475 integrated
 - 261026 T474 integrated
-- 261026 T476 integrated

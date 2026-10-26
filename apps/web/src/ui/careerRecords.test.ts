@@ -8,6 +8,8 @@ import {
   clubRanks,
   divisionName,
   leaderBoard,
+  LEADER_LIMIT,
+  nextLeaderCount,
   trophyCabinet,
 } from './careerRecords';
 import { playerStatus } from './playerAnalysis';
@@ -180,5 +182,26 @@ describe('all-time boards', () => {
     const last = outfield[10];
     expect(clubLeaders(w.players, leaderBoard('assists'))).toHaveLength(10);
     expect(clubRanks(w.players, last.id).some(({ board }) => board.key === 'assists')).toBe(false);
+  });
+
+  it('pages 선수 통산 ten at a time up to a hundred players (→WEB-54)', () => {
+    // A century of club history: 101 scorers, each with a distinct total.
+    const base = world().players.find((p) => p.position !== 'GK')!;
+    const scorers = Array.from({ length: 101 }, (_, i) => {
+      const p = structuredClone(base);
+      p.id = `scorer-${String(i).padStart(3, '0')}`;
+      p.career[0] = 200 - i;
+      return p;
+    });
+    const all = clubLeaders(scorers, leaderBoard('goals'), LEADER_LIMIT);
+    expect(all).toHaveLength(100);
+    expect(all.at(-1)!.id).toBe(scorers[99].id);
+    expect(nextLeaderCount(10, all.length)).toBe(20);
+    expect(nextLeaderCount(90, all.length)).toBe(100);
+    // At the limit or the board's end there is nothing more to show.
+    expect(nextLeaderCount(100, all.length)).toBe(100);
+    expect(nextLeaderCount(10, 14)).toBe(14);
+    expect(nextLeaderCount(14, 14)).toBe(14);
+    expect(nextLeaderCount(95, 120)).toBe(100);
   });
 });

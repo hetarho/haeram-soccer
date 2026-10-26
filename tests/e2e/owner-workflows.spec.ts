@@ -273,14 +273,14 @@ test('opens club seasons in records and retains the detail scope through league 
   ).toHaveAttribute('aria-selected', 'true');
   await page.getByRole('button', { name: '← 돌아가기 · 클럽 시즌 기록', exact: true }).click();
   await expect(page).toHaveURL(/season=1950.*part=matches.*competition=cup/);
-  await page.getByRole('button', { name: '← 시즌 목록으로', exact: true }).click();
+  await page.getByRole('button', { name: '← 시즌별 기록', exact: true }).click();
   await expect(list).toBeVisible();
   await expect(page).toHaveURL(/\/history$/);
   // Explicit undefined must clear a deep-linked initial year as well as an in-session pick.
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.goto('/history?season=1950');
   await expect(page.getByRole('combobox', { name: '기록 시즌', exact: true })).toBeVisible();
-  await page.getByRole('button', { name: '← 시즌 목록으로', exact: true }).click();
+  await page.getByRole('button', { name: '← 시즌별 기록', exact: true }).click();
   await expect(list).toBeVisible();
   await expect(page).toHaveURL(/\/history$/);
 });

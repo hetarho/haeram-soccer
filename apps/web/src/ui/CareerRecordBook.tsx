@@ -7,6 +7,9 @@ import {
   clubLeaders,
   divisionName,
   LEADER_BOARDS,
+  LEADER_LIMIT,
+  LEADER_PAGE,
+  nextLeaderCount,
   trophyCabinet,
   type LeaderBoard,
 } from './careerRecords';
@@ -215,9 +218,12 @@ export function TrophyCabinet({ w }: { w: World }) {
 }
 
 function LeaderTable({ w, board }: { w: World; board: LeaderBoard }) {
-  const leaders = clubLeaders(w.players, board),
-    places = boardPlaces(leaders, board),
+  const all = clubLeaders(w.players, board, LEADER_LIMIT),
+    places = boardPlaces(all, board),
     apps = board.key === 'apps';
+  const [shown, setShown] = useState(LEADER_PAGE);
+  const leaders = all.slice(0, shown),
+    next = nextLeaderCount(shown, all.length);
   const careerApps = useCareerApps();
   return (
     <Panel title={board.title} note="우리 클럽 통산 · 모든 대회">
@@ -254,6 +260,16 @@ function LeaderTable({ w, board }: { w: World; board: LeaderBoard }) {
               ))}
             </tbody>
           </table>
+          {next > shown && (
+            <button
+              data-ui="link"
+              type="button"
+              className={s.textButton}
+              onClick={() => setShown(next)}
+            >
+              더 보기 · {shown + 1}–{next}위
+            </button>
+          )}
         </div>
       ) : (
         <div className={s.empty}>아직 기록이 없어요.</div>
@@ -278,7 +294,7 @@ export function ClubLeaders({ w }: { w: World }) {
           onChange={setKey}
         />
       </div>
-      <LeaderTable w={w} board={LEADER_BOARDS.find((board) => board.key === key)!} />
+      <LeaderTable key={key} w={w} board={LEADER_BOARDS.find((board) => board.key === key)!} />
       <p className={s.muted}>
         모든 대회에서 우리 클럽 소속으로 남긴 기록이에요. 교체 없이 선발 11명이 90분을 모두 뛰어
         출전 시간을 90분으로 나눈 값이 출전 경기 수예요. 같은 기록은 순위를 함께 나누고 선수 ID

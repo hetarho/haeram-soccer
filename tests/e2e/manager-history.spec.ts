@@ -123,7 +123,7 @@ for (const viewport of VIEWPORTS)
       page.getByRole('heading', { name: `${seasonName(career.cupSeason)} · 구단 시즌 기록` }),
     ).toBeVisible();
     const back = page.getByRole('button', {
-      name: `← 감독 이력으로 · ${career.cupWinner.name}`,
+      name: `← 감독 이력 · ${career.cupWinner.name}`,
       exact: true,
     });
     await expect(back).toBeVisible();
