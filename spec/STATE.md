@@ -356,6 +356,7 @@
 - module-1026 passed the final ARCH-30 gate on 5afd5956; finish main publication and CI. Parked product ideations remain parked.
 
 ## log
+- 261026 T469 pushed to main 35f48eef: the batch caught the moment span breaking the themes' NEXT MATCH first-child rule at 1280 (fixed in 35f48eef), then passed on the whole tree; main CI 40319410126 green. Two concurrent batches had timed out integration tests (long-career; calendar ENG/ESP) under host load; they pass on a quiet host
 - 261026 module-1026 complete: T473 T474 T475 T476 independently reviewed and integrated; final unit/integration/contract checks and 277 Chromium journeys passed on 5afd5956
 - 261026 T473 T475 integrated
 - 261026 T474 integrated
@@ -375,4 +376,3 @@
 - 261026 update-ssot WEB start
 - 261026 ideation match-day-progress + calibration-pass start (owner): match day a ≥ 2 s beat at every pace, no visible catch-up; no own-club edge, judged by measurement; T410 follow-ups explained
 - 261026 T468 done: shared production NPC context with measurements, including pre-form gaps; current-revision upgrade and three seeded scenario fixtures refreshed, assertions retained. Typecheck/lint/format, 556 changed unit cases and build passed; full main batch and CI follow.
-- 261026 T468 start: main batch found four revision-dependent fixture assumptions and one measurement adapter retaining the flat NPC context; preserve rules and historical evidence, repair before the authorized main push.
