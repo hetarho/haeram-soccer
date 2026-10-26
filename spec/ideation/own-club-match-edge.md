@@ -32,6 +32,20 @@
 - [o] C: both A and B → MATCH r32 (MATCH-2), T466 (B as match-model revision 3), T467 (A: the own club's curve on revision 3 against MATCH-2's) ← T434: both causes still move results, so either alone leaves a gap the owner cannot see
   - B: a club nobody owns takes its named manager's ability (→STAFF-17) on the own club's formula, morale neutral (60) since it tracks none; manager styles stay own-only (→STAFF-14)
   - A: no path is the reference; both hold MATCH-2's curve, the own club's fixtures included; the tuning itself joins the calibration pass the owner orders (261026)
+- [o] Read on revision 3 (T467, 261026, `scripts/own-edge-probe.ts`, CALIBRATION.md T467): the same `own-edge` founding built 10 seasons on `continuous-aggregate-3`; each own fixture bucketed by its prepared gap from the own side (prepareMatch before the day's form, on the target's raw axis) against `outcomeTarget`; the league's other fixtures on the aggregate path as the reference; 10 seeds a fixture ← indicative only, ±0.14 points a match at 300–380 matches a path
+  | reading | path | matches | gap | points a match (target) | expected score (target) |
+  |---|---|---|---|---|---|
+  | founding, 1960 tier 4, XI 41 v 30, 지도력 35 | detailed | 300 | +12.2 | 1.52 (2.15) | 0.57 (0.75) |
+  | | aggregate | 300 | +12.2 | 2.33 (2.15) | 0.80 (0.75) |
+  | | reference | 4,200 | 0 | 1.39 (1.38) | 0.50 (0.50) |
+  | top tier, ENG 1부 median club, XI 83 v 83, its manager 85, morale 60 | detailed | 380 | +1.2 | 1.53 (1.46) | 0.54 (0.53) |
+  | | aggregate | 380 | +1.2 | 1.56 (1.46) | 0.55 (0.53) |
+  | | reference | 6,840 | 0 | 1.40 (1.39) | 0.50 (0.50) |
+  - engine path: about 90% of T434's −0.9 remains at the founding (detailed − aggregate −0.81), the detailed engine below the curve (−0.63) and the aggregate above it (+0.18), the same sides as T434; at the top tier the gap is −0.03 and both paths sit on the curve within noise
+  - the founding's detailed engine is flat: 1.43–1.64 points a match from gap +5 to +20, draws 33–40%, 1.8 goals a match; the top tier's detailed slope is, if anything, steeper than the target
+  - the aggregate reference holds the curve at both tiers (within 0.11 where a bucket has 400+ matches)
+  - title race: tier-0 champions 2.29 points a match (median, 1.97–2.74), lead over second 6 (median), 10+ in 25 and ≤2 in 20 of 80 — beside T410's revision-2 2.32 and 6 (22 / 18 of 80), no widening at this size
+  - lever: the detailed engine's tier dependence (how the grid turns a gap into results at low levels); this read cannot separate the level from the founded squad's own inputs, which only the founding's own side carries
 - [x] A alone: parity — on equal inputs our fixtures produce the same outcome curve as other clubs' fixtures ← leaves the one-sided context, about 0.4 points a match
 - [x] B alone: symmetric context — other clubs' match context from their own manager's ability and their morale ← leaves the engine-path gap, about 0.9 points a match
 - [x] D: keep the edge but show it — the owner sees "expected strength" including manager/morale/engine so 82 v 99 is not misleading ← does not fix balance
@@ -46,6 +60,6 @@
 - LEAGUE: title-rate expectations for reference careers (how often a dominant club should win)
 
 ## open
-- Does the reversed engine gap hold on a top-tier career with OVR near MATCH-23's equal top-tier sides? T434 read only 1960 amateur football (T467 reads a top-tier club).
+- Does the reversed engine gap hold on a top-tier career with OVR near MATCH-23's equal top-tier sides? T467: no — at the top tier both paths sit on the curve; the gap stays at the founding's tier-4 level. Is that the level or the founded squad's own inputs? Separate it by playing the founding league's other fixtures on the detailed engine at the same gaps.
 - How often should a club that is genuinely the strongest win its league (a target band for reference careers)?
 - Reproduce: `pnpm exec tsx scripts/own-edge-probe.ts --seeds 10 --seasons 10 --out <file.json>` (a cached 10-season world; each fixture with `w.seed = <seed>:probe<i>` on `simulateMatch` or `simulateAggregate`); for a save, `decode` from `apps/web/src/adapters/persistence.ts` gives the world instead.
