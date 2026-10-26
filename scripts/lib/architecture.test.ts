@@ -49,6 +49,15 @@ describe('runtime architecture boundaries', () => {
         expect(files, forbidden).not.toContain(`packages/engine/src/${forbidden}.ts`);
     },
   );
+  it('publishes views with only the view protocol: no engine, persistence, UI or browser state', () => {
+    const files = closure('apps/web/src/runtime/viewPublisher.ts');
+    expect(files.filter((name) => name.startsWith('apps/'))).toEqual([
+      'apps/web/src/runtime/protocol.ts',
+      'apps/web/src/runtime/viewPublisher.ts',
+    ]);
+    expect(files.filter((name) => name.startsWith('packages/engine/'))).toEqual([]);
+    expect(packages(files).filter((name) => FRAMEWORK.test(name))).toEqual([]);
+  });
   it.each(['events', 'quotes', 'player-state'])(
     '%s stays below world generation, campaign and match orchestration',
     (leaf) => {
