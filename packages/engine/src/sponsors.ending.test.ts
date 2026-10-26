@@ -2,7 +2,7 @@ import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import type { World } from '../../contracts/src/types';
 import { advanceDays, currentDay, operate, seasonDayOf } from './index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { club } from './sponsors.testkit';
 
 /** An owner's local contract in its final season, and the same club delegating business. */

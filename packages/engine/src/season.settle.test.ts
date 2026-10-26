@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  DISABLED_RELEASE,
-  ENABLED_RELEASE,
-  withCandidateModel,
-} from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { withCandidateModel } from '../../../tests/fixtures/worlds';
 import { PD, TD } from '../../contracts/src/detail';
 import type { Fixture, Incident, MatchRecord, World } from '../../contracts/src/types';
 import { settleRate } from './adaptation';

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { operate, simulateSeason } from './index';
-import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { FOUNDING, world } from './finance.testkit';
 
 describe('earned, auditable club finances', () => {

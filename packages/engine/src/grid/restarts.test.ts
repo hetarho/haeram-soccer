@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { ATTRIBUTES } from '../../../contracts/src/player';
-import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { random } from '../primitives';
 import { interruptAll, takeBall, updateIntentions, type IntentionReason } from './intentions';
 import { prepareOnClock, type MotionKnot } from './movement';

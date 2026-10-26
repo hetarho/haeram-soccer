@@ -1,7 +1,7 @@
 import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { academyPlayers, simulateSeason, FOUNDING_YEAR } from './index';
 import { lastRound, world } from './academy.testkit';
 

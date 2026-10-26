@@ -12,7 +12,7 @@ import {
   moraleStrength,
   settleMorale,
 } from './morale';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 
 /** The club on the pre-feature path: morale, not the match model, is the subject. */
 const world = () =>

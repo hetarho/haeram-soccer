@@ -1,10 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  DISABLED_RELEASE,
-  ENABLED_RELEASE,
-  simulatedWorld,
-  withoutManagerHistory,
-} from '../../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../../tests/fixtures/releases';
+import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
 import { canonical } from '../../../../packages/contracts/src/index';
 import {
   CURRENT_ENGINE_VERSION,

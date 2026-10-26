@@ -15,8 +15,8 @@ import {
   operate,
   type MatchModelRelease,
 } from '../../../../packages/engine/src/index';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import {
-  DISABLED_RELEASE,
   simulatedWorld,
   withCandidateModel,
   withoutManagerHistory,

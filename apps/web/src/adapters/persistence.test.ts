@@ -25,13 +25,9 @@ import {
   preIdentityCareer,
 } from '../../../../tests/fixtures/club-identity';
 import { featureState } from '../../../../tests/fixtures/feature-state';
-import {
-  cachedWorld,
-  DISABLED_RELEASE,
-  ENABLED_RELEASE,
-  simulatedWorld,
-  withoutManagerHistory,
-} from '../../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../../tests/fixtures/releases';
+import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
 import { reduceIdentityDraft } from '../ui/clubIdentityDraft';
 import {
   checkpoint,

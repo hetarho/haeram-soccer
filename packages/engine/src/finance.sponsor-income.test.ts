@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { advanceDays, advanceRound, operate } from './index';
 import { professionalStart } from './testing';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { world } from './finance.testkit';
 
 describe('earned, auditable club finances', () => {

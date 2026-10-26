@@ -2,7 +2,9 @@ import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
 import type { Founding, ManagerStyle, World } from '../../contracts/src/types';
-import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import {
   advanceRound,
   coachProspect,

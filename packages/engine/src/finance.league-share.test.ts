@@ -13,7 +13,7 @@ import {
   scaleOperatingExpenses,
 } from './index';
 import { professionalStart } from './testing';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { world } from './finance.testkit';
 
 /**

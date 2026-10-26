@@ -14,7 +14,8 @@ import {
   simulateSeason,
   FOUNDING_YEAR,
 } from './index';
-import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { transferredScorerWorld } from '../../../tests/fixtures/transferred-scorer';
 
 /** The scorer race's club on the pre-feature path: the league's scorer ledger is the subject. */

@@ -51,7 +51,7 @@ import {
   modelEvidence,
   writerActivation,
 } from '../tests/fixtures/full-model-workload';
-import { DISABLED_RELEASE } from '../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../tests/fixtures/releases';
 
 /**
  * The storage benchmark in phases (T308): `pnpm run benchmark` runs every phase in one process,

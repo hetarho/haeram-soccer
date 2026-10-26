@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { operate, simulateSeason } from './index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { club, squadOf, toFinalRound } from './sponsors.testkit';
 
 /** A professional club with an indexed local contract of five seasons. */

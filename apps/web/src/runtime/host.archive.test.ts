@@ -16,12 +16,9 @@ import {
 } from '../../../../packages/engine/src/index';
 import { encode } from '../adapters/persistence';
 import { headToHead } from './headToHead';
-import {
-  cachedWorld,
-  DISABLED_RELEASE,
-  simulatedWorld,
-  withoutManagerHistory,
-} from '../../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
+import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
 import { input, playOn, req } from './host.testkit';
 import type { View } from './protocol';
 

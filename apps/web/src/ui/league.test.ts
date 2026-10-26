@@ -8,7 +8,8 @@ import type {
 import { createWorld, advanceRound, groupKey, ranked } from '../../../../packages/engine/src/index';
 import { fixturesFor } from '../../../../packages/engine/src/season';
 import { professionalStart } from '../../../../packages/engine/src/testing';
-import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../../tests/fixtures/cached-world';
+import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import {
   archivedTimeline,
   clubDivision,

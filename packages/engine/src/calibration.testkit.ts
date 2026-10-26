@@ -1,5 +1,5 @@
 import type { Club, Fixture } from '../../contracts/src/types';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { playGrid } from './grid/engine';
 import { buildGridSetup } from './grid/setup';
 import { createWorld, rating, simulateMatch } from './index';

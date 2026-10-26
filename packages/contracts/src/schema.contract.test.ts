@@ -12,7 +12,7 @@ import type { LedgerKind, Sponsor, SponsorContract, World } from './types';
 import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from './detail';
 import { MATCH_MODEL_REVISION, type MatchModelState, type NpcSeasonStats } from './match-model';
 import { createWorld, simulateSeason, type MatchModelRelease } from '../../engine/src/index';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { LOAD_CATALOG } from '../../catalogs/src/index';
 it('round trips exact monetary strings without losing integer precision', () => {
   const facts = {

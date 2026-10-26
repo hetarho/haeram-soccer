@@ -2,7 +2,7 @@ import { ATTRIBUTES, type Attribute } from '../../contracts/src/player';
 import { lineOf } from './player';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import type { Player, StaffRole, StaffTrait, World } from '../../contracts/src/types';
 import {
   activePlayers,

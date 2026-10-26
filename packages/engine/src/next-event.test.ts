@@ -14,7 +14,8 @@ import { nextEventDays, advanceToNextEvent } from './next-event';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
 import { stoppingReasons } from './stopping';
 import { currency, priceIndex } from '../../catalogs/src/index';
-import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 /** Founded on the pre-feature path: the calendar's next event, not the match model, is the subject. */
 function world() {
   const w = createWorld(

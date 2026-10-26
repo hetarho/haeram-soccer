@@ -5,7 +5,7 @@ import { canonical, validateWorld } from '../../contracts/src/index';
 import type { Line, Player, Position, World } from '../../contracts/src/types';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { lineOf } from './player';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import {
   ACADEMY_LIMIT,
   ACADEMY_READINESS_LABEL,

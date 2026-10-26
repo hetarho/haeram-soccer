@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { Position, World } from '../../contracts/src/types';
 import { ATTRIBUTES } from '../../contracts/src/player';
-import { DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { activePlayers, makePlayer, npcSquad, clubOf, formationOf } from './index';
 import { callUpFor, SQUAD_TARGET } from './squad-target';
 import { closeSeason } from './season';

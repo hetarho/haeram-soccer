@@ -37,7 +37,8 @@ import {
 } from './index';
 import { sellPlayer } from './testing';
 import { advanceEconomy } from './economy';
-import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { world } from './finance.testkit';
 
 describe('earned, auditable club finances', () => {

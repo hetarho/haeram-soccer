@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { World } from '../../contracts/src/types';
 import { advanceRound, simulateSeason } from './index';
 import { legacySettings } from './responsibilities';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { finance, world } from './business.testkit';
 
 /** A world after its season's league rounds, played unobserved: the close is left to the test. */

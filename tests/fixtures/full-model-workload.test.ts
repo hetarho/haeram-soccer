@@ -11,7 +11,8 @@ import {
   modelEvidence,
   writerActivation,
 } from './full-model-workload';
-import { DISABLED_RELEASE, ENABLED_RELEASE, simulatedWorld } from './worlds';
+import { DISABLED_RELEASE, ENABLED_RELEASE } from './releases';
+import { simulatedWorld } from './worlds';
 
 /** A supported career founded before the release, three rounds in on the pre-feature model. */
 const preRelease = () => simulatedWorld(ACTIVATION_FOUNDING, { rounds: 3 }, DISABLED_RELEASE);

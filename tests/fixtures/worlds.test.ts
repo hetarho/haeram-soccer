@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { advanceRound, createWorld, MATCH_MODEL_RELEASE } from '../../packages/engine/src/index';
 import { canonical } from '../../packages/contracts/src/index';
-import { cachedWorld, DISABLED_RELEASE, ENABLED_RELEASE, simulatedWorld } from './worlds';
+import { cachedWorld } from './cached-world';
+import { DISABLED_RELEASE, ENABLED_RELEASE } from './releases';
+import { simulatedWorld } from './worlds';
 
 const input = {
   country: 'ENG',

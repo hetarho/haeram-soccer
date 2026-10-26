@@ -1,5 +1,5 @@
 import { ATTRIBUTES } from '../../contracts/src/player';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { clubMilestones, createWorld } from './index';
 
 /** The milestone club on the pre-feature path: club goals, not the match model, are the subject. */

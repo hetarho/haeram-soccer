@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { simulateSeason } from './index';
 import { lastRound, world } from './staff.testkit';
 

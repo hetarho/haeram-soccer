@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
 import { advanceRound, cupKey, legsOf, tieAggregate } from './index';
-import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { archiveLastRound, closedSeason, founded, toLastRound } from './season.testkit';
 
 describe('closed season archive', () => {

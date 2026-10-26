@@ -1,6 +1,7 @@
 import type { World } from '../../contracts/src/types';
 import { legacySettings } from './responsibilities';
-import { DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 /** The business club on the pre-feature path: the business, not the match model, is the subject. */
 export function world(country: 'ENG' | 'BEL' = 'ENG', seed = 'business') {

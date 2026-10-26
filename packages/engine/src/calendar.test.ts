@@ -15,7 +15,8 @@ import {
   SEASON_END_DAY,
   seasonLength,
 } from './index';
-import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { world as calendarClub } from './calendar.testkit';
 
 /**

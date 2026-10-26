@@ -11,7 +11,7 @@ import {
   operate,
   simulateSeason,
 } from './index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { byId, world } from './goals.testkit';
 
 describe('milestones from retained club facts', () => {

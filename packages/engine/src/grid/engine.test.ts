@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
-import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { createWorld } from '../index';
 import { validateFullMatchRecord } from '../match-model';
 import { playGrid } from './engine';

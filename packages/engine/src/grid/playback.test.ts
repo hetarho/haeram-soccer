@@ -5,7 +5,7 @@ import {
   NEUTRAL_FRAME_PACE,
 } from '../../../contracts/src/match-model';
 import type { MatchFrame, MatchMotionSample } from '../../../contracts/src/types';
-import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { createWorld } from '../index';
 import { validateFullMatchRecord } from '../match-model';
 import { GRID_BALL_CONFIG } from './movement';

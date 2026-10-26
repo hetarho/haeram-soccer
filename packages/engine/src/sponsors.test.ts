@@ -11,7 +11,7 @@ import {
   sponsorOffers,
   sponsorSlots,
 } from './index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { club, paidIn, squadOf, toFinalRound } from './sponsors.testkit';
 
 const slot = (w: World, id: string) => sponsorSlots(w).find((view) => view.slot === id)!;

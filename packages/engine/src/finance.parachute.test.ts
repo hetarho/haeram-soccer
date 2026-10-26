@@ -8,7 +8,9 @@ import {
   parachutePayment,
   ratio,
 } from './index';
-import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { FOUNDING } from './finance.testkit';
 
 describe('the league distribution', () => {

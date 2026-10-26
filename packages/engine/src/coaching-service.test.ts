@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { PersonCareer } from '../../contracts/src/types';
 import { createWorld } from './index';
-import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import {
   atCareerDate,
   careerDate,

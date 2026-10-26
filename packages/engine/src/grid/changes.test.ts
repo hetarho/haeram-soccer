@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Manager, Tactic } from '../../../contracts/src/types';
 import { injuryChance } from '../careers';
-import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { createWorld } from '../index';
 import { lineOf } from '../player';
 import { random } from '../primitives';

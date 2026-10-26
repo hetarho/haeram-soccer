@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { validateWorld } from '../../contracts/src/schema';
 import { FOUNDING_YEAR } from './index';
-import { DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { assertCapacities, input } from './world.testkit';
 describe('world progression', () => {
   it('conserves league capacities across promotions and retains records', () => {

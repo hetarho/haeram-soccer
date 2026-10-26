@@ -33,7 +33,8 @@ import {
   transferOffers,
   transferWindowDays,
 } from './index';
-import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 
 /**
  * A rich level-4 club on the winter window's opening day, half its season played with revenue far

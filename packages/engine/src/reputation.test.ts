@@ -5,7 +5,9 @@ import { divisionLevel, finishTerm, settleReputation, awardReputation } from './
 import { leagueFinishes } from './season';
 import { tieFixtures } from './knockout';
 import type { KnockoutRound, EuropeTournament } from '../../contracts/src/types';
-import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 /** The club on the pre-feature path: reputation, not the match model, is the subject. */
 const world = () =>
   simulatedWorld(

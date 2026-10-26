@@ -25,7 +25,7 @@ import {
   unreadAttention,
 } from './index';
 import { sellPlayer } from './testing';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { CLOSED, incoming, on, world } from './transfers.testkit';
 
 const share = (amount: string, percent: number) =>

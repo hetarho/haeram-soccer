@@ -6,10 +6,8 @@ import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from '../../contracts/sr
 import {
   carriesMatchModel,
   isMatchModelRevision,
-  MATCH_MODEL_REVISION,
   matchModelNumber,
   type FullMatchRecord,
-  type MatchModelRevision,
 } from '../../contracts/src/match-model';
 import type { Incident, MatchRecord, Metrics, World } from '../../contracts/src/types';
 import { CURRENT_ENGINE_VERSION } from '../../contracts/src/versions';
@@ -19,22 +17,8 @@ import { eraRules } from './grid/setup';
 import { openNpcSeason, trackingBoundary } from './npc-stats';
 import { zeroMetrics } from './primitives';
 
-/** Which model a release activates and whether it activates at all. */
-export interface MatchModelRelease {
-  readonly revision: MatchModelRevision;
-  readonly enabled: boolean;
-}
-/**
- * The internal release switch, on since T286 measured the combined model's throughput, capacity
- * and continuity gates passing (→ARCH-31, SAVE-23; its accuracy is reported beside it, →MATCH-28):
- * a new career is tracked from its founding and a supported rules-4.0.0 career activates at its
- * next writer load. Tests and measurements of the pre-feature path pass a disabled release
- * explicitly, and no player control or timing ever selects it.
- */
-export const MATCH_MODEL_RELEASE: MatchModelRelease = {
-  revision: MATCH_MODEL_REVISION,
-  enabled: true,
-};
+export { MATCH_MODEL_RELEASE, type MatchModelRelease } from './match-model-release';
+import type { MatchModelRelease } from './match-model-release';
 
 /**
  * Whether `activateMatchModel` would record `release` on `w`: the release is on, the world plays

@@ -18,7 +18,9 @@ import {
   stepBase,
   transferOffers,
 } from './index';
-import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 /** The club on the pre-feature path: its bases, not the match model, are the subject. */
 function world(policy?: Partial<ClubPolicy>) {

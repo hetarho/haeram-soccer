@@ -17,7 +17,8 @@ import { movePerson } from './npc-continuity';
 import { openNeed, openNeeds, takeWindowNeeds } from './replacements';
 import { transferWindowDays } from './transfers';
 import { lineOf } from './player';
-import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 const world = (count = 20) => cachedWorld(`world:${count}`, () => found(count));
 /** The club on the pre-feature path: replacement needs, not the match model, are the subject. */
 function found(count: number) {

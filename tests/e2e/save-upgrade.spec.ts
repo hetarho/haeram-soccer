@@ -2,7 +2,8 @@ import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { createWorld, advanceRound } from '../../packages/engine/src/index';
 import { encode } from '../../apps/web/src/adapters/persistence';
-import { DISABLED_RELEASE, withoutManagerHistory } from '../fixtures/worlds';
+import { DISABLED_RELEASE } from '../fixtures/releases';
+import { withoutManagerHistory } from '../fixtures/worlds';
 import { openSaveMenu } from './save-menu';
 
 /**

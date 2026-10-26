@@ -12,7 +12,8 @@ import {
   MATCH_MODEL_RELEASE,
   type MatchModelRelease,
 } from '../../packages/engine/src/index';
-import { DISABLED_RELEASE, simulatedWorld, withoutManagerHistory } from './worlds';
+import { DISABLED_RELEASE } from './releases';
+import { simulatedWorld, withoutManagerHistory } from './worlds';
 
 /**
  * Marked synthetic fixtures for the club-identity continuity journeys (T254; →KIT-9/12/15,

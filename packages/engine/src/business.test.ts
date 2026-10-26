@@ -20,7 +20,7 @@ import {
 } from './index';
 import { legacySettings } from './responsibilities';
 import { professionalStart } from './testing';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { finance, world } from './business.testkit';
 
 describe('league income sized for a 46-game season', () => {

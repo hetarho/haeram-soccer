@@ -9,7 +9,8 @@ import {
 import { currentDay, fixtureDay, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import type { ClubIdentity } from '../../../../packages/contracts/src/identity';
 import { featureState } from '../../../../tests/fixtures/feature-state';
-import { cachedWorld, simulatedWorld } from '../../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../../tests/fixtures/cached-world';
+import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { base64, pack, unbase64, unpack } from './packing';
 import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
 import type { Founding, World } from '../../../../packages/contracts/src/types';

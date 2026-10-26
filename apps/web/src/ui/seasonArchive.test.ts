@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { createWorld, simulateSeason } from '../../../../packages/engine/src/index';
 import { professionalStart } from '../../../../packages/engine/src/testing';
-import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { finalZones } from './league';
 import { finalRows, seasonSnapshots } from './seasonArchive';
 

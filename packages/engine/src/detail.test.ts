@@ -4,7 +4,7 @@ import { validateWorld } from '../../contracts/src/index';
 import type { Tactic, World } from '../../contracts/src/types';
 import { advanceRound, createWorld } from './index';
 import { professionalStart } from './testing';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 
 /** A professional season played to its last round with `tactic`, built once and shared. */
 function season(tactic: Tactic, seed: string) {

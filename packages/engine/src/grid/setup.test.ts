@@ -3,7 +3,7 @@ import type { Fixture, Player } from '../../../contracts/src/types';
 import { MATCH_MODEL_REVISIONS } from '../../../contracts/src/match-model';
 import { createWorld, isInjured, ownStarters, squad } from '../index';
 import { clubManager } from '../managerMarket';
-import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { bestRoleAt, FORMATIONS } from '../player';
 import { MATCH_MOTION_CONFIG } from './playback';
 import { benchFor, buildGridSetup, eraRules, modelAtLeast, takersFor } from './setup';

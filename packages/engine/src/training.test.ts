@@ -8,7 +8,8 @@ import { settleRate } from './adaptation';
 import { TRAINING_INJURY, trainingInjuryChance } from './careers';
 import { decode, encode } from '../../../apps/web/src/adapters/persistence';
 import { requestSchema } from '../../../apps/web/src/runtime/protocol';
-import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import {
   activePlayers,
   advanceDays,

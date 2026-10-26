@@ -40,10 +40,9 @@ import { legacyCrestMap } from '../../../../packages/engine/src/identity-legacy'
 import { FOUNDING_YEAR, clubOf } from '../../../../packages/engine/src/world';
 import { professionalStart } from '../../../../packages/engine/src/testing';
 import { npcCompetition, trackingBoundary } from '../../../../packages/engine/src/npc-stats';
+import { cachedWorld } from '../../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import {
-  cachedWorld,
-  DISABLED_RELEASE,
-  ENABLED_RELEASE,
   simulatedWorld,
   withCandidateModel,
   withoutManagerHistory,

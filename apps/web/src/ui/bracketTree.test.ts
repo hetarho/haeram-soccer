@@ -13,7 +13,8 @@ import {
   prepareSeason,
   tieAggregate,
 } from '../../../../packages/engine/src/index';
-import { cachedWorld, DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { archivedKnockout, treeColumns, treeStart, type TreeColumn } from './bracketTree';
 
 /** The bracket club on the pre-feature path: the knockout tree, not the match model, is the subject. */

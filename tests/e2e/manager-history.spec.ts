@@ -7,7 +7,7 @@ import {
   managerActivationCareer,
   managerJourneyCareer,
   type ManagerJourneyCareer,
-} from '../fixtures/manager-history';
+} from '../fixtures/manager-careers';
 import {
   committedRaw,
   exportRaw,
@@ -34,7 +34,7 @@ import { advanceOneRound } from './season-progression';
 /**
  * 감독 이력 in the build (T308; →WEB-92/74/54, HIST-18/19, SAVE-24): real careers imported or seeded
  * as a writer left them, with every expected label read in Node through the worker host's own read
- * and T305's view mapping (tests/fixtures/manager-history.ts), never restated here.
+ * and T305's view mapping (tests/fixtures/manager-careers.ts), never restated here.
  */
 const VIEWPORTS = [
   { name: 'desktop', width: 1280, height: 900 },
@@ -58,8 +58,7 @@ for (const viewport of VIEWPORTS)
   test(`reads tenures page by page and comes back from their seasons on ${viewport.name}`, async ({
     page,
   }) => {
-    // The released model plays this two-season career in Node first: about 25 s locally, past
-    // the slow 90 s budget with the browser part on CI (run 40243569140).
+    // Prepared validated setup is shared across browsers; the current Host still reads its facts.
     test.setTimeout(240_000);
     await page.setViewportSize(viewport);
     const career: ManagerJourneyCareer = await managerJourneyCareer();
@@ -275,7 +274,7 @@ test('starts tracking an older career at the writer, never in a read-only tab', 
 });
 
 test('never shows one game’s manager history in another', async ({ page }) => {
-  // The same Node-played career as above: past 90 s on CI (run 40243569140).
+  // The same prepared career as above, independently cloned for this browser journey.
   test.setTimeout(240_000);
   await page.setViewportSize({ width: 1280, height: 900 });
   const career = await managerJourneyCareer();

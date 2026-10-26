@@ -1,7 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
 import type { World } from '../../packages/contracts/src/types';
 import { advanceRound, createWorld } from '../../packages/engine/src/index';
-import { DISABLED_RELEASE, withCandidateModel } from '../fixtures/worlds';
+import { DISABLED_RELEASE } from '../fixtures/releases';
+import { withCandidateModel } from '../fixtures/worlds';
 import { horizontalOverflow } from './layout';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { chooseOption, selectOptions } from './select';

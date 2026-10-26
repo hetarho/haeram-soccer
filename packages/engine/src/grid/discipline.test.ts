@@ -13,7 +13,7 @@ import {
 } from './discipline';
 import type { Point } from './pitch';
 import { gridKit } from './testkit';
-import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { createWorld } from '../index';
 import { playGrid } from './engine';
 import { M } from './record';

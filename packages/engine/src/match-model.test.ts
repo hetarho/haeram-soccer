@@ -13,8 +13,8 @@ import {
   declaredRelease,
   DISABLED_RELEASE,
   ENABLED_RELEASE,
-  simulatedWorld,
-} from '../../../tests/fixtures/worlds';
+} from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { currentDay } from './calendar';
 import { M } from './grid/record';
 import { advanceRound, createWorld } from './index';

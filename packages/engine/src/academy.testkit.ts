@@ -1,5 +1,6 @@
 import type { World } from '../../contracts/src/types';
-import { DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { advanceRound } from './index';
 
 /** The academy club on the pre-feature path: youth, not the match model, is the subject. */

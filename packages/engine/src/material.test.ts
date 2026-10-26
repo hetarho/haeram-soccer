@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { TD } from '../../contracts/src/detail';
 import type { MatchMaterial, MatchRecord } from '../../contracts/src/types';
-import { DISABLED_RELEASE, ENABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { FOUNDING } from './finance.testkit';
 import { playGrid } from './grid/engine';
 import { cellOf } from './grid/pitch';

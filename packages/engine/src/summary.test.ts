@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Fixture, World } from '../../contracts/src/types';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { INJURY } from './careers';
 import { createWorld, ownLeagueClubs } from './index';
 import { simulateMatch, SUMMARY_DISCIPLINE } from './match';

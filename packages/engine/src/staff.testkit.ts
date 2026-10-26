@@ -1,5 +1,6 @@
 import { legacySettings } from './responsibilities';
-import { DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import type { Founding, World } from '../../contracts/src/types';
 import { advanceRound, type MatchModelRelease } from './index';
 

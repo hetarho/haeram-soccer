@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
 import { LOAD_CATALOG } from '../../catalogs/src/index';
 import { quote, simulateSeason } from './index';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { club, paidIn, toFinalRound } from './sponsors.testkit';
 
 /** A club with a rules 1.15 sponsor, and the club a load makes of it. */

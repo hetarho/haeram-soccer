@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import type { Tactic } from '../../../contracts/src/types';
-import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { FORMATIONS, lineOf } from '../player';
 import { random } from '../primitives';
 import { defendSetPiece, restartTaken, takeBall, updateIntentions } from './intentions';

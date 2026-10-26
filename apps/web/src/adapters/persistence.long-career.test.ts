@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { canonical } from '../../../../packages/contracts/src/index';
 import { simulateSeason } from '../../../../packages/engine/src/index';
-import { cachedWorld } from '../../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { checkpoint, decode } from './persistence';
 import { world } from './persistence.testkit';
 

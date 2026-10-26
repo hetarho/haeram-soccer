@@ -14,7 +14,7 @@ import {
 } from '../../apps/web/src/ui/presentationClock';
 import { fullStatsCoverage, leagueStatsScope } from '../../apps/web/src/ui/fullStatsView';
 import { writerActivation } from './full-model-workload';
-import { DISABLED_RELEASE, ENABLED_RELEASE } from './worlds';
+import { DISABLED_RELEASE, ENABLED_RELEASE } from './releases';
 
 /**
  * Marked synthetic fixture for the full-model continuity journey (T402, T286; →SAVE-22/23, HIST-17,

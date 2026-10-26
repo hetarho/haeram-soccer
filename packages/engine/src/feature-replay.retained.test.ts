@@ -4,7 +4,8 @@ import { Host } from '../../../apps/web/src/runtime/host';
 import { retainedWorkload } from '../../../tests/fixtures/retained-workload';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
 import { createWorld, currentDay, advanceDays } from './index';
-import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { command, facts, readAndReload } from './feature-replay.testkit';
 
 // Each career is its own case with its own limit, in its own file so the two run side by side.

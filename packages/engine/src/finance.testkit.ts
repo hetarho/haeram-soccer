@@ -1,5 +1,6 @@
 import type { Founding } from '../../contracts/src/types';
-import { DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 export const FOUNDING: Founding = {
   country: 'ENG',

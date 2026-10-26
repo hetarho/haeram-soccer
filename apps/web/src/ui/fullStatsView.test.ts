@@ -11,7 +11,8 @@ import type { MatchRecord, Metrics, World } from '../../../../packages/contracts
 import { seasonDayLabel } from '../../../../packages/engine/src/calendar';
 import { fullStatsRead } from '../../../../packages/engine/src/npc-stats';
 import { transferredScorerWorld } from '../../../../tests/fixtures/transferred-scorer';
-import { cachedWorld, simulatedWorld, withCandidateModel } from '../../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../../tests/fixtures/cached-world';
+import { simulatedWorld, withCandidateModel } from '../../../../tests/fixtures/worlds';
 import { hundredths, recordCounters } from './advanced';
 import {
   fullStatsAdvanced,

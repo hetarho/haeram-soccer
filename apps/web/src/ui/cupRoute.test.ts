@@ -12,7 +12,8 @@ import {
   createWorld,
   prepareSeason,
 } from '../../../../packages/engine/src/index';
-import { cachedWorld, DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { cupRoute, nationName, runLine, runResult, type TieRow } from './cupRoute';
 
 const club = (id: string, country: string): Club => ({

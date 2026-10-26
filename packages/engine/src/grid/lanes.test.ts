@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { ATTRIBUTES } from '../../../contracts/src/player';
-import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { BOX_CONFIG, deliveryPoint, deliveryReach, type DeliveryAim } from './box';
 import { GRID_BALL_CONFIG } from './movement';
 import {

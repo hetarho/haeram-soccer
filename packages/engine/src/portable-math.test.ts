@@ -8,7 +8,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { buildGridSetup } from './grid/setup';
 import { createState } from './grid/state';
 import { gridKit } from './grid/testkit';

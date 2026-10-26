@@ -14,7 +14,7 @@ import {
   seasonDayOf,
 } from './index';
 import { sellPlayer } from './testing';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { byId, world } from './goals.testkit';
 
 describe('milestones from retained club facts', () => {

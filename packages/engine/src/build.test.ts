@@ -9,7 +9,7 @@ import {
   simulateMatch,
   TACTICS,
 } from './index';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { baseline, sample, scenario } from './build.testkit';
 
 // Tactical builds on the pre-feature path, as build.tradeoffs guards them (T419).

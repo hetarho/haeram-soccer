@@ -13,7 +13,8 @@ import {
   isSaveCompatibilityError,
   SaveCompatibilityError,
 } from '../../../../packages/contracts/src/versions';
-import { DISABLED_RELEASE, simulatedWorld } from '../../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { packBitColumns } from './bitpacking';
 import { pack, unpack } from './packing';
 import {

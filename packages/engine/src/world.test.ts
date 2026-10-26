@@ -23,7 +23,8 @@ import {
 import type { World } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
 import { LINE_MINIMUM, lineOf, ovrAt } from './player';
-import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { assertCapacities, input } from './world.testkit';
 describe('world progression', () => {
   it('level offsets the founding XI and scales only the cash', () => {

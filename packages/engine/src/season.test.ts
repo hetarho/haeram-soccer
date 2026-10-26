@@ -1,10 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import {
-  cachedWorld,
-  DISABLED_RELEASE,
-  simulatedWorld,
-  withCandidateModel,
-} from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld, withCandidateModel } from '../../../tests/fixtures/worlds';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { Fixture, MatchPlayback, World } from '../../contracts/src/types';
 import { simulateAggregate } from './aggregate/engine';

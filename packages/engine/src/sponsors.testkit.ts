@@ -4,7 +4,8 @@ import type { World } from '../../contracts/src/types';
 import { currency, priceIndex } from '../../catalogs/src/index';
 import { activePlayers, advanceRound, prepareSeason } from './index';
 import { professionalStart } from './testing';
-import { DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 /**
  * A club founded in 1950, moved to `year` and to the lowest professional division if asked; on the

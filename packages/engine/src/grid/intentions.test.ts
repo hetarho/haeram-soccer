@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
-import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { FORMATIONS } from '../player';
 import { BOX_CONFIG, boxScene, boxSide, boxZones } from './box';
 import { playGrid } from './engine';

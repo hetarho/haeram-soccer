@@ -1,10 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import {
-  DISABLED_RELEASE,
-  simulatedWorld,
-  withoutManagerHistory,
-} from '../../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
+import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
 import {
   envelopeEngine,
   FULL_MODEL_CHECKPOINT_SCHEMA,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PD, PLAYER_DETAIL_SIZE, TD } from '../../../contracts/src/detail';
-import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { createWorld } from '../index';
 import { MATERIAL_LAYOUT } from '../material';
 import { validateFullMatchRecord } from '../match-model';

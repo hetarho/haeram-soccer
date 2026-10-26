@@ -13,7 +13,7 @@ import {
   clubOf,
 } from '../../packages/engine/src/index';
 import { currency, priceIndex } from '../../packages/catalogs/src/index';
-import { DISABLED_RELEASE } from './worlds';
+import { DISABLED_RELEASE } from './releases';
 export interface FixtureDefinition {
   name: string;
   input: Founding;

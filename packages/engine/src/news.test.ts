@@ -17,7 +17,8 @@ import {
   trainingInjuries,
 } from './index';
 import type { NewsItem } from './news';
-import { cachedWorld, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 const founding = (seed = 'news') =>
   ({

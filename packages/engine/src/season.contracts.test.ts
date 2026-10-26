@@ -2,7 +2,8 @@ import { legacySettings } from './responsibilities';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { activePlayers, clubOf, divisionStrength, marketWageAt, overall, rating } from './index';
-import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { closedSeason, founded, toLastRound } from './season.testkit';
 
 // Contracts at the close, on the pre-feature path: the squad, not the match model, is the subject.

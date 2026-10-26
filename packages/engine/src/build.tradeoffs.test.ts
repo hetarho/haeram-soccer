@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { TACTICS } from './index';
 import { sample, scenario } from './build.testkit';
 

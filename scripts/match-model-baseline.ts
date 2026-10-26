@@ -76,7 +76,8 @@ import { buildAggregateInput } from '../packages/engine/src/aggregate/input';
 import { attributePlayerFacts } from '../packages/engine/src/aggregate/players';
 import { aggregateStreams } from '../packages/engine/src/aggregate/team';
 import { eraRules } from '../packages/engine/src/grid/setup';
-import { DISABLED_RELEASE, ENABLED_RELEASE, withCandidateModel } from '../tests/fixtures/worlds';
+import { DISABLED_RELEASE, ENABLED_RELEASE } from '../tests/fixtures/releases';
+import { withCandidateModel } from '../tests/fixtures/worlds';
 import {
   buildParityReport,
   buildPerformanceReport,

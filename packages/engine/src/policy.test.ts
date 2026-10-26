@@ -29,7 +29,9 @@ import {
   driftFans,
   baseEffects,
 } from './index';
-import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 /** The club on the pre-feature path: club policy, not the match model, is the subject. */
 function world(policy?: Partial<ClubPolicy>) {

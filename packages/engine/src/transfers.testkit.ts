@@ -1,7 +1,8 @@
 import { legacySettings } from './responsibilities';
 import type { TransferBid, World } from '../../contracts/src/types';
 import { createWorld, currentDay, seasonDayOf } from './index';
-import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 
 export const CLOSED = '이적시장이 닫혀 있어요. 자유계약 선수만 언제든 영입할 수 있어요.';
 

@@ -3,7 +3,8 @@ import { COUNTRIES, currency, priceIndex } from '../../catalogs/src/index';
 import type { CountryCode, Fixture, KnockoutRound } from '../../contracts/src/types';
 import { AMATEUR_CLUBS, createWorld, finishCups, finishEurope, prepareSeason } from './index';
 import { knockoutStage, type CupStage } from './stages';
-import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 
 /** Seasons that span every domestic cup size and each continental format and calendar change. */
 const YEARS = [1950, 1955, 1960, 1971, 1991, 1993, 1994, 1997, 1999, 2004, 2009, 2021, 2024];

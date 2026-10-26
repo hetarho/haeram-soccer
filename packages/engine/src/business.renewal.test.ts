@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { advanceDays, advanceRound, simulateSeason } from './index';
 import { legacySettings } from './responsibilities';
-import { cachedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { world } from './business.testkit';
 
 describe('business delegation and cash warnings', () => {

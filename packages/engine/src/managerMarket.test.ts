@@ -36,7 +36,9 @@ import {
   yearlyStaff,
 } from './index';
 import { ratio } from './primitives';
-import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 const founding = (seed: string): Founding => ({
   country: 'ENG',

@@ -18,12 +18,9 @@ import {
   type MatchModelRelease,
 } from '../../../../packages/engine/src/index';
 import { transferredScorerWorld } from '../../../../tests/fixtures/transferred-scorer';
-import {
-  cachedWorld,
-  DISABLED_RELEASE,
-  simulatedWorld,
-  withoutManagerHistory,
-} from '../../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
+import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
 import { checkpoint, encode, decode, recognizedLegacy } from './persistence';
 import { pack, unpack } from './packing';
 import { FOUNDING, legacyIntegers } from './persistence.testkit';

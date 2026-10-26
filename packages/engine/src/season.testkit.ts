@@ -16,7 +16,9 @@ import {
   ranked,
 } from './index';
 import { professionalStart } from './testing';
-import { cachedWorld, DISABLED_RELEASE, simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 /**
  * A club whose first season is `year`, with a squad and manager of that time, founded under

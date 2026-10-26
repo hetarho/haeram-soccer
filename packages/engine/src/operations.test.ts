@@ -12,7 +12,8 @@ import {
   staffCandidates,
   transferOffers,
 } from './index';
-import { cachedWorld, DISABLED_RELEASE } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 /** The club on the pre-feature path: owner operations, not the match model, are the subject. */
 const world = () => {
   const w = createWorld(
