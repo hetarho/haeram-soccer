@@ -10,6 +10,11 @@
 - docs: en  # doc language
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
+## active
+| tag | host | mode | since | at | doing |
+|---|---|---|---|---|---|
+| q7m3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-26T04:36Z | 2026-10-26T04:36Z | - |
+
 ## inbox
 - 261026 decided T432 MATCH-17 MATCH-29 T410: which freedom setting to keep at the exit → drift 60, loosen 0.4, reform 6, threshold 0.35, swap chance 0.5 a 10-minute block: the owner's examples show (a full-back in the far half 47 → 91% of matches, on the far wing lane 0 → 7%), every record valid, no MATCH-29 ordering moved inside → outside; goals 2.46 → 2.72 and xG 2.48 → 2.66 a match left for T410's re-read (alt: the starting drift 25, where nothing showed because freedom in play is 0.14–0.75 | drift 70, goals 2.84 | threshold 0.6, where no pair ever qualified)
 - 261026 suggest T458 T286: CI e2e on the released model is slower (Chromium 21.4 → 32.7 min) and two journeys meet a modal backdrop during automatic progression on CI only (WebKit live-state:20, Firefox season-flow:135) → k5n2 found the next match eve opening under a click and fixed both (605e985f); still worth a look at the browser worker's per-day cost on the released model
