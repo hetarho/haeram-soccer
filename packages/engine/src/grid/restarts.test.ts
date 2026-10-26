@@ -396,7 +396,10 @@ describe('grid restarts', () => {
       expect(gp.intention).toMatchObject({ priority: 'committed', since: kick, until });
     }
     expect(scene.keeper!.intention).toMatchObject({ kind: 'cover', since: kick, until });
-    expect(jobs(s, kick)).toHaveLength(runners.length + scene.marks.length + 1);
+    // Revision 4's rest defence and outlets (T480) hold theirs too.
+    expect(jobs(s, kick)).toHaveLength(
+      runners.length + scene.marks.length + 1 + (scene.rest?.length ?? 0),
+    );
 
     // The attackers win the second ball at the edge of the box: every other job still serves it.
     const edge = runners.at(-1)!;

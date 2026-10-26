@@ -508,7 +508,7 @@ export function prepareOnClock(
   walk?: (s: GridState, at: number) => void,
 ): RestartPreparer {
   return (s, restart, taker, scene) => {
-    const moves: Placement[] = scene ? [...scene.up, ...scene.marks] : [];
+    const moves: Placement[] = scene ? [...scene.up, ...scene.marks, ...(scene.rest ?? [])] : [];
     if (restart.kind === 'kickoff')
       for (const sd of [0, 1] as const)
         for (const gp of s.players[sd])
@@ -520,6 +520,8 @@ export function prepareOnClock(
     kick?.(s);
     const until = s.elapsed + SHAPE_CONFIG.setPiece.stay;
     restartTaken(s, scene?.up ?? [], until);
-    if (scene) defendSetPiece(s, scene, until);
+    // Revision 4's rest defence and outlets (T480) keep their places through the second ball too.
+    if (scene)
+      defendSetPiece(s, { ...scene, marks: [...scene.marks, ...(scene.rest ?? [])] }, until);
   };
 }

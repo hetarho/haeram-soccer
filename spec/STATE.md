@@ -348,7 +348,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T480 | Corner numbers drawn per corner and set by the late score | MATCH | T479 | todo |
 | T481 | Shot choice from the chance, bent by position, role and manager | MATCH | T479 | todo |
 | T482 | Recalibrate revision 4 scoring without suppressing a line (explore 3h) | MATCH | T480 T481 | todo |
 
@@ -366,11 +365,12 @@
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 
 ## next
-- implement-task T480, then T481 T482 in order; autopilot k2d7 runs the final batch gate and pushes main once.
+- implement-task T481, then T482; autopilot k2d7 runs the final batch gate and pushes main once.
 - T473 T474 T475 T476 are complete; no implementation task remains.
 - module-1026 passed the final ARCH-30 gate on 5afd5956; main b050ce93 passed CI 40336122845 on every browser. Parked product ideations remain parked.
 
 ## log
+- 261027 T480 done: revision 4 corners keep 2–3 back near halfway and 1–2 up, drawn and set by the late score, keeper up in added time one behind; attackers within 25 m 9+ in 36% → 2% of corners
 - 261027 T479 done: match-model revision 4; a free kick played as a pass goes to the nearest suitable player (own third: forwards 59% → 0%, walk 34 → 4 m); digests re-recorded, revision 3 kept as REVISION_3
 - 261027 T478 done: every stoppage drawn as a rush (≥ 2× running, ≤ 1.5 s at 1x) and a still beat per kind scaled with speed, captions for cards, injuries and substitutions; e2e specs updated for the batch
 - 261027 T477 done: observed restarts trace the walk-in and frames list stoppages; drawn dead-time speed 3.3–4.5 m per match second (was 0.10–0.78), facts unchanged, positions digests re-recorded
@@ -390,4 +390,3 @@
 - 261026 create-task T473 T474 T475 T476: refine todo touches and lane allocation for renewed parallel autopilot; acceptance and ARCH r22 preserved
 - 261026 T472 done (r8n5 host): T472 구현과 acceptance/result 갱신을 완료했습니다. 단위 테스트 32개, 타입·린트·포맷 검사와 코드 동등성 검증이 통과했습니다. 기존 spec 경고와 미실행 통합/e2e 검사를 결과에 기록했으며, 변경은 호스트의 검토·커밋을 위해 남겼습니다.; Git finalization by the host because the implementation sandbox is read-only for .git
 - 261026 T471 done (host): reviewed exact event/quote extraction and 77 import-only consumer changes; 71 isolated cases, typecheck, lint, format and build passed; Git finalization completed by host
-- 261026 T471 implementation ready (r8m4): independent event/quote leaves, 77 direct consumers and isolated regression checks; required commit parked on read-only .git access, host finalization pending.

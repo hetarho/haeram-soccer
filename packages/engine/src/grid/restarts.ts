@@ -281,7 +281,8 @@ export function placeAtOnce(s: GridState, rs: Restart, taker: number, scene?: Se
   s.owner = [side, taker];
   s.possession = side;
   if (!scene) return;
-  for (const { gp, to } of [...scene.up, ...scene.marks]) gp.pos = [to[0], to[1]];
+  for (const { gp, to } of [...scene.up, ...scene.marks, ...(scene.rest ?? [])])
+    gp.pos = [to[0], to[1]];
   holdSetPiece(scene, s.elapsed + rs.dead + SHAPE_CONFIG.setPiece.stay);
 }
 
@@ -421,7 +422,8 @@ export function playRestart(
   }
   if (rs.kind === 'corner') {
     const taker = takerFor(s, side, 'corner');
-    place(taker, setPieceTargets(s, side, taker));
+    // Revision 4 draws the corner's numbers (T480); a delivered free kick keeps today's.
+    place(taker, setPieceTargets(s, side, taker, r));
     const tags = computeTags(s, side, taker, { setPiece: true });
     if (r() < K.shortCorner) {
       const target = nearestFree(s, side, taker, 1e9, 0);

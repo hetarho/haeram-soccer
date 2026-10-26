@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
+import {
+  MATCH_MODEL_REVISION,
+  MATCH_MODEL_REVISIONS,
+  type MatchModelRevision,
+} from '../../../contracts/src/match-model';
 import type { Tactic } from '../../../contracts/src/types';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { FORMATIONS, lineOf } from '../player';
@@ -539,5 +543,97 @@ describe('the flank beside a back three (T399)', () => {
     const middle: Point = [30, 34];
     expect(place(true, middle, 0.5, 5)).toEqual(place(true, middle, 0, 0));
     expect(place(false, flank, 0.5, 5)).toEqual(place(false, flank, 0, 0));
+  });
+});
+
+describe('revision 4 corner numbers (T480, →MATCH-18)', () => {
+  const N = SHAPE_CONFIG.setPiece.numbers;
+  const [, , third] = MATCH_MODEL_REVISIONS;
+  /** A corner for side 0 on `model`, `t` seconds into `period`, at `score`. */
+  function corner(model: MatchModelRevision, score: [number, number], period: 1 | 2 = 1, t = 600) {
+    const s = createState({ ...setPieceKit.setup, model });
+    s.period = period;
+    s.t = t;
+    s.elapsed = (period - 1) * 2700 + t;
+    s.score = score;
+    return { s, taker: s.setup.takers[0].corner };
+  }
+  const parts = (scene: ReturnType<typeof setPieceTargets>) => ({
+    rest: scene.rest!.filter(({ gp }) => gp.side === 0),
+    outlets: scene.rest!.filter(({ gp }) => gp.side === 1),
+  });
+
+  it('revision 4 corners keep 2–3 back near halfway and 1–2 outlets', () => {
+    const r = random('corner-numbers');
+    const seen = { rest: new Set<number>(), outlets: new Set<number>() };
+    for (let n = 0; n < 60; n++) {
+      const { s, taker } = corner(MATCH_MODEL_REVISION, [0, 0]);
+      const scene = setPieceTargets(s, 0, taker, r);
+      const { rest, outlets } = parts(scene);
+      seen.rest.add(rest.length);
+      seen.outlets.add(outlets.length);
+      // The rest defence in its own half near halfway, the outlets just inside theirs.
+      for (const { to } of rest) {
+        expect(attackFrame(0, to)[0]).toBeGreaterThanOrEqual(N.restCoverX);
+        expect(attackFrame(0, to)[0]).toBeLessThan(PITCH.length / 2);
+      }
+      for (const { to } of outlets) expect(attackFrame(0, to)[0]).toBe(N.outletX);
+      expect(N.outletX).toBeGreaterThan(PITCH.length / 2);
+      // Each rest defender facing an outlet marks him.
+      rest.slice(0, outlets.length).forEach((x, i) => expect(x.opponent).toBe(outlets[i]!.gp));
+      // Everyone else goes up or defends the box: nine attackers besides the taker, ten defenders.
+      expect(scene.up.length + rest.length).toBe(9);
+      expect(scene.marks.length + outlets.length).toBe(10);
+    }
+    expect([...seen.rest].sort()).toEqual([...N.rest]);
+    expect([...seen.outlets].sort()).toEqual([...N.outlets]);
+  });
+
+  it('from the 80th minute a side behind sends more up and a side ahead keeps everyone back', () => {
+    const r = random('late-corners');
+    for (let n = 0; n < 30; n++) {
+      // 85′, the corner's side a goal behind: more go up, and the leading defenders all come back.
+      const behind = corner(MATCH_MODEL_REVISION, [0, 1], 2, 40 * 60);
+      const chase = parts(setPieceTargets(behind.s, 0, behind.taker, r));
+      expect(chase.rest.length).toBeGreaterThanOrEqual(N.chasingRest[0]);
+      expect(chase.rest.length).toBeLessThanOrEqual(N.chasingRest[1]);
+      expect(chase.outlets.length).toBe(N.protectingOutlets[0]);
+      // 85′, a goal ahead: more stay back, and the trailing defenders leave two up.
+      const ahead = corner(MATCH_MODEL_REVISION, [1, 0], 2, 40 * 60);
+      const keep = parts(setPieceTargets(ahead.s, 0, ahead.taker, r));
+      expect(keep.rest.length).toBeGreaterThanOrEqual(N.protectingRest[0]);
+      expect(keep.rest.length).toBeLessThanOrEqual(N.protectingRest[1]);
+      expect(keep.outlets.length).toBe(N.chasingOutlets[0]);
+      // Before the 80th minute the score changes nothing.
+      const early = corner(MATCH_MODEL_REVISION, [0, 1], 1, 600);
+      const usual = parts(setPieceTargets(early.s, 0, early.taker, r));
+      expect(usual.rest.length).toBeGreaterThanOrEqual(N.rest[0]);
+      expect(usual.outlets.length).toBeGreaterThanOrEqual(N.outlets[0]);
+    }
+  });
+
+  it('the keeper goes up in added time one goal behind, not two', () => {
+    const r = random('keeper-up');
+    const keeperUp = (score: [number, number], t: number) => {
+      const { s, taker } = corner(MATCH_MODEL_REVISION, score, 2, t);
+      const scene = setPieceTargets(s, 0, taker, r);
+      return scene.up.find(({ gp }) => gp.slot === 0);
+    };
+    const up = keeperUp([0, 1], 46 * 60);
+    expect(up).toBeDefined();
+    expect(attackFrame(0, up!.to)).toEqual([...N.keeperSpot]);
+    expect(keeperUp([0, 2], 46 * 60)).toBeUndefined();
+    expect(keeperUp([0, 1], 44 * 60)).toBeUndefined();
+    expect(keeperUp([0, 0], 46 * 60)).toBeUndefined();
+  });
+
+  it("revision 3 corners keep today's scene", () => {
+    const { s, taker } = corner(third, [0, 0]);
+    let draws = 0;
+    const scene = setPieceTargets(s, 0, taker, () => (draws++, 0.5));
+    expect(draws).toBe(0);
+    expect(scene).toEqual(setPieceTargets(s, 0, taker));
+    expect(scene.rest).toBeUndefined();
+    expect(scene.up).toHaveLength(SHAPE_CONFIG.setPiece.box.length + 1);
   });
 });

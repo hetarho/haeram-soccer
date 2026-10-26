@@ -88,8 +88,9 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * T444's deliveries into the zones, for T445's shots through the bodies in front of goal and
  * their second balls, for T437's recalibration, for T446's lofted deliveries over the crowd and
  * for T447's box zone depths, for T432's freedom on revision 2, for T433's tendencies in
- * revision 2's movement, for T466's revision 3 and for T479's revision 4, the first tie of each
- * kind; T466's were 9/2, 7/5 and 4/3 (revision 3's, `REVISION_3_CASES`), T433's were 3/0,
+ * revision 2's movement, for T466's revision 3, for T479's revision 4 and for T480's corner
+ * numbers, the first tie of each kind; T479's were 7/4, 7/6 and 0/1, T466's were 9/2, 7/5 and 4/3
+ * (revision 3's, `REVISION_3_CASES`), T433's were 3/0,
  * 3/1 and 0/4 (revision 2's, `REVISION_2_CASES`), T432's were 1/5, 36/3 and 3/0,
  * T345's were 20/4,
  * 1/16 and 9/5, T348's 7/10,
@@ -100,9 +101,9 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * and 5/15, T446's 0/1, 0/3 and 2/0, T447's 4/2, 2/5 and 16/0 — revision 1's, `REVISION_1_CASES`).
  */
 const CASES = {
-  1975: { extraTime: 7, shootout: 4 },
-  1995: { extraTime: 7, shootout: 6 },
-  2024: { extraTime: 0, shootout: 1 },
+  1975: { extraTime: 14, shootout: 6 },
+  1995: { extraTime: 8, shootout: 4 },
+  2024: { extraTime: 9, shootout: 0 },
 } as const;
 type Year = keyof typeof CASES;
 
@@ -289,31 +290,41 @@ interface CandidateDigests {
  * in the own third a centre-back or the keeper, instead of the named taker) moved every value and
  * the knockout ties (rescanned above); before it, the values now revision 3's (`REVISION_3`).
  * Revisions 1 and 2's and the pre-feature facts did not move.
+ * T480's corner numbers on revision 4 (2–3 attackers kept back near halfway and 1–2 defenders left
+ * up, drawn per corner and set by the late score, every attacker who went up marked before the
+ * zones, the keeper up in added time one goal behind; 16 observed fixtures: attackers within 25 m
+ * of goal at the kick, taker included, 9+ in 36 → 2% of corners, the rest 41 → 55 m from that goal
+ * line) moved every value and the knockout ties
+ * (rescanned above); before it, facts 1975 a93fcdd189f1175e, dbec53b6a91fa171, ab92e4705856f241,
+ * 1995 6bc7ffbc47956777, 53b8998bb26840e0, 63c73ad5aadab90d, 2024 ac7984e59c1cede7,
+ * 46fd46c2c7f3b25f, abe627a2f695a167 and positions 1975 32d3b1b9ecd8b4ba, b48043fac882d662, 1995
+ * 0f174a70f94a52ca, 2e34d67e0cf48ddf, 2024 a3d5c6d968b99691, 62ae7d2c1a33703f. Revisions 1–3's
+ * and the pre-feature facts did not move.
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: 'a93fcdd189f1175e',
-      extraTime: 'dbec53b6a91fa171',
-      shootout: 'ab92e4705856f241',
+      league: '9b3a3006cb467519',
+      extraTime: '92395b9ae0e41692',
+      shootout: 'e63fa618c748d9e6',
     },
-    positions: { observed: '32d3b1b9ecd8b4ba', shootout: 'b48043fac882d662' },
+    positions: { observed: '0a16aa50c06a78c3', shootout: '10862565d43d799a' },
   },
   1995: {
     facts: {
-      league: '6bc7ffbc47956777',
-      extraTime: '53b8998bb26840e0',
-      shootout: '63c73ad5aadab90d',
+      league: '81f04a94d8ac724c',
+      extraTime: '875423ce84d7bd5e',
+      shootout: '1728583de8753114',
     },
-    positions: { observed: '0f174a70f94a52ca', shootout: '2e34d67e0cf48ddf' },
+    positions: { observed: '7fe1b323ff875d52', shootout: '34e1d2abf2b0fc14' },
   },
   2024: {
     facts: {
-      league: 'ac7984e59c1cede7',
-      extraTime: '46fd46c2c7f3b25f',
-      shootout: 'abe627a2f695a167',
+      league: '0d0e15edcd7ac7a4',
+      extraTime: '7937eb6693d0cf0b',
+      shootout: 'c6d191e579678129',
     },
-    positions: { observed: 'a3d5c6d968b99691', shootout: '62ae7d2c1a33703f' },
+    positions: { observed: 'f313e4ccd5caf956', shootout: 'd18c0625cef7e1b7' },
   },
 };
 
