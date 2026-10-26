@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| f6d2 | hq-dev1-pve2-vm2 | pair | 2026-10-26T01:46Z | 2026-10-26T01:46Z | T461 |
+| f6d2 | hq-dev1-pve2-vm2 | pair | 2026-10-26T01:46Z | 2026-10-26T02:08Z | T462 |
 
 ## inbox
 - 261026 decided T432 MATCH-17 MATCH-29 T410: which freedom setting to keep at the exit → drift 60, loosen 0.4, reform 6, threshold 0.35, swap chance 0.5 a 10-minute block: the owner's examples show (a full-back in the far half 47 → 91% of matches, on the far wing lane 0 → 7%), every record valid, no MATCH-29 ordering moved inside → outside; goals 2.46 → 2.72 and xG 2.48 → 2.66 a match left for T410's re-read (alt: the starting drift 25, where nothing showed because freedom in play is 0.14–0.75 | drift 70, goals 2.84 | threshold 0.6, where no pair ever qualified)
@@ -309,8 +309,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T461 | Isolate match rules and fixture reconstruction | ARCH | T459 | doing@261026.f6d2 |
-| T462 | Reusable measurement identities and feedback comparison | ARCH | T459 T460 T461 | todo |
+| T462 | Reusable measurement identities and feedback comparison | ARCH | T459 T460 T461 | doing@261026.f6d2 |
 | T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 T441 T442 T443 T444 T445 T455 T456 T457 T458 | todo |
 | T458 | Chromium journeys follow the released football | ARCH MATCH WEB | - | doing@261026.k5n2 |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
@@ -336,6 +335,7 @@
 - after T286: T433 (on revision 2, behind `modelAtLeast(setup, 2)`; T432 done), then T410 beside T434 (main-session tasks, delegated to sub-sessions)
 
 ## log
+- 261026 T461 done (f6d2, eab7e101): grid/packing runtime closures 124→37 / 139→31; largest engine cycle 80→58; focused 124 tests passed; deterministic integration deferred to final batch
 - 261026 T460 done (f6d2, cdcfff6d): every existing test remains assigned once; 148 unit / 133 integration / 3 contract files, CI split and report retention; final batch pending
 - 261026 T459 done (f6d2, 032a2b09): dependency-scoped fixtures, simulation-free cache/release helpers and validated prepared manager worlds; 12 focused tests and fast checks pass
 - 261026 ARCH r21 + T459–T462 (f6d2): adopted feedback-cost review; preserve coverage and baseline, isolate caches/test tiers/engine leaves/measurement reuse; other start-vibe session stopped by owner
