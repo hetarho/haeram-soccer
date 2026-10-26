@@ -16,6 +16,7 @@
 | q7m3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-26T04:46Z | 2026-10-26T04:46Z | - |
 
 ## inbox
+- 261026 decided ideation/own-club-match-edge MATCH-2 T466 T467: which of A/B/C/D after T434's figures (left open for the owner since 261025) → C: a club nobody owns adds its named manager's ability on the own club's formula ((ability − 50)/4, STAFF-17's manager whose level follows the club's strength ±8) with morale at the neutral 60, as match-model revision 3 (T466); then T467 reads the own club's curve against MATCH-2's on revision 3 at the founding and a top-tier club (20 m), the tuning joining the owner's calibration pass; manager styles stay own-only, because T434 found both causes still move results and either alone leaves a gap the owner cannot see (alt: B alone | A alone | D, show the edge | morale from the last five results, new state per club | flat 4 kept and the own club's terms removed, which makes hiring a manager pointless) — managers follow club strength, so strength gaps between clubs nobody owns grow about a quarter; T467 reads the title-race effect beside T410's
 - 261026 decided MATCH-13 MATCH-30 T327: MATCH-13 specified 40 m and own 60% while both paths count from MATCH-14's nearest band edges (35 m; two-thirds), as T327 recommended → the definition states the band-edge zones and MATCH-30 keeps the Opta bands with the offset beside them, because the cell-level aggregate cannot read metres inside a band and exact parity matters more than the 35–40 m strip (alt: exact metres on the grid only, a parity gap by construction | re-derive both bands from SB16 events under the band-edge zones, a data task with no published league table to check it)
 - 261026 decided MATCH-13 MATCH-28: the grid counts a line-breaking pass by player positions (55→65 m inside one band) while the aggregate draws them only among passes into a higher band → MATCH-13 states the aggregate's cell-level reading and holds the count by MATCH-28 parity, no code change, since the aggregate places no players (alt: let the ledger accept same-band forward passes, which its generator never draws)
 - 261026 decided ARCH-23 T463: netlify.toml pins Node 24.12.0 while .node-version and package.json require 24.22.1 → T463 removes Netlify's own pin so .node-version is the one source, with a unit test over every pin, no ARCH rev since ARCH-23 already requires one pinned toolchain (alt: set NODE_VERSION 24.22.1 and test equality, kept as T463's fallback)
@@ -294,7 +295,7 @@
 | match-continuity-and-performance | converted@261021 |
 | manager-achievements | converted@261021 |
 | set-piece-defence-and-goal-feedback | converted@261022 |
-| own-club-match-edge | open@261023 |
+| own-club-match-edge | converted@261026 |
 | match-viewing-pace-and-freedom | converted@261025 |
 | save-storage-and-fast-pace | converted@261026 |
 
@@ -306,7 +307,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 31 | 31 | - | 0 |
+| MATCH | 32 | 32 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 35 | 35 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -325,6 +326,8 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T466 | Symmetric match context as match-model revision 3 | MATCH STAFF SAVE ARCH | - | todo |
+| T467 | Read the own club's outcome curve on revision 3 | MATCH ARCH | T466 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -339,6 +342,7 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
+- T466 (symmetric match context, match-model revision 3) then T467 (explore 20 m, the own club's curve on revision 3); ideation own-club-match-edge converted (choice C, MATCH r32)
 - T465 done (late-step indicator); its e2e journey (progression-settings "a late own match day shows 경기 진행 중…" at 360/390/1280) runs in the host batch. Performance steps (a)/(c) wait for the owner's x10 read (inbox suggest)
 - T464 done (active checkpoint in IndexedDB); its e2e specs (club-identity-continuity, recovery, save-upgrade, match-core, club-identity-observation/-preparation, manager-history, presentation-settings) and the integration-tier persistence/client tests run in the host batch.
 - T463 done: Netlify reads .node-version once NODE_VERSION is unset; confirm the Node version in the first Netlify build log after the main push, and set NODE_VERSION = "24.22.1" (the test then requires equality) if Netlify did not pick it up. MATCH r31 reconciled the doc-review counter discrepancies without code work.
@@ -346,6 +350,8 @@
 - end of work (q7m3): one full batch, one main push, one CI read; T433, T434 and T410 run as 20 m gameplay reads (owner 261026): T433, T434 and T410 done; T410's five named calibration follow-ups (CALIBRATION.md T410 section) wait for the owner's calibration pass
 
 ## log
+- 261026 create-task (q7m3): T466 symmetric match context as match-model revision 3, T467 own club's outcome curve read on revision 3 (MATCH@32)
+- 261026 update-ssot MATCH r32 (q7m3, ideation own-club-match-edge choice C, converted): MATCH-2 a club nobody owns adds its named manager's (ability − 50)/4 and neutral morale from revision 3, flat 4 before; the curve holds for the own club's fixtures too
 - 261026 T465 done (q7m3): an automatic step still in flight one pace interval after it began sets ProgressionState.lateStep; the transport's reserved slot shows a decorative spinner with 경기 진행 중… / 진행 중… until it lands or the clock stops; steps and catch-up unchanged, e2e left to the host batch
 - 261026 create-task (q7m3): T465 late automatic step progress indicator (WEB@154 MATCH@31)
 - 261026 update-ssot WEB r154 (q7m3, ideation save-storage-and-fast-pace step 2, converted): WEB-18 a step still in flight one pace interval after it began shows 경기 진행 중… / 진행 중… in the transport, no results, step and catch-up unchanged
@@ -364,5 +370,3 @@
 - 261026 ideation save-storage-and-fast-pace start + recorded (owner): active checkpoint to IndexedDB, then x10 with a "경기 진행 중…" match-day indicator; after the current football tasks
 - 261026 doc-review ARCH KIT MATCH PLAYER SAVE WEB start; owner requested docs-to-artifacts cleanup and source consistency audit.
 - 261026 re-scope (q7m3, owner): T433, T434, T410 each within 20 m as gameplay reads (10 seasons, a handful of fixtures); pilot-size parity deferred
-- 261026 T286 done (q7m3): released model evidence = batch on 2ab7207c + main CI 40262705063 Chromium/WebKit; final batch and CI at the end of the work
-- 261026 T458 done (q7m3, 2b8b0b12): Firefox business, season-flow, stable-controls-and-pacing 15/15 on local Firefox (2.0 m)

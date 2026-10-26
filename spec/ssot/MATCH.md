@@ -1,17 +1,19 @@
 # MATCH Observable match simulation
-> r31 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r32 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
   - added time is the time each half lost to goals, substitutions, injuries, cards and set-piece delays, announced as the half ends; the modern era plays about 6–12 minutes a match in all (EPL 2023-24 11:39, the five seasons before about 7:20).
   - at half-time the sides change ends and the manager may substitute (→MATCH-20).
 - MATCH-2 [o] Outcome factors include the players' attributes at their slots, club/manager quality, fatigue, home advantage, and the actually applied tactical preset. ← the own club must play on the same terms as the clubs it meets
-  - every club's strength is its actual starting XI in its formation (→STAFF-22): the average 실효 OVR at the slots (→PLAYER-6) minus (fatigue − 20)/6 for fatigue above 20; an own player's 실효 OVR carries his adaptation multiplier (→PLAYER-10), a player of a club nobody owns his club's 조직력 multiplier (→LEAGUE-12); clubs nobody owns add 4 for their unmodelled manager, the own club (manager ability − 50)/4, morale, its manager style's strength (→STAFF-14) and at home its build's home strength (→ECON-22).
+  - every club's strength is its actual starting XI in its formation (→STAFF-22): the average 실효 OVR at the slots (→PLAYER-6) minus (fatigue − 20)/6 for fatigue above 20; an own player's 실효 OVR carries his adaptation multiplier (→PLAYER-10), a player of a club nobody owns his club's 조직력 multiplier (→LEAGUE-12).
+  - every club adds (manager ability − 50)/4 for its manager — the own club's hired one, a club nobody owns its named manager (→STAFF-17) — and (morale − 60)/10, a club nobody owns at the neutral 60 since it tracks no morale; the own club also adds its manager style's strength (→STAFF-14) and at home its build's home strength (→ECON-22). ← a manager counts the same for every club, so the own club's edge is only what its manager, morale and build earn
+  - this symmetric context plays from match-model revision 3 (→SAVE-23); fixtures on earlier revisions and the pre-feature model keep a flat 4 for a club nobody owns.
   - fatigue up to 20 is ordinary match fitness and costs nothing in ratings, duels or tactic fit; only the excess weakens a player.
   - clubs nobody owns do not track fatigue match by match, so a pressing club's squad carries fatigue 32.
   - a strength gap counts with diminishing returns (gap / ⁴√(1 + (gap/24)⁴): 20→18.1, 30→22.0, 40→23.3); each side then adds its match-day form, a seeded fat-tailed draw (sd 7, within ±21) from a stream of its own, so watched and unwatched runs agree. ← even a far stronger side has bad days; a +20 favourite wins about 79%, draws 14% and loses 7%, as in real league data
   - home, manager and morale points and the form move every player's skills too (half the difference between the sides to each), so a strength point counts the same wherever it comes from.
-  - calibration target: Elo with 16 Elo per rating point; the grid engine and the probabilistic path (→MATCH-22) each hold it across gaps −10 to +40, and each calibration records its measured error there. The executable target and comparison registry is `scripts/lib/match-parity.ts`; calibration measurements are historical evidence, not an additional rule source.
+  - calibration target: Elo with 16 Elo per rating point; the grid engine and the probabilistic path (→MATCH-22) each hold it across gaps −10 to +40, the own club's fixtures included at home and away, so equal prepared strengths give the own club the same curve as every other club; each calibration records its measured error there. The executable target and comparison registry is `scripts/lib/match-parity.ts`; calibration measurements are historical evidence, not an additional rule source.
 - MATCH-3 [o] Provide possession, goals, assists, shots, shots on target, attempted/completed passes, tackles, interceptions, dribbles, saves, fouls, yellow and red cards, corners, offsides, minutes played, substitutions, injuries and player contributions.
   - possession is a side's share of both sides' attempted passes (the published convention), the same on both paths.
 - MATCH-4 [o] Display counts, denominators and defined ratios; no attempts means no defined percentage. Compare own match, season and career totals.
@@ -283,6 +285,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r32 261026 MATCH-2✎ a club nobody owns adds a flat 4 for its unmodelled manager→(its named manager's ability − 50)/4 and neutral morale, the own club's terms on the same formula, from match-model revision 3 (earlier revisions keep 4); calibration curve held by the own club's fixtures at home and away too
 - r31 261026 MATCH-13✎ high turnover within 40 m→35 m of goal and PPDA zone own 60%→own two-thirds (MATCH-14's nearest band edges, as both paths count since T327); line-breaking pass on the aggregate path→drawn among completed passes into a higher band. MATCH-30✎ high-turnover and PPDA source cells state the zone offset; bands unchanged
 - r30 261025 MATCH-33✎ a delivery reached along its whole path→a lofted one reached only at the crosser's foot and at its zone; no blind delivery with nobody in a zone→also none when every delivery is cut out, the choice reading the reach
 - r29 261025 MATCH-11✎ keeper distribution against the defender nearest the lane→the opponent who reaches its path first (→MATCH-31)

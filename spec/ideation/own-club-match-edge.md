@@ -1,5 +1,5 @@
 # IDEATION own-club-match-edge
-> st:open@261023 | Our club should win only what its squad, manager and circumstances earn; on equal terms it should score like any other club of the same strength.
+> st:converted@261026 | Our club should win only what its squad, manager and circumstances earn; on equal terms it should score like any other club of the same strength.
 
 ## vision
 - Problem (owner, 261023, from a 1950–1995 쉬움 career): a squad of OVR ~78–82 keeps winning 1부 titles against rivals shown at 98–102. The owner asked why a weaker side beats far stronger ones season after season.
@@ -29,10 +29,12 @@
   - against MATCH-2's target (Elo, 16 a rating point, venues pooled) the expected scores would be about 0.53 as played and 0.72 neutral; the detailed engine gives 0.42 / 0.55 and the aggregate 0.70 / 0.84, so the two paths miss the curve on opposite sides rather than one holding it (a rough read that takes the shown XI ratings as the match strengths)
 - [o] Recommendation (T434): C, both A and B ← both causes still move results on the released model; the engine gap only changed direction, so fixing context alone (B) or the path alone (A) leaves a ~0.4–0.9 point a match difference the owner cannot see; with A, calibrate both paths to MATCH-2's curve instead of one to the other, since on this read neither holds it. The choice stays with the owner.
 - [x] Treat it as part of 쉬움 ← WEB-3: difficulty sets only the start; every rule is the same at every level
-- [?] A: parity — on equal inputs our fixtures produce the same outcome curve as other clubs' fixtures (calibrate one path to the other, or play both on one path)
-- [?] B: symmetric context — other clubs' match context from their own manager's ability and their morale, on the same formula as ours
-- [?] C: both A and B
-- [?] D: keep the edge but show it — the owner sees "expected strength" including manager/morale/engine so 82 v 99 is not misleading (does not fix balance)
+- [o] C: both A and B → MATCH r32 (MATCH-2), T466 (B as match-model revision 3), T467 (A: the own club's curve on revision 3 against MATCH-2's) ← T434: both causes still move results, so either alone leaves a gap the owner cannot see
+  - B: a club nobody owns takes its named manager's ability (→STAFF-17) on the own club's formula, morale neutral (60) since it tracks none; manager styles stay own-only (→STAFF-14)
+  - A: no path is the reference; both hold MATCH-2's curve, the own club's fixtures included; the tuning itself joins the calibration pass the owner orders (261026)
+- [x] A alone: parity — on equal inputs our fixtures produce the same outcome curve as other clubs' fixtures ← leaves the one-sided context, about 0.4 points a match
+- [x] B alone: symmetric context — other clubs' match context from their own manager's ability and their morale ← leaves the engine-path gap, about 0.9 points a match
+- [x] D: keep the edge but show it — the owner sees "expected strength" including manager/morale/engine so 82 v 99 is not misleading ← does not fix balance
 
 ## shape
 - flow: measure on the candidate model too → choose A/B/C → update MATCH/CLUB rules → recalibrate → re-measure on this save and reference careers
@@ -44,8 +46,6 @@
 - LEAGUE: title-rate expectations for reference careers (how often a dominant club should win)
 
 ## open
-- With A, which path is the reference: the detailed engine's football or the probabilistic curve's results? (T434 leans to neither: MATCH-2's curve, which both miss)
-- Does the reversed engine gap hold on a top-tier career with OVR near MATCH-23's equal top-tier sides? T434 read only 1960 amateur football.
-- With B, what is "morale" for a club nobody owns — form over its last matches, a fixed baseline, or none?
+- Does the reversed engine gap hold on a top-tier career with OVR near MATCH-23's equal top-tier sides? T434 read only 1960 amateur football (T467 reads a top-tier club).
 - How often should a club that is genuinely the strongest win its league (a target band for reference careers)?
 - Reproduce: `pnpm exec tsx scripts/own-edge-probe.ts --seeds 10 --seasons 10 --out <file.json>` (a cached 10-season world; each fixture with `w.seed = <seed>:probe<i>` on `simulateMatch` or `simulateAggregate`); for a save, `decode` from `apps/web/src/adapters/persistence.ts` gives the world instead.
