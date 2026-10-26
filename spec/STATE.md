@@ -13,9 +13,10 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| p7r3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-26T00:34Z | 2026-10-26T00:35Z | T432 |
+| p7r3 | hq-dev1-pve2-vm2 | autopilot | 2026-10-26T00:34Z | 2026-10-26T00:35Z | - |
 
 ## inbox
+- 261026 decided T432 MATCH-17 MATCH-29 T410: which freedom setting to keep at the exit → drift 60, loosen 0.4, reform 6, threshold 0.35, swap chance 0.5 a 10-minute block: the owner's examples show (a full-back in the far half 47 → 91% of matches, on the far wing lane 0 → 7%), every record valid, no MATCH-29 ordering moved inside → outside; goals 2.46 → 2.72 and xG 2.48 → 2.66 a match left for T410's re-read (alt: the starting drift 25, where nothing showed because freedom in play is 0.14–0.75 | drift 70, goals 2.84 | threshold 0.6, where no pair ever qualified)
 - 261026 suggest T458 T286: CI e2e on the released model is slower (Chromium 21.4 → 32.7 min) and two journeys meet a modal backdrop during automatic progression on CI only (WebKit live-state:20, Firefox season-flow:135) → k5n2 found the next match eve opening under a click and fixed both (605e985f); still worth a look at the browser worker's per-day cost on the released model
 - 261026 decided T435 SAVE-23 ARCH-30: "revision 2 plays exactly as revision 1 (every digest unchanged)" while each record names the revision that settled it → the aggregate path keeps revision 1's stream names, a test proves the same football on both revisions, and the throughput facts digests (11) are re-recorded for the record label alone with the old values kept in their history comments (alt: keep labelling new records revision 1, against SAVE-23's per-match revision | pin the digest tests to revision 1, leaving revision 2 unmeasured there)
 - 261026 decided T458 STAFF-14: the manager-history journey's closer had left at the 1950 close (a one-season firefighter) → the fixture picks a free manager whose school signs for more than one season (alt: return expired managers to the free market, a STAFF rule change | pin the journey to the disabled release); CI WebKit's two 5 s timeouts get 15 s waits for the same states (alt: mark the journeys slow)
@@ -310,7 +311,6 @@
 | T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 T441 T442 T443 T444 T445 T455 T456 T457 T458 | todo |
 | T458 | Chromium journeys follow the released football | ARCH MATCH WEB | - | doing@261026.k5n2 |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
-| T432 | Freedom, situational disorder and position swaps in the candidate's movement | MATCH STAFF PLAYER ARCH | T431 T435 | doing@261026.p7r3 |
 | T433 | 규율, 압박 성향 and 예측력 drive movement | MATCH PLAYER ARCH | T432 | todo |
 | T434 | Re-run the own-club edge probe on the released model | MATCH WEB ARCH | T286 | todo |
 
@@ -329,9 +329,10 @@
 ## next
 - v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428
 - k5n2 (261026, autopilot until 09:30 KST): T458 and T435 integrated, group gates passed on 9e54c848 and 4b8c42af (Chromium 274 each); main pushed 111581e7, then 3c003b7d+docs with the CI budgets for five journeys slow CI runners timed out (branch CI 40243569140). The CI of that last push (run 40247530947) closes T458 and T286; if it fails, fix it first. 605e985f covers the match-eve race (the next eve opening under a click on a slow runner) behind WebKit live-state:20 and Firefox season-flow:135
-- after T286: T432 → T433 (on revision 2, behind `modelAtLeast(setup, 2)`), then T410 beside T434 (main-session tasks, delegated to sub-sessions)
+- after T286: T433 (on revision 2, behind `modelAtLeast(setup, 2)`; T432 done), then T410 beside T434 (main-session tasks, delegated to sub-sessions)
 
 ## log
+- 261026 T432 done (p7r3): revision 2's freedom, disorder and swaps (drift 60, loosen 0.4, reform 6, threshold 0.35); goals 2.46 → 2.72, a full-back in the far half 47 → 91% of matches; revision 1 and pre-feature digests unchanged
 - 261026 T458 CI budgets (k5n2, 3c003b7d): manager-history ×3, owner-workflows:340, staff:259 timed out at 90 s on CI only; explicit budgets, released cup-winner seed first
 - 261026 T435 done (k5n2, integrated 4b8c42af): match-model revision 2, revision-1 careers upgrade at the writer load; football unchanged, facts digests re-recorded for the record label
 - 261026 T458 group gate pass (k5n2): 9e54c848 typecheck, lint, format, unit 2141, contract 39, catalogs, build, Chromium 274; main push and CI next

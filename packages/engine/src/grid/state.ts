@@ -4,6 +4,8 @@ import type { Player } from '../../../contracts/src/types';
 import { FORMATIONS, levelFactor, lineOf } from '../player';
 import { HOST_MATH, PORTABLE_MATH, type MatchMath } from '../portable-math';
 import { fatigueLoad, slotOvr, unhappyPenalty } from '../world';
+import { matchModelNumber } from '../../../contracts/src/match-model';
+import type { FreedomState } from './freedom';
 import type { EndedIntention, Intention } from './intentions';
 import { attackFrame, PITCH, type Point } from './pitch';
 import type { GridSetup } from './setup';
@@ -54,6 +56,10 @@ export interface GridState {
   score: [number, number];
   lastRegain?: { side: 0 | 1; at: number };
   lastLoss?: { side: 0 | 1; at: number };
+  /** Match seconds of the last delivered set piece's kick (`restartTaken`); revision 2's disorder reads it (T432). */
+  setPieceAt?: number;
+  /** Revision 2 only (T432): each side's freedom plan as last planned (`freedom.ts`); absent before it. */
+  freedom?: FreedomState;
   /** The last completed pass, in the receiving side's attack frame; tags read the carrier's orientation from it. */
   lastPass?: { dx: number; dy: number };
   /**
@@ -65,6 +71,8 @@ export interface GridState {
   possessionSince: number;
   /** Each side's substitutions and injuries so far (→MATCH-20, §8.1). */
   changes: [SideChanges, SideChanges];
+  /** Counts every player entering a slot or leaving the pitch; revision 2's freedom plans re-read the lineup when it moves (T432). */
+  lineups: number;
   /** The match's level: the mean 실효 OVR of both starting XIs at kick-off. */
   level: number;
   /** The duels' skill scale on this fixture's model (`STRENGTH_CONFIG`, T357). */
@@ -257,7 +265,12 @@ export function createState(setup: GridSetup): GridState {
     score: [0, 0],
     possessionSince: 0,
     changes: [noChanges(), noChanges()],
+    lineups: 0,
     math: setup.model === undefined ? HOST_MATH : PORTABLE_MATH,
+    // Revision 2's movement needs its per-match tendencies (T432).
+    ...(setup.tendencies && setup.model && matchModelNumber(setup.model) >= 2
+      ? { freedom: { plans: [] } }
+      : {}),
   };
 }
 
@@ -314,5 +327,6 @@ export function skill(s: GridState, side: 0 | 1, idx: number, a: Attribute): num
 /** Puts a player into a slot and recomputes his base for it. */
 export function enterSlot(s: GridState, gp: GridPlayer, slot: number): void {
   gp.slot = slot;
+  s.lineups++;
   fillBase(s.setup, gp, slot);
 }

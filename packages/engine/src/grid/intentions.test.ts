@@ -4,6 +4,7 @@ import { DISABLED_RELEASE } from '../../../../tests/fixtures/worlds';
 import { FORMATIONS } from '../player';
 import { BOX_CONFIG, boxScene, boxSide, boxZones } from './box';
 import { playGrid } from './engine';
+import { DISORDER_CONFIG, FREEDOM_CONFIG, looseness } from './freedom';
 import {
   attackZones,
   carryTo,
@@ -26,7 +27,7 @@ import { runPlan, SHAPE_CONFIG, shapePlace, targetOf } from './shape';
 import { random } from '../primitives';
 import { createState, type GridPlayer, type GridState } from './state';
 import type { TraceEntry } from './trace';
-import { gridKit } from './testkit';
+import { gridKit, type Kit } from './testkit';
 
 // Side 0 plays possession (4-3-3: 1 inverted full-back, 4 overlapping full-back, 7 deep-lying
 // playmaker, 9 false nine), side 1 balanced (3-5-2). The pre-feature path's kit: candidate cases
@@ -705,5 +706,142 @@ describe('the box scene’s runs (→MATCH-33, T443)', () => {
     expect(scene.runners.spot).toBeUndefined();
     expect(scene.runners.edge).toBeUndefined();
     expect(Object.values(scene.runners)).not.toContain(5);
+  });
+});
+
+/** A tendency row with this freedom and neutral others (T432 reads only the freedom). */
+const tendency = (freedom: number) => ({
+  freedom,
+  discipline: 0.5,
+  pressing: 0.5,
+  anticipation: 0.5,
+});
+/**
+ * A revision-2 state of `k` with the per-match tendencies T432 reads: every player free by `base`,
+ * side 0's `free` by their own, side 0 holding the ball at `ball` with nobody of side 1 near it.
+ * `none` leaves the tendencies out, the freedom-less places to compare with.
+ */
+function freeLab(
+  k: Kit,
+  ball: Point,
+  free: Record<number, number> = {},
+  base = 0.1,
+  none = false,
+): GridState {
+  const s = createState({
+    ...k.setup,
+    model: MATCH_MODEL_REVISION,
+    ...(none
+      ? {}
+      : {
+          tendencies: [
+            k.setup.rosters[0].map((_, i) => tendency(free[i] ?? base)),
+            k.setup.rosters[1].map(() => tendency(base)),
+          ] as [ReturnType<typeof tendency>[], ReturnType<typeof tendency>[]],
+        }),
+  });
+  s.possession = 0;
+  s.owner = [0, 6];
+  s.ball = [ball[0], ball[1]];
+  s.players[0][6]!.pos = [ball[0], ball[1]];
+  s.players[1].forEach((gp, i) => i < 11 && (gp.pos = [104, 4 + 6 * i]));
+  s.elapsed = 600;
+  return s;
+}
+
+describe('freedom in movement (→MATCH-17, STAFF-46, T432)', () => {
+  // Side 0 plays counter (4-4-2: 1 LB, 2–3 CB, 4 RB, 5 LM, 6–7 CM, 8 RM, 9–10 ST).
+  const counter = gridKit(['counter', 'balanced'], 'intention-lab', DISABLED_RELEASE);
+  const D = FREEDOM_CONFIG.drift;
+
+  it('a free full-back overlaps beyond his winger while a low-freedom one stays', () => {
+    // The ball on the left flank in the opponents' half.
+    const ball: Point = [80, 8];
+    const free = freeLab(counter, ball, { 1: 1 });
+    const still = freeLab(counter, ball);
+    const plain = freeLab(counter, ball, {}, 0.1, true);
+    expect(shapePlace(free, 0, 1)[0]).toBeGreaterThan(shapePlace(free, 0, 5)[0]);
+    expect(shapePlace(free, 0, 1)[0] - shapePlace(plain, 0, 1)[0]).toBeCloseTo(
+      FREEDOM_CONFIG.overlap * D,
+    );
+    // A low-freedom full-back stays near his place, behind his winger.
+    expect(shapePlace(still, 0, 1)[0]).toBeLessThan(shapePlace(still, 0, 5)[0]);
+    expect(shapePlace(still, 0, 1)[0] - shapePlace(plain, 0, 1)[0]).toBeLessThanOrEqual(
+      0.1 * D + 1e-9,
+    );
+    // The far full-back holds while the free one goes: the rest defence stays (4-4-2's back four).
+    expect(shapePlace(free, 0, 4)).toEqual(shapePlace(plain, 0, 4));
+    for (const cb of [2, 3]) expect(shapePlace(free, 0, cb)).toEqual(shapePlace(plain, 0, cb));
+  });
+
+  it('a forward with freedom drops into midfield in the build-up', () => {
+    // The ball with a centre-midfielder in his own half.
+    const ball: Point = [30, 30];
+    const free = freeLab(counter, ball, { 9: 1, 10: 0.2 });
+    const plain = freeLab(counter, ball, {}, 0.1, true);
+    const dropped = (s: GridState, idx: number) =>
+      shapePlace(plain, 0, idx)[0] - shapePlace(s, 0, idx)[0];
+    expect(dropped(free, 9)).toBeCloseTo(FREEDOM_CONFIG.drop * D);
+    // Of the two strikers only the freer drops; the other holds the front line.
+    expect(dropped(free, 10)).toBe(0);
+    // Out of possession he holds his slot.
+    const without = freeLab(counter, ball, { 9: 1 });
+    without.possession = 1;
+    without.owner = undefined;
+    const plainWithout = freeLab(counter, ball, {}, 0.1, true);
+    plainWithout.possession = 1;
+    plainWithout.owner = undefined;
+    expect(shapePlace(without, 0, 9)).toEqual(shapePlace(plainWithout, 0, 9));
+  });
+
+  it('disorder loosens after a turnover and re-forms', () => {
+    const s = freeLab(counter, [60, 34]);
+    const gp = s.players[0][7]!;
+    gp.pos = [20, 60];
+    const place = shapePlace(s, 0, 7);
+    const toward = (t: [number, number]) => [
+      (t[0] - place[0]) / (gp.pos[0] - place[0]),
+      (t[1] - place[1]) / (gp.pos[1] - place[1]),
+    ];
+    // Ordered, he heads for his place.
+    expect(targetOf(s, 0, 7)).toEqual(place);
+    // Straight after a turnover he keeps `loosen` of his distance from it, whatever his freedom.
+    s.lastLoss = { side: 1, at: s.elapsed };
+    s.lastRegain = { side: 0, at: s.elapsed };
+    for (const share of toward(targetOf(s, 0, 7)))
+      expect(share).toBeCloseTo(DISORDER_CONFIG.loosen);
+    // Halfway through the re-forming it is half as loose, and it has re-formed by `reform` s.
+    s.elapsed += DISORDER_CONFIG.reform / 2;
+    for (const share of toward(targetOf(s, 0, 7)))
+      expect(share).toBeCloseTo(DISORDER_CONFIG.loosen / 2);
+    s.elapsed += DISORDER_CONFIG.reform / 2;
+    expect(targetOf(s, 0, 7)).toEqual(place);
+    // The keeper never loosens.
+    s.lastLoss = { side: 1, at: s.elapsed };
+    const keeper = s.players[0][0]!;
+    keeper.pos = [30, 10];
+    expect(targetOf(s, 0, 0)).toEqual(shapePlace(s, 0, 0));
+    // A set piece's kick loosens it the same way (`restartTaken`).
+    const t = freeLab(counter, [60, 34]);
+    t.players[0][7]!.pos = [20, 60];
+    restartTaken(t, [{ gp: t.players[0][9]!, to: [96, 34] }], t.elapsed + 8);
+    expect(t.setPieceAt).toBe(t.elapsed);
+    expect(targetOf(t, 0, 7)).not.toEqual(shapePlace(t, 0, 7));
+    // Behind late, the chasing side plays loose until it is level; the side ahead does not.
+    const late = freeLab(counter, [60, 34]);
+    late.period = 2;
+    late.t = 35 * 60;
+    late.elapsed = 80 * 60;
+    late.score = [0, 1];
+    late.players[0][7]!.pos = [20, 60];
+    expect(looseness(late, 0)).toBe(DISORDER_CONFIG.loosen);
+    expect(looseness(late, 1)).toBe(0);
+    late.score = [1, 1];
+    expect(looseness(late, 0)).toBe(0);
+    // Before revision 2 nothing loosens.
+    const plain = freeLab(counter, [60, 34], {}, 0.1, true);
+    plain.lastLoss = { side: 1, at: plain.elapsed };
+    plain.players[0][7]!.pos = [20, 60];
+    expect(targetOf(plain, 0, 7)).toEqual(shapePlace(plain, 0, 7));
   });
 });

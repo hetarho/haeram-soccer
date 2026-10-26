@@ -334,9 +334,9 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
     // T442's shut lanes `candidate-et-2`, T443's box scene `candidate-et-0`, T444's deliveries
     // into the zones `candidate-et-1`, T445's bodies in front of goal `candidate-et-4`, T437's
     // recalibration `candidate-et-1`, T446's lofted deliveries over the crowd `candidate-et-3`,
-    // T447's box zone depths `candidate-et-4`).
-    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-4']) {
-      const extraTime = id === 'candidate-et-4';
+    // T447's box zone depths `candidate-et-4`, T432's freedom on revision 2 `candidate-et-0`).
+    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', 'candidate-et-0']) {
+      const extraTime = id === 'candidate-et-0';
       const { result, frames } =
         id === 'candidate-1'
           ? watched

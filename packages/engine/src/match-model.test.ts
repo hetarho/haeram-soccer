@@ -341,13 +341,6 @@ describe('match-model revision 2 (→SAVE-23, T435)', () => {
       (n, c) => n + c.clubs.reduce((sum, club) => sum + club.matches, 0),
       0,
     );
-  /** Results without the revision that settled them. */
-  const football = (w: World) =>
-    canonical({
-      own: w.ownMatches.map(({ model: _model, ...m }) => (void _model, m)),
-      fixtures: w.fixtures.map((f) => [f.id, f.score ?? null]),
-      season: w.npcSeason!.competitions,
-    });
 
   it('a revision-1 world moves to revision 2 at the safe boundary', () => {
     const w = onRevision1();
@@ -383,12 +376,16 @@ describe('match-model revision 2 (→SAVE-23, T435)', () => {
     expect(counted(w)).toBeGreaterThan(before);
   });
 
-  it('revision 2 plays exactly as revision 1 until T432 and T433 use it', () => {
+  it("revision 2's own matches play T432's freedom, revision 1 keeps its football", () => {
     const kept = onRevision1(),
       upgraded = onRevision1();
+    const settled = kept.ownMatches.length;
     activateMatchModel(upgraded, ENABLED_RELEASE);
     for (const w of [kept, upgraded]) for (let n = 0; n < 2; n++) advanceRound(w, undefined, false);
-    expect(football(upgraded)).toBe(football(kept));
+    // T432 moves revision 2's players (until then both revisions played the same football).
+    const own = (w: World) =>
+      canonical(w.ownMatches.slice(settled).map(({ model: _model, ...m }) => (void _model, m)));
+    expect(own(upgraded)).not.toBe(own(kept));
     expect(upgraded.ownMatches.at(-1)!.model).toBe(second);
     expect(kept.ownMatches.at(-1)!.model).toBe(first);
   });

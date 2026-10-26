@@ -7,6 +7,7 @@ import { FORMATIONS, lineOf } from '../player';
 import { actionWeight } from '../match';
 import type { MatchMath } from '../portable-math';
 import { boxBackLine, boxGuardTarget, boxMarkPoint, defendingBox } from './box';
+import { freedomPlan, looseness } from './freedom';
 import { coverShadow } from './lanes';
 import type { GridPlayer, GridState } from './state';
 import { minutesOn, onPitch, other, skill, slotOf } from './state';
@@ -287,7 +288,10 @@ export function targetOf(
   // The candidate model's intentions (`intentions.ts`) take him where they go, ahead of his shape.
   if (gp.intention) return intentionTarget(s, gp);
   if (gp.run && gp.run.until > s.elapsed && lineOfSlot(s, gp) !== 'GK') return [...gp.run.target];
-  return shapePlace(s, side, idx, cache);
+  const place = shapePlace(s, side, idx, cache);
+  // A loose shape (revision 2, T432): an outfielder keeps part of his distance from his place.
+  const k = gp.slot > 0 ? looseness(s, side) : 0;
+  return k ? [place[0] + (gp.pos[0] - place[0]) * k, place[1] + (gp.pos[1] - place[1]) * k] : place;
 }
 
 /**
@@ -317,13 +321,18 @@ export function shapePlace(
     x = clamp(x, 2, high ? SHAPE_CONFIG.keeperMax.sweeperKeeper : SHAPE_CONFIG.keeperMax.other);
     return toEngine(side, [x, CENTRE + (by - CENTRE) * 0.15]);
   }
-  const spot = SPOTS[tactic][gp.slot]!;
+  // Revision 2 (T432): the slot whose job he plays after a swap, and where his freedom takes him.
+  const freedom = freedomPlan(s, side);
+  const job = freedom ? freedom.job[idx]! : gp.slot;
+  const jobSlot = FORMATIONS[tactic].slots[job]!;
+  const line = job === gp.slot ? own : (lineOf(jobSlot.position) as Line);
+  const spot = SPOTS[tactic][job]!;
   const inPossession = s.possession === side;
   let x = spot[0],
     y = spot[1];
   if (inPossession) {
     x += cfg.advance;
-    const shift = ROLE_SHIFT[slotOf(s, gp).role];
+    const shift = ROLE_SHIFT[jobSlot.role];
     if (shift) {
       x += shift[0];
       y += spot[1] < CENTRE ? shift[1] : spot[1] > CENTRE ? -shift[1] : 0;
@@ -333,6 +342,10 @@ export function shapePlace(
     (bx - MID) *
     (!inPossession && bx > MID && cfg.upfield !== undefined ? cfg.upfield : cfg.compact);
   y += (by - CENTRE) * SHAPE_CONFIG.lateral;
+  if (freedom) {
+    x += freedom.dx[idx]!;
+    y += freedom.dy[idx]!;
+  }
   // The flank beside a back three, out of possession (candidate model, T399).
   const F = SHAPE_CONFIG.candidate.flank;
   if (
@@ -346,7 +359,7 @@ export function shapePlace(
     const cbs = slots.flatMap((slot, i) => (slot.position === 'CB' ? [i] : []));
     if (cbs.length >= 3) {
       const left = by < CENTRE;
-      const pos = slots[gp.slot]!.position;
+      const pos = jobSlot.position;
       if ((left && pos === 'LWB') || (!left && pos === 'RWB')) y += (by - y) * F.follow;
       else if ((left && pos === 'RWB') || (!left && pos === 'LWB')) y += (CENTRE - y) * F.tuck;
       const wide = cbs.reduce((a, b) =>
@@ -358,7 +371,7 @@ export function shapePlace(
           ? b
           : a,
       );
-      if (gp.slot === wide) y += left ? -F.channel : F.channel;
+      if (job === wide) y += left ? -F.channel : F.channel;
     }
   }
   if (inPossession) {
@@ -369,7 +382,7 @@ export function shapePlace(
       SS.drop &&
       s.setup.model !== undefined &&
       bandOf(bx) >= 5 &&
-      SS.roles.includes(slotOf(s, gp).role) &&
+      SS.roles.includes(jobSlot.role) &&
       FORMATIONS[tactic].slots.filter((slot) => lineOf(slot.position) === 'FW').length >= 2
     )
       x -= SS.drop;
@@ -409,12 +422,12 @@ export function shapePlace(
   }
   // Against a box scene the back line drops toward its goal and narrows (candidate model, T443).
   if (
-    own === 'DF' &&
+    line === 'DF' &&
     s.setup.model !== undefined &&
     ((cache.box ??= [])[side] ??= defendingBox(s, side) ?? 0) !== 0
   )
     return toEngine(side, boxBackLine(s, side, y));
-  if (own === 'DF') x = clamp(x, lineFloor(bx, cfg.line[0]), cfg.line[1]);
+  if (line === 'DF') x = clamp(x, lineFloor(bx, cfg.line[0]), cfg.line[1]);
   return toEngine(side, [x, y]);
 }
 

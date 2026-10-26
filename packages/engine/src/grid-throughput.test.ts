@@ -18,7 +18,11 @@
  */
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
+import {
+  MATCH_MODEL_REVISION,
+  MATCH_MODEL_REVISIONS,
+  type MatchModelRevision,
+} from '../../contracts/src/match-model';
 import type { Fixture, World } from '../../contracts/src/types';
 import { playGrid } from './grid/engine';
 import { buildFrames } from './grid/playback';
@@ -47,14 +51,19 @@ function era(year: number): { w: World; f: Fixture } {
 function play(
   { w, f }: { w: World; f: Fixture },
   id: string,
-  opts: { observe?: boolean; decide?: DecideRule; preFeature?: boolean } = {},
+  opts: {
+    observe?: boolean;
+    decide?: DecideRule;
+    preFeature?: boolean;
+    model?: MatchModelRevision;
+  } = {},
 ) {
   const fixture = { ...f, id };
   const setup = buildGridSetup(w, fixture, {
     observe: opts.observe ?? false,
     recordPlayers: true,
     ...(opts.decide ? { decide: opts.decide } : {}),
-    ...(opts.preFeature ? {} : { model: MATCH_MODEL_REVISION }),
+    ...(opts.preFeature ? {} : { model: opts.model ?? MATCH_MODEL_REVISION }),
   });
   const result = playGrid(setup);
   return { result, setup, frames: opts.observe ? buildFrames(result, setup, w.seed) : [] };
@@ -78,18 +87,19 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * T441's passes cut out where they are reached, for T442's shut lanes, for T443's box scene, for
  * T444's deliveries into the zones, for T445's shots through the bodies in front of goal and
  * their second balls, for T437's recalibration, for T446's lofted deliveries over the crowd and
- * for T447's box zone depths, the first tie of each kind; T345's were 20/4,
+ * for T447's box zone depths, and for T432's freedom on revision 2, the first tie of each kind;
+ * T345's were 20/4,
  * 1/16 and 9/5, T348's 7/10,
  * 16/3 and 9/0, T365's 2/8, 1/5 and 15/0, T370's 5/3, 34/0 and 18/3, T371's 26/6, 1/17 and 0/19,
  * T384's 1/11, 7/9 and 3/1, T397's 0/1, 1/2 and 34/0, T398's 20/8, 7/3 and 3/0, T399's 5/16, 7/2
  * and 3/1, T426's 7/2, 10/3 and 5/12, T441's 13/8, 3/0 and 18/0, T442's 2/16, 2/0 and 5/1,
  * T443's 1/2, 0/1 and 6/3, T444's 5/2, 0/3 and 13/1, T445's 1/0, 7/4 and 2/0, T437's 1/0, 3/8
- * and 5/15, T446's 0/1, 0/3 and 2/0).
+ * and 5/15, T446's 0/1, 0/3 and 2/0, T447's 4/2, 2/5 and 16/0 — revision 1's, `REVISION_1_CASES`).
  */
 const CASES = {
-  1975: { extraTime: 4, shootout: 2 },
-  1995: { extraTime: 2, shootout: 5 },
-  2024: { extraTime: 16, shootout: 0 },
+  1975: { extraTime: 1, shootout: 5 },
+  1995: { extraTime: 36, shootout: 3 },
+  2024: { extraTime: 3, shootout: 0 },
 } as const;
 type Year = keyof typeof CASES;
 
@@ -244,33 +254,76 @@ interface CandidateDigests {
  * and positions 1975 da77dcd869b05a14, 1cbbf86a7af506ac, 1995 734b72709cff6baf, 2c1aa9caf17259f1,
  * 2024 1dae5f1755497eef, 2362ea450611199a. The pre-feature facts did not move.
  * T435's match-model revision 2 names every candidate record's model continuous-aggregate-2 and
- * plays the same football until T432 and T433 use it (match-model.test.ts "revision 2 plays exactly
- * as revision 1"): it moved the facts digests by that label only and no positions digest; before
- * it, facts 1975 a29eb278c768540c, a74abb8cfd489a58, cb404e2c025fb3f4, 1995 7f87afd0e25ba811,
- * dad4ff2e8fdfcf1a, d84decf0069941c7, 2024 350be78318430d71, 7a6282dbe15f7b44, e9132add2a2297e4.
+ * played the same football until T432 used it: it moved the facts digests by that label only and
+ * no positions digest; before it, facts 1975 a29eb278c768540c, a74abb8cfd489a58, cb404e2c025fb3f4,
+ * 1995 7f87afd0e25ba811, dad4ff2e8fdfcf1a, d84decf0069941c7, 2024 350be78318430d71,
+ * 7a6282dbe15f7b44, e9132add2a2297e4 (now revision 1's, `REVISION_1`).
+ * T432's freedom, disorder and swaps on revision 2 (160 observed fixtures against revision 1:
+ * goals 2.46 → 2.72, xG 2.48 → 2.66 a match) moved every value and the knockout ties (rescanned
+ * above); before it, facts 1975 6a4775a7a336398a, 2b46be63fad36d0e, dbed6956f2b6b738, 1995
+ * 93425a463d8e9aed, 33a0d290368a0747, 46e07bd58865be6b, 2024 d60b15c309a5595c, 43bd04020b1271aa,
+ * 33124e7a42b4d58b (revision 1's football under revision 2's label) and positions as
+ * `REVISION_1`'s. The pre-feature facts did not move.
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: '6a4775a7a336398a',
-      extraTime: '2b46be63fad36d0e',
-      shootout: 'dbed6956f2b6b738',
+      league: 'e8919dcd7339e348',
+      extraTime: '5948ddfb9d3134df',
+      shootout: '273bee624dbec12d',
+    },
+    positions: { observed: '03a625c0b9561fac', shootout: 'b2f4246a1339c5ad' },
+  },
+  1995: {
+    facts: {
+      league: '9710bbf8648bf7ed',
+      extraTime: '5521ef3c3d047c7f',
+      shootout: '9354135b628c4a99',
+    },
+    positions: { observed: '62151697c1d9bb1d', shootout: '23b65c5afb831dac' },
+  },
+  2024: {
+    facts: {
+      league: '78e410693bd80db4',
+      extraTime: 'ab883a82561b0fd7',
+      shootout: '679b7a94b32ab318',
+    },
+    positions: { observed: '8a93907fff1ddb60', shootout: 'd8d442978a90c486' },
+  },
+};
+
+/**
+ * Revision 1's knockout ties and digests (T432): the football revision 2 played until T432 moved
+ * it, its facts labelled continuous-aggregate-1 (T435's values before its label) and its positions
+ * as T447 recorded them. They never move again (→SAVE-23).
+ */
+const REVISION_1_CASES = {
+  1975: { extraTime: 4, shootout: 2 },
+  1995: { extraTime: 2, shootout: 5 },
+  2024: { extraTime: 16, shootout: 0 },
+} as const satisfies Record<Year, { extraTime: number; shootout: number }>;
+const REVISION_1: Record<Year, CandidateDigests> = {
+  1975: {
+    facts: {
+      league: 'a29eb278c768540c',
+      extraTime: 'a74abb8cfd489a58',
+      shootout: 'cb404e2c025fb3f4',
     },
     positions: { observed: '07c822b4e9c902d3', shootout: '10e90c63b1226de8' },
   },
   1995: {
     facts: {
-      league: '93425a463d8e9aed',
-      extraTime: '33a0d290368a0747',
-      shootout: '46e07bd58865be6b',
+      league: '7f87afd0e25ba811',
+      extraTime: 'dad4ff2e8fdfcf1a',
+      shootout: 'd84decf0069941c7',
     },
     positions: { observed: 'fa795c0e24ba2c5e', shootout: 'd026d8cfaaeca681' },
   },
   2024: {
     facts: {
-      league: 'd60b15c309a5595c',
-      extraTime: '43bd04020b1271aa',
-      shootout: '33124e7a42b4d58b',
+      league: '350be78318430d71',
+      extraTime: '7a6282dbe15f7b44',
+      shootout: 'e9132add2a2297e4',
     },
     positions: { observed: 'b9e0c5c071922d28', shootout: 'd79ba1087cbcb882' },
   },
@@ -313,6 +366,23 @@ describe('detailed engine throughput (T325)', () => {
         positions: { observed: positionsOf(watched), shootout: positionsOf(pens) },
       };
       expect(got, `${year} candidate digests on ${HOST}`).toEqual(CANDIDATE[year]);
+      // Revision 1 plays as it did before revision 2 moved (→SAVE-23): its matches replay under it.
+      const first = (id: string, opts: Parameters<typeof play>[2] = {}) =>
+        play(kit, id, { ...opts, model: MATCH_MODEL_REVISIONS[0] });
+      const r1 = REVISION_1_CASES[year];
+      const r1Pens = first(`knockout-${year}-${r1.shootout}`, { decide: LEVEL, observe: true });
+      const r1League = first(`league-${year}`, { observe: true });
+      expect(
+        {
+          facts: {
+            league: factsOf(r1League),
+            extraTime: factsOf(first(`knockout-${year}-${r1.extraTime}`, { decide: LEVEL })),
+            shootout: factsOf(r1Pens),
+          },
+          positions: { observed: positionsOf(r1League), shootout: positionsOf(r1Pens) },
+        },
+        `${year} revision-1 digests`,
+      ).toEqual(REVISION_1[year]);
       const recorded = PRE_FEATURE[HOST]?.[year];
       if (recorded === undefined)
         console.log(`no ${HOST} pre-feature digest for ${year}; this host gives ${factsOf(old)}`);

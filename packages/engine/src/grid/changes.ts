@@ -279,6 +279,7 @@ export function coverGoal(s: GridState, side: 0 | 1): void {
 /** Takes a player off the pitch now (a substitution, an injury or a red card). */
 export function leave(s: GridState, gp: GridPlayer): void {
   gp.onPitch = false;
+  s.lineups++;
   gp.offAt = s.elapsed;
   gp.offMin = regMinute(s);
 }

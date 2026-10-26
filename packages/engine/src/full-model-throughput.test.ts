@@ -117,11 +117,13 @@ const facts = (w: World) => ({
  * → 2.73 a match) changed the candidate rounds only; 613d48d6033512fa before. T435's match-model
  * revision 2 names every record's model continuous-aggregate-2 and plays the same football
  * (match-model.test.ts "revision 2 plays exactly as revision 1"): both digests moved by that label
- * only; 940dadab556327b9 and 2eef0890977e3b38 before.
+ * only; 940dadab556327b9 and 2eef0890977e3b38 before. T432's freedom, disorder and swaps on
+ * revision 2 (160 observed fixtures against revision 1: goals 2.46 → 2.72, xG 2.48 → 2.66 a match)
+ * changed the candidate rounds only; c0af3afdd552ff60 before.
  */
 const BEFORE = {
   aggregateRecords: '35f59be3046fd689',
-  candidateRounds: 'c0af3afdd552ff60',
+  candidateRounds: 'ea80c6051b01dc56',
 };
 
 describe('complete-result throughput (T285)', () => {

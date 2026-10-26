@@ -299,6 +299,8 @@ export function restartTaken(
   for (const side of [0, 1] as const)
     for (const gp of s.players[side])
       if (gp.intention?.priority === 'restart') endIntention(s, gp, 'arrival');
+  // A delivery's kick: revision 2's shape loosens from here (`looseness`, T432).
+  if (up.length) s.setPieceAt = s.elapsed;
   for (const { gp, to } of up)
     setIntention(s, gp, {
       kind: 'run',

@@ -15,6 +15,7 @@ import {
 } from './coordination';
 import { combination } from './decide';
 import { playGrid } from './engine';
+import { FREEDOM_CONFIG, freedomPlan, SWAP_CONFIG } from './freedom';
 import {
   applyCoordination,
   attackZones,
@@ -32,6 +33,7 @@ import { SHADOW_CONFIG } from './lanes';
 import { attackFrame, PITCH, type Point } from './pitch';
 import { lineX, setPieceTargets, SHAPE_CONFIG, shapePlace, targetOf } from './shape';
 import { createState, onPitch, slotOf, type GridPlayer, type GridState } from './state';
+import type { GridSetup } from './setup';
 import { gridKit, type Kit } from './testkit';
 
 const kits = new Map<string, Kit>();
@@ -53,8 +55,9 @@ function scene(
   tactics: [Tactic, Tactic] = ['possession', 'balanced'],
   carrier = 7,
   at: Point = [62, 34],
+  extra: Partial<GridSetup> = {},
 ): GridState {
-  const s = createState({ ...kitOf(tactics).setup, model: MATCH_MODEL_REVISION });
+  const s = createState({ ...kitOf(tactics).setup, model: MATCH_MODEL_REVISION, ...extra });
   for (const side of [0, 1] as const)
     s.players[side].forEach((gp, i) => (gp.pos = side === 0 ? [1, 2 + 6 * i] : [104, 2 + 6 * i]));
   s.possession = 0;
@@ -1181,5 +1184,108 @@ describe('protecting the box goal-side (→MATCH-34, T443)', () => {
     attackZones(s, 0);
     put(s, 0, nearRunner.idx, [99, 34.5]);
     between(targetOf(s, 1, 2), nearRunner);
+  });
+});
+
+describe('freedom covers and swaps (→MATCH-17, T432)', () => {
+  const tendency = (freedom: number) => ({
+    freedom,
+    discipline: 0.5,
+    pressing: 0.5,
+    anticipation: 0.5,
+  });
+  /** `scene` on revision 2 with tendencies: side 0's `free` by their own freedom, everyone else by `base`. */
+  const freeScene = (
+    tactics: [Tactic, Tactic],
+    at: Point,
+    free: Record<number, number> = {},
+    base = 0.1,
+    none = false,
+  ) => {
+    const k = kitOf(tactics);
+    return scene(
+      tactics,
+      6,
+      at,
+      none
+        ? {}
+        : {
+            tendencies: [
+              k.setup.rosters[0].map((_, i) => tendency(free[i] ?? base)),
+              k.setup.rosters[1].map(() => tendency(base)),
+            ],
+          },
+    );
+  };
+
+  it('a vacated zone is covered', () => {
+    // 4-4-2: the free left-back (1) overlaps with the ball on his flank in the other half.
+    const tactics: [Tactic, Tactic] = ['counter', 'balanced'];
+    const s = freeScene(tactics, [80, 8], { 1: 1 });
+    const plain = freeScene(tactics, [80, 8], {}, 0.1, true);
+    const moved = (idx: number) => {
+      const [a, b] = [shapePlace(s, 0, idx), shapePlace(plain, 0, idx)];
+      return [a[0] - b[0], a[1] - b[1]];
+    };
+    expect(moved(1)[0]).toBeGreaterThan(FREEDOM_CONFIG.vacated);
+    // The central midfielder on his side (6) drops toward the zone he left, the other (7) stays.
+    const [dx, dy] = moved(6);
+    expect(dx).toBeLessThan(0);
+    expect(dy).toBeLessThan(0);
+    expect(moved(7)).toEqual([0, 0]);
+    // The rest defence holds: both centre-backs and the far full-back keep their places.
+    for (const idx of [2, 3, 4]) expect(moved(idx)).toEqual([0, 0]);
+    // A low-freedom full-back (his move under `vacated` metres) leaves no zone to cover.
+    const still = freeScene(
+      tactics,
+      [80, 8],
+      {},
+      (FREEDOM_CONFIG.vacated / FREEDOM_CONFIG.drift) * 0.5,
+    );
+    const [a, b] = [shapePlace(still, 0, 6), shapePlace(plain, 0, 6)];
+    expect(a).toEqual(b);
+  });
+
+  it('wingers swap flanks when both are free', () => {
+    // 4-3-3: the left winger (8) and the right winger (10).
+    const tactics: [Tactic, Tactic] = ['possession', 'balanced'];
+    const blocks = Array.from({ length: 12 }, (_, k) => k * SWAP_CONFIG.block + 30);
+    const jobs = (free: Record<number, number>) =>
+      blocks.map((elapsed) => {
+        // The ball central short of halfway: nobody's freedom moves him, so each stands at his job's place.
+        const s = freeScene(tactics, [48, 34], free);
+        s.elapsed = elapsed;
+        return { s, job: freedomPlan(s, 0)!.job };
+      });
+    const both = jobs({ 8: 0.9, 10: 0.9 });
+    const swapped = both.filter(({ job }) => job[8] === 10);
+    // They swap in some blocks and swap back in others, each doing the other's job.
+    expect(swapped.length).toBeGreaterThan(0);
+    expect(swapped.length).toBeLessThan(blocks.length);
+    for (const { s, job } of swapped) {
+      expect(job[10]).toBe(8);
+      expect(shapePlace(s, 0, 8)[1]).toBeGreaterThan(PITCH.width / 2);
+      expect(shapePlace(s, 0, 10)[1]).toBeLessThan(PITCH.width / 2);
+    }
+    for (const { s } of both.filter(({ job }) => job[8] === 8))
+      expect(shapePlace(s, 0, 8)[1]).toBeLessThan(PITCH.width / 2);
+    // Out of possession a swapped winger defends from his new flank too.
+    const { s } = swapped[0]!;
+    s.possession = 1;
+    s.owner = undefined;
+    expect(shapePlace(s, 0, 8)[1]).toBeGreaterThan(PITCH.width / 2);
+    // One winger at or below the threshold: nobody swaps.
+    for (const free of [
+      { 8: 0.9, 10: SWAP_CONFIG.threshold },
+      { 8: 0.3, 10: 0.9 },
+    ])
+      for (const { job } of jobs(free))
+        expect(job.slice(0, 11)).toEqual(job.map((_, i) => i).slice(0, 11));
+    // Free full-backs rotate with their wingers when the wingers do not swap flanks.
+    const rotating = jobs({ 1: 0.9, 4: 0.9, 8: 0.9, 10: 0.9 }).filter(
+      ({ job }) => job[1] === 8 || job[4] === 10,
+    );
+    expect(rotating.length).toBeGreaterThan(0);
+    for (const { job } of rotating) expect(job[8] === 10).toBe(false);
   });
 });
