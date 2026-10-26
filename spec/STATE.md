@@ -327,11 +327,11 @@
 
 ## next
 - v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428
-- k5n2 (261026, autopilot until 09:30 KST): T458 integrated (9e54c848) and the group gate passed on it (Chromium 274); main pushed from the group head, its CI closes T458 and T286
-- T435 done and integrated (4b8c42af): revision 2 (continuous-aggregate-2) and the upgrade at the writer load; group gate on 4b8c42af running, then main
+- k5n2 (261026, autopilot until 09:30 KST): T458 and T435 integrated, group gates passed on 9e54c848 and 4b8c42af (Chromium 274 each); main pushed 111581e7, then 3c003b7d+docs with the CI budgets for five journeys slow CI runners timed out (branch CI 40243569140). The CI of that last push closes T458 and T286; if it fails, fix it first (season-flow:135 on Firefox is the open one)
 - after T286: T432 → T433 (on revision 2, behind `modelAtLeast(setup, 2)`), then T410 beside T434 (main-session tasks, delegated to sub-sessions)
 
 ## log
+- 261026 T458 CI budgets (k5n2, 3c003b7d): manager-history ×3, owner-workflows:340, staff:259 timed out at 90 s on CI only; explicit budgets, released cup-winner seed first
 - 261026 T435 done (k5n2, integrated 4b8c42af): match-model revision 2, revision-1 careers upgrade at the writer load; football unchanged, facts digests re-recorded for the record label
 - 261026 T458 group gate pass (k5n2): 9e54c848 typecheck, lint, format, unit 2141, contract 39, catalogs, build, Chromium 274; main push and CI next
 - 261026 v9n4 session end (owner's 07:00 KST stop): group gate failed 11 Chromium journeys → T458; group branch pushed, main unchanged
@@ -351,4 +351,3 @@
 - 261026 create-task T449 + implement-task start (r8m2): stable primary mode switch, trailing mode text and manual-report launcher removal.
 - 261026 update-ssot WEB r152 (r8m2): primary mode-change action before stable-width mode text; no manual dismissed-match launcher, other decision access preserved.
 - 261026 T448 done (r8m2): unified bottom controls, no visible footer/hints; 34 affected unit tests and fast/build checks pass; subsequent layout/report steering in T449.
-- 261026 create-task freshness (r8m2): WEB r151 changes management controls/footer only; inactive todo T286/T434 base WEB@150→151, contracts unchanged.
