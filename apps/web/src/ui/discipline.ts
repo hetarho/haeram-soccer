@@ -1,10 +1,12 @@
-import type { Ban, Incident, MatchRecord, World } from '../../../../packages/contracts/src/types';
+import type { Ban, World } from '../../../../packages/contracts/src/types';
 import { squad } from '../../../../packages/engine/src/world';
 
 /**
  * Display read models of cards and bans (→MATCH-19, CLUB-45, LEAGUE-15): counts from the incidents
- * of own matches, bans and yellow counts from `w.discipline`. Nothing here changes the world.
+ * of own matches (the shared tallies), bans and yellow counts from `w.discipline`. Nothing here
+ * changes the world.
  */
+export { cardCounts, leagueReds, perOwnMatches, type Cards } from '../runtime/playerTallies';
 
 /** Where a ban counts, as the squad and the league tables say it. */
 export const banScope = (scope: Ban['scope']) =>
@@ -14,65 +16,6 @@ export const banText = (ban: Pick<Ban, 'matches' | 'scope'>) =>
 /** A player's bans still to serve. */
 export const bansOf = (w: Pick<World, 'discipline'>, id: string) =>
   w.discipline?.bans.filter((ban) => ban.player === id) ?? [];
-
-export interface Cards {
-  yellow: number;
-  red: number;
-}
-/** A yellow card, a second yellow (it counts towards accumulation too) or a red. */
-const card = (kind: Incident['kind']) =>
-  kind === 'yellow' ? [1, 0] : kind === 'secondYellow' ? [1, 1] : kind === 'red' ? [0, 1] : null;
-
-type Matches = Pick<World, 'ownMatches' | 'year'>;
-/**
- * One pass over the own matches, kept while the season and the number of own matches stay: they are
- * only ever appended to (and lose their material at the close, when the season turns), so the world's
- * daily revisions reuse it and only a match day rescans.
- */
-export function perOwnMatches<W extends Matches, T>(build: (w: W) => T) {
-  const cache = new WeakMap<MatchRecord[], { key: string; value: T }>();
-  return (w: W): T => {
-    const key = `${w.year}:${w.ownMatches.length}`;
-    const hit = cache.get(w.ownMatches);
-    if (hit?.key === key) return hit.value;
-    const value = build(w);
-    cache.set(w.ownMatches, { key, value });
-    return value;
-  };
-}
-
-/** Season and career cards of every player booked in an own match, either side. */
-export const cardCounts = perOwnMatches((w: Matches) => {
-  const counts = new Map<string, { season: Cards; career: Cards }>();
-  for (const m of w.ownMatches)
-    for (const incident of m.incidents ?? []) {
-      const [yellow, red] = card(incident.kind) ?? [];
-      if (yellow === undefined) continue;
-      let entry = counts.get(incident.player);
-      if (!entry)
-        counts.set(
-          incident.player,
-          (entry = { season: { yellow: 0, red: 0 }, career: { yellow: 0, red: 0 } }),
-        );
-      entry.career.yellow += yellow;
-      entry.career.red += red!;
-      if (m.year === w.year) {
-        entry.season.yellow += yellow;
-        entry.season.red += red!;
-      }
-    }
-  return counts;
-});
-
-/** Red cards of this season's league matches by player, either side of every own match. */
-export const leagueReds = perOwnMatches((w: Matches) => {
-  const reds: Record<string, number> = {};
-  for (const m of w.ownMatches)
-    if (m.year === w.year && (m.kind === 'league' || m.kind === 'lower'))
-      for (const incident of m.incidents ?? [])
-        if (card(incident.kind)?.[1]) reds[incident.player] = (reds[incident.player] ?? 0) + 1;
-  return reds;
-});
 
 export interface DisciplineRow {
   id: string;

@@ -1,17 +1,7 @@
 import type { Player, SeasonArchive, World } from '../../../../packages/contracts/src/types';
-import { country } from '../../../../packages/catalogs/src/index';
+import { divisionName } from '../presentation/competitionLabels';
 
-/**
- * A season's division as the records name it: "2부", "3부 B조" where the division plays in
- * regional groups, "아마추어 리그" below the professional game.
- */
-export function divisionName(code: string, tier: number, group?: number) {
-  const groups = country(code).groups[tier];
-  if (!groups) return '아마추어 리그';
-  const region =
-    group !== undefined && groups.length > 1 ? ` ${String.fromCharCode(65 + group)}조` : '';
-  return `${tier + 1}부${region}`;
-}
+export { divisionName };
 
 /** The highest finish: the top division first, then the rank; the earliest season breaks ties. */
 function bestFinish(history: readonly SeasonArchive[]) {

@@ -337,8 +337,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T473 | Move shared read models below Worker and UI consumers | ARCH | T471 | todo |
-| T475 | Separate view delta publication from the world writer | ARCH | T473 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -351,12 +349,13 @@
 | presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
-| module-1026 | 3 | 4 | 2 | 2 | 2 | 0 | 0 | 2026-10-26T13:28:06.598Z | [history](work/module-1026.json) |
+| module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T13:37:02.388Z | [history](work/module-1026.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261026 T473 T475 integrated
 - 261026 T474 integrated
 - 261026 T476 integrated
 - 261026 create-task T473 T474 T475 T476: refine todo touches and lane allocation for renewed parallel autopilot; acceptance and ARCH r22 preserved
@@ -376,4 +375,3 @@
 - 261026 T468 done: shared production NPC context with measurements, including pre-form gaps; current-revision upgrade and three seeded scenario fixtures refreshed, assertions retained. Typecheck/lint/format, 556 changed unit cases and build passed; full main batch and CI follow.
 - 261026 T468 start: main batch found four revision-dependent fixture assumptions and one measurement adapter retaining the flat NPC context; preserve rules and historical evidence, repair before the authorized main push.
 - 261026 doc-review artifacts tidied (SSOT revs unchanged): removed applied UI packs and duplicate planning prose; retained original raw benchmarks plus 99 measured tables and 12 UI measurement runs with snapshot provenance; current references and disposable capture paths updated. Typecheck, lint, format, source equivalence and spec lint passed; main batch in progress.
-- 261026 doc-review artifacts start: retain unimplemented concepts and benchmark measurements; remove duplicate planning and applied UI evidence.
