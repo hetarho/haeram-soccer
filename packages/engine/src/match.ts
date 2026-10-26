@@ -264,6 +264,17 @@ export interface Prepared extends MatchSetup {
   synergy?: SynergyEffects;
 }
 
+/** A club nobody owns adds its revision's manager term (MATCH-2). */
+export function npcMatchContext(
+  w: World,
+  club: Club,
+  model: MatchModelRevision | undefined = activeMatchModel(w),
+): number {
+  return model !== undefined && matchModelNumber(model) >= 3
+    ? (clubManager(w, club).ability - 50) / 4
+    : 4;
+}
+
 /**
  * `math` is the match's table: the candidate grid passes the portable one, so its day's form and
  * gap (every skill's shift) are the same on every host (→ARCH-9, T358). `model` is the revision
@@ -294,13 +305,8 @@ export function prepareMatch(
   // From revision 3 a club nobody owns adds its named manager on the own club's formula, its
   // morale at the neutral 60 adding nothing; earlier revisions and the pre-feature model keep a
   // flat 4 (→MATCH-2, T466). Styles stay the own club's (→STAFF-14).
-  const symmetric = model !== undefined && matchModelNumber(model) >= 3;
   const sideContext = (side: 0 | 1) =>
-    side === ownSide
-      ? ownStrength(side)
-      : symmetric
-        ? (clubManager(w, teams[side]).ability - 50) / 4
-        : 4;
+    side === ownSide ? ownStrength(side) : npcMatchContext(w, teams[side], model);
   // What each side brings beyond its XI: home ground, then the manager and morale terms.
   const context = [3 + sideContext(0), sideContext(1)];
   const form = matchForm(w, f, math);

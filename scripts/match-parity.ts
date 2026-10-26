@@ -74,7 +74,7 @@ import { playGrid } from '../packages/engine/src/grid/engine';
 import { cellBand } from '../packages/engine/src/grid/pitch';
 import { M } from '../packages/engine/src/grid/record';
 import { buildGridSetup, eraRules, type DecideRule } from '../packages/engine/src/grid/setup';
-import type { Prepared } from '../packages/engine/src/match';
+import { npcMatchContext, type Prepared } from '../packages/engine/src/match';
 import { validateFullMatchRecord } from '../packages/engine/src/match-model';
 import { lineOf } from '../packages/engine/src/player';
 import { withCandidateModel } from '../tests/fixtures/worlds';
@@ -82,6 +82,7 @@ import { applyBehaviour, behaviourOf } from './t328-counter-roles-variants';
 import {
   conditionClubs,
   conditionFixture,
+  fixtureGap,
   coreFixturePairs,
   forcedFatigueApplied,
   forcedGap,
@@ -200,7 +201,7 @@ export interface Conditioning {
  * the matchday rosters as the aggregate path reads them, then — when a tactic or a squad fatigue is
  * set — prepareMatch's own arithmetic for two clubs nobody owns again on the changed inputs: the XI
  * rated at the formation it plays (as world.ts `rating` rates a club's own), home ground 3 and the
- * unmodelled manager's 4 on each side (MATCH-2), the gap's diminishing returns, the day's form,
+ * revision's manager context on each side (MATCH-2), the gap's diminishing returns, the day's form,
  * then the profiles of the tactics played and the possession chance. `gap` is the home-minus-away
  * match strength before form for the outcome curve. Forced tactics field the detailed runner's
  * squads built for the forced formation (grid-bands `forcedRosters`, T321), so both engines measure
@@ -211,11 +212,19 @@ export function conditionedMatch(w: World, f: Fixture, conditioning: Conditionin
   const prepared = prepareMatch(w, f);
   let rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
   const { tactics, fatigue } = conditioning;
+  const context = [
+    3 + npcMatchContext(w, prepared.teams[0]),
+    npcMatchContext(w, prepared.teams[1]),
+  ];
   if (tactics === undefined && fatigue === undefined)
     return {
       prepared,
       rosters,
-      gap: rating(w, prepared.teams[0], f) + 3 - rating(w, prepared.teams[1], f),
+      gap:
+        rating(w, prepared.teams[0], f) +
+        context[0]! -
+        rating(w, prepared.teams[1], f) -
+        context[1]!,
     };
   if (prepared.ownSide !== undefined) throw new Error('conditioning is for clubs nobody owns');
   if (tactics !== undefined)
@@ -239,7 +248,6 @@ export function conditionedMatch(w: World, f: Fixture, conditioning: Conditionin
   const rated = ([0, 1] as const).map((side) =>
     rosterRating(prepared.teams[side], squads[side], played[side]),
   );
-  const context = [3 + 4, 4];
   const form = matchForm(w, f);
   const base = [rated[0]! + context[0]!, rated[1]! + context[1]!];
   const gap = base[0]! - base[1]!,
@@ -266,7 +274,7 @@ export function conditionedMatch(w: World, f: Fixture, conditioning: Conditionin
         80,
       ) / 100,
   };
-  return { prepared: conditioned, rosters, gap: rated[0]! + 3 - rated[1]! };
+  return { prepared: conditioned, rosters, gap };
 }
 
 /** One fixture on the candidate aggregate path, as `simulateAggregate` plays it, with its match. */
@@ -403,8 +411,8 @@ export function referenceCondition(
       condition: c.id,
       fixture: f.id,
       gap: forced
-        ? forcedGap([home, away], setup.rosters, setup.tactics)
-        : rating(w, home, f) + 3 - rating(w, away, f),
+        ? forcedGap(w, [home, away], setup.rosters, setup.tactics)
+        : fixtureGap(w, [home, away], f),
       // MATCH-29's freshness of a forced pairing only from its declared squad fatigue (T321).
       ...(!forced || applied ? { freshness: result.diagnostics.freshness } : {}),
     };

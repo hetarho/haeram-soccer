@@ -55,6 +55,7 @@ import {
   slotOvr,
 } from '../packages/engine/src/index';
 import { FORMATIONS } from '../packages/engine/src/player';
+import { npcMatchContext } from '../packages/engine/src/match';
 import { validateFullMatchRecord } from '../packages/engine/src/match-model';
 import { playGrid, type GridResult } from '../packages/engine/src/grid/engine';
 import { GRID_BALL_CONFIG, GRID_MOVEMENT_CONFIG } from '../packages/engine/src/grid/movement';
@@ -469,8 +470,8 @@ function playCondition(job: Job): { samples: MatchSample[]; ms: number } {
       // pairing rates the rosters it fields, as the aggregate runner does (`forcedGap`).
       gap:
         c.family === 'tactics'
-          ? forcedGap([home, away], setup.rosters, setup.tactics)
-          : rating(w, home, f) + 3 - rating(w, away, f),
+          ? forcedGap(w, [home, away], setup.rosters, setup.tactics)
+          : fixtureGap(w, [home, away], f),
       // MATCH-29's freshness measures a tactic's in-match cost only from the declared fatigue.
       ...(c.family !== 'tactics' || fatigueApplied
         ? { freshness: result.diagnostics.freshness }
@@ -524,18 +525,25 @@ export function rosterRating(club: Club, xi: readonly Player[], tactic: Tactic):
   });
   return Math.round((ovr * cohesionMultiplier(club) - load) / 11);
 }
-/**
- * A forced pairing's home-minus-away match strength before form (CORPUS_CONFIG v3): the rosters
- * it fields rated at the formations played, plus home ground — the same in both runners, never the
- * clubs' own XIs with their weekly press load.
- */
+/** The candidate's NPC context and home advantage, before form (MATCH-2). */
+export const contextGap = (w: World, clubs: readonly [Club, Club]) =>
+  3 +
+  npcMatchContext(w, clubs[0], MATCH_MODEL_REVISION) -
+  npcMatchContext(w, clubs[1], MATCH_MODEL_REVISION);
+
+/** A fixture's prepared strength gap, before diminishing returns and form. */
+export const fixtureGap = (w: World, clubs: readonly [Club, Club], f: Fixture) =>
+  rating(w, clubs[0], f) + contextGap(w, clubs) - rating(w, clubs[1], f);
+
+/** A forced pairing's fielded XIs and the same candidate context as ordinary fixtures. */
 export const forcedGap = (
+  w: World,
   clubs: readonly [Club, Club],
   rosters: readonly (readonly Player[])[],
   tactics: readonly [Tactic, Tactic],
 ) =>
   rosterRating(clubs[0], rosters[0]!, tactics[0]) +
-  3 -
+  contextGap(w, clubs) -
   rosterRating(clubs[1], rosters[1]!, tactics[1]);
 
 /** Whether a forced pairing's rosters start from its declared squad fatigue; freshness is read only then. */

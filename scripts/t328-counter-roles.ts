@@ -26,7 +26,6 @@ import { PD, TD } from '../packages/contracts/src/detail';
 import { MATCH_MODEL_REVISION } from '../packages/contracts/src/match-model';
 import type { Tactic } from '../packages/contracts/src/types';
 import { FORMATIONS } from '../packages/engine/src/player';
-import { rating } from '../packages/engine/src/index';
 import { validateFullMatchRecord } from '../packages/engine/src/match-model';
 import { playGrid } from '../packages/engine/src/grid/engine';
 import { M } from '../packages/engine/src/grid/record';
@@ -35,6 +34,7 @@ import { buildGridSetup } from '../packages/engine/src/grid/setup';
 import {
   conditionClubs,
   conditionFixture,
+  fixtureGap,
   forcedGap,
   forceTacticRosters,
   type ConditionParams,
@@ -219,8 +219,8 @@ function playJob(job: Job) {
       condition: c.id,
       gap:
         c.family === 'tactics'
-          ? forcedGap([home, away], setup.rosters, setup.tactics)
-          : rating(w, home, f) + 3 - rating(w, away, f),
+          ? forcedGap(w, [home, away], setup.rosters, setup.tactics)
+          : fixtureGap(w, [home, away], f),
       ...(c.family !== 'tactics' || fatigueApplied
         ? { freshness: result.diagnostics.freshness }
         : {}),

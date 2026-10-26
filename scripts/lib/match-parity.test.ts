@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../packages/contracts/src/detail';
 import type { Fixture, MatchRecord, Tactic } from '../../packages/contracts/src/types';
-import { clubStyle, createWorld, PRESS_LOAD_FATIGUE } from '../../packages/engine/src/index';
+import {
+  clubStyle,
+  createWorld,
+  effectiveGap,
+  matchForm,
+  PRESS_LOAD_FATIGUE,
+} from '../../packages/engine/src/index';
 import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
 import { inMatchFatigue } from '../../packages/engine/src/grid/changes';
 import { M } from '../../packages/engine/src/grid/record';
@@ -1169,6 +1175,10 @@ describe('aggregate measurement (T284)', () => {
     for (const key of ['tactics', 'strength', 'shift', 'profiles', 'possessionChance'] as const)
       expect(own.prepared[key]).toEqual(plain.prepared[key]);
     expect(own.gap).toBe(plain.gap);
+    const form = matchForm(w, f);
+    expect(
+      plain.prepared.strength[0]! - plain.prepared.strength[1]! - form[0] + form[1],
+    ).toBeCloseTo(effectiveGap(plain.gap), 10);
     // Forced tactics from the neutral squad fatigue: the press side sheds its weekly load (MATCH-2,
     // fatigue 32 costs 2 rating points), the world's players keep theirs.
     const forced = conditionedMatch(w, f, {
@@ -1188,7 +1198,7 @@ describe('aggregate measurement (T284)', () => {
       tactics: ['counter', 'press'],
     });
     forceTacticRosters(w, f, setup, [press, other], NEUTRAL_SQUAD_FATIGUE);
-    expect(forcedGap([press, other], setup.rosters, setup.tactics)).toBe(forced.gap);
+    expect(forcedGap(w, [press, other], setup.rosters, setup.tactics)).toBe(forced.gap);
     expect(forced.prepared.profiles[1]!.pressure).toBeGreaterThan(0);
     // Each squad is built for its forced formation, as the detailed runner's (T321): every starter
     // plays his own position, and without a declared squad fatigue there is no freshness reading.

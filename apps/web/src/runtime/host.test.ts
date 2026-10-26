@@ -949,8 +949,8 @@ describe('prospective match-model activation (→SAVE-23)', () => {
   });
 
   it('the upgrade waits for a queued playback and happens on load', async () => {
-    const [first, second] = MATCH_MODEL_REVISIONS;
-    // A career released on revision 1 (T286), saved mid-season before revision 2.
+    const [first] = MATCH_MODEL_REVISIONS;
+    // A career released on revision 1 (T286), saved mid-season before the current revision.
     const source = simulatedWorld(input, { rounds: 3 }, { revision: first, enabled: true });
     expect(source.matchModel!.revision).toBe(first);
     const disk = await encode(source);
@@ -970,7 +970,7 @@ describe('prospective match-model activation (→SAVE-23)', () => {
     expect(host.world!.matchModel!.revision).toBe(first);
     const replay = await round(host, 'upgrade-replayed');
     expect(canonical(replay.playback!.record)).toBe(canonical(playback.record));
-    // At the next load of a checkpoint that holds it the career moves to revision 2: one writer
+    // At the next load of a checkpoint that holds it the career moves to the current revision: one writer
     // upgrade, the boundary and coverage kept, every settled match still on revision 1.
     const held = structuredClone(host.world!);
     const upgraded = await load(host, 'upgrade-held', await encode(held));
@@ -978,16 +978,16 @@ describe('prospective match-model activation (→SAVE-23)', () => {
     expect(upgraded.upgraded).toBe(true);
     const w = host.world!;
     expect(w.revision).toBe(held.revision + 1);
-    expect(w.matchModel).toEqual({ ...held.matchModel!, revision: second });
-    expect(w.npcSeason!.model).toBe(second);
+    expect(w.matchModel).toEqual({ ...held.matchModel!, revision: MATCH_MODEL_REVISION });
+    expect(w.npcSeason!.model).toBe(MATCH_MODEL_REVISION);
     expect(canonical(w.ownMatches)).toBe(canonical(held.ownMatches));
     expect(w.ownMatches.every((m) => m.model === first)).toBe(true);
     expect(canonical((await decode(upgraded.raw!)).world)).toBe(canonical(w));
-    // Its next results play revision 2.
+    // Its next results play the current revision.
     expect((await round(host, 'upgrade-round')).ok).toBe(true);
     const added = host.world!.ownMatches.slice(held.ownMatches.length);
     expect(added.length).toBeGreaterThan(0);
-    expect(added.every((m) => m.model === second)).toBe(true);
+    expect(added.every((m) => m.model === MATCH_MODEL_REVISION)).toBe(true);
   });
 
   it('read only does not persist activation', async () => {

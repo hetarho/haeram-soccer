@@ -39,7 +39,7 @@ const results = (w: World) =>
     });
 
 describe('club news', () => {
-  const w = simulatedWorld(founding(), { rounds: 30 });
+  const w = simulatedWorld(founding('news-first-win'), { rounds: 30 });
   const news = clubNews(w);
 
   it('derives the same feed from the same facts, newest first, with unique stable IDs', () => {
@@ -55,6 +55,7 @@ describe('club news', () => {
 
   it('celebrates the first win and reports streaks when they reach a milestone', () => {
     const first = results(w).find((row) => row.result === 'W')!;
+    expect(first, 'the current-model fixture must include a win').toBeDefined();
     const item = news.find((n) => n.id === `${w.year}:${first.m.id}:first-win`)!;
     expect(item).toMatchObject({ celebrate: true, weight: 'major', tag: '기록' });
     let run = 0;
