@@ -7,8 +7,10 @@ import { importResponsibilityCareer } from './responsibility-fixtures';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
 import {
   deadBallBeats,
+  presentationAdvance,
   presentationMs,
   presentationSamples,
+  runningLength,
   WATCH_DEFAULT_SPEED,
   WATCH_MINUTE_MS,
 } from '../../apps/web/src/ui/presentationClock';
@@ -255,8 +257,9 @@ test('opens at 2x, one minute per 12 s at 1x, and provides five replay speeds', 
     expect(after).toBeGreaterThanOrEqual(before);
     expect(after).toBeLessThanOrEqual(before + Math.max(2, elapsedMinutes));
   }
-  // At 16x every minute lasts 750 ms, restarts and chances alike: 6 s cover about 8 minutes,
-  // never a slowed set piece nor a skipped spell.
+  // At 16x a minute of running play lasts 750 ms, restarts' kicks and chances alike, and each
+  // stoppage's dead-ball beat (→WEB-32 r156) is drawn faster: 6 s cover about 8 minutes, at most
+  // what the clock's own rule gives the busiest stretch of this match, never a skipped spell.
   // A goal's hold (→WEB-94) is real time outside running play: each one met takes its 1 s out.
   const fastMinuteMs = WATCH_MINUTE_MS / 16;
   const holdMinutes = GOAL_FEEDBACK_CONFIG.holdMs / fastMinuteMs;
@@ -280,7 +283,15 @@ test('opens at 2x, one minute per 12 s at 1x, and provides five replay speeds', 
     return state.goalSeen.cues + (state.goalHeld ? 1 : 0);
   });
   expect(covered).toBeGreaterThanOrEqual(5 - holdMinutes * holds);
-  expect(covered).toBeLessThanOrEqual(10);
+  const beats = deadBallBeats(playback.frames);
+  const length = runningLength(playback.frames.length);
+  let most = 0;
+  for (let f = 0; f < playback.frames.length; f++)
+    most = Math.max(
+      most,
+      presentationAdvance(f * 60, 8 * fastMinuteMs, 16, length, beats) / 60 - f,
+    );
+  expect(covered).toBeLessThanOrEqual(Math.ceil(most) + 2);
   await expect(page.getByRole('button', { name: /^(재생|일시정지|다시 보기)$/ })).toHaveCount(0);
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   const timeline = page.getByRole('slider', { name: '경기 시간', exact: true });
