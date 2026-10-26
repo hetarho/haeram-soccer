@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| f6d2 | hq-dev1-pve2-vm2 | pair | 2026-10-26T01:46Z | 2026-10-26T02:08Z | T462 |
+| f6d2 | hq-dev1-pve2-vm2 | pair | 2026-10-26T01:46Z | 2026-10-26T03:09Z | - |
 
 ## inbox
 - 261026 decided T432 MATCH-17 MATCH-29 T410: which freedom setting to keep at the exit → drift 60, loosen 0.4, reform 6, threshold 0.35, swap chance 0.5 a 10-minute block: the owner's examples show (a full-back in the far half 47 → 91% of matches, on the far wing lane 0 → 7%), every record valid, no MATCH-29 ordering moved inside → outside; goals 2.46 → 2.72 and xG 2.48 → 2.66 a match left for T410's re-read (alt: the starting drift 25, where nothing showed because freedom in play is 0.14–0.75 | drift 70, goals 2.84 | threshold 0.6, where no pair ever qualified)
@@ -309,7 +309,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T462 | Reusable measurement identities and feedback comparison | ARCH | T459 T460 T461 | doing@261026.f6d2 |
 | T286 | Release the complete model with its throughput, capacity and continuity checks | MATCH HIST WEB SAVE KIT ARCH | T275 T283 T284 T285 T321 T323 T324 T325 T326 T328 T334 T336 T345 T348 T349 T350 T356 T357 T358 T359 T365 T366 T367 T368 T369 T370 T371 T372 T373 T374 T375 T384 T396 T397 T398 T399 T400 T401 T402 T308 T408 T409 T411 T420 T422 T426 T436 T437 T441 T442 T443 T444 T445 T455 T456 T457 T458 | todo |
 | T458 | Chromium journeys follow the released football | ARCH MATCH WEB | - | doing@261026.k5n2 |
 | T410 | Re-read both references and MATCH-28 parity at the pilot size on the released model | MATCH ARCH | T286 T433 | todo |
@@ -329,12 +328,13 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
-- f6d2 owns the adopted development-feedback cleanup T459 → T460/T461 → T462; resume prior football tasks after this cleanup, with no new century benchmark.
+- f6d2 completed the adopted development-feedback cleanup T459–T462; final main-push CI is recorded in reports/261026-f6d2. The owner restarts the stopped session afterward; existing football tasks retain their scope.
 - v9n4 stopped at 07:00 KST 261026 (owner's deadline). Group branch work/v9n4-release is pushed (77dbe428 + hand-off): T286 integrated (switch on, gate pass: seasons 13.37 / 13.41 s, fixture 0.654 ms, quiet; capacity 2,463,516 B; browser releasePassed) and origin/main 5727ee01 merged. Branch CI run 40233059787 gives the Chromium, WebKit and Firefox read of 77dbe428
 - k5n2 (261026, autopilot until 09:30 KST): T458 and T435 integrated, group gates passed on 9e54c848 and 4b8c42af (Chromium 274 each); main pushed 111581e7, then 3c003b7d+docs with the CI budgets for five journeys slow CI runners timed out (branch CI 40243569140). The CI of that last push (run 40247530947) closes T458 and T286; if it fails, fix it first. 605e985f covers the match-eve race (the next eve opening under a click on a slow runner) behind WebKit live-state:20 and Firefox season-flow:135
 - after T286: T433 (on revision 2, behind `modelAtLeast(setup, 2)`; T432 done), then T410 beside T434 (main-session tasks, delegated to sub-sessions)
 
 ## log
+- 261026 T462 done (f6d2, 2ab7207c): shared computation identities; static and normal-check evidence saved; 2206 Vitest passes + 4 existing pending, all 274 Chromium cases resolved; configured main push/CI next
 - 261026 T461 done (f6d2, eab7e101): grid/packing runtime closures 124→37 / 139→31; largest engine cycle 80→58; focused 124 tests passed; deterministic integration deferred to final batch
 - 261026 T460 done (f6d2, cdcfff6d): every existing test remains assigned once; 148 unit / 133 integration / 3 contract files, CI split and report retention; final batch pending
 - 261026 T459 done (f6d2, 032a2b09): dependency-scoped fixtures, simulation-free cache/release helpers and validated prepared manager worlds; 12 focused tests and fast checks pass
@@ -354,4 +354,3 @@
 - 261026 T451 done + T446–T451 publication verified (r8m2): unit 2131 + 4 existing skips, contracts 39, catalogs/resources/build and Chromium 274 covered (269 first run + five corrected-driver reruns). Owner-authorized commit/push follows.
 - 261026 T451 start (r8m2): Chromium 269/274 pass on the final app build; update shared drivers for same-date reports, absent footer and menu-only exports, then rerun five failures.
 - 261026 publication fix (r8m2): the first Chromium batch found configureResponsibilities still reading mode from the removed metadata/button aria-label; stop that run and read the separate progression-mode status. Unit 2131 + 4 skips, contracts 39, catalogs/resources/build already passed and are reused.
-- 261026 T450 done (r8m2): NEXT MATCH follows home conditions in DOM/grid order; task checks pass. T446–T450 publication batch starts before the owner-authorized commit/push.

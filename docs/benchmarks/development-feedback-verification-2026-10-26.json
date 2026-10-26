@@ -1,0 +1,2289 @@
+{
+  "kind": "normal-verification-not-performance-benchmark",
+  "runtimeSourceCommit": "87c07561",
+  "goalFixtureFixCommit": "2ab7207c9b51c5f7668378b7c38fdb5829162fe5",
+  "passed": true,
+  "limits": [
+    "No controlled before/after performance pair.",
+    "Source, hardware, release state and cache warmth differ from historical artifacts.",
+    "Normal batch had an occupied-port preflight; its non-browser stages passed.",
+    "Initial Chromium: 272 passed, 2 failed from revision-dependent goal assumptions; four affected cases passed after test-only correction.",
+    "272 unchanged cases reused; four focused cases include the two failures and two changed viewport variants. No second full suite."
+  ],
+  "batch": {
+    "started": "2026-10-26T02:16:12.307Z",
+    "scope": "batch: Chromium",
+    "source": {
+      "commit": "87c075616a218fd5a23d61cfec899f2be977d12f",
+      "tree": "6986caa3c542e5f37e04bffcf23a900ac05fa7b0",
+      "dirty": true,
+      "diff": ""
+    },
+    "machine": {
+      "node": "v24.22.1",
+      "platform": "linux",
+      "arch": "x64",
+      "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "logicalCpus": 12,
+      "memoryBytes": 33577496576
+    },
+    "cache": "Existing caches retained; cache warmth and external host load uncontrolled.",
+    "stages": [
+      {
+        "stage": "typecheck",
+        "command": "pnpm run typecheck",
+        "started": "2026-10-26T02:16:12.341Z",
+        "finished": "2026-10-26T02:16:45.345Z",
+        "elapsedMs": 33003,
+        "exitCode": 0
+      },
+      {
+        "stage": "lint",
+        "command": "pnpm run lint",
+        "started": "2026-10-26T02:16:45.351Z",
+        "finished": "2026-10-26T02:17:02.430Z",
+        "elapsedMs": 17079,
+        "exitCode": 0
+      },
+      {
+        "stage": "format:check",
+        "command": "pnpm run format:check",
+        "started": "2026-10-26T02:17:02.431Z",
+        "finished": "2026-10-26T02:17:30.992Z",
+        "elapsedMs": 28561,
+        "exitCode": 0
+      },
+      {
+        "stage": "test:unit",
+        "command": "pnpm run test:unit --reporter=default --reporter=json --outputFile=.tmp/verification/unit-results.json",
+        "started": "2026-10-26T02:17:30.993Z",
+        "finished": "2026-10-26T02:18:56.246Z",
+        "elapsedMs": 85253,
+        "exitCode": 0
+      },
+      {
+        "stage": "test:integration",
+        "command": "pnpm run test:integration --reporter=default --reporter=json --outputFile=.tmp/verification/integration-results.json",
+        "started": "2026-10-26T02:18:56.247Z",
+        "finished": "2026-10-26T02:34:48.386Z",
+        "elapsedMs": 952140,
+        "exitCode": 0
+      },
+      {
+        "stage": "test:contract",
+        "command": "pnpm run test:contract --reporter=default --reporter=json --outputFile=.tmp/verification/contract-results.json",
+        "started": "2026-10-26T02:34:48.387Z",
+        "finished": "2026-10-26T02:35:57.246Z",
+        "elapsedMs": 68859,
+        "exitCode": 0
+      },
+      {
+        "stage": "validate:catalogs",
+        "command": "pnpm run validate:catalogs",
+        "started": "2026-10-26T02:35:57.247Z",
+        "finished": "2026-10-26T02:35:58.327Z",
+        "elapsedMs": 1080,
+        "exitCode": 0
+      },
+      {
+        "stage": "validate:presentation",
+        "command": "pnpm run validate:presentation",
+        "started": "2026-10-26T02:35:58.327Z",
+        "finished": "2026-10-26T02:35:59.722Z",
+        "elapsedMs": 1394,
+        "exitCode": 0
+      },
+      {
+        "stage": "build",
+        "command": "pnpm run build",
+        "started": "2026-10-26T02:35:59.722Z",
+        "finished": "2026-10-26T02:36:05.560Z",
+        "elapsedMs": 5838,
+        "exitCode": 0
+      },
+      {
+        "stage": "test:e2e",
+        "command": "pnpm run test:e2e --project=chromium",
+        "started": "2026-10-26T02:36:05.560Z",
+        "finished": "2026-10-26T02:36:06.925Z",
+        "elapsedMs": 1365,
+        "exitCode": 1
+      }
+    ],
+    "finished": "2026-10-26T02:36:06.925Z",
+    "elapsedMs": 1194618,
+    "passed": false
+  },
+  "initialUnitAttempt": {
+    "started": "2026-10-26T02:08:48.433Z",
+    "scope": "batch: Chromium",
+    "source": {
+      "commit": "8c6aedbf83b5fc3225097e195a19ed3f8eeff7b6",
+      "tree": "26503a8226e96d576542b6f480cb0ce5411e64e2",
+      "dirty": false,
+      "diff": ""
+    },
+    "machine": {
+      "node": "v24.22.1",
+      "platform": "linux",
+      "arch": "x64",
+      "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "logicalCpus": 12,
+      "memoryBytes": 33577496576
+    },
+    "cache": "Existing caches retained; cache warmth and external host load uncontrolled.",
+    "stages": [
+      {
+        "stage": "typecheck",
+        "command": "pnpm run typecheck",
+        "started": "2026-10-26T02:08:48.464Z",
+        "finished": "2026-10-26T02:09:19.883Z",
+        "elapsedMs": 31417,
+        "exitCode": 0
+      },
+      {
+        "stage": "lint",
+        "command": "pnpm run lint",
+        "started": "2026-10-26T02:09:19.887Z",
+        "finished": "2026-10-26T02:09:35.392Z",
+        "elapsedMs": 15505,
+        "exitCode": 0
+      },
+      {
+        "stage": "format:check",
+        "command": "pnpm run format:check",
+        "started": "2026-10-26T02:09:35.392Z",
+        "finished": "2026-10-26T02:10:01.985Z",
+        "elapsedMs": 26592,
+        "exitCode": 0
+      },
+      {
+        "stage": "test:unit",
+        "command": "pnpm run test:unit --reporter=default --reporter=json --outputFile=.tmp/verification/unit-results.json",
+        "started": "2026-10-26T02:10:01.985Z",
+        "finished": "2026-10-26T02:14:09.046Z",
+        "elapsedMs": 247061,
+        "exitCode": 1
+      }
+    ],
+    "finished": "2026-10-26T02:14:09.046Z",
+    "elapsedMs": 320613,
+    "passed": false
+  },
+  "chromium": {
+    "initialStats": {
+      "startTime": "2026-10-26T02:36:17.626Z",
+      "duration": 1518461.38,
+      "expected": 272,
+      "skipped": 0,
+      "unexpected": 2,
+      "flaky": 0
+    },
+    "initialCheck": {
+      "schemaVersion": 1,
+      "ok": false,
+      "exitCode": 1,
+      "cached": false,
+      "timedOut": false,
+      "ms": 1520092,
+      "scope": {
+        "TIER": "batch",
+        "DIFF_BASE": "ebc514f49087bd6da24f6eeef8c60bc7e6a25eb3",
+        "TASK": "T462",
+        "TASKS": "T462"
+      },
+      "log": "/home/deep/haeram/haeram-soccor/.git/haeram/v1/logs/check-aca3bfce-4a7b-4618-8e2e-87a9146c6b35.log",
+      "failedTests": [
+        "1) [chromium] › tests/e2e/match-core.spec.ts:327:1 › an archived replay holds each goal it crosses, keeps a pause and skips what a seek passes",
+        "2) [chromium] › tests/e2e/mobile-match-presentation.spec.ts:196:3 › goal cue and ball ownership in the normal view at 360"
+      ],
+      "tail": [
+        "    ────────────────────────────────────────────────────────────────────────────────────────────────",
+        "",
+        "  Slow test file: [chromium] › tests/e2e/second-career.spec.ts (6.2m)",
+        "  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel",
+        "  2 failed",
+        "    [chromium] › tests/e2e/match-core.spec.ts:327:1 › an archived replay holds each goal it crosses, keeps a pause and skips what a seek passes ",
+        "    [chromium] › tests/e2e/mobile-match-presentation.spec.ts:196:3 › goal cue and ball ownership in the normal view at 360 ",
+        "  272 passed (25.3m)"
+      ]
+    },
+    "focusedStats": {
+      "startTime": "2026-10-26T03:06:02.660Z",
+      "duration": 137884.79700000002,
+      "expected": 4,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "focusedCheck": {
+      "schemaVersion": 1,
+      "ok": true,
+      "exitCode": 0,
+      "cached": false,
+      "timedOut": false,
+      "ms": 139457,
+      "scope": {
+        "TIER": "batch",
+        "DIFF_BASE": "87c07561",
+        "TASK": "T462",
+        "TASKS": "T462"
+      },
+      "log": "/home/deep/haeram/haeram-soccor/.git/haeram/v1/logs/check-319ddd72-d355-487d-bb78-f7ee55a0c1df.log",
+      "failedTests": [],
+      "tail": [
+        "(node:4112923) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.",
+        "(Use `node --trace-warnings ...` to show where the warning was created)",
+        "  ✓  1 [chromium] › tests/e2e/match-core.spec.ts:327:1 › an archived replay holds each goal it crosses, keeps a pause and skips what a seek passes (28.2s)",
+        "  ✓  2 [chromium] › tests/e2e/mobile-match-presentation.spec.ts:202:3 › goal cue and ball ownership in the normal view at 360 (1.6m)",
+        "  ✓  3 [chromium] › tests/e2e/mobile-match-presentation.spec.ts:202:3 › goal cue and ball ownership in the normal view at 390 (18.6s)",
+        "  ✓  4 [chromium] › tests/e2e/mobile-match-presentation.spec.ts:202:3 › goal cue and ball ownership in the normal view at 1280 (18.4s)",
+        "",
+        "  4 passed (2.3m)"
+      ]
+    },
+    "resolvedPassingCases": 274,
+    "cases": [
+      {
+        "file": "analysis.spec.ts",
+        "title": "analysis.spec.ts › downloads scoped analysis CSVs and disables empty competition samples on mobile",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 16909
+      },
+      {
+        "file": "analysis.spec.ts",
+        "title": "analysis.spec.ts › reproduces earned season records after reload on mobile",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 84814
+      },
+      {
+        "file": "analysis.spec.ts",
+        "title": "analysis.spec.ts › uses matching archive samples for season splits and competition filters",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 10818
+      },
+      {
+        "file": "analysis.spec.ts",
+        "title": "analysis.spec.ts › filters the own-club fixture notebook and reads a settled full-season record",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 14572
+      },
+      {
+        "file": "analysis.spec.ts",
+        "title": "analysis.spec.ts › compares distinct own players with a shared scope and returns focus without progression",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5439
+      },
+      {
+        "file": "analysis.spec.ts",
+        "title": "analysis.spec.ts › filters player samples and shows scoped per-90 evidence on a mobile profile",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 12388
+      },
+      {
+        "file": "analysis.spec.ts",
+        "title": "analysis.spec.ts › jumps between recorded periods without changing the final result or calendar",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 11599
+      },
+      {
+        "file": "analysis.spec.ts",
+        "title": "analysis.spec.ts › reveals the recorded match report only after choosing the final result",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 11189
+      },
+      {
+        "file": "analysis.spec.ts",
+        "title": "analysis.spec.ts › compares tactical rules as previews while the applied tactic and date stay unchanged",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 6413
+      },
+      {
+        "file": "analysis.spec.ts",
+        "title": "analysis.spec.ts › opens evidence-based opponent scouting without progressing the world",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5782
+      },
+      {
+        "file": "builds.spec.ts",
+        "title": "builds.spec.ts › discloses roster and opponent tactical fit before an actual seeded match",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 11083
+      },
+      {
+        "file": "builds.spec.ts",
+        "title": "builds.spec.ts › keeps quick lineup and sticky confirmation reachable at 360x740",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5144
+      },
+      {
+        "file": "builds.spec.ts",
+        "title": "builds.spec.ts › keeps quick lineup and sticky confirmation reachable at 390x844",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5276
+      },
+      {
+        "file": "business.spec.ts",
+        "title": "business.spec.ts › older operations addresses open their tab",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 15730
+      },
+      {
+        "file": "business.spec.ts",
+        "title": "business.spec.ts › reviews and starts a stadium expansion at 360x740",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7107
+      },
+      {
+        "file": "business.spec.ts",
+        "title": "business.spec.ts › reviews and starts a stadium expansion at 390x844",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7121
+      },
+      {
+        "file": "business.spec.ts",
+        "title": "business.spec.ts › pays sponsor installments only for league games after the actual contract",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 10873
+      },
+      {
+        "file": "business.spec.ts",
+        "title": "business.spec.ts › at level 4 the commercial staff sign an empty slot's best offer",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 9576
+      },
+      {
+        "file": "business.spec.ts",
+        "title": "business.spec.ts › drafts a 지역 investment row with its spend and builds 지역 기반 over real rounds",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 21415
+      },
+      {
+        "file": "business.spec.ts",
+        "title": "business.spec.ts › keeps ticket drafts out of the save and applies their price to an actual home gate",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 15119
+      },
+      {
+        "file": "business.spec.ts",
+        "title": "business.spec.ts › recovers a genuine negative operating balance and enforces the three-contribution limit",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 10304
+      },
+      {
+        "file": "business.spec.ts",
+        "title": "business.spec.ts › ends a bankrupt career on the game-over page and founds a new club from it",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4692
+      },
+      {
+        "file": "club-identity-continuity.spec.ts",
+        "title": "club-identity-continuity.spec.ts › founded, worn, edited and moved by file, designs and the earlier kit stay exact at 360x740",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 25114
+      },
+      {
+        "file": "club-identity-continuity.spec.ts",
+        "title": "club-identity-continuity.spec.ts › founded, worn, edited and moved by file, designs and the earlier kit stay exact at 390x844",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 26410
+      },
+      {
+        "file": "club-identity-continuity.spec.ts",
+        "title": "club-identity-continuity.spec.ts › a shirt chosen for the next fixture survives reload and slot parking; another game gets neither it nor the design draft",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 17188
+      },
+      {
+        "file": "club-identity-continuity.spec.ts",
+        "title": "club-identity-continuity.spec.ts › a pre-identity career keeps its crests and facts, gains only shirts on writer activation and says its kits were not recorded",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 9258
+      },
+      {
+        "file": "club-identity-continuity.spec.ts",
+        "title": "club-identity-continuity.spec.ts › a read-only tab installs nothing; taking ownership adopts the designs once through the writer",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7556
+      },
+      {
+        "file": "club-identity-continuity.spec.ts",
+        "title": "club-identity-continuity.spec.ts › a refused apply and a failed checkpoint keep the committed save, the draft and the export",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 8967
+      },
+      {
+        "file": "club-identity-continuity.spec.ts",
+        "title": "club-identity-continuity.spec.ts › a failed adoption write keeps the original checkpoint and still exports the adopted career",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7429
+      },
+      {
+        "file": "club-identity-continuity.spec.ts",
+        "title": "club-identity-continuity.spec.ts › newer save data (envelope schema 5) over a valid older predecessor stays protected",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3050
+      },
+      {
+        "file": "club-identity-continuity.spec.ts",
+        "title": "club-identity-continuity.spec.ts › newer save data (identity format 2) over a valid older predecessor stays protected",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3116
+      },
+      {
+        "file": "club-identity-founding.spec.ts",
+        "title": "club-identity-founding.spec.ts › the exact previewed design is the founded identity after reload and continuing the slot",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7909
+      },
+      {
+        "file": "club-identity-founding.spec.ts",
+        "title": "club-identity-founding.spec.ts › founding without customising still gives the previewed draft with three complete shirts",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 2521
+      },
+      {
+        "file": "club-identity-founding.spec.ts",
+        "title": "club-identity-founding.spec.ts › changing seed and country keeps a customised design, and cancel restores the entry design",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4910
+      },
+      {
+        "file": "club-identity-founding.spec.ts",
+        "title": "club-identity-founding.spec.ts › the design editor keeps every control reachable and returns focus to its entry",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 2628
+      },
+      {
+        "file": "club-identity-founding.spec.ts",
+        "title": "club-identity-founding.spec.ts › another founding slot starts from a clean design",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5147
+      },
+      {
+        "file": "club-identity-founding.spec.ts",
+        "title": "club-identity-founding.spec.ts › random crest selection keeps the three colours and persists the previewed composition",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3875
+      },
+      {
+        "file": "club-identity-management.spec.ts",
+        "title": "club-identity-management.spec.ts › three named colours link shirts and crest, and each apply reaches every crest",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 10126
+      },
+      {
+        "file": "club-identity-management.spec.ts",
+        "title": "club-identity-management.spec.ts › 되돌리기 restores the entry design and a failed apply keeps the draft and the applied design",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7043
+      },
+      {
+        "file": "club-identity-management.spec.ts",
+        "title": "club-identity-management.spec.ts › navigation detours and passing days keep the draft beside the policy draft",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7878
+      },
+      {
+        "file": "club-identity-management.spec.ts",
+        "title": "club-identity-management.spec.ts › another game never receives the draft",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 8580
+      },
+      {
+        "file": "club-identity-management.spec.ts",
+        "title": "club-identity-management.spec.ts › a read-only tab inspects the design but cannot apply it",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 6694
+      },
+      {
+        "file": "club-identity-management.spec.ts",
+        "title": "club-identity-management.spec.ts › a stale applied identity is never silently overwritten",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 6902
+      },
+      {
+        "file": "club-identity-observation.spec.ts",
+        "title": "club-identity-observation.spec.ts › the live Canvas wears the recorded stripes, checks and keeper colours at phone scale",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 9975
+      },
+      {
+        "file": "club-identity-observation.spec.ts",
+        "title": "club-identity-observation.spec.ts › a design applied while the match is paused mid-match leaves its recorded shirts on the pitch",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 16339
+      },
+      {
+        "file": "club-identity-observation.spec.ts",
+        "title": "club-identity-observation.spec.ts › an old imported record says 유니폼 미기록 and never draws today’s design",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 9604
+      },
+      {
+        "file": "club-identity-preparation.spec.ts",
+        "title": "club-identity-preparation.spec.ts › our home league shirt is previewed, committed once, kept through reload and worn only in that fixture",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 21000
+      },
+      {
+        "file": "club-identity-preparation.spec.ts",
+        "title": "club-identity-preparation.spec.ts › our away shirt maps to the away side and stays apart from the lineup decision",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 17643
+      },
+      {
+        "file": "club-identity-preparation.spec.ts",
+        "title": "club-identity-preparation.spec.ts › a warned cup-tie clash can be confirmed, reads read-only elsewhere and returns to automatic selection",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 21895
+      },
+      {
+        "file": "club-identity-preparation.spec.ts",
+        "title": "club-identity-preparation.spec.ts › automatic play moving the next fixture restarts the preview and never applies the drafted shirt",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 13782
+      },
+      {
+        "file": "contract-talks.spec.ts",
+        "title": "contract-talks.spec.ts › declines a contract talk: the badge, then the transfer request",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 60310
+      },
+      {
+        "file": "contract-talks.spec.ts",
+        "title": "contract-talks.spec.ts › the talk rule shows under 선수 and applies",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 6306
+      },
+      {
+        "file": "cups-and-club.spec.ts",
+        "title": "cups-and-club.spec.ts › cups, transfer stance, coaching and club trends at 390x844 › shows the drawn domestic cup with our tie and the road to Europe",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3009
+      },
+      {
+        "file": "cups-and-club.spec.ts",
+        "title": "cups-and-club.spec.ts › cups, transfer stance, coaching and club trends at 390x844 › switches a player transfer stance from the roster badge and sets coaching per department",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 15430
+      },
+      {
+        "file": "cups-and-club.spec.ts",
+        "title": "cups-and-club.spec.ts › cups, transfer stance, coaching and club trends at 390x844 › rates every league club and opens any club from the table",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4257
+      },
+      {
+        "file": "cups-and-club.spec.ts",
+        "title": "cups-and-club.spec.ts › cups, transfer stance, coaching and club trends at 390x844 › opens the team sheet of a club in our cup tie and stacks sheets over sheets",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4851
+      },
+      {
+        "file": "cups-and-club.spec.ts",
+        "title": "cups-and-club.spec.ts › cups, transfer stance, coaching and club trends at 390x844 › keeps the transfer market as a 사람 tab with its own address",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 6164
+      },
+      {
+        "file": "cups-and-club.spec.ts",
+        "title": "cups-and-club.spec.ts › cups, transfer stance, coaching and club trends at 390x844 › replays a closed season of the cup: its bracket, our road, a report and the honours",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 77953
+      },
+      {
+        "file": "cups-and-club.spec.ts",
+        "title": "cups-and-club.spec.ts › cups, transfer stance, coaching and club trends at 390x844 › charts league position, Elo and values in the records room",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3243
+      },
+      {
+        "file": "entry.spec.ts",
+        "title": "entry.spec.ts › serves a real static application entry",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 1070
+      },
+      {
+        "file": "entry.spec.ts",
+        "title": "entry.spec.ts › creates, computes and reloads through the bundled worker",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 12216
+      },
+      {
+        "file": "entry.spec.ts",
+        "title": "entry.spec.ts › observes event-backed metrics, historical locks and responsive navigation",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 11871
+      },
+      {
+        "file": "facility-art.spec.ts",
+        "title": "facility-art.spec.ts › loads only current heritage facility scenes at 360px",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 8345
+      },
+      {
+        "file": "facility-art.spec.ts",
+        "title": "facility-art.spec.ts › loads only current terraces facility scenes at 390px",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7994
+      },
+      {
+        "file": "facility-art.spec.ts",
+        "title": "facility-art.spec.ts › loads only current contemporary facility scenes at 1440px",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 8378
+      },
+      {
+        "file": "facility-art.spec.ts",
+        "title": "facility-art.spec.ts › updates era, training and academy scenes only on actual completion, retaining them after reload",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 30924
+      },
+      {
+        "file": "founding.spec.ts",
+        "title": "founding.spec.ts › fits basic founding and saves advanced choices at 360x740",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 6276
+      },
+      {
+        "file": "founding.spec.ts",
+        "title": "founding.spec.ts › fits all founding controls and recovery tools with wrapped fallback text at 360x740",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 2009
+      },
+      {
+        "file": "founding.spec.ts",
+        "title": "founding.spec.ts › fits basic founding and saves advanced choices at 390x844",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 6143
+      },
+      {
+        "file": "founding.spec.ts",
+        "title": "founding.spec.ts › fits all founding controls and recovery tools with wrapped fallback text at 390x844",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 2079
+      },
+      {
+        "file": "founding.spec.ts",
+        "title": "founding.spec.ts › founds with a preset as its direction",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3454
+      },
+      {
+        "file": "founding.spec.ts",
+        "title": "founding.spec.ts › starts with generous capital and shows a fact-aware guide without changing the save",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 17016
+      },
+      {
+        "file": "full-model-continuity.spec.ts",
+        "title": "full-model-continuity.spec.ts › continues a mid-season activated career on desktop",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 107053
+      },
+      {
+        "file": "full-model-continuity.spec.ts",
+        "title": "full-model-continuity.spec.ts › continues a mid-season activated career on mobile",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 102754
+      },
+      {
+        "file": "full-stat-comparison.spec.ts",
+        "title": "full-stat-comparison.spec.ts › compares current full statistics of every club in the same units on desktop",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 11311
+      },
+      {
+        "file": "full-stat-comparison.spec.ts",
+        "title": "full-stat-comparison.spec.ts › compares current full statistics of every club in the same units on mobile",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 11867
+      },
+      {
+        "file": "full-stat-comparison.spec.ts",
+        "title": "full-stat-comparison.spec.ts › names a partial season start and sample through reload and import",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7906
+      },
+      {
+        "file": "growth-core.spec.ts",
+        "title": "growth-core.spec.ts › 19-player warning opens from its home tile at 360x740",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5714
+      },
+      {
+        "file": "growth-core.spec.ts",
+        "title": "growth-core.spec.ts › growing club fits 360x740 and opens real play and details",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 14794
+      },
+      {
+        "file": "growth-core.spec.ts",
+        "title": "growth-core.spec.ts › 19-player warning opens from its home tile at 390x844",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5847
+      },
+      {
+        "file": "growth-core.spec.ts",
+        "title": "growth-core.spec.ts › growing club fits 390x844 and opens real play and details",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 9838
+      },
+      {
+        "file": "intervention.spec.ts",
+        "title": "intervention.spec.ts › changes a real starting XI through the mobile preparation sheet, saves it and shows earned finances",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 20714
+      },
+      {
+        "file": "intervention.spec.ts",
+        "title": "intervention.spec.ts › intervenes over the league without losing filters or interrupting progress at 360",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 9015
+      },
+      {
+        "file": "intervention.spec.ts",
+        "title": "intervention.spec.ts › intervenes over the league without losing filters or interrupting progress at 390",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 9489
+      },
+      {
+        "file": "intervention.spec.ts",
+        "title": "intervention.spec.ts › intervenes over the league without losing filters or interrupting progress at 1440",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 13451
+      },
+      {
+        "file": "intervention.spec.ts",
+        "title": "intervention.spec.ts › prepares a subsequent match from the theatre while keeping the recorded score and playback context",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 12043
+      },
+      {
+        "file": "large-codec.spec.ts",
+        "title": "large-codec.spec.ts › large portable codec writes, loads and exports under production CSP",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 201218
+      },
+      {
+        "file": "live-state.spec.ts",
+        "title": "live-state.spec.ts › keeps league views and nodes across silent progression from home and updates real scorers",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 13547
+      },
+      {
+        "file": "live-state.spec.ts",
+        "title": "live-state.spec.ts › watching a match pauses the calendar and retains playback across page switches",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 11771
+      },
+      {
+        "file": "live-state.spec.ts",
+        "title": "live-state.spec.ts › the fatigue remedy opens the assistant's training sheet with 회복 ready, and an order sets it",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4978
+      },
+      {
+        "file": "management-surfaces.spec.ts",
+        "title": "management-surfaces.spec.ts › matchday-print: next-event text remains readable on the dark transport",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3048
+      },
+      {
+        "file": "management-surfaces.spec.ts",
+        "title": "management-surfaces.spec.ts › sticker-club: next-event text remains readable on the dark transport",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 2793
+      },
+      {
+        "file": "management-surfaces.spec.ts",
+        "title": "management-surfaces.spec.ts › standard: management cards, transport and choices retain inset content and separate actions",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 19331
+      },
+      {
+        "file": "management-surfaces.spec.ts",
+        "title": "management-surfaces.spec.ts › pixel: management cards, transport and choices retain inset content and separate actions",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 19637
+      },
+      {
+        "file": "management.spec.ts",
+        "title": "management.spec.ts › operates a club, reads a season and exports/imports the actual save",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 95107
+      },
+      {
+        "file": "management.spec.ts",
+        "title": "management.spec.ts › browses every historical regional group and resets filters on country changes",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 80418
+      },
+      {
+        "file": "manager-history.spec.ts",
+        "title": "manager-history.spec.ts › reads tenures page by page and comes back from their seasons on desktop",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 14902
+      },
+      {
+        "file": "manager-history.spec.ts",
+        "title": "manager-history.spec.ts › reads tenures page by page and comes back from their seasons on mobile",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 15626
+      },
+      {
+        "file": "manager-history.spec.ts",
+        "title": "manager-history.spec.ts › starts tracking an older career at the writer, never in a read-only tab",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 23022
+      },
+      {
+        "file": "manager-history.spec.ts",
+        "title": "manager-history.spec.ts › never shows one game’s manager history in another",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 15282
+      },
+      {
+        "file": "manual-progression.spec.ts",
+        "title": "manual-progression.spec.ts › exclusive-controls 1280",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 6258
+      },
+      {
+        "file": "manual-progression.spec.ts",
+        "title": "manual-progression.spec.ts › next-match-eve-with-all-delegated 1280",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 6621
+      },
+      {
+        "file": "manual-progression.spec.ts",
+        "title": "manual-progression.spec.ts › same-date-event-group 1280",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3929
+      },
+      {
+        "file": "manual-progression.spec.ts",
+        "title": "manual-progression.spec.ts › exclusive-controls 390",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7143
+      },
+      {
+        "file": "manual-progression.spec.ts",
+        "title": "manual-progression.spec.ts › next-match-eve-with-all-delegated 390",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 6855
+      },
+      {
+        "file": "manual-progression.spec.ts",
+        "title": "manual-progression.spec.ts › same-date-event-group 390",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3092
+      },
+      {
+        "file": "manual-progression.spec.ts",
+        "title": "manual-progression.spec.ts › manual entry enables match report with all business direct",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5138
+      },
+      {
+        "file": "manual-progression.spec.ts",
+        "title": "manual-progression.spec.ts › manual entry enables match report with all business delegated",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5037
+      },
+      {
+        "file": "match-core.spec.ts",
+        "title": "match-core.spec.ts › keeps the full match loop in 360x740 and preserves actual seeded facts",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 37654
+      },
+      {
+        "file": "match-core.spec.ts",
+        "title": "match-core.spec.ts › keeps the full match loop in 390x844 and preserves actual seeded facts",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 39551
+      },
+      {
+        "file": "match-core.spec.ts",
+        "title": "match-core.spec.ts › an archived replay holds each goal it crosses, keeps a pause and skips what a seek passes",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 28199
+      },
+      {
+        "file": "match-material.spec.ts",
+        "title": "match-material.spec.ts › opens an own match material from its report and from the fixture notebook",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 14731
+      },
+      {
+        "file": "match-themes.spec.ts",
+        "title": "match-themes.spec.ts › match themes paint their grounds, frame controls and preserve a paused instant at 360",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 14814
+      },
+      {
+        "file": "match-themes.spec.ts",
+        "title": "match-themes.spec.ts › match themes paint their grounds, frame controls and preserve a paused instant at 1380",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 15694
+      },
+      {
+        "file": "mediation.spec.ts",
+        "title": "mediation.spec.ts › direct-financial-conflict-review",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4975
+      },
+      {
+        "file": "mediation.spec.ts",
+        "title": "mediation.spec.ts › case-support-is-not-standing-policy",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4913
+      },
+      {
+        "file": "mediation.spec.ts",
+        "title": "mediation.spec.ts › support changes retain the preview and confirm only the latest conditions",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 9284
+      },
+      {
+        "file": "mediation.spec.ts",
+        "title": "mediation.spec.ts › retained-promise-status",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4199
+      },
+      {
+        "file": "mediation.spec.ts",
+        "title": "mediation.spec.ts › direct mediation stops manual and survives reading notifications",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4284
+      },
+      {
+        "file": "mediation.spec.ts",
+        "title": "mediation.spec.ts › direct mediation stops automatic and survives reading notifications",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4164
+      },
+      {
+        "file": "mediation.spec.ts",
+        "title": "mediation.spec.ts › mediation-handover-on-apply discloses work and never replays its recorded policy",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7410
+      },
+      {
+        "file": "mediation.spec.ts",
+        "title": "mediation.spec.ts › promise-reload-and-deadline with none retains the original commitment",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 52911
+      },
+      {
+        "file": "mediation.spec.ts",
+        "title": "mediation.spec.ts › promise-reload-and-deadline with loan retains the original commitment",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 53123
+      },
+      {
+        "file": "mediation.spec.ts",
+        "title": "mediation.spec.ts › promise-reload-and-deadline with free retains the original commitment",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 53095
+      },
+      {
+        "file": "mediation.spec.ts",
+        "title": "mediation.spec.ts › promise-personnel-changes preserves director-independent promises and cancels on manager replacement",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 9269
+      },
+      {
+        "file": "milestones.spec.ts",
+        "title": "milestones.spec.ts › keeps a compact home with calendar progress and retained milestone facts at 360x740",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 20790
+      },
+      {
+        "file": "milestones.spec.ts",
+        "title": "milestones.spec.ts › keeps a compact home with calendar progress and retained milestone facts at 390x844",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 15400
+      },
+      {
+        "file": "milestones.spec.ts",
+        "title": "milestones.spec.ts › keeps a compact home with calendar progress and retained milestone facts at 1280x800",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 15181
+      },
+      {
+        "file": "mobile-match-presentation.spec.ts",
+        "title": "mobile-match-presentation.spec.ts › matchday-print: readable match tabs and aligned result icon",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7979
+      },
+      {
+        "file": "mobile-match-presentation.spec.ts",
+        "title": "mobile-match-presentation.spec.ts › standard: readable match tabs and aligned result icon",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7561
+      },
+      {
+        "file": "mobile-match-presentation.spec.ts",
+        "title": "mobile-match-presentation.spec.ts › pixel: readable match tabs and aligned result icon",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7323
+      },
+      {
+        "file": "mobile-match-presentation.spec.ts",
+        "title": "mobile-match-presentation.spec.ts › sticker-club: readable match tabs and aligned result icon",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7826
+      },
+      {
+        "file": "mobile-match-presentation.spec.ts",
+        "title": "mobile-match-presentation.spec.ts › fixed pitch ratio 360",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7418
+      },
+      {
+        "file": "mobile-match-presentation.spec.ts",
+        "title": "mobile-match-presentation.spec.ts › fixed pitch ratio 390",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7517
+      },
+      {
+        "file": "mobile-match-presentation.spec.ts",
+        "title": "mobile-match-presentation.spec.ts › mobile result-only continuation preserves the exiting card position",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 10844
+      },
+      {
+        "file": "mobile-match-presentation.spec.ts",
+        "title": "mobile-match-presentation.spec.ts › goal cue and ball ownership in the normal view at 360",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 98205
+      },
+      {
+        "file": "mobile-match-presentation.spec.ts",
+        "title": "mobile-match-presentation.spec.ts › goal cue and ball ownership in the normal view at 390",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 18623
+      },
+      {
+        "file": "mobile-match-presentation.spec.ts",
+        "title": "mobile-match-presentation.spec.ts › goal cue and ball ownership in the normal view at 1280",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 18397
+      },
+      {
+        "file": "mobile.spec.ts",
+        "title": "mobile.spec.ts › uses reachable mobile navigation and traps modal focus without scrolling the background",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5050
+      },
+      {
+        "file": "mobile.spec.ts",
+        "title": "mobile.spec.ts › keeps confirmation actions and its close control inside a small mobile viewport",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3492
+      },
+      {
+        "file": "mobile.spec.ts",
+        "title": "mobile.spec.ts › floating warnings leave the HUD and content fixed on low and phone screens",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3636
+      },
+      {
+        "file": "native-touch.spec.ts",
+        "title": "native-touch.spec.ts › keeps founding and match preparation selectors touchable at 360x740",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 21080
+      },
+      {
+        "file": "native-touch.spec.ts",
+        "title": "native-touch.spec.ts › keeps scouting and league exploration selectors touchable at 360x740",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7531
+      },
+      {
+        "file": "native-touch.spec.ts",
+        "title": "native-touch.spec.ts › keeps founding and match preparation selectors touchable at 390x844",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 17753
+      },
+      {
+        "file": "native-touch.spec.ts",
+        "title": "native-touch.spec.ts › keeps scouting and league exploration selectors touchable at 390x844",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 6908
+      },
+      {
+        "file": "news.spec.ts",
+        "title": "news.spec.ts › keeps the club name and compact cash readable in a 360 px HUD",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4299
+      },
+      {
+        "file": "news.spec.ts",
+        "title": "news.spec.ts › celebrates in one lower line, with headlines collected in the clock news button",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 14514
+      },
+      {
+        "file": "news.spec.ts",
+        "title": "news.spec.ts › \"뉴스 표시 안 함\" files achievements behind the news button without a banner",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 12711
+      },
+      {
+        "file": "news.spec.ts",
+        "title": "news.spec.ts › shares one notification/news dialog with independent read counts and keyboard tabs at 390px",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 16522
+      },
+      {
+        "file": "news.spec.ts",
+        "title": "news.spec.ts › shares one notification/news dialog with independent read counts and keyboard tabs at 1280px",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 14799
+      },
+      {
+        "file": "owner-workflows.spec.ts",
+        "title": "owner-workflows.spec.ts › contextual-sheet-restores-candidate",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5724
+      },
+      {
+        "file": "owner-workflows.spec.ts",
+        "title": "owner-workflows.spec.ts › department-sheet-preserves-other-drafts",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5495
+      },
+      {
+        "file": "owner-workflows.spec.ts",
+        "title": "owner-workflows.spec.ts › retains an unapplied academy investment through a detour and discards it explicitly",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4147
+      },
+      {
+        "file": "owner-workflows.spec.ts",
+        "title": "owner-workflows.spec.ts › a different game never inherits the first career policy draft",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5297
+      },
+      {
+        "file": "owner-workflows.spec.ts",
+        "title": "owner-workflows.spec.ts › training exposes the team action first and opens its named responsible coach",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3439
+      },
+      {
+        "file": "owner-workflows.spec.ts",
+        "title": "owner-workflows.spec.ts › a player profile leads to that player training and keeps the squad search",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4422
+      },
+      {
+        "file": "owner-workflows.spec.ts",
+        "title": "owner-workflows.spec.ts › recruitment needs open on demand and academy operations open their exact work",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4976
+      },
+      {
+        "file": "owner-workflows.spec.ts",
+        "title": "owner-workflows.spec.ts › opens club seasons in records and retains the detail scope through league and cup visits",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 6524
+      },
+      {
+        "file": "owner-workflows.spec.ts",
+        "title": "owner-workflows.spec.ts › keeps a foreign league selected across all competition lenses without substituting our players",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4729
+      },
+      {
+        "file": "owner-workflows.spec.ts",
+        "title": "owner-workflows.spec.ts › keeps the home briefing informational alongside the public clock and links the current club record",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 12313
+      },
+      {
+        "file": "owner-workflows.spec.ts",
+        "title": "owner-workflows.spec.ts › chooses a cup once and keeps its archived season through competition and club-record visits",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 89241
+      },
+      {
+        "file": "owner-workflows.spec.ts",
+        "title": "owner-workflows.spec.ts › department sheet is readonly in a second tab and restores its task",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5333
+      },
+      {
+        "file": "owner-workflows.spec.ts",
+        "title": "owner-workflows.spec.ts › recruitment support round-trips between department sheet and full board",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7781
+      },
+      {
+        "file": "player-profile.spec.ts",
+        "title": "player-profile.spec.ts › reads players as football media would at 360x740 (→WEB-59, CLUB-10, CLUB-14)",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7028
+      },
+      {
+        "file": "player-profile.spec.ts",
+        "title": "player-profile.spec.ts › reads players as football media would at 390x844 (→WEB-59, CLUB-10, CLUB-14)",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7301
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › matchday-print: readable transport choices and inset settings rows at 390",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 6067
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › matchday-print: readable transport choices and inset settings rows at 1380",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5135
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › standard: readable transport choices and inset settings rows at 390",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5082
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › standard: readable transport choices and inset settings rows at 1380",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4839
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › pixel: readable transport choices and inset settings rows at 390",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4838
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › pixel: readable transport choices and inset settings rows at 1380",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5444
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › sticker-club: readable transport choices and inset settings rows at 390",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5444
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › sticker-club: readable transport choices and inset settings rows at 1380",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5913
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › image-built themes cover home, pinned table cells and detail sheets without advancing play 390",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 32678
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › image-built themes cover home, pinned table cells and detail sheets without advancing play 1380",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 31922
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › shipped standard theme replaces art and reloads while preserving facts at 390px",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 11458
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › shipped pixel theme replaces art and reloads while preserving facts at 390px",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 11130
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › shipped sticker-club theme replaces art and reloads while preserving facts at 390px",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 11442
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › shipped standard theme replaces art and reloads while preserving facts at 1380px",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 11381
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › shipped pixel theme replaces art and reloads while preserving facts at 1380px",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 10670
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › shipped sticker-club theme replaces art and reloads while preserving facts at 1380px",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 10822
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › pending theme resources add no feedback row or picker layout shift",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 1889
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › theme reveal keeps controls in the composited dialog and backdrop",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4942
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › registry settings before founding, on slots and in the HUD at 360px",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 10172
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › registry settings before founding, on slots and in the HUD at 390px",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 10431
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › a failed initial default resource offers retry without creating game data",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 925
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › denied preference storage keeps data-only selections usable for this session",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5237
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › a failed theme selection retains the usable pack and retries without losing a founding draft",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3535
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › unseen routed locale and theme change actual resources while game facts, draft and Korean prose stay exact",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 10933
+      },
+      {
+        "file": "presentation-settings.spec.ts",
+        "title": "presentation-settings.spec.ts › a read-only game tab changes presentation without claiming ownership or issuing game commands",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 8343
+      },
+      {
+        "file": "preview.spec.ts",
+        "title": "preview.spec.ts › built deep links, module worker, cache/CSP and missing assets",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5764
+      },
+      {
+        "file": "preview.spec.ts",
+        "title": "preview.spec.ts › serves the _headers set",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 55
+      },
+      {
+        "file": "progression-settings.spec.ts",
+        "title": "progression-settings.spec.ts › mobile clock keeps actions in one row and advances at the dropdown pace",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 15574
+      },
+      {
+        "file": "progression-settings.spec.ts",
+        "title": "progression-settings.spec.ts › a hidden tab plays on like an idle game, names the date in its title, and can pause instead",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 10216
+      },
+      {
+        "file": "progression-settings.spec.ts",
+        "title": "progression-settings.spec.ts › a page that closed with the clock running plays the time away on return and sums it up",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 11538
+      },
+      {
+        "file": "progression-settings.spec.ts",
+        "title": "progression-settings.spec.ts › deciding the event that stopped a running clock plays on (→WEB-42)",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 11277
+      },
+      {
+        "file": "progression-settings.spec.ts",
+        "title": "progression-settings.spec.ts › restored match eve uses actual match actions instead of acknowledging the observation",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5330
+      },
+      {
+        "file": "progression-settings.spec.ts",
+        "title": "progression-settings.spec.ts › standard mode shortcut confirms, cancels and remembers both directions without advancing",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7439
+      },
+      {
+        "file": "progression-settings.spec.ts",
+        "title": "progression-settings.spec.ts › pixel mode shortcut confirms, cancels and remembers both directions without advancing",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 6436
+      },
+      {
+        "file": "progression-settings.spec.ts",
+        "title": "progression-settings.spec.ts › office bulk report choices include observations and preserve mode 390",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 8114
+      },
+      {
+        "file": "progression-settings.spec.ts",
+        "title": "progression-settings.spec.ts › office authority confirmation and pending handover 390",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 8742
+      },
+      {
+        "file": "progression-settings.spec.ts",
+        "title": "progression-settings.spec.ts › office bulk report choices include observations and preserve mode 1280",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 8525
+      },
+      {
+        "file": "progression-settings.spec.ts",
+        "title": "progression-settings.spec.ts › office authority confirmation and pending handover 1280",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 8810
+      },
+      {
+        "file": "progression-settings.spec.ts",
+        "title": "progression-settings.spec.ts › manual can keep match eve disabled and stop at the next result",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 12537
+      },
+      {
+        "file": "progression-settings.spec.ts",
+        "title": "progression-settings.spec.ts › standard dismissed NEXT MATCH reopens without settling until an explicit choice",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 9774
+      },
+      {
+        "file": "progression-settings.spec.ts",
+        "title": "progression-settings.spec.ts › pixel dismissed NEXT MATCH reopens without settling until an explicit choice",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 10094
+      },
+      {
+        "file": "records.spec.ts",
+        "title": "records.spec.ts › records room at 390x844 › refreshes manager history during automatic play without flashing progress or cancel",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5752
+      },
+      {
+        "file": "records.spec.ts",
+        "title": "records.spec.ts › records room at 390x844 › reads the records room in five tabs with Elo context, chart bubbles and player sheets",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 89228
+      },
+      {
+        "file": "records.spec.ts",
+        "title": "records.spec.ts › records room at desktop › refreshes manager history during automatic play without flashing progress or cancel",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5581
+      },
+      {
+        "file": "records.spec.ts",
+        "title": "records.spec.ts › records room at desktop › reads the records room in five tabs with Elo context, chart bubbles and player sheets",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 94103
+      },
+      {
+        "file": "recovery.spec.ts",
+        "title": "recovery.spec.ts › one writer, live read-only updates and ownership after reload",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 14694
+      },
+      {
+        "file": "recovery.spec.ts",
+        "title": "recovery.spec.ts › recovers prior checkpoint after active corruption without clearing another application key",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 20514
+      },
+      {
+        "file": "recovery.spec.ts",
+        "title": "recovery.spec.ts › quota failure preserves disk save, exports actual memory progress and retries",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 14654
+      },
+      {
+        "file": "recovery.spec.ts",
+        "title": "recovery.spec.ts › unsupported import leaves the current world and manifest intact",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3086
+      },
+      {
+        "file": "recovery.spec.ts",
+        "title": "recovery.spec.ts › a terminated real worker exposes recovery and retains the last committed checkpoint",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3803
+      },
+      {
+        "file": "recovery.spec.ts",
+        "title": "recovery.spec.ts › a new game goes into another slot, both careers survive switching and back navigation works",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 10175
+      },
+      {
+        "file": "recovery.spec.ts",
+        "title": "recovery.spec.ts › deleting the game in play stays on the slot screen, even with every slot empty",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4999
+      },
+      {
+        "file": "recovery.spec.ts",
+        "title": "recovery.spec.ts › founding beside a parked game shows none of its club, cash or bands",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3499
+      },
+      {
+        "file": "recruitment.spec.ts",
+        "title": "recruitment.spec.ts › compact market exposes rows before optional panels at 360",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4439
+      },
+      {
+        "file": "recruitment.spec.ts",
+        "title": "recruitment.spec.ts › compact market exposes rows before optional panels at 390",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4403
+      },
+      {
+        "file": "recruitment.spec.ts",
+        "title": "recruitment.spec.ts › filters and compares stable candidates, discloses free wages, and saves real recruit and loan costs",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 15466
+      },
+      {
+        "file": "recruitment.spec.ts",
+        "title": "recruitment.spec.ts › reaches the forty-player ceiling with eight loans and prevents any further contract",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 14901
+      },
+      {
+        "file": "recruitment.spec.ts",
+        "title": "recruitment.spec.ts › disables an unaffordable fee while keeping a cheaper loan available with honest ongoing costs",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5981
+      },
+      {
+        "file": "recruitment.spec.ts",
+        "title": "recruitment.spec.ts › keeps the clock running while comparing candidates away from home until the owner stops it",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 10908
+      },
+      {
+        "file": "recruitment.spec.ts",
+        "title": "recruitment.spec.ts › the market ends with who answers offers and names the recruitment level, opening the board",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 8226
+      },
+      {
+        "file": "rules-three-owner.spec.ts",
+        "title": "rules-three-owner.spec.ts › rules three retains a joint career and promise through scoped drafts, handover and portable reload",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 14269
+      },
+      {
+        "file": "rules-three-owner.spec.ts",
+        "title": "rules-three-owner.spec.ts › the market discloses combined departure compensation before its approval",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5725
+      },
+      {
+        "file": "save-upgrade.spec.ts",
+        "title": "save-upgrade.spec.ts › recognized legacy gameplay resets on writer activation and new careers reload",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5647
+      },
+      {
+        "file": "save-upgrade.spec.ts",
+        "title": "save-upgrade.spec.ts › earlier rules import refused",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 2171
+      },
+      {
+        "file": "save-upgrade.spec.ts",
+        "title": "save-upgrade.spec.ts › future selected save stays protected and exports exactly instead of downgrading its predecessor",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 2498
+      },
+      {
+        "file": "save-upgrade.spec.ts",
+        "title": "save-upgrade.spec.ts › readonly legacy stays intact until writer handoff",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 3185
+      },
+      {
+        "file": "season-flow.spec.ts",
+        "title": "season-flow.spec.ts › advances real days at each speed, stops and restores the saved calendar",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 20595
+      },
+      {
+        "file": "season-flow.spec.ts",
+        "title": "season-flow.spec.ts › shows independent player decisions and post-match league context",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 18883
+      },
+      {
+        "file": "second-career.spec.ts",
+        "title": "second-career.spec.ts › qualitative-aptitude-visibility",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5138
+      },
+      {
+        "file": "second-career.spec.ts",
+        "title": "second-career.spec.ts › once-only-encouragement",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 7982
+      },
+      {
+        "file": "second-career.spec.ts",
+        "title": "second-career.spec.ts › combined-playing-coach-review",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5660
+      },
+      {
+        "file": "second-career.spec.ts",
+        "title": "second-career.spec.ts › same-person-cross-role-links",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 6138
+      },
+      {
+        "file": "second-career.spec.ts",
+        "title": "second-career.spec.ts › employed-coach-manager-quote",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4704
+      },
+      {
+        "file": "second-career.spec.ts",
+        "title": "second-career.spec.ts › combined approval survives reload and portable import at 1280px",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 11030
+      },
+      {
+        "file": "second-career.spec.ts",
+        "title": "second-career.spec.ts › combined approval survives reload and portable import at 390px",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 10890
+      },
+      {
+        "file": "second-career.spec.ts",
+        "title": "second-career.spec.ts › coach-only dismissal preserves the playing contract through reload",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 8194
+      },
+      {
+        "file": "second-career.spec.ts",
+        "title": "second-career.spec.ts › joint contract authority direct/direct remains atomic",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 45092
+      },
+      {
+        "file": "second-career.spec.ts",
+        "title": "second-career.spec.ts › joint contract authority direct/delegated remains atomic",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 41205
+      },
+      {
+        "file": "second-career.spec.ts",
+        "title": "second-career.spec.ts › joint contract authority delegated/direct remains atomic",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 47666
+      },
+      {
+        "file": "second-career.spec.ts",
+        "title": "second-career.spec.ts › joint contract authority delegated/delegated remains atomic",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 42814
+      },
+      {
+        "file": "second-career.spec.ts",
+        "title": "second-career.spec.ts › synthetic two playing-coach years plus full-time service excludes unemployment and crosses the exact day",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 12989
+      },
+      {
+        "file": "second-career.spec.ts",
+        "title": "second-career.spec.ts › playing retirement retains the unexpired coach job at the real season close",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 119326
+      },
+      {
+        "file": "second-career.spec.ts",
+        "title": "second-career.spec.ts › a disclosed player departure ends both jobs and charges coach compensation once",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5737
+      },
+      {
+        "file": "set-piece-defence.spec.ts",
+        "title": "set-piece-defence.spec.ts › shows both sides through a delivered set piece on phone",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 27284
+      },
+      {
+        "file": "set-piece-defence.spec.ts",
+        "title": "set-piece-defence.spec.ts › shows both sides through a delivered set piece on desktop",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 21565
+      },
+      {
+        "file": "stable-controls-and-pacing.spec.ts",
+        "title": "stable-controls-and-pacing.spec.ts › surveys every management destination during uninterrupted calendar play",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 21705
+      },
+      {
+        "file": "stable-controls-and-pacing.spec.ts",
+        "title": "stable-controls-and-pacing.spec.ts › keeps browsing available and management edits locked over real automatic ticks",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 15795
+      },
+      {
+        "file": "stable-controls-and-pacing.spec.ts",
+        "title": "stable-controls-and-pacing.spec.ts › opens at 2x, one minute per 12 s at 1x, and provides five replay speeds",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 24377
+      },
+      {
+        "file": "stable-controls-and-pacing.spec.ts",
+        "title": "stable-controls-and-pacing.spec.ts › draws a set-piece preparation in about 1.5 s with the players travelling",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 13581
+      },
+      {
+        "file": "staff.spec.ts",
+        "title": "staff.spec.ts › an unrenewed firefighter leaves at the close and the alert opens the market",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 37649
+      },
+      {
+        "file": "staff.spec.ts",
+        "title": "staff.spec.ts › with the manager post delegated a resignation is filled at once and the clock runs on",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 8629
+      },
+      {
+        "file": "staff.spec.ts",
+        "title": "staff.spec.ts › the 1 April card renews the firefighter in one tap",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 68209
+      },
+      {
+        "file": "staff.spec.ts",
+        "title": "staff.spec.ts › 스태프 leads with the 단장 and 이적시장 discloses the scout shortlist at 360x740",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4417
+      },
+      {
+        "file": "staff.spec.ts",
+        "title": "staff.spec.ts › 사람 at 360x740 › 사람 tabs keep their address and the manager criteria preview a gegenpress pick",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 16748
+      },
+      {
+        "file": "staff.spec.ts",
+        "title": "staff.spec.ts › 사람 at 360x740 › older 감독 and squad addresses land on their 사람 tabs",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 13543
+      },
+      {
+        "file": "strategy.spec.ts",
+        "title": "strategy.spec.ts › applies a preset at once, changes it again at once, and saves its own strategy",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 14408
+      },
+      {
+        "file": "strategy.spec.ts",
+        "title": "strategy.spec.ts › keeps draft review compact with notifications in the HUD at 360x740",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5912
+      },
+      {
+        "file": "strategy.spec.ts",
+        "title": "strategy.spec.ts › keeps draft review compact with notifications in the HUD at 390x844",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5858
+      },
+      {
+        "file": "strategy.spec.ts",
+        "title": "strategy.spec.ts › keeps draft review compact with notifications in the HUD at 1280x800",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 8101
+      },
+      {
+        "file": "styled-select.spec.ts",
+        "title": "styled-select.spec.ts › selects by keyboard, exposes selection and dismisses without committing previews",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 2306
+      },
+      {
+        "file": "styled-select.spec.ts",
+        "title": "styled-select.spec.ts › keeps text season controls steady and selected competition on one line at 360",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4615
+      },
+      {
+        "file": "styled-select.spec.ts",
+        "title": "styled-select.spec.ts › keeps long dropdowns within the viewport and Escape inside preparation at 360",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 17094
+      },
+      {
+        "file": "styled-select.spec.ts",
+        "title": "styled-select.spec.ts › keeps text season controls steady and selected competition on one line at 390",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4937
+      },
+      {
+        "file": "styled-select.spec.ts",
+        "title": "styled-select.spec.ts › keeps long dropdowns within the viewport and Escape inside preparation at 390",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 13811
+      },
+      {
+        "file": "training.spec.ts",
+        "title": "training.spec.ts › saves actual training without free growth and keeps home compact at 360x740",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 24920
+      },
+      {
+        "file": "training.spec.ts",
+        "title": "training.spec.ts › saves actual training without free growth and keeps home compact at 390x844",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 20826
+      },
+      {
+        "file": "training.spec.ts",
+        "title": "training.spec.ts › shows an owner's order with the assistant's rule, and a suggestion's odds",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 5086
+      },
+      {
+        "file": "training.spec.ts",
+        "title": "training.spec.ts › promotes a prospect from 유소년",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4883
+      },
+      {
+        "file": "training.spec.ts",
+        "title": "training.spec.ts › suggests 하드 for one player, forces 회복 for the squad and lists adaptation (→CLUB-11, PLAYER-12)",
+        "project": "chromium",
+        "status": "passed",
+        "durationMs": 4749
+      }
+    ]
+  },
+  "vitest": {
+    "unit": {
+      "files": 140,
+      "passed": 1020,
+      "failed": 0,
+      "pending": 0,
+      "slowFiles": [
+        {
+          "file": "packages/engine/src/grid/decide.test.ts",
+          "elapsedMs": 81314.574
+        },
+        {
+          "file": "packages/engine/src/staff.hiring.test.ts",
+          "elapsedMs": 58322.603
+        },
+        {
+          "file": "packages/engine/src/grid/shape.test.ts",
+          "elapsedMs": 33478.993
+        },
+        {
+          "file": "apps/web/src/adapters/compression.test.ts",
+          "elapsedMs": 12156.894
+        },
+        {
+          "file": "packages/engine/src/registration.test.ts",
+          "elapsedMs": 11613.929
+        },
+        {
+          "file": "packages/engine/src/promises.test.ts",
+          "elapsedMs": 8493.951
+        },
+        {
+          "file": "packages/engine/src/direction.test.ts",
+          "elapsedMs": 7301.692
+        },
+        {
+          "file": "packages/engine/src/playing-coach.test.ts",
+          "elapsedMs": 6822.747
+        },
+        {
+          "file": "packages/engine/src/mediation-resolution.test.ts",
+          "elapsedMs": 6450.913
+        },
+        {
+          "file": "apps/web/src/ui/board.test.ts",
+          "elapsedMs": 5959.505
+        }
+      ]
+    },
+    "integration": {
+      "files": 143,
+      "passed": 1147,
+      "failed": 0,
+      "pending": 4,
+      "slowFiles": [
+        {
+          "file": "apps/web/src/adapters/persistence.long-career.test.ts",
+          "elapsedMs": 477209.616
+        },
+        {
+          "file": "apps/web/src/adapters/persistence.test.ts",
+          "elapsedMs": 235879.375
+        },
+        {
+          "file": "apps/web/src/runtime/host.test.ts",
+          "elapsedMs": 208643.462
+        },
+        {
+          "file": "packages/engine/src/grid/bands.test.ts",
+          "elapsedMs": 205179.229
+        },
+        {
+          "file": "packages/engine/src/calendar.progression-esp.test.ts",
+          "elapsedMs": 188718.858
+        },
+        {
+          "file": "packages/engine/src/calendar.progression-eng.test.ts",
+          "elapsedMs": 182913.027
+        },
+        {
+          "file": "packages/engine/src/grid/engine.test.ts",
+          "elapsedMs": 153558.573
+        },
+        {
+          "file": "packages/engine/src/season.test.ts",
+          "elapsedMs": 144917.617
+        },
+        {
+          "file": "packages/engine/src/feature-replay.retained.test.ts",
+          "elapsedMs": 141043.525
+        },
+        {
+          "file": "packages/engine/src/detail.test.ts",
+          "elapsedMs": 138812.292
+        }
+      ]
+    },
+    "contract": {
+      "files": 3,
+      "passed": 39,
+      "failed": 0,
+      "pending": 0,
+      "slowFiles": [
+        {
+          "file": "tests/fixtures/portable.contract.test.ts",
+          "elapsedMs": 33077.292
+        },
+        {
+          "file": "packages/contracts/src/identity.contract.test.ts",
+          "elapsedMs": 11871.374
+        },
+        {
+          "file": "packages/contracts/src/schema.contract.test.ts",
+          "elapsedMs": 11780.297
+        }
+      ]
+    }
+  },
+  "seedParity": [
+    "before [ 2, 7, 10, 45, 56 ] 58b3591052b4274f6d797ab243a18d304acf8457a1a2697f142d8d90e56eb503",
+    "after [ 2, 7, 10, 45, 56 ] 58b3591052b4274f6d797ab243a18d304acf8457a1a2697f142d8d90e56eb503"
+  ]
+}
