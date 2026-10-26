@@ -1,7 +1,7 @@
 import type { World } from '../../contracts/src/types';
 import { staffMember } from './staff';
 import { currentDay } from './calendar';
-import { transferWindow } from './transfers';
+import { transferWindow } from './transfer-window';
 
 export const directorTrait = (w: World) => staffMember(w, 'director')?.trait;
 export const bidExtra = (w: World) => (w.direction?.finance === 'aggressive' ? 10 : 0);

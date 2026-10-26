@@ -10,6 +10,11 @@
 - docs: en  # doc language
 - push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
 
+## active
+| tag | host | mode | since | at | doing |
+|---|---|---|---|---|---|
+| r8n5 | hq-dev1-pve2-vm2 | autopilot | 2026-10-26T09:39Z | 2026-10-26T09:39Z | - |
+
 ## inbox
 - 261026 decided T471 T472 T473 T474 T475 T476 ARCH-30: the implementation sandbox makes .git read-only → host owns task finalization and commits after checking acceptance and verification logs; fresh implementation sessions edit source and task acceptance/result only, run isolated task checks directly, and return work to the host (alt: park all implementation | change sandbox permissions); existing sandbox and verification scope stay intact
 - 261026 decided review/module-boundaries-261026 T471 T472 T473 T474 T475 T476: owner delegated task creation and implementation via start-vibe until 21:00 KST, periodic verified main pushes and remote hand-off → adopt the six behavior-preserving dependency extractions (alt: broad folder moves | another review only); use sequential fresh unit sessions, with full ARCH-30 verification per publication and no product-policy changes
@@ -330,7 +335,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T472 | Separate transfer calendar queries from negotiation | ARCH | - | todo |
 | T473 | Move shared read models below Worker and UI consumers | ARCH | T471 | todo |
 | T474 | Separate completed facility facts from construction commands | ARCH | T471 | todo |
 | T475 | Separate view delta publication from the world writer | ARCH | T473 | todo |
@@ -349,10 +353,11 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 
 ## next
-- implement-task T472; then T473, T474, T475 and T476 from review/module-boundaries-261026. Deadline 21:00 KST 261026; periodic verified main pushes and remote hand-off for unfinished work.
-- T471 passed its isolated units, typecheck, lint, format and build; host reviewed the exact extraction and finalized it. The host owns Git writes for subsequent sandboxed implementation sessions, as well as the ARCH-30 batch and CI. Parked product ideations stay parked.
+- implement-task T473; remaining module-boundary refactor: T473 T474 T475 T476.
+- Preserve the owner deadline: 21:00 KST on 261026. Verified main publication only; retain unfinished work and exact next steps remotely before stopping. Parked product ideations stay parked.
 
 ## log
+- 261026 T472 done (r8n5 host): T472 구현과 acceptance/result 갱신을 완료했습니다. 단위 테스트 32개, 타입·린트·포맷 검사와 코드 동등성 검증이 통과했습니다. 기존 spec 경고와 미실행 통합/e2e 검사를 결과에 기록했으며, 변경은 호스트의 검토·커밋을 위해 남겼습니다.; Git finalization by the host because the implementation sandbox is read-only for .git
 - 261026 T471 done (host): reviewed exact event/quote extraction and 77 import-only consumer changes; 71 isolated cases, typecheck, lint, format and build passed; Git finalization completed by host
 - 261026 T471 implementation ready (r8m4): independent event/quote leaves, 77 direct consumers and isolated regression checks; required commit parked on read-only .git access, host finalization pending.
 - 261026 create-task review/module-boundaries-261026: six adopted dependency extractions T471–T476; delegated implementation, periodic verified main pushes and 21:00 KST remote hand-off
@@ -372,5 +377,3 @@
 - 261026 T467 done (q7m3): own-edge-probe buckets by prepared gap against outcomeTarget on revision 3; founding detailed 1.52 v 2.15 (aggregate 2.33), top tier on the curve (1.53 / 1.56 v 1.46); about 90% of T434's −0.9 remains at tier 4; title race unchanged beside T410; lever suggested (grid tier dependence)
 - 261026 fix CI manual progression start: WebKit retains aria-hidden exit copies after the match completed; scope the report assertion to the live dialog and await next-event readiness before checking the manual stop.
 - 261026 T466 done (q7m3): match-model revision 3: a club nobody owns adds its named manager's (ability − 50)/4, morale neutral, in prepareMatch for both paths; revisions 1/2 and pre-feature keep the flat 4; revision 2 digests kept and asserted, revision 3 grid/full-model digests and knockout ties re-recorded; future-revision tests name -4
-- 261026 create-task (q7m3): T466 symmetric match context as match-model revision 3, T467 own club's outcome curve read on revision 3 (MATCH@32)
-- 261026 update-ssot MATCH r32 (q7m3, ideation own-club-match-edge choice C, converted): MATCH-2 a club nobody owns adds its named manager's (ability − 50)/4 and neutral morale from revision 3, flat 4 before; the curve holds for the own club's fixtures too

@@ -17,7 +17,8 @@ import {
 import { releaseCost, staffMember } from '../../../../packages/engine/src/staff';
 import { positionsLabel } from './FormationPitch';
 import { gradeLabel, PlayerProfile } from './PlayerProfile';
-import { bidBoard, bidOutlook, transferWindow } from '../../../../packages/engine/src/transfers';
+import { bidBoard, bidOutlook } from '../../../../packages/engine/src/transfers';
+import { transferWindow } from '../../../../packages/engine/src/transfer-window';
 import { bidKind, freeSigning, visibleBids } from './bids';
 import { clubOf, overall } from '../../../../packages/engine/src/player-state';
 import {

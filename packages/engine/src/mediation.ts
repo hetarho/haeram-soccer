@@ -1,6 +1,6 @@
 import type { RecruitmentMediation, SigningRequest, World } from '../../contracts/src/types';
 import { careerDate, careerOrdinal, atCareerDate } from './person-careers';
-import { transferWindow, transferWindowDays } from './transfers';
+import { transferWindow, transferWindowDays } from './transfer-window';
 import { directionOption } from './direction';
 import { staffBidShare } from './director-bidding';
 import {

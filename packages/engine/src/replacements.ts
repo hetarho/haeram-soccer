@@ -4,7 +4,7 @@ import { refillPosition } from './world';
 import { POSITION_LABEL } from './player';
 import type { Player, World } from '../../contracts/src/types';
 import { currentDay } from './calendar';
-import { transferWindow, transferWindowDays } from './transfers';
+import { transferWindow, transferWindowDays } from './transfer-window';
 import { lineOf } from './player';
 import { isDelegated } from './responsibilities';
 import { pushInbox } from './inbox';

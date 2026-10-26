@@ -33,4 +33,10 @@ describe('runtime architecture boundaries', () => {
       expect(files, forbidden).not.toContain(`packages/engine/src/${forbidden}.ts`);
     expect(files).toContain('packages/engine/src/league-fixtures.ts');
   });
+  it('queries transfer windows with only the calendar, without negotiation or orchestration', () => {
+    expect(closure('packages/engine/src/transfer-window.ts')).toEqual([
+      'packages/engine/src/calendar.ts',
+      'packages/engine/src/transfer-window.ts',
+    ]);
+  });
 });

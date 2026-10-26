@@ -3,7 +3,7 @@ import { LINES } from '../../../../packages/contracts/src/player';
 import { lineOf, POSITION_LABEL } from '../../../../packages/engine/src/player';
 import type { TransferOffer } from '../../../../packages/engine/src/recruitment';
 import { isDelegated } from '../../../../packages/engine/src/responsibilities';
-import { transferWindow } from '../../../../packages/engine/src/transfers';
+import { transferWindow } from '../../../../packages/engine/src/transfer-window';
 
 export const LINE_NAMES: Readonly<Record<Line, string>> = {
   GK: '골키퍼',

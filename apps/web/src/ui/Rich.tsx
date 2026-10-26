@@ -51,10 +51,10 @@ import {
   STANCE_INFO,
   TRANSFER_STANCES,
   transferStance,
-  transferWindow,
   UNTOUCHABLE_BAR,
   UNTOUCHABLE_PRICE,
 } from '../../../../packages/engine/src/transfers';
+import { transferWindow } from '../../../../packages/engine/src/transfer-window';
 import { buildOf, cardOf } from '../../../../packages/engine/src/build';
 import { Dialog } from './Dialog';
 import { OvrBadge } from './OvrBadge';

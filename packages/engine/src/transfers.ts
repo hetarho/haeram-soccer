@@ -5,7 +5,13 @@ import { endPlayingCoachForDeparture, playingCoachDepartureCost } from './playin
 import { movePerson } from './npc-continuity';
 import type { Club, Player, TransferBid, TransferStance, World } from '../../contracts/src/types';
 import { currency } from '../../catalogs/src/index';
-import { currentDay, SEASON_END_DAY, seasonDayLabel, seasonDayOf } from './calendar';
+import { currentDay, dayCountedFrom, seasonDayLabel } from './calendar';
+import {
+  assertTransferWindow,
+  transferWindow,
+  transferWindowDays,
+  WINDOW_INFO,
+} from './transfer-window';
 import { clamp, compareIds, hash, integer, random, ratio, scaleBy } from './primitives';
 import {
   activePlayers,
@@ -36,7 +42,14 @@ import {
   staffSignings,
 } from './signings';
 
-const DAY_MS = 24 * 60 * 60 * 1000;
+export {
+  assertTransferWindow,
+  transferWindow,
+  transferWindowDays,
+  WINDOW_INFO,
+  type TransferWindowState,
+} from './transfer-window';
+
 /** Daily chance that another club bids for one of our players while a window is open. */
 export const INCOMING_BID_CHANCE = 0.06;
 const MAX_PENDING_INCOMING = 3;
@@ -44,63 +57,6 @@ const INCOMING_RESPONSE_DAYS = 5;
 const SQUAD_MINIMUM = 14;
 /** Resolved bids kept for the record; open negotiations are never pruned. */
 const CLOSED_BID_HISTORY = 60;
-export const WINDOW_INFO = {
-  summer: { name: '여름 이적시장', deadline: '9월 1일', opening: '시즌 종료 직후' },
-  winter: { name: '겨울 이적시장', deadline: '2월 1일', opening: '1월 1일' },
-} as const;
-
-export interface TransferWindowState {
-  open: boolean;
-  /** The current window while open, or the next window to open while closed. */
-  kind?: 'summer' | 'winter';
-  label: string;
-  /** Season day of the deadline while open, or of the next opening while closed. */
-  until?: number;
-  daysLeft?: number;
-}
-function daysInSeason(year: number) {
-  return (Date.UTC(year + 1, 7, 1) - Date.UTC(year, 7, 1)) / DAY_MS;
-}
-/** Season days of each window boundary; no window spans the season rollover. */
-export function transferWindowDays(year: number) {
-  return {
-    /** The summer window opens on the first day of the season that follows the final round. */
-    summerOpen: 0,
-    summerClose: seasonDayOf(year, 9, 1),
-    winterOpen: seasonDayOf(year, 1, 1),
-    winterClose: seasonDayOf(year, 2, 1),
-    /** The day this season closes, when the next summer window opens. */
-    seasonClose: SEASON_END_DAY + 1,
-  };
-}
-const dLabel = (days: number) => (days === 0 ? 'D-day' : `D-${days}`);
-/** Summer from the season close to 1 September and winter 1 January–1 February. */
-export function transferWindow(w: World, day = currentDay(w)): TransferWindowState {
-  const d = transferWindowDays(w.year);
-  const open = (kind: 'summer' | 'winter', until: number): TransferWindowState => ({
-    open: true,
-    kind,
-    label: `${WINDOW_INFO[kind].name} · ${WINDOW_INFO[kind].deadline} 마감 · ${dLabel(until - day)}`,
-    until,
-    daysLeft: until - day,
-  });
-  const closed = (kind: 'summer' | 'winter', until: number): TransferWindowState => ({
-    open: false,
-    kind,
-    label: `이적시장 닫힘 · ${WINDOW_INFO[kind].opening} 개장 · ${dLabel(until - day)}`,
-    until,
-    daysLeft: until - day,
-  });
-  if (day <= d.summerClose) return open('summer', d.summerClose);
-  if (day < d.winterOpen) return closed('winter', d.winterOpen);
-  if (day <= d.winterClose) return open('winter', d.winterClose);
-  return closed('summer', Math.max(day, d.seasonClose));
-}
-/** Fee-bearing moves need an open window; free agents sign at any time. */
-export function assertTransferWindow(w: World, freeAgent = false): void {
-  if (!freeAgent && !transferWindow(w).open)
-    throw new Error('이적시장이 닫혀 있어요. 자유계약 선수만 언제든 영입할 수 있어요.');
-}
 /**
  * What another club would consider fair for a player: his market value (→CLUB-25), steeply
  * more for ability and a young player's promise, less with age, by the division (ours unless
@@ -111,12 +67,6 @@ export function playerValue(w: World, player: Player, division?: number): string
 }
 
 const isOpen = (bid: TransferBid) => bid.status === 'pending' || bid.status === 'countered';
-/** Today's day counted from 1 August of `year`, so dues survive the season rollover. */
-function dayInSeasonOf(w: World, year: number) {
-  let day = currentDay(w);
-  for (let y = year; y < w.year; y++) day += daysInSeason(y);
-  return day;
-}
 function bidId(prefix: string, w: World, day: number, playerId: string, extra = '') {
   const id = `${prefix}:${w.year}:${day}:${extra}${playerId}`;
   return id.length <= 100 ? id : `${prefix}:${w.year}:${day}:${extra}${hash(playerId)}`;
@@ -529,7 +479,7 @@ function settleBids(w: World, open: boolean) {
   const code = clubOf(w).country;
   for (const bid of w.bids || []) {
     if (!isOpen(bid)) continue;
-    const today = dayInSeasonOf(w, bid.year);
+    const today = dayCountedFrom(w, bid.year);
     if (bid.year !== w.year && currency(code, bid.year).code !== w.currency) {
       expire(w, bid, '이적', '화폐 단위가 바뀌어 이전 금액의 협상이 끝났어요.');
     } else if (bid.direction === 'out') {

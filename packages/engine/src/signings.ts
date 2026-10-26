@@ -36,7 +36,8 @@ import { pushInbox } from './inbox';
 import { isDelegated } from './responsibilities';
 import { isForeignCandidate, transferOffers, squadCommand } from './ops-squad';
 import { POLICY_INFO, policyOf } from './policy';
-import { placeBid, transferWindow, transferWindowDays } from './transfers';
+import { placeBid } from './transfers';
+import { transferWindow, transferWindowDays } from './transfer-window';
 
 /**
  * The 단장's signings with transfers delegated (→CLUB-33, →STAFF-20): what a squad must hold before he
