@@ -14,6 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
+| p9a4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-27T09:05Z | 2026-10-27T09:05Z | - |
 
 ## inbox
 - 261027 decided ARCH-4 review/ui-engine-boundary-261027: how the UI may use engine code → only engine read leaves (closure reaches no world/season/match/grid execution), today's orchestration imports a shrink-only list guarded by an architecture test, leaves extracted for labels/constants/simple reads first (alt: publish every domain read in the worker view, which grows each view message and needs measurement | keep unrestricted imports with no guard) — F5's real domain reads (NPC squads, cost projections) stay open for a measured decision
