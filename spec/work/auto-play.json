@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-27T09:38:43.382Z",
-  "sourceCommit": "3ac0ec0fa73000a226fc85ba7fbc8475ac4ec344",
+  "snapshotAt": "2026-10-27T09:48:34.553Z",
+  "sourceCommit": "b525a8df3effe22f2c32eaf2bba29123a81baa2f",
   "group": {
     "id": "auto-play",
     "branch": "work/auto-play",
@@ -13,7 +13,7 @@
       "maxPending": 8
     },
     "review": "risky",
-    "runner": {
+    "lastRun": {
       "id": "a7bc5c3e-9a69-43ec-889a-ca03a169e8ce",
       "adapter": "builtin",
       "providers": {
@@ -36,6 +36,25 @@
         }
       ],
       "startedAt": "2026-10-27T09:06:20.606Z",
+      "stoppedAt": "2026-10-27T09:48:33.609Z",
+      "dispatched": 7,
+      "outcome": "needs-attention",
+      "failures": [
+        {
+          "attempt": "672228cf-83d5-4347-b656-a4a1fdb2c90b",
+          "submissionId": "a876a649-5444-4247-9f34-b7934d25c531",
+          "commit": "3a33dfbbc6ba643aed1344ca81b66e2ce2afc1b4",
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+        },
+        {
+          "attempt": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+          "submissionId": "089a7790-1272-4339-9d35-6bbba28e9b12",
+          "commit": "2ee6d98bb8d71520bc4a31a7dc08ba9ea38e4780",
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+        }
+      ],
       "autopilot": true,
       "decisionWaitMs": 900000
     }
@@ -60,7 +79,7 @@
       "id": "T518",
       "title": "Two-phase league round with a read-only fixture copy",
       "dep": [],
-      "status": "ready"
+      "status": "approved"
     },
     {
       "id": "T519",
@@ -279,8 +298,8 @@
       "contributors": [
         "a7bc5c3e-9a69-43ec-889a-ca03a169e8ce/worker-3"
       ],
-      "status": "ready",
-      "reason": null,
+      "status": "approved",
+      "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:contract",
       "createdAt": "2026-10-27T09:06:31.305Z",
       "startCommit": "977f2571550d708536abeaf5785069b7a34f3e2c",
       "verifiedCommit": "2ee6d98bb8d71520bc4a31a7dc08ba9ea38e4780",
@@ -296,17 +315,51 @@
         "files": 4
       },
       "dispatch": {
-        "id": "3730c07a-fda6-4e3e-ac72-f86e59f92614",
+        "id": "b7abdb17-636a-41be-b062-0402d4ed0edb",
         "runner": "a7bc5c3e-9a69-43ec-889a-ca03a169e8ce",
-        "role": "worker",
-        "slot": 3,
+        "role": "reviewer",
+        "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-27T09:06:33.206Z",
-        "finishedAt": "2026-10-27T09:31:26.579Z",
+        "startedAt": "2026-10-27T09:42:47.542Z",
+        "finishedAt": "2026-10-27T09:45:21.462Z",
         "error": null,
-        "summary": "T518이 끝났습니다. 리그 라운드를 두 단계로 나눴습니다. 먼저 모든 경기를 계산하고, 그다음 경기 순서대로 기록합니다. 한 라운드에 같은 클럽이 두 번 나오면 예전처럼 한 경기씩 계산하고 기록합니다.\n\n새 파일 `packages/engine/src/round-jobs.ts`에 다음을 넣었습니다.\n- 다른 클럽 경기가 읽는 월드 키 목록 `FIXTURE_READ_KEYS`와, 그 키만 담은 읽기 전용 사본을 만드는 `readCopy`\n- 라운드 작업 목록 `roundJobs`, 헬퍼가 실행할 순수 함수 `simulateRoundJob`\n- 결과의 선수 ID를 월드의 선수단과 다시 잇는 `jobPlayback`(맞지 않는 결과는 엔진이 직접 다시 계산)\n- 월드마다 따로 주입하는 `setRoundSimulator`(기본은 없음)\n\n시뮬레이터는 우리 리그 경기가 있는 날에만 쓰입니다. 다른 경기를 넘겨 시작시키고, 그동안 엔진 스레드에서 우리 경기를 치른 뒤 결과를 받습니다. 결과가 `undefined`면 엔진이 직접 계산합니다. T519 호스트가 비동기로 기다릴 수 있도록 `prepareRound`/`completeRound` 한 쌍도 `season.ts`에서 공개했고, 이 둘 사이에서는 `advanceDays`/`advanceRound`가 오류를 냅니다.\n\n**확인한 것**\n- day bench(프로토타입 bench-b 이식본) 해시: 시뮬레이터 없이 `098fdcae5ada357b`, 역순 처리 + JSON 왕복 시뮬레이터로도 같은 값입니다.\n- `--matches 30`(301일): 변경 전 트리, 변경 후, 역순 시뮬레이터 모두 `04797292c875ce29`로 같습니다.\n- typecheck, lint, format:check 통과.\n- `round-jobs.test.ts` 3개 통과: (a) 60일 동안 동기 시뮬레이터, prepare/complete 쌍, 헬퍼 실패를 섞어 돌려도 시뮬레이터 없는 경우와 월드가 같음, (b) Proxy 추적으로 목록 밖 키 읽기·쓰기 없음, (c) 클럽 중복 시 예전 방식으로 처리.\n- 변경 영향 단위·contract 테스트: 598개 중 597개 통과. `staff.hiring.test.ts` 1건이 병렬 실행 중 37초로 제한 시간(30초)을 넘겼고, 단독 재실행에서는 17개 모두 6.3초에 통과했습니다.\n\n**남은 것**\n- acceptance에 적힌 integration 테스트(`season`/`world`/`calendar.fast-path`)는 여기서 돌리지 않았습니다. 마지막 검증 단계로 넘기며 limits에 적었습니다.\n- 단위 테스트 (a)는 필요한 경기만 남긴 합성 BEL 월드를 쓰고, 기준 실행 결과는 캐시합니다. 그래도 7–12초가 걸려 다른 단위 테스트보다 무겁습니다.\n- `world.ts`는 바꾸지 않았습니다. 선수단을 헬퍼로 보내는 방식은 손해였다는 메모대로 프로토타입의 `seedNpcSquads`는 가져오지 않았습니다."
+        "summary": "T518 meets its acceptance and ARCH-6 r24, so I'm approving it. The risk flag was only about size (406 lines over 4 files). Most of that is the new round-jobs.ts module and its test; the season.ts change is a focused rewrite of the round step. `playRound` now runs in two phases: it computes every fixture first, then records them in fixture order. The record loop is unchanged from the old code. Before anything is recorded, each simulator result is matched back to the world's own squads, so recording one fixture can't change the roster used for another. If a result doesn't match its fixture, or names a player the world's squads don't have, the engine computes that fixture itself. A round that names a club twice still uses the old interleaved loop. The simulator is called only on a league day that includes our fixture, and our match plays on the engine meanwhile. Cup and continental days are unchanged. `prepareRound`/`completeRound` give T519 a synchronous split point. `beginDays` blocks day and round stepping while a round is pending, and `prepareRound` changes nothing when it returns false. I checked that `squad()`/`continuousSquad` read only `people`, `seed`, `year` and `playerClub` for NPC clubs, so own players out on loan don't pull `players` into the copy. The NPC squad cache is keyed per world, so a copy rebuilds its own squads as the impl notes intend. The three tests match acceptance (a)–(c). Test (a) also covers the prepare/complete pair and a helper failure, and checks the copy's keys. The worker reports matching day-bench hashes, with and without the simulator, at 49 and 301 days. The commit merges cleanly onto b525a8df; the T517/T520 changes since its parent are in the grid engine and the web runtime, not season.ts. Not verified here: the integration tests (season/world/calendar.fast-path) were not run by the worker, and the coordinator's verify list does not include them, so they rest on the batch gate."
+      },
+      "review": {
+        "id": "6c2a6bfe-7ec3-4701-ad30-c4bcc942c6ec",
+        "owner": "a7bc5c3e-9a69-43ec-889a-ca03a169e8ce/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T518 meets its acceptance and ARCH-6 r24, so I'm approving it. The risk flag was only about size (406 lines over 4 files). Most of that is the new round-jobs.ts module and its test; the season.ts change is a focused rewrite of the round step. `playRound` now runs in two phases: it computes every fixture first, then records them in fixture order. The record loop is unchanged from the old code. Before anything is recorded, each simulator result is matched back to the world's own squads, so recording one fixture can't change the roster used for another. If a result doesn't match its fixture, or names a player the world's squads don't have, the engine computes that fixture itself. A round that names a club twice still uses the old interleaved loop. The simulator is called only on a league day that includes our fixture, and our match plays on the engine meanwhile. Cup and continental days are unchanged. `prepareRound`/`completeRound` give T519 a synchronous split point. `beginDays` blocks day and round stepping while a round is pending, and `prepareRound` changes nothing when it returns false. I checked that `squad()`/`continuousSquad` read only `people`, `seed`, `year` and `playerClub` for NPC clubs, so own players out on loan don't pull `players` into the copy. The NPC squad cache is keyed per world, so a copy rebuilds its own squads as the impl notes intend. The three tests match acceptance (a)–(c). Test (a) also covers the prepare/complete pair and a helper failure, and checks the copy's keys. The worker reports matching day-bench hashes, with and without the simulator, at 49 and 301 days. The commit merges cleanly onto b525a8df; the T517/T520 changes since its parent are in the grid engine and the web runtime, not season.ts. Not verified here: the integration tests (season/world/calendar.fast-path) were not run by the worker, and the coordinator's verify list does not include them, so they rest on the batch gate.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/season.ts:868 (T518, playRound results loop) / round-jobs.ts:89 jobPlayback",
+            "message": "`completeRound` says a missing or unusable result is computed here, but a results array with a null entry crashes on `result.record.id`. A null entry is what a sparse array becomes after a JSON or worker round trip. Only true holes are skipped by `forEach`. Suggest skipping null entries, e.g. `if (!result) return`, so a partial helper failure from T519 falls back instead of throwing mid-round."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/season.ts:961-966 (T518, prepareRound)",
+            "message": "`w.calendar`/`w.round++` change before `start` runs. If `start` throws (for example a postMessage clone error in T519's host), the world is left mid-day with no pending entry, and the next `advanceDays` would skip that round's fixtures. ARCH-6's checkpoint restore covers this, but T519 should either guard `start` or restore the checkpoint on that error. Note it for T519."
+          },
+          {
+            "priority": "P3",
+            "where": "spec/tasks/T518.round-two-phase-and-read-copy.md acceptance item 6 (T518)",
+            "message": "Item 6 is checked [v], but the result's limits say the integration run (season.test.ts, world.test.ts, calendar.fast-path.test.ts) was not done. The coordinator's verify command (unit + contract) does not cover it either. The batch gate must run those integration files before T518 counts as done."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/round-jobs.test.ts:51 (T518, test a)",
+            "message": "The unit test takes 7–12 s warm and 16.6 s cold. In the same parallel run, another file timed out at 37 s against the 30 s limit. Consider an explicit per-test timeout, or a shorter day count that still covers at least two own match days, so the unit gate doesn't fail intermittently under load."
+          }
+        ],
+        "commit": "2ee6d98bb8d71520bc4a31a7dc08ba9ea38e4780",
+        "baseCommit": "b525a8df3effe22f2c32eaf2bba29123a81baa2f",
+        "submissionId": "089a7790-1272-4339-9d35-6bbba28e9b12",
+        "createdAt": "2026-10-27T09:42:46.481Z",
+        "finishedAt": "2026-10-27T09:45:21.403Z"
       },
       "steps": [
         {
@@ -350,6 +403,8 @@
       "submittedBase": "977f2571550d708536abeaf5785069b7a34f3e2c",
       "submissionId": "c989d48f-9c6d-494b-af0d-95a8b0d0845b",
       "submittedAt": "2026-10-27T09:34:36.626Z",
+      "integratedCommit": "b525a8df3effe22f2c32eaf2bba29123a81baa2f",
+      "integratedAt": "2026-10-27T09:42:45.339Z",
       "risk": {
         "risky": false,
         "reasons": [],
@@ -401,6 +456,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-27T09:31:27.487Z",
           "finishedAt": "2026-10-27T09:34:36.320Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:contract",
+          "startedAt": "2026-10-27T09:38:43.587Z",
+          "finishedAt": "2026-10-27T09:42:45.111Z"
         }
       ]
     }
@@ -1592,6 +1654,261 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 733,
+      "at": "2026-10-27T09:42:45.255Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "64f325cb-4199-4d07-9de2-694cd3b444c8",
+      "taskId": "T517",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:contract",
+            "startedAt": "2026-10-27T09:38:43.587Z",
+            "finishedAt": "2026-10-27T09:42:45.111Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 734,
+      "at": "2026-10-27T09:42:45.339Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "64f325cb-4199-4d07-9de2-694cd3b444c8",
+      "taskId": "T517",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "b525a8df3effe22f2c32eaf2bba29123a81baa2f",
+        "integratedAt": "2026-10-27T09:42:45.339Z"
+      }
+    },
+    {
+      "sequence": 735,
+      "at": "2026-10-27T09:42:46.481Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "6c2a6bfe-7ec3-4701-ad30-c4bcc942c6ec",
+          "owner": "a7bc5c3e-9a69-43ec-889a-ca03a169e8ce/reviewer-1",
+          "status": "reviewing",
+          "commit": "2ee6d98bb8d71520bc4a31a7dc08ba9ea38e4780",
+          "baseCommit": "b525a8df3effe22f2c32eaf2bba29123a81baa2f",
+          "submissionId": "089a7790-1272-4339-9d35-6bbba28e9b12",
+          "createdAt": "2026-10-27T09:42:46.481Z"
+        }
+      }
+    },
+    {
+      "sequence": 736,
+      "at": "2026-10-27T09:42:47.542Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "b7abdb17-636a-41be-b062-0402d4ed0edb",
+          "runner": "a7bc5c3e-9a69-43ec-889a-ca03a169e8ce",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T09:42:47.542Z"
+        }
+      }
+    },
+    {
+      "sequence": 737,
+      "at": "2026-10-27T09:42:47.601Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "b7abdb17-636a-41be-b062-0402d4ed0edb",
+          "runner": "a7bc5c3e-9a69-43ec-889a-ca03a169e8ce",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T09:42:47.542Z"
+        }
+      }
+    },
+    {
+      "sequence": 738,
+      "at": "2026-10-27T09:45:21.403Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "6c2a6bfe-7ec3-4701-ad30-c4bcc942c6ec",
+          "owner": "a7bc5c3e-9a69-43ec-889a-ca03a169e8ce/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T518 meets its acceptance and ARCH-6 r24, so I'm approving it. The risk flag was only about size (406 lines over 4 files). Most of that is the new round-jobs.ts module and its test; the season.ts change is a focused rewrite of the round step. `playRound` now runs in two phases: it computes every fixture first, then records them in fixture order. The record loop is unchanged from the old code. Before anything is recorded, each simulator result is matched back to the world's own squads, so recording one fixture can't change the roster used for another. If a result doesn't match its fixture, or names a player the world's squads don't have, the engine computes that fixture itself. A round that names a club twice still uses the old interleaved loop. The simulator is called only on a league day that includes our fixture, and our match plays on the engine meanwhile. Cup and continental days are unchanged. `prepareRound`/`completeRound` give T519 a synchronous split point. `beginDays` blocks day and round stepping while a round is pending, and `prepareRound` changes nothing when it returns false. I checked that `squad()`/`continuousSquad` read only `people`, `seed`, `year` and `playerClub` for NPC clubs, so own players out on loan don't pull `players` into the copy. The NPC squad cache is keyed per world, so a copy rebuilds its own squads as the impl notes intend. The three tests match acceptance (a)–(c). Test (a) also covers the prepare/complete pair and a helper failure, and checks the copy's keys. The worker reports matching day-bench hashes, with and without the simulator, at 49 and 301 days. The commit merges cleanly onto b525a8df; the T517/T520 changes since its parent are in the grid engine and the web runtime, not season.ts. Not verified here: the integration tests (season/world/calendar.fast-path) were not run by the worker, and the coordinator's verify list does not include them, so they rest on the batch gate.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/season.ts:868 (T518, playRound results loop) / round-jobs.ts:89 jobPlayback",
+              "message": "`completeRound` says a missing or unusable result is computed here, but a results array with a null entry crashes on `result.record.id`. A null entry is what a sparse array becomes after a JSON or worker round trip. Only true holes are skipped by `forEach`. Suggest skipping null entries, e.g. `if (!result) return`, so a partial helper failure from T519 falls back instead of throwing mid-round."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/season.ts:961-966 (T518, prepareRound)",
+              "message": "`w.calendar`/`w.round++` change before `start` runs. If `start` throws (for example a postMessage clone error in T519's host), the world is left mid-day with no pending entry, and the next `advanceDays` would skip that round's fixtures. ARCH-6's checkpoint restore covers this, but T519 should either guard `start` or restore the checkpoint on that error. Note it for T519."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T518.round-two-phase-and-read-copy.md acceptance item 6 (T518)",
+              "message": "Item 6 is checked [v], but the result's limits say the integration run (season.test.ts, world.test.ts, calendar.fast-path.test.ts) was not done. The coordinator's verify command (unit + contract) does not cover it either. The batch gate must run those integration files before T518 counts as done."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/round-jobs.test.ts:51 (T518, test a)",
+              "message": "The unit test takes 7–12 s warm and 16.6 s cold. In the same parallel run, another file timed out at 37 s against the 30 s limit. Consider an explicit per-test timeout, or a shorter day count that still covers at least two own match days, so the unit gate doesn't fail intermittently under load."
+            }
+          ],
+          "commit": "2ee6d98bb8d71520bc4a31a7dc08ba9ea38e4780",
+          "baseCommit": "b525a8df3effe22f2c32eaf2bba29123a81baa2f",
+          "submissionId": "089a7790-1272-4339-9d35-6bbba28e9b12",
+          "createdAt": "2026-10-27T09:42:46.481Z",
+          "finishedAt": "2026-10-27T09:45:21.403Z"
+        }
+      }
+    },
+    {
+      "sequence": 739,
+      "at": "2026-10-27T09:45:21.462Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "b7abdb17-636a-41be-b062-0402d4ed0edb",
+          "runner": "a7bc5c3e-9a69-43ec-889a-ca03a169e8ce",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T09:42:47.542Z",
+          "finishedAt": "2026-10-27T09:45:21.462Z",
+          "error": null,
+          "summary": "T518 meets its acceptance and ARCH-6 r24, so I'm approving it. The risk flag was only about size (406 lines over 4 files). Most of that is the new round-jobs.ts module and its test; the season.ts change is a focused rewrite of the round step. `playRound` now runs in two phases: it computes every fixture first, then records them in fixture order. The record loop is unchanged from the old code. Before anything is recorded, each simulator result is matched back to the world's own squads, so recording one fixture can't change the roster used for another. If a result doesn't match its fixture, or names a player the world's squads don't have, the engine computes that fixture itself. A round that names a club twice still uses the old interleaved loop. The simulator is called only on a league day that includes our fixture, and our match plays on the engine meanwhile. Cup and continental days are unchanged. `prepareRound`/`completeRound` give T519 a synchronous split point. `beginDays` blocks day and round stepping while a round is pending, and `prepareRound` changes nothing when it returns false. I checked that `squad()`/`continuousSquad` read only `people`, `seed`, `year` and `playerClub` for NPC clubs, so own players out on loan don't pull `players` into the copy. The NPC squad cache is keyed per world, so a copy rebuilds its own squads as the impl notes intend. The three tests match acceptance (a)–(c). Test (a) also covers the prepare/complete pair and a helper failure, and checks the copy's keys. The worker reports matching day-bench hashes, with and without the simulator, at 49 and 301 days. The commit merges cleanly onto b525a8df; the T517/T520 changes since its parent are in the grid engine and the web runtime, not season.ts. Not verified here: the integration tests (season/world/calendar.fast-path) were not run by the worker, and the coordinator's verify list does not include them, so they rest on the batch gate."
+        }
+      }
+    },
+    {
+      "sequence": 740,
+      "at": "2026-10-27T09:45:21.673Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 741,
+      "at": "2026-10-27T09:48:32.159Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:contract"
+      }
+    },
+    {
+      "sequence": 742,
+      "at": "2026-10-27T09:48:33.609Z",
+      "type": "group",
+      "group": "auto-play",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "a7bc5c3e-9a69-43ec-889a-ca03a169e8ce",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T09:06:20.606Z",
+          "stoppedAt": "2026-10-27T09:48:33.609Z",
+          "dispatched": 7,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "672228cf-83d5-4347-b656-a4a1fdb2c90b",
+              "submissionId": "a876a649-5444-4247-9f34-b7934d25c531",
+              "commit": "3a33dfbbc6ba643aed1344ca81b66e2ce2afc1b4",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            },
+            {
+              "attempt": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+              "submissionId": "089a7790-1272-4339-9d35-6bbba28e9b12",
+              "commit": "2ee6d98bb8d71520bc4a31a7dc08ba9ea38e4780",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
