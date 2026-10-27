@@ -384,7 +384,7 @@
 - o7h4 pushed T490–T493 (owner office, home season card, records sub-screen) to main after the ARCH-30 batch passed on eaf5f3d1; confirm its decided inbox items.
 
 ## log
-- 261027 h7t3 closed: T510–T515 merged on work/h7t3 and pushed to main at the owner's request; batch: unit 1192, integration 1174/1175 (persistence.long-career timed out under host load, passes alone in 12 s), contract/build/Chromium at push in progress
+- 261027 h7t3 closed: T510–T515 merged on work/h7t3 and pushed to main at the owner's request; batch: unit 1192, integration 1174/1175 (persistence.long-career timed out under host load, passes alone in 12 s), contract 42, catalogs, presentation and build passed; Chromium not run locally (port 4173 busy), left to CI
 - 261027 T510–T515 done: trust-floor contracts, STAFF-47 resignations, zero-match interims hidden, transfer facts + 이적 기록 tab, canvas heat maps
 - 261027 create-task STAFF@36 HIST@18 WEB@159 (h7t3): T510–T515 (foundation + 4 lanes)
 - 261027 update-ssot STAFF r36 HIST r18 WEB r159 (h7t3): trust floor resignations, zero-match interims hidden, transfer fee records, broadcast heat maps
