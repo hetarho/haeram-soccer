@@ -14,7 +14,6 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
-| n3w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T12:15Z | 2026-10-27T12:15Z | - |
 | g8u6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T16:41Z | 2026-10-27T16:42Z | T532 |
 
 ## inbox
@@ -371,7 +370,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | doing@261027.n3w8 |
 | T530 | Work-based owner office and shared approval controls | WEB ARCH | - | doing@261028.g8u6 |
 | T531 | Home approval requests visit their working desk | WEB ARCH | T530 | doing@261028.g8u6 |
 | T532 | Season and History competition hubs | WEB ARCH | T531 | doing@261027.g8u6 |
@@ -394,10 +392,11 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- n3w8 (work auto-play-2): T516–T521, T524, T525 on main after the group gate passed on 2573791c (typecheck, lint, format, unit, integration, contract, catalogs, presentation, build, Chromium); explore T522 (automatic play read in the built game, `pnpm exec tsx scripts/automatic-play-read.mjs`) runs next in the main session on a quiet machine.
+- n3w8 closed (report 261027-n3w8): automatic play T516–T525 on main (group gate on 2573791c); T522 read on the built game: 0 stalls at x1/x2/x5/x10, x10 10 days a second, no main-thread long task, helpers on (M1 Max, headless Chromium) — a CPU-throttled phone-class read is the open question. Inbox: confirm the WEB-18 read decisions (T524 → T525) and the WEB-69 framed-tabs suggestion.
 - g8u6 owns T530–T533: requested gameplay hierarchy; completed code collected locally, final batch and main push after the whole slice.
 
 ## log
+- 261028 T522 done (n3w8): built-game read 0 stalls at every pace, x10 10.0 days/s, season-close jump only; reports/automatic-play-read-261028
 - 261028 share WEB r164/T530–T533 planning and reserve the gameplay hierarchy implementation for g8u6.
 - 261027 T525 integrated
 - 261028 update-ssot WEB r163 + create-task → T525 (n3w8): reads wait for the computed days at the pace instead of showing them at once; T524 integrated, its gate run failed records.spec on the calendar jump
@@ -417,4 +416,3 @@
 - 261027 T504 done: common resource skins and JSON metadata, compact UI encodings, 276 responsive facility variants, demand-driven staging and art checks; affected validation passed
 - 261027 create-task WEB r159 → T504; implementation started (r6u2)
 - 261027 update-ssot WEB start (r6u2): portable resource skins and asset delivery audit
-- 261027 T495 done: 32 competition-specific trophy variants across four themes, country-aware cabinet selection and safe fallback; unit/integration/contract and all 299 Chromium journeys passed, with unchanged-timeout recovery for load-related tests.
