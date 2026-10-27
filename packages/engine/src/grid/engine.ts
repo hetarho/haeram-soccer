@@ -631,7 +631,8 @@ export function playGrid(setup: GridSetup): GridResult {
     s.owner = [side, d.target];
     s.ball = [aim[0], aim[1]];
     s.received = [side, d.target];
-    updateIntentions(s);
+    // Only the defenders' targets are read, so the attack plans its box runs alone (`planCoordination`).
+    updateIntentions(s, false, true);
     const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
     const reads = new Map<GridPlayer, { to: [number, number]; at: number }>();
     for (const gp of s.players[other(side)])

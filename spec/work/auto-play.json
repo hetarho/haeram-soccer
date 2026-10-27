@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-27T09:34:39.628Z",
-  "sourceCommit": "977f2571550d708536abeaf5785069b7a34f3e2c",
+  "snapshotAt": "2026-10-27T09:38:43.382Z",
+  "sourceCommit": "3ac0ec0fa73000a226fc85ba7fbc8475ac4ec344",
   "group": {
     "id": "auto-play",
     "branch": "work/auto-play",
@@ -42,10 +42,10 @@
   },
   "summary": {
     "total": 7,
-    "completed": 1,
-    "remaining": 6,
+    "completed": 2,
+    "remaining": 5,
     "running": 0,
-    "review": 3,
+    "review": 2,
     "blocked": 0,
     "unassigned": 3
   },
@@ -53,12 +53,6 @@
     {
       "id": "T516",
       "title": "Automatic play without the match-day moment",
-      "dep": [],
-      "status": "approved"
-    },
-    {
-      "id": "T517",
-      "title": "Result-identical cuts in the own match and a shared day bench",
       "dep": [],
       "status": "approved"
     },
@@ -119,6 +113,8 @@
       "submittedBase": "977f2571550d708536abeaf5785069b7a34f3e2c",
       "submissionId": "85ab02a6-8143-4cea-b391-87f603f11b9e",
       "submittedAt": "2026-10-27T09:19:20.745Z",
+      "integratedCommit": "3ac0ec0fa73000a226fc85ba7fbc8475ac4ec344",
+      "integratedAt": "2026-10-27T09:38:41.346Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -178,6 +174,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-27T09:17:18.008Z",
           "finishedAt": "2026-10-27T09:19:20.371Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:contract",
+          "startedAt": "2026-10-27T09:34:40.113Z",
+          "finishedAt": "2026-10-27T09:38:40.390Z"
         }
       ]
     },
@@ -339,7 +342,7 @@
       "contributors": [
         "a7bc5c3e-9a69-43ec-889a-ca03a169e8ce/worker-4"
       ],
-      "status": "approved",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-27T09:06:35.166Z",
       "startCommit": "977f2571550d708536abeaf5785069b7a34f3e2c",
@@ -1538,6 +1541,53 @@
       "group": "auto-play",
       "attemptId": "d66b3aab-7d7e-44a7-bc42-ea39f9f19543",
       "taskId": "T520",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 730,
+      "at": "2026-10-27T09:38:40.924Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "d66b3aab-7d7e-44a7-bc42-ea39f9f19543",
+      "taskId": "T520",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:contract",
+            "startedAt": "2026-10-27T09:34:40.113Z",
+            "finishedAt": "2026-10-27T09:38:40.390Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 731,
+      "at": "2026-10-27T09:38:41.346Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "d66b3aab-7d7e-44a7-bc42-ea39f9f19543",
+      "taskId": "T520",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "3ac0ec0fa73000a226fc85ba7fbc8475ac4ec344",
+        "integratedAt": "2026-10-27T09:38:41.346Z"
+      }
+    },
+    {
+      "sequence": 732,
+      "at": "2026-10-27T09:38:41.562Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "64f325cb-4199-4d07-9de2-694cd3b444c8",
+      "taskId": "T517",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
