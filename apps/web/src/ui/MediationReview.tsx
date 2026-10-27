@@ -9,7 +9,7 @@ import type {
 import type { GameClient } from '../runtime/client';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { directionOption } from '../../../../packages/engine/src/direction';
-import { requestLabel } from '../../../../packages/engine/src/signings';
+import { requestLabel } from '../../../../packages/engine/src/player';
 import { isDelegated } from '../../../../packages/engine/src/responsibilities';
 import { Dialog } from './Dialog';
 import { Money } from './Money';

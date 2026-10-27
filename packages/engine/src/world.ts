@@ -193,6 +193,8 @@ export function makeManager(
   };
 }
 import { FOUNDING_YEAR } from './calendar';
+import { initialElo } from './elo';
+export { initialElo } from './elo';
 export { EUROPEAN_CUP_START, FOUNDING_YEAR } from './calendar';
 /** Amateur clubs per country below the professional pyramid; with the owner's club, a league of 16. */
 import { AMATEUR_CLUBS } from './league-fixtures';
@@ -256,10 +258,6 @@ export function stature(seed: string, id: string) {
 export function tierLevel(tier: number, amateur = false) {
   const [low, high] = tierStrengthRange(tier, amateur);
   return (low + high) / 2;
-}
-/** A rough Club Elo from strength: one rating point is about 16 Elo points (→HIST-12). */
-export function initialElo(strength: number) {
-  return Math.round(1350 + (strength - 60) * 16);
 }
 const colorOf = (r: () => number) =>
   '#' +

@@ -12,19 +12,14 @@ import { simulateMatch } from './match';
 import type { DecideRule } from './grid/setup';
 import { recordMatch } from './season';
 import { fixtureDay } from './calendar';
+import { tieAggregate, tieId } from './competition-keys';
+export { roundLabel, tieAggregate, tieId } from './competition-keys';
 
 export type Settlement = (w: World, p: MatchPlayback) => void;
 
 /** A fixture is due on its day, or, for whole-round jumps, once its round has been reached. */
 export function isDue(w: World, f: Fixture, day?: number) {
   return !f.score && (day === undefined ? f.round <= w.round : fixtureDay(f) <= day);
-}
-
-/** Media name of a knockout round from the clubs it starts with: 결승, 4강, 8강 … or N라운드. */
-export function roundLabel(clubs: number, index: number) {
-  if (clubs === 2) return '결승';
-  if (clubs <= 64 && (clubs & (clubs - 1)) === 0) return `${clubs}강`;
-  return `${index + 1}라운드`;
 }
 
 /** Knockout rounds needed to find one winner among `n` clubs. */
@@ -63,11 +58,6 @@ export function seededDraw(seeded: readonly string[]): KnockoutTie[] {
   for (let i = 0; i < seeded.length / 2; i++)
     ties.push({ home: seeded[seeded.length - 1 - i], away: seeded[i] });
   return ties;
-}
-
-/** A tie's fixture ID; `year` reaches the fixtures of a season already closed. */
-export function tieId(w: World, key: string, round: number, tie: number, year = w.year) {
-  return `${year}:${key}:k${round}:${tie}`;
 }
 
 /** The fixtures of one tie: a single match, or a first leg and its return (a round later). */
@@ -197,19 +187,6 @@ export function decideTie(w: World, tie: KnockoutTie, legs: Fixture[], awayGoals
     tie.decided = 'pens';
   }
   return true;
-}
-
-/** Aggregate score of a tie from the first-leg home side's view, for display. */
-export function tieAggregate(tie: KnockoutTie, legs: readonly Fixture[]): [number, number] {
-  return legs.reduce<[number, number]>(
-    (sum, f) =>
-      f.score
-        ? f.home === tie.home
-          ? [sum[0] + f.score.home, sum[1] + f.score.away]
-          : [sum[0] + f.score.away, sum[1] + f.score.home]
-        : sum,
-    [0, 0],
-  );
 }
 
 /** Clubs still standing after a fully decided round: seeded byes first, then the winners. */

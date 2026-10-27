@@ -1,4 +1,4 @@
-import type { ManagerStyle, Tactic } from '../../contracts/src/types';
+import type { ManagerStyle, SigningRequest, Tactic } from '../../contracts/src/types';
 import {
   ATTRIBUTES,
   type Attribute,
@@ -765,3 +765,13 @@ export function generateProfile(
   };
   return { attrs, positions, personality, traits: generateTraits(rng, position, rating, attrs) };
 }
+/** A player of each line as a noun (수비수), beside LINE_LABEL's line name (수비). */
+export const LINE_NAME: Readonly<Record<Line, string>> = {
+  GK: '골키퍼',
+  DF: '수비수',
+  MF: '미드필더',
+  FW: '공격수',
+};
+/** A request in words: the line it asks for, or the formation slot's position. */
+export const requestLabel = (request: Pick<SigningRequest, 'line' | 'position'>) =>
+  request.position ? `${POSITION_LABEL[request.position]} 자리` : LINE_NAME[request.line];

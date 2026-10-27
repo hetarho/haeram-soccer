@@ -66,12 +66,9 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/staff.ts',
     'packages/engine/src/transfers.ts',
   ],
-  'apps/web/src/ui/CupHistory.tsx': ['packages/engine/src/cups.ts'],
   'apps/web/src/ui/CupsView.tsx': [
-    'packages/engine/src/cups.ts',
     'packages/engine/src/europe.ts',
     'packages/engine/src/knockout.ts',
-    'packages/engine/src/season.ts',
   ],
   'apps/web/src/ui/EventCenter.tsx': [
     'packages/engine/src/contracts.ts',
@@ -88,7 +85,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/strategy.ts',
     'packages/engine/src/world.ts',
   ],
-  'apps/web/src/ui/MediationReview.tsx': ['packages/engine/src/signings.ts'],
   'apps/web/src/ui/OvrBadge.tsx': ['packages/engine/src/world.ts'],
   'apps/web/src/ui/Pitch.tsx': [
     'packages/engine/src/managerMarket.ts',
@@ -144,7 +140,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/strategy.ts',
     'packages/engine/src/world.ts',
   ],
-  'apps/web/src/ui/TeamSheetDialog.tsx': ['packages/engine/src/ratings.ts'],
   'apps/web/src/ui/TrainingOrderSheet.tsx': [
     'packages/engine/src/academy.ts',
     'packages/engine/src/coach-training.ts',
@@ -163,15 +158,10 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/presets.ts',
     'packages/engine/src/projection.ts',
   ],
-  'apps/web/src/ui/bracketTree.ts': [
-    'packages/engine/src/cups.ts',
-    'packages/engine/src/europe.ts',
-    'packages/engine/src/knockout.ts',
-  ],
+  'apps/web/src/ui/bracketTree.ts': ['packages/engine/src/europe.ts'],
   'apps/web/src/ui/cupCompetitions.ts': ['packages/engine/src/europe.ts'],
   'apps/web/src/ui/cupRoute.ts': ['packages/engine/src/stages.ts'],
   'apps/web/src/ui/discipline.ts': ['packages/engine/src/world.ts'],
-  'apps/web/src/ui/league.ts': ['packages/engine/src/season.ts'],
   'apps/web/src/ui/officeChanges.ts': ['packages/engine/src/pending-work-preview.ts'],
   'apps/web/src/ui/officeSummary.ts': ['packages/engine/src/presets.ts'],
   'apps/web/src/ui/outcome.ts': [
@@ -179,7 +169,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/training.ts',
     'packages/engine/src/world.ts',
   ],
-  'apps/web/src/ui/recordTrends.ts': ['packages/engine/src/ratings.ts'],
   'apps/web/src/ui/scouting.ts': ['packages/engine/src/career-assessment.ts'],
   'apps/web/src/ui/strategies.ts': ['packages/engine/src/presets.ts'],
   'apps/web/src/ui/tacticComparison.ts': ['packages/engine/src/strategy.ts'],

@@ -1,6 +1,6 @@
 import type { Club, Fixture, TableRow, World } from '../../../../packages/contracts/src/types';
 import { COUNTRIES, country } from '../../../../packages/catalogs/src/index';
-import { groupKey } from '../../../../packages/engine/src/season';
+import { groupKey } from '../../../../packages/engine/src/league-fixtures';
 import { divisionName } from '../presentation/competitionLabels';
 
 export { divisionName };

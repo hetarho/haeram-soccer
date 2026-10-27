@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import type { Fixture, KnockoutRound, World } from '../../../../packages/contracts/src/types';
 import { fixtureDate } from '../../../../packages/engine/src/calendar';
-import { legsOf, tieAggregate } from '../../../../packages/engine/src/knockout';
+import { legsOf } from '../../../../packages/engine/src/knockout';
+import { tieAggregate } from '../../../../packages/engine/src/competition-keys';
 import { treeColumns, treeStart, type Slot } from './bracketTree';
 import { ClubLink } from './ClubLink';
 import c from './CupsView.module.css';

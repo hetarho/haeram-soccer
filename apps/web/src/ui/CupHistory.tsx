@@ -8,7 +8,7 @@ import type {
   SeasonArchive,
   World,
 } from '../../../../packages/contracts/src/types';
-import { domesticCupName } from '../../../../packages/engine/src/cups';
+import { domesticCupName } from '../../../../packages/engine/src/competition-keys';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import type { GameClient } from '../runtime/client';
 import { Bracket, Club } from './Bracket';

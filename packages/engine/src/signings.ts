@@ -14,7 +14,8 @@ import type {
   World,
 } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
-import { LINE_MINIMUM, lineOf, POSITION_LABEL } from './player';
+import { LINE_MINIMUM, LINE_NAME, lineOf, POSITION_LABEL, requestLabel } from './player';
+export { requestLabel } from './player';
 import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS } from './calendar';
 import { MARKET_REFRESH_ROUNDS } from './managerMarket';
 import { clamp, compareIds, ratio, scaleBy } from './primitives';
@@ -59,12 +60,6 @@ export const SIGNING_CONFIG = {
   /** Trust a manager loses when a window closes with none of his requests met. */
   unmetTrust: 3,
 };
-const LINE_NAME: Readonly<Record<Line, string>> = {
-  GK: '골키퍼',
-  DF: '수비수',
-  MF: '미드필더',
-  FW: '공격수',
-};
 
 type Offer = ReturnType<typeof transferOffers>[number];
 /**
@@ -84,9 +79,6 @@ export type SigningNeed = (
       margin: number;
     }
 ) & { requested?: SigningRequest };
-/** A request in words: the line it asks for, or the formation slot's position. */
-export const requestLabel = (request: Pick<SigningRequest, 'line' | 'position'>) =>
-  request.position ? `${POSITION_LABEL[request.position]} 자리` : LINE_NAME[request.line];
 /** Whether a player fits a slot request: he plays its position at 준수 or better (→CLUB-33). */
 const playsAt = (p: Player, position: Position) =>
   (p.positions[position] ?? 0) >= SIGNING_CONFIG.fitLevel;

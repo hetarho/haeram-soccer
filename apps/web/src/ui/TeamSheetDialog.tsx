@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { Fixture, World } from '../../../../packages/contracts/src/types';
 import { fixtureDate, fixtureDay } from '../../../../packages/engine/src/calendar';
-import { eloOf } from '../../../../packages/engine/src/ratings';
+import { eloOf } from '../../../../packages/engine/src/elo';
 import type { GameClient } from '../runtime/client';
 import type { HeadToHead, Meeting } from '../runtime/headToHead';
 import { useGameState } from '../runtime/store';
