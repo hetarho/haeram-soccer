@@ -3,8 +3,7 @@ import { useMemo } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { country, currency } from '../../../../packages/catalogs/src/index';
 import { clubOf } from '../../../../packages/engine/src/player-state';
-import { quote } from '../../../../packages/engine/src/quotes';
-import { ratio } from '../../../../packages/engine/src/primitives';
+import { inTodayMoney } from '../../../../packages/engine/src/transfer-records';
 import { Panel } from './App';
 import { Chart, type ChartBand } from './Chart';
 import { ClubLink } from './ClubLink';
@@ -21,12 +20,6 @@ import {
 import { Segments } from './Segments';
 import s from './App.module.css';
 import t from './ClubTrends.module.css';
-
-/** A past amount in today's money, in minor units: price index and currency change applied. */
-function inToday(w: World, amount: string, year: number) {
-  const code = clubOf(w).country;
-  return ratio(amount, BigInt(quote(code, w.year, 10000)), BigInt(quote(code, year, 10000)));
-}
 
 /** A chart plots major units, so a point carries its amount divided down. */
 const plotted = (w: World, amount: string) =>
@@ -58,9 +51,9 @@ function trendSeries(w: World) {
     labels: list.map((h) => seasonName(h.year)),
     details: list.map((_, i) => detail(i)),
   });
-  const squad = valued.map((h) => inToday(w, h.squadValue!, h.year)),
-    clubValue = valued.map((h) => inToday(w, h.clubValue!, h.year)),
-    cash = seasons.map((h) => inToday(w, h.cash, h.year));
+  const squad = valued.map((h) => inTodayMoney(w, h.squadValue!, h.year)),
+    clubValue = valued.map((h) => inTodayMoney(w, h.clubValue!, h.year)),
+    cash = seasons.map((h) => inTodayMoney(w, h.cash, h.year));
   const bands: ChartBand[] = [
     {
       label: '세계 최저–최고',
@@ -454,7 +447,11 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                   </td>
                   <td data-label="선수단 가치 · 현재 물가">
                     {h.squadValue ? (
-                      <Money value={inToday(w, h.squadValue, h.year)} code={code} year={w.year} />
+                      <Money
+                        value={inTodayMoney(w, h.squadValue, h.year)}
+                        code={code}
+                        year={w.year}
+                      />
                     ) : (
                       '—'
                     )}
