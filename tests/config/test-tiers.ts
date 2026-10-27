@@ -120,6 +120,7 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/recruitment.test.ts',
   'packages/engine/src/replacements.test.ts',
   'packages/engine/src/reputation.test.ts',
+  'packages/engine/src/round-jobs.test.ts',
   'packages/engine/src/scoring.test.ts',
   'packages/engine/src/season.brackets.test.ts',
   'packages/engine/src/season.contracts.test.ts',

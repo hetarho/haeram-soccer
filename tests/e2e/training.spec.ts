@@ -16,7 +16,13 @@ import {
 import { encode } from '../../apps/web/src/adapters/persistence';
 import type { TrainingFocus, World } from '../../packages/contracts/src/types';
 import { expectHomeBounds } from './layout';
-import { acknowledgeEvents, closeOutcome, setResponsibility } from './events';
+import {
+  acknowledgeEvents,
+  closeOutcome,
+  dismissMatchReport,
+  matchReport,
+  setResponsibility,
+} from './events';
 import { continueSlot } from './slots';
 import { retainPerson, openEmployment } from '../../packages/engine/src/person-careers';
 
@@ -131,9 +137,11 @@ for (const { seed: worldSeed, ...viewport } of [
     await expect(date).toHaveText('1950년 8월 2일');
     await openTraining();
     const mini = page.getByRole('region', { name: '시즌 진행', exact: true });
-    const entered = await date.innerText();
-    await expect(date).not.toHaveText(entered);
+    // Still running in 훈련. Stopped now, the days computed ahead (three at x1) are shown at the
+    // pace first, short of the first match eve; the date rests once play is offered again.
+    await expect(mini.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
     await mini.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
+    await expect(mini.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
     const paused = await date.innerText();
     // 훈련 shows the focus in force and changes nothing itself (→WEB-70): each focus states its
     // round's recovery and growth, the assistant's pick is marked, and why.
@@ -184,9 +192,16 @@ for (const { seed: worldSeed, ...viewport } of [
     // stopped. A start landing just after the eve stopped it is ignored by the clock itself.
     const toggle = mini.getByRole('button', { name: /^자동 진행 (정지|시작)$/ });
     if ((await toggle.getAttribute('aria-label')) === '자동 진행 정지') await toggle.click();
-    await expect(mini.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
+    await expect(mini.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+    // The stop shows the days computed ahead first, so the run may rest on the first match eve,
+    // whose report reopens after the reload and waits there for the match below.
+    const atEve = (await date.innerText()) === `1950년 8월 ${daysUntilNextMatch(reference)}일`;
     await page.reload();
+    if (atEve) {
+      await expect(matchReport(page)).toBeVisible();
+      await dismissMatchReport(page);
+    }
     await openTraining();
     await expect(page.getByTestId('training-focus')).toContainText('지금 하드 트레이닝');
     const planned = await exportWorld(page);

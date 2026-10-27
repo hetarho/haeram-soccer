@@ -79,34 +79,20 @@ describe('unified bottom progression controls', () => {
     },
   );
 
-  it('plays the match-day moment in its reserved slot only while home is not on screen', () => {
-    gameStore.getState().view!.world.settings!.mode = 'automatic';
-    const moment = {
-      store: createStore(() => ({ running: true, pace: 'x10', reason: '', matchMoment: 'f1' })),
-    } as unknown as ProgressionController;
-    const slot = (markup: string) =>
-      markup.match(/<span[^>]*data-testid="match-moment"[^>]*>(.*?)<\/span><\/div>/)?.[0];
-    const away = slot(
-      renderToStaticMarkup(createElement(ProgressControls, { client, controller: moment })),
-    );
-    expect(away).toContain('data-state="on"');
-    expect(away).toContain('aria-hidden="true"');
-    expect(away).toMatch(/<i class="[^"]*"><\/i>/);
-    expect(away).not.toContain('aria-live');
-    // On home the NEXT MATCH card plays it; the slot stays reserved and empty, as when idle.
-    for (const markup of [
-      renderToStaticMarkup(
-        createElement(ProgressControls, { client, controller: moment, homeVisible: true }),
-      ),
-      renderToStaticMarkup(createElement(ProgressControls, { client, controller })),
-    ])
-      expect(markup).toMatch(/data-testid="match-moment"[^>]*data-state="off"[^>]*><\/span>/);
-    gameStore.getState().view!.world.settings!.mode = 'manual';
-    const manual = renderToStaticMarkup(
-      createElement(ProgressControls, { client, controller: moment }),
-    );
-    expect(manual).not.toContain('match-moment');
-  });
+  it.each(['manual', 'automatic'] as const)(
+    'ends the %s mode group with its mode text: no match-day slot or animation',
+    (mode) => {
+      gameStore.getState().view!.world.settings!.mode = mode;
+      const running = {
+        store: createStore(() => ({ running: true, pace: 'x10', reason: '' })),
+      } as unknown as ProgressionController;
+      const markup = renderToStaticMarkup(
+        createElement(ProgressControls, { client, controller: running }),
+      );
+      expect(markup).not.toContain('match-moment');
+      expect(markup).toMatch(/data-testid="progression-mode"[^>]*>(AUTO|MANUAL)<\/span><\/div>/);
+    },
+  );
 
   it('shows the result notice with both clubs and the score while the store holds one', () => {
     const w = gameStore.getState().view!.world;

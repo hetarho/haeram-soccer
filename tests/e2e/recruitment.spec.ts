@@ -361,8 +361,10 @@ test('keeps the clock running while comparing candidates away from home until th
   await expect(date).not.toHaveText(comparing);
   await dialog.getByRole('button', { name: '후보 비교 마치기', exact: true }).click();
   await expect(dialog).toHaveCount(0);
-  // Only the owner's stop holds the date.
+  // Only the owner's stop holds the date, once the days computed ahead are shown (→WEB-18): play
+  // is offered again when the last of them is.
   await mini.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
+  await expect(mini.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
   const stopped = await date.innerText();
   await page.waitForTimeout(1200);
   await expect(date).toHaveText(stopped);

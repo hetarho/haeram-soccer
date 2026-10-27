@@ -72,14 +72,18 @@ function recordScroll(value: number) {
 
 /**
  * One season's archive with its own matches and events, plus every manager event. It is fetched
- * only while a tab reads it; the season in progress is read again whenever the world moves on,
+ * only while a tab reads it; the season in progress is read again when an own match or an event is
+ * added, never on the date alone, since each read first shows the days computed ahead (→WEB-18),
  * while a closed season's archive never changes, so a fast clock never keeps cancelling its read.
  * The last reply for the same world and season stays on screen until the next one lands, so a
  * running clock never blanks it.
  */
 function useSeasonArchive(client: GameClient, w: World, year: number, enabled: boolean) {
   const [result, setResult] = useState<ArchiveResult>();
-  const revision = year === w.year ? w.revision : undefined;
+  // Published views keep the references of unchanged parts, so these change only with their facts.
+  const current = year === w.year,
+    matches = current ? w.ownMatches : undefined,
+    events = current ? w.events : undefined;
   useEffect(() => {
     if (!enabled) return;
     let valid = true;
@@ -96,7 +100,7 @@ function useSeasonArchive(client: GameClient, w: World, year: number, enabled: b
     return () => {
       valid = false;
     };
-  }, [client, w.id, revision, year, enabled]);
+  }, [client, w.id, matches, events, year, enabled]);
   return result?.world === w.id && result.year === year ? result : undefined;
 }
 

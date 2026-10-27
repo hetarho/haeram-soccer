@@ -337,6 +337,11 @@ export interface ViewDelta {
   dropped: string[];
   /** Large changed parts as the changes inside them, keyed as `dropped` names them. */
   patches?: Record<string, ViewPatch>;
+  /**
+   * `patches` as the JSON the publisher already wrote to size them, the form a worker posts: one
+   * string copies across in a fraction of the time thousands of small patch objects take.
+   */
+  patchText?: string;
 }
 /**
  * The changes inside one view part: a whole value, an object's changed keys and removed keys, or
@@ -346,32 +351,62 @@ export type ViewPatch =
   | { v: unknown }
   | { o: Record<string, ViewPatch>; d?: string[] }
   | { a: [number, ViewPatch][]; n: number };
+/**
+ * Gives a value sent whole the references of its base where they are equal (the client's
+ * `shareValue`), so a view rebuilt with it needs no second walk over the whole view.
+ */
+export type ShareValue = (before: unknown, after: unknown) => unknown;
+const keep: ShareValue = (_before, after) => after;
 /** `base` with `patch` applied; objects off the changed paths keep their identity. */
-export function applyViewPatch(base: unknown, patch: ViewPatch): unknown {
-  if ('v' in patch) return patch.v;
+export function applyViewPatch(base: unknown, patch: ViewPatch, share: ShareValue = keep): unknown {
+  if ('v' in patch) return share(base, patch.v);
+  // `{ v: undefined }` read back from `patchText`.
+  if (!('o' in patch) && !('a' in patch)) return undefined;
   if ('o' in patch) {
     const out = { ...(base as Record<string, unknown>) };
-    for (const [key, sub] of Object.entries(patch.o)) out[key] = applyViewPatch(out[key], sub);
+    for (const [key, sub] of Object.entries(patch.o))
+      out[key] = applyViewPatch(out[key], sub, share);
     for (const key of patch.d ?? []) delete out[key];
     return out;
   }
   const out = (base as unknown[]).slice(0, patch.n);
-  for (const [index, sub] of patch.a) out[index] = applyViewPatch(out[index], sub);
+  for (const [index, sub] of patch.a) out[index] = applyViewPatch(out[index], sub, share);
   return out;
 }
-/** The whole view a delta describes, rebuilt on the base view it names. */
-export function applyViewDelta(base: View, delta: ViewDelta): View {
-  const view = { ...base, ...delta.parts, world: { ...base.world, ...delta.world } } as View;
+/**
+ * The whole view a delta describes, rebuilt on the base view it names, with its patches sent as
+ * objects or as `patchText`. With `share`, every value the delta carries regains the base's equal
+ * references, and a delta that changes nothing is the base itself.
+ */
+export function applyViewDelta(base: View, delta: ViewDelta, share: ShareValue = keep): View {
+  const patches =
+    delta.patches ??
+    (delta.patchText ? (JSON.parse(delta.patchText) as Record<string, ViewPatch>) : {});
+  if (
+    share !== keep &&
+    !delta.dropped.length &&
+    !Object.keys(delta.parts).length &&
+    !Object.keys(delta.world).length &&
+    !Object.keys(patches).length
+  )
+    return base;
+  const view = { ...base, world: { ...base.world } } as View;
+  const top = view as unknown as Record<string, unknown>,
+    world = view.world as Record<string, unknown>;
+  for (const [key, value] of Object.entries(delta.parts))
+    top[key] = share(base[key as keyof Omit<View, 'world'>], value);
+  for (const [key, value] of Object.entries(delta.world))
+    world[key] = share(base.world[key as keyof ProjectedWorld], value);
   for (const key of delta.dropped)
-    if (key.startsWith('world.')) delete (view.world as Record<string, unknown>)[key.slice(6)];
-    else delete (view as unknown as Record<string, unknown>)[key];
-  for (const [key, patch] of Object.entries(delta.patches ?? {}))
+    if (key.startsWith('world.')) delete world[key.slice(6)];
+    else delete top[key];
+  for (const [key, patch] of Object.entries(patches))
     if (key.startsWith('world.')) {
       const part = key.slice(6) as keyof ProjectedWorld;
-      (view.world as Record<string, unknown>)[part] = applyViewPatch(base.world[part], patch);
+      world[part] = applyViewPatch(base.world[part], patch, share);
     } else {
       const part = key as keyof Omit<View, 'world'>;
-      (view as unknown as Record<string, unknown>)[part] = applyViewPatch(base[part], patch);
+      top[part] = applyViewPatch(base[part], patch, share);
     }
   return view;
 }

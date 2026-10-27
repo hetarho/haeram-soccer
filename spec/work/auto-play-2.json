@@ -1,0 +1,2792 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-10-27T16:35:19.928Z",
+  "sourceCommit": "2573791c73ec899ce20565f82cc40f60ebddca5a",
+  "group": {
+    "id": "auto-play-2",
+    "branch": "work/auto-play-2",
+    "status": "active",
+    "createdAt": "2026-10-27T12:16:14.070Z",
+    "limits": {
+      "workers": 4,
+      "reviewers": 1,
+      "maxPending": 8
+    },
+    "verified": {
+      "commit": "2573791c73ec899ce20565f82cc40f60ebddca5a",
+      "checks": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
+          "startedAt": "2026-10-27T16:12:59.870Z",
+          "finishedAt": "2026-10-27T16:35:17.789Z"
+        }
+      ],
+      "at": "2026-10-27T16:35:17.918Z",
+      "excluded": [
+        "T522"
+      ]
+    },
+    "push": null,
+    "review": "risky",
+    "lastRun": {
+      "id": "816ac175-d66a-42f4-9e89-e9135265279b",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-27T15:58:53.392Z",
+      "stoppedAt": "2026-10-27T16:35:18.301Z",
+      "dispatched": 2,
+      "outcome": "main-session",
+      "failures": [],
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    }
+  },
+  "summary": {
+    "total": 4,
+    "completed": 3,
+    "remaining": 1,
+    "running": 0,
+    "review": 0,
+    "blocked": 0,
+    "unassigned": 1
+  },
+  "tasks": [
+    {
+      "id": "T522",
+      "title": "Read automatic play in the built browser game",
+      "dep": [
+        "T517",
+        "T519",
+        "T520",
+        "T521"
+      ],
+      "status": "doing@261027.n3w8"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "group": "auto-play-2",
+      "taskId": "T521",
+      "tasks": [
+        "T521"
+      ],
+      "lane": null,
+      "owner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a/worker-1",
+      "contributors": [
+        "ead0e6fb-544d-4cb0-89b5-fb33840ed96a/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-27T12:17:06.955Z",
+      "startCommit": "8fa616033dba81fe5fd56a8e5594c7a3b49000ce",
+      "verifiedCommit": "e92d50854e8bd0224dfdedace63682998aaddfcf",
+      "submittedBase": "43974477e0414381536b4bc82fd680b5dbaf2e2d",
+      "submissionId": "2414e70c-374d-4c08-af71-87d0719639b2",
+      "submittedAt": "2026-10-27T13:26:21.806Z",
+      "integratedCommit": "7247a1a4a854e19cb1a70c71c0a345d31b31022c",
+      "integratedAt": "2026-10-27T13:33:37.877Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "1361 changed lines (limit 300)",
+          "outside touches: apps/web/src/ui/App.tsx tests/e2e/progression-settings.spec.ts tests/e2e/recruitment.spec.ts tests/e2e/season-flow.spec.ts tests/e2e/training.spec.ts",
+          "reworked after a review or integration failure"
+        ],
+        "lines": 1361,
+        "files": 9
+      },
+      "dispatch": {
+        "id": "027e4b59-3e9c-4313-84da-0cb4dc0688ab",
+        "runner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-27T13:26:23.498Z",
+        "finishedAt": "2026-10-27T13:33:05.109Z",
+        "error": null,
+        "summary": "T521 (e92d5085 against 43974477) now meets its acceptance and WEB-18, 64, 97 and 98 and SAVE-8, and the rework fixes every finding from review 1e61ca97.\n\nThe P2 is fixed. All four Chromium specs now wait after 자동 진행 정지 until the lock lifts before they read the date. The waits are on 진행 방식 변경 or 자동 진행 시작 being enabled. Both stay disabled while held days are still being shown, because draining keeps clockRunning set: gameActionsBlocked and modeSwitchBlocked both read it, and lock() only clears it in drained(). So these waits really cover the drain. The x1 stop accepts 8월 2–5일. At most 3 days are held, and in-flight plus held never exceeds the depth, so it stays short of the 8월 7일 eve.\n\nThe P3s are fixed too:\n- A notice read during play is now marked on the shown day and on every held day (withRead). This cannot change which days stop the clock: an unread window-open stop is never on screen while the clock runs.\n- A late day is now followed one full interval after it shows: late is when it lands after its turn or the timer fires half an interval late. This matches \"one per pace interval\" in WEB-18, and the two adjusted beat cases in progression.test.ts check out arithmetically.\n- openSlots now calls pause(true), which goes through stop(): held days are shown at once and saved once before slots.sync reads the synchronously published view.\n\nThe rest:\n- I scanned the other e2e stop sites (intervention, stable-controls, records, native-touch, club-identity, facility-art) and none reads the date mid-drain in a way that would fail.\n- The one integration case with automatic commands (client.test.ts autosave) still holds by reading.\n- The edits outside touches (App.tsx and the four specs) are scoped and are what the last review asked for.\n\nEvidence: the worker ran typecheck, lint, format:check, the two progression unit files (61 tests) and the --changed unit and contract run (112 tests). Integration and Chromium were left for the coordinator's batch. The remaining items are optional P3s."
+      },
+      "review": {
+        "id": "92d92f19-a499-4544-aecd-4a95a896e919",
+        "owner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T521 (e92d5085 against 43974477) now meets its acceptance and WEB-18, 64, 97 and 98 and SAVE-8, and the rework fixes every finding from review 1e61ca97.\n\nThe P2 is fixed. All four Chromium specs now wait after 자동 진행 정지 until the lock lifts before they read the date. The waits are on 진행 방식 변경 or 자동 진행 시작 being enabled. Both stay disabled while held days are still being shown, because draining keeps clockRunning set: gameActionsBlocked and modeSwitchBlocked both read it, and lock() only clears it in drained(). So these waits really cover the drain. The x1 stop accepts 8월 2–5일. At most 3 days are held, and in-flight plus held never exceeds the depth, so it stays short of the 8월 7일 eve.\n\nThe P3s are fixed too:\n- A notice read during play is now marked on the shown day and on every held day (withRead). This cannot change which days stop the clock: an unread window-open stop is never on screen while the clock runs.\n- A late day is now followed one full interval after it shows: late is when it lands after its turn or the timer fires half an interval late. This matches \"one per pace interval\" in WEB-18, and the two adjusted beat cases in progression.test.ts check out arithmetically.\n- openSlots now calls pause(true), which goes through stop(): held days are shown at once and saved once before slots.sync reads the synchronously published view.\n\nThe rest:\n- I scanned the other e2e stop sites (intervention, stable-controls, records, native-touch, club-identity, facility-art) and none reads the date mid-drain in a way that would fail.\n- The one integration case with automatic commands (client.test.ts autosave) still holds by reading.\n- The edits outside touches (App.tsx and the four specs) are scoped and are what the last review asked for.\n\nEvidence: the worker ran typecheck, lint, format:check, the two progression unit files (61 tests) and the --changed unit and contract run (112 tests). Integration and Chromium were left for the coordinator's batch. The remaining items are optional P3s.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "tests/e2e/recruitment.spec.ts:337-338 (T521)",
+            "message": "The guard `daysUntilNextMatch(before) > 4` exists so that the run never reaches the first match day. At level 4 matchEve is off, so nothing stops play at the eve. The owner's stop now shows up to RUN_AHEAD_DAYS.x1 = 3 more days after the click. The rested date can therefore move from about 8월 4–6일 to 8월 7–9일, and may play our first match. No assertion breaks (players and currentDay only), but the comment and guard no longer state the real invariant. Either widen the guard to cover the held days (e.g. `> 4 + RUN_AHEAD_DAYS.x1`) or reword the comment."
+          },
+          {
+            "priority": "P3",
+            "where": "tests/e2e/season-flow.spec.ts:7, tests/e2e/progression-settings.spec.ts:63-90 (T521)",
+            "message": "Both specs dropped their x2 run. Its held days could reach the 8월 7일 eve after an x1 stop that had already moved the date. The titles still say 'advances real days at each speed' and 'advances at the dropdown pace', but the browser now only runs x1 and x10. Optional: run x2 first from 8월 1일, so start plus stop plus 3 held days rests by 8월 5일, or rename the tests. Exact counts are already covered in progression.runahead.test.ts."
+          },
+          {
+            "priority": "P3",
+            "where": "spec/ssot/WEB.md WEB-18/98 (T521 hand-off to the coordinator / update-ssot)",
+            "message": "Two decisions left in T521's result limits are not recorded in the SSOT yet. (1) Reads that skip the command queue are answered from the worker's head. These are head-to-head, club records, archives, person career, league fixtures and manager history. During play they can show one of our results up to RUN_AHEAD_DAYS before its day is shown. This is the deferred P3 from the last review. (2) Leaving play for the slot screen now shows held days at once (App.tsx openSlots → pause(true)). WEB-18/98 only name office entry and hiding for that. The worker cannot write STATE or SSOT, so the coordinator should carry both into the STATE inbox or an update-ssot so they are not lost after integration."
+          }
+        ],
+        "commit": "e92d50854e8bd0224dfdedace63682998aaddfcf",
+        "baseCommit": "43974477e0414381536b4bc82fd680b5dbaf2e2d",
+        "submissionId": "2414e70c-374d-4c08-af71-87d0719639b2",
+        "createdAt": "2026-10-27T13:26:22.580Z",
+        "finishedAt": "2026-10-27T13:33:05.086Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "1e61ca97-b1fe-463d-baa6-44da2dfa60fb",
+          "owner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T521's code meets its acceptance. The client keeps held days and shows them in order. Requests start from the newest held day. The controller computes days back to back up to RUN_AHEAD_DAYS (x1 3, x2 3, x5 5, x10 7) and computes nothing past a day that stops the clock (new event or decision, critical alert, bankruptcy, observed match eve). The owner's stop shows the held days at the pace, keeps the lock until they are shown, then saves once. Office entry and hiding show held days at once, and a pace change shows held days at the faster pace. The unit suites cover these rules well, and I found no correctness defect in progression.ts or client.ts. Changes are requested for one reason: the new stop shows held days for a few seconds after the owner stops, and several Chromium specs assert the date the moment stop is clicked. They will fail every run (the worker listed them), no task in auto-play-2 owns them, and the group's pre-push batch will be red. The P3 items are optional.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "tests/e2e/progression-settings.spec.ts:66-72 (T521; also recruitment.spec.ts:365-368, training.spec.ts:136-171, season-flow.spec.ts:28-58)",
+              "message": "T521's owner stop now keeps showing the held days at the pace after the click. At x1 computing a day takes milliseconds, so 3 days are always held, and the stop runs on for about 3 s. These specs will fail every run, not just on slow machines. progression-settings clicks stop right after 8월 2일 and asserts 8월 2일 holds, but the date ends on 8월 5일. recruitment reads `stopped` right after the stop and asserts it is unchanged 1.2 s later. training reads `paused` right after the stop and asserts it much later. season-flow's 400 ms stability poll can settle before the held days finish. The result lists them, but no task in auto-play-2 owns them: T522 only touches scripts/ and reports/. The group's pre-push Chromium batch will fail. Fix: after clicking 자동 진행 정지, wait until 진행 방식 변경 / 자동 진행 시작 is enabled again (the lock lifts when the last held day is shown) before reading the date. Accept 8월 2–5일 for the x1 stop. Where an x2 stop can run on to the 8월 7일 match eve, stop earlier or expect the eve card. These files are outside T521's touches. The coordinator should either widen T521's touches for the resubmission or open a follow-up task that lands before the group's batch."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/client.ts:424 (T521)",
+              "message": "Reading notifications while days are held only updates the newest held day. The day on screen and the older held days were computed before the read, so they still show the items as unread. For up to RUN_AHEAD_DAYS pace intervals (about 3 s at x1), 모두 읽음 and single reads during play look like they did nothing, and the 모두 읽음 button stays enabled. WEB-97 says reading notifications stays usable during play. Consider marking the items read on the shown view and on every held day as well, and add a case to progression.runahead.test.ts."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/client.ts:473 (T521)",
+              "message": "Every request now starts from the newest held day. That includes reads that skip the queue: head-to-head, club records, archives, person career, league fixtures and manager history. During play these can return one of our match results up to 7 days before its day is shown. This spoils the calendar and disagrees with the shown view's ownMatches. The impl notes accept this from the prototype. If it stays, record it under WEB-18; otherwise have views that mix worker reads with the shown view cut them off at the shown date."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/progression.ts:824 (T521)",
+              "message": "After a day that shows late, the next held day is placed on the pace's beat, 0.5 to 1.5 intervals later. For example, a day 0.6 intervals late puts the next one 1.4 intervals later, even though that day is ready. The acceptance says 'one pace interval after the previous one'. The result discloses this, and it is invisible at x10, but at x1 a day can stay on screen for 0.5 s or 1.4 s. Either set due = now + interval after a late day, or record the beat rule in WEB-18 (update-ssot)."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/App.tsx:952 (T521 interaction)",
+              "message": "openSlots calls controller.pause(), which now keeps showing held days after the game screen has closed. It then syncs the slot card from the date shown before those days. The save that follows, and any park() checkpoint, hold the later date, so the slot card's date and cash can be several days stale. Consider showing held days at once when leaving play, as entering the office and hiding the tab already do, before slots.sync."
+            }
+          ],
+          "commit": "996652c440303278e87c378ea5d0c9e5113bf755",
+          "baseCommit": "43974477e0414381536b4bc82fd680b5dbaf2e2d",
+          "submissionId": "199d8ede-7379-42b2-9130-ac4c9bf8f762",
+          "createdAt": "2026-10-27T13:05:03.462Z",
+          "finishedAt": "2026-10-27T13:16:12.255Z",
+          "invalidatedAt": "2026-10-27T13:16:12.331Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T521",
+          "commit": "e92d50854e8bd0224dfdedace63682998aaddfcf",
+          "at": "2026-10-27T13:26:21.759Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-27T13:25:47.377Z",
+              "finishedAt": "2026-10-27T13:26:21.480Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-27T13:25:47.377Z",
+          "finishedAt": "2026-10-27T13:26:21.480Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-27T13:33:06.474Z",
+          "finishedAt": "2026-10-27T13:33:37.656Z"
+        }
+      ]
+    },
+    {
+      "id": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "group": "auto-play-2",
+      "taskId": "T524",
+      "tasks": [
+        "T524"
+      ],
+      "lane": null,
+      "owner": "9d92bbae-924a-462f-8c2e-343169281dcd/worker-1",
+      "contributors": [
+        "ee602424-6fb0-4374-a820-79f2927fdaca/worker-1",
+        "fb9f561d-d1bc-4cf0-a383-27b4f4189e85/worker-1",
+        "9d92bbae-924a-462f-8c2e-343169281dcd/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-27T14:55:03.911Z",
+      "startCommit": "53ce730c07cfc5857da2e41ea9b654dd8bbd6b06",
+      "verifiedCommit": "a1df455f0b653257d9c7128432b22de1f5f9c3a3",
+      "submittedBase": "cad4e3cd6374fd42883a57958ac76ed4a9648d6f",
+      "submissionId": "f83a5e0c-fedb-4480-8bf1-3577d586a84f",
+      "submittedAt": "2026-10-27T15:25:32.237Z",
+      "integratedCommit": "174af69100a3276d065905b5f7c50a811b8771ec",
+      "integratedAt": "2026-10-27T15:34:31.856Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "376 changed lines (limit 300)",
+          "outside touches: apps/web/src/ui/RecordsRoom.tsx apps/web/src/ui/fullStatsView.ts",
+          "reworked after a review or integration failure",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 376,
+        "files": 5
+      },
+      "dispatch": {
+        "id": "dad9a732-6cfb-4596-9e3f-f3f3898cd219",
+        "runner": "9d92bbae-924a-462f-8c2e-343169281dcd",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-27T15:25:34.374Z",
+        "finishedAt": "2026-10-27T15:33:57.559Z",
+        "error": null,
+        "summary": "T524 (rework of 2cbc068d, now at a1df455f against cad4e3cd) fixes both findings from review 1cede1a9, and I approve it. I looked at the four risk reasons first.\n\n- **Size (376 lines) and edits outside touches.** All the T524 changes are in client.ts, progression.ts and the run-ahead test, plus two small re-key edits in fullStatsView.ts and RecordsRoom.tsx. Both outside-touches edits are the P2 fix, and the result's limits list them. The merge commit 05086393 only brings in the base, so `git diff cad4e3cd...a1df455f` holds T524 alone.\n- **Rework.**\n  - The P2 fix is correct. `useFullStats` now re-reads league and lower scopes only when `w.round` changes. I checked this against the engine: `fixturesFor` puts every division's fixtures, the amateur league's included, on the shared global rounds 1–46, and `beginRound` raises `w.round` and settles that round's fixtures in the same day step (season.ts:841, 914–923). So a league's statistics can only change when `w.round` changes. Cup and Europe scopes keep the revision key, but no UI uses them.\n  - `useSeasonArchive` now re-reads on the `ownMatches`/`events` references. The host builds the archive only from history, `ownMatches` and `events` (host.ts:489–498). `applyViewDelta` keeps the references of parts that did not change, and `shareValue` restores them for views sent whole, so the archive re-reads only when its contents change. The view's last-150-events window also changes whenever an event is added.\n  - I checked the other read call sites myself. They re-read per round, per result, per key or per subject, and none re-reads every shown day except the mediation preview, which the clock stops for.\n  - `LeagueFullStats` takes a world from `worldSelector` that has no `round` key. On a round day it still picks up the new round through `fixtures`/`players`, and the old revision key had the same lag, so nothing regresses.\n  - The P3 fix (`reveal(true, true)` in `showAhead`) only turns on the result notice for read flushes. `announce()` still stays silent when hidden or stopped, so the office, hiding and blocker flushes behave as before.\n- **Autopilot decisions waiting for the owner.**\n  - Points (1) to (4) and (6) are consistent with WEB-18 r162. The SSOT says a read first shows the computed days at once. The impl notes accept one flush per round or per result.\n  - Point (5), announcing on read flushes, follows WEB-18's \"once our fixture's day is shown, a result notice … appears\" and can be reverted in one line. It still needs the owner's confirmation; it does not block approval.\n\nI re-read the gate's logic and found no problems:\n- reads are counted and waited for;\n- a read in flight waits for `computing`;\n- `compute()` posts nothing while `reads` is above zero;\n- a read during the owner's stop ends it through `drained()`;\n- `dispose()` clears the gate, and each controller has its own client.\n\nThe host's list of queue-skipping reads (host.ts:315–326) matches the nine reads now routed through `read()`, and the `it.each` case covers all nine.\n\nI did not rerun the worker's checks: unit tests on the two progression files (76 tests), typecheck, lint, format, the `--changed` shard (127 tests) and `fullStatsView.test.ts`. The final gate is left to the coordinator: the integration `client.test.ts` and chromium e2e, which the worker also did not run."
+      },
+      "review": {
+        "id": "9e97752a-b574-4fc6-9b65-882e565bfedb",
+        "owner": "9d92bbae-924a-462f-8c2e-343169281dcd/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T524 (rework of 2cbc068d, now at a1df455f against cad4e3cd) fixes both findings from review 1cede1a9, and I approve it. I looked at the four risk reasons first.\n\n- **Size (376 lines) and edits outside touches.** All the T524 changes are in client.ts, progression.ts and the run-ahead test, plus two small re-key edits in fullStatsView.ts and RecordsRoom.tsx. Both outside-touches edits are the P2 fix, and the result's limits list them. The merge commit 05086393 only brings in the base, so `git diff cad4e3cd...a1df455f` holds T524 alone.\n- **Rework.**\n  - The P2 fix is correct. `useFullStats` now re-reads league and lower scopes only when `w.round` changes. I checked this against the engine: `fixturesFor` puts every division's fixtures, the amateur league's included, on the shared global rounds 1–46, and `beginRound` raises `w.round` and settles that round's fixtures in the same day step (season.ts:841, 914–923). So a league's statistics can only change when `w.round` changes. Cup and Europe scopes keep the revision key, but no UI uses them.\n  - `useSeasonArchive` now re-reads on the `ownMatches`/`events` references. The host builds the archive only from history, `ownMatches` and `events` (host.ts:489–498). `applyViewDelta` keeps the references of parts that did not change, and `shareValue` restores them for views sent whole, so the archive re-reads only when its contents change. The view's last-150-events window also changes whenever an event is added.\n  - I checked the other read call sites myself. They re-read per round, per result, per key or per subject, and none re-reads every shown day except the mediation preview, which the clock stops for.\n  - `LeagueFullStats` takes a world from `worldSelector` that has no `round` key. On a round day it still picks up the new round through `fixtures`/`players`, and the old revision key had the same lag, so nothing regresses.\n  - The P3 fix (`reveal(true, true)` in `showAhead`) only turns on the result notice for read flushes. `announce()` still stays silent when hidden or stopped, so the office, hiding and blocker flushes behave as before.\n- **Autopilot decisions waiting for the owner.**\n  - Points (1) to (4) and (6) are consistent with WEB-18 r162. The SSOT says a read first shows the computed days at once. The impl notes accept one flush per round or per result.\n  - Point (5), announcing on read flushes, follows WEB-18's \"once our fixture's day is shown, a result notice … appears\" and can be reverted in one line. It still needs the owner's confirmation; it does not block approval.\n\nI re-read the gate's logic and found no problems:\n- reads are counted and waited for;\n- a read in flight waits for `computing`;\n- `compute()` posts nothing while `reads` is above zero;\n- a read during the owner's stop ends it through `drained()`;\n- `dispose()` clears the gate, and each controller has its own client.\n\nThe host's list of queue-skipping reads (host.ts:315–326) matches the nine reads now routed through `read()`, and the `it.each` case covers all nine.\n\nI did not rerun the worker's checks: unit tests on the two progression files (76 tests), typecheck, lint, format, the `--changed` shard (127 tests) and `fullStatsView.test.ts`. The final gate is left to the coordinator: the integration `client.test.ts` and chromium e2e, which the worker also did not run.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/fullStatsView.ts:297 and apps/web/src/ui/RecordsRoom.tsx:84 (T524)",
+            "message": "T524: no test covers the new re-read keys. The controller case at progression.runahead.test.ts:611 fakes a once-a-round reader, and the e2e journeys open each lens fresh. Nothing checks that `useFullStats` skips a revision-only change and re-reads when `w.round` changes, or that `useSeasonArchive` re-reads only when `ownMatches`/`events` change. Optional: add small hook tests so a later key change can't quietly bring back the every-day flush or leave the stats stale."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/runtime/client.ts:71 (T524)",
+            "message": "T524: nothing imports the exported `ReadGate` type; only the `readGate` property uses it, and progression.ts relies on inference. Either drop `export` or type the assignment in the controller with it."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/runtime/progression.ts:601 (T524, autopilot decision 5)",
+            "message": "T524: showing the result notice when a read shows the held days at once is an autopilot call the owner or planner still has to confirm. It matches WEB-18's result-notice line, and the result says how to undo it (`showAhead` → `flush()`). Hand off to the planner; no code change needed unless they rule otherwise."
+          }
+        ],
+        "commit": "a1df455f0b653257d9c7128432b22de1f5f9c3a3",
+        "baseCommit": "cad4e3cd6374fd42883a57958ac76ed4a9648d6f",
+        "submissionId": "f83a5e0c-fedb-4480-8bf1-3577d586a84f",
+        "createdAt": "2026-10-27T15:25:33.052Z",
+        "finishedAt": "2026-10-27T15:33:57.536Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "1cede1a9-9993-4c91-9cbb-7fdfda232748",
+          "owner": "9d92bbae-924a-462f-8c2e-343169281dcd/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T524 puts all nine queue-skipping reads through one `read()` helper. The controller registers a gate (`beforeRead`) that waits for the in-flight run-ahead step and shows the held days through `flush()`, the same path the office and hiding use. While a read is unanswered, `compute()` posts nothing. The gate is cleared on dispose. I checked the code against WEB-18 r162 and all five acceptance items, and it meets them. I also checked the four autopilot decisions the worker left for the owner (the risk reason): (1) a read with nothing held still holds computing; (2) catch-up steps are shown as they land, ahead of a read posted behind them, because the client handles each reply synchronously; (3) held days keep showing at the pace until the in-flight step lands; (4) a read during the owner's draining stop ends that stop, as entering the office does. All four are consistent with the SSOT. I did not rerun the worker's tests (unit run on the two progression files, typecheck/lint/format, --changed shard) and leave the final gate to the coordinator. One impact gap blocks approval. The task accepted re-reads per result or per round, but the full-stats hook re-reads on every new world revision, so with the player-comparison dialog open the read gate flushes the run-ahead buffer on every shown day. The calendar then runs several times faster than the selected pace, in jumps.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/runtime/progression.ts:579 (T524) with apps/web/src/ui/fullStatsView.ts:294 and apps/web/src/ui/PlayerComparison.tsx:61",
+              "message": "T524: the impact on views that re-read on every shown day was not assessed. `useFullStats` puts `w.revision` in its effect key. `Roster` passes `state.view.world`, which changes every shown day, to `PlayerComparison`. So with the comparison open at league scope, every paced day shown by `reveal(false)` triggers `fullStats` → `beforeRead`. That read waits for the step `tick()` has just posted and then `flush()`es every held day. At x1 (run-ahead depth 3) this shows day N on the beat and N+3 one step later, so about 4 days per second. At every pace the calendar moves in jumps of up to the depth, and computing waits behind each full-stats read. That breaks WEB-18's selected pace and 'every step is one day' while the dialog is open, which is a regression T524 introduces. `LeagueFullStats` does the same whenever its selected world keys change. The impl notes accepted flushes only for per-result or per-round re-readers (RecordsRoom, TeamSheetDialog, LeaguePicker), and result limits do not mention this case. Fix (needs a coordinator/planner call on WEB-18/WEB-89, since fullStatsView.ts is outside the touches): either re-key `useFullStats` on settled results (e.g. the shown round or fixtures played, not `w.revision`), or have the planner rule that views re-reading every day may speed up the shown clock. In both cases add a `progression.runahead.test.ts` case where a read fires on every shown day and check that the shown days keep the pace."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/progression.ts:880/911 (T524)",
+              "message": "T524: `showAhead()` uses `flush()`, which calls `shown(day, false)`, so a read-triggered flush never calls `announce()`. If our fixture's day is among the held days a read flushes, it is shown with the clock still running, but the 경기 결과 알림 notice (WEB-18) is skipped. This is fine for the office and hiding, where nobody is watching the paced clock, but a read leaves the clock running in view. It is not listed in the result's limits. Hand off to the planner: decide whether a read-triggered flush should announce the latest own result in the batch."
+            }
+          ],
+          "commit": "755579ba7b6fb9642978071b44773c34ed882283",
+          "baseCommit": "cad4e3cd6374fd42883a57958ac76ed4a9648d6f",
+          "submissionId": "02757fde-bcd2-4677-b443-1d25a4cb9123",
+          "createdAt": "2026-10-27T15:07:29.035Z",
+          "finishedAt": "2026-10-27T15:15:02.064Z",
+          "invalidatedAt": "2026-10-27T15:15:02.140Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T524",
+          "commit": "a1df455f0b653257d9c7128432b22de1f5f9c3a3",
+          "at": "2026-10-27T15:25:32.183Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-27T15:24:57.381Z",
+              "finishedAt": "2026-10-27T15:25:31.922Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-27T15:24:57.381Z",
+          "finishedAt": "2026-10-27T15:25:31.922Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-27T15:33:59.316Z",
+          "finishedAt": "2026-10-27T15:34:31.643Z"
+        }
+      ]
+    },
+    {
+      "id": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "group": "auto-play-2",
+      "taskId": "T525",
+      "tasks": [
+        "T525"
+      ],
+      "lane": null,
+      "owner": "816ac175-d66a-42f4-9e89-e9135265279b/worker-1",
+      "contributors": [
+        "816ac175-d66a-42f4-9e89-e9135265279b/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-27T15:58:53.645Z",
+      "startCommit": "10b334c99f2c62347259508ec59836f75b89fe1c",
+      "verifiedCommit": "67beecbc4504a02740d1b907122cd4955229548d",
+      "submittedBase": "10b334c99f2c62347259508ec59836f75b89fe1c",
+      "submissionId": "9e64c56e-8af1-4ebb-b175-bc05ea34c519",
+      "submittedAt": "2026-10-27T16:08:21.493Z",
+      "integratedCommit": "2573791c73ec899ce20565f82cc40f60ebddca5a",
+      "integratedAt": "2026-10-27T16:12:58.725Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 260,
+        "files": 2
+      },
+      "dispatch": {
+        "id": "4f6d8158-1f4f-4afa-894a-8458b8dd03f8",
+        "runner": "816ac175-d66a-42f4-9e89-e9135265279b",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-27T16:08:23.380Z",
+        "finishedAt": "2026-10-27T16:12:24.415Z",
+        "error": null,
+        "summary": "T525 meets its acceptance criteria and WEB-18 r163. `beforeRead` keeps T524's `reads` counter, so nothing is computed ahead once a read starts. When days are held or a step is in flight, `ready` is now a promise in `waitingReads` instead of `showAhead()`. `postReads()` releases it only when `ahead` is empty and `inFlight` is false. It is called at the end of every `reveal()` path (beat, flush, refused client reveal, empty list), after every `send()` lands, and on `dispose()`. `GameClient.command` never rejects because `enqueue` catches errors, so the `postReads()` after `send()`'s finally always runs and a failed step cannot strand a read. Stop, eve-stop and fresh-event stops all flush and then post. A cancelled in-flight step during stop or pause posts through `send()` or through `step()`'s flush. Mode or world changes go through `stop('')` and flush. Removing `computing`, `showAhead` and `announce` leaves no stale references. Our result is still announced only on paced reveals. The rewritten fake-worker cases check what acceptance asks for: 100 ms gaps, no posting or computing while waiting, an in-flight step, a slow step, identical drain timing with one save, office entry and hiding, dispose, nothing held or in flight, x1 per-round reads 1 s apart, and the nine read types. The worker's evidence (81 targeted unit tests, typecheck, lint, format, `--changed` unit+contract) matches the task. I did not run tests in this read-only review. Risk reason 'autopilot decisions awaiting the owner' refers to the WEB-18 r163 inbox decision. The code follows that decision as written, and confirming it is for the owner, not this review. `records.spec` e2e and the full gates are left for the coordinator batch, as the result limits say."
+      },
+      "review": {
+        "id": "7890eccf-3cc8-4440-a431-e43c8a756e1a",
+        "owner": "816ac175-d66a-42f4-9e89-e9135265279b/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T525 meets its acceptance criteria and WEB-18 r163. `beforeRead` keeps T524's `reads` counter, so nothing is computed ahead once a read starts. When days are held or a step is in flight, `ready` is now a promise in `waitingReads` instead of `showAhead()`. `postReads()` releases it only when `ahead` is empty and `inFlight` is false. It is called at the end of every `reveal()` path (beat, flush, refused client reveal, empty list), after every `send()` lands, and on `dispose()`. `GameClient.command` never rejects because `enqueue` catches errors, so the `postReads()` after `send()`'s finally always runs and a failed step cannot strand a read. Stop, eve-stop and fresh-event stops all flush and then post. A cancelled in-flight step during stop or pause posts through `send()` or through `step()`'s flush. Mode or world changes go through `stop('')` and flush. Removing `computing`, `showAhead` and `announce` leaves no stale references. Our result is still announced only on paced reveals. The rewritten fake-worker cases check what acceptance asks for: 100 ms gaps, no posting or computing while waiting, an in-flight step, a slow step, identical drain timing with one save, office entry and hiding, dispose, nothing held or in flight, x1 per-round reads 1 s apart, and the nine read types. The worker's evidence (81 targeted unit tests, typecheck, lint, format, `--changed` unit+contract) matches the task. I did not run tests in this read-only review. Risk reason 'autopilot decisions awaiting the owner' refers to the WEB-18 r163 inbox decision. The code follows that decision as written, and confirming it is for the owner, not this review. `records.spec` e2e and the full gates are left for the coordinator batch, as the result limits say.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/runtime/progression.ts:750",
+            "message": "T525: an old drain stall (from T521, not introduced here) now also holds reads. If the owner pauses, the drain starts, and they open the league page's match tab during it, LiveSeason's `setWatching(true)` sets `watching` without `beginWatch` (the clock isn't running). `tick()` then returns early, clears `due` and schedules nothing. Leaving the tab runs `endWatch()`, which also does nothing because `resumeAfterWatch` is false. The drain stays stuck with days held and management locked. Under T524, a read in this state called `showAhead()` and ended the drain. Under T525 the read waits until play, office entry, hiding or dispose. Not blocking for T525. Hand to planning: decide whether watching during a drain should flush the held days or resume the drain when watching ends, and add a regression case for a read waiting through it."
+          }
+        ],
+        "commit": "67beecbc4504a02740d1b907122cd4955229548d",
+        "baseCommit": "10b334c99f2c62347259508ec59836f75b89fe1c",
+        "submissionId": "9e64c56e-8af1-4ebb-b175-bc05ea34c519",
+        "createdAt": "2026-10-27T16:08:22.325Z",
+        "finishedAt": "2026-10-27T16:12:24.393Z"
+      },
+      "steps": [
+        {
+          "taskId": "T525",
+          "commit": "67beecbc4504a02740d1b907122cd4955229548d",
+          "at": "2026-10-27T16:08:21.444Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-27T16:07:25.403Z",
+              "finishedAt": "2026-10-27T16:08:21.175Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-27T16:07:25.403Z",
+          "finishedAt": "2026-10-27T16:08:21.175Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-27T16:12:26.195Z",
+          "finishedAt": "2026-10-27T16:12:58.505Z"
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1376,
+      "at": "2026-10-27T12:16:14.092Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "auto-play-2",
+        "branch": "work/auto-play-2",
+        "status": "preparing",
+        "createdAt": "2026-10-27T12:16:14.070Z",
+        "limits": {
+          "workers": 4,
+          "reviewers": 1,
+          "maxPending": 8
+        },
+        "push": null,
+        "review": "risky"
+      }
+    },
+    {
+      "sequence": 1377,
+      "at": "2026-10-27T12:16:14.911Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 1378,
+      "at": "2026-10-27T12:17:06.714Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T12:17:06.695Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1379,
+      "at": "2026-10-27T12:17:06.955Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+        "group": "auto-play-2",
+        "taskId": "T521",
+        "tasks": [
+          "T521"
+        ],
+        "lane": null,
+        "owner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a/worker-1",
+        "contributors": [
+          "ead0e6fb-544d-4cb0-89b5-fb33840ed96a/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-27T12:17:06.955Z",
+        "startCommit": "8fa616033dba81fe5fd56a8e5594c7a3b49000ce"
+      }
+    },
+    {
+      "sequence": 1380,
+      "at": "2026-10-27T12:17:07.544Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1381,
+      "at": "2026-10-27T12:17:08.003Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "32c6a9d8-3e34-4551-bf57-ff0242efeaa8",
+          "runner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T12:17:08.003Z"
+        }
+      }
+    },
+    {
+      "sequence": 1382,
+      "at": "2026-10-27T12:17:08.202Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "32c6a9d8-3e34-4551-bf57-ff0242efeaa8",
+          "runner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T12:17:08.003Z"
+        }
+      }
+    },
+    {
+      "sequence": 1383,
+      "at": "2026-10-27T13:04:28.080Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1384,
+      "at": "2026-10-27T13:04:28.566Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1385,
+      "at": "2026-10-27T13:04:28.613Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1386,
+      "at": "2026-10-27T13:05:02.699Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "996652c440303278e87c378ea5d0c9e5113bf755",
+        "submittedBase": "43974477e0414381536b4bc82fd680b5dbaf2e2d",
+        "submissionId": "199d8ede-7379-42b2-9130-ac4c9bf8f762",
+        "submittedAt": "2026-10-27T13:05:02.698Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "1149 changed lines (limit 300)"
+          ],
+          "lines": 1149,
+          "files": 4
+        },
+        "steps": [
+          {
+            "taskId": "T521",
+            "commit": "996652c440303278e87c378ea5d0c9e5113bf755",
+            "at": "2026-10-27T13:05:02.654Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-27T13:04:28.846Z",
+                "finishedAt": "2026-10-27T13:05:02.378Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-27T13:04:28.846Z",
+            "finishedAt": "2026-10-27T13:05:02.378Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1387,
+      "at": "2026-10-27T13:05:02.727Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "32c6a9d8-3e34-4551-bf57-ff0242efeaa8",
+          "runner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T12:17:08.003Z",
+          "finishedAt": "2026-10-27T13:05:02.726Z",
+          "error": null,
+          "summary": "T521 is implemented, and every task-tier check I ran passes. The integration and e2e runs are left to the batch gate. Four e2e specs are likely to fail there because of the new stop behaviour; I left them unchanged.\n\n**What changed**\n- `client.ts`: the client now holds the days automatic play computes, oldest first. The newest one is the head: requests, saves and export start from it, and `reveal()` shows the held days in order. A notice read while days are held updates the newest held day. Any other owner command, a load or a new world is shown at once and clears what was held. The reply handler moved out of the constructor into `received` so it can be unit-tested.\n- `progression.ts`: adds `RUN_AHEAD_DAYS` (x1 3, x2 3, x5 5, x10 7). While the page is shown, the controller computes back to back until that many days are held. Each day is shown on the pace's beat, or as soon as it lands when late.\n- **Stopping days:** nothing is computed past a day with a new stopping event or pending decision, a critical alert, bankruptcy or a match eve that stops for observation. The clock stops when that day is shown, so the world sits on the shown date.\n- **Owner's stop:** the held days are shown at the pace, management stays locked until the last one, then it unlocks and the save is requested once.\n- **Show at once:** entering the owner office, hiding the tab and blocker stops show the held days immediately.\n- **Hidden or returning:** nothing is computed ahead. Catch-up steps are shown as they land.\n- **Pace change:** applies to new days; held days keep the faster of the old and new pace.\n- `progression.runahead.test.ts` (new, 14 cases): covers every acceptance scenario plus the real client's hold and reveal. On a modelled x10 run for 30 s it shows no stall and 300 days, against 50 stalls and 175 days computing one day at a time.\n- `progression.test.ts`: the 44 existing cases still pass. They now run one day at a time behind a fake client that holds and reveals like the real one.\n- `OwnerOfficeView.tsx`: unchanged, because office entry already goes through `enterOffice()`, which now shows held days at once.\n\n**Checks run**\n- `pnpm run typecheck`, `pnpm run lint` and `pnpm run format:check` pass.\n- The two progression test files pass (58 tests).\n- The changed-file unit/contract selection passes: 8 files, 109 tests.\n\n**Not run, left to the batch**\n- `client.test.ts` (integration). Reading it, its autosave case should still pass.\n- e2e on Chromium. The prototype commits `db28c045`/`b9a6956a` aren't in this repository, so I wrote this from the spec (WEB-18/64/97/98, SAVE-8). The stall test uses modelled step times (25/120/400 ms), not the 261027 trace.\n\n**E2E specs likely to fail** (outside my files, unrun): after a stop, up to 3 more days are now shown at x1/x2, and the first match eve (8월 7일) is close enough to be reached.\n- `progression-settings.spec.ts` lines 66–100 expect the date to stay on 8월 2일 after the x1 stop.\n- `season-flow.spec.ts` lines 28–58 can read the date before the stop has finished showing days, and the x2 stop may land on the eve.\n- `training.spec.ts` lines 136–178 read the date right after the stop. A slow page can reach the eve, and restarting then plays round 1.\n- `recruitment.spec.ts` lines 365–368 read the date right after the stop.\n\nWaiting for 자동 진행 시작 to become enabled before reading the date fixes the reads. The eve cases need an earlier stop or should expect the eve. All of this is recorded in the task result limits."
+        }
+      }
+    },
+    {
+      "sequence": 1388,
+      "at": "2026-10-27T13:05:03.462Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "1e61ca97-b1fe-463d-baa6-44da2dfa60fb",
+          "owner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a/reviewer-1",
+          "status": "reviewing",
+          "commit": "996652c440303278e87c378ea5d0c9e5113bf755",
+          "baseCommit": "43974477e0414381536b4bc82fd680b5dbaf2e2d",
+          "submissionId": "199d8ede-7379-42b2-9130-ac4c9bf8f762",
+          "createdAt": "2026-10-27T13:05:03.462Z"
+        }
+      }
+    },
+    {
+      "sequence": 1389,
+      "at": "2026-10-27T13:05:04.526Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "2ae98a6a-f545-494c-b77c-4b0d39c96d81",
+          "runner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T13:05:04.526Z"
+        }
+      }
+    },
+    {
+      "sequence": 1390,
+      "at": "2026-10-27T13:05:04.552Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "2ae98a6a-f545-494c-b77c-4b0d39c96d81",
+          "runner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T13:05:04.526Z"
+        }
+      }
+    },
+    {
+      "sequence": 1391,
+      "at": "2026-10-27T13:16:12.256Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T521's code meets its acceptance. The client keeps held days and shows them in order. Requests start from the newest held day. The controller computes days back to back up to RUN_AHEAD_DAYS (x1 3, x2 3, x5 5, x10 7) and computes nothing past a day that stops the clock (new event or decision, critical alert, bankruptcy, observed match eve). The owner's stop shows the held days at the pace, keeps the lock until they are shown, then saves once. Office entry and hiding show held days at once, and a pace change shows held days at the faster pace. The unit suites cover these rules well, and I found no correctness defect in progression.ts or client.ts. Changes are requested for one reason: the new stop shows held days for a few seconds after the owner stops, and several Chromium specs assert the date the moment stop is clicked. They will fail every run (the worker listed them), no task in auto-play-2 owns them, and the group's pre-push batch will be red. The P3 items are optional.",
+        "review": {
+          "id": "1e61ca97-b1fe-463d-baa6-44da2dfa60fb",
+          "owner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T521's code meets its acceptance. The client keeps held days and shows them in order. Requests start from the newest held day. The controller computes days back to back up to RUN_AHEAD_DAYS (x1 3, x2 3, x5 5, x10 7) and computes nothing past a day that stops the clock (new event or decision, critical alert, bankruptcy, observed match eve). The owner's stop shows the held days at the pace, keeps the lock until they are shown, then saves once. Office entry and hiding show held days at once, and a pace change shows held days at the faster pace. The unit suites cover these rules well, and I found no correctness defect in progression.ts or client.ts. Changes are requested for one reason: the new stop shows held days for a few seconds after the owner stops, and several Chromium specs assert the date the moment stop is clicked. They will fail every run (the worker listed them), no task in auto-play-2 owns them, and the group's pre-push batch will be red. The P3 items are optional.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "tests/e2e/progression-settings.spec.ts:66-72 (T521; also recruitment.spec.ts:365-368, training.spec.ts:136-171, season-flow.spec.ts:28-58)",
+              "message": "T521's owner stop now keeps showing the held days at the pace after the click. At x1 computing a day takes milliseconds, so 3 days are always held, and the stop runs on for about 3 s. These specs will fail every run, not just on slow machines. progression-settings clicks stop right after 8월 2일 and asserts 8월 2일 holds, but the date ends on 8월 5일. recruitment reads `stopped` right after the stop and asserts it is unchanged 1.2 s later. training reads `paused` right after the stop and asserts it much later. season-flow's 400 ms stability poll can settle before the held days finish. The result lists them, but no task in auto-play-2 owns them: T522 only touches scripts/ and reports/. The group's pre-push Chromium batch will fail. Fix: after clicking 자동 진행 정지, wait until 진행 방식 변경 / 자동 진행 시작 is enabled again (the lock lifts when the last held day is shown) before reading the date. Accept 8월 2–5일 for the x1 stop. Where an x2 stop can run on to the 8월 7일 match eve, stop earlier or expect the eve card. These files are outside T521's touches. The coordinator should either widen T521's touches for the resubmission or open a follow-up task that lands before the group's batch."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/client.ts:424 (T521)",
+              "message": "Reading notifications while days are held only updates the newest held day. The day on screen and the older held days were computed before the read, so they still show the items as unread. For up to RUN_AHEAD_DAYS pace intervals (about 3 s at x1), 모두 읽음 and single reads during play look like they did nothing, and the 모두 읽음 button stays enabled. WEB-97 says reading notifications stays usable during play. Consider marking the items read on the shown view and on every held day as well, and add a case to progression.runahead.test.ts."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/client.ts:473 (T521)",
+              "message": "Every request now starts from the newest held day. That includes reads that skip the queue: head-to-head, club records, archives, person career, league fixtures and manager history. During play these can return one of our match results up to 7 days before its day is shown. This spoils the calendar and disagrees with the shown view's ownMatches. The impl notes accept this from the prototype. If it stays, record it under WEB-18; otherwise have views that mix worker reads with the shown view cut them off at the shown date."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/progression.ts:824 (T521)",
+              "message": "After a day that shows late, the next held day is placed on the pace's beat, 0.5 to 1.5 intervals later. For example, a day 0.6 intervals late puts the next one 1.4 intervals later, even though that day is ready. The acceptance says 'one pace interval after the previous one'. The result discloses this, and it is invisible at x10, but at x1 a day can stay on screen for 0.5 s or 1.4 s. Either set due = now + interval after a late day, or record the beat rule in WEB-18 (update-ssot)."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/App.tsx:952 (T521 interaction)",
+              "message": "openSlots calls controller.pause(), which now keeps showing held days after the game screen has closed. It then syncs the slot card from the date shown before those days. The save that follows, and any park() checkpoint, hold the later date, so the slot card's date and cash can be several days stale. Consider showing held days at once when leaving play, as entering the office and hiding the tab already do, before slots.sync."
+            }
+          ],
+          "commit": "996652c440303278e87c378ea5d0c9e5113bf755",
+          "baseCommit": "43974477e0414381536b4bc82fd680b5dbaf2e2d",
+          "submissionId": "199d8ede-7379-42b2-9130-ac4c9bf8f762",
+          "createdAt": "2026-10-27T13:05:03.462Z",
+          "finishedAt": "2026-10-27T13:16:12.255Z"
+        }
+      }
+    },
+    {
+      "sequence": 1392,
+      "at": "2026-10-27T13:16:12.281Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "2ae98a6a-f545-494c-b77c-4b0d39c96d81",
+          "runner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T13:05:04.526Z",
+          "finishedAt": "2026-10-27T13:16:12.281Z",
+          "error": null,
+          "summary": "T521's code meets its acceptance. The client keeps held days and shows them in order. Requests start from the newest held day. The controller computes days back to back up to RUN_AHEAD_DAYS (x1 3, x2 3, x5 5, x10 7) and computes nothing past a day that stops the clock (new event or decision, critical alert, bankruptcy, observed match eve). The owner's stop shows the held days at the pace, keeps the lock until they are shown, then saves once. Office entry and hiding show held days at once, and a pace change shows held days at the faster pace. The unit suites cover these rules well, and I found no correctness defect in progression.ts or client.ts. Changes are requested for one reason: the new stop shows held days for a few seconds after the owner stops, and several Chromium specs assert the date the moment stop is clicked. They will fail every run (the worker listed them), no task in auto-play-2 owns them, and the group's pre-push batch will be red. The P3 items are optional."
+        }
+      }
+    },
+    {
+      "sequence": 1393,
+      "at": "2026-10-27T13:16:12.331Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "1e61ca97-b1fe-463d-baa6-44da2dfa60fb",
+            "owner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T521's code meets its acceptance. The client keeps held days and shows them in order. Requests start from the newest held day. The controller computes days back to back up to RUN_AHEAD_DAYS (x1 3, x2 3, x5 5, x10 7) and computes nothing past a day that stops the clock (new event or decision, critical alert, bankruptcy, observed match eve). The owner's stop shows the held days at the pace, keeps the lock until they are shown, then saves once. Office entry and hiding show held days at once, and a pace change shows held days at the faster pace. The unit suites cover these rules well, and I found no correctness defect in progression.ts or client.ts. Changes are requested for one reason: the new stop shows held days for a few seconds after the owner stops, and several Chromium specs assert the date the moment stop is clicked. They will fail every run (the worker listed them), no task in auto-play-2 owns them, and the group's pre-push batch will be red. The P3 items are optional.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "tests/e2e/progression-settings.spec.ts:66-72 (T521; also recruitment.spec.ts:365-368, training.spec.ts:136-171, season-flow.spec.ts:28-58)",
+                "message": "T521's owner stop now keeps showing the held days at the pace after the click. At x1 computing a day takes milliseconds, so 3 days are always held, and the stop runs on for about 3 s. These specs will fail every run, not just on slow machines. progression-settings clicks stop right after 8월 2일 and asserts 8월 2일 holds, but the date ends on 8월 5일. recruitment reads `stopped` right after the stop and asserts it is unchanged 1.2 s later. training reads `paused` right after the stop and asserts it much later. season-flow's 400 ms stability poll can settle before the held days finish. The result lists them, but no task in auto-play-2 owns them: T522 only touches scripts/ and reports/. The group's pre-push Chromium batch will fail. Fix: after clicking 자동 진행 정지, wait until 진행 방식 변경 / 자동 진행 시작 is enabled again (the lock lifts when the last held day is shown) before reading the date. Accept 8월 2–5일 for the x1 stop. Where an x2 stop can run on to the 8월 7일 match eve, stop earlier or expect the eve card. These files are outside T521's touches. The coordinator should either widen T521's touches for the resubmission or open a follow-up task that lands before the group's batch."
+              },
+              {
+                "priority": "P3",
+                "where": "apps/web/src/runtime/client.ts:424 (T521)",
+                "message": "Reading notifications while days are held only updates the newest held day. The day on screen and the older held days were computed before the read, so they still show the items as unread. For up to RUN_AHEAD_DAYS pace intervals (about 3 s at x1), 모두 읽음 and single reads during play look like they did nothing, and the 모두 읽음 button stays enabled. WEB-97 says reading notifications stays usable during play. Consider marking the items read on the shown view and on every held day as well, and add a case to progression.runahead.test.ts."
+              },
+              {
+                "priority": "P3",
+                "where": "apps/web/src/runtime/client.ts:473 (T521)",
+                "message": "Every request now starts from the newest held day. That includes reads that skip the queue: head-to-head, club records, archives, person career, league fixtures and manager history. During play these can return one of our match results up to 7 days before its day is shown. This spoils the calendar and disagrees with the shown view's ownMatches. The impl notes accept this from the prototype. If it stays, record it under WEB-18; otherwise have views that mix worker reads with the shown view cut them off at the shown date."
+              },
+              {
+                "priority": "P3",
+                "where": "apps/web/src/runtime/progression.ts:824 (T521)",
+                "message": "After a day that shows late, the next held day is placed on the pace's beat, 0.5 to 1.5 intervals later. For example, a day 0.6 intervals late puts the next one 1.4 intervals later, even though that day is ready. The acceptance says 'one pace interval after the previous one'. The result discloses this, and it is invisible at x10, but at x1 a day can stay on screen for 0.5 s or 1.4 s. Either set due = now + interval after a late day, or record the beat rule in WEB-18 (update-ssot)."
+              },
+              {
+                "priority": "P3",
+                "where": "apps/web/src/ui/App.tsx:952 (T521 interaction)",
+                "message": "openSlots calls controller.pause(), which now keeps showing held days after the game screen has closed. It then syncs the slot card from the date shown before those days. The save that follows, and any park() checkpoint, hold the later date, so the slot card's date and cash can be several days stale. Consider showing held days at once when leaving play, as entering the office and hiding the tab already do, before slots.sync."
+              }
+            ],
+            "commit": "996652c440303278e87c378ea5d0c9e5113bf755",
+            "baseCommit": "43974477e0414381536b4bc82fd680b5dbaf2e2d",
+            "submissionId": "199d8ede-7379-42b2-9130-ac4c9bf8f762",
+            "createdAt": "2026-10-27T13:05:03.462Z",
+            "finishedAt": "2026-10-27T13:16:12.255Z",
+            "invalidatedAt": "2026-10-27T13:16:12.331Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1394,
+      "at": "2026-10-27T13:16:12.418Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "7cd11101-2e3f-4be6-a4d0-41853ab89cb1",
+          "runner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T13:16:12.418Z"
+        }
+      }
+    },
+    {
+      "sequence": 1395,
+      "at": "2026-10-27T13:16:12.592Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "7cd11101-2e3f-4be6-a4d0-41853ab89cb1",
+          "runner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T13:16:12.418Z"
+        }
+      }
+    },
+    {
+      "sequence": 1396,
+      "at": "2026-10-27T13:25:46.598Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1397,
+      "at": "2026-10-27T13:25:47.089Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1398,
+      "at": "2026-10-27T13:25:47.131Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1399,
+      "at": "2026-10-27T13:26:21.806Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "2414e70c-374d-4c08-af71-87d0719639b2",
+        "submittedAt": "2026-10-27T13:26:21.806Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "1361 changed lines (limit 300)",
+            "outside touches: apps/web/src/ui/App.tsx tests/e2e/progression-settings.spec.ts tests/e2e/recruitment.spec.ts tests/e2e/season-flow.spec.ts tests/e2e/training.spec.ts",
+            "reworked after a review or integration failure"
+          ],
+          "lines": 1361,
+          "files": 9
+        },
+        "steps": [
+          {
+            "taskId": "T521",
+            "commit": "e92d50854e8bd0224dfdedace63682998aaddfcf",
+            "at": "2026-10-27T13:26:21.759Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-27T13:25:47.377Z",
+                "finishedAt": "2026-10-27T13:26:21.480Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-27T13:25:47.377Z",
+            "finishedAt": "2026-10-27T13:26:21.480Z"
+          }
+        ],
+        "verifiedCommit": "e92d50854e8bd0224dfdedace63682998aaddfcf"
+      }
+    },
+    {
+      "sequence": 1400,
+      "at": "2026-10-27T13:26:21.833Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "7cd11101-2e3f-4be6-a4d0-41853ab89cb1",
+          "runner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T13:16:12.418Z",
+          "finishedAt": "2026-10-27T13:26:21.833Z",
+          "error": null,
+          "summary": "The blocking review finding (P2) is fixed, along with three of the four optional P3 items. The fixes are in four Chromium specs and `App.tsx`, all outside T521's listed touches, so the scope check may flag them. I have not run them; client.test.ts and the Chromium specs are left for the batch gate.\n\n**P2 — specs that read the date right after 자동 진행 정지**\n- `progression-settings.spec.ts`: after the x1 stop it waits for 진행 방식 변경 to be enabled, then accepts 8월 2–5일 and checks the date holds. I dropped the x2 stop: its held days can reach the 8월 7일 match eve, and pressing play there plays the match through.\n- `season-flow.spec.ts`: waits for 자동 진행 시작 to be enabled instead of the 400 ms stability polls. The x2 stop is dropped for the same eve reason.\n- `training.spec.ts`: stops as soon as 훈련 shows the clock still running, then waits for play to be enabled. That keeps the held days short of the first match eve, so round 1 is not played.\n- `recruitment.spec.ts`: waits for play to be enabled before reading `stopped`.\n- The other specs that click stop already wait for something the lock gates or don't depend on the date, so I left them unchanged.\n\n**P3 items**\n- **Read marks:** a notice read while days are held now shows as read on the day on screen and on every held day, not just the newest. This is in `client.ts`.\n- **Late days:** a day that shows late is now followed by the next one a full pace interval later, instead of on the next beat. This matches the acceptance wording. In the one-day-at-a-time suite this changed two timing expectations in `progression.test.ts`, which I updated.\n- **Slot screen:** opening the slot screen now shows the held days at once (`pause(true)`), so the slot card and the save hold the same date. This is the `App.tsx` change.\n- **Not changed (left for the planner):** reads that skip the command queue (head-to-head, club records, archives, person career, league fixtures, manager history) answer from the newest computed day, so during play they can show one of our results up to 7 days early. Either recording that under WEB-18 or cutting those views at the shown date is a spec decision; it's in the result limits.\n\n**Checks run, all passing:** `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`; the two progression test files (61 passed); the changed-file unit/contract selection against 8fa61603 (8 files, 112 passed). The modelled 30 s x10 run now shows 0 stalls and 300 days, against 44 stalls and 157 days computing one day at a time.\n\n**Not run, for the batch:** `pnpm exec vitest run --project integration apps/web/src/runtime/client.test.ts` and `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`, which includes the four edited specs.\n\nThe task result in `spec/tasks/T521.run-ahead-clock.md` is updated with all of this."
+        }
+      }
+    },
+    {
+      "sequence": 1401,
+      "at": "2026-10-27T13:26:22.580Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "92d92f19-a499-4544-aecd-4a95a896e919",
+          "owner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a/reviewer-1",
+          "status": "reviewing",
+          "commit": "e92d50854e8bd0224dfdedace63682998aaddfcf",
+          "baseCommit": "43974477e0414381536b4bc82fd680b5dbaf2e2d",
+          "submissionId": "2414e70c-374d-4c08-af71-87d0719639b2",
+          "createdAt": "2026-10-27T13:26:22.580Z"
+        }
+      }
+    },
+    {
+      "sequence": 1402,
+      "at": "2026-10-27T13:26:23.498Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "027e4b59-3e9c-4313-84da-0cb4dc0688ab",
+          "runner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T13:26:23.498Z"
+        }
+      }
+    },
+    {
+      "sequence": 1403,
+      "at": "2026-10-27T13:26:23.523Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "027e4b59-3e9c-4313-84da-0cb4dc0688ab",
+          "runner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T13:26:23.498Z"
+        }
+      }
+    },
+    {
+      "sequence": 1404,
+      "at": "2026-10-27T13:33:05.086Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "92d92f19-a499-4544-aecd-4a95a896e919",
+          "owner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T521 (e92d5085 against 43974477) now meets its acceptance and WEB-18, 64, 97 and 98 and SAVE-8, and the rework fixes every finding from review 1e61ca97.\n\nThe P2 is fixed. All four Chromium specs now wait after 자동 진행 정지 until the lock lifts before they read the date. The waits are on 진행 방식 변경 or 자동 진행 시작 being enabled. Both stay disabled while held days are still being shown, because draining keeps clockRunning set: gameActionsBlocked and modeSwitchBlocked both read it, and lock() only clears it in drained(). So these waits really cover the drain. The x1 stop accepts 8월 2–5일. At most 3 days are held, and in-flight plus held never exceeds the depth, so it stays short of the 8월 7일 eve.\n\nThe P3s are fixed too:\n- A notice read during play is now marked on the shown day and on every held day (withRead). This cannot change which days stop the clock: an unread window-open stop is never on screen while the clock runs.\n- A late day is now followed one full interval after it shows: late is when it lands after its turn or the timer fires half an interval late. This matches \"one per pace interval\" in WEB-18, and the two adjusted beat cases in progression.test.ts check out arithmetically.\n- openSlots now calls pause(true), which goes through stop(): held days are shown at once and saved once before slots.sync reads the synchronously published view.\n\nThe rest:\n- I scanned the other e2e stop sites (intervention, stable-controls, records, native-touch, club-identity, facility-art) and none reads the date mid-drain in a way that would fail.\n- The one integration case with automatic commands (client.test.ts autosave) still holds by reading.\n- The edits outside touches (App.tsx and the four specs) are scoped and are what the last review asked for.\n\nEvidence: the worker ran typecheck, lint, format:check, the two progression unit files (61 tests) and the --changed unit and contract run (112 tests). Integration and Chromium were left for the coordinator's batch. The remaining items are optional P3s.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "tests/e2e/recruitment.spec.ts:337-338 (T521)",
+              "message": "The guard `daysUntilNextMatch(before) > 4` exists so that the run never reaches the first match day. At level 4 matchEve is off, so nothing stops play at the eve. The owner's stop now shows up to RUN_AHEAD_DAYS.x1 = 3 more days after the click. The rested date can therefore move from about 8월 4–6일 to 8월 7–9일, and may play our first match. No assertion breaks (players and currentDay only), but the comment and guard no longer state the real invariant. Either widen the guard to cover the held days (e.g. `> 4 + RUN_AHEAD_DAYS.x1`) or reword the comment."
+            },
+            {
+              "priority": "P3",
+              "where": "tests/e2e/season-flow.spec.ts:7, tests/e2e/progression-settings.spec.ts:63-90 (T521)",
+              "message": "Both specs dropped their x2 run. Its held days could reach the 8월 7일 eve after an x1 stop that had already moved the date. The titles still say 'advances real days at each speed' and 'advances at the dropdown pace', but the browser now only runs x1 and x10. Optional: run x2 first from 8월 1일, so start plus stop plus 3 held days rests by 8월 5일, or rename the tests. Exact counts are already covered in progression.runahead.test.ts."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/ssot/WEB.md WEB-18/98 (T521 hand-off to the coordinator / update-ssot)",
+              "message": "Two decisions left in T521's result limits are not recorded in the SSOT yet. (1) Reads that skip the command queue are answered from the worker's head. These are head-to-head, club records, archives, person career, league fixtures and manager history. During play they can show one of our results up to RUN_AHEAD_DAYS before its day is shown. This is the deferred P3 from the last review. (2) Leaving play for the slot screen now shows held days at once (App.tsx openSlots → pause(true)). WEB-18/98 only name office entry and hiding for that. The worker cannot write STATE or SSOT, so the coordinator should carry both into the STATE inbox or an update-ssot so they are not lost after integration."
+            }
+          ],
+          "commit": "e92d50854e8bd0224dfdedace63682998aaddfcf",
+          "baseCommit": "43974477e0414381536b4bc82fd680b5dbaf2e2d",
+          "submissionId": "2414e70c-374d-4c08-af71-87d0719639b2",
+          "createdAt": "2026-10-27T13:26:22.580Z",
+          "finishedAt": "2026-10-27T13:33:05.086Z"
+        }
+      }
+    },
+    {
+      "sequence": 1405,
+      "at": "2026-10-27T13:33:05.109Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "027e4b59-3e9c-4313-84da-0cb4dc0688ab",
+          "runner": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T13:26:23.498Z",
+          "finishedAt": "2026-10-27T13:33:05.109Z",
+          "error": null,
+          "summary": "T521 (e92d5085 against 43974477) now meets its acceptance and WEB-18, 64, 97 and 98 and SAVE-8, and the rework fixes every finding from review 1e61ca97.\n\nThe P2 is fixed. All four Chromium specs now wait after 자동 진행 정지 until the lock lifts before they read the date. The waits are on 진행 방식 변경 or 자동 진행 시작 being enabled. Both stay disabled while held days are still being shown, because draining keeps clockRunning set: gameActionsBlocked and modeSwitchBlocked both read it, and lock() only clears it in drained(). So these waits really cover the drain. The x1 stop accepts 8월 2–5일. At most 3 days are held, and in-flight plus held never exceeds the depth, so it stays short of the 8월 7일 eve.\n\nThe P3s are fixed too:\n- A notice read during play is now marked on the shown day and on every held day (withRead). This cannot change which days stop the clock: an unread window-open stop is never on screen while the clock runs.\n- A late day is now followed one full interval after it shows: late is when it lands after its turn or the timer fires half an interval late. This matches \"one per pace interval\" in WEB-18, and the two adjusted beat cases in progression.test.ts check out arithmetically.\n- openSlots now calls pause(true), which goes through stop(): held days are shown at once and saved once before slots.sync reads the synchronously published view.\n\nThe rest:\n- I scanned the other e2e stop sites (intervention, stable-controls, records, native-touch, club-identity, facility-art) and none reads the date mid-drain in a way that would fail.\n- The one integration case with automatic commands (client.test.ts autosave) still holds by reading.\n- The edits outside touches (App.tsx and the four specs) are scoped and are what the last review asked for.\n\nEvidence: the worker ran typecheck, lint, format:check, the two progression unit files (61 tests) and the --changed unit and contract run (112 tests). Integration and Chromium were left for the coordinator's batch. The remaining items are optional P3s."
+        }
+      }
+    },
+    {
+      "sequence": 1406,
+      "at": "2026-10-27T13:33:05.166Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1407,
+      "at": "2026-10-27T13:33:37.809Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-27T13:33:06.474Z",
+            "finishedAt": "2026-10-27T13:33:37.656Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1408,
+      "at": "2026-10-27T13:33:37.877Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "7247a1a4a854e19cb1a70c71c0a345d31b31022c",
+        "integratedAt": "2026-10-27T13:33:37.877Z"
+      }
+    },
+    {
+      "sequence": 1409,
+      "at": "2026-10-27T13:56:32.711Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T12:17:06.695Z",
+          "stoppedAt": "2026-10-27T13:56:32.711Z",
+          "dispatched": 4,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "role": "finish",
+              "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
+              "details": [
+                "stderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness\n[presentation:locale] Missing message \"navigation.league\" (en-US); using the registered default (ko-KR). {\n  code: 'missing-message',\n  locale: 'en-US',\n  messageId: 'navigation.league',\n  message: 'Missing message \"navigation.league\" (en-US); using the registered default (ko-KR).'\n}\n\n(node:90412) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90415) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90485) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90544) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90552) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90554) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90682) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  |unit| packages/engine/src/staff.hiring.test.ts > contract terms (STAFF-11, STAFF-14) > never signs a manager past his 70th year, and the firefighter for one season\nError: Test timed out in 30000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ packages/engine/src/staff.hiring.test.ts:323:3\n    321|   });\n    322|\n    323|   it('never signs a manager past his 70th year, and the firefighter fo…\n       |   ^\n    324|     const w = world('seventy');\n    325|     expect(managerTermLimit({ born: w.year - 50 }, w.year)).toBe(5);\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n FAIL  |unit| packages/engine/src/grid/decide.test.ts > grid decisions > shoots less when ahead and more when behind, all match long\nError: Test timed out in 30000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ packages/engine/src/grid/decide.test.ts:615:3\n    613|   });\n    614|\n    615|   it('shoots less when ahead and more when behind, all match long', ()…\n       |   ^\n    616|     const at = centre(6, 2);\n    617|     const shot = (lead: number) => mixAt(ST, at, (t) => ({ ...t, lead,…\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n"
+              ]
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1410,
+      "at": "2026-10-27T14:55:03.679Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "ee602424-6fb0-4374-a820-79f2927fdaca",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T14:55:03.662Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1411,
+      "at": "2026-10-27T14:55:03.911Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+        "group": "auto-play-2",
+        "taskId": "T524",
+        "tasks": [
+          "T524"
+        ],
+        "lane": null,
+        "owner": "ee602424-6fb0-4374-a820-79f2927fdaca/worker-1",
+        "contributors": [
+          "ee602424-6fb0-4374-a820-79f2927fdaca/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-27T14:55:03.911Z",
+        "startCommit": "53ce730c07cfc5857da2e41ea9b654dd8bbd6b06"
+      }
+    },
+    {
+      "sequence": 1412,
+      "at": "2026-10-27T14:55:04.820Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1413,
+      "at": "2026-10-27T14:55:05.274Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "428f2f75-3464-4d68-bbbf-ba7d04621a30",
+          "runner": "ee602424-6fb0-4374-a820-79f2927fdaca",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T14:55:05.274Z"
+        }
+      }
+    },
+    {
+      "sequence": 1414,
+      "at": "2026-10-27T14:55:05.471Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "428f2f75-3464-4d68-bbbf-ba7d04621a30",
+          "runner": "ee602424-6fb0-4374-a820-79f2927fdaca",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T14:55:05.274Z"
+        }
+      }
+    },
+    {
+      "sequence": 1415,
+      "at": "2026-10-27T15:05:23.234Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1416,
+      "at": "2026-10-27T15:05:23.397Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T524: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+      }
+    },
+    {
+      "sequence": 1417,
+      "at": "2026-10-27T15:05:23.445Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "428f2f75-3464-4d68-bbbf-ba7d04621a30",
+          "runner": "ee602424-6fb0-4374-a820-79f2927fdaca",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T14:55:05.274Z",
+          "finishedAt": "2026-10-27T15:05:23.445Z",
+          "error": "T524: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+          "summary": "T524 is done. During automatic play, a read that skips the command queue can no longer show results from a day the calendar hasn't reached yet. The edits are in the three touched files plus the task's acceptance checks and result. Nothing is committed.\n\nHow it works:\n- **One read path.** All nine reads (`archive`, `recruitmentHistory`, `mediationPreview`, `personCareer`, `headToHead`, `clubRecords`, `managerHistory`, `leagueFixtures`, `fullStats`) now go through a single private `read()` in `client.ts`. It asks a gate (`readGate`) first. The progression controller sets that gate when it is created and clears it on dispose.\n- **What the gate does while the clock runs.** In `progression.ts`, the read counts as pending, and `compute()` sends no step until it is answered. If a step is in flight, the read waits for it to land. Then every held day is shown at once through `flush()`, the same path as entering the office or hiding the tab. If the owner's stop was still showing days, it ends there, unlocking and saving. Only then is the read sent. Computing ahead resumes as soon as the read is answered or fails. The clock never stops.\n- **Otherwise.** With the clock stopped, in manual mode or with the tab hidden, the gate does nothing and the read goes out at once, as before.\n\nTests: `progression.runahead.test.ts` has 13 new cases. They cover held days shown before a head-to-head read is sent, a read started during an in-flight step, no steps sent until the reply or an error and the run continuing after, a read with nothing held changing nothing, a read during the owner's stop, and all nine reads going out only after the held days are shown. The fake client is now built on `GameClient.prototype`, so these cases exercise the real read path. When I disabled the gate, 12 of the 13 failed; only the nothing-held case passed, which is correct.\n\nChecks run and passing:\n- `pnpm install --frozen-lockfile --prefer-offline`\n- `pnpm exec vitest run --project unit apps/web/src/runtime/progression.test.ts apps/web/src/runtime/progression.runahead.test.ts` (74 tests)\n- `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`\n- `pnpm exec vitest run --project unit --project contract --changed 53ce730c --passWithNoTests` (8 files, 125 tests). My first try at this one was blocked because I had added `$?` to the command. The plain command then ran and passed.\n\nLeft for the batch run (not run here): `pnpm exec vitest run --project integration apps/web/src/runtime/client.test.ts` and `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`. `client.test.ts` is untouched because its reads run without a controller.\n\nBehaviour the task text didn't spell out, also listed in the result:\n- If the clock runs with nothing held and nothing in flight, the read goes out at once but still pauses computing ahead until it is answered.\n- Catch-up steps (hidden tab, or returning after time away) aren't held by reads. Each is shown as it lands, before any read sent behind it is answered.\n- A read waiting on an in-flight step leaves the held days showing at the normal pace until that step lands, then shows them all at once."
+        }
+      }
+    },
+    {
+      "sequence": 1418,
+      "at": "2026-10-27T15:05:24.376Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "ee602424-6fb0-4374-a820-79f2927fdaca",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T14:55:03.662Z",
+          "stoppedAt": "2026-10-27T15:05:24.376Z",
+          "dispatched": 1,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+              "role": "worker",
+              "error": "T524: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1419,
+      "at": "2026-10-27T15:06:05.141Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1420,
+      "at": "2026-10-27T15:06:10.082Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "fb9f561d-d1bc-4cf0-a383-27b4f4189e85",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T15:06:10.063Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1421,
+      "at": "2026-10-27T15:06:10.121Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "fb9f561d-d1bc-4cf0-a383-27b4f4189e85/worker-1",
+        "contributors": [
+          "ee602424-6fb0-4374-a820-79f2927fdaca/worker-1",
+          "fb9f561d-d1bc-4cf0-a383-27b4f4189e85/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 1422,
+      "at": "2026-10-27T15:06:10.173Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+      }
+    },
+    {
+      "sequence": 1423,
+      "at": "2026-10-27T15:06:10.966Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "fb9f561d-d1bc-4cf0-a383-27b4f4189e85",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T15:06:10.063Z",
+          "stoppedAt": "2026-10-27T15:06:10.966Z",
+          "dispatched": 0,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+              "role": "worker",
+              "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1424,
+      "at": "2026-10-27T15:06:39.065Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1425,
+      "at": "2026-10-27T15:06:45.193Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1426,
+      "at": "2026-10-27T15:07:21.481Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "755579ba7b6fb9642978071b44773c34ed882283",
+        "submittedBase": "cad4e3cd6374fd42883a57958ac76ed4a9648d6f",
+        "submissionId": "02757fde-bcd2-4677-b443-1d25a4cb9123",
+        "submittedAt": "2026-10-27T15:07:21.481Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 256,
+          "files": 3
+        },
+        "steps": [
+          {
+            "taskId": "T524",
+            "commit": "755579ba7b6fb9642978071b44773c34ed882283",
+            "at": "2026-10-27T15:07:21.432Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-27T15:06:45.451Z",
+                "finishedAt": "2026-10-27T15:07:21.136Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-27T15:06:45.451Z",
+            "finishedAt": "2026-10-27T15:07:21.136Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1427,
+      "at": "2026-10-27T15:07:28.226Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "9d92bbae-924a-462f-8c2e-343169281dcd",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T15:07:28.208Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1428,
+      "at": "2026-10-27T15:07:29.035Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "1cede1a9-9993-4c91-9cbb-7fdfda232748",
+          "owner": "9d92bbae-924a-462f-8c2e-343169281dcd/reviewer-1",
+          "status": "reviewing",
+          "commit": "755579ba7b6fb9642978071b44773c34ed882283",
+          "baseCommit": "cad4e3cd6374fd42883a57958ac76ed4a9648d6f",
+          "submissionId": "02757fde-bcd2-4677-b443-1d25a4cb9123",
+          "createdAt": "2026-10-27T15:07:29.035Z"
+        }
+      }
+    },
+    {
+      "sequence": 1429,
+      "at": "2026-10-27T15:07:30.191Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "1353ce34-94f4-434b-a79e-7e64fe323bcd",
+          "runner": "9d92bbae-924a-462f-8c2e-343169281dcd",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T15:07:30.191Z"
+        }
+      }
+    },
+    {
+      "sequence": 1430,
+      "at": "2026-10-27T15:07:30.215Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "1353ce34-94f4-434b-a79e-7e64fe323bcd",
+          "runner": "9d92bbae-924a-462f-8c2e-343169281dcd",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T15:07:30.191Z"
+        }
+      }
+    },
+    {
+      "sequence": 1431,
+      "at": "2026-10-27T15:15:02.064Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T524 puts all nine queue-skipping reads through one `read()` helper. The controller registers a gate (`beforeRead`) that waits for the in-flight run-ahead step and shows the held days through `flush()`, the same path the office and hiding use. While a read is unanswered, `compute()` posts nothing. The gate is cleared on dispose. I checked the code against WEB-18 r162 and all five acceptance items, and it meets them. I also checked the four autopilot decisions the worker left for the owner (the risk reason): (1) a read with nothing held still holds computing; (2) catch-up steps are shown as they land, ahead of a read posted behind them, because the client handles each reply synchronously; (3) held days keep showing at the pace until the in-flight step lands; (4) a read during the owner's draining stop ends that stop, as entering the office does. All four are consistent with the SSOT. I did not rerun the worker's tests (unit run on the two progression files, typecheck/lint/format, --changed shard) and leave the final gate to the coordinator. One impact gap blocks approval. The task accepted re-reads per result or per round, but the full-stats hook re-reads on every new world revision, so with the player-comparison dialog open the read gate flushes the run-ahead buffer on every shown day. The calendar then runs several times faster than the selected pace, in jumps.",
+        "review": {
+          "id": "1cede1a9-9993-4c91-9cbb-7fdfda232748",
+          "owner": "9d92bbae-924a-462f-8c2e-343169281dcd/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T524 puts all nine queue-skipping reads through one `read()` helper. The controller registers a gate (`beforeRead`) that waits for the in-flight run-ahead step and shows the held days through `flush()`, the same path the office and hiding use. While a read is unanswered, `compute()` posts nothing. The gate is cleared on dispose. I checked the code against WEB-18 r162 and all five acceptance items, and it meets them. I also checked the four autopilot decisions the worker left for the owner (the risk reason): (1) a read with nothing held still holds computing; (2) catch-up steps are shown as they land, ahead of a read posted behind them, because the client handles each reply synchronously; (3) held days keep showing at the pace until the in-flight step lands; (4) a read during the owner's draining stop ends that stop, as entering the office does. All four are consistent with the SSOT. I did not rerun the worker's tests (unit run on the two progression files, typecheck/lint/format, --changed shard) and leave the final gate to the coordinator. One impact gap blocks approval. The task accepted re-reads per result or per round, but the full-stats hook re-reads on every new world revision, so with the player-comparison dialog open the read gate flushes the run-ahead buffer on every shown day. The calendar then runs several times faster than the selected pace, in jumps.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/runtime/progression.ts:579 (T524) with apps/web/src/ui/fullStatsView.ts:294 and apps/web/src/ui/PlayerComparison.tsx:61",
+              "message": "T524: the impact on views that re-read on every shown day was not assessed. `useFullStats` puts `w.revision` in its effect key. `Roster` passes `state.view.world`, which changes every shown day, to `PlayerComparison`. So with the comparison open at league scope, every paced day shown by `reveal(false)` triggers `fullStats` → `beforeRead`. That read waits for the step `tick()` has just posted and then `flush()`es every held day. At x1 (run-ahead depth 3) this shows day N on the beat and N+3 one step later, so about 4 days per second. At every pace the calendar moves in jumps of up to the depth, and computing waits behind each full-stats read. That breaks WEB-18's selected pace and 'every step is one day' while the dialog is open, which is a regression T524 introduces. `LeagueFullStats` does the same whenever its selected world keys change. The impl notes accepted flushes only for per-result or per-round re-readers (RecordsRoom, TeamSheetDialog, LeaguePicker), and result limits do not mention this case. Fix (needs a coordinator/planner call on WEB-18/WEB-89, since fullStatsView.ts is outside the touches): either re-key `useFullStats` on settled results (e.g. the shown round or fixtures played, not `w.revision`), or have the planner rule that views re-reading every day may speed up the shown clock. In both cases add a `progression.runahead.test.ts` case where a read fires on every shown day and check that the shown days keep the pace."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/progression.ts:880/911 (T524)",
+              "message": "T524: `showAhead()` uses `flush()`, which calls `shown(day, false)`, so a read-triggered flush never calls `announce()`. If our fixture's day is among the held days a read flushes, it is shown with the clock still running, but the 경기 결과 알림 notice (WEB-18) is skipped. This is fine for the office and hiding, where nobody is watching the paced clock, but a read leaves the clock running in view. It is not listed in the result's limits. Hand off to the planner: decide whether a read-triggered flush should announce the latest own result in the batch."
+            }
+          ],
+          "commit": "755579ba7b6fb9642978071b44773c34ed882283",
+          "baseCommit": "cad4e3cd6374fd42883a57958ac76ed4a9648d6f",
+          "submissionId": "02757fde-bcd2-4677-b443-1d25a4cb9123",
+          "createdAt": "2026-10-27T15:07:29.035Z",
+          "finishedAt": "2026-10-27T15:15:02.064Z"
+        }
+      }
+    },
+    {
+      "sequence": 1432,
+      "at": "2026-10-27T15:15:02.086Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "1353ce34-94f4-434b-a79e-7e64fe323bcd",
+          "runner": "9d92bbae-924a-462f-8c2e-343169281dcd",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T15:07:30.191Z",
+          "finishedAt": "2026-10-27T15:15:02.086Z",
+          "error": null,
+          "summary": "T524 puts all nine queue-skipping reads through one `read()` helper. The controller registers a gate (`beforeRead`) that waits for the in-flight run-ahead step and shows the held days through `flush()`, the same path the office and hiding use. While a read is unanswered, `compute()` posts nothing. The gate is cleared on dispose. I checked the code against WEB-18 r162 and all five acceptance items, and it meets them. I also checked the four autopilot decisions the worker left for the owner (the risk reason): (1) a read with nothing held still holds computing; (2) catch-up steps are shown as they land, ahead of a read posted behind them, because the client handles each reply synchronously; (3) held days keep showing at the pace until the in-flight step lands; (4) a read during the owner's draining stop ends that stop, as entering the office does. All four are consistent with the SSOT. I did not rerun the worker's tests (unit run on the two progression files, typecheck/lint/format, --changed shard) and leave the final gate to the coordinator. One impact gap blocks approval. The task accepted re-reads per result or per round, but the full-stats hook re-reads on every new world revision, so with the player-comparison dialog open the read gate flushes the run-ahead buffer on every shown day. The calendar then runs several times faster than the selected pace, in jumps."
+        }
+      }
+    },
+    {
+      "sequence": 1433,
+      "at": "2026-10-27T15:15:02.140Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "owner": "9d92bbae-924a-462f-8c2e-343169281dcd/worker-1",
+        "contributors": [
+          "ee602424-6fb0-4374-a820-79f2927fdaca/worker-1",
+          "fb9f561d-d1bc-4cf0-a383-27b4f4189e85/worker-1",
+          "9d92bbae-924a-462f-8c2e-343169281dcd/worker-1"
+        ],
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "1cede1a9-9993-4c91-9cbb-7fdfda232748",
+            "owner": "9d92bbae-924a-462f-8c2e-343169281dcd/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T524 puts all nine queue-skipping reads through one `read()` helper. The controller registers a gate (`beforeRead`) that waits for the in-flight run-ahead step and shows the held days through `flush()`, the same path the office and hiding use. While a read is unanswered, `compute()` posts nothing. The gate is cleared on dispose. I checked the code against WEB-18 r162 and all five acceptance items, and it meets them. I also checked the four autopilot decisions the worker left for the owner (the risk reason): (1) a read with nothing held still holds computing; (2) catch-up steps are shown as they land, ahead of a read posted behind them, because the client handles each reply synchronously; (3) held days keep showing at the pace until the in-flight step lands; (4) a read during the owner's draining stop ends that stop, as entering the office does. All four are consistent with the SSOT. I did not rerun the worker's tests (unit run on the two progression files, typecheck/lint/format, --changed shard) and leave the final gate to the coordinator. One impact gap blocks approval. The task accepted re-reads per result or per round, but the full-stats hook re-reads on every new world revision, so with the player-comparison dialog open the read gate flushes the run-ahead buffer on every shown day. The calendar then runs several times faster than the selected pace, in jumps.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/runtime/progression.ts:579 (T524) with apps/web/src/ui/fullStatsView.ts:294 and apps/web/src/ui/PlayerComparison.tsx:61",
+                "message": "T524: the impact on views that re-read on every shown day was not assessed. `useFullStats` puts `w.revision` in its effect key. `Roster` passes `state.view.world`, which changes every shown day, to `PlayerComparison`. So with the comparison open at league scope, every paced day shown by `reveal(false)` triggers `fullStats` → `beforeRead`. That read waits for the step `tick()` has just posted and then `flush()`es every held day. At x1 (run-ahead depth 3) this shows day N on the beat and N+3 one step later, so about 4 days per second. At every pace the calendar moves in jumps of up to the depth, and computing waits behind each full-stats read. That breaks WEB-18's selected pace and 'every step is one day' while the dialog is open, which is a regression T524 introduces. `LeagueFullStats` does the same whenever its selected world keys change. The impl notes accepted flushes only for per-result or per-round re-readers (RecordsRoom, TeamSheetDialog, LeaguePicker), and result limits do not mention this case. Fix (needs a coordinator/planner call on WEB-18/WEB-89, since fullStatsView.ts is outside the touches): either re-key `useFullStats` on settled results (e.g. the shown round or fixtures played, not `w.revision`), or have the planner rule that views re-reading every day may speed up the shown clock. In both cases add a `progression.runahead.test.ts` case where a read fires on every shown day and check that the shown days keep the pace."
+              },
+              {
+                "priority": "P3",
+                "where": "apps/web/src/runtime/progression.ts:880/911 (T524)",
+                "message": "T524: `showAhead()` uses `flush()`, which calls `shown(day, false)`, so a read-triggered flush never calls `announce()`. If our fixture's day is among the held days a read flushes, it is shown with the clock still running, but the 경기 결과 알림 notice (WEB-18) is skipped. This is fine for the office and hiding, where nobody is watching the paced clock, but a read leaves the clock running in view. It is not listed in the result's limits. Hand off to the planner: decide whether a read-triggered flush should announce the latest own result in the batch."
+              }
+            ],
+            "commit": "755579ba7b6fb9642978071b44773c34ed882283",
+            "baseCommit": "cad4e3cd6374fd42883a57958ac76ed4a9648d6f",
+            "submissionId": "02757fde-bcd2-4677-b443-1d25a4cb9123",
+            "createdAt": "2026-10-27T15:07:29.035Z",
+            "finishedAt": "2026-10-27T15:15:02.064Z",
+            "invalidatedAt": "2026-10-27T15:15:02.140Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1434,
+      "at": "2026-10-27T15:15:02.293Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e1be5398-aa39-4519-9bcd-6cbd0432d943",
+          "runner": "9d92bbae-924a-462f-8c2e-343169281dcd",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T15:15:02.293Z"
+        }
+      }
+    },
+    {
+      "sequence": 1435,
+      "at": "2026-10-27T15:15:02.490Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e1be5398-aa39-4519-9bcd-6cbd0432d943",
+          "runner": "9d92bbae-924a-462f-8c2e-343169281dcd",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T15:15:02.293Z"
+        }
+      }
+    },
+    {
+      "sequence": 1436,
+      "at": "2026-10-27T15:24:56.618Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1437,
+      "at": "2026-10-27T15:24:57.098Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1438,
+      "at": "2026-10-27T15:24:57.142Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1439,
+      "at": "2026-10-27T15:25:32.237Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "f83a5e0c-fedb-4480-8bf1-3577d586a84f",
+        "submittedAt": "2026-10-27T15:25:32.237Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "376 changed lines (limit 300)",
+            "outside touches: apps/web/src/ui/RecordsRoom.tsx apps/web/src/ui/fullStatsView.ts",
+            "reworked after a review or integration failure",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 376,
+          "files": 5
+        },
+        "steps": [
+          {
+            "taskId": "T524",
+            "commit": "a1df455f0b653257d9c7128432b22de1f5f9c3a3",
+            "at": "2026-10-27T15:25:32.183Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-27T15:24:57.381Z",
+                "finishedAt": "2026-10-27T15:25:31.922Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-27T15:24:57.381Z",
+            "finishedAt": "2026-10-27T15:25:31.922Z"
+          }
+        ],
+        "verifiedCommit": "a1df455f0b653257d9c7128432b22de1f5f9c3a3"
+      }
+    },
+    {
+      "sequence": 1440,
+      "at": "2026-10-27T15:25:32.268Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "e1be5398-aa39-4519-9bcd-6cbd0432d943",
+          "runner": "9d92bbae-924a-462f-8c2e-343169281dcd",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T15:15:02.293Z",
+          "finishedAt": "2026-10-27T15:25:32.268Z",
+          "error": null,
+          "summary": "I fixed both review findings. To do that I edited two UI files outside the task's touches, `apps/web/src/ui/fullStatsView.ts` and `apps/web/src/ui/RecordsRoom.tsx`. T521 did the same in its correction. This is listed in the result limits.\n\n**P2 (calendar jumps past the pace):** every read shows the held days at once, so any view that re-reads on every shown day pushes the calendar faster than the selected pace. I went through all nine read call sites, and two re-read on every shown day:\n- **`useFullStats`** (player comparison at league scope, `LeagueFullStats`): a league's or the amateur league's full statistics only change on a league match day, when `w.round` moves on. It now re-reads on the round; other scopes still use the revision.\n- **The records room's current-season archive** (`useSeasonArchive`, used by 감독 이력 and the current season's page): this one the reviewer hadn't flagged. It now re-reads only when own matches or events change. Published views keep the same object for an unchanged part, so those references only change with new facts.\n\nThe other call sites already re-read only per result, round or key, or read once. The mediation preview does re-read on the revision, but an owner-held mediation stops the clock, so it never reads during play.\n\n**P3 (result notice skipped):** a read leaves the clock running in view, so a read that shows our match day among the held days now announces the result. That follows WEB-18 as written (\"once our fixture's day is shown, a result notice appears\"). The office, hiding and blocker flushes still stay silent. The reviewer had marked this one for the planner. If the planner wants read flushes silent, `showAhead` goes back to `flush()`; the result limits say so.\n\n**New tests** in `progression.runahead.test.ts`:\n- A view that re-reads once a round keeps the x1 pace for 15 s. The only days shown early are the held days right after a round day, at most 3 per round.\n- A read that shows our day-9 result among the held days sets the 경기 결과 알림 notice. With announcing turned off, this case fails.\n\n**Checks run, all passing:**\n- `pnpm exec vitest run --project unit apps/web/src/runtime/progression.test.ts apps/web/src/runtime/progression.runahead.test.ts` (76 tests)\n- `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`\n- `pnpm exec vitest run --project unit --project contract --changed cad4e3cd --passWithNoTests` (8 files, 127 tests)\n- `apps/web/src/ui/fullStatsView.test.ts` (6 tests). It belongs to the integration project, and I ran it because its module changed.\n\n**Left for the batch run:** `pnpm exec vitest run --project integration apps/web/src/runtime/client.test.ts` and `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`. Neither changed hook has a rendering test, so the records and league journeys there are what exercise the new keys."
+        }
+      }
+    },
+    {
+      "sequence": 1441,
+      "at": "2026-10-27T15:25:33.052Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "9e97752a-b574-4fc6-9b65-882e565bfedb",
+          "owner": "9d92bbae-924a-462f-8c2e-343169281dcd/reviewer-1",
+          "status": "reviewing",
+          "commit": "a1df455f0b653257d9c7128432b22de1f5f9c3a3",
+          "baseCommit": "cad4e3cd6374fd42883a57958ac76ed4a9648d6f",
+          "submissionId": "f83a5e0c-fedb-4480-8bf1-3577d586a84f",
+          "createdAt": "2026-10-27T15:25:33.052Z"
+        }
+      }
+    },
+    {
+      "sequence": 1442,
+      "at": "2026-10-27T15:25:34.374Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "dad9a732-6cfb-4596-9e3f-f3f3898cd219",
+          "runner": "9d92bbae-924a-462f-8c2e-343169281dcd",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T15:25:34.374Z"
+        }
+      }
+    },
+    {
+      "sequence": 1443,
+      "at": "2026-10-27T15:25:34.399Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "dad9a732-6cfb-4596-9e3f-f3f3898cd219",
+          "runner": "9d92bbae-924a-462f-8c2e-343169281dcd",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T15:25:34.374Z"
+        }
+      }
+    },
+    {
+      "sequence": 1444,
+      "at": "2026-10-27T15:33:57.536Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "9e97752a-b574-4fc6-9b65-882e565bfedb",
+          "owner": "9d92bbae-924a-462f-8c2e-343169281dcd/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T524 (rework of 2cbc068d, now at a1df455f against cad4e3cd) fixes both findings from review 1cede1a9, and I approve it. I looked at the four risk reasons first.\n\n- **Size (376 lines) and edits outside touches.** All the T524 changes are in client.ts, progression.ts and the run-ahead test, plus two small re-key edits in fullStatsView.ts and RecordsRoom.tsx. Both outside-touches edits are the P2 fix, and the result's limits list them. The merge commit 05086393 only brings in the base, so `git diff cad4e3cd...a1df455f` holds T524 alone.\n- **Rework.**\n  - The P2 fix is correct. `useFullStats` now re-reads league and lower scopes only when `w.round` changes. I checked this against the engine: `fixturesFor` puts every division's fixtures, the amateur league's included, on the shared global rounds 1–46, and `beginRound` raises `w.round` and settles that round's fixtures in the same day step (season.ts:841, 914–923). So a league's statistics can only change when `w.round` changes. Cup and Europe scopes keep the revision key, but no UI uses them.\n  - `useSeasonArchive` now re-reads on the `ownMatches`/`events` references. The host builds the archive only from history, `ownMatches` and `events` (host.ts:489–498). `applyViewDelta` keeps the references of parts that did not change, and `shareValue` restores them for views sent whole, so the archive re-reads only when its contents change. The view's last-150-events window also changes whenever an event is added.\n  - I checked the other read call sites myself. They re-read per round, per result, per key or per subject, and none re-reads every shown day except the mediation preview, which the clock stops for.\n  - `LeagueFullStats` takes a world from `worldSelector` that has no `round` key. On a round day it still picks up the new round through `fixtures`/`players`, and the old revision key had the same lag, so nothing regresses.\n  - The P3 fix (`reveal(true, true)` in `showAhead`) only turns on the result notice for read flushes. `announce()` still stays silent when hidden or stopped, so the office, hiding and blocker flushes behave as before.\n- **Autopilot decisions waiting for the owner.**\n  - Points (1) to (4) and (6) are consistent with WEB-18 r162. The SSOT says a read first shows the computed days at once. The impl notes accept one flush per round or per result.\n  - Point (5), announcing on read flushes, follows WEB-18's \"once our fixture's day is shown, a result notice … appears\" and can be reverted in one line. It still needs the owner's confirmation; it does not block approval.\n\nI re-read the gate's logic and found no problems:\n- reads are counted and waited for;\n- a read in flight waits for `computing`;\n- `compute()` posts nothing while `reads` is above zero;\n- a read during the owner's stop ends it through `drained()`;\n- `dispose()` clears the gate, and each controller has its own client.\n\nThe host's list of queue-skipping reads (host.ts:315–326) matches the nine reads now routed through `read()`, and the `it.each` case covers all nine.\n\nI did not rerun the worker's checks: unit tests on the two progression files (76 tests), typecheck, lint, format, the `--changed` shard (127 tests) and `fullStatsView.test.ts`. The final gate is left to the coordinator: the integration `client.test.ts` and chromium e2e, which the worker also did not run.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/fullStatsView.ts:297 and apps/web/src/ui/RecordsRoom.tsx:84 (T524)",
+              "message": "T524: no test covers the new re-read keys. The controller case at progression.runahead.test.ts:611 fakes a once-a-round reader, and the e2e journeys open each lens fresh. Nothing checks that `useFullStats` skips a revision-only change and re-reads when `w.round` changes, or that `useSeasonArchive` re-reads only when `ownMatches`/`events` change. Optional: add small hook tests so a later key change can't quietly bring back the every-day flush or leave the stats stale."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/client.ts:71 (T524)",
+              "message": "T524: nothing imports the exported `ReadGate` type; only the `readGate` property uses it, and progression.ts relies on inference. Either drop `export` or type the assignment in the controller with it."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/progression.ts:601 (T524, autopilot decision 5)",
+              "message": "T524: showing the result notice when a read shows the held days at once is an autopilot call the owner or planner still has to confirm. It matches WEB-18's result-notice line, and the result says how to undo it (`showAhead` → `flush()`). Hand off to the planner; no code change needed unless they rule otherwise."
+            }
+          ],
+          "commit": "a1df455f0b653257d9c7128432b22de1f5f9c3a3",
+          "baseCommit": "cad4e3cd6374fd42883a57958ac76ed4a9648d6f",
+          "submissionId": "f83a5e0c-fedb-4480-8bf1-3577d586a84f",
+          "createdAt": "2026-10-27T15:25:33.052Z",
+          "finishedAt": "2026-10-27T15:33:57.536Z"
+        }
+      }
+    },
+    {
+      "sequence": 1445,
+      "at": "2026-10-27T15:33:57.559Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "dad9a732-6cfb-4596-9e3f-f3f3898cd219",
+          "runner": "9d92bbae-924a-462f-8c2e-343169281dcd",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T15:25:34.374Z",
+          "finishedAt": "2026-10-27T15:33:57.559Z",
+          "error": null,
+          "summary": "T524 (rework of 2cbc068d, now at a1df455f against cad4e3cd) fixes both findings from review 1cede1a9, and I approve it. I looked at the four risk reasons first.\n\n- **Size (376 lines) and edits outside touches.** All the T524 changes are in client.ts, progression.ts and the run-ahead test, plus two small re-key edits in fullStatsView.ts and RecordsRoom.tsx. Both outside-touches edits are the P2 fix, and the result's limits list them. The merge commit 05086393 only brings in the base, so `git diff cad4e3cd...a1df455f` holds T524 alone.\n- **Rework.**\n  - The P2 fix is correct. `useFullStats` now re-reads league and lower scopes only when `w.round` changes. I checked this against the engine: `fixturesFor` puts every division's fixtures, the amateur league's included, on the shared global rounds 1–46, and `beginRound` raises `w.round` and settles that round's fixtures in the same day step (season.ts:841, 914–923). So a league's statistics can only change when `w.round` changes. Cup and Europe scopes keep the revision key, but no UI uses them.\n  - `useSeasonArchive` now re-reads on the `ownMatches`/`events` references. The host builds the archive only from history, `ownMatches` and `events` (host.ts:489–498). `applyViewDelta` keeps the references of parts that did not change, and `shareValue` restores them for views sent whole, so the archive re-reads only when its contents change. The view's last-150-events window also changes whenever an event is added.\n  - I checked the other read call sites myself. They re-read per round, per result, per key or per subject, and none re-reads every shown day except the mediation preview, which the clock stops for.\n  - `LeagueFullStats` takes a world from `worldSelector` that has no `round` key. On a round day it still picks up the new round through `fixtures`/`players`, and the old revision key had the same lag, so nothing regresses.\n  - The P3 fix (`reveal(true, true)` in `showAhead`) only turns on the result notice for read flushes. `announce()` still stays silent when hidden or stopped, so the office, hiding and blocker flushes behave as before.\n- **Autopilot decisions waiting for the owner.**\n  - Points (1) to (4) and (6) are consistent with WEB-18 r162. The SSOT says a read first shows the computed days at once. The impl notes accept one flush per round or per result.\n  - Point (5), announcing on read flushes, follows WEB-18's \"once our fixture's day is shown, a result notice … appears\" and can be reverted in one line. It still needs the owner's confirmation; it does not block approval.\n\nI re-read the gate's logic and found no problems:\n- reads are counted and waited for;\n- a read in flight waits for `computing`;\n- `compute()` posts nothing while `reads` is above zero;\n- a read during the owner's stop ends it through `drained()`;\n- `dispose()` clears the gate, and each controller has its own client.\n\nThe host's list of queue-skipping reads (host.ts:315–326) matches the nine reads now routed through `read()`, and the `it.each` case covers all nine.\n\nI did not rerun the worker's checks: unit tests on the two progression files (76 tests), typecheck, lint, format, the `--changed` shard (127 tests) and `fullStatsView.test.ts`. The final gate is left to the coordinator: the integration `client.test.ts` and chromium e2e, which the worker also did not run."
+        }
+      }
+    },
+    {
+      "sequence": 1446,
+      "at": "2026-10-27T15:33:57.621Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1447,
+      "at": "2026-10-27T15:34:31.792Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-27T15:33:59.316Z",
+            "finishedAt": "2026-10-27T15:34:31.643Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1448,
+      "at": "2026-10-27T15:34:31.856Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "174af69100a3276d065905b5f7c50a811b8771ec",
+        "integratedAt": "2026-10-27T15:34:31.856Z"
+      }
+    },
+    {
+      "sequence": 1449,
+      "at": "2026-10-27T15:56:23.612Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "9d92bbae-924a-462f-8c2e-343169281dcd",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T15:07:28.208Z",
+          "stoppedAt": "2026-10-27T15:56:23.612Z",
+          "dispatched": 3,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "role": "finish",
+              "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
+              "details": [
+                "(node:1064) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1113) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1287) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1282) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\nstderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness\n[presentation:locale] Missing message \"navigation.league\" (en-US); using the registered default (ko-KR). {\n  code: 'missing-message',\n  locale: 'en-US',\n  messageId: 'navigation.league',\n  message: 'Missing message \"navigation.league\" (en-US); using the registered default (ko-KR).'\n}\n\n(node:1345) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1379) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1395) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\nA PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.\n\u001b[33m[INEFFECTIVE_DYNAMIC_IMPORT] \u001b[0mapps/web/src/adapters/games.ts is dynamically imported by apps/web/src/runtime/client.ts but also statically imported by apps/web/src/adapters/legacyReset.ts, apps/web/src/adapters/previousStore.ts, apps/web/src/runtime/client.ts, apps/web/src/runtime/slots.ts, apps/web/src/ui/App.tsx, dynamic import will not move module into another chunk.\n\n"
+              ]
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1450,
+      "at": "2026-10-27T15:58:53.410Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "816ac175-d66a-42f4-9e89-e9135265279b",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T15:58:53.392Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1451,
+      "at": "2026-10-27T15:58:53.645Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+        "group": "auto-play-2",
+        "taskId": "T525",
+        "tasks": [
+          "T525"
+        ],
+        "lane": null,
+        "owner": "816ac175-d66a-42f4-9e89-e9135265279b/worker-1",
+        "contributors": [
+          "816ac175-d66a-42f4-9e89-e9135265279b/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-27T15:58:53.645Z",
+        "startCommit": "10b334c99f2c62347259508ec59836f75b89fe1c"
+      }
+    },
+    {
+      "sequence": 1452,
+      "at": "2026-10-27T15:58:54.344Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1453,
+      "at": "2026-10-27T15:58:54.559Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c082fece-f181-4ab3-a89d-be24968b62d5",
+          "runner": "816ac175-d66a-42f4-9e89-e9135265279b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T15:58:54.559Z"
+        }
+      }
+    },
+    {
+      "sequence": 1454,
+      "at": "2026-10-27T15:58:54.766Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c082fece-f181-4ab3-a89d-be24968b62d5",
+          "runner": "816ac175-d66a-42f4-9e89-e9135265279b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T15:58:54.559Z"
+        }
+      }
+    },
+    {
+      "sequence": 1455,
+      "at": "2026-10-27T16:07:23.989Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1456,
+      "at": "2026-10-27T16:07:24.952Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1457,
+      "at": "2026-10-27T16:07:25.025Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1458,
+      "at": "2026-10-27T16:08:21.493Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "67beecbc4504a02740d1b907122cd4955229548d",
+        "submittedBase": "10b334c99f2c62347259508ec59836f75b89fe1c",
+        "submissionId": "9e64c56e-8af1-4ebb-b175-bc05ea34c519",
+        "submittedAt": "2026-10-27T16:08:21.493Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 260,
+          "files": 2
+        },
+        "steps": [
+          {
+            "taskId": "T525",
+            "commit": "67beecbc4504a02740d1b907122cd4955229548d",
+            "at": "2026-10-27T16:08:21.444Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-27T16:07:25.403Z",
+                "finishedAt": "2026-10-27T16:08:21.175Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-27T16:07:25.403Z",
+            "finishedAt": "2026-10-27T16:08:21.175Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1459,
+      "at": "2026-10-27T16:08:21.521Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "c082fece-f181-4ab3-a89d-be24968b62d5",
+          "runner": "816ac175-d66a-42f4-9e89-e9135265279b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T15:58:54.559Z",
+          "finishedAt": "2026-10-27T16:08:21.521Z",
+          "error": null,
+          "summary": "I implemented T525: during automatic play a read now waits until the held days have been shown at the pace, so the calendar no longer jumps. The unit tests, typecheck, lint and format checks pass; the e2e records spec has not been run and is left for the batch.\n\n**What changed in `apps/web/src/runtime/progression.ts`**\n- T524's gate stays: `beforeRead` still returns `{ ready, settled }`, and its `reads` counter still stops `compute()` from the read's start. Only `ready` changed.\n- If nothing is held and no step is in flight, the read is sent at once. Otherwise `ready` is a promise that `postReads()` resolves once nothing is held and nothing is in flight.\n- `postReads()` runs after every `reveal()` (on each beat and in the office, hide, blocker and stop paths), after every step lands in `send()`, and on `dispose()`.\n- I removed `showAhead()`, the `computing` promise and T524's `announce` parameter. Our match result is now announced when its day is shown at the pace, as it is without a read.\n\n**What the tests show (`progression.runahead.test.ts`)**\n- **Days held at x10:** the read goes out at 1.0 s with the last held day, with all nine gaps exactly 100 ms. Nothing is computed while it waits or until it is answered.\n- **Step in flight:** the read waits for that step and the held days. With only a slow step in flight, it goes when that day is shown.\n- **Owner's stop:** the shown times, the unlock and the single save are identical with and without a read. The read goes out with the last day.\n- **Office, hiding and dispose:** each releases a waiting read at once.\n- **Running clock with nothing held:** the read goes at once.\n- **Records view open at x1:** 19 days are shown exactly 1 s apart with no early days, where T524 showed 3 early days per round.\n- **All nine read types:** each now waits for the held days.\n\n**Checks run**\n- `pnpm exec vitest run --project unit` on `progression.test.ts` and `progression.runahead.test.ts`: 81 tests passed.\n- `pnpm run typecheck`, `pnpm run lint` and `pnpm run format:check` passed.\n- The changed-files unit and contract run (`--changed 10b334c9`) passed 121 tests in 7 files.\n\n**Left for the batch (not run)**\n- `tests/e2e/records.spec.ts`. The spec is unchanged and expects `1950년 8월 4일` within 10 s.\n- The `client.test.ts` integration tests (untouched).\n- `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`.\n\n**Behaviour to know about** (also in the task's result limits)\n- After a read goes out, nothing is held and computing waits for its answer, so the next day can stall by about the read's round trip plus one step. The impl notes accept this cost.\n- Catch-up steps (hidden tab or returning after being away) still aren't held by reads, as in T524.\n- `dispose` sends a waiting read without showing the held days, since the page is leaving."
+        }
+      }
+    },
+    {
+      "sequence": 1460,
+      "at": "2026-10-27T16:08:22.325Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "7890eccf-3cc8-4440-a431-e43c8a756e1a",
+          "owner": "816ac175-d66a-42f4-9e89-e9135265279b/reviewer-1",
+          "status": "reviewing",
+          "commit": "67beecbc4504a02740d1b907122cd4955229548d",
+          "baseCommit": "10b334c99f2c62347259508ec59836f75b89fe1c",
+          "submissionId": "9e64c56e-8af1-4ebb-b175-bc05ea34c519",
+          "createdAt": "2026-10-27T16:08:22.325Z"
+        }
+      }
+    },
+    {
+      "sequence": 1461,
+      "at": "2026-10-27T16:08:23.380Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "4f6d8158-1f4f-4afa-894a-8458b8dd03f8",
+          "runner": "816ac175-d66a-42f4-9e89-e9135265279b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T16:08:23.380Z"
+        }
+      }
+    },
+    {
+      "sequence": 1462,
+      "at": "2026-10-27T16:08:23.405Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "4f6d8158-1f4f-4afa-894a-8458b8dd03f8",
+          "runner": "816ac175-d66a-42f4-9e89-e9135265279b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T16:08:23.380Z"
+        }
+      }
+    },
+    {
+      "sequence": 1463,
+      "at": "2026-10-27T16:12:24.393Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "7890eccf-3cc8-4440-a431-e43c8a756e1a",
+          "owner": "816ac175-d66a-42f4-9e89-e9135265279b/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T525 meets its acceptance criteria and WEB-18 r163. `beforeRead` keeps T524's `reads` counter, so nothing is computed ahead once a read starts. When days are held or a step is in flight, `ready` is now a promise in `waitingReads` instead of `showAhead()`. `postReads()` releases it only when `ahead` is empty and `inFlight` is false. It is called at the end of every `reveal()` path (beat, flush, refused client reveal, empty list), after every `send()` lands, and on `dispose()`. `GameClient.command` never rejects because `enqueue` catches errors, so the `postReads()` after `send()`'s finally always runs and a failed step cannot strand a read. Stop, eve-stop and fresh-event stops all flush and then post. A cancelled in-flight step during stop or pause posts through `send()` or through `step()`'s flush. Mode or world changes go through `stop('')` and flush. Removing `computing`, `showAhead` and `announce` leaves no stale references. Our result is still announced only on paced reveals. The rewritten fake-worker cases check what acceptance asks for: 100 ms gaps, no posting or computing while waiting, an in-flight step, a slow step, identical drain timing with one save, office entry and hiding, dispose, nothing held or in flight, x1 per-round reads 1 s apart, and the nine read types. The worker's evidence (81 targeted unit tests, typecheck, lint, format, `--changed` unit+contract) matches the task. I did not run tests in this read-only review. Risk reason 'autopilot decisions awaiting the owner' refers to the WEB-18 r163 inbox decision. The code follows that decision as written, and confirming it is for the owner, not this review. `records.spec` e2e and the full gates are left for the coordinator batch, as the result limits say.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/progression.ts:750",
+              "message": "T525: an old drain stall (from T521, not introduced here) now also holds reads. If the owner pauses, the drain starts, and they open the league page's match tab during it, LiveSeason's `setWatching(true)` sets `watching` without `beginWatch` (the clock isn't running). `tick()` then returns early, clears `due` and schedules nothing. Leaving the tab runs `endWatch()`, which also does nothing because `resumeAfterWatch` is false. The drain stays stuck with days held and management locked. Under T524, a read in this state called `showAhead()` and ended the drain. Under T525 the read waits until play, office entry, hiding or dispose. Not blocking for T525. Hand to planning: decide whether watching during a drain should flush the held days or resume the drain when watching ends, and add a regression case for a read waiting through it."
+            }
+          ],
+          "commit": "67beecbc4504a02740d1b907122cd4955229548d",
+          "baseCommit": "10b334c99f2c62347259508ec59836f75b89fe1c",
+          "submissionId": "9e64c56e-8af1-4ebb-b175-bc05ea34c519",
+          "createdAt": "2026-10-27T16:08:22.325Z",
+          "finishedAt": "2026-10-27T16:12:24.393Z"
+        }
+      }
+    },
+    {
+      "sequence": 1464,
+      "at": "2026-10-27T16:12:24.415Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "4f6d8158-1f4f-4afa-894a-8458b8dd03f8",
+          "runner": "816ac175-d66a-42f4-9e89-e9135265279b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T16:08:23.380Z",
+          "finishedAt": "2026-10-27T16:12:24.415Z",
+          "error": null,
+          "summary": "T525 meets its acceptance criteria and WEB-18 r163. `beforeRead` keeps T524's `reads` counter, so nothing is computed ahead once a read starts. When days are held or a step is in flight, `ready` is now a promise in `waitingReads` instead of `showAhead()`. `postReads()` releases it only when `ahead` is empty and `inFlight` is false. It is called at the end of every `reveal()` path (beat, flush, refused client reveal, empty list), after every `send()` lands, and on `dispose()`. `GameClient.command` never rejects because `enqueue` catches errors, so the `postReads()` after `send()`'s finally always runs and a failed step cannot strand a read. Stop, eve-stop and fresh-event stops all flush and then post. A cancelled in-flight step during stop or pause posts through `send()` or through `step()`'s flush. Mode or world changes go through `stop('')` and flush. Removing `computing`, `showAhead` and `announce` leaves no stale references. Our result is still announced only on paced reveals. The rewritten fake-worker cases check what acceptance asks for: 100 ms gaps, no posting or computing while waiting, an in-flight step, a slow step, identical drain timing with one save, office entry and hiding, dispose, nothing held or in flight, x1 per-round reads 1 s apart, and the nine read types. The worker's evidence (81 targeted unit tests, typecheck, lint, format, `--changed` unit+contract) matches the task. I did not run tests in this read-only review. Risk reason 'autopilot decisions awaiting the owner' refers to the WEB-18 r163 inbox decision. The code follows that decision as written, and confirming it is for the owner, not this review. `records.spec` e2e and the full gates are left for the coordinator batch, as the result limits say."
+        }
+      }
+    },
+    {
+      "sequence": 1465,
+      "at": "2026-10-27T16:12:24.475Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1466,
+      "at": "2026-10-27T16:12:58.668Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-27T16:12:26.195Z",
+            "finishedAt": "2026-10-27T16:12:58.505Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1467,
+      "at": "2026-10-27T16:12:58.725Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "2573791c73ec899ce20565f82cc40f60ebddca5a",
+        "integratedAt": "2026-10-27T16:12:58.725Z"
+      }
+    },
+    {
+      "sequence": 1468,
+      "at": "2026-10-27T16:35:17.958Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "verified": {
+          "commit": "2573791c73ec899ce20565f82cc40f60ebddca5a",
+          "checks": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
+              "startedAt": "2026-10-27T16:12:59.870Z",
+              "finishedAt": "2026-10-27T16:35:17.789Z"
+            }
+          ],
+          "at": "2026-10-27T16:35:17.918Z",
+          "excluded": [
+            "T522"
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 1469,
+      "at": "2026-10-27T16:35:18.301Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "816ac175-d66a-42f4-9e89-e9135265279b",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T15:58:53.392Z",
+          "stoppedAt": "2026-10-27T16:35:18.301Z",
+          "dispatched": 2,
+          "outcome": "main-session",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    }
+  ]
+}

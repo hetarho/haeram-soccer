@@ -14,7 +14,6 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
-| p9a4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-27T09:05Z | 2026-10-27T09:05Z | - |
 | n3w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T12:15Z | 2026-10-27T12:15Z | - |
 
 ## inbox
@@ -319,6 +318,9 @@
 - 261027 suggest T482 ideation/calibration-pass: forwards take 10 of 12.5 shots a team and 141 → 107 decisions in front of the box against midfielders' ~23; a midfield-positioning pass (where midfielders are when the ball reaches the final third) is the lever for goals by line, set-piece and headed shares
 - 261027 parked -: `vibe loop` refuses this checkout while older work groups (refactor-261019, identity, full-model, presentation-261021, history-activation, v9n4-release and others) are listed as active; the owner decides whether to close or clean them
 - 261027 decided T477 T478 T479 T480 T481 T482: how to run the implementation once `vibe loop` refused → the autopilot session implements the tasks itself, one at a time, with the batch gate before the single main push (alt: `work run`, which needs the old work spaces cleaned first)
+- 261028 decided WEB-18 T525: T524 showed the computed days at once before a read, and a records view open during play re-reads on a new key, so the shown calendar jumped (1950-08-01 → 08-05, records.spec on 174af691) → a read waits until the computed days are shown at the pace and nothing is computed ahead meanwhile (alt: let reads show computed-ahead days | keep the jump)
+- 261027 decided WEB-18 T524: reads outside the command queue answer from the newest computed day, up to 7 days past the shown date → they first show the computed days at once and nothing is computed ahead until answered (alt: record that reads may show computed-ahead days | cut each read at the shown date, which cumulative statistics cannot do)
+- 261027 decided T518 ARCH-31: round-jobs.test.ts tier → integration (it advances days, which tests/config/test-tiers keeps out of unit), acceptance command updated (alt: keep it unit and shrink it below advanceDays)
 
 ## ideation
 | id | st |
@@ -343,7 +345,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 24 | 24 | - | 2 |
-| WEB | 162 | 162 | - | 0 |
+| WEB | 164 | 164 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -368,13 +370,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T516 | Automatic play without the match-day moment | WEB | - | todo |
-| T517 | Result-identical cuts in the own match and a shared day bench | MATCH ARCH WEB | - | todo |
-| T518 | Two-phase league round with a read-only fixture copy | ARCH MATCH WEB | - | todo |
-| T519 | Helper workers for an own match day's other fixtures | ARCH MATCH WEB | T518 T520 | todo |
-| T520 | Lighter match-day view publication | ARCH WEB | - | todo |
-| T521 | Automatic play computes ahead of the shown date | WEB SAVE MATCH | T516 T520 | todo |
-| T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | todo |
+| T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | doing@261027.n3w8 |
 | T532 | Season and History competition hubs | WEB ARCH | T531 | todo |
 | T533 | First-team, academy and coaching navigation | WEB ARCH | T532 | todo |
 
@@ -391,12 +387,15 @@
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 | h7t3 | 4 | 6 | 0 | 6 | 0 | 1 | 2 | 2026-10-27T08:21:16.497Z | [history](work/h7t3.json) |
+| auto-play | 4 | 7 | 4 | 3 | 0 | 1 | 0 | 2026-10-27T11:34:29.863Z | [history](work/auto-play.json) |
+| auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- implement-task T532 (then T533): only the requested office/approval/navigation redesign; four-unit host loop, one final batch and main push.
-- Preserve existing T516–T522 performance work and unrelated ideation for a separate run.
+- implement-task T532 (then T533): requested gameplay hierarchy; preserve the integrated automatic-play work.
+- n3w8 (work auto-play-2): T516–T521, T524, T525 on main after the group gate passed on 2573791c (typecheck, lint, format, unit, integration, contract, catalogs, presentation, build, Chromium); explore T522 (automatic play read in the built game, `pnpm exec tsx scripts/automatic-play-read.mjs`) runs next in the main session on a quiet machine.
 
 ## log
+- 261028 sync origin/main: preserve automatic-play r162/r163 and serialize the gameplay redesign as WEB r164; T530/T531 remain complete.
 - 261028 T531 done: host finalized the verified child implementation and task commit.
 - 261028 T530 done: 141 affected unit cases, type/lint/format/build passed; host finalized the commit after restricted child Git writes.
 - 261028 create-task WEB r162: T530–T533 serial UI chain; existing performance tasks remain outside this requested slice.
@@ -416,4 +415,3 @@
 - 261027 T494 done: redrew all 21 print/pixel/sticker trophies in their theme's illustration style; preserved the seven standard photographs; asset integrity and task checks passed.
 - 261027 u3b8 closed: T500–T503 batch gate passed on f25cae1a (unit 1171, integration 1158 after a quiet-host rerun of 3 load timeouts, contract 39, catalogs, presentation, build, Chromium 299/299), pushed to main
 - 261027 T503 done: competition keys, Elo reads, request label and empty table moved to leaves; UI exception list 43→38 files
-- 261027 T502 done: staff catalogue and member reads moved to staff-info.ts; UI exception list 46→43 files

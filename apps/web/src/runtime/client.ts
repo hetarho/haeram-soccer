@@ -19,7 +19,8 @@ import {
   type Reply,
   type View,
 } from './protocol';
-import { NOTIFICATIONS_KEY, notificationStore, shareView } from './store';
+import { NOTIFICATIONS_KEY, notificationStore, shareValue, shareView } from './store';
+import { HELPER_CONFIG } from './helperPool';
 /** Bound the engine snapshot RPC separately from expensive background compression. */
 const CHECKPOINT_TIMEOUT_MS = 60000;
 // Large lossless careers compress in the separate codec worker; engine RPC stays bounded below.
@@ -56,6 +57,32 @@ export interface ClientState {
   /** Player commands queued or running; automatic clock ticks never count. */
   pendingActions?: number;
 }
+/**
+ * How a reply's view is taken: `hold` keeps an automatic day for `reveal`; `head`, reading a notice
+ * while the clock runs, replaces the newest held day when there is one and marks the notices read
+ * on the others; any other view is shown at once, with whatever was computed before it.
+ */
+type Taking = 'hold' | 'head' | undefined;
+/**
+ * How the progression controller holds a read outside the command queue (→WEB-18): `ready`, when
+ * set, settles once the read may be posted, and `settled` is called once it is answered or failed.
+ * Undefined lets the read go at once.
+ */
+export type ReadGate = () => { ready?: Promise<void>; settled: () => void } | undefined;
+/** `view` with the notices in `read` marked read; the same view when none of them was unread. */
+function withRead(view: View, read: Set<string>): View {
+  const inbox = view.world.inbox;
+  if (!inbox?.some((item) => !item.read && read.has(item.id))) return view;
+  return {
+    ...view,
+    world: {
+      ...view.world,
+      inbox: inbox.map((item) =>
+        !item.read && read.has(item.id) ? { ...item, read: true } : item,
+      ),
+    },
+  };
+}
 export class GameClient {
   private automaticPending = 0;
   state: ClientState = {
@@ -71,6 +98,8 @@ export class GameClient {
   private codec = new Worker(new URL('./codec.ts', import.meta.url), { type: 'module' });
   /** Checkpoints the codec is building, by the save request that asked for them. */
   private builds = new Map<string, { resolve: (result: CodecResult) => void; timer: number }>();
+  /** The fixture helpers, computing an own match day's other fixtures for the engine (→ARCH-6). */
+  private helpers: Worker[] = [];
   /** The save being built and committed, and whether a newer one was asked for meanwhile. */
   private saving?: Promise<void>;
   private savedCheckpoint?: { raw: string; worldId: string; revision: number };
@@ -88,12 +117,24 @@ export class GameClient {
       reject: (e: Error) => void;
       timer: number;
       publishView: boolean;
+      /** How its view is taken (`take`). */
+      taking?: Taking;
     }
   >();
   private queue = Promise.resolve();
-  /** The latest published views this tab holds by sequence, the newest its state's (→ARCH-6). */
+  /** The latest published views this tab holds by sequence, the newest the head's (→ARCH-6). */
   private views = new Map<number, View>();
   private viewSeq?: number;
+  /**
+   * Days automatic play computed ahead of the shown date, oldest first (→WEB-18). The newest is
+   * the world the engine worker holds: requests and saves start from it, and `reveal` shows them.
+   */
+  private held: View[] = [];
+  /**
+   * Set by the progression controller: the engine answers a read from its newest computed day, so
+   * a read waits until the days computed ahead are shown (→WEB-18).
+   */
+  readGate?: ReadGate;
   private release?: () => void;
   private lockWait?: AbortController;
   private cancelled = false;
@@ -128,41 +169,7 @@ export class GameClient {
       indexed ? new IndexedDbCheckpointKey('previous') : undefined,
       indexed ? new IndexedDbCheckpointKey('active') : undefined,
     );
-    this.worker.onmessage = (event: MessageEvent<Reply>) => {
-      const r = event.data;
-      const pending = this.waiters.get(r.requestId);
-      if (!pending) return;
-      clearTimeout(pending.timer);
-      pending.timer = window.setTimeout(() => this.failWorker(), 15000);
-      if (r.progress !== undefined) {
-        if (this.state.activity === 'foreground') {
-          this.state.progress = r.progress;
-          this.emit();
-        }
-        return;
-      }
-      clearTimeout(pending.timer);
-      this.waiters.delete(r.requestId);
-      const view = this.viewOf(r);
-      if (view && pending.publishView) {
-        this.state.view = shareView(this.state.view, view);
-        if (r.viewSeq !== undefined) {
-          this.views.set(r.viewSeq, this.state.view!);
-          this.viewSeq = r.viewSeq;
-          while (this.views.size > PUBLISHED_VIEWS)
-            this.views.delete(this.views.keys().next().value!);
-        }
-      }
-      // Callers read the whole view, sharing the published state's references.
-      if (view) r.view = pending.publishView ? this.state.view : view;
-      if (r.ok) pending.resolve(r);
-      else
-        pending.reject(
-          r.errorCode === 'save-compatibility'
-            ? new SaveCompatibilityError(r.error)
-            : new Error(r.error || 'Worker 오류'),
-        );
-    };
+    this.worker.onmessage = (event: MessageEvent<Reply>) => this.received(event.data);
     this.worker.onerror = () => this.failWorker();
     // Nested workers are not dependable on every browser (→ARCH-18), so the client creates the
     // codec and hands the engine worker a port to it: snapshots never pass through this thread.
@@ -174,9 +181,77 @@ export class GameClient {
       for (const id of [...this.builds.keys()])
         this.built({ id, ok: false, error: '저장 Worker가 종료되었습니다.' });
     };
+    this.startHelpers();
     this.channel.onmessage = (event) => this.refresh(event.data?.generation);
     window.addEventListener('storage', this.storageListener);
     notificationStore.sync();
+  }
+  /**
+   * Creates the fixture helpers on a device with the cores for them and hands their ports to the
+   * engine worker, as for the codec (→ARCH-6/18). Without them, after a creation failure or once
+   * one errors, the engine worker computes every fixture itself.
+   */
+  private startHelpers() {
+    if (!((navigator.hardwareConcurrency ?? 0) >= HELPER_CONFIG.minCores)) return;
+    const ports: MessagePort[] = [];
+    try {
+      for (let i = 0; i < HELPER_CONFIG.count; i++) {
+        const helper = new Worker(new URL('./fixtureHelper.ts', import.meta.url), {
+          type: 'module',
+        });
+        this.helpers.push(helper);
+        helper.onerror = () => this.helpersFailed();
+        const channel = new MessageChannel();
+        helper.postMessage({ type: 'port', port: channel.port1 }, [channel.port1]);
+        ports.push(channel.port2);
+      }
+    } catch {
+      this.helpersFailed();
+      return;
+    }
+    this.worker.postMessage({ type: 'helpers', ports }, ports);
+  }
+  /** An engine worker reply: progress, or the answer its request waits for. */
+  private received(r: Reply) {
+    const pending = this.waiters.get(r.requestId);
+    if (!pending) return;
+    clearTimeout(pending.timer);
+    pending.timer = window.setTimeout(() => this.failWorker(), 15000);
+    if (r.progress !== undefined) {
+      if (this.state.activity === 'foreground') {
+        this.state.progress = r.progress;
+        this.emit();
+      }
+      return;
+    }
+    clearTimeout(pending.timer);
+    this.waiters.delete(r.requestId);
+    const { view, shared } = this.viewOf(r, pending.publishView);
+    // A failed day changes nothing to show: its view stands where the worker does.
+    const taking = pending.taking === 'hold' && !r.ok ? 'head' : pending.taking;
+    const taken =
+      view && pending.publishView
+        ? this.take(shared ? view : shareView(this.head, view)!, taking)
+        : undefined;
+    if (taken && r.viewSeq !== undefined) {
+      this.views.set(r.viewSeq, taken);
+      this.viewSeq = r.viewSeq;
+      while (this.views.size > PUBLISHED_VIEWS) this.views.delete(this.views.keys().next().value!);
+    }
+    // Callers read the whole view, sharing the taken view's references.
+    if (view) r.view = taken ?? view;
+    if (r.ok) pending.resolve(r);
+    else
+      pending.reject(
+        r.errorCode === 'save-compatibility'
+          ? new SaveCompatibilityError(r.error)
+          : new Error(r.error || 'Worker 오류'),
+      );
+  }
+  private helpersFailed() {
+    if (!this.helpers.length) return;
+    for (const helper of this.helpers.splice(0)) helper.terminate();
+    this.worker.postMessage({ type: 'helpers-failed' });
   }
   private refresh(generation: number) {
     if (!this.state.readonly || !Number.isSafeInteger(generation) || generation < 0) return;
@@ -349,18 +424,62 @@ export class GameClient {
     }
     this.emit();
   }
-  /** The whole view a reply carries, rebuilt on the base it names when it sends only changes. */
-  private viewOf(r: Reply): View | undefined {
-    if (r.view) return r.view;
+  /**
+   * The whole view a reply carries, rebuilt on the base it names when it sends only changes;
+   * `shared` when it was rebuilt on the head to follow it, its values regaining that view's
+   * references as they went in, as `shareView` would give them (→ARCH-6).
+   */
+  private viewOf(r: Reply, publish: boolean): { view?: View; shared?: boolean } {
+    if (r.view) return { view: r.view };
     const delta = r.viewDelta,
       base = delta && this.views.get(delta.base);
-    if (!delta || !base) return undefined;
-    return applyViewDelta(base, delta);
+    if (!delta || !base) return {};
+    if (publish && base === this.head)
+      return { view: applyViewDelta(base, delta, shareValue), shared: true };
+    return { view: applyViewDelta(base, delta) };
+  }
+  /** The newest view the engine worker holds: the last day computed ahead, else the shown one. */
+  private get head() {
+    return this.held.at(-1) ?? this.state.view;
+  }
+  /** Takes a view as `taking` says; held days share structure with the day before (→WEB-18). */
+  private take(view: View, taking: Taking) {
+    const same = this.head?.world.id === view.world.id;
+    if (taking === 'hold' && same) this.held.push(view);
+    else if (taking === 'head' && same && this.held.length) {
+      // Notices read during play read on the day shown and every day held too (→WEB-97).
+      const read = new Set(
+        (view.world.inbox || []).filter((item) => item.read).map((item) => item.id),
+      );
+      this.held = [...this.held.slice(0, -1).map((held) => withRead(held, read)), view];
+      this.state.view = withRead(this.state.view!, read);
+    } else {
+      // An owner decision, a load or another world stands past whatever was computed ahead.
+      this.held = [];
+      this.state.view = view;
+    }
+    return view;
+  }
+  /**
+   * Shows the next computed day, or every one at once, in order; returns how many it showed. The
+   * progression controller calls it at the pace (→WEB-18).
+   */
+  reveal(all = false) {
+    const shown = this.held.splice(0, all ? this.held.length : 1);
+    if (!shown.length) return 0;
+    this.state.view = shown.at(-1);
+    this.emit();
+    return shown.length;
   }
   private requestId() {
     return `${this.session.slice(0, 8)}:${++this.serial}`;
   }
-  private rpc(body: Body, requestId = this.requestId(), timeout = 15000): Promise<Reply> {
+  private rpc(
+    body: Body,
+    requestId = this.requestId(),
+    timeout = 15000,
+    automatic = false,
+  ): Promise<Reply> {
     if (this.failed)
       return Promise.reject(
         new Error('Worker를 다시 불러오세요. 마지막 저장은 파일로 보관할 수 있습니다.'),
@@ -375,14 +494,21 @@ export class GameClient {
           body.type === 'command' ||
           body.type === 'ack-critical' ||
           (body.type === 'inspect' && !!body.activate),
+        taking: automatic
+          ? 'hold'
+          : body.type === 'command' && body.command.type === 'read-inbox'
+            ? 'head'
+            : undefined,
       });
+      // The worker stands at the head, ahead of the shown date while days are held.
+      const head = this.head;
       this.worker.postMessage({
         protocol: 1,
         session: this.session,
         requestId,
-        expectedRevision: this.state.view?.world.revision ?? -1,
+        expectedRevision: head?.world.revision ?? -1,
         ...this.saves.generationInfo,
-        viewBase: this.state.view ? this.viewSeq : undefined,
+        viewBase: head ? this.viewSeq : undefined,
         body,
       });
     });
@@ -415,7 +541,7 @@ export class GameClient {
     this.queue = task.then(() => {});
     return task;
   }
-  private async mutate(body: Body) {
+  private async mutate(body: Body, automatic = false) {
     if (this.state.readonly) throw new Error('이 탭은 읽기 전용입니다.');
     if (body.type === 'found' && this.saves.incompatibleCheckpoint && !body.replace)
       throw new SaveCompatibilityError(
@@ -425,7 +551,7 @@ export class GameClient {
       this.state.savedRevision = -1;
       this.state.playback = undefined;
     }
-    const reply = await this.rpc(body);
+    const reply = await this.rpc(body, undefined, undefined, automatic);
     if (body.type === 'found' && body.replace && this.saves.incompatibleCheckpoint)
       this.replacingIncompatible = true;
     if (reply.playback) this.state.playback = reply.playback;
@@ -485,9 +611,12 @@ export class GameClient {
       this.saving = undefined;
     }
   }
-  /** One checkpoint of the engine's current world, committed with the envelope the codec validated. */
+  /**
+   * One checkpoint of the engine's current world, committed with the envelope the codec validated.
+   * During automatic play it may hold days not yet shown (→SAVE-8).
+   */
   private async saveOnce() {
-    const w = this.state.view?.world;
+    const w = this.head?.world;
     if (!w || this.state.readonly || w.revision === this.state.savedRevision) return;
     const requestId = this.requestId();
     const built = new Promise<CodecResult>((resolve) =>
@@ -513,7 +642,7 @@ export class GameClient {
         : new Error(result.error);
     // A checkpoint of a world no longer in play, or no newer than the committed one, is dropped.
     if (
-      result.envelope.worldId !== this.state.view?.world.id ||
+      result.envelope.worldId !== this.head?.world.id ||
       result.envelope.generation <= this.saves.generationInfo.parentGeneration
     )
       return;
@@ -552,9 +681,9 @@ export class GameClient {
     });
   }
   /**
-   * `automatic` marks clock ticks; every other command is an owner decision and reports its
-   * outcome. Neither waits for its save: a decision asks for one at once, automatic days within
-   * AUTOSAVE_MS (→SAVE-8).
+   * `automatic` marks clock ticks, whose days are held until `reveal` shows them; every other
+   * command is an owner decision and reports its outcome. Neither waits for its save: a decision
+   * asks for one at once, automatic days within AUTOSAVE_MS (→SAVE-8).
    */
   command(command: Command, options: { background?: boolean; automatic?: boolean } = {}) {
     if (
@@ -570,16 +699,19 @@ export class GameClient {
       this.emit();
     }
     const task = this.enqueue(async () => {
-      const before = this.state.view?.world;
+      const before = this.head?.world;
       let reply: Reply | undefined;
       const count = command.type === 'season' ? Math.min(100, Math.max(1, command.count)) : 1;
       try {
         for (let i = 0; i < count; i++) {
           if (this.cancelled) break;
-          reply = await this.mutate({
-            type: 'command',
-            command: command.type === 'season' ? { type: 'season', count: 1 } : command,
-          } as Body);
+          reply = await this.mutate(
+            {
+              type: 'command',
+              command: command.type === 'season' ? { type: 'season', count: 1 } : command,
+            } as Body,
+            options.automatic,
+          );
           if (reply.cancelled || this.state.view?.world.critical) break;
         }
       } finally {
@@ -623,38 +755,52 @@ export class GameClient {
       return reply;
     });
   }
+  /**
+   * A read skips the command queue, so it never sets busy or waits behind a season command
+   * (→ARCH-6). The engine answers it from its newest computed day, so it is posted only once the
+   * controller has shown the days computed ahead, and computing ahead waits for its answer (→WEB-18).
+   */
+  private async read(body: Body) {
+    const gate = this.readGate?.();
+    try {
+      if (gate?.ready) await gate.ready;
+      return await this.rpc(body);
+    } finally {
+      gate?.settled();
+    }
+  }
   /** Season and manager records are reads; refreshing them never holds the clock or sets busy. */
   async archive(year: number) {
-    return (await this.rpc({ type: 'archive', year })).archive;
+    return (await this.read({ type: 'archive', year })).archive;
   }
-  /**
-   * Our all-time record against a club from every own match the worker keeps; the view holds only
-   * the recent ones. A read skips the command queue, so it never sets busy or holds the clock.
-   */
   async recruitmentHistory() {
-    const reply = await this.rpc({ type: 'recruitment-history' });
+    const reply = await this.read({ type: 'recruitment-history' });
     if (!reply.recruitmentHistory)
       throw new Error(reply.error ?? '영입 결정 기록 응답이 없습니다.');
     return reply.recruitmentHistory;
   }
   async mediationPreview(id: string, support: 'director' | 'balanced' | 'manager') {
-    const reply = await this.rpc({ type: 'mediation-preview', id, support });
+    const reply = await this.read({ type: 'mediation-preview', id, support });
     if (!reply.mediationPreview) throw new Error(reply.error ?? '중재 미리보기 응답이 없습니다.');
     return reply.mediationPreview;
   }
   async personCareer(person: string) {
-    const reply = await this.rpc({ type: 'person-career', person });
+    const reply = await this.read({ type: 'person-career', person });
     if (!reply.personCareer) throw new Error(reply.error ?? '인물 경력 응답이 없습니다.');
     return reply.personCareer;
   }
+  /**
+   * Our all-time record against a club from every own match the worker keeps; the view holds only
+   * the recent ones.
+   */
   async headToHead(club: string) {
-    const reply = await this.rpc({ type: 'head-to-head', club });
+    const reply = await this.read({ type: 'head-to-head', club });
     if (!reply.headToHead) throw new Error('맞대결 기록 응답이 없습니다.');
     return reply.headToHead;
   }
   /** Our match records over every own match, read like head-to-head without the command queue. */
   async clubRecords() {
-    const reply = await this.rpc({ type: 'club-records' });
+    const reply = await this.read({ type: 'club-records' });
     if (!reply.clubRecords) throw new Error('클럽 기록 응답이 없습니다.');
     return reply.clubRecords;
   }
@@ -666,7 +812,7 @@ export class GameClient {
    */
   async managerHistory(cursor?: string) {
     const world = this.state.view?.world.id;
-    const reply = await this.rpc({
+    const reply = await this.read({
       type: 'manager-history',
       ...(cursor !== undefined ? { cursor } : {}),
       ...(world !== undefined ? { world } : {}),
@@ -677,7 +823,7 @@ export class GameClient {
   }
   /** Another league's fixtures this season, read like head-to-head without the command queue. */
   async leagueFixtures(league: { code: string; tier: number; group: number }) {
-    const reply = await this.rpc({
+    const reply = await this.read({
       type: 'league-fixtures',
       country: league.code,
       tier: league.tier,
@@ -690,7 +836,7 @@ export class GameClient {
    * command queue; undefined while the season keeps none.
    */
   async fullStats(scope: FullStatsScope) {
-    const reply = await this.rpc({ type: 'full-stats', ...scope });
+    const reply = await this.read({ type: 'full-stats', ...scope });
     if (!reply.ok) throw new Error(reply.error ?? '세부 기록 응답이 없습니다.');
     return reply.fullStats;
   }
@@ -723,9 +869,10 @@ export class GameClient {
           '지원하지 않는 저장 버전의 원본을 보존하고 있습니다. 호환되는 앱으로 열거나 기록 파일을 가져오세요.';
         return this.rawBackup();
       }
-      if (this.state.view && !this.failed) {
+      const head = this.head;
+      if (head && !this.failed) {
         const saved = this.savedCheckpoint,
-          current = this.state.view.world;
+          current = head.world;
         if (saved?.worldId === current.id && saved.revision === current.revision) return saved.raw;
         return (await this.rpc({ type: 'export' }, this.requestId(), CODEC_TIMEOUT_MS)).raw;
       }
@@ -779,6 +926,7 @@ export class GameClient {
       await this.saves.clearPrevious().catch(() => {});
       // Nothing left in this page — the slot index on leaving, a save — may bring it back either.
       this.state.view = undefined;
+      this.held = [];
       this.views.clear();
       this.state.playback = undefined;
       this.emit();
@@ -803,5 +951,6 @@ export class GameClient {
     this.channel.close();
     this.worker.terminate();
     this.codec.terminate();
+    for (const helper of this.helpers) helper.terminate();
   }
 }
