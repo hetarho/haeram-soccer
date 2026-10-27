@@ -19,7 +19,7 @@ import {
   type Reply,
   type View,
 } from './protocol';
-import { NOTIFICATIONS_KEY, notificationStore, shareView } from './store';
+import { NOTIFICATIONS_KEY, notificationStore, shareValue, shareView } from './store';
 /** Bound the engine snapshot RPC separately from expensive background compression. */
 const CHECKPOINT_TIMEOUT_MS = 60000;
 // Large lossless careers compress in the separate codec worker; engine RPC stays bounded below.
@@ -143,9 +143,9 @@ export class GameClient {
       }
       clearTimeout(pending.timer);
       this.waiters.delete(r.requestId);
-      const view = this.viewOf(r);
+      const { view, shared } = this.viewOf(r, pending.publishView);
       if (view && pending.publishView) {
-        this.state.view = shareView(this.state.view, view);
+        this.state.view = shared ? view : shareView(this.state.view, view);
         if (r.viewSeq !== undefined) {
           this.views.set(r.viewSeq, this.state.view!);
           this.viewSeq = r.viewSeq;
@@ -349,13 +349,19 @@ export class GameClient {
     }
     this.emit();
   }
-  /** The whole view a reply carries, rebuilt on the base it names when it sends only changes. */
-  private viewOf(r: Reply): View | undefined {
-    if (r.view) return r.view;
+  /**
+   * The whole view a reply carries, rebuilt on the base it names when it sends only changes;
+   * `shared` when it was rebuilt on the published view to replace it, its values regaining that
+   * view's references as they went in, as `shareView` would give them (→ARCH-6).
+   */
+  private viewOf(r: Reply, publish: boolean): { view?: View; shared?: boolean } {
+    if (r.view) return { view: r.view };
     const delta = r.viewDelta,
       base = delta && this.views.get(delta.base);
-    if (!delta || !base) return undefined;
-    return applyViewDelta(base, delta);
+    if (!delta || !base) return {};
+    if (publish && base === this.state.view)
+      return { view: applyViewDelta(base, delta, shareValue), shared: true };
+    return { view: applyViewDelta(base, delta) };
   }
   private requestId() {
     return `${this.session.slice(0, 8)}:${++this.serial}`;
