@@ -63,6 +63,12 @@ export interface ClientState {
  * on the others; any other view is shown at once, with whatever was computed before it.
  */
 type Taking = 'hold' | 'head' | undefined;
+/**
+ * How the progression controller holds a read outside the command queue (→WEB-18): `ready`, when
+ * set, settles once the read may be posted, and `settled` is called once it is answered or failed.
+ * Undefined lets the read go at once.
+ */
+export type ReadGate = () => { ready?: Promise<void>; settled: () => void } | undefined;
 /** `view` with the notices in `read` marked read; the same view when none of them was unread. */
 function withRead(view: View, read: Set<string>): View {
   const inbox = view.world.inbox;
@@ -124,6 +130,11 @@ export class GameClient {
    * the world the engine worker holds: requests and saves start from it, and `reveal` shows them.
    */
   private held: View[] = [];
+  /**
+   * Set by the progression controller: the engine answers a read from its newest computed day, so
+   * a read waits until the days computed ahead are shown (→WEB-18).
+   */
+  readGate?: ReadGate;
   private release?: () => void;
   private lockWait?: AbortController;
   private cancelled = false;
@@ -744,38 +755,52 @@ export class GameClient {
       return reply;
     });
   }
+  /**
+   * A read skips the command queue, so it never sets busy or waits behind a season command
+   * (→ARCH-6). The engine answers it from its newest computed day, so it is posted only once the
+   * controller has shown the days computed ahead, and computing ahead waits for its answer (→WEB-18).
+   */
+  private async read(body: Body) {
+    const gate = this.readGate?.();
+    try {
+      if (gate?.ready) await gate.ready;
+      return await this.rpc(body);
+    } finally {
+      gate?.settled();
+    }
+  }
   /** Season and manager records are reads; refreshing them never holds the clock or sets busy. */
   async archive(year: number) {
-    return (await this.rpc({ type: 'archive', year })).archive;
+    return (await this.read({ type: 'archive', year })).archive;
   }
-  /**
-   * Our all-time record against a club from every own match the worker keeps; the view holds only
-   * the recent ones. A read skips the command queue, so it never sets busy or holds the clock.
-   */
   async recruitmentHistory() {
-    const reply = await this.rpc({ type: 'recruitment-history' });
+    const reply = await this.read({ type: 'recruitment-history' });
     if (!reply.recruitmentHistory)
       throw new Error(reply.error ?? '영입 결정 기록 응답이 없습니다.');
     return reply.recruitmentHistory;
   }
   async mediationPreview(id: string, support: 'director' | 'balanced' | 'manager') {
-    const reply = await this.rpc({ type: 'mediation-preview', id, support });
+    const reply = await this.read({ type: 'mediation-preview', id, support });
     if (!reply.mediationPreview) throw new Error(reply.error ?? '중재 미리보기 응답이 없습니다.');
     return reply.mediationPreview;
   }
   async personCareer(person: string) {
-    const reply = await this.rpc({ type: 'person-career', person });
+    const reply = await this.read({ type: 'person-career', person });
     if (!reply.personCareer) throw new Error(reply.error ?? '인물 경력 응답이 없습니다.');
     return reply.personCareer;
   }
+  /**
+   * Our all-time record against a club from every own match the worker keeps; the view holds only
+   * the recent ones.
+   */
   async headToHead(club: string) {
-    const reply = await this.rpc({ type: 'head-to-head', club });
+    const reply = await this.read({ type: 'head-to-head', club });
     if (!reply.headToHead) throw new Error('맞대결 기록 응답이 없습니다.');
     return reply.headToHead;
   }
   /** Our match records over every own match, read like head-to-head without the command queue. */
   async clubRecords() {
-    const reply = await this.rpc({ type: 'club-records' });
+    const reply = await this.read({ type: 'club-records' });
     if (!reply.clubRecords) throw new Error('클럽 기록 응답이 없습니다.');
     return reply.clubRecords;
   }
@@ -787,7 +812,7 @@ export class GameClient {
    */
   async managerHistory(cursor?: string) {
     const world = this.state.view?.world.id;
-    const reply = await this.rpc({
+    const reply = await this.read({
       type: 'manager-history',
       ...(cursor !== undefined ? { cursor } : {}),
       ...(world !== undefined ? { world } : {}),
@@ -798,7 +823,7 @@ export class GameClient {
   }
   /** Another league's fixtures this season, read like head-to-head without the command queue. */
   async leagueFixtures(league: { code: string; tier: number; group: number }) {
-    const reply = await this.rpc({
+    const reply = await this.read({
       type: 'league-fixtures',
       country: league.code,
       tier: league.tier,
@@ -811,7 +836,7 @@ export class GameClient {
    * command queue; undefined while the season keeps none.
    */
   async fullStats(scope: FullStatsScope) {
-    const reply = await this.rpc({ type: 'full-stats', ...scope });
+    const reply = await this.read({ type: 'full-stats', ...scope });
     if (!reply.ok) throw new Error(reply.error ?? '세부 기록 응답이 없습니다.');
     return reply.fullStats;
   }

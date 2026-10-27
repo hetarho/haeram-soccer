@@ -367,7 +367,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | doing@261027.n3w8 |
-| T524 | Reads during automatic play wait for the shown date | WEB | T521 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -383,12 +382,13 @@
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 | h7t3 | 4 | 6 | 0 | 6 | 0 | 1 | 2 | 2026-10-27T08:21:16.497Z | [history](work/h7t3.json) |
 | auto-play | 4 | 7 | 4 | 3 | 0 | 1 | 0 | 2026-10-27T11:34:29.863Z | [history](work/auto-play.json) |
-| auto-play-2 | 4 | 3 | 1 | 2 | 0 | 0 | 1 | 2026-10-27T15:06:11.936Z | [history](work/auto-play-2.json) |
+| auto-play-2 | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-27T15:33:59.206Z | [history](work/auto-play-2.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261027 T524 integrated
 - 261027 update-ssot WEB r162 + create-task → T524 (n3w8, T521 review P3): reads outside the command queue first show the computed days and hold computing ahead
 - 261027 T521 done (n3w8 group auto-play-2): run-ahead clock; gate fixes for the recovery (helper worker) and training (eve after the stop) journeys
 - 261027 n3w8: T519 integrated on work/auto-play-2 (p9a4's approved submission fe75453e merged as-is; CI on 8db55791 unit, integration ×3 and checks passed)
@@ -408,4 +408,3 @@
 - 261027 u3b8 closed: T500–T503 batch gate passed on f25cae1a (unit 1171, integration 1158 after a quiet-host rerun of 3 load timeouts, contract 39, catalogs, presentation, build, Chromium 299/299), pushed to main
 - 261027 T503 done: competition keys, Elo reads, request label and empty table moved to leaves; UI exception list 43→38 files
 - 261027 T502 done: staff catalogue and member reads moved to staff-info.ts; UI exception list 46→43 files
-- 261027 T501 done: tactic labels, founding years and injury reads moved to engine leaves; UI exception list 53→46 files
