@@ -1,11 +1,12 @@
 import { PersonCareerLink } from './PersonCareer';
 import type { GameClient } from '../runtime/client';
 import { PlayingCoachReview } from './PlayingCoachReview';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { Player, World } from '../../../../packages/contracts/src/types';
 import { agentOf, clausesLabel, talkFor } from '../../../../packages/engine/src/contracts';
 import { yellowWarning } from '../../../../packages/engine/src/discipline';
-import { seasonHeat } from '../../../../packages/engine/src/material';
+import { seasonHeat, type HeatMap } from '../../../../packages/engine/src/material';
+import { HeatPitch } from './HeatPitch';
 import { useGameState } from '../runtime/store';
 import { Attributes } from './Attributes';
 import { clubRanks } from './careerRecords';
@@ -190,45 +191,25 @@ function Discipline({ w, player, tally }: { w: World; player: Player; tally?: Pl
     </section>
   );
 }
-/** The pitch in his attack frame: 8 bands toward the goal on the right, 5 lanes across. */
-function HeatGrid({ cells }: { cells: number[] }) {
-  const most = Math.max(1, ...cells);
-  return (
-    <div
-      role="img"
-      aria-label={`터치 ${cells.reduce((sum, n) => sum + n, 0)}회 · 오른쪽으로 공격`}
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(8, 1fr)',
-        gridAutoFlow: 'column',
-        gridTemplateRows: 'repeat(5, 1fr)',
-        aspectRatio: '105 / 68',
-        maxWidth: 420,
-        gap: 1,
-        background: 'var(--line)',
-        border: '1px solid var(--line-strong)',
-      }}
-    >
-      {cells.map((n, i) => (
-        <i
-          key={i}
-          style={{
-            background: `color-mix(in srgb, var(--accent) ${Math.round((n / most) * 85)}%, var(--surface))`,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
 /** This season's heat map from its matches, earlier seasons' from the archive (→MATCH-5). */
 function SeasonHeat({ w, player, tally }: { w: World; player: Player; tally?: PlayerTally }) {
-  const seasons = [
-    ...(tally?.heat ? [{ year: w.year, cells: tally.heat }] : []),
-    ...w.history
-      .map((archive) => ({ year: archive.year, cells: seasonHeat(archive, player.id)?.cells }))
-      .filter((season): season is { year: number; cells: number[] } => !!season.cells)
-      .reverse(),
-  ];
+  const seasons = useMemo(
+    () => [
+      ...(tally?.heat
+        ? [
+            {
+              year: w.year,
+              map: { cells: tally.heat, touches: tally.heat.reduce((a, b) => a + b, 0) },
+            },
+          ]
+        : []),
+      ...w.history
+        .map((archive) => ({ year: archive.year, map: seasonHeat(archive, player.id) }))
+        .filter((season): season is { year: number; map: HeatMap } => !!season.map)
+        .reverse(),
+    ],
+    [tally?.heat, w.year, w.history, player.id],
+  );
   const [year, setYear] = useState(seasons[0]?.year);
   const shown = seasons.find((season) => season.year === year) ?? seasons[0];
   return (
@@ -252,7 +233,8 @@ function SeasonHeat({ w, player, tally }: { w: World; player: Player; tally?: Pl
               </Select>
             </label>
           )}
-          <HeatGrid cells={shown.cells} />
+          {/* His attack frame, toward the goal on the right (→WEB-99). */}
+          <HeatPitch map={shown.map} label={`터치 ${shown.map.touches}회 · 오른쪽으로 공격`} />
           <p className={a.note}>{seasonName(shown.year)} 우리 클럽 경기의 터치 위치예요.</p>
         </>
       ) : (

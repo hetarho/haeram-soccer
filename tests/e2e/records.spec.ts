@@ -71,7 +71,7 @@ for (const [label, viewport] of [
       ).toBe(0);
     });
 
-    test('reads the records room in five tabs with Elo context, chart bubbles and player sheets', async ({
+    test('reads the records room in six tabs with Elo context, chart bubbles and player sheets', async ({
       page,
     }) => {
       // A whole season is played first; slow CI browsers need the longer budget.
@@ -84,6 +84,7 @@ for (const [label, viewport] of [
         '구단 성장',
         '명예·최고기록',
         '선수 통산',
+        '이적 기록',
         '감독 이력',
       ]);
       await expect(tab('시즌별 기록')).toHaveAttribute('aria-selected', 'true');
@@ -296,6 +297,33 @@ for (const [label, viewport] of [
       await boards.getByRole('button', { name: '득점', exact: true }).click();
       await expect(page.getByRole('table', { name: '역대 최다 득점' })).toBeVisible();
       await expect(apps).toHaveCount(0);
+      expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+
+      // 이적 기록: 영입 and 매각 fee boards over every season or one, in today's money; a club
+      // without a fee transfer says so (→WEB-54, HIST-20).
+      await tab('이적 기록').click();
+      await expect(page).toHaveURL(/\/history\?view=transfers$/);
+      const transferBoards = page.getByRole('group', { name: '이적 기록 종류' });
+      await expect(transferBoards.getByRole('button')).toHaveText(['영입', '매각']);
+      await expect(transferBoards.getByRole('button', { name: '영입' })).toHaveAttribute(
+        'aria-pressed',
+        'true',
+      );
+      const transferSeason = page.getByRole('combobox', { name: '이적 기록 시즌', exact: true });
+      await expect(transferSeason).toHaveAttribute('data-value', 'all');
+      const signings = page.getByRole('table', { name: '역대 최고 이적료 영입' });
+      const empty = page.getByText('기록된 이적료 거래가 없어요.');
+      await expect(signings.or(empty)).toBeVisible();
+      if (await signings.isVisible()) {
+        const rows = await signings.getByRole('row').count();
+        expect(rows).toBeGreaterThan(1);
+        expect(rows).toBeLessThanOrEqual(11);
+      }
+      await transferBoards.getByRole('button', { name: '매각' }).click();
+      await expect(
+        page.getByRole('table', { name: '역대 최고 이적료 매각' }).or(empty),
+      ).toBeVisible();
+      await expect(signings).toHaveCount(0);
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
       // 시즌 기록 holds one season of ours at a time: the arrows step through the seasons and the

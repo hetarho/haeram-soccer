@@ -8,7 +8,7 @@ import { CURRENT_CATALOG } from '../../catalogs/src/index';
 import { describe, expect, it } from 'vitest';
 import { canonical } from './index';
 import { validateWorld, type LoadCatalog } from './schema';
-import type { LedgerKind, Sponsor, SponsorContract, World } from './types';
+import type { LedgerKind, Sponsor, SponsorContract, TransferFact, World } from './types';
 import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from './detail';
 import { MATCH_MODEL_REVISION, type MatchModelState, type NpcSeasonStats } from './match-model';
 import { createWorld, simulateSeason, type MatchModelRelease } from '../../engine/src/index';
@@ -529,5 +529,79 @@ describe('match-model metadata on load (→SAVE-23)', () => {
       expect(error).toBeInstanceOf(Error);
       expect(error).not.toBeInstanceOf(SaveCompatibilityError);
     }
+  });
+});
+
+describe('trust floor and own-club transfer facts (→STAFF-47, HIST-20)', () => {
+  const fact: TransferFact = {
+    direction: 'in',
+    loan: false,
+    player: 'p:1',
+    person: 'person:1',
+    name: 'Arthur Cole',
+    club: 'club:2',
+    fee: '12345678901234567890',
+    currency: 'GBP',
+    year: 1951,
+    day: 30,
+  };
+  const load = (change: (copy: World) => unknown) => {
+    const copy = structuredClone(world());
+    change(copy);
+    return validateWorld(copy, LOAD_CATALOG);
+  };
+
+  it('accepts a manager trust warning flag', () => {
+    expect(load((c) => (c.manager.trustWarned = true)).manager.trustWarned).toBe(true);
+    expect(load(() => undefined).manager.trustWarned).toBeUndefined();
+    for (const value of [false, 1, 'true'])
+      expect(() => load((c) => Object.assign(c.manager, { trustWarned: value }))).toThrow();
+  });
+
+  it('accepts own-club transfer facts', () => {
+    const w = world();
+    // Older worlds without the field still validate unchanged.
+    expect('transfers' in w).toBe(false);
+    expect(canonical(validateWorld(structuredClone(w), LOAD_CATALOG))).toBe(canonical(w));
+    w.transfers = {
+      ledgerBefore: 12,
+      facts: [
+        fact,
+        {
+          direction: 'out',
+          loan: true,
+          player: 'p:2',
+          name: 'Ben Hale',
+          fee: '0',
+          year: 1952,
+          day: 200,
+        },
+      ],
+    };
+    expect(canonical(validateWorld(structuredClone(w), LOAD_CATALOG))).toBe(canonical(w));
+  });
+
+  it('rejects a malformed transfer fact', () => {
+    const nameless: Partial<TransferFact> = { ...fact };
+    delete nameless.name;
+    const malformed: unknown[] = [
+      { ...fact, direction: 'loan' },
+      { ...fact, fee: '-1' },
+      { ...fact, fee: 1000 },
+      { ...fact, loan: 'no' },
+      { ...fact, player: '' },
+      { ...fact, day: 400 },
+      { ...fact, year: 1800 },
+      { ...fact, extra: 1 },
+      nameless,
+    ];
+    for (const bad of malformed)
+      expect(() =>
+        load((c) => (c.transfers = { ledgerBefore: 0, facts: [bad as TransferFact] })),
+      ).toThrow();
+    expect(() => load((c) => (c.transfers = { ledgerBefore: -1, facts: [fact] }))).toThrow();
+    expect(() =>
+      load((c) => Object.assign(c, { transfers: { ledgerBefore: 0, facts: [fact], extra: 1 } })),
+    ).toThrow();
   });
 });
