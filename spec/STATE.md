@@ -394,6 +394,7 @@
 - Keep unrelated T516-T522 work as previously pending; preserve n3w8's T522 ownership and integrated automatic-play code. Remote reservations remain until host publication.
 
 ## log
+- 261028 fix approval-return: cancellation/home actions stay disabled while a command is queued or in flight; 26 focused cases and type/lint/format/build passed.
 - 261028 T533 done: host finalized the verified child implementation and task commit.
 - 261028 T532 done: host finalized the verified child implementation and task commit.
 - 261028 reconcile shared planning: local T530/T531 stay archived and complete; g8u6 continues T532/T533 under strict remote claims.
@@ -413,4 +414,3 @@
 - 261027 fix home-header: league/date now share a framed header row and season statistics have inner padding; typecheck, targeted lint/format and 5 ProgressControls cases passed; sticker home visually checked, owner review complete; ready for publication verification
 - 261027 T504 done: common resource skins and JSON metadata, compact UI encodings, 276 responsive facility variants, demand-driven staging and art checks; affected validation passed
 - 261027 create-task WEB r159 → T504; implementation started (r6u2)
-- 261027 update-ssot WEB start (r6u2): portable resource skins and asset delivery audit

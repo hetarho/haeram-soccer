@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react';
-import type { GameClient } from '../runtime/client';
+import type { ClientState, GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
 import { stoppingEvents } from '../runtime/progression';
 import { approvalClient } from './approvalClient';
@@ -7,6 +7,9 @@ import type { ApprovalRequest } from './eventRouting';
 import { approvalId, approvalWorld, returnApprovalHome, useNavigation } from './state';
 import { useTaskMemory } from './taskMemory';
 import s from './EventCenter.module.css';
+import { useGameState } from '../runtime/store';
+
+const submitting = (state: ClientState) => !!(state.busy || state.pendingActions);
 
 export function ApprovalRequestHost({
   request,
@@ -20,6 +23,10 @@ export function ApprovalRequestHost({
   children: (client: GameClient, error: string) => ReactNode;
 }) {
   const [error, setError] = useState('');
+  const pendingSubmission = useGameState(submitting);
+  const leave = () => {
+    if (!submitting(client.state)) returnApprovalHome(request);
+  };
   const scoped = useMemo(
     () =>
       approvalClient(
@@ -52,10 +59,10 @@ export function ApprovalRequestHost({
       <h2>{request.item.title}</h2>
       <p>{request.item.detail}</p>
       <div className={s.actions}>
-        <button type="button" data-ui="link" onClick={() => returnApprovalHome(request)}>
+        <button type="button" data-ui="link" disabled={pendingSubmission} onClick={leave}>
           홈으로
         </button>
-        <button type="button" onClick={() => returnApprovalHome(request)}>
+        <button type="button" disabled={pendingSubmission} onClick={leave}>
           취소
         </button>
       </div>

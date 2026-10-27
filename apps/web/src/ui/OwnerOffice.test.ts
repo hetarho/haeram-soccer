@@ -7,12 +7,18 @@ import type { ClientState, GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
 import type { View } from '../runtime/protocol';
 import { gameStore, initialClientState } from '../runtime/store';
+import { ApprovalRequestHost } from './ApprovalRequestHost';
+import type { ApprovalRequest } from './eventRouting';
 import { OfficeRow, OwnerOffice, PendingHandover } from './OwnerOfficeView';
 import { DESK_RESPONSIBILITIES } from './officeDesks';
 import { officeBulkChange, officeProposal, officeSettings } from './officeChanges';
 vi.mock('../runtime/store', async (original) => ({
   ...(await original<typeof import('../runtime/store')>()),
   useGameState: (selector: (state: ClientState) => unknown) => selector(gameStore.getState()),
+}));
+vi.mock('../runtime/progression', async (original) => ({
+  ...(await original<typeof import('../runtime/progression')>()),
+  stoppingEvents: () => [{ id: 'request' }],
 }));
 vi.mock('../../../../packages/engine/src/pending-work-preview', () => ({
   pendingWorkPreview: () => [],
@@ -154,5 +160,50 @@ describe('owner office page', () => {
     expect(
       [...markup.matchAll(/<button[^>]*>/g)].every(([tag]) => tag.includes('disabled=""')),
     ).toBe(true);
+  });
+});
+
+describe('approval return controls', () => {
+  it('holds cancellation for queued and active submissions, then allows return even in read-only mode', () => {
+    const request: ApprovalRequest = {
+      world: 'office',
+      desk: 'players',
+      item: {
+        id: 'request',
+        ref: 'bid',
+        kind: 'incoming-bid',
+        title: 'Synthetic request',
+        detail: '',
+        year: 1950,
+        day: 0,
+        attention: true,
+      },
+    };
+    const client = {
+      get state() {
+        return gameStore.getState();
+      },
+    } as GameClient;
+    for (const [busy, pendingActions, readonly] of [
+      [false, 0, false],
+      [false, 1, false],
+      [true, 0, false],
+      [false, 0, true],
+    ] as const) {
+      gameStore.setState({ busy, pendingActions, readonly });
+      const markup = renderToStaticMarkup(
+        createElement(ApprovalRequestHost, {
+          client,
+          controller,
+          request,
+          children: () => null,
+        }),
+      );
+      const buttons = [...markup.matchAll(/<button([^>]*)>/g)];
+      expect(buttons).toHaveLength(2);
+      expect(buttons.every(([, attrs]) => attrs.includes('disabled=""'))).toBe(
+        busy || pendingActions > 0,
+      );
+    }
   });
 });
