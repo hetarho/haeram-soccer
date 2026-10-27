@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
 import { dismissMatchReport } from './events';
+import { settle } from './layout';
 
 /** Follow the final gameplay hierarchy through the visible navigation. */
 export async function openPersonnel(
@@ -14,6 +15,8 @@ export async function openPersonnel(
     .getByRole('navigation', { name: mobile ? '모바일 게임 메뉴' : '게임 메뉴', exact: true })
     .getByRole('button', { name: hub, exact: true })
     .click();
+  // Click local tabs only after the incoming view stops moving; Firefox otherwise scrolls it.
+  await settle(page);
   if (view === 'academy') return;
   const label = {
     players: '선수 목록',
