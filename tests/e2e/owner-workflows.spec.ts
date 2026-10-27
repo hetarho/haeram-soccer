@@ -126,9 +126,9 @@ test('retains an unapplied academy investment through a detour and discards it e
     .getByRole('button', { name: '창 닫기', exact: true })
     .click();
   await expect(page.getByRole('dialog', { name: '유소년 업무 기준', exact: true })).toHaveCount(0);
-  await expect(page.getByRole('tab', { name: '유소년', exact: true })).toHaveAttribute(
-    'aria-selected',
-    'true',
+  await expect(nav(page).getByRole('button', { name: '유소년', exact: true })).toHaveAttribute(
+    'aria-current',
+    'page',
   );
   await openOperations(page);
   const draft = page.getByTestId('strategy-board').getByTestId('strategy-draft');
@@ -187,7 +187,7 @@ test('training exposes the team action first and opens its named responsible coa
   const staff = page.getByRole('dialog', { name: '수석코치 선임', exact: true });
   await expect(staff).toBeVisible();
   await staff.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await page.getByRole('button', { name: '← 돌아가기 · 1군 훈련', exact: true }).click();
+  await page.getByRole('button', { name: '← 돌아가기 · 훈련', exact: true }).click();
   await expect(page.getByTestId('training-focus')).toBeVisible();
 });
 
@@ -210,7 +210,7 @@ test('a player profile leads to that player training and keeps the squad search'
   const sheet = page.getByRole('dialog', { name: `${name} 개별 훈련`, exact: true });
   await expect(sheet).toBeVisible();
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await page.getByRole('button', { name: '← 돌아가기 · 선수', exact: true }).click();
+  await page.getByRole('button', { name: '← 돌아가기 · 선수 목록', exact: true }).click();
   await expect(page.getByRole('textbox', { name: '선수 찾기' })).toHaveValue(name);
 });
 
@@ -233,9 +233,9 @@ test('recruitment needs open on demand and academy operations open their exact w
   // The office opened on 시설; leaving it returns to the academy that asked (→WEB-39/74).
   await expect(officeTitle(page)).toHaveText('투자');
   await leaveOffice(page);
-  await expect(page.getByRole('tab', { name: '유소년', exact: true })).toHaveAttribute(
-    'aria-selected',
-    'true',
+  await expect(nav(page).getByRole('button', { name: '유소년', exact: true })).toHaveAttribute(
+    'aria-current',
+    'page',
   );
 });
 
@@ -472,6 +472,7 @@ test('recruitment support round-trips between department sheet and full board', 
   await expect(board.getByTestId('strategy-draft')).toHaveCount(0);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
+  await openOfficeLibrary(page);
   await page
     .getByRole('region', { name: '영입', exact: true })
     .getByRole('button', { name: /어떤 선수를/ })

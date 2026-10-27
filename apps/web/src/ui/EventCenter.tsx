@@ -139,8 +139,7 @@ export const EventCenter = memo(function EventCenter({
           {date} ·{' '}
           {resumeOpen ? '관전 중인 경기' : eve ? '경기 준비 보고' : `이벤트 ${events.length}개`}
         </h2>
-        {/* The group can cover home's office entrance; waiting work can still be handed over
-            from 결재라인 모아보기 (→WEB-79/82). The match eve card names it itself. */}
+        {/* The match eve card names its responsibility entry itself. */}
         {!eve && !resumeOpen && (
           <button data-ui="link" type="button" className={s.groupOffice} onClick={openOwnerOffice}>
             결재라인 모아보기
@@ -272,7 +271,7 @@ export const EventCard = memo(function EventCard({
       data-surface="panel"
       key={item.id}
       ref={cardExit}
-      className={s.card}
+      className={`${s.card} ${inDesk ? s.inlineCard : ''}`}
       aria-label="이벤트"
       data-testid="event-card"
     >

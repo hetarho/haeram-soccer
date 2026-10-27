@@ -197,6 +197,7 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   // The library belongs to the device: it survives a reload and edits keep its ID.
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
+  await openOfficeLibrary(page);
   await expect(board.getByTestId('current-strategy')).toHaveText('유스 순혈주의');
   await squad.locator('button[aria-controls^="board-area-body-"]').click();
   await expect(squad.getByRole('radio', { name: '선수단 투자 표준', exact: true })).toHaveAttribute(

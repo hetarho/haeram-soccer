@@ -1,3 +1,4 @@
+import { openLeague } from './competition-navigation';
 import { openPersonnel } from './personnel-navigation';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { expectCompactStandings, expectHomeBounds, horizontalOverflow, settle } from './layout';
@@ -173,7 +174,7 @@ for (const themeId of ['standard', 'pixel']) {
       ).toBeGreaterThanOrEqual(4.5);
 
       if (width === 360 || width === 390) {
-        await navigate(page, '리그');
+        await openLeague(page);
         await page.getByRole('tab', { name: '순위표', exact: true }).click();
         await page.getByTestId('view-scroller').evaluate((element) => element.scrollTo(0, 0));
         await expectCompactStandings(page);

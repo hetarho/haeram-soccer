@@ -252,12 +252,10 @@
 }
 
 .eventGroup {
-  position: fixed;
-  z-index: 95;
-  right: 12px;
-  bottom: 88px;
-  width: min(420px, calc(100vw - 24px));
-  max-height: 60dvh;
+  position: relative;
+  width: 100%;
+  max-height: min(40dvh, 320px);
+  margin-bottom: 12px;
   overflow-y: auto;
   background: var(--surface-grain, none) var(--surface-2);
   border: 1px solid var(--gold-edge);
@@ -287,17 +285,12 @@
   font-size: 12px;
   font-weight: 700;
 }
-.group .card {
+.group .card,
+.card.inlineCard {
   position: static;
   width: auto;
   max-height: none;
   overflow: visible;
-}
-
-@media (max-width: 760px) {
-  .eventGroup {
-    bottom: calc(150px + env(safe-area-inset-bottom));
-  }
 }
 
 .matchReport .actions button {

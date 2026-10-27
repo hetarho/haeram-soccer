@@ -117,6 +117,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await closeOutcome(page, '방향을 바꿨어요');
     await openPersonnel(page, 'players');
     await openPersonnel(page, 'coaches');
+    await page.getByText('스태프 선임 기준', { exact: true }).click();
     await expect(page.getByRole('button', { name: /^코치 기조 · 최고 수준/ })).toBeVisible();
     // Level 3 hands every department to the staff at once.
     await chooseLevel(page, 3);

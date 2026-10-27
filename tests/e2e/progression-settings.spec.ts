@@ -564,6 +564,7 @@ for (const width of [390, 1280]) {
     );
     const toast = page.getByTestId('action-outcome');
     await expect(toast).toHaveText('설정을 적용했어요');
+    await expect(toast).toBeVisible();
     // The office has no bottom controls: the toast sits at the bottom of the screen (→WEB-36/39).
     const box = (await toast.boundingBox())!;
     expect(box.y + box.height).toBeLessThanOrEqual(page.viewportSize()!.height);
@@ -595,6 +596,7 @@ test('manual can keep match eve disabled and stop at the next result', async ({ 
   ).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
+  await openOffice(page);
   await expect(office).toBeVisible();
   await leaveOffice(page);
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toContainText(

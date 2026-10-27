@@ -29,7 +29,13 @@ async function dismissCelebration(page: Page) {
  * dialog before using the entrance; dismissing never resolves its work. A no-op inside the office.
  */
 export async function enterOffice(page: Page, options: { timeout?: number } = {}) {
-  if (await inOffice(page)) return;
+  if (await inOffice(page)) {
+    if (!new URL(page.url()).searchParams.has('request')) return;
+    await page
+      .getByTestId('approval-request')
+      .getByRole('button', { name: '취소', exact: true })
+      .click();
+  }
   await dismissCelebration(page);
   const covering = page.getByRole('dialog').filter({ has: page.getByTestId('event-group') });
   if (await covering.isVisible())
@@ -44,6 +50,11 @@ export async function enterOffice(page: Page, options: { timeout?: number } = {}
   if ((await home.getAttribute('aria-current')) !== 'page') await home.click(options);
   const hub = page.getByTestId('club-hub');
   await expect(hub).toBeVisible();
+  if (await covering.isVisible())
+    await covering.getByRole('button', { name: '창 닫기', exact: true }).click();
+  const outcome = page.getByTestId('action-outcome');
+  if (await outcome.isVisible())
+    await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
   const entrance = hub.getByRole('button', { name: '구단주 사무실 들어가기', exact: true });
   await entrance.evaluate((element) => element.scrollIntoView({ block: 'start' }));
   await entrance.click(options);
@@ -69,17 +80,12 @@ export async function openOfficeArea(page: Page, area: string, options: { timeou
   if (area === '결재라인 모아보기') {
     const overview = page.getByRole('dialog', { name: area, exact: true });
     if (await overview.isVisible()) return;
-    const group = page.getByTestId('event-group');
-    if (await group.isVisible())
-      await group.getByRole('button', { name: area, exact: true }).first().click(options);
-    else {
-      await enterOffice(page, options);
-      await officeLobby(page);
-      await page
-        .getByTestId('office-lobby')
-        .getByRole('button', { name: area, exact: true })
-        .click(options);
-    }
+    await enterOffice(page, options);
+    await officeLobby(page);
+    await page
+      .getByTestId('office-lobby')
+      .getByRole('button', { name: area, exact: true })
+      .click(options);
     await expect(overview).toBeVisible();
     return;
   }

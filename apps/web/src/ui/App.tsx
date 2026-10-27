@@ -1158,6 +1158,9 @@ export function App() {
           <ProgressOverview compact={page !== 'dashboard'} />
         )}
         <div ref={scroller} className={s.scroller} data-testid="view-scroller">
+          {client && controller && playing && !w.bankrupt && page !== 'match' && (
+            <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
+          )}
           {client && controller ? (
             screen === 'slots' && slots ? (
               <Suspense
@@ -1268,9 +1271,6 @@ export function App() {
       {client && playing && <ActionOutcome />}
       {/* The match theatre keeps its own controls clear; news waits until the owner returns. */}
       {client && playing && <CommunicationsCenter key={w.id} client={client} />}
-      {client && controller && playing && !w.bankrupt && page !== 'match' && (
-        <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
-      )}
       {moreOpen && (
         <AppMenu
           onClose={() => setMoreOpen(false)}

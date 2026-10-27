@@ -1,10 +1,12 @@
 import type { Page } from '@playwright/test';
+import { dismissMatchReport } from './events';
 
 /** Follow the final gameplay hierarchy through the visible navigation. */
 export async function openPersonnel(
   page: Page,
   view: 'players' | 'market' | 'training' | 'academy' | 'manager' | 'coaches',
 ) {
+  await dismissMatchReport(page);
   const hub =
     view === 'academy' ? '유소년' : view === 'manager' || view === 'coaches' ? '코치진' : '1군';
   const mobile = (page.viewportSize()?.width ?? 1280) <= 760;

@@ -7,7 +7,7 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단', exact: true }).click();
+  await page.getByRole('button', { name: '클럽 창단 →', exact: true }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await openLeague(page);
   await chooseOption(page.getByRole('combobox', { name: '국가', exact: true }), 'GER');

@@ -370,6 +370,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 
+
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
@@ -387,11 +388,13 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- T530-T533 implementation scope is complete locally; host finalizes T533 and owns the single integrated batch, main push and CI wait.
-- Keep unrelated T516-T522 work as previously pending; preserve n3w8's T522 ownership and integrated automatic-play code. Remote reservations remain until host publication.
+- T530-T534 are complete locally; coordinator must pass the repaired integrated batch, push main and wait for CI before final delivery.
+- Preserve the integrated automatic-play work and n3w8 report; no unrelated implementation remains in this requested UI slice.
 - n3w8 closed (report 261027-n3w8): automatic play T516–T525 on main (group gate on 2573791c); T522 read on the built game: 0 stalls at x1/x2/x5/x10, x10 10 days a second, no main-thread long task, helpers on (M1 Max, headless Chromium) — a CPU-throttled phone-class read is the open question. Inbox: confirm the WEB-18 read decisions (T524 → T525) and the WEB-69 framed-tabs suggestion.
 
 ## log
+- 261028 T534 done: repaired integrated UI layering, history retention and canonical browser journeys; task checks/build pass, coordinator browser gate pending.
+- 261028 T534 start: coordinator repairs initial Chromium integration failures; no implementation code was pushed.
 - 261028 fix navigation-tools: screenshot capture and the unchanged 30-click first-play sample use the six gameplay destinations; syntax and type/lint/format checks passed; no new benchmark claim.
 - 261028 fix personnel-deep-links: canonical personnel entries serve the SPA with no-cache HTML; missing assets remain 404; HTTP checks, type/lint/format/build passed; preview regression extended for the final batch.
 - 261028 fix approval-return: cancellation/home actions stay disabled while a command is queued or in flight; 26 focused cases and type/lint/format/build passed.
@@ -410,5 +413,3 @@
 - 261027 merge publication: preserved remote WEB r159 (transfer records/heat maps); local resource skins r159→r160 and play-pace r160→r161, decision content unchanged; p9a4 task bases keep their recorded content and can refresh on next sync
 - 261027 ideation play-pace-and-owner-surfaces converted: owner dropped the action / standing choice / dashboard split and home ordering; automatic play scope fully in WEB r160, SAVE r55, ARCH r24
 - 261027 create-task WEB r160 SAVE r55 ARCH r24 → T516–T522 (moment removal, grid cuts + day bench, two-phase round, helper workers, lighter publication, run-ahead clock, browser read)
-- 261027 update-ssot WEB r160 SAVE r55 ARCH r24 from ideation/play-pace-and-owner-surfaces: no match-day moment, computing ahead 3/5/7 days with stop/office/hidden rules, helper workers beside the sole-writer engine; doc stays ready for the owner-surfaces slice
-- 261027 ideation play-pace-and-owner-surfaces: owner removed the 2 s match-day beat; integrated result-identical prototypes measured (own match day 0.54–0.77×, x10 season 54 → about 10 stalls at depth 7, worlds identical)

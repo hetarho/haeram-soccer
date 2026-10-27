@@ -342,6 +342,7 @@ test('keeps ticket drafts out of the save and applies their price to an actual h
   expect(applied.cash).toBe(before.cash);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
+  await openOfficeLibrary(page);
   await fans.locator('button[aria-controls^="board-area-body-"]').click();
   await expect(premium).toHaveAttribute('aria-checked', 'true');
   await playNext(page);

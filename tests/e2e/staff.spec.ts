@@ -156,6 +156,7 @@ test.describe('사람 at 360x740', () => {
     await closeOutcome(page, '방향을 바꿨어요');
     await openPeople(page);
     await openPersonnel(page, 'manager');
+    await post.getByText('감독 선임 기준·추천 후보', { exact: true }).click();
     await expect(post.getByRole('button', { name: /^선호 학파 · 게겐프레싱/ })).toBeVisible();
     // Whom the staff would appoint today: a gegenpress manager, or why nobody.
     await expect(pick).toContainText(/게겐프레싱|감독 기조에 맞는 감독이 없어/);

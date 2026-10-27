@@ -1,4 +1,4 @@
-import { COMPETITION_PATHS } from './competitionNavigation';
+import { competitionRoute, COMPETITION_PATHS } from './competitionNavigation';
 import { useTaskMemory, useTaskState } from './taskMemory';
 import { SeasonReview } from './SeasonReview';
 import { PixelIcon } from './PixelIcon';
@@ -152,7 +152,10 @@ export function RecordsRoom({ state, client }: Props) {
     recordScroll(0);
   }, [request, setTab, setYear, w.id]);
   useEffect(() => {
-    const restore = () => setYear(savedRecordYear(w));
+    const restore = () => {
+      if (competitionRoute(location.pathname, location.search)?.page === 'history')
+        setYear(savedRecordYear(w));
+    };
     window.addEventListener('popstate', restore);
     window.addEventListener('tasknavigate', restore);
     return () => {
@@ -167,14 +170,13 @@ export function RecordsRoom({ state, client }: Props) {
     tab === 'managers' ? w.year : (year ?? w.year),
     (tab === 'seasons' && year !== undefined) || tab === 'managers',
   );
-  useEffect(
-    () =>
-      replaceQuery((params) => {
-        if (tab === 'seasons' && year !== undefined) params.set('season', String(year));
-        else for (const param of ['season', 'part', 'competition']) params.delete(param);
-      }),
-    [tab, year],
-  );
+  useEffect(() => {
+    if (competitionRoute(location.pathname, location.search)?.page !== 'history') return;
+    replaceQuery((params) => {
+      if (tab === 'seasons' && year !== undefined) params.set('season', String(year));
+      else for (const param of ['season', 'part', 'competition']) params.delete(param);
+    });
+  }, [tab, year]);
   const selectTab = (next: RecordTab) => {
     leaveManagerSeason(w.id);
     setTab(next);

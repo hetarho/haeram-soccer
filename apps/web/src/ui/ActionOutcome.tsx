@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { activeDialogSurface } from './Dialog';
 import type { Command, World } from '../../../../packages/contracts/src/types';
 type Entry = { command: Command; before: World; after: World };
 import { useGameState } from '../runtime/store';
@@ -62,9 +64,9 @@ export function ActionOutcome() {
   );
   const settingsToast =
     !!latest && batch!.entries.every((entry) => entry.command.type === 'settings');
-  const visible = !!outcome && dialogs === 0;
+  const visible = !!outcome && (dialogs === 0 || settingsToast);
   // Opening another sheet means the player has moved on from a card already seen.
-  if (dialogs > 0 && batch?.shown) setBatch(undefined);
+  if (dialogs > 0 && batch?.shown && !settingsToast) setBatch(undefined);
   useEffect(() => {
     if (!visible) return;
     setBatch((current) => current && (current.shown ? current : { ...current, shown: true }));
@@ -75,7 +77,7 @@ export function ActionOutcome() {
     return () => window.clearTimeout(timer.current);
   }, [visible, batch?.seen, settingsToast]);
   if (!visible || !outcome) return null;
-  return (
+  const feedback = (
     <aside
       key={batch!.seen}
       ref={outcomeExit}
@@ -131,4 +133,6 @@ export function ActionOutcome() {
       )}
     </aside>
   );
+  const surface = settingsToast && dialogs > 0 ? activeDialogSurface() : undefined;
+  return surface ? createPortal(feedback, surface) : feedback;
 }

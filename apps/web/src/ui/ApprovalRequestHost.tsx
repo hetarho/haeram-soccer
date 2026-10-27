@@ -51,7 +51,7 @@ export function ApprovalRequestHost({
   return (
     <section
       data-surface="panel"
-      className={s.card}
+      className={`${s.card} ${s.inlineCard}`}
       data-testid="approval-request"
       data-request-id={request.item.id}
       aria-label="결재 요청"

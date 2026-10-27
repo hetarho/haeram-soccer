@@ -40,6 +40,12 @@ function syncBackground() {
     node.inert = node !== top || inertBefore.get(node)!;
   }
 }
+/** Feedback stays inside the top dialog's focus and background lock. */
+export function activeDialogSurface() {
+  return layers
+    .findLast((layer) => layer.isConnected)
+    ?.querySelector<HTMLElement>('[role="dialog"]');
+}
 /** Makes everything outside `layer` inert and locks body scroll until the returned release. */
 export function lockLayer(layer: HTMLElement) {
   if (!layers.length) {
