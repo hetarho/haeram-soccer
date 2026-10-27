@@ -16,7 +16,6 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | p9a4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-27T09:05Z | 2026-10-27T09:05Z | - |
 | n3w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T12:15Z | 2026-10-27T12:15Z | - |
-| g8u4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T15:55Z | 2026-10-27T15:55Z | - |
 
 ## inbox
 - 261028 decided WEB-39 WEB-79: work grouping → player contracts (incl. youth), staff contracts (incl. manager), investment (finance/local/global/facilities), sponsors and identity; keep all seven saved responsibility keys (alt: merge stored responsibilities or retain an operating-policy gate). Shared inline controls and eligible direct actions use existing commands.
@@ -395,7 +394,7 @@
 | h7t3 | 4 | 6 | 0 | 6 | 0 | 1 | 2 | 2026-10-27T08:21:16.497Z | [history](work/h7t3.json) |
 
 ## next
-- implement-task T530 (then T531, T532, T533): only the requested office/approval/navigation redesign; four-unit host loop, one final batch and main push.
+- implement-task T531 (then T532, T533): only the requested office/approval/navigation redesign; four-unit host loop, one final batch and main push.
 - Preserve existing T516–T522 performance work and unrelated ideation for a separate run.
 
 ## log
