@@ -382,7 +382,7 @@
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
-| h7t3 | 4 | 6 | 0 | 6 | 0 | 0 | 3 | 2026-10-27T07:59:59.505Z | [history](work/h7t3.json) |
+| h7t3 | 4 | 6 | 0 | 6 | 0 | 1 | 2 | 2026-10-27T08:21:16.497Z | [history](work/h7t3.json) |
 
 ## next
 - h7t3 work group (work/h7t3): T510 foundation → lanes manager-trust T511, interim-history T512, transfer-records T513–T514, heatmap T515; batch then merge to main.
