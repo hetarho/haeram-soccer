@@ -594,9 +594,12 @@ export class ProgressionController {
     }
     return { ready: this.computing.then(() => this.showAhead()), settled };
   }
-  /** Shows every computed day at once; the owner's stop ends there and saves (→SAVE-8). */
+  /**
+   * Shows every computed day at once; the owner's stop ends there and saves (→SAVE-8). A running
+   * clock stays in view, so our result among them is announced as at the pace (→WEB-18).
+   */
   private showAhead() {
-    this.flush();
+    this.reveal(true, true);
     this.drained();
   }
   /**
@@ -862,8 +865,11 @@ export class ProgressionController {
     const eve = pendingMatchReport(after);
     return !!eve && eve.id !== this.passedMatch;
   }
-  /** Shows the next computed day on its beat, or all of them at once. */
-  private reveal(all: boolean) {
+  /**
+   * Shows the next computed day on its beat, or all of them at once; `announce` lets a day shown
+   * with the clock running in view announce our result.
+   */
+  private reveal(all: boolean, announce = !all) {
     const days = this.ahead.splice(0, all ? this.ahead.length : 1);
     // The client no longer holds them when another load replaced its views.
     if (!days.length || !this.client.reveal(all)) return;
@@ -877,7 +883,7 @@ export class ProgressionController {
       this.stepAt = now;
       this.due = (late ? now : due) + interval;
     }
-    for (const day of days) this.shown(day, !all);
+    for (const day of days) this.shown(day, announce);
     this.writeClock();
   }
   /** Shows every computed day at once: in the office, as the tab hides and for a blocker. */
@@ -886,9 +892,9 @@ export class ProgressionController {
   }
   /**
    * A computed day is on screen: it stops the clock where it would have without computing ahead,
-   * and a day shown at the pace announces our result.
+   * and a day shown at the pace or for a read announces our result.
    */
-  private shown({ before, after }: Held, paced: boolean) {
+  private shown({ before, after }: Held, announce: boolean) {
     // The client state stops the clock for these (constructor).
     if (after.critical || after.bankrupt) return;
     const running = this.store.getState().running,
@@ -907,7 +913,7 @@ export class ProgressionController {
       if (fresh.kind === 'match') this.store.setState({ matchEve: fresh.ref });
       return;
     }
-    if (running && !this.eveStop(after) && paced)
+    if (running && !this.eveStop(after) && announce)
       this.announce(after, before.ownMatches.at(-1)?.id);
   }
   /** The owner's stop ends once every computed day is shown; its save holds that date (→SAVE-8). */

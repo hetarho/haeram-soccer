@@ -579,6 +579,87 @@ describe('reads outside the command queue wait for the shown date (WEB-18)', () 
     expect(consecutive(fake, 0)).toBe(true);
   });
 
+  it('a read that shows our result among the held days announces it, as the pace would', async () => {
+    const template = quiet();
+    const record = { id: 'match-9' } as World['ownMatches'][number];
+    const fake = worker(
+      template,
+      () => 20,
+      (day) =>
+        ({
+          ...template,
+          calendar: { day },
+          revision: template.revision + day,
+          ownMatches: day >= 9 ? [record] : [],
+        }) as World,
+    );
+    const controller = clock(fake);
+    controller.setBackground({ resultNotice: true });
+    controller.setPace('x10');
+    controller.start();
+    // Days 4–10 are held, our fixture's result on day 9.
+    await vi.advanceTimersByTimeAsync(350);
+    expect(controller.store.getState().resultNotice).toBeUndefined();
+    const read = fake.client.headToHead('rival');
+    expect(fake.showing()).toBe(10);
+    expect(controller.store.getState().resultNotice).toEqual({ matchId: 'match-9' });
+    fake.reads[0].answer(answered);
+    await read;
+    expect(running(controller)).toBe(true);
+  });
+
+  it('a view that reads again once a round keeps the pace between rounds', async () => {
+    // Like the league's full statistics (useFullStats), it reads when the shown round moves on, as
+    // a React effect does once the shown day is published.
+    const template = quiet();
+    const fake = worker(
+      template,
+      () => 20,
+      (day) =>
+        ({
+          ...template,
+          calendar: { day },
+          round: Math.floor(day / 7),
+          revision: template.revision + day,
+        }) as World,
+    );
+    let round = 0;
+    const unsubscribe = gameStore.subscribe((state) => {
+      const w = state.view?.world as World | undefined;
+      if (!w || w.round === round) return;
+      round = w.round;
+      queueMicrotask(
+        () => void fake.client.fullStats({ kind: 'league', groupKey: 'ENG:0:0' }).catch(() => {}),
+      );
+    });
+    try {
+      const controller = clock(fake);
+      controller.start();
+      let reads = 0;
+      for (let t = 0; t < 15_000; t += 10) {
+        await vi.advanceTimersByTimeAsync(10);
+        for (const posted of fake.reads.splice(0)) {
+          posted.answer({ ok: true, requestId: 'read' } as Reply);
+          reads++;
+        }
+      }
+      expect(reads).toBe(2);
+      expect(consecutive(fake, 0)).toBe(true);
+      const gap = (i: number) => fake.shown[i].at - fake.shown[i - 1].at;
+      for (let i = 1; i < fake.shown.length; i++) {
+        if (gap(i) >= PACE_MS.x1) continue;
+        // Only the days held when a round day was shown come early, together.
+        let first = i;
+        while (first > 1 && gap(first - 1) < PACE_MS.x1) first--;
+        expect(fake.shown[first - 1].day % 7).toBe(0);
+      }
+      // Fifteen paced days plus at most the held days of each of the two rounds.
+      expect(fake.shown.length).toBeLessThanOrEqual(15 + 2 * RUN_AHEAD_DAYS.x1);
+    } finally {
+      unsubscribe();
+    }
+  });
+
   it.each<[Body['type'], (client: GameClient) => Promise<unknown>]>([
     ['archive', (c) => c.archive(base.year)],
     ['recruitment-history', (c) => c.recruitmentHistory()],

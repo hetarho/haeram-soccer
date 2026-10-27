@@ -279,19 +279,22 @@ export type FullStatsState =
 /** What a lens says when the read itself failed, beside its retry button. */
 export const FULL_STATS_FAILED = '세부 기록을 불러오지 못했어요.';
 /**
- * One competition's complete statistics, requested when a lens opens and again after the world
- * changes (→WEB-89): the daily view never carries them. A world without a match model asks for
+ * One competition's complete statistics, requested when a lens opens and again once they can have
+ * changed (→WEB-89): the daily view never carries them. A league's settle only on a league match
+ * day, when the round moves on, so a league lens reads once a round rather than every shown day;
+ * each read first shows the days computed ahead (→WEB-18). A world without a match model asks for
  * nothing; the previous read stays on screen until the next one lands.
  */
 export function useFullStats(
   client: Pick<GameClient, 'fullStats'>,
-  w: Pick<World, 'id' | 'year' | 'revision' | 'matchModel'>,
+  w: Pick<World, 'id' | 'year' | 'round' | 'revision' | 'matchModel'>,
   scope: FullStatsScope | undefined,
 ): FullStatsState {
   const on = activeMatchModel(w) !== undefined && scope !== undefined;
   const [attempt, setAttempt] = useState(0);
+  const settled = scope?.kind === 'league' || scope?.kind === 'lower' ? w.round : w.revision;
   const name = on ? `${w.id}:${w.year}:${scope.kind}:${scope.groupKey}` : undefined,
-    key = name && `${name}:${w.revision}:${attempt}`;
+    key = name && `${name}:${settled}:${attempt}`;
   const [held, setHeld] = useState<
     { name: string; read: FullStatsRead | undefined } | { name: string; failed: string }
   >();
