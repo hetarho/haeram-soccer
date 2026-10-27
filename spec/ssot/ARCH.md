@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r23 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r24 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -50,6 +50,7 @@
   - Worker messages include protocol version, session ID, request ID, expected world revision, and validated payloads.
   - Duplicate requests do not repeat recruitment fees, sponsor payments, tactics changes, currency transitions, or fixture settlement.
   - Publish bounded UI projections/deltas, not the complete world on every simulation step.
+  - On a day with our league fixture, the day's other league fixtures may be computed on helper workers from a read-only copy of what those fixtures read, while the engine worker plays our match; the engine worker stays the sole writer and records every result in fixture order. Without helpers (creation failure or too few cores) it computes them itself. Both paths give identical worlds, checked by a test comparing a season played each way. ← other clubs' fixtures are about 40% of an own match day (measured 261027)
   - Read-only requests (head-to-head) are validated like commands but answered between simulation steps, without the revision check, receipt or view, so a read never waits behind a season command or flickers the busy state.
   - A worker failure restores the last committed checkpoint and reports any uncommitted progress; it does not silently invent a continuation.
   - Vite provides worker bundling: [Vite worker support](https://vite.dev/guide/features.html#web-workers).
@@ -244,6 +245,7 @@
 - Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
 
 ## chg
+- r24 261027 ARCH-6+ helper workers may compute an own match day's other league fixtures from a read-only copy; the engine worker stays the sole writer, records in fixture order and falls back to computing them itself; identical worlds tested
 - r23 261027 ARCH-3✎ app/features/rendering/workers path table→the real ui/runtime/adapters/presentation layout, tests/fixtures and scripts, portable fixtures marked planned; ARCH-4✎ no rule for which engine modules the UI names→UI imports engine values only from read leaves, existing orchestration imports a shrink-only list guarded by an architecture test
 - r22 261026 ARCH-11✎ save repository uses localStorage→keeps checkpoints in IndexedDB, localStorage for settings/manifest/slot index and SAVE-3's fallback; ARCH-14✎ never move the active checkpoint to IndexedDB/cloud→never move checkpoints to cloud storage; constraints✎ primary save store localStorage→IndexedDB with the bounded localStorage fallback
 - r21 261026 ARCH-21✎ source-wide world cache→dependency-scoped JSON cache and prepared UI checkpoints; ARCH-22✎ unit/contract→unit/integration/contract; ARCH-23✎ mixed unit shards→separate unit/integration jobs; ARCH-30✎ mixed changed tests and per-unit batch→unit-project task checks and one final batch; ARCH-33+ leaf computation boundaries and dependency-scoped measurement reuse

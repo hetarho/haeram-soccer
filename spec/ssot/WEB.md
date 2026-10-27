@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r159 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r160 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -41,7 +41,6 @@
   - The stadium scene carries no season figures.
   - The owner-office entrance is a pressable card with the office illustration, the name 구단주 사무실 and its areas; it opens the office.
   - NEXT MATCH is a distinct padded card with the active theme's card surface, edge and corners. It places opponent/competition and the current tactic/lineup summary on the left, with 전술·선발 준비 at the far right in the same flex row. Keep readable type, breathing room and full touch targets (→WEB-17); opponent text gives way before the preparation action.
-  - during an own fixture day's match-day moment (→WEB-18) the card shows that animation in place of its content until the moment ends.
   - Home has no advance-to-watch or next-season watch action. New live observation starts only from the match-eve dialog (→WEB-42/50). An unfinished existing playback resumes through its report (→WEB-83), never through the NEXT MATCH card. The full menu has no observation/return button.
   - Record import/export and game-slot tools are available in the settings menu, with no duplicate tools in the home or management content. Founding, recovery, slot selection and game-over screens keep their contextual tools.
   - The current competitive briefing names rank gaps, form and next rival; detailed fixtures/results remain in the league and the club season record.
@@ -72,12 +71,13 @@
   - The match theatre has no season-progression transport; its presentation speed follows →WEB-32.
   - notifications/news (→WEB-51) lives in the HUD beside cash, separating global communication from progression controls; its counts and touch target remain readable without overlapping content.
   - automatic mode keeps play/pause and one pace dropdown showing the selected x1/x2/x5/x10 value: one day per 1/0.5/0.2/0.1 seconds. The dropdown options explain each pace. Steps never wait for saving (→SAVE-8). While the page is shown every step is one day and a late step is waited for, never followed by owed days, so the visible calendar never skips a day; owed days are played only for hidden or away time (→WEB-64), and stopped time is never owed.
-  - while the page is shown, an own fixture day of automatic play shows the match-day moment for at least 2 s at every pace: a looping animation with no clubs, score, minute or other result, in home's NEXT MATCH card (→WEB-11) and, on any other view, small in the bottom control area. The next day follows only once both the moment and that day's step have finished. ← the owner sees each match played as one steady beat instead of a halt and a jump; an own match day computes in about 0.9 s (measured 261026)
-    - x10 then plays about 2.7 days a second over a season instead of its nominal 10; every other day keeps its pace interval.
-    - only own fixture days have it: a day with only other clubs' fixtures plays at the pace. A watched match replaces it; a fixture played through from its match eve has it on its day.
-    - stopping the clock ends it at once, the day already settled. Manual mode never shows it, and a late ordinary day shows no indicator.
-    - it never changes the step or its results.
-  - after the moment, a result notice — our fixture's score with both clubs for a few seconds, opening its match record — appears only while the owner's 경기 결과 알림 preference is on; it is off by default and kept per browser (→WEB-79).
+  - automatic play has no match-day pause or animation: an own fixture day is shown at the pace like any other day.
+  - while the page is shown, the engine may compute days ahead of the shown date — at most 3 days at x1 and x2, 5 at x5 and 7 at x10 — and the calendar shows them one per pace interval; a day still computing when its turn comes is waited for. ← a slow match day is absorbed by the fast days before it without skipping a shown day (measured 261027, a 1950 ENG season at x10 with the result-identical speed-ups: 54 → about 10 visible stalls, 4.3 → about 8.9 days a second)
+    - nothing is computed past a day that will stop the clock — a stopping event, a pending decision, a critical alert, bankruptcy or an own match eve that stops for observation — so every stop lands on the same day as it would without computing ahead, with the world on the shown date.
+    - the owner's stop shows the computed days still ahead at the pace and then stops; management stays locked until they are shown (→WEB-97). Entering the owner office shows them at once (→WEB-98).
+    - a pace change applies to days computed from then on; days already computed are shown at the faster of the old and new pace.
+    - computing ahead and every speed-up of a day's step never change any day's step or its results: the world is identical to computing each day in order on one engine (→MATCH-7).
+  - once our fixture's day is shown, a result notice — our fixture's score with both clubs for a few seconds, opening its match record — appears only while the owner's 경기 결과 알림 preference is on; it is off by default and kept per browser (→WEB-79).
   - pace selection changes pace only. A stopped automatic clock stays stopped until play; an event stop does not change the selected progression mode.
   - manual mode offers 다음 이벤트 with automatic play off (→WEB-5). Use a text action with a trailing progression icon, readable vertical padding and space above and below the button inside the transport bar; preserve the full touch target (→WEB-17). Present one direct move to the next configured event's date, without a paced date-by-date animation or an intervening progress/cancel journey. Do not add an artificial wait. Unfinished observation takes precedence under →WEB-83.
   - the manual move still settles intervening days in order (→LEAGUE-11), retains their facts and stops at the first configured event. Its presentation never bypasses pending owner decisions, critical blockers or save/worker errors.
@@ -328,7 +328,7 @@
   - a read-only tab (→SAVE-6) can only continue the game in play, read-only.
   - wording is 새 게임, never 새로운 세계 or 새 세계.
 - WEB-64 [o] Automatic mode can play on while the owner does something else; manual mode never progresses unattended or catches up time away. ← owners leave the club running in a background window
-  - in automatic mode a hidden tab keeps a running clock going at its wall-clock pace: when the browser throttles timers, the next tick plays every owed day in consecutive steps, each still ending on news and match days and stopping for the configured responsibility/observation events (→WEB-18), with no match-day moment while hidden or away. A per-browser setting (백그라운드 진행) can pause it while hidden instead.
+  - in automatic mode a hidden tab keeps a running clock going at its wall-clock pace: when the browser throttles timers, the next tick plays every owed day in consecutive steps, each still ending on news and match days and stopping for the configured responsibility/observation events (→WEB-18); nothing is computed ahead while hidden or away, and days already computed ahead are shown at once when the tab hides. A per-browser setting (백그라운드 진행) can pause it while hidden instead.
   - a page the browser froze, discarded or closed with automatic mode running plays the time it was away on return, as the game in play is shown again, up to the away limit — 끄기, 30일 or 한 시즌 (default), kept per browser — with the same stops; parked slots never progress.
   - after the tab was hidden for at least a minute, or after such a return, a "자리를 비운 동안" card summarizes when the run started and ended, own results (W-D-L and the latest scores), the league rank and cash before and after, and the stop that ended it, when a match was played or at least seven days passed.
   - while hidden the tab title shows the game date and whether the clock runs or why it stopped.
@@ -531,12 +531,12 @@
   - Entering manual through the shortcut enables 경기 전날 보고 and explicitly describes it; entering automatic preserves observations. Every other responsibility, observation and background choice remains unchanged. Responsibility confirmations in the office follow →WEB-79/82.
   - A successful switch leaves the clock stopped and advances no days. Busy/read-only/error/critical protection, rejected settings and world replacement cannot apply a stale change or save a failed opt-out; failures remain visible and retryable.
 
-- WEB-97 [o] Management changes remain disabled throughout automatic calendar play and until an admitted date step finishes after stopping. The same protection covers manual next-event processing. ← a running calendar must not alternate editable and disabled controls between day calculations
+- WEB-97 [o] Management changes remain disabled throughout automatic calendar play and, after stopping, until an admitted date step finishes and every day computed ahead has been shown (→WEB-18). The same protection covers manual next-event processing. ← a running calendar must not alternate editable and disabled controls between day calculations
   - Apply one stable lock across home remedies, mode switching, preparation, squad/contracts/recruitment/staff, training/academy, operating policies, facilities/sponsors/finance, club-design application and report/delegation/background changes, including their dialogs and confirmations.
   - Automatic stop stays available throughout play. Pace changes, navigation, inspection, filters, draft previews, reading notifications, exports and presentation-only preferences remain usable; opening a view or dialog does not itself stop the clock, apart from entering the owner office (→WEB-18/90/98).
   - Reject game-changing owner commands received while automatic play is running without queueing them or changing the selected mode. Commands admitted before play must settle before play starts. Retain read-only, error, critical and world-replacement protections.
 
-- WEB-98 [o] Entering the owner office (→WEB-39) stops automatic play as an owner stop, ending a match-day moment as a stop does (→WEB-18); leaving the office starts the clock again only when entering stopped it. Manual mode and an already stopped clock are unaffected, and nothing inside the office starts the clock. ← office work is management change, locked while the calendar runs (→WEB-97), and the office hides the stop control
+- WEB-98 [o] Entering the owner office (→WEB-39) stops automatic play as an owner stop, showing at once any days computed ahead (→WEB-18); leaving the office starts the clock again only when entering stopped it. Manual mode and an already stopped clock are unaffected, and nothing inside the office starts the clock. ← office work is management change, locked while the calendar runs (→WEB-97), and the office hides the stop control
 
 ## flow
 
@@ -547,6 +547,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r160 261027 WEB-18✎ ≥ 2 s match-day animation→none; +compute ahead 3/5/7 days (x1·x2/x5/x10), never past a stopping day, stop shows computed days at the pace, results identical; WEB-11✎ NEXT MATCH moment→removed; WEB-64✎ no moment while hidden→nothing computed ahead; WEB-97✎ lock→also until computed days shown; WEB-98✎ ends the moment→shows computed days at once
 - r159 261027 WEB-91✎ CSS control borders and stylesheet-owned visual mappings→portable JSON skins with common resource-based controls, meters, facility steps and notices; unbounded image delivery→budgeted compressed responsive assets and demand-driven image staging
 - r158 261027 WEB-10✎ seven tabs incl. 구단→six, office from home, +spacing below HUD; WEB-11✎ rank·strength·record on the scene→season card round·rank·record, +office entrance (beside the season card on wide screens); WEB-18✎ round on home→in the season card; WEB-39✎ 구단 운영 page tabs→focused 구단주 사무실 lobby of six areas, /direction strategy→lobby; WEB-44✎ +strength tile; WEB-54✎ 목록으로 under tabs→sub-screen navigator bar, top ten→+10 per 더 보기 to 100; WEB-69✎ −방향; WEB-71/79/86✎ 구단 운영›→구단주 사무실›, 구단주 사무실 tab→결재 라인, +event groups link 결재 라인; WEB-97✎ +office exception; WEB-98+ office stops the clock
 - r157 261027 WEB-1/90✎ Korean-only foundation→Korean default plus eleven complete packs for the extracted UI messages, native labels, locale plurals and Arabic RTL; complete feature/engine extraction remains subsequent work

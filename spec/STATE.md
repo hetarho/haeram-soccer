@@ -328,12 +328,13 @@
 | save-storage-and-fast-pace | ready@261026 |
 | match-day-progress | ready@261026 |
 | calibration-pass | open@261026 |
+| play-pace-and-owner-surfaces | ready@261027 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 23 | 23 | - | 2 |
-| WEB | 159 | 159 | - | 0 |
+| ARCH | 24 | 24 | - | 2 |
+| WEB | 160 | 160 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -343,7 +344,7 @@
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
 | HIST | 17 | 17 | - | 0 |
-| SAVE | 54 | 54 | - | 0 |
+| SAVE | 55 | 55 | - | 0 |
 | PLAYER | 10 | 10 | - | 0 |
 
 ## review
@@ -358,6 +359,13 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T516 | Automatic play without the match-day moment | WEB | - | todo |
+| T517 | Result-identical cuts in the own match and a shared day bench | MATCH ARCH WEB | - | todo |
+| T518 | Two-phase league round with a read-only fixture copy | ARCH MATCH WEB | - | todo |
+| T519 | Helper workers for an own match day's other fixtures | ARCH MATCH WEB | T518 T520 | todo |
+| T520 | Lighter match-day view publication | ARCH WEB | - | todo |
+| T521 | Automatic play computes ahead of the shown date | WEB SAVE MATCH | T516 T520 | todo |
+| T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -373,12 +381,17 @@
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 
 ## next
+- implement-task T516 (then T517/T518/T520 in any order, T519, T521, explore T522): automatic play without the match-day moment and with result-identical speed-ups (ideation/play-pace-and-owner-surfaces; prototypes on branch perf/integrated).
+- ideation play-pace-and-owner-surfaces 계속: action / standing choice / dashboard split and home ordering (still open with the owner).
 - T504 complete: portable resource skins, responsive facilities and image budgets; 79.2 MB → 40.9 MB image payload, 164 affected unit cases and all 13 focused Chromium cases passed; awaiting the ARCH-30 publication gate.
 - T494–T495 complete: theme-matched trophy artwork and distinct division/continental silhouettes; all required batch stages passed before publication.
 - review/ui-engine-boundary-261027 F1–F4 done (T500–T503): UI→orchestration exceptions 53→38 files, 38→35 engine modules; F5 (domain reads on the main thread) waits for a measured decision.
 - o7h4 pushed T490–T493 (owner office, home season card, records sub-screen) to main after the ARCH-30 batch passed on eaf5f3d1; confirm its decided inbox items.
 
 ## log
+- 261027 create-task WEB r160 SAVE r55 ARCH r24 → T516–T522 (moment removal, grid cuts + day bench, two-phase round, helper workers, lighter publication, run-ahead clock, browser read)
+- 261027 update-ssot WEB r160 SAVE r55 ARCH r24 from ideation/play-pace-and-owner-surfaces: no match-day moment, computing ahead 3/5/7 days with stop/office/hidden rules, helper workers beside the sole-writer engine; doc stays ready for the owner-surfaces slice
+- 261027 ideation play-pace-and-owner-surfaces: owner removed the 2 s match-day beat; integrated result-identical prototypes measured (own match day 0.54–0.77×, x10 season 54 → about 10 stalls at depth 7, worlds identical)
 - 261027 fix home-header: league/date now share a framed header row and season statistics have inner padding; typecheck, targeted lint/format and 5 ProgressControls cases passed; sticker home visually checked, owner review complete; ready for publication verification
 - 261027 T504 done: common resource skins and JSON metadata, compact UI encodings, 276 responsive facility variants, demand-driven staging and art checks; affected validation passed
 - 261027 create-task WEB r159 → T504; implementation started (r6u2)
@@ -396,6 +409,3 @@
 - 261027 o7h4 closed: T490–T493 and gate fixes; batch passed on eaf5f3d1 (299/299 Chromium), pushed to main
 - 261027 batch gate (o7h4) 279/299 Chromium: fixed office-aware helpers (address-based office, selected home tab, celebration and event cards), event groups link 결재 라인, wide home pairs the entrance with the season card, short-phone spacing keeps seven standings rows; the 20 journeys pass on rerun
 - 261027 T493 done (o7h4): records season sub-screen with a top navigator bar; 선수 통산 더 보기 ten at a time to 100
-- 261027 T491 T492 done (o7h4): focused 구단주 사무실 from home with the clock stopped inside, lobby of six areas, 결재 라인; office-aware e2e helpers across 20 specs, browser specs left to the batch
-- 261027 T490 done (o7h4): home season card with round·rank·record, strength tile leads team state, 10px below the HUD; task checks passed, browser specs left to the batch
-- 261027 create-task WEB r158 (autopilot o7h4): T490 home season card and strength tile, T491 focused office and clock, T492 office lobby and 결재 라인, T493 records season screen and player totals to 100

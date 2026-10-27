@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r54 | Define the browser-demo rules for browser persistence and protocol.
+> r55 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -22,6 +22,7 @@
   - a checkpoint is built, compressed, checksummed and validated in a background codec worker; neither the simulation nor the UI waits for it.
   - at most one save is in flight: a newer request replaces the waiting one, and an older checkpoint is never written over a newer one.
   - the UI shows when the game was last saved without changing on every day step.
+  - a background save during automatic play may hold days computed ahead of the shown date (→WEB-18); the save on stopping follows once those days are shown, so it holds the date the clock stopped on.
 - SAVE-9 [o] Export/import uses the same envelope; checksum provides corruption detection only. All successful changes remain local.
 
 - SAVE-10 [o] Current engine rules are 4.0.0; only 4.0.0 gameplay checkpoints are accepted (→SAVE-19). Earlier gameplay is never converted; the bounded recognized-legacy reset and future/unrecognized-version protection follow →SAVE-19 and →SAVE-11.
@@ -92,6 +93,7 @@
   - derived totals and display text are not a second persisted accomplishment database. Retain all source facts losslessly within the existing century and capacity limits (→SAVE-4/13), including repeated/interim appointments and a settled round after the century.
 
 ## chg
+- r55 261027 SAVE-8+ background saves may hold days computed ahead of the shown date; the stop save waits until they are shown
 - r54 261026 SAVE-3✎ active checkpoint localStorage slot:a→IndexedDB key active, moved on the first commit; SAVE-4✎ checkpoint cap→every store, localStorage total→settings and fallback only; SAVE-14✎ reason localStorage copy→predecessor and autosaves
 - r53 261025 SAVE-23✎ one model revision→later revisions activate prospectively at the next safe boundary; settled matches keep and replay under their revision
 - r52 261024 SAVE-23✎ activation required →MATCH-28 and →ARCH-31 evidence→→ARCH-31 throughput and capacity evidence, →MATCH-28 accuracy reported, not a gate
