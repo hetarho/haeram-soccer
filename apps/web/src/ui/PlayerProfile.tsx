@@ -140,7 +140,11 @@ export function PlayerProfile({
           <h4>플레이 특성</h4>
           <p className={s.traits}>
             {player.traits.length
-              ? player.traits.map((trait) => <span key={trait}>{TRAIT_LABEL[trait]}</span>)
+              ? player.traits.map((trait) => (
+                  <span data-ui="label" key={trait}>
+                    {TRAIT_LABEL[trait]}
+                  </span>
+                ))
               : '없음'}
           </p>
         </div>
@@ -158,10 +162,12 @@ export function PlayerProfile({
                   aria-label={`${ATTRIBUTE_LABEL[attribute]} ${value}`}
                 >
                   <span>{ATTRIBUTE_LABEL[attribute]}</span>
-                  <i
-                    style={{ width: `${Math.max(2, Math.min(100, value))}%` }}
-                    data-tone={value >= 75 ? 'high' : value >= 60 ? 'mid' : 'low'}
-                  />
+                  <span data-ui="attribute-meter" aria-hidden="true">
+                    <i
+                      style={{ width: `${Math.max(2, Math.min(100, value))}%` }}
+                      data-tone={value >= 75 ? 'high' : value >= 60 ? 'mid' : 'low'}
+                    />
+                  </span>
                   <b>{value}</b>
                 </div>
               );

@@ -27,7 +27,7 @@ export interface FacilityImageSelection {
 }
 export type ThemeImageNeed =
   | { type: 'icon'; role: string; variant?: string }
-  | ({ type: 'facility' } & FacilityImageSelection);
+  | ({ type: 'facility'; width?: number } & FacilityImageSelection);
 
 function fontFamilies(value: string): string[] {
   return (value.match(/"[^"]+"|'[^']+'|[^,]+/g) ?? []).map((family) =>
@@ -92,7 +92,26 @@ export function validateThemeTypography(pack: ThemePack, url = '/') {
 export function createThemeResolver(input: ThemePack, options: { url: string }) {
   const pack = validateThemePack(input);
   const { fonts, tokens: typography } = validateThemeTypography(pack, options.url);
-  const tokens = resolveThemeTokens(pack.tokens, typography);
+  const uiImages = Object.freeze(
+    Object.fromEntries(
+      Object.entries(pack.images.ui ?? {}).map(([role, image]) => [
+        role,
+        {
+          ...image,
+          resource: resolveResourceUrl(image.resource, options.url),
+        },
+      ]),
+    ),
+  );
+  const tokens: Readonly<Record<string, string>> = Object.freeze({
+    ...resolveThemeTokens(pack.tokens, typography),
+    ...Object.fromEntries(
+      Object.entries(uiImages).flatMap(([role, image]) => [
+        [role, `url(${JSON.stringify(image.resource)})`],
+        ...(image.slice ? [[`${role}-slice`, String(image.slice)]] : []),
+      ]),
+    ),
+  });
   const imageTreatment = Object.freeze({ ...pack.tokens.imageTreatment });
   const iconImages = Object.freeze([
     ...new Set(
@@ -127,13 +146,21 @@ export function createThemeResolver(input: ThemePack, options: { url: string }) 
     )
       throw new PresentationValidationError('Invalid semantic facility selection');
     const slot = pack.images.facility;
-    const reference =
-      slot.overrides?.[`${era}.${kind}.${stage}`] ??
-      slot.pattern.replace(/\{(era|kind|stage)\}/g, (_, key: string) =>
-        String({ era, kind, stage }[key as 'era' | 'kind' | 'stage']),
+    const resource = (imageSlot: typeof slot) =>
+      resolveResourceUrl(
+        imageSlot.overrides?.[`${era}.${kind}.${stage}`] ??
+          imageSlot.pattern.replace(/\{(era|kind|stage)\}/g, (_, key: string) =>
+            String({ era, kind, stage }[key as 'era' | 'kind' | 'stage']),
+          ),
+        options.url,
       );
     return {
-      src: resolveResourceUrl(reference, options.url),
+      src: resource(slot),
+      variants: (slot.variants ?? []).map((variant) => ({
+        src: resource(variant),
+        width: variant.width,
+        height: variant.height,
+      })),
       era,
       kind,
       stage,
@@ -155,6 +182,7 @@ export function createThemeResolver(input: ThemePack, options: { url: string }) 
     colorScheme: pack.colorScheme ?? 'normal',
     imageTreatment,
     iconImages,
+    uiImages,
     stylesheet: pack.stylesheet ? resolveResourceUrl(pack.stylesheet, options.url) : undefined,
     token,
     icon,
@@ -169,10 +197,23 @@ export function collectThemeImageResources(theme: ThemeResolver, needs: readonly
   return [
     ...new Set(
       needs.flatMap((need) => {
-        if (need.type === 'facility') return [theme.facility(need).src];
+        if (need.type === 'facility') {
+          const scene = theme.facility(need);
+          return [selectFacilityImage(scene, need.width).src];
+        }
         const resource = theme.icon(need.role, need.variant);
         return resource.type === 'image' ? [resource.resource] : [];
       }),
     ),
   ];
+}
+
+/** Pick the same representation that srcset selects for the mounted image's pixel demand. */
+export function selectFacilityImage(
+  scene: { src: string; variants: readonly { src: string; width: number }[] },
+  width?: number,
+) {
+  if (!width || !scene.variants.length) return scene;
+  const variants = [...scene.variants].sort((a, b) => a.width - b.width);
+  return variants.find((variant) => variant.width >= width) ?? variants[variants.length - 1];
 }

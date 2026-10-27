@@ -83,6 +83,87 @@
       "imageRendering": "pixelated",
       "filter": "saturate(0.7) contrast(0.92)",
       "overlay": "rgb(9 15 12 / 24%)"
+    },
+    "ui": {
+      "pitch-ground": "#172b21",
+      "pitch-stripe": "#244630",
+      "pitch-stripe-alt": "#2b5035",
+      "pitch-line": "#c7d4b3",
+      "pitch-goal": "#f1f0d8",
+      "pitch-marker-outline": "#e4e9cd",
+      "pitch-ball": "#f4f0dc",
+      "pitch-ball-edge": "#0c1510",
+      "pitch-ball-seam": "#29472c",
+      "pitch-carrier": "#a9d58c",
+      "pitch-selection": "#f1f0e8",
+      "pitch-idle-text": "#c7d4b3",
+      "pitch-line-width": "1.4",
+      "pitch-marker-width": "1.2",
+      "pitch-pixel-size": "2",
+      "pitch-texture-opacity": "0.22",
+      "pitch-texture-size": "32",
+      "pitch-texture": "var(--image-canvas-material)",
+      "pitch-chart-ground": "var(--image-dark-fill, var(--image-ink-color))",
+      "image-canvas-material": "var(--image-art-paper)",
+      "image-quiet-material": "var(--image-art-paper-quiet)",
+      "image-dark-material": "var(--image-art-ink)",
+      "image-primary-material": "var(--image-art-vermilion)",
+      "image-panel-frame": "var(--image-art-frame-ticket)",
+      "image-primary-frame": "var(--image-art-frame-stamp)",
+      "image-dark-frame": "var(--image-art-frame-dark)",
+      "image-tile-frame": "var(--image-art-frame-tile)",
+      "image-button-frame": "var(--image-art-frame-button)",
+      "image-selected-frame": "var(--image-art-frame-selected)",
+      "image-canvas": "#111415",
+      "image-quiet": "#191d1e",
+      "image-ink-color": "#f3f2e8",
+      "image-muted": "#c3ccc5",
+      "image-faint": "#adb9b0",
+      "image-accent": "#a1cf9b",
+      "image-focus": "#f1f0e8",
+      "image-on-dark": "#f3f2e8",
+      "image-on-dark-muted": "#c3ccc5",
+      "image-primary": "#2e713d",
+      "image-on-primary": "#f6fff1",
+      "image-on-primary-muted": "#f6fff1",
+      "image-dark-fill": "#0c0f10",
+      "image-sidebar-hover": "#a1cf9b10",
+      "image-heart": "#f09687",
+      "image-ovr-bronze": "#cbb98c",
+      "image-ovr-silver": "#cfd8dc",
+      "image-table-line": "#47584b",
+      "image-table-hover": "#a1cf9b10",
+      "image-selected-row": "#22392a",
+      "image-dialog-shadow": "#00000065",
+      "image-popover-shadow": "#00000050",
+      "image-radius": "2px",
+      "image-focus-width": "2px",
+      "image-focus-offset": "2px",
+      "image-menu-gap": "10px",
+      "image-link-decoration": "underline",
+      "image-material-size": "32px",
+      "image-small-size": "12px",
+      "image-caption-size": "12px",
+      "image-frame-slice": "var(--image-art-frame-ticket-slice)",
+      "text": "var(--image-ink-color)",
+      "text-muted": "var(--image-muted)",
+      "text-faint": "var(--image-faint)",
+      "accent-text": "var(--image-accent)",
+      "focus": "var(--image-focus)",
+      "focus-width": "var(--image-focus-width)",
+      "focus-offset": "var(--image-focus-offset)",
+      "page-grain": "none",
+      "surface-grain": "none",
+      "image-rendering": "pixelated",
+      "image-panel-radius": "var(--card-radius)",
+      "image-dialog-radius": "var(--image-radius, 0px)",
+      "image-badge-radius": "var(--image-radius, 0px)",
+      "image-control-shadow": "none",
+      "image-meter-low": "var(--image-primary-material)",
+      "image-meter-mid": "var(--image-primary-material)",
+      "image-meter-high": "var(--image-primary-material)",
+      "image-meter-track": "var(--image-canvas-material)",
+      "image-position-material": "var(--image-canvas-material)"
     }
   },
   "fonts": [
@@ -139,6 +220,213 @@
         "terraces.staff.0": "/art/scenes/staff-office-v2.webp",
         "contemporary.manager.0": "/art/scenes/manager-office-v2.webp",
         "contemporary.staff.0": "/art/scenes/staff-office-v2.webp"
+      }
+    },
+    "ui": {
+      "image-art-frame-button": {
+        "resource": "../../art/pixel/ui/frame-button.png",
+        "width": 128,
+        "height": 128,
+        "mode": "nine-slice",
+        "slice": 16
+      },
+      "image-art-frame-dark": {
+        "resource": "../../art/pixel/ui/frame-dark.png",
+        "width": 128,
+        "height": 128,
+        "mode": "nine-slice",
+        "slice": 16
+      },
+      "image-art-frame-selected": {
+        "resource": "../../art/pixel/ui/frame-selected.png",
+        "width": 128,
+        "height": 128,
+        "mode": "nine-slice",
+        "slice": 16
+      },
+      "image-art-frame-stamp": {
+        "resource": "../../art/pixel/ui/frame-primary.png",
+        "width": 128,
+        "height": 128,
+        "mode": "nine-slice",
+        "slice": 16
+      },
+      "image-art-frame-ticket": {
+        "resource": "../../art/pixel/ui/frame-panel.png",
+        "width": 128,
+        "height": 128,
+        "mode": "nine-slice",
+        "slice": 16
+      },
+      "image-art-frame-tile": {
+        "resource": "../../art/pixel/ui/frame-tile.png",
+        "width": 128,
+        "height": 128,
+        "mode": "nine-slice",
+        "slice": 16
+      },
+      "image-art-ink": {
+        "resource": "../../art/pixel/ui/dark.png",
+        "width": 32,
+        "height": 32,
+        "mode": "tile"
+      },
+      "image-art-paper": {
+        "resource": "../../art/pixel/ui/canvas.png",
+        "width": 32,
+        "height": 32,
+        "mode": "tile"
+      },
+      "image-art-paper-quiet": {
+        "resource": "../../art/pixel/ui/quiet.png",
+        "width": 32,
+        "height": 32,
+        "mode": "tile"
+      },
+      "image-art-vermilion": {
+        "resource": "../../art/pixel/ui/primary.png",
+        "width": 32,
+        "height": 32,
+        "mode": "tile"
+      },
+      "image-art-masthead": {
+        "resource": "../../art/pixel/ui/masthead.png",
+        "width": 448,
+        "height": 144,
+        "mode": "image"
+      },
+      "image-art-rule-dark": {
+        "resource": "../../art/pixel/ui/rule-dark.png",
+        "width": 64,
+        "height": 2,
+        "mode": "image"
+      },
+      "image-art-rule-light": {
+        "resource": "../../art/pixel/ui/rule-light.png",
+        "width": 64,
+        "height": 2,
+        "mode": "image"
+      },
+      "image-art-rule-light-vertical": {
+        "resource": "../../art/pixel/ui/rule-light-vertical.png",
+        "width": 2,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-sidebar-terrace": {
+        "resource": "../../art/pixel/ui/sidebar-terrace.png",
+        "width": 384,
+        "height": 192,
+        "mode": "image",
+        "preload": false
+      },
+      "image-art-icon-home": {
+        "resource": "../../art/pixel/ui/icon-home.png",
+        "width": 192,
+        "height": 192,
+        "mode": "image"
+      },
+      "image-art-icon-league": {
+        "resource": "../../art/pixel/ui/icon-league.png",
+        "width": 192,
+        "height": 192,
+        "mode": "image"
+      },
+      "image-art-icon-cup": {
+        "resource": "../../art/pixel/ui/icon-cup.png",
+        "width": 192,
+        "height": 192,
+        "mode": "image"
+      },
+      "image-art-icon-history": {
+        "resource": "../../art/pixel/ui/icon-history.png",
+        "width": 192,
+        "height": 192,
+        "mode": "image"
+      },
+      "image-art-icon-people": {
+        "resource": "../../art/pixel/ui/icon-people.png",
+        "width": 192,
+        "height": 192,
+        "mode": "image"
+      },
+      "image-art-icon-training": {
+        "resource": "../../art/pixel/ui/icon-training.png",
+        "width": 192,
+        "height": 192,
+        "mode": "image"
+      },
+      "image-art-icon-office": {
+        "resource": "../../art/pixel/ui/icon-office.png",
+        "width": 192,
+        "height": 192,
+        "mode": "image"
+      },
+      "image-art-icon-boot": {
+        "resource": "../../art/pixel/ui/icon-boot.png",
+        "width": 192,
+        "height": 192,
+        "mode": "image"
+      },
+      "image-art-icon-supporters": {
+        "resource": "../../art/pixel/ui/icon-supporters.png",
+        "width": 192,
+        "height": 192,
+        "mode": "image"
+      },
+      "image-art-icon-manager": {
+        "resource": "../../art/pixel/ui/icon-manager.png",
+        "width": 192,
+        "height": 192,
+        "mode": "image"
+      },
+      "image-art-icon-shirt": {
+        "resource": "../../art/pixel/ui/icon-shirt.png",
+        "width": 192,
+        "height": 192,
+        "mode": "image"
+      },
+      "image-art-icon-bell": {
+        "resource": "../../art/pixel/ui/icon-bell.png",
+        "width": 192,
+        "height": 192,
+        "mode": "image"
+      },
+      "image-art-icon-menu": {
+        "resource": "../../art/pixel/ui/icon-menu.png",
+        "width": 192,
+        "height": 192,
+        "mode": "image"
+      },
+      "image-art-icon-switch": {
+        "resource": "../../art/pixel/ui/icon-switch.png",
+        "width": 192,
+        "height": 192,
+        "mode": "image"
+      },
+      "image-art-icon-play": {
+        "resource": "../../art/pixel/ui/icon-play.png",
+        "width": 192,
+        "height": 192,
+        "mode": "image"
+      },
+      "image-art-icon-heart": {
+        "resource": "../../art/pixel/ui/icon-heart.png",
+        "width": 192,
+        "height": 192,
+        "mode": "image"
+      },
+      "image-art-position-pitch": {
+        "resource": "../../art/pixel/ui/position-pitch.svg",
+        "width": 150,
+        "height": 200,
+        "mode": "image"
+      },
+      "image-art-check": {
+        "resource": "../../art/pixel/ui/check.svg",
+        "width": 24,
+        "height": 24,
+        "mode": "image"
       }
     }
   },

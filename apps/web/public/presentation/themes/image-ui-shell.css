@@ -4,6 +4,19 @@ html[data-theme] {
   --image-small-size: 12px;
   --image-caption-size: 12px;
 
+  body,
+  button,
+  [data-surface],
+  [data-ui],
+  [data-home-part],
+  [role='listbox'] {
+    image-rendering: var(--image-rendering, auto);
+  }
+
+  canvas {
+    image-rendering: auto;
+  }
+
   body {
     background: var(--image-canvas) var(--image-canvas-material) repeat;
     background-size: var(--image-material-size, 512px);
@@ -56,7 +69,8 @@ html[data-theme] {
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
     background-size: var(--image-material-size, 320px);
     border-right: 6px solid transparent;
-    border-image: var(--image-dark-frame) var(--image-frame-slice, 40) / 0 4px 0 0 stretch;
+    border-image: var(--image-dark-frame)
+      var(--image-art-frame-dark-slice, var(--image-frame-slice, 40)) / 0 4px 0 0 stretch;
     --text: var(--image-on-dark);
     --text-muted: var(--image-on-dark);
     --text-faint: var(--image-on-dark-muted);
@@ -125,7 +139,8 @@ html[data-theme] {
   }
 
   [data-ui='game-shell'] > [data-ui='sidebar'] nav button[aria-current='page'] {
-    border-image: var(--image-selected-frame) var(--image-frame-slice, 48) / 10px stretch;
+    border-image: var(--image-selected-frame)
+      var(--image-art-frame-selected-slice, var(--image-frame-slice, 48)) / 10px stretch;
     background: var(--image-primary) var(--image-primary-material) repeat padding-box;
     background-size: var(--image-material-size, 256px);
     color: var(--image-on-primary);
@@ -347,8 +362,9 @@ html[data-theme] {
     min-height: 84px;
     padding: 6px 10px;
     border: 6px solid transparent;
-    border-image: var(--image-panel-frame) var(--image-frame-slice, 54) / 17px stretch;
-    border-radius: var(--image-radius, 0px);
+    border-image: var(--image-panel-frame)
+      var(--image-art-frame-ticket-slice, var(--image-frame-slice, 54)) / 17px stretch;
+    border-radius: var(--image-panel-radius, var(--image-radius, 0px));
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 384px);
     gap: 18px;
@@ -357,8 +373,9 @@ html[data-theme] {
   /* The office lobby's desks wear the team-state tile frame: pressable game tiles (→WEB-39). */
   [data-office-area] {
     border: 9px solid transparent;
-    border-image: var(--image-tile-frame) var(--image-frame-slice, 52) / 12px stretch;
-    border-radius: var(--image-radius, 0px);
+    border-image: var(--image-tile-frame)
+      var(--image-art-frame-tile-slice, var(--image-frame-slice, 52)) / 12px stretch;
+    border-radius: var(--image-panel-radius, var(--image-radius, 0px));
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 384px);
     color: var(--image-ink-color);
@@ -373,8 +390,9 @@ html[data-theme] {
     min-height: 84px;
     padding: 6px 12px 6px 6px;
     border: 8px solid transparent;
-    border-image: var(--image-tile-frame) var(--image-frame-slice, 52) / 12px stretch;
-    border-radius: var(--image-radius, 0px);
+    border-image: var(--image-tile-frame)
+      var(--image-art-frame-tile-slice, var(--image-frame-slice, 52)) / 12px stretch;
+    border-radius: var(--image-panel-radius, var(--image-radius, 0px));
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 384px);
     color: var(--image-ink-color);
@@ -415,7 +433,8 @@ html[data-theme] {
     min-height: 44px;
     padding: 4px 10px;
     border: 4px solid transparent;
-    border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 13px stretch;
+    border-image: var(--image-primary-frame)
+      var(--image-art-frame-stamp-slice, var(--image-frame-slice, 54)) / 13px stretch;
     border-radius: var(--image-radius, 0px);
     color: var(--image-on-primary);
     background: var(--image-primary) var(--image-primary-material) repeat padding-box;
@@ -443,7 +462,8 @@ html[data-theme] {
   [data-home-part='season-meter'] progress {
     height: 13px;
     border: 2px solid transparent;
-    border-image: var(--image-button-frame) var(--image-frame-slice, 42) / 3px stretch;
+    border-image: var(--image-button-frame)
+      var(--image-art-frame-button-slice, var(--image-frame-slice, 42)) / 3px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-quiet) var(--image-quiet-material) repeat;
   }
@@ -485,7 +505,8 @@ html[data-theme] {
     inset: 0;
     pointer-events: none;
     border: 8px solid transparent;
-    border-image: var(--image-tile-frame) var(--image-frame-slice, 50) / 11px stretch;
+    border-image: var(--image-tile-frame)
+      var(--image-art-frame-tile-slice, var(--image-frame-slice, 50)) / 11px stretch;
   }
 
   [data-home-part='scene'] {
@@ -509,7 +530,8 @@ html[data-theme] {
     min-height: 32px;
     padding: 5px 9px;
     border: 5px solid transparent;
-    border-image: var(--image-dark-frame) var(--image-frame-slice, 46) / 7px stretch;
+    border-image: var(--image-dark-frame)
+      var(--image-art-frame-dark-slice, var(--image-frame-slice, 46)) / 7px stretch;
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
       padding-box;
     background-size: var(--image-material-size, 256px);
@@ -626,7 +648,8 @@ html[data-theme] {
     min-height: 88px;
     padding: 6px 12px;
     border: 9px solid transparent;
-    border-image: var(--image-tile-frame) var(--image-frame-slice, 52) / 12px stretch;
+    border-image: var(--image-tile-frame)
+      var(--image-art-frame-tile-slice, var(--image-frame-slice, 52)) / 12px stretch;
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 384px);
     color: var(--image-ink-color);
@@ -711,7 +734,8 @@ html[data-theme] {
     margin: 0;
     padding: 5px 12px;
     border: 7px solid transparent;
-    border-image: var(--image-dark-frame) var(--image-frame-slice, 48) / 10px stretch;
+    border-image: var(--image-dark-frame)
+      var(--image-art-frame-dark-slice, var(--image-frame-slice, 48)) / 10px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
       padding-box;
@@ -724,6 +748,7 @@ html[data-theme] {
 
   [data-testid='view-scroller'] > footer + div > button:first-child {
     border-image-source: var(--image-primary-frame);
+    border-image-slice: var(--image-art-frame-stamp-slice, var(--image-frame-slice, 22));
     background-image: var(--image-primary-material);
   }
 
@@ -736,7 +761,8 @@ html[data-theme] {
     padding: max(10px, var(--control-gap)) 8px;
     gap: 8px;
     border: 3px solid transparent;
-    border-image: var(--image-dark-frame) var(--image-frame-slice, 46) / 10px stretch;
+    border-image: var(--image-dark-frame)
+      var(--image-art-frame-dark-slice, var(--image-frame-slice, 46)) / 10px stretch;
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
       padding-box;
     background-size: var(--image-material-size, 256px);
@@ -782,7 +808,8 @@ html[data-theme] {
     min-height: 44px;
     padding: 0;
     border: 6px solid transparent;
-    border-image: var(--image-primary-frame) var(--image-frame-slice, 54) / 8px stretch;
+    border-image: var(--image-primary-frame)
+      var(--image-art-frame-stamp-slice, var(--image-frame-slice, 54)) / 8px stretch;
     border-radius: var(--image-radius, 0px);
     background: var(--image-primary) var(--image-primary-material) repeat padding-box;
     background-size: var(--image-material-size, 256px);
@@ -1095,7 +1122,8 @@ html[data-theme] {
       padding: 1px 2px;
       gap: 0;
       border: 4px solid transparent;
-      border-image: var(--image-dark-frame) var(--image-frame-slice, 46) / 9px stretch;
+      border-image: var(--image-dark-frame)
+        var(--image-art-frame-dark-slice, var(--image-frame-slice, 46)) / 9px stretch;
       border-radius: var(--image-radius, 0px);
       background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
         padding-box;
@@ -1112,7 +1140,8 @@ html[data-theme] {
     }
     [data-ui='game-shell'] > nav button[aria-current='page'] {
       border: 4px solid transparent;
-      border-image: var(--image-selected-frame) var(--image-frame-slice, 48) / 6px stretch;
+      border-image: var(--image-selected-frame)
+        var(--image-art-frame-selected-slice, var(--image-frame-slice, 48)) / 6px stretch;
       background: var(--image-primary) var(--image-primary-material) repeat padding-box;
       background-size: var(--image-material-size, 256px);
       color: var(--image-on-primary);

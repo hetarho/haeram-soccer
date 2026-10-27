@@ -50,26 +50,26 @@
   border-left-color: var(--line-strong);
 }
 .positional {
-  border-left-color: #59a8ff;
+  border-left-color: var(--cool);
 }
 .gegenpress {
-  border-left-color: #ff6d60;
+  border-left-color: var(--danger);
 }
 .counter {
-  border-left-color: #ffcb47;
+  border-left-color: var(--gold);
 }
 .organizer {
-  border-left-color: #8fa8b8;
+  border-left-color: var(--text-muted);
 }
 .motivator {
-  border-left-color: #ff9257;
+  border-left-color: var(--warm);
 }
 .developer {
-  border-left-color: #2fc274;
+  border-left-color: var(--positive);
 }
 .firefighter {
-  border-left-color: #ff4d8d;
+  border-left-color: var(--danger);
 }
 .headcoach {
-  border-left-color: #b38cff;
+  border-left-color: var(--accent-text);
 }

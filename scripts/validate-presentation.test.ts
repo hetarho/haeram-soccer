@@ -54,10 +54,15 @@ function deployment() {
     for (const font of resolver.fonts)
       for (const source of getFontSources(font)) write(source.resource, 'synthetic font file');
     if (resolver.stylesheet) write(resolver.stylesheet, ':root {}');
+    for (const image of Object.values(resolver.uiImages))
+      write(image.resource, 'synthetic UI file');
     for (const era of FACILITY_ERAS)
       for (const kind of FACILITY_KINDS)
-        for (let stage = 0; stage <= facilityStageTop(kind); stage++)
-          write(resolver.facility({ era, kind, stage }).src, 'synthetic image file');
+        for (let stage = 0; stage <= facilityStageTop(kind); stage++) {
+          const scene = resolver.facility({ era, kind, stage });
+          write(scene.src, 'synthetic image file');
+          for (const variant of scene.variants) write(variant.src, 'synthetic variant file');
+        }
     for (const [role, icon] of Object.entries(pack.icons))
       for (const variant of [undefined, ...Object.keys(icon.variants ?? {})]) {
         const resource = resolver.icon(role, variant);
@@ -212,7 +217,7 @@ describe('static presentation resource validation', () => {
     tree.theme.icons.home.variants = { optional: { type: 'image', resource: '/missing-icon.svg' } };
     tree.json(tree.themeUrl, tree.theme);
     await expect(validatePresentation(tree.root)).rejects.toMatchObject({
-      cause: { message: expect.stringContaining('Missing theme image') },
+      message: expect.stringContaining('Missing theme icon'),
     });
   });
 

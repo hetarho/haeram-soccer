@@ -8,8 +8,6 @@
   border: 1px solid color-mix(in srgb, var(--danger) 65%, transparent);
   border-left: 3px solid var(--danger);
   border-radius: var(--card-radius);
-  background: #180e10ed;
-  color: #f4e9e9;
   font-size: 12px;
   line-height: 1.5;
   text-wrap: pretty;
@@ -17,7 +15,7 @@
 .overlay b {
   display: block;
   margin-bottom: 2px;
-  color: #ffaaa3;
+  color: var(--danger);
   font-family: var(--display);
   font-size: 13px;
 }

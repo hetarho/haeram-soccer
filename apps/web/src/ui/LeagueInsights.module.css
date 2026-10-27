@@ -593,15 +593,15 @@
   min-width: 28px;
   padding: 1px 6px;
   border-radius: var(--badge-radius);
-  border: 1px solid #d99a6266;
-  color: var(--ovr-bronze, #d99a62);
+  border: 1px solid color-mix(in srgb, var(--ovr-bronze) 40%, transparent);
+  color: var(--ovr-bronze, var(--warm));
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   text-align: center;
 }
 .teamOvr[data-tier='silver'] {
-  border-color: #cfd8dc66;
-  color: var(--ovr-silver, #cfd8dc);
+  border-color: color-mix(in srgb, var(--ovr-silver) 40%, transparent);
+  color: var(--ovr-silver, var(--text-muted));
 }
 .teamOvr[data-tier='gold'] {
   border-color: color-mix(in srgb, var(--gold) 50%, transparent);

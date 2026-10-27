@@ -112,13 +112,16 @@ export async function validatePresentation(
       },
     });
     installed?.dispose();
+    for (const image of Object.values(theme.uiImages))
+      await asset(image.resource, `theme UI resource ${entry.id}`);
     for (const era of FACILITY_ERAS)
       for (const kind of FACILITY_KINDS)
-        for (let stage = 0; stage <= facilityStageTop(kind); stage++)
-          await asset(
-            theme.facility({ era, kind, stage }).src,
-            `era stage asset ${entry.id}/${era}.${kind}.${stage}`,
-          );
+        for (let stage = 0; stage <= facilityStageTop(kind); stage++) {
+          const scene = theme.facility({ era, kind, stage });
+          await asset(scene.src, `era stage asset ${entry.id}/${era}.${kind}.${stage}`);
+          for (const variant of scene.variants)
+            await asset(variant.src, `responsive scene ${entry.id}/${era}.${kind}.${stage}`);
+        }
     for (const reference of Object.values(pack.images.facility.overrides ?? {}))
       await asset(resolveResourceUrl(reference, url), `theme image override ${entry.id}`);
     for (const [role, icon] of Object.entries(pack.icons))

@@ -18,6 +18,12 @@ function theme(id = 'pixel') {
   return createThemeResolver(pack, { url: `/presentation/themes/${id}.json` });
 }
 
+function skinImages(resolver: ReturnType<typeof theme>) {
+  return Object.values(resolver.uiImages)
+    .filter((image) => image.preload !== false)
+    .map((image) => image.resource);
+}
+
 function memoryPorts() {
   const active = new Set<string>(['unowned']);
   const resources: { id: string; disposed: boolean; disposeCalls: number }[] = [];
@@ -266,7 +272,7 @@ describe('theme resource installation', () => {
     }
   });
 
-  it('loads selected fonts, image icons and optional CSS without preloading facility scenes', async () => {
+  it('loads selected fonts and shared skins without preloading unseen icons or facility scenes', async () => {
     const resolver = theme();
     const memory = memoryPorts();
     const stageFont = vi.fn(memory.ports.stageFont);
@@ -277,7 +283,7 @@ describe('theme resource installation', () => {
     });
     expect(stageFont.mock.calls.map(([font]) => font)).toEqual(resolver.fonts);
     expect(stageStylesheet).toHaveBeenCalledExactlyOnceWith('/presentation/themes/pixel.css');
-    expect(stageImage.mock.calls.map(([url]) => url)).toEqual(resolver.iconImages);
+    expect(stageImage.mock.calls.map(([url]) => url)).toEqual(skinImages(resolver));
     installed!.dispose();
   });
 
@@ -304,12 +310,13 @@ describe('theme resource installation', () => {
         installThemeResources(candidate, {
           ports: { ...memory.ports, stageImage },
           previous: previous!,
-          requiredImages: missing === 'scene' ? [scene.src, scene.src] : undefined,
+          requiredImages: [failedUrl, failedUrl],
         }),
       ).rejects.toBeInstanceOf(ThemeInstallationError);
-      expect(stageImage.mock.calls.map(([url]) => url)).toEqual(
-        missing === 'scene' ? [...candidate.iconImages, scene.src] : candidate.iconImages,
-      );
+      expect(stageImage.mock.calls.map(([url]) => url)).toEqual([
+        ...skinImages(candidate),
+        failedUrl,
+      ]);
       expect([...memory.active]).toEqual(originalActive);
       expect([...memory.tokens.values()]).toEqual(['#111415']);
       expect(memory.resources.slice(candidateStart).every((resource) => resource.disposed)).toBe(
@@ -319,7 +326,7 @@ describe('theme resource installation', () => {
     }
   });
 
-  it('derives every declared image icon and variant without a role or pack-ID list', async () => {
+  it('keeps the full icon inventory while staging only explicitly needed variants', async () => {
     const memory = memoryPorts();
     const pack = validateThemePack(structuredClone(pixelData));
     pack.id = 'unseen-images';
@@ -334,10 +341,11 @@ describe('theme resource installation', () => {
     const stageImage = vi.fn(memory.ports.stageImage);
     const installed = await installThemeResources(candidate, {
       ports: { ...memory.ports, stageImage },
+      requiredImages: ['/packs/unseen/status-quiet.svg', '/packs/unseen/status-quiet.svg'],
     });
+    expect(candidate.iconImages).toContain('/packs/unseen/status.svg');
     expect(stageImage.mock.calls.map(([url]) => url)).toEqual([
-      '/packs/unseen/status.svg',
-      ...theme().iconImages,
+      ...skinImages(candidate),
       '/packs/unseen/status-quiet.svg',
     ]);
     installed!.dispose();
@@ -382,9 +390,9 @@ describe('theme resource installation', () => {
       requiredImages: ['/art/scenes/terraces/training-2.webp'],
     });
     expect(stageImage.mock.calls.map(([url]) => url)).toEqual([
-      ...previousTheme.iconImages,
+      ...skinImages(previousTheme),
       '/art/scenes/heritage/stadium-0.webp',
-      ...nextTheme.iconImages,
+      ...skinImages(nextTheme),
       '/art/scenes/terraces/training-2.webp',
     ]);
     expect(oldImages.every((resource) => resource.disposed)).toBe(true);

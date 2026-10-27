@@ -166,7 +166,9 @@ function DomesticCup({ w }: { w: World }) {
           </span>
         )}
       </header>
-      <p className={c.status}>{ownStatus(w, cup.rounds, cup.fixtures, entered)}</p>
+      <p data-ui="notice" className={c.status}>
+        {ownStatus(w, cup.rounds, cup.fixtures, entered)}
+      </p>
       <Bracket
         w={w}
         rounds={cup.rounds}
@@ -215,7 +217,9 @@ function Continental({ w, t }: { w: World; t: EuropeTournament }) {
           </span>
         )}
       </header>
-      <p className={c.status}>{status}</p>
+      <p data-ui="notice" className={c.status}>
+        {status}
+      </p>
       <Bracket w={w} rounds={rounds} fixtures={t.fixtures} competition={t.key} />
       {second.length > 0 &&
         second.map((ids, g) => (

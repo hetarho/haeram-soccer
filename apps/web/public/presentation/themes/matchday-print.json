@@ -108,6 +108,82 @@
       "imageRendering": "auto",
       "filter": "none",
       "overlay": "transparent"
+    },
+    "ui": {
+      "pitch-ground": "#e7d9ad",
+      "pitch-stripe": "#d5c590",
+      "pitch-stripe-alt": "#ded0a1",
+      "pitch-line": "#403d31",
+      "pitch-goal": "#8b3428",
+      "pitch-marker-outline": "#2b2922",
+      "pitch-ball": "#fff9e7",
+      "pitch-ball-edge": "#24241f",
+      "pitch-ball-seam": "#b8402c",
+      "pitch-carrier": "#b33524",
+      "pitch-selection": "#a82f23",
+      "pitch-idle-text": "#403d31",
+      "pitch-line-width": "1.3",
+      "pitch-marker-width": "1.7",
+      "pitch-pixel-size": "0",
+      "pitch-texture-opacity": "0.48",
+      "pitch-texture-size": "320",
+      "pitch-texture": "var(--image-canvas-material)",
+      "pitch-chart-ground": "var(--image-dark-fill, var(--image-ink-color))",
+      "image-canvas-material": "var(--image-art-paper)",
+      "image-quiet-material": "var(--image-art-paper-quiet)",
+      "image-dark-material": "var(--image-art-ink)",
+      "image-primary-material": "var(--image-art-vermilion)",
+      "image-panel-frame": "var(--image-art-frame-ticket)",
+      "image-primary-frame": "var(--image-art-frame-stamp)",
+      "image-dark-frame": "var(--image-art-frame-dark)",
+      "image-tile-frame": "var(--image-art-frame-tile)",
+      "image-button-frame": "var(--image-art-frame-button)",
+      "image-selected-frame": "var(--image-art-frame-selected)",
+      "image-canvas": "#eddfc3",
+      "image-quiet": "#f1e5cb",
+      "image-ink-color": "#24231e",
+      "image-muted": "#39372e",
+      "image-faint": "#4c473b",
+      "image-accent": "#a62e20",
+      "image-focus": "#24231e",
+      "image-on-dark": "#f2e6c9",
+      "image-on-dark-muted": "#e7d8b7",
+      "image-primary": "#a63724",
+      "image-on-primary": "#fff1d8",
+      "image-sidebar-hover": "#f4e5c514",
+      "image-heart": "#ed6950",
+      "image-on-primary-muted": "#f1dfbf",
+      "image-ovr-bronze": "#8e4d1e",
+      "image-ovr-silver": "#4d5960",
+      "image-table-line": "#7c6d4e38",
+      "image-table-hover": "#8d6b3210",
+      "image-selected-row": "#e8d9b9",
+      "image-dialog-shadow": "#20170d40",
+      "image-popover-shadow": "#31251a30",
+      "page-grain": "none",
+      "text": "var(--image-ink-color)",
+      "text-muted": "var(--image-muted)",
+      "text-faint": "var(--image-faint)",
+      "accent-text": "var(--image-accent)",
+      "focus": "var(--image-focus)",
+      "focus-width": "var(--image-focus-width)",
+      "focus-offset": "var(--image-focus-offset)",
+      "image-focus-width": "2px",
+      "image-focus-offset": "2px",
+      "image-menu-gap": "8px",
+      "image-link-decoration": "underline",
+      "image-frame-slice": "var(--image-art-frame-ticket-slice)",
+      "image-material-size": "256px",
+      "image-rendering": "auto",
+      "image-panel-radius": "0px",
+      "image-dialog-radius": "var(--image-radius, 0px)",
+      "image-badge-radius": "var(--image-radius, 0px)",
+      "image-control-shadow": "none",
+      "image-meter-low": "var(--image-dark-material)",
+      "image-meter-mid": "var(--image-primary-material)",
+      "image-meter-high": "var(--image-primary-material)",
+      "image-meter-track": "var(--image-canvas-material)",
+      "image-position-material": "var(--image-canvas-material)"
     }
   },
   "fonts": [
@@ -138,6 +214,247 @@
         "terraces.staff.0": "/art/matchday-print/staff.webp",
         "contemporary.manager.0": "/art/matchday-print/manager.webp",
         "contemporary.staff.0": "/art/matchday-print/staff.webp"
+      },
+      "variants": [
+        {
+          "pattern": "/art/matchday-print/{era}/{kind}-{stage}.small.webp",
+          "overrides": {
+            "heritage.manager.0": "/art/matchday-print/manager.small.webp",
+            "heritage.staff.0": "/art/matchday-print/staff.small.webp",
+            "terraces.manager.0": "/art/matchday-print/manager.small.webp",
+            "terraces.staff.0": "/art/matchday-print/staff.small.webp",
+            "contemporary.manager.0": "/art/matchday-print/manager.small.webp",
+            "contemporary.staff.0": "/art/matchday-print/staff.small.webp"
+          },
+          "width": 480,
+          "height": 160
+        },
+        {
+          "pattern": "/art/matchday-print/{era}/{kind}-{stage}.webp",
+          "overrides": {
+            "heritage.manager.0": "/art/matchday-print/manager.webp",
+            "heritage.staff.0": "/art/matchday-print/staff.webp",
+            "terraces.manager.0": "/art/matchday-print/manager.webp",
+            "terraces.staff.0": "/art/matchday-print/staff.webp",
+            "contemporary.manager.0": "/art/matchday-print/manager.webp",
+            "contemporary.staff.0": "/art/matchday-print/staff.webp"
+          },
+          "width": 960,
+          "height": 320
+        }
+      ]
+    },
+    "ui": {
+      "image-art-frame-button": {
+        "resource": "../../art/matchday-print/home/frame-button.webp",
+        "width": 192,
+        "height": 131,
+        "mode": "nine-slice",
+        "slice": 22
+      },
+      "image-art-frame-dark": {
+        "resource": "../../art/matchday-print/home/frame-dark.webp",
+        "width": 192,
+        "height": 132,
+        "mode": "nine-slice",
+        "slice": 22
+      },
+      "image-art-frame-selected": {
+        "resource": "../../art/matchday-print/home/frame-selected.webp",
+        "width": 192,
+        "height": 131,
+        "mode": "nine-slice",
+        "slice": 22
+      },
+      "image-art-frame-stamp": {
+        "resource": "../../art/matchday-print/home/frame-stamp.webp",
+        "width": 192,
+        "height": 131,
+        "mode": "nine-slice",
+        "slice": 22
+      },
+      "image-art-frame-ticket": {
+        "resource": "../../art/matchday-print/home/frame-ticket.webp",
+        "width": 192,
+        "height": 132,
+        "mode": "nine-slice",
+        "slice": 22
+      },
+      "image-art-frame-tile": {
+        "resource": "../../art/matchday-print/home/frame-tile.webp",
+        "width": 192,
+        "height": 132,
+        "mode": "nine-slice",
+        "slice": 22
+      },
+      "image-art-icon-bell": {
+        "resource": "../../art/matchday-print/home/icon-bell.webp",
+        "width": 64,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-icon-boot": {
+        "resource": "../../art/matchday-print/home/icon-boot.webp",
+        "width": 64,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-icon-cup": {
+        "resource": "../../art/matchday-print/home/icon-cup.webp",
+        "width": 64,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-icon-heart": {
+        "resource": "../../art/matchday-print/home/icon-heart.webp",
+        "width": 64,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-icon-history": {
+        "resource": "../../art/matchday-print/home/icon-history.webp",
+        "width": 64,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-icon-home": {
+        "resource": "../../art/matchday-print/home/icon-home.webp",
+        "width": 64,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-icon-league": {
+        "resource": "../../art/matchday-print/home/icon-league.webp",
+        "width": 64,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-icon-manager": {
+        "resource": "../../art/matchday-print/home/icon-manager.webp",
+        "width": 64,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-icon-menu": {
+        "resource": "../../art/matchday-print/home/icon-menu.webp",
+        "width": 64,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-icon-office": {
+        "resource": "../../art/matchday-print/home/icon-office.webp",
+        "width": 64,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-icon-people": {
+        "resource": "../../art/matchday-print/home/icon-people.webp",
+        "width": 64,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-icon-play": {
+        "resource": "../../art/matchday-print/home/icon-play.webp",
+        "width": 64,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-icon-shirt": {
+        "resource": "../../art/matchday-print/home/icon-shirt.webp",
+        "width": 64,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-icon-supporters": {
+        "resource": "../../art/matchday-print/home/icon-supporters.webp",
+        "width": 64,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-icon-switch": {
+        "resource": "../../art/matchday-print/home/icon-switch.webp",
+        "width": 64,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-icon-training": {
+        "resource": "../../art/matchday-print/home/icon-training.webp",
+        "width": 64,
+        "height": 64,
+        "mode": "image"
+      },
+      "image-art-ink": {
+        "resource": "../../art/matchday-print/home/ink.webp",
+        "width": 256,
+        "height": 256,
+        "mode": "tile"
+      },
+      "image-art-masthead": {
+        "resource": "../../art/matchday-print/home/masthead.webp",
+        "width": 226,
+        "height": 86,
+        "mode": "image"
+      },
+      "image-art-paper": {
+        "resource": "../../art/matchday-print/home/paper.webp",
+        "width": 256,
+        "height": 256,
+        "mode": "tile"
+      },
+      "image-art-paper-quiet": {
+        "resource": "../../art/matchday-print/home/paper-quiet.webp",
+        "width": 256,
+        "height": 256,
+        "mode": "tile"
+      },
+      "image-art-rule-dark": {
+        "resource": "../../art/matchday-print/home/rule-dark.webp",
+        "width": 1070,
+        "height": 5,
+        "mode": "image"
+      },
+      "image-art-rule-light": {
+        "resource": "../../art/matchday-print/home/rule-light.webp",
+        "width": 205,
+        "height": 5,
+        "mode": "image"
+      },
+      "image-art-rule-light-vertical": {
+        "resource": "../../art/matchday-print/home/rule-light-vertical.webp",
+        "width": 5,
+        "height": 80,
+        "mode": "image"
+      },
+      "image-art-sidebar-terrace": {
+        "resource": "../../art/matchday-print/home/sidebar-terrace.webp",
+        "width": 480,
+        "height": 320,
+        "mode": "image",
+        "preload": false
+      },
+      "image-art-vermilion": {
+        "resource": "../../art/matchday-print/home/vermilion.webp",
+        "width": 256,
+        "height": 256,
+        "mode": "tile"
+      },
+      "surface-grain": {
+        "resource": "../../art/standard/grain.png",
+        "width": 160,
+        "height": 160,
+        "mode": "tile"
+      },
+      "image-art-position-pitch": {
+        "resource": "../../art/matchday-print/ui/position-pitch.svg",
+        "width": 150,
+        "height": 200,
+        "mode": "image"
+      },
+      "image-art-check": {
+        "resource": "../../art/matchday-print/ui/check.svg",
+        "width": 24,
+        "height": 24,
+        "mode": "image"
       }
     }
   },

@@ -2,7 +2,7 @@ import s from './FacilityArt.module.css';
 import { facilityScene, type FacilityScene } from './facilityScene';
 import type { World } from '../../../../packages/contracts/src/types';
 import { useLocale, usePresentation, useTheme, useThemeNeed } from '../presentation/react';
-import type { CSSProperties } from 'react';
+import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 
 /** Keep atmospheric art below the contrast of the surrounding game information. */
 export function FacilityArt({
@@ -20,9 +20,31 @@ export function FacilityArt({
   const theme = useTheme();
   const themeLabel = usePresentation().themeEntry!.label;
   const scene = facilityScene(kind, world, { locale, theme, themeLabel });
-  useThemeNeed({ type: 'facility', era: scene.era, kind, stage: scene.stage });
+  const element = useRef<HTMLSpanElement>(null);
+  const [width, setWidth] = useState(0);
+  useLayoutEffect(() => {
+    const node = element.current;
+    if (!node) return;
+    const update = () => setWidth(Math.ceil(node.getBoundingClientRect().width));
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+  useThemeNeed(
+    width
+      ? {
+          type: 'facility',
+          era: scene.era,
+          kind,
+          stage: scene.stage,
+          width: width * (globalThis.devicePixelRatio || 1),
+        }
+      : undefined,
+  );
   return (
     <span
+      ref={element}
       className={`${s.art} ${className || ''}`}
       data-facility-art={kind}
       data-era={scene.era}
@@ -32,12 +54,18 @@ export function FacilityArt({
       <img
         key={scene.src}
         className={s.image}
-        src={scene.src}
+        src={width ? scene.src : undefined}
+        srcSet={
+          width && scene.variants.length
+            ? scene.variants.map((variant) => `${variant.src} ${variant.width}w`).join(', ')
+            : undefined
+        }
+        sizes={width ? `${width}px` : '100vw'}
         alt={scene.alt}
         width="240"
         height="80"
         loading={eager || kind === 'stadium' ? 'eager' : 'lazy'}
-        decoding="sync"
+        decoding="async"
         style={{
           objectFit: scene.treatment.objectFit,
           objectPosition: scene.treatment.objectPosition,

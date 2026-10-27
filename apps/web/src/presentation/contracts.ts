@@ -166,6 +166,19 @@ export interface SemanticImageSlot {
   /** Optional same-role exceptions, keyed as era.kind.stage. */
   overrides?: Record<string, string>;
 }
+/** Source-pixel insets also describe native cap-inset / nine-patch resources. */
+export interface UiImageResource {
+  resource: string;
+  width: number;
+  height: number;
+  mode: 'image' | 'tile' | 'nine-slice';
+  slice?: number;
+  preload?: boolean;
+}
+export interface FacilityImageVariant extends SemanticImageSlot {
+  width: number;
+  height: number;
+}
 export interface ThemePack {
   schemaVersion: 1;
   id: string;
@@ -175,10 +188,14 @@ export interface ThemePack {
     surfaces: Record<string, string>;
     typography: Record<string, string>;
     shape: Record<string, string>;
+    ui?: Record<string, string>;
     imageTreatment: ImageTreatment;
   };
   fonts: FontResource[];
-  images: { facility: SemanticImageSlot };
+  images: {
+    facility: SemanticImageSlot & { variants?: FacilityImageVariant[] };
+    ui?: Record<string, UiImageResource>;
+  };
   icons: Record<string, ThemeIcon>;
   stylesheet?: string;
 }
@@ -420,6 +437,7 @@ const themeSchema = z.strictObject({
     surfaces: tokensSchema(THEME_TOKEN_KEYS.surfaces),
     typography: tokensSchema(THEME_TOKEN_KEYS.typography),
     shape: tokensSchema(THEME_TOKEN_KEYS.shape),
+    ui: tokensSchema([]).optional(),
     imageTreatment: z.strictObject({
       objectFit: z.enum(['cover', 'contain', 'fill', 'none', 'scale-down']),
       objectPosition: nonempty,
@@ -429,7 +447,49 @@ const themeSchema = z.strictObject({
     }),
   }),
   fonts: z.array(fontSchema).min(1),
-  images: z.strictObject({ facility: facilitySlotSchema }),
+  images: z.strictObject({
+    facility: facilitySlotSchema.extend({
+      variants: z
+        .array(
+          facilitySlotSchema.extend({
+            width: z.number().int().positive(),
+            height: z.number().int().positive(),
+          }),
+        )
+        .optional(),
+    }),
+    ui: z
+      .record(
+        z.string().regex(/^[a-z][a-z0-9-]*$/),
+        z
+          .strictObject({
+            resource: resourceReferenceSchema,
+            width: z.number().int().positive(),
+            height: z.number().int().positive(),
+            mode: z.enum(['image', 'tile', 'nine-slice']),
+            slice: z.number().int().positive().optional(),
+            preload: z.boolean().optional(),
+          })
+          .superRefine((image, ctx) => {
+            if (
+              image.mode === 'nine-slice' &&
+              (!image.slice || image.slice * 2 >= Math.min(image.width, image.height))
+            )
+              ctx.addIssue({
+                code: 'custom',
+                path: ['slice'],
+                message: 'Invalid nine-slice insets',
+              });
+            if (image.mode !== 'nine-slice' && image.slice !== undefined)
+              ctx.addIssue({
+                code: 'custom',
+                path: ['slice'],
+                message: 'Only nine-slice images have insets',
+              });
+          }),
+      )
+      .optional(),
+  }),
   icons: z
     .record(
       semanticId,

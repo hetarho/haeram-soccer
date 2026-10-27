@@ -388,7 +388,9 @@ describe('one presentation controller', () => {
       },
     );
     await controller.initialize();
-    const iconImages = controller.getSnapshot().theme!.iconImages;
+    const iconImages = Object.values(controller.getSnapshot().theme!.uiImages).map(
+      (image) => image.resource,
+    );
     const release = controller.registerNeed({
       type: 'facility',
       era: 'heritage',

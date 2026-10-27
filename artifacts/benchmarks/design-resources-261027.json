@@ -1,0 +1,59 @@
+{
+  "policy": "compact-ui-and-responsive-scenes-v1",
+  "groups": [
+    {
+      "theme": "matchday-print",
+      "group": "ui",
+      "before": 1040507,
+      "after": 195420
+    },
+    {
+      "theme": "matchday-print",
+      "group": "facility",
+      "before": 32199476,
+      "after": 11897526,
+      "small": 2705620
+    },
+    {
+      "theme": "standard",
+      "group": "ui",
+      "before": 132454,
+      "after": 62179
+    },
+    {
+      "theme": "standard",
+      "group": "facility",
+      "before": 20606108,
+      "after": 8362564,
+      "small": 2094154
+    },
+    {
+      "theme": "pixel",
+      "group": "ui",
+      "before": 39015,
+      "after": 39293
+    },
+    {
+      "theme": "sticker-club",
+      "group": "ui",
+      "before": 256360,
+      "after": 79208
+    },
+    {
+      "theme": "sticker-club",
+      "group": "facility",
+      "before": 18592230,
+      "after": 7167376,
+      "small": 1997864
+    }
+  ],
+  "measuredDate": "2026-10-27",
+  "baseCommit": "a08e0dc15ccb5277971e0fb90b37b510ee64a496",
+  "command": "node scripts/optimize-presentation-art.mjs --write",
+  "unit": "bytes",
+  "publicImages": {
+    "before": 79165922,
+    "afterIncludingResponsiveVariants": 40902344
+  },
+  "scope": "All registered themes. Facility groups cover 92 distinct scenes per smooth theme. Pixel assets remain lossless and unscaled. Figures measure file bytes, not a controlled network or rendering speedup."
+}

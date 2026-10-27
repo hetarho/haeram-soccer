@@ -20,7 +20,7 @@ const STYLE_DEFAULTS = {
 
 /** The single bridge from pack namespaces to shared CSS/Canvas semantic roles. */
 export function resolveThemeTokens(
-  tokens: Pick<ThemePack['tokens'], 'palette' | 'surfaces' | 'shape' | 'typography'>,
+  tokens: Pick<ThemePack['tokens'], 'palette' | 'surfaces' | 'shape' | 'typography' | 'ui'>,
   typography: Readonly<Record<string, string>> = tokens.typography,
 ): Readonly<Record<string, string>> {
   return Object.freeze({
@@ -29,5 +29,6 @@ export function resolveThemeTokens(
     ...tokens.surfaces,
     ...tokens.shape,
     ...typography,
+    ...tokens.ui,
   });
 }

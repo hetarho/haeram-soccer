@@ -136,13 +136,15 @@ export async function expectCompactStandings(page: Page) {
         overflow: wrap.scrollWidth > wrap.clientWidth,
         tabBorder: parseFloat(style.borderTopWidth),
         tabBackground: style.backgroundImage,
+        tabFrame: style.borderImageSource,
       };
     });
   expect(metrics.visibleRows).toBeGreaterThanOrEqual(7);
   expect(metrics.rowHeights.every((height) => height <= 48)).toBe(true);
   expect(metrics.overflow).toBe(true);
-  expect(metrics.tabBorder).toBe(0);
-  expect(metrics.tabBackground).toBe('none');
+  expect(metrics.tabBorder).toBe(1);
+  expect(metrics.tabBackground).toContain('/art/');
+  expect(metrics.tabFrame).toContain('/art/');
 }
 
 /** The current view fits one screen: nothing scrolls vertically or horizontally. */

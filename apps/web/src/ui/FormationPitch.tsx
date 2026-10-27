@@ -87,6 +87,7 @@ export function PositionMap({
   return (
     <div
       className={`${s.pitch} ${s.mini}`}
+      data-ui="position-map"
       role="img"
       aria-label={`포지션 ${listed.map(([p, level]) => `${p} ${LEVEL_LABEL[level]}`).join(', ')}`}
     >
@@ -96,6 +97,7 @@ export function PositionMap({
         <span
           key={position}
           className={s.dot}
+          data-ui="position-mark"
           data-level={level}
           data-main={position === main || undefined}
           style={{ left: `${POSITION_SPOT[position][0]}%`, top: `${POSITION_SPOT[position][1]}%` }}

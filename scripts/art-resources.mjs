@@ -5,11 +5,24 @@ import { dirname } from 'node:path';
 import { promisify } from 'node:util';
 
 const execute = promisify(execFile);
-const WIDTH = 1440;
-const HEIGHT = 480;
+export const FACILITY_ENCODING = Object.freeze({
+  width: 960,
+  height: 320,
+  smallWidth: 480,
+  smallHeight: 160,
+  quality: 80,
+  smallQuality: 78,
+  maxBytes: 180_000,
+  smallMaxBytes: 55_000,
+});
+const { width: WIDTH, height: HEIGHT } = FACILITY_ENCODING;
 
 /** Shared deployment geometry and source validation for generated facility packs. */
-export async function encodeFacilityPanorama(source, output, { quality = 85 } = {}) {
+export async function encodeFacilityPanorama(
+  source,
+  output,
+  { quality = FACILITY_ENCODING.quality } = {},
+) {
   const { stdout } = await execute('ffprobe', [
     '-v',
     'error',
@@ -37,7 +50,7 @@ export async function encodeFacilityPanorama(source, output, { quality = 85 } = 
     '-c:v',
     'libwebp',
     '-quality',
-    String(quality),
+    String(Math.min(quality, FACILITY_ENCODING.quality)),
     '-compression_level',
     '6',
     '-frames:v',
@@ -47,10 +60,38 @@ export async function encodeFacilityPanorama(source, output, { quality = 85 } = 
     output,
   ]);
   const content = await readFile(output);
+  const smallPath = output.replace(/\.webp$/, '.small.webp');
+  await execute('ffmpeg', [
+    '-v',
+    'error',
+    '-y',
+    '-i',
+    source,
+    '-vf',
+    `scale=${FACILITY_ENCODING.smallWidth}:${FACILITY_ENCODING.smallHeight}`,
+    '-c:v',
+    'libwebp',
+    '-quality',
+    String(FACILITY_ENCODING.smallQuality),
+    '-compression_level',
+    '6',
+    '-threads',
+    '1',
+    smallPath,
+  ]);
+  const small = await readFile(smallPath);
+  if (content.length > FACILITY_ENCODING.maxBytes || small.length > FACILITY_ENCODING.smallMaxBytes)
+    throw new Error(`Encoded facility exceeds deployment budget: ${output}`);
   return {
     width: WIDTH,
     height: HEIGHT,
     bytes: content.length,
     sha256: createHash('sha256').update(content).digest('hex'),
+    small: {
+      width: FACILITY_ENCODING.smallWidth,
+      height: FACILITY_ENCODING.smallHeight,
+      bytes: small.length,
+      sha256: createHash('sha256').update(small).digest('hex'),
+    },
   };
 }

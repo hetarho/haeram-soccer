@@ -69,6 +69,8 @@ export function createSyntheticPresentation(baseline: {
   };
   const theme = structuredClone(baseline.theme);
   theme.id = FIXTURE_THEME;
+  for (const image of Object.values(theme.images.ui ?? {}))
+    image.resource = resolveResourceUrl(image.resource, baseline.themeUrl);
   theme.tokens.palette.bg = FIXTURE_BACKGROUND;
   theme.tokens.imageTreatment = {
     objectFit: 'cover',

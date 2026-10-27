@@ -23,6 +23,29 @@ export const UI_PICTOGRAMS = [
   'heart',
 ];
 
+export const UI_ART_ENCODING = Object.freeze({
+  frameWidth: 192,
+  frameSlice: 22,
+  iconWidth: 64,
+  tileWidth: 256,
+  sidebarWidth: 480,
+  quality: 85,
+});
+const MATERIALS = new Set([
+  'paper',
+  'paper-quiet',
+  'ink',
+  'vermilion',
+  'canvas',
+  'quiet',
+  'dark',
+  'primary',
+  'cream',
+  'forest',
+  'orange',
+  'ivory',
+]);
+
 export function uiSvg(width, height, content, pixel = false) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"${pixel ? ' shape-rendering="crispEdges"' : ''}>${content}</svg>`;
 }
@@ -57,20 +80,36 @@ export async function createUiArtPipeline({ sources, output }) {
   const page = await browser.newPage();
   const assets = [];
   const hash = (data) => createHash('sha256').update(data).digest('hex');
-  const rasterize = async (data, format = 'webp') =>
+  const rasterize = async (data, format = 'webp', name = '') =>
     Buffer.from(
       await page.evaluate(
-        async ({ data, format }) => {
+        async ({ data, format, target, quality }) => {
           const image = new Image();
           image.src = data;
           await image.decode();
           const canvas = document.createElement('canvas');
-          canvas.width = image.naturalWidth;
-          canvas.height = image.naturalHeight;
-          canvas.getContext('2d').drawImage(image, 0, 0);
-          return canvas.toDataURL(`image/${format}`, 0.91).split(',')[1];
+          canvas.width = Math.min(target || image.naturalWidth, image.naturalWidth);
+          canvas.height = Math.round((image.naturalHeight * canvas.width) / image.naturalWidth);
+          canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+          return canvas.toDataURL(`image/${format}`, quality).split(',')[1];
         },
-        { data, format },
+        {
+          data,
+          format,
+          quality: UI_ART_ENCODING.quality / 100,
+          target:
+            format === 'png'
+              ? 0
+              : name.startsWith('frame-')
+                ? UI_ART_ENCODING.frameWidth
+                : name.startsWith('icon-')
+                  ? UI_ART_ENCODING.iconWidth
+                  : MATERIALS.has(name)
+                    ? UI_ART_ENCODING.tileWidth
+                    : name.startsWith('sidebar-')
+                      ? UI_ART_ENCODING.sidebarWidth
+                      : 0,
+        },
       ),
       'base64',
     );
@@ -78,6 +117,7 @@ export async function createUiArtPipeline({ sources, output }) {
     const data = await rasterize(
       `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`,
       format,
+      name,
     );
     const file = `${name}.${format}`;
     await writeFile(resolve(output, file), data);
@@ -155,7 +195,7 @@ export async function createUiArtPipeline({ sources, output }) {
       ],
       { maxBuffer: 16 * 1024 * 1024 },
     );
-    const data = await rasterize(`data:image/png;base64,${png.toString('base64')}`);
+    const data = await rasterize(`data:image/png;base64,${png.toString('base64')}`, 'webp', name);
     await writeFile(resolve(output, file), data);
     assets.push({ file, source, crop, filter, bytes: data.length, sha256: hash(data) });
   };

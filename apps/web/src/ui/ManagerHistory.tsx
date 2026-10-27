@@ -109,7 +109,7 @@ function TenureCard({
         <div className={m.identity}>
           <h4>{row.name}</h4>
           {row.badges.map((badge) => (
-            <span key={badge} className={m.badge}>
+            <span data-ui="label" key={badge} className={m.badge}>
               {badge}
             </span>
           ))}
@@ -120,7 +120,11 @@ function TenureCard({
           {row.tracking && <span className={m.tracking}>{row.tracking}</span>}
         </p>
       </header>
-      {row.coverage && <p className={m.coverage}>{row.coverage}</p>}
+      {row.coverage && (
+        <p data-ui="notice" data-tone="warm" className={m.coverage}>
+          {row.coverage}
+        </p>
+      )}
       <dl className={m.summary}>
         <div>
           <dt>우승·승격</dt>
@@ -148,7 +152,7 @@ function TenureCard({
         ))}
       </dl>
       {row.provisional.map((line) => (
-        <p key={line} className={m.provisional}>
+        <p data-ui="notice" data-tone="cool" key={line} className={m.provisional}>
           {line}
         </p>
       ))}

@@ -31,7 +31,7 @@
   background: var(--accent-text);
 }
 .tone2 {
-  background: #fff3cf;
+  background: var(--image-on-dark, var(--text));
 }
 .card {
   position: absolute;

@@ -15,7 +15,13 @@ export function CashAlarm({ overlay = false }: { overlay?: boolean }) {
   const runway = fixedCostRunway(w.cash, operatingCosts(w).annual);
   if (cash >= 0n && runway >= CASH_WARNING_ROUNDS) return null;
   return (
-    <div className={overlay ? c.overlay : s.cashAlarm} role="status" data-testid="cash-alarm">
+    <div
+      data-ui="notice"
+      data-tone="danger"
+      className={overlay ? c.overlay : s.cashAlarm}
+      role="status"
+      data-testid="cash-alarm"
+    >
       {cash < 0n ? (
         <>
           <b>파산 위기</b> 잔고 <Money value={w.cash} code={own.country} year={w.year} /> ·{' '}

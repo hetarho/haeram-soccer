@@ -73,10 +73,13 @@ export function useOptionalTheme() {
   return theme;
 }
 /** Register semantic needs so a new pack resolves only the facility scenes currently mounted. */
-export function useThemeNeed(need: ThemeImageNeed) {
+export function useThemeNeed(need?: ThemeImageNeed) {
   const controller = useContext(PresentationContext);
   const identity = JSON.stringify(need);
-  useLayoutEffect(() => controller?.registerNeed(need), [controller, identity]);
+  useLayoutEffect(
+    () => (need ? controller?.registerNeed(need) : undefined),
+    [controller, identity],
+  );
 }
 export function usePresentationSettings() {
   const settings = useContext(SettingsContext);

@@ -61,7 +61,7 @@ export function FacilityParts({
   const work = (part: FacilityPart) => {
     const running = facilityWork(w, part);
     return running ? (
-      <p className={f.work} data-testid={`facility-work-${part}`}>
+      <p data-ui="notice" data-tone="warm" className={f.work} data-testid={`facility-work-${part}`}>
         공사 중 · {part === 'stadium' ? STADIUM_STEPS[running.to].name : `${running.to}단계`} ·
         완공까지 {running.left}일
       </p>
@@ -118,11 +118,11 @@ export function FacilityParts({
             </p>
           </div>
         </div>
-        <ol className={f.ladder} aria-label="경기장 단계">
+        <ol data-ui="facility-steps" className={f.ladder} aria-label="경기장 단계" tabIndex={0}>
           {STADIUM_STEPS.map((step, index) => (
             <li
               key={step.name}
-              data-surface="tile"
+              data-ui="facility-step"
               data-state={
                 index < w.stadium
                   ? 'built'
@@ -173,7 +173,12 @@ export function FacilityParts({
           <ol className={f.levels} aria-label={`${FACILITY_PART_LABEL[part]} 단계별 효과`}>
             {Array.from({ length: MAX_LEVEL }, (_, i) => i + 1).map((level) => (
               <li key={level} data-built={level <= partLevel(w, part) || undefined}>
-                <b>{level}</b>
+                <b
+                  data-ui="level-mark"
+                  data-state={level <= partLevel(w, part) ? 'built' : undefined}
+                >
+                  {level}
+                </b>
                 <small>{levelEffect(part, level)}</small>
               </li>
             ))}

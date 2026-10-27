@@ -148,7 +148,10 @@ export async function prepareThemeResources(
     const requests = theme.fonts.map((font) => Promise.resolve().then(() => ports.stageFont(font)));
     if (theme.stylesheet)
       requests.push(Promise.resolve().then(() => ports.stageStylesheet(theme.stylesheet!)));
-    for (const url of new Set([...theme.iconImages, ...(options.requiredImages ?? [])]))
+    const skins = Object.values(theme.uiImages)
+      .filter((image) => image.preload !== false)
+      .map((image) => image.resource);
+    for (const url of new Set([...skins, ...(options.requiredImages ?? [])]))
       requests.push(Promise.resolve().then(() => ports.stageImage(url)));
     const results = await Promise.allSettled(requests);
     for (const result of results) if (result.status === 'fulfilled') staged.push(result.value);

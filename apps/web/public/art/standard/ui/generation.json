@@ -16,8 +16,18 @@
         "height": 247
       },
       "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
-      "bytes": 9064,
-      "sha256": "8fde67a3415fed70324c5926540e3bd486055cbc80db757409cc1300d9c2deaf"
+      "bytes": 1474,
+      "sha256": "17339d80560a4528b2d1bcf3cf6fe4383e64c58dcbd614e740b879df4583f363",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 9064,
+        "inputSha256": "8fde67a3415fed70324c5926540e3bd486055cbc80db757409cc1300d9c2deaf",
+        "width": 192,
+        "height": 102,
+        "quality": 85
+      },
+      "width": 192,
+      "height": 102
     },
     {
       "file": "frame-primary.webp",
@@ -29,8 +39,18 @@
         "height": 247
       },
       "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
-      "bytes": 7112,
-      "sha256": "1dee543219c0804ed53d82d52cbcdeb45ca64fe062f8635eb577aeacbc289d6e"
+      "bytes": 1530,
+      "sha256": "0bea5982f4492193c99d87c2df14063adb9b7bd08007481989fb353371b7bc68",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 7112,
+        "inputSha256": "1dee543219c0804ed53d82d52cbcdeb45ca64fe062f8635eb577aeacbc289d6e",
+        "width": 192,
+        "height": 102,
+        "quality": 85
+      },
+      "width": 192,
+      "height": 102
     },
     {
       "file": "frame-dark.webp",
@@ -42,8 +62,18 @@
         "height": 247
       },
       "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
-      "bytes": 6366,
-      "sha256": "5132c5d7846799ff6ad339373101fb4d6b4d6885e59f88d9a03f9bdf12c6e85e"
+      "bytes": 1504,
+      "sha256": "dac06561d28e9b01d241c235d5ef5476581b80de96e99deea735304308f7be22",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 6366,
+        "inputSha256": "5132c5d7846799ff6ad339373101fb4d6b4d6885e59f88d9a03f9bdf12c6e85e",
+        "width": 192,
+        "height": 102,
+        "quality": 85
+      },
+      "width": 192,
+      "height": 102
     },
     {
       "file": "frame-tile.webp",
@@ -55,8 +85,18 @@
         "height": 246
       },
       "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
-      "bytes": 6454,
-      "sha256": "8c7dd60d27482571bfbf035f778b131a01b13b55cacede1c2e3afa90074e866d"
+      "bytes": 1444,
+      "sha256": "02993362a446cf15452d91e2d636203356b44144944be6a1e8470a8746b6c5ed",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 6454,
+        "inputSha256": "8c7dd60d27482571bfbf035f778b131a01b13b55cacede1c2e3afa90074e866d",
+        "width": 192,
+        "height": 102,
+        "quality": 85
+      },
+      "width": 192,
+      "height": 102
     },
     {
       "file": "frame-button.webp",
@@ -68,8 +108,18 @@
         "height": 246
       },
       "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
-      "bytes": 5842,
-      "sha256": "7b796ad83b6ef277b1e4aed437bb607d8e73b53d1db99a5b79cc2e263fa97128"
+      "bytes": 1542,
+      "sha256": "b4e1cf0d0313af9d0449a3c5aefee1023d1dc83706c1bf62f8abf80b53ae9b63",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 5842,
+        "inputSha256": "7b796ad83b6ef277b1e4aed437bb607d8e73b53d1db99a5b79cc2e263fa97128",
+        "width": 192,
+        "height": 102,
+        "quality": 85
+      },
+      "width": 192,
+      "height": 102
     },
     {
       "file": "frame-selected.webp",
@@ -81,159 +131,419 @@
         "height": 246
       },
       "filter": "format=rgba,lut=a='if(lt(val,96),0,if(gt(val,220),255,val))'",
-      "bytes": 9232,
-      "sha256": "34f06f7a8bc8fc2631d496183e0f228e777ac30e85b503d147bf13fbf84237ff"
+      "bytes": 1772,
+      "sha256": "e6ae8e6bf0942b509dd673865dd2bbcc56421c67ca803feec85707086833bbe9",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 9232,
+        "inputSha256": "34f06f7a8bc8fc2631d496183e0f228e777ac30e85b503d147bf13fbf84237ff",
+        "width": 192,
+        "height": 102,
+        "quality": 85
+      },
+      "width": 192,
+      "height": 102
     },
     {
       "file": "icon-home.webp",
       "source": "lucide-static/icons/house.svg",
-      "bytes": 2008,
-      "sha256": "df7babb14a965f857968da7ddc310fd69c07143d116cf984b03920cc1bf6f49e"
+      "bytes": 1776,
+      "sha256": "04ebd84743db6de31a0987dbf60417f56bd6680aa46f3f4e5f5b135182fe2aed",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2008,
+        "inputSha256": "df7babb14a965f857968da7ddc310fd69c07143d116cf984b03920cc1bf6f49e",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 64
     },
     {
       "file": "icon-league.webp",
       "source": "lucide-static/icons/table-2.svg",
-      "bytes": 1324,
-      "sha256": "33849dc799ff5b52af6cd66256f6ea7822941e26733a6691def369563d2bd99a"
+      "bytes": 1078,
+      "sha256": "c4085ada7b5d7bcebeccab5acc0a64b1ca62bb192b04dacb95315ffed655c4ef",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 1324,
+        "inputSha256": "33849dc799ff5b52af6cd66256f6ea7822941e26733a6691def369563d2bd99a",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 64
     },
     {
       "file": "icon-cup.webp",
       "source": "lucide-static/icons/trophy.svg",
-      "bytes": 2316,
-      "sha256": "7f292137e8f194dedc80f6b08f40b5f83befcc89623890bf678d1cb322bb6869"
+      "bytes": 2350,
+      "sha256": "8159999b2b3418d832315faed90777c4d4d8d9aea00718d63b56aa26f23c2a57",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2316,
+        "inputSha256": "7f292137e8f194dedc80f6b08f40b5f83befcc89623890bf678d1cb322bb6869",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 64
     },
     {
       "file": "icon-history.webp",
       "source": "lucide-static/icons/rotate-ccw-clock.svg",
-      "bytes": 2942,
-      "sha256": "678f0a0291b53c3deec3d4df581ced17cc04f1ce26e090dfd3df0f40b583f841"
+      "bytes": 2608,
+      "sha256": "fbb88c59f46cf14ef825442cf3ef246e1538d67d005bb1008e55c67a1875c73d",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2942,
+        "inputSha256": "678f0a0291b53c3deec3d4df581ced17cc04f1ce26e090dfd3df0f40b583f841",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 64
     },
     {
       "file": "icon-people.webp",
       "source": "lucide-static/icons/users.svg",
-      "bytes": 3106,
-      "sha256": "c77e7eb80894fd01b654da1dffbe9112d2297a10190d26181ce6efbfb63b2df1"
+      "bytes": 2318,
+      "sha256": "661aaf00427e943ba6612ad604d96f4c6c6e7211ea56dcaf119c194b32e3d4c3",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 3106,
+        "inputSha256": "c77e7eb80894fd01b654da1dffbe9112d2297a10190d26181ce6efbfb63b2df1",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 64
     },
     {
       "file": "icon-training.webp",
       "source": "lucide-static/icons/dumbbell.svg",
-      "bytes": 3646,
-      "sha256": "f03cd76da12be3922d9c57a952f27ca711e9701d2a84be3a36eb0d22bdc7ad02"
+      "bytes": 2784,
+      "sha256": "03be822c45fe3111932b99b40461471d889b66c64d6542ef07919c9098507ada",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 3646,
+        "inputSha256": "f03cd76da12be3922d9c57a952f27ca711e9701d2a84be3a36eb0d22bdc7ad02",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 64
     },
     {
       "file": "icon-office.webp",
       "source": "lucide-static/icons/building.svg",
-      "bytes": 2162,
-      "sha256": "1db29fa532c537b07d20c6a17738e94d54248c6e55000e02e3f9d357f4d659aa"
+      "bytes": 2254,
+      "sha256": "e1f4efc24b4a67d6b80c39f1ed094169b0f481026a67166c1a8142eb000dabc7",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2162,
+        "inputSha256": "1db29fa532c537b07d20c6a17738e94d54248c6e55000e02e3f9d357f4d659aa",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 64
     },
     {
       "file": "icon-boot.webp",
       "source": "lucide-static/icons/footprints.svg",
-      "bytes": 3218,
-      "sha256": "350b5ea1ce1394ff6ede1bd94348f50cafae407154ea152f8c5fa0710a3cb35b"
+      "bytes": 2664,
+      "sha256": "737a7a4811ba365eb487d142efc8e99505586460d5af2c44e92e2be392496ad7",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 3218,
+        "inputSha256": "350b5ea1ce1394ff6ede1bd94348f50cafae407154ea152f8c5fa0710a3cb35b",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 64
     },
     {
       "file": "icon-supporters.webp",
       "source": "lucide-static/icons/users-round.svg",
-      "bytes": 3556,
-      "sha256": "e8e270ce71ea11464e87cdf3d0d99f593fe0e17e749a5be049a04df10ac67124"
+      "bytes": 2636,
+      "sha256": "40500408ee58661f2c2f45786d6f1e60df33c22889c4b7a9ff07c8a77137fd20",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 3556,
+        "inputSha256": "e8e270ce71ea11464e87cdf3d0d99f593fe0e17e749a5be049a04df10ac67124",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 64
     },
     {
       "file": "icon-manager.webp",
       "source": "lucide-static/icons/user-round.svg",
-      "bytes": 2576,
-      "sha256": "2a4324f6aa0eb80c84e88530466096febfd5f4418cfe8c7b3ec2335ab13dd3ff"
+      "bytes": 1810,
+      "sha256": "02be4f036777bbfdbf368d52dd2f1323f647ad0964ad454712f07eda00654ac2",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2576,
+        "inputSha256": "2a4324f6aa0eb80c84e88530466096febfd5f4418cfe8c7b3ec2335ab13dd3ff",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 64
     },
     {
       "file": "icon-shirt.webp",
       "source": "lucide-static/icons/shirt.svg",
-      "bytes": 2422,
-      "sha256": "dd4d8c33ed13a74b71d1d416a02a25405925a127cc8542059cea502d1f418f78"
+      "bytes": 1978,
+      "sha256": "a5589be5348d2e570f1a3b6c8040ae32cc6d11423f51480190be50054e138e83",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2422,
+        "inputSha256": "dd4d8c33ed13a74b71d1d416a02a25405925a127cc8542059cea502d1f418f78",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 64
     },
     {
       "file": "icon-bell.webp",
       "source": "lucide-static/icons/bell.svg",
-      "bytes": 2404,
-      "sha256": "2cb93b689100a65da94dde520fcc9e047ec2ed08b0e43a716bd0aa784ca8b8ff"
+      "bytes": 1892,
+      "sha256": "a83a8f325043eae69388e4ca572cd6528f21d90094b34425fc4a2b6983e6f51d",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2404,
+        "inputSha256": "2cb93b689100a65da94dde520fcc9e047ec2ed08b0e43a716bd0aa784ca8b8ff",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 64
     },
     {
       "file": "icon-menu.webp",
       "source": "lucide-static/icons/menu.svg",
-      "bytes": 1098,
-      "sha256": "72b9a6ae7321453d47fda4df69c5ebe8bb631aaf479fdb2bac2249f9e8e24fce"
+      "bytes": 566,
+      "sha256": "a10f7d67324cfa01cbe0797a72c9551a7b9621e0a6ae7bbd9d3d1f56056ab3b9",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 1098,
+        "inputSha256": "72b9a6ae7321453d47fda4df69c5ebe8bb631aaf479fdb2bac2249f9e8e24fce",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 64
     },
     {
       "file": "icon-switch.webp",
       "source": "lucide-static/icons/arrow-right-left.svg",
-      "bytes": 1528,
-      "sha256": "c7bc42a6a506fd01eec974bdf5236ea4c8d0d8739a2e55c7c0f28af02bdc7356"
+      "bytes": 1120,
+      "sha256": "2e205dac087f5593abffcc223bf03962cc32f1e62d2e24f1499a0da7ffa6f2ce",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 1528,
+        "inputSha256": "c7bc42a6a506fd01eec974bdf5236ea4c8d0d8739a2e55c7c0f28af02bdc7356",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 64
     },
     {
       "file": "icon-play.webp",
       "source": "lucide-static/icons/play.svg",
-      "bytes": 2262,
-      "sha256": "036711a4e2a1c346f6af5defaaf3495ce28bc8ec759e9c2d392edf6a6e06d89c"
+      "bytes": 1544,
+      "sha256": "18fe7ba01c3fcdb6c56bc1fd3edcbe781dc1f8862e32aca0ffe008e93e71bf97",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2262,
+        "inputSha256": "036711a4e2a1c346f6af5defaaf3495ce28bc8ec759e9c2d392edf6a6e06d89c",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 64
     },
     {
       "file": "icon-heart.webp",
       "source": "lucide-static/icons/heart.svg",
-      "bytes": 2874,
-      "sha256": "cbacfb06cb3f2630a15d22e93df286fa538c9f97fd01a81434f8eeb504253692"
+      "bytes": 2246,
+      "sha256": "7f156842e2fed6f3a735842ce2deadf85deda552bee67d758325eb5a7348cf29",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2874,
+        "inputSha256": "cbacfb06cb3f2630a15d22e93df286fa538c9f97fd01a81434f8eeb504253692",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 64
     },
     {
       "file": "canvas.webp",
       "source": "standard/grain.png + semantic palette",
-      "bytes": 2044,
-      "sha256": "ca2cd2061463867b67a21fcd46fb9b4f19b1de0d504f63dd1448a158437161a6"
+      "bytes": 594,
+      "sha256": "8791a74cf47e2328e1d5abec0740e06dd2972f4472f06b1e4c387e5b7e5de7e8",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2044,
+        "inputSha256": "ca2cd2061463867b67a21fcd46fb9b4f19b1de0d504f63dd1448a158437161a6",
+        "width": 160,
+        "height": 160,
+        "quality": 85
+      },
+      "width": 160,
+      "height": 160
     },
     {
       "file": "quiet.webp",
       "source": "standard/grain.png + semantic palette",
-      "bytes": 1720,
-      "sha256": "751b9c187609b141b45e5b3f63f7c24129cbc4ebd78b989ae4c5976ed7446375"
+      "bytes": 394,
+      "sha256": "1699fb7bdf59098ed72b654f14f760dd93ea09469ef499ee9a17c14e4bf75caa",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 1720,
+        "inputSha256": "751b9c187609b141b45e5b3f63f7c24129cbc4ebd78b989ae4c5976ed7446375",
+        "width": 160,
+        "height": 160,
+        "quality": 85
+      },
+      "width": 160,
+      "height": 160
     },
     {
       "file": "dark.webp",
       "source": "standard/grain.png + semantic palette",
-      "bytes": 1846,
-      "sha256": "15c2528427d63f08edc9f53a43732012e9ae3d2ca26fbae4cdd713d7f241a46d"
+      "bytes": 460,
+      "sha256": "1e52b365bfcac78730ac4489ab8302162b9bf75241f8e2490274606b1e5b72d6",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 1846,
+        "inputSha256": "15c2528427d63f08edc9f53a43732012e9ae3d2ca26fbae4cdd713d7f241a46d",
+        "width": 160,
+        "height": 160,
+        "quality": 85
+      },
+      "width": 160,
+      "height": 160
     },
     {
       "file": "primary.webp",
       "source": "standard/grain.png + semantic palette",
-      "bytes": 622,
-      "sha256": "7dd8df39c46975e94916c8def00f29e0f674e0309de11d6efc98755029cb33b8"
+      "bytes": 126,
+      "sha256": "4b669670c9cb438da5ea1da80bcd1f3f70fc44991fca4900ac8f3345462a0b0c",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 622,
+        "inputSha256": "7dd8df39c46975e94916c8def00f29e0f674e0309de11d6efc98755029cb33b8",
+        "width": 160,
+        "height": 160,
+        "quality": 85
+      },
+      "width": 160,
+      "height": 160
     },
     {
       "file": "sidebar-terrace.webp",
       "source": "sidebar.png",
       "filter": "scale=600:-1",
-      "bytes": 36126,
-      "sha256": "f88e7f724eb56b0818791c01ce3d385d9db7b5ad893be17133609df32db9ae9e"
+      "bytes": 15996,
+      "sha256": "445eba1c8c7db27f22a109eed560490063463a9bfd6b2d82d52ec69c9620a8a5",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 36126,
+        "inputSha256": "f88e7f724eb56b0818791c01ce3d385d9db7b5ad893be17133609df32db9ae9e",
+        "width": 480,
+        "height": 320,
+        "quality": 85
+      },
+      "width": 480,
+      "height": 320
     },
     {
       "file": "masthead.webp",
       "source": "native wordmark SVG in prepare-standard-ui.mjs",
-      "bytes": 4518,
-      "sha256": "8cda13201d6bb243b71c6987b3d36abe2c46c48831da63109cd931530016f57e"
+      "bytes": 2816,
+      "sha256": "bfcead8e8e1b1e3c034be59b1510b102aa2f5710596a0001fb8dd4313d780565",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 4518,
+        "inputSha256": "8cda13201d6bb243b71c6987b3d36abe2c46c48831da63109cd931530016f57e",
+        "width": 512,
+        "height": 166,
+        "quality": 85
+      },
+      "width": 512,
+      "height": 166
     },
     {
       "file": "rule-dark.webp",
       "source": "native tonal rule",
-      "bytes": 580,
-      "sha256": "e55f7d535dae843abd9766ba4ec900f5f098fbec08a8c245da24b30344246167"
+      "bytes": 106,
+      "sha256": "7c2d17058f70e6ea6d8b447c112bb7e99746817dee58df50f3aab8d6f82d2d62",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 580,
+        "inputSha256": "e55f7d535dae843abd9766ba4ec900f5f098fbec08a8c245da24b30344246167",
+        "width": 64,
+        "height": 2,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 2
     },
     {
       "file": "rule-light.webp",
       "source": "native tonal rule",
-      "bytes": 572,
-      "sha256": "73f1159304eb53373db4acce37d7ff74caee603878db404f34f4d051b2e1818e"
+      "bytes": 94,
+      "sha256": "a6f3fea337292d16115b29133b7f494fe327514e289f16d1e8ab283db3fc53d3",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 572,
+        "inputSha256": "73f1159304eb53373db4acce37d7ff74caee603878db404f34f4d051b2e1818e",
+        "width": 64,
+        "height": 2,
+        "quality": 85
+      },
+      "width": 64,
+      "height": 2
     },
     {
       "file": "rule-light-vertical.webp",
       "source": "native tonal rule",
-      "bytes": 572,
-      "sha256": "ef46566dffd9b525af6a0e0109e18878f431470e160a847d8f254a219a9519d6"
+      "bytes": 94,
+      "sha256": "30928c7eb94371cf65ded722d07341e5ea897362e064f5d645c028fa7ce4d29e",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 572,
+        "inputSha256": "ef46566dffd9b525af6a0e0109e18878f431470e160a847d8f254a219a9519d6",
+        "width": 2,
+        "height": 64,
+        "quality": 85
+      },
+      "width": 2,
+      "height": 64
     }
   ]
 }

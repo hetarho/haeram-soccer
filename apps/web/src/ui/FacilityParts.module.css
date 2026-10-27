@@ -15,21 +15,24 @@
 /* The stadium's eight steps as one track: built steps lit, the next work marked. */
 .ladder {
   display: grid;
-  grid-template-columns: repeat(9, minmax(0, 1fr));
-  gap: 3px;
+  grid-template-columns: repeat(9, minmax(64px, 1fr));
+  gap: 6px;
   margin: 0;
-  padding: 0;
+  padding: 3px 1px 6px;
   list-style: none;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
 }
 .ladder li {
   display: grid;
   justify-items: center;
   gap: 2px;
-  padding: 6px 0;
+  padding: 8px 3px;
   border-radius: var(--card-radius);
   background: var(--inset-fill, rgba(0, 0, 0, 0.22));
   border: 1px solid var(--line);
   min-width: 0;
+  white-space: nowrap;
 }
 .ladder li b {
   font-size: 12px;

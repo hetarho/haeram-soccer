@@ -19,6 +19,14 @@ interface UiAsset {
   sha256: string;
 }
 export const UI_PICTOGRAMS: readonly string[];
+export const UI_ART_ENCODING: Readonly<{
+  frameWidth: number;
+  frameSlice: number;
+  iconWidth: number;
+  tileWidth: number;
+  sidebarWidth: number;
+  quality: number;
+}>;
 export function verifyUiAssets(output: string): Promise<number>;
 export function createUiArtPipeline(options: { sources: string; output: string }): Promise<{
   assets: UiAsset[];
