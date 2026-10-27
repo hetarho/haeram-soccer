@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-27T11:33:20.565Z",
-  "sourceCommit": "3f537bbd029201e9b332e61c90f4b5d35dd172c1",
+  "snapshotAt": "2026-10-27T11:34:29.863Z",
+  "sourceCommit": "7f2f9c1da87b62d75801e7d49d3942cdb1dde0a1",
   "group": {
     "id": "auto-play",
     "branch": "work/auto-play",
