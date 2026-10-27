@@ -375,7 +375,7 @@
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
-| auto-play | 4 | 7 | 4 | 3 | 1 | 0 | 0 | 2026-10-27T10:26:21.351Z | [history](work/auto-play.json) |
+| auto-play | 4 | 7 | 4 | 3 | 0 | 1 | 0 | 2026-10-27T11:33:20.565Z | [history](work/auto-play.json) |
 
 ## next
 - inspect work board for remaining tasks
