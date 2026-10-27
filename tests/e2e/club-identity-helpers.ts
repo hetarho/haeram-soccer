@@ -1,3 +1,4 @@
+import { openClubRecords } from './competition-navigation';
 import { expect, type Locator, type Page, type TestInfo } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode } from '../../apps/web/src/adapters/persistence';
@@ -409,7 +410,7 @@ export async function watchToWhistle(page: Page) {
 /** The records-room replay of this season's first listed own match (→WEB-54). */
 export async function openRecordedMatch(page: Page) {
   await outsideOffice(page);
-  await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
+  await openClubRecords(page);
   await page.getByRole('tab', { name: '시즌별 기록', exact: true }).click();
   await page.getByRole('table', { name: '시즌별 기록' }).getByRole('button').first().click();
   await expect(page.getByRole('combobox', { name: '기록 시즌', exact: true })).toBeVisible();

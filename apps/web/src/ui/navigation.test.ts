@@ -56,8 +56,14 @@ describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
       address: '/training',
     });
     // Other pages keep their addresses as they are.
-    expect(routeOf('/leagues', '?view=table')).toEqual({ page: 'league' });
-    expect(routeOf('/history/1951', '')).toEqual({ page: 'history' });
+    expect(routeOf('/leagues', '?view=table')).toEqual({
+      page: 'league',
+      address: '/season?competition=league&view=table',
+    });
+    expect(routeOf('/history/1951', '')).toEqual({
+      page: 'history',
+      address: '/history?section=club',
+    });
     expect(routeOf('/', '')).toEqual({ page: 'dashboard' });
   });
 

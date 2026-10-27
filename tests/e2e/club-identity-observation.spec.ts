@@ -1,3 +1,4 @@
+import { openClubRecords } from './competition-navigation';
 import { expect, test, type Page } from '@playwright/test';
 import { describeShirt } from '../../apps/web/src/ui/kitPainting';
 import { UNRECORDED_LOOK } from '../../apps/web/src/ui/matchAppearance';
@@ -316,7 +317,7 @@ test('an old imported record says 유니폼 미기록 and never draws today’s 
   await importResponsibilityCareer(page, w);
   // Activation installs no historical appearance.
   expect((await savedWorld(page)).ownMatches.some((m) => 'appearance' in m)).toBe(false);
-  await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
+  await openClubRecords(page);
   await openCurrentClubSeason(page);
   await page
     .getByRole('group', { name: '시즌 기록 보기' })

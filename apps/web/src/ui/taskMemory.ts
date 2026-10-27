@@ -59,7 +59,16 @@ export function rememberTask(page: Page) {
 const ABSENT = Symbol('absent-task-value');
 
 export function useTaskState<T>(world: string, key: string, initial: T | (() => T)) {
-  const [fallback] = useState(initial);
+  const [entry, setEntry] = useState(() => ({
+    world,
+    key,
+    value: typeof initial === 'function' ? (initial as () => T)() : initial,
+  }));
+  let fallback = entry.value;
+  if (entry.world !== world || entry.key !== key) {
+    fallback = typeof initial === 'function' ? (initial as () => T)() : initial;
+    setEntry({ world, key, value: fallback });
+  }
   const stored = useTaskMemory((state) =>
     state.world === world && Object.hasOwn(state.values, key) ? state.values[key] : ABSENT,
   );

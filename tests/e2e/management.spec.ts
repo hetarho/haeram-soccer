@@ -1,3 +1,4 @@
+import { openClubRecords, openLeague } from './competition-navigation';
 import { openOfficeLibrary } from './office';
 import { marketRows, marketInfo, closeMarketPanel } from './market';
 import { finishSeason, advanceOneRound } from './season-progression';
@@ -74,7 +75,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   // A closed season no longer interrupts: its review waits in the league's season list.
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog', { name: '시즌 진행 도구' })).toHaveCount(0);
-  await page.getByRole('button', { name: '리그', exact: true }).first().click();
+  await openLeague(page, true);
   await chooseOption(page.getByRole('combobox', { name: '리그 시즌', exact: true }), '1950');
   await openSeasonReview(page);
   await expect(page.getByTestId('season-move')).toBeVisible();
@@ -95,7 +96,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await expect(german.locator('tbody tr')).toHaveCount(18);
   await page.getByRole('button', { name: '우리 리그로', exact: true }).click();
   await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('Haeram');
-  await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
+  await openClubRecords(page);
   await openCurrentClubSeason(page);
   await chooseOption(page.getByRole('combobox', { name: '기록 시즌', exact: true }), '1950');
   await page
@@ -144,7 +145,7 @@ test('browses every historical regional group and resets filters on country chan
   await page.keyboard.press('Escape');
   await page.setViewportSize({ width: 390, height: 844 });
   // Other leagues' past tables live on the league page, never in the records room (→WEB-54).
-  await page.getByRole('button', { name: '리그', exact: true }).first().click();
+  await openLeague(page, true);
   await chooseOption(page.getByRole('combobox', { name: '리그 시즌', exact: true }), '1950');
   await page
     .getByRole('tablist', { name: '지난 시즌 보기' })

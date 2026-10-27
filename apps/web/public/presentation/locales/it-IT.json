@@ -5,13 +5,13 @@
     "navigation.dashboard": "Home del club",
     "navigation.league": "Campionato",
     "navigation.europe": "Coppe",
-    "navigation.history": "Archivio del club",
+    "navigation.history": "Storia",
     "navigation.people": "Rosa e staff",
     "navigation.training": "Allenamento e sviluppo",
     "navigation.business": "Gestione del club",
     "navigation.short.league": "Lega",
     "navigation.short.europe": "Coppe",
-    "navigation.short.history": "Archivio",
+    "navigation.short.history": "Storia",
     "navigation.short.dashboard": "Home",
     "navigation.short.people": "Rosa",
     "navigation.short.training": "Allena.",
@@ -156,6 +156,11 @@
     "match.stoppage.yellow": "Ammonizione · {player}",
     "match.stoppage.red": "Espulsione · {player}",
     "match.stoppage.injury": "Infortunio · {player}",
-    "match.stoppage.sub": "Sostituzione · {out} → {in}"
+    "match.stoppage.sub": "Sostituzione · {out} → {in}",
+    "navigation.season": "Stagione",
+    "navigation.short.season": "Stagione",
+    "navigation.clubRecords": "Archivio del club",
+    "navigation.pastLeague": "Campionati passati",
+    "navigation.pastCup": "Coppe passate"
   }
 }

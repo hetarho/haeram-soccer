@@ -5,13 +5,13 @@
     "navigation.dashboard": "Beranda klub",
     "navigation.league": "Liga",
     "navigation.europe": "Piala",
-    "navigation.history": "Arsip klub",
+    "navigation.history": "Sejarah",
     "navigation.people": "Skuad dan staf",
     "navigation.training": "Latihan dan pengembangan",
     "navigation.business": "Pengelolaan klub",
     "navigation.short.league": "Liga",
     "navigation.short.europe": "Piala",
-    "navigation.short.history": "Arsip",
+    "navigation.short.history": "Sejarah",
     "navigation.short.dashboard": "Beranda",
     "navigation.short.people": "Skuad",
     "navigation.short.training": "Latihan",
@@ -150,6 +150,11 @@
     "match.stoppage.yellow": "Kartu kuning · {player}",
     "match.stoppage.red": "Kartu merah · {player}",
     "match.stoppage.injury": "Cedera · {player}",
-    "match.stoppage.sub": "Pergantian · {out} → {in}"
+    "match.stoppage.sub": "Pergantian · {out} → {in}",
+    "navigation.season": "Musim",
+    "navigation.short.season": "Musim",
+    "navigation.clubRecords": "Arsip klub",
+    "navigation.pastLeague": "Liga terdahulu",
+    "navigation.pastCup": "Piala terdahulu"
   }
 }

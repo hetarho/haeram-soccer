@@ -1,3 +1,4 @@
+import { openLeague } from './competition-navigation';
 import { marketFilters, marketRows, closeMarketPanel } from './market';
 import { watchNext } from './watch';
 import { chooseOption, selectOptions } from './select';
@@ -187,10 +188,7 @@ for (const viewport of [
     await expect(order).toHaveAttribute('data-value', 'potential');
     await closeMarketPanel(page, '영입 필터');
     await expect(marketRows(page)).toHaveCount(8);
-    await page
-      .getByRole('navigation', { name: '모바일 게임 메뉴' })
-      .getByRole('button', { name: '리그', exact: true })
-      .click();
+    await openLeague(page);
     await page.getByRole('tab', { name: '순위표', exact: true }).click();
     const country = page.getByRole('combobox', { name: '국가', exact: true });
     const tier = page.getByRole('combobox', { name: '디비전', exact: true });

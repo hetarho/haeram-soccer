@@ -1,3 +1,4 @@
+import { openClubRecords, openCups, openLeague } from './competition-navigation';
 import { finishSeason } from './season-progression';
 import { test, expect } from '@playwright/test';
 import { chooseLevel, closeOutcome, setResponsibility } from './events';
@@ -19,7 +20,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
 
   test('shows the drawn domestic cup with our tie and the road to Europe', async ({ page }) => {
     await found(page, 'cups-journey');
-    await page.getByRole('button', { name: '컵 대회', exact: true }).click();
+    await openCups(page);
     await expect(page.getByRole('tab', { name: '잉글랜드 컵', exact: true })).toHaveAttribute(
       'aria-selected',
       'true',
@@ -29,11 +30,10 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(cup.getByRole('heading', { name: '1라운드' })).toBeVisible();
     await expect(cup.getByText('우리 팀')).toBeVisible();
     await expect(cup).toContainText('다음');
-    await expect(page.getByText(/유러피언컵은 5년 후\(1955\/56\) 창설돼요/)).toBeVisible();
-    await page
-      .getByRole('group', { name: '컵 대회 기간' })
-      .getByRole('button', { name: '지난 시즌·역사', exact: true })
-      .click();
+    await page.getByRole('tab', { name: 'European Cup', exact: true }).click();
+    await expect(page.getByText('1955/56 시즌에 창설돼요.', { exact: true })).toBeVisible();
+    await openCups(page, true);
+    await page.getByRole('tab', { name: '잉글랜드 컵', exact: true }).click();
     await expect(page.getByRole('region', { name: '컵 대회 역사' })).toContainText(
       '아직 기록된 대회가 없어요',
     );
@@ -130,10 +130,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
 
   test('rates every league club and opens any club from the table', async ({ page }) => {
     await found(page, 'rivals-journey');
-    await page
-      .getByRole('navigation', { name: '모바일 게임 메뉴' })
-      .getByRole('button', { name: '리그', exact: true })
-      .click();
+    await openLeague(page);
     await page.getByRole('tab', { name: '순위표', exact: true }).click();
     const table = page.getByRole('table', { name: '리그 순위표' });
     await expect(table.getByRole('columnheader', { name: 'OVR' })).toBeVisible();
@@ -147,10 +144,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(sheet).toContainText('OVR');
     await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
     // The cup opens as a list in its mass first round; the tree waits for the last 32.
-    await page
-      .getByRole('navigation', { name: '모바일 게임 메뉴' })
-      .getByRole('button', { name: '컵 대회', exact: true })
-      .click();
+    await openCups(page);
     const switcher = page.getByRole('group', { name: '대진 보기' });
     await expect(switcher.getByRole('button', { name: '라운드별' })).toHaveAttribute(
       'aria-pressed',
@@ -166,7 +160,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
   }) => {
     await found(page, 'club-links-journey');
     const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
-    await nav.getByRole('button', { name: '컵 대회', exact: true }).click();
+    await openCups(page);
     const tie = page
       .getByRole('region', { name: '잉글랜드 컵' })
       .getByRole('listitem')
@@ -261,14 +255,8 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(page.getByTestId('game-round')).toHaveText('0');
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog', { name: '시즌 진행 도구' })).toHaveCount(0);
-    await page
-      .getByRole('navigation', { name: '모바일 게임 메뉴' })
-      .getByRole('button', { name: '컵 대회', exact: true })
-      .click();
-    await page
-      .getByRole('group', { name: '컵 대회 기간' })
-      .getByRole('button', { name: '지난 시즌·역사', exact: true })
-      .click();
+    await openCups(page);
+    await openCups(page, true);
     const history = page.getByRole('region', { name: '컵 대회 역사' });
     const picker = history.getByRole('group', { name: '컵 시즌 선택' });
     await expect(picker.getByRole('combobox', { name: '대진표 시즌' })).toHaveText(/1950\/51/);
@@ -299,7 +287,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
 
   test('charts league position, Elo and values in the records room', async ({ page }) => {
     await found(page, 'trends-journey');
-    await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
+    await openClubRecords(page);
     // The season table is a part of 요약; the charts show one at a time on 추이.
     await page.getByRole('tab', { name: '시즌별 기록', exact: true }).click();
     await expect(page.getByRole('table', { name: '시즌별 기록' })).toBeVisible();

@@ -1,3 +1,4 @@
+import { openLeague } from './competition-navigation';
 import { expect, test } from '@playwright/test';
 import { encode } from '../../apps/web/src/adapters/persistence';
 import { createWorld } from '../../packages/engine/src/index';
@@ -15,8 +16,8 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   await page.getByRole('button', { name: '클럽 창단' }).click();
   const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(nav).toBeVisible();
-  // Seven tabs, staff included and the market inside the squad page, each a 44 px touch target.
-  await expect(nav.getByRole('button')).toHaveCount(6);
+  // Competition hubs share the bar with home and personnel, each a 44 px touch target.
+  await expect(nav.getByRole('button')).toHaveCount(5);
   const metrics = await nav.getByRole('button').evaluateAll((buttons) =>
     buttons.map((button) => {
       const rect = button.getBoundingClientRect();
@@ -88,7 +89,7 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   await nav.getByRole('button', { name: '선수단·스태프', exact: true }).click();
   await expect(page.getByText(/^선수단 \d+\/40$/)).toBeVisible();
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-  await nav.getByRole('button', { name: '리그', exact: true }).click();
+  await openLeague(page);
   await page.getByRole('tab', { name: '순위표', exact: true }).click();
   await expect(page.getByRole('table', { name: '리그 순위표' }).first()).toBeVisible();
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);

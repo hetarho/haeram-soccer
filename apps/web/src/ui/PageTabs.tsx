@@ -1,4 +1,4 @@
-import { useEffect, type KeyboardEvent, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, type KeyboardEvent, type ReactNode } from 'react';
 import { nextTabIndex } from './tabs';
 import { taskAddress, useTaskState } from './taskMemory';
 import s from './App.module.css';
@@ -109,6 +109,17 @@ function addressTab<T extends string>(
   return older?.(params) ?? tabs.find(([id]) => id === params.get(param))?.[0] ?? first;
 }
 
+/** A mounted lens may share a pathname with other lenses; match its grouping keys too. */
+function matchesPath(path?: string) {
+  if (!path) return true;
+  const expected = new URL(path, location.origin);
+  const params = new URLSearchParams(location.search);
+  return (
+    location.pathname.startsWith(expected.pathname) &&
+    [...expected.searchParams].every(([key, value]) => params.get(key) === value)
+  );
+}
+
 /**
  * A tab kept in the address under `param` and per career in task memory (→ useTaskState): read
  * from the address when the page opens, written back as it changes (replaced, never a history
@@ -136,22 +147,37 @@ export function useAddressTab<T extends string>(
     older?: (params: URLSearchParams) => T | undefined;
   },
 ) {
-  const [tab, setTab] = useTaskState(world, key, () => addressTab(param, tabs, first, older));
-  const shown = !path || location.pathname.startsWith(path);
+  const [tab, setTab] = useTaskState(world, key, () =>
+    matchesPath(path) ? addressTab(param, tabs, first, older) : first,
+  );
+  const shown = matchesPath(path);
+  const entry = useRef('');
+  const scope = `${world}:${key}:${path ?? ''}`;
+  const entering = shown && entry.current !== scope;
+  useLayoutEffect(() => {
+    if (entering) {
+      entry.current = scope;
+      setTab(addressTab(param, tabs, first, older));
+    }
+    if (!shown) entry.current = '';
+  });
   useEffect(() => {
-    if (!shown) return;
+    if (!shown || entering) return;
     replaceQuery((params) => {
       if (tab === first && !keepFirst) params.delete(param);
       else params.set(param, tab);
     });
-  }, [param, tab, first, keepFirst, shown]);
+  }, [param, tab, first, keepFirst, shown, entering]);
   useEffect(() => {
     const restore = () => {
-      if (!path || location.pathname.startsWith(path))
-        setTab(addressTab(param, tabs, first, older));
+      if (matchesPath(path)) setTab(addressTab(param, tabs, first, older));
     };
     window.addEventListener('popstate', restore);
-    return () => window.removeEventListener('popstate', restore);
+    window.addEventListener('tasknavigate', restore);
+    return () => {
+      window.removeEventListener('popstate', restore);
+      window.removeEventListener('tasknavigate', restore);
+    };
   }, [param, tabs, first, older, path, setTab]);
   return [tab, setTab] as const;
 }

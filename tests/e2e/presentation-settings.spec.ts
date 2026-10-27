@@ -1,3 +1,4 @@
+import { openLeague } from './competition-navigation';
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { decode } from '../../apps/web/src/adapters/persistence';
@@ -241,7 +242,7 @@ for (const width of [390, 1380])
         expect((await copy.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);
       await remedies.getByRole('button', { name: '창 닫기', exact: true }).click();
 
-      await page.getByRole('navigation').getByRole('button', { name: '리그', exact: true }).click();
+      await openLeague(page);
       await page.getByRole('tab', { name: '순위표', exact: true }).click();
       const table = page.getByRole('table', { name: '리그 순위표', exact: true });
       await expect(table).toBeVisible();

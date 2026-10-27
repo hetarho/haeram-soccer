@@ -5,13 +5,13 @@
     "navigation.dashboard": "الرئيسية",
     "navigation.league": "الدوري",
     "navigation.europe": "الكؤوس",
-    "navigation.history": "أرشيف النادي",
+    "navigation.history": "التاريخ",
     "navigation.people": "الفريق والطاقم",
     "navigation.training": "التدريب والتطوير",
     "navigation.business": "إدارة النادي",
     "navigation.short.league": "الدوري",
     "navigation.short.europe": "الكؤوس",
-    "navigation.short.history": "الأرشيف",
+    "navigation.short.history": "التاريخ",
     "navigation.short.dashboard": "الرئيسية",
     "navigation.short.people": "الفريق",
     "navigation.short.training": "التدريب",
@@ -165,6 +165,11 @@
     "match.stoppage.yellow": "بطاقة صفراء · {player}",
     "match.stoppage.red": "بطاقة حمراء · {player}",
     "match.stoppage.injury": "إصابة · {player}",
-    "match.stoppage.sub": "تبديل · خروج {out}، دخول {in}"
+    "match.stoppage.sub": "تبديل · خروج {out}، دخول {in}",
+    "navigation.season": "الموسم",
+    "navigation.short.season": "الموسم",
+    "navigation.clubRecords": "سجلات النادي",
+    "navigation.pastLeague": "الدوريات السابقة",
+    "navigation.pastCup": "الكؤوس السابقة"
   }
 }

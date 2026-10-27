@@ -5,13 +5,13 @@
     "navigation.dashboard": "클럽 홈",
     "navigation.league": "리그",
     "navigation.europe": "컵 대회",
-    "navigation.history": "클럽 기록실",
+    "navigation.history": "역사",
     "navigation.people": "선수단·스태프",
     "navigation.training": "훈련·육성",
     "navigation.business": "구단 운영",
     "navigation.short.league": "리그",
     "navigation.short.europe": "컵",
-    "navigation.short.history": "기록",
+    "navigation.short.history": "역사",
     "navigation.short.dashboard": "홈",
     "navigation.short.people": "선수단",
     "navigation.short.training": "훈련",
@@ -47,15 +47,21 @@
     "save.justNow": "방금 저장",
     "save.secondsAgo": {
       "plural": "count",
-      "forms": { "other": "{count}초 전 저장" }
+      "forms": {
+        "other": "{count}초 전 저장"
+      }
     },
     "save.minutesAgo": {
       "plural": "count",
-      "forms": { "other": "{count}분 전 저장" }
+      "forms": {
+        "other": "{count}분 전 저장"
+      }
     },
     "save.hoursAgo": {
       "plural": "count",
-      "forms": { "other": "{count}시간 전 저장" }
+      "forms": {
+        "other": "{count}시간 전 저장"
+      }
     },
     "save.status": "{saved} · r{revision} · 물가 {status}",
     "save.price.observed": "관측",
@@ -144,6 +150,11 @@
     "match.stoppage.yellow": "경고 · {player}",
     "match.stoppage.red": "퇴장 · {player}",
     "match.stoppage.injury": "부상 · {player}",
-    "match.stoppage.sub": "교체 · {out} → {in}"
+    "match.stoppage.sub": "교체 · {out} → {in}",
+    "navigation.season": "시즌",
+    "navigation.short.season": "시즌",
+    "navigation.clubRecords": "클럽 기록실",
+    "navigation.pastLeague": "이전 리그 기록",
+    "navigation.pastCup": "이전 컵대회 기록"
   }
 }

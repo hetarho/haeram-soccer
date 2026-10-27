@@ -1,3 +1,4 @@
+import { openLeague } from './competition-navigation';
 import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { chooseOption } from './select';
@@ -50,10 +51,7 @@ test('opens an own match material from its report and from the fixture notebook'
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
   // From a completed row of the own fixture notebook.
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '리그', exact: true })
-    .click();
+  await openLeague(page);
   await page.getByRole('tab', { name: '일정·결과', exact: true }).click();
   await page
     .getByRole('group', { name: '일정·결과 보기' })

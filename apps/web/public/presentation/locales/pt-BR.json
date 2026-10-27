@@ -5,13 +5,13 @@
     "navigation.dashboard": "Início do clube",
     "navigation.league": "Liga",
     "navigation.europe": "Copas",
-    "navigation.history": "Histórico do clube",
+    "navigation.history": "História",
     "navigation.people": "Elenco e comissão técnica",
     "navigation.training": "Treinamento e desenvolvimento",
     "navigation.business": "Gestão do clube",
     "navigation.short.league": "Liga",
     "navigation.short.europe": "Copas",
-    "navigation.short.history": "Histórico",
+    "navigation.short.history": "História",
     "navigation.short.dashboard": "Início",
     "navigation.short.people": "Elenco",
     "navigation.short.training": "Treino",
@@ -156,6 +156,11 @@
     "match.stoppage.yellow": "Cartão amarelo · {player}",
     "match.stoppage.red": "Cartão vermelho · {player}",
     "match.stoppage.injury": "Lesão · {player}",
-    "match.stoppage.sub": "Substituição · {out} → {in}"
+    "match.stoppage.sub": "Substituição · {out} → {in}",
+    "navigation.season": "Temporada",
+    "navigation.short.season": "Temporada",
+    "navigation.clubRecords": "Registros do clube",
+    "navigation.pastLeague": "Ligas anteriores",
+    "navigation.pastCup": "Copas anteriores"
   }
 }

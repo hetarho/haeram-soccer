@@ -1,0 +1,30 @@
+import { TabList } from './PageTabs';
+import { useLocale } from '../presentation/react';
+import { useNavigation, type Page } from './state';
+import { HISTORY_PAGES, SEASON_PAGES } from './competitionNavigation';
+
+export function CompetitionTabs({ page }: { page: Page }) {
+  const { t } = useLocale();
+  const setPage = useNavigation((state) => state.setPage);
+  const season = SEASON_PAGES.some((candidate) => candidate === page);
+  if (!season && !HISTORY_PAGES.some((candidate) => candidate === page)) return null;
+  const tabs: [Page, string][] = season
+    ? [
+        ['league', t('navigation.league')],
+        ['europe', t('navigation.europe')],
+      ]
+    : [
+        ['history', t('navigation.clubRecords')],
+        ['leagueHistory', t('navigation.pastLeague')],
+        ['cupHistory', t('navigation.pastCup')],
+      ];
+  return (
+    <TabList
+      tabs={tabs}
+      value={page}
+      onChange={setPage}
+      label={t(season ? 'navigation.season' : 'navigation.history')}
+      idPrefix="competition-hub"
+    />
+  );
+}

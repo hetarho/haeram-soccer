@@ -2,15 +2,24 @@ import { describe, expect, it } from 'vitest';
 import { NAV, TABS } from './navigationTabs';
 
 describe('navigation destinations (→WEB-10)', () => {
-  it('puts six tabs on the phone bar, records left of the raised home and the squad levers right', () => {
+  it('groups competitions into Season and History, keeping the raised home before personnel', () => {
     expect(TABS.map(([page]) => page)).toEqual([
       'league',
-      'europe',
       'history',
       'dashboard',
       'people',
       'training',
     ]);
+  });
+
+  it('selects each primary group for all of its local lenses', () => {
+    expect(TABS.find(([id]) => id === 'league')?.[3]).toEqual(['league', 'europe']);
+    expect(TABS.find(([id]) => id === 'history')?.[3]).toEqual([
+      'history',
+      'leagueHistory',
+      'cupHistory',
+    ]);
+    expect(NAV.filter(([, key]) => key === 'navigation.season')).toHaveLength(1);
   });
 
   it('lists the owner office in neither bar: it opens from home (→WEB-39)', () => {
@@ -19,7 +28,6 @@ describe('navigation destinations (→WEB-10)', () => {
     expect(NAV.map(([page]) => page)).toEqual([
       'dashboard',
       'league',
-      'europe',
       'history',
       'people',
       'training',

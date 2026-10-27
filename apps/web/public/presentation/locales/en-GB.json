@@ -5,13 +5,13 @@
     "navigation.dashboard": "Club home",
     "navigation.league": "League",
     "navigation.europe": "Cups",
-    "navigation.history": "Club records",
+    "navigation.history": "History",
     "navigation.people": "Squad & staff",
     "navigation.training": "Training & development",
     "navigation.business": "Club operations",
     "navigation.short.league": "League",
     "navigation.short.europe": "Cups",
-    "navigation.short.history": "Records",
+    "navigation.short.history": "History",
     "navigation.short.dashboard": "Home",
     "navigation.short.people": "Squad",
     "navigation.short.training": "Training",
@@ -153,6 +153,11 @@
     "match.stoppage.yellow": "Yellow card · {player}",
     "match.stoppage.red": "Red card · {player}",
     "match.stoppage.injury": "Injury · {player}",
-    "match.stoppage.sub": "Substitution · {out} → {in}"
+    "match.stoppage.sub": "Substitution · {out} → {in}",
+    "navigation.season": "Season",
+    "navigation.short.season": "Season",
+    "navigation.clubRecords": "Club records",
+    "navigation.pastLeague": "Past leagues",
+    "navigation.pastCup": "Past cups"
   }
 }

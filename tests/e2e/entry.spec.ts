@@ -1,3 +1,4 @@
+import { openCups, openLeague } from './competition-navigation';
 import { watchNext } from './watch';
 import { advanceOneRound } from './season-progression';
 import { delegateSales } from './events';
@@ -42,14 +43,15 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await expect(page.getByText('유효 슈팅', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: '컵 대회' }).click();
-  await expect(page.getByText(/유러피언컵은 5년 후\(1955\/56\) 창설돼요/)).toBeVisible();
+  await openCups(page);
+  await page.getByRole('tab', { name: 'European Cup', exact: true }).click();
+  await expect(page.getByText('1955/56 시즌에 창설돼요.', { exact: true })).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   const mobileMenu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(mobileMenu).toBeVisible();
   // The match view has no tab: it opens only from a watch action. The owner's squad levers sit
   // right of home: 사람 (players, market and staff) and 훈련; the office opens from home.
-  const tabs = ['리그', '컵 대회', '클럽 기록실', '클럽 홈', '선수단·스태프', '훈련·육성'];
+  const tabs = ['시즌', '역사', '클럽 홈', '선수단·스태프', '훈련·육성'];
   await expect(mobileMenu.getByRole('button')).toHaveCount(tabs.length);
   expect(
     await mobileMenu
@@ -103,7 +105,7 @@ test('observes event-backed metrics, historical locks and responsive navigation'
     '유소년',
   ]);
   await expect(page).toHaveURL(/\/training$/);
-  await mobileMenu.getByRole('button', { name: '리그', exact: true }).click();
+  await openLeague(page);
   await expect(page.getByRole('tab', { name: '순위표', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',

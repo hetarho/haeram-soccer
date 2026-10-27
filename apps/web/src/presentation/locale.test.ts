@@ -100,14 +100,28 @@ describe('locale messages', () => {
   it('preserves current Korean shell copy', () => {
     const { t } = createLoadedLocale(koreanRegistry, korean);
     expect(
-      ['dashboard', 'league', 'europe', 'history', 'people', 'training', 'business'].map((key) =>
-        t(`navigation.${key}`),
-      ),
+      [
+        'dashboard',
+        'season',
+        'league',
+        'europe',
+        'history',
+        'clubRecords',
+        'pastLeague',
+        'pastCup',
+        'people',
+        'training',
+        'business',
+      ].map((key) => t(`navigation.${key}`)),
     ).toEqual([
       '클럽 홈',
+      '시즌',
       '리그',
       '컵 대회',
+      '역사',
       '클럽 기록실',
+      '이전 리그 기록',
+      '이전 컵대회 기록',
       '선수단·스태프',
       '훈련·육성',
       '구단 운영',
@@ -116,7 +130,7 @@ describe('locale messages', () => {
       ['league', 'europe', 'history', 'dashboard', 'people', 'training', 'business'].map((key) =>
         t(`navigation.short.${key}`),
       ),
-    ).toEqual(['리그', '컵', '기록', '홈', '선수단', '훈련', '구단']);
+    ).toEqual(['리그', '컵', '역사', '홈', '선수단', '훈련', '구단']);
     expect(t('shell.menu')).toBe('설정');
     expect(t('shell.readonlyNotice')).toBe('다른 탭이 플레이 중입니다. 이 탭은 읽기 전용입니다.');
     expect(t('shell.loadingView')).toBe('화면을 여는 중…');

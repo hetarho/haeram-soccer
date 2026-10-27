@@ -5,13 +5,13 @@
     "navigation.dashboard": "Vereinszentrale",
     "navigation.league": "Liga",
     "navigation.europe": "Pokale",
-    "navigation.history": "Vereinsarchiv",
+    "navigation.history": "Historie",
     "navigation.people": "Kader und Trainerteam",
     "navigation.training": "Training und Entwicklung",
     "navigation.business": "Vereinsführung",
     "navigation.short.league": "Liga",
     "navigation.short.europe": "Pokale",
-    "navigation.short.history": "Archiv",
+    "navigation.short.history": "Historie",
     "navigation.short.dashboard": "Start",
     "navigation.short.people": "Kader",
     "navigation.short.training": "Training",
@@ -153,6 +153,11 @@
     "match.stoppage.yellow": "Gelbe Karte · {player}",
     "match.stoppage.red": "Rote Karte · {player}",
     "match.stoppage.injury": "Verletzung · {player}",
-    "match.stoppage.sub": "Wechsel · {out} → {in}"
+    "match.stoppage.sub": "Wechsel · {out} → {in}",
+    "navigation.season": "Saison",
+    "navigation.short.season": "Saison",
+    "navigation.clubRecords": "Vereinsarchiv",
+    "navigation.pastLeague": "Frühere Ligen",
+    "navigation.pastCup": "Frühere Pokale"
   }
 }

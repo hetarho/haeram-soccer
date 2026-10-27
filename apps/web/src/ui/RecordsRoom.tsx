@@ -1,3 +1,4 @@
+import { COMPETITION_PATHS } from './competitionNavigation';
 import { useTaskMemory, useTaskState } from './taskMemory';
 import { SeasonReview } from './SeasonReview';
 import { PixelIcon } from './PixelIcon';
@@ -111,6 +112,7 @@ export function RecordsRoom({ state, client }: Props) {
   const [tab, setTab] = useAddressTab('view', RECORD_TABS, 'seasons', {
     world: w.id,
     key: 'records-tab',
+    path: COMPETITION_PATHS.history,
     older: olderRecordTab,
   });
   const [year, setYear] = useTaskState<number | undefined>(w.id, 'records-year', () =>
@@ -125,7 +127,7 @@ export function RecordsRoom({ state, client }: Props) {
       }));
     setTab('seasons');
     setYear(picked);
-    history.pushState(null, '', `/history?season=${picked}`);
+    history.pushState(null, '', `/history?section=club&season=${picked}`);
     recordScroll(0);
   };
   // An accomplishment or a tenure's season opens our season record; the list keeps its place.
@@ -137,7 +139,7 @@ export function RecordsRoom({ state, client }: Props) {
   const returnToManagers = () => {
     setTab('managers');
     setYear(undefined);
-    history.pushState(null, '', '/history?view=managers');
+    history.pushState(null, '', '/history?section=club&view=managers');
   };
   const openedFrom =
     managers.opened && managers.page?.rows.find((r) => r.id === managers.opened!.row);
@@ -152,7 +154,11 @@ export function RecordsRoom({ state, client }: Props) {
   useEffect(() => {
     const restore = () => setYear(savedRecordYear(w));
     window.addEventListener('popstate', restore);
-    return () => window.removeEventListener('popstate', restore);
+    window.addEventListener('tasknavigate', restore);
+    return () => {
+      window.removeEventListener('popstate', restore);
+      window.removeEventListener('tasknavigate', restore);
+    };
   }, [w.id, w.year, setYear]);
   // The managers read every manager event, which only the season in progress keeps current.
   const archive = useSeasonArchive(
@@ -178,7 +184,7 @@ export function RecordsRoom({ state, client }: Props) {
   const returnToList = () => {
     leaveManagerSeason(w.id);
     setYear(undefined);
-    history.pushState(null, '', '/history');
+    history.pushState(null, '', COMPETITION_PATHS.history);
     recordScroll(useTaskMemory.getState().scrolls['record-list'] ?? 0);
   };
   // A season is a sub-screen of the records: a navigator bar replaces the tabs (→WEB-54).
@@ -234,7 +240,7 @@ export function RecordsRoom({ state, client }: Props) {
                     className={s.textButton}
                     type="button"
                     aria-label="이 시즌 리그 순위표"
-                    onClick={() => openLeagueSeason(year)}
+                    onClick={() => openLeagueSeason(year, w.year)}
                   >
                     리그 순위표
                   </button>
@@ -243,7 +249,7 @@ export function RecordsRoom({ state, client }: Props) {
                     className={s.textButton}
                     type="button"
                     aria-label="이 시즌 컵 대회 기록"
-                    onClick={() => openCupSeason(year)}
+                    onClick={() => openCupSeason(year, 'cup', w.year)}
                   >
                     컵 대회 기록
                   </button>

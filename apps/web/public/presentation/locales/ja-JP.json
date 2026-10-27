@@ -5,13 +5,13 @@
     "navigation.dashboard": "クラブホーム",
     "navigation.league": "リーグ",
     "navigation.europe": "カップ戦",
-    "navigation.history": "クラブ記録室",
+    "navigation.history": "歴史",
     "navigation.people": "選手・スタッフ",
     "navigation.training": "練習・育成",
     "navigation.business": "クラブ運営",
     "navigation.short.league": "リーグ",
     "navigation.short.europe": "カップ",
-    "navigation.short.history": "記録",
+    "navigation.short.history": "歴史",
     "navigation.short.dashboard": "ホーム",
     "navigation.short.people": "選手",
     "navigation.short.training": "練習",
@@ -150,6 +150,11 @@
     "match.stoppage.yellow": "警告 · {player}",
     "match.stoppage.red": "退場 · {player}",
     "match.stoppage.injury": "負傷 · {player}",
-    "match.stoppage.sub": "交代 · {out} → {in}"
+    "match.stoppage.sub": "交代 · {out} → {in}",
+    "navigation.season": "シーズン",
+    "navigation.short.season": "シーズン",
+    "navigation.clubRecords": "クラブ記録室",
+    "navigation.pastLeague": "過去のリーグ記録",
+    "navigation.pastCup": "過去のカップ記録"
   }
 }

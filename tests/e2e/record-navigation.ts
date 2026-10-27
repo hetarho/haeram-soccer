@@ -1,3 +1,4 @@
+import { openClubRecords } from './competition-navigation';
 import { expect, type Page } from '@playwright/test';
 
 /**
@@ -25,7 +26,7 @@ export async function openSeasonReview(page: Page) {
 }
 /** The records room's 감독 이력 list (→WEB-92), once its first page is shown. */
 export async function openManagerHistory(page: Page) {
-  await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
+  await openClubRecords(page);
   await showRecordTabs(page);
   await page.getByRole('tab', { name: '감독 이력', exact: true }).click();
   const list = managerHistoryList(page);

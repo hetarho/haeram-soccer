@@ -1,3 +1,4 @@
+import { openLeague } from './competition-navigation';
 import { watchNext } from './watch';
 import { configureResponsibilities } from './events';
 import { expect, test, type Page } from '@playwright/test';
@@ -230,7 +231,7 @@ for (const viewport of [
       );
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await expectCompactMatch(page, viewport);
-    await nav.getByRole('button', { name: '리그', exact: true }).click();
+    await openLeague(page);
     const leagueTabs = page.getByRole('tablist', { name: '리그 보기' }).getByRole('tab');
     await expect(leagueTabs).toHaveText(['순위표', '일정·결과', '팀 기록', '선수 기록']);
     for (const tab of await leagueTabs.all()) {

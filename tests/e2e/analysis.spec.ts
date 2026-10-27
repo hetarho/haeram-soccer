@@ -1,3 +1,4 @@
+import { openClubRecords, openLeague } from './competition-navigation';
 import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { finishSeason } from './season-progression';
@@ -19,7 +20,7 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
-  await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
+  await openClubRecords(page);
   await openCurrentClubSeason(page);
   await page.getByText('분석 데이터 내보내기', { exact: true }).click();
   const panel = page.getByRole('region', { name: '분석 데이터 내보내기', exact: true }),
@@ -65,7 +66,7 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   // A closed season no longer interrupts: its review waits in the league's season list.
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog', { name: '시즌 진행 도구' })).toHaveCount(0);
-  await page.getByRole('button', { name: '리그', exact: true }).first().click();
+  await openLeague(page, true);
   await chooseOption(page.getByRole('combobox', { name: '리그 시즌', exact: true }), '1950');
   await openSeasonReview(page);
   await expect(page.getByTestId('season-move')).toBeVisible();
@@ -117,18 +118,19 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   expect(scorerRows).toBeGreaterThan(0);
   expect(scorerRows).toBeLessThanOrEqual(10);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-  // The arrow steps back to the season in progress; stepping back again keeps the closed tab.
+  // Closed-season arrows stay within History; the Season hub opens current facts.
   await expect(page.getByRole('button', { name: '이전 시즌', exact: true })).toBeDisabled();
-  await page.getByRole('button', { name: '다음 시즌', exact: true }).click();
+  await expect(page.getByRole('button', { name: '다음 시즌', exact: true })).toBeDisabled();
+  await openLeague(page);
   await expect(page.getByRole('tablist', { name: '리그 보기' })).toBeVisible();
   await expect(past).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '다음 시즌', exact: true })).toBeDisabled();
-  await page.getByRole('button', { name: '이전 시즌', exact: true }).click();
+  await expect(page.getByRole('group', { name: '리그 시즌 선택', exact: true })).toHaveCount(0);
+  await openLeague(page, true);
   await expect(pastTab('선수 기록')).toHaveAttribute('aria-selected', 'true');
   await expect(scorers).toBeVisible();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   // The record book is on the records room's first tab, under 기타 기록.
-  await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
+  await openClubRecords(page);
   // The records room returns to the season the league opened; its navigator leads back out.
   await showRecordTabs(page);
   await page.getByRole('tab', { name: '명예·최고기록', exact: true }).click();
@@ -171,7 +173,7 @@ test('uses matching archive samples for season splits and competition filters', 
   await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
-  await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
+  await openClubRecords(page);
   await openCurrentClubSeason(page);
   // The analysis is open from the start, so a competition filter shows at once.
   const analysis = page.getByRole('region', { name: '선택 시즌 분석', exact: true });
@@ -194,10 +196,7 @@ test('filters the own-club fixture notebook and reads a settled full-season reco
   await delegateSales(page);
   await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '리그', exact: true })
-    .click();
+  await openLeague(page);
   await expect(page.getByRole('region', { name: '우리 팀 일정 노트', exact: true })).toHaveCount(0);
   await page.getByRole('tab', { name: '순위표', exact: true }).click();
   const expand = page.getByRole('button', { name: /전체 \d+팀 순위 보기/ }).first();

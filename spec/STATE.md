@@ -372,7 +372,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | doing@261027.n3w8 |
-| T532 | Season and History competition hubs | WEB ARCH | T531 | doing@261027.g8u6 |
 | T533 | First-team, academy and coaching navigation | WEB ARCH | T532 | todo |
 
 ## work
@@ -392,10 +391,11 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- implement-task T532 (then T533): finish the requested gameplay hierarchy, then one final batch and main push.
+- implement-task T533: finish the requested personnel hierarchy after T532, then one final host-owned batch and main push.
 - T530/T531 complete locally; remote reservations remain until publication. Preserve n3w8's T522 ownership and integrated automatic-play code.
 
 ## log
+- 261028 T532 done: host finalized the verified child implementation and task commit.
 - 261028 reconcile shared planning: local T530/T531 stay archived and complete; g8u6 continues T532/T533 under strict remote claims.
 - 261028 sync origin/main: preserve automatic-play r162/r163 and serialize the gameplay redesign as WEB r164; T530/T531 remain complete.
 - 261028 T531 done: host finalized the verified child implementation and task commit.
@@ -415,4 +415,3 @@
 - 261027 create-task WEB r159 → T504; implementation started (r6u2)
 - 261027 update-ssot WEB start (r6u2): portable resource skins and asset delivery audit
 - 261027 T495 done: 32 competition-specific trophy variants across four themes, country-aware cabinet selection and safe fallback; unit/integration/contract and all 299 Chromium journeys passed, with unchanged-timeout recovery for load-related tests.
-- 261027 u3b8 closed: T500–T503 batch gate passed on f25cae1a (unit 1171, integration 1158 after a quiet-host rerun of 3 load timeouts, contract 39, catalogs, presentation, build, Chromium 299/299), pushed to main

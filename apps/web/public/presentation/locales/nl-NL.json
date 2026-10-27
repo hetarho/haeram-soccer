@@ -5,13 +5,13 @@
     "navigation.dashboard": "Clubhome",
     "navigation.league": "Competitie",
     "navigation.europe": "Bekers",
-    "navigation.history": "Clubarchief",
+    "navigation.history": "Geschiedenis",
     "navigation.people": "Selectie en staf",
     "navigation.training": "Training en ontwikkeling",
     "navigation.business": "Clubbeheer",
     "navigation.short.league": "Liga",
     "navigation.short.europe": "Bekers",
-    "navigation.short.history": "Archief",
+    "navigation.short.history": "Geschiedenis",
     "navigation.short.dashboard": "Home",
     "navigation.short.people": "Selectie",
     "navigation.short.training": "Training",
@@ -153,6 +153,11 @@
     "match.stoppage.yellow": "Gele kaart · {player}",
     "match.stoppage.red": "Rode kaart · {player}",
     "match.stoppage.injury": "Blessure · {player}",
-    "match.stoppage.sub": "Wissel · {out} → {in}"
+    "match.stoppage.sub": "Wissel · {out} → {in}",
+    "navigation.season": "Seizoen",
+    "navigation.short.season": "Seizoen",
+    "navigation.clubRecords": "Clubarchief",
+    "navigation.pastLeague": "Eerdere competities",
+    "navigation.pastCup": "Eerdere bekers"
   }
 }

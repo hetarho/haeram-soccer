@@ -1,3 +1,9 @@
+import {
+  COMPETITION_PATHS,
+  competitionRoute,
+  HISTORY_PAGES,
+  SEASON_PAGES,
+} from './competitionNavigation';
 import { OFFICE_DESKS, resolveOffice, type WorkDesk } from './officeDesks';
 import { rememberTask, taskAddress, useTaskMemory } from './taskMemory';
 import { create } from 'zustand';
@@ -22,16 +28,23 @@ import type {
  * →WEB-10).
  */
 export type Page =
-  'dashboard' | 'match' | 'league' | 'europe' | 'people' | 'training' | 'business' | 'history';
+  | 'dashboard'
+  | 'match'
+  | 'league'
+  | 'europe'
+  | 'people'
+  | 'training'
+  | 'business'
+  | 'history'
+  | 'leagueHistory'
+  | 'cupHistory';
 const paths: Record<Page, string> = {
   dashboard: '/journal',
   match: '/matches',
-  league: '/leagues',
-  europe: '/europe',
+  ...COMPETITION_PATHS,
   people: '/people',
   training: '/training',
   business: '/direction',
-  history: '/history',
 };
 
 /** 사람's tabs (→WEB-43), in tab-bar order; the first one keeps no ?view= in the address. */
@@ -86,6 +99,8 @@ export interface Route {
  */
 export function routeOf(pathname: string, search: string): Route {
   const at = (path: string) => pathname === path || pathname.startsWith(path + '/');
+  const competition = competitionRoute(pathname, search);
+  if (competition) return competition;
   const asked = new URLSearchParams(search).get('view');
   let route: Route;
   if (at('/squad')) route = { page: 'people', view: 'players' };
@@ -142,12 +157,37 @@ export const useNavigation = create<{
     const address = useTaskMemory.getState().addresses[page] ?? paths[page];
     if (taskAddress() !== address) history.pushState(null, '', address);
     set({ page });
+    if (typeof window !== 'undefined') window.dispatchEvent(new Event('tasknavigate'));
   },
   replacePage: (page) => {
-    if (location.pathname !== paths[page]) history.replaceState(null, '', paths[page]);
+    if (taskAddress() !== paths[page]) history.replaceState(null, '', paths[page]);
     set({ page });
   },
 }));
+
+/** A primary entry resumes its last lens; explicit local tabs select their own lens. */
+export function openPrimary(page: Page) {
+  const pages = page === 'league' ? SEASON_PAGES : page === 'history' ? HISTORY_PAGES : undefined;
+  const saved = useTaskMemory.getState().values[`hub-${page}`] as Page | undefined;
+  useNavigation
+    .getState()
+    .setPage(
+      pages?.some((candidate) => candidate === useNavigation.getState().page)
+        ? useNavigation.getState().page
+        : saved && pages?.some((candidate) => candidate === saved)
+          ? saved
+          : page,
+    );
+}
+useNavigation.subscribe(({ page }) => {
+  const hub = SEASON_PAGES.some((candidate) => candidate === page)
+    ? 'league'
+    : HISTORY_PAGES.some((candidate) => candidate === page)
+      ? 'history'
+      : undefined;
+  if (hub)
+    useTaskMemory.setState((memory) => ({ values: { ...memory.values, [`hub-${hub}`]: page } }));
+});
 
 // However the office is reached — a page change, an address, back or a task return — the page
 // before it is where leaving returns.
@@ -407,10 +447,11 @@ export const useLeagueSeason = create<{ request?: number; take: () => void }>((s
   take: () => set({ request: undefined }),
 }));
 /** Opens the league page on a season (→WEB-54). */
-export function openLeagueSeason(year: number) {
-  beginTaskDetour('league');
+export function openLeagueSeason(year: number, currentYear?: number) {
+  const target = year === currentYear ? 'league' : 'leagueHistory';
+  beginTaskDetour(target);
   useLeagueSeason.setState({ request: year });
-  useNavigation.getState().setPage('league');
+  useNavigation.getState().setPage(target);
 }
 
 /** A closed season's tabs on the league page, in tab-bar order; the review comes first. */
@@ -552,7 +593,7 @@ export function returnedToManagers(world: string) {
 /** A focused policy/competition visit keeps the working task it was opened from. */
 export function beginTaskDetour(target: Page) {
   const page = useNavigation.getState().page;
-  if (page === target) return;
+  if (page === target && !HISTORY_PAGES.some((candidate) => candidate === page)) return;
   const prior = useTaskMemory.getState();
   if (prior.returning?.target === target && prior.returning.address === taskAddress()) return;
   rememberTask(page);
@@ -566,9 +607,9 @@ export function beginTaskDetour(target: Page) {
           : '1군 훈련'
         : page === 'history'
           ? '클럽 시즌 기록'
-          : page === 'league'
+          : page === 'league' || page === 'leagueHistory'
             ? '리그'
-            : page === 'europe'
+            : page === 'europe' || page === 'cupHistory'
               ? '컵 대회'
               : '클럽 홈';
   useTaskMemory.setState({
@@ -590,7 +631,8 @@ export function returnToTask() {
     useTrainingView.getState().open((route.view as TrainingTab) ?? 'training');
   if (route.page === 'business')
     useBusinessView.getState().open((route.view as OfficeView) ?? 'lobby');
-  useNavigation.setState({ page: task.page });
+  useNavigation.setState({ page: route.page });
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event('tasknavigate'));
 }
 
 /** A specific responsible staff post, opened from its operational work. */
@@ -625,8 +667,9 @@ export function openClubSeason(year: number) {
   useNavigation.getState().setPage('history');
 }
 export const useCupRequest = oneShot<{ year: number; competition: string }>();
-export function openCupSeason(year: number, competition = 'cup') {
-  beginTaskDetour('europe');
+export function openCupSeason(year: number, competition = 'cup', currentYear?: number) {
+  const target = year === currentYear ? 'europe' : 'cupHistory';
+  beginTaskDetour(target);
   useCupRequest.getState().open({ year, competition });
-  useNavigation.getState().setPage('europe');
+  useNavigation.getState().setPage(target);
 }

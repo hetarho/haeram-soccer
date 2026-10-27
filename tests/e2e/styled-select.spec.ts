@@ -1,3 +1,4 @@
+import { openClubRecords } from './competition-navigation';
 import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { expect, test, type Locator } from '@playwright/test';
@@ -79,11 +80,7 @@ for (const viewport of [
     await page.setViewportSize(viewport);
     await page.goto('/');
     await page.getByRole('button', { name: '클럽 창단' }).click();
-    await page
-      .getByRole('button', { name: '클럽 기록실', exact: true })
-      .filter({ visible: true })
-      .first()
-      .click();
+    await openClubRecords(page);
     await page.getByRole('button', { name: '1950/51 구단 시즌 기록 보기', exact: true }).click();
     const season = page.getByRole('combobox', { name: '기록 시즌', exact: true });
     const competition = page.getByRole('combobox', { name: '기록 대회 범위', exact: true });

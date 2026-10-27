@@ -118,7 +118,7 @@ for (const viewport of VIEWPORTS)
     const at = await scrollTo(page, winner);
     expect(at).toBeGreaterThan(0);
     await winner.getByRole('button', { name: cup.action.accessibleLabel }).click();
-    await expect(page).toHaveURL(new RegExp(`/history\\?season=${career.cupSeason}$`));
+    await expect(page).toHaveURL(new RegExp(`/history\\?section=club&season=${career.cupSeason}$`));
     await expect(
       page.getByRole('heading', { name: `${seasonName(career.cupSeason)} · 구단 시즌 기록` }),
     ).toBeVisible();
@@ -132,7 +132,7 @@ for (const viewport of VIEWPORTS)
     await page.getByRole('button', { name: '← 돌아가기 · 클럽 시즌 기록', exact: true }).click();
     await expect(back).toBeVisible();
     await back.click();
-    await expect(page).toHaveURL(/\/history\?view=managers$/);
+    await expect(page).toHaveURL(/\/history\?section=club&view=managers$/);
     await expect(page.getByRole('tab', { name: '감독 이력', exact: true })).toHaveAttribute(
       'aria-selected',
       'true',
@@ -147,9 +147,11 @@ for (const viewport of VIEWPORTS)
     await inspect(closer);
     const there = await scrollTo(page, closer);
     await closer.getByRole('button', { name: source.accessibleLabel }).click();
-    await expect(page).toHaveURL(new RegExp(`/history\\?season=${source.season.year}$`));
+    await expect(page).toHaveURL(
+      new RegExp(`/history\\?section=club&season=${source.season.year}$`),
+    );
     await page.goBack();
-    await expect(page).toHaveURL(/\/history\?view=managers$/);
+    await expect(page).toHaveURL(/\/history\?section=club&view=managers$/);
     await expect(list.getByRole('article')).toHaveCount(total);
     await expect(toggle(closer)).toHaveAttribute('aria-expanded', 'true');
     await expect.poll(() => viewScroll(page)).toBeGreaterThan(there - 8);

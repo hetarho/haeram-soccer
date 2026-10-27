@@ -153,6 +153,16 @@ describe('cup honours', () => {
     expect(honours.unrecorded).toBe(0);
   });
 
+  it('reads another domestic competition without substituting our country', () => {
+    const honours = cupHonours(history(), clubs, 'GER', 'cup');
+    expect(honours.clubs).toEqual([
+      { club: 'GER:0:0:1', titles: 6, runnerUps: 0, finals: 6, lastTitle: 1995 },
+    ]);
+    expect(honours.doubles).toHaveLength(6);
+    expect(honours.finals.every((row) => row.winner.startsWith('GER:'))).toBe(true);
+    expect(honours.unrecorded).toBe(6);
+  });
+
   it('is empty before any season closed and ignores competitions not yet founded', () => {
     expect(cupHonours([], clubs, 'ENG', 'cup')).toEqual({
       finals: [],

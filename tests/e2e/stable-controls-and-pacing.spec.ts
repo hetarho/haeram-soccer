@@ -1,3 +1,4 @@
+import { openLeague, openCups, openClubRecords } from './competition-navigation';
 import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { expect, test } from '@playwright/test';
@@ -46,8 +47,8 @@ test('surveys every management destination during uninterrupted calendar play', 
     const before = await date.innerText();
     await expect(date).not.toHaveText(before);
   };
-  for (const name of ['리그', '컵 대회', '클럽 기록실']) {
-    await nav.getByRole('button', { name, exact: true }).click();
+  for (const open of [openLeague, openCups, openClubRecords]) {
+    await open(page);
     await continues();
   }
   await nav.getByRole('button', { name: '선수단·스태프', exact: true }).click();

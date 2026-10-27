@@ -1,3 +1,4 @@
+import { openClubRecords, openCups, openLeague } from './competition-navigation';
 import { openOfficeLibrary } from './office';
 import { gameHud } from './layout';
 import { marketRows, marketFilters, marketInfo, closeMarketPanel } from './market';
@@ -241,7 +242,7 @@ test('opens club seasons in records and retains the detail scope through league 
   page,
 }) => {
   await found(page);
-  await nav(page).getByRole('button', { name: '클럽 기록실', exact: true }).click();
+  await openClubRecords(page);
   const list = page.getByRole('table', { name: '시즌별 기록' });
   await expect(list.locator('tr[aria-current="true"]')).toHaveCount(1);
   await expect(list).not.toContainText('진행 중');
@@ -276,21 +277,21 @@ test('opens club seasons in records and retains the detail scope through league 
   await expect(page).toHaveURL(/season=1950.*part=matches.*competition=cup/);
   await page.getByRole('button', { name: '← 시즌별 기록', exact: true }).click();
   await expect(list).toBeVisible();
-  await expect(page).toHaveURL(/\/history$/);
+  await expect(page).toHaveURL(/\/history\?section=club$/);
   // Explicit undefined must clear a deep-linked initial year as well as an in-session pick.
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.goto('/history?season=1950');
   await expect(page.getByRole('combobox', { name: '기록 시즌', exact: true })).toBeVisible();
   await page.getByRole('button', { name: '← 시즌별 기록', exact: true }).click();
   await expect(list).toBeVisible();
-  await expect(page).toHaveURL(/\/history$/);
+  await expect(page).toHaveURL(/\/history\?section=club$/);
 });
 
 test('keeps a foreign league selected across all competition lenses without substituting our players', async ({
   page,
 }) => {
   await found(page);
-  await nav(page).getByRole('button', { name: '리그', exact: true }).click();
+  await openLeague(page);
   await chooseOption(page.getByRole('combobox', { name: '국가', exact: true }), 'GER');
   const table = page.getByRole('table', { name: '리그 순위표' });
   const firstClub = await table
@@ -335,7 +336,7 @@ test('keeps the home briefing informational alongside the public clock and links
   ).toBeVisible();
   await briefing.getByRole('button', { name: '이번 시즌 구단 기록 →', exact: true }).click();
   await expect(briefing).toHaveCount(0);
-  await expect(page).toHaveURL(/\/history\?season=1950/);
+  await expect(page).toHaveURL(/\/history\?section=club&season=1950/);
   await nav(page).getByRole('button', { name: '클럽 홈', exact: true }).click();
   await advanceOneRound(page);
   await expect(page.getByTestId('game-round')).toHaveText('1');
@@ -365,14 +366,13 @@ test('chooses a cup once and keeps its archived season through competition and c
   await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1952');
   await expect(page.getByTestId('game-round')).toHaveText('0');
   await page.keyboard.press('Escape');
-  await nav(page).getByRole('button', { name: '컵 대회', exact: true }).click();
+  await openCups(page);
   const competition = page.getByRole('tablist', { name: '컵 대회', exact: true });
-  const period = page.getByRole('group', { name: '컵 대회 기간', exact: true });
-  await period.getByRole('button', { name: '지난 시즌·역사', exact: true }).click();
+  await openCups(page, true);
   await chooseOption(page.getByRole('combobox', { name: '대진표 시즌', exact: true }), '1950');
   await competition.getByRole('tab', { name: 'European Cup', exact: true }).click();
-  await expect(period.getByRole('button', { name: '지난 시즌·역사', exact: true })).toHaveAttribute(
-    'aria-pressed',
+  await expect(page.getByRole('tab', { name: '이전 컵대회 기록', exact: true })).toHaveAttribute(
+    'aria-selected',
     'true',
   );
   await expect(page.getByRole('region', { name: '컵 대회 역사', exact: true })).toContainText(
@@ -385,9 +385,9 @@ test('chooses a cup once and keeps its archived season through competition and c
     '1950',
   );
   await page.getByRole('button', { name: '이 시즌 구단 기록', exact: true }).click();
-  await expect(page).toHaveURL(/\/history\?season=1950/);
+  await expect(page).toHaveURL(/\/history\?section=club&season=1950/);
   await page.getByRole('button', { name: '← 돌아가기 · 컵 대회', exact: true }).click();
-  await expect(page).toHaveURL(/competition=cup&period=history&season=1950/);
+  await expect(page).toHaveURL(/section=cup.*cup=cup.*season=1950/);
   await expect(page.getByRole('combobox', { name: '대진표 시즌', exact: true })).toHaveAttribute(
     'data-value',
     '1950',

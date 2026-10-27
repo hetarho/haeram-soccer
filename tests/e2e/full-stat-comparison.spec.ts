@@ -1,3 +1,4 @@
+import { openLeague } from './competition-navigation';
 import { expect, test, type Page } from '@playwright/test';
 import type { World } from '../../packages/contracts/src/types';
 import { advanceRound, createWorld } from '../../packages/engine/src/index';
@@ -39,7 +40,7 @@ const nav = (page: Page) =>
     exact: true,
   });
 async function openLeagueTab(page: Page, tab: '팀 기록' | '선수 기록') {
-  await nav(page).getByRole('button', { name: '리그', exact: true }).click();
+  await openLeague(page);
   await page.getByRole('tab', { name: tab, exact: true }).click();
 }
 
@@ -140,7 +141,7 @@ test('names a partial season start and sample through reload and import', async 
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   // A reload restores the page it left; the ledger comes back from the saved checkpoint.
-  await expect(nav(page).getByRole('button', { name: '리그', exact: true })).toBeVisible();
+  await expect(nav(page).getByRole('button', { name: '시즌', exact: true })).toBeVisible();
   expect(await coverage()).toBe(imported);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });

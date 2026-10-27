@@ -1,3 +1,4 @@
+import { openLeague } from './competition-navigation';
 import { watchNext } from './watch';
 import { test, expect, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -27,7 +28,7 @@ test('keeps league views and nodes across silent progression from home and updat
   });
   const menu = page.getByRole('navigation', { name: '게임 메뉴', exact: true });
   const date = page.getByTestId('game-date');
-  await menu.getByRole('button', { name: '리그', exact: true }).click();
+  await openLeague(page);
   const rankTab = page.getByRole('tab', { name: '팀 기록', exact: true });
   await rankTab.click();
   await page
@@ -61,7 +62,7 @@ test('keeps league views and nodes across silent progression from home and updat
   // day before the match eve is sure to be on screen.
   await expect(date).not.toHaveText('1950년 8월 1일');
   // Looking at the league keeps the run going; the selected statistics view is kept.
-  await menu.getByRole('button', { name: '리그', exact: true }).click();
+  await openLeague(page);
   await expect(mini.getByRole('button', { name: '자동 진행 정지' })).toBeVisible();
   await expect(rankTab).toHaveAttribute('aria-selected', 'true');
   await page.getByRole('tab', { name: '선수 기록', exact: true }).click();
@@ -172,7 +173,7 @@ test('watching a match pauses the calendar and retains playback across page swit
       document.querySelector('canvas');
   });
   const menu = page.getByRole('navigation', { name: '게임 메뉴', exact: true });
-  await menu.getByRole('button', { name: '리그', exact: true }).click();
+  await openLeague(page);
   await expect(page.getByRole('tab', { name: '순위표', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',

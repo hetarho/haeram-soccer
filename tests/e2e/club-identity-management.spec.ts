@@ -1,3 +1,4 @@
+import { openLeague } from './competition-navigation';
 import { openOfficeLibrary } from './office';
 import { gameHud } from './layout';
 import { expect, test, type Locator, type Page } from '@playwright/test';
@@ -169,7 +170,7 @@ test('three named colours link shirts and crest, and each apply reaches every cr
   await expect(crestFill(hud, '#E0218A')).not.toHaveCount(0);
   await leaveOffice(page);
   await expect(crestFill(hud, '#E0218A')).not.toHaveCount(0);
-  await nav(page).getByRole('button', { name: '리그', exact: true }).click();
+  await openLeague(page);
   const own = page
     .getByRole('table', { name: '리그 순위표' })
     .getByRole('button', { name: `${NAME} 팀 정보`, exact: true })

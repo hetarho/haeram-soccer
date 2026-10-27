@@ -1,3 +1,5 @@
+import { competitionRoute, selectedYear } from './competitionNavigation';
+import { useTaskState } from './taskMemory';
 import { CompetitionRecords, UnavailableLeagueRecord } from './CompetitionRecords';
 import { Segments } from './Segments';
 import { PixelIcon } from './PixelIcon';
@@ -8,6 +10,7 @@ import {
   Suspense,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type ComponentProps,
@@ -433,9 +436,8 @@ const ResultsPane = memo(function ResultsPane({
   );
 });
 /**
- * Which season the league page shows: the one in progress (the live tabs) or a closed one (its
- * own tabs). The list sits between previous/next arrows; a season close adds itself here instead
- * of stopping the clock.
+ * History's closed-season picker, between previous/next arrows. A season close adds its record
+ * here without opening a screen or stopping the clock.
  */
 function SeasonPicker({
   value,
@@ -447,8 +449,9 @@ function SeasonPicker({
   const current = useGameState((state) => state.view?.world.year);
   const closed = useGameState((state) => state.view?.world.history.map((h) => h.year).join(','));
   if (current === undefined) return null;
-  // Oldest first; the season in progress is the last stop.
-  const years = [...(closed ? closed.split(',').map(Number) : []), current];
+  // Oldest first, restricted to closed seasons; current facts belong to Season.
+  const years = closed ? closed.split(',').map(Number) : [];
+  if (!years.length) return null;
   const at = Math.max(0, years.indexOf(value ?? current));
   const go = (index: number) => onChange(years[index] === current ? undefined : years[index]);
   return (
@@ -507,30 +510,51 @@ export const LiveSeason = memo(function LiveSeason({
   client: GameClient;
   controller: ProgressionController;
 }) {
-  const active = page === 'match' || page === 'league';
+  const archive = page === 'leagueHistory';
+  const leaguePage = page === 'league' || archive;
+  const active = page === 'match' || leaguePage;
+  const world = useGameState((state) => state.view!.world.id);
+  const years = useGameState((state) => state.view!.world.history.map((h) => h.year).join(','));
+  const context = archive ? 'leagueHistory' : 'league';
+  const atContext = () => competitionRoute(location.pathname, location.search)?.page === context;
   // Whether the page asked for is the one on screen; moves between other pages leave it alone.
   const settled = useNavigation((state) => state.page === page);
   const [preparing, setPreparing] = useState(false);
   const visibleTabs = LEAGUE_TABS;
-  const [leagueTab, setLeagueTab] = useState<Tab>(savedLeagueTab);
-  const [teamPart, setTeamPart] = useState<'table' | 'rank'>(() => {
+  const [leagueTab, setLeagueTab] = useTaskState<Tab>(world, `${context}-tab`, () =>
+    atContext() ? savedLeagueTab() : 'table',
+  );
+  const [teamPart, setTeamPart] = useTaskState<'table' | 'rank'>(world, `${context}-team`, () => {
     const p = new URLSearchParams(location.search);
     return p.get('view') === 'rank' || p.get('detail') === 'rank' ? 'rank' : 'table';
   });
-  const [playerPart, setPlayerPart] = useState<'scorers' | 'trend'>(() => {
-    const p = new URLSearchParams(location.search);
-    return p.get('view') === 'scorer-trend' || p.get('detail') === 'trend' ? 'trend' : 'scorers';
-  });
-  const [reviewYear, setReviewYear] = useState<number | undefined>(() => {
-    // Only the league page's own address names its season: a records-room season in the address
-    // after a reload is that page's, not a closed league season to open here.
-    if (!location.pathname.startsWith('/leagues')) return undefined;
-    const saved = Number(new URLSearchParams(location.search).get('season'));
-    return Number.isInteger(saved) && saved > 0 ? saved : undefined;
-  });
-  // The league the table, results and overview show; none is the own league (→WEB-65).
-  const [league, setLeague] = useState<LeagueChoice | undefined>(() =>
-    parseLeague(new URLSearchParams(location.search).get('league')),
+  const [playerPart, setPlayerPart] = useTaskState<'scorers' | 'trend'>(
+    world,
+    `${context}-player`,
+    () => {
+      const p = new URLSearchParams(location.search);
+      return p.get('view') === 'scorer-trend' || p.get('detail') === 'trend' ? 'trend' : 'scorers';
+    },
+  );
+  const [pickedYear, setReviewYear] = useTaskState<number | undefined>(
+    world,
+    'league-history-year',
+    () =>
+      competitionRoute(location.pathname, location.search)?.page === 'leagueHistory'
+        ? selectedYear(new URLSearchParams(location.search))
+        : undefined,
+  );
+  const reviewYear = archive
+    ? (pickedYear ?? (years ? Number(years.split(',').at(-1)) : undefined))
+    : undefined;
+  useEffect(() => {
+    if (archive && pickedYear === undefined && reviewYear !== undefined) setReviewYear(reviewYear);
+  }, [archive, pickedYear, reviewYear, setReviewYear]);
+  const [league, setLeague] = useTaskState<LeagueChoice | undefined>(
+    world,
+    `${context}-scope`,
+    () =>
+      atContext() ? parseLeague(new URLSearchParams(location.search).get('league')) : undefined,
   );
   // A closed season's tab stays while the list steps between closed seasons.
   const pastTab = pastOf(leagueTab);
@@ -549,7 +573,7 @@ export const LiveSeason = memo(function LiveSeason({
   const requestedSeason = useLeagueSeason((state) => state.request);
   const currentYear = useGameState((state) => state.view?.world.year);
   useEffect(() => {
-    if (requestedSeason === undefined || currentYear === undefined) return;
+    if (!leaguePage || requestedSeason === undefined || currentYear === undefined) return;
     useLeagueSeason.getState().take();
     setLeague(undefined);
     setLeagueTab('table');
@@ -557,29 +581,41 @@ export const LiveSeason = memo(function LiveSeason({
     else {
       setReviewYear(requestedSeason);
     }
-  }, [requestedSeason, currentYear]);
+  }, [requestedSeason, currentYear, leaguePage, setLeague, setLeagueTab, setReviewYear]);
+  const restoreLeague = useCallback(() => {
+    if (competitionRoute(location.pathname, location.search)?.page !== context) return;
+    const params = new URLSearchParams(location.search);
+    setLeagueTab(savedLeagueTab());
+    setLeague(parseLeague(params.get('league')));
+    if (archive) setReviewYear(selectedYear(params));
+    setTeamPart(
+      params.get('detail') === 'rank' || params.get('view') === 'rank' ? 'rank' : 'table',
+    );
+    setPlayerPart(
+      params.get('detail') === 'trend' || params.get('view') === 'scorer-trend'
+        ? 'trend'
+        : 'scorers',
+    );
+  }, [context, archive, setLeagueTab, setLeague, setReviewYear, setTeamPart, setPlayerPart]);
+  const entered = useRef('');
+  const entering = leaguePage && settled && atContext() && entered.current !== context;
+  useLayoutEffect(() => {
+    if (entering) {
+      entered.current = context;
+      restoreLeague();
+    }
+    if (!leaguePage) entered.current = '';
+  });
   useEffect(() => {
-    const restore = () => {
-      if (!location.pathname.startsWith('/leagues')) return;
-      const params = new URLSearchParams(location.search),
-        year = Number(params.get('season'));
-      setLeagueTab(savedLeagueTab());
-      setLeague(parseLeague(params.get('league')));
-      setReviewYear(Number.isInteger(year) && year > 0 ? year : undefined);
-      setTeamPart(
-        params.get('detail') === 'rank' || params.get('view') === 'rank' ? 'rank' : 'table',
-      );
-      setPlayerPart(
-        params.get('detail') === 'trend' || params.get('view') === 'scorer-trend'
-          ? 'trend'
-          : 'scorers',
-      );
+    window.addEventListener('popstate', restoreLeague);
+    window.addEventListener('tasknavigate', restoreLeague);
+    return () => {
+      window.removeEventListener('popstate', restoreLeague);
+      window.removeEventListener('tasknavigate', restoreLeague);
     };
-    window.addEventListener('popstate', restore);
-    return () => window.removeEventListener('popstate', restore);
-  }, []);
+  }, [restoreLeague]);
   useEffect(() => {
-    if (page !== 'league') return;
+    if (!leaguePage || !settled || !atContext() || entering) return;
     const url = new URL(location.href);
     url.searchParams.set('view', leagueTab);
     if (leagueTab === 'teams' && teamPart === 'rank') url.searchParams.set('detail', 'rank');
@@ -597,11 +633,35 @@ export const LiveSeason = memo(function LiveSeason({
       url.searchParams.set('tab', pastTab);
     }
     history.replaceState(history.state, '', `${url.pathname}${url.search}${url.hash}`);
-  }, [page, leagueTab, reviewYear, pastTab, league, teamPart, playerPart]);
-  const reviewing = page === 'league' && reviewYear !== undefined;
+  }, [
+    page,
+    leaguePage,
+    settled,
+    leagueTab,
+    reviewYear,
+    pastTab,
+    league,
+    teamPart,
+    playerPart,
+    context,
+    entering,
+  ]);
+  useEffect(() => {
+    if (archive && reviewYear === currentYear) {
+      const params = new URLSearchParams(location.search);
+      params.delete('season');
+      params.delete('tab');
+      const target = competitionRoute('/season', params.toString());
+      const address = target?.address ?? '/season?competition=league';
+      history.replaceState(null, '', address);
+      useNavigation.setState({ page: 'league' });
+      window.dispatchEvent(new Event('tasknavigate'));
+    }
+  }, [archive, reviewYear, currentYear]);
+  const reviewing = archive && reviewYear !== undefined;
   // A league tab mounts the first time it is shown and stays mounted after, so it keeps what was
   // chosen in it; a tab never opened renders nothing while hidden.
-  const shown = page === 'league' && !reviewing ? tab : undefined;
+  const shown = page === 'league' ? tab : undefined;
   const [opened, setOpened] = useState<Tab[]>([]);
   if (shown && !opened.includes(shown)) setOpened([...opened, shown]);
   useEffect(() => {
@@ -627,7 +687,10 @@ export const LiveSeason = memo(function LiveSeason({
   const inTabs = (id: Tab) => visibleTabs.some(([visible]) => visible === id);
   return (
     <div hidden={!active} data-testid="live-season" className={t.liveSeason}>
-      {page === 'league' && <SeasonPicker value={reviewYear} onChange={setReviewYear} />}
+      {archive && <SeasonPicker value={reviewYear} onChange={setReviewYear} />}
+      {archive && reviewYear === undefined && (
+        <p className={s.muted}>아직 마감된 리그 시즌이 없어요.</p>
+      )}
       {page === 'league' && !reviewing && <LeagueScope league={league} onLeague={setLeague} />}
       {/* Only the tabs stay pinned: a taller pinned band would hide what scrolls up under it. */}
       {page === 'league' && !reviewing && (
@@ -658,7 +721,7 @@ export const LiveSeason = memo(function LiveSeason({
           role={id === 'match' ? undefined : 'tabpanel'}
           aria-labelledby={id !== 'match' && inTabs(id) ? `season-tab-${id}` : undefined}
           aria-label={id === 'match' ? '경기 관전' : inTabs(id) ? undefined : label}
-          hidden={tab !== id || reviewing}
+          hidden={tab !== id || reviewing || (archive && id !== 'match')}
         >
           {id === 'match' ? (
             <MatchPane onPrepare={onPrepare} showDate={page === 'match'} />

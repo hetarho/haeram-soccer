@@ -334,14 +334,17 @@ export function CupHistory({
   competition: key,
   picked,
   onYear: setPicked,
+  countryCode,
 }: {
   w: World;
   client: GameClient;
   competition: string;
   picked?: number;
   onYear: (year: number) => void;
+  countryCode: string;
 }) {
   const own = clubOf(w);
+  const ownCompetition = key !== 'cup' || countryCode === own.country;
   const [report, setReport] = useState<MatchRecord>();
   const [allRuns, setAllRuns] = useState(false),
     [allFinals, setAllFinals] = useState(false);
@@ -350,37 +353,49 @@ export function CupHistory({
   const runId = useId();
   // Closed seasons never change: the honours follow the number of seasons and the competition.
   const honours = useMemo(
-    () => cupHonours(w.history, w.clubs, own.country, key),
-    [w.id, w.history.length, key],
+    () => cupHonours(w.history, w.clubs, countryCode, key),
+    [w.id, w.history.length, key, countryCode],
   );
   const runs = useMemo(
     () =>
       [...w.history]
         .reverse()
         .flatMap((h) =>
-          (h.runs || []).filter((run) => run.key === key).map((run) => ({ year: h.year, run })),
+          (ownCompetition ? h.runs || [] : [])
+            .filter((run) => run.key === key)
+            .map((run) => ({ year: h.year, run })),
         ),
-    [w.id, w.history.length, key],
+    [w.id, w.history.length, key, countryCode, ownCompetition],
   );
   // Oldest first; a season chosen for another competition stays when this one was played then.
   const years = honours.finals.map((row) => row.year).reverse();
   const year = picked ?? years.at(-1);
+  useEffect(() => {
+    if (picked === undefined && year !== undefined) setPicked(year);
+  }, [picked, year, setPicked]);
   const final = honours.finals.find((row) => row.year === year);
   const season = w.history.find((h) => h.year === year);
-  const archive = useSeasonRecords(client, w.id, year);
+  const archive = useSeasonRecords(client, w.id, ownCompetition ? year : undefined);
   const records = archive?.records;
-  const bracket = records?.season?.brackets?.find((entry) => entry.key === key);
+  const bracket = ownCompetition
+    ? records?.season?.brackets?.find((entry) => entry.key === key)
+    : undefined;
   const knockout = useMemo(
     () => (bracket && year !== undefined ? archivedKnockout(w, year, bracket) : undefined),
     [bracket, year],
   );
   const route = useMemo(
-    () => (records && year !== undefined ? cupRoute(w, year, key, records) : undefined),
-    [records, year, key],
+    () =>
+      !ownCompetition
+        ? []
+        : records && year !== undefined
+          ? cupRoute(w, year, key, records)
+          : undefined,
+    [records, year, key, ownCompetition],
   );
   const chip =
       key === 'cup'
-        ? domesticCupName(own.country)
+        ? domesticCupName(countryCode)
         : lineageName(
             w,
             LINEAGES.find((entry) => entry.key === key)!,
@@ -447,7 +462,11 @@ export function CupHistory({
                   </>
                 )}
               </p>
-              {season && <p className={c.status}>{runLine(season, key)}</p>}
+              {season && (
+                <p className={c.status}>
+                  {ownCompetition ? runLine(season, key) : '우리 클럽은 나서지 않았어요'}
+                </p>
+              )}
               <section
                 ref={journey}
                 tabIndex={-1}
@@ -463,13 +482,16 @@ export function CupHistory({
                   <CupJourney w={w} rows={route} onReport={setReport} />
                 ) : (
                   <p className={c.note}>
-                    {season?.runs && !season.runs.some((run) => run.key === key)
+                    {!ownCompetition ||
+                    (season?.runs && !season.runs.some((run) => run.key === key))
                       ? `우리 클럽은 이 시즌 ${name}에 나서지 않았어요.`
                       : `이 시즌 우리 클럽의 ${name} 경기 기록이 남아 있지 않아요.`}
                   </p>
                 )}
               </section>
-              {archive?.failed ? (
+              {!ownCompetition ? (
+                <p className={c.treeNote}>이 대회의 지난 대진표는 보관하지 않았어요.</p>
+              ) : archive?.failed ? (
                 <p className={c.treeNote} role="alert">
                   대진표를 읽지 못했어요. 시즌을 다시 골라 보세요.
                 </p>

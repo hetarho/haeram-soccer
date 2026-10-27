@@ -1,3 +1,4 @@
+import { openLeague } from './competition-navigation';
 import { watchNext } from './watch';
 import { chooseOption, selectOptions } from './select';
 import { chooseLevel, delegateSales } from './events';
@@ -102,7 +103,7 @@ for (const viewport of [
       name: viewport.width < 760 ? '모바일 게임 메뉴' : '게임 메뉴',
       exact: true,
     });
-    await nav.getByRole('button', { name: '리그', exact: true }).click();
+    await openLeague(page);
     await page.getByRole('tab', { name: '순위표', exact: true }).click();
     const country = page.getByRole('combobox', { name: '국가', exact: true });
     await chooseOption(country, 'FRA');
@@ -124,7 +125,7 @@ for (const viewport of [
     const stop = page.getByRole('button', { name: '자동 진행 정지', exact: true });
     await expect(stop).toBeVisible();
     await stop.click();
-    await nav.getByRole('button', { name: '리그', exact: true }).click();
+    await openLeague(page);
     await expect(page).toHaveURL(contextUrl);
     await expect(country).toHaveAttribute('data-value', 'FRA');
 
@@ -137,7 +138,7 @@ for (const viewport of [
     await expect(plan).toHaveCount(0);
     await expect(review).toBeFocused();
     await leaveOffice(page);
-    await nav.getByRole('button', { name: '리그', exact: true }).click();
+    await openLeague(page);
     await expect(page).toHaveURL(contextUrl);
     await expect(country).toHaveAttribute('data-value', 'FRA');
 

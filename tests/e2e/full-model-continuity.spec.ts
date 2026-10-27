@@ -1,3 +1,4 @@
+import { openClubRecords, openLeague } from './competition-navigation';
 import { expect, test, type Page } from '@playwright/test';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import { canonical } from '../../packages/contracts/src/index';
@@ -32,7 +33,7 @@ const nav = (page: Page) =>
   });
 /** The own league's coverage line in its player records (→WEB-89). */
 async function coverageLine(page: Page) {
-  await nav(page).getByRole('button', { name: '리그', exact: true }).click();
+  await openLeague(page);
   await page.getByRole('tab', { name: '선수 기록', exact: true }).click();
   return page
     .getByRole('region', { name: '선수 세부 기록', exact: true })
@@ -40,7 +41,7 @@ async function coverageLine(page: Page) {
 }
 /** This season's own matches in the records room. */
 async function seasonMatches(page: Page) {
-  await nav(page).getByRole('button', { name: '클럽 기록실', exact: true }).click();
+  await openClubRecords(page);
   await page.getByRole('tab', { name: '시즌별 기록', exact: true }).click();
   await page.getByRole('table', { name: '시즌별 기록' }).getByRole('button').first().click();
   await page
@@ -209,7 +210,7 @@ for (const viewport of VIEWPORTS)
     // Saved, reloaded, exported and imported: the same aggregates, boundary and appearances.
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
-    await expect(nav(page).getByRole('button', { name: '리그', exact: true })).toBeVisible();
+    await expect(nav(page).getByRole('button', { name: '시즌', exact: true })).toBeVisible();
     // The records load after the page: wait for the line rather than read it at once.
     await expect(await coverageLine(page)).toHaveText(played);
     const raw = await exportRaw(page);

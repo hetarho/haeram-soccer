@@ -1,7 +1,16 @@
+import { COMPETITION_PATHS } from './competitionNavigation';
+import { CompetitionTabs } from './CompetitionTabs';
 import { OfficeOverviewHost } from './OfficeOverviewHost';
 import { CashAlarm } from './CashAlarm';
 import { FeedbackOverlay } from './FeedbackOverlay';
-import { activateTaskWorld, openClubSeason, openPeople, useNavigation, type Page } from './state';
+import {
+  activateTaskWorld,
+  openClubSeason,
+  openPeople,
+  openPrimary,
+  useNavigation,
+  type Page,
+} from './state';
 import { PixelIcon, type PixelIconName } from './PixelIcon';
 import { useLocale } from '../presentation/react';
 import type { Translator } from '../presentation/locale';
@@ -140,6 +149,8 @@ function NavIcon({ page }: { page: Page }) {
     match: 'ball',
     league: 'table',
     europe: 'cup',
+    leagueHistory: 'history',
+    cupHistory: 'history',
     people: 'people',
     training: 'training',
     business: 'trend',
@@ -456,7 +467,7 @@ const ConnectedEurope = memo(function ConnectedEurope({ client }: { client: Game
   const state = useContentState();
   const page = useNavigation((state) => state.page);
   const visited = useRef(false);
-  if (page === 'europe') visited.current = true;
+  if (page === 'europe' || page === 'cupHistory') visited.current = true;
   if (!visited.current) return null;
   return (
     <Suspense fallback={<p role="status">컵 대회를 불러오고 있어요.</p>}>
@@ -864,11 +875,12 @@ export function App() {
     [pendingImport, setPendingImport] = useState<string>(),
     [moreOpen, setMoreOpen] = useState(false),
     [guideOpen, setGuideOpen] = useState(false);
-  const { page, setPage, replacePage } = useNavigation();
+  const { page, replacePage } = useNavigation();
   // One responsibility dialog for the clock, local task links and the main menu.
   const showNews = useNewsSheet((state) => state.show);
   const showGlossary = useGlossary((state) => state.show);
   const contentPage = useDeferredValue(page);
+  const competitionHub = Object.hasOwn(COMPETITION_PATHS, contentPage);
   const changingView = contentPage !== page;
   const openMenu = useCallback(() => setMoreOpen(true), []);
   useEffect(() => {
@@ -1081,9 +1093,13 @@ export function App() {
                 data-ui="navigation"
                 key={id}
                 disabled={menuDisabled}
-                aria-current={page === id ? 'page' : undefined}
-                className={page === id ? s.active : undefined}
-                onClick={() => setPage(id)}
+                aria-current={
+                  TABS.find(([tab]) => tab === id)?.[3].includes(page) ? 'page' : undefined
+                }
+                className={
+                  TABS.find(([tab]) => tab === id)?.[3].includes(page) ? s.active : undefined
+                }
+                onClick={() => openPrimary(id)}
               >
                 <NavIcon page={id} />
                 {t(label)}
@@ -1171,18 +1187,30 @@ export function App() {
                   <div className={s.coreContent} hidden={contentPage !== 'dashboard'}>
                     <ConnectedDashboard client={client} />
                   </div>
-                  <LiveSeason
-                    key={worldId}
-                    page={contentPage}
-                    client={client}
-                    controller={controller}
-                  />
-                  <div hidden={contentPage !== 'europe'}>
-                    <ConnectedEurope client={client} />
+                  <CompetitionTabs page={contentPage} />
+                  <div
+                    id="competition-hub-panel"
+                    className={s.views}
+                    role={competitionHub ? 'tabpanel' : undefined}
+                    aria-labelledby={
+                      competitionHub ? `competition-hub-tab-${contentPage}` : undefined
+                    }
+                  >
+                    <LiveSeason
+                      key={worldId}
+                      page={contentPage}
+                      client={client}
+                      controller={controller}
+                    />
+                    <div hidden={contentPage !== 'europe' && contentPage !== 'cupHistory'}>
+                      <ConnectedEurope client={client} />
+                    </div>
+                    {(['people', 'training', 'business', 'history'] as Page[]).includes(
+                      contentPage,
+                    ) && (
+                      <ConnectedRich page={contentPage} client={client} controller={controller} />
+                    )}
                   </div>
-                  {(['people', 'training', 'business', 'history'] as Page[]).includes(
-                    contentPage,
-                  ) && <ConnectedRich page={contentPage} client={client} controller={controller} />}
                 </div>
               </>
             )
@@ -1206,7 +1234,7 @@ export function App() {
               aria-current={owns.includes(page) ? 'page' : undefined}
               className={id === 'dashboard' ? s.homeTab : undefined}
               disabled={menuDisabled}
-              onClick={() => setPage(id)}
+              onClick={() => openPrimary(id)}
             >
               <NavIcon page={id} />
               <span>{t(label)}</span>

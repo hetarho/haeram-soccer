@@ -5,13 +5,13 @@
     "navigation.dashboard": "Kulüp ana sayfası",
     "navigation.league": "Lig",
     "navigation.europe": "Kupalar",
-    "navigation.history": "Kulüp arşivi",
+    "navigation.history": "Tarihçe",
     "navigation.people": "Kadro ve teknik ekip",
     "navigation.training": "Antrenman ve gelişim",
     "navigation.business": "Kulüp yönetimi",
     "navigation.short.league": "Lig",
     "navigation.short.europe": "Kupalar",
-    "navigation.short.history": "Arşiv",
+    "navigation.short.history": "Tarihçe",
     "navigation.short.dashboard": "Ana sayfa",
     "navigation.short.people": "Kadro",
     "navigation.short.training": "İdman",
@@ -153,6 +153,11 @@
     "match.stoppage.yellow": "Sarı kart · {player}",
     "match.stoppage.red": "Kırmızı kart · {player}",
     "match.stoppage.injury": "Sakatlık · {player}",
-    "match.stoppage.sub": "Oyuncu değişikliği · {out} → {in}"
+    "match.stoppage.sub": "Oyuncu değişikliği · {out} → {in}",
+    "navigation.season": "Sezon",
+    "navigation.short.season": "Sezon",
+    "navigation.clubRecords": "Kulüp arşivi",
+    "navigation.pastLeague": "Geçmiş ligler",
+    "navigation.pastCup": "Geçmiş kupalar"
   }
 }

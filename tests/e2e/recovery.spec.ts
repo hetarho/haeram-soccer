@@ -1,3 +1,4 @@
+import { openLeague } from './competition-navigation';
 import { advanceOneRound } from './season-progression';
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
@@ -270,8 +271,8 @@ test('a new game goes into another slot, both careers survive switching and back
   await page.reload();
   await expect(page.getByText('New Fictional Club', { exact: true }).first()).toBeVisible();
   // The first career waited in its slot and comes back intact.
-  await page.getByRole('button', { name: '리그', exact: true }).first().click();
-  await expect(page).toHaveURL(/\/leagues/);
+  await openLeague(page);
+  await expect(page).toHaveURL(/\/season\?competition=league/);
   // The URL updates before the deferred page commits. Wait for the intended departure page
   // before scrolling to its footer, which moves when that page replaces the previous one.
   await expect(page.getByRole('tab', { name: '순위표', exact: true })).toBeVisible();

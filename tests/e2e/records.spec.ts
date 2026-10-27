@@ -1,3 +1,4 @@
+import { openClubRecords } from './competition-navigation';
 import { chooseOption } from './select';
 import { finishSeason } from './season-progression';
 import { managerHistoryList, openCurrentClubSeason } from './record-navigation';
@@ -15,7 +16,7 @@ async function closeFirstSeason(page: Page, seed: string) {
   await expect(page.getByTestId('game-round')).toHaveText('0');
   await page.keyboard.press('Escape');
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
-  await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
+  await openClubRecords(page);
 }
 
 for (const [label, viewport] of [
@@ -32,7 +33,7 @@ for (const [label, viewport] of [
       await page.getByText('고급 설정', { exact: true }).click();
       await page.getByLabel('세계 생성 시드').fill('live-tabs-quiet');
       await page.getByRole('button', { name: '클럽 창단' }).click();
-      await page.getByRole('button', { name: '클럽 기록실', exact: true }).first().click();
+      await openClubRecords(page);
       await page.evaluate(() => {
         const probe = { flashes: 0 };
         (window as typeof window & { archiveProbe?: typeof probe }).archiveProbe = probe;
@@ -88,7 +89,7 @@ for (const [label, viewport] of [
         '감독 이력',
       ]);
       await expect(tab('시즌별 기록')).toHaveAttribute('aria-selected', 'true');
-      await expect(page).toHaveURL(/\/history$/);
+      await expect(page).toHaveURL(/\/history\?section=club$/);
 
       // 요약: one part at a time, the trophy cabinet first, then where our Elo stands among every
       // club, the season table and the other records.
@@ -153,7 +154,7 @@ for (const [label, viewport] of [
       // Centred, so the floating news button and the tab bar stay clear of the row.
       await row.evaluate((element) => element.scrollIntoView({ block: 'center' }));
       await row.click();
-      await expect(page).toHaveURL(/\/history\?season=1950/);
+      await expect(page).toHaveURL(/\/history\?section=club&season=1950/);
       // The season is a sub-screen: the records tabs give way to its navigator bar (→WEB-54).
       await expect(page.getByRole('tablist', { name: '기록실 보기' })).toHaveCount(0);
       const navigator = page.getByRole('navigation', { name: '시즌 기록 이동', exact: true });
@@ -175,7 +176,7 @@ for (const [label, viewport] of [
         );
       }
       await page.getByRole('button', { name: '이 시즌 리그 순위표', exact: true }).click();
-      await expect(page).toHaveURL(/\/leagues\?.*season=1950&tab=table/);
+      await expect(page).toHaveURL(/\/history\?.*section=league.*season=1950&tab=table/);
       await expect(
         page.getByRole('tablist', { name: '지난 시즌 보기' }).getByRole('tab', { name: '순위표' }),
       ).toHaveAttribute('aria-selected', 'true');
@@ -192,7 +193,7 @@ for (const [label, viewport] of [
       await page.keyboard.press('ArrowRight');
       await expect(tab('구단 성장')).toBeFocused();
       await expect(tab('구단 성장')).toHaveAttribute('aria-selected', 'true');
-      await expect(page).toHaveURL(/\/history\?view=trends$/);
+      await expect(page).toHaveURL(/\/history\?section=club&view=trends$/);
 
       // Growth: one chart at a time, the league position first; the keyboard steps through the
       // seasons and End reads the latest in the bubble.
@@ -302,7 +303,7 @@ for (const [label, viewport] of [
       // 이적 기록: 영입 and 매각 fee boards over every season or one, in today's money; a club
       // without a fee transfer says so (→WEB-54, HIST-20).
       await tab('이적 기록').click();
-      await expect(page).toHaveURL(/\/history\?view=transfers$/);
+      await expect(page).toHaveURL(/\/history\?section=club&view=transfers$/);
       const transferBoards = page.getByRole('group', { name: '이적 기록 종류' });
       await expect(transferBoards.getByRole('button')).toHaveText(['영입', '매각']);
       await expect(transferBoards.getByRole('button', { name: '영입' })).toHaveAttribute(
@@ -353,7 +354,7 @@ for (const [label, viewport] of [
       await tab('시즌별 기록').focus();
       await page.keyboard.press('End');
       await expect(tab('감독 이력')).toHaveAttribute('aria-selected', 'true');
-      await expect(page).toHaveURL(/\/history\?view=managers$/);
+      await expect(page).toHaveURL(/\/history\?section=club&view=managers$/);
       await expect(page.getByRole('heading', { name: '감독들이 남긴 계절' })).toBeVisible();
       await expect(page.getByText(/ · 현재$/)).toBeVisible();
       // The closed season's tenures above it: the one in charge now on top, with a record.
@@ -377,7 +378,7 @@ for (const [label, viewport] of [
       await expect(fresh.getByText(/ · 현재$/)).toBeVisible();
       await expect(fresh.getByText('감독 기록을 펼치는 중…')).toHaveCount(0);
       await freshTabs.getByRole('tab', { name: '시즌별 기록' }).click();
-      await expect(fresh).toHaveURL(/\/history$/);
+      await expect(fresh).toHaveURL(/\/history\?section=club$/);
       expect(await horizontalOverflow(fresh)).toBeLessThanOrEqual(0);
     });
   });
