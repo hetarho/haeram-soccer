@@ -307,12 +307,13 @@ for (const viewport of [
     await expect(result).toContainText(`${ownGoals}–${otherGoals}`);
     expect(await savedRaw(page)).toBe(settled);
     advanceToNextMatch(reference);
-    const beforeNext = await page.getByTestId('game-date').innerText();
+    const matchDate = page.getByTestId('match-theatre').getByTestId('game-date');
+    const beforeNext = await matchDate.innerText();
     await page.getByTestId('match-next-action').click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
-    await expect(page.getByTestId('game-date')).toHaveText(beforeNext);
+    await expect(page.getByTestId('calendar').getByTestId('game-date')).toHaveText(beforeNext);
     await watchNext(page);
-    await expect(page.getByTestId('game-date')).not.toHaveText(beforeNext);
+    await expect(matchDate).not.toHaveText(beforeNext);
     await expect(page.getByTestId('match-next-action')).toBeEnabled();
     await expectCompactMatch(page, viewport);
     await expect(page.getByRole('button', { name: '경기 상세', exact: true })).toHaveAttribute(

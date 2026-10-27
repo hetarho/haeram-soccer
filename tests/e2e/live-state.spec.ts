@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
 import { createWorld } from '../../packages/engine/src/index';
 import type { World } from '../../packages/contracts/src/types';
-import { configureResponsibilities } from './events';
+import { configureResponsibilities, matchReport } from './events';
 import { continueSlot } from './slots';
 import { chooseOption } from './select';
 
@@ -18,9 +18,7 @@ async function found(page: import('@playwright/test').Page) {
   await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 1일');
 }
 
-test('keeps league views and nodes across silent progression from home and updates real scorers', async ({
-  page,
-}) => {
+async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-first') {
   // Exercise observation timing without unrelated direct market decisions.
   await found(page);
   await configureResponsibilities(page, {
@@ -65,10 +63,17 @@ test('keeps league views and nodes across silent progression from home and updat
   await openLeague(page);
   await expect(mini.getByRole('button', { name: '자동 진행 정지' })).toBeVisible();
   await expect(rankTab).toHaveAttribute('aria-selected', 'true');
-  await page.getByRole('tab', { name: '선수 기록', exact: true }).click();
-  // A match eve opens its dialog automatically from every management view. On a slow browser
-  // the run reaches it before the view switch: then its backdrop takes the click, so stop trying.
-  const eveDialog = page.getByRole('dialog', { name: 'NEXT MATCH', exact: true });
+  const eveDialog = matchReport(page);
+  const playersTab = page.getByRole('tab', { name: '선수 기록', exact: true });
+  // Cover both event orders without racing an observed report's background lock.
+  if (observation === 'eve-first') await expect(eveDialog).toBeVisible();
+  while (!(await eveDialog.isVisible()))
+    try {
+      await playersTab.click({ timeout: 1000 });
+      break;
+    } catch {
+      // An arriving match-eve report can take the click before the tab changes.
+    }
   const scorerTrend = page
     .getByRole('group', { name: '선수 기록 보기' })
     .getByRole('button', { name: '득점왕 추이', exact: true });
@@ -81,6 +86,15 @@ test('keeps league views and nodes across silent progression from home and updat
     }
   await expect(eveDialog).toBeVisible();
   await expect(date).toHaveText('1950년 8월 7일');
+  if ((await playersTab.getAttribute('aria-selected')) !== 'true') {
+    await eveDialog.getByRole('button', { name: '창 닫기', exact: true }).click();
+    await playersTab.click();
+    await scorerTrend.click();
+    // Browsing a dismissed observation leaves its work and the calendar unchanged.
+    await expect(date).toHaveText('1950년 8월 7일');
+    await page.getByTestId('event-pill').click();
+    await expect(eveDialog).toBeVisible();
+  }
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
   await eve.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
@@ -123,7 +137,14 @@ test('keeps league views and nodes across silent progression from home and updat
   expect(probe).toEqual({ samePanel: true, sameCanvas: true, flashes: 0 });
   await rankTab.click();
   await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
-});
+}
+
+for (const observation of ['interleaved', 'eve-first'] as const)
+  test(`keeps league views and nodes across silent progression and updates real scorers (${observation})`, async ({
+    page,
+  }) => {
+    await proveLiveLeague(page, observation);
+  });
 
 test('watching a match pauses the calendar and retains playback across page switches', async ({
   page,
