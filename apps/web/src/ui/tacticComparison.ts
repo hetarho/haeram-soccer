@@ -1,6 +1,6 @@
 import type { Player, Tactic, World } from '../../../../packages/contracts/src/types';
 import { fatigueCost, ownTacticalProfile } from '../../../../packages/engine/src/strategy';
-import { TACTICS } from '../../../../packages/engine/src/world';
+import { TACTICS } from '../../../../packages/engine/src/tactics';
 
 /**
  * The four tactics over one lineup, read from the profile the engine plays for the own club:

@@ -7,7 +7,8 @@ import type {
 import { activeTrainingFocus } from '../../../../packages/engine/src/training';
 import { seasonDate } from '../../../../packages/engine/src/calendar';
 import { activePlayers, clubOf } from '../../../../packages/engine/src/player-state';
-import { startingSquad, tacticLabel } from '../../../../packages/engine/src/world';
+import { startingSquad } from '../../../../packages/engine/src/world';
+import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import { lineupSummary } from '../../../../packages/engine/src/strategy';
 import { compactMoney, number } from './format';
 import { orderIds, ownLeagueIds } from './league';

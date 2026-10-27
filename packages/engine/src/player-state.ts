@@ -9,6 +9,7 @@ import {
   levelFactor,
   type Slot,
 } from './player';
+import { dayCountedFrom } from './calendar';
 
 const ownIndex = new WeakMap<readonly Club[], number>();
 /** The owner's club: its place in the clubs array is remembered and checked on every call. */
@@ -50,4 +51,11 @@ export const formationOf = (tactic: Tactic) => FORMATIONS[tactic].slots;
 export const FRESH_FATIGUE = 20;
 export function fatigueLoad(fatigue: number) {
   return Math.max(0, fatigue - FRESH_FATIGUE);
+}
+/** Days until an injured player can play again (→CLUB-23); 0 when fit. */
+export function injuryDaysLeft(w: World, p: Player) {
+  return p.injury ? Math.max(0, p.injury.day - dayCountedFrom(w, p.injury.year)) : 0;
+}
+export function isInjured(w: World, p: Player) {
+  return injuryDaysLeft(w, p) > 0;
 }

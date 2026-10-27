@@ -63,7 +63,7 @@ describe('runtime architecture boundaries', () => {
     expect(files.filter((name) => name.startsWith('packages/engine/'))).toEqual([]);
     expect(packages(files).filter((name) => FRAMEWORK.test(name))).toEqual([]);
   });
-  it.each(['events', 'quotes', 'player-state'])(
+  it.each(['events', 'quotes', 'player-state', 'tactics', 'calendar'])(
     '%s stays below world generation, campaign and match orchestration',
     (leaf) => {
       const files = closure(`packages/engine/src/${leaf}.ts`);

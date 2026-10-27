@@ -4,7 +4,7 @@ import { PixelIcon } from './PixelIcon';
 import { useEffect, useState, type ReactNode } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import { readBuildTitle } from '../../../../packages/engine/src/build';
-import { tacticLabel } from '../../../../packages/engine/src/world';
+import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import type { ClientState, GameClient } from '../runtime/client';
 import type { ClubRecords, RecordMatch, Run } from '../runtime/clubRecords';
 import type { Reply } from '../runtime/protocol';

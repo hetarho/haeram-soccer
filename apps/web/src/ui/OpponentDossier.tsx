@@ -1,6 +1,6 @@
 import type { World } from '../../../../packages/contracts/src/types';
 import { fixtureDate } from '../../../../packages/engine/src/calendar';
-import { tacticLabel } from '../../../../packages/engine/src/world';
+import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import { competitionLabel, kindLabel, seasonName } from './format';
 import { resultFor, scoutOpponent } from './scouting';
 import { ClubLink } from './ClubLink';

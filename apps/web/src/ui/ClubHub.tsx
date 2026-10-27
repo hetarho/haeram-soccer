@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../packages/engine/src/player-state';
-import { tacticLabel } from '../../../../packages/engine/src/world';
+import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import { nextOwnFixture, currentDay, seasonLength } from '../../../../packages/engine/src/calendar';
 import { orderIds, ownDivisionRound, ownLeagueIds } from './league';
 import { competitionLabel, number } from './format';

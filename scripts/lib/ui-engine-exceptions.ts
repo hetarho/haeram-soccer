@@ -60,8 +60,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/investment.ts',
     'packages/engine/src/settlement.ts',
   ],
-  'apps/web/src/ui/ClubFounding.tsx': ['packages/engine/src/world.ts'],
-  'apps/web/src/ui/ClubHub.tsx': ['packages/engine/src/world.ts'],
   'apps/web/src/ui/ClubStaff.tsx': [
     'packages/engine/src/hiring.ts',
     'packages/engine/src/managerMarket.ts',
@@ -92,15 +90,12 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/strategy.ts',
     'packages/engine/src/world.ts',
   ],
-  'apps/web/src/ui/MatchReport.tsx': ['packages/engine/src/world.ts'],
   'apps/web/src/ui/MediationReview.tsx': ['packages/engine/src/signings.ts'],
-  'apps/web/src/ui/OpponentDossier.tsx': ['packages/engine/src/world.ts'],
   'apps/web/src/ui/OvrBadge.tsx': ['packages/engine/src/world.ts'],
   'apps/web/src/ui/PersonCareer.tsx': ['packages/engine/src/staff.ts'],
   'apps/web/src/ui/Pitch.tsx': [
     'packages/engine/src/managerMarket.ts',
     'packages/engine/src/match.ts',
-    'packages/engine/src/world.ts',
   ],
   'apps/web/src/ui/PlayerProfile.tsx': [
     'packages/engine/src/career-assessment.ts',
@@ -120,7 +115,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/projection.ts',
   ],
   'apps/web/src/ui/ProgressControls.tsx': ['packages/engine/src/stopping.ts'],
-  'apps/web/src/ui/RecordsRoom.tsx': ['packages/engine/src/world.ts'],
   'apps/web/src/ui/RecruitmentDesk.tsx': [
     'packages/engine/src/recruitment.ts',
     'packages/engine/src/staff.ts',
@@ -136,7 +130,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/ops-staff.ts',
     'packages/engine/src/staff.ts',
     'packages/engine/src/transfers.ts',
-    'packages/engine/src/world.ts',
   ],
   'apps/web/src/ui/ScoutShortlist.tsx': [
     'packages/engine/src/signings.ts',
@@ -161,8 +154,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/strategy.ts',
     'packages/engine/src/world.ts',
   ],
-  'apps/web/src/ui/StyleCard.tsx': ['packages/engine/src/world.ts'],
-  'apps/web/src/ui/TacticalLab.tsx': ['packages/engine/src/world.ts'],
   'apps/web/src/ui/TeamSheetDialog.tsx': ['packages/engine/src/ratings.ts'],
   'apps/web/src/ui/TrainingOrderSheet.tsx': [
     'packages/engine/src/academy.ts',
@@ -201,15 +192,9 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/world.ts',
   ],
   'apps/web/src/ui/recordTrends.ts': ['packages/engine/src/ratings.ts'],
-  'apps/web/src/ui/scouting.ts': [
-    'packages/engine/src/career-assessment.ts',
-    'packages/engine/src/strategy.ts',
-  ],
+  'apps/web/src/ui/scouting.ts': ['packages/engine/src/career-assessment.ts'],
   'apps/web/src/ui/strategies.ts': ['packages/engine/src/presets.ts'],
-  'apps/web/src/ui/tacticComparison.ts': [
-    'packages/engine/src/strategy.ts',
-    'packages/engine/src/world.ts',
-  ],
+  'apps/web/src/ui/tacticComparison.ts': ['packages/engine/src/strategy.ts'],
   'apps/web/src/ui/teamState.ts': [
     'packages/engine/src/academy.ts',
     'packages/engine/src/care.ts',

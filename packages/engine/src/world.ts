@@ -26,7 +26,6 @@ import type {
 import { clamp, hash, integer, random, ratio, zeroMetrics, compareIds } from './primitives';
 import { CURRENT_ENGINE_VERSION } from '../../contracts/src/versions';
 import { coachProspect, MANAGER_CAREER } from './coaching';
-import { dayCountedFrom } from './calendar';
 import { isBanned, isUnavailable } from './discipline';
 import { MARKET_BANDS, STYLE_INFO, YOUTH_SELECTION_BONUS } from './styles';
 import { divisionFor, drawAgent, marketWageAt, settleClauses } from './contracts';
@@ -41,13 +40,8 @@ import {
   type Slot,
 } from './player';
 export const ENGINE_VERSION = CURRENT_ENGINE_VERSION;
-export const TACTICS: Tactic[] = ['balanced', 'possession', 'counter', 'press'];
-export const tacticLabel: Record<Tactic, string> = {
-  balanced: '균형',
-  possession: '점유',
-  counter: '역습',
-  press: '전방 압박',
-};
+import { TACTICS, clubStyle } from './tactics';
+export { TACTICS, tacticLabel, clubStyle } from './tactics';
 import {
   clubOf,
   activePlayers,
@@ -198,9 +192,8 @@ export function makeManager(
     potential: career.potential,
   };
 }
-/** The European Cup starts in 1955; every club is founded five seasons earlier (→WEB-2). */
-export const EUROPEAN_CUP_START = 1955;
-export const FOUNDING_YEAR = EUROPEAN_CUP_START - 5;
+import { FOUNDING_YEAR } from './calendar';
+export { EUROPEAN_CUP_START, FOUNDING_YEAR } from './calendar';
 /** Amateur clubs per country below the professional pyramid; with the owner's club, a league of 16. */
 import { AMATEUR_CLUBS } from './league-fixtures';
 export { AMATEUR_CLUBS } from './league-fixtures';
@@ -475,12 +468,6 @@ export function squad(w: World, c: Club): Player[] {
 export function invalidateNpcSquads(w: World) {
   npcCaches.delete(w);
 }
-/** Stable playing style of a club nobody owns, shared by simulation and scouting. */
-export function clubStyle(club: Pick<Club, 'id'>): Tactic {
-  return TACTICS[
-    Math.abs(club.id.split('').reduce((sum, letter) => sum + letter.charCodeAt(0), 0)) % 4
-  ];
-}
 /**
  * Weekly load a pressing club carries. Unowned squads do not track fatigue match by match, so a
  * pressing style pays its usual cost up front instead of pressing for free.
@@ -642,13 +629,8 @@ export function selectedLineup(
     return [replacement];
   });
 }
-/** Days until an injured player can play again (→CLUB-23); 0 when fit. */
-export function injuryDaysLeft(w: World, p: Player) {
-  return p.injury ? Math.max(0, p.injury.day - dayCountedFrom(w, p.injury.year)) : 0;
-}
-export function isInjured(w: World, p: Player) {
-  return injuryDaysLeft(w, p) > 0;
-}
+import { isInjured } from './player-state';
+export { injuryDaysLeft, isInjured } from './player-state';
 /**
  * The own club's starting XI: the manager's (or the owner's saved) choice among fit players; an
  * injured player plays only when too few are fit to field eleven. A player banned for the

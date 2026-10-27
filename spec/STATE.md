@@ -358,7 +358,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T501 | Move tactic labels, founding years and injury reads out of world.ts | ARCH | T500 | todo |
 | T502 | Extract the staff catalogue and member reads into staff-info.ts | ARCH | T501 | todo |
 | T503 | Move competition keys, Elo reads and single labels into leaves | ARCH | T502 | todo |
 
@@ -376,10 +375,11 @@
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 
 ## next
-- implement-task T501, then T502–T503 in order (review/ui-engine-boundary-261027 F1–F4); F5 (domain reads on the main thread) waits for a measured decision.
+- implement-task T502, then T503 (review/ui-engine-boundary-261027 F1–F4); F5 (domain reads on the main thread) waits for a measured decision.
 - o7h4 pushed T490–T493 (owner office, home season card, records sub-screen) to main after the ARCH-30 batch passed on eaf5f3d1; confirm its decided inbox items.
 
 ## log
+- 261027 T501 done: tactic labels, founding years and injury reads moved to engine leaves; UI exception list 53→46 files
 - 261027 T500 done: UI→engine orchestration guard with a shrink-only list (53 files, 38 modules)
 - 261027 create-task review/ui-engine-boundary-261027 + ARCH r23 → T500–T503 (guard, tactic/injury leaves, staff-info leaf, competition/label leaves); review converted
 - 261027 ARCH r23: ARCH-3 path table matches the real layout; ARCH-4 UI imports engine values only from read leaves with a shrink-only guarded exception list
@@ -399,4 +399,3 @@
 - 261027 ideation dead-balls-and-finishing converted
 - 261027 update-ssot WEB r156 MATCH r33 (autopilot k2d7, ideation dead-balls-and-finishing): WEB-32 dead-ball beat for every stoppage tied to speed; MATCH-12 no straight-line glide in dead time; MATCH-16 shot choice from the chance bent by position, role, traits, tactic and school; MATCH-18 free-kick taker by place, corner numbers drawn and score-dependent late
 - 261027 update-ssot WEB MATCH start
-- 261027 ideation dead-balls-and-finishing ready (owner): every stoppage rush ≥ 2× → still beat by kind, both tied to speed; named free-kick taker only in shooting/crossing range; shot choice from the chance bent by position (FW > MF > DF, role), school and tactic, traits, then recalibrated; corners 2–3 back / 1–2 up drawn, score from 80′, keeper up in added time one behind
