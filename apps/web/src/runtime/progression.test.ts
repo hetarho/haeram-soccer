@@ -6,7 +6,7 @@ import { gameStore, initialClientState } from './store';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { PACE_MS, ProgressionController, RESULT_NOTICE_MS } from './progression';
 import { useMatchView } from './matchView';
-import type { View } from './protocol';
+import type { Reply, View } from './protocol';
 
 const w = createWorld({
   country: 'ENG',
@@ -22,6 +22,11 @@ function playback(id: string): MatchPlayback {
     squads: [[], []],
   };
 }
+/**
+ * These cases pin the clock's rules a day at a time; computing ahead of the shown date has its own
+ * suite (progression.runahead.test.ts).
+ */
+const ONE_DAY_AT_A_TIME = { x1: 0, x2: 0, x5: 0, x10: 0 };
 function setup(current?: MatchPlayback, world = w) {
   gameStore.publish({
     ...initialClientState,
@@ -35,13 +40,25 @@ function setup(current?: MatchPlayback, world = w) {
   });
   const command = vi.fn(async () => ({ ok: true, requestId: 'test', view: { world: w } as View }));
   const saveSoon = vi.fn();
+  // Like the client, an automatic day's view is held until the clock reveals it.
+  const held: View[] = [];
   const client = {
-    command,
+    async command(...args: unknown[]) {
+      const reply = await (command as (...args: unknown[]) => Promise<Reply | undefined>)(...args);
+      if ((args[1] as { automatic?: boolean })?.automatic && reply?.ok && reply.view)
+        held.push(reply.view);
+      return reply;
+    },
+    reveal(all = false) {
+      const shown = held.splice(0, all ? held.length : 1);
+      if (shown.length) gameStore.publish({ ...gameStore.getSnapshot(), view: shown.at(-1) });
+      return shown.length;
+    },
     cancel: vi.fn(),
     saveSoon,
     setClockRunning: (clockRunning: boolean) => gameStore.setState({ clockRunning }),
   } as unknown as GameClient;
-  const controller = new ProgressionController(client);
+  const controller = new ProgressionController(client, ONE_DAY_AT_A_TIME);
   return { controller, command, client, saveSoon };
 }
 let controller: ProgressionController | undefined;
