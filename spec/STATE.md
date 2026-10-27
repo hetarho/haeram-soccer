@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | n3w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T12:15Z | 2026-10-27T12:15Z | - |
-| g8u6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T16:41Z | 2026-10-27T16:41Z | - |
+| g8u6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T16:41Z | 2026-10-27T16:42Z | T532 |
 
 ## inbox
 - 261028 decided T531 WEB-100 WEB-74: how to keep request identity through submission and browser history → world-named request addresses and session snapshots, with a scoped client forwarding the existing forms/commands (alt: consume a one-shot request only | copy each form into the office); history can revisit resolved work safely, late replies cannot redirect another request/game, and business rules stay authoritative.
@@ -374,7 +374,7 @@
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | doing@261027.n3w8 |
 | T530 | Work-based owner office and shared approval controls | WEB ARCH | - | doing@261028.g8u6 |
 | T531 | Home approval requests visit their working desk | WEB ARCH | T530 | doing@261028.g8u6 |
-| T532 | Season and History competition hubs | WEB ARCH | T531 | todo |
+| T532 | Season and History competition hubs | WEB ARCH | T531 | doing@261027.g8u6 |
 | T533 | First-team, academy and coaching navigation | WEB ARCH | T532 | todo |
 
 ## work
