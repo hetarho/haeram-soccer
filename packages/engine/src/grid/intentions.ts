@@ -139,7 +139,7 @@ export const INTENTION_CONFIG = {
 } as const;
 
 /** Kinds whose target follows a reference rather than staying where it was set. */
-const TRACKING: ReadonlySet<IntentionKind> = new Set(['press', 'mark', 'cover']);
+export const TRACKING: ReadonlySet<IntentionKind> = new Set(['press', 'mark', 'cover']);
 
 const C = INTENTION_CONFIG;
 
@@ -474,7 +474,7 @@ function verdict(
  * and nobody has it yet. It reads no carrier: no urgent danger and no jobs to give, so nobody
  * presses the taker while the ball is in the air and the scene keeps its set-piece jobs.
  */
-export function updateIntentions(s: GridState, inFlight = false): void {
+export function updateIntentions(s: GridState, inFlight = false, defenceOnly = false): void {
   const def = other(s.possession);
   const danger = !inFlight && inDanger(s, def);
   const review = (gp: GridPlayer) => {
@@ -518,7 +518,7 @@ export function updateIntentions(s: GridState, inFlight = false): void {
         boxRunTo(gp, false);
     }
   // With no carrier `planCoordination` plans nothing (its empty plan), so it is not asked.
-  if (!inFlight) applyCoordination(s, planCoordination(s, danger));
+  if (!inFlight) applyCoordination(s, planCoordination(s, danger, defenceOnly));
 }
 
 /**

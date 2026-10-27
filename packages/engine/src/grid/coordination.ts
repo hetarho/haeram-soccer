@@ -224,7 +224,11 @@ export interface CoordinationPlan {
  * an urgent danger. Reads the state and changes nothing, so every player decides on the same
  * snapshot and an inspection changes no outcome.
  */
-export function planCoordination(s: GridState, danger: boolean): CoordinationPlan {
+export function planCoordination(
+  s: GridState,
+  danger: boolean,
+  defenceOnly = false,
+): CoordinationPlan {
   const plan: CoordinationPlan = { handovers: [], shadows: [], jobs: [] };
   const att = s.possession;
   const carrier = s.owner && s.owner[0] === att ? s.players[att][s.owner[1]]! : undefined;
@@ -235,7 +239,11 @@ export function planCoordination(s: GridState, danger: boolean): CoordinationPla
   // defence knows which zones the attack fills.
   const box = boxScene(s, att);
   defend(s, other(att), carrier, danger, plan, claimed, cache, box);
-  attack(s, att, carrier, plan, claimed, box);
+  // A read of the defence alone (`readsOf`'s speculative update): of the attack's jobs only its box
+  // runs reach a defender's target (`boxMarkPoint`, `zoneRunner`); every later attacking job only
+  // changes attackers' intentions, which the read undoes.
+  if (defenceOnly) boxRuns(s, att, plan, claimed, box);
+  else attack(s, att, carrier, plan, claimed, box);
   return plan;
 }
 
@@ -657,8 +665,21 @@ function attack(
   const mates = s.players[side].filter((gp) => outfield(gp) && gp !== carrier);
   // The rest defence stays home while the ball is in the opponent's half.
   const home = attackFrame(side, s.ball)[0] >= PITCH.length / 2;
-  // The box (T443, →MATCH-33): while its scene is on, each zone's attacker takes a committed box
-  // run to his load point, `BOX_CONFIG.load` m short of it; one already on it keeps it.
+  boxRuns(s, side, plan, claimed, box);
+  attackRest(s, side, carrier, plan, claimed, box, mates, home);
+}
+
+/**
+ * The box (T443, →MATCH-33): while its scene is on, each zone's attacker takes a committed box
+ * run to his load point, `BOX_CONFIG.load` m short of it; one already on it keeps it.
+ */
+function boxRuns(
+  s: GridState,
+  side: 0 | 1,
+  plan: CoordinationPlan,
+  claimed: Set<GridPlayer>,
+  box: BoxScene | undefined,
+): void {
   if (box)
     for (const zone of BOX_ZONES) {
       const idx = box.runners[zone];
@@ -683,6 +704,19 @@ function attack(
         BOX_CONFIG.seconds,
       );
     }
+}
+
+/** The attack's jobs after its box runs: support, an open lane and runs. */
+function attackRest(
+  s: GridState,
+  side: 0 | 1,
+  carrier: GridPlayer,
+  plan: CoordinationPlan,
+  claimed: Set<GridPlayer>,
+  box: BoxScene | undefined,
+  mates: GridPlayer[],
+  home: boolean,
+): void {
   // Support: the nearest presser makes the carrier look for a teammate to show (→MATCH-16).
   let presser: GridPlayer | undefined,
     closest: number = TAG_CONFIG.pressureRadius;
