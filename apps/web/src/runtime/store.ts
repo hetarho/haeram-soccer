@@ -5,7 +5,7 @@ import type { ClientState } from './client';
 import type { View } from './protocol';
 
 /** Worker messages are cloned, so equal branches must regain their previous references. */
-function shareValue(previous: unknown, next: unknown): unknown {
+export function shareValue(previous: unknown, next: unknown): unknown {
   if (Object.is(previous, next)) return previous;
   if (!previous || !next || typeof previous !== 'object' || typeof next !== 'object') return next;
   if (Array.isArray(previous) && Array.isArray(next)) {

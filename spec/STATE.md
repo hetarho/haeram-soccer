@@ -363,7 +363,6 @@
 | T517 | Result-identical cuts in the own match and a shared day bench | MATCH ARCH WEB | - | todo |
 | T518 | Two-phase league round with a read-only fixture copy | ARCH MATCH WEB | - | todo |
 | T519 | Helper workers for an own match day's other fixtures | ARCH MATCH WEB | T518 T520 | todo |
-| T520 | Lighter match-day view publication | ARCH WEB | - | todo |
 | T521 | Automatic play computes ahead of the shown date | WEB SAVE MATCH | T516 T520 | todo |
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | todo |
 
@@ -379,15 +378,13 @@
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
+| auto-play | 4 | 7 | 1 | 6 | 0 | 3 | 0 | 2026-10-27T09:34:39.628Z | [history](work/auto-play.json) |
 
 ## next
-- implement-task T516 (then T517/T518/T520 in any order, T519, T521, explore T522): automatic play without the match-day moment and with result-identical speed-ups (ideation/play-pace-and-owner-surfaces; prototypes on branch perf/integrated).
-- T504 complete: portable resource skins, responsive facilities and image budgets; 79.2 MB → 40.9 MB image payload, 164 affected unit cases and all 13 focused Chromium cases passed; awaiting the ARCH-30 publication gate.
-- T494–T495 complete: theme-matched trophy artwork and distinct division/continental silhouettes; all required batch stages passed before publication.
-- review/ui-engine-boundary-261027 F1–F4 done (T500–T503): UI→orchestration exceptions 53→38 files, 38→35 engine modules; F5 (domain reads on the main thread) waits for a measured decision.
-- o7h4 pushed T490–T493 (owner office, home season card, records sub-screen) to main after the ARCH-30 batch passed on eaf5f3d1; confirm its decided inbox items.
+- inspect work board for remaining tasks
 
 ## log
+- 261027 T520 integrated
 - 261027 ideation play-pace-and-owner-surfaces converted: owner dropped the action / standing choice / dashboard split and home ordering; automatic play scope fully in WEB r160, SAVE r55, ARCH r24
 - 261027 create-task WEB r160 SAVE r55 ARCH r24 → T516–T522 (moment removal, grid cuts + day bench, two-phase round, helper workers, lighter publication, run-ahead clock, browser read)
 - 261027 update-ssot WEB r160 SAVE r55 ARCH r24 from ideation/play-pace-and-owner-surfaces: no match-day moment, computing ahead 3/5/7 days with stop/office/hidden rules, helper workers beside the sole-writer engine; doc stays ready for the owner-surfaces slice
@@ -407,4 +404,3 @@
 - 261027 ARCH r23: ARCH-3 path table matches the real layout; ARCH-4 UI imports engine values only from read leaves with a shrink-only guarded exception list
 - 261027 review-code ui-engine-boundary-261027: 53 UI files import 39 orchestration-reaching engine modules; F1–F4 adopted (owner: make the tasks and implement them), F5 open
 - 261027 o7h4 closed: T490–T493 and gate fixes; batch passed on eaf5f3d1 (299/299 Chromium), pushed to main
-- 261027 batch gate (o7h4) 279/299 Chromium: fixed office-aware helpers (address-based office, selected home tab, celebration and event cards), event groups link 결재 라인, wide home pairs the entrance with the season card, short-phone spacing keeps seven standings rows; the 20 journeys pass on rerun
