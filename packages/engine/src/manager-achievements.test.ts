@@ -198,7 +198,7 @@ describe('pure manager accomplishment queries', () => {
       manager: { id: 'b', name: 'Synthetic B', interim: true },
     });
     const old = entry('pre-tracking', 2029, 200, undefined);
-    const input = { ...source(facts), matches: [old] };
+    const input = { ...source(facts), matches: [old, entry('interim', 2030, 11, 'ours:tenure:2')] };
     expect(tenureRows(input).map((row) => row.summary!.record.coverage)).toEqual([
       'complete',
       'complete',
@@ -420,7 +420,7 @@ describe('pure manager accomplishment queries', () => {
         kind: 'appointment',
         key: `appointment-${serial}`,
         at: date(2030, 10),
-        manager: { id: `m-${serial}`, name: `Synthetic ${serial}`, interim: serial % 2 === 0 },
+        manager: { id: `m-${serial}`, name: `Synthetic ${serial}`, interim: false },
       });
     const input = source(facts);
     const first = managerHistoryPage(input);
@@ -455,6 +455,108 @@ describe('pure manager accomplishment queries', () => {
         });
       }
     }
+  });
+
+  describe('interim tenures credited with no match or outcome', () => {
+    const appoint = (facts: ManagerHistoryFacts, key: string, at: number, interim: boolean) =>
+      recordManagerTenureChange(facts, {
+        kind: 'appointment',
+        key,
+        at: date(2030, at),
+        manager: { id: key, name: `Synthetic ${key}`, interim },
+      });
+    const ids = (input: ManagerHistorySource) =>
+      managerHistoryPage(input).rows.map((row) => row.id);
+
+    it('leaves out an interim with no match or outcome', () => {
+      // A delegated departure appoints the interim and his successor on the same day.
+      const delegated = appoint(appoint(create(), 'interim', 10, true), 'successor', 10, false);
+      const before = JSON.stringify(delegated);
+      expect(ids(source(delegated))).toEqual(['tenure:ours:tenure:3', 'tenure:ours:tenure:1']);
+      expect(managerHistoryPage(source(delegated)).total).toBe(2);
+      expect(delegated.tenures).toHaveLength(3);
+      expect(JSON.stringify(delegated)).toBe(before);
+      const caretaker = appoint(create(), 'interim', 10, true);
+      const current = {
+        ...source(caretaker),
+        currentManager: { id: 'interim', name: 'Synthetic interim', interim: true },
+      };
+      expect(ids(current)).toEqual(['tenure:ours:tenure:1']);
+      expect(managerHistoryPage(current).total).toBe(1);
+    });
+
+    it('lists an interim once he takes a match', () => {
+      const caretaker = appoint(create(), 'interim', 10, true);
+      const input = { ...source(caretaker), matches: [entry('first', 2030, 11, 'ours:tenure:2')] };
+      const [interim] = tenureRows(input);
+      expect(interim).toMatchObject({
+        id: 'tenure:ours:tenure:2',
+        current: true,
+        manager: { interim: true },
+        tenure: { appointed: date(2030, 10) },
+        summary: { record: { played: 1, won: 1 } },
+      });
+      const titled = attributeManagerOutcome(
+        caretaker,
+        { kind: 'cup-title', year: 2030, competition: 'cup:ENG' },
+        { at: date(2030, 200) },
+      );
+      expect(ids(source(titled))).toEqual(['tenure:ours:tenure:2', 'tenure:ours:tenure:1']);
+    });
+
+    it('a hidden interim does not make a season shared', () => {
+      const finished = attributeManagerOutcome(
+        create(),
+        { kind: 'league-finish', year: 2030, ...division() },
+        { at: date(2030, 300) },
+      );
+      const caretaker = recordManagerTenureChange(finished, {
+        kind: 'appointment',
+        key: 'interim',
+        at: date(2030, 301),
+        manager: { id: 'interim', name: 'Synthetic interim', interim: true },
+      });
+      const seasons: ManagerHistorySeason[] = [
+        {
+          year: 2030,
+          league: { division: division(), name: 'Synthetic League', rank: 1, final: true },
+          cups: [],
+          promotions: [],
+        },
+      ];
+      const hidden = tenureRows({ ...source(caretaker), seasons });
+      expect(hidden).toHaveLength(1);
+      expect(hidden[0].summary!.honours).toMatchObject([
+        { kind: 'league-title', sharedSeason: false },
+      ]);
+      expect(hidden[0].summary!.bestFinishes[0].finishes[0].sharedSeason).toBe(false);
+      const shown = tenureRows({
+        ...source(caretaker),
+        seasons,
+        matches: [entry('next', 2031, 1, 'ours:tenure:2')],
+      });
+      expect(shown).toHaveLength(2);
+      expect(shown[1].summary!.honours).toMatchObject([{ sharedSeason: true }]);
+    });
+
+    it('pagination skips hidden interims', () => {
+      let facts = create();
+      for (let serial = 2; serial <= 45; serial++)
+        facts = appoint(facts, `m-${serial}`, 10, serial % 2 === 0);
+      const input = source(facts);
+      const first = managerHistoryPage(input);
+      const second = managerHistoryPage(input, first.nextCursor!);
+      expect([first.total, first.rows.length, second.rows.length]).toEqual([23, 20, 3]);
+      expect(second.nextCursor).toBeNull();
+      const serials = [...first.rows, ...second.rows].map((row) =>
+        Number(row.id.split(':').at(-1)),
+      );
+      expect(serials).toEqual(Array.from({ length: 23 }, (_, index) => 45 - index * 2));
+      const hidden =
+        'manager-history:1:' +
+        encodeURIComponent(JSON.stringify(['ours', 'tenure:ours:tenure:44']));
+      expect(() => managerHistoryPage(input, hidden)).toThrow(ManagerHistoryQueryError);
+    });
   });
 
   it('rejects snapshots for another club and ambiguous duplicate season sources', () => {
