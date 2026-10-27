@@ -124,7 +124,12 @@ function addFinish(acc: Accumulator, finish: ManagerFinalFinish) {
     });
   else if (finish.rank === best.rank) best.finishes.push(finish);
 }
-function sharedSeason(year: number, acc: Accumulator, source: ManagerHistorySource): boolean {
+function sharedSeason(
+  year: number,
+  acc: Accumulator,
+  source: ManagerHistorySource,
+  hidden: ReadonlySet<string>,
+): boolean {
   const tenure = acc.row.tenure!;
   return (
     !tenure.appointed ||
@@ -133,6 +138,7 @@ function sharedSeason(year: number, acc: Accumulator, source: ManagerHistorySour
     !!source.facts?.tenures.some(
       (other) =>
         other.id !== tenure.id &&
+        !hidden.has(other.id) &&
         other.trackedFrom.year <= year &&
         (!other.ended || other.ended.year >= year),
     )
@@ -247,10 +253,24 @@ export function managerHistoryPage(
     seasons.set(season.year, season);
   }
   const seenOutcomes = new Set<string>();
-  for (const outcome of source.facts?.outcomes ?? []) {
+  const outcomes = (source.facts?.outcomes ?? []).filter((outcome) => {
     const key = managerOutcomeSourceKey(outcome.source);
-    if (seenOutcomes.has(key)) continue;
+    if (seenOutcomes.has(key)) return false;
     seenOutcomes.add(key);
+    return true;
+  });
+  // An interim credited with no own match and no outcome stays in the facts but is left out of
+  // every summary, list and count (HIST-18); one match or outcome shows him from his appointment.
+  const credited = new Set(outcomes.map((outcome) => outcome.tenure));
+  const hidden = new Set(
+    [...accumulators]
+      .filter(
+        ([id, { row, summary }]) =>
+          row.tenure!.interim && summary.record.played === 0 && !credited.has(id),
+      )
+      .map(([id]) => id),
+  );
+  for (const outcome of outcomes) {
     const acc = accumulators.get(outcome.tenure);
     if (!acc) continue;
     const season = seasons.get(outcome.source.year);
@@ -260,7 +280,7 @@ export function managerHistoryPage(
       season: { year: outcome.source.year, club: source.club },
       sharedSeason:
         (participants.get(outcome.source.year)?.size ?? 0) > 1 ||
-        sharedSeason(outcome.source.year, acc, source),
+        sharedSeason(outcome.source.year, acc, source, hidden),
     };
     acc.seasons.add(outcome.source.year);
     let resolved = false;
@@ -402,12 +422,18 @@ export function managerHistoryPage(
     summary.provisionalFinishes.sort((a, b) => b.season.year - a.season.year);
   }
   const sortable: { row: ManagerHistoryRow; year: number; day: number; order: number }[] = [
-    ...[...accumulators.values()].map(({ row }, index) => ({
-      row,
-      year: row.tenure!.trackedFrom.year,
-      day: row.tenure!.trackedFrom.day,
-      order: index,
-    })),
+    ...[...accumulators.values()].flatMap(({ row }, index) =>
+      hidden.has(row.tenure!.id)
+        ? []
+        : [
+            {
+              row,
+              year: row.tenure!.trackedFrom.year,
+              day: row.tenure!.trackedFrom.day,
+              order: index,
+            },
+          ],
+    ),
   ];
   if (!source.facts && source.currentManager)
     sortable.push({

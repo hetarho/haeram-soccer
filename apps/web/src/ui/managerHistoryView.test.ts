@@ -62,11 +62,14 @@ describe('manager-history view labels', () => {
     expect(han.tracking).toBeUndefined();
   });
 
-  it('keeps same-name reappointments apart and shows a no-match interim as tracked zero', () => {
-    const rows = tenures(reappointedCareer());
-    expect(rows.map((row) => row.name)).toEqual(['Park Again', 'Lee Interim', 'Park Again']);
-    expect(new Set(rows.map((row) => row.id)).size).toBe(3);
-    const [again, interim, first] = rows;
+  it('keeps same-name reappointments apart and leaves out a no-match interim', () => {
+    const career = reappointedCareer();
+    const rows = tenures(career);
+    // The same-day interim never took a match: his tenure stays in the facts only (→HIST-18).
+    expect(career.facts!.tenures.map((tenure) => tenure.name)).toContain('Lee Interim');
+    expect(rows.map((row) => row.name)).toEqual(['Park Again', 'Park Again']);
+    expect(new Set(rows.map((row) => row.id)).size).toBe(2);
+    const [again, first] = rows;
 
     expect(again.badges).toEqual(['현재 감독']);
     expect(again.service).toBe('선임 1960-11-09');
@@ -77,17 +80,6 @@ describe('manager-history view labels', () => {
       { label: '최다 연승', value: '2경기', ongoing: false },
       { label: '최장 무패', value: '3경기 · 진행 중', ongoing: true },
     ]);
-
-    expect(interim.badges).toEqual(['감독대행']);
-    expect(interim.end).toBe('떠남 1960-11-09 · 교체');
-    expect(interim.record).toMatchObject({
-      line: '지휘한 공식전 없음',
-      rate: '승률 —',
-      known: true,
-    });
-    expect(interim.runs.map((run) => run.value)).toEqual(['—', '—']);
-    expect(interim.honoursLine).toBe('우승·승격 없음');
-    expect(interim.coverage).toBeUndefined();
 
     expect(first.badges).toEqual([]);
     expect(first.service).toBe('선임 1960-08-01');

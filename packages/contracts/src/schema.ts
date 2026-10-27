@@ -200,6 +200,7 @@ const manager = z.object({
   born: z.number().int().optional(),
   potential: rating.optional(),
   term: term.optional(),
+  trustWarned: z.literal(true).optional(),
 });
 const score = z.object({
   home: z.number().int().min(0).max(99),
@@ -827,6 +828,26 @@ const discipline = z.strictObject({
     )
     .max(20000),
 });
+/** Our club's fee transfers (→HIST-20). */
+const transferRecords = z.strictObject({
+  ledgerBefore: z.number().int().min(0).max(100000),
+  facts: z
+    .array(
+      z.strictObject({
+        direction: z.enum(['in', 'out']),
+        loan: z.boolean(),
+        player: id,
+        person: id.optional(),
+        name: text,
+        club: id.optional(),
+        fee: amount,
+        currency: text.optional(),
+        year: season,
+        day: seasonDay,
+      }),
+    )
+    .max(100000),
+});
 const worldSchema: z.ZodType<World> = z.object({
   schema: z.literal(1),
   engine: text,
@@ -1030,6 +1051,7 @@ const worldSchema: z.ZodType<World> = z.object({
   matchModel: matchModelStateSchema.optional(),
   npcSeason: npcSeasonSchema.optional(),
   managerHistory: managerHistoryFactsSchema.optional(),
+  transfers: transferRecords.optional(),
   history: z.array(archive).max(2200),
   events: z.array(event).max(100000),
   cash: money,

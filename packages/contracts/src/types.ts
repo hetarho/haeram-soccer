@@ -452,6 +452,8 @@ export interface Manager {
   potential?: number;
   /** Seasons the owner chose at his last hiring or renewal (→STAFF-14); absent before rules 1.16. */
   term?: ContractTerm;
+  /** Set while his trust-floor warning stands (→STAFF-47); absent otherwise. */
+  trustWarned?: true;
 }
 /** Free-agent managers and the clubs whose managers changed (→STAFF-17). */
 export interface ManagerMarket {
@@ -1040,6 +1042,31 @@ export interface PersonCareer {
   };
   management?: { ability: number; potential: number; school: ManagerStyle; at: CareerDate };
 }
+/** One completed fee signing, sale or loan of our club (→HIST-20). */
+export interface TransferFact {
+  direction: 'in' | 'out';
+  loan: boolean;
+  /** Player.id */
+  player: string;
+  /** PersonCareer id when known. */
+  person?: string;
+  /** His name when it happened. */
+  name: string;
+  /** The other club's id when known. */
+  club?: string;
+  /** Minor units, as the ledger amount. */
+  fee: string;
+  /** As Event.currency at the time. */
+  currency?: string;
+  year: number;
+  /** Season day (careerDate). */
+  day: number;
+}
+export interface TransferRecords {
+  /** w.events.length when the first fact was recorded: ledger entries before it are the older career's (→HIST-20). */
+  ledgerBefore: number;
+  facts: TransferFact[];
+}
 
 export interface World {
   schema: 1;
@@ -1143,6 +1170,8 @@ export interface World {
    * founding or a writer activation; absent in a career not yet tracked.
    */
   managerHistory?: ManagerHistoryFacts;
+  /** Our club's fee transfers (→HIST-20); absent until the first is recorded. */
+  transfers?: TransferRecords;
   history: SeasonArchive[];
   events: Event[];
   cash: string;
