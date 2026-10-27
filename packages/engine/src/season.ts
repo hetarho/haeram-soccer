@@ -54,6 +54,17 @@ import {
   transferRequests,
 } from './contracts';
 import { simulateMatch } from './match';
+import {
+  jobPlayback,
+  ownFixture,
+  readCopy,
+  roundJobs,
+  roundSimulator,
+  type FixtureReadCopy,
+  type RoundJob,
+  type RoundJobResult,
+  type RoundSimulator,
+} from './round-jobs';
 import { fatigueCost } from './strategy';
 import { developAnnually, settleTraining } from './training';
 import { runAcademyIntake, seasonAcademy } from './academy';
@@ -801,15 +812,73 @@ export function advanceRound(w: World, settlement?: Settlement, observe = true) 
   while (w.round === round && !w.bankrupt) stepDay(w, capture, observe);
   return ownPlayback;
 }
-/** A league match day: the round's matches, then its settlement and snapshots. */
-function playRound(w: World, capture: Settlement, observe: boolean) {
+/**
+ * A league round's matches as two phases: every fixture is computed from the world as it stands at
+ * kick-off, then all are recorded in fixture order. Fixtures are independent (each club plays once
+ * a round, each fixture draws its own seeded streams and settles its two clubs), so this equals
+ * playing and recording one after another, which a round naming a club twice still does.
+ */
+interface RoundPhase {
+  fixtures: Fixture[];
+  sequential: boolean;
+  jobs: RoundJob[];
+  /** Fixtures already computed: our match while the simulator computes the jobs. */
+  played: Map<Fixture, MatchPlayback>;
+  observe: boolean;
+  collect?: () => readonly RoundJobResult[] | undefined;
+}
+function playFixture(w: World, f: Fixture, observe: boolean) {
+  const own = ownFixture(w, f);
+  return simulateMatch(w, f, own && observe, own || isScoringFixture(w, f));
+}
+/** A round's unplayed fixtures; `sequential` when a club appears in two of them. */
+function roundFixtures(w: World, round: number) {
+  const fixtures = w.fixtures.filter((f) => f.round === round && !f.score);
+  const clubs = new Set(fixtures.flatMap((f) => [f.home, f.away]));
+  return { fixtures, clubs, sequential: clubs.size < 2 * fixtures.length };
+}
+/** Phase one's start: the simulator, only on a day with our fixture, gets the other fixtures. */
+function beginRound(w: World, observe: boolean, simulator?: RoundSimulator): RoundPhase {
   w.round++;
-  for (const f of w.fixtures.filter((f) => f.round === w.round && !f.score)) {
-    const own = f.home === w.playerClub || f.away === w.playerClub;
-    const p = simulateMatch(w, f, own && observe, own || isScoringFixture(w, f));
-    f.score = p.record.score;
-    recordMatch(w, p, true);
-    if (own) capture(w, p);
+  const { fixtures, sequential } = roundFixtures(w, w.round);
+  const jobs = sequential ? [] : roundJobs(w, fixtures);
+  const phase: RoundPhase = { fixtures, sequential, jobs, played: new Map(), observe };
+  if (simulator && !sequential && jobs.length < fixtures.length) {
+    phase.collect = simulator(readCopy(w), jobs);
+    for (const f of fixtures) if (ownFixture(w, f)) phase.played.set(f, playFixture(w, f, observe));
+  }
+  return phase;
+}
+/** A league match day: the round's matches, then its settlement and snapshots. */
+function playRound(
+  w: World,
+  phase: RoundPhase,
+  results: readonly RoundJobResult[] | undefined,
+  capture: Settlement,
+) {
+  const { fixtures, observe } = phase;
+  if (phase.sequential)
+    for (const f of fixtures) {
+      const p = playFixture(w, f, observe);
+      f.score = p.record.score;
+      recordMatch(w, p, true);
+      if (ownFixture(w, f)) capture(w, p);
+    }
+  else {
+    // Every result rejoins the world's rosters before anything is recorded; a job without a
+    // usable result is computed here, on the world as it stood at kick-off.
+    results?.forEach((result, i) => {
+      const job = phase.jobs[i];
+      const p = job && jobPlayback(w, job, result);
+      if (p) phase.played.set(job.fixture, p);
+    });
+    const playbacks = fixtures.map((f) => phase.played.get(f) ?? playFixture(w, f, observe));
+    fixtures.forEach((f, i) => {
+      const p = playbacks[i]!;
+      f.score = p.record.score;
+      recordMatch(w, p, true);
+      if (ownFixture(w, f)) capture(w, p);
+    });
   }
   settleTraining(w);
   settleClubRounds(w);
@@ -830,6 +899,7 @@ function playRound(w: World, capture: Settlement, observe: boolean) {
 }
 /** Records an older save may lack, set up before its first day is lived. */
 function beginDays(w: World) {
+  if (pendingRounds.has(w)) throw new Error('결과를 기다리는 라운드가 있습니다.');
   w.calendar ||= { day: currentDay(w) };
   if (!w.rankHistory) snapshotStandings(w);
   ensureScorers(w);
@@ -843,11 +913,12 @@ function stepDay(w: World, capture: Settlement, observe: boolean) {
   const day = currentDay(w) + 1;
   w.calendar = { day };
   // The season closes the day after its final round; the empty summer is skipped.
-  if (day > SEASON_END_DAY || day >= seasonLength(w)) {
+  if (closingDay(w, day)) {
     closeSeason(w);
     w.revision++;
-  } else if (w.round < SEASON_ROUNDS && day >= (w.round + 1) * ROUND_INTERVAL_DAYS) {
-    playRound(w, capture, observe);
+  } else if (leagueDay(w, day)) {
+    const phase = beginRound(w, observe, roundSimulator(w));
+    playRound(w, phase, phase.collect?.(), capture);
     clubDay(w);
   } else {
     advanceEurope(w, capture, day, observe);
@@ -855,6 +926,62 @@ function stepDay(w: World, capture: Settlement, observe: boolean) {
     clubDay(w);
     w.revision++;
   }
+}
+function closingDay(w: World, day: number) {
+  return day > SEASON_END_DAY || day >= seasonLength(w);
+}
+function leagueDay(w: World, day: number) {
+  return w.round < SEASON_ROUNDS && day >= (w.round + 1) * ROUND_INTERVAL_DAYS;
+}
+
+/** The world's league match day waiting between `prepareRound` and `completeRound`. */
+const pendingRounds = new WeakMap<World, RoundPhase>();
+/**
+ * The next day's step up to its round's records, when it is a league match day with our fixture
+ * and no club named twice; otherwise nothing changes and the day steps through `advanceDays`.
+ * `start` receives the round's other fixtures (to post to helpers), then our match plays here.
+ * The world stays mid-day, read or changed by nothing, until `completeRound`, so a host can await
+ * helper results between the two while the engine itself stays synchronous (→ARCH-6).
+ */
+export function prepareRound(
+  w: World,
+  start: (copy: FixtureReadCopy, jobs: readonly RoundJob[]) => void,
+  observe = true,
+) {
+  if (w.critical || w.bankrupt || pendingRounds.has(w)) return false;
+  const day = currentDay(w) + 1;
+  if (closingDay(w, day) || !leagueDay(w, day)) return false;
+  const { clubs, sequential } = roundFixtures(w, w.round + 1);
+  if (sequential || !clubs.has(w.playerClub)) return false;
+  beginDays(w);
+  w.calendar = { day };
+  const phase = beginRound(w, observe, (copy, jobs) => {
+    start(copy, jobs);
+    return () => undefined;
+  });
+  pendingRounds.set(w, phase);
+  return true;
+}
+/**
+ * The prepared day's remainder, exactly as `advanceDays(w, 1)` lives it: `results` answer the
+ * jobs in job order; a missing or unusable one (a failed helper) is computed here. Returns our
+ * match's playback.
+ */
+export function completeRound(
+  w: World,
+  results: readonly RoundJobResult[] | undefined,
+  settlement?: Settlement,
+) {
+  const phase = pendingRounds.get(w);
+  if (!phase) throw new Error('결과를 기다리는 라운드가 없습니다.');
+  pendingRounds.delete(w);
+  let ownPlayback: MatchPlayback | undefined;
+  playRound(w, phase, results, (world, p) => {
+    ownPlayback = p;
+    settlement?.(world, p);
+  });
+  clubDay(w);
+  return ownPlayback;
 }
 
 /**
