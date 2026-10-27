@@ -328,7 +328,6 @@
 | save-storage-and-fast-pace | ready@261026 |
 | match-day-progress | ready@261026 |
 | calibration-pass | open@261026 |
-| play-pace-and-owner-surfaces | ready@261027 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
@@ -382,13 +381,13 @@
 
 ## next
 - implement-task T516 (then T517/T518/T520 in any order, T519, T521, explore T522): automatic play without the match-day moment and with result-identical speed-ups (ideation/play-pace-and-owner-surfaces; prototypes on branch perf/integrated).
-- ideation play-pace-and-owner-surfaces 계속: action / standing choice / dashboard split and home ordering (still open with the owner).
 - T504 complete: portable resource skins, responsive facilities and image budgets; 79.2 MB → 40.9 MB image payload, 164 affected unit cases and all 13 focused Chromium cases passed; awaiting the ARCH-30 publication gate.
 - T494–T495 complete: theme-matched trophy artwork and distinct division/continental silhouettes; all required batch stages passed before publication.
 - review/ui-engine-boundary-261027 F1–F4 done (T500–T503): UI→orchestration exceptions 53→38 files, 38→35 engine modules; F5 (domain reads on the main thread) waits for a measured decision.
 - o7h4 pushed T490–T493 (owner office, home season card, records sub-screen) to main after the ARCH-30 batch passed on eaf5f3d1; confirm its decided inbox items.
 
 ## log
+- 261027 ideation play-pace-and-owner-surfaces converted: owner dropped the action / standing choice / dashboard split and home ordering; automatic play scope fully in WEB r160, SAVE r55, ARCH r24
 - 261027 create-task WEB r160 SAVE r55 ARCH r24 → T516–T522 (moment removal, grid cuts + day bench, two-phase round, helper workers, lighter publication, run-ahead clock, browser read)
 - 261027 update-ssot WEB r160 SAVE r55 ARCH r24 from ideation/play-pace-and-owner-surfaces: no match-day moment, computing ahead 3/5/7 days with stop/office/hidden rules, helper workers beside the sole-writer engine; doc stays ready for the owner-surfaces slice
 - 261027 ideation play-pace-and-owner-surfaces: owner removed the 2 s match-day beat; integrated result-identical prototypes measured (own match day 0.54–0.77×, x10 season 54 → about 10 stalls at depth 7, worlds identical)
@@ -408,4 +407,3 @@
 - 261027 review-code ui-engine-boundary-261027: 53 UI files import 39 orchestration-reaching engine modules; F1–F4 adopted (owner: make the tasks and implement them), F5 open
 - 261027 o7h4 closed: T490–T493 and gate fixes; batch passed on eaf5f3d1 (299/299 Chromium), pushed to main
 - 261027 batch gate (o7h4) 279/299 Chromium: fixed office-aware helpers (address-based office, selected home tab, celebration and event cards), event groups link 결재 라인, wide home pairs the entrance with the season card, short-phone spacing keeps seven standings rows; the 20 journeys pass on rerun
-- 261027 T493 done (o7h4): records season sub-screen with a top navigator bar; 선수 통산 더 보기 ten at a time to 100
