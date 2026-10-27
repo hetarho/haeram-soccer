@@ -52,6 +52,8 @@ import {
   withoutManagerHistory,
 } from '../../../../tests/fixtures/worlds';
 import { input, playOn, req } from './host.testkit';
+import { HelperPool, type HelperJob, type HelperPort } from './helperPool';
+import { answer as answerHelper, serve as serveHelper } from './fixtureHelper';
 /** A host wired to a codec port that keeps each posted snapshot, cloned as postMessage would. */
 function withCodec() {
   const jobs: CodecJob[] = [];
@@ -1225,5 +1227,128 @@ describe('own-manager tracking at the writer boundary (→SAVE-24)', () => {
     const retry = writer();
     await load(retry, 'track-retry', disk);
     expect(canonical(retry.world)).toBe(canonical(host.world));
+  });
+});
+
+/** A helper as the browser wires it: fixtureHelper.ts serving the far end of a real channel. */
+function helperChannel() {
+  const channel = new MessageChannel();
+  serveHelper(channel.port1 as unknown as Parameters<typeof serveHelper>[0]);
+  const port = channel.port2 as unknown as HelperPort;
+  const posted: HelperJob[] = [];
+  const post = port.postMessage.bind(port);
+  port.postMessage = (job) => {
+    posted.push(job);
+    post(job);
+  };
+  const close = () => {
+    channel.port1.close();
+    channel.port2.close();
+  };
+  return { port, posted, close };
+}
+/** A helper that answers every share with an error. */
+function failingHelper(): HelperPort & { posted: number } {
+  const port: HelperPort & { posted: number } = {
+    posted: 0,
+    onmessage: null,
+    postMessage(job) {
+      port.posted++;
+      setTimeout(() => port.onmessage?.({ data: { id: job.id, error: 'boom' } }), 0);
+    },
+  };
+  return port;
+}
+/** Founds `input` for unattended play: staff decide every business category, nothing is observed. */
+async function foundDelegated(h: Host) {
+  await h.handle(req('create', -1, { type: 'found', input }));
+  const settings = structuredClone(settingsOf(h.world!));
+  for (const key of RESPONSIBILITY_KEYS) settings.responsibilities[key] = 'delegated';
+  settings.observations = { matchEve: false, windowOpen: false };
+  const reply = await h.handle(
+    req('delegate', h.world!.revision, {
+      type: 'command',
+      command: { type: 'settings', settings },
+    }),
+  );
+  expect(reply.ok, reply.error).toBe(true);
+}
+/** Founds `input` and plays it day by day through `advance-days` until our first match is played. */
+async function throughFirstMatch(h: Host) {
+  await foundDelegated(h);
+  for (let day = 0; !h.world!.ownMatches.length; day++) {
+    expect(day).toBeLessThan(14);
+    const reply = await h.handle(
+      req(`day-${day}`, h.world!.revision, {
+        type: 'command',
+        command: { type: 'advance-days', days: 1 },
+      }),
+    );
+    expect(reply.ok, reply.error).toBe(true);
+  }
+  return canonical(h.world!);
+}
+describe('fixture helpers', () => {
+  it('compute our match day’s other fixtures on the helpers with the world of one engine', async () => {
+    const sequential = await throughFirstMatch(new Host());
+    const helpers = [helperChannel(), helperChannel()];
+    const helped = new Host();
+    helped.helpers = new HelperPool(helpers.map((helper) => helper.port));
+    try {
+      expect(await throughFirstMatch(helped)).toBe(sequential);
+      // Only our league match day went to the helpers, one share each.
+      expect(helpers.map((helper) => helper.posted.length)).toEqual([1, 1]);
+      expect(helped.helpers.active).toBe(true);
+    } finally {
+      for (const helper of helpers) helper.close();
+    }
+    // A helper failing falls back to the engine worker for that round, with the same world.
+    const failing = new Host();
+    const bad = failingHelper();
+    failing.helpers = new HelperPool([bad]);
+    expect(await throughFirstMatch(failing)).toBe(sequential);
+    expect(bad.posted).toBe(1);
+    expect(failing.helpers.active).toBe(false);
+  });
+  it('holds reads while our match day waits for its helpers', async () => {
+    const h = new Host();
+    await foundDelegated(h);
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => (release = resolve));
+    const held: HelperPort & { jobs: HelperJob[] } = {
+      jobs: [],
+      onmessage: null,
+      postMessage(job) {
+        held.jobs.push(job);
+        void gate.then(() => held.onmessage?.({ data: answerHelper(job) }));
+      },
+    };
+    h.helpers = new HelperPool([held]);
+    const order: string[] = [];
+    for (let day = 0; !held.jobs.length; day++) {
+      expect(day).toBeLessThan(14);
+      const step = h.handle(
+        req(`day-${day}`, h.world!.revision, {
+          type: 'command',
+          command: { type: 'advance-days', days: 1 },
+        }),
+      );
+      // Let the step run up to its helpers, if this is our match day.
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      if (!held.jobs.length) {
+        expect((await step).ok).toBe(true);
+        continue;
+      }
+      const read = h.handle(req('read', -1, { type: 'archive', year: FOUNDING_YEAR }));
+      void step.then(() => order.push('step'));
+      void read.then(() => order.push('read'));
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(order).toEqual([]);
+      release();
+      const [stepped, archive] = await Promise.all([step, read]);
+      expect(stepped.ok).toBe(true);
+      // The read waited for the completed day: our match is in the archive.
+      expect(archive.archive?.matches).toHaveLength(1);
+    }
   });
 });

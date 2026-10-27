@@ -20,6 +20,7 @@ import {
   type View,
 } from './protocol';
 import { NOTIFICATIONS_KEY, notificationStore, shareValue, shareView } from './store';
+import { HELPER_CONFIG } from './helperPool';
 /** Bound the engine snapshot RPC separately from expensive background compression. */
 const CHECKPOINT_TIMEOUT_MS = 60000;
 // Large lossless careers compress in the separate codec worker; engine RPC stays bounded below.
@@ -71,6 +72,8 @@ export class GameClient {
   private codec = new Worker(new URL('./codec.ts', import.meta.url), { type: 'module' });
   /** Checkpoints the codec is building, by the save request that asked for them. */
   private builds = new Map<string, { resolve: (result: CodecResult) => void; timer: number }>();
+  /** The fixture helpers, computing an own match day's other fixtures for the engine (→ARCH-6). */
+  private helpers: Worker[] = [];
   /** The save being built and committed, and whether a newer one was asked for meanwhile. */
   private saving?: Promise<void>;
   private savedCheckpoint?: { raw: string; worldId: string; revision: number };
@@ -174,9 +177,40 @@ export class GameClient {
       for (const id of [...this.builds.keys()])
         this.built({ id, ok: false, error: '저장 Worker가 종료되었습니다.' });
     };
+    this.startHelpers();
     this.channel.onmessage = (event) => this.refresh(event.data?.generation);
     window.addEventListener('storage', this.storageListener);
     notificationStore.sync();
+  }
+  /**
+   * Creates the fixture helpers on a device with the cores for them and hands their ports to the
+   * engine worker, as for the codec (→ARCH-6/18). Without them, after a creation failure or once
+   * one errors, the engine worker computes every fixture itself.
+   */
+  private startHelpers() {
+    if (!((navigator.hardwareConcurrency ?? 0) >= HELPER_CONFIG.minCores)) return;
+    const ports: MessagePort[] = [];
+    try {
+      for (let i = 0; i < HELPER_CONFIG.count; i++) {
+        const helper = new Worker(new URL('./fixtureHelper.ts', import.meta.url), {
+          type: 'module',
+        });
+        this.helpers.push(helper);
+        helper.onerror = () => this.helpersFailed();
+        const channel = new MessageChannel();
+        helper.postMessage({ type: 'port', port: channel.port1 }, [channel.port1]);
+        ports.push(channel.port2);
+      }
+    } catch {
+      this.helpersFailed();
+      return;
+    }
+    this.worker.postMessage({ type: 'helpers', ports }, ports);
+  }
+  private helpersFailed() {
+    if (!this.helpers.length) return;
+    for (const helper of this.helpers.splice(0)) helper.terminate();
+    this.worker.postMessage({ type: 'helpers-failed' });
   }
   private refresh(generation: number) {
     if (!this.state.readonly || !Number.isSafeInteger(generation) || generation < 0) return;
@@ -809,5 +843,6 @@ export class GameClient {
     this.channel.close();
     this.worker.terminate();
     this.codec.terminate();
+    for (const helper of this.helpers) helper.terminate();
   }
 }
