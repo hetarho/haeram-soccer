@@ -143,8 +143,8 @@ describe('computing ahead of the shown date (WEB-18)', () => {
     expect(consecutive(alone, 0)).toBe(true);
     // The engine never stood more than the pace's run-ahead days past the shown date.
     expect(ahead.head() - ahead.shown.at(-1)!.day).toBeLessThanOrEqual(RUN_AHEAD_DAYS.x10);
-    // Computing ahead absorbs the round days: no stall and 300 days shown, against 50 stalls and
-    // 175 days a day at a time.
+    // Computing ahead absorbs the round days: no stall and 300 days shown, against 44 stalls and
+    // 157 days a day at a time.
     expect(stalls(alone, 'x10')).toBeGreaterThan(0);
     expect(stalls(ahead, 'x10')).toBeLessThan(stalls(alone, 'x10'));
     expect(stalls(ahead, 'x10')).toBeLessThanOrEqual(stalls(alone, 'x10') / 4);
@@ -319,6 +319,38 @@ describe('computing ahead of the shown date (WEB-18)', () => {
     expect(running(controller)).toBe(false);
   });
 
+  it('leaving play for the slot screen shows the held days at once and saves once', async () => {
+    const fake = worker(quiet());
+    const controller = clock(fake);
+    controller.setPace('x10');
+    controller.start();
+    await vi.advanceTimersByTimeAsync(350);
+    expect(fake.held).toHaveLength(RUN_AHEAD_DAYS.x10);
+    controller.pause(true);
+    expect(running(controller)).toBe(false);
+    expect(fake.held).toHaveLength(0);
+    expect(fake.showing()).toBe(fake.head());
+    expect(locked()).toBe(false);
+    expect(fake.saveSoon).toHaveBeenCalledOnce();
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(fake.showing()).toBe(fake.head());
+    expect(consecutive(fake, 0)).toBe(true);
+  });
+
+  it('a late day shows as it lands and the next one a full interval after it', async () => {
+    // At x1 day 4 is asked for once day 1 shows at 1 s; it takes 3.53 s, landing 0.53 s after its
+    // turn at 4 s. The days after it are quick.
+    const fake = worker(quiet(), (day) => (day === 4 ? 3530 : 10));
+    const controller = clock(fake);
+    const startedAt = Date.now();
+    controller.start();
+    await vi.advanceTimersByTimeAsync(8000);
+    expect(fake.shown.slice(0, 7).map((s) => s.at - startedAt)).toEqual([
+      1000, 2000, 3000, 4530, 5530, 6530, 7530,
+    ]);
+    expect(consecutive(fake, 0)).toBe(true);
+  });
+
   it('hiding the tab shows the held days at once and computes nothing ahead while hidden', async () => {
     const fake = worker(quiet());
     const controller = clock(fake);
@@ -430,11 +462,10 @@ describe('the client holds the days computed ahead (WEB-18)', () => {
   const dayView = (day: number) =>
     ({ world: { ...quiet(), calendar: { day }, revision: base.revision + day } }) as View;
   /** A client without its workers: requests are recorded, replies handed in. */
-  function client() {
+  function client(shown = dayView(0)) {
     vi.stubGlobal('window', globalThis);
     const posted: Request[] = [],
-      notify = vi.fn(),
-      shown = dayView(0);
+      notify = vi.fn();
     const instance = Object.assign(Object.create(GameClient.prototype), {
       state: {
         ...initialClientState,
@@ -458,6 +489,52 @@ describe('the client holds the days computed ahead (WEB-18)', () => {
     return { client: instance, internals: instance as unknown as Internals, posted, notify };
   }
   const step: Body = { type: 'command', command: { type: 'advance-days', days: 1 } };
+
+  it('a notice read while days are held reads on the day shown and every held day', async () => {
+    const notice = {
+      id: 'notice',
+      year: base.year,
+      day: 0,
+      kind: 'window-open' as const,
+      title: '소식',
+      detail: '-',
+      attention: true,
+    };
+    const noticed = (day: number, read = false) => {
+      const view = dayView(day);
+      view.world.inbox = [{ ...notice, read }];
+      return view;
+    };
+    const { client: c, internals, posted, notify } = client(noticed(0));
+    for (const day of [1, 2]) {
+      const request = internals.rpc(step, undefined, undefined, true);
+      internals.received({
+        requestId: posted.at(-1)!.requestId,
+        ok: true,
+        view: noticed(day),
+        viewSeq: day + 1,
+      });
+      await request;
+    }
+    // The worker reads it on the newest day; the client marks it on the days before too.
+    const read = internals.rpc({ type: 'command', command: { type: 'read-inbox', id: 'notice' } });
+    internals.received({
+      requestId: posted.at(-1)!.requestId,
+      ok: true,
+      view: noticed(2, true),
+      viewSeq: 4,
+    });
+    await read;
+    const unread = (view?: View) => view!.world.inbox!.some((item) => !item.read);
+    expect(unread(c.state.view)).toBe(false);
+    expect(c.state.view?.world.calendar?.day).toBe(0);
+    expect(internals.held.map(unread)).toEqual([false, false]);
+    expect(internals.held.map((view) => view.world.calendar?.day)).toEqual([1, 2]);
+    // Shown at the pace, the days stay read.
+    c.reveal();
+    expect(unread(c.state.view)).toBe(false);
+    expect(notify).toHaveBeenCalledOnce();
+  });
 
   it('holds automatic days, asks from the newest and reveals them in order', async () => {
     const { client: c, internals, posted, notify } = client();

@@ -949,7 +949,8 @@ export function App() {
     if (loadFailed) setScreen(client.earlierRules() && slots ? 'slots' : 'game');
   }, [client, settled, loadFailed, slots]);
   const openSlots = () => {
-    controller?.pause();
+    // Leaving play shows the days computed ahead at once, so the slot card has the saved date.
+    controller?.pause(true);
     slots?.sync(gameStore.getSnapshot().view?.world, true);
     slots?.cancel();
     rememberInGame(false);

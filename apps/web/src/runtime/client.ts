@@ -59,10 +59,24 @@ export interface ClientState {
 }
 /**
  * How a reply's view is taken: `hold` keeps an automatic day for `reveal`; `head`, reading a notice
- * while the clock runs, changes the newest held day when there is one; any other view is shown at
- * once, with whatever was computed before it.
+ * while the clock runs, replaces the newest held day when there is one and marks the notices read
+ * on the others; any other view is shown at once, with whatever was computed before it.
  */
 type Taking = 'hold' | 'head' | undefined;
+/** `view` with the notices in `read` marked read; the same view when none of them was unread. */
+function withRead(view: View, read: Set<string>): View {
+  const inbox = view.world.inbox;
+  if (!inbox?.some((item) => !item.read && read.has(item.id))) return view;
+  return {
+    ...view,
+    world: {
+      ...view.world,
+      inbox: inbox.map((item) =>
+        !item.read && read.has(item.id) ? { ...item, read: true } : item,
+      ),
+    },
+  };
+}
 export class GameClient {
   private automaticPending = 0;
   state: ClientState = {
@@ -421,8 +435,14 @@ export class GameClient {
   private take(view: View, taking: Taking) {
     const same = this.head?.world.id === view.world.id;
     if (taking === 'hold' && same) this.held.push(view);
-    else if (taking === 'head' && same && this.held.length) this.held[this.held.length - 1] = view;
-    else {
+    else if (taking === 'head' && same && this.held.length) {
+      // Notices read during play read on the day shown and every day held too (→WEB-97).
+      const read = new Set(
+        (view.world.inbox || []).filter((item) => item.read).map((item) => item.id),
+      );
+      this.held = [...this.held.slice(0, -1).map((held) => withRead(held, read)), view];
+      this.state.view = withRead(this.state.view!, read);
+    } else {
       // An owner decision, a load or another world stands past whatever was computed ahead.
       this.held = [];
       this.state.view = view;

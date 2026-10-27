@@ -164,6 +164,8 @@ interface Held {
   ms: number;
   /** It stops the clock once shown, so nothing is computed past it. */
   stops: boolean;
+  /** When it landed: after its turn, it was late. */
+  at: number;
 }
 
 /** Owns the clock outside React, so changing or hiding a view cannot restart it. */
@@ -566,11 +568,17 @@ export class ProgressionController {
   /**
    * The owner's own stop: nothing resumes it until the owner starts it again. The days computed
    * ahead are shown at the pace first, and management stays locked until they are; the stop's save
-   * follows the last of them (→WEB-18/97, SAVE-8).
+   * follows the last of them (→WEB-18/97, SAVE-8). `leaving` play (the slot screen) shows them at
+   * once instead, as entering the office does, so the slot card and the save hold the same date.
    */
-  pause() {
+  pause(leaving = false) {
     this.resumeAfterWatch = false;
-    if (!this.store.getState().running || this.hidden || (!this.ahead.length && !this.inFlight))
+    if (
+      leaving ||
+      !this.store.getState().running ||
+      this.hidden ||
+      (!this.ahead.length && !this.inFlight)
+    )
       return this.stop();
     this.resumeAfterEvents = false;
     this.clearResultNotice();
@@ -797,7 +805,13 @@ export class ProgressionController {
     }
     const after = reply?.ok ? reply.view?.world : undefined;
     if (after && after.id === this.worldId)
-      this.ahead.push({ before, after, ms: sending.ms, stops: this.stopsAt(before, after) });
+      this.ahead.push({
+        before,
+        after,
+        ms: sending.ms,
+        stops: this.stopsAt(before, after),
+        at: Date.now(),
+      });
     return reply;
   }
   /**
@@ -815,13 +829,14 @@ export class ProgressionController {
     // The client no longer holds them when another load replaced its views.
     if (!days.length || !this.client.reveal(all)) return;
     if (!all) {
-      // On time the next day follows one interval later; after a late day it keeps to the beat,
-      // at least half an interval on, so no day shows for only a blink.
+      // The next day follows one interval after this one: after its turn when it was ready on
+      // time, so a timer firing a little late does not slow the pace, else after it showed.
       const now = Date.now(),
         interval = this.interval(),
-        due = this.due ?? now;
+        due = this.due ?? now,
+        late = days[0].at > due || now - due >= interval / 2;
       this.stepAt = now;
-      this.due = due + interval * Math.max(1, Math.ceil((now + interval / 2 - due) / interval));
+      this.due = (late ? now : due) + interval;
     }
     for (const day of days) this.shown(day, !all);
     this.writeClock();
