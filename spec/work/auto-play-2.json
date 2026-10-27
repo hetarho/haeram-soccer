@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-27T15:05:25.342Z",
-  "sourceCommit": "89c774d21f2aefa2344652f620909c92c09e4b81",
+  "snapshotAt": "2026-10-27T15:06:11.936Z",
+  "sourceCommit": "c70fd4aaa846a0f51f74652368dda9f811811712",
   "group": {
     "id": "auto-play-2",
     "branch": "work/auto-play-2",
@@ -15,7 +15,7 @@
     "push": null,
     "review": "risky",
     "lastRun": {
-      "id": "ee602424-6fb0-4374-a820-79f2927fdaca",
+      "id": "fb9f561d-d1bc-4cf0-a383-27b4f4189e85",
       "adapter": "builtin",
       "providers": {
         "worker": {
@@ -36,15 +36,15 @@
           "version": "2.1.310 (Claude Code)"
         }
       ],
-      "startedAt": "2026-10-27T14:55:03.662Z",
-      "stoppedAt": "2026-10-27T15:05:24.376Z",
-      "dispatched": 1,
+      "startedAt": "2026-10-27T15:06:10.063Z",
+      "stoppedAt": "2026-10-27T15:06:10.966Z",
+      "dispatched": 0,
       "outcome": "needs-attention",
       "failures": [
         {
           "attempt": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
           "role": "worker",
-          "error": "T524: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+          "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
         }
       ],
       "autopilot": true,
@@ -236,12 +236,13 @@
         "T524"
       ],
       "lane": null,
-      "owner": "ee602424-6fb0-4374-a820-79f2927fdaca/worker-1",
+      "owner": "fb9f561d-d1bc-4cf0-a383-27b4f4189e85/worker-1",
       "contributors": [
-        "ee602424-6fb0-4374-a820-79f2927fdaca/worker-1"
+        "ee602424-6fb0-4374-a820-79f2927fdaca/worker-1",
+        "fb9f561d-d1bc-4cf0-a383-27b4f4189e85/worker-1"
       ],
       "status": "blocked",
-      "reason": "T524: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+      "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요.",
       "createdAt": "2026-10-27T14:55:03.911Z",
       "startCommit": "53ce730c07cfc5857da2e41ea9b654dd8bbd6b06",
       "dispatch": {
@@ -1320,6 +1321,134 @@
               "attempt": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
               "role": "worker",
               "error": "T524: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1419,
+      "at": "2026-10-27T15:06:05.141Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1420,
+      "at": "2026-10-27T15:06:10.082Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "fb9f561d-d1bc-4cf0-a383-27b4f4189e85",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T15:06:10.063Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1421,
+      "at": "2026-10-27T15:06:10.121Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "fb9f561d-d1bc-4cf0-a383-27b4f4189e85/worker-1",
+        "contributors": [
+          "ee602424-6fb0-4374-a820-79f2927fdaca/worker-1",
+          "fb9f561d-d1bc-4cf0-a383-27b4f4189e85/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 1422,
+      "at": "2026-10-27T15:06:10.173Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+      }
+    },
+    {
+      "sequence": 1423,
+      "at": "2026-10-27T15:06:10.966Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "fb9f561d-d1bc-4cf0-a383-27b4f4189e85",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T15:06:10.063Z",
+          "stoppedAt": "2026-10-27T15:06:10.966Z",
+          "dispatched": 0,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+              "role": "worker",
+              "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
             }
           ],
           "autopilot": true,
