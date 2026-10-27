@@ -17,6 +17,7 @@
 | n3w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T12:15Z | 2026-10-27T12:15Z | - |
 
 ## inbox
+- 261028 decided WEB-18 T525: T524 showed the computed days at once before a read, and a records view open during play re-reads on a new key, so the shown calendar jumped (1950-08-01 → 08-05, records.spec on 174af691) → a read waits until the computed days are shown at the pace and nothing is computed ahead meanwhile (alt: let reads show computed-ahead days | keep the jump)
 - 261027 decided WEB-18 T524: reads outside the command queue answer from the newest computed day, up to 7 days past the shown date → they first show the computed days at once and nothing is computed ahead until answered (alt: record that reads may show computed-ahead days | cut each read at the shown date, which cumulative statistics cannot do)
 - 261027 suggest WEB-69 T504: T504's shared skin frames every `[role=tab]` with a button frame and a quiet/canvas fill, while WEB-69 still says page tab bars have no filled or outlined boxes (label over a hairline, accent underline) — confirm the framed tabs in WEB-69 or restore hairline tabs
 - 261027 decided T518 ARCH-31: round-jobs.test.ts tier → integration (it advances days, which tests/config/test-tiers keeps out of unit), acceptance command updated (alt: keep it unit and shrink it below advanceDays)
@@ -341,7 +342,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 24 | 24 | - | 2 |
-| WEB | 162 | 162 | - | 0 |
+| WEB | 163 | 163 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -367,6 +368,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | doing@261027.n3w8 |
+| T525 | Reads wait for the computed days at the pace | WEB | T524 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -388,6 +390,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261028 update-ssot WEB r163 + create-task → T525 (n3w8): reads wait for the computed days at the pace instead of showing them at once; T524 integrated, its gate run failed records.spec on the calendar jump
 - 261027 T524 integrated
 - 261027 update-ssot WEB r162 + create-task → T524 (n3w8, T521 review P3): reads outside the command queue first show the computed days and hold computing ahead
 - 261027 T521 done (n3w8 group auto-play-2): run-ahead clock; gate fixes for the recovery (helper worker) and training (eve after the stop) journeys
@@ -407,4 +410,3 @@
 - 261027 T494 done: redrew all 21 print/pixel/sticker trophies in their theme's illustration style; preserved the seven standard photographs; asset integrity and task checks passed.
 - 261027 u3b8 closed: T500–T503 batch gate passed on f25cae1a (unit 1171, integration 1158 after a quiet-host rerun of 3 load timeouts, contract 39, catalogs, presentation, build, Chromium 299/299), pushed to main
 - 261027 T503 done: competition keys, Elo reads, request label and empty table moved to leaves; UI exception list 43→38 files
-- 261027 T502 done: staff catalogue and member reads moved to staff-info.ts; UI exception list 46→43 files
