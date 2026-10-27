@@ -12,3 +12,6 @@
 /history /index.html 200
 /season /index.html 200
 /history/* /index.html 200
+/first-team /index.html 200
+/academy /index.html 200
+/staff /index.html 200

@@ -41,3 +41,9 @@
   Cache-Control: no-cache
 /404.html
   Cache-Control: no-cache
+/first-team
+  Cache-Control: no-cache
+/academy
+  Cache-Control: no-cache
+/staff
+  Cache-Control: no-cache

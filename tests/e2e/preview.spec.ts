@@ -17,6 +17,18 @@ test('built deep links, module worker, cache/CSP and missing assets', async ({ p
   expect(html.status()).toBe(200);
   expect(html.headers()['cache-control']).toBe('no-cache');
   expect(html.headers()['content-security-policy']).toContain("worker-src 'self'");
+  for (const path of [
+    '/season?competition=cup',
+    '/first-team?view=training',
+    '/academy',
+    '/staff?view=coaches',
+    '/history?section=league',
+  ]) {
+    const route = await request.get(path);
+    expect(route.status(), path).toBe(200);
+    expect(route.headers()['cache-control'], path).toBe('no-cache');
+    expect(await route.text(), path).toMatch(/src="[^"\n]+\.js"/);
+  }
   const entry = await request.get('/');
   const asset = (await entry.text()).match(/src="([^"]+\.js)"/)![1];
   const js = await request.get(asset);
