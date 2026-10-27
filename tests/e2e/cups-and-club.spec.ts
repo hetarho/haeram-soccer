@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { openClubRecords, openCups, openLeague } from './competition-navigation';
 import { finishSeason } from './season-progression';
 import { test, expect } from '@playwright/test';
@@ -46,7 +47,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await found(page, 'listing-journey');
     await chooseLevel(page, 2);
     await setResponsibility(page, '스폰서 계약', 'delegated');
-    await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+    await openPersonnel(page, 'players');
     const open = page.getByRole('button', { name: /이적 상태 · 협상 가능 · 바꾸기$/ });
     await expect(open.first()).toBeVisible();
     const total = await open.count();
@@ -81,11 +82,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
 
     // Below level 3 the owner hires coaches himself; 코치진 names the 코치 기조 the staff would
     // follow and each department shows whom it would hire (→STAFF-15). The coaches are a tab of 사람.
-    const tab = (name: string) =>
-      page
-        .getByRole('tablist', { name: '선수단·스태프 보기' })
-        .getByRole('tab', { name, exact: true });
-    await tab('스태프').click();
+    await openPersonnel(page, 'coaches');
     await expect(page.getByTestId('coaching-mode')).toContainText('직접');
     const staff = page.getByRole('region', { name: '스태프', exact: true });
     await expect(staff.getByRole('checkbox')).toHaveCount(0);
@@ -118,8 +115,8 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
       0,
     );
     await closeOutcome(page, '방향을 바꿨어요');
-    await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-    await tab('스태프').click();
+    await openPersonnel(page, 'players');
+    await openPersonnel(page, 'coaches');
     await expect(page.getByRole('button', { name: /^코치 기조 · 최고 수준/ })).toBeVisible();
     // Level 3 hands every department to the staff at once.
     await chooseLevel(page, 3);
@@ -209,20 +206,20 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
   test('keeps the transfer market as a 사람 tab with its own address', async ({ page }) => {
     await found(page, 'market-segment-journey');
     const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
-    await nav.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-    const tabs = page.getByRole('tablist', { name: '선수단·스태프 보기' });
-    await expect(tabs.getByRole('tab')).toHaveText(['선수', '이적시장', '감독', '스태프']);
+    await openPersonnel(page, 'players');
+    const tabs = page.getByRole('tablist', { name: '1군' });
+    await expect(tabs.getByRole('tab')).toHaveText(['선수 목록', '이적시장', '훈련']);
     await tabs.getByRole('tab', { name: '이적시장', exact: true }).click();
     await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
     await expect(tabs.getByRole('tab', { name: '이적시장' })).toHaveAttribute(
       'aria-selected',
       'true',
     );
-    await expect(nav.getByRole('button', { name: '선수단·스태프', exact: true })).toHaveAttribute(
+    await expect(nav.getByRole('button', { name: '1군', exact: true })).toHaveAttribute(
       'aria-current',
       'page',
     );
-    await expect(page).toHaveURL(/\/people\?view=market$/);
+    await expect(page).toHaveURL(/\/first-team\?view=market$/);
     expect(await horizontalOverflow(page)).toBe(0);
     // The market's address reopens 사람 on the market.
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
@@ -232,16 +229,16 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
       'true',
     );
     await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
-    await tabs.getByRole('tab', { name: '선수', exact: true }).click();
+    await tabs.getByRole('tab', { name: '선수 목록', exact: true }).click();
     await expect(page.getByText('선수단 20/40', { exact: true })).toBeVisible();
-    await expect(page).toHaveURL(/\/people$/);
+    await expect(page).toHaveURL(/\/first-team\?view=players$/);
     // The older market address lands there too, replaced in the address bar.
     await page.goto('/transfers');
     await expect(tabs.getByRole('tab', { name: '이적시장' })).toHaveAttribute(
       'aria-selected',
       'true',
     );
-    await expect(page).toHaveURL(/\/people\?view=market$/);
+    await expect(page).toHaveURL(/\/first-team\?view=market$/);
   });
 
   test('replays a closed season of the cup: its bracket, our road, a report and the honours', async ({

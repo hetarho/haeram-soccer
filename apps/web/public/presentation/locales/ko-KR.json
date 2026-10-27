@@ -155,6 +155,17 @@
     "navigation.short.season": "시즌",
     "navigation.clubRecords": "클럽 기록실",
     "navigation.pastLeague": "이전 리그 기록",
-    "navigation.pastCup": "이전 컵대회 기록"
+    "navigation.pastCup": "이전 컵대회 기록",
+    "navigation.firstTeam": "1군",
+    "navigation.short.firstTeam": "1군",
+    "navigation.academy": "유소년",
+    "navigation.short.academy": "유소년",
+    "navigation.staff": "코치진",
+    "navigation.short.staff": "코치진",
+    "personnel.players": "선수 목록",
+    "personnel.market": "이적시장",
+    "personnel.training": "훈련",
+    "personnel.manager": "감독",
+    "personnel.coaches": "스태프"
   }
 }

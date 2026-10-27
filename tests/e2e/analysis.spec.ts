@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { openClubRecords, openLeague } from './competition-navigation';
 import { watchNext } from './watch';
 import { delegateSales } from './events';
@@ -238,7 +239,7 @@ test('compares distinct own players with a shared scope and returns focus withou
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
-  await page.getByRole('button', { name: '선수단·스태프', exact: true }).first().click();
+  await openPersonnel(page, 'players');
   const opener = page.getByRole('button', { name: '우리 선수 비교', exact: true });
   await opener.click();
   const sheet = page.getByRole('dialog', { name: '우리 선수 비교', exact: true });
@@ -275,7 +276,7 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
   await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
-  await page.getByRole('button', { name: '선수단·스태프', exact: true }).first().click();
+  await openPersonnel(page, 'players');
   // Position, order and sample sit behind the panel's view-settings button (a sheet on phones).
   const settings = page.getByRole('button', { name: /^선수 보기 설정/ });
   await settings.click();

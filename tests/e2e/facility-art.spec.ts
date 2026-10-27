@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { expect, test, type Page } from '@playwright/test';
 import { checkpoint } from '../../apps/web/src/adapters/persistence';
 import { currency } from '../../packages/catalogs/src/index';
@@ -152,19 +153,18 @@ for (const scenario of [
     await expectArt(page, 'locker', scenario.era, scenario.stadium);
     await dialog.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
     await expect(dialog).toHaveCount(0);
-    await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+    await openPersonnel(page, 'players');
     const people = page.getByRole('tabpanel');
     const overview = page.getByTestId('facility-overview');
-    const tabs = page.getByRole('tablist', { name: '선수단·스태프 보기' });
     for (const [tab, kind, stage] of [
-      ['선수', 'locker', scenario.stadium],
-      ['감독', 'manager', 0],
-      ['스태프', 'staff', 0],
+      ['players', 'locker', scenario.stadium],
+      ['manager', 'manager', 0],
+      ['coaches', 'staff', 0],
     ] as const) {
       // A tab clicked while the page still slides in sits partly outside the view, and Firefox's
       // scroll-into-view then nudges the column by its 2px padding; home bounds need it at rest.
       await settle(page);
-      await tabs.getByRole('tab', { name: tab, exact: true }).click();
+      await openPersonnel(page, tab);
       await expectArt(page, kind, scenario.era, stage);
       await expect(people.locator(':scope > :first-child')).toHaveAttribute(
         'data-testid',
@@ -177,9 +177,9 @@ for (const scenario of [
       expect(Math.round(bounds.height)).toBeLessThanOrEqual(240);
       await expectHomeBounds(page);
     }
-    await tabs.getByRole('tab', { name: '이적시장', exact: true }).click();
+    await openPersonnel(page, 'market');
     await expect(overview).toHaveCount(0);
-    await page.getByRole('button', { name: '훈련·육성', exact: true }).click();
+    await openPersonnel(page, 'training');
     await expectArt(page, 'training', scenario.era, scenario.training);
     await expect(page.getByRole('tabpanel').locator(':scope > :first-child')).toHaveAttribute(
       'data-testid',
@@ -190,9 +190,8 @@ for (const scenario of [
       .getByRole('region', { name: '훈련 방향', exact: true })
       .boundingBox())!;
     expect(scene.y + scene.height).toBeLessThanOrEqual(focus.y);
-    const trainingTabs = page.getByRole('tablist', { name: '훈련·육성 보기' });
     await settle(page);
-    await trainingTabs.getByRole('tab', { name: '유소년', exact: true }).click();
+    await openPersonnel(page, 'academy');
     await expectArt(page, 'academy', scenario.era, scenario.academy);
     await expect(overview).toHaveAccessibleName('유소년 아카데미');
     await expect(overview).toContainText(
@@ -204,7 +203,7 @@ for (const scenario of [
       .boundingBox())!;
     expect(academyScene.y + academyScene.height).toBeLessThanOrEqual(prospects.y);
     await expectHomeBounds(page);
-    await trainingTabs.getByRole('tab', { name: '1군 훈련', exact: true }).click();
+    await openPersonnel(page, 'training');
     await expectArt(page, 'training', scenario.era, scenario.training);
     expect([...requested].sort()).toEqual(
       (['stadium', 'locker', 'training', 'academy', 'manager', 'staff'] as const)
@@ -262,20 +261,19 @@ test('updates era, training and academy scenes only on actual completion, retain
   for (const item of w.inbox || []) item.read = true;
   await load(page, w);
   await expectArt(page, 'stadium', 'heritage', 0);
-  await page.getByRole('button', { name: '훈련·육성', exact: true }).click();
+  await openPersonnel(page, 'training');
   await expectArt(page, 'training', 'heritage', 0);
-  const tabs = page.getByRole('tablist', { name: '훈련·육성 보기' });
-  await tabs.getByRole('tab', { name: '유소년', exact: true }).click();
+  await openPersonnel(page, 'academy');
   await expectArt(page, 'academy', 'heritage', 0);
   await expect(page.getByTestId('facility-overview')).toContainText('기본 유소년 시설');
-  await tabs.getByRole('tab', { name: '1군 훈련', exact: true }).click();
+  await openPersonnel(page, 'training');
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   await expectArt(page, 'training', 'terraces', 1);
   await acknowledgeEvents(page);
   const stop = page.getByRole('button', { name: '자동 진행 정지', exact: true });
   if (await stop.isVisible()) await stop.click();
   await expect(page.getByTestId('game-date')).toContainText('1970년 1월');
-  await tabs.getByRole('tab', { name: '유소년', exact: true }).click();
+  await openPersonnel(page, 'academy');
   await expectArt(page, 'academy', 'terraces', 1);
   await expect(page.getByTestId('facility-overview')).toContainText('1단계 유소년 시설');
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
@@ -283,8 +281,8 @@ test('updates era, training and academy scenes only on actual completion, retain
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   await expectArt(page, 'stadium', 'terraces', 0);
-  await page.getByRole('button', { name: '훈련·육성', exact: true }).click();
+  await openPersonnel(page, 'training');
   await expectArt(page, 'training', 'terraces', 1);
-  await tabs.getByRole('tab', { name: '유소년', exact: true }).click();
+  await openPersonnel(page, 'academy');
   await expectArt(page, 'academy', 'terraces', 1);
 });

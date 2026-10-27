@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { expect, type Page } from '@playwright/test';
 import { createWorld } from '../../packages/engine/src/index';
 import { careerDate } from '../../packages/engine/src/person-careers';
@@ -35,7 +36,7 @@ export function secondCareerFixture() {
 export async function importSecondCareer(page: Page) {
   const fixture = secondCareerFixture();
   await importResponsibilityCareer(page, fixture.w);
-  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await openPersonnel(page, 'players');
   await page
     .getByRole('button', { name: `${fixture.player.name} 선수 기록`, exact: true })
     .first()

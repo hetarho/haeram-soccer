@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { openLeague } from './competition-navigation';
 import { expect, test } from '@playwright/test';
 import { encode } from '../../apps/web/src/adapters/persistence';
@@ -17,7 +18,7 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(nav).toBeVisible();
   // Competition hubs share the bar with home and personnel, each a 44 px touch target.
-  await expect(nav.getByRole('button')).toHaveCount(5);
+  await expect(nav.getByRole('button')).toHaveCount(6);
   const metrics = await nav.getByRole('button').evaluateAll((buttons) =>
     buttons.map((button) => {
       const rect = button.getBoundingClientRect();
@@ -36,9 +37,9 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   await expect(more).toBeEnabled();
   // Pages scroll inside the view scroller; open a long page and scroll it before the modal.
   // The office hides the menu, so a long tabbed page stands in for it (→WEB-39).
-  await nav.getByRole('button', { name: '훈련·육성', exact: true }).click();
+  await openPersonnel(page, 'training');
   const scroller = page.getByTestId('view-scroller');
-  await expect(page.getByRole('tablist', { name: '훈련·육성 보기', exact: true })).toBeVisible();
+  await expect(page.getByRole('tablist', { name: '1군', exact: true })).toBeVisible();
   await scroller.evaluate((element) => element.scrollTo(0, 240));
   const before = await scroller.evaluate((element) => element.scrollTop);
   expect(before).toBeGreaterThan(0);
@@ -83,10 +84,10 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   expect(await page.evaluate(() => scrollY)).toBe(0);
 
   await more.click();
-  await expect(dialog.getByRole('button', { name: '선수단·스태프', exact: true })).toHaveCount(0);
+  await expect(dialog.getByRole('button', { name: '1군', exact: true })).toHaveCount(0);
   await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(dialog).toHaveCount(0);
-  await nav.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await openPersonnel(page, 'players');
   await expect(page.getByText(/^선수단 \d+\/40$/)).toBeVisible();
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   await openLeague(page);

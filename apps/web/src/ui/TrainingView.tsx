@@ -1,5 +1,6 @@
+import { developmentDestination } from './personnelNavigation';
 import { useTaskState } from './taskMemory';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { FacilityOverview } from './FacilityOverview';
 import type {
   TrainingCoach,
@@ -38,19 +39,8 @@ import {
 } from '../../../../packages/engine/src/player';
 import type { ClientState, GameClient } from '../runtime/client';
 import { AcademyPanel } from './AcademyPanel';
-import { PageTabs, TabPanel } from './PageTabs';
 import { PlayerLink } from './PlayerSheet';
-import {
-  openHome,
-  openStaff,
-  openDirection,
-  routeOf,
-  TRAINING_TABS,
-  useCoachRequest,
-  useTrainingView,
-  type Home,
-  type TrainingTab,
-} from './state';
+import { openHome, openStaff, openDirection, useCoachRequest, type TrainingTab } from './state';
 import { callLine, playerCallLine, TrainingOrderSheet } from './TrainingOrderSheet';
 import { multiplierLabel } from './PlayerProfile';
 import { ATTRIBUTES } from '../../../../packages/contracts/src/player';
@@ -78,79 +68,34 @@ function focusEffect(focus: TrainingFocus, recoveryBonus: number) {
   };
 }
 
-/** The 훈련 tab a request or the address asks for. */
-function trainingStart(request: TrainingTab | undefined): TrainingTab {
-  if (request) return request;
-  const route = routeOf(location.pathname, location.search);
-  return TRAINING_TABS.find(([id]) => id === route.view)?.[0] ?? 'training';
-}
-
 /** A coach's training sheet: for the squad, the academy, or one first-team player. */
 type Sheet = { coach: TrainingCoach; focus?: TrainingFocus | YouthFocus; player?: string };
 
-/**
- * 훈련 (→WEB-70): how the club develops its players, as one tab bar — the focus the coaches set and
- * the owner's suggestions and orders to them (→STAFF-19), each player's own focus and adaptation,
- * what drives growth and who is still growing, then the academy. A tab asked for from elsewhere is
- * taken once; otherwise the tab comes from the address.
- */
-export function TrainingView({ state, client }: Props) {
+/** Independently composed training bodies retain one training-sheet host. */
+export function TrainingView({ state, client, view }: Props & { view: TrainingTab }) {
   const w = state.view!.world;
-  const request = useTrainingView((view) => view.request);
-  const [tab, setTab] = useState<TrainingTab>(() => trainingStart(request));
-  useEffect(() => {
-    if (!request) return;
-    setTab(request);
-    useTrainingView.getState().take();
-  }, [request]);
   // A coach's sheet asked for from a remedy or the academy's line opens once (→WEB-44).
   const coachRequest = useCoachRequest((view) => view.request);
-  const [sheet, setSheet] = useState<Sheet>();
+  const [sheet, setSheet] = useTaskState<Sheet | undefined>(
+    w.id,
+    `training-sheet-${view}`,
+    undefined,
+  );
   useEffect(() => {
-    if (!coachRequest) return;
+    if (!coachRequest || (coachRequest.coach === 'youth') !== (view === 'academy')) return;
     setSheet(coachRequest);
     useCoachRequest.getState().take();
-  }, [coachRequest]);
+  }, [coachRequest, setSheet, view]);
   const sheetPlayer = sheet?.player
     ? activePlayers(w).find((player) => player.id === sheet.player)
     : undefined;
-  const outlook = developmentOutlook(w);
   return (
     <>
-      <PageTabs
-        tabs={TRAINING_TABS}
-        value={tab}
-        onChange={setTab}
-        label="훈련·육성 보기"
-        idPrefix="training"
-      />
-      <TabPanel idPrefix="training" value={tab}>
-        {tab === 'training' ? (
-          <>
-            <FacilityOverview
-              w={w}
-              kind="training"
-              title={w.trainingGround ? `${w.trainingGround}단계 훈련장` : '기본 훈련장'}
-            >
-              {focusName(outlook.focus.focus)} · 수석코치{' '}
-              {w.staff?.find((person) => person.role === 'assistant')?.name ?? '공석'}
-            </FacilityOverview>
-            <div className={`${s.stack} ${s.pair}`}>
-              <TrainingFocusPanel w={w} outlook={outlook} onSheet={setSheet} />
-              <DevelopmentDrivers outlook={outlook} />
-              <PlayerTraining w={w} onSheet={setSheet} />
-            </div>
-          </>
-        ) : (
-          <>
-            <FacilityOverview w={w} kind="academy" title="유소년 아카데미">
-              {w.academyFacility ? `${w.academyFacility}단계 유소년 시설` : '기본 유소년 시설'} ·{' '}
-              유소년 총괄 {w.staff?.find((person) => person.role === 'youth')?.name ?? '공석'}
-            </FacilityOverview>
-            <AcademyPanel w={w} client={client} />
-          </>
-        )}
-      </TabPanel>
+      {view === 'training' ? (
+        <FirstTeamTraining w={w} onSheet={setSheet} />
+      ) : (
+        <AcademyTraining w={w} client={client} />
+      )}
       {sheet && (!sheet.player || sheetPlayer) && (
         <TrainingOrderSheet
           w={w}
@@ -161,6 +106,39 @@ export function TrainingView({ state, client }: Props) {
           onClose={() => setSheet(undefined)}
         />
       )}
+    </>
+  );
+}
+
+/** First-team training and academy can compose independently without copying their actions. */
+export function FirstTeamTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => void }) {
+  const outlook = developmentOutlook(w);
+  return (
+    <>
+      <FacilityOverview
+        w={w}
+        kind="training"
+        title={w.trainingGround ? `${w.trainingGround}단계 훈련장` : '기본 훈련장'}
+      >
+        {focusName(outlook.focus.focus)} · 수석코치{' '}
+        {w.staff?.find((person) => person.role === 'assistant')?.name ?? '공석'}
+      </FacilityOverview>
+      <div className={`${s.stack} ${s.pair}`}>
+        <TrainingFocusPanel w={w} outlook={outlook} onSheet={onSheet} />
+        <DevelopmentDrivers outlook={outlook} />
+        <PlayerTraining w={w} onSheet={onSheet} />
+      </div>
+    </>
+  );
+}
+export function AcademyTraining({ w, client }: { w: World; client: GameClient }) {
+  return (
+    <>
+      <FacilityOverview w={w} kind="academy" title="유소년 아카데미">
+        {w.academyFacility ? `${w.academyFacility}단계 유소년 시설` : '기본 유소년 시설'} · 유소년
+        총괄 {w.staff?.find((person) => person.role === 'youth')?.name ?? '공석'}
+      </FacilityOverview>
+      <AcademyPanel w={w} client={client} />
     </>
   );
 }
@@ -417,8 +395,7 @@ function openDriver(home: DevelopmentHome, label: string) {
     openDirection(label === '선수단 투자' ? 'squad' : 'youth');
     return;
   }
-  const [page, view] = home.split('/');
-  openHome({ page, view } as Home);
+  openHome(developmentDestination(home));
 }
 
 /**

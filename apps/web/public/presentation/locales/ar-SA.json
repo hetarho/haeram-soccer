@@ -170,6 +170,17 @@
     "navigation.short.season": "الموسم",
     "navigation.clubRecords": "سجلات النادي",
     "navigation.pastLeague": "الدوريات السابقة",
-    "navigation.pastCup": "الكؤوس السابقة"
+    "navigation.pastCup": "الكؤوس السابقة",
+    "navigation.firstTeam": "الفريق الأول",
+    "navigation.short.firstTeam": "الفريق",
+    "navigation.academy": "الأكاديمية",
+    "navigation.short.academy": "الشباب",
+    "navigation.staff": "الجهاز الفني",
+    "navigation.short.staff": "الجهاز",
+    "personnel.players": "اللاعبون",
+    "personnel.market": "الانتقالات",
+    "personnel.training": "التدريب",
+    "personnel.manager": "المدير الفني",
+    "personnel.coaches": "الطاقم"
   }
 }

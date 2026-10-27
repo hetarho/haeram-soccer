@@ -155,6 +155,17 @@
     "navigation.short.season": "Musim",
     "navigation.clubRecords": "Arsip klub",
     "navigation.pastLeague": "Liga terdahulu",
-    "navigation.pastCup": "Piala terdahulu"
+    "navigation.pastCup": "Piala terdahulu",
+    "navigation.firstTeam": "Tim utama",
+    "navigation.short.firstTeam": "Tim",
+    "navigation.academy": "Akademi",
+    "navigation.short.academy": "Akademi",
+    "navigation.staff": "Staf pelatih",
+    "navigation.short.staff": "Pelatih",
+    "personnel.players": "Pemain",
+    "personnel.market": "Transfer",
+    "personnel.training": "Latihan",
+    "personnel.manager": "Manajer",
+    "personnel.coaches": "Staf"
   }
 }

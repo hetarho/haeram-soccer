@@ -158,6 +158,17 @@
     "navigation.short.season": "Sezon",
     "navigation.clubRecords": "Kulüp arşivi",
     "navigation.pastLeague": "Geçmiş ligler",
-    "navigation.pastCup": "Geçmiş kupalar"
+    "navigation.pastCup": "Geçmiş kupalar",
+    "navigation.firstTeam": "A takım",
+    "navigation.short.firstTeam": "A takım",
+    "navigation.academy": "Altyapı",
+    "navigation.short.academy": "Altyapı",
+    "navigation.staff": "Teknik ekip",
+    "navigation.short.staff": "Ekip",
+    "personnel.players": "Oyuncular",
+    "personnel.market": "Transferler",
+    "personnel.training": "Antrenman",
+    "personnel.manager": "Teknik direktör",
+    "personnel.coaches": "Ekip"
   }
 }

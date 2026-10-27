@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { openLeague } from './competition-navigation';
 import { openOfficeLibrary } from './office';
 import { gameHud } from './layout';
@@ -94,7 +95,6 @@ async function foundHere(page: Page, seed: string, name: string) {
   await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
 }
-const nav = (page: Page) => page.getByRole('navigation', { name: '모바일 게임 메뉴' });
 async function openSlots(page: Page) {
   await outsideOffice(page);
   await page.getByRole('button', { name: '설정', exact: true }).click();
@@ -273,8 +273,8 @@ test('navigation detours and passing days keep the draft beside the policy draft
   await expectDraft(view);
   // Another page and back: a fresh entry opens the lobby, and the design still waits (→WEB-74).
   await leaveOffice(page);
-  await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
-  await expect(page).toHaveURL(/\/people/);
+  await openPersonnel(page, 'players');
+  await expect(page).toHaveURL(/\/first-team\?view=players/);
   await openOfficeArea(page, '구단 디자인');
   view = await designView(page);
   await expectDraft(view);

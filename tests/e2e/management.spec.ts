@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { openClubRecords, openLeague } from './competition-navigation';
 import { openOfficeLibrary } from './office';
 import { marketRows, marketInfo, closeMarketPanel } from './market';
@@ -17,20 +18,16 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByLabel('세계 생성 시드').fill('ui-management');
   await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-  await expect(
-    page.getByRole('tablist', { name: '선수단·스태프 보기', exact: true }),
-  ).toBeVisible();
-  // 사람 opens on 선수; the market, the manager's office and the coaches are tabs beside it.
+  await openPersonnel(page, 'players');
+  await expect(page.getByRole('tablist', { name: '1군', exact: true })).toBeVisible();
+  // First-team work starts on the roster; coaching work has its own primary hub.
   const peopleTab = (name: string) =>
-    page
-      .getByRole('tablist', { name: '선수단·스태프 보기' })
-      .getByRole('tab', { name, exact: true });
-  await expect(peopleTab('선수')).toHaveAttribute('aria-selected', 'true');
-  await peopleTab('스태프').click();
+    page.getByRole('tablist', { name: '1군' }).getByRole('tab', { name, exact: true });
+  await expect(peopleTab('선수 목록')).toHaveAttribute('aria-selected', 'true');
+  await openPersonnel(page, 'coaches');
   await expect(page.getByRole('region', { name: '스태프', exact: true })).toBeVisible();
-  await expect(page).toHaveURL(/\/people\?view=coaches$/);
-  await peopleTab('감독').click();
+  await expect(page).toHaveURL(/\/staff\?view=coaches$/);
+  await openPersonnel(page, 'manager');
   await chooseOption(page.getByRole('combobox', { name: '요청 전술', exact: true }), 'counter');
   await chooseOption(page.getByRole('combobox', { name: '요청 말투', exact: true }), 'evidence');
   await page.getByRole('button', { name: '감독에게 제안하기' }).click();
@@ -50,12 +47,12 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await draft.getByRole('button', { name: '적용', exact: true }).click();
   await expect(draft).toHaveCount(0);
   await expect(page.getByTestId('area-summary-global')).toHaveText('해외 홍보 · 없음 · 안 함');
-  // The market is a tab of 사람.
+  // The market is a first-team tab.
   await leaveOffice(page);
-  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await openPersonnel(page, 'players');
   await peopleTab('이적시장').click();
   await expect(peopleTab('이적시장')).toHaveAttribute('aria-selected', 'true');
-  await expect(page).toHaveURL(/\/people\?view=market$/);
+  await expect(page).toHaveURL(/\/first-team\?view=market$/);
   await marketRows(page)
     .filter({ hasText: '자유계약' })
     .first()
@@ -65,7 +62,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await closeMarketPanel(page, '영입 후보 상세');
   await expect(await marketInfo(page)).toContainText('선수단 정원 21/40');
   await closeMarketPanel(page, '영입 정보');
-  await peopleTab('선수').click();
+  await peopleTab('선수 목록').click();
   await expect(page.getByText('선수단 21/40', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await finishSeason(page);

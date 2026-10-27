@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { marketRows, marketFilters, marketInfo, marketCandidate, closeMarketPanel } from './market';
 import { createWorld, makePlayer, joinClub } from '../../packages/engine/src/index';
 import { movePerson } from '../../packages/engine/src/npc-continuity';
@@ -41,14 +42,9 @@ async function foundMarket(page: Page, seed: string, difficulty: '쉬움' | '어
 
 /** The market is 사람's second tab. */
 const marketTab = (page: Page) =>
-  page
-    .getByRole('tablist', { name: '선수단·스태프 보기' })
-    .getByRole('tab', { name: '이적시장', exact: true });
+  page.getByRole('tablist', { name: '1군' }).getByRole('tab', { name: '이적시장', exact: true });
 async function openMarket(page: Page) {
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '선수단·스태프', exact: true })
-    .click();
+  await openPersonnel(page, 'players');
   await marketTab(page).click();
   await expect(marketTab(page)).toHaveAttribute('aria-selected', 'true');
   await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
@@ -406,7 +402,7 @@ test('the market ends with who answers offers and names the recruitment level, o
     ).toHaveAttribute('aria-pressed', 'true');
   // 나가기 returns to the market the link left (→WEB-39/74).
   await leaveOffice(page);
-  await expect(page).toHaveURL(/\/people\?view=market$/);
+  await expect(page).toHaveURL(/\/first-team\?view=market$/);
   expect(await horizontalOverflow(page)).toBe(0);
   // The recruitment level is a line that opens its home on the 방향 board (→WEB-71).
   await page.getByRole('button', { name: /^영입 기조 · 균형/ }).click();
@@ -416,5 +412,5 @@ test('the market ends with who answers offers and names the recruitment level, o
       .getByRole('dialog', { name: '영입 업무 기준', exact: true })
       .getByRole('radio', { name: '영입 기조 균형', exact: true }),
   ).toHaveAttribute('aria-checked', 'true');
-  await expect(page).toHaveURL(/\/people\?view=market$/);
+  await expect(page).toHaveURL(/\/first-team\?view=market$/);
 });

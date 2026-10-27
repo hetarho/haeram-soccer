@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { test, expect } from '@playwright/test';
 import { importSecondCareer } from './career-fixtures';
 import { horizontalOverflow } from './layout';
@@ -55,19 +56,15 @@ test('same-person-cross-role-links', async ({ page }) => {
   const { importResponsibilityCareer } = await import('./responsibility-fixtures');
   const { w, player } = await qualifiedCoachFixture('internal');
   await importResponsibilityCareer(page, w);
-  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-  const tab = (name: string) =>
-    page
-      .getByRole('tablist', { name: '선수단·스태프 보기' })
-      .getByRole('tab', { name, exact: true });
-  await tab('스태프').click();
+  await openPersonnel(page, 'players');
+  await openPersonnel(page, 'coaches');
   await page.getByRole('button', { name: `${player.name} 인물 경력`, exact: true }).click();
   let detail = page.getByRole('dialog', { name: '인물 경력', exact: true });
   await expect(detail).toContainText(player.name);
   await expect(detail).toContainText(`${player.born}년생`);
   await expect(detail).toContainText('3년 근무 충족');
   await detail.getByRole('button', { name: '닫기', exact: true }).last().click();
-  await tab('감독').click();
+  await openPersonnel(page, 'manager');
   await page.getByRole('button', { name: '교체', exact: true }).click();
   const card = page
     .getByRole('article')
@@ -89,11 +86,8 @@ test('employed-coach-manager-quote', async ({ page }) => {
   const { importResponsibilityCareer } = await import('./responsibility-fixtures');
   const { w, player } = await qualifiedCoachFixture('club');
   await importResponsibilityCareer(page, w);
-  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-  await page
-    .getByRole('tablist', { name: '선수단·스태프 보기' })
-    .getByRole('tab', { name: '감독', exact: true })
-    .click();
+  await openPersonnel(page, 'players');
+  await openPersonnel(page, 'manager');
   await page.getByRole('button', { name: '교체', exact: true }).click();
   const card = page
     .getByRole('article')
@@ -163,11 +157,8 @@ test('coach-only dismissal preserves the playing contract through reload', async
   const { STAFF_INFO } = await import('../../packages/engine/src/staff');
   const { w, player, proposal } = await combinedCareerFixture();
   await importResponsibilityCareer(page, w);
-  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-  await page
-    .getByRole('tablist', { name: '선수단·스태프 보기' })
-    .getByRole('tab', { name: '스태프', exact: true })
-    .click();
+  await openPersonnel(page, 'players');
+  await openPersonnel(page, 'coaches');
   const department = page
     .getByRole('listitem')
     .filter({ has: page.getByRole('button', { name: `${player.name} 인물 경력`, exact: true }) });

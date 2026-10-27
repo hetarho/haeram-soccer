@@ -97,6 +97,18 @@ describe('locale messages', () => {
     ]);
   });
 
+  it('names the final six-entry hierarchy and personnel subviews', () => {
+    const { t } = createLoadedLocale(koreanRegistry, korean);
+    expect(
+      ['season', 'history', 'dashboard', 'firstTeam', 'academy', 'staff'].map((key) =>
+        t(`navigation.${key}`),
+      ),
+    ).toEqual(['시즌', '역사', '클럽 홈', '1군', '유소년', '코치진']);
+    expect(
+      ['players', 'market', 'training', 'manager', 'coaches'].map((key) => t(`personnel.${key}`)),
+    ).toEqual(['선수 목록', '이적시장', '훈련', '감독', '스태프']);
+  });
+
   it('preserves current Korean shell copy', () => {
     const { t } = createLoadedLocale(koreanRegistry, korean);
     expect(

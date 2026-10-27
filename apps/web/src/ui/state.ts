@@ -1,4 +1,13 @@
 import {
+  FIRST_TEAM_TABS,
+  STAFF_TABS,
+  PERSONNEL_PATHS,
+  personnelAddress,
+  personnelHome,
+  personnelRoute,
+  type PersonnelHome,
+} from './personnelNavigation';
+import {
   COMPETITION_PATHS,
   competitionRoute,
   HISTORY_PAGES,
@@ -22,18 +31,15 @@ import type {
   ManagerHistoryPage,
   ManagerSourceSeason,
 } from '../../../../packages/contracts/src/manager-history-view';
-/**
- * The destinations: home, the competitions and records, and the owner's three levers — 사람 (who
- * joins and stays), 훈련 (how players develop) and 방향 (where the club is going and its money,
- * →WEB-10).
- */
+/** The six gameplay destinations, their competition lenses and the focused office. */
 export type Page =
   | 'dashboard'
   | 'match'
   | 'league'
   | 'europe'
-  | 'people'
-  | 'training'
+  | 'firstTeam'
+  | 'academy'
+  | 'staff'
   | 'business'
   | 'history'
   | 'leagueHistory'
@@ -42,29 +48,14 @@ const paths: Record<Page, string> = {
   dashboard: '/journal',
   match: '/matches',
   ...COMPETITION_PATHS,
-  people: '/people',
-  training: '/training',
+  ...PERSONNEL_PATHS,
   business: '/direction',
 };
 
-/** 사람's tabs (→WEB-43), in tab-bar order; the first one keeps no ?view= in the address. */
-export const PEOPLE_TABS = [
-  ['players', '선수'],
-  ['market', '이적시장'],
-  ['manager', '감독'],
-  ['coaches', '스태프'],
-] as const;
-export type PeopleTab = (typeof PEOPLE_TABS)[number][0];
-/** A 사람 tab, or `candidates`: 감독 with the manager market open (→WEB-43, WEB-57). */
+/** Compatibility requests resolve through the canonical personnel destinations. */
+export type PeopleTab = 'players' | 'market' | 'manager' | 'coaches';
 export type PeopleRequest = PeopleTab | 'candidates';
-/** 훈련's tabs (→WEB-70), in tab-bar order; the first one keeps no ?view= in the address. */
-export const TRAINING_TABS = [
-  ['training', '1군 훈련'],
-  ['academy', '유소년'],
-] as const;
-export type TrainingTab = (typeof TRAINING_TABS)[number][0];
-const tabOf = <T extends string>(tabs: readonly (readonly [T, string])[], id: string | null) =>
-  tabs.find(([tab]) => tab === id)?.[0];
+export type TrainingTab = 'training' | 'academy';
 /** The owner office's areas (→WEB-39), in lobby order; each keeps its ?view= in the address. */
 export const BUSINESS_TABS = OFFICE_DESKS;
 export type BusinessView = WorkDesk;
@@ -76,57 +67,32 @@ export function officeAddress(view: OfficeView) {
   return `${paths.business}${view === 'lobby' ? '' : `?view=${view}`}`;
 }
 /** Where a setting lives (→WEB-71): a page and its tab. */
-export type Home =
-  | { page: 'people'; view: PeopleTab }
-  | { page: 'training'; view: TrainingTab }
-  | { page: 'business'; view: BusinessView };
+export type Home = PersonnelHome | { page: 'business'; view: BusinessView };
 
 /** Where an address lands. */
 export interface Route {
   page: Page;
-  /** The tab 사람 or 훈련 opens on, or the office's view. */
+  /** The personnel workflow or office view. */
   view?: PeopleTab | TrainingTab | OfficeView;
-  /** 사람's 감독 opens with the manager market. */
+  /** The manager workflow opens with the replacement market. */
   market?: true;
   /** The address to show instead of the one asked for, for older and non-canonical ones. */
   address?: string;
 }
-/**
- * Resolves an address. Older ones open 사람's tabs (→WEB-43): /squad 선수, /transfers 이적시장,
- * /manager 감독 (its ?view=coaches 코치진, ?view=delegation 감독), and ?view=candidates — of
- * /manager or /people — 감독 with the market open; /business opens 방향's tabs (→WEB-39) with its
- * views. Each gets the address of the tab it opens.
- */
+/** Resolve canonical destinations and meaningful older deep links. */
 export function routeOf(pathname: string, search: string): Route {
   const at = (path: string) => pathname === path || pathname.startsWith(path + '/');
   const competition = competitionRoute(pathname, search);
   if (competition) return competition;
+  const personnel = personnelRoute(pathname, search);
+  if (personnel) return personnel;
   const asked = new URLSearchParams(search).get('view');
-  let route: Route;
-  if (at('/squad')) route = { page: 'people', view: 'players' };
-  else if (at('/transfers')) route = { page: 'people', view: 'market' };
-  else if (at('/manager') || (at(paths.people) && asked === 'candidates'))
-    route = {
-      page: 'people',
-      view: asked === 'coaches' ? 'coaches' : 'manager',
-      ...(asked === 'candidates' ? { market: true as const } : {}),
-    };
-  else if (at(paths.people))
-    route = { page: 'people', view: tabOf(PEOPLE_TABS, asked) ?? 'players' };
-  else if (at(paths.training))
-    route = { page: 'training', view: tabOf(TRAINING_TABS, asked) ?? 'training' };
-  else if (at(paths.business) || at('/business'))
-    route = { page: 'business', view: officeView(asked) };
-  else
+  if (!at(paths.business) && !at('/business'))
     return {
       page: (Object.entries(paths).find(([, path]) => at(path))?.[0] as Page) || 'dashboard',
     };
-  const first = {
-    people: PEOPLE_TABS[0][0],
-    training: TRAINING_TABS[0][0],
-    business: 'lobby',
-  }[route.page as 'people' | 'training' | 'business'];
-  let address = `${paths[route.page]}${route.view === first ? '' : `?view=${route.view}`}`;
+  const route: Route = { page: 'business', view: officeView(asked) };
+  let address = officeAddress(route.view as OfficeView);
   const request = new URLSearchParams(search).get('request');
   if (route.page === 'business' && request)
     address += `${address.includes('?') ? '&' : '?'}request=${encodeURIComponent(request)}`;
@@ -212,15 +178,9 @@ const oneShot = <T>() =>
       return request;
     },
   }));
-/**
- * A 사람 tab asked for from elsewhere, such as the manager-departure alert opening the market.
- * 사람 takes it once, even while it is showing; otherwise it opens on the tab in its address.
- */
-export const usePeopleView = oneShot<PeopleRequest>();
-// The market an older address asked for opens once 사람 shows (the address keeps only its tab).
+/** A legacy alert/deep link asks for the manager market once. */
+export const usePeopleView = oneShot<'candidates'>();
 if (arrival?.market) usePeopleView.getState().open('candidates');
-/** A 훈련 tab asked for from elsewhere, taken the same way. */
-export const useTrainingView = oneShot<TrainingTab>();
 /** An office view asked for while the office is showing; from elsewhere the address carries it. */
 export const useBusinessView = oneShot<OfficeView>();
 /**
@@ -263,7 +223,8 @@ export function openCoachSheet(
   focus?: TrainingFocus | YouthFocus,
   player?: string,
 ) {
-  beginTaskDetour('training');
+  const destination = personnelHome(coach === 'youth' ? 'academy' : 'training');
+  beginTaskDetour(destination.page, personnelAddress(destination));
   useCoachRequest.getState().open({ coach, focus, player });
   openTraining(coach === 'youth' ? 'academy' : 'training');
 }
@@ -285,15 +246,20 @@ export function openDirection(area: AreaKey) {
   useDepartmentPolicy.getState().open({ area });
 }
 
-/** Opens 사람 on a tab, or on 감독 with the manager market (`candidates`). */
-export function openPeople(tab: PeopleRequest) {
-  usePeopleView.getState().open(tab);
-  useNavigation.getState().setPage('people');
+/** Explicit action links select their canonical workflow, never the last unrelated subview. */
+export function openPersonnel(home: PersonnelHome, market = false) {
+  rememberTask(useNavigation.getState().page);
+  const address = personnelAddress(home, market);
+  if (taskAddress() !== address) history.pushState(null, '', address);
+  useNavigation.setState({ page: home.page });
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event('tasknavigate'));
 }
-/** Opens 훈련 on a tab. */
+export function openPeople(tab: PeopleRequest) {
+  if (tab === 'candidates') usePeopleView.getState().open(tab);
+  openPersonnel(personnelHome(tab), tab === 'candidates');
+}
 export function openTraining(tab: TrainingTab) {
-  useTrainingView.getState().open(tab);
-  useNavigation.getState().setPage('training');
+  openPersonnel(personnelHome(tab));
 }
 /** Opens the office on a view: from elsewhere through its address, while it shows by request. */
 export function openBusiness(
@@ -328,6 +294,12 @@ export function activateTaskWorld(world: string) {
   ) {
     useNavigation.getState().replacePage('dashboard');
     useNavigation.setState({ officeFrom: undefined });
+  }
+  if (previous && previous !== world) {
+    usePeopleView.getState().take();
+    useCoachRequest.getState().take();
+    useStaffRequest.getState().take();
+    useContractTalk.getState().close();
   }
   useTaskMemory.getState().activate(world);
 }
@@ -366,15 +338,14 @@ export function returnApprovalHome(request?: ApprovalRequest) {
 }
 /** Opens the page and tab where a setting lives (→WEB-71). */
 export function openHome(home: Home) {
-  if (home.page === 'people') openPeople(home.view);
-  else if (home.page === 'training') openTraining(home.view);
-  else openBusiness(home.view);
+  if (home.page === 'business') openBusiness(home.view);
+  else openPersonnel(home);
 }
-/** Opens the transfer market: 사람's 이적시장. */
+/** Opens the first-team transfer market. */
 export function openMarket() {
   openPeople('market');
 }
-/** The player whose contract-talk sheet is open over 사람's 선수 (→WEB-68). */
+/** The player's authoritative roster contract talk (→WEB-68). */
 export const useContractTalk = create<{
   id?: string;
   open: (id: string) => void;
@@ -385,6 +356,7 @@ export const useContractTalk = create<{
 }));
 /** Opens a player's contract talk from elsewhere, such as its event card: 선수, then the sheet. */
 export function openContractTalk(id: string) {
+  beginTaskDetour('firstTeam', personnelAddress(personnelHome('players')));
   useContractTalk.getState().open(id);
   openPeople('players');
 }
@@ -392,12 +364,7 @@ if (typeof window !== 'undefined')
   window.addEventListener('popstate', () => {
     // Back and forward follow the address; an older one is replaced by where it lands.
     const route = arrive();
-    if (route.page === 'people')
-      usePeopleView
-        .getState()
-        .open(route.market ? 'candidates' : ((route.view as PeopleTab) ?? 'players'));
-    if (route.page === 'training')
-      useTrainingView.getState().open((route.view as TrainingTab) ?? 'training');
+    if (route.market) usePeopleView.getState().open('candidates');
     if (route.page === 'business')
       useBusinessView.getState().open((route.view as OfficeView) ?? 'lobby');
     useNavigation.setState({ page: route.page });
@@ -591,27 +558,32 @@ export function returnedToManagers(world: string) {
 }
 
 /** A focused policy/competition visit keeps the working task it was opened from. */
-export function beginTaskDetour(target: Page) {
+export function beginTaskDetour(target: Page, address?: string) {
   const page = useNavigation.getState().page;
-  if (page === target && !HISTORY_PAGES.some((candidate) => candidate === page)) return;
+  if (
+    page === target &&
+    (!address || address === taskAddress()) &&
+    !HISTORY_PAGES.some((candidate) => candidate === page)
+  )
+    return;
   const prior = useTaskMemory.getState();
   if (prior.returning?.target === target && prior.returning.address === taskAddress()) return;
   rememberTask(page);
   const view = new URLSearchParams(location.search).get('view');
   const label =
-    page === 'people'
-      ? (PEOPLE_TABS.find(([id]) => id === (view ?? 'players'))?.[1] ?? '선수단')
-      : page === 'training'
-        ? view === 'academy'
+    page === 'firstTeam'
+      ? (FIRST_TEAM_TABS.find(([id]) => id === (view ?? 'players'))?.[1] ?? '1군')
+      : page === 'staff'
+        ? (STAFF_TABS.find(([id]) => id === (view ?? 'manager'))?.[1] ?? '코치진')
+        : page === 'academy'
           ? '유소년'
-          : '1군 훈련'
-        : page === 'history'
-          ? '클럽 시즌 기록'
-          : page === 'league' || page === 'leagueHistory'
-            ? '리그'
-            : page === 'europe' || page === 'cupHistory'
-              ? '컵 대회'
-              : '클럽 홈';
+          : page === 'history'
+            ? '클럽 시즌 기록'
+            : page === 'league' || page === 'leagueHistory'
+              ? '리그'
+              : page === 'europe' || page === 'cupHistory'
+                ? '컵 대회'
+                : '클럽 홈';
   useTaskMemory.setState({
     parents: prior.returning?.target === page ? [...prior.parents, prior.returning] : [],
     returning: { page, address: taskAddress(), label, target },
@@ -625,10 +597,7 @@ export function returnToTask() {
   useTaskMemory.setState({ returning: parents.at(-1), parents: parents.slice(0, -1) });
   history.pushState(null, '', task.address);
   const route = routeOf(location.pathname, location.search);
-  if (route.page === 'people')
-    usePeopleView.getState().open((route.view as PeopleTab) ?? 'players');
-  if (route.page === 'training')
-    useTrainingView.getState().open((route.view as TrainingTab) ?? 'training');
+  if (route.market) usePeopleView.getState().open('candidates');
   if (route.page === 'business')
     useBusinessView.getState().open((route.view as OfficeView) ?? 'lobby');
   useNavigation.setState({ page: route.page });
@@ -638,7 +607,7 @@ export function returnToTask() {
 /** A specific responsible staff post, opened from its operational work. */
 export const useStaffRequest = oneShot<StaffRole>();
 export function openStaff(role: StaffRole) {
-  beginTaskDetour('people');
+  beginTaskDetour('staff', personnelAddress(personnelHome('coaches')));
   useStaffRequest.getState().open(role);
   openPeople('coaches');
 }

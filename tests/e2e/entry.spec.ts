@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { openCups, openLeague } from './competition-navigation';
 import { watchNext } from './watch';
 import { advanceOneRound } from './season-progression';
@@ -49,9 +50,8 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await page.setViewportSize({ width: 390, height: 844 });
   const mobileMenu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(mobileMenu).toBeVisible();
-  // The match view has no tab: it opens only from a watch action. The owner's squad levers sit
-  // right of home: 사람 (players, market and staff) and 훈련; the office opens from home.
-  const tabs = ['시즌', '역사', '클럽 홈', '선수단·스태프', '훈련·육성'];
+  // The same six destinations appear on desktop and phones; the office opens from home.
+  const tabs = ['시즌', '역사', '클럽 홈', '1군', '유소년', '코치진'];
   await expect(mobileMenu.getByRole('button')).toHaveCount(tabs.length);
   expect(
     await mobileMenu
@@ -81,30 +81,27 @@ test('observes event-backed metrics, historical locks and responsive navigation'
     await expect(allMenu.getByRole('button', { name: label, exact: true })).toHaveCount(0);
   await allMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(allMenu).toHaveCount(0);
-  // The phone tab reads 사람; its page opens on 선수 with the squad count.
-  await expect(mobileMenu.getByRole('button', { name: '선수단·스태프', exact: true })).toHaveText(
-    '선수단',
-  );
-  await mobileMenu.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-  await expect(
-    page.getByRole('tablist', { name: '선수단·스태프 보기', exact: true }),
-  ).toBeVisible();
-  const peopleTabs = page.getByRole('tablist', { name: '선수단·스태프 보기' }).getByRole('tab');
-  await expect(peopleTabs).toHaveText(['선수', '이적시장', '감독', '스태프']);
+  // First-team work opens on the roster with its real squad count.
+  await expect(mobileMenu.getByRole('button', { name: '1군', exact: true })).toHaveText('1군');
+  await openPersonnel(page, 'players');
+  await expect(page.getByRole('tablist', { name: '1군', exact: true })).toBeVisible();
+  const peopleTabs = page.getByRole('tablist', { name: '1군' }).getByRole('tab');
+  await expect(peopleTabs).toHaveText(['선수 목록', '이적시장', '훈련']);
   await expect(peopleTabs.first()).toHaveAttribute('aria-selected', 'true');
   // A delegated premium sale can change the squad before kickoff; the heading must match
   // the actual cards rather than the founding count.
   const rosterCount = await page.locator('[class*="rosterCards"] article').count();
   expect(rosterCount).toBeGreaterThanOrEqual(14);
   await expect(page.getByText(`선수단 ${rosterCount}/40`, { exact: true })).toBeVisible();
-  await expect(page).toHaveURL(/\/people$/);
-  await mobileMenu.getByRole('button', { name: '훈련·육성', exact: true }).click();
-  await expect(page.getByRole('tablist', { name: '훈련·육성 보기', exact: true })).toBeVisible();
-  await expect(page.getByRole('tablist', { name: '훈련·육성 보기' }).getByRole('tab')).toHaveText([
-    '1군 훈련',
-    '유소년',
+  await expect(page).toHaveURL(/\/first-team\?view=players$/);
+  await openPersonnel(page, 'training');
+  await expect(page.getByRole('tablist', { name: '1군', exact: true })).toBeVisible();
+  await expect(page.getByRole('tablist', { name: '1군' }).getByRole('tab')).toHaveText([
+    '선수 목록',
+    '이적시장',
+    '훈련',
   ]);
-  await expect(page).toHaveURL(/\/training$/);
+  await expect(page).toHaveURL(/\/first-team\?view=training$/);
   await openLeague(page);
   await expect(page.getByRole('tab', { name: '순위표', exact: true })).toHaveAttribute(
     'aria-selected',

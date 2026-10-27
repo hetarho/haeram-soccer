@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { openLeague } from './competition-navigation';
 import { advanceOneRound } from './season-progression';
 import { test, expect } from '@playwright/test';
@@ -238,17 +239,15 @@ test('a new game goes into another slot, both careers survive switching and back
   page,
 }) => {
   await found(page);
-  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-  await expect(page).toHaveURL(/\/people$/);
-  await expect(
-    page.getByRole('tablist', { name: '선수단·스태프 보기', exact: true }),
-  ).toBeVisible();
+  await openPersonnel(page, 'players');
+  await expect(page).toHaveURL(/\/first-team\?view=players$/);
+  await expect(page.getByRole('tablist', { name: '1군', exact: true })).toBeVisible();
   await page.goBack();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   // Whichever tab a game was left on, a game entered from the slot screen opens on home.
-  await page.getByRole('button', { name: '훈련·육성', exact: true }).click();
-  await expect(page).toHaveURL(/\/training$/);
-  await expect(page.getByRole('tablist', { name: '훈련·육성 보기', exact: true })).toBeVisible();
+  await openPersonnel(page, 'training');
+  await expect(page).toHaveURL(/\/first-team\?view=training$/);
+  await expect(page.getByRole('tablist', { name: '1군', exact: true })).toBeVisible();
   await (await openSaveMenu(page)).getByRole('button', { name: '게임 슬롯', exact: true }).click();
   const slotScreen = page.getByTestId('game-slots');
   await expect(slotScreen.getByRole('listitem', { name: '슬롯 1' })).toContainText('진행 중');

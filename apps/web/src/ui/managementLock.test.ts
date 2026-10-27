@@ -9,6 +9,7 @@ import type { ClientState, GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
 import type { View } from '../runtime/protocol';
 import { gameStore, initialClientState } from '../runtime/store';
+import korean from '../../public/presentation/locales/ko-KR.json';
 import { AcademyPanel } from './AcademyPanel';
 import { BusinessWorkbench } from './BusinessWorkbench';
 import { ClubDesignView } from './ClubDesignView';
@@ -19,6 +20,13 @@ import { RecruitmentDesk } from './RecruitmentDesk';
 import Rich from './Rich';
 import { StrategyBoard } from './StrategyBoard';
 import { TrainingOrderSheet } from './TrainingOrderSheet';
+
+vi.mock('../presentation/react', async (original) => ({
+  ...(await original<typeof import('../presentation/react')>()),
+  useLocale: () => ({
+    t: (id: string) => korean.messages[id as keyof typeof korean.messages] ?? id,
+  }),
+}));
 
 const { drafts } = vi.hoisted(() => ({ drafts: {} as Record<string, unknown> }));
 vi.mock('../runtime/store', async (original) => ({
@@ -104,7 +112,11 @@ function expectLocked(element: () => ReactElement, label: RegExp) {
 }
 beforeEach(() => {
   gameStore.setState(state(), true);
-  vi.stubGlobal('location', { pathname: '/people', search: '' });
+  vi.stubGlobal('location', {
+    origin: 'https://game.test',
+    pathname: '/first-team',
+    search: '?view=players',
+  });
   for (const key of Object.keys(drafts)) delete drafts[key];
 });
 afterEach(() => {
@@ -119,7 +131,7 @@ describe('management screen calendar locks', () => {
         createElement(Rich, {
           state: gameStore.getState(),
           client,
-          page: 'people',
+          page: 'firstTeam',
           controller,
         }),
       /이적 상태/,
@@ -169,13 +181,17 @@ describe('management screen calendar locks', () => {
     expectLocked(() => createElement(AcademyPanel, { w, client }), / 방출$/);
   });
   it('locks manager requests while navigation and replacement-market inspection remain available', () => {
-    vi.stubGlobal('location', { pathname: '/people', search: '?view=manager' });
+    vi.stubGlobal('location', {
+      origin: 'https://game.test',
+      pathname: '/staff',
+      search: '?view=manager',
+    });
     expectLocked(
       () =>
         createElement(Rich, {
           state: gameStore.getState(),
           client,
-          page: 'people',
+          page: 'staff',
           controller,
         }),
       /감독에게 제안하기/,
@@ -184,7 +200,7 @@ describe('management screen calendar locks', () => {
       createElement(Rich, {
         state: gameStore.getState(),
         client,
-        page: 'people',
+        page: 'staff',
         controller,
       }),
     );

@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { advanceOneRound } from './season-progression';
 import { expect, test, type Page } from '@playwright/test';
 import {
@@ -126,7 +127,7 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   // The manager could not talk him round: the roster card on 사람's 선수 wears the badge with its
   // reason.
   await expect(page).toHaveURL(/\/journal$/);
-  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await openPersonnel(page, 'players');
   const roster = page.locator('article').filter({ hasText: name });
   // 선수 ends with who answers talks: the owner, at level 1 (→WEB-43).
   await expect(
@@ -156,8 +157,8 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await news.getByRole('button', { name: '닫기', exact: true }).click();
 
   // 사람 opens on 선수, the roster.
-  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-  await expect(page).toHaveURL(/\/people$/);
+  await openPersonnel(page, 'players');
+  await expect(page).toHaveURL(/\/first-team\?view=players$/);
   await expect(roster.getByText('이적 요청', { exact: true })).toBeVisible();
   await expect(
     roster.getByRole('button', { name: `${name} 이적 상태 · 이적 명단 · 바꾸기` }),
@@ -173,7 +174,7 @@ test('the talk rule shows under 선수 and applies', async ({ page, browserName 
   await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await openPersonnel(page, 'players');
   // The owner holds contracts; the delegated criteria remain visible for a later handover.
   const talks = page.getByRole('region', { name: '계약 협상 위임' });
   await expect(talks.getByRole('checkbox')).toHaveCount(0);
@@ -195,7 +196,7 @@ test('the talk rule shows under 선수 and applies', async ({ page, browserName 
   await expect(draft).toHaveCount(0);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
-  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await openPersonnel(page, 'players');
   await expect(
     page
       .getByRole('region', { name: '계약 협상 위임' })

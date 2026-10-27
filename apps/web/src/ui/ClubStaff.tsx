@@ -1,5 +1,6 @@
+import { useTaskState } from './taskMemory';
 import { PersonCareerLink } from './PersonCareer';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import type {
   ContractTerm,
   Manager,
@@ -164,7 +165,11 @@ export function ManagerRenewal({
   disabled: boolean;
 }) {
   const offer = managerRenewal(w);
-  const [term, setTerm] = useState<ContractTerm>(managerTerm(w.manager) as ContractTerm);
+  const [term, setTerm] = useTaskState<ContractTerm>(
+    w.id,
+    `manager-renewal-term-${w.manager.id}`,
+    managerTerm(w.manager) as ContractTerm,
+  );
   if (!offer) return null;
   const chosen = Math.min(term, offer.limit) as ContractTerm,
     terms = managerRenewal(w, chosen)!;
@@ -304,7 +309,7 @@ export function CoachingStaff({
 }) {
   const acting = useActing();
   const request = useStaffRequest((store) => store.request);
-  const [role, setRole] = useState<StaffRole | undefined>(() =>
+  const [role, setRole] = useTaskState<StaffRole | undefined>(w.id, 'staff-role', () =>
     selected && !w.staff?.some((member) => member.role === selected) ? selected : undefined,
   );
   useEffect(() => {
@@ -316,14 +321,21 @@ export function CoachingStaff({
       useStaffRequest.getState().take();
     }
   }, [request]);
-  const [pick, setPick] = useState<string>();
+  const [pick, setPick] = useTaskState<string | undefined>(w.id, 'staff-pick', undefined);
   // Hiring and renewing both start from the two seasons the staff would sign (→STAFF-15).
-  const [term, setTerm] = useState<ContractTerm>(DELEGATED_TERM);
-  const [renewing, setRenewing] = useState<StaffRole | undefined>(() =>
+  const [term, setTerm] = useTaskState<ContractTerm>(w.id, 'staff-term', DELEGATED_TERM);
+  const [renewing, setRenewing] = useTaskState<StaffRole | undefined>(w.id, 'staff-renewing', () =>
     selected && w.staff?.some((member) => member.role === selected && isExpiring(w, member))
       ? selected
       : undefined,
   );
+  useEffect(() => {
+    if (!selected) return;
+    const member = w.staff?.find((person) => person.role === selected);
+    setRole(member ? undefined : selected);
+    setPick(undefined);
+    setRenewing(member && isExpiring(w, member) ? selected : undefined);
+  }, [selected, w.id]);
   const club = clubOf(w);
   const format = (value: string) => <Money value={value} code={club.country} year={w.year} />,
     // Inside a control that already answers the tap: the notation, the exact amount as its title.

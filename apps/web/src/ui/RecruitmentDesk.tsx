@@ -279,14 +279,26 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
     'market-comparison-offers',
     {},
   );
-  const [comparing, setComparing] = useState(false);
+  const [comparing, setComparing] = useTaskState(w.id, 'market-comparing', false);
   const [message, setMessage] = useState('');
-  const [biddingId, setBiddingId] = useState<string>();
-  const [viewingId, setViewingId] = useState<string>();
-  const [panel, setPanel] = useState<'filters' | 'info' | 'negotiations'>();
-  const [step, setStep] = useState(1);
+  const [biddingId, setBiddingId] = useTaskState<string | undefined>(
+    w.id,
+    'market-biddingId',
+    undefined,
+  );
+  const [viewingId, setViewingId] = useTaskState<string | undefined>(
+    w.id,
+    'market-viewingId',
+    undefined,
+  );
+  const [panel, setPanel] = useTaskState<'filters' | 'info' | 'negotiations' | undefined>(
+    w.id,
+    'market-panel',
+    undefined,
+  );
+  const [step, setStep] = useTaskState(w.id, 'market-step', 1);
   // 모두 보기 on the 이적 협상 list: closed bids past the first rows.
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useTaskState(w.id, 'market-expanded', false);
   const registered = squadRegistration(w);
   const blocked = useGameState(gameActionsBlocked);
   const recommended = recruitmentLineNeed(w);

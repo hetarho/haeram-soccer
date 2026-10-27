@@ -151,8 +151,9 @@ function NavIcon({ page }: { page: Page }) {
     europe: 'cup',
     leagueHistory: 'history',
     cupHistory: 'history',
-    people: 'people',
-    training: 'training',
+    firstTeam: 'people',
+    academy: 'training',
+    staff: 'people',
     business: 'trend',
     history: 'history',
   };
@@ -999,6 +1000,28 @@ export function App() {
   useEffect(() => {
     if (page === 'match' && client && w && !hasPlayback) replacePage('dashboard');
   }, [page, client, w, hasPlayback, replacePage]);
+  // Local personnel tabs create meaningful history entries too, while keeping the same page.
+  const [taskLocation, setTaskLocation] = useState(taskAddress);
+  const lastTaskAddress = useRef(taskLocation);
+  useEffect(() => {
+    const restore = (event: Event) => {
+      const address = taskAddress();
+      if (event.type === 'popstate' && lastTaskAddress.current !== address) {
+        const previous = lastTaskAddress.current;
+        useTaskMemory.setState((memory) => ({
+          scrolls: { ...memory.scrolls, [previous]: scroller.current?.scrollTop ?? 0 },
+        }));
+      }
+      lastTaskAddress.current = address;
+      setTaskLocation(address);
+    };
+    window.addEventListener('popstate', restore);
+    window.addEventListener('tasknavigate', restore);
+    return () => {
+      window.removeEventListener('popstate', restore);
+      window.removeEventListener('tasknavigate', restore);
+    };
+  }, []);
   // The document never scrolls; each view scrolls inside the content region below the HUD.
   const scroller = useRef<HTMLDivElement>(null);
   // Screens slide in from the side of the tab that was chosen, so navigation reads spatially.
@@ -1040,7 +1063,7 @@ export function App() {
       resize.disconnect();
       window.clearTimeout(timer);
     };
-  }, [page, contentPage, worldId, replacing, screen]);
+  }, [page, contentPage, worldId, replacing, screen, taskLocation]);
   const saveFile = (raw: string, name: string) => {
     const url = URL.createObjectURL(new Blob([raw], { type: 'application/json' })),
       a = document.createElement('a');
@@ -1205,7 +1228,7 @@ export function App() {
                     <div hidden={contentPage !== 'europe' && contentPage !== 'cupHistory'}>
                       <ConnectedEurope client={client} />
                     </div>
-                    {(['people', 'training', 'business', 'history'] as Page[]).includes(
+                    {(['firstTeam', 'academy', 'staff', 'business', 'history'] as Page[]).includes(
                       contentPage,
                     ) && (
                       <ConnectedRich page={contentPage} client={client} controller={controller} />

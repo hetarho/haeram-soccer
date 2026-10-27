@@ -162,21 +162,21 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           id: 'market',
           label: '이적시장',
           effect: '부족한 자리에 더 강한 선수를 찾아요',
-          page: 'people',
+          page: 'firstTeam',
           tab: 'market',
         },
         {
           id: 'training',
           label: '1군 훈련',
           effect: '코치의 훈련 방향을 보고 선수 성장을 이끌어요',
-          page: 'training',
+          page: 'firstTeam',
           tab: 'training',
         },
         {
           id: 'academy',
           label: '유소년 보기',
           effect: '1군에 올릴 만한 유망주를 살펴요',
-          page: 'training',
+          page: 'academy',
           tab: 'academy',
         },
       ];
@@ -195,7 +195,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           cost: '무료',
           unavailable: activeTrainingFocus(w) === 'recovery' ? '이미 회복 훈련 중' : undefined,
           coach: { coach: 'assistant', focus: 'recovery' },
-          page: 'training',
+          page: 'firstTeam',
         },
         {
           id: 'rest-lineup',
@@ -231,15 +231,15 @@ export function remedies(w: World, key: StateKey): Remedy[] {
         {
           id: 'office',
           label: '감독과 전술 이야기하기',
-          effect: '사람 › 감독에서 감독의 철학과 신뢰를 보고 전술을 제안하거나 조건을 받아들여요',
-          page: 'people',
+          effect: '코치진 › 감독에서 감독의 철학과 신뢰를 보고 전술을 제안하거나 조건을 받아들여요',
+          page: 'staff',
           tab: 'manager',
         },
         {
           id: 'candidates',
           label: '다른 감독 후보 살펴보기',
-          effect: '사람 › 감독의 감독 시장에서 후보의 스타일과 선임 비용을 비교해요',
-          page: 'people',
+          effect: '코치진 › 감독의 감독 시장에서 후보의 스타일과 선임 비용을 비교해요',
+          page: 'staff',
           tab: 'candidates',
         },
       ];
@@ -309,7 +309,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           id: 'market',
           label: '선수 매각 살펴보기',
           effect: '이적시장에서 제안과 매각 가능 선수를 확인해요',
-          page: 'people',
+          page: 'firstTeam',
           tab: 'market',
         },
       ];
@@ -322,14 +322,14 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           id: 'market',
           label: '이적시장',
           effect: `자유계약 선수는 언제든, 이적료 선수는 이적시장 기간에 영입해요 · ${squadRegistration(w).detail}`,
-          page: 'people',
+          page: 'firstTeam',
           tab: 'market',
         },
         {
           id: 'academy',
           label: '유소년 보기',
-          effect: `훈련 › 유소년 · 아카데미 ${academy.players.length}명 · 1군 자리 ${academy.room.total}개`,
-          page: 'training',
+          effect: `유소년 · 아카데미 ${academy.players.length}명 · 1군 자리 ${academy.room.total}개`,
+          page: 'academy',
           tab: 'academy',
         },
         {
@@ -482,7 +482,7 @@ export function teamStates(w: World): TeamStateItem[] {
       advice: interim
         ? {
             text: '감독대행이 팀을 이끌고 있어요. 새 감독을 선임해야 전술과 성장이 제자리를 찾아요.',
-            actions: [{ label: '감독 후보 보기', page: 'people', tab: 'candidates' }],
+            actions: [{ label: '감독 후보 보기', page: 'staff', tab: 'candidates' }],
           }
         : trust < 55
           ? {

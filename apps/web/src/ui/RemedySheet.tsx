@@ -35,8 +35,10 @@ export function useRemedyRunner(client: GameClient, onPrepare?: () => void) {
     else if (action.coach) openCoachSheet(action.coach.coach, action.coach.focus);
     else if (action.board) {
       useDepartmentPolicy.getState().open(action.board);
-    } else if (action.page === 'people') openPeople((action.tab as PeopleRequest) ?? 'players');
-    else if (action.page === 'training') openTraining((action.tab as TrainingTab) ?? 'training');
+    } else if (action.page === 'firstTeam' || action.page === 'staff') {
+      if (action.tab === 'training') openTraining('training');
+      else openPeople((action.tab as PeopleRequest) ?? 'players');
+    } else if (action.page === 'academy') openTraining((action.tab as TrainingTab) ?? 'academy');
     else if (action.page) setPage(action.page);
   };
 }

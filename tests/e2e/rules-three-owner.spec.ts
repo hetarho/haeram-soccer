@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { openOfficeLibrary } from './office';
 import { marketInfo, closeMarketPanel } from './market';
 import { openOffice } from './events';
@@ -9,7 +10,6 @@ import { transferOffers } from '../../packages/engine/src/index';
 import { detectMediations } from '../../packages/engine/src/mediation';
 import { lineOf } from '../../packages/engine/src/player';
 import { leaveOffice } from './office';
-const nav = (page: Page) => page.getByRole('navigation', { name: '모바일 게임 메뉴' });
 /** 구단주 사무실 › 업무 기준, entered from home (→WEB-39). */
 async function operations(page: Page) {
   await openOfficeLibrary(page);
@@ -39,7 +39,7 @@ test('rules three retains a joint career and promise through scoped drafts, hand
   await finance.getByRole('button', { name: /어디서 벌고/ }).click();
   await finance.getByRole('radio', { name: '재정 기조 신중', exact: true }).click();
   await leaveOffice(page);
-  await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await openPersonnel(page, 'players');
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
   await marketInfo(page);
   await page.getByRole('button', { name: /^영입 기조/ }).click();
@@ -120,7 +120,7 @@ test('the market discloses combined departure compensation before its approval',
   const compensation = playingCoachDepartureCost(w, player.id);
   await page.setViewportSize({ width: 390, height: 844 });
   await importResponsibilityCareer(page, w);
-  await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await openPersonnel(page, 'players');
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
   await page.getByRole('button', { name: /^이적 협상 ·/ }).click();
   const negotiation = page.getByRole('region', { name: '진행 중인 협상' });

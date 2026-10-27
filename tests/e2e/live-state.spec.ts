@@ -255,7 +255,7 @@ test("the fatigue remedy opens the assistant's training sheet with 회복 ready,
   // The sheet closes and 훈련 opens the assistant's sheet with 회복 first; nothing has changed yet
   // (→WEB-44, STAFF-19).
   await expect(sheet).toBeHidden();
-  await expect(page).toHaveURL(/\/training$/);
+  await expect(page).toHaveURL(/\/first-team\?view=training$/);
   const training = page.getByRole('dialog', { name: '수석코치 훈련 제안' });
   await expect(training.getByRole('listitem').first()).toContainText('회복 훈련');
   await expect(training.getByTestId('training-call-assistant')).toContainText('하드 트레이닝');

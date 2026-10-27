@@ -7,8 +7,9 @@ describe('navigation destinations (→WEB-10)', () => {
       'league',
       'history',
       'dashboard',
-      'people',
-      'training',
+      'firstTeam',
+      'academy',
+      'staff',
     ]);
   });
 
@@ -19,6 +20,7 @@ describe('navigation destinations (→WEB-10)', () => {
       'leagueHistory',
       'cupHistory',
     ]);
+    expect(NAV.map(([page]) => page)).toEqual(TABS.map(([page]) => page));
     expect(NAV.filter(([, key]) => key === 'navigation.season')).toHaveLength(1);
   });
 
@@ -26,11 +28,12 @@ describe('navigation destinations (→WEB-10)', () => {
     expect(TABS.some(([page]) => page === 'business')).toBe(false);
     expect(NAV.some(([page]) => page === 'business')).toBe(false);
     expect(NAV.map(([page]) => page)).toEqual([
-      'dashboard',
       'league',
       'history',
-      'people',
-      'training',
+      'dashboard',
+      'firstTeam',
+      'academy',
+      'staff',
     ]);
   });
 });

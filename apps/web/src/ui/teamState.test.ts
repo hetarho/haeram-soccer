@@ -51,7 +51,7 @@ describe('team state', () => {
     const [recovery, rest] = fatigue.advice!.actions;
     expect(recovery).toMatchObject({
       coach: { coach: 'assistant', focus: 'recovery' },
-      page: 'training',
+      page: 'firstTeam',
     });
     expect(recovery.command).toBeUndefined();
     expect(rest.command).toEqual({ type: 'care', kind: 'rest-day' });
@@ -155,7 +155,7 @@ describe('team state', () => {
       '티켓 가격 상한',
     );
     expect(states.find((state) => state.key === 'squad')!.advice!.actions[0]).toMatchObject({
-      page: 'people',
+      page: 'firstTeam',
       tab: 'market',
     });
   });
@@ -301,9 +301,9 @@ describe('team strength sheet', () => {
     ]);
     expect(choices[0].prepare).toBe(true);
     expect(choices.slice(1).map((choice) => [choice.page, choice.tab])).toEqual([
-      ['people', 'market'],
-      ['training', 'training'],
-      ['training', 'academy'],
+      ['firstTeam', 'market'],
+      ['firstTeam', 'training'],
+      ['academy', 'academy'],
     ]);
     // Navigation only: nothing here costs or commands.
     expect(choices.every((choice) => !choice.command && !choice.cost)).toBe(true);

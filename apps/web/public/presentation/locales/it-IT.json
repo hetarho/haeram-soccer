@@ -161,6 +161,17 @@
     "navigation.short.season": "Stagione",
     "navigation.clubRecords": "Archivio del club",
     "navigation.pastLeague": "Campionati passati",
-    "navigation.pastCup": "Coppe passate"
+    "navigation.pastCup": "Coppe passate",
+    "navigation.firstTeam": "Prima squadra",
+    "navigation.short.firstTeam": "Squadra",
+    "navigation.academy": "Vivaio",
+    "navigation.short.academy": "Vivaio",
+    "navigation.staff": "Staff tecnico",
+    "navigation.short.staff": "Staff",
+    "personnel.players": "Giocatori",
+    "personnel.market": "Mercato",
+    "personnel.training": "Allenamento",
+    "personnel.manager": "Allenatore",
+    "personnel.coaches": "Staff"
   }
 }

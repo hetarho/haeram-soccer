@@ -155,6 +155,17 @@
     "navigation.short.season": "シーズン",
     "navigation.clubRecords": "クラブ記録室",
     "navigation.pastLeague": "過去のリーグ記録",
-    "navigation.pastCup": "過去のカップ記録"
+    "navigation.pastCup": "過去のカップ記録",
+    "navigation.firstTeam": "トップチーム",
+    "navigation.short.firstTeam": "トップ",
+    "navigation.academy": "ユース",
+    "navigation.short.academy": "ユース",
+    "navigation.staff": "コーチ陣",
+    "navigation.short.staff": "コーチ",
+    "personnel.players": "選手一覧",
+    "personnel.market": "移籍市場",
+    "personnel.training": "練習",
+    "personnel.manager": "監督",
+    "personnel.coaches": "スタッフ"
   }
 }

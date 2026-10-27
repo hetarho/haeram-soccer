@@ -158,6 +158,17 @@
     "navigation.short.season": "Saison",
     "navigation.clubRecords": "Vereinsarchiv",
     "navigation.pastLeague": "Frühere Ligen",
-    "navigation.pastCup": "Frühere Pokale"
+    "navigation.pastCup": "Frühere Pokale",
+    "navigation.firstTeam": "Erste Mannschaft",
+    "navigation.short.firstTeam": "Team",
+    "navigation.academy": "Nachwuchs",
+    "navigation.short.academy": "Jugend",
+    "navigation.staff": "Trainerteam",
+    "navigation.short.staff": "Trainer",
+    "personnel.players": "Spieler",
+    "personnel.market": "Transfers",
+    "personnel.training": "Training",
+    "personnel.manager": "Trainer",
+    "personnel.coaches": "Mitarbeiter"
   }
 }

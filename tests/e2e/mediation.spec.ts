@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { marketInfo, marketCandidate, closeMarketPanel } from './market';
 import { dismissMatchReport, openOffice } from './events';
 import { test, expect, type Page } from '@playwright/test';
@@ -43,11 +44,8 @@ function ask(w: ReturnType<typeof createWorld>, line: 'MF' | 'GK') {
 async function market(page: Page, w: ReturnType<typeof createWorld>) {
   await importResponsibilityCareer(page, w);
   await dismissMatchReport(page);
-  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-  await page
-    .getByRole('tablist', { name: '선수단·스태프 보기' })
-    .getByRole('tab', { name: '이적시장', exact: true })
-    .click();
+  await openPersonnel(page, 'players');
+  await openPersonnel(page, 'market');
 }
 test('direct-financial-conflict-review', async ({ page }) => {
   const w = fixture(),
@@ -336,9 +334,8 @@ test('promise-personnel-changes preserves director-independent promises and canc
   w.settings!.responsibilities.staff = 'direct';
   const director = w.staff!.find((s) => s.role === 'director')!;
   await importResponsibilityCareer(page, w);
-  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-  const tabs = page.getByRole('tablist', { name: '선수단·스태프 보기' });
-  await tabs.getByRole('tab', { name: '스태프', exact: true }).click();
+  await openPersonnel(page, 'players');
+  await openPersonnel(page, 'coaches');
   const post = page.locator('#staff-post-director');
   await expect(post).toContainText(director.name);
   await post.getByRole('button', { name: '교체', exact: true }).click();
@@ -347,7 +344,7 @@ test('promise-personnel-changes preserves director-independent promises and canc
     .getByRole('button', { name: /^계약 해지/ })
     .click();
   expect((await exportedCareer(page)).promises![0].status).toBe('pending');
-  await tabs.getByRole('tab', { name: '감독', exact: true }).click();
+  await openPersonnel(page, 'manager');
   await page.getByRole('button', { name: '교체', exact: true }).click();
   const card = page
     .getByRole('article')

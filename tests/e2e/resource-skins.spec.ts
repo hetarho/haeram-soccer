@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { expect, test, type Locator } from '@playwright/test';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { preparedWorld } from '../fixtures/prepared-world';
@@ -38,7 +39,7 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
     await expect(page.getByTestId('club-hub')).toBeVisible();
     const navigate = async (name: string) =>
       page.getByRole('button', { name, exact: true }).filter({ visible: true }).first().click();
-    await navigate('선수단·스태프');
+    await openPersonnel(page, 'players');
     await imageSkin(page.getByRole('textbox', { name: '선수 찾기' }));
     await page.screenshot({ path: `.tmp/resource-audit/${theme.id}-roster.png` });
     const roster = page.locator('[class*="rosterCards"]');

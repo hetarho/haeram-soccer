@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { openLeague, openCups, openClubRecords } from './competition-navigation';
 import { watchNext } from './watch';
 import { delegateSales } from './events';
@@ -51,23 +52,17 @@ test('surveys every management destination during uninterrupted calendar play', 
     await open(page);
     await continues();
   }
-  await nav.getByRole('button', { name: '선수단·스태프', exact: true }).click();
-  for (const name of ['선수', '이적시장', '감독', '스태프']) {
-    await page.getByRole('tab', { name, exact: true }).click();
+  for (const view of ['players', 'market', 'manager', 'coaches', 'training', 'academy'] as const) {
+    await openPersonnel(page, view);
     await continues();
-    if (name === '감독')
+    if (view === 'manager')
       await expect(
         page.getByRole('button', { name: '감독에게 제안하기', exact: true }),
       ).toBeDisabled();
-    if (name === '이적시장')
+    if (view === 'market')
       await expect(page.getByRole('button', { name: '영입 필터', exact: true })).toBeEnabled();
   }
-  await nav.getByRole('button', { name: '훈련·육성', exact: true }).click();
-  for (const name of ['1군 훈련', '유소년']) {
-    await page.getByRole('tab', { name, exact: true }).click();
-    await continues();
-  }
-  await page.getByRole('tab', { name: '1군 훈련', exact: true }).click();
+  await openPersonnel(page, 'training');
   await page.getByRole('button', { name: /^수석코치에게 훈련 제안·강행/ }).click();
   const training = page.getByRole('dialog', { name: '수석코치 훈련 제안', exact: true });
   for (const action of await training.getByRole('button', { name: /제안 ·|강행 ·/ }).all())

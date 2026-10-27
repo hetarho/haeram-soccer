@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { openLeague } from './competition-navigation';
 import { expect, test, type Page } from '@playwright/test';
 import type { World } from '../../packages/contracts/src/types';
@@ -98,7 +99,7 @@ for (const viewport of VIEWPORTS)
     await expect(country).toHaveAttribute('data-value', 'ENG');
 
     // Our player against another club's, from the same statistics.
-    await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
+    await openPersonnel(page, 'players');
     const opener = page.getByRole('button', { name: '우리 선수 비교', exact: true });
     await opener.click();
     // One dialog whose title follows its scope, so the locator survives the rename.

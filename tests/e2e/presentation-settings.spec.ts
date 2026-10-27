@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { openLeague } from './competition-navigation';
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
@@ -276,10 +277,7 @@ for (const width of [390, 1380])
       await expect
         .poll(async () => (await ownBadge.evaluate(textContrast)).ratio)
         .toBeGreaterThanOrEqual(4.5);
-      await page
-        .getByRole('navigation')
-        .getByRole('button', { name: '선수단·스태프', exact: true })
-        .click();
+      await openPersonnel(page, 'players');
       const roster = page.locator('section').filter({
         has: page.getByRole('heading', { name: '우리 클럽의 선수들', exact: true }),
       });

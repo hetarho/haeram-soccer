@@ -158,6 +158,17 @@
     "navigation.short.season": "Seizoen",
     "navigation.clubRecords": "Clubarchief",
     "navigation.pastLeague": "Eerdere competities",
-    "navigation.pastCup": "Eerdere bekers"
+    "navigation.pastCup": "Eerdere bekers",
+    "navigation.firstTeam": "Eerste elftal",
+    "navigation.short.firstTeam": "Elftal",
+    "navigation.academy": "Jeugd",
+    "navigation.short.academy": "Jeugd",
+    "navigation.staff": "Technische staf",
+    "navigation.short.staff": "Staf",
+    "personnel.players": "Spelers",
+    "personnel.market": "Transfers",
+    "personnel.training": "Training",
+    "personnel.manager": "Trainer",
+    "personnel.coaches": "Staf"
   }
 }

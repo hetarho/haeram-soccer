@@ -6,63 +6,50 @@ import { BUSINESS_TABS, officeAddress, officeView, routeOf } from './state';
 import { useTaskMemory } from './taskMemory';
 
 describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
-  it("routeOf maps /squad, /transfers and /manager with each view to 사람's tabs", () => {
-    expect(routeOf('/squad', '')).toEqual({ page: 'people', view: 'players', address: '/people' });
-    expect(routeOf('/transfers', '')).toEqual({
-      page: 'people',
-      view: 'market',
-      address: '/people?view=market',
-    });
-    expect(routeOf('/manager', '')).toEqual({
-      page: 'people',
-      view: 'manager',
-      address: '/people?view=manager',
-    });
-    expect(routeOf('/manager', '?view=coaches')).toEqual({
-      page: 'people',
-      view: 'coaches',
-      address: '/people?view=coaches',
-    });
-    expect(routeOf('/manager', '?view=delegation')).toEqual({
-      page: 'people',
-      view: 'manager',
-      address: '/people?view=manager',
-    });
-    // The candidates view opens 감독 with the manager market, from either address.
-    for (const pathname of ['/manager', '/people'])
-      expect(routeOf(pathname, '?view=candidates')).toEqual({
-        page: 'people',
+  it('maps legacy personnel links to their actual canonical workflow', () => {
+    for (const [path, search, page, view, address] of [
+      ['/squad', '', 'firstTeam', 'players', '/first-team?view=players'],
+      ['/transfers', '', 'firstTeam', 'market', '/first-team?view=market'],
+      ['/people', '?view=manager', 'staff', 'manager', '/staff?view=manager'],
+      ['/manager', '?view=coaches', 'staff', 'coaches', '/staff?view=coaches'],
+      ['/manager', '?view=delegation', 'staff', 'manager', '/staff?view=manager'],
+      ['/training', '', 'firstTeam', 'training', '/first-team?view=training'],
+    ])
+      expect(routeOf(path, search)).toEqual({ page, view, address });
+    expect(routeOf('/training', '?view=academy')).toEqual({ page: 'academy', address: '/academy' });
+    for (const path of ['/manager', '/people'])
+      expect(routeOf(path, '?view=candidates')).toEqual({
+        page: 'staff',
         view: 'manager',
         market: true,
-        address: '/people?view=manager',
+        address: '/staff?view=manager&market=1',
       });
   });
 
-  it('routeOf keeps /people and /training views', () => {
-    expect(routeOf('/people', '')).toEqual({ page: 'people', view: 'players' });
-    for (const view of ['market', 'manager', 'coaches'])
-      expect(routeOf('/people', `?view=${view}`)).toEqual({ page: 'people', view });
-    expect(routeOf('/training', '')).toEqual({ page: 'training', view: 'training' });
-    expect(routeOf('/training', '?view=academy')).toEqual({ page: 'training', view: 'academy' });
-    // The first tab keeps no ?view=; an unknown view opens the first tab.
-    expect(routeOf('/people', '?view=players')).toEqual({
-      page: 'people',
+  it('retains canonical subviews, meaningful filters and direct-load defaults', () => {
+    for (const view of ['players', 'market', 'training'])
+      expect(routeOf('/first-team', `?view=${view}`)).toEqual({ page: 'firstTeam', view });
+    for (const view of ['manager', 'coaches'])
+      expect(routeOf('/staff', `?view=${view}`)).toEqual({ page: 'staff', view });
+    expect(routeOf('/academy', '')).toEqual({ page: 'academy' });
+    expect(routeOf('/first-team', '')).toEqual({
+      page: 'firstTeam',
       view: 'players',
-      address: '/people',
+      address: '/first-team?view=players',
     });
-    expect(routeOf('/training', '?view=gym')).toEqual({
-      page: 'training',
-      view: 'training',
-      address: '/training',
+    expect(routeOf('/staff', '?view=unknown')).toEqual({
+      page: 'staff',
+      view: 'manager',
+      address: '/staff?view=manager',
     });
-    // Other pages keep their addresses as they are.
+    expect(routeOf('/people', '?view=market&player=p1&line=DF')).toEqual({
+      page: 'firstTeam',
+      view: 'market',
+      address: '/first-team?view=market&player=p1&line=DF',
+    });
     expect(routeOf('/leagues', '?view=table')).toEqual({
       page: 'league',
       address: '/season?competition=league&view=table',
-    });
-    expect(routeOf('/history/1951', '')).toEqual({
-      page: 'history',
-      address: '/history?section=club',
     });
     expect(routeOf('/', '')).toEqual({ page: 'dashboard' });
   });

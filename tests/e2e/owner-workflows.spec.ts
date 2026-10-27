@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { openClubRecords, openCups, openLeague } from './competition-navigation';
 import { openOfficeLibrary } from './office';
 import { gameHud } from './layout';
@@ -28,7 +29,7 @@ async function openOperations(page: Page) {
 
 test('contextual-sheet-restores-candidate', async ({ page }) => {
   await found(page);
-  await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await openPersonnel(page, 'players');
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
   const filter = await marketFilters(page);
   const roles = filter.getByRole('group', { name: '영입 포지션 선택' });
@@ -81,7 +82,7 @@ test('department-sheet-preserves-other-drafts', async ({ page }) => {
   await finance.getByRole('radio', { name: '재정 기조 신중', exact: true }).click();
   await expect(page.getByTestId('strategy-draft')).toBeVisible();
   await leaveOffice(page);
-  await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await openPersonnel(page, 'players');
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
   await marketInfo(page);
   await page.getByRole('button', { name: /^영입 기조/ }).click();
@@ -111,8 +112,8 @@ test('retains an unapplied academy investment through a detour and discards it e
   page,
 }) => {
   await found(page);
-  await nav(page).getByRole('button', { name: '훈련·육성', exact: true }).click();
-  await page.getByRole('tab', { name: '유소년', exact: true }).click();
+  await openPersonnel(page, 'training');
+  await openPersonnel(page, 'academy');
   await page.getByRole('button', { name: /^유소년 투자 · 유입 방식/ }).click();
   const youth = page.getByRole('region', { name: '유소년', exact: true });
   await youth.getByRole('radio', { name: '유소년 투자 육성 강화', exact: true }).click();
@@ -138,7 +139,7 @@ test('retains an unapplied academy investment through a detour and discards it e
   await draft.getByRole('button', { name: '되돌리기', exact: true }).click();
   await expect(draft).toHaveCount(0);
   await leaveOffice(page);
-  await nav(page).getByRole('button', { name: '훈련·육성', exact: true }).click();
+  await openPersonnel(page, 'training');
   await openOperations(page);
   await expect(draft).toHaveCount(0);
 });
@@ -177,7 +178,7 @@ test('training exposes the team action first and opens its named responsible coa
   page,
 }) => {
   await found(page);
-  await nav(page).getByRole('button', { name: '훈련·육성', exact: true }).click();
+  await openPersonnel(page, 'training');
   const focus = page.getByRole('region', { name: '훈련 방향', exact: true });
   const action = focus.getByRole('button', { name: /^수석코치에게 훈련 제안·강행/ });
   await expect(action).toBeInViewport();
@@ -194,7 +195,7 @@ test('a player profile leads to that player training and keeps the squad search'
   page,
 }) => {
   await found(page);
-  await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await openPersonnel(page, 'players');
   const playerLink = page
     .locator('[class*="rosterCards"] article')
     .first()
@@ -217,7 +218,7 @@ test('recruitment needs open on demand and academy operations open their exact w
   page,
 }) => {
   await found(page);
-  await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await openPersonnel(page, 'players');
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
   await expect(marketRows(page).first()).toBeVisible();
   const needs = page.getByRole('region', { name: '감독 영입 요청', exact: true });
@@ -225,8 +226,8 @@ test('recruitment needs open on demand and academy operations open their exact w
   await marketInfo(page);
   await expect(needs).toBeVisible();
   await closeMarketPanel(page, '영입 정보');
-  await nav(page).getByRole('button', { name: '훈련·육성', exact: true }).click();
-  await page.getByRole('tab', { name: '유소년', exact: true }).click();
+  await openPersonnel(page, 'training');
+  await openPersonnel(page, 'academy');
   await page.getByRole('button', { name: /유소년 시설 .*공사 보기/ }).click();
   await expect(page.getByTestId('facility-academy')).toBeVisible();
   // The office opened on 시설; leaving it returns to the academy that asked (→WEB-39/74).
@@ -437,7 +438,7 @@ test('recruitment support round-trips between department sheet and full board', 
   page,
 }) => {
   await found(page);
-  await nav(page).getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await openPersonnel(page, 'players');
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
   await marketInfo(page);
   const trigger = page.getByRole('button', { name: /^영입 기조/ });

@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { marketRows, closeMarketPanel } from './market';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { horizontalOverflow } from './layout';
@@ -20,7 +21,7 @@ const sideways = (dialog: Locator) =>
     ),
   );
 async function people(page: Page) {
-  await page.getByRole('button', { name: '선수단·스태프', exact: true }).first().click();
+  await openPersonnel(page, 'players');
 }
 
 for (const viewport of [
@@ -78,10 +79,7 @@ for (const viewport of [
 
     // A market candidate: positions with levels, the scout's range on his personality, and his
     // 실효 OVR at the slot he would take on arrival and settled.
-    await page
-      .getByRole('tablist', { name: '선수단·스태프 보기' })
-      .getByRole('tab', { name: '이적시장', exact: true })
-      .click();
+    await openPersonnel(page, 'market');
     await marketRows(page)
       .first()
       .getByRole('button', { name: / 상세 보기$/ })

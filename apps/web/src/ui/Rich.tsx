@@ -1,3 +1,4 @@
+import { PersonnelHub } from './PersonnelHubs';
 import type { ProgressionController } from '../runtime/progression';
 import { squadRegistration } from './squadRegistration';
 import { PersonCareerLink } from './PersonCareer';
@@ -75,14 +76,10 @@ import {
   type RosterView,
 } from './RosterFilters';
 import {
-  PEOPLE_TABS,
-  routeOf,
   useBusinessView,
   useContractTalk,
-  usePeopleView,
   returnApprovalHome,
   type Page,
-  type PeopleRequest,
   type PeopleTab,
 } from './state';
 import {
@@ -93,10 +90,9 @@ import {
   ManagerRenewal,
   TalkRulePanel,
 } from './ClubStaff';
-import { PageTabs, TabList, TabPanel } from './PageTabs';
+import { TabList, TabPanel } from './PageTabs';
 import { AcademyPanel } from './AcademyPanel';
 import { TrainingView } from './TrainingView';
-import { FacilityOverview } from './FacilityOverview';
 import management from './ManagementView.module.css';
 import { explorePlayers, ofScope, playerStatus } from './playerAnalysis';
 import { bansOf, banText } from './discipline';
@@ -153,63 +149,6 @@ function TraitNote({ trait }: { trait?: ManagerTrait }) {
   return (
     <>
       선발 성향 <b>{MANAGER_TRAIT_INFO[trait].label}</b> · {MANAGER_TRAIT_INFO[trait].effect}
-    </>
-  );
-}
-/** The 사람 tab a request or the address asks for, and whether 감독 opens with the market. */
-function peopleStart(request: PeopleRequest | undefined): { tab: PeopleTab; market: boolean } {
-  if (request)
-    return {
-      tab: request === 'candidates' ? 'manager' : request,
-      market: request === 'candidates',
-    };
-  const route = routeOf(location.pathname, location.search);
-  const tab = PEOPLE_TABS.find(([id]) => id === route.view)?.[0] ?? 'players';
-  return { tab, market: !!route.market };
-}
-/**
- * 사람 (→WEB-43): who is in the club and who joins or stays, as one tab bar — the players, the
- * transfer market, the manager (whose 교체 opens the market to replace him) and the coaching
- * staff. A request from elsewhere, such as the manager-departure alert, is taken once; otherwise
- * the tab comes from the address.
- */
-function People({ state, client }: Props) {
-  const w = state.view!.world;
-  const request = usePeopleView((view) => view.request);
-  const [start] = useState(() => peopleStart(request));
-  const [tab, setTab] = useState<PeopleTab>(start.tab);
-  const [market, setMarket] = useState(start.market);
-  useEffect(() => {
-    if (!request) return;
-    const next = peopleStart(request);
-    setTab(next.tab);
-    if (next.market) setMarket(true);
-    usePeopleView.getState().take();
-  }, [request]);
-  return (
-    <>
-      <PageTabs
-        tabs={PEOPLE_TABS}
-        value={tab}
-        onChange={setTab}
-        label="선수단·스태프 보기"
-        idPrefix="people"
-      />
-      <TabPanel idPrefix="people" value={tab}>
-        {tab !== 'market' && (
-          <FacilityOverview
-            w={w}
-            kind={tab === 'coaches' ? 'staff' : tab === 'manager' ? 'manager' : 'locker'}
-            title={tab === 'players' ? '드레싱 룸' : tab === 'manager' ? '감독실' : '스태프 사무실'}
-          >
-            {tab === 'coaches'
-              ? `스태프 ${w.staff?.length ?? 0}명 · 감독 ${w.manager.name}`
-              : `감독 ${w.manager.name} · ${tacticLabel[w.tactic]}`}
-          </FacilityOverview>
-        )}
-        <PersonnelPanel tab={tab} state={state} client={client} onReplace={() => setMarket(true)} />
-      </TabPanel>
-      {market && <ManagerMarket state={state} client={client} onClose={() => setMarket(false)} />}
     </>
   );
 }
@@ -356,8 +295,8 @@ function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => 
   const w = state.view!.world,
     m = w.manager,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
-    [tactic, setTactic] = useState(w.tactic),
-    [tone, setTone] = useState('respect'),
+    [tactic, setTactic] = useTaskState(w.id, 'manager-tactic', w.tactic),
+    [tone, setTone] = useTaskState(w.id, 'manager-tone', 'respect'),
     [requests, setRequests] = useState<StateKey>();
   const disabled = useGameState(gameActionsBlocked);
   const response = w.events.filter((e) => e.kind === 'manager-response').at(-1);
@@ -520,8 +459,8 @@ function ManagerMarket({
     w = v.world,
     m = w.manager,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
-    [hiring, setHiring] = useState<string>(),
-    [term, setTerm] = useState<ContractTerm>(1);
+    [hiring, setHiring] = useTaskState<string | undefined>(w.id, 'manager-hiring', undefined),
+    [term, setTerm] = useTaskState<ContractTerm>(w.id, 'manager-hire-term', 1);
   const disabled = useGameState(gameActionsBlocked);
   const format = (value: bigint | string) => <Money value={value} code={c.country} year={w.year} />;
   // Replacing a contracted manager pays him 25% of his wage per season left; an interim leaves
@@ -883,7 +822,7 @@ function ContractTalkSheet({
   onClose: () => void;
   error?: string;
 }) {
-  const [picked, setTerm] = useState<TalkTerm>(2);
+  const [picked, setTerm] = useTaskState<TalkTerm>(w.id, `player-talk-term-${player.id}`, 2);
   const c = w.clubs.find((club) => club.id === w.playerClub)!,
     money = (value: string | bigint) => <Money value={value} code={c.country} year={w.year} />,
     raise = BigInt(talk.floor) - BigInt(player.wage),
@@ -992,11 +931,11 @@ function Roster({ state, client }: Props) {
     w = v.world,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
     [view, setView] = useTaskState<RosterView>(w.id, 'roster-view', DEFAULT_ROSTER_VIEW),
-    [comparing, setComparing] = useState(false),
-    [fullTable, setFullTable] = useState(false),
+    [comparing, setComparing] = useTaskState(w.id, 'roster-comparing', false),
+    [fullTable, setFullTable] = useTaskState(w.id, 'roster-table', false),
     [playerQuery, setPlayerQuery] = useTaskState(w.id, 'roster-query', ''),
     [playerPage, setPlayerPage] = useTaskState(w.id, 'roster-page', 0),
-    [stanceId, setStanceId] = useState<string>();
+    [stanceId, setStanceId] = useTaskState<string | undefined>(w.id, 'roster-stance', undefined);
   const talkId = useContractTalk((state) => state.id),
     { open: openTalk, close: closeTalk } = useContractTalk.getState();
   const disabled = useGameState(gameActionsBlocked);
@@ -1329,8 +1268,20 @@ export default function Rich({
   page,
   controller,
 }: Props & { page: Page; controller: ProgressionController }) {
-  if (page === 'people') return <People state={state} client={client} />;
-  if (page === 'training') return <TrainingView state={state} client={client} />;
+  if (page === 'firstTeam' || page === 'staff')
+    return (
+      <PersonnelHub
+        key={`${state.view!.world.id}:${page}`}
+        page={page}
+        state={state}
+        panel={(tab, replace) => (
+          <PersonnelPanel tab={tab} state={state} client={client} onReplace={replace} />
+        )}
+        training={<TrainingView state={state} client={client} view="training" />}
+        market={(close) => <ManagerMarket state={state} client={client} onClose={close} />}
+      />
+    );
+  if (page === 'academy') return <TrainingView state={state} client={client} view="academy" />;
   if (page === 'business')
     return <Business state={state} client={client} controller={controller} />;
   return (

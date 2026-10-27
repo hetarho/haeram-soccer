@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { expectCompactStandings, expectHomeBounds, horizontalOverflow, settle } from './layout';
 import { textContrast } from './contrast';
@@ -178,7 +179,7 @@ for (const themeId of ['standard', 'pixel']) {
         await expectCompactStandings(page);
       }
 
-      await navigate(page, '선수단·스태프');
+      await openPersonnel(page, 'players');
       const panel = page
         .locator('section')
         .filter({ has: page.getByRole('heading', { name: '우리 클럽의 선수들', exact: true }) });

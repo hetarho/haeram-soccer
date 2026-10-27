@@ -161,6 +161,17 @@
     "navigation.short.season": "Temporada",
     "navigation.clubRecords": "Registros do clube",
     "navigation.pastLeague": "Ligas anteriores",
-    "navigation.pastCup": "Copas anteriores"
+    "navigation.pastCup": "Copas anteriores",
+    "navigation.firstTeam": "Time principal",
+    "navigation.short.firstTeam": "Time",
+    "navigation.academy": "Base",
+    "navigation.short.academy": "Base",
+    "navigation.staff": "Comissão técnica",
+    "navigation.short.staff": "Técnicos",
+    "personnel.players": "Jogadores",
+    "personnel.market": "Transferências",
+    "personnel.training": "Treino",
+    "personnel.manager": "Técnico",
+    "personnel.coaches": "Equipe"
   }
 }

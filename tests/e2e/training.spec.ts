@@ -1,3 +1,4 @@
+import { openPersonnel } from './personnel-navigation';
 import { watchNext } from './watch';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -122,10 +123,10 @@ for (const { seed: worldSeed, ...viewport } of [
     const roster = page.locator('[class*="rosterCards"] article');
     // Delegated staff may sell a fringe player for a premium while the window is open.
     const openSquad = async (w: World) => {
-      await nav.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+      await openPersonnel(page, 'players');
       await expect(roster).toHaveCount(w.players.filter((p) => p.status === 'active').length);
     };
-    const openTraining = () => nav.getByRole('button', { name: '훈련·육성', exact: true }).click();
+    const openTraining = () => openPersonnel(page, 'training');
     await openSquad(before);
     for (const player of await roster.all()) await expect(player).toContainText('성장 +0.00');
 
@@ -168,7 +169,7 @@ for (const { seed: worldSeed, ...viewport } of [
     // The owner suggests or orders right in 훈련 (→WEB-70, STAFF-19): a volunteer takes an order
     // without leaving.
     await page.getByRole('button', { name: /^수석코치에게 훈련 제안·강행/ }).click();
-    await expect(page).toHaveURL(/\/training$/);
+    await expect(page).toHaveURL(/\/first-team\?view=training$/);
     const sheet = page.getByRole('dialog', { name: '수석코치 훈련 제안' });
     await expect(sheet).toContainText('무급 자원봉사 코치는 강행해도 떠나지 않아요');
     await sheet.getByRole('button', { name: '하드 트레이닝 강행 · 사임 확률 0%' }).click();
@@ -185,7 +186,7 @@ for (const { seed: worldSeed, ...viewport } of [
     await mini.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
     await expect(date).not.toHaveText(paused);
     // The match-eve stop keeps it short of round 1.
-    await nav.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+    await openPersonnel(page, 'players');
     await expect(roster.first()).toBeVisible();
     for (const player of await roster.all()) await expect(player).toContainText('성장 +0.00');
     // A clock left running resumes after a reload (→WEB-64); stop the run so the reload starts
@@ -270,7 +271,7 @@ test("shows an owner's order with the assistant's rule, and a suggestion's odds"
   await seed(page, w);
   await page.goto('/');
   await continueSlot(page);
-  await page.getByRole('button', { name: '훈련·육성', exact: true }).first().click();
+  await openPersonnel(page, 'training');
   await expect(page.getByTestId('training-focus')).toHaveText(
     '지금 하드 트레이닝 · 구단주 지시 · 4라운드 남음',
   );
@@ -289,7 +290,7 @@ test("shows an owner's order with the assistant's rule, and a suggestion's odds"
   await expect(sheet.getByRole('button', { name: '균형 훈련 제안 · 수락 확률 30%' })).toBeVisible();
   await sheet.getByRole('button', { name: '회복 훈련 강행 · 사임 확률 0%' }).click();
   await expect(sheet).toHaveCount(0);
-  await page.getByRole('button', { name: '훈련·육성', exact: true }).first().click();
+  await openPersonnel(page, 'training');
   await expect(page.getByTestId('training-focus')).toHaveText(
     '지금 회복 · 구단주 지시 · 4라운드 남음',
   );
@@ -325,10 +326,8 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   await seed(page, w);
   await page.goto('/');
   await continueSlot(page);
-  const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
-  await nav.getByRole('button', { name: '훈련·육성', exact: true }).click();
-  await page.getByRole('tab', { name: '유소년', exact: true }).click();
-  await expect(page).toHaveURL(/\/training\?view=academy$/);
+  await openPersonnel(page, 'academy');
+  await expect(page).toHaveURL(/\/academy$/);
   // Prospects stand in their age group (→CLUB-16); a 17-year-old is in U-19.
   await expect(page.getByTestId('age-group-u19')).toContainText(prospect.name);
   await expect(page.getByTestId('age-group-u17')).toContainText('0명');
@@ -353,19 +352,19 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   await expect(academy).toContainText('아직 아카데미 선수가 없어요');
   await expect(page.getByRole('region', { name: '승격한 선수 관리' })).toContainText(prospect.name);
   await expect(page.getByRole('button', { name: '이 선수 훈련 보기', exact: true })).toBeVisible();
-  await nav.getByRole('button', { name: '선수단·스태프', exact: true }).click();
+  await openPersonnel(page, 'players');
   const roster = page.locator('[class*="rosterCards"] article');
   await expect(roster).toHaveCount(squad + 1);
   await expect(roster.filter({ hasText: prospect.name })).toHaveCount(1);
   // The focused youth editor keeps this academy task and route in place.
-  await nav.getByRole('button', { name: '훈련·육성', exact: true }).click();
-  await page.getByRole('tab', { name: '유소년', exact: true }).click();
+  await openPersonnel(page, 'training');
+  await openPersonnel(page, 'academy');
   await expect(page.getByRole('button', { name: /^육성 목표 · 표준/ })).toBeVisible();
   await expect(page.getByRole('button', { name: /^데뷔 시점 · 표준/ })).toBeVisible();
   await page.getByRole('button', { name: /^유소년 투자 · 유입 방식은 업무 기준에서/ }).click();
   await expect(page.getByRole('dialog', { name: '유소년 업무 기준', exact: true })).toBeVisible();
   await expect(page.getByTestId('department-policy-board')).toContainText('유소년 투자');
-  await expect(page).toHaveURL(/\/training\?view=academy$/);
+  await expect(page).toHaveURL(/\/academy$/);
 });
 
 test('suggests 하드 for one player, forces 회복 for the squad and lists adaptation (→CLUB-11, PLAYER-12)', async ({
@@ -380,7 +379,7 @@ test('suggests 하드 for one player, forces 회복 for the squad and lists adap
   await seed(page, w);
   await page.goto('/');
   await continueSlot(page);
-  await page.getByRole('button', { name: '훈련·육성', exact: true }).first().click();
+  await openPersonnel(page, 'training');
 
   // One player's own focus: the sheet names him and his suggestion's odds.
   const own = page.getByRole('region', { name: '개별 훈련' });
