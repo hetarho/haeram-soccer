@@ -1,4 +1,5 @@
 import { Host } from './host';
+import { forPosting } from './viewPublisher';
 const host = new Host((reply) => self.postMessage(reply));
 self.onmessage = (event: MessageEvent) => {
   if (event.data?.type === 'cancel') {
@@ -10,5 +11,5 @@ self.onmessage = (event: MessageEvent) => {
     host.codec = event.data.port;
     return;
   }
-  void host.handle(event.data).then((reply) => self.postMessage(reply));
+  void host.handle(event.data).then((reply) => self.postMessage(forPosting(reply)));
 };

@@ -6,7 +6,16 @@ import { DIRECTION_INFO, DIRECTION_KEYS } from '../../../../packages/engine/src/
 import { MATCH_MODEL_REVISION } from '../../../../packages/contracts/src/match-model';
 import type { World } from '../../../../packages/contracts/src/types';
 import { isSaveCompatibilityError } from '../../../../packages/contracts/src/versions';
-import { applyViewPatch, requestSchema, worldMetadataOf } from './protocol';
+import {
+  applyViewDelta,
+  applyViewPatch,
+  requestSchema,
+  worldMetadataOf,
+  type View,
+  type ViewPatch,
+} from './protocol';
+import { shareValue } from './store';
+import { forPosting, ViewPublisher } from './viewPublisher';
 
 const request = (body: unknown) => ({
   protocol: 1,
@@ -223,5 +232,96 @@ describe('view patches (→ARCH-6)', () => {
     expect(next.kept).toBe(base.kept);
     expect(next).not.toBe(base);
     expect(next.changed).toEqual({ y: 2 });
+  });
+});
+
+describe('view deltas posted as patchText (→ARCH-6)', () => {
+  const view = (clubs: unknown[], round: number) =>
+    ({ totalMatches: round, world: { id: 'w1', round, clubs } }) as unknown as View;
+  const clubs = (points: (i: number) => number) =>
+    Array.from({ length: 40 }, (_, i) => ({
+      id: `c${i}`,
+      name: `Club ${i}`.padEnd(240, '.'),
+      points: points(i),
+      ...(i === 5 && points(0) === 0 ? { note: 'n' } : {}),
+    }));
+  it('rebuilds the same view from patchText as from the patch objects', () => {
+    const publisher = new ViewPublisher(),
+      first = view(
+        clubs(() => 0),
+        1,
+      );
+    publisher.publish(first);
+    const second = view(
+      clubs((i) => (i % 4 ? 0 : 3)),
+      2,
+    );
+    const reply = publisher.publish(second, 1),
+      posted = forPosting(reply).viewDelta!;
+    expect(posted.patches).toBeUndefined();
+    expect(JSON.parse(posted.patchText!)).toEqual(
+      JSON.parse(JSON.stringify(reply.viewDelta!.patches)),
+    );
+    const fromText = applyViewDelta(structuredClone(first), structuredClone(posted));
+    expect(fromText).toStrictEqual(second);
+    expect(fromText).toStrictEqual(applyViewDelta(structuredClone(first), reply.viewDelta!));
+  });
+  it('reads a value JSON left out back as a removed key or an empty array slot', () => {
+    const base = { kept: 1, gone: 2, list: [1, 2] };
+    const patches = { o: { gone: {}, list: { a: [[1, {}]], n: 2 } }, d: ['gone'] };
+    expect(applyViewPatch(base, patches as unknown as ViewPatch)).toStrictEqual({
+      kept: 1,
+      list: [1, undefined],
+    });
+  });
+  it('rebuilds a later view on an older base the client still names', () => {
+    const publisher = new ViewPublisher(),
+      first = view(
+        clubs(() => 0),
+        1,
+      );
+    publisher.publish(first);
+    // A view the client never takes is diffed on the first and takes over its kept JSON.
+    const skipped = view(
+      clubs((i) => (i === 2 ? 1 : 0)),
+      2,
+    );
+    expect(publisher.publish(skipped, 1).viewDelta!.base).toBe(1);
+    const third = view(
+      clubs((i) => (i % 3 ? 0 : 3)),
+      3,
+    );
+    const posted = structuredClone(forPosting(publisher.publish(third, 1))).viewDelta!;
+    expect(posted.base).toBe(1);
+    expect(posted.patchText).toBeDefined();
+    expect(applyViewDelta(structuredClone(first), posted)).toStrictEqual(third);
+    // And the newest view diffs on the third's JSON kept from that rebuild.
+    const fourth = view(
+      clubs((i) => (i % 3 ? 1 : 3)),
+      4,
+    );
+    const latest = structuredClone(forPosting(publisher.publish(fourth, 3))).viewDelta!;
+    expect(applyViewDelta(structuredClone(third), latest)).toStrictEqual(fourth);
+  });
+  it('shares the base references and gives the base itself for an empty delta', () => {
+    const base = view(
+      clubs(() => 0),
+      1,
+    );
+    const empty = { base: 1, parts: {}, world: {}, dropped: [] };
+    expect(applyViewDelta(base, empty, shareValue)).toBe(base);
+    expect(applyViewDelta(base, empty)).not.toBe(base);
+    const delta = {
+      ...empty,
+      world: { clubs: structuredClone(base.world.clubs) },
+      patchText: JSON.stringify({
+        'world.clubs': { a: [[1, { o: { points: { v: 3 } } }]], n: 40 },
+      }),
+    };
+    const rebuilt = applyViewDelta(base, delta, shareValue);
+    const before = base.world.clubs as unknown[],
+      after = rebuilt.world.clubs as unknown as { points: number }[];
+    expect(after[0]).toBe(before[0]);
+    expect(after[1]!.points).toBe(3);
   });
 });

@@ -8,7 +8,7 @@
  */
 import { cos, hypot, sin } from '../portable-math';
 import { anticipationRead } from './freedom';
-import { defendSetPiece, restartPlaces, restartTaken } from './intentions';
+import { defendSetPiece, restartPlaces, restartTaken, TRACKING } from './intentions';
 import {
   attackFrame,
   BAND_EDGES,
@@ -118,7 +118,8 @@ export function stepToward(m: Mover, target: readonly [number, number], vmax: nu
   const dx = target[0] - m.pos[0],
     dy = target[1] - m.pos[1];
   const dist = hypot(dx, dy);
-  const speed = hypot(v[0], v[1]);
+  // A standing player's speed is 0 without the call (`hypot(0, 0)` is exactly 0).
+  const speed = v[0] === 0 && v[1] === 0 ? 0 : hypot(v[0], v[1]);
   // Arrived: within reach of the point at a speed one whole step's braking stops.
   if (dist <= C.arrive && speed <= C.braking * C.step + 1e-9) {
     m.pos[0] = target[0];
@@ -345,6 +346,8 @@ export function carryInStride(
     to: readonly [number, number];
     vmax: number;
     read?: { to: readonly [number, number]; at: number };
+    /** A press, mark or cover follows another player, so its target is read again every step. */
+    tracks: boolean;
   }[] = [];
   for (const side of [0, 1] as const)
     for (const o of s.players[side]) {
@@ -352,8 +355,11 @@ export function carryInStride(
       const read = reads?.get(o);
       others.push({
         gp: o,
+        // Every other intention holds its set target, which no step of the carry changes, so its
+        // start-of-carry read stands.
         to: inside(targetOf(s, side, o.idx, cache)),
         vmax: speedOf(s, o),
+        tracks: o.intention !== undefined && TRACKING.has(o.intention.kind),
         ...(read ? { read: { to: inside(read.to), at: read.at } } : {}),
       });
     }
@@ -368,7 +374,7 @@ export function carryInStride(
         m.gp,
         m.read && t + 1e-9 >= m.read.at
           ? m.read.to
-          : m.gp.intention
+          : m.tracks
             ? inside(intentionTarget(s, m.gp))
             : m.to,
         m.vmax,

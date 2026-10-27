@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import type { Tactic } from '../../../contracts/src/types';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
@@ -31,10 +31,39 @@ import {
 } from './intentions';
 import { SHADOW_CONFIG } from './lanes';
 import { attackFrame, PITCH, type Point } from './pitch';
-import { lineX, setPieceTargets, SHAPE_CONFIG, shapePlace, targetOf } from './shape';
-import { createState, onPitch, slotOf, type GridPlayer, type GridState } from './state';
+import {
+  lineX,
+  setPieceTargets,
+  SHAPE_CONFIG,
+  shapePlace,
+  targetOf,
+  type ShapeCache,
+} from './shape';
+import { createState, onPitch, other, slotOf, type GridPlayer, type GridState } from './state';
 import type { GridSetup } from './setup';
 import { gridKit, type Kit } from './testkit';
+
+/**
+ * The engine's `readsOf` speculative update (`updateIntentions(s, false, true)`), sampled during a
+ * played match: `sample` sees each state just before it, `real` is the unwrapped update. Every other
+ * call passes straight through.
+ */
+const speculative = vi.hoisted(() => ({
+  sample: undefined as ((s: GridState) => void) | undefined,
+  real: undefined as
+    ((s: GridState, inFlight?: boolean, defenceOnly?: boolean) => void) | undefined,
+}));
+vi.mock('./intentions', async (importOriginal) => {
+  const real = await importOriginal<typeof import('./intentions')>();
+  speculative.real = real.updateIntentions;
+  return {
+    ...real,
+    updateIntentions: (s: GridState, inFlight = false, defenceOnly = false) => {
+      if (defenceOnly) speculative.sample?.(s);
+      real.updateIntentions(s, inFlight, defenceOnly);
+    },
+  };
+});
 
 const kits = new Map<string, Kit>();
 /**
@@ -404,6 +433,60 @@ describe('grid coordination', () => {
     // Planning again from the same snapshot plans the same.
     expect(planCoordination(s, false)).toEqual(plan);
     expect(plan.jobs.length).toBeGreaterThan(0);
+  });
+
+  it("gives the defence the same targets from the attack's box runs alone (T517)", () => {
+    // `readsOf` plans the attack's box runs alone in its speculative update: a defender's target
+    // reads only those of the attack's jobs (`boxMarkPoint`, `zoneRunner`). Played matches check it
+    // on every speculative update against the full plan, each run from the same intentions.
+    const real = speculative.real!;
+    const defenders = (s: GridState, defenceOnly: boolean) => {
+      const everyone = [...s.players[0], ...s.players[1]];
+      const kept = everyone.map((gp) => ({
+        intention: gp.intention,
+        fields: gp.intention && { ...gp.intention },
+        ended: gp.ended,
+        run: gp.run,
+      }));
+      real(s, false, defenceOnly);
+      const side = other(s.owner![0]);
+      const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
+      const targets = s.players[side].map((gp) =>
+        onPitch(gp) ? targetOf(s, side, gp.idx, cache) : undefined,
+      );
+      const boxRuns = s.players[s.owner![0]].filter((gp) => gp.intention?.box).length;
+      everyone.forEach((gp, k) => {
+        const was = kept[k]!;
+        if (was.intention) Object.assign(was.intention, was.fields);
+        gp.intention = was.intention;
+        gp.ended = was.ended;
+        gp.run = was.run;
+      });
+      return { targets, boxRuns };
+    };
+    let samples = 0,
+      withBoxRuns = 0;
+    const differing: number[] = [];
+    speculative.sample = (s) => {
+      const full = defenders(s, false);
+      const reduced = defenders(s, true);
+      samples++;
+      if (reduced.boxRuns) withBoxRuns++;
+      if (JSON.stringify(reduced.targets) !== JSON.stringify(full.targets))
+        differing.push(s.elapsed);
+    };
+    try {
+      for (const tactics of [
+        ['possession', 'counter'],
+        ['press', 'balanced'],
+      ] as [Tactic, Tactic][])
+        playGrid({ ...kitOf(tactics).setup, model: MATCH_MODEL_REVISION });
+    } finally {
+      speculative.sample = undefined;
+    }
+    expect(differing).toEqual([]);
+    expect(samples).toBeGreaterThan(200);
+    expect(withBoxRuns).toBeGreaterThan(0);
   });
 
   it('keeps comparable role and trait differences, deterministically', () => {
