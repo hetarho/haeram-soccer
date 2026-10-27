@@ -1,0 +1,309 @@
+{
+  "task": "T522",
+  "at": "2026-10-27T16:53:39.526Z",
+  "source": {
+    "commit": "35d0a4bc48e630e63d269d62515ca3c0a868110b",
+    "dirty": true
+  },
+  "build": {
+    "sha256": "f9962dfc3506e8ac"
+  },
+  "machine": {
+    "cpu": "Apple M1 Max",
+    "logicalCpus": 10,
+    "memoryGiB": 32,
+    "platform": "darwin 25.5.0",
+    "node": "v26.8.1",
+    "chromium": "1243",
+    "loadAfter": [2.9, 3.84, 7.05]
+  },
+  "setup": {
+    "viewport": "1280x800",
+    "seasonDays": 365,
+    "monthDays": 30,
+    "reps": 2,
+    "stall": "≥ 1.5 × pace"
+  },
+  "simulation": {
+    "pace": "x10",
+    "stalls": 10,
+    "daysPerSecond": 8.9,
+    "depth": 7
+  },
+  "comparison": {
+    "x10Stalls": [0, 0],
+    "x10DaysPerSecond": [10, 10]
+  },
+  "runs": [
+    {
+      "rep": 0,
+      "pace": "x10",
+      "days": 365,
+      "from": "1950년 8월 2일",
+      "to": "1951년 9월 12일",
+      "loadBefore": 2.63,
+      "stalls": 0,
+      "worstGapMs": 112,
+      "gapMs": {
+        "p50": 100,
+        "p90": 107,
+        "p99": 110
+      },
+      "daysPerSecond": 10,
+      "targetDaysPerSecond": 10,
+      "skippedDays": 42,
+      "jumps": [
+        {
+          "from": "1951년 6월 19일",
+          "to": "1951년 8월 1일",
+          "missing": 42,
+          "gapMs": 94
+        }
+      ],
+      "stops": [],
+      "longTasks": {
+        "count": 0,
+        "over100ms": 0,
+        "totalMs": 0,
+        "maxMs": 0
+      },
+      "helpers": {
+        "created": 2,
+        "terminated": 0,
+        "errors": 0,
+        "hardwareConcurrency": 10
+      }
+    },
+    {
+      "rep": 0,
+      "pace": "x1",
+      "days": 30,
+      "from": "1950년 8월 2일",
+      "to": "1950년 8월 31일",
+      "loadBefore": 4.42,
+      "stalls": 0,
+      "worstGapMs": 1019,
+      "gapMs": {
+        "p50": 1000,
+        "p90": 1010,
+        "p99": 1019
+      },
+      "daysPerSecond": 1,
+      "targetDaysPerSecond": 1,
+      "skippedDays": 0,
+      "jumps": [],
+      "stops": [],
+      "longTasks": {
+        "count": 0,
+        "over100ms": 0,
+        "totalMs": 0,
+        "maxMs": 0
+      },
+      "helpers": {
+        "created": 2,
+        "terminated": 0,
+        "errors": 0,
+        "hardwareConcurrency": 10
+      }
+    },
+    {
+      "rep": 0,
+      "pace": "x2",
+      "days": 30,
+      "from": "1950년 8월 2일",
+      "to": "1950년 8월 31일",
+      "loadBefore": 3.66,
+      "stalls": 0,
+      "worstGapMs": 519,
+      "gapMs": {
+        "p50": 500,
+        "p90": 511,
+        "p99": 519
+      },
+      "daysPerSecond": 2,
+      "targetDaysPerSecond": 2,
+      "skippedDays": 0,
+      "jumps": [],
+      "stops": [],
+      "longTasks": {
+        "count": 0,
+        "over100ms": 0,
+        "totalMs": 0,
+        "maxMs": 0
+      },
+      "helpers": {
+        "created": 2,
+        "terminated": 0,
+        "errors": 0,
+        "hardwareConcurrency": 10
+      }
+    },
+    {
+      "rep": 0,
+      "pace": "x5",
+      "days": 30,
+      "from": "1950년 8월 2일",
+      "to": "1950년 8월 31일",
+      "loadBefore": 3.15,
+      "stalls": 0,
+      "worstGapMs": 213,
+      "gapMs": {
+        "p50": 200,
+        "p90": 208,
+        "p99": 213
+      },
+      "daysPerSecond": 5,
+      "targetDaysPerSecond": 5,
+      "skippedDays": 0,
+      "jumps": [],
+      "stops": [],
+      "longTasks": {
+        "count": 0,
+        "over100ms": 0,
+        "totalMs": 0,
+        "maxMs": 0
+      },
+      "helpers": {
+        "created": 2,
+        "terminated": 0,
+        "errors": 0,
+        "hardwareConcurrency": 10
+      }
+    },
+    {
+      "rep": 1,
+      "pace": "x10",
+      "days": 365,
+      "from": "1950년 8월 2일",
+      "to": "1951년 9월 12일",
+      "loadBefore": 3.14,
+      "stalls": 0,
+      "worstGapMs": 113,
+      "gapMs": {
+        "p50": 100,
+        "p90": 107,
+        "p99": 111
+      },
+      "daysPerSecond": 10,
+      "targetDaysPerSecond": 10,
+      "skippedDays": 42,
+      "jumps": [
+        {
+          "from": "1951년 6월 19일",
+          "to": "1951년 8월 1일",
+          "missing": 42,
+          "gapMs": 94
+        }
+      ],
+      "stops": [],
+      "longTasks": {
+        "count": 0,
+        "over100ms": 0,
+        "totalMs": 0,
+        "maxMs": 0
+      },
+      "helpers": {
+        "created": 2,
+        "terminated": 0,
+        "errors": 0,
+        "hardwareConcurrency": 10
+      }
+    },
+    {
+      "rep": 1,
+      "pace": "x1",
+      "days": 30,
+      "from": "1950년 8월 2일",
+      "to": "1950년 8월 31일",
+      "loadBefore": 3.89,
+      "stalls": 0,
+      "worstGapMs": 1018,
+      "gapMs": {
+        "p50": 1000,
+        "p90": 1007,
+        "p99": 1018
+      },
+      "daysPerSecond": 1,
+      "targetDaysPerSecond": 1,
+      "skippedDays": 0,
+      "jumps": [],
+      "stops": [],
+      "longTasks": {
+        "count": 0,
+        "over100ms": 0,
+        "totalMs": 0,
+        "maxMs": 0
+      },
+      "helpers": {
+        "created": 2,
+        "terminated": 0,
+        "errors": 0,
+        "hardwareConcurrency": 10
+      }
+    },
+    {
+      "rep": 1,
+      "pace": "x2",
+      "days": 30,
+      "from": "1950년 8월 2일",
+      "to": "1950년 8월 31일",
+      "loadBefore": 3.27,
+      "stalls": 0,
+      "worstGapMs": 515,
+      "gapMs": {
+        "p50": 500,
+        "p90": 511,
+        "p99": 515
+      },
+      "daysPerSecond": 2,
+      "targetDaysPerSecond": 2,
+      "skippedDays": 0,
+      "jumps": [],
+      "stops": [],
+      "longTasks": {
+        "count": 0,
+        "over100ms": 0,
+        "totalMs": 0,
+        "maxMs": 0
+      },
+      "helpers": {
+        "created": 2,
+        "terminated": 0,
+        "errors": 0,
+        "hardwareConcurrency": 10
+      }
+    },
+    {
+      "rep": 1,
+      "pace": "x5",
+      "days": 30,
+      "from": "1950년 8월 2일",
+      "to": "1950년 8월 31일",
+      "loadBefore": 2.55,
+      "stalls": 0,
+      "worstGapMs": 216,
+      "gapMs": {
+        "p50": 200,
+        "p90": 208,
+        "p99": 216
+      },
+      "daysPerSecond": 5,
+      "targetDaysPerSecond": 5,
+      "skippedDays": 0,
+      "jumps": [],
+      "stops": [],
+      "longTasks": {
+        "count": 0,
+        "over100ms": 0,
+        "totalMs": 0,
+        "maxMs": 0
+      },
+      "helpers": {
+        "created": 2,
+        "terminated": 0,
+        "errors": 0,
+        "hardwareConcurrency": 10
+      }
+    }
+  ]
+}
