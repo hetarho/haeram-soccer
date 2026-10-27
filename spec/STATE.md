@@ -374,8 +374,6 @@
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | doing@261027.n3w8 |
 | T532 | Season and History competition hubs | WEB ARCH | T531 | todo |
 | T533 | First-team, academy and coaching navigation | WEB ARCH | T532 | todo |
-| T530 | Work-based owner office and shared approval controls | WEB ARCH | - | doing@261028.g8u6 |
-| T531 | Home approval requests visit their working desk | WEB ARCH | T530 | doing@261028.g8u6 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -394,11 +392,11 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- implement-task T532 (then T533): requested gameplay hierarchy; preserve the integrated automatic-play work.
-- n3w8 (work auto-play-2): T516–T521, T524, T525 on main after the group gate passed on 2573791c (typecheck, lint, format, unit, integration, contract, catalogs, presentation, build, Chromium); explore T522 (automatic play read in the built game, `pnpm exec tsx scripts/automatic-play-read.mjs`) runs next in the main session on a quiet machine.
-- g8u6 owns T530–T533: requested gameplay hierarchy; completed code collected locally, final batch and main push after the whole slice.
+- implement-task T532 (then T533): finish the requested gameplay hierarchy, then one final batch and main push.
+- T530/T531 complete locally; remote reservations remain until publication. Preserve n3w8's T522 ownership and integrated automatic-play code.
 
 ## log
+- 261028 reconcile shared planning: local T530/T531 stay archived and complete; g8u6 continues T532/T533 under strict remote claims.
 - 261028 sync origin/main: preserve automatic-play r162/r163 and serialize the gameplay redesign as WEB r164; T530/T531 remain complete.
 - 261028 T531 done: host finalized the verified child implementation and task commit.
 - 261028 T530 done: 141 affected unit cases, type/lint/format/build passed; host finalized the commit after restricted child Git writes.
@@ -418,4 +416,3 @@
 - 261027 update-ssot WEB start (r6u2): portable resource skins and asset delivery audit
 - 261027 T495 done: 32 competition-specific trophy variants across four themes, country-aware cabinet selection and safe fallback; unit/integration/contract and all 299 Chromium journeys passed, with unchanged-timeout recovery for load-related tests.
 - 261027 u3b8 closed: T500–T503 batch gate passed on f25cae1a (unit 1171, integration 1158 after a quiet-host rerun of 3 load timeouts, contract 39, catalogs, presentation, build, Chromium 299/299), pushed to main
-- 261027 T503 done: competition keys, Elo reads, request label and empty table moved to leaves; UI exception list 43→38 files
