@@ -68,9 +68,9 @@ for (const width of [360, 390]) {
       .getByRole('combobox', { name: '자동 진행 배속', exact: true })
       .boundingBox();
     expect(date!.width).toBeGreaterThan(0);
-    expect(date!.x + date!.width).toBeLessThanOrEqual(pace!.x);
-    expect(date!.y).toBeLessThan(pace!.y + pace!.height);
-    // Calendar metadata sits above the content; transport has its own bottom row.
+    expect(date!.x + date!.width).toBeLessThanOrEqual(width);
+    // Calendar metadata sits in its framed header above the content; transport has its own
+    // bottom row.
     expect(date!.y + date!.height).toBeLessThanOrEqual(pace!.y);
     await watchNext(page);
     const canvas = page.getByLabel('22명의 선수와 공으로 표현하는 경기');

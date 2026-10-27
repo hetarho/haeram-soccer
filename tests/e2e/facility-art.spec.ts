@@ -19,15 +19,16 @@ import { facilityStageTop } from '../../apps/web/src/presentation/facilityImages
 const presentation = readPresentationBaselines();
 const defaultThemeLabel = presentation.themeEntry.label;
 const defaultTheme = createThemeResolver(presentation.theme, { url: presentation.themeUrl });
-const facilitySources = new Set(
+/** Each registered scene's resource paths (its default and responsive variants) → its default. */
+const facilitySources = new Map(
   FACILITY_ERAS.flatMap((era) =>
     FACILITY_KINDS.flatMap((kind) =>
-      Array.from(
-        { length: facilityStageTop(kind) + 1 },
-        (_, stage) =>
-          new URL(defaultTheme.facility({ era, kind, stage }).src, 'https://presentation.invalid')
-            .pathname,
-      ),
+      Array.from({ length: facilityStageTop(kind) + 1 }, (_, stage) => {
+        const scene = defaultTheme.facility({ era, kind, stage });
+        return [scene.src, ...scene.variants.map((variant) => variant.src)].map(
+          (src) => [new URL(src, 'https://presentation.invalid').pathname, scene.src] as const,
+        );
+      }).flat(),
     ),
   ),
 );
@@ -95,13 +96,15 @@ async function expectArt(page: Page, kind: FacilityKind, era: FacilityEra, stage
   expect(await img.getAttribute('alt')).toMatch(new RegExp(`${defaultThemeLabel}$`));
   // The overview uses the same current facility resource as preparation and the home scene.
   await img.scrollIntoViewIfNeeded();
+  // A responsive variant reports its natural size at the chosen density (a 110px office
+  // thumbnail reads 109×36), so the 3:1 check allows that rounding.
   await expect
     .poll(() =>
       img.evaluate(
         (el: HTMLImageElement) =>
           el.complete &&
-          el.naturalWidth >= 240 &&
-          Math.abs(el.naturalWidth / el.naturalHeight - 3) < 0.015,
+          el.naturalHeight > 0 &&
+          Math.abs(el.naturalWidth - 3 * el.naturalHeight) <= 3,
       ),
     )
     .toBe(true);
@@ -126,8 +129,10 @@ for (const scenario of [
     const requested = new Set<string>();
     page.on('request', (request) => {
       const pathname = new URL(request.url()).pathname;
-      // Only registered facility scenes count here; UI materials and frames load independently.
-      if (facilitySources.has(pathname)) requested.add(pathname);
+      // Only registered facility scenes count here, in whichever size the browser picked; UI
+      // materials and frames load independently.
+      const scene = facilitySources.get(pathname);
+      if (scene) requested.add(scene);
     });
     await page.setViewportSize({ width: scenario.width, height: scenario.height });
     await load(

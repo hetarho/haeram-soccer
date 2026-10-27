@@ -18,6 +18,7 @@
 | n3w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T12:15Z | 2026-10-27T12:15Z | - |
 
 ## inbox
+- 261027 suggest WEB-69 T504: T504's shared skin frames every `[role=tab]` with a button frame and a quiet/canvas fill, while WEB-69 still says page tab bars have no filled or outlined boxes (label over a hairline, accent underline) — confirm the framed tabs in WEB-69 or restore hairline tabs
 - 261027 decided HIST-18 WEB-92: how to drop caretakers that never took a match → keep the tenure fact, leave interim tenures with no credited match or outcome out of every summary/list/count (alt: never record such an interim | hide every zero-match tenure, interim or not)
 - 261027 decided STAFF-47: what trust 0 means → at trust ≤10 a 10%/round resignation chance (25% at 0), certain resignation at the close at 0, warning notice on first reaching ≤10 (alt: trust drifts back toward 50 | morale-only penalty as now)
 - 261027 decided HIST-20 WEB-54: transfer fee rankings → structured own-club fee transfer facts, 영입/매각 boards all-time or by season in today's money, older careers ranked from ledger amounts by entry text (alt: ledger-only ranking | include free transfers)
@@ -396,6 +397,7 @@
 - h7t3 pushed T510–T515 (trust-floor resignations, zero-match interims hidden, 이적 기록 tab, canvas heat maps) to main; Chromium journeys were still running at push — check report 261027-h7t3 checks and CI.
 
 ## log
+- 261027 T523 done (n3w8): main CI fix after T504 — chart tabs readable on their new surfaces, mediation choice inputs skip the 20 px skin, pitch/facility specs follow the framed header and responsive art; 3 Chromium spec files 25/25
 - 261027 merge publication: preserved remote WEB r159 (transfer records/heat maps); local resource skins r159→r160 and play-pace r160→r161, decision content unchanged; p9a4 task bases keep their recorded content and can refresh on next sync
 - 261027 ideation play-pace-and-owner-surfaces converted: owner dropped the action / standing choice / dashboard split and home ordering; automatic play scope fully in WEB r160, SAVE r55, ARCH r24
 - 261027 create-task WEB r160 SAVE r55 ARCH r24 → T516–T522 (moment removal, grid cuts + day bench, two-phase round, helper workers, lighter publication, run-ahead clock, browser read)
@@ -415,4 +417,3 @@
 - 261027 create-task review/ui-engine-boundary-261027 + ARCH r23 → T500–T503 (guard, tactic/injury leaves, staff-info leaf, competition/label leaves); review converted
 - 261027 ARCH r23: ARCH-3 path table matches the real layout; ARCH-4 UI imports engine values only from read leaves with a shrink-only guarded exception list
 - 261027 review-code ui-engine-boundary-261027: 53 UI files import 39 orchestration-reaching engine modules; F1–F4 adopted (owner: make the tasks and implement them), F5 open
-- 261027 o7h4 closed: T490–T493 and gate fixes; batch passed on eaf5f3d1 (299/299 Chromium), pushed to main
