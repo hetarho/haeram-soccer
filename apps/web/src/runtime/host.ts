@@ -9,6 +9,8 @@ import {
   createWorld,
   advanceRound,
   advanceDays,
+  prepareRound,
+  completeRound,
   seasonLength,
   groupKey,
   closeSeason,
@@ -56,6 +58,8 @@ import {
   type View,
 } from './protocol';
 import { ViewPublisher } from './viewPublisher';
+import { playDay, type DaySteps, type HelperPool } from './helperPool';
+const DAY_STEPS: DaySteps = { prepareRound, completeRound, advanceDays };
 /** The patch policy lives with publication; existing importers still find it here. */
 export { VIEW_PATCH } from './viewPublisher';
 import { clubRecords } from './clubRecords';
@@ -256,6 +260,10 @@ export class Host {
   cancelled = false;
   /** The port to the client's codec worker, which builds every checkpoint (→ARCH-13). */
   codec?: { postMessage(job: CodecJob): void };
+  /** The client's fixture helpers, when it created them (→ARCH-6); without, every fixture plays here. */
+  helpers?: HelperPool;
+  /** An own match day waiting for its helpers: the world is mid-day, so reads wait for it. */
+  private round?: Promise<void>;
   /** Whether founding and writer activation record the full match model; only tests set it. */
   private release: MatchModelRelease;
   constructor(
@@ -313,13 +321,32 @@ export class Host {
       type === 'archive' ||
       type === 'manager-history'
     )
-      return Promise.resolve(this.read(input));
+      return this.round ? this.afterRound(input) : Promise.resolve(this.read(input));
     const task = this.queue.then(() => this.execute(input));
     this.queue = task.then(
       () => {},
       () => {},
     );
     return task;
+  }
+  /** A read arriving mid-day, answered once no own match day waits for its helpers. */
+  private async afterRound(input: unknown) {
+    while (this.round) await this.round;
+    return this.read(input);
+  }
+  /** The next day of a day step; an own match day may wait for its helpers, holding reads. */
+  private async day(w: World, observe: boolean) {
+    const step = playDay(this.helpers, w, observe, DAY_STEPS);
+    if (!(step instanceof Promise)) return step;
+    this.round = step.then(
+      () => {},
+      () => {},
+    );
+    try {
+      return await step;
+    } finally {
+      this.round = undefined;
+    }
   }
   /**
    * News reads the whole career (records, debuts, event order), so it is derived here rather than
@@ -591,7 +618,7 @@ export class Host {
             const watched = cmd.type === 'next-match';
             for (let n = 0; n < limit; n++) {
               if (this.cancelled) break;
-              const p = advanceDays(w, 1, undefined, watched);
+              const p = await this.day(w, watched);
               if (p?.frames.length) playback = p;
               if (
                 w.critical ||

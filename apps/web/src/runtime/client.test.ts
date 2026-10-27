@@ -13,6 +13,8 @@ import { identityOf } from '../../../../packages/engine/src/club-identity';
 import type { World } from '../../../../packages/contracts/src/types';
 import { Host } from './host';
 import { serve } from './codec';
+import { serve as serveHelper } from './fixtureHelper';
+import { HELPER_CONFIG, HelperPool, type HelperPort } from './helperPool';
 import type { CodecResult, Reply, Request } from './protocol';
 import { earlierRules, GameSlots } from './slots';
 import { ACTIVE_SAVE_KEYS, GameIndexStore, type ParkedStore } from '../adapters/games';
@@ -44,6 +46,7 @@ class WorkerPort {
   onerror?: () => void;
   host = new Host((reply) => this.deliver(reply), { release: WorkerPort.release });
   private codecPort?: MessagePort;
+  private helperPorts: MessagePort[] = [];
   constructor() {
     WorkerPort.instances.push(this);
   }
@@ -52,9 +55,20 @@ class WorkerPort {
     this.onmessage?.({ data: cloned } as MessageEvent<Reply>);
     return cloned;
   }
-  postMessage(input: Request | { type: 'cancel' } | { type: 'codec'; port: MessagePort }) {
+  postMessage(
+    input:
+      | Request
+      | { type: 'cancel' }
+      | { type: 'codec'; port: MessagePort }
+      | { type: 'helpers'; ports: MessagePort[] }
+      | { type: 'helpers-failed' },
+  ) {
     if ('type' in input) {
       if (input.type === 'codec') this.host.codec = this.codecPort = input.port;
+      else if (input.type === 'helpers') {
+        this.helperPorts = input.ports;
+        this.host.helpers = new HelperPool(input.ports as unknown as HelperPort[]);
+      } else if (input.type === 'helpers-failed') this.host.helpers?.disable();
       else this.host.cancelled = true;
       return;
     }
@@ -65,6 +79,26 @@ class WorkerPort {
   }
   terminate() {
     this.codecPort?.close();
+    for (const port of this.helperPorts) port.close();
+  }
+}
+
+/** A fixture helper as fixtureHelper.ts wires it, serving shares on a real MessageChannel port. */
+class HelperWorker {
+  static instances: HelperWorker[] = [];
+  onerror?: () => void;
+  terminated = false;
+  private port?: MessagePort;
+  constructor() {
+    HelperWorker.instances.push(this);
+  }
+  postMessage(input: { type: 'port'; port: MessagePort }) {
+    this.port = input.port;
+    serveHelper(input.port as unknown as Parameters<typeof serveHelper>[0]);
+  }
+  terminate() {
+    this.terminated = true;
+    this.port?.close();
   }
 }
 
@@ -96,6 +130,7 @@ class CodecPort {
 }
 
 function FakeWorker(url: URL) {
+  if (String(url).endsWith('fixtureHelper.ts')) return new HelperWorker();
   return String(url).endsWith('codec.ts') ? new CodecPort() : new WorkerPort();
 }
 
@@ -147,6 +182,7 @@ beforeEach(() => {
   WorkerPort.instances = [];
   WorkerPort.release = undefined;
   CodecPort.instances = [];
+  HelperWorker.instances = [];
   ChannelPort.instances = [];
   vi.stubGlobal('Worker', FakeWorker);
   vi.stubGlobal('BroadcastChannel', ChannelPort);
@@ -169,6 +205,70 @@ beforeEach(() => {
 afterEach(() => {
   for (const client of clients.splice(0)) client.dispose();
   vi.unstubAllGlobals();
+});
+
+describe('fixture helpers', () => {
+  /** The writer lock as the shared stub grants it, on a device with `cores` logical cores. */
+  function withCores(cores: number | undefined) {
+    vi.stubGlobal('navigator', {
+      hardwareConcurrency: cores,
+      locks: {
+        request: (
+          _name: string,
+          _options: unknown,
+          callback: (lock: { name: string }) => Promise<void>,
+        ) => callback({ name: 'writer' }),
+      },
+    });
+  }
+  it('creates its helpers on a device with the cores and hands their ports to the engine worker', async () => {
+    withCores(HELPER_CONFIG.minCores);
+    const client = await start();
+    expect(HelperWorker.instances).toHaveLength(HELPER_CONFIG.count);
+    const host = WorkerPort.instances[0]!.host;
+    expect(host.helpers?.active).toBe(true);
+    // Unattended play: staff decide every business category and nothing stops to observe.
+    const settings = structuredClone(client.state.view!.world.settings!);
+    for (const key of Object.keys(
+      settings.responsibilities,
+    ) as (keyof typeof settings.responsibilities)[])
+      settings.responsibilities[key] = 'delegated';
+    settings.observations = { matchEve: false, windowOpen: false };
+    await client.command({ type: 'settings', settings }, { background: true });
+    // The first own match is a league day within two weeks; it plays with the helpers' fixtures.
+    for (let day = 0; !client.state.view!.world.ownMatches.length; day++) {
+      expect(day).toBeLessThan(14);
+      await client.command({ type: 'advance-days', days: 1 }, { background: true });
+    }
+    expect(host.helpers?.active).toBe(true);
+    expect(client.state.error).toBeUndefined();
+  });
+  it('creates none below the core threshold or without a reported count', async () => {
+    withCores(HELPER_CONFIG.minCores - 1);
+    await start();
+    withCores(undefined);
+    await start();
+    expect(HelperWorker.instances).toEqual([]);
+    expect(WorkerPort.instances.map((worker) => worker.host.helpers)).toEqual([
+      undefined,
+      undefined,
+    ]);
+  });
+  it('a helper error ends helper use and a creation failure leaves the engine worker computing', async () => {
+    withCores(HELPER_CONFIG.minCores);
+    await start();
+    HelperWorker.instances[1]!.onerror?.();
+    expect(HelperWorker.instances.every((helper) => helper.terminated)).toBe(true);
+    expect(WorkerPort.instances[0]!.host.helpers?.active).toBe(false);
+    vi.stubGlobal('Worker', function BlockedHelpers(url: URL) {
+      if (String(url).endsWith('fixtureHelper.ts')) throw new Error('blocked');
+      return FakeWorker(url);
+    });
+    const client = await start();
+    expect(WorkerPort.instances[1]!.host.helpers).toBeUndefined();
+    await client.command({ type: 'advance-days', days: 1 }, { background: true });
+    expect(client.state.view!.world.calendar?.day).toBe(1);
+  });
 });
 
 describe('background worker publication', () => {
