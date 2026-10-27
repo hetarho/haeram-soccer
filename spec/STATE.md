@@ -389,7 +389,7 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- T530-T535 are published on main 5653ee3f. CI passed eight jobs; three Firefox art-geometry cases required the helper-only 936a169f correction (18/18 three-browser regression pass). Coordinator owns the repaired batch, push and final CI wait.
+- T530-T535 are published on main 5653ee3f. The helper-only Firefox correction 936a169f passed 18/18 three-browser regressions and the full 9be28f16 batch (Chromium 310/310). Coordinator owns its publication and final CI wait.
 - Preserve the integrated automatic-play work and n3w8 report; no unrelated implementation remains in this requested UI slice.
 - n3w8 closed (report 261027-n3w8): automatic play T516–T525 on main (group gate on 2573791c); T522 read on the built game: 0 stalls at x1/x2/x5/x10, x10 10 days a second, no main-thread long task, helpers on (M1 Max, headless Chromium) — a CPU-throttled phone-class read is the open question. Inbox: confirm the WEB-18 read decisions (T524 → T525) and the WEB-69 framed-tabs suggestion.
 
