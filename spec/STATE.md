@@ -14,6 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
+| cups | hq-dev1-pve2-vm2 | pair | 2026-10-27T03:06Z | 2026-10-27T03:06Z | T495 |
 
 ## inbox
 - 261027 decided WEB-79 WEB-39: a better name for the report/delegation menu → 결재 라인 (alt: 업무 분장 | 권한 위임 | 보고 체계), the owner signs off or staff settle; 구단주 사무실 becomes the whole place holding every club lever
@@ -355,6 +356,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T495 | Give competition trophies distinct silhouettes | WEB ARCH | T494 | doing@261027.cups |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -376,6 +378,7 @@
 - k2d7: final batch gate on the committed head in a clean worktree, then one push to main and CI.
 
 ## log
+- 261027 T494 done: redrew all 21 print/pixel/sticker trophies in their theme's illustration style; preserved the seven standard photographs; asset integrity and task checks passed.
 - 261027 o7h4 closed: T490–T493 and gate fixes; batch passed on eaf5f3d1 (299/299 Chromium), pushed to main
 - 261027 batch gate (o7h4) 279/299 Chromium: fixed office-aware helpers (address-based office, selected home tab, celebration and event cards), event groups link 결재 라인, wide home pairs the entrance with the season card, short-phone spacing keeps seven standings rows; the 20 journeys pass on rerun
 - 261027 T493 done (o7h4): records season sub-screen with a top navigator bar; 선수 통산 더 보기 ten at a time to 100
@@ -395,4 +398,3 @@
 - 261027 m6p4 closed: T473 T474 T475 T476 complete on main b050ce93; final local batch and all nine jobs of CI 40336122845 passed, including every browser; API confirmed success after the observer HTML fallback could not read completed conclusions
 - 261027 ideation dead-balls-and-finishing start (owner): dead balls crawl, forwards walk back for free kicks, forwards pass up open goals, corners crowd — measured diagnosis recorded
 - 261027 k2d7 batch gate passed on 92c81b24 (clean worktree): typecheck/lint/format, unit 1145, integration 1158 + 4 skips, contract 39, catalogs, presentation, build, Chromium 299; the first run failed one goal-cue journey whose fixture lost a goal under revision 4 (fixed in 92c81b24)
-- 261027 T482 done: revision 4 recalibrated (shot quality, pass gain 0.3, scale 0.28, deliveries 0.7, fouls ×1.5): 600 matches 25/37 rows, goals 2.86, shots 11.3, unmarked striker takes goal-area chances 61–65%; goals by line still FW 81% (follow-up suggested)

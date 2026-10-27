@@ -1,5 +1,5 @@
 {
-  "method": "built-in image_gen; ffmpeg resizing and transparent WebP encoding through the existing UI art canvas pipeline",
+  "method": "Built-in image_gen; theme illustrations use their existing UI and approved illustrated league trophy as style references, with isolated alpha cleanup, FFmpeg preparation and the shared Chromium WebP encoding pipeline; pixel sprites remain native 48x48 for CSS nearest-neighbor display. Standard photographic artwork retained.",
   "date": "2026-10-27",
   "references": [
     {
@@ -89,233 +89,518 @@
     {
       "theme": "matchday-print",
       "kind": "league",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a magnificent tall domestic league championship cup inspired by the LEFT trophy in the photograph. A burnished gold open crown on top, graceful silver urn body with small gold sculptural details, two upward sweeping handles, tiered circular dark plinth and foot. No ribbons, inscription or logos. Style: exquisite vintage sports annual engraving, detailed hand-etched copperplate linework, warm charcoal ink shadows with muted antique gold and ivory silver highlights, tiny stipple and crosshatch texture; the complete object is richly shaded, dimensional and tangible, not a simplistic flat vector or outline icon. Restrained warm print palette, authentic British matchday programme illustration. Transparent background, no paper rectangle or floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-9b291e5a-306b-4a6f-9bbd-947d44387430.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A tall LEAGUE CHAMPION CUP with a gold crown, silver urn bowl, two upturned handles and a dark stepped circular base. Style/medium: Bold TWO-DIMENSIONAL WOODCUT / LINOCUT sports programme illustration matching the attached interface. Solid warm charcoal ink shapes, big cream negative-space cuts, small vermilion red and ochre accents. Strong simplified silhouette and coarse hand-carved hatching in flat blocks, restrained printed stipple. At most 4 inks: charcoal, warm ivory, muted ochre, vermilion. SILVER is depicted by ivory negative space and charcoal carving, GOLD by flat ochre. Keep the object visually FLAT with bold carved outline, no continuous metallic reflections or smooth airbrushed volume. Take only the illustration language from the reference UI, never its layout/text/background. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award.",
+      "references": ["apps/web/design/home-themes/captures/print.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-ab37cc54-2d42-44c2-ae41-bb33002583c8.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 193,
+          "y": 15,
+          "width": 868,
+          "height": 1225
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "matchday-print/league.webp",
       "width": 336,
       "height": 336,
-      "bytes": 36950,
-      "sha256": "aa6541b6dfbd17029c8a02e975c546f03ed6c4597fe05b7ade84c94cc6eac7af"
+      "bytes": 29676,
+      "sha256": "663d0e58dbd377df5e8180843baa3c15d1c2d3a6f2ed5fa34e82339e711f45cb"
     },
     {
       "theme": "matchday-print",
       "kind": "cup",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: an elegant traditional domestic association-football knockout cup inspired by the RIGHT trophy in the photograph. Ornate silver pear-shaped bowl, slim curving handles, beautifully detailed removable domed lid with small finial, narrow stem and a dark round stepped plinth. Warm antique-gold details, no ribbons, inscription or logos. Style: exquisite vintage sports annual engraving, detailed hand-etched copperplate linework, warm charcoal ink shadows with muted antique gold and ivory silver highlights, tiny stipple and crosshatch texture; the complete object is richly shaded, dimensional and tangible, not a simplistic flat vector or outline icon. Restrained warm print palette, authentic British matchday programme illustration. Transparent background, no paper rectangle or floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-1d6bcaac-658b-4d70-bf08-ec8eb592b6cf.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A DOMESTIC CUP: a silver pear-shaped bowl, two thin curved handles, a domed lid with a small finial, slender stem and dark stepped circular base; a few antique-gold accents. Style/medium: Bold TWO-DIMENSIONAL WOODCUT / LINOCUT sports programme illustration matching the attached interface. Solid warm charcoal ink shapes, big cream negative-space cuts, small vermilion red and ochre accents. Strong simplified silhouette and coarse hand-carved hatching in flat blocks, restrained printed stipple. At most 4 inks: charcoal, warm ivory, muted ochre, vermilion. SILVER is depicted by ivory negative space and charcoal carving, GOLD by flat ochre. Keep the object visually FLAT with bold carved outline, no continuous metallic reflections or smooth airbrushed volume. Take only the illustration language from the reference UI, never its layout/text/background. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/design/home-themes/captures/print.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-ab37cc54-2d42-44c2-ae41-bb33002583c8.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-a6ab8806-6bfe-401d-9233-63b30ded6dee.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 238,
+          "y": 56,
+          "width": 777,
+          "height": 1167
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "matchday-print/cup.webp",
       "width": 336,
       "height": 336,
-      "bytes": 32804,
-      "sha256": "3ecf74178ce891b5c35f60bcb6668069a2e39fa4144a1f3d191df4e237f7b0f4"
+      "bytes": 24498,
+      "sha256": "d07e76079ce908a6ab1c96003eba0855cc3535ec2474979dea2a0cfaa4c2a13a"
     },
     {
       "theme": "matchday-print",
       "kind": "continental",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a grand European continental champions cup inspired by the MIDDLE trophy in the photograph. Majestic broad smooth polished silver body, famously large high looping handles rising above the bowl at both sides, sturdy short stem, circular silver foot, no lid and no crown. No ribbons, inscription or logos. Style: exquisite vintage sports annual engraving, detailed hand-etched copperplate linework, warm charcoal ink shadows with muted antique gold and ivory silver highlights, tiny stipple and crosshatch texture; the complete object is richly shaded, dimensional and tangible, not a simplistic flat vector or outline icon. Restrained warm print palette, authentic British matchday programme illustration. Transparent background, no paper rectangle or floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-0e585774-6934-4859-af23-c9cccb894f1d.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A CONTINENTAL CHAMPIONS CUP: broad silver bowl with TWO large high loop handles reaching above it, short thick stem and silver round foot, NO lid and NO crown. Style/medium: Bold TWO-DIMENSIONAL WOODCUT / LINOCUT sports programme illustration matching the attached interface. Solid warm charcoal ink shapes, big cream negative-space cuts, small vermilion red and ochre accents. Strong simplified silhouette and coarse hand-carved hatching in flat blocks, restrained printed stipple. At most 4 inks: charcoal, warm ivory, muted ochre, vermilion. SILVER is depicted by ivory negative space and charcoal carving, GOLD by flat ochre. Keep the object visually FLAT with bold carved outline, no continuous metallic reflections or smooth airbrushed volume. Take only the illustration language from the reference UI, never its layout/text/background. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/design/home-themes/captures/print.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-ab37cc54-2d42-44c2-ae41-bb33002583c8.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-e2225368-0372-4b44-928c-03124bd61522.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 183,
+          "y": 48,
+          "width": 888,
+          "height": 1172
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "matchday-print/continental.webp",
       "width": 336,
       "height": 336,
-      "bytes": 32662,
-      "sha256": "ec6dcfa8e9e66aa811b5a77157529642c62616c332d2f100f8c6cddfaee21dd9"
+      "bytes": 30924,
+      "sha256": "ec399707ae1129dbdf446a9cd2b29a00ddcc0b9ad03e47ba888c932e412ce2f0"
     },
     {
       "theme": "matchday-print",
       "kind": "final",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: an authentic football cup-final runners-up medal. A large beautifully crafted round SILVER medal with a raised football and restrained laurel embossing, suspended on a neatly folded muted navy and ivory neck ribbon forming a slender inverted V. Complete ribbon AND medal visible. This is a prestigious runners-up memento, not a gold winner's cup. No letters, numbers or logos. Style: exquisite vintage sports annual engraving, detailed hand-etched copperplate linework, warm charcoal ink shadows with muted antique gold and ivory silver highlights, tiny stipple and crosshatch texture; the complete object is richly shaded, dimensional and tangible, not a simplistic flat vector or outline icon. Restrained warm print palette, authentic British matchday programme illustration. Transparent background, no paper rectangle or floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-a45f1284-8607-4eea-84f5-66ada2c6f94d.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A RUNNER-UP SILVER MEDAL with a simple embossed football and small laurels, hanging below a full narrow inverted-V ribbon in navy and ivory. Entire ribbon and medal visible. Silver rather than gold. Style/medium: Bold TWO-DIMENSIONAL WOODCUT / LINOCUT sports programme illustration matching the attached interface. Solid warm charcoal ink shapes, big cream negative-space cuts, small vermilion red and ochre accents. Strong simplified silhouette and coarse hand-carved hatching in flat blocks, restrained printed stipple. At most 4 inks: charcoal, warm ivory, muted ochre, vermilion. SILVER is depicted by ivory negative space and charcoal carving, GOLD by flat ochre. Keep the object visually FLAT with bold carved outline, no continuous metallic reflections or smooth airbrushed volume. Take only the illustration language from the reference UI, never its layout/text/background. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/design/home-themes/captures/print.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-ab37cc54-2d42-44c2-ae41-bb33002583c8.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-04537aa3-a5be-43f0-a4d3-ee8662e98c1c.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 277,
+          "y": 76,
+          "width": 700,
+          "height": 1123
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "matchday-print/final.webp",
       "width": 336,
       "height": 336,
-      "bytes": 27462,
-      "sha256": "663c844615066416a702e1afd0329d4ee2dc85f4d75e42079b0cda09e914cd94"
+      "bytes": 25648,
+      "sha256": "6cfb8f243a85f09b2146297eb150054be5cfe96cf990f37ff83e3779f86b462f"
     },
     {
       "theme": "matchday-print",
       "kind": "promotion",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a ceremonial football promotion award: an elegant freestanding antique GOLD shield plaque with a raised upward chevron at its centre, football relief beneath it and discreet laurel sprigs framing the shield, mounted on a small dark stepped plinth. Make it look like a crafted physical sporting award. The upward direction must be unambiguous. No cup, letters, numbers or logos. Style: exquisite vintage sports annual engraving, detailed hand-etched copperplate linework, warm charcoal ink shadows with muted antique gold and ivory silver highlights, tiny stipple and crosshatch texture; the complete object is richly shaded, dimensional and tangible, not a simplistic flat vector or outline icon. Restrained warm print palette, authentic British matchday programme illustration. Transparent background, no paper rectangle or floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-181fee0f-b204-4adc-923c-1e7d8f3d82d7.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A PROMOTION AWARD: freestanding antique-gold shield on a small dark rectangular plinth, one large unmistakable upward arrow/chevron at center, small football relief and laurel sprigs. Style/medium: Bold TWO-DIMENSIONAL WOODCUT / LINOCUT sports programme illustration matching the attached interface. Solid warm charcoal ink shapes, big cream negative-space cuts, small vermilion red and ochre accents. Strong simplified silhouette and coarse hand-carved hatching in flat blocks, restrained printed stipple. At most 4 inks: charcoal, warm ivory, muted ochre, vermilion. SILVER is depicted by ivory negative space and charcoal carving, GOLD by flat ochre. Keep the object visually FLAT with bold carved outline, no continuous metallic reflections or smooth airbrushed volume. Take only the illustration language from the reference UI, never its layout/text/background. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/design/home-themes/captures/print.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-ab37cc54-2d42-44c2-ae41-bb33002583c8.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-22cbbf66-2a39-4d04-95ad-6e1f829d0612.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 229,
+          "y": 14,
+          "width": 797,
+          "height": 1227
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "matchday-print/promotion.webp",
       "width": 336,
       "height": 336,
-      "bytes": 35868,
-      "sha256": "d1e04ef92be6a83c1e323e82ea50b8c36f679dedd80ebfc8de86be4b6959a533"
+      "bytes": 28682,
+      "sha256": "5ab81fccf807f1cae81136da926419ca051efa2dce086546b4369f58d81adc98"
     },
     {
       "theme": "matchday-print",
       "kind": "relegation",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a sober club-history relegation commemorative plaque: an authentic freestanding dark pewter shield with restrained reddish copper bevels and an unmistakable raised downward chevron at its centre, mounted on a small dark rectangular plinth. Understated, dignified and historical, no celebratory gold, no cup, letters, numbers or logos. Style: exquisite vintage sports annual engraving, detailed hand-etched copperplate linework, warm charcoal ink shadows with muted antique gold and ivory silver highlights, tiny stipple and crosshatch texture; the complete object is richly shaded, dimensional and tangible, not a simplistic flat vector or outline icon. Restrained warm print palette, authentic British matchday programme illustration. Transparent background, no paper rectangle or floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-9e6721fd-2833-4e29-9618-4f926f86cb61.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A RELEGATION COMMEMORATIVE PLAQUE: freestanding muted charcoal/pewter shield on a dark rectangular plinth, copper accents and one large unmistakable downward arrow/chevron at center. Sober rather than celebratory; no gold. Style/medium: Bold TWO-DIMENSIONAL WOODCUT / LINOCUT sports programme illustration matching the attached interface. Solid warm charcoal ink shapes, big cream negative-space cuts, small vermilion red and ochre accents. Strong simplified silhouette and coarse hand-carved hatching in flat blocks, restrained printed stipple. At most 4 inks: charcoal, warm ivory, muted ochre, vermilion. SILVER is depicted by ivory negative space and charcoal carving, GOLD by flat ochre. Keep the object visually FLAT with bold carved outline, no continuous metallic reflections or smooth airbrushed volume. Take only the illustration language from the reference UI, never its layout/text/background. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/design/home-themes/captures/print.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-ab37cc54-2d42-44c2-ae41-bb33002583c8.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-8a60fd8a-698e-4ea5-b313-328ab8f475ec.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 254,
+          "y": 42,
+          "width": 745,
+          "height": 1185
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "matchday-print/relegation.webp",
       "width": 336,
       "height": 336,
-      "bytes": 36660,
-      "sha256": "bdf00d930ab2b16ea88ac00a00fb209c7f5bff0733f0280f88b8bdc98870cc5f"
+      "bytes": 28484,
+      "sha256": "3ae193bc2716de32168aac64b16717a5fb5b31589bd9b80499e60cfb82d19552"
     },
     {
       "theme": "matchday-print",
       "kind": "best",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a beautiful club-best-finish gold football award inspired by a traditional Ballon d'Or: one finely panelled reflective golden association football resting on a rugged crystalline metallic mineral pedestal. Detailed pentagonal and hexagonal seams, compact substantial silhouette, rich honey-gold highlights and a contrasting darker mineral base. No text, inscription or logos. Style: exquisite vintage sports annual engraving, detailed hand-etched copperplate linework, warm charcoal ink shadows with muted antique gold and ivory silver highlights, tiny stipple and crosshatch texture; the complete object is richly shaded, dimensional and tangible, not a simplistic flat vector or outline icon. Restrained warm print palette, authentic British matchday programme illustration. Transparent background, no paper rectangle or floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-b1229837-5131-43b9-ba1c-7717e0cfe032.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A CLUB BEST FINISH AWARD: one golden football with clearly drawn pentagon/hexagon panels sitting on a compact dark faceted mineral pedestal. No cup or handles. Style/medium: Bold TWO-DIMENSIONAL WOODCUT / LINOCUT sports programme illustration matching the attached interface. Solid warm charcoal ink shapes, big cream negative-space cuts, small vermilion red and ochre accents. Strong simplified silhouette and coarse hand-carved hatching in flat blocks, restrained printed stipple. At most 4 inks: charcoal, warm ivory, muted ochre, vermilion. SILVER is depicted by ivory negative space and charcoal carving, GOLD by flat ochre. Keep the object visually FLAT with bold carved outline, no continuous metallic reflections or smooth airbrushed volume. Take only the illustration language from the reference UI, never its layout/text/background. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/design/home-themes/captures/print.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-ab37cc54-2d42-44c2-ae41-bb33002583c8.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-886cd181-89ea-4848-ab5e-c57a9bf1a635.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 268,
+          "y": 87,
+          "width": 718,
+          "height": 1106
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "matchday-print/best.webp",
       "width": 336,
       "height": 336,
-      "bytes": 45256,
-      "sha256": "768f532976e6910e0306e54c085fa914e131e584194e0760f5fa64e29d3ff3e9"
+      "bytes": 33648,
+      "sha256": "bd65845aaa8c8b0b85df68d865a29d8129bd26e31991c3277cf2795430e7ef88"
     },
     {
       "theme": "pixel",
       "kind": "league",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a magnificent tall domestic league championship cup inspired by the LEFT trophy in the photograph. A burnished gold open crown on top, graceful silver urn body with small gold sculptural details, two upward sweeping handles, tiered circular dark plinth and foot. No ribbons, inscription or logos. Style: expertly hand-pixelled 64-bit-era football management game inventory art, deliberate square pixel clusters and hard pixel edges, sophisticated densely shaded metallic silver and gold with ivory glints, deep forest shadows, rich material depth. Chunky readable silhouette but carefully observed realistic trophy proportions. No smooth gradients, no simplistic flat icon. Transparent background, no floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-9500ddeb-210b-4bc9-aba3-d1fff6174855.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A tall LEAGUE CHAMPION CUP with a gold crown, silver urn bowl, two upturned handles and a dark stepped circular base. Style/medium: Authentic LOW-RESOLUTION 16-bit RPG / football management inventory SPRITE, designed on a 48x48 grid and enlarged with NEAREST NEIGHBOUR square pixels. Obvious chunky square 1px pixel clusters on the 48px grid. Restricted 12-color palette: warm ivory, 3 silver grays, ochre/gold, dark forest green, muted terracotta and charcoal. Black/dark-green 1px stepped contour, at most 3 flat shade levels per material, tiny isolated square highlights, simple graphic proportions. Edges have clearly visible stair steps. Absolutely NO antialiasing, NO smooth curves, NO photographic metal and NO continuous gradients. The supplied tiny cup glyph is a reference for the square pixel edge language, add restrained sprite colours. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award.",
+      "references": ["apps/web/public/art/pixel/ui/icon-cup.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-dcff7faa-e7b0-4ef3-87f3-58740b2a2116.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 228,
+          "y": 62,
+          "width": 798,
+          "height": 1146
+        },
+        "filter": "scale=40:40:force_original_aspect_ratio=decrease:flags=neighbor,format=rgba,lut=a='if(lt(val,128),0,255)',pad=48:48:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "pixel/league.webp",
-      "width": 336,
-      "height": 336,
-      "bytes": 45292,
-      "sha256": "42a21bf0c55b09352407523dd0f1e38efc19ecfc8a4d2333c5cf5df3309af70c"
+      "width": 48,
+      "height": 48,
+      "bytes": 1606,
+      "sha256": "61388e662999201c2a8ebf66438dc8b208f7c8111baae3c767cdded27b0bd94d"
     },
     {
       "theme": "pixel",
       "kind": "cup",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: an elegant traditional domestic association-football knockout cup inspired by the RIGHT trophy in the photograph. Ornate silver pear-shaped bowl, slim curving handles, beautifully detailed removable domed lid with small finial, narrow stem and a dark round stepped plinth. Warm antique-gold details, no ribbons, inscription or logos. Style: expertly hand-pixelled 64-bit-era football management game inventory art, deliberate square pixel clusters and hard pixel edges, sophisticated densely shaded metallic silver and gold with ivory glints, deep forest shadows, rich material depth. Chunky readable silhouette but carefully observed realistic trophy proportions. No smooth gradients, no simplistic flat icon. Transparent background, no floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-84b9842c-b3a2-484d-a032-76e1f1707fb0.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A DOMESTIC CUP: a silver pear-shaped bowl, two thin curved handles, a domed lid with a small finial, slender stem and dark stepped circular base; a few antique-gold accents. Style/medium: Authentic LOW-RESOLUTION 16-bit RPG / football management inventory SPRITE, designed on a 48x48 grid and enlarged with NEAREST NEIGHBOUR square pixels. Obvious chunky square 1px pixel clusters on the 48px grid. Restricted 12-color palette: warm ivory, 3 silver grays, ochre/gold, dark forest green, muted terracotta and charcoal. Black/dark-green 1px stepped contour, at most 3 flat shade levels per material, tiny isolated square highlights, simple graphic proportions. Edges have clearly visible stair steps. Absolutely NO antialiasing, NO smooth curves, NO photographic metal and NO continuous gradients. The supplied tiny cup glyph is a reference for the square pixel edge language, add restrained sprite colours. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/public/art/pixel/ui/icon-cup.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-dcff7faa-e7b0-4ef3-87f3-58740b2a2116.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-2bc3f20b-31d3-4f01-b4aa-a911ede2eca9.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 237,
+          "y": 78,
+          "width": 781,
+          "height": 1130
+        },
+        "filter": "scale=40:40:force_original_aspect_ratio=decrease:flags=neighbor,format=rgba,lut=a='if(lt(val,128),0,255)',pad=48:48:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "pixel/cup.webp",
-      "width": 336,
-      "height": 336,
-      "bytes": 37844,
-      "sha256": "94b6693719a659377f16574ac87f26f6d2b20b649e3126a57d8568d2c098771b"
+      "width": 48,
+      "height": 48,
+      "bytes": 1526,
+      "sha256": "a9ffcd592663a3f8155184180ebd561887ce0f892463739fbe4c0143494750d1"
     },
     {
       "theme": "pixel",
       "kind": "continental",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a grand European continental champions cup inspired by the MIDDLE trophy in the photograph. Majestic broad smooth polished silver body, famously large high looping handles rising above the bowl at both sides, sturdy short stem, circular silver foot, no lid and no crown. No ribbons, inscription or logos. Style: expertly hand-pixelled 64-bit-era football management game inventory art, deliberate square pixel clusters and hard pixel edges, sophisticated densely shaded metallic silver and gold with ivory glints, deep forest shadows, rich material depth. Chunky readable silhouette but carefully observed realistic trophy proportions. No smooth gradients, no simplistic flat icon. Transparent background, no floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-77cf17d1-5152-4b70-9bab-10cf22956c31.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A CONTINENTAL CHAMPIONS CUP: broad silver bowl with TWO large high loop handles reaching above it, short thick stem and silver round foot, NO lid and NO crown. Style/medium: Authentic LOW-RESOLUTION 16-bit RPG / football management inventory SPRITE, designed on a 48x48 grid and enlarged with NEAREST NEIGHBOUR square pixels. Obvious chunky square 1px pixel clusters on the 48px grid. Restricted 12-color palette: warm ivory, 3 silver grays, ochre/gold, dark forest green, muted terracotta and charcoal. Black/dark-green 1px stepped contour, at most 3 flat shade levels per material, tiny isolated square highlights, simple graphic proportions. Edges have clearly visible stair steps. Absolutely NO antialiasing, NO smooth curves, NO photographic metal and NO continuous gradients. The supplied tiny cup glyph is a reference for the square pixel edge language, add restrained sprite colours. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/public/art/pixel/ui/icon-cup.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-dcff7faa-e7b0-4ef3-87f3-58740b2a2116.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-442971e0-993e-4f9f-9e07-043fc25ea3b9.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 216,
+          "y": 116,
+          "width": 822,
+          "height": 1054
+        },
+        "filter": "scale=40:40:force_original_aspect_ratio=decrease:flags=neighbor,format=rgba,lut=a='if(lt(val,128),0,255)',pad=48:48:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "pixel/continental.webp",
-      "width": 336,
-      "height": 336,
-      "bytes": 44232,
-      "sha256": "5348b3f78e3008059f9cadd7ac18775bbcbaabc67e3b3472a94899ade100e2aa"
+      "width": 48,
+      "height": 48,
+      "bytes": 1658,
+      "sha256": "f512b8eb326122ff28007e1564faaec4820a48bcf27b34d3ef7ffdfff7829e8d"
     },
     {
       "theme": "pixel",
       "kind": "final",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: an authentic football cup-final runners-up medal. A large beautifully crafted round SILVER medal with a raised football and restrained laurel embossing, suspended on a neatly folded muted navy and ivory neck ribbon forming a slender inverted V. Complete ribbon AND medal visible. This is a prestigious runners-up memento, not a gold winner's cup. No letters, numbers or logos. Style: expertly hand-pixelled 64-bit-era football management game inventory art, deliberate square pixel clusters and hard pixel edges, sophisticated densely shaded metallic silver and gold with ivory glints, deep forest shadows, rich material depth. Chunky readable silhouette but carefully observed realistic trophy proportions. No smooth gradients, no simplistic flat icon. Transparent background, no floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-048328b1-b566-4c8d-9276-1227b7211109.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A RUNNER-UP SILVER MEDAL with a simple embossed football and small laurels, hanging below a full narrow inverted-V ribbon in navy and ivory. Entire ribbon and medal visible. Silver rather than gold. Style/medium: Authentic LOW-RESOLUTION 16-bit RPG / football management inventory SPRITE, designed on a 48x48 grid and enlarged with NEAREST NEIGHBOUR square pixels. Obvious chunky square 1px pixel clusters on the 48px grid. Restricted 12-color palette: warm ivory, 3 silver grays, ochre/gold, dark forest green, muted terracotta and charcoal. Black/dark-green 1px stepped contour, at most 3 flat shade levels per material, tiny isolated square highlights, simple graphic proportions. Edges have clearly visible stair steps. Absolutely NO antialiasing, NO smooth curves, NO photographic metal and NO continuous gradients. The supplied tiny cup glyph is a reference for the square pixel edge language, add restrained sprite colours. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/public/art/pixel/ui/icon-cup.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-dcff7faa-e7b0-4ef3-87f3-58740b2a2116.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-9d542e37-5555-46eb-934b-c6f3f8d5d2c8.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 322,
+          "y": 67,
+          "width": 611,
+          "height": 1152
+        },
+        "filter": "scale=40:40:force_original_aspect_ratio=decrease:flags=neighbor,format=rgba,lut=a='if(lt(val,128),0,255)',pad=48:48:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "pixel/final.webp",
-      "width": 336,
-      "height": 336,
-      "bytes": 34218,
-      "sha256": "a4898c2fd5caeed6a5f665fefac7d61c234ffc65a9af28b82c5c071f2aaea130"
+      "width": 48,
+      "height": 48,
+      "bytes": 1470,
+      "sha256": "3d3c33f057f443b06290fad3138e692b943a7a6fb4942b693b8bf5f6a5e2e585"
     },
     {
       "theme": "pixel",
       "kind": "promotion",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a ceremonial football promotion award: an elegant freestanding antique GOLD shield plaque with a raised upward chevron at its centre, football relief beneath it and discreet laurel sprigs framing the shield, mounted on a small dark stepped plinth. Make it look like a crafted physical sporting award. The upward direction must be unambiguous. No cup, letters, numbers or logos. Style: expertly hand-pixelled 64-bit-era football management game inventory art, deliberate square pixel clusters and hard pixel edges, sophisticated densely shaded metallic silver and gold with ivory glints, deep forest shadows, rich material depth. Chunky readable silhouette but carefully observed realistic trophy proportions. No smooth gradients, no simplistic flat icon. Transparent background, no floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-09c50fbd-7461-435e-9c4d-e0ccfbff42cf.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A PROMOTION AWARD: freestanding antique-gold shield on a small dark rectangular plinth, one large unmistakable upward arrow/chevron at center, small football relief and laurel sprigs. Style/medium: Authentic LOW-RESOLUTION 16-bit RPG / football management inventory SPRITE, designed on a 48x48 grid and enlarged with NEAREST NEIGHBOUR square pixels. Obvious chunky square 1px pixel clusters on the 48px grid. Restricted 12-color palette: warm ivory, 3 silver grays, ochre/gold, dark forest green, muted terracotta and charcoal. Black/dark-green 1px stepped contour, at most 3 flat shade levels per material, tiny isolated square highlights, simple graphic proportions. Edges have clearly visible stair steps. Absolutely NO antialiasing, NO smooth curves, NO photographic metal and NO continuous gradients. The supplied tiny cup glyph is a reference for the square pixel edge language, add restrained sprite colours. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/public/art/pixel/ui/icon-cup.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-dcff7faa-e7b0-4ef3-87f3-58740b2a2116.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-99b5cf01-ed09-4733-91bb-6ce9604097e4.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 249,
+          "y": 110,
+          "width": 756,
+          "height": 1097
+        },
+        "filter": "scale=40:40:force_original_aspect_ratio=decrease:flags=neighbor,format=rgba,lut=a='if(lt(val,128),0,255)',pad=48:48:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "pixel/promotion.webp",
-      "width": 336,
-      "height": 336,
-      "bytes": 45264,
-      "sha256": "1c6d93447f8322a0295105e4e85bcd85b7d76cda73a12fc1e64331a3d4b062d5"
+      "width": 48,
+      "height": 48,
+      "bytes": 1664,
+      "sha256": "b403764d4139cfd778c414b8fff1d864da434a91986b01cab369ff75e30862cd"
     },
     {
       "theme": "pixel",
       "kind": "relegation",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a sober club-history relegation commemorative plaque: an authentic freestanding dark pewter shield with restrained reddish copper bevels and an unmistakable raised downward chevron at its centre, mounted on a small dark rectangular plinth. Understated, dignified and historical, no celebratory gold, no cup, letters, numbers or logos. Style: expertly hand-pixelled 64-bit-era football management game inventory art, deliberate square pixel clusters and hard pixel edges, sophisticated densely shaded metallic silver and gold with ivory glints, deep forest shadows, rich material depth. Chunky readable silhouette but carefully observed realistic trophy proportions. No smooth gradients, no simplistic flat icon. Transparent background, no floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-d24f04e2-75d4-4fac-a105-58ae59e64a8a.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A RELEGATION COMMEMORATIVE PLAQUE: freestanding muted charcoal/pewter shield on a dark rectangular plinth, copper accents and one large unmistakable downward arrow/chevron at center. Sober rather than celebratory; no gold. Style/medium: Authentic LOW-RESOLUTION 16-bit RPG / football management inventory SPRITE, designed on a 48x48 grid and enlarged with NEAREST NEIGHBOUR square pixels. Obvious chunky square 1px pixel clusters on the 48px grid. Restricted 12-color palette: warm ivory, 3 silver grays, ochre/gold, dark forest green, muted terracotta and charcoal. Black/dark-green 1px stepped contour, at most 3 flat shade levels per material, tiny isolated square highlights, simple graphic proportions. Edges have clearly visible stair steps. Absolutely NO antialiasing, NO smooth curves, NO photographic metal and NO continuous gradients. The supplied tiny cup glyph is a reference for the square pixel edge language, add restrained sprite colours. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/public/art/pixel/ui/icon-cup.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-dcff7faa-e7b0-4ef3-87f3-58740b2a2116.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-4a5616a8-3666-4131-8177-4b7d3aa55b80.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 268,
+          "y": 105,
+          "width": 719,
+          "height": 1093
+        },
+        "filter": "scale=40:40:force_original_aspect_ratio=decrease:flags=neighbor,format=rgba,lut=a='if(lt(val,128),0,255)',pad=48:48:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "pixel/relegation.webp",
-      "width": 336,
-      "height": 336,
-      "bytes": 41022,
-      "sha256": "9f498fc6a3b7ca4d595f73d1aac12538cbc07a266ce7a753d8ce7381f47a0cce"
+      "width": 48,
+      "height": 48,
+      "bytes": 1554,
+      "sha256": "f375f12d270125e3ae9374035414c3e8a6fa77cf8257aa4859d34930e4e9656c"
     },
     {
       "theme": "pixel",
       "kind": "best",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a beautiful club-best-finish gold football award inspired by a traditional Ballon d'Or: one finely panelled reflective golden association football resting on a rugged crystalline metallic mineral pedestal. Detailed pentagonal and hexagonal seams, compact substantial silhouette, rich honey-gold highlights and a contrasting darker mineral base. No text, inscription or logos. Style: expertly hand-pixelled 64-bit-era football management game inventory art, deliberate square pixel clusters and hard pixel edges, sophisticated densely shaded metallic silver and gold with ivory glints, deep forest shadows, rich material depth. Chunky readable silhouette but carefully observed realistic trophy proportions. No smooth gradients, no simplistic flat icon. Transparent background, no floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-f27c6b3b-9697-4b78-9a44-c8befabc143d.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A CLUB BEST FINISH AWARD: one golden football with clearly drawn pentagon/hexagon panels sitting on a compact dark faceted mineral pedestal. No cup or handles. Style/medium: Authentic LOW-RESOLUTION 16-bit RPG / football management inventory SPRITE, designed on a 48x48 grid and enlarged with NEAREST NEIGHBOUR square pixels. Obvious chunky square 1px pixel clusters on the 48px grid. Restricted 12-color palette: warm ivory, 3 silver grays, ochre/gold, dark forest green, muted terracotta and charcoal. Black/dark-green 1px stepped contour, at most 3 flat shade levels per material, tiny isolated square highlights, simple graphic proportions. Edges have clearly visible stair steps. Absolutely NO antialiasing, NO smooth curves, NO photographic metal and NO continuous gradients. The supplied tiny cup glyph is a reference for the square pixel edge language, add restrained sprite colours. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/public/art/pixel/ui/icon-cup.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-dcff7faa-e7b0-4ef3-87f3-58740b2a2116.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-6fa7c676-de9b-4a80-a24d-c1b70e4d69d2.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 263,
+          "y": 103,
+          "width": 728,
+          "height": 1090
+        },
+        "filter": "scale=40:40:force_original_aspect_ratio=decrease:flags=neighbor,format=rgba,lut=a='if(lt(val,128),0,255)',pad=48:48:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "pixel/best.webp",
-      "width": 336,
-      "height": 336,
-      "bytes": 48220,
-      "sha256": "147a2299ffab58e019b73de6e979cfeebce79575ff902ea2f64f65df5ebacb20"
+      "width": 48,
+      "height": 48,
+      "bytes": 1666,
+      "sha256": "b9e73d740ea40dac9dd52f7bf5bcb6d23092dd537ad92eba7147ac035a7fecbc"
     },
     {
       "theme": "sticker-club",
       "kind": "league",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a magnificent tall domestic league championship cup inspired by the LEFT trophy in the photograph. A burnished gold open crown on top, graceful silver urn body with small gold sculptural details, two upward sweeping handles, tiered circular dark plinth and foot. No ribbons, inscription or logos. Style: premium illustrated football collector sticker, beautifully shaded three-dimensional hand-painted silver and rich honey gold, dark forest ink contour, creamy die-cut paper border following the COMPLETE object silhouette, subtle tactile screenprint grain, lively detailed sporting illustration. Restrained coral and emerald accents when appropriate, no flat geometric clipart, no enclosing rectangle. Transparent outside the cream silhouette border, no floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-aff1a575-fbb1-4842-b71c-135dff849bba.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A tall LEAGUE CHAMPION CUP with a gold crown, silver urn bowl, two upturned handles and a dark stepped circular base. Style/medium: FLAT hand-drawn CARTOON FOOTBALL STICKER matching the cheerful flat icons in the attached interface. Bold thick dark-forest rounded ink contours, simple slightly playful proportions, solid cream/silver gray and honey-gold colour fills, at most ONE hard-edged cel shadow per shape. Cream die-cut paper rim following the entire outer silhouette including handles; transparent OUTSIDE the rim. No glossy metal, no rendered surface, no fine engraving, no airbrushed modeling. Charming 2D illustrated collectible with broad readable shapes at 88px. Use forest green, warm ivory, golden yellow with restrained coral/navy detail. Take only cartoon illustration language from the UI, never its layout/text/background. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award.",
+      "references": ["apps/web/design/home-themes/captures/sticker.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-261243e5-b3e5-4b94-a985-07f380edd678.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 172,
+          "y": 15,
+          "width": 907,
+          "height": 1219
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "sticker-club/league.webp",
       "width": 336,
       "height": 336,
-      "bytes": 38930,
-      "sha256": "c1080d78c29217f53d8291bcdd2e2e2595d9dc3073f74930bf2e6d3ed0684232"
+      "bytes": 25216,
+      "sha256": "3b59db9bf279d0d3d3b4c62730d58b4f7de5730ae678217ecc8a2e884a30984a"
     },
     {
       "theme": "sticker-club",
       "kind": "cup",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: an elegant traditional domestic association-football knockout cup inspired by the RIGHT trophy in the photograph. Ornate silver pear-shaped bowl, slim curving handles, beautifully detailed removable domed lid with small finial, narrow stem and a dark round stepped plinth. Warm antique-gold details, no ribbons, inscription or logos. Style: premium illustrated football collector sticker, beautifully shaded three-dimensional hand-painted silver and rich honey gold, dark forest ink contour, creamy die-cut paper border following the COMPLETE object silhouette, subtle tactile screenprint grain, lively detailed sporting illustration. Restrained coral and emerald accents when appropriate, no flat geometric clipart, no enclosing rectangle. Transparent outside the cream silhouette border, no floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-10d74aeb-5c6c-4f77-acc8-4564185c62f2.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A DOMESTIC CUP: a silver pear-shaped bowl, two thin curved handles, a domed lid with a small finial, slender stem and dark stepped circular base; a few antique-gold accents. Style/medium: FLAT hand-drawn CARTOON FOOTBALL STICKER matching the cheerful flat icons in the attached interface. Bold thick dark-forest rounded ink contours, simple slightly playful proportions, solid cream/silver gray and honey-gold colour fills, at most ONE hard-edged cel shadow per shape. Cream die-cut paper rim following the entire outer silhouette including handles; transparent OUTSIDE the rim. No glossy metal, no rendered surface, no fine engraving, no airbrushed modeling. Charming 2D illustrated collectible with broad readable shapes at 88px. Use forest green, warm ivory, golden yellow with restrained coral/navy detail. Take only cartoon illustration language from the UI, never its layout/text/background. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/design/home-themes/captures/sticker.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-261243e5-b3e5-4b94-a985-07f380edd678.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-642af3e1-6e50-466a-a8c1-8dc57a79f9d1.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 174,
+          "y": 44,
+          "width": 906,
+          "height": 1166
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "sticker-club/cup.webp",
       "width": 336,
       "height": 336,
-      "bytes": 34858,
-      "sha256": "3b383e0e082b3564029eab94e8e123ed3ab5ff0069a90a2d23716e0439ae805a"
+      "bytes": 23746,
+      "sha256": "baf77bb9a6005f33e80b2c48cf19d3682d7e70a326d8b799818cd0620e2abbbe"
     },
     {
       "theme": "sticker-club",
       "kind": "continental",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a grand European continental champions cup inspired by the MIDDLE trophy in the photograph. Majestic broad smooth polished silver body, famously large high looping handles rising above the bowl at both sides, sturdy short stem, circular silver foot, no lid and no crown. No ribbons, inscription or logos. Style: premium illustrated football collector sticker, beautifully shaded three-dimensional hand-painted silver and rich honey gold, dark forest ink contour, creamy die-cut paper border following the COMPLETE object silhouette, subtle tactile screenprint grain, lively detailed sporting illustration. Restrained coral and emerald accents when appropriate, no flat geometric clipart, no enclosing rectangle. Transparent outside the cream silhouette border, no floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-4733ed9f-2250-4e8b-adf9-83d34b87cc08.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A CONTINENTAL CHAMPIONS CUP: broad silver bowl with TWO large high loop handles reaching above it, short thick stem and silver round foot, NO lid and NO crown. Style/medium: FLAT hand-drawn CARTOON FOOTBALL STICKER matching the cheerful flat icons in the attached interface. Bold thick dark-forest rounded ink contours, simple slightly playful proportions, solid cream/silver gray and honey-gold colour fills, at most ONE hard-edged cel shadow per shape. Cream die-cut paper rim following the entire outer silhouette including handles; transparent OUTSIDE the rim. No glossy metal, no rendered surface, no fine engraving, no airbrushed modeling. Charming 2D illustrated collectible with broad readable shapes at 88px. Use forest green, warm ivory, golden yellow with restrained coral/navy detail. Take only cartoon illustration language from the UI, never its layout/text/background. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/design/home-themes/captures/sticker.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-261243e5-b3e5-4b94-a985-07f380edd678.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-4b01fb24-20cf-465c-b593-44f108750827.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 163,
+          "y": 56,
+          "width": 927,
+          "height": 1165
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "sticker-club/continental.webp",
       "width": 336,
       "height": 336,
-      "bytes": 37842,
-      "sha256": "8660bfb51cb9230a93a403c8ced4bd7f33323232cac719da81fe2efab131e2d4"
+      "bytes": 27458,
+      "sha256": "1e5b626133842821099f95323bc002e07bb00df5b6df04853ddf41eedd984a44"
     },
     {
       "theme": "sticker-club",
       "kind": "final",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: an authentic football cup-final runners-up medal. A large beautifully crafted round SILVER medal with a raised football and restrained laurel embossing, suspended on a neatly folded muted navy and ivory neck ribbon forming a slender inverted V. Complete ribbon AND medal visible. This is a prestigious runners-up memento, not a gold winner's cup. No letters, numbers or logos. Style: premium illustrated football collector sticker, beautifully shaded three-dimensional hand-painted silver and rich honey gold, dark forest ink contour, creamy die-cut paper border following the COMPLETE object silhouette, subtle tactile screenprint grain, lively detailed sporting illustration. Restrained coral and emerald accents when appropriate, no flat geometric clipart, no enclosing rectangle. Transparent outside the cream silhouette border, no floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-b109f3d1-681b-4bc6-b126-6a8a055585e1.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A RUNNER-UP SILVER MEDAL with a simple embossed football and small laurels, hanging below a full narrow inverted-V ribbon in navy and ivory. Entire ribbon and medal visible. Silver rather than gold. Style/medium: FLAT hand-drawn CARTOON FOOTBALL STICKER matching the cheerful flat icons in the attached interface. Bold thick dark-forest rounded ink contours, simple slightly playful proportions, solid cream/silver gray and honey-gold colour fills, at most ONE hard-edged cel shadow per shape. Cream die-cut paper rim following the entire outer silhouette including handles; transparent OUTSIDE the rim. No glossy metal, no rendered surface, no fine engraving, no airbrushed modeling. Charming 2D illustrated collectible with broad readable shapes at 88px. Use forest green, warm ivory, golden yellow with restrained coral/navy detail. Take only cartoon illustration language from the UI, never its layout/text/background. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/design/home-themes/captures/sticker.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-261243e5-b3e5-4b94-a985-07f380edd678.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-922bf88f-1845-4636-81b9-43ce1c0ae2dc.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 277,
+          "y": 74,
+          "width": 700,
+          "height": 1118
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "sticker-club/final.webp",
       "width": 336,
       "height": 336,
-      "bytes": 32450,
-      "sha256": "5410ce6f0a5a6b76a52eef8c0e2d4eac9065cf974ce104053d0a5b9845cbd8db"
+      "bytes": 23134,
+      "sha256": "0275e61e48bbd49d709aa687991587bf7e65e5ae819c6bf0fa999092eb370115"
     },
     {
       "theme": "sticker-club",
       "kind": "promotion",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a ceremonial football promotion award: an elegant freestanding antique GOLD shield plaque with a raised upward chevron at its centre, football relief beneath it and discreet laurel sprigs framing the shield, mounted on a small dark stepped plinth. Make it look like a crafted physical sporting award. The upward direction must be unambiguous. No cup, letters, numbers or logos. Style: premium illustrated football collector sticker, beautifully shaded three-dimensional hand-painted silver and rich honey gold, dark forest ink contour, creamy die-cut paper border following the COMPLETE object silhouette, subtle tactile screenprint grain, lively detailed sporting illustration. Restrained coral and emerald accents when appropriate, no flat geometric clipart, no enclosing rectangle. Transparent outside the cream silhouette border, no floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-efbfd414-5e88-4f37-9e50-170a13f88364.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A PROMOTION AWARD: freestanding antique-gold shield on a small dark rectangular plinth, one large unmistakable upward arrow/chevron at center, small football relief and laurel sprigs. Style/medium: FLAT hand-drawn CARTOON FOOTBALL STICKER matching the cheerful flat icons in the attached interface. Bold thick dark-forest rounded ink contours, simple slightly playful proportions, solid cream/silver gray and honey-gold colour fills, at most ONE hard-edged cel shadow per shape. Cream die-cut paper rim following the entire outer silhouette including handles; transparent OUTSIDE the rim. No glossy metal, no rendered surface, no fine engraving, no airbrushed modeling. Charming 2D illustrated collectible with broad readable shapes at 88px. Use forest green, warm ivory, golden yellow with restrained coral/navy detail. Take only cartoon illustration language from the UI, never its layout/text/background. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/design/home-themes/captures/sticker.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-261243e5-b3e5-4b94-a985-07f380edd678.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-4ca8a6b1-6f79-4c44-bc5d-34559f56a190.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 215,
+          "y": 63,
+          "width": 824,
+          "height": 1134
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "sticker-club/promotion.webp",
       "width": 336,
       "height": 336,
-      "bytes": 39946,
-      "sha256": "98a559f245c1e8ff9d8f4c0b2f52b5f28876d179cb2b1142d03c8e193869729f"
+      "bytes": 28018,
+      "sha256": "af22eeb84d02177d95a825bd7ce38efc285f4416a989a44adec8298911f71e55"
     },
     {
       "theme": "sticker-club",
       "kind": "relegation",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a sober club-history relegation commemorative plaque: an authentic freestanding dark pewter shield with restrained reddish copper bevels and an unmistakable raised downward chevron at its centre, mounted on a small dark rectangular plinth. Understated, dignified and historical, no celebratory gold, no cup, letters, numbers or logos. Style: premium illustrated football collector sticker, beautifully shaded three-dimensional hand-painted silver and rich honey gold, dark forest ink contour, creamy die-cut paper border following the COMPLETE object silhouette, subtle tactile screenprint grain, lively detailed sporting illustration. Restrained coral and emerald accents when appropriate, no flat geometric clipart, no enclosing rectangle. Transparent outside the cream silhouette border, no floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-5fa9a0d1-62f2-4e88-93c0-6e14df12ee7e.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A RELEGATION COMMEMORATIVE PLAQUE: freestanding muted charcoal/pewter shield on a dark rectangular plinth, copper accents and one large unmistakable downward arrow/chevron at center. Sober rather than celebratory; no gold. Style/medium: FLAT hand-drawn CARTOON FOOTBALL STICKER matching the cheerful flat icons in the attached interface. Bold thick dark-forest rounded ink contours, simple slightly playful proportions, solid cream/silver gray and honey-gold colour fills, at most ONE hard-edged cel shadow per shape. Cream die-cut paper rim following the entire outer silhouette including handles; transparent OUTSIDE the rim. No glossy metal, no rendered surface, no fine engraving, no airbrushed modeling. Charming 2D illustrated collectible with broad readable shapes at 88px. Use forest green, warm ivory, golden yellow with restrained coral/navy detail. Take only cartoon illustration language from the UI, never its layout/text/background. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/design/home-themes/captures/sticker.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-261243e5-b3e5-4b94-a985-07f380edd678.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-09f06706-b65d-4e08-9c78-23e031b45421.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 139,
+          "y": 57,
+          "width": 976,
+          "height": 1155
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "sticker-club/relegation.webp",
       "width": 336,
       "height": 336,
-      "bytes": 38904,
-      "sha256": "174eaae50f6c92a4236fe86d3292cd15c10e03d264270b2819186879f77650e7"
+      "bytes": 28684,
+      "sha256": "30179dd9b70381542af2ea3a660fa62ffb8efa7109737686d8503b63d6a00f31"
     },
     {
       "theme": "sticker-club",
       "kind": "best",
-      "prompt": "Use case: product-mockup. Asset: ONE premium football trophy cutout for a club-history game's trophy cabinet, square canvas, genuinely transparent alpha background. Use the provided real-cups photograph ONLY as a reference for authentic silversmithing, cup proportions, handles and recognisable trophy silhouettes. Do not reproduce the photo, stadium, logos or text. Show exactly ONE complete physical award, near-frontal view with slight depth, centred, occupying about 86% of canvas height, all handles/lid/base visible, generous clear margin on all sides. Beautifully observed materials, crisp readable silhouette at 112px, sophisticated highly crafted collectible quality, no UI. No letters, numbers, logos, text, watermark, confetti, surrounding objects or fake checkerboard. Subject: a beautiful club-best-finish gold football award inspired by a traditional Ballon d'Or: one finely panelled reflective golden association football resting on a rugged crystalline metallic mineral pedestal. Detailed pentagonal and hexagonal seams, compact substantial silhouette, rich honey-gold highlights and a contrasting darker mineral base. No text, inscription or logos. Style: premium illustrated football collector sticker, beautifully shaded three-dimensional hand-painted silver and rich honey gold, dark forest ink contour, creamy die-cut paper border following the COMPLETE object silhouette, subtle tactile screenprint grain, lively detailed sporting illustration. Restrained coral and emerald accents when appropriate, no flat geometric clipart, no enclosing rectangle. Transparent outside the cream silhouette border, no floor.",
-      "source": "/Users/ihaelam/.codex/generated_images/01a178ed-2de8-7c30-bda4-7026a136d6f4/exec-822ad313-6943-41e3-b643-3ca1270f6d89.png",
+      "prompt": "Use case: illustration-story. Asset: ONE isolated football honour icon for a themed game's trophy cabinet. REPLACE the photographic look with a clearly drawn illustration. Square transparent canvas. Exactly one award, centered front view, entire silhouette including handles/crown/base visible with at least 8% clear margins on ALL sides, occupying roughly 80% of canvas height. A strong silhouette readable at 88px. Subject: A CLUB BEST FINISH AWARD: one golden football with clearly drawn pentagon/hexagon panels sitting on a compact dark faceted mineral pedestal. No cup or handles. Style/medium: FLAT hand-drawn CARTOON FOOTBALL STICKER matching the cheerful flat icons in the attached interface. Bold thick dark-forest rounded ink contours, simple slightly playful proportions, solid cream/silver gray and honey-gold colour fills, at most ONE hard-edged cel shadow per shape. Cream die-cut paper rim following the entire outer silhouette including handles; transparent OUTSIDE the rim. No glossy metal, no rendered surface, no fine engraving, no airbrushed modeling. Charming 2D illustrated collectible with broad readable shapes at 88px. Use forest green, warm ivory, golden yellow with restrained coral/navy detail. Take only cartoon illustration language from the UI, never its layout/text/background. Genuinely transparent alpha background. No lettering, logos, numbers, watermarks, scene, floor, cast shadow, background panel, enclosing card or fake checkerboard. No photograph, photorealism, chrome rendering, studio lighting, 3D render, ray tracing, lens glints or complex realistic reflections. Keep the meaning and overall silhouette of this award. Input image 1 is the existing theme UI/style reference. Input image 2 is the approved illustrated league cup: match its ink weight, colour palette and degree of simplification for this set. Draw ONLY the award specified in Subject; do not copy the league cup's crown or handles onto a different award.",
+      "references": [
+        "apps/web/design/home-themes/captures/sticker.png",
+        "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-261243e5-b3e5-4b94-a985-07f380edd678.png"
+      ],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-bcc0cf48-57a4-43f1-9e00-ea8743ab050a.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 234,
+          "y": 78,
+          "width": 786,
+          "height": 1127
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
       "file": "sticker-club/best.webp",
       "width": 336,
       "height": 336,
-      "bytes": 44534,
-      "sha256": "84778443a01ac687b05019ebf7e1e44081a95174a4908b9b597d0002bd199796"
+      "bytes": 26238,
+      "sha256": "b6201eabfda19401336b4dcc097ff5f1aae4e4df69a9429b149e1d3567db50c5"
     }
   ]
 }
