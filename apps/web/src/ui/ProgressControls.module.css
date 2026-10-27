@@ -179,35 +179,6 @@
   letter-spacing: 0.5px;
   line-height: 1.5;
 }
-/* Away from home the match-day moment (→WEB-18) plays in the rest of the mode group, one line tall. */
-.momentSlot {
-  position: relative;
-  flex: 1;
-  min-width: 0;
-  height: 18px;
-  overflow: hidden;
-}
-.momentBall {
-  position: absolute;
-  top: 3px;
-  left: 0;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: moment-roll 1200ms ease-in-out infinite alternate;
-}
-@keyframes moment-roll {
-  to {
-    left: calc(100% - 12px);
-    transform: rotate(360deg);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .momentBall {
-    animation: none;
-  }
-}
 /* The result notice floats above the bar, so nothing in it moves. */
 .resultNotice {
   position: absolute;

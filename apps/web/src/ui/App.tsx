@@ -446,23 +446,10 @@ const ConnectedFounding = memo(function ConnectedFounding({
     />
   );
 });
-const ConnectedDashboard = memo(function ConnectedDashboard({
-  client,
-  controller,
-}: {
-  client: GameClient;
-  controller: ProgressionController;
-}) {
+const ConnectedDashboard = memo(function ConnectedDashboard({ client }: { client: GameClient }) {
   const state = useContentState();
   const w = state.view!.world;
-  return (
-    <ClubHub
-      w={w}
-      client={client}
-      controller={controller}
-      journal={<ClubJournal state={state} />}
-    />
-  );
+  return <ClubHub w={w} client={client} journal={<ClubJournal state={state} />} />;
 });
 const ConnectedEurope = memo(function ConnectedEurope({ client }: { client: GameClient }) {
   const state = useContentState();
@@ -1180,7 +1167,7 @@ export function App() {
                 <div className={s.views} inert={changingView} aria-busy={changingView}>
                   {!office && <TaskReturn />}
                   <div className={s.coreContent} hidden={contentPage !== 'dashboard'}>
-                    <ConnectedDashboard client={client} controller={controller} />
+                    <ConnectedDashboard client={client} />
                   </div>
                   <LiveSeason
                     key={worldId}
@@ -1203,11 +1190,7 @@ export function App() {
           {client && screen === 'game' && (!w || replacing) && <StartTools onImport={importFile} />}
         </div>
         {client && controller && playing && !w.bankrupt && page !== 'match' && !office && (
-          <ProgressControls
-            client={client}
-            controller={controller}
-            homeVisible={page === 'dashboard'}
-          />
+          <ProgressControls client={client} controller={controller} />
         )}
       </main>
       {playing && <AccessibleSaveStatus />}

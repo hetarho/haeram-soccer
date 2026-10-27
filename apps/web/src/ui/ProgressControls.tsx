@@ -82,15 +82,12 @@ export const ProgressOverview = memo(function ProgressOverview({
 export const ProgressControls = memo(function ProgressControls({
   client,
   controller,
-  homeVisible = false,
 }: {
   client: GameClient;
   controller: ProgressionController;
-  /** Home's NEXT MATCH card is on screen and shows the match-day moment itself. */
-  homeVisible?: boolean;
 }) {
   const state = useGameState((state) => state);
-  const { running, pace, matchMoment, resultNotice } = useProgression(controller, (state) => state);
+  const { running, pace, resultNotice } = useProgression(controller, (state) => state);
   const [report, setReport] = useState<string>();
   // When the clock stops itself (e.g. at a match eve) the toggle flips from stop to start; a
   // click landing just after that was aimed at the old label, so it must not start the clock.
@@ -157,7 +154,6 @@ export const ProgressControls = memo(function ProgressControls({
   );
   // Progression stays local to this row; global news lives in the HUD.
   const progress = Math.round((currentDay(w) / Math.max(1, seasonLength(w))) * 1000) / 10;
-  const moment = !manual && matchMoment !== undefined && !homeVisible;
   const noticed = resultNotice && w.ownMatches.find((m) => m.id === resultNotice.matchId);
   const opened = report !== undefined ? w.ownMatches.find((m) => m.id === report) : undefined;
   const name = (id: string) => w.clubs.find((club) => club.id === id)?.name ?? id;
@@ -173,17 +169,6 @@ export const ProgressControls = memo(function ProgressControls({
         >
           {manual ? 'MANUAL' : 'AUTO'}
         </span>
-        {/* Reserved slot: away from home the match-day moment plays here without moving anything. */}
-        {!manual && (
-          <span
-            className={p.momentSlot}
-            data-testid="match-moment"
-            data-state={moment ? 'on' : 'off'}
-            aria-hidden="true"
-          >
-            {moment && <i className={p.momentBall} />}
-          </span>
-        )}
       </div>
       {noticed && (
         <button
