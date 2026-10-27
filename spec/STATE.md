@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | n3w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T12:15Z | 2026-10-27T12:15Z | - |
+| g8u6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T16:41Z | 2026-10-27T16:41Z | - |
 
 ## inbox
 - 261028 decided T531 WEB-100 WEB-74: how to keep request identity through submission and browser history → world-named request addresses and session snapshots, with a scoped client forwarding the existing forms/commands (alt: consume a one-shot request only | copy each form into the office); history can revisit resolved work safely, late replies cannot redirect another request/game, and business rules stay authoritative.
@@ -373,6 +374,8 @@
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | doing@261027.n3w8 |
 | T532 | Season and History competition hubs | WEB ARCH | T531 | todo |
 | T533 | First-team, academy and coaching navigation | WEB ARCH | T532 | todo |
+| T530 | Work-based owner office and shared approval controls | WEB ARCH | - | doing@261028.g8u6 |
+| T531 | Home approval requests visit their working desk | WEB ARCH | T530 | doing@261028.g8u6 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -393,6 +396,7 @@
 ## next
 - implement-task T532 (then T533): requested gameplay hierarchy; preserve the integrated automatic-play work.
 - n3w8 (work auto-play-2): T516–T521, T524, T525 on main after the group gate passed on 2573791c (typecheck, lint, format, unit, integration, contract, catalogs, presentation, build, Chromium); explore T522 (automatic play read in the built game, `pnpm exec tsx scripts/automatic-play-read.mjs`) runs next in the main session on a quiet machine.
+- g8u6 owns T530–T533: requested gameplay hierarchy; completed code collected locally, final batch and main push after the whole slice.
 
 ## log
 - 261028 sync origin/main: preserve automatic-play r162/r163 and serialize the gameplay redesign as WEB r164; T530/T531 remain complete.
@@ -401,6 +405,7 @@
 - 261028 create-task WEB r162: T530–T533 serial UI chain; existing performance tasks remain outside this requested slice.
 - 261028 update-ssot WEB r162 done: work desks, shared inline approval, request round trips and audience-based navigation.
 - 261028 update-ssot WEB start: business desks, approval round trips, season/history and personnel navigation.
+- 261028 share WEB r164/T530–T533 planning and reserve the gameplay hierarchy implementation for g8u6.
 - 261027 T523 done (n3w8): main CI fix after T504 — chart tabs readable on their new surfaces, mediation choice inputs skip the 20 px skin, pitch/facility specs follow the framed header and responsive art; 3 Chromium spec files 25/25
 - 261027 merge publication: preserved remote WEB r159 (transfer records/heat maps); local resource skins r159→r160 and play-pace r160→r161, decision content unchanged; p9a4 task bases keep their recorded content and can refresh on next sync
 - 261027 ideation play-pace-and-owner-surfaces converted: owner dropped the action / standing choice / dashboard split and home ordering; automatic play scope fully in WEB r160, SAVE r55, ARCH r24
@@ -412,6 +417,5 @@
 - 261027 create-task WEB r159 → T504; implementation started (r6u2)
 - 261027 update-ssot WEB start (r6u2): portable resource skins and asset delivery audit
 - 261027 T495 done: 32 competition-specific trophy variants across four themes, country-aware cabinet selection and safe fallback; unit/integration/contract and all 299 Chromium journeys passed, with unchanged-timeout recovery for load-related tests.
-- 261027 T494 done: redrew all 21 print/pixel/sticker trophies in their theme's illustration style; preserved the seven standard photographs; asset integrity and task checks passed.
 - 261027 u3b8 closed: T500–T503 batch gate passed on f25cae1a (unit 1171, integration 1158 after a quiet-host rerun of 3 load timeouts, contract 39, catalogs, presentation, build, Chromium 299/299), pushed to main
 - 261027 T503 done: competition keys, Elo reads, request label and empty table moved to leaves; UI exception list 43→38 files
