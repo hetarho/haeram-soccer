@@ -190,6 +190,10 @@ export class ProgressionController {
   private unsubscribe: () => void;
   private unsubscribeClock: () => void;
   private inFlight = false;
+  /** The day the shown clock is computing ahead and its handling, which a read waits for. */
+  private computing?: Promise<void>;
+  /** Reads outside the command queue still unanswered: nothing is computed ahead meanwhile. */
+  private reads = 0;
   /** The pace interval of the day being computed, which a pace change can shorten. */
   private sending?: { ms: number };
   /** Days computed ahead of the shown date, oldest first, as the client holds them. */
@@ -239,6 +243,7 @@ export class ProgressionController {
     const initial = gameStore.getSnapshot().view?.world;
     this.mode = initial ? settingsOf(initial).mode : undefined;
     this.armed = this.worldId ? this.recordToResume(this.worldId) : undefined;
+    this.client.readGate = () => this.beforeRead();
     this.unsubscribeClock = this.store.subscribe((state, previous) => {
       if (state.running !== previous.running) this.lock();
     });
@@ -566,6 +571,35 @@ export class ProgressionController {
     this.start();
   }
   /**
+   * A read the engine answers outside the command queue answers from its newest computed day: a
+   * shown clock first shows at once every day computed ahead, a step in flight once it lands, and
+   * computes nothing ahead until the read is answered; a running clock keeps running (→WEB-18).
+   * Stopped, hidden or in manual mode the shown date is the engine's and the read goes at once.
+   */
+  private beforeRead() {
+    if (this.disposed || this.hidden || (!this.store.getState().running && !this.draining))
+      return undefined;
+    this.reads++;
+    let open = true;
+    const settled = () => {
+      if (!open) return;
+      open = false;
+      this.reads--;
+      if (!this.reads && !this.hidden && this.store.getState().running) this.wake();
+    };
+    // A read posted behind a step is answered after it, so the step lands and is shown first.
+    if (!this.computing) {
+      this.showAhead();
+      return { settled };
+    }
+    return { ready: this.computing.then(() => this.showAhead()), settled };
+  }
+  /** Shows every computed day at once; the owner's stop ends there and saves (→SAVE-8). */
+  private showAhead() {
+    this.flush();
+    this.drained();
+  }
+  /**
    * The owner's own stop: nothing resumes it until the owner starts it again. The days computed
    * ahead are shown at the pace first, and management stays locked until they are; the stop's save
    * follows the last of them (→WEB-18/97, SAVE-8). `leaving` play (the slot screen) shows them at
@@ -741,13 +775,15 @@ export class ProgressionController {
   }
   /**
    * Computes the next day while fewer than the pace's run-ahead days wait to be shown, never past
-   * one that stops the clock (→WEB-18). Without days held ahead it is computed once it is due.
+   * one that stops the clock or while a read is unanswered (→WEB-18). Without days held ahead it is
+   * computed once it is due.
    */
   private compute() {
     const state = gameStore.getSnapshot(),
       shown = state.view?.world,
       last = this.ahead.at(-1);
-    if (this.inFlight || state.processing || !shown || state.readonly || state.error) return;
+    if (this.inFlight || this.reads || state.processing || !shown || state.readonly || state.error)
+      return;
     if (last?.stops) return;
     const head = last?.after ?? shown;
     if (head.critical || head.bankrupt) return;
@@ -755,7 +791,10 @@ export class ProgressionController {
     if (this.ahead.length >= Math.max(depth, Date.now() >= this.due! ? 1 : 0)) return;
     // The day on screen may itself stop the clock: a start on a match eve.
     if (!last && this.eveStop(head)) return;
-    void this.step(head);
+    const computing = this.step(head).finally(() => {
+      if (this.computing === computing) this.computing = undefined;
+    });
+    this.computing = computing;
   }
   /** One day computed ahead; it is shown on its turn. */
   private async step(before: World) {
@@ -961,6 +1000,7 @@ export class ProgressionController {
     this.unsubscribe();
     this.unsubscribeClock();
     this.suspensionSources.clear();
+    this.client.readGate = undefined;
   }
 }
 export function useProgression<T>(

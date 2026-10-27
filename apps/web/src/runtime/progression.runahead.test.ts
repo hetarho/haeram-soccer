@@ -36,10 +36,20 @@ const ONE_DAY_AT_A_TIME: Record<Pace, number> = { x1: 0, x2: 0, x5: 0, x10: 0 };
  */
 const measured = (day: number) => (day % 7 === 0 ? 400 : day % 7 === 4 ? 120 : 25);
 
+/** A read the fake worker was sent, with where the worker and the screen stood when it went. */
+interface Posted {
+  body: Body;
+  head: number;
+  showing: number;
+  held: number;
+  answer(reply: Reply): void;
+  fail(error: Error): void;
+}
 /**
  * A fake engine worker behind the client's hold-and-reveal: one step at a time, each taking the
  * time `stepMs` gives its days; automatic days are held until revealed, and every day shown is
- * recorded with when it was shown.
+ * recorded with when it was shown. The client's reads go through its own gate and are recorded
+ * as they are posted, waiting for the test's answer.
  */
 function worker(
   template: World,
@@ -50,6 +60,8 @@ function worker(
   let day = currentDay(template);
   const held: View[] = [];
   const shown: { day: number; at: number }[] = [];
+  const reads: Posted[] = [];
+  const showing = () => currentDay(gameStore.getSnapshot().view!.world as World);
   const command = vi.fn(async (cmd: Command, options: { automatic?: boolean } = {}) => {
     const days = cmd.type === 'advance-days' ? cmd.days : 0;
     let ms = 0;
@@ -62,7 +74,7 @@ function worker(
     return { ok: true, requestId: `day-${day}`, view };
   });
   const saveSoon = vi.fn();
-  const client = {
+  const client = Object.assign(Object.create(GameClient.prototype), {
     command,
     reveal(all = false) {
       const out = held.splice(0, all ? held.length : 1);
@@ -74,7 +86,12 @@ function worker(
     cancel: vi.fn(),
     saveSoon,
     setClockRunning: (clockRunning: boolean) => gameStore.setState({ clockRunning }),
-  } as unknown as GameClient;
+    rpc: (body: Body) =>
+      new Promise<Reply>((answer, fail) =>
+        reads.push({ body, head: day, showing: showing(), held: held.length, answer, fail }),
+      ),
+  }) as GameClient;
+  Object.defineProperty(client, 'state', { get: () => gameStore.getSnapshot() });
   gameStore.publish({
     ...initialClientState,
     busy: false,
@@ -90,10 +107,11 @@ function worker(
     saveSoon,
     held,
     shown,
+    reads,
     /** The day the worker stands on. */
     head: () => day,
     /** The day on screen. */
-    showing: () => currentDay(gameStore.getSnapshot().view!.world as World),
+    showing,
     days: () => (command.mock.calls as unknown as [{ days: number }][]).map(([c]) => c.days),
   };
 }
@@ -450,6 +468,139 @@ describe('pace changes while days are held (WEB-18)', () => {
     const held = fake.shown.slice(shownBefore, shownBefore + RUN_AHEAD_DAYS.x1);
     expect(held.map((s) => s.at - changedAt)).toEqual([0, 100, 200]);
     expect(consecutive(fake, 0)).toBe(true);
+  });
+});
+
+describe('reads outside the command queue wait for the shown date (WEB-18)', () => {
+  const record = {} as NonNullable<Reply['headToHead']>;
+  const answered = { ok: true, requestId: 'read', headToHead: record } as Reply;
+
+  it('with days held a head-to-head read shows them at once before it is posted', async () => {
+    const fake = worker(quiet());
+    const controller = clock(fake);
+    controller.setPace('x10');
+    controller.start();
+    await vi.advanceTimersByTimeAsync(350);
+    expect(fake.held).toHaveLength(RUN_AHEAD_DAYS.x10);
+    const sent = fake.command.mock.calls.length;
+    const read = fake.client.headToHead('rival');
+    // Nothing was in flight: every held day is shown at once and the read goes from that day.
+    expect(fake.reads).toMatchObject([
+      { body: { type: 'head-to-head', club: 'rival' }, head: 10, showing: 10, held: 0 },
+    ]);
+    expect(new Set(fake.shown.slice(3).map((s) => s.at)).size).toBe(1);
+    // The clock keeps running and management stays locked, but nothing is computed until it is
+    // answered.
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(running(controller)).toBe(true);
+    expect(locked()).toBe(true);
+    expect(fake.command.mock.calls.length).toBe(sent);
+    expect(fake.showing()).toBe(10);
+    fake.reads[0].answer(answered);
+    await expect(read).resolves.toBe(record);
+    // Then the run carries on from the shown day, computing ahead again.
+    await vi.advanceTimersByTimeAsync(PACE_MS.x10 * 3);
+    expect(fake.command.mock.calls.length).toBeGreaterThan(sent);
+    expect(fake.held.length).toBeGreaterThan(0);
+    expect(fake.shown.length).toBeGreaterThan(10);
+    expect(consecutive(fake, 0)).toBe(true);
+  });
+
+  it('a read started during a step in flight goes once that step is shown; an error resumes the run', async () => {
+    const fake = worker(quiet());
+    const controller = clock(fake);
+    controller.setPace('x10');
+    controller.start();
+    // At 0.31 s three days are shown, six held and the tenth is being computed.
+    await vi.advanceTimersByTimeAsync(310);
+    expect(fake.held).toHaveLength(6);
+    const outcome = fake.client.headToHead('rival').catch((error: Error) => error.message);
+    expect(fake.reads).toHaveLength(0);
+    // The worker would answer it after the step, so the step lands and is shown first.
+    await vi.advanceTimersByTimeAsync(10);
+    expect(fake.reads).toMatchObject([{ head: 10, showing: 10, held: 0 }]);
+    const sent = fake.command.mock.calls.length;
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(fake.command.mock.calls.length).toBe(sent);
+    fake.reads[0].fail(new Error('worker'));
+    expect(await outcome).toBe('worker');
+    await vi.advanceTimersByTimeAsync(PACE_MS.x10 * 3);
+    expect(fake.command.mock.calls.length).toBeGreaterThan(sent);
+    expect(running(controller)).toBe(true);
+    expect(consecutive(fake, 0)).toBe(true);
+  });
+
+  it('a read with nothing held goes at once and changes nothing', async () => {
+    const fake = worker(quiet());
+    const controller = clock(fake);
+    // A stopped clock.
+    const read = fake.client.headToHead('rival');
+    expect(fake.reads).toMatchObject([{ head: 0, showing: 0, held: 0 }]);
+    fake.reads[0].answer(answered);
+    await read;
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(fake.command).not.toHaveBeenCalled();
+    expect(fake.shown).toEqual([]);
+    expect(running(controller)).toBe(false);
+    expect(locked()).toBe(false);
+    // A hidden tab shows each step as it lands.
+    controller.setPace('x10');
+    controller.start();
+    await vi.advanceTimersByTimeAsync(350);
+    controller.setHidden(true);
+    const shown = fake.shown.length;
+    const hidden = fake.client.headToHead('rival');
+    expect(fake.reads[1]).toMatchObject({ head: fake.head(), showing: fake.head(), held: 0 });
+    expect(fake.shown).toHaveLength(shown);
+    fake.reads[1].answer(answered);
+    await hidden;
+    expect(running(controller)).toBe(true);
+  });
+
+  it("a read while the owner's stop still shows the held days shows them at once, then unlocks and saves", async () => {
+    const fake = worker(quiet());
+    const controller = clock(fake);
+    controller.setPace('x10');
+    controller.start();
+    await vi.advanceTimersByTimeAsync(350);
+    controller.pause();
+    expect(locked()).toBe(true);
+    const sent = fake.command.mock.calls.length;
+    const read = fake.client.clubRecords();
+    expect(fake.reads).toMatchObject([{ body: { type: 'club-records' }, head: 10, showing: 10 }]);
+    expect(locked()).toBe(false);
+    // The stop's save holds the date it stopped on (→SAVE-8).
+    expect(fake.saveSoon).toHaveBeenCalledOnce();
+    fake.reads[0].answer({ ok: true, requestId: 'read', clubRecords: {} } as Reply);
+    await read;
+    await vi.advanceTimersByTimeAsync(2000);
+    expect(running(controller)).toBe(false);
+    expect(fake.command.mock.calls.length).toBe(sent);
+    expect(consecutive(fake, 0)).toBe(true);
+  });
+
+  it.each<[Body['type'], (client: GameClient) => Promise<unknown>]>([
+    ['archive', (c) => c.archive(base.year)],
+    ['recruitment-history', (c) => c.recruitmentHistory()],
+    ['mediation-preview', (c) => c.mediationPreview('case', 'balanced')],
+    ['person-career', (c) => c.personCareer('person')],
+    ['head-to-head', (c) => c.headToHead('rival')],
+    ['club-records', (c) => c.clubRecords()],
+    ['manager-history', (c) => c.managerHistory()],
+    ['league-fixtures', (c) => c.leagueFixtures({ code: 'GER', tier: 0, group: 0 })],
+    ['full-stats', (c) => c.fullStats({ kind: 'league', groupKey: 'ENG:0:0' })],
+  ])('the %s read goes only once the held days are shown', async (type, read) => {
+    const fake = worker(quiet());
+    const controller = clock(fake);
+    controller.setPace('x10');
+    controller.start();
+    await vi.advanceTimersByTimeAsync(350);
+    expect(fake.held).toHaveLength(RUN_AHEAD_DAYS.x10);
+    const outcome = read(fake.client).catch(() => undefined);
+    expect(fake.reads).toMatchObject([{ body: { type }, head: 10, showing: 10, held: 0 }]);
+    fake.reads[0].fail(new Error('answered'));
+    await outcome;
+    expect(running(controller)).toBe(true);
   });
 });
 
