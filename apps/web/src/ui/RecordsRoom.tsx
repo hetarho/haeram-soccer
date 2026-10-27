@@ -22,6 +22,7 @@ import { Pitch } from './Pitch';
 import { PlayerLink } from './PlayerSheet';
 import { archivePlayback } from './replay';
 import { SeasonAnalysis } from './SeasonAnalysis';
+import { TransferRecords } from './TransferRecords';
 import { Segments } from './Segments';
 import { Select } from './Select';
 import {
@@ -260,6 +261,8 @@ export function RecordsRoom({ state, client }: Props) {
           <ClubTrends w={w} />
         ) : tab === 'players' ? (
           <ClubLeaders w={w} />
+        ) : tab === 'transfers' ? (
+          <TransferRecords w={w} ledger={state.view!.transferLedger ?? []} />
         ) : (
           <>
             <ManagerRecords

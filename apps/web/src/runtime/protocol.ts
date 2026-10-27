@@ -31,6 +31,7 @@ import type { ManagerHistoryPage } from '../../../../packages/contracts/src/mana
 import type { clubMilestones } from '../../../../packages/engine/src/goals';
 import type { financialBreakdown } from '../../../../packages/engine/src/finance';
 import type { NewsItem } from '../../../../packages/engine/src/news';
+import type { TransferLedgerEntry } from '../../../../packages/engine/src/transfer-records';
 import type { ClubRecords } from './clubRecords';
 import type { HeadToHead } from './headToHead';
 import type { Tallies } from './playerTallies';
@@ -313,6 +314,11 @@ export interface View {
    * room reads the history again on it, never on the date alone (→HIST-18, WEB-92).
    */
   managerHistoryKey?: string;
+  /**
+   * The older career's fee ledger entries (→HIST-20), which the projected world's recent events
+   * cannot rank; absent from views made before it.
+   */
+  transferLedger?: TransferLedgerEntry[];
 }
 /**
  * Published views each side keeps, so a reply can still name the base a client holds after a

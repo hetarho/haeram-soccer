@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-27T10:20:16.074Z",
-  "sourceCommit": "f73b511bc80227cfac46df01c79a379241212c58",
+  "snapshotAt": "2026-10-27T11:34:29.863Z",
+  "sourceCommit": "7f2f9c1da87b62d75801e7d49d3942cdb1dde0a1",
   "group": {
     "id": "auto-play",
     "branch": "work/auto-play",
@@ -13,7 +13,7 @@
       "maxPending": 8
     },
     "review": "risky",
-    "runner": {
+    "lastRun": {
       "id": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
       "adapter": "builtin",
       "providers": {
@@ -36,45 +36,14 @@
         }
       ],
       "startedAt": "2026-10-27T10:17:31.545Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "54a1ff18-63d2-4485-a2e9-50f3c641f93c",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-10-27T09:57:54.659Z",
-      "stoppedAt": "2026-10-27T10:02:58.557Z",
-      "dispatched": 2,
+      "stoppedAt": "2026-10-27T11:33:19.646Z",
+      "dispatched": 4,
       "outcome": "needs-attention",
       "failures": [
         {
-          "attempt": "672228cf-83d5-4347-b656-a4a1fdb2c90b",
-          "role": "worker",
-          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
-        },
-        {
-          "attempt": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
-          "submissionId": "083c37a0-085e-4e59-8b56-f4ede185d8c5",
-          "commit": "9adc690889a9b40879c59db4692678c351bb93c4",
+          "attempt": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+          "submissionId": "61a029a6-916b-416e-b78f-e9a9bc5ac697",
+          "commit": "fe75453e6cd2ba7a481a7188a57cc15fdb0b4ed6",
           "role": "integration",
           "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
         }
@@ -85,20 +54,14 @@
   },
   "summary": {
     "total": 7,
-    "completed": 3,
-    "remaining": 4,
+    "completed": 4,
+    "remaining": 3,
     "running": 0,
     "review": 1,
     "blocked": 0,
-    "unassigned": 3
+    "unassigned": 2
   },
   "tasks": [
-    {
-      "id": "T516",
-      "title": "Automatic play without the match-day moment",
-      "dep": [],
-      "status": "ready"
-    },
     {
       "id": "T519",
       "title": "Helper workers for an own match day's other fixtures",
@@ -106,7 +69,7 @@
         "T518",
         "T520"
       ],
-      "status": "todo"
+      "status": "approved"
     },
     {
       "id": "T521",
@@ -234,7 +197,7 @@
         "a7bc5c3e-9a69-43ec-889a-ca03a169e8ce/worker-2",
         "54a1ff18-63d2-4485-a2e9-50f3c641f93c/worker-1"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-27T09:06:26.627Z",
       "startCommit": "977f2571550d708536abeaf5785069b7a34f3e2c",
@@ -242,6 +205,8 @@
       "submittedBase": "f73b511bc80227cfac46df01c79a379241212c58",
       "submissionId": "145a6af0-4a67-4ec2-8dea-47c4bb522e1c",
       "submittedAt": "2026-10-27T10:17:25.969Z",
+      "integratedCommit": "3f537bbd029201e9b332e61c90f4b5d35dd172c1",
+      "integratedAt": "2026-10-27T10:30:21.520Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -253,17 +218,36 @@
         "files": 10
       },
       "dispatch": {
-        "id": "1537ffea-1509-4830-ad03-551f4c4c3fdd",
-        "runner": "54a1ff18-63d2-4485-a2e9-50f3c641f93c",
-        "role": "worker",
+        "id": "00c7703a-40a2-4090-b289-c322552b2649",
+        "runner": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+        "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-27T09:57:54.944Z",
-        "finishedAt": "2026-10-27T10:02:54.957Z",
-        "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-        "summary": "T516을 바뀐 것 없이 다시 제출합니다. work/auto-play(T517·T520 통합분)가 이미 작업 공간에 병합되어 있어(7dbbc96c) 따로 rebase하지 않았고, T516 커밋(3a33dfbb)도 그대로 남아 있습니다. 작업 트리에는 커밋하지 않은 변경이 없습니다. 병합된 트리에서 다시 돌린 검사는 모두 통과했습니다: `pnpm install --frozen-lockfile --prefer-offline`, typecheck, lint, format:check, 그리고 progression.test.ts·ProgressControls.test.ts·ClubHub.test.ts unit 테스트 60건. e2e 테스트 progression-settings.spec.ts는 여전히 실행하지 않았으니, 묶음 관문에서 `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium tests/e2e/progression-settings.spec.ts`로 돌려야 합니다."
+        "startedAt": "2026-10-27T10:24:26.010Z",
+        "finishedAt": "2026-10-27T10:26:19.774Z",
+        "error": null,
+        "summary": "T516 (rework submission 7dbbc96c on base 2de6ccc5): the rework is only a merge of work/auto-play into the original 3a33dfbb. git diff 3a33dfbb..7dbbc96c leaves progression.ts, every ui file and the e2e spec unchanged. The earlier integration failure was a 30 s timeout in the unrelated packages/engine/src/staff.hiring.test.ts, and the coordinator reports the rerun passes. The diff against 2de6ccc5 contains only T516 changes, so it does not collide with T517/T518/T520. I checked the risk reasons first. (1) The 453 changed lines are mostly deletions (112+/361-). (2) The App.tsx and ClubHub.test.ts edits outside touches are the minimum needed once the homeVisible/controller/moment props are gone, and the result limits record them. (3) The rework itself is a no-op merge. Acceptance holds. MATCH_DAY_MOMENT_MS, matchMoment, momentTimer/momentStep/momentBefore and beginMoment/endMoment/clearMoment are removed, and tick() no longer waits on a moment. Of the old names, the code and tests keep only the literal 'match-moment' and 'matchMoment' strings, which the new tests use to check they are absent. The result notice moved into announce(next, before), called after a visible, non-catch-up own-fixture step's reply is accepted. It runs after the cancel, critical, world-change and fresh-stop guards, so the old stop/eve/hidden outcomes are kept. It compares the latest own match record before and after the step, as momentBefore did, gates on running, !hidden and resultNotice, and clears after RESULT_NOTICE_MS. stop() and dispose() still clear it. The NEXT MATCH overlay, the bottom moment slot and their CSS are removed. The slot was the last child of the left-aligned mode group, so nothing else moves. The unit tests cover the two required cases with exact timing: the next step one pace interval after an early (50 ms) or slow (2500 ms) step lands, and the notice on/off at landing and expiry. They also cover stop and hidden with no notice, and manual next-event with no notice. ProgressControls.test.ts checks that neither mode has a slot. This matches the WEB@160 SSOT for WEB-18: no match-day pause or animation, and the notice once our fixture's day is shown. The rewritten progression-settings e2e journey has not been run and is left to the coordinator's batch."
+      },
+      "review": {
+        "id": "a56663d3-4221-4e62-a264-d9e5bd0f7a22",
+        "owner": "357b05ed-2549-4117-8a2c-8b22203cf3ff/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T516 (rework submission 7dbbc96c on base 2de6ccc5): the rework is only a merge of work/auto-play into the original 3a33dfbb. git diff 3a33dfbb..7dbbc96c leaves progression.ts, every ui file and the e2e spec unchanged. The earlier integration failure was a 30 s timeout in the unrelated packages/engine/src/staff.hiring.test.ts, and the coordinator reports the rerun passes. The diff against 2de6ccc5 contains only T516 changes, so it does not collide with T517/T518/T520. I checked the risk reasons first. (1) The 453 changed lines are mostly deletions (112+/361-). (2) The App.tsx and ClubHub.test.ts edits outside touches are the minimum needed once the homeVisible/controller/moment props are gone, and the result limits record them. (3) The rework itself is a no-op merge. Acceptance holds. MATCH_DAY_MOMENT_MS, matchMoment, momentTimer/momentStep/momentBefore and beginMoment/endMoment/clearMoment are removed, and tick() no longer waits on a moment. Of the old names, the code and tests keep only the literal 'match-moment' and 'matchMoment' strings, which the new tests use to check they are absent. The result notice moved into announce(next, before), called after a visible, non-catch-up own-fixture step's reply is accepted. It runs after the cancel, critical, world-change and fresh-stop guards, so the old stop/eve/hidden outcomes are kept. It compares the latest own match record before and after the step, as momentBefore did, gates on running, !hidden and resultNotice, and clears after RESULT_NOTICE_MS. stop() and dispose() still clear it. The NEXT MATCH overlay, the bottom moment slot and their CSS are removed. The slot was the last child of the left-aligned mode group, so nothing else moves. The unit tests cover the two required cases with exact timing: the next step one pace interval after an early (50 ms) or slow (2500 ms) step lands, and the notice on/off at landing and expiry. They also cover stop and hidden with no notice, and manual next-event with no notice. ProgressControls.test.ts checks that neither mode has a slot. This matches the WEB@160 SSOT for WEB-18: no match-day pause or animation, and the notice once our fixture's day is shown. The rewritten progression-settings e2e journey has not been run and is left to the coordinator's batch.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "tests/e2e/progression-settings.spec.ts:166 (T516)",
+            "message": "The rewritten journey reads document.querySelector('[data-testid=\"game-date\"]'). LiveSeason.tsx:205 also renders an sr-only game-date, so whichever node comes first in the DOM is read. Both should show the same world date, and the journey has not been run. In the coordinator batch (`PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium tests/e2e/progression-settings.spec.ts`), confirm the date check and the 1.5 s bound are stable under CI load. If not, scope the selector to the 시즌 진행 controls region."
+          }
+        ],
+        "commit": "7dbbc96ca11bd92e0c159d66b249f46fb917e7b9",
+        "baseCommit": "2de6ccc5cb30c9988362111b5ad4fa8d1b023980",
+        "submissionId": "145a6af0-4a67-4ec2-8dea-47c4bb522e1c",
+        "createdAt": "2026-10-27T10:24:24.679Z",
+        "finishedAt": "2026-10-27T10:26:19.708Z"
       },
       "reviewHistory": [
         {
@@ -327,6 +311,13 @@
           "startedAt": "2026-10-27T10:14:09.564Z",
           "finishedAt": "2026-10-27T10:17:25.648Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:contract",
+          "startedAt": "2026-10-27T10:26:21.560Z",
+          "finishedAt": "2026-10-27T10:30:21.300Z"
+        }
       ]
     },
     {
@@ -349,6 +340,8 @@
       "submittedBase": "f73b511bc80227cfac46df01c79a379241212c58",
       "submissionId": "02e6e402-ef6d-401f-b738-74e7dd6f7ad9",
       "submittedAt": "2026-10-27T10:14:06.692Z",
+      "integratedCommit": "2de6ccc5cb30c9988362111b5ad4fa8d1b023980",
+      "integratedAt": "2026-10-27T10:24:21.668Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -509,6 +502,13 @@
           "startedAt": "2026-10-27T10:11:04.134Z",
           "finishedAt": "2026-10-27T10:14:06.406Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:contract",
+          "startedAt": "2026-10-27T10:20:16.301Z",
+          "finishedAt": "2026-10-27T10:24:21.408Z"
+        }
       ]
     },
     {
@@ -591,6 +591,99 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:contract",
           "startedAt": "2026-10-27T09:38:43.587Z",
           "finishedAt": "2026-10-27T09:42:45.111Z"
+        }
+      ]
+    },
+    {
+      "id": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "group": "auto-play",
+      "taskId": "T519",
+      "tasks": [
+        "T519"
+      ],
+      "lane": null,
+      "owner": "357b05ed-2549-4117-8a2c-8b22203cf3ff/worker-1",
+      "contributors": [
+        "357b05ed-2549-4117-8a2c-8b22203cf3ff/worker-1"
+      ],
+      "status": "approved",
+      "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:contract",
+      "createdAt": "2026-10-27T10:24:22.091Z",
+      "startCommit": "2de6ccc5cb30c9988362111b5ad4fa8d1b023980",
+      "verifiedCommit": "fe75453e6cd2ba7a481a7188a57cc15fdb0b4ed6",
+      "submittedBase": "3f537bbd029201e9b332e61c90f4b5d35dd172c1",
+      "submissionId": "61a029a6-916b-416e-b78f-e9a9bc5ac697",
+      "submittedAt": "2026-10-27T10:43:08.489Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "665 changed lines (limit 300)",
+          "outside touches: apps/web/src/runtime/client.test.ts apps/web/src/runtime/host.test.ts"
+        ],
+        "lines": 665,
+        "files": 8
+      },
+      "dispatch": {
+        "id": "589f8de6-43e6-42f1-9bf3-08164f4129cb",
+        "runner": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-27T10:43:11.128Z",
+        "finishedAt": "2026-10-27T10:45:42.758Z",
+        "error": null,
+        "summary": "T519 meets its acceptance criteria. Risk reasons first: the 665 lines are mostly tests. The two files outside touches (client.test.ts and host.test.ts) are the integration tests that acceptance 6 explicitly asks to update. HelperPool splits jobs into contiguous shares and serializes the read copy once per round, before our match mutates the world. Results come back in job order. Every failure path settles the round with `undefined` and never throws into prepareRound: an error reply, a short reply, a timeout, an unserializable copy, a throwing port, or `helpers-failed` from the client. The pool then stays disabled, so that round and later ones run on the engine. playDay mirrors stepDay's league branch: prepareRound and completeRound cover beginDays, then beginRound, playRound and clubDay, and every other day falls through to advanceDays(w,1). Host.day sits inside the serialized execute queue. Reads that arrive mid-day are held by `afterRound`, which re-checks `this.round` after every wakeup and so never observes a pending world; this was T518's stated hand-off. The reply is built as before. Cancel stays per-day. On the client, helpers are created only when hardwareConcurrency >= minCores (an undefined count is excluded) and their ports are handed over the same way as the codec's. A creation throw sends nothing and a helper onerror terminates them all. The default test navigator stub has no hardwareConcurrency, so existing client tests are unaffected. helperPool.ts imports engine code only as types, so the client entry does not load the engine. Unit tests cover fixture order, partial shares, error, timeout, stale id, short reply, mid-round disable and serialization/port failures. They also cover playDay ordering and the non-own-day path. World equality is tested in host.test.ts (integration) through the real fixtureHelper serve and through a failing helper, alongside T518's 60-day equality, consistent with the test-tier rule. The worker's bench shows the same world hash and ratios of 0.58 and 0.68, inside the prototype band. The integration tests were not run by the worker and are left to the coordinator gate. Only optional P3 notes remain."
+      },
+      "review": {
+        "id": "ab6ae50a-b99b-43ac-b973-3a020368ab10",
+        "owner": "357b05ed-2549-4117-8a2c-8b22203cf3ff/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T519 meets its acceptance criteria. Risk reasons first: the 665 lines are mostly tests. The two files outside touches (client.test.ts and host.test.ts) are the integration tests that acceptance 6 explicitly asks to update. HelperPool splits jobs into contiguous shares and serializes the read copy once per round, before our match mutates the world. Results come back in job order. Every failure path settles the round with `undefined` and never throws into prepareRound: an error reply, a short reply, a timeout, an unserializable copy, a throwing port, or `helpers-failed` from the client. The pool then stays disabled, so that round and later ones run on the engine. playDay mirrors stepDay's league branch: prepareRound and completeRound cover beginDays, then beginRound, playRound and clubDay, and every other day falls through to advanceDays(w,1). Host.day sits inside the serialized execute queue. Reads that arrive mid-day are held by `afterRound`, which re-checks `this.round` after every wakeup and so never observes a pending world; this was T518's stated hand-off. The reply is built as before. Cancel stays per-day. On the client, helpers are created only when hardwareConcurrency >= minCores (an undefined count is excluded) and their ports are handed over the same way as the codec's. A creation throw sends nothing and a helper onerror terminates them all. The default test navigator stub has no hardwareConcurrency, so existing client tests are unaffected. helperPool.ts imports engine code only as types, so the client entry does not load the engine. Unit tests cover fixture order, partial shares, error, timeout, stale id, short reply, mid-round disable and serialization/port failures. They also cover playDay ordering and the non-own-day path. World equality is tested in host.test.ts (integration) through the real fixtureHelper serve and through a failing helper, alongside T518's 60-day equality, consistent with the test-tier rule. The worker's bench shows the same world hash and ratios of 0.58 and 0.68, inside the prototype band. The integration tests were not run by the worker and are left to the coordinator gate. Only optional P3 notes remain.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/runtime/host.test.ts:1293 (T519)",
+            "message": "ARCH-6 says both paths are 'checked by a test comparing a season played each way'. T519 compares worlds only through the first own match day: one helper round. T518's round-jobs.test.ts covers 60 days with an in-process simulator. Neither test covers a full season, and none runs the real HelperPool plus fixtureHelper path over several own match days. Consider adding a longer helper-path equality test in the integration tier (for example, several own match days, or a season on the pruned fixture world), or have the SSOT owner confirm that the 60-day plus first-match combination meets the clause."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/runtime/helperPool.ts:47 (T519)",
+            "message": "When the engine-side pool disables itself after an error reply, a short reply or a timeout, the client is never told. Its helper Workers stay alive and idle, each holding a loaded engine module, until dispose(). Only a Worker onerror terminates them. This is optional: the engine worker could post a `helpers-off` notice so the client can terminate them, or the leftover workers can be accepted and documented."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/runtime/progression.ts:489 (T519 limits)",
+            "message": "Manual mode's `next-event` and the legacy `advance`/`season` commands still play own match days sequentially, as the result limits state. Auto-play (`advance-days`) and watched `next-match` do use the helpers, which covers this group's goal. If manual next-event should also gain the speedup, it needs a follow-up task with an engine change to nextEventDays."
+          }
+        ],
+        "commit": "fe75453e6cd2ba7a481a7188a57cc15fdb0b4ed6",
+        "baseCommit": "3f537bbd029201e9b332e61c90f4b5d35dd172c1",
+        "submissionId": "61a029a6-916b-416e-b78f-e9a9bc5ac697",
+        "createdAt": "2026-10-27T10:43:09.754Z",
+        "finishedAt": "2026-10-27T10:45:42.555Z"
+      },
+      "steps": [
+        {
+          "taskId": "T519",
+          "commit": "fe75453e6cd2ba7a481a7188a57cc15fdb0b4ed6",
+          "at": "2026-10-27T10:43:08.434Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-27T10:41:24.325Z",
+              "finishedAt": "2026-10-27T10:43:08.174Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-27T10:41:24.325Z",
+          "finishedAt": "2026-10-27T10:43:08.174Z"
         }
       ]
     }
@@ -3254,6 +3347,614 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 785,
+      "at": "2026-10-27T10:24:21.570Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:contract",
+            "startedAt": "2026-10-27T10:20:16.301Z",
+            "finishedAt": "2026-10-27T10:24:21.408Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 786,
+      "at": "2026-10-27T10:24:21.668Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "2de6ccc5cb30c9988362111b5ad4fa8d1b023980",
+        "integratedAt": "2026-10-27T10:24:21.668Z"
+      }
+    },
+    {
+      "sequence": 787,
+      "at": "2026-10-27T10:24:22.091Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "taskId": "T519",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+        "group": "auto-play",
+        "taskId": "T519",
+        "tasks": [
+          "T519"
+        ],
+        "lane": null,
+        "owner": "357b05ed-2549-4117-8a2c-8b22203cf3ff/worker-1",
+        "contributors": [
+          "357b05ed-2549-4117-8a2c-8b22203cf3ff/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-27T10:24:22.091Z",
+        "startCommit": "2de6ccc5cb30c9988362111b5ad4fa8d1b023980"
+      }
+    },
+    {
+      "sequence": 788,
+      "at": "2026-10-27T10:24:22.842Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "taskId": "T519",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 789,
+      "at": "2026-10-27T10:24:23.495Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "taskId": "T519",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "6c615920-d92b-4e46-8ff6-44defb484851",
+          "runner": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T10:24:23.495Z"
+        }
+      }
+    },
+    {
+      "sequence": 790,
+      "at": "2026-10-27T10:24:23.747Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "taskId": "T519",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "6c615920-d92b-4e46-8ff6-44defb484851",
+          "runner": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T10:24:23.495Z"
+        }
+      }
+    },
+    {
+      "sequence": 791,
+      "at": "2026-10-27T10:24:24.679Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "672228cf-83d5-4347-b656-a4a1fdb2c90b",
+      "taskId": "T516",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "a56663d3-4221-4e62-a264-d9e5bd0f7a22",
+          "owner": "357b05ed-2549-4117-8a2c-8b22203cf3ff/reviewer-1",
+          "status": "reviewing",
+          "commit": "7dbbc96ca11bd92e0c159d66b249f46fb917e7b9",
+          "baseCommit": "2de6ccc5cb30c9988362111b5ad4fa8d1b023980",
+          "submissionId": "145a6af0-4a67-4ec2-8dea-47c4bb522e1c",
+          "createdAt": "2026-10-27T10:24:24.679Z"
+        }
+      }
+    },
+    {
+      "sequence": 792,
+      "at": "2026-10-27T10:24:26.010Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "672228cf-83d5-4347-b656-a4a1fdb2c90b",
+      "taskId": "T516",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "00c7703a-40a2-4090-b289-c322552b2649",
+          "runner": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T10:24:26.010Z"
+        }
+      }
+    },
+    {
+      "sequence": 793,
+      "at": "2026-10-27T10:24:26.064Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "672228cf-83d5-4347-b656-a4a1fdb2c90b",
+      "taskId": "T516",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "00c7703a-40a2-4090-b289-c322552b2649",
+          "runner": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T10:24:26.010Z"
+        }
+      }
+    },
+    {
+      "sequence": 794,
+      "at": "2026-10-27T10:26:19.708Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "672228cf-83d5-4347-b656-a4a1fdb2c90b",
+      "taskId": "T516",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "a56663d3-4221-4e62-a264-d9e5bd0f7a22",
+          "owner": "357b05ed-2549-4117-8a2c-8b22203cf3ff/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T516 (rework submission 7dbbc96c on base 2de6ccc5): the rework is only a merge of work/auto-play into the original 3a33dfbb. git diff 3a33dfbb..7dbbc96c leaves progression.ts, every ui file and the e2e spec unchanged. The earlier integration failure was a 30 s timeout in the unrelated packages/engine/src/staff.hiring.test.ts, and the coordinator reports the rerun passes. The diff against 2de6ccc5 contains only T516 changes, so it does not collide with T517/T518/T520. I checked the risk reasons first. (1) The 453 changed lines are mostly deletions (112+/361-). (2) The App.tsx and ClubHub.test.ts edits outside touches are the minimum needed once the homeVisible/controller/moment props are gone, and the result limits record them. (3) The rework itself is a no-op merge. Acceptance holds. MATCH_DAY_MOMENT_MS, matchMoment, momentTimer/momentStep/momentBefore and beginMoment/endMoment/clearMoment are removed, and tick() no longer waits on a moment. Of the old names, the code and tests keep only the literal 'match-moment' and 'matchMoment' strings, which the new tests use to check they are absent. The result notice moved into announce(next, before), called after a visible, non-catch-up own-fixture step's reply is accepted. It runs after the cancel, critical, world-change and fresh-stop guards, so the old stop/eve/hidden outcomes are kept. It compares the latest own match record before and after the step, as momentBefore did, gates on running, !hidden and resultNotice, and clears after RESULT_NOTICE_MS. stop() and dispose() still clear it. The NEXT MATCH overlay, the bottom moment slot and their CSS are removed. The slot was the last child of the left-aligned mode group, so nothing else moves. The unit tests cover the two required cases with exact timing: the next step one pace interval after an early (50 ms) or slow (2500 ms) step lands, and the notice on/off at landing and expiry. They also cover stop and hidden with no notice, and manual next-event with no notice. ProgressControls.test.ts checks that neither mode has a slot. This matches the WEB@160 SSOT for WEB-18: no match-day pause or animation, and the notice once our fixture's day is shown. The rewritten progression-settings e2e journey has not been run and is left to the coordinator's batch.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "tests/e2e/progression-settings.spec.ts:166 (T516)",
+              "message": "The rewritten journey reads document.querySelector('[data-testid=\"game-date\"]'). LiveSeason.tsx:205 also renders an sr-only game-date, so whichever node comes first in the DOM is read. Both should show the same world date, and the journey has not been run. In the coordinator batch (`PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium tests/e2e/progression-settings.spec.ts`), confirm the date check and the 1.5 s bound are stable under CI load. If not, scope the selector to the 시즌 진행 controls region."
+            }
+          ],
+          "commit": "7dbbc96ca11bd92e0c159d66b249f46fb917e7b9",
+          "baseCommit": "2de6ccc5cb30c9988362111b5ad4fa8d1b023980",
+          "submissionId": "145a6af0-4a67-4ec2-8dea-47c4bb522e1c",
+          "createdAt": "2026-10-27T10:24:24.679Z",
+          "finishedAt": "2026-10-27T10:26:19.708Z"
+        }
+      }
+    },
+    {
+      "sequence": 795,
+      "at": "2026-10-27T10:26:19.774Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "672228cf-83d5-4347-b656-a4a1fdb2c90b",
+      "taskId": "T516",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "00c7703a-40a2-4090-b289-c322552b2649",
+          "runner": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T10:24:26.010Z",
+          "finishedAt": "2026-10-27T10:26:19.774Z",
+          "error": null,
+          "summary": "T516 (rework submission 7dbbc96c on base 2de6ccc5): the rework is only a merge of work/auto-play into the original 3a33dfbb. git diff 3a33dfbb..7dbbc96c leaves progression.ts, every ui file and the e2e spec unchanged. The earlier integration failure was a 30 s timeout in the unrelated packages/engine/src/staff.hiring.test.ts, and the coordinator reports the rerun passes. The diff against 2de6ccc5 contains only T516 changes, so it does not collide with T517/T518/T520. I checked the risk reasons first. (1) The 453 changed lines are mostly deletions (112+/361-). (2) The App.tsx and ClubHub.test.ts edits outside touches are the minimum needed once the homeVisible/controller/moment props are gone, and the result limits record them. (3) The rework itself is a no-op merge. Acceptance holds. MATCH_DAY_MOMENT_MS, matchMoment, momentTimer/momentStep/momentBefore and beginMoment/endMoment/clearMoment are removed, and tick() no longer waits on a moment. Of the old names, the code and tests keep only the literal 'match-moment' and 'matchMoment' strings, which the new tests use to check they are absent. The result notice moved into announce(next, before), called after a visible, non-catch-up own-fixture step's reply is accepted. It runs after the cancel, critical, world-change and fresh-stop guards, so the old stop/eve/hidden outcomes are kept. It compares the latest own match record before and after the step, as momentBefore did, gates on running, !hidden and resultNotice, and clears after RESULT_NOTICE_MS. stop() and dispose() still clear it. The NEXT MATCH overlay, the bottom moment slot and their CSS are removed. The slot was the last child of the left-aligned mode group, so nothing else moves. The unit tests cover the two required cases with exact timing: the next step one pace interval after an early (50 ms) or slow (2500 ms) step lands, and the notice on/off at landing and expiry. They also cover stop and hidden with no notice, and manual next-event with no notice. ProgressControls.test.ts checks that neither mode has a slot. This matches the WEB@160 SSOT for WEB-18: no match-day pause or animation, and the notice once our fixture's day is shown. The rewritten progression-settings e2e journey has not been run and is left to the coordinator's batch."
+        }
+      }
+    },
+    {
+      "sequence": 796,
+      "at": "2026-10-27T10:26:19.903Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "672228cf-83d5-4347-b656-a4a1fdb2c90b",
+      "taskId": "T516",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 797,
+      "at": "2026-10-27T10:30:21.428Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "672228cf-83d5-4347-b656-a4a1fdb2c90b",
+      "taskId": "T516",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:contract",
+            "startedAt": "2026-10-27T10:26:21.560Z",
+            "finishedAt": "2026-10-27T10:30:21.300Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 798,
+      "at": "2026-10-27T10:30:21.520Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "672228cf-83d5-4347-b656-a4a1fdb2c90b",
+      "taskId": "T516",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "3f537bbd029201e9b332e61c90f4b5d35dd172c1",
+        "integratedAt": "2026-10-27T10:30:21.520Z"
+      }
+    },
+    {
+      "sequence": 799,
+      "at": "2026-10-27T10:41:23.598Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "taskId": "T519",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 800,
+      "at": "2026-10-27T10:41:24.028Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "taskId": "T519",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 801,
+      "at": "2026-10-27T10:41:24.110Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "taskId": "T519",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 802,
+      "at": "2026-10-27T10:43:08.489Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "taskId": "T519",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "fe75453e6cd2ba7a481a7188a57cc15fdb0b4ed6",
+        "submittedBase": "3f537bbd029201e9b332e61c90f4b5d35dd172c1",
+        "submissionId": "61a029a6-916b-416e-b78f-e9a9bc5ac697",
+        "submittedAt": "2026-10-27T10:43:08.489Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "665 changed lines (limit 300)",
+            "outside touches: apps/web/src/runtime/client.test.ts apps/web/src/runtime/host.test.ts"
+          ],
+          "lines": 665,
+          "files": 8
+        },
+        "steps": [
+          {
+            "taskId": "T519",
+            "commit": "fe75453e6cd2ba7a481a7188a57cc15fdb0b4ed6",
+            "at": "2026-10-27T10:43:08.434Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-27T10:41:24.325Z",
+                "finishedAt": "2026-10-27T10:43:08.174Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-27T10:41:24.325Z",
+            "finishedAt": "2026-10-27T10:43:08.174Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 803,
+      "at": "2026-10-27T10:43:08.549Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "taskId": "T519",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "6c615920-d92b-4e46-8ff6-44defb484851",
+          "runner": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T10:24:23.495Z",
+          "finishedAt": "2026-10-27T10:43:08.549Z",
+          "error": null,
+          "summary": "T519 구현 완료. 새 파일 helperPool.ts에 HELPER_CONFIG(count 2, minCores 4, timeoutMs 8000), HelperPool, playDay를 넣었습니다. HelperPool은 job을 연속 구간으로 나눠 helper마다 보내고, read copy는 라운드당 JSON 문자열 하나로 만듭니다. 결과는 fixture 순서로 돌려줍니다. 오류 응답, 짧은 응답, timeout, 직렬화할 수 없는 copy, 예외를 던지는 port 중 하나라도 생기면 pool을 끄고 undefined를 돌려주며, 그 라운드와 이후 라운드는 엔진 worker가 직접 계산합니다. prepareRound 안으로 예외를 던지지 않습니다. 새 파일 fixtureHelper.ts는 module worker로, answer/serve를 제공하고 WorkerGlobalScope에서만 연결됩니다. client는 코어가 4개 이상일 때만 helper 2개를 만들어 port를 엔진 worker에 넘깁니다. 생성에 실패하면 아무것도 보내지 않고, helper 오류가 나면 helper를 terminate하고 helpers-failed를 보냅니다. worker.ts는 helpers/helpers-failed 메시지를 처리합니다. host의 advance-days/next-match 루프는 매일 playDay를 거칩니다. 우리 경기일에 helper 결과를 기다리는 동안 읽기 요청은 그 날이 끝난 뒤에 답하고, 명령은 기존처럼 직렬 큐로 처리하며, 응답 형식은 그대로입니다. 실행한 검사: typecheck, lint, format:check, helperPool.test.ts 단위 테스트(12개 통과), --changed unit+contract(42개 통과), build(fixtureHelper가 별도 worker chunk로 번들됨, 402 kB). host 경로 day bench(Node worker_threads, ENG perf-261027, 교차 실행 2회): 우리 경기일 중앙값이 순차 1113/926 ms에서 helper 사용 시 646/631 ms로 줄었고, 비율은 0.58/0.68입니다. 네 번 모두 world hash d292f98c9c2141c5로 같았습니다. host.test.ts와 client.test.ts(integration)는 수정만 하고 실행하지 않았으며, 묶음 관문에 넘기도록 result limits에 적었습니다. bench 스크립트는 scratchpad에만 있고 커밋되지 않습니다. 수동 next-event와 legacy advance/season 명령은 엔진 변경이 필요해 여전히 순차로 계산합니다."
+        }
+      }
+    },
+    {
+      "sequence": 804,
+      "at": "2026-10-27T10:43:09.754Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "taskId": "T519",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "ab6ae50a-b99b-43ac-b973-3a020368ab10",
+          "owner": "357b05ed-2549-4117-8a2c-8b22203cf3ff/reviewer-1",
+          "status": "reviewing",
+          "commit": "fe75453e6cd2ba7a481a7188a57cc15fdb0b4ed6",
+          "baseCommit": "3f537bbd029201e9b332e61c90f4b5d35dd172c1",
+          "submissionId": "61a029a6-916b-416e-b78f-e9a9bc5ac697",
+          "createdAt": "2026-10-27T10:43:09.754Z"
+        }
+      }
+    },
+    {
+      "sequence": 805,
+      "at": "2026-10-27T10:43:11.128Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "taskId": "T519",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "589f8de6-43e6-42f1-9bf3-08164f4129cb",
+          "runner": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T10:43:11.128Z"
+        }
+      }
+    },
+    {
+      "sequence": 806,
+      "at": "2026-10-27T10:43:11.189Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "taskId": "T519",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "589f8de6-43e6-42f1-9bf3-08164f4129cb",
+          "runner": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T10:43:11.128Z"
+        }
+      }
+    },
+    {
+      "sequence": 807,
+      "at": "2026-10-27T10:45:42.555Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "taskId": "T519",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "ab6ae50a-b99b-43ac-b973-3a020368ab10",
+          "owner": "357b05ed-2549-4117-8a2c-8b22203cf3ff/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T519 meets its acceptance criteria. Risk reasons first: the 665 lines are mostly tests. The two files outside touches (client.test.ts and host.test.ts) are the integration tests that acceptance 6 explicitly asks to update. HelperPool splits jobs into contiguous shares and serializes the read copy once per round, before our match mutates the world. Results come back in job order. Every failure path settles the round with `undefined` and never throws into prepareRound: an error reply, a short reply, a timeout, an unserializable copy, a throwing port, or `helpers-failed` from the client. The pool then stays disabled, so that round and later ones run on the engine. playDay mirrors stepDay's league branch: prepareRound and completeRound cover beginDays, then beginRound, playRound and clubDay, and every other day falls through to advanceDays(w,1). Host.day sits inside the serialized execute queue. Reads that arrive mid-day are held by `afterRound`, which re-checks `this.round` after every wakeup and so never observes a pending world; this was T518's stated hand-off. The reply is built as before. Cancel stays per-day. On the client, helpers are created only when hardwareConcurrency >= minCores (an undefined count is excluded) and their ports are handed over the same way as the codec's. A creation throw sends nothing and a helper onerror terminates them all. The default test navigator stub has no hardwareConcurrency, so existing client tests are unaffected. helperPool.ts imports engine code only as types, so the client entry does not load the engine. Unit tests cover fixture order, partial shares, error, timeout, stale id, short reply, mid-round disable and serialization/port failures. They also cover playDay ordering and the non-own-day path. World equality is tested in host.test.ts (integration) through the real fixtureHelper serve and through a failing helper, alongside T518's 60-day equality, consistent with the test-tier rule. The worker's bench shows the same world hash and ratios of 0.58 and 0.68, inside the prototype band. The integration tests were not run by the worker and are left to the coordinator gate. Only optional P3 notes remain.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/host.test.ts:1293 (T519)",
+              "message": "ARCH-6 says both paths are 'checked by a test comparing a season played each way'. T519 compares worlds only through the first own match day: one helper round. T518's round-jobs.test.ts covers 60 days with an in-process simulator. Neither test covers a full season, and none runs the real HelperPool plus fixtureHelper path over several own match days. Consider adding a longer helper-path equality test in the integration tier (for example, several own match days, or a season on the pruned fixture world), or have the SSOT owner confirm that the 60-day plus first-match combination meets the clause."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/helperPool.ts:47 (T519)",
+              "message": "When the engine-side pool disables itself after an error reply, a short reply or a timeout, the client is never told. Its helper Workers stay alive and idle, each holding a loaded engine module, until dispose(). Only a Worker onerror terminates them. This is optional: the engine worker could post a `helpers-off` notice so the client can terminate them, or the leftover workers can be accepted and documented."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/progression.ts:489 (T519 limits)",
+              "message": "Manual mode's `next-event` and the legacy `advance`/`season` commands still play own match days sequentially, as the result limits state. Auto-play (`advance-days`) and watched `next-match` do use the helpers, which covers this group's goal. If manual next-event should also gain the speedup, it needs a follow-up task with an engine change to nextEventDays."
+            }
+          ],
+          "commit": "fe75453e6cd2ba7a481a7188a57cc15fdb0b4ed6",
+          "baseCommit": "3f537bbd029201e9b332e61c90f4b5d35dd172c1",
+          "submissionId": "61a029a6-916b-416e-b78f-e9a9bc5ac697",
+          "createdAt": "2026-10-27T10:43:09.754Z",
+          "finishedAt": "2026-10-27T10:45:42.555Z"
+        }
+      }
+    },
+    {
+      "sequence": 808,
+      "at": "2026-10-27T10:45:42.759Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "taskId": "T519",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "589f8de6-43e6-42f1-9bf3-08164f4129cb",
+          "runner": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T10:43:11.128Z",
+          "finishedAt": "2026-10-27T10:45:42.758Z",
+          "error": null,
+          "summary": "T519 meets its acceptance criteria. Risk reasons first: the 665 lines are mostly tests. The two files outside touches (client.test.ts and host.test.ts) are the integration tests that acceptance 6 explicitly asks to update. HelperPool splits jobs into contiguous shares and serializes the read copy once per round, before our match mutates the world. Results come back in job order. Every failure path settles the round with `undefined` and never throws into prepareRound: an error reply, a short reply, a timeout, an unserializable copy, a throwing port, or `helpers-failed` from the client. The pool then stays disabled, so that round and later ones run on the engine. playDay mirrors stepDay's league branch: prepareRound and completeRound cover beginDays, then beginRound, playRound and clubDay, and every other day falls through to advanceDays(w,1). Host.day sits inside the serialized execute queue. Reads that arrive mid-day are held by `afterRound`, which re-checks `this.round` after every wakeup and so never observes a pending world; this was T518's stated hand-off. The reply is built as before. Cancel stays per-day. On the client, helpers are created only when hardwareConcurrency >= minCores (an undefined count is excluded) and their ports are handed over the same way as the codec's. A creation throw sends nothing and a helper onerror terminates them all. The default test navigator stub has no hardwareConcurrency, so existing client tests are unaffected. helperPool.ts imports engine code only as types, so the client entry does not load the engine. Unit tests cover fixture order, partial shares, error, timeout, stale id, short reply, mid-round disable and serialization/port failures. They also cover playDay ordering and the non-own-day path. World equality is tested in host.test.ts (integration) through the real fixtureHelper serve and through a failing helper, alongside T518's 60-day equality, consistent with the test-tier rule. The worker's bench shows the same world hash and ratios of 0.58 and 0.68, inside the prototype band. The integration tests were not run by the worker and are left to the coordinator gate. Only optional P3 notes remain."
+        }
+      }
+    },
+    {
+      "sequence": 809,
+      "at": "2026-10-27T10:45:43.094Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "taskId": "T519",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 810,
+      "at": "2026-10-27T11:33:18.013Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+      "taskId": "T519",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:contract"
+      }
+    },
+    {
+      "sequence": 811,
+      "at": "2026-10-27T11:33:19.646Z",
+      "type": "group",
+      "group": "auto-play",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T10:17:31.545Z",
+          "stoppedAt": "2026-10-27T11:33:19.646Z",
+          "dispatched": 4,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "eb21feb0-0091-4241-a3a5-ddcfc60ec4c7",
+              "submissionId": "61a029a6-916b-416e-b78f-e9a9bc5ac697",
+              "commit": "fe75453e6cd2ba7a481a7188a57cc15fdb0b4ed6",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]

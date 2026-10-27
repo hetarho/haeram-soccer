@@ -127,7 +127,7 @@ for (const [width, height] of [
   [390, 844],
   [1280, 800],
 ]) {
-  test(`an own match day shows the match-day moment in NEXT MATCH for at least 2 s without moving the controls ${width}`, async ({
+  test(`an own match day at x10 passes at the pace without a hold or animation and without moving the controls ${width}`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height });
@@ -138,8 +138,6 @@ for (const [width, height] of [
       observations: { matchEve: false },
     });
     const controls = page.getByRole('region', { name: '시즌 진행', exact: true });
-    const slot = controls.getByTestId('match-moment');
-    await expect(slot).toHaveAttribute('data-state', 'off');
     await chooseOption(
       controls.getByRole('combobox', { name: '자동 진행 배속', exact: true }),
       'x10',
@@ -165,48 +163,39 @@ for (const [width, height] of [
     const before = await boxes();
     const transport = (await controls.boundingBox())!;
     await controls.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-    // Catch the moment's first frame, then time it until it ends.
+    // Catch the frame our first match day is shown, then the frame the day after it is.
     const seen = await page.waitForFunction(
       (selectors) => {
-        const moment = document.querySelector('[data-testid="next-match-moment"]');
-        if (!moment) return undefined;
+        if (document.querySelector('[data-testid="game-round"]')?.textContent !== '1')
+          return undefined;
         return {
           at: performance.now(),
+          date: document.querySelector('[data-testid="game-date"]')?.textContent,
           boxes: selectors.map((selector) => {
             const r = document.querySelector(selector)!.getBoundingClientRect();
             return [r.x, r.y, r.width, r.height].map(Math.round);
           }),
           transport: document.querySelector('[data-ui="season-transport"]')!.getBoundingClientRect()
             .height,
-          hidden: moment.getAttribute('aria-hidden'),
-          live: !!moment.closest('[aria-live]'),
-          text: moment.textContent,
-          // On home the card plays it; the bottom slot stays empty.
-          slot: document.querySelector('[data-testid="match-moment"]')?.getAttribute('data-state'),
         };
       },
       pinned,
       { polling: 'raf', timeout: 20_000 },
     );
-    const moment = (await seen.jsonValue())!;
-    expect(moment.boxes).toEqual(before);
-    expect(Math.round(moment.transport)).toBe(Math.round(transport.height));
-    expect(moment.hidden).toBe('true');
-    expect(moment.live).toBe(false);
-    expect(moment.text).toBe('');
-    expect(moment.slot).toBe('off');
-    const ended = await page.waitForFunction(
-      () => (document.querySelector('[data-testid="next-match-moment"]') ? 0 : performance.now()),
-      undefined,
+    const matchDay = (await seen.jsonValue())!;
+    expect(matchDay.boxes).toEqual(before);
+    expect(Math.round(matchDay.transport)).toBe(Math.round(transport.height));
+    const next = await page.waitForFunction(
+      (date) =>
+        document.querySelector('[data-testid="game-date"]')?.textContent !== date
+          ? performance.now()
+          : 0,
+      matchDay.date,
       { polling: 'raf', timeout: 20_000 },
     );
-    // At least 2 s (→WEB-18), less one frame either side of the watch.
-    expect((await ended.jsonValue()) - moment.at).toBeGreaterThanOrEqual(1950);
-    await expect(page.getByTestId('game-round')).toHaveText('1');
+    // No ≥ 2 s hold: the next day follows within the pace and a step's own time, not a moment.
+    expect((await next.jsonValue()) - matchDay.at).toBeLessThan(1500);
     await controls.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
-    await expect(page.getByTestId('next-match-moment')).toHaveCount(0);
-    await expect(slot).toHaveAttribute('data-state', 'off');
-    await expect(slot).toBeEmpty();
     expect(await boxes()).toEqual(before);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   });

@@ -49,6 +49,7 @@ import { CURRENT_CATALOG } from '../../../../packages/catalogs/src/index';
 import { decode, encode } from '../adapters/persistence';
 import { clubMilestones } from '../../../../packages/engine/src/goals';
 import { financialBreakdown } from '../../../../packages/engine/src/finance';
+import { transferLedger } from '../../../../packages/engine/src/transfer-records';
 import {
   requestSchema,
   worldMetadataOf,
@@ -255,6 +256,7 @@ export class Host {
   // string; never reuse a live world or trust header/checksum identity alone.
   private inspected?: { raw: string; result: Awaited<ReturnType<typeof decode>> };
   private newsCache?: { key: string; news: View['news'] };
+  private ledgerCache?: { events: World['events']; end: number; ledger: View['transferLedger'] };
   /** Numbers, retains and diffs the views this host publishes. */
   private views = new ViewPublisher();
   cancelled = false;
@@ -365,6 +367,16 @@ export class Host {
     if (this.newsCache?.key !== key) this.newsCache = { key, news: clubNews(w) };
     return this.newsCache.news;
   }
+  /**
+   * The older career's transfer ledger (→HIST-20): fixed once the first fact is recorded, so it is
+   * read again only while the boundary moves.
+   */
+  private transferLedger(w: World): View['transferLedger'] {
+    const end = w.transfers?.ledgerBefore ?? w.events.length;
+    if (this.ledgerCache?.events !== w.events || this.ledgerCache.end !== end)
+      this.ledgerCache = { events: w.events, end, ledger: transferLedger(w) };
+    return this.ledgerCache.ledger;
+  }
   private view(w = this.world): View | undefined {
     if (!w) return;
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
@@ -434,6 +446,7 @@ export class Host {
       finance: financialBreakdown(w),
       news: this.news(w),
       managerHistoryKey: managerHistoryKey(w),
+      transferLedger: this.transferLedger(w),
     };
   }
   /** The view for a reply (→ARCH-6): this world's view, whole or as the changes since `base`. */

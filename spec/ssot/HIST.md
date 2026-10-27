@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r17 | Define the browser-demo rules for durable metrics and history.
+> r18 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -60,6 +60,7 @@
   - freeze the responsible tenure on each newly settled own match and on the source of a newly finalised league finish, cup title or promotion. Preserve settlement order and unique source references so retries, reloads, season rollover and later appointments cannot duplicate or reassign facts.
   - tracking starts at founding or the supported-career activation boundary (→SAVE-24). Preserve a known earlier service year without presenting activation as the appointment date. Older unstructured events and names remain readable; an ambiguous name/date or missing attribution is never sufficient to invent a historical tenure link.
   - summaries are pure reads of retained facts; they add no random draws, match effects, cash, rewards or separate manager-quality rating (→HIST-7).
+  - an interim tenure credited with no own match and no outcome stays in the facts but is left out of every manager summary, list and count (→WEB-92); once it is credited with one it shows from its appointment. ← a caretaker who never took a match is no part of the club's story
 - HIST-19 [o] Own-manager accomplishment summaries describe results recorded during each tenure (→HIST-18).
   - show league titles with the actual country/division/group, retained domestic and continental cup titles, promotions with the actual division move, and best final league rank separately within each country/division/group. Include the season and competition; a lower-division first place is not a top-flight title, and a grouping change alone is not promotion.
   - credit a cup title to the tenure responsible when its final is decided, a league title/final rank when the final league table is settled, and a promotion when the actual promotion outcome is settled. This uses settlement, not an earlier mathematical clinch. A later change of manager never transfers an accomplishment; a shared season is identified as such rather than crediting its final outcome to every manager.
@@ -67,11 +68,19 @@
   - distinguish a fully tracked tenure with no accomplishment from incomplete/unavailable historical attribution. Counts and maxima from a partially tracked tenure are explicitly limited to its recorded period, never presented as complete career totals. Current season rank/promotion-zone membership is provisional, not a completed accomplishment.
   - v1 covers our club's tenures and factual results. Other-club honours, deepest-cup-run rankings, generated praise and claims of sole managerial causation are outside this summary.
 
+- HIST-20 [o] Our club keeps one transfer fact for each completed fee signing, sale and loan in or out, for the whole career. ← fans rank record fees, and a ledger line is no record of who moved
+  - each fact holds the player's identity (person when known) and name, the other club, the direction, permanent or loan, the fee in the currency it was paid in, and the date.
+  - free transfers, releases, academy call-ups and retirements keep no fee fact.
+  - rankings compare fees in today's money (→ECON-6) and show the original amount beside it.
+  - a career whose transfers predate these facts ranks its recorded transfer-in/transfer-out ledger entries by amount, labelled with the entry's recorded text; it never invents a player, club or date link (→SAVE-24).
+  - the facts fit →SAVE-4/13's century budgets without pruning.
+
 ## flow
 
 - Career/mediation outcomes → retained person links and commitments → fact-backed profiles, decisions and derived news.
 
 ## chg
+- r18 261027 HIST-18✎ every tenure in summaries→interim tenures without a credited match or outcome left out; HIST-20+ own-club transfer facts (fee signings, sales, loans) with rankings in today's money and ledger fallback for older careers
 - r17 261021 HIST-18/19+ stable own-manager tenures, settlement-time accomplishment attribution, factual summaries and explicit tracking coverage
 - r16 261020 HIST-3✎ unspecified NPC current statistics→complete settled team/player aggregates; HIST-17+ shared accumulation, identity/transfer conservation, tracking boundaries and bounded NPC retention
 - r15 261019 HIST-13✎ appearances as minutes / 90 with no substitutions→one per recorded match with minutes > 0, starters and substitutes alike; per-90 rates remain separate

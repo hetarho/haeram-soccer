@@ -27,7 +27,7 @@ import { gate, settleLeagueMerit, settleRound } from './settlement';
 import { assessOperatingExpenses } from './finance';
 import { reduceSeasonMaterial } from './material';
 import { delegatedBusiness, sponsorReminder, yearlySponsor } from './ops-commercial';
-import { yearlyStaff } from './ops-staff';
+import { settleManagerTrust, yearlyStaff } from './ops-staff';
 import type {
   BracketArchive,
   Club,
@@ -886,6 +886,8 @@ function playRound(
   advanceEurope(w, capture, undefined, observe);
   advanceCups(w, capture, undefined, observe);
   settleRound(w);
+  // A manager at the floor of trust may resign once the round is settled (→STAFF-47).
+  settleManagerTrust(w);
   snapshotStandings(w);
   snapshotScorers(w);
   if (w.round % MARKET_REFRESH_ROUNDS === 0) {

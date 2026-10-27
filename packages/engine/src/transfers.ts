@@ -22,6 +22,7 @@ import {
   slotOvr,
 } from './player-state';
 import { addEvent } from './events';
+import { recordTransfer } from './transfer-records';
 import { ownStarters } from './world';
 import { ambitionAfterDecline, leaveContract, marketValue, signingClauses } from './contracts';
 import { credit, debit } from './transactions';
@@ -131,6 +132,7 @@ function completeSigning(w: World, bid: TransferBid, offer: MarketOffer, fee: st
   else p.clauses = signingClauses(w, p);
   w.players.push(p);
   noteSigning(w, p);
+  recordTransfer(w, { direction: 'in', loan: !!bid.loan, player: p, club: bid.club, fee });
   addEvent(
     w,
     'transfer-in',
@@ -163,6 +165,7 @@ function completeSale(w: World, bid: TransferBid, p: Player) {
   leaveContract(w, p);
   movePerson(w, p, club?.id, true);
   if (wasStarter || activePlayers(w).length < 20) openNeed(w, p);
+  recordTransfer(w, { direction: 'out', loan: false, player: p, club: bid.club, fee: bid.fee });
   addEvent(
     w,
     'transfer-out',
