@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r22 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r23 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -17,22 +17,26 @@
 - ARCH-3 [o] Repository structure separates domain code, contracts, data, browser adapters, and future platform code.
   | Path | Responsibility |
   |---|---|
-  | `apps/web/src/app` | React entry, routing, feature composition, error boundaries |
-  | `apps/web/src/features` | founding, dashboard, matches, statistics, club operations, history |
-  | `apps/web/src/rendering` | Canvas pitch and SVG chart presentation |
-  | `apps/web/src/adapters` | worker bridge, browser storage, save import/export |
-  | `apps/web/src/workers` | engine host and background save codec |
+  | `apps/web/src/main.tsx` | entry: presentation bootstrap, React root |
+  | `apps/web/src/ui` | React screens, Canvas pitch, SVG charts, and their framework-free view helpers (`*.ts`) |
+  | `apps/web/src/runtime` | main-thread client and store, engine worker host, protocol, view publisher, codec worker, read models shared with the worker |
+  | `apps/web/src/adapters` | browser storage repositories, checkpoint commit, save codec and packing, preference stores, resource loaders |
+  | `apps/web/src/presentation` | locale/theme registry and controller, shared presentation labels and assets (→ARCH-32) |
   | `packages/contracts` | commands, events, projections, save/catalog DTOs, boundary schemas |
-  | `packages/engine` | framework-independent simulation and domain state |
+  | `packages/engine` | framework-independent simulation and domain state; `grid/` and `aggregate/` compute matches |
   | `packages/catalogs` | versioned countries, names, competition eras, prices, currencies |
-  | `fixtures/portable` | seeds, commands, catalogs, expected facts, save migration cases |
+  | `tests/fixtures` | shared simulated test worlds and workloads (→ARCH-21) |
+  | `fixtures/portable` | planned: seeds, commands, catalogs, expected facts, save migration cases (→ARCH-20) |
   | `tests/e2e` | browser journeys, persistence/recovery, built-site smoke checks |
+  | `scripts` | verification, measurement and dependency tooling |
   | `spec` | current policies, implementation tasks, standalone state |
   | `apps/flutter` | future Flutter application; do not scaffold in the web milestone |
 - ARCH-4 [o] Dependency direction: contracts → engine/catalogs → platform adapters → UI.
   - Engine imports DTO types and injected catalogs; it does not import React, Zustand, DOM, browser storage, HTTP clients, or rendering.
   - Catalogs are data; schema validation occurs before they enter the engine.
   - React may display projections and submit commands; it does not directly modify canonical game state.
+  - UI code imports engine values only from read leaves: modules whose runtime import closure reaches no world generation, season, match or grid-execution orchestration. Constants, labels and pure reads the UI needs live in such leaves beside their data. ← a label or read pulled through an orchestration module ties the screen and its tests to every engine change
+  - Existing UI imports of orchestration modules are listed exceptions guarded by an architecture test: a new UI→orchestration import fails, and so does a listed import that no longer exists, so the list only shrinks. Moving domain reads into the published view instead is a separate measured decision.
 - ARCH-5 [o] A versioned deterministic engine owns game progression.
   - Inputs: world seed, explicit commands and the game day each applies at, engine/rule versions, and catalog versions.
   - Use a documented seeded PRNG with portable test vectors and separately named streams for generation, matches, and other stochastic systems.
@@ -240,6 +244,7 @@
 - Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
 
 ## chg
+- r23 261027 ARCH-3✎ app/features/rendering/workers path table→the real ui/runtime/adapters/presentation layout, tests/fixtures and scripts, portable fixtures marked planned; ARCH-4✎ no rule for which engine modules the UI names→UI imports engine values only from read leaves, existing orchestration imports a shrink-only list guarded by an architecture test
 - r22 261026 ARCH-11✎ save repository uses localStorage→keeps checkpoints in IndexedDB, localStorage for settings/manifest/slot index and SAVE-3's fallback; ARCH-14✎ never move the active checkpoint to IndexedDB/cloud→never move checkpoints to cloud storage; constraints✎ primary save store localStorage→IndexedDB with the bounded localStorage fallback
 - r21 261026 ARCH-21✎ source-wide world cache→dependency-scoped JSON cache and prepared UI checkpoints; ARCH-22✎ unit/contract→unit/integration/contract; ARCH-23✎ mixed unit shards→separate unit/integration jobs; ARCH-30✎ mixed changed tests and per-unit batch→unit-project task checks and one final batch; ARCH-33+ leaf computation boundaries and dependency-scoped measurement reuse
 - r20 261024 ARCH-31✎ paired accuracy, throughput and capacity release gates→throughput and capacity gates with accuracy measured and reported, not a gate; a timebox ending does not pass the release gate→never reports a failing metric as passing
