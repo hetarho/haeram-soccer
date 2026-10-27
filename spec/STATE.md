@@ -365,7 +365,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T519 | Helper workers for an own match day's other fixtures | ARCH MATCH WEB | T518 T520 | todo |
 | T521 | Automatic play computes ahead of the shown date | WEB SAVE MATCH | T516 T520 | todo |
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | todo |
 
@@ -394,6 +393,7 @@
 - h7t3 pushed T510–T515 (trust-floor resignations, zero-match interims hidden, 이적 기록 tab, canvas heat maps) to main; Chromium journeys were still running at push — check report 261027-h7t3 checks and CI.
 
 ## log
+- 261027 n3w8: T519 integrated on work/auto-play-2 (p9a4's approved submission fe75453e merged as-is; CI on 8db55791 unit, integration ×3 and checks passed)
 - 261027 p9a4: T516 T517 T518 T520 integrated on work/auto-play; T519 T521 T522 base WEB@160→161 (renumbered on the main merge, content unchanged)
 - 261027 merge publication: preserved remote WEB r159 (transfer records/heat maps); local resource skins r159→r160 and play-pace r160→r161, decision content unchanged; p9a4 task bases keep their recorded content and can refresh on next sync
 - 261027 ideation play-pace-and-owner-surfaces converted: owner dropped the action / standing choice / dashboard split and home ordering; automatic play scope fully in WEB r160, SAVE r55, ARCH r24
