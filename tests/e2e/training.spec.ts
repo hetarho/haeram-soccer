@@ -131,9 +131,11 @@ for (const { seed: worldSeed, ...viewport } of [
     await expect(date).toHaveText('1950년 8월 2일');
     await openTraining();
     const mini = page.getByRole('region', { name: '시즌 진행', exact: true });
-    const entered = await date.innerText();
-    await expect(date).not.toHaveText(entered);
+    // Still running in 훈련. Stopped now, the days computed ahead (three at x1) are shown at the
+    // pace first, short of the first match eve; the date rests once play is offered again.
+    await expect(mini.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
     await mini.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
+    await expect(mini.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
     const paused = await date.innerText();
     // 훈련 shows the focus in force and changes nothing itself (→WEB-70): each focus states its
     // round's recovery and growth, the assistant's pick is marked, and why.

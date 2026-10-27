@@ -365,7 +365,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T521 | Automatic play computes ahead of the shown date | WEB SAVE MATCH | T516 T520 | todo |
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | todo |
 
 ## work
@@ -382,17 +381,13 @@
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 | h7t3 | 4 | 6 | 0 | 6 | 0 | 1 | 2 | 2026-10-27T08:21:16.497Z | [history](work/h7t3.json) |
 | auto-play | 4 | 7 | 4 | 3 | 0 | 1 | 0 | 2026-10-27T11:34:29.863Z | [history](work/auto-play.json) |
+| auto-play-2 | 4 | 2 | 1 | 1 | 0 | 0 | 0 | 2026-10-27T13:33:06.364Z | [history](work/auto-play-2.json) |
 
 ## next
-- T504 publication authorized after owner review; full unit and contract/resource checks passed, integration timeout recheck passed; remaining Chromium run stopped at owner request before publication.
-- p9a4 handoff (work auto-play, pushed as origin work/auto-play): T516, T517, T518, T520 integrated and merged with main fd49c84b; batch on 56f367f1 passed typecheck/lint/format/unit/integration/contract/catalogs/build and Chromium 296/303 — the 7 failures (facility-art heritage 360/terraces 390, mediation direct-financial-conflict-review, mobile-match-presentation tabs contrast ×2 and pitch ratio 360/390) fail identically on origin/main fd49c84b, so they predate this work (resource UI merge); fix them on main, rerun the batch, then push. T519 resubmitted after the main merge and the WEB@161 base bump (origin task/auto-play/T519-eb21feb0; its earlier integration failures were load flakes, unit 1203 + contract 39 pass on rerun) and waits for review and integration (`work run --work auto-play --autopilot`); T521 not started (waits on T519 for client.ts); then explore T522.
-- T504 complete: portable resource skins, responsive facilities and image budgets; 79.2 MB → 40.9 MB image payload, 164 affected unit cases and all 13 focused Chromium cases passed; awaiting the ARCH-30 publication gate.
-- T494–T495 complete: theme-matched trophy artwork and distinct division/continental silhouettes; all required batch stages passed before publication.
-- review/ui-engine-boundary-261027 F1–F4 done (T500–T503): UI→orchestration exceptions 53→38 files, 38→35 engine modules; F5 (domain reads on the main thread) waits for a measured decision.
-- o7h4 pushed T490–T493 (owner office, home season card, records sub-screen) to main after the ARCH-30 batch passed on eaf5f3d1; confirm its decided inbox items.
-- h7t3 pushed T510–T515 (trust-floor resignations, zero-match interims hidden, 이적 기록 tab, canvas heat maps) to main; Chromium journeys were still running at push — check report 261027-h7t3 checks and CI.
+- inspect work board for remaining tasks
 
 ## log
+- 261027 T521 integrated
 - 261027 n3w8: T519 integrated on work/auto-play-2 (p9a4's approved submission fe75453e merged as-is; CI on 8db55791 unit, integration ×3 and checks passed)
 - 261027 T523 done (n3w8): main CI fix after T504 — chart tabs readable on their new surfaces, mediation choice inputs skip the 20 px skin, pitch/facility specs follow the framed header and responsive art; 3 Chromium spec files 25/25
 - 261027 p9a4: T516 T517 T518 T520 integrated on work/auto-play; T519 T521 T522 base WEB@160→161 (renumbered on the main merge, content unchanged)
@@ -412,4 +407,3 @@
 - 261027 T502 done: staff catalogue and member reads moved to staff-info.ts; UI exception list 46→43 files
 - 261027 T501 done: tactic labels, founding years and injury reads moved to engine leaves; UI exception list 53→46 files
 - 261027 T500 done: UI→engine orchestration guard with a shrink-only list (53 files, 38 modules)
-- 261027 create-task review/ui-engine-boundary-261027 + ARCH r23 → T500–T503 (guard, tactic/injury leaves, staff-info leaf, competition/label leaves); review converted

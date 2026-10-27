@@ -63,37 +63,24 @@ test('mobile clock keeps actions in one row and advances at the dropdown pace', 
   await chooseOption(pace, 'x1');
   await page.waitForTimeout(1500);
   await expect(date).toHaveText('1950년 8월 1일');
-  // Play starts the clock; stopping after the first tick advances exactly one day.
+  // Play starts the clock. The owner's stop first shows the days computed ahead at the pace, at
+  // most three at x1, and management stays locked until they are shown (→WEB-18/97).
   await toggle.click();
   await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toBeDisabled();
   await expect(date).toHaveText('1950년 8월 2일');
   await stop.click();
   await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toBeEnabled();
-  await expect(date).toHaveText('1950년 8월 2일');
-  // x2 is a day every half second: it moves on and stops with the owner, short of the match eve.
-  await chooseOption(pace, 'x2');
-  await expect(pace).toHaveAttribute('data-value', 'x2');
-  await expect(date).toHaveText('1950년 8월 2일');
-  await toggle.click();
-  // Every visible step is one day (→WEB-18); a step already sent may still land after the stop.
-  await expect(date).not.toHaveText('1950년 8월 2일');
-  await stop.click();
-  // A day step already in flight when the owner stops still lands; read the date once it rests.
-  let stepped = await date.innerText();
-  await expect
-    .poll(async () => {
-      const before = stepped;
-      await page.waitForTimeout(400);
-      stepped = await date.innerText();
-      return stepped === before;
-    })
-    .toBe(true);
-  expect(['1950년 8월 3일', '1950년 8월 4일', '1950년 8월 5일']).toContain(stepped);
+  const stopped = await date.innerText();
+  expect(['1950년 8월 2일', '1950년 8월 3일', '1950년 8월 4일', '1950년 8월 5일']).toContain(
+    stopped,
+  );
   await page.waitForTimeout(1200);
-  await expect(date).toHaveText(stepped);
-  // x10 runs on to the eve of our first match and the clock stops there.
+  await expect(date).toHaveText(stopped);
+  // x10 runs on to the eve of our first match, computing nothing past it, and the clock stops
+  // there; choosing the pace alone leaves the date.
   await chooseOption(pace, 'x10');
   await expect(pace).toHaveAttribute('data-value', 'x10');
+  await expect(date).toHaveText(stopped);
   await toggle.click();
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
