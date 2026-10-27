@@ -60,6 +60,41 @@ describe('lossless career stream compaction', () => {
     expect(canonical(restored)).toBe(canonical(w));
   });
 
+  it('keeps a trust warning and own-club transfer facts through a pack round trip', () => {
+    const w = career();
+    w.manager.trustWarned = true;
+    const player = w.players.find((p) => p.status === 'active')!;
+    w.transfers = {
+      ledgerBefore: w.events.length,
+      facts: [
+        {
+          direction: 'in',
+          loan: false,
+          player: player.id,
+          name: player.name,
+          club: w.clubs.find((c) => c.id !== w.playerClub)!.id,
+          fee: '12345678901234567890',
+          currency: w.currency,
+          year: w.year,
+          day: 3,
+        },
+        {
+          direction: 'out',
+          loan: true,
+          player: 'gone',
+          name: 'Ben Hale',
+          fee: '0',
+          year: w.year,
+          day: 9,
+        },
+      ],
+    };
+    const restored = validateWorld(unpack(JSON.parse(JSON.stringify(pack(w)))));
+    expect(restored.transfers).toEqual(w.transfers);
+    expect(restored.manager.trustWarned).toBe(true);
+    expect(canonical(restored)).toBe(canonical(w));
+  });
+
   it('keeps the player and terms a pending bid was made for through a pack round trip', () => {
     const w = career();
     // Asking fees follow the market (→CLUB-25); the round trip is what is tested, not the price.
