@@ -334,6 +334,31 @@ html[data-theme] {
     line-height: 1.4;
   }
 
+  [data-ui='calendar-header'] {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+    padding: 8px 12px;
+    border: 1px solid transparent;
+    border-image: var(--image-button-frame)
+      var(--image-art-frame-button-slice, var(--image-frame-slice, 22)) / 4px stretch;
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 256px);
+  }
+
+  [data-ui='calendar-header'] small {
+    color: var(--image-accent);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  [data-ui='calendar-header'] [data-testid='game-date'] {
+    font-weight: 700;
+  }
+
   [data-ui='season-overview'] > div:nth-child(2) {
     gap: 7px;
   }
@@ -571,6 +596,7 @@ html[data-theme] {
     border: 0;
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
     color: var(--image-on-dark);
+    padding: 8px 4px;
   }
 
   [data-home-part='season-stats'] > div {
@@ -1052,10 +1078,10 @@ html[data-theme] {
       right: 6px;
     }
     [data-home-part='season-stats'] {
-      margin: 0 4px 4px;
+      margin: 6px 6px 0;
     }
     [data-home-part='season-stats'] > div {
-      padding: 5px 8px;
+      padding: 6px 10px;
       gap: 2px;
     }
     [data-home-part='season-stats'] span {

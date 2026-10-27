@@ -51,12 +51,17 @@ export const ProgressOverview = memo(function ProgressOverview({
       aria-label="시즌 정보"
       data-testid={compact ? 'mini-clock' : undefined}
     >
-      <div className={p.calendarSummary} data-testid="calendar" data-season={w.year}>
+      <header
+        className={p.calendarSummary}
+        data-ui="calendar-header"
+        data-testid="calendar"
+        data-season={w.year}
+      >
         <small>
           {w.lower ? t('shell.amateurLeague') : t('shell.division', { division: club.tier + 1 })}
         </small>
         <span data-testid="game-date">{seasonDate(w)}</span>
-      </div>
+      </header>
       {round && (
         <div
           className={p.round}

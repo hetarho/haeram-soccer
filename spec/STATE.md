@@ -379,6 +379,7 @@
 - o7h4 pushed T490–T493 (owner office, home season card, records sub-screen) to main after the ARCH-30 batch passed on eaf5f3d1; confirm its decided inbox items.
 
 ## log
+- 261027 fix home-header: league/date now share a framed header row and season statistics have inner padding; typecheck, targeted lint/format and 5 ProgressControls cases passed; sticker home visually checked, owner review complete; ready for publication verification
 - 261027 T504 done: common resource skins and JSON metadata, compact UI encodings, 276 responsive facility variants, demand-driven staging and art checks; affected validation passed
 - 261027 create-task WEB r159 → T504; implementation started (r6u2)
 - 261027 update-ssot WEB start (r6u2): portable resource skins and asset delivery audit
@@ -398,4 +399,3 @@
 - 261027 T491 T492 done (o7h4): focused 구단주 사무실 from home with the clock stopped inside, lobby of six areas, 결재 라인; office-aware e2e helpers across 20 specs, browser specs left to the batch
 - 261027 T490 done (o7h4): home season card with round·rank·record, strength tile leads team state, 10px below the HUD; task checks passed, browser specs left to the batch
 - 261027 create-task WEB r158 (autopilot o7h4): T490 home season card and strength tile, T491 focused office and clock, T492 office lobby and 결재 라인, T493 records season screen and player totals to 100
-- 261027 update-ssot WEB r158 (autopilot o7h4, owner request): season card on home (round·rank·record), strength in team state, spacing below the HUD, focused 구단주 사무실 entered from home with six areas and 결재 라인, office stops the clock (WEB-98), records season sub-screen with a navigator bar, player totals up to 100
