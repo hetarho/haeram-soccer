@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-27T13:56:34.103Z",
-  "sourceCommit": "7247a1a4a854e19cb1a70c71c0a345d31b31022c",
+  "snapshotAt": "2026-10-27T15:06:11.936Z",
+  "sourceCommit": "c70fd4aaa846a0f51f74652368dda9f811811712",
   "group": {
     "id": "auto-play-2",
     "branch": "work/auto-play-2",
@@ -15,7 +15,7 @@
     "push": null,
     "review": "risky",
     "lastRun": {
-      "id": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+      "id": "fb9f561d-d1bc-4cf0-a383-27b4f4189e85",
       "adapter": "builtin",
       "providers": {
         "worker": {
@@ -36,17 +36,15 @@
           "version": "2.1.310 (Claude Code)"
         }
       ],
-      "startedAt": "2026-10-27T12:17:06.695Z",
-      "stoppedAt": "2026-10-27T13:56:32.711Z",
-      "dispatched": 4,
+      "startedAt": "2026-10-27T15:06:10.063Z",
+      "stoppedAt": "2026-10-27T15:06:10.966Z",
+      "dispatched": 0,
       "outcome": "needs-attention",
       "failures": [
         {
-          "role": "finish",
-          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
-          "details": [
-            "stderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness\n[presentation:locale] Missing message \"navigation.league\" (en-US); using the registered default (ko-KR). {\n  code: 'missing-message',\n  locale: 'en-US',\n  messageId: 'navigation.league',\n  message: 'Missing message \"navigation.league\" (en-US); using the registered default (ko-KR).'\n}\n\n(node:90412) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90415) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90485) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90544) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90552) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90554) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90682) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  |unit| packages/engine/src/staff.hiring.test.ts > contract terms (STAFF-11, STAFF-14) > never signs a manager past his 70th year, and the firefighter for one season\nError: Test timed out in 30000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ packages/engine/src/staff.hiring.test.ts:323:3\n    321|   });\n    322|\n    323|   it('never signs a manager past his 70th year, and the firefighter fo…\n       |   ^\n    324|     const w = world('seventy');\n    325|     expect(managerTermLimit({ born: w.year - 50 }, w.year)).toBe(5);\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n FAIL  |unit| packages/engine/src/grid/decide.test.ts > grid decisions > shoots less when ahead and more when behind, all match long\nError: Test timed out in 30000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ packages/engine/src/grid/decide.test.ts:615:3\n    613|   });\n    614|\n    615|   it('shoots less when ahead and more when behind, all match long', ()…\n       |   ^\n    616|     const at = centre(6, 2);\n    617|     const shot = (lead: number) => mixAt(ST, at, (t) => ({ ...t, lead,…\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n"
-          ]
+          "attempt": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+          "role": "worker",
+          "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
         }
       ],
       "autopilot": true,
@@ -54,12 +52,12 @@
     }
   },
   "summary": {
-    "total": 2,
+    "total": 3,
     "completed": 1,
-    "remaining": 1,
+    "remaining": 2,
     "running": 0,
     "review": 0,
-    "blocked": 0,
+    "blocked": 1,
     "unassigned": 1
   },
   "tasks": [
@@ -72,7 +70,15 @@
         "T520",
         "T521"
       ],
-      "status": "todo"
+      "status": "doing@261027.n3w8"
+    },
+    {
+      "id": "T524",
+      "title": "Reads during automatic play wait for the shown date",
+      "dep": [
+        "T521"
+      ],
+      "status": "blocked"
     }
   ],
   "attempts": [
@@ -221,6 +227,37 @@
           "finishedAt": "2026-10-27T13:33:37.656Z"
         }
       ]
+    },
+    {
+      "id": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "group": "auto-play-2",
+      "taskId": "T524",
+      "tasks": [
+        "T524"
+      ],
+      "lane": null,
+      "owner": "fb9f561d-d1bc-4cf0-a383-27b4f4189e85/worker-1",
+      "contributors": [
+        "ee602424-6fb0-4374-a820-79f2927fdaca/worker-1",
+        "fb9f561d-d1bc-4cf0-a383-27b4f4189e85/worker-1"
+      ],
+      "status": "blocked",
+      "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요.",
+      "createdAt": "2026-10-27T14:55:03.911Z",
+      "startCommit": "53ce730c07cfc5857da2e41ea9b654dd8bbd6b06",
+      "dispatch": {
+        "id": "428f2f75-3464-4d68-bbbf-ba7d04621a30",
+        "runner": "ee602424-6fb0-4374-a820-79f2927fdaca",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-27T14:55:05.274Z",
+        "finishedAt": "2026-10-27T15:05:23.445Z",
+        "error": "T524: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+        "summary": "T524 is done. During automatic play, a read that skips the command queue can no longer show results from a day the calendar hasn't reached yet. The edits are in the three touched files plus the task's acceptance checks and result. Nothing is committed.\n\nHow it works:\n- **One read path.** All nine reads (`archive`, `recruitmentHistory`, `mediationPreview`, `personCareer`, `headToHead`, `clubRecords`, `managerHistory`, `leagueFixtures`, `fullStats`) now go through a single private `read()` in `client.ts`. It asks a gate (`readGate`) first. The progression controller sets that gate when it is created and clears it on dispose.\n- **What the gate does while the clock runs.** In `progression.ts`, the read counts as pending, and `compute()` sends no step until it is answered. If a step is in flight, the read waits for it to land. Then every held day is shown at once through `flush()`, the same path as entering the office or hiding the tab. If the owner's stop was still showing days, it ends there, unlocking and saving. Only then is the read sent. Computing ahead resumes as soon as the read is answered or fails. The clock never stops.\n- **Otherwise.** With the clock stopped, in manual mode or with the tab hidden, the gate does nothing and the read goes out at once, as before.\n\nTests: `progression.runahead.test.ts` has 13 new cases. They cover held days shown before a head-to-head read is sent, a read started during an in-flight step, no steps sent until the reply or an error and the run continuing after, a read with nothing held changing nothing, a read during the owner's stop, and all nine reads going out only after the held days are shown. The fake client is now built on `GameClient.prototype`, so these cases exercise the real read path. When I disabled the gate, 12 of the 13 failed; only the nothing-held case passed, which is correct.\n\nChecks run and passing:\n- `pnpm install --frozen-lockfile --prefer-offline`\n- `pnpm exec vitest run --project unit apps/web/src/runtime/progression.test.ts apps/web/src/runtime/progression.runahead.test.ts` (74 tests)\n- `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`\n- `pnpm exec vitest run --project unit --project contract --changed 53ce730c --passWithNoTests` (8 files, 125 tests). My first try at this one was blocked because I had added `$?` to the command. The plain command then ran and passed.\n\nLeft for the batch run (not run here): `pnpm exec vitest run --project integration apps/web/src/runtime/client.test.ts` and `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`. `client.test.ts` is untouched because its reads run without a controller.\n\nBehaviour the task text didn't spell out, also listed in the result:\n- If the clock runs with nothing held and nothing in flight, the read goes out at once but still pauses computing ahead until it is answered.\n- Catch-up steps (hidden tab, or returning after time away) aren't held by reads. Each is shown as it lands, before any read sent behind it is answered.\n- A read waiting on an in-flight step leaves the held days showing at the normal pace until that step lands, then shows them all at once."
+      }
     }
   ],
   "history": [
@@ -1066,6 +1103,352 @@
               "details": [
                 "stderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness\n[presentation:locale] Missing message \"navigation.league\" (en-US); using the registered default (ko-KR). {\n  code: 'missing-message',\n  locale: 'en-US',\n  messageId: 'navigation.league',\n  message: 'Missing message \"navigation.league\" (en-US); using the registered default (ko-KR).'\n}\n\n(node:90412) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90415) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90485) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90544) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90552) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90554) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90682) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  |unit| packages/engine/src/staff.hiring.test.ts > contract terms (STAFF-11, STAFF-14) > never signs a manager past his 70th year, and the firefighter for one season\nError: Test timed out in 30000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ packages/engine/src/staff.hiring.test.ts:323:3\n    321|   });\n    322|\n    323|   it('never signs a manager past his 70th year, and the firefighter fo…\n       |   ^\n    324|     const w = world('seventy');\n    325|     expect(managerTermLimit({ born: w.year - 50 }, w.year)).toBe(5);\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n FAIL  |unit| packages/engine/src/grid/decide.test.ts > grid decisions > shoots less when ahead and more when behind, all match long\nError: Test timed out in 30000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ packages/engine/src/grid/decide.test.ts:615:3\n    613|   });\n    614|\n    615|   it('shoots less when ahead and more when behind, all match long', ()…\n       |   ^\n    616|     const at = centre(6, 2);\n    617|     const shot = (lead: number) => mixAt(ST, at, (t) => ({ ...t, lead,…\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n"
               ]
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1410,
+      "at": "2026-10-27T14:55:03.679Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "ee602424-6fb0-4374-a820-79f2927fdaca",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T14:55:03.662Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1411,
+      "at": "2026-10-27T14:55:03.911Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+        "group": "auto-play-2",
+        "taskId": "T524",
+        "tasks": [
+          "T524"
+        ],
+        "lane": null,
+        "owner": "ee602424-6fb0-4374-a820-79f2927fdaca/worker-1",
+        "contributors": [
+          "ee602424-6fb0-4374-a820-79f2927fdaca/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-27T14:55:03.911Z",
+        "startCommit": "53ce730c07cfc5857da2e41ea9b654dd8bbd6b06"
+      }
+    },
+    {
+      "sequence": 1412,
+      "at": "2026-10-27T14:55:04.820Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1413,
+      "at": "2026-10-27T14:55:05.274Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "428f2f75-3464-4d68-bbbf-ba7d04621a30",
+          "runner": "ee602424-6fb0-4374-a820-79f2927fdaca",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T14:55:05.274Z"
+        }
+      }
+    },
+    {
+      "sequence": 1414,
+      "at": "2026-10-27T14:55:05.471Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "428f2f75-3464-4d68-bbbf-ba7d04621a30",
+          "runner": "ee602424-6fb0-4374-a820-79f2927fdaca",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T14:55:05.274Z"
+        }
+      }
+    },
+    {
+      "sequence": 1415,
+      "at": "2026-10-27T15:05:23.234Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1416,
+      "at": "2026-10-27T15:05:23.397Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T524: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+      }
+    },
+    {
+      "sequence": 1417,
+      "at": "2026-10-27T15:05:23.445Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "428f2f75-3464-4d68-bbbf-ba7d04621a30",
+          "runner": "ee602424-6fb0-4374-a820-79f2927fdaca",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T14:55:05.274Z",
+          "finishedAt": "2026-10-27T15:05:23.445Z",
+          "error": "T524: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+          "summary": "T524 is done. During automatic play, a read that skips the command queue can no longer show results from a day the calendar hasn't reached yet. The edits are in the three touched files plus the task's acceptance checks and result. Nothing is committed.\n\nHow it works:\n- **One read path.** All nine reads (`archive`, `recruitmentHistory`, `mediationPreview`, `personCareer`, `headToHead`, `clubRecords`, `managerHistory`, `leagueFixtures`, `fullStats`) now go through a single private `read()` in `client.ts`. It asks a gate (`readGate`) first. The progression controller sets that gate when it is created and clears it on dispose.\n- **What the gate does while the clock runs.** In `progression.ts`, the read counts as pending, and `compute()` sends no step until it is answered. If a step is in flight, the read waits for it to land. Then every held day is shown at once through `flush()`, the same path as entering the office or hiding the tab. If the owner's stop was still showing days, it ends there, unlocking and saving. Only then is the read sent. Computing ahead resumes as soon as the read is answered or fails. The clock never stops.\n- **Otherwise.** With the clock stopped, in manual mode or with the tab hidden, the gate does nothing and the read goes out at once, as before.\n\nTests: `progression.runahead.test.ts` has 13 new cases. They cover held days shown before a head-to-head read is sent, a read started during an in-flight step, no steps sent until the reply or an error and the run continuing after, a read with nothing held changing nothing, a read during the owner's stop, and all nine reads going out only after the held days are shown. The fake client is now built on `GameClient.prototype`, so these cases exercise the real read path. When I disabled the gate, 12 of the 13 failed; only the nothing-held case passed, which is correct.\n\nChecks run and passing:\n- `pnpm install --frozen-lockfile --prefer-offline`\n- `pnpm exec vitest run --project unit apps/web/src/runtime/progression.test.ts apps/web/src/runtime/progression.runahead.test.ts` (74 tests)\n- `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`\n- `pnpm exec vitest run --project unit --project contract --changed 53ce730c --passWithNoTests` (8 files, 125 tests). My first try at this one was blocked because I had added `$?` to the command. The plain command then ran and passed.\n\nLeft for the batch run (not run here): `pnpm exec vitest run --project integration apps/web/src/runtime/client.test.ts` and `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`. `client.test.ts` is untouched because its reads run without a controller.\n\nBehaviour the task text didn't spell out, also listed in the result:\n- If the clock runs with nothing held and nothing in flight, the read goes out at once but still pauses computing ahead until it is answered.\n- Catch-up steps (hidden tab, or returning after time away) aren't held by reads. Each is shown as it lands, before any read sent behind it is answered.\n- A read waiting on an in-flight step leaves the held days showing at the normal pace until that step lands, then shows them all at once."
+        }
+      }
+    },
+    {
+      "sequence": 1418,
+      "at": "2026-10-27T15:05:24.376Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "ee602424-6fb0-4374-a820-79f2927fdaca",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T14:55:03.662Z",
+          "stoppedAt": "2026-10-27T15:05:24.376Z",
+          "dispatched": 1,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+              "role": "worker",
+              "error": "T524: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1419,
+      "at": "2026-10-27T15:06:05.141Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1420,
+      "at": "2026-10-27T15:06:10.082Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "fb9f561d-d1bc-4cf0-a383-27b4f4189e85",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T15:06:10.063Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1421,
+      "at": "2026-10-27T15:06:10.121Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "fb9f561d-d1bc-4cf0-a383-27b4f4189e85/worker-1",
+        "contributors": [
+          "ee602424-6fb0-4374-a820-79f2927fdaca/worker-1",
+          "fb9f561d-d1bc-4cf0-a383-27b4f4189e85/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 1422,
+      "at": "2026-10-27T15:06:10.173Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+      }
+    },
+    {
+      "sequence": 1423,
+      "at": "2026-10-27T15:06:10.966Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "fb9f561d-d1bc-4cf0-a383-27b4f4189e85",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T15:06:10.063Z",
+          "stoppedAt": "2026-10-27T15:06:10.966Z",
+          "dispatched": 0,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+              "role": "worker",
+              "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
             }
           ],
           "autopilot": true,

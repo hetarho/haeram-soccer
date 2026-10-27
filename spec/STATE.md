@@ -366,7 +366,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | todo |
+| T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | doing@261027.n3w8 |
 | T524 | Reads during automatic play wait for the shown date | WEB | T521 | todo |
 
 ## work
@@ -383,7 +383,7 @@
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 | h7t3 | 4 | 6 | 0 | 6 | 0 | 1 | 2 | 2026-10-27T08:21:16.497Z | [history](work/h7t3.json) |
 | auto-play | 4 | 7 | 4 | 3 | 0 | 1 | 0 | 2026-10-27T11:34:29.863Z | [history](work/auto-play.json) |
-| auto-play-2 | 4 | 2 | 1 | 1 | 0 | 0 | 0 | 2026-10-27T13:56:34.103Z | [history](work/auto-play-2.json) |
+| auto-play-2 | 4 | 3 | 1 | 2 | 0 | 0 | 1 | 2026-10-27T15:06:11.936Z | [history](work/auto-play-2.json) |
 
 ## next
 - inspect work board for remaining tasks
