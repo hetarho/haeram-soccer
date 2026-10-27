@@ -389,7 +389,7 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- Gameplay and navigation correction are published on main a25dc139. Independent cold-cache unit setup correction de28c4b2 passed the fresh-cache file and all 1319 units; other source scopes remain identical to the passed full batch. Coordinator owns its publication and final CI completion.
+- Gameplay T530-T535 is on main 9a94dbce. Its CI passed eight jobs, with one WebKit observation-order test failure. Browser-only correction b8492975 passed all 21 affected journeys across three browsers plus fast checks; coordinator owns its publication and final CI completion.
 - Preserve the integrated automatic-play work and n3w8 report; no unrelated implementation remains in this requested UI slice.
 - n3w8 closed (report 261027-n3w8): automatic play T516–T525 on main (group gate on 2573791c); T522 read on the built game: 0 stalls at x1/x2/x5/x10, x10 10 days a second, no main-thread long task, helpers on (M1 Max, headless Chromium) — a CPU-throttled phone-class read is the open question. Inbox: confirm the WEB-18 read decisions (T524 → T525) and the WEB-69 framed-tabs suggestion.
 
