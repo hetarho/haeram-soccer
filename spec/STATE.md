@@ -372,7 +372,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | doing@261027.n3w8 |
-| T532 | Season and History competition hubs | WEB ARCH | T531 | todo |
+| T532 | Season and History competition hubs | WEB ARCH | T531 | doing@261027.g8u6 |
 | T533 | First-team, academy and coaching navigation | WEB ARCH | T532 | todo |
 
 ## work
