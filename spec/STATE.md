@@ -394,6 +394,7 @@
 - n3w8 closed (report 261027-n3w8): automatic play T516–T525 on main (group gate on 2573791c); T522 read on the built game: 0 stalls at x1/x2/x5/x10, x10 10 days a second, no main-thread long task, helpers on (M1 Max, headless Chromium) — a CPU-throttled phone-class read is the open question. Inbox: confirm the WEB-18 read decisions (T524 → T525) and the WEB-69 framed-tabs suggestion.
 
 ## log
+- 261028 fix coach-hiring-unit-setup: use the known criteria-change-85 seed and assert its candidate condition, eliminating 86 cold world generations; keep all hiring/contract assertions and the 30 s timeout.
 - 261028 fix personnel-navigation-geometry: wait for the incoming hub animation before clicking its local tab, preserving exact zero-scroll and facility-image assertions in Firefox; no production code change.
 - 261028 fix compact-competition-hub: remove 10 px of inter-row margin while retaining 44 px targets and seven complete phone standings rows; office helper dismisses a newly arrived match-eve report before retrying entry.
 - 261028 T535 done: settings feedback survives dialog handoff without a copied toast; request helper waits for home return; remaining cup journeys follow Season.
@@ -413,4 +414,3 @@
 - 261028 update-ssot WEB start: business desks, approval round trips, season/history and personnel navigation.
 - 261028 share WEB r164/T530–T533 planning and reserve the gameplay hierarchy implementation for g8u6.
 - 261028 T522 done (n3w8): built-game read 0 stalls at every pace, x10 10.0 days/s, season-close jump only; reports/automatic-play-read-261028
-- 261027 T523 done (n3w8): main CI fix after T504 — chart tabs readable on their new surfaces, mediation choice inputs skip the 20 px skin, pitch/facility specs follow the framed header and responsive art; 3 Chromium spec files 25/25

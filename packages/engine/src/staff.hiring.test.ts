@@ -225,7 +225,9 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
   });
 
   it("a new 코치 기조 fills a volunteer post at once while a contracted coach waits for his contract's end", () => {
-    const w = world(seedWhere('criteria-change', (abilities) => abilities.every((a) => a < 65)));
+    // The known matching seed avoids generating 86 full worlds on a cold test cache.
+    const w = world('criteria-change-85');
+    expect(staffCandidates(w, 'attack').every((offer) => offer.ability < 65)).toBe(true);
     w.intervention = 3;
     w.settings = legacySettings(3);
     w.direction = { coaches: 'elite' };
