@@ -26,7 +26,7 @@ import {
   playerTendencies,
 } from '../../../../packages/engine/src/match';
 import { clubManager } from '../../../../packages/engine/src/managerMarket';
-import { tacticLabel } from '../../../../packages/engine/src/world';
+import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import { percent } from './format';
 // The report only shows once a match is over: it loads then, keeping it out of the entry (→ARCH-28).
 const MatchReport = lazy(() =>

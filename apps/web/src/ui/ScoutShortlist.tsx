@@ -3,7 +3,7 @@ import type { Line } from '../../../../packages/contracts/src/types';
 import type { World } from '../../../../packages/contracts/src/types';
 import { nextShortlistDraw } from '../../../../packages/engine/src/signings';
 import { seasonDayLabel } from '../../../../packages/engine/src/calendar';
-import { staffMember } from '../../../../packages/engine/src/staff';
+import { staffMember } from '../../../../packages/engine/src/staff-info';
 import { clubOf, overall } from '../../../../packages/engine/src/player-state';
 import type { TransferOffer } from '../../../../packages/engine/src/recruitment';
 import { Money } from './Money';

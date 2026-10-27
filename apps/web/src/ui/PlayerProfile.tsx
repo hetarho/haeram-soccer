@@ -1,5 +1,5 @@
 import { careerAssessment } from '../../../../packages/engine/src/career-assessment';
-import { STAFF_INFO } from '../../../../packages/engine/src/staff';
+import { STAFF_INFO, staffMember } from '../../../../packages/engine/src/staff-info';
 import type { Grade, Personality } from '../../../../packages/contracts/src/player';
 import type { Player, World } from '../../../../packages/contracts/src/types';
 import {
@@ -15,7 +15,6 @@ import {
   rolesAt,
   TRAIT_LABEL,
 } from '../../../../packages/engine/src/player';
-import { staffMember } from '../../../../packages/engine/src/staff';
 import {
   formationOf,
   overall,

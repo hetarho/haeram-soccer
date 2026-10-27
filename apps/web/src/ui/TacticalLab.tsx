@@ -1,6 +1,6 @@
 import type { Player, Tactic, World } from '../../../../packages/contracts/src/types';
 import { FORMATIONS } from '../../../../packages/engine/src/player';
-import { tacticLabel } from '../../../../packages/engine/src/world';
+import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import { FormationPitch } from './FormationPitch';
 import { compareTactics, signedPoint } from './tacticComparison';
 import s from './Analysis.module.css';

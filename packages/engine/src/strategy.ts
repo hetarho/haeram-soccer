@@ -1,8 +1,14 @@
-import type { Club, Fixture, Player, Tactic, World } from '../../contracts/src/types';
+import type { Fixture, Player, Tactic, World } from '../../contracts/src/types';
 import { isBanned } from './discipline';
-import { activePlayers, fatigueLoad, formationOf, ownMultiplier, slotOvr } from './player-state';
+import {
+  activePlayers,
+  fatigueLoad,
+  formationOf,
+  isInjured,
+  ownMultiplier,
+  slotOvr,
+} from './player-state';
 import { addEvent } from './events';
-import { clubStyle, isInjured } from './world';
 import { slotLine } from './player';
 import { clamp, compareIds } from './primitives';
 import { managerStyleEffects } from './styles';
@@ -30,10 +36,7 @@ export interface TacticalProfile {
   tradeoff: string;
 }
 
-/** Stable opponent identity is shared by simulation and pre-match scouting. */
-export function npcTactic(club: Pick<Club, 'id'>): Tactic {
-  return clubStyle(club);
-}
+export { npcTactic } from './tactics';
 
 const tacticTradeoffs: Record<Tactic, string> = {
   balanced: '수비 안정 · 직접 슈팅 기회는 조금 줄어듭니다',

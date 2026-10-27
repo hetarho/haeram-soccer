@@ -5,9 +5,8 @@ import type {
   KnockoutTie,
   World,
 } from '../../../../packages/contracts/src/types';
-import { cupKey } from '../../../../packages/engine/src/cups';
+import { cupKey, roundLabel, tieId } from '../../../../packages/engine/src/competition-keys';
 import { europeanEras, returnLegRound } from '../../../../packages/engine/src/europe';
-import { roundLabel, tieId } from '../../../../packages/engine/src/knockout';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 
 /** A slot of the tree: a drawn tie, a club through on a bye, or a tie still to be drawn. */

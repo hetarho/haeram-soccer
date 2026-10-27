@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { CareerDate } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
 import type { PersonCareerDetail } from '../runtime/personCareer';
-import { STAFF_INFO } from '../../../../packages/engine/src/staff';
+import { STAFF_INFO } from '../../../../packages/engine/src/staff-info';
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
 import { Dialog } from './Dialog';
 import { ClubLink } from './ClubLink';

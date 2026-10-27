@@ -10,19 +10,21 @@ import type {
 } from '../../../../packages/contracts/src/types';
 import {
   coachPickPreview,
+  renewalTerms,
+  staffCandidates,
+  staffImpact,
+} from '../../../../packages/engine/src/staff';
+import {
   CONTRACT_TERMS,
   DELEGATED_TERM,
   isExpiring,
   MANAGER_TRAIT_INFO,
   releaseCost,
-  renewalTerms,
   seasonsLeft,
   STAFF_INFO,
   STAFF_ROLES,
   STAFF_TRAIT_INFO,
-  staffCandidates,
-  staffImpact,
-} from '../../../../packages/engine/src/staff';
+} from '../../../../packages/engine/src/staff-info';
 import { managerRenewal, managerTermLimit } from '../../../../packages/engine/src/ops-staff';
 import { coachCriteriaOf, coachDelegated } from '../../../../packages/engine/src/hiring';
 import { directionOption, financeStance } from '../../../../packages/engine/src/direction';

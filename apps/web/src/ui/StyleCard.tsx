@@ -1,6 +1,6 @@
 import type { ManagerStyle } from '../../../../packages/contracts/src/types';
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
-import { tacticLabel } from '../../../../packages/engine/src/world';
+import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import s from './StyleCard.module.css';
 
 /** A manager's school as a card: what it is, what it raises and what it costs (→STAFF-14). */

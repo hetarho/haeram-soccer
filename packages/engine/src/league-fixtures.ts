@@ -1,5 +1,5 @@
 /** Pure fixture reconstruction shared by season preparation and the save codec. */
-import type { Club, Fixture, World } from '../../contracts/src/types';
+import type { Club, Fixture, TableRow, World } from '../../contracts/src/types';
 import { country } from '../../catalogs/src/index';
 import { clubOf } from './player-state';
 import { compareIds } from './primitives';
@@ -68,3 +68,12 @@ export function buildSeasonFixtures(
     );
   return fixtures;
 }
+export const emptyTable = (): TableRow => ({
+  played: 0,
+  won: 0,
+  drawn: 0,
+  lost: 0,
+  gf: 0,
+  ga: 0,
+  points: 0,
+});

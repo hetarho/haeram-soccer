@@ -9,8 +9,8 @@ import type {
   World,
 } from '../../../../packages/contracts/src/types';
 import { lineupPreset, lineupSummary } from '../../../../packages/engine/src/strategy';
-import { activePlayers, clubOf } from '../../../../packages/engine/src/player-state';
-import { isInjured, rating, startingSquad } from '../../../../packages/engine/src/world';
+import { activePlayers, clubOf, isInjured } from '../../../../packages/engine/src/player-state';
+import { rating, startingSquad } from '../../../../packages/engine/src/world';
 import { quote } from '../../../../packages/engine/src/quotes';
 import { activeTrainingFocus } from '../../../../packages/engine/src/training';
 import { suggestionChance } from '../../../../packages/engine/src/coach-training';

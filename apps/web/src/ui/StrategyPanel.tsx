@@ -8,18 +8,15 @@ import {
   formationOf,
   ownMultiplier,
   slotOvr,
-} from '../../../../packages/engine/src/player-state';
-import {
   injuryDaysLeft,
   isInjured,
-  startingSquad,
-  tacticLabel,
-} from '../../../../packages/engine/src/world';
+} from '../../../../packages/engine/src/player-state';
+import { startingSquad } from '../../../../packages/engine/src/world';
+import { tacticLabel, npcTactic } from '../../../../packages/engine/src/tactics';
 import { quote } from '../../../../packages/engine/src/quotes';
 import {
   lineupPreset,
   lineupSummary,
-  npcTactic,
   tacticalProfile,
 } from '../../../../packages/engine/src/strategy';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';

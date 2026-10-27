@@ -16,9 +16,13 @@ import type {
 } from '../../../../packages/contracts/src/types';
 import { priceIndex } from '../../../../packages/catalogs/src/index';
 import { isDelegated } from '../../../../packages/engine/src/responsibilities';
-import { injuryDaysLeft, tacticLabel } from '../../../../packages/engine/src/world';
+import {
+  injuryDaysLeft,
+  overall,
+  UNHAPPY_PENALTY,
+} from '../../../../packages/engine/src/player-state';
+import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import { quote } from '../../../../packages/engine/src/quotes';
-import { overall, UNHAPPY_PENALTY } from '../../../../packages/engine/src/player-state';
 import {
   agentOf,
   agentPremium,
@@ -95,9 +99,9 @@ import { Attributes } from './Attributes';
 import { StyleCard } from './StyleCard';
 import { RemedySheet } from './RemedySheet';
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
-import { MANAGER_TRAIT_INFO } from '../../../../packages/engine/src/staff';
-import { managerRenewal } from '../../../../packages/engine/src/ops-staff';
+import { MANAGER_TRAIT_INFO } from '../../../../packages/engine/src/staff-info';
 import {
+  managerRenewal,
   defaultManagerTerm,
   managerPayoff,
   managerTermLimit,

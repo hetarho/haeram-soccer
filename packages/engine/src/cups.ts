@@ -2,6 +2,8 @@ import { awardReputation, REPUTATION_CONFIG } from './reputation';
 import type { DomesticCup, KnockoutRound, World } from '../../contracts/src/types';
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { compareIds } from './primitives';
+import { cupKey, domesticCupName } from './competition-keys';
+export { cupKey, domesticCupName } from './competition-keys';
 import { addEvent } from './events';
 import { broadcastQuote } from './quotes';
 import { clubOf } from './player-state';
@@ -39,9 +41,6 @@ export const CUP_PRIZE_CONFIG = {
   ties: [7, 3.5, 1.8, 0.9] as readonly number[],
   honor: 27,
 };
-
-export const cupKey = (code: string) => `cup:${code}`;
-export const domesticCupName = (code: string) => `${country(code).name} 컵`;
 
 /** Every club of the country down to its amateur level; higher divisions are seeded first. */
 function entrants(w: World, code: string) {

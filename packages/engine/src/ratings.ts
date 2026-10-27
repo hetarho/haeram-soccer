@@ -1,6 +1,8 @@
 import type { Club, MatchRecord, World } from '../../contracts/src/types';
 import { activePlayers, clubOf } from './player-state';
-import { findClub, initialElo } from './world';
+import { findClub } from './world';
+import { eloOf } from './elo';
+export { eloOf, eloRank } from './elo';
 import { footballQuote, quote } from './quotes';
 import { playerValue } from './transfers';
 import { facilityBuiltUnits } from './facilities';
@@ -10,10 +12,6 @@ import { facilityBuiltUnits } from './facilities';
  * Football Elo form: K 20, home advantage 60 points, more weight for wider margins.
  */
 export const ELO = { k: 20, home: 60 } as const;
-
-export function eloOf(c: Club) {
-  return c.elo ?? initialElo(c.strength);
-}
 
 export function settleElo(w: World, m: Pick<MatchRecord, 'home' | 'away' | 'score'>) {
   const home = findClub(w, m.home),
@@ -27,12 +25,6 @@ export function settleElo(w: World, m: Pick<MatchRecord, 'home' | 'away' | 'scor
   const delta = ELO.k * weight * (result - expected);
   home.elo = Math.round((rh + delta) * 10) / 10;
   away.elo = Math.round((ra - delta) * 10) / 10;
-}
-
-/** The own club's place among every club of the world by Elo, 1 = best. */
-export function eloRank(w: World) {
-  const own = eloOf(clubOf(w));
-  return w.clubs.filter((c) => c.id !== w.playerClub && eloOf(c) > own).length + 1;
 }
 
 /**

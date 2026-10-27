@@ -19,7 +19,7 @@ import {
 } from '../../../../packages/engine/src/coach-training';
 import { ORDER_ROUNDS } from '../../../../packages/engine/src/orders';
 import { YOUTH_FOCUS_INFO } from '../../../../packages/engine/src/academy';
-import { STAFF_INFO, staffMember } from '../../../../packages/engine/src/staff';
+import { STAFF_INFO, staffMember } from '../../../../packages/engine/src/staff-info';
 import { trainingFocusInfo } from '../../../../packages/engine/src/training';
 import type { GameClient } from '../runtime/client';
 import { gameActionsBlocked, useGameState } from '../runtime/store';

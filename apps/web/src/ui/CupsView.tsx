@@ -12,10 +12,10 @@ import type {
 import { country } from '../../../../packages/catalogs/src/index';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import { fixtureDate } from '../../../../packages/engine/src/calendar';
-import { cupKey, domesticCupName } from '../../../../packages/engine/src/cups';
+import { cupKey, domesticCupName } from '../../../../packages/engine/src/competition-keys';
 import { ownReached } from '../../../../packages/engine/src/knockout';
 import { phaseGroups } from '../../../../packages/engine/src/europe';
-import { emptyTable } from '../../../../packages/engine/src/season';
+import { emptyTable } from '../../../../packages/engine/src/league-fixtures';
 import type { GameClient } from '../runtime/client';
 import { Bracket, Club } from './Bracket';
 import { number, seasonName } from './format';

@@ -89,16 +89,8 @@ import {
   recordScorers,
   snapshotScorers,
 } from './scoring';
-export const emptyTable = (): TableRow => ({
-  played: 0,
-  won: 0,
-  drawn: 0,
-  lost: 0,
-  gf: 0,
-  ga: 0,
-  points: 0,
-});
-import { groupKey, amateurOpponents, buildSeasonFixtures } from './league-fixtures';
+import { groupKey, amateurOpponents, buildSeasonFixtures, emptyTable } from './league-fixtures';
+export { emptyTable } from './league-fixtures';
 export { groupKey, fixturesFor } from './league-fixtures';
 
 /**

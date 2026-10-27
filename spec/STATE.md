@@ -16,6 +16,8 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 
 ## inbox
+- 261027 decided ARCH-4 review/ui-engine-boundary-261027: how the UI may use engine code → only engine read leaves (closure reaches no world/season/match/grid execution), today's orchestration imports a shrink-only list guarded by an architecture test, leaves extracted for labels/constants/simple reads first (alt: publish every domain read in the worker view, which grows each view message and needs measurement | keep unrestricted imports with no guard) — F5's real domain reads (NPC squads, cost projections) stay open for a measured decision
+- 261027 decided T500 T501 T502 T503: task numbering while the cups session holds T494/T495 in the shared checkout → start this slice at T500 so neither session renumbers (alt: next free T496, which the cups session is likely to take)
 - 261027 decided WEB-79 WEB-39: a better name for the report/delegation menu → 결재 라인 (alt: 업무 분장 | 권한 위임 | 보고 체계), the owner signs off or staff settle; 구단주 사무실 becomes the whole place holding every club lever
 - 261027 decided WEB-10: the tab bar once 구단 leaves it → six tabs 리그·컵·기록 | 홈 | 선수단·훈련, left side unchanged and home kept raised though no longer centred (alt: move 기록 right of home | merge 리그 and 컵 to keep home centred)
 - 261027 decided WEB-98 WEB-39: the clock in a focused office that hides the stop control → entering stops automatic play, leaving restarts it only if entering stopped it (alt: keep running with every change locked | stop and stay stopped)
@@ -330,7 +332,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 22 | 22 | - | 2 |
+| ARCH | 23 | 23 | - | 2 |
 | WEB | 158 | 158 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
@@ -351,6 +353,7 @@
 | recent-code-quality-261023 | converted@261023 |
 | development-feedback-261026 | converted@261026 |
 | module-boundaries-261026 | converted@261026 |
+| ui-engine-boundary-261027 | converted@261027 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -371,14 +374,20 @@
 
 ## next
 - T494–T495 complete: theme-matched trophy artwork and distinct division/continental silhouettes; all required batch stages passed before publication.
+- review/ui-engine-boundary-261027 F1–F4 done (T500–T503): UI→orchestration exceptions 53→38 files, 38→35 engine modules; F5 (domain reads on the main thread) waits for a measured decision.
 - o7h4 pushed T490–T493 (owner office, home season card, records sub-screen) to main after the ARCH-30 batch passed on eaf5f3d1; confirm its decided inbox items.
-- T473 T474 T475 T476 are complete; no implementation task remains.
-- module-1026 passed the final ARCH-30 gate on 5afd5956; main b050ce93 passed CI 40336122845 on every browser. Parked product ideations remain parked.
-- k2d7: final batch gate on the committed head in a clean worktree, then one push to main and CI.
 
 ## log
 - 261027 T495 done: 32 competition-specific trophy variants across four themes, country-aware cabinet selection and safe fallback; unit/integration/contract and all 299 Chromium journeys passed, with unchanged-timeout recovery for load-related tests.
 - 261027 T494 done: redrew all 21 print/pixel/sticker trophies in their theme's illustration style; preserved the seven standard photographs; asset integrity and task checks passed.
+- 261027 u3b8 closed: T500–T503 batch gate passed on f25cae1a (unit 1171, integration 1158 after a quiet-host rerun of 3 load timeouts, contract 39, catalogs, presentation, build, Chromium 299/299), pushed to main
+- 261027 T503 done: competition keys, Elo reads, request label and empty table moved to leaves; UI exception list 43→38 files
+- 261027 T502 done: staff catalogue and member reads moved to staff-info.ts; UI exception list 46→43 files
+- 261027 T501 done: tactic labels, founding years and injury reads moved to engine leaves; UI exception list 53→46 files
+- 261027 T500 done: UI→engine orchestration guard with a shrink-only list (53 files, 38 modules)
+- 261027 create-task review/ui-engine-boundary-261027 + ARCH r23 → T500–T503 (guard, tactic/injury leaves, staff-info leaf, competition/label leaves); review converted
+- 261027 ARCH r23: ARCH-3 path table matches the real layout; ARCH-4 UI imports engine values only from read leaves with a shrink-only guarded exception list
+- 261027 review-code ui-engine-boundary-261027: 53 UI files import 39 orchestration-reaching engine modules; F1–F4 adopted (owner: make the tasks and implement them), F5 open
 - 261027 o7h4 closed: T490–T493 and gate fixes; batch passed on eaf5f3d1 (299/299 Chromium), pushed to main
 - 261027 batch gate (o7h4) 279/299 Chromium: fixed office-aware helpers (address-based office, selected home tab, celebration and event cards), event groups link 결재 라인, wide home pairs the entrance with the season card, short-phone spacing keeps seven standings rows; the 20 journeys pass on rerun
 - 261027 T493 done (o7h4): records season sub-screen with a top navigator bar; 선수 통산 더 보기 ten at a time to 100
@@ -389,11 +398,3 @@
 - 261027 update-ssot WEB start (autopilot o7h4)
 - 261027 T483 done: eleven complete language packs; 29 locale cases, all fast/unit/integration/contract/resource checks, 277 existing Chromium journeys and the repaired 22 locale journeys passed; concurrent T477–T482 contracts preserved
 - 261027 T483 start: WEB-1/90 r157 adds eleven language packs; renamed from this session’s T477 to preserve the concurrent T477–T482 football tasks
-- 261027 create-task WEB MATCH (autopilot k2d7): T477–T482 — dead-time samples and stoppage markers, dead-ball beat, revision 4 with free-kick takers, corner numbers, shot choice, explore recalibration 3h
-- 261027 create-task WEB MATCH start
-- 261027 ideation dead-balls-and-finishing converted
-- 261027 update-ssot WEB r156 MATCH r33 (autopilot k2d7, ideation dead-balls-and-finishing): WEB-32 dead-ball beat for every stoppage tied to speed; MATCH-12 no straight-line glide in dead time; MATCH-16 shot choice from the chance bent by position, role, traits, tactic and school; MATCH-18 free-kick taker by place, corner numbers drawn and score-dependent late
-- 261027 update-ssot WEB MATCH start
-- 261027 ideation dead-balls-and-finishing ready (owner): every stoppage rush ≥ 2× → still beat by kind, both tied to speed; named free-kick taker only in shooting/crossing range; shot choice from the chance bent by position (FW > MF > DF, role), school and tactic, traits, then recalibrated; corners 2–3 back / 1–2 up drawn, score from 80′, keeper up in added time one behind
-- 261027 m6p4 closed: T473 T474 T475 T476 complete on main b050ce93; final local batch and all nine jobs of CI 40336122845 passed, including every browser; API confirmed success after the observer HTML fallback could not read completed conclusions
-- 261027 ideation dead-balls-and-finishing start (owner): dead balls crawl, forwards walk back for free kicks, forwards pass up open goals, corners crowd — measured diagnosis recorded

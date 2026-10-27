@@ -1,6 +1,6 @@
 import type { Club, SeasonArchive, World } from '../../../../packages/contracts/src/types';
 import { country } from '../../../../packages/catalogs/src/index';
-import { eloOf, eloRank } from '../../../../packages/engine/src/ratings';
+import { eloOf, eloRank } from '../../../../packages/engine/src/elo';
 import { divisionName } from './careerRecords';
 import { seasonName } from './format';
 import { ownLeagueIds } from './league';

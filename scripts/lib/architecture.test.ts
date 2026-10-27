@@ -1,8 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, relative, resolve } from 'node:path';
 import ts from 'typescript';
 import { dependencies, runtimeImports, sourceGraph } from './source-graph';
+import {
+  ORCHESTRATION,
+  UI_ORCHESTRATION_IMPORTS,
+  uiOrchestrationImports,
+} from './ui-engine-exceptions';
 
 const closure = (entry: string) =>
   dependencies(sourceGraph(process.cwd()), [entry]).map((file) => relative(process.cwd(), file));
@@ -58,14 +63,20 @@ describe('runtime architecture boundaries', () => {
     expect(files.filter((name) => name.startsWith('packages/engine/'))).toEqual([]);
     expect(packages(files).filter((name) => FRAMEWORK.test(name))).toEqual([]);
   });
-  it.each(['events', 'quotes', 'player-state'])(
-    '%s stays below world generation, campaign and match orchestration',
-    (leaf) => {
-      const files = closure(`packages/engine/src/${leaf}.ts`);
-      for (const forbidden of ['world', 'season', 'transfers', 'managerMarket', 'match'])
-        expect(files, forbidden).not.toContain(`packages/engine/src/${forbidden}.ts`);
-    },
-  );
+  it.each([
+    'events',
+    'quotes',
+    'player-state',
+    'tactics',
+    'calendar',
+    'staff-info',
+    'competition-keys',
+    'elo',
+  ])('%s stays below world generation, campaign and match orchestration', (leaf) => {
+    const files = closure(`packages/engine/src/${leaf}.ts`);
+    for (const forbidden of ['world', 'season', 'transfers', 'managerMarket', 'match'])
+      expect(files, forbidden).not.toContain(`packages/engine/src/${forbidden}.ts`);
+  });
   it('executes an already prepared grid match without campaign or presentation code', () => {
     const files = closure('packages/engine/src/grid/engine.ts');
     for (const forbidden of [
@@ -91,5 +102,24 @@ describe('runtime architecture boundaries', () => {
       'packages/engine/src/calendar.ts',
       'packages/engine/src/transfer-window.ts',
     ]);
+  });
+});
+
+describe('UI engine imports', () => {
+  it('UI imports engine orchestration only through the listed exceptions', () => {
+    expect(uiOrchestrationImports(process.cwd())).toEqual(UI_ORCHESTRATION_IMPORTS);
+  });
+  it('lists only existing UI files and engine modules that reach orchestration', () => {
+    const graph = sourceGraph(process.cwd());
+    for (const [file, modules] of Object.entries(UI_ORCHESTRATION_IMPORTS)) {
+      expect(existsSync(file), file).toBe(true);
+      for (const module of modules) {
+        const files = dependencies(graph, [module]).map((name) => relative(process.cwd(), name));
+        expect(
+          ORCHESTRATION.some((name) => files.includes(name)),
+          module,
+        ).toBe(true);
+      }
+    }
   });
 });

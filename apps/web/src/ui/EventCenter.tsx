@@ -12,7 +12,7 @@ import { clubOf } from '../../../../packages/engine/src/player-state';
 import { pendingDecisions } from '../../../../packages/engine/src/stopping';
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { talkFor } from '../../../../packages/engine/src/contracts';
-import { isExpiring, releaseCost } from '../../../../packages/engine/src/staff';
+import { isExpiring, releaseCost } from '../../../../packages/engine/src/staff-info';
 import { managerRenewal } from '../../../../packages/engine/src/ops-staff';
 import { managerTerm } from '../../../../packages/engine/src/styles';
 import type { GameClient } from '../runtime/client';

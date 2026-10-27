@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
-import { tacticLabel } from '../../../../packages/engine/src/world';
+import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import { kindLabel, seasonName } from './format';
 import { hundredths, matchComparison, PD, recordCounters, share, sideLines } from './advanced';
 import { Term } from './Term';
