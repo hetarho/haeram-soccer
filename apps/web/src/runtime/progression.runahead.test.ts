@@ -474,21 +474,29 @@ describe('pace changes while days are held (WEB-18)', () => {
 describe('reads outside the command queue wait for the shown date (WEB-18)', () => {
   const record = {} as NonNullable<Reply['headToHead']>;
   const answered = { ok: true, requestId: 'read', headToHead: record } as Reply;
+  /** Real milliseconds between each day shown and the one before it. */
+  const gaps = (fake: Fake) => fake.shown.slice(1).map((s, i) => s.at - fake.shown[i].at);
 
-  it('with days held a head-to-head read shows them at once before it is posted', async () => {
+  it('with days held a head-to-head read goes once they are shown at the pace', async () => {
     const fake = worker(quiet());
     const controller = clock(fake);
     controller.setPace('x10');
     controller.start();
+    // Days 1–3 are shown, days 4–10 held.
     await vi.advanceTimersByTimeAsync(350);
     expect(fake.held).toHaveLength(RUN_AHEAD_DAYS.x10);
     const sent = fake.command.mock.calls.length;
     const read = fake.client.headToHead('rival');
-    // Nothing was in flight: every held day is shown at once and the read goes from that day.
+    expect(fake.reads).toHaveLength(0);
+    // The held days are shown one beat apart, never early for it, and nothing is computed ahead.
+    await vi.advanceTimersByTimeAsync(PACE_MS.x10 * 6 + 49);
+    expect(fake.showing()).toBe(9);
+    expect(fake.reads).toHaveLength(0);
+    await vi.advanceTimersByTimeAsync(1);
     expect(fake.reads).toMatchObject([
       { body: { type: 'head-to-head', club: 'rival' }, head: 10, showing: 10, held: 0 },
     ]);
-    expect(new Set(fake.shown.slice(3).map((s) => s.at)).size).toBe(1);
+    expect(gaps(fake)).toEqual(Array(9).fill(PACE_MS.x10));
     // The clock keeps running and management stays locked, but nothing is computed until it is
     // answered.
     await vi.advanceTimersByTimeAsync(2000);
@@ -504,9 +512,10 @@ describe('reads outside the command queue wait for the shown date (WEB-18)', () 
     expect(fake.held.length).toBeGreaterThan(0);
     expect(fake.shown.length).toBeGreaterThan(10);
     expect(consecutive(fake, 0)).toBe(true);
+    expect(gaps(fake).every((gap) => gap >= PACE_MS.x10)).toBe(true);
   });
 
-  it('a read started during a step in flight goes once that step is shown; an error resumes the run', async () => {
+  it('a read started during a step in flight waits for it and the held days; an error resumes the run', async () => {
     const fake = worker(quiet());
     const controller = clock(fake);
     controller.setPace('x10');
@@ -514,12 +523,18 @@ describe('reads outside the command queue wait for the shown date (WEB-18)', () 
     // At 0.31 s three days are shown, six held and the tenth is being computed.
     await vi.advanceTimersByTimeAsync(310);
     expect(fake.held).toHaveLength(6);
-    const outcome = fake.client.headToHead('rival').catch((error: Error) => error.message);
-    expect(fake.reads).toHaveLength(0);
-    // The worker would answer it after the step, so the step lands and is shown first.
-    await vi.advanceTimersByTimeAsync(10);
-    expect(fake.reads).toMatchObject([{ head: 10, showing: 10, held: 0 }]);
     const sent = fake.command.mock.calls.length;
+    const outcome = fake.client.headToHead('rival').catch((error: Error) => error.message);
+    // The step lands and is held with the others; the read waits until the last is shown.
+    await vi.advanceTimersByTimeAsync(10);
+    expect(fake.held).toHaveLength(7);
+    expect(fake.reads).toHaveLength(0);
+    await vi.advanceTimersByTimeAsync(PACE_MS.x10 * 6 + 79);
+    expect(fake.showing()).toBe(9);
+    expect(fake.reads).toHaveLength(0);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(fake.reads).toMatchObject([{ head: 10, showing: 10, held: 0 }]);
+    expect(gaps(fake)).toEqual(Array(9).fill(PACE_MS.x10));
     await vi.advanceTimersByTimeAsync(1000);
     expect(fake.command.mock.calls.length).toBe(sent);
     fake.reads[0].fail(new Error('worker'));
@@ -530,7 +545,25 @@ describe('reads outside the command queue wait for the shown date (WEB-18)', () 
     expect(consecutive(fake, 0)).toBe(true);
   });
 
-  it('a read with nothing held goes at once and changes nothing', async () => {
+  it('a read with only a slow step in flight goes once that day is shown', async () => {
+    const fake = worker(quiet(), () => 250);
+    const controller = clock(fake);
+    controller.setPace('x10');
+    controller.start();
+    // Days 1 and 2 were shown late as they landed; day 3 is in flight until 0.75 s.
+    await vi.advanceTimersByTimeAsync(600);
+    expect(fake.held).toHaveLength(0);
+    const read = fake.client.headToHead('rival');
+    await vi.advanceTimersByTimeAsync(149);
+    expect(fake.reads).toHaveLength(0);
+    await vi.advanceTimersByTimeAsync(1);
+    expect(fake.reads).toMatchObject([{ head: 3, showing: 3, held: 0 }]);
+    fake.reads[0].answer(answered);
+    await read;
+    expect(running(controller)).toBe(true);
+  });
+
+  it('a read with nothing held or in flight goes at once and changes nothing', async () => {
     const fake = worker(quiet());
     const controller = clock(fake);
     // A stopped clock.
@@ -557,29 +590,107 @@ describe('reads outside the command queue wait for the shown date (WEB-18)', () 
     expect(running(controller)).toBe(true);
   });
 
-  it("a read while the owner's stop still shows the held days shows them at once, then unlocks and saves", async () => {
+  it('a running clock with nothing held or in flight posts a read at once', async () => {
+    const fake = worker(quiet());
+    const controller = clock(fake, ONE_DAY_AT_A_TIME);
+    controller.start();
+    // Day 1 was computed when due and shown as it landed at 1.02 s.
+    await vi.advanceTimersByTimeAsync(1500);
+    expect(fake.showing()).toBe(1);
+    const read = fake.client.headToHead('rival');
+    expect(fake.reads).toMatchObject([{ head: 1, showing: 1, held: 0 }]);
+    // Nothing is computed until it is answered, then the run goes on.
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(fake.head()).toBe(1);
+    fake.reads[0].answer(answered);
+    await read;
+    await vi.advanceTimersByTimeAsync(PACE_MS.x1);
+    expect(fake.showing()).toBe(2);
+    expect(running(controller)).toBe(true);
+  });
+
+  it("a read during the owner's stop leaves its timing unchanged and goes with its last day", async () => {
+    const drain = async (read: boolean) => {
+      const fake = worker(quiet());
+      const controller = clock(fake);
+      controller.setPace('x10');
+      controller.start();
+      await vi.advanceTimersByTimeAsync(350);
+      controller.pause();
+      const pausedAt = Date.now(),
+        shownBefore = fake.shown.length;
+      const outcome = read ? fake.client.clubRecords() : undefined;
+      let unlocked: number | undefined, posted: number | undefined, saved: number | undefined;
+      for (let t = 0; t < 1500; t += 10) {
+        await vi.advanceTimersByTimeAsync(10);
+        unlocked ??= locked() ? undefined : Date.now() - pausedAt;
+        saved ??= fake.saveSoon.mock.calls.length ? Date.now() - pausedAt : undefined;
+        posted ??= fake.reads.length ? Date.now() - pausedAt : undefined;
+      }
+      if (outcome) {
+        expect(fake.reads).toMatchObject([{ body: { type: 'club-records' }, head: 10, held: 0 }]);
+        expect(fake.reads[0].showing).toBe(10);
+        fake.reads[0].answer({ ok: true, requestId: 'read', clubRecords: {} } as Reply);
+        await outcome;
+      }
+      expect(running(controller)).toBe(false);
+      expect(fake.saveSoon).toHaveBeenCalledOnce();
+      expect(consecutive(fake, 0)).toBe(true);
+      const result = {
+        shown: fake.shown.slice(shownBefore).map((s) => s.at - pausedAt),
+        unlocked,
+        saved,
+        posted,
+        sent: fake.command.mock.calls.length,
+      };
+      controller.dispose();
+      return result;
+    };
+    const alone = await drain(false),
+      withRead = await drain(true);
+    // The held days are shown at the pace; the stop unlocks and saves when the last is shown, and
+    // the read goes then.
+    expect(alone.shown).toEqual([50, 150, 250, 350, 450, 550, 650]);
+    expect(alone.unlocked).toBe(650);
+    expect(withRead).toEqual({ ...alone, posted: 650 });
+  });
+
+  it.each<[string, (controller: ProgressionController) => void]>([
+    ['entering the owner office', (c) => c.enterOffice()],
+    ['hiding the tab', (c) => c.setHidden(true)],
+  ])('%s shows the held days at once, which releases a waiting read', async (_, act) => {
     const fake = worker(quiet());
     const controller = clock(fake);
     controller.setPace('x10');
     controller.start();
     await vi.advanceTimersByTimeAsync(350);
-    controller.pause();
-    expect(locked()).toBe(true);
-    const sent = fake.command.mock.calls.length;
-    const read = fake.client.clubRecords();
-    expect(fake.reads).toMatchObject([{ body: { type: 'club-records' }, head: 10, showing: 10 }]);
-    expect(locked()).toBe(false);
-    // The stop's save holds the date it stopped on (→SAVE-8).
-    expect(fake.saveSoon).toHaveBeenCalledOnce();
-    fake.reads[0].answer({ ok: true, requestId: 'read', clubRecords: {} } as Reply);
+    const read = fake.client.headToHead('rival');
+    await vi.advanceTimersByTimeAsync(PACE_MS.x10 * 2);
+    expect(fake.showing()).toBe(5);
+    expect(fake.reads).toHaveLength(0);
+    act(controller);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fake.reads).toMatchObject([{ head: 10, showing: 10, held: 0 }]);
+    fake.reads[0].answer(answered);
     await read;
-    await vi.advanceTimersByTimeAsync(2000);
-    expect(running(controller)).toBe(false);
-    expect(fake.command.mock.calls.length).toBe(sent);
-    expect(consecutive(fake, 0)).toBe(true);
   });
 
-  it('a read that shows our result among the held days announces it, as the pace would', async () => {
+  it('dispose releases a waiting read', async () => {
+    const fake = worker(quiet());
+    const controller = clock(fake);
+    controller.setPace('x10');
+    controller.start();
+    await vi.advanceTimersByTimeAsync(350);
+    const read = fake.client.headToHead('rival');
+    expect(fake.reads).toHaveLength(0);
+    controller.dispose();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fake.reads).toHaveLength(1);
+    fake.reads[0].answer(answered);
+    await expect(read).resolves.toBe(record);
+  });
+
+  it('our result among the held days is announced on its day at the pace, before the read goes', async () => {
     const template = quiet();
     const record = { id: 'match-9' } as World['ownMatches'][number];
     const fake = worker(
@@ -601,16 +712,25 @@ describe('reads outside the command queue wait for the shown date (WEB-18)', () 
     await vi.advanceTimersByTimeAsync(350);
     expect(controller.store.getState().resultNotice).toBeUndefined();
     const read = fake.client.headToHead('rival');
-    expect(fake.showing()).toBe(10);
+    expect(fake.showing()).toBe(3);
+    await vi.advanceTimersByTimeAsync(PACE_MS.x10 * 5 + 49);
+    expect(fake.showing()).toBe(8);
+    expect(controller.store.getState().resultNotice).toBeUndefined();
+    await vi.advanceTimersByTimeAsync(1);
+    expect(fake.showing()).toBe(9);
     expect(controller.store.getState().resultNotice).toEqual({ matchId: 'match-9' });
+    expect(fake.reads).toHaveLength(0);
+    await vi.advanceTimersByTimeAsync(PACE_MS.x10);
+    expect(fake.reads).toMatchObject([{ showing: 10, held: 0 }]);
     fake.reads[0].answer(answered);
     await read;
     expect(running(controller)).toBe(true);
   });
 
-  it('a view that reads again once a round keeps the pace between rounds', async () => {
+  it('a view that reads again once a round keeps every day one beat after the one before', async () => {
     // Like the league's full statistics (useFullStats), it reads when the shown round moves on, as
-    // a React effect does once the shown day is published.
+    // a React effect does once the shown day is published; the records room reads again on a new
+    // managerHistoryKey the same way.
     const template = quiet();
     const fake = worker(
       template,
@@ -635,26 +755,23 @@ describe('reads outside the command queue wait for the shown date (WEB-18)', () 
     try {
       const controller = clock(fake);
       controller.start();
-      let reads = 0;
-      for (let t = 0; t < 15_000; t += 10) {
+      const posted: { showing: number; held: number }[] = [];
+      for (let t = 0; t < 19_500; t += 10) {
         await vi.advanceTimersByTimeAsync(10);
-        for (const posted of fake.reads.splice(0)) {
-          posted.answer({ ok: true, requestId: 'read' } as Reply);
-          reads++;
+        for (const read of fake.reads.splice(0)) {
+          posted.push({ showing: read.showing, held: read.held });
+          read.answer({ ok: true, requestId: 'read' } as Reply);
         }
       }
-      expect(reads).toBe(2);
+      // Each round's read goes once the days held on its round day are shown, from the shown day.
+      expect(posted).toEqual([
+        { showing: 7 + RUN_AHEAD_DAYS.x1, held: 0 },
+        { showing: 14 + RUN_AHEAD_DAYS.x1, held: 0 },
+      ]);
+      // No day comes early or stalls: nineteen days, one second apart.
       expect(consecutive(fake, 0)).toBe(true);
-      const gap = (i: number) => fake.shown[i].at - fake.shown[i - 1].at;
-      for (let i = 1; i < fake.shown.length; i++) {
-        if (gap(i) >= PACE_MS.x1) continue;
-        // Only the days held when a round day was shown come early, together.
-        let first = i;
-        while (first > 1 && gap(first - 1) < PACE_MS.x1) first--;
-        expect(fake.shown[first - 1].day % 7).toBe(0);
-      }
-      // Fifteen paced days plus at most the held days of each of the two rounds.
-      expect(fake.shown.length).toBeLessThanOrEqual(15 + 2 * RUN_AHEAD_DAYS.x1);
+      expect(fake.shown).toHaveLength(19);
+      expect(gaps(fake)).toEqual(Array(18).fill(PACE_MS.x1));
     } finally {
       unsubscribe();
     }
@@ -670,7 +787,7 @@ describe('reads outside the command queue wait for the shown date (WEB-18)', () 
     ['manager-history', (c) => c.managerHistory()],
     ['league-fixtures', (c) => c.leagueFixtures({ code: 'GER', tier: 0, group: 0 })],
     ['full-stats', (c) => c.fullStats({ kind: 'league', groupKey: 'ENG:0:0' })],
-  ])('the %s read goes only once the held days are shown', async (type, read) => {
+  ])('the %s read goes only once the held days are shown at the pace', async (type, read) => {
     const fake = worker(quiet());
     const controller = clock(fake);
     controller.setPace('x10');
@@ -678,7 +795,10 @@ describe('reads outside the command queue wait for the shown date (WEB-18)', () 
     await vi.advanceTimersByTimeAsync(350);
     expect(fake.held).toHaveLength(RUN_AHEAD_DAYS.x10);
     const outcome = read(fake.client).catch(() => undefined);
+    expect(fake.reads).toHaveLength(0);
+    await vi.advanceTimersByTimeAsync(PACE_MS.x10 * 6 + 50);
     expect(fake.reads).toMatchObject([{ body: { type }, head: 10, showing: 10, held: 0 }]);
+    expect(gaps(fake)).toEqual(Array(9).fill(PACE_MS.x10));
     fake.reads[0].fail(new Error('answered'));
     await outcome;
     expect(running(controller)).toBe(true);
