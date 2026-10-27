@@ -1,6 +1,6 @@
 import { CashAlarm } from './CashAlarm';
 import { FeedbackOverlay } from './FeedbackOverlay';
-import { openClubSeason } from './state';
+import { openClubSeason, openPeople, useNavigation, type Page } from './state';
 import { PixelIcon, type PixelIconName } from './PixelIcon';
 import { useLocale } from '../presentation/react';
 import type { Translator } from '../presentation/locale';
@@ -20,7 +20,6 @@ import {
 import type { World } from '../../../../packages/contracts/src/types';
 import { country, priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
-import { openPeople, useNavigation, type Page } from './state';
 import { NAV, TABS } from './navigationTabs';
 import { HudCash } from './HudCash';
 import { DepartmentPolicySheet } from './DepartmentPolicySheet';
@@ -62,7 +61,7 @@ import { CelebrationHost } from './Celebration';
 const CupsView = lazy(() => import('./CupsView').then((module) => ({ default: module.CupsView })));
 import { TeamSheetHost } from './TeamSheet';
 import { PlayerSheetHost } from './PlayerSheet';
-import { MANAGER_GONE } from '../../../../packages/engine/src/ops-staff';
+import { MANAGER_GONE } from '../../../../packages/engine/src/staff-info';
 import { GameSlots } from '../runtime/slots';
 import { GameIndexStore } from '../adapters/games';
 import { useTabTitle } from './tabTitle';

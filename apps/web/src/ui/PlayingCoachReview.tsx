@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { ContractTerm, Player, World } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
-import { STAFF_INFO } from '../../../../packages/engine/src/staff';
+import { STAFF_INFO } from '../../../../packages/engine/src/staff-info';
 import { DecisionOwner } from './DecisionOwner';
 import { Money } from './Money';
 import s from './PlayerProfile.module.css';

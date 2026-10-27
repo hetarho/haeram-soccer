@@ -14,7 +14,7 @@ import {
   ROLE_LABEL,
   TRAIT_LABEL,
 } from '../../../../packages/engine/src/player';
-import { releaseCost, staffMember } from '../../../../packages/engine/src/staff';
+import { releaseCost, staffMember } from '../../../../packages/engine/src/staff-info';
 import { positionsLabel } from './FormationPitch';
 import { gradeLabel, PlayerProfile } from './PlayerProfile';
 import { bidBoard, bidOutlook } from '../../../../packages/engine/src/transfers';

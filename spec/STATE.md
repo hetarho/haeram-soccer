@@ -358,7 +358,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T502 | Extract the staff catalogue and member reads into staff-info.ts | ARCH | T501 | todo |
 | T503 | Move competition keys, Elo reads and single labels into leaves | ARCH | T502 | todo |
 
 ## work
@@ -375,10 +374,11 @@
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 
 ## next
-- implement-task T502, then T503 (review/ui-engine-boundary-261027 F1–F4); F5 (domain reads on the main thread) waits for a measured decision.
+- implement-task T503 (review/ui-engine-boundary-261027 F1–F4); F5 (domain reads on the main thread) waits for a measured decision.
 - o7h4 pushed T490–T493 (owner office, home season card, records sub-screen) to main after the ARCH-30 batch passed on eaf5f3d1; confirm its decided inbox items.
 
 ## log
+- 261027 T502 done: staff catalogue and member reads moved to staff-info.ts; UI exception list 46→43 files
 - 261027 T501 done: tactic labels, founding years and injury reads moved to engine leaves; UI exception list 53→46 files
 - 261027 T500 done: UI→engine orchestration guard with a shrink-only list (53 files, 38 modules)
 - 261027 create-task review/ui-engine-boundary-261027 + ARCH r23 → T500–T503 (guard, tactic/injury leaves, staff-info leaf, competition/label leaves); review converted
@@ -398,4 +398,3 @@
 - 261027 create-task WEB MATCH start
 - 261027 ideation dead-balls-and-finishing converted
 - 261027 update-ssot WEB r156 MATCH r33 (autopilot k2d7, ideation dead-balls-and-finishing): WEB-32 dead-ball beat for every stoppage tied to speed; MATCH-12 no straight-line glide in dead time; MATCH-16 shot choice from the chance bent by position, role, traits, tactic and school; MATCH-18 free-kick taker by place, corner numbers drawn and score-dependent late
-- 261027 update-ssot WEB MATCH start

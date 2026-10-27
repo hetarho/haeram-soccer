@@ -1,3 +1,5 @@
+import { MANAGER_GONE } from './staff-info';
+export { MANAGER_GONE } from './staff-info';
 import { cancelPromises } from './promises';
 import { careerDate, closeEmployment, syncMentorExposures } from './person-careers';
 import { onManagerChange } from './adaptation';
@@ -239,7 +241,6 @@ function reportManagerWait(w: World) {
   });
 }
 /** The blocking alert a departure raises; the app offers hiring or carrying on with the interim. */
-export const MANAGER_GONE = '감독이 떠났습니다. 새 감독을 선임하세요.';
 /**
  * The manager leaves and a basic interim steps in (→STAFF-7). With the post delegated the staff
  * appoint a successor by the owner's criteria at once and the clock runs on; when nobody fits the

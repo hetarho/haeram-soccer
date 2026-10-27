@@ -99,7 +99,7 @@ import { Attributes } from './Attributes';
 import { StyleCard } from './StyleCard';
 import { RemedySheet } from './RemedySheet';
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
-import { MANAGER_TRAIT_INFO } from '../../../../packages/engine/src/staff';
+import { MANAGER_TRAIT_INFO } from '../../../../packages/engine/src/staff-info';
 import {
   managerRenewal,
   defaultManagerTerm,

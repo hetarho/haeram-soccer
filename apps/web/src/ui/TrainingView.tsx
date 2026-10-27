@@ -20,7 +20,7 @@ import {
   AUTO_HARD_MORALE,
   AUTO_PLAYER_RECOVERY,
   AUTO_RECOVERY_FATIGUE,
-} from '../../../../packages/engine/src/staff';
+} from '../../../../packages/engine/src/staff-info';
 import { playerSuggestionWait } from '../../../../packages/engine/src/coach-training';
 import { settleRate } from '../../../../packages/engine/src/adaptation';
 import { TRAINING_INJURY } from '../../../../packages/engine/src/careers';
@@ -34,6 +34,7 @@ import {
   ADAPTATION_NEUTRAL,
   MATCH_GAIN,
   TRAINING_GAIN,
+  ATTRIBUTE_LABEL,
 } from '../../../../packages/engine/src/player';
 import type { ClientState, GameClient } from '../runtime/client';
 import { AcademyPanel } from './AcademyPanel';
@@ -53,7 +54,6 @@ import {
 import { callLine, playerCallLine, TrainingOrderSheet } from './TrainingOrderSheet';
 import { multiplierLabel } from './PlayerProfile';
 import { ATTRIBUTES } from '../../../../packages/contracts/src/player';
-import { ATTRIBUTE_LABEL } from '../../../../packages/engine/src/player';
 import s from './TrainingView.module.css';
 
 type Props = { state: ClientState; client: GameClient };

@@ -46,7 +46,6 @@ export function uiOrchestrationImports(root: string): Record<string, string[]> {
 
 export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
   'apps/web/src/ui/AcademyPanel.tsx': ['packages/engine/src/academy.ts'],
-  'apps/web/src/ui/App.tsx': ['packages/engine/src/ops-staff.ts'],
   'apps/web/src/ui/AwaySummary.tsx': ['packages/engine/src/projection.ts'],
   'apps/web/src/ui/Bracket.tsx': ['packages/engine/src/knockout.ts'],
   'apps/web/src/ui/BusinessWorkbench.tsx': [
@@ -77,7 +76,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
   'apps/web/src/ui/EventCenter.tsx': [
     'packages/engine/src/contracts.ts',
     'packages/engine/src/ops-staff.ts',
-    'packages/engine/src/staff.ts',
     'packages/engine/src/stopping.ts',
   ],
   'apps/web/src/ui/FacilityParts.tsx': [
@@ -92,21 +90,18 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
   ],
   'apps/web/src/ui/MediationReview.tsx': ['packages/engine/src/signings.ts'],
   'apps/web/src/ui/OvrBadge.tsx': ['packages/engine/src/world.ts'],
-  'apps/web/src/ui/PersonCareer.tsx': ['packages/engine/src/staff.ts'],
   'apps/web/src/ui/Pitch.tsx': [
     'packages/engine/src/managerMarket.ts',
     'packages/engine/src/match.ts',
   ],
   'apps/web/src/ui/PlayerProfile.tsx': [
     'packages/engine/src/career-assessment.ts',
-    'packages/engine/src/staff.ts',
     'packages/engine/src/world.ts',
   ],
   'apps/web/src/ui/PlayerSheetDialog.tsx': [
     'packages/engine/src/contracts.ts',
     'packages/engine/src/discipline.ts',
   ],
-  'apps/web/src/ui/PlayingCoachReview.tsx': ['packages/engine/src/staff.ts'],
   'apps/web/src/ui/PolicyBoard.tsx': [
     'packages/engine/src/academy.ts',
     'packages/engine/src/bases.ts',
@@ -117,7 +112,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
   'apps/web/src/ui/ProgressControls.tsx': ['packages/engine/src/stopping.ts'],
   'apps/web/src/ui/RecruitmentDesk.tsx': [
     'packages/engine/src/recruitment.ts',
-    'packages/engine/src/staff.ts',
     'packages/engine/src/transfers.ts',
   ],
   'apps/web/src/ui/Rich.tsx': [
@@ -128,13 +122,9 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/managerMarket.ts',
     'packages/engine/src/morale.ts',
     'packages/engine/src/ops-staff.ts',
-    'packages/engine/src/staff.ts',
     'packages/engine/src/transfers.ts',
   ],
-  'apps/web/src/ui/ScoutShortlist.tsx': [
-    'packages/engine/src/signings.ts',
-    'packages/engine/src/staff.ts',
-  ],
+  'apps/web/src/ui/ScoutShortlist.tsx': ['packages/engine/src/signings.ts'],
   'apps/web/src/ui/StrategyBoard.tsx': [
     'packages/engine/src/academy.ts',
     'packages/engine/src/care.ts',
@@ -158,14 +148,12 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
   'apps/web/src/ui/TrainingOrderSheet.tsx': [
     'packages/engine/src/academy.ts',
     'packages/engine/src/coach-training.ts',
-    'packages/engine/src/staff.ts',
     'packages/engine/src/training.ts',
   ],
   'apps/web/src/ui/TrainingView.tsx': [
     'packages/engine/src/careers.ts',
     'packages/engine/src/coach-training.ts',
     'packages/engine/src/morale.ts',
-    'packages/engine/src/staff.ts',
     'packages/engine/src/training.ts',
   ],
   'apps/web/src/ui/board.ts': [
