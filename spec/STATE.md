@@ -360,7 +360,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T516 | Automatic play without the match-day moment | WEB | - | todo |
-| T518 | Two-phase league round with a read-only fixture copy | ARCH MATCH WEB | - | todo |
 | T519 | Helper workers for an own match day's other fixtures | ARCH MATCH WEB | T518 T520 | todo |
 | T521 | Automatic play computes ahead of the shown date | WEB SAVE MATCH | T516 T520 | todo |
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | todo |
@@ -377,12 +376,13 @@
 | history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
 | v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
-| auto-play | 4 | 7 | 2 | 5 | 0 | 1 | 1 | 2026-10-27T10:02:59.435Z | [history](work/auto-play.json) |
+| auto-play | 4 | 7 | 3 | 4 | 0 | 1 | 0 | 2026-10-27T10:20:16.074Z | [history](work/auto-play.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261027 T518 integrated
 - 261027 T517 integrated
 - 261027 T520 integrated
 - 261027 ideation play-pace-and-owner-surfaces converted: owner dropped the action / standing choice / dashboard split and home ordering; automatic play scope fully in WEB r160, SAVE r55, ARCH r24
@@ -402,4 +402,3 @@
 - 261027 T500 done: UI→engine orchestration guard with a shrink-only list (53 files, 38 modules)
 - 261027 create-task review/ui-engine-boundary-261027 + ARCH r23 → T500–T503 (guard, tactic/injury leaves, staff-info leaf, competition/label leaves); review converted
 - 261027 ARCH r23: ARCH-3 path table matches the real layout; ARCH-4 UI imports engine values only from read leaves with a shrink-only guarded exception list
-- 261027 review-code ui-engine-boundary-261027: 53 UI files import 39 orchestration-reaching engine modules; F1–F4 adopted (owner: make the tasks and implement them), F5 open

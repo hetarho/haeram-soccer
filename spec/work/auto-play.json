@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-27T10:02:59.435Z",
-  "sourceCommit": "d26aa16167446c7b88699e83e61948a4385143f5",
+  "snapshotAt": "2026-10-27T10:20:16.074Z",
+  "sourceCommit": "f73b511bc80227cfac46df01c79a379241212c58",
   "group": {
     "id": "auto-play",
     "branch": "work/auto-play",
@@ -13,6 +13,32 @@
       "maxPending": 8
     },
     "review": "risky",
+    "runner": {
+      "id": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-27T10:17:31.545Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    },
     "lastRun": {
       "id": "54a1ff18-63d2-4485-a2e9-50f3c641f93c",
       "adapter": "builtin",
@@ -59,11 +85,11 @@
   },
   "summary": {
     "total": 7,
-    "completed": 2,
-    "remaining": 5,
+    "completed": 3,
+    "remaining": 4,
     "running": 0,
     "review": 1,
-    "blocked": 1,
+    "blocked": 0,
     "unassigned": 3
   },
   "tasks": [
@@ -71,13 +97,7 @@
       "id": "T516",
       "title": "Automatic play without the match-day moment",
       "dep": [],
-      "status": "blocked"
-    },
-    {
-      "id": "T518",
-      "title": "Two-phase league round with a read-only fixture copy",
-      "dep": [],
-      "status": "approved"
+      "status": "ready"
     },
     {
       "id": "T519",
@@ -214,18 +234,20 @@
         "a7bc5c3e-9a69-43ec-889a-ca03a169e8ce/worker-2",
         "54a1ff18-63d2-4485-a2e9-50f3c641f93c/worker-1"
       ],
-      "status": "blocked",
-      "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+      "status": "ready",
+      "reason": null,
       "createdAt": "2026-10-27T09:06:26.627Z",
       "startCommit": "977f2571550d708536abeaf5785069b7a34f3e2c",
-      "submittedBase": "977f2571550d708536abeaf5785069b7a34f3e2c",
-      "submissionId": "a876a649-5444-4247-9f34-b7934d25c531",
-      "submittedAt": "2026-10-27T09:17:13.990Z",
+      "verifiedCommit": "7dbbc96ca11bd92e0c159d66b249f46fb917e7b9",
+      "submittedBase": "f73b511bc80227cfac46df01c79a379241212c58",
+      "submissionId": "145a6af0-4a67-4ec2-8dea-47c4bb522e1c",
+      "submittedAt": "2026-10-27T10:17:25.969Z",
       "risk": {
         "risky": true,
         "reasons": [
           "453 changed lines (limit 300)",
-          "outside touches: apps/web/src/ui/App.tsx apps/web/src/ui/ClubHub.test.ts"
+          "outside touches: apps/web/src/ui/App.tsx apps/web/src/ui/ClubHub.test.ts",
+          "reworked after a review or integration failure"
         ],
         "lines": 453,
         "files": 10
@@ -288,13 +310,13 @@
       "steps": [
         {
           "taskId": "T516",
-          "commit": "3a33dfbbc6ba643aed1344ca81b66e2ce2afc1b4",
-          "at": "2026-10-27T09:17:13.916Z",
+          "commit": "7dbbc96ca11bd92e0c159d66b249f46fb917e7b9",
+          "at": "2026-10-27T10:17:25.901Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-              "startedAt": "2026-10-27T09:15:19.424Z",
-              "finishedAt": "2026-10-27T09:17:13.600Z"
+              "startedAt": "2026-10-27T10:14:09.564Z",
+              "finishedAt": "2026-10-27T10:17:25.648Z"
             }
           ]
         }
@@ -302,8 +324,8 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-          "startedAt": "2026-10-27T09:15:19.424Z",
-          "finishedAt": "2026-10-27T09:17:13.600Z"
+          "startedAt": "2026-10-27T10:14:09.564Z",
+          "finishedAt": "2026-10-27T10:17:25.648Z"
         }
       ]
     },
@@ -319,64 +341,65 @@
       "contributors": [
         "a7bc5c3e-9a69-43ec-889a-ca03a169e8ce/worker-3"
       ],
-      "status": "approved",
-      "reason": "Command failed: git -C /home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/auto-play-integrate-b5d96af2 merge --no-ff --no-commit 9adc690889a9b40879c59db4692678c351bb93c4\n",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-10-27T09:06:31.305Z",
       "startCommit": "977f2571550d708536abeaf5785069b7a34f3e2c",
-      "verifiedCommit": "9adc690889a9b40879c59db4692678c351bb93c4",
-      "submittedBase": "d26aa16167446c7b88699e83e61948a4385143f5",
-      "submissionId": "083c37a0-085e-4e59-8b56-f4ede185d8c5",
-      "submittedAt": "2026-10-27T09:57:39.043Z",
+      "verifiedCommit": "e9b8ac9efcefec2a672ca439369e0cec02febd8c",
+      "submittedBase": "f73b511bc80227cfac46df01c79a379241212c58",
+      "submissionId": "02e6e402-ef6d-401f-b738-74e7dd6f7ad9",
+      "submittedAt": "2026-10-27T10:14:06.692Z",
       "risk": {
         "risky": true,
         "reasons": [
           "407 changed lines (limit 300)",
-          "outside touches: tests/config/test-tiers.ts"
+          "outside touches: tests/config/test-tiers.ts",
+          "reworked after a review or integration failure"
         ],
         "lines": 407,
         "files": 5
       },
       "dispatch": {
-        "id": "d98287ab-afbe-4c7d-9c96-1e46665e339b",
-        "runner": "54a1ff18-63d2-4485-a2e9-50f3c641f93c",
+        "id": "254d61e5-bdad-4cb9-99e6-d466d37ca4e6",
+        "runner": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
         "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-27T09:57:57.555Z",
-        "finishedAt": "2026-10-27T10:02:55.913Z",
+        "startedAt": "2026-10-27T10:17:34.250Z",
+        "finishedAt": "2026-10-27T10:20:14.321Z",
         "error": null,
-        "summary": "T518 meets its acceptance. playRound now runs in two phases: it computes every fixture from the world as it stands at kick-off, then records them all in fixture order. A round that names a club twice still uses the old interleaved loop. round-jobs.ts exports FIXTURE_READ_KEYS with the specified keys, readCopy, roundJobs, simulateRoundJob, the job/result types and a per-world simulator held in a WeakMap (none by default). The simulator only runs on a league day that includes our fixture, and our match still plays on the engine. For T519 there is a synchronous prepareRound/completeRound pair, which mirrors stepDay's league branch step for step (beginDays, calendar, round++, records, settlement, clubDay, revision). While a round is pending, the beginDays guard makes advanceDays and advanceRound throw. I checked the independence argument against recordMatch: it writes only the two clubs' tables, Elo, bans and injuries, the NPC season stats, and own-only effects. NPC squad caches are invalidated only during club business, never inside a round. jobPlayback maps result IDs back to the world's squads and computes on the engine instead when a result doesn't match. The new tests cover acceptance (a) to (c): a reversed, JSON-round-tripped helper, plus the prepare pair and a failed helper, gives the same world over 60 days; a Proxy trace shows no key read outside FIXTURE_READ_KEYS and no writes; a duplicated club takes the fallback. The worker's day-bench hashes match the old interleaved path (098fdcae5ada357b over 49 days; 04797292c875ce29 with --matches 30). Risk reasons: the 407 changed lines are mostly the new test and the spec result. The change to tests/config/test-tiers.ts outside touches is a one-line, alphabetical addition that the acceptance itself requires (integration tier). The worker did not run the integration command from the last acceptance item (round-jobs, season, world, calendar.fast-path); that is left to the coordinator's final gate."
+        "summary": "T518 meets its acceptance. I checked the three risk reasons first. The 407 lines are mostly the new round-jobs.ts module and its test. The change outside `touches`, tests/config/test-tiers.ts, is the coordinator's one-line registration of round-jobs.test.ts in the integration tier, which the acceptance requires. The rework only moved that test into the integration tier. playRound is now two-phase. Without a simulator it computes every fixture, then records them in fixture order. A round naming a club twice keeps the old loop unchanged. The sync advanceDays path is unchanged when no simulator is set. setRoundSimulator is per world (WeakMap). The simulator is used only on a league day with our fixture, and cup and continental play still runs after the league records. The prepareRound/completeRound pair matches stepDay's league-day branch and guards day and round stepping while a round is pending. FIXTURE_READ_KEYS, readCopy, roundJobs and simulateRoundJob match the acceptance. jobPlayback falls back to the engine for a mismatched or unresolved result. No helper duplicates an existing one (there was no shared own-fixture helper). The tests cover the acceptance: (a) a reversed, JSON round-tripped simulator plus the prepared pair and a failed-helper path, compared by canonical hash over 60 days; (b) a Proxy key trace including writes, plus copy-versus-world equality; (c) the duplicate-club fallback. The reference run is cached by the test's dependency graph, so engine changes invalidate it. Identity with the old interleaved path rests on the worker's day bench: hash 098fdcae5ada357b over 49 days, and 04797292c875ce29 with --matches 30 both before and after the change and with the reverse simulator. The worker ran typecheck, lint and format (all pass) and round-jobs.test.ts under the unit project (3/3). Since that test moved to the integration tier, neither it nor the season, world and calendar.fast-path integration runs from the last acceptance item have been run. They are left to the coordinator's final gate. The findings are optional improvements only."
       },
       "review": {
-        "id": "83dba5f2-f318-4ddc-91c8-7fd8339d9049",
-        "owner": "54a1ff18-63d2-4485-a2e9-50f3c641f93c/reviewer-1",
+        "id": "2967ddc1-3e31-4c52-b3c8-30b9640dfa2d",
+        "owner": "357b05ed-2549-4117-8a2c-8b22203cf3ff/reviewer-1",
         "status": "approved",
         "verdict": "approved",
-        "summary": "T518 meets its acceptance. playRound now runs in two phases: it computes every fixture from the world as it stands at kick-off, then records them all in fixture order. A round that names a club twice still uses the old interleaved loop. round-jobs.ts exports FIXTURE_READ_KEYS with the specified keys, readCopy, roundJobs, simulateRoundJob, the job/result types and a per-world simulator held in a WeakMap (none by default). The simulator only runs on a league day that includes our fixture, and our match still plays on the engine. For T519 there is a synchronous prepareRound/completeRound pair, which mirrors stepDay's league branch step for step (beginDays, calendar, round++, records, settlement, clubDay, revision). While a round is pending, the beginDays guard makes advanceDays and advanceRound throw. I checked the independence argument against recordMatch: it writes only the two clubs' tables, Elo, bans and injuries, the NPC season stats, and own-only effects. NPC squad caches are invalidated only during club business, never inside a round. jobPlayback maps result IDs back to the world's squads and computes on the engine instead when a result doesn't match. The new tests cover acceptance (a) to (c): a reversed, JSON-round-tripped helper, plus the prepare pair and a failed helper, gives the same world over 60 days; a Proxy trace shows no key read outside FIXTURE_READ_KEYS and no writes; a duplicated club takes the fallback. The worker's day-bench hashes match the old interleaved path (098fdcae5ada357b over 49 days; 04797292c875ce29 with --matches 30). Risk reasons: the 407 changed lines are mostly the new test and the spec result. The change to tests/config/test-tiers.ts outside touches is a one-line, alphabetical addition that the acceptance itself requires (integration tier). The worker did not run the integration command from the last acceptance item (round-jobs, season, world, calendar.fast-path); that is left to the coordinator's final gate.",
+        "summary": "T518 meets its acceptance. I checked the three risk reasons first. The 407 lines are mostly the new round-jobs.ts module and its test. The change outside `touches`, tests/config/test-tiers.ts, is the coordinator's one-line registration of round-jobs.test.ts in the integration tier, which the acceptance requires. The rework only moved that test into the integration tier. playRound is now two-phase. Without a simulator it computes every fixture, then records them in fixture order. A round naming a club twice keeps the old loop unchanged. The sync advanceDays path is unchanged when no simulator is set. setRoundSimulator is per world (WeakMap). The simulator is used only on a league day with our fixture, and cup and continental play still runs after the league records. The prepareRound/completeRound pair matches stepDay's league-day branch and guards day and round stepping while a round is pending. FIXTURE_READ_KEYS, readCopy, roundJobs and simulateRoundJob match the acceptance. jobPlayback falls back to the engine for a mismatched or unresolved result. No helper duplicates an existing one (there was no shared own-fixture helper). The tests cover the acceptance: (a) a reversed, JSON round-tripped simulator plus the prepared pair and a failed-helper path, compared by canonical hash over 60 days; (b) a Proxy key trace including writes, plus copy-versus-world equality; (c) the duplicate-club fallback. The reference run is cached by the test's dependency graph, so engine changes invalidate it. Identity with the old interleaved path rests on the worker's day bench: hash 098fdcae5ada357b over 49 days, and 04797292c875ce29 with --matches 30 both before and after the change and with the reverse simulator. The worker ran typecheck, lint and format (all pass) and round-jobs.test.ts under the unit project (3/3). Since that test moved to the integration tier, neither it nor the season, world and calendar.fast-path integration runs from the last acceptance item have been run. They are left to the coordinator's final gate. The findings are optional improvements only.",
         "findings": [
           {
             "priority": "P3",
-            "where": "packages/engine/src/season.ts:prepareRound (T518)",
-            "message": "prepareRound is not exception-safe. beginRound advances w.round (and prepareRound sets w.calendar) before it calls `start` and plays our match, and pendingRounds is set only afterwards. If `start` throws (for example a postMessage DataCloneError in T519's host) or our match throws, the world is left half-stepped: the round counter has moved on, the round's fixtures are unscored, and nothing is pending. The host then cannot fall back to the engine-only path that ARCH-6 requires and can only restore the checkpoint. Consider registering the pending phase before calling `start`, or catching and rolling back, or at least documenting that T519 must treat a throw here as a checkpoint restore."
+            "where": "packages/engine/src/season.ts:815 (T518)",
+            "message": "The doc block describing the two-phase round sits on `interface RoundPhase`, while `playRound` keeps the old one-line comment. Move the two-phase description to `playRound` and give `RoundPhase` its own short comment, so the comment describes the function that does the work."
           },
           {
             "priority": "P3",
-            "where": "packages/engine/src/round-jobs.ts:jobPlayback (T518)",
-            "message": "jobPlayback checks only the fixture ID, the two clubs and that every roster ID exists. A malformed helper result is not caught: a null entry, a missing `squads` (`?? []` turns it into an empty roster), or roster lines that don't cover the record's lineCounts. These would throw later inside recordMatch/settleNpcSeason after some fixtures are already recorded. The helpers are same-bundle code, so this is low risk, but either have T519's host validate results at the worker boundary (ARCH-6 'validated payloads') or treat a structurally incomplete result as unusable here, so the engine computes it instead."
+            "where": "packages/engine/src/season.ts:858 (T518)",
+            "message": "In stepDay's sync path, if an injected simulator's `start` or `collect()` throws, the error escapes after `w.round++` and our match has been computed, so the world is left mid-day and nothing marks it pending. Under ARCH-6 a worker failure restores the last checkpoint, so this is acceptable, but treating a throw from `collect` as `undefined` (engine computes the jobs) would match the 'failed helper' semantics completeRound already has. Leave it to T519 or document it."
           },
           {
             "priority": "P3",
-            "where": "packages/engine/src/round-jobs.test.ts (T518)",
-            "message": "Test (a) caches its no-simulator reference, which itself runs the new two-phase path. The suite therefore never compares against the old interleaved order; that identity rests only on the worker's manual day-bench hashes recorded in the task result. That is acceptable for the acceptance as written. A small committed regression would be cheaper to keep honest: for example, the interleaved loop inlined in the test over a few rounds, or the bench hash pinned for a tiny world."
+            "where": "packages/engine/src/season.ts:946 (T518 → T519)",
+            "message": "Between prepareRound and completeRound only day and round stepping (beginDays) throw. Other commands, reads, autosave and checkpoint serialization would see a world mid-day: round incremented, calendar advanced, our match unrecorded. The result's limits note this. T519's host must queue every command and checkpoint across that gap; consider an exported `roundPending(w)` so the host and checkpoint code can assert it."
           }
         ],
-        "commit": "9adc690889a9b40879c59db4692678c351bb93c4",
-        "baseCommit": "d26aa16167446c7b88699e83e61948a4385143f5",
-        "submissionId": "083c37a0-085e-4e59-8b56-f4ede185d8c5",
-        "createdAt": "2026-10-27T09:57:56.113Z",
-        "finishedAt": "2026-10-27T10:02:55.854Z"
+        "commit": "e9b8ac9efcefec2a672ca439369e0cec02febd8c",
+        "baseCommit": "f73b511bc80227cfac46df01c79a379241212c58",
+        "submissionId": "02e6e402-ef6d-401f-b738-74e7dd6f7ad9",
+        "createdAt": "2026-10-27T10:17:32.842Z",
+        "finishedAt": "2026-10-27T10:20:14.261Z"
       },
       "reviewHistory": [
         {
@@ -414,18 +437,68 @@
           "finishedAt": "2026-10-27T09:45:21.403Z",
           "invalidatedAt": "2026-10-27T09:55:36.986Z",
           "invalidationReason": "review snapshot changed"
+        },
+        {
+          "id": "83dba5f2-f318-4ddc-91c8-7fd8339d9049",
+          "owner": "54a1ff18-63d2-4485-a2e9-50f3c641f93c/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T518 meets its acceptance. playRound now runs in two phases: it computes every fixture from the world as it stands at kick-off, then records them all in fixture order. A round that names a club twice still uses the old interleaved loop. round-jobs.ts exports FIXTURE_READ_KEYS with the specified keys, readCopy, roundJobs, simulateRoundJob, the job/result types and a per-world simulator held in a WeakMap (none by default). The simulator only runs on a league day that includes our fixture, and our match still plays on the engine. For T519 there is a synchronous prepareRound/completeRound pair, which mirrors stepDay's league branch step for step (beginDays, calendar, round++, records, settlement, clubDay, revision). While a round is pending, the beginDays guard makes advanceDays and advanceRound throw. I checked the independence argument against recordMatch: it writes only the two clubs' tables, Elo, bans and injuries, the NPC season stats, and own-only effects. NPC squad caches are invalidated only during club business, never inside a round. jobPlayback maps result IDs back to the world's squads and computes on the engine instead when a result doesn't match. The new tests cover acceptance (a) to (c): a reversed, JSON-round-tripped helper, plus the prepare pair and a failed helper, gives the same world over 60 days; a Proxy trace shows no key read outside FIXTURE_READ_KEYS and no writes; a duplicated club takes the fallback. The worker's day-bench hashes match the old interleaved path (098fdcae5ada357b over 49 days; 04797292c875ce29 with --matches 30). Risk reasons: the 407 changed lines are mostly the new test and the spec result. The change to tests/config/test-tiers.ts outside touches is a one-line, alphabetical addition that the acceptance itself requires (integration tier). The worker did not run the integration command from the last acceptance item (round-jobs, season, world, calendar.fast-path); that is left to the coordinator's final gate.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/season.ts:prepareRound (T518)",
+              "message": "prepareRound is not exception-safe. beginRound advances w.round (and prepareRound sets w.calendar) before it calls `start` and plays our match, and pendingRounds is set only afterwards. If `start` throws (for example a postMessage DataCloneError in T519's host) or our match throws, the world is left half-stepped: the round counter has moved on, the round's fixtures are unscored, and nothing is pending. The host then cannot fall back to the engine-only path that ARCH-6 requires and can only restore the checkpoint. Consider registering the pending phase before calling `start`, or catching and rolling back, or at least documenting that T519 must treat a throw here as a checkpoint restore."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/round-jobs.ts:jobPlayback (T518)",
+              "message": "jobPlayback checks only the fixture ID, the two clubs and that every roster ID exists. A malformed helper result is not caught: a null entry, a missing `squads` (`?? []` turns it into an empty roster), or roster lines that don't cover the record's lineCounts. These would throw later inside recordMatch/settleNpcSeason after some fixtures are already recorded. The helpers are same-bundle code, so this is low risk, but either have T519's host validate results at the worker boundary (ARCH-6 'validated payloads') or treat a structurally incomplete result as unusable here, so the engine computes it instead."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/round-jobs.test.ts (T518)",
+              "message": "Test (a) caches its no-simulator reference, which itself runs the new two-phase path. The suite therefore never compares against the old interleaved order; that identity rests only on the worker's manual day-bench hashes recorded in the task result. That is acceptable for the acceptance as written. A small committed regression would be cheaper to keep honest: for example, the interleaved loop inlined in the test over a few rounds, or the bench hash pinned for a tiny world."
+            }
+          ],
+          "commit": "9adc690889a9b40879c59db4692678c351bb93c4",
+          "baseCommit": "d26aa16167446c7b88699e83e61948a4385143f5",
+          "submissionId": "083c37a0-085e-4e59-8b56-f4ede185d8c5",
+          "createdAt": "2026-10-27T09:57:56.113Z",
+          "finishedAt": "2026-10-27T10:02:55.854Z",
+          "invalidatedAt": "2026-10-27T10:03:03.275Z",
+          "invalidationReason": "integration failed"
+        },
+        {
+          "id": "93d6057d-0bc3-4a36-816c-c8b4a0457a2e",
+          "owner": "integration",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Integration failed on the merged candidate.",
+          "findings": [
+            {
+              "priority": "P1",
+              "where": "integration",
+              "message": "Merge the group branch into this workspace, fix the failure, and resubmit: Command failed: git -C /home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/auto-play-integrate-0fa23a27 merge --no-ff --no-commit 9adc690889a9b40879c59db4692678c351bb93c4\n"
+            }
+          ],
+          "commit": "9adc690889a9b40879c59db4692678c351bb93c4",
+          "baseCommit": "f73b511bc80227cfac46df01c79a379241212c58",
+          "finishedAt": "2026-10-27T10:03:03.275Z",
+          "invalidatedAt": "2026-10-27T10:11:02.620Z",
+          "invalidationReason": "worker resumed or blocked"
         }
       ],
       "steps": [
         {
           "taskId": "T518",
-          "commit": "9adc690889a9b40879c59db4692678c351bb93c4",
-          "at": "2026-10-27T09:57:38.980Z",
+          "commit": "e9b8ac9efcefec2a672ca439369e0cec02febd8c",
+          "at": "2026-10-27T10:14:06.635Z",
           "verification": [
             {
               "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-              "startedAt": "2026-10-27T09:56:13.872Z",
-              "finishedAt": "2026-10-27T09:57:38.724Z"
+              "startedAt": "2026-10-27T10:11:04.134Z",
+              "finishedAt": "2026-10-27T10:14:06.406Z"
             }
           ]
         }
@@ -433,8 +506,8 @@
       "verification": [
         {
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-          "startedAt": "2026-10-27T09:56:13.872Z",
-          "finishedAt": "2026-10-27T09:57:38.724Z"
+          "startedAt": "2026-10-27T10:11:04.134Z",
+          "finishedAt": "2026-10-27T10:14:06.406Z"
         }
       ]
     },
@@ -2646,6 +2719,541 @@
           "autopilot": true,
           "decisionWaitMs": 900000
         }
+      }
+    },
+    {
+      "sequence": 770,
+      "at": "2026-10-27T10:03:01.483Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 771,
+      "at": "2026-10-27T10:03:03.275Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "integrating",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "integration failed",
+        "review": {
+          "id": "93d6057d-0bc3-4a36-816c-c8b4a0457a2e",
+          "owner": "integration",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Integration failed on the merged candidate.",
+          "findings": [
+            {
+              "priority": "P1",
+              "where": "integration",
+              "message": "Merge the group branch into this workspace, fix the failure, and resubmit: Command failed: git -C /home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/auto-play-integrate-0fa23a27 merge --no-ff --no-commit 9adc690889a9b40879c59db4692678c351bb93c4\n"
+            }
+          ],
+          "commit": "9adc690889a9b40879c59db4692678c351bb93c4",
+          "baseCommit": "f73b511bc80227cfac46df01c79a379241212c58",
+          "finishedAt": "2026-10-27T10:03:03.275Z"
+        },
+        "reviewHistory": [
+          {
+            "id": "6c2a6bfe-7ec3-4701-ad30-c4bcc942c6ec",
+            "owner": "a7bc5c3e-9a69-43ec-889a-ca03a169e8ce/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T518 meets its acceptance and ARCH-6 r24, so I'm approving it. The risk flag was only about size (406 lines over 4 files). Most of that is the new round-jobs.ts module and its test; the season.ts change is a focused rewrite of the round step. `playRound` now runs in two phases: it computes every fixture first, then records them in fixture order. The record loop is unchanged from the old code. Before anything is recorded, each simulator result is matched back to the world's own squads, so recording one fixture can't change the roster used for another. If a result doesn't match its fixture, or names a player the world's squads don't have, the engine computes that fixture itself. A round that names a club twice still uses the old interleaved loop. The simulator is called only on a league day that includes our fixture, and our match plays on the engine meanwhile. Cup and continental days are unchanged. `prepareRound`/`completeRound` give T519 a synchronous split point. `beginDays` blocks day and round stepping while a round is pending, and `prepareRound` changes nothing when it returns false. I checked that `squad()`/`continuousSquad` read only `people`, `seed`, `year` and `playerClub` for NPC clubs, so own players out on loan don't pull `players` into the copy. The NPC squad cache is keyed per world, so a copy rebuilds its own squads as the impl notes intend. The three tests match acceptance (a)–(c). Test (a) also covers the prepare/complete pair and a helper failure, and checks the copy's keys. The worker reports matching day-bench hashes, with and without the simulator, at 49 and 301 days. The commit merges cleanly onto b525a8df; the T517/T520 changes since its parent are in the grid engine and the web runtime, not season.ts. Not verified here: the integration tests (season/world/calendar.fast-path) were not run by the worker, and the coordinator's verify list does not include them, so they rest on the batch gate.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/season.ts:868 (T518, playRound results loop) / round-jobs.ts:89 jobPlayback",
+                "message": "`completeRound` says a missing or unusable result is computed here, but a results array with a null entry crashes on `result.record.id`. A null entry is what a sparse array becomes after a JSON or worker round trip. Only true holes are skipped by `forEach`. Suggest skipping null entries, e.g. `if (!result) return`, so a partial helper failure from T519 falls back instead of throwing mid-round."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/season.ts:961-966 (T518, prepareRound)",
+                "message": "`w.calendar`/`w.round++` change before `start` runs. If `start` throws (for example a postMessage clone error in T519's host), the world is left mid-day with no pending entry, and the next `advanceDays` would skip that round's fixtures. ARCH-6's checkpoint restore covers this, but T519 should either guard `start` or restore the checkpoint on that error. Note it for T519."
+              },
+              {
+                "priority": "P3",
+                "where": "spec/tasks/T518.round-two-phase-and-read-copy.md acceptance item 6 (T518)",
+                "message": "Item 6 is checked [v], but the result's limits say the integration run (season.test.ts, world.test.ts, calendar.fast-path.test.ts) was not done. The coordinator's verify command (unit + contract) does not cover it either. The batch gate must run those integration files before T518 counts as done."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/round-jobs.test.ts:51 (T518, test a)",
+                "message": "The unit test takes 7–12 s warm and 16.6 s cold. In the same parallel run, another file timed out at 37 s against the 30 s limit. Consider an explicit per-test timeout, or a shorter day count that still covers at least two own match days, so the unit gate doesn't fail intermittently under load."
+              }
+            ],
+            "commit": "2ee6d98bb8d71520bc4a31a7dc08ba9ea38e4780",
+            "baseCommit": "b525a8df3effe22f2c32eaf2bba29123a81baa2f",
+            "submissionId": "089a7790-1272-4339-9d35-6bbba28e9b12",
+            "createdAt": "2026-10-27T09:42:46.481Z",
+            "finishedAt": "2026-10-27T09:45:21.403Z",
+            "invalidatedAt": "2026-10-27T09:55:36.986Z",
+            "invalidationReason": "review snapshot changed"
+          },
+          {
+            "id": "83dba5f2-f318-4ddc-91c8-7fd8339d9049",
+            "owner": "54a1ff18-63d2-4485-a2e9-50f3c641f93c/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T518 meets its acceptance. playRound now runs in two phases: it computes every fixture from the world as it stands at kick-off, then records them all in fixture order. A round that names a club twice still uses the old interleaved loop. round-jobs.ts exports FIXTURE_READ_KEYS with the specified keys, readCopy, roundJobs, simulateRoundJob, the job/result types and a per-world simulator held in a WeakMap (none by default). The simulator only runs on a league day that includes our fixture, and our match still plays on the engine. For T519 there is a synchronous prepareRound/completeRound pair, which mirrors stepDay's league branch step for step (beginDays, calendar, round++, records, settlement, clubDay, revision). While a round is pending, the beginDays guard makes advanceDays and advanceRound throw. I checked the independence argument against recordMatch: it writes only the two clubs' tables, Elo, bans and injuries, the NPC season stats, and own-only effects. NPC squad caches are invalidated only during club business, never inside a round. jobPlayback maps result IDs back to the world's squads and computes on the engine instead when a result doesn't match. The new tests cover acceptance (a) to (c): a reversed, JSON-round-tripped helper, plus the prepare pair and a failed helper, gives the same world over 60 days; a Proxy trace shows no key read outside FIXTURE_READ_KEYS and no writes; a duplicated club takes the fallback. The worker's day-bench hashes match the old interleaved path (098fdcae5ada357b over 49 days; 04797292c875ce29 with --matches 30). Risk reasons: the 407 changed lines are mostly the new test and the spec result. The change to tests/config/test-tiers.ts outside touches is a one-line, alphabetical addition that the acceptance itself requires (integration tier). The worker did not run the integration command from the last acceptance item (round-jobs, season, world, calendar.fast-path); that is left to the coordinator's final gate.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/season.ts:prepareRound (T518)",
+                "message": "prepareRound is not exception-safe. beginRound advances w.round (and prepareRound sets w.calendar) before it calls `start` and plays our match, and pendingRounds is set only afterwards. If `start` throws (for example a postMessage DataCloneError in T519's host) or our match throws, the world is left half-stepped: the round counter has moved on, the round's fixtures are unscored, and nothing is pending. The host then cannot fall back to the engine-only path that ARCH-6 requires and can only restore the checkpoint. Consider registering the pending phase before calling `start`, or catching and rolling back, or at least documenting that T519 must treat a throw here as a checkpoint restore."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/round-jobs.ts:jobPlayback (T518)",
+                "message": "jobPlayback checks only the fixture ID, the two clubs and that every roster ID exists. A malformed helper result is not caught: a null entry, a missing `squads` (`?? []` turns it into an empty roster), or roster lines that don't cover the record's lineCounts. These would throw later inside recordMatch/settleNpcSeason after some fixtures are already recorded. The helpers are same-bundle code, so this is low risk, but either have T519's host validate results at the worker boundary (ARCH-6 'validated payloads') or treat a structurally incomplete result as unusable here, so the engine computes it instead."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/round-jobs.test.ts (T518)",
+                "message": "Test (a) caches its no-simulator reference, which itself runs the new two-phase path. The suite therefore never compares against the old interleaved order; that identity rests only on the worker's manual day-bench hashes recorded in the task result. That is acceptable for the acceptance as written. A small committed regression would be cheaper to keep honest: for example, the interleaved loop inlined in the test over a few rounds, or the bench hash pinned for a tiny world."
+              }
+            ],
+            "commit": "9adc690889a9b40879c59db4692678c351bb93c4",
+            "baseCommit": "d26aa16167446c7b88699e83e61948a4385143f5",
+            "submissionId": "083c37a0-085e-4e59-8b56-f4ede185d8c5",
+            "createdAt": "2026-10-27T09:57:56.113Z",
+            "finishedAt": "2026-10-27T10:02:55.854Z",
+            "invalidatedAt": "2026-10-27T10:03:03.275Z",
+            "invalidationReason": "integration failed"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 772,
+      "at": "2026-10-27T10:11:02.620Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null,
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "6c2a6bfe-7ec3-4701-ad30-c4bcc942c6ec",
+            "owner": "a7bc5c3e-9a69-43ec-889a-ca03a169e8ce/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T518 meets its acceptance and ARCH-6 r24, so I'm approving it. The risk flag was only about size (406 lines over 4 files). Most of that is the new round-jobs.ts module and its test; the season.ts change is a focused rewrite of the round step. `playRound` now runs in two phases: it computes every fixture first, then records them in fixture order. The record loop is unchanged from the old code. Before anything is recorded, each simulator result is matched back to the world's own squads, so recording one fixture can't change the roster used for another. If a result doesn't match its fixture, or names a player the world's squads don't have, the engine computes that fixture itself. A round that names a club twice still uses the old interleaved loop. The simulator is called only on a league day that includes our fixture, and our match plays on the engine meanwhile. Cup and continental days are unchanged. `prepareRound`/`completeRound` give T519 a synchronous split point. `beginDays` blocks day and round stepping while a round is pending, and `prepareRound` changes nothing when it returns false. I checked that `squad()`/`continuousSquad` read only `people`, `seed`, `year` and `playerClub` for NPC clubs, so own players out on loan don't pull `players` into the copy. The NPC squad cache is keyed per world, so a copy rebuilds its own squads as the impl notes intend. The three tests match acceptance (a)–(c). Test (a) also covers the prepare/complete pair and a helper failure, and checks the copy's keys. The worker reports matching day-bench hashes, with and without the simulator, at 49 and 301 days. The commit merges cleanly onto b525a8df; the T517/T520 changes since its parent are in the grid engine and the web runtime, not season.ts. Not verified here: the integration tests (season/world/calendar.fast-path) were not run by the worker, and the coordinator's verify list does not include them, so they rest on the batch gate.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/season.ts:868 (T518, playRound results loop) / round-jobs.ts:89 jobPlayback",
+                "message": "`completeRound` says a missing or unusable result is computed here, but a results array with a null entry crashes on `result.record.id`. A null entry is what a sparse array becomes after a JSON or worker round trip. Only true holes are skipped by `forEach`. Suggest skipping null entries, e.g. `if (!result) return`, so a partial helper failure from T519 falls back instead of throwing mid-round."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/season.ts:961-966 (T518, prepareRound)",
+                "message": "`w.calendar`/`w.round++` change before `start` runs. If `start` throws (for example a postMessage clone error in T519's host), the world is left mid-day with no pending entry, and the next `advanceDays` would skip that round's fixtures. ARCH-6's checkpoint restore covers this, but T519 should either guard `start` or restore the checkpoint on that error. Note it for T519."
+              },
+              {
+                "priority": "P3",
+                "where": "spec/tasks/T518.round-two-phase-and-read-copy.md acceptance item 6 (T518)",
+                "message": "Item 6 is checked [v], but the result's limits say the integration run (season.test.ts, world.test.ts, calendar.fast-path.test.ts) was not done. The coordinator's verify command (unit + contract) does not cover it either. The batch gate must run those integration files before T518 counts as done."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/round-jobs.test.ts:51 (T518, test a)",
+                "message": "The unit test takes 7–12 s warm and 16.6 s cold. In the same parallel run, another file timed out at 37 s against the 30 s limit. Consider an explicit per-test timeout, or a shorter day count that still covers at least two own match days, so the unit gate doesn't fail intermittently under load."
+              }
+            ],
+            "commit": "2ee6d98bb8d71520bc4a31a7dc08ba9ea38e4780",
+            "baseCommit": "b525a8df3effe22f2c32eaf2bba29123a81baa2f",
+            "submissionId": "089a7790-1272-4339-9d35-6bbba28e9b12",
+            "createdAt": "2026-10-27T09:42:46.481Z",
+            "finishedAt": "2026-10-27T09:45:21.403Z",
+            "invalidatedAt": "2026-10-27T09:55:36.986Z",
+            "invalidationReason": "review snapshot changed"
+          },
+          {
+            "id": "83dba5f2-f318-4ddc-91c8-7fd8339d9049",
+            "owner": "54a1ff18-63d2-4485-a2e9-50f3c641f93c/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T518 meets its acceptance. playRound now runs in two phases: it computes every fixture from the world as it stands at kick-off, then records them all in fixture order. A round that names a club twice still uses the old interleaved loop. round-jobs.ts exports FIXTURE_READ_KEYS with the specified keys, readCopy, roundJobs, simulateRoundJob, the job/result types and a per-world simulator held in a WeakMap (none by default). The simulator only runs on a league day that includes our fixture, and our match still plays on the engine. For T519 there is a synchronous prepareRound/completeRound pair, which mirrors stepDay's league branch step for step (beginDays, calendar, round++, records, settlement, clubDay, revision). While a round is pending, the beginDays guard makes advanceDays and advanceRound throw. I checked the independence argument against recordMatch: it writes only the two clubs' tables, Elo, bans and injuries, the NPC season stats, and own-only effects. NPC squad caches are invalidated only during club business, never inside a round. jobPlayback maps result IDs back to the world's squads and computes on the engine instead when a result doesn't match. The new tests cover acceptance (a) to (c): a reversed, JSON-round-tripped helper, plus the prepare pair and a failed helper, gives the same world over 60 days; a Proxy trace shows no key read outside FIXTURE_READ_KEYS and no writes; a duplicated club takes the fallback. The worker's day-bench hashes match the old interleaved path (098fdcae5ada357b over 49 days; 04797292c875ce29 with --matches 30). Risk reasons: the 407 changed lines are mostly the new test and the spec result. The change to tests/config/test-tiers.ts outside touches is a one-line, alphabetical addition that the acceptance itself requires (integration tier). The worker did not run the integration command from the last acceptance item (round-jobs, season, world, calendar.fast-path); that is left to the coordinator's final gate.",
+            "findings": [
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/season.ts:prepareRound (T518)",
+                "message": "prepareRound is not exception-safe. beginRound advances w.round (and prepareRound sets w.calendar) before it calls `start` and plays our match, and pendingRounds is set only afterwards. If `start` throws (for example a postMessage DataCloneError in T519's host) or our match throws, the world is left half-stepped: the round counter has moved on, the round's fixtures are unscored, and nothing is pending. The host then cannot fall back to the engine-only path that ARCH-6 requires and can only restore the checkpoint. Consider registering the pending phase before calling `start`, or catching and rolling back, or at least documenting that T519 must treat a throw here as a checkpoint restore."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/round-jobs.ts:jobPlayback (T518)",
+                "message": "jobPlayback checks only the fixture ID, the two clubs and that every roster ID exists. A malformed helper result is not caught: a null entry, a missing `squads` (`?? []` turns it into an empty roster), or roster lines that don't cover the record's lineCounts. These would throw later inside recordMatch/settleNpcSeason after some fixtures are already recorded. The helpers are same-bundle code, so this is low risk, but either have T519's host validate results at the worker boundary (ARCH-6 'validated payloads') or treat a structurally incomplete result as unusable here, so the engine computes it instead."
+              },
+              {
+                "priority": "P3",
+                "where": "packages/engine/src/round-jobs.test.ts (T518)",
+                "message": "Test (a) caches its no-simulator reference, which itself runs the new two-phase path. The suite therefore never compares against the old interleaved order; that identity rests only on the worker's manual day-bench hashes recorded in the task result. That is acceptable for the acceptance as written. A small committed regression would be cheaper to keep honest: for example, the interleaved loop inlined in the test over a few rounds, or the bench hash pinned for a tiny world."
+              }
+            ],
+            "commit": "9adc690889a9b40879c59db4692678c351bb93c4",
+            "baseCommit": "d26aa16167446c7b88699e83e61948a4385143f5",
+            "submissionId": "083c37a0-085e-4e59-8b56-f4ede185d8c5",
+            "createdAt": "2026-10-27T09:57:56.113Z",
+            "finishedAt": "2026-10-27T10:02:55.854Z",
+            "invalidatedAt": "2026-10-27T10:03:03.275Z",
+            "invalidationReason": "integration failed"
+          },
+          {
+            "id": "93d6057d-0bc3-4a36-816c-c8b4a0457a2e",
+            "owner": "integration",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Integration failed on the merged candidate.",
+            "findings": [
+              {
+                "priority": "P1",
+                "where": "integration",
+                "message": "Merge the group branch into this workspace, fix the failure, and resubmit: Command failed: git -C /home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/auto-play-integrate-0fa23a27 merge --no-ff --no-commit 9adc690889a9b40879c59db4692678c351bb93c4\n"
+              }
+            ],
+            "commit": "9adc690889a9b40879c59db4692678c351bb93c4",
+            "baseCommit": "f73b511bc80227cfac46df01c79a379241212c58",
+            "finishedAt": "2026-10-27T10:03:03.275Z",
+            "invalidatedAt": "2026-10-27T10:11:02.620Z",
+            "invalidationReason": "worker resumed or blocked"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 773,
+      "at": "2026-10-27T10:11:03.917Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 774,
+      "at": "2026-10-27T10:14:06.692Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "f73b511bc80227cfac46df01c79a379241212c58",
+        "submissionId": "02e6e402-ef6d-401f-b738-74e7dd6f7ad9",
+        "submittedAt": "2026-10-27T10:14:06.692Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "407 changed lines (limit 300)",
+            "outside touches: tests/config/test-tiers.ts",
+            "reworked after a review or integration failure"
+          ],
+          "lines": 407,
+          "files": 5
+        },
+        "steps": [
+          {
+            "taskId": "T518",
+            "commit": "e9b8ac9efcefec2a672ca439369e0cec02febd8c",
+            "at": "2026-10-27T10:14:06.635Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-27T10:11:04.134Z",
+                "finishedAt": "2026-10-27T10:14:06.406Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-27T10:11:04.134Z",
+            "finishedAt": "2026-10-27T10:14:06.406Z"
+          }
+        ],
+        "verifiedCommit": "e9b8ac9efcefec2a672ca439369e0cec02febd8c"
+      }
+    },
+    {
+      "sequence": 775,
+      "at": "2026-10-27T10:14:08.203Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "672228cf-83d5-4347-b656-a4a1fdb2c90b",
+      "taskId": "T516",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 776,
+      "at": "2026-10-27T10:14:09.380Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "672228cf-83d5-4347-b656-a4a1fdb2c90b",
+      "taskId": "T516",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 777,
+      "at": "2026-10-27T10:17:25.969Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "672228cf-83d5-4347-b656-a4a1fdb2c90b",
+      "taskId": "T516",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "f73b511bc80227cfac46df01c79a379241212c58",
+        "submissionId": "145a6af0-4a67-4ec2-8dea-47c4bb522e1c",
+        "submittedAt": "2026-10-27T10:17:25.969Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "453 changed lines (limit 300)",
+            "outside touches: apps/web/src/ui/App.tsx apps/web/src/ui/ClubHub.test.ts",
+            "reworked after a review or integration failure"
+          ],
+          "lines": 453,
+          "files": 10
+        },
+        "steps": [
+          {
+            "taskId": "T516",
+            "commit": "7dbbc96ca11bd92e0c159d66b249f46fb917e7b9",
+            "at": "2026-10-27T10:17:25.901Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-27T10:14:09.564Z",
+                "finishedAt": "2026-10-27T10:17:25.648Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-27T10:14:09.564Z",
+            "finishedAt": "2026-10-27T10:17:25.648Z"
+          }
+        ],
+        "verifiedCommit": "7dbbc96ca11bd92e0c159d66b249f46fb917e7b9"
+      }
+    },
+    {
+      "sequence": 778,
+      "at": "2026-10-27T10:17:31.582Z",
+      "type": "group",
+      "group": "auto-play",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T10:17:31.545Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 779,
+      "at": "2026-10-27T10:17:32.842Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "2967ddc1-3e31-4c52-b3c8-30b9640dfa2d",
+          "owner": "357b05ed-2549-4117-8a2c-8b22203cf3ff/reviewer-1",
+          "status": "reviewing",
+          "commit": "e9b8ac9efcefec2a672ca439369e0cec02febd8c",
+          "baseCommit": "f73b511bc80227cfac46df01c79a379241212c58",
+          "submissionId": "02e6e402-ef6d-401f-b738-74e7dd6f7ad9",
+          "createdAt": "2026-10-27T10:17:32.842Z"
+        }
+      }
+    },
+    {
+      "sequence": 780,
+      "at": "2026-10-27T10:17:34.250Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "254d61e5-bdad-4cb9-99e6-d466d37ca4e6",
+          "runner": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T10:17:34.250Z"
+        }
+      }
+    },
+    {
+      "sequence": 781,
+      "at": "2026-10-27T10:17:34.326Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "254d61e5-bdad-4cb9-99e6-d466d37ca4e6",
+          "runner": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T10:17:34.250Z"
+        }
+      }
+    },
+    {
+      "sequence": 782,
+      "at": "2026-10-27T10:20:14.261Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "2967ddc1-3e31-4c52-b3c8-30b9640dfa2d",
+          "owner": "357b05ed-2549-4117-8a2c-8b22203cf3ff/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T518 meets its acceptance. I checked the three risk reasons first. The 407 lines are mostly the new round-jobs.ts module and its test. The change outside `touches`, tests/config/test-tiers.ts, is the coordinator's one-line registration of round-jobs.test.ts in the integration tier, which the acceptance requires. The rework only moved that test into the integration tier. playRound is now two-phase. Without a simulator it computes every fixture, then records them in fixture order. A round naming a club twice keeps the old loop unchanged. The sync advanceDays path is unchanged when no simulator is set. setRoundSimulator is per world (WeakMap). The simulator is used only on a league day with our fixture, and cup and continental play still runs after the league records. The prepareRound/completeRound pair matches stepDay's league-day branch and guards day and round stepping while a round is pending. FIXTURE_READ_KEYS, readCopy, roundJobs and simulateRoundJob match the acceptance. jobPlayback falls back to the engine for a mismatched or unresolved result. No helper duplicates an existing one (there was no shared own-fixture helper). The tests cover the acceptance: (a) a reversed, JSON round-tripped simulator plus the prepared pair and a failed-helper path, compared by canonical hash over 60 days; (b) a Proxy key trace including writes, plus copy-versus-world equality; (c) the duplicate-club fallback. The reference run is cached by the test's dependency graph, so engine changes invalidate it. Identity with the old interleaved path rests on the worker's day bench: hash 098fdcae5ada357b over 49 days, and 04797292c875ce29 with --matches 30 both before and after the change and with the reverse simulator. The worker ran typecheck, lint and format (all pass) and round-jobs.test.ts under the unit project (3/3). Since that test moved to the integration tier, neither it nor the season, world and calendar.fast-path integration runs from the last acceptance item have been run. They are left to the coordinator's final gate. The findings are optional improvements only.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/season.ts:815 (T518)",
+              "message": "The doc block describing the two-phase round sits on `interface RoundPhase`, while `playRound` keeps the old one-line comment. Move the two-phase description to `playRound` and give `RoundPhase` its own short comment, so the comment describes the function that does the work."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/season.ts:858 (T518)",
+              "message": "In stepDay's sync path, if an injected simulator's `start` or `collect()` throws, the error escapes after `w.round++` and our match has been computed, so the world is left mid-day and nothing marks it pending. Under ARCH-6 a worker failure restores the last checkpoint, so this is acceptable, but treating a throw from `collect` as `undefined` (engine computes the jobs) would match the 'failed helper' semantics completeRound already has. Leave it to T519 or document it."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/season.ts:946 (T518 → T519)",
+              "message": "Between prepareRound and completeRound only day and round stepping (beginDays) throw. Other commands, reads, autosave and checkpoint serialization would see a world mid-day: round incremented, calendar advanced, our match unrecorded. The result's limits note this. T519's host must queue every command and checkpoint across that gap; consider an exported `roundPending(w)` so the host and checkpoint code can assert it."
+            }
+          ],
+          "commit": "e9b8ac9efcefec2a672ca439369e0cec02febd8c",
+          "baseCommit": "f73b511bc80227cfac46df01c79a379241212c58",
+          "submissionId": "02e6e402-ef6d-401f-b738-74e7dd6f7ad9",
+          "createdAt": "2026-10-27T10:17:32.842Z",
+          "finishedAt": "2026-10-27T10:20:14.261Z"
+        }
+      }
+    },
+    {
+      "sequence": 783,
+      "at": "2026-10-27T10:20:14.321Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "254d61e5-bdad-4cb9-99e6-d466d37ca4e6",
+          "runner": "357b05ed-2549-4117-8a2c-8b22203cf3ff",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T10:17:34.250Z",
+          "finishedAt": "2026-10-27T10:20:14.321Z",
+          "error": null,
+          "summary": "T518 meets its acceptance. I checked the three risk reasons first. The 407 lines are mostly the new round-jobs.ts module and its test. The change outside `touches`, tests/config/test-tiers.ts, is the coordinator's one-line registration of round-jobs.test.ts in the integration tier, which the acceptance requires. The rework only moved that test into the integration tier. playRound is now two-phase. Without a simulator it computes every fixture, then records them in fixture order. A round naming a club twice keeps the old loop unchanged. The sync advanceDays path is unchanged when no simulator is set. setRoundSimulator is per world (WeakMap). The simulator is used only on a league day with our fixture, and cup and continental play still runs after the league records. The prepareRound/completeRound pair matches stepDay's league-day branch and guards day and round stepping while a round is pending. FIXTURE_READ_KEYS, readCopy, roundJobs and simulateRoundJob match the acceptance. jobPlayback falls back to the engine for a mismatched or unresolved result. No helper duplicates an existing one (there was no shared own-fixture helper). The tests cover the acceptance: (a) a reversed, JSON round-tripped simulator plus the prepared pair and a failed-helper path, compared by canonical hash over 60 days; (b) a Proxy key trace including writes, plus copy-versus-world equality; (c) the duplicate-club fallback. The reference run is cached by the test's dependency graph, so engine changes invalidate it. Identity with the old interleaved path rests on the worker's day bench: hash 098fdcae5ada357b over 49 days, and 04797292c875ce29 with --matches 30 both before and after the change and with the reverse simulator. The worker ran typecheck, lint and format (all pass) and round-jobs.test.ts under the unit project (3/3). Since that test moved to the integration tier, neither it nor the season, world and calendar.fast-path integration runs from the last acceptance item have been run. They are left to the coordinator's final gate. The findings are optional improvements only."
+        }
+      }
+    },
+    {
+      "sequence": 784,
+      "at": "2026-10-27T10:20:14.442Z",
+      "type": "attempt",
+      "group": "auto-play",
+      "attemptId": "ecd9f1ab-872b-4d89-bee0-4e6fb21101c9",
+      "taskId": "T518",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]
