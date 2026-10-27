@@ -15,12 +15,13 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | n3w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T12:15Z | 2026-10-27T12:15Z | - |
+| g8u6 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T16:41Z | 2026-10-27T16:42Z | T532 |
 
 ## inbox
-- 261028 decided WEB-18 T525: T524 showed the computed days at once before a read, and a records view open during play re-reads on a new key, so the shown calendar jumped (1950-08-01 → 08-05, records.spec on 174af691) → a read waits until the computed days are shown at the pace and nothing is computed ahead meanwhile (alt: let reads show computed-ahead days | keep the jump)
-- 261027 decided WEB-18 T524: reads outside the command queue answer from the newest computed day, up to 7 days past the shown date → they first show the computed days at once and nothing is computed ahead until answered (alt: record that reads may show computed-ahead days | cut each read at the shown date, which cumulative statistics cannot do)
+- 261028 decided T531 WEB-100 WEB-74: how to keep request identity through submission and browser history → world-named request addresses and session snapshots, with a scoped client forwarding the existing forms/commands (alt: consume a one-shot request only | copy each form into the office); history can revisit resolved work safely, late replies cannot redirect another request/game, and business rules stay authoritative.
+- 261028 decided WEB-39 WEB-79: work grouping → player contracts (incl. youth), staff contracts (incl. manager), investment (finance/local/global/facilities), sponsors and identity; keep all seven saved responsibility keys (alt: merge stored responsibilities or retain an operating-policy gate). Shared inline controls and eligible direct actions use existing commands.
+- 261028 decided WEB-10 WEB-40 WEB-43: navigation depth → six primary entries Season/History/home/first-team/youth/coaching, with competition and people lenses inside each (alt: keep people and training as competing functional groups). Preserve old deep links and world-scoped context.
 - 261027 suggest WEB-69 T504: T504's shared skin frames every `[role=tab]` with a button frame and a quiet/canvas fill, while WEB-69 still says page tab bars have no filled or outlined boxes (label over a hairline, accent underline) — confirm the framed tabs in WEB-69 or restore hairline tabs
-- 261027 decided T518 ARCH-31: round-jobs.test.ts tier → integration (it advances days, which tests/config/test-tiers keeps out of unit), acceptance command updated (alt: keep it unit and shrink it below advanceDays)
 - 261027 decided HIST-18 WEB-92: how to drop caretakers that never took a match → keep the tenure fact, leave interim tenures with no credited match or outcome out of every summary/list/count (alt: never record such an interim | hide every zero-match tenure, interim or not)
 - 261027 decided STAFF-47: what trust 0 means → at trust ≤10 a 10%/round resignation chance (25% at 0), certain resignation at the close at 0, warning notice on first reaching ≤10 (alt: trust drifts back toward 50 | morale-only penalty as now)
 - 261027 decided HIST-20 WEB-54: transfer fee rankings → structured own-club fee transfer facts, 영입/매각 boards all-time or by season in today's money, older careers ranked from ledger amounts by entry text (alt: ledger-only ranking | include free transfers)
@@ -318,6 +319,9 @@
 - 261027 suggest T482 ideation/calibration-pass: forwards take 10 of 12.5 shots a team and 141 → 107 decisions in front of the box against midfielders' ~23; a midfield-positioning pass (where midfielders are when the ball reaches the final third) is the lever for goals by line, set-piece and headed shares
 - 261027 parked -: `vibe loop` refuses this checkout while older work groups (refactor-261019, identity, full-model, presentation-261021, history-activation, v9n4-release and others) are listed as active; the owner decides whether to close or clean them
 - 261027 decided T477 T478 T479 T480 T481 T482: how to run the implementation once `vibe loop` refused → the autopilot session implements the tasks itself, one at a time, with the batch gate before the single main push (alt: `work run`, which needs the old work spaces cleaned first)
+- 261028 decided WEB-18 T525: T524 showed the computed days at once before a read, and a records view open during play re-reads on a new key, so the shown calendar jumped (1950-08-01 → 08-05, records.spec on 174af691) → a read waits until the computed days are shown at the pace and nothing is computed ahead meanwhile (alt: let reads show computed-ahead days | keep the jump)
+- 261027 decided WEB-18 T524: reads outside the command queue answer from the newest computed day, up to 7 days past the shown date → they first show the computed days at once and nothing is computed ahead until answered (alt: record that reads may show computed-ahead days | cut each read at the shown date, which cumulative statistics cannot do)
+- 261027 decided T518 ARCH-31: round-jobs.test.ts tier → integration (it advances days, which tests/config/test-tiers keeps out of unit), acceptance command updated (alt: keep it unit and shrink it below advanceDays)
 
 ## ideation
 | id | st |
@@ -342,7 +346,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 24 | 24 | - | 2 |
-| WEB | 163 | 163 | - | 0 |
+| WEB | 164 | 164 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -368,6 +372,10 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | doing@261027.n3w8 |
+| T530 | Work-based owner office and shared approval controls | WEB ARCH | - | doing@261028.g8u6 |
+| T531 | Home approval requests visit their working desk | WEB ARCH | T530 | doing@261028.g8u6 |
+| T532 | Season and History competition hubs | WEB ARCH | T531 | doing@261027.g8u6 |
+| T533 | First-team, academy and coaching navigation | WEB ARCH | T532 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -387,11 +395,10 @@
 
 ## next
 - n3w8 (work auto-play-2): T516–T521, T524, T525 on main after the group gate passed on 2573791c (typecheck, lint, format, unit, integration, contract, catalogs, presentation, build, Chromium); explore T522 (automatic play read in the built game, `pnpm exec tsx scripts/automatic-play-read.mjs`) runs next in the main session on a quiet machine.
-- inbox: confirm the WEB-18 read decisions (T524 → T525) and the WEB-69 framed-tabs suggestion.
-- T504 complete: portable resource skins, responsive facilities and image budgets; its journeys fixed in T523 and main CI green on 3aa6f4aa.
-- review/ui-engine-boundary-261027 F1–F4 done (T500–T503): UI→orchestration exceptions 53→38 files, 38→35 engine modules; F5 (domain reads on the main thread) waits for a measured decision.
+- g8u6 owns T530–T533: requested gameplay hierarchy; completed code collected locally, final batch and main push after the whole slice.
 
 ## log
+- 261028 share WEB r164/T530–T533 planning and reserve the gameplay hierarchy implementation for g8u6.
 - 261027 T525 integrated
 - 261028 update-ssot WEB r163 + create-task → T525 (n3w8): reads wait for the computed days at the pace instead of showing them at once; T524 integrated, its gate run failed records.spec on the calendar jump
 - 261028 T525 done (n3w8): a read during play waits for the computed days at the pace; group gate passed on 2573791c
@@ -411,4 +418,3 @@
 - 261027 create-task WEB r159 → T504; implementation started (r6u2)
 - 261027 update-ssot WEB start (r6u2): portable resource skins and asset delivery audit
 - 261027 T495 done: 32 competition-specific trophy variants across four themes, country-aware cabinet selection and safe fallback; unit/integration/contract and all 299 Chromium journeys passed, with unchanged-timeout recovery for load-related tests.
-- 261027 T494 done: redrew all 21 print/pixel/sticker trophies in their theme's illustration style; preserved the seven standard photographs; asset integrity and task checks passed.
