@@ -13,7 +13,6 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| h7t3 | local | autopilot | 2026-10-27T07:25Z | 2026-10-27T07:25Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 
 ## inbox
@@ -363,12 +362,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T510 | Contracts for the trust-floor warning and own-club transfer facts | STAFF HIST SAVE ARCH | - | todo |
-| T511 | Managers at the floor of trust resign | STAFF CLUB HIST | T510 | todo |
-| T512 | Hide interim tenures that never took a match | HIST WEB | - | todo |
-| T513 | Record own-club transfer facts and rank them | HIST ECON SAVE WORLD | T510 | todo |
-| T514 | 이적 기록 view in the records room | WEB HIST | T513 | todo |
-| T515 | Broadcast-style heat maps on a 2D canvas | WEB MATCH ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -385,12 +378,14 @@
 | h7t3 | 4 | 6 | 0 | 6 | 0 | 1 | 2 | 2026-10-27T08:21:16.497Z | [history](work/h7t3.json) |
 
 ## next
-- h7t3 work group (work/h7t3): T510 foundation → lanes manager-trust T511, interim-history T512, transfer-records T513–T514, heatmap T515; batch then merge to main.
+- h7t3 pushed T510–T515 (trust-floor resignations, zero-match interims hidden, 이적 기록 tab, canvas heat maps) to main; Chromium journeys were still running at push — check report 261027-h7t3 checks and CI.
 - T494–T495 complete: theme-matched trophy artwork and distinct division/continental silhouettes; all required batch stages passed before publication.
 - review/ui-engine-boundary-261027 F1–F4 done (T500–T503): UI→orchestration exceptions 53→38 files, 38→35 engine modules; F5 (domain reads on the main thread) waits for a measured decision.
 - o7h4 pushed T490–T493 (owner office, home season card, records sub-screen) to main after the ARCH-30 batch passed on eaf5f3d1; confirm its decided inbox items.
 
 ## log
+- 261027 h7t3 closed: T510–T515 merged on work/h7t3 and pushed to main at the owner's request; batch: unit 1192, integration 1174/1175 (persistence.long-career timed out under host load, passes alone in 12 s), contract/build/Chromium at push in progress
+- 261027 T510–T515 done: trust-floor contracts, STAFF-47 resignations, zero-match interims hidden, transfer facts + 이적 기록 tab, canvas heat maps
 - 261027 create-task STAFF@36 HIST@18 WEB@159 (h7t3): T510–T515 (foundation + 4 lanes)
 - 261027 update-ssot STAFF r36 HIST r18 WEB r159 (h7t3): trust floor resignations, zero-match interims hidden, transfer fee records, broadcast heat maps
 - 261027 T495 done: 32 competition-specific trophy variants across four themes, country-aware cabinet selection and safe fallback; unit/integration/contract and all 299 Chromium journeys passed, with unchanged-timeout recovery for load-related tests.
@@ -409,5 +404,3 @@
 - 261027 T491 T492 done (o7h4): focused 구단주 사무실 from home with the clock stopped inside, lobby of six areas, 결재 라인; office-aware e2e helpers across 20 specs, browser specs left to the batch
 - 261027 T490 done (o7h4): home season card with round·rank·record, strength tile leads team state, 10px below the HUD; task checks passed, browser specs left to the batch
 - 261027 create-task WEB r158 (autopilot o7h4): T490 home season card and strength tile, T491 focused office and clock, T492 office lobby and 결재 라인, T493 records season screen and player totals to 100
-- 261027 update-ssot WEB r158 (autopilot o7h4, owner request): season card on home (round·rank·record), strength in team state, spacing below the HUD, focused 구단주 사무실 entered from home with six areas and 결재 라인, office stops the clock (WEB-98), records season sub-screen with a navigator bar, player totals up to 100
-- 261027 update-ssot WEB start (autopilot o7h4)
