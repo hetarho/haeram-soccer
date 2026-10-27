@@ -394,7 +394,7 @@
 - h7t3 pushed T510–T515 (trust-floor resignations, zero-match interims hidden, 이적 기록 tab, canvas heat maps) to main; Chromium journeys were still running at push — check report 261027-h7t3 checks and CI.
 
 ## log
-- 261027 p9a4: T516 T517 T518 T520 integrated on work/auto-play
+- 261027 p9a4: T516 T517 T518 T520 integrated on work/auto-play; T519 T521 T522 base WEB@160→161 (renumbered on the main merge, content unchanged)
 - 261027 merge publication: preserved remote WEB r159 (transfer records/heat maps); local resource skins r159→r160 and play-pace r160→r161, decision content unchanged; p9a4 task bases keep their recorded content and can refresh on next sync
 - 261027 ideation play-pace-and-owner-surfaces converted: owner dropped the action / standing choice / dashboard split and home ordering; automatic play scope fully in WEB r160, SAVE r55, ARCH r24
 - 261027 create-task WEB r160 SAVE r55 ARCH r24 → T516–T522 (moment removal, grid cuts + day bench, two-phase round, helper workers, lighter publication, run-ahead clock, browser read)
