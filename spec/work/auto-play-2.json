@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-27T15:33:59.206Z",
-  "sourceCommit": "cad4e3cd6374fd42883a57958ac76ed4a9648d6f",
+  "snapshotAt": "2026-10-27T15:56:24.655Z",
+  "sourceCommit": "174af69100a3276d065905b5f7c50a811b8771ec",
   "group": {
     "id": "auto-play-2",
     "branch": "work/auto-play-2",
@@ -14,7 +14,7 @@
     },
     "push": null,
     "review": "risky",
-    "runner": {
+    "lastRun": {
       "id": "9d92bbae-924a-462f-8c2e-343169281dcd",
       "adapter": "builtin",
       "providers": {
@@ -37,40 +37,16 @@
         }
       ],
       "startedAt": "2026-10-27T15:07:28.208Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "fb9f561d-d1bc-4cf0-a383-27b4f4189e85",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-10-27T15:06:10.063Z",
-      "stoppedAt": "2026-10-27T15:06:10.966Z",
-      "dispatched": 0,
+      "stoppedAt": "2026-10-27T15:56:23.612Z",
+      "dispatched": 3,
       "outcome": "needs-attention",
       "failures": [
         {
-          "attempt": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
-          "role": "worker",
-          "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+          "role": "finish",
+          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
+          "details": [
+            "(node:1064) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1113) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1287) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1282) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\nstderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness\n[presentation:locale] Missing message \"navigation.league\" (en-US); using the registered default (ko-KR). {\n  code: 'missing-message',\n  locale: 'en-US',\n  messageId: 'navigation.league',\n  message: 'Missing message \"navigation.league\" (en-US); using the registered default (ko-KR).'\n}\n\n(node:1345) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1379) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1395) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\nA PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.\n\u001b[33m[INEFFECTIVE_DYNAMIC_IMPORT] \u001b[0mapps/web/src/adapters/games.ts is dynamically imported by apps/web/src/runtime/client.ts but also statically imported by apps/web/src/adapters/legacyReset.ts, apps/web/src/adapters/previousStore.ts, apps/web/src/runtime/client.ts, apps/web/src/runtime/slots.ts, apps/web/src/ui/App.tsx, dynamic import will not move module into another chunk.\n\n"
+          ]
         }
       ],
       "autopilot": true,
@@ -268,6 +244,8 @@
       "submittedBase": "cad4e3cd6374fd42883a57958ac76ed4a9648d6f",
       "submissionId": "f83a5e0c-fedb-4480-8bf1-3577d586a84f",
       "submittedAt": "2026-10-27T15:25:32.237Z",
+      "integratedCommit": "174af69100a3276d065905b5f7c50a811b8771ec",
+      "integratedAt": "2026-10-27T15:34:31.856Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -368,6 +346,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-27T15:24:57.381Z",
           "finishedAt": "2026-10-27T15:25:31.922Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-27T15:33:59.316Z",
+          "finishedAt": "2026-10-27T15:34:31.643Z"
         }
       ]
     }
@@ -2156,6 +2141,89 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1447,
+      "at": "2026-10-27T15:34:31.792Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-27T15:33:59.316Z",
+            "finishedAt": "2026-10-27T15:34:31.643Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1448,
+      "at": "2026-10-27T15:34:31.856Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "2cbc068d-27fa-4a76-a1e5-a9720ac9ce5b",
+      "taskId": "T524",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "174af69100a3276d065905b5f7c50a811b8771ec",
+        "integratedAt": "2026-10-27T15:34:31.856Z"
+      }
+    },
+    {
+      "sequence": 1449,
+      "at": "2026-10-27T15:56:23.612Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "9d92bbae-924a-462f-8c2e-343169281dcd",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T15:07:28.208Z",
+          "stoppedAt": "2026-10-27T15:56:23.612Z",
+          "dispatched": 3,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "role": "finish",
+              "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
+              "details": [
+                "(node:1064) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1113) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1287) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1282) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\nstderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness\n[presentation:locale] Missing message \"navigation.league\" (en-US); using the registered default (ko-KR). {\n  code: 'missing-message',\n  locale: 'en-US',\n  messageId: 'navigation.league',\n  message: 'Missing message \"navigation.league\" (en-US); using the registered default (ko-KR).'\n}\n\n(node:1345) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1379) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1395) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\nA PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.\n\u001b[33m[INEFFECTIVE_DYNAMIC_IMPORT] \u001b[0mapps/web/src/adapters/games.ts is dynamically imported by apps/web/src/runtime/client.ts but also statically imported by apps/web/src/adapters/legacyReset.ts, apps/web/src/adapters/previousStore.ts, apps/web/src/runtime/client.ts, apps/web/src/runtime/slots.ts, apps/web/src/ui/App.tsx, dynamic import will not move module into another chunk.\n\n"
+              ]
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]

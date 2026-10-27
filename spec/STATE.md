@@ -382,7 +382,7 @@
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 | h7t3 | 4 | 6 | 0 | 6 | 0 | 1 | 2 | 2026-10-27T08:21:16.497Z | [history](work/h7t3.json) |
 | auto-play | 4 | 7 | 4 | 3 | 0 | 1 | 0 | 2026-10-27T11:34:29.863Z | [history](work/auto-play.json) |
-| auto-play-2 | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-27T15:33:59.206Z | [history](work/auto-play-2.json) |
+| auto-play-2 | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-27T15:56:24.655Z | [history](work/auto-play-2.json) |
 
 ## next
 - inspect work board for remaining tasks
