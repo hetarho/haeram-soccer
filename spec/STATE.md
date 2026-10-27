@@ -16,8 +16,11 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | p9a4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-27T09:05Z | 2026-10-27T09:05Z | - |
 | n3w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T12:15Z | 2026-10-27T12:15Z | - |
+| g8u4 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T15:55Z | 2026-10-27T15:55Z | - |
 
 ## inbox
+- 261028 decided WEB-39 WEB-79: work grouping → player contracts (incl. youth), staff contracts (incl. manager), investment (finance/local/global/facilities), sponsors and identity; keep all seven saved responsibility keys (alt: merge stored responsibilities or retain an operating-policy gate). Shared inline controls and eligible direct actions use existing commands.
+- 261028 decided WEB-10 WEB-40 WEB-43: navigation depth → six primary entries Season/History/home/first-team/youth/coaching, with competition and people lenses inside each (alt: keep people and training as competing functional groups). Preserve old deep links and world-scoped context.
 - 261027 suggest WEB-69 T504: T504's shared skin frames every `[role=tab]` with a button frame and a quiet/canvas fill, while WEB-69 still says page tab bars have no filled or outlined boxes (label over a hairline, accent underline) — confirm the framed tabs in WEB-69 or restore hairline tabs
 - 261027 decided HIST-18 WEB-92: how to drop caretakers that never took a match → keep the tenure fact, leave interim tenures with no credited match or outcome out of every summary/list/count (alt: never record such an interim | hide every zero-match tenure, interim or not)
 - 261027 decided STAFF-47: what trust 0 means → at trust ≤10 a 10%/round resignation chance (25% at 0), certain resignation at the close at 0, warning notice on first reaching ≤10 (alt: trust drifts back toward 50 | morale-only penalty as now)
@@ -340,7 +343,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 24 | 24 | - | 2 |
-| WEB | 161 | 161 | - | 0 |
+| WEB | 162 | 162 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -372,6 +375,10 @@
 | T520 | Lighter match-day view publication | ARCH WEB | - | todo |
 | T521 | Automatic play computes ahead of the shown date | WEB SAVE MATCH | T516 T520 | todo |
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | todo |
+| T530 | Work-based owner office and shared approval controls | WEB ARCH | - | todo |
+| T531 | Home approval requests visit their working desk | WEB ARCH | T530 | todo |
+| T532 | Season and History competition hubs | WEB ARCH | T531 | todo |
+| T533 | First-team, academy and coaching navigation | WEB ARCH | T532 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -388,15 +395,13 @@
 | h7t3 | 4 | 6 | 0 | 6 | 0 | 1 | 2 | 2026-10-27T08:21:16.497Z | [history](work/h7t3.json) |
 
 ## next
-- T504 publication authorized after owner review; full unit and contract/resource checks passed, integration timeout recheck passed; remaining Chromium run stopped at owner request before publication.
-- implement-task T516 (then T517/T518/T520 in any order, T519, T521, explore T522): automatic play without the match-day moment and with result-identical speed-ups (ideation/play-pace-and-owner-surfaces; prototypes on branch perf/integrated).
-- T504 complete: portable resource skins, responsive facilities and image budgets; 79.2 MB → 40.9 MB image payload, 164 affected unit cases and all 13 focused Chromium cases passed; awaiting the ARCH-30 publication gate.
-- T494–T495 complete: theme-matched trophy artwork and distinct division/continental silhouettes; all required batch stages passed before publication.
-- review/ui-engine-boundary-261027 F1–F4 done (T500–T503): UI→orchestration exceptions 53→38 files, 38→35 engine modules; F5 (domain reads on the main thread) waits for a measured decision.
-- o7h4 pushed T490–T493 (owner office, home season card, records sub-screen) to main after the ARCH-30 batch passed on eaf5f3d1; confirm its decided inbox items.
-- h7t3 pushed T510–T515 (trust-floor resignations, zero-match interims hidden, 이적 기록 tab, canvas heat maps) to main; Chromium journeys were still running at push — check report 261027-h7t3 checks and CI.
+- implement-task T530 (then T531, T532, T533): only the requested office/approval/navigation redesign; four-unit host loop, one final batch and main push.
+- Preserve existing T516–T522 performance work and unrelated ideation for a separate run.
 
 ## log
+- 261028 create-task WEB r162: T530–T533 serial UI chain; existing performance tasks remain outside this requested slice.
+- 261028 update-ssot WEB r162 done: work desks, shared inline approval, request round trips and audience-based navigation.
+- 261028 update-ssot WEB start: business desks, approval round trips, season/history and personnel navigation.
 - 261027 T523 done (n3w8): main CI fix after T504 — chart tabs readable on their new surfaces, mediation choice inputs skip the 20 px skin, pitch/facility specs follow the framed header and responsive art; 3 Chromium spec files 25/25
 - 261027 merge publication: preserved remote WEB r159 (transfer records/heat maps); local resource skins r159→r160 and play-pace r160→r161, decision content unchanged; p9a4 task bases keep their recorded content and can refresh on next sync
 - 261027 ideation play-pace-and-owner-surfaces converted: owner dropped the action / standing choice / dashboard split and home ordering; automatic play scope fully in WEB r160, SAVE r55, ARCH r24
@@ -414,6 +419,3 @@
 - 261027 T502 done: staff catalogue and member reads moved to staff-info.ts; UI exception list 46→43 files
 - 261027 T501 done: tactic labels, founding years and injury reads moved to engine leaves; UI exception list 53→46 files
 - 261027 T500 done: UI→engine orchestration guard with a shrink-only list (53 files, 38 modules)
-- 261027 create-task review/ui-engine-boundary-261027 + ARCH r23 → T500–T503 (guard, tactic/injury leaves, staff-info leaf, competition/label leaves); review converted
-- 261027 ARCH r23: ARCH-3 path table matches the real layout; ARCH-4 UI imports engine values only from read leaves with a shrink-only guarded exception list
-- 261027 review-code ui-engine-boundary-261027: 53 UI files import 39 orchestration-reaching engine modules; F1–F4 adopted (owner: make the tasks and implement them), F5 open
