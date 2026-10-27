@@ -103,19 +103,29 @@ for (const width of [1280, 390]) {
     await importResponsibilityCareer(page, w);
     const group = page.getByTestId('event-group');
     await expect(group).toContainText('내일 경기');
-    const reject = group.getByRole('button', { name: '거절', exact: true });
-    await expect(reject).toHaveCount(2);
+    const review = group.getByRole('button', { name: '검토하기', exact: true });
+    await expect(review).toHaveCount(2);
     const next = page.getByRole('button', { name: '다음 이벤트', exact: true });
     const result = group.getByRole('button', { name: '결과만 보고 계속', exact: true });
     // Next-event remains a report-reopen action; the unresolved decisions block settlement.
     await expect(next).toBeEnabled();
     await expect(result).toBeDisabled();
-    await reject.first().click();
-    await expect(reject).toHaveCount(1);
+    await review.first().click();
+    await page
+      .getByTestId('approval-request')
+      .getByRole('button', { name: '거절', exact: true })
+      .click();
+    await next.click();
+    await expect(review).toHaveCount(1);
     await expect(next).toBeEnabled();
     await expect(result).toBeDisabled();
-    await reject.first().click();
-    await expect(reject).toHaveCount(0);
+    await review.first().click();
+    await page
+      .getByTestId('approval-request')
+      .getByRole('button', { name: '거절', exact: true })
+      .click();
+    await next.click();
+    await expect(review).toHaveCount(0);
     await expect(next).toBeEnabled();
     await expect(result).toBeEnabled();
     await expect(group).toContainText('내일 경기');

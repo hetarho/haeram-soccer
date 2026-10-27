@@ -1,6 +1,7 @@
 import { useCallback, useState, type SetStateAction } from 'react';
 import { create } from 'zustand';
 import type { Page } from './state';
+import type { ApprovalRequest } from './eventRouting';
 
 export interface TaskReturn {
   page: Page;
@@ -16,15 +17,25 @@ export const useTaskMemory = create<{
   scrolls: Record<string, number>;
   returning?: TaskReturn;
   parents: TaskReturn[];
+  approvalRequests: Record<string, ApprovalRequest>;
   activate: (world: string) => void;
 }>((set, get) => ({
   values: {},
   parents: [],
+  approvalRequests: {},
   addresses: {},
   scrolls: {},
   activate: (world) => {
     if (get().world !== world)
-      set({ world, values: {}, parents: [], addresses: {}, scrolls: {}, returning: undefined });
+      set({
+        world,
+        values: {},
+        parents: [],
+        addresses: {},
+        scrolls: {},
+        returning: undefined,
+        approvalRequests: {},
+      });
   },
 }));
 
@@ -33,6 +44,8 @@ export function taskAddress() {
 }
 export function rememberTask(page: Page) {
   const address = taskAddress();
+  // Request visits have their own history entry, never the default address of an ordinary desk.
+  if (page === 'business' && new URLSearchParams(location.search).has('request')) return;
   const { addresses, scrolls } = useTaskMemory.getState();
   useTaskMemory.setState({
     addresses: { ...addresses, [page]: address },

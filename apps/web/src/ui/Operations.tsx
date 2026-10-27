@@ -1,6 +1,9 @@
 import type { ProgressionController } from '../runtime/progression';
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTaskMemory } from './taskMemory';
+import { ApprovalRequestHost } from './ApprovalRequestHost';
+import { stoppingEvents } from '../runtime/progression';
+import { eventDesk, type ApprovalRequest } from './eventRouting';
 import type { ClientState, GameClient } from '../runtime/client';
 import { BusinessWorkbench } from './BusinessWorkbench';
 import { FinanceOutlook } from './FinanceOutlook';
@@ -9,6 +12,9 @@ import {
   leaveOffice,
   officeAddress,
   officeView,
+  approvalId,
+  approvalWorld,
+  returnApprovalHome,
   type BusinessView,
   type OfficeView,
 } from './state';
@@ -49,9 +55,27 @@ export function OperationsView({
   state: ClientState;
   client: GameClient;
   legacy: ReactNode;
-  personnel: (desk: 'players' | 'staff') => ReactNode;
+  personnel: (
+    desk: 'players' | 'staff',
+    client: GameClient,
+    request?: ApprovalRequest,
+    error?: string,
+  ) => ReactNode;
 }) {
   const w = state.view!.world;
+  const requests = useTaskMemory((memory) => memory.approvalRequests);
+  const requestId = approvalId();
+  const liveRequest = requestId
+    ? stoppingEvents(w).find((item) => item.id === requestId)
+    : undefined;
+  const [request] = useState(() =>
+    requestId && approvalWorld() === w.id
+      ? (requests[requestId] ??
+        (liveRequest && eventDesk(liveRequest)
+          ? { world: w.id, desk: eventDesk(liveRequest)!, item: liveRequest }
+          : undefined))
+      : undefined,
+  );
   const [view, setView] = useState<OfficeView>(() =>
     officeView(new URLSearchParams(location.search).get('view')),
   );
@@ -74,6 +98,10 @@ export function OperationsView({
     requestAnimationFrame(() => scroller()?.scrollTo({ top: 0 }));
   };
   const toLobby = () => {
+    if (requestId) {
+      returnApprovalHome();
+      return;
+    }
     if (fromLobby.current) {
       backToLobby = true;
       history.back();
@@ -108,56 +136,93 @@ export function OperationsView({
       <OfficeBar back={{ label: '사무실', onClick: toLobby }} title={label} client={client} />
       {/* The bar names the area; its own panels carry their regions. */}
       <div data-office-view={id}>
-        {DESK_RESPONSIBILITIES[id].length > 0 && (
-          <Suspense fallback={null}>
-            <OwnerOffice
-              key={`${w.id}:${id}`}
+        {requestId ? (
+          request && request.world === w.id && request.desk === id ? (
+            <ApprovalRequestHost
+              key={`${w.id}:${requestId}`}
+              request={request}
               client={client}
               controller={controller}
-              scope={DESK_RESPONSIBILITIES[id]}
-            />
-          </Suspense>
-        )}
-        {DESK_AREAS[id].length > 0 && (
-          <section className={lines.lines} aria-label="적용 중인 업무 기준">
-            {DESK_AREAS[id].map((key) => {
-              const area = DIRECTION_AREAS.find((area) => area.key === key)!;
-              return (
-                <button
-                  type="button"
-                  className={lines.line}
-                  data-ui="link"
-                  key={key}
-                  onClick={() => openDirection(key)}
-                >
-                  <span>
-                    {area.label} · {areaSummary(w, area)} {areaBase(w, area)}
-                  </span>
-                  <small>기준 편집</small>
-                </button>
-              );
-            })}
-          </section>
-        )}
-        {id === 'players' || id === 'staff' ? (
-          personnel(id)
-        ) : id === 'investment' ? (
+            >
+              {(scoped, error) =>
+                id === 'players' || id === 'staff' ? (
+                  personnel(id, scoped, request, error)
+                ) : (
+                  <BusinessWorkbench
+                    state={state}
+                    client={scoped}
+                    part={id === 'investment' ? 'finance' : 'sponsor'}
+                    selectedSlot={request.item.ref}
+                  />
+                )
+              }
+            </ApprovalRequestHost>
+          ) : (
+            <section data-testid="approval-request">
+              <p role="status">이미 처리되었거나 조건이 바뀐 요청이에요.</p>
+              <button onClick={() => returnApprovalHome()}>홈으로</button>
+            </section>
+          )
+        ) : null}
+        {!requestId && (
           <>
-            <FinanceOutlook w={w} />
-            <BusinessWorkbench state={state} client={client} part="finance" legacy={legacy} />
-            <BusinessWorkbench state={state} client={client} part="build" />
-            {w.campaigns.length > 0 && (
-              <BusinessWorkbench state={state} client={client} part="marketing" legacy={legacy} />
-            )}
-            <details data-testid="office-library">
-              <summary>구단 전체 방향·저장 설정</summary>
-              <Suspense fallback={<p role="status">방향을 여는 중…</p>}>
-                <StrategyBoard w={w} client={client} />
+            {DESK_RESPONSIBILITIES[id].length > 0 && (
+              <Suspense fallback={null}>
+                <OwnerOffice
+                  key={`${w.id}:${id}`}
+                  client={client}
+                  controller={controller}
+                  scope={DESK_RESPONSIBILITIES[id]}
+                />
               </Suspense>
-            </details>
+            )}
+            {DESK_AREAS[id].length > 0 && (
+              <section className={lines.lines} aria-label="적용 중인 업무 기준">
+                {DESK_AREAS[id].map((key) => {
+                  const area = DIRECTION_AREAS.find((area) => area.key === key)!;
+                  return (
+                    <button
+                      type="button"
+                      className={lines.line}
+                      data-ui="link"
+                      key={key}
+                      onClick={() => openDirection(key)}
+                    >
+                      <span>
+                        {area.label} · {areaSummary(w, area)} {areaBase(w, area)}
+                      </span>
+                      <small>기준 편집</small>
+                    </button>
+                  );
+                })}
+              </section>
+            )}
+            {id === 'players' || id === 'staff' ? (
+              personnel(id, client)
+            ) : id === 'investment' ? (
+              <>
+                <FinanceOutlook w={w} />
+                <BusinessWorkbench state={state} client={client} part="finance" legacy={legacy} />
+                <BusinessWorkbench state={state} client={client} part="build" />
+                {w.campaigns.length > 0 && (
+                  <BusinessWorkbench
+                    state={state}
+                    client={client}
+                    part="marketing"
+                    legacy={legacy}
+                  />
+                )}
+                <details data-testid="office-library">
+                  <summary>구단 전체 방향·저장 설정</summary>
+                  <Suspense fallback={<p role="status">방향을 여는 중…</p>}>
+                    <StrategyBoard w={w} client={client} />
+                  </Suspense>
+                </details>
+              </>
+            ) : (
+              <BusinessWorkbench state={state} client={client} part={id} legacy={legacy} />
+            )}
           </>
-        ) : (
-          <BusinessWorkbench state={state} client={client} part={id} legacy={legacy} />
         )}
       </div>
     </>

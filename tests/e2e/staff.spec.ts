@@ -301,8 +301,13 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   await expect(card).toContainText(renewal);
   await expect(page.getByTestId('game-date')).toHaveText('1951년 4월 1일');
   await expect(card).toContainText('스태프 재계약');
-  await expect(card.getByRole('button', { name: '감독 재계약', exact: true })).toBeEnabled();
-  await card.getByRole('button', { name: '감독 재계약', exact: true }).click();
+  await card.getByRole('button', { name: '검토하기', exact: true }).click();
+  await expect(page).toHaveURL(/view=staff&request=/);
+  await page
+    .getByTestId('manager-renewal')
+    .getByRole('button', { name: /^재계약/ })
+    .click();
+  await expect(page).toHaveURL(/\/journal$/);
   await expect(card).toHaveCount(0);
   await openPeople(page);
   await tab(page, '감독').click();

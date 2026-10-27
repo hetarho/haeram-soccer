@@ -1,5 +1,5 @@
 import type { GameSettings, ResponsibilityKey } from '../../packages/contracts/src/types';
-import { expect, type Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 import { inOffice, LOBBY, officeLobby, officeTitle, openOfficeArea, outsideOffice } from './office';
 const LABELS: Record<ResponsibilityKey, string> = {
   manager: '감독 인사',
@@ -209,6 +209,14 @@ export const eventCard = (page: Page) =>
     .getByTestId('event-card')
     .and(page.getByRole('complementary', { name: '이벤트', exact: true }));
 
+/** Home only offers review; the actual command/form belongs to the selected office request. */
+export async function reviewEvent(page: Page, card: Locator = eventCard(page).first()) {
+  await card.getByRole('button', { name: '검토하기', exact: true }).click();
+  const request = page.getByTestId('approval-request');
+  await expect(request).toBeVisible();
+  return request;
+}
+
 /**
  * Reads every pending attention card with '확인', e.g. after importing a career mid-season; an
  * offer that waits for an answer instead (another club's bid) is declined.
@@ -224,16 +232,19 @@ export async function acknowledgeEvents(page: Page) {
     const count = await eventCard(page).count();
     // An observation is not a dismissible report; the caller can prepare or watch the match.
     if (!current || current.includes('내일 경기')) return;
-    const mediation = card.getByRole('button', { name: '영입 중재 검토', exact: true });
-    if (await mediation.count()) {
-      await mediation.click();
+    const reviewing = card.getByRole('button', { name: '검토하기', exact: true });
+    const work = (await reviewing.count()) ? await reviewEvent(page, card) : card;
+    const mediation = page.getByRole('dialog', { name: '영입 중재 검토', exact: true });
+    if (await mediation.isVisible()) {
       const review = page.getByRole('dialog', { name: '영입 중재 검토', exact: true });
       await review.getByRole('radio', { name: '단장 우선', exact: true }).check();
       await review.getByRole('button', { name: '이번 중재 결정 확정', exact: true }).click();
     } else {
-      const read = card.getByRole('button', { name: '확인', exact: true });
+      const contract = page.getByRole('dialog', { name: '계약 협상', exact: true });
+      const controls = (await contract.isVisible()) ? contract : work;
+      const read = controls.getByRole('button', { name: '확인', exact: true });
       await (
-        (await read.count()) ? read : card.getByRole('button', { name: '거절', exact: true })
+        (await read.count()) ? read : controls.getByRole('button', { name: '거절', exact: true })
       ).click();
     }
     await expect

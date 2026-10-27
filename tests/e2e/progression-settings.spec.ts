@@ -2,7 +2,13 @@ import { chooseOption, selectOptions } from './select';
 import { createWorld, advanceDays } from '../../packages/engine/src/index';
 import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsibility-fixtures';
 import { expect, test, type Page } from '@playwright/test';
-import { chooseLevel, configureResponsibilities, dismissSettingsToast, openOffice } from './events';
+import {
+  chooseLevel,
+  configureResponsibilities,
+  dismissSettingsToast,
+  openOffice,
+  reviewEvent,
+} from './events';
 import { horizontalOverflow, settle } from './layout';
 import { leaveOffice } from './office';
 async function foundQuiet(page: Page) {
@@ -336,9 +342,12 @@ test('deciding the event that stopped a running clock plays on (→WEB-42)', asy
     // The last event waiting is decided (확인, or 거절 for an offer): the clock runs again
     // without play.
     const others = Number(/남은 이벤트 (\d+)개/.exec(text)?.[1] ?? 1);
-    const read = card.getByRole('button', { name: '확인', exact: true });
+    const controls = (await card.getByRole('button', { name: '검토하기', exact: true }).count())
+      ? await reviewEvent(page, card)
+      : card;
+    const read = controls.getByRole('button', { name: '확인', exact: true });
     await (
-      (await read.count()) ? read : card.getByRole('button', { name: '거절', exact: true })
+      (await read.count()) ? read : controls.getByRole('button', { name: '거절', exact: true })
     ).click();
     if (others > 1) continue;
     await expect(stop).toBeVisible();

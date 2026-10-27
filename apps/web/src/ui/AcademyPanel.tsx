@@ -45,7 +45,15 @@ function Meter({ value }: { value: number }) {
  * director's rule (→STAFF-13); the director sets the academy's training focus (→CLUB-31). The
  * academy investment and 유입 방식 are set in 방향 and only named here (→WEB-71).
  */
-export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
+export function AcademyPanel({
+  w,
+  client,
+  selected,
+}: {
+  w: World;
+  client: GameClient;
+  selected?: string;
+}) {
   const acting = useActing();
   const [promoted, setPromoted] = useTaskState<string | undefined>(
     w.id,
@@ -54,6 +62,14 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
   );
   const arrived = w.players.find((person) => person.id === promoted && person.status === 'active');
   const summary = academySummary(w);
+  const groups = selected
+    ? summary.groups
+        .map((group) => ({
+          ...group,
+          players: group.players.filter(({ player }) => player.id === selected),
+        }))
+        .filter((group) => group.players.length > 0)
+    : summary.groups;
   const today = currentDay(w);
   const director = w.staff?.find((member) => member.role === 'youth');
   const nextIntake =
@@ -94,7 +110,7 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
           다음 입단 <b>{nextIntake}</b> · 예상 {summary.nextIntakeSize}명
         </p>
         {summary.players.length ? (
-          summary.groups.map((group) => (
+          groups.map((group) => (
             <section
               key={group.key}
               className={s.ageGroup}

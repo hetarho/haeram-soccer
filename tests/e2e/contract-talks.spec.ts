@@ -12,7 +12,7 @@ import {
   UNHAPPY_CONFIG,
 } from '../../packages/engine/src/index';
 import { encode } from '../../apps/web/src/adapters/persistence';
-import { eventCard } from './events';
+import { eventCard, reviewEvent } from './events';
 import { continueSlot } from './slots';
 import { savedWorld } from './club-identity-helpers';
 
@@ -102,7 +102,8 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await continueSlot(page);
   const card = eventCard(page);
   await expect(card).toContainText(`${name} 선수 계약에 답변해 주세요`);
-  await card.getByRole('button', { name: '협상하기', exact: true }).click();
+  await reviewEvent(page, card);
+  await expect(page).toHaveURL(/\/direction\?view=players&request=/);
 
   // The sheet states the demand, the floor, the term, the cost, the runway and the risk.
   const sheet = page.getByRole('dialog', { name: '계약 협상' });
@@ -124,7 +125,8 @@ test('declines a contract talk: the badge, then the transfer request', async ({
 
   // The manager could not talk him round: the roster card on 사람's 선수 wears the badge with its
   // reason.
-  await expect(page).toHaveURL(/\/people$/);
+  await expect(page).toHaveURL(/\/journal$/);
+  await page.getByRole('button', { name: '선수단·스태프', exact: true }).click();
   const roster = page.locator('article').filter({ hasText: name });
   // 선수 ends with who answers talks: the owner, at level 1 (→WEB-43).
   await expect(

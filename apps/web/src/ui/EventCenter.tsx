@@ -1,23 +1,16 @@
-import { MediationButton } from './MediationReview';
+import { eventDesk } from './eventRouting';
 import { PixelIcon } from './PixelIcon';
 import { memo, useEffect, useId, useRef, useState } from 'react';
-import type {
-  InboxItem,
-  InboxKind,
-  TransferBid,
-  World,
-} from '../../../../packages/contracts/src/types';
+import type { InboxItem, TransferBid, World } from '../../../../packages/contracts/src/types';
 import { seasonDate, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import { pendingDecisions } from '../../../../packages/engine/src/stopping';
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
-import { talkFor } from '../../../../packages/engine/src/contracts';
-import { isExpiring, releaseCost } from '../../../../packages/engine/src/staff-info';
-import { managerRenewal } from '../../../../packages/engine/src/ops-staff';
-import { managerTerm } from '../../../../packages/engine/src/styles';
+import { releaseCost } from '../../../../packages/engine/src/staff-info';
 import type { GameClient } from '../runtime/client';
 import {
   gameActionsBlocked,
+  gameStore,
   notificationStore,
   useGameState,
   useNotifications,
@@ -30,14 +23,11 @@ import {
   type ProgressionController,
 } from '../runtime/progression';
 import {
-  openBusiness,
-  openContractTalk,
   openMarket,
-  openPeople,
-  usePlayerSheet,
   openTraining,
   openOwnerOffice,
   useNavigation,
+  openApprovalRequest,
 } from './state';
 import { Money } from './Money';
 import { Dialog } from './Dialog';
@@ -63,11 +53,6 @@ const cardExit = fadeOutOnRemove([
   { opacity: 0, transform: 'translateY(18px) scale(0.98)' },
 ]);
 
-/** Items about a player's contract: a talk, his unhappiness, his transfer request. */
-const PLAYER_KINDS: readonly InboxKind[] = ['contract-talk', 'unhappy', 'transfer-request'];
-/** Sponsor reminders and contracts ending open 운영's 후원; other money items open 재정. */
-const sponsorItem = (item: InboxItem) =>
-  item.kind === 'sponsor-ending' || item.title.includes('후원');
 function bidFor(w: World, item: InboxItem): TransferBid | undefined {
   return item.ref ? w.bids?.find((bid) => bid.id === item.ref) : undefined;
 }
@@ -123,7 +108,7 @@ export const EventCenter = memo(function EventCenter({
     if (eveKey) setOpened(eveKey);
     else if (resumeKey && requested) setOpened(resumeKey);
   }, [eveKey, resumeKey, eventRequest]);
-  if (!w || running || (!events.length && !resumeOpen)) return null;
+  if (!w || page === 'business' || running || (!events.length && !resumeOpen)) return null;
   const inDialog = compact || eve || resumeOpen;
   const label = resumeOpen ? '관전 이어보기' : eve ? 'NEXT MATCH' : `${date} 이벤트`;
   if (inDialog && opened !== key && !resumeOpen) {
@@ -193,14 +178,16 @@ export const EventCenter = memo(function EventCenter({
   );
 });
 
-const EventCard = memo(function EventCard({
+export const EventCard = memo(function EventCard({
   client,
   controller,
   item,
+  inDesk = false,
 }: {
   client: GameClient;
   controller: ProgressionController;
   item: InboxItem;
+  inDesk?: boolean;
 }) {
   const w = useGameState((state) => state.view!.world);
   const market = useGameState((state) => state.view?.transfers) || [];
@@ -208,11 +195,38 @@ const EventCard = memo(function EventCard({
   const decide = async (item: InboxItem, action?: () => Promise<unknown>) => {
     const reply = await action?.();
     if (reply && typeof reply === 'object' && 'ok' in reply && !reply.ok) return;
+    if (inDesk) return;
     await read(item);
     controller.eventDecided();
   };
   const acting = useGameState(gameActionsBlocked);
   const setPage = useNavigation((state) => state.setPage);
+  const bid = bidFor(w, item);
+  const desk = eventDesk(item);
+  if (!inDesk && desk)
+    return (
+      <aside
+        data-surface="panel"
+        className={s.card}
+        aria-label="이벤트"
+        data-testid="event-card"
+        data-request-id={item.id}
+      >
+        <header>
+          <span className={s.kind}>{KIND_LABEL[item.kind]}</span>
+        </header>
+        <h3>{item.title}</h3>
+        <p>{bid && `${playerName(w, bid, market)} · `}결재 대기</p>
+        <button
+          data-ui="primary"
+          onClick={() => {
+            if (gameStore.getSnapshot().view?.world.id === w.id) openApprovalRequest(w.id, item);
+          }}
+        >
+          검토하기
+        </button>
+      </aside>
+    );
   const next = nextOwnFixture(w);
   const eve = item.kind === 'match' && next?.id === item.ref ? next : undefined;
   const club = clubOf(w);
@@ -244,14 +258,6 @@ const EventCard = memo(function EventCard({
       </MatchReportCard>
     );
   }
-  const bid = bidFor(w, item);
-  // A talk still open, or an unhappy player's floor still to meet (→WEB-68).
-  const talker = PLAYER_KINDS.includes(item.kind)
-    ? w.players.find((p) => p.id === item.ref && p.status === 'active' && talkFor(w, p))
-    : undefined;
-  const expiring = (w.staff || []).filter((member) => isExpiring(w, member));
-  // A firefighter's season-long deal can still be extended while it runs.
-  const keepManager = managerTerm(w.manager) === 1 && !!managerRenewal(w);
   const answer = (accept: boolean) => {
     if (!bid) return;
     return decide(item, () => client.command({ type: 'respond-bid', id: bid.id, accept }));
@@ -345,99 +351,6 @@ const EventCard = memo(function EventCard({
               확인
             </button>
           </>
-        ) : item.kind === 'finance' || item.kind === 'sponsor-ending' ? (
-          <>
-            <button
-              data-ui="primary"
-              className={s.primary}
-              disabled={acting}
-              onClick={() => {
-                void read(item);
-                openBusiness(sponsorItem(item) ? 'sponsor' : 'finance');
-              }}
-            >
-              {sponsorItem(item) ? '후원 보기' : '재정 보기'}
-            </button>
-            <button disabled={acting} onClick={() => void decide(item)}>
-              확인
-            </button>
-          </>
-        ) : item.ref && w.mediations?.some((m) => m.id === item.ref && m.status === 'pending') ? (
-          <MediationButton
-            record={w.mediations.find((m) => m.id === item.ref)!}
-            w={w}
-            client={client}
-          />
-        ) : item.ref && w.playingCoachProposals?.[item.ref]?.status === 'pending' ? (
-          <button onClick={() => usePlayerSheet.getState().open(item.ref!)}>
-            선수·코치 계약 검토
-          </button>
-        ) : item.kind === 'staff-renewal' && item.ref === w.manager.id ? (
-          <>
-            {keepManager && (
-              <button
-                data-ui="primary"
-                className={s.primary}
-                disabled={acting}
-                onClick={() => void decide(item, () => client.command({ type: 'renew-manager' }))}
-              >
-                감독 재계약
-              </button>
-            )}
-            <button
-              data-ui="primary"
-              className={keepManager ? undefined : s.primary}
-              disabled={acting}
-              onClick={() => {
-                void read(item);
-                openPeople('manager');
-              }}
-            >
-              감독 보기
-            </button>
-            <button disabled={acting} onClick={() => void decide(item)}>
-              확인
-            </button>
-          </>
-        ) : item.kind === 'staff-renewal' ? (
-          <>
-            {expiring.length > 0 && (
-              <button
-                data-ui="primary"
-                className={s.primary}
-                disabled={acting}
-                onClick={() =>
-                  void decide(item, async () => {
-                    for (const member of expiring)
-                      await client.command({ type: 'renew-staff', role: member.role });
-                  })
-                }
-              >
-                모두 재계약
-              </button>
-            )}
-            <button
-              data-ui="primary"
-              className={expiring.length ? undefined : s.primary}
-              disabled={acting}
-              onClick={() => {
-                void read(item);
-                openPeople('coaches');
-              }}
-            >
-              스태프 보기
-            </button>
-            {/* Each department's switch and criteria live in 사람's 코치진 (→WEB-43). */}
-            <button
-              disabled={acting}
-              onClick={() => {
-                void read(item);
-                openPeople('coaches');
-              }}
-            >
-              자동 결정 설정
-            </button>
-          </>
         ) : item.kind === 'cup' ? (
           <>
             <button
@@ -450,23 +363,6 @@ const EventCard = memo(function EventCard({
               }}
             >
               대진표 보기
-            </button>
-            <button disabled={acting} onClick={() => void decide(item)}>
-              확인
-            </button>
-          </>
-        ) : talker ? (
-          <>
-            <button
-              data-ui="primary"
-              className={s.primary}
-              disabled={acting}
-              onClick={() => {
-                void read(item);
-                openContractTalk(talker.id);
-              }}
-            >
-              {talker.talk ? '협상하기' : '하한 제시하기'}
             </button>
             <button disabled={acting} onClick={() => void decide(item)}>
               확인

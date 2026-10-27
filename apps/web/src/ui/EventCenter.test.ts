@@ -15,12 +15,24 @@ import {
   type SystemNotification,
 } from '../runtime/store';
 import { CommunicationsButton, EventCenter } from './EventCenter';
+import { useNavigation } from './state';
 
 const reports = vi.hoisted(() => ({
   resume: undefined as MatchPlayback | undefined,
   events: [] as InboxItem[],
   eve: false,
 }));
+vi.mock('./state', async (importOriginal) => {
+  const original = await importOriginal<typeof import('./state')>();
+  return {
+    ...original,
+    useNavigation: Object.assign(
+      (selector: (state: ReturnType<typeof original.useNavigation.getState>) => unknown) =>
+        selector(original.useNavigation.getState()),
+      original.useNavigation,
+    ),
+  };
+});
 vi.mock('../runtime/matchView', () => ({ useUnfinishedPlayback: () => reports.resume }));
 vi.mock('../runtime/progression', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../runtime/progression')>()),
@@ -120,6 +132,35 @@ describe('unfinished observation access', () => {
     const markup = renderEvents();
     expect(markup).toContain('이벤트 1개');
     expect(markup).not.toContain('NEXT MATCH · 보고 확인');
+  });
+});
+describe('home business requests', () => {
+  it('offers review with request identity and no home submission controls', () => {
+    reports.events = [
+      {
+        id: 'decision:sales:bid',
+        attention: true,
+        ref: 'bid',
+        kind: 'incoming-bid',
+        title: 'Synthetic sale',
+        detail: 'Pending terms',
+        year: 1950,
+        day: 7,
+      },
+    ];
+    const controller = {
+      store: createStore(() => ({ running: false, eventRequest: 0 })),
+    } as unknown as ProgressionController;
+    const render = () =>
+      renderToStaticMarkup(createElement(EventCenter, { client: {} as GameClient, controller }));
+    const markup = render();
+    expect(markup).toContain('data-request-id="decision:sales:bid"');
+    expect(markup).toContain('검토하기');
+    expect(markup).not.toContain('수락하고 매각');
+    expect(markup).not.toContain('>거절<');
+    useNavigation.setState({ page: 'business' });
+    expect(render()).toBe('');
+    useNavigation.setState({ page: 'dashboard' });
   });
 });
 afterEach(() => {

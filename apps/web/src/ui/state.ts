@@ -1,6 +1,8 @@
 import { OFFICE_DESKS, resolveOffice, type WorkDesk } from './officeDesks';
 import { rememberTask, taskAddress, useTaskMemory } from './taskMemory';
 import { create } from 'zustand';
+import { eventDesk, type ApprovalRequest } from './eventRouting';
+import type { StopReason } from '../../../../packages/engine/src/stopping';
 import type { BoardRequest } from './board';
 import type { AreaKey } from './areas';
 import type {
@@ -109,7 +111,13 @@ export function routeOf(pathname: string, search: string): Route {
     training: TRAINING_TABS[0][0],
     business: 'lobby',
   }[route.page as 'people' | 'training' | 'business'];
-  const address = `${paths[route.page]}${route.view === first ? '' : `?view=${route.view}`}`;
+  let address = `${paths[route.page]}${route.view === first ? '' : `?view=${route.view}`}`;
+  const request = new URLSearchParams(search).get('request');
+  if (route.page === 'business' && request)
+    address += `${address.includes('?') ? '&' : '?'}request=${encodeURIComponent(request)}`;
+  const requestWorld = new URLSearchParams(search).get('requestWorld');
+  if (route.page === 'business' && request && requestWorld)
+    address += `&requestWorld=${encodeURIComponent(requestWorld)}`;
   return address === pathname + search ? route : { ...route, address };
 }
 /** The address in the bar, with an older one replaced by where it lands. */
@@ -194,6 +202,10 @@ export function openOfficeLobby() {
  * was entered from, home by default.
  */
 export function leaveOffice() {
+  if (approvalId()) {
+    returnApprovalHome();
+    return;
+  }
   if (useTaskMemory.getState().returning?.target === 'business') {
     returnToTask();
     return;
@@ -255,6 +267,62 @@ export function openBusiness(
   rememberTask(useNavigation.getState().page);
   history.pushState(null, '', officeAddress(view));
   useNavigation.setState({ page: 'business' });
+}
+/** A request has its own address and world-scoped snapshot, separate from desk browsing. */
+export function approvalId() {
+  return typeof location === 'undefined'
+    ? undefined
+    : (new URLSearchParams(location.search).get('request') ?? undefined);
+}
+export function approvalWorld() {
+  return typeof location === 'undefined'
+    ? undefined
+    : (new URLSearchParams(location.search).get('requestWorld') ?? undefined);
+}
+/** App's existing career activation also clears an address belonging to another world. */
+export function activateTaskWorld(world: string) {
+  const previous = useTaskMemory.getState().world;
+  if (
+    approvalId() &&
+    ((approvalWorld() && approvalWorld() !== world) || (previous && previous !== world))
+  ) {
+    useNavigation.getState().replacePage('dashboard');
+    useNavigation.setState({ officeFrom: undefined });
+  }
+  useTaskMemory.getState().activate(world);
+}
+export function openApprovalRequest(world: string, item: StopReason) {
+  const desk = eventDesk(item);
+  if (!desk) return;
+  useTaskMemory.getState().activate(world);
+  rememberTask(useNavigation.getState().page);
+  const request: ApprovalRequest = { world, desk, item: { ...item } };
+  useTaskMemory.setState((memory) => ({
+    approvalRequests: { ...memory.approvalRequests, [item.id]: request },
+  }));
+  history.pushState(
+    null,
+    '',
+    `${officeAddress(desk)}&request=${encodeURIComponent(item.id)}&requestWorld=${encodeURIComponent(world)}`,
+  );
+  if (useNavigation.getState().page === 'business') useBusinessView.getState().open(desk);
+  useNavigation.setState({ page: 'business' });
+}
+export function returnApprovalHome(request?: ApprovalRequest) {
+  if (
+    request &&
+    (useTaskMemory.getState().world !== request.world ||
+      approvalWorld() !== request.world ||
+      approvalId() !== request.item.id ||
+      useNavigation.getState().page !== 'business')
+  )
+    return;
+  const desk = officeView(new URLSearchParams(location.search).get('view'));
+  useTaskMemory.setState((memory) => ({
+    addresses: { ...memory.addresses, business: officeAddress(desk) },
+  }));
+  history.pushState(null, '', '/journal');
+  useNavigation.setState({ page: 'dashboard' });
 }
 /** Opens the page and tab where a setting lives (→WEB-71). */
 export function openHome(home: Home) {

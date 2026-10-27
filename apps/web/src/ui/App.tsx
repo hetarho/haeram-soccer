@@ -1,7 +1,7 @@
 import { OfficeOverviewHost } from './OfficeOverviewHost';
 import { CashAlarm } from './CashAlarm';
 import { FeedbackOverlay } from './FeedbackOverlay';
-import { openClubSeason, openPeople, useNavigation, type Page } from './state';
+import { activateTaskWorld, openClubSeason, openPeople, useNavigation, type Page } from './state';
 import { PixelIcon, type PixelIconName } from './PixelIcon';
 import { useLocale } from '../presentation/react';
 import type { Translator } from '../presentation/locale';
@@ -1022,7 +1022,7 @@ export function App() {
     );
   }, [contentPage]);
   useEffect(() => {
-    if (worldId) useTaskMemory.getState().activate(worldId);
+    if (worldId) activateTaskWorld(worldId);
   }, [worldId]);
   useEffect(() => {
     const root = scroller.current;

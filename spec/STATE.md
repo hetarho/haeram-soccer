@@ -16,8 +16,10 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | p9a4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-27T09:05Z | 2026-10-27T09:05Z | - |
 | n3w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T12:15Z | 2026-10-27T12:15Z | - |
+| g8u5 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T16:18Z | 2026-10-27T16:18Z | - |
 
 ## inbox
+- 261028 decided T531 WEB-100 WEB-74: how to keep request identity through submission and browser history → world-named request addresses and session snapshots, with a scoped client forwarding the existing forms/commands (alt: consume a one-shot request only | copy each form into the office); history can revisit resolved work safely, late replies cannot redirect another request/game, and business rules stay authoritative.
 - 261028 decided WEB-39 WEB-79: work grouping → player contracts (incl. youth), staff contracts (incl. manager), investment (finance/local/global/facilities), sponsors and identity; keep all seven saved responsibility keys (alt: merge stored responsibilities or retain an operating-policy gate). Shared inline controls and eligible direct actions use existing commands.
 - 261028 decided WEB-10 WEB-40 WEB-43: navigation depth → six primary entries Season/History/home/first-team/youth/coaching, with competition and people lenses inside each (alt: keep people and training as competing functional groups). Preserve old deep links and world-scoped context.
 - 261027 suggest WEB-69 T504: T504's shared skin frames every `[role=tab]` with a button frame and a quiet/canvas fill, while WEB-69 still says page tab bars have no filled or outlined boxes (label over a hairline, accent underline) — confirm the framed tabs in WEB-69 or restore hairline tabs
@@ -374,7 +376,6 @@
 | T520 | Lighter match-day view publication | ARCH WEB | - | todo |
 | T521 | Automatic play computes ahead of the shown date | WEB SAVE MATCH | T516 T520 | todo |
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | todo |
-| T531 | Home approval requests visit their working desk | WEB ARCH | T530 | todo |
 | T532 | Season and History competition hubs | WEB ARCH | T531 | todo |
 | T533 | First-team, academy and coaching navigation | WEB ARCH | T532 | todo |
 
@@ -393,10 +394,11 @@
 | h7t3 | 4 | 6 | 0 | 6 | 0 | 1 | 2 | 2026-10-27T08:21:16.497Z | [history](work/h7t3.json) |
 
 ## next
-- implement-task T531 (then T532, T533): only the requested office/approval/navigation redesign; four-unit host loop, one final batch and main push.
+- implement-task T532 (then T533): only the requested office/approval/navigation redesign; four-unit host loop, one final batch and main push.
 - Preserve existing T516–T522 performance work and unrelated ideation for a separate run.
 
 ## log
+- 261028 T531 done: host finalized the verified child implementation and task commit.
 - 261028 T530 done: 141 affected unit cases, type/lint/format/build passed; host finalized the commit after restricted child Git writes.
 - 261028 create-task WEB r162: T530–T533 serial UI chain; existing performance tasks remain outside this requested slice.
 - 261028 update-ssot WEB r162 done: work desks, shared inline approval, request round trips and audience-based navigation.
@@ -416,4 +418,3 @@
 - 261027 u3b8 closed: T500–T503 batch gate passed on f25cae1a (unit 1171, integration 1158 after a quiet-host rerun of 3 load timeouts, contract 39, catalogs, presentation, build, Chromium 299/299), pushed to main
 - 261027 T503 done: competition keys, Elo reads, request label and empty table moved to leaves; UI exception list 43→38 files
 - 261027 T502 done: staff catalogue and member reads moved to staff-info.ts; UI exception list 46→43 files
-- 261027 T501 done: tactic labels, founding years and injury reads moved to engine leaves; UI exception list 53→46 files

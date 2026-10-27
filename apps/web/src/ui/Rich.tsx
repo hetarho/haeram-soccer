@@ -47,6 +47,11 @@ import type { ClientState, GameClient } from '../runtime/client';
 import { Panel } from './App';
 import { RecruitmentDesk } from './RecruitmentDesk';
 import { OperationsView } from './Operations';
+import { EventCard } from './EventCenter';
+import { MediationReview } from './MediationReview';
+import { PlayingCoachReview } from './PlayingCoachReview';
+import type { ApprovalRequest } from './eventRouting';
+import { STAFF_ROLES } from '../../../../packages/engine/src/staff-info';
 import {
   expectedOfferDays,
   LISTED_OFFER,
@@ -75,6 +80,7 @@ import {
   useBusinessView,
   useContractTalk,
   usePeopleView,
+  returnApprovalHome,
   type Page,
   type PeopleRequest,
   type PeopleTab,
@@ -270,6 +276,81 @@ function OfficePersonnelWork({ desk, state, client }: Props & { desk: 'players' 
     </>
   );
 }
+/** Request hosts compose the same forms used in ordinary personnel work. */
+function PersonnelRequest({
+  state,
+  client,
+  request,
+  controller,
+  error,
+}: Props & {
+  request: ApprovalRequest;
+  controller: ProgressionController;
+  error?: string;
+}) {
+  const w = state.view!.world;
+  const item = request.item;
+  const blocked = useGameState(gameActionsBlocked);
+  const [market, setMarket] = useState(false);
+  const cancel = () => returnApprovalHome(request);
+  const player = w.players.find((player) => player.id === item.ref);
+  const talk = player && item.kind === 'contract-talk' ? talkFor(w, player) : undefined;
+  const mediation = w.mediations?.find((record) => record.id === item.ref);
+  if (player && talk)
+    return (
+      <ContractTalkSheet
+        w={w}
+        player={player}
+        talk={talk}
+        disabled={blocked}
+        error={error}
+        onOffer={(term) => {
+          void client.command({
+            type: 'contract-offer',
+            player: player.id,
+            wage: talk.floor,
+            term,
+          });
+        }}
+        onDecline={() => {
+          void client.command({ type: 'contract-decline', player: player.id });
+        }}
+        onClose={cancel}
+      />
+    );
+  if (mediation)
+    return <MediationReview record={mediation} w={w} client={client} onClose={cancel} />;
+  if (player && w.playingCoachProposals?.[player.id]?.status === 'pending')
+    return <PlayingCoachReview w={w} player={player} client={client} />;
+  if (item.kind === 'incoming-bid' || item.kind === 'bid-response')
+    return <EventCard client={client} controller={controller} item={item} inDesk />;
+  if (item.responsibility === 'academy')
+    return <AcademyPanel w={w} client={client} selected={item.ref} />;
+  if (item.ref === w.manager.id)
+    return (
+      <>
+        <PersonnelPanel
+          tab="manager"
+          state={state}
+          client={client}
+          onReplace={() => setMarket(true)}
+        />
+        {market && (
+          <ManagerMarket
+            state={state}
+            client={client}
+            onClose={cancel}
+            onCancel={cancel}
+            error={error}
+          />
+        )}
+      </>
+    );
+  const role =
+    w.staff?.find((member) => member.id === item.ref)?.role ??
+    STAFF_ROLES.find((role) => role === item.ref);
+  return <CoachingStaff w={w} client={client} selected={role} onCancel={cancel} error={error} />;
+}
 /** The manager's office: who he is and what he signed, and the owner's requests to him. */
 function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => void }) {
   const w = state.view!.world,
@@ -428,7 +509,13 @@ function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => 
  * of our league and the division above, who cost compensation to their clubs. The list moves every
  * four rounds; hiring confirms on top of it and closes both.
  */
-function ManagerMarket({ state, client, onClose }: Props & { onClose: () => void }) {
+function ManagerMarket({
+  state,
+  client,
+  onClose,
+  onCancel,
+  error,
+}: Props & { onClose: () => void; onCancel?: () => void; error?: string }) {
   const v = state.view!,
     w = v.world,
     m = w.manager,
@@ -542,7 +629,13 @@ function ManagerMarket({ state, client, onClose }: Props & { onClose: () => void
         </Panel>
       </Dialog>
       {chosen && (
-        <Dialog label="감독 선임 확인" onClose={() => setHiring(undefined)}>
+        <Dialog
+          label="감독 선임 확인"
+          onClose={() => {
+            setHiring(undefined);
+            onCancel?.();
+          }}
+        >
           <h2>{chosen.name} 감독을 선임할까요?</h2>
           <ul className={s.consequences}>
             <li>
@@ -596,20 +689,30 @@ function ManagerMarket({ state, client, onClose }: Props & { onClose: () => void
             </li>
           </ul>
           <div className={s.actions}>
-            <button onClick={() => setHiring(undefined)}>취소</button>
+            <button
+              onClick={() => {
+                setHiring(undefined);
+                onCancel?.();
+              }}
+            >
+              취소
+            </button>
             <button
               data-ui="primary"
               className={s.primary}
               disabled={disabled}
-              onClick={() => {
-                void client.command({ type: 'hire', id: chosen.id, term });
-                setHiring(undefined);
-                onClose();
+              onClick={async () => {
+                const reply = await client.command({ type: 'hire', id: chosen.id, term });
+                if (reply?.ok) {
+                  setHiring(undefined);
+                  onClose();
+                }
               }}
             >
               선임 확정
             </button>
           </div>
+          {error && <p role="alert">{error}</p>}
         </Dialog>
       )}
     </>
@@ -769,6 +872,7 @@ function ContractTalkSheet({
   onOffer,
   onDecline,
   onClose,
+  error,
 }: {
   w: World;
   player: Player;
@@ -777,6 +881,7 @@ function ContractTalkSheet({
   onOffer: (term: TalkTerm) => void;
   onDecline: () => void;
   onClose: () => void;
+  error?: string;
 }) {
   const [picked, setTerm] = useState<TalkTerm>(2);
   const c = w.clubs.find((club) => club.id === w.playerClub)!,
@@ -816,6 +921,7 @@ function ContractTalkSheet({
         </div>
       }
     >
+      {error && <p role="alert">{error}</p>}
       <h2>
         {player.name} {player.talk ? `${label} 협상` : '언해피 · 하한 제시'}
       </h2>
@@ -1194,14 +1300,25 @@ function Business({ state, client, controller }: Props & { controller: Progressi
         state={state}
         client={client}
         legacy={<EconomicContext state={state} />}
-        personnel={(desk) => (
-          <OfficePersonnelWork
-            key={`${state.view!.world.id}:${desk}`}
-            desk={desk}
-            state={state}
-            client={client}
-          />
-        )}
+        personnel={(desk, scoped, request, error) =>
+          request ? (
+            <PersonnelRequest
+              key={`${request.world}:${request.item.id}`}
+              request={request}
+              state={state}
+              client={scoped}
+              controller={controller}
+              error={error}
+            />
+          ) : (
+            <OfficePersonnelWork
+              key={`${state.view!.world.id}:${desk}`}
+              desk={desk}
+              state={state}
+              client={scoped}
+            />
+          )
+        }
       />
     </>
   );

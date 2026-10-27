@@ -289,10 +289,24 @@ function DirectorDecides({ w }: { w: World }) {
 const TRAINING_COACHES: readonly StaffRole[] = ['assistant', 'youth'];
 
 /** Coaching departments, their effect on the squad and replacements. */
-export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
+export function CoachingStaff({
+  w,
+  client,
+  selected,
+  onCancel,
+  error,
+}: {
+  w: World;
+  client: GameClient;
+  selected?: StaffRole;
+  onCancel?: () => void;
+  error?: string;
+}) {
   const acting = useActing();
   const request = useStaffRequest((store) => store.request);
-  const [role, setRole] = useState<StaffRole>();
+  const [role, setRole] = useState<StaffRole | undefined>(() =>
+    selected && !w.staff?.some((member) => member.role === selected) ? selected : undefined,
+  );
   useEffect(() => {
     if (request) {
       setRole(request);
@@ -305,7 +319,11 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
   const [pick, setPick] = useState<string>();
   // Hiring and renewing both start from the two seasons the staff would sign (→STAFF-15).
   const [term, setTerm] = useState<ContractTerm>(DELEGATED_TERM);
-  const [renewing, setRenewing] = useState<StaffRole>();
+  const [renewing, setRenewing] = useState<StaffRole | undefined>(() =>
+    selected && w.staff?.some((member) => member.role === selected && isExpiring(w, member))
+      ? selected
+      : undefined,
+  );
   const club = clubOf(w);
   const format = (value: string) => <Money value={value} code={club.country} year={w.year} />,
     // Inside a control that already answers the tap: the notation, the exact amount as its title.
@@ -341,6 +359,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
             ...STAFF_ROLES.filter((id) => id !== 'director' && id !== 'scout'),
           ] as StaffRole[]
         ).map((id) => {
+          if (selected && id !== selected) return null;
           const member = members.get(id);
           return (
             <li key={id} id={`staff-post-${id}`} data-role={id}>
@@ -452,7 +471,10 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
       {role && (
         <Dialog
           label={`${STAFF_INFO[role].label} 선임`}
-          onClose={() => setRole(undefined)}
+          onClose={() => {
+            setRole(undefined);
+            onCancel?.();
+          }}
           actions={
             <div className={s.sheetActions}>
               {current && (
@@ -470,16 +492,16 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
                 data-ui="primary"
                 className={s.primary}
                 disabled={acting || !chosen}
-                onClick={() => {
+                onClick={async () => {
                   if (!chosen) return;
-                  void client.command({
+                  const reply = await client.command({
                     type: 'hire-staff',
                     role,
                     candidate: candidates.findIndex((candidate) => candidate.id === chosen.id),
                     candidateId: chosen.id,
                     term,
                   });
-                  setRole(undefined);
+                  if (reply?.ok) setRole(undefined);
                 }}
               >
                 {chosen ? `${chosen.name} 선임 · ${term}시즌` : '후보를 고르세요'}
@@ -544,6 +566,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
           {candidates.length > 0 && (
             <TermDial label="코치 계약 기간" value={term} disabled={acting} onChange={setTerm} />
           )}
+          {error && <p role="alert">{error}</p>}
           {chosen && (
             <TermCosts
               w={w}
@@ -564,17 +587,27 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
       {renewing && renewal && renewed && (
         <Dialog
           label={`${STAFF_INFO[renewing].label} 재계약`}
-          onClose={() => setRenewing(undefined)}
+          onClose={() => {
+            setRenewing(undefined);
+            onCancel?.();
+          }}
           actions={
             <div className={s.sheetActions}>
-              <button onClick={() => setRenewing(undefined)}>취소</button>
+              <button
+                onClick={() => {
+                  setRenewing(undefined);
+                  onCancel?.();
+                }}
+              >
+                취소
+              </button>
               <button
                 data-ui="primary"
                 className={s.primary}
                 disabled={acting}
-                onClick={() => {
-                  void client.command({ type: 'renew-staff', role: renewing, term });
-                  setRenewing(undefined);
+                onClick={async () => {
+                  const reply = await client.command({ type: 'renew-staff', role: renewing, term });
+                  if (reply?.ok) setRenewing(undefined);
                 }}
               >
                 재계약 · {term}시즌
@@ -586,6 +619,7 @@ export function CoachingStaff({ w, client }: { w: World; client: GameClient }) {
             {renewal.name} (능력 {Math.round(renewal.ability)}) · 연봉은 지금 능력으로 다시 정해지고
             계약 기간 동안 그대로예요.
           </p>
+          {error && <p role="alert">{error}</p>}
           <TermDial label="코치 재계약 기간" value={term} disabled={acting} onChange={setTerm} />
           <TermCosts
             w={w}

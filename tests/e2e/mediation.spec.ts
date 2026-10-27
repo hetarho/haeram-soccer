@@ -208,7 +208,7 @@ for (const mode of ['manual', 'automatic'] as const)
     expect(after.mediations![0].status).toBe('pending');
     expect(after.promises ?? []).toHaveLength(0);
     await expect(
-      page.getByTestId('event-card').getByRole('button', { name: '영입 중재 검토', exact: true }),
+      page.getByTestId('event-card').getByRole('button', { name: '검토하기', exact: true }),
     ).toHaveCount(2);
   });
 

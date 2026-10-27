@@ -344,9 +344,13 @@ test('a disclosed player departure ends both jobs and charges coach compensation
   const owed = playingCoachDepartureCost(w, player.id);
   await importResponsibilityCareer(page, w);
   const card = page.getByTestId('event-card').filter({ hasText: '선수·코치 계약 종료 검토' });
-  await expect(card).toContainText('코치 계약도 함께 종료');
-  await expect(card).toContainText('기존 계약 종료 비용');
-  await card.getByRole('button', { name: '수락하고 매각', exact: true }).click();
+  await card.getByRole('button', { name: '검토하기', exact: true }).click();
+  await expect(page.getByTestId('approval-request')).toContainText('코치 계약도 함께 종료');
+  await expect(page.getByTestId('approval-request')).toContainText('기존 계약 종료 비용');
+  await page
+    .getByTestId('approval-request')
+    .getByRole('button', { name: '수락하고 매각', exact: true })
+    .click();
   const after = await exportedCareer(page);
   expect(BigInt(after.cash)).toBe(BigInt(w.cash) + BigInt(bid.fee) - BigInt(owed));
   expect(after.people![player.id].club).toBe(club);

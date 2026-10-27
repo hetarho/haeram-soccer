@@ -126,11 +126,13 @@ export function BusinessWorkbench({
   client,
   part,
   legacy,
+  selectedSlot,
 }: {
   state: ClientState;
   client: GameClient;
   part: WorkbenchPart;
   legacy?: ReactNode;
+  selectedSlot?: string;
 }) {
   // 구단 디자인 is the authoritative design editor (→WEB-39/71/86), not a money view.
   if (part === 'identity')
@@ -146,7 +148,15 @@ export function BusinessWorkbench({
         <ClubDesignView key={state.view!.world.id} state={state} client={client} />
       </Suspense>
     );
-  return <MoneyWorkbench state={state} client={client} part={part} legacy={legacy} />;
+  return (
+    <MoneyWorkbench
+      state={state}
+      client={client}
+      part={part}
+      legacy={legacy}
+      selectedSlot={selectedSlot}
+    />
+  );
 }
 
 function MoneyWorkbench({
@@ -154,11 +164,13 @@ function MoneyWorkbench({
   client,
   part,
   legacy,
+  selectedSlot,
 }: {
   state: ClientState;
   client: GameClient;
   part: Exclude<WorkbenchPart, 'identity'>;
   legacy?: ReactNode;
+  selectedSlot?: string;
 }) {
   const w = state.view!.world,
     club = clubOf(w),
@@ -166,6 +178,9 @@ function MoneyWorkbench({
   const format = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   const blocked = useGameState(gameActionsBlocked);
   const tab = part;
+  const sponsorViews = state.view!.sponsors.filter(
+    (view) => !selectedSlot || view.slot === selectedSlot,
+  );
   const [sheet, setSheet] = useState<'ledger' | 'legacy'>();
   const [message, setMessage] = useState('');
   const games = Math.max(
@@ -286,7 +301,7 @@ function MoneyWorkbench({
                 지급하며 강등되면 남은 기간이 30% 줄어요.
               </p>
               <div className={s.slots}>
-                {state.view!.sponsors.map((view) => (
+                {sponsorViews.map((view) => (
                   <section
                     data-surface="panel"
                     className={s.slot}
