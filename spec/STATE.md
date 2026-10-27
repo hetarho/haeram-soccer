@@ -389,11 +389,11 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- Gameplay T530-T535 is on main 9a94dbce. Its CI passed eight jobs, with one WebKit observation-order test failure. Browser-only correction b8492975 passed all 21 affected journeys across three browsers plus fast checks; coordinator owns its publication and final CI completion.
-- Preserve the integrated automatic-play work and n3w8 report; no unrelated implementation remains in this requested UI slice.
+- Gameplay hierarchy T530-T535 shipped on main 8af246fa; the full batch, cold-cache unit repair, 21-case browser regression and [all-browser CI](https://github.com/hetarho/haeram-soccer/actions/runs/40585549122) passed. Requested scope is complete; no implementation task remains.
 - n3w8 closed (report 261027-n3w8): automatic play T516–T525 on main (group gate on 2573791c); T522 read on the built game: 0 stalls at x1/x2/x5/x10, x10 10 days a second, no main-thread long task, helpers on (M1 Max, headless Chromium) — a CPU-throttled phone-class read is the open question. Inbox: confirm the WEB-18 read decisions (T524 → T525) and the WEB-69 framed-tabs suggestion.
 
 ## log
+- 261028 gameplay hierarchy shipped: WEB r164, T530-T535 and verified test repairs; main 8af246fa passed all nine CI jobs; report 261028-g8u4.
 - 261028 fix live-observation-order: cover both match-eve-before-selection and interleaved browsing, dismiss/reopen pending observation for the remaining read-only visit, and scope date assertions to the active calendar/theatre. All date, score, scorer and retained-node assertions remain.
 - 261028 fix coach-hiring-unit-setup: use the known criteria-change-85 seed and assert its candidate condition, eliminating 86 cold world generations; keep all hiring/contract assertions and the 30 s timeout.
 - 261028 fix personnel-navigation-geometry: wait for the incoming hub animation before clicking its local tab, preserving exact zero-scroll and facility-image assertions in Firefox; no production code change.
@@ -413,4 +413,3 @@
 - 261028 create-task WEB r162: T530–T533 serial UI chain; existing performance tasks remain outside this requested slice.
 - 261028 update-ssot WEB r162 done: work desks, shared inline approval, request round trips and audience-based navigation.
 - 261028 update-ssot WEB start: business desks, approval round trips, season/history and personnel navigation.
-- 261028 share WEB r164/T530–T533 planning and reserve the gameplay hierarchy implementation for g8u6.
