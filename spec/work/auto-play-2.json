@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-27T16:12:26.060Z",
-  "sourceCommit": "10b334c99f2c62347259508ec59836f75b89fe1c",
+  "snapshotAt": "2026-10-27T16:35:19.928Z",
+  "sourceCommit": "2573791c73ec899ce20565f82cc40f60ebddca5a",
   "group": {
     "id": "auto-play-2",
     "branch": "work/auto-play-2",
@@ -12,9 +12,23 @@
       "reviewers": 1,
       "maxPending": 8
     },
+    "verified": {
+      "commit": "2573791c73ec899ce20565f82cc40f60ebddca5a",
+      "checks": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
+          "startedAt": "2026-10-27T16:12:59.870Z",
+          "finishedAt": "2026-10-27T16:35:17.789Z"
+        }
+      ],
+      "at": "2026-10-27T16:35:17.918Z",
+      "excluded": [
+        "T522"
+      ]
+    },
     "push": null,
     "review": "risky",
-    "runner": {
+    "lastRun": {
       "id": "816ac175-d66a-42f4-9e89-e9135265279b",
       "adapter": "builtin",
       "providers": {
@@ -37,44 +51,10 @@
         }
       ],
       "startedAt": "2026-10-27T15:58:53.392Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "9d92bbae-924a-462f-8c2e-343169281dcd",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.310 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-10-27T15:07:28.208Z",
-      "stoppedAt": "2026-10-27T15:56:23.612Z",
-      "dispatched": 3,
-      "outcome": "needs-attention",
-      "failures": [
-        {
-          "role": "finish",
-          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
-          "details": [
-            "(node:1064) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1113) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1287) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1282) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\nstderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness\n[presentation:locale] Missing message \"navigation.league\" (en-US); using the registered default (ko-KR). {\n  code: 'missing-message',\n  locale: 'en-US',\n  messageId: 'navigation.league',\n  message: 'Missing message \"navigation.league\" (en-US); using the registered default (ko-KR).'\n}\n\n(node:1345) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1379) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:1395) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\nA PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.\n\u001b[33m[INEFFECTIVE_DYNAMIC_IMPORT] \u001b[0mapps/web/src/adapters/games.ts is dynamically imported by apps/web/src/runtime/client.ts but also statically imported by apps/web/src/adapters/legacyReset.ts, apps/web/src/adapters/previousStore.ts, apps/web/src/runtime/client.ts, apps/web/src/runtime/slots.ts, apps/web/src/ui/App.tsx, dynamic import will not move module into another chunk.\n\n"
-          ]
-        }
-      ],
+      "stoppedAt": "2026-10-27T16:35:18.301Z",
+      "dispatched": 2,
+      "outcome": "main-session",
+      "failures": [],
       "autopilot": true,
       "decisionWaitMs": 900000
     }
@@ -402,6 +382,8 @@
       "submittedBase": "10b334c99f2c62347259508ec59836f75b89fe1c",
       "submissionId": "9e64c56e-8af1-4ebb-b175-bc05ea34c519",
       "submittedAt": "2026-10-27T16:08:21.493Z",
+      "integratedCommit": "2573791c73ec899ce20565f82cc40f60ebddca5a",
+      "integratedAt": "2026-10-27T16:12:58.725Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -461,6 +443,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-27T16:07:25.403Z",
           "finishedAt": "2026-10-27T16:08:21.175Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-27T16:12:26.195Z",
+          "finishedAt": "2026-10-27T16:12:58.505Z"
         }
       ]
     }
@@ -2698,6 +2687,105 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1466,
+      "at": "2026-10-27T16:12:58.668Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-27T16:12:26.195Z",
+            "finishedAt": "2026-10-27T16:12:58.505Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1467,
+      "at": "2026-10-27T16:12:58.725Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "2573791c73ec899ce20565f82cc40f60ebddca5a",
+        "integratedAt": "2026-10-27T16:12:58.725Z"
+      }
+    },
+    {
+      "sequence": 1468,
+      "at": "2026-10-27T16:35:17.958Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "verified": {
+          "commit": "2573791c73ec899ce20565f82cc40f60ebddca5a",
+          "checks": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
+              "startedAt": "2026-10-27T16:12:59.870Z",
+              "finishedAt": "2026-10-27T16:35:17.789Z"
+            }
+          ],
+          "at": "2026-10-27T16:35:17.918Z",
+          "excluded": [
+            "T522"
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 1469,
+      "at": "2026-10-27T16:35:18.301Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "816ac175-d66a-42f4-9e89-e9135265279b",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T15:58:53.392Z",
+          "stoppedAt": "2026-10-27T16:35:18.301Z",
+          "dispatched": 2,
+          "outcome": "main-session",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
