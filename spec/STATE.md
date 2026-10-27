@@ -14,9 +14,10 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
-| p9a4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-27T09:05Z | 2026-10-27T09:05Z | - |
 
 ## inbox
+- 261027 decided T518 ARCH-31: round-jobs.test.ts tier → integration (it advances days, which tests/config/test-tiers keeps out of unit), acceptance command updated (alt: keep it unit and shrink it below advanceDays)
+- 261027 parked p9a4: batch on 56f367f1 failed 7 Chromium journeys that fail identically on origin/main fd49c84b (facility-art, mediation 44 px choices, mobile match tabs contrast and pitch ratio); auto-play was not pushed to main — fix on main first
 - 261027 decided HIST-18 WEB-92: how to drop caretakers that never took a match → keep the tenure fact, leave interim tenures with no credited match or outcome out of every summary/list/count (alt: never record such an interim | hide every zero-match tenure, interim or not)
 - 261027 decided STAFF-47: what trust 0 means → at trust ≤10 a 10%/round resignation chance (25% at 0), certain resignation at the close at 0, warning notice on first reaching ≤10 (alt: trust drifts back toward 50 | morale-only penalty as now)
 - 261027 decided HIST-20 WEB-54: transfer fee rankings → structured own-club fee transfer facts, 영입/매각 boards all-time or by season in today's money, older careers ranked from ledger amounts by entry text (alt: ledger-only ranking | include free transfers)
