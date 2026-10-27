@@ -194,6 +194,8 @@ export function Dialog({
       // Every close path unmounts; a detached copy fades out so no dialog vanishes abruptly.
       if (!reducedMotion()) {
         const ghost = detachedCopy(layer);
+        // Settings feedback moves to the surviving dialog; it must not also fade with this copy.
+        for (const toast of ghost.querySelectorAll('[data-settings-toast]')) toast.remove();
         ghost.setAttribute('aria-hidden', 'true');
         ghost.inert = true;
         ghost.style.pointerEvents = 'none';

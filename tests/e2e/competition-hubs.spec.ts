@@ -51,8 +51,16 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
   );
   await page.goto('/europe?competition=cup&period=history&season=1940&country=GER');
   await expect(page).toHaveURL(/history\?section=cup.*season=1940.*country=GER.*cup=cup/);
+  await expect(page.getByRole('tab', { name: '독일 컵', exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await expect(page.getByRole('combobox', { name: '국내 컵 국가', exact: true })).toHaveAttribute(
+    'data-value',
+    'GER',
+  );
   await expect(page.getByRole('region', { name: '컵 대회 역사', exact: true })).toContainText(
-    '독일 컵',
+    '아직 기록된 대회가 없어요.',
   );
   await expect(
     page

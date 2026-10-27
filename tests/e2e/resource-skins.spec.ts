@@ -1,3 +1,4 @@
+import { openCups } from './competition-navigation';
 import { openPersonnel } from './personnel-navigation';
 import { expect, test, type Locator } from '@playwright/test';
 import { readPresentationBaselines } from '../fixtures/presentation';
@@ -71,7 +72,7 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
     await expect(page.getByTestId('facility-stadium')).toBeVisible();
     await page.screenshot({ path: `.tmp/resource-audit/${theme.id}-facilities.png` });
     await leaveOffice(page);
-    await navigate('컵 대회');
+    await openCups(page);
     const cupStatus = page.locator('[data-ui="notice"]').filter({ visible: true }).first();
     if (await cupStatus.count()) await imageSkin(cupStatus);
     await page.screenshot({ path: `.tmp/resource-audit/${theme.id}-cups.png` });

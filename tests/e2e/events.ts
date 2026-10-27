@@ -233,7 +233,8 @@ export async function acknowledgeEvents(page: Page) {
     // An observation is not a dismissible report; the caller can prepare or watch the match.
     if (!current || current.includes('내일 경기')) return;
     const reviewing = card.getByRole('button', { name: '검토하기', exact: true });
-    const work = (await reviewing.count()) ? await reviewEvent(page, card) : card;
+    const inDesk = (await reviewing.count()) > 0;
+    const work = inDesk ? await reviewEvent(page, card) : card;
     const mediation = page.getByRole('dialog', { name: '영입 중재 검토', exact: true });
     if (await mediation.isVisible()) {
       const review = page.getByRole('dialog', { name: '영입 중재 검토', exact: true });
@@ -247,6 +248,7 @@ export async function acknowledgeEvents(page: Page) {
         (await read.count()) ? read : controls.getByRole('button', { name: '거절', exact: true })
       ).click();
     }
+    if (inDesk) await expect(page.getByTestId('approval-request')).toHaveCount(0);
     await expect
       .poll(async () => [await eventCard(page).count(), await title()], { timeout: 10000 })
       .not.toEqual([count, current]);
