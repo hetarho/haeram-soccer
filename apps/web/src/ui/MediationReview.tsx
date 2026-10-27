@@ -154,7 +154,7 @@ export function MediationReview({
             </div>
             <fieldset className={s.supportChoices} disabled={disabled}>
               <legend>이번 중재 선택</legend>
-              <div className={s.options}>
+              <div className={s.options} data-ui="choice-cards">
                 {(Object.keys(labels) as MediationSupport[]).map((value) => (
                   <label key={value}>
                     <input

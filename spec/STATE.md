@@ -14,10 +14,11 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
+| n3w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T12:15Z | 2026-10-27T12:15Z | - |
 
 ## inbox
+- 261027 suggest WEB-69 T504: T504's shared skin frames every `[role=tab]` with a button frame and a quiet/canvas fill, while WEB-69 still says page tab bars have no filled or outlined boxes (label over a hairline, accent underline) — confirm the framed tabs in WEB-69 or restore hairline tabs
 - 261027 decided T518 ARCH-31: round-jobs.test.ts tier → integration (it advances days, which tests/config/test-tiers keeps out of unit), acceptance command updated (alt: keep it unit and shrink it below advanceDays)
-- 261027 parked p9a4: batch on 56f367f1 failed 7 Chromium journeys that fail identically on origin/main fd49c84b (facility-art, mediation 44 px choices, mobile match tabs contrast and pitch ratio); auto-play was not pushed to main — fix on main first
 - 261027 decided HIST-18 WEB-92: how to drop caretakers that never took a match → keep the tenure fact, leave interim tenures with no credited match or outcome out of every summary/list/count (alt: never record such an interim | hide every zero-match tenure, interim or not)
 - 261027 decided STAFF-47: what trust 0 means → at trust ≤10 a 10%/round resignation chance (25% at 0), certain resignation at the close at 0, warning notice on first reaching ≤10 (alt: trust drifts back toward 50 | morale-only penalty as now)
 - 261027 decided HIST-20 WEB-54: transfer fee rankings → structured own-club fee transfer facts, 영입/매각 boards all-time or by season in today's money, older careers ranked from ledger amounts by entry text (alt: ledger-only ranking | include free transfers)
@@ -352,7 +353,6 @@
 | SAVE | 55 | 55 | - | 0 |
 | PLAYER | 10 | 10 | - | 0 |
 
-
 ## review
 | id | st |
 |---|---|
@@ -394,6 +394,7 @@
 
 ## log
 - 261027 n3w8: T519 integrated on work/auto-play-2 (p9a4's approved submission fe75453e merged as-is; CI on 8db55791 unit, integration ×3 and checks passed)
+- 261027 T523 done (n3w8): main CI fix after T504 — chart tabs readable on their new surfaces, mediation choice inputs skip the 20 px skin, pitch/facility specs follow the framed header and responsive art; 3 Chromium spec files 25/25
 - 261027 p9a4: T516 T517 T518 T520 integrated on work/auto-play; T519 T521 T522 base WEB@160→161 (renumbered on the main merge, content unchanged)
 - 261027 merge publication: preserved remote WEB r159 (transfer records/heat maps); local resource skins r159→r160 and play-pace r160→r161, decision content unchanged; p9a4 task bases keep their recorded content and can refresh on next sync
 - 261027 ideation play-pace-and-owner-surfaces converted: owner dropped the action / standing choice / dashboard split and home ordering; automatic play scope fully in WEB r160, SAVE r55, ARCH r24
@@ -412,6 +413,3 @@
 - 261027 T501 done: tactic labels, founding years and injury reads moved to engine leaves; UI exception list 53→46 files
 - 261027 T500 done: UI→engine orchestration guard with a shrink-only list (53 files, 38 modules)
 - 261027 create-task review/ui-engine-boundary-261027 + ARCH r23 → T500–T503 (guard, tactic/injury leaves, staff-info leaf, competition/label leaves); review converted
-- 261027 ARCH r23: ARCH-3 path table matches the real layout; ARCH-4 UI imports engine values only from read leaves with a shrink-only guarded exception list
-- 261027 review-code ui-engine-boundary-261027: 53 UI files import 39 orchestration-reaching engine modules; F1–F4 adopted (owner: make the tasks and implement them), F5 open
-- 261027 o7h4 closed: T490–T493 and gate fixes; batch passed on eaf5f3d1 (299/299 Chromium), pushed to main
