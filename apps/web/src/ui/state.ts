@@ -370,6 +370,7 @@ export const RECORD_TABS = [
   ['trends', '구단 성장'],
   ['honours', '명예·최고기록'],
   ['players', '선수 통산'],
+  ['transfers', '이적 기록'],
   ['managers', '감독 이력'],
 ] as const;
 export type RecordTab = (typeof RECORD_TABS)[number][0];

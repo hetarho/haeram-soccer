@@ -1,0 +1,1414 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-10-27T08:21:16.497Z",
+  "sourceCommit": "7efb82e62a3ec7183fe644ea6314426b9662570c",
+  "group": {
+    "id": "h7t3",
+    "branch": "work/h7t3",
+    "status": "active",
+    "createdAt": "2026-10-27T07:28:33.307Z",
+    "limits": {
+      "workers": 4,
+      "reviewers": 1,
+      "maxPending": 6
+    },
+    "review": "risky",
+    "lastRun": {
+      "id": "5e71552c-d786-4397-812f-471cd5a919a4",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-27T08:12:25.539Z",
+      "stoppedAt": "2026-10-27T08:21:15.450Z",
+      "dispatched": 2,
+      "outcome": "needs-attention",
+      "failures": [
+        {
+          "attempt": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+          "role": "worker",
+          "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+        },
+        {
+          "attempt": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+          "role": "worker",
+          "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+        },
+        {
+          "attempt": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+          "submissionId": "b41ab09d-47e1-4c65-8a16-c3a2c1b2467e",
+          "commit": "2eca62231d071dd3334d8cae988606b04ee9eaf9",
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+        }
+      ],
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    }
+  },
+  "summary": {
+    "total": 6,
+    "completed": 0,
+    "remaining": 6,
+    "running": 0,
+    "review": 1,
+    "blocked": 2,
+    "unassigned": 3
+  },
+  "tasks": [
+    {
+      "id": "T510",
+      "title": "Contracts for the trust-floor warning and own-club transfer facts",
+      "dep": [],
+      "status": "approved"
+    },
+    {
+      "id": "T511",
+      "title": "Managers at the floor of trust resign",
+      "dep": [
+        "T510"
+      ],
+      "lane": "manager-trust",
+      "status": "todo"
+    },
+    {
+      "id": "T512",
+      "title": "Hide interim tenures that never took a match",
+      "dep": [],
+      "lane": "interim-history",
+      "status": "blocked"
+    },
+    {
+      "id": "T513",
+      "title": "Record own-club transfer facts and rank them",
+      "dep": [
+        "T510"
+      ],
+      "lane": "transfer-records",
+      "status": "todo"
+    },
+    {
+      "id": "T514",
+      "title": "이적 기록 view in the records room",
+      "dep": [
+        "T513"
+      ],
+      "lane": "transfer-records",
+      "status": "todo"
+    },
+    {
+      "id": "T515",
+      "title": "Broadcast-style heat maps on a 2D canvas",
+      "dep": [],
+      "lane": "heatmap",
+      "status": "blocked"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "group": "h7t3",
+      "taskId": "T510",
+      "tasks": [
+        "T510"
+      ],
+      "lane": null,
+      "owner": "5e71552c-d786-4397-812f-471cd5a919a4/worker-1",
+      "contributors": [
+        "1b8b061a-3b4e-479e-96cd-05e34a415cdb/worker-1",
+        "5e71552c-d786-4397-812f-471cd5a919a4/worker-1"
+      ],
+      "status": "approved",
+      "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:contract",
+      "createdAt": "2026-10-27T07:28:39.123Z",
+      "startCommit": "2716a53d57267d5fac949ef6c2ff06f441dc3c71",
+      "verifiedCommit": "2eca62231d071dd3334d8cae988606b04ee9eaf9",
+      "submittedBase": "7efb82e62a3ec7183fe644ea6314426b9662570c",
+      "submissionId": "b41ab09d-47e1-4c65-8a16-c3a2c1b2467e",
+      "submittedAt": "2026-10-27T08:16:34.671Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "review paths: packages/contracts/src/schema.ts packages/contracts/src/types.ts"
+        ],
+        "lines": 162,
+        "files": 4
+      },
+      "dispatch": {
+        "id": "edb5639d-422e-4c2a-a8f9-0a61869bf378",
+        "runner": "5e71552c-d786-4397-812f-471cd5a919a4",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-27T08:16:37.642Z",
+        "finishedAt": "2026-10-27T08:17:16.368Z",
+        "error": null,
+        "summary": "T510 adds Manager.trustWarned?: true and World.transfers?: TransferRecords (TransferFact, TransferRecords exported). The schemas match the impl-notes shape and reuse the existing id, text, amount, season and seasonDay helpers. They are strict like their neighbours: the manager object is z.object, which is non-strict, but the flag is z.literal(true), so other values fail. The fact and records objects are strictObject. Events cap at 100000 and ledgerBefore is capped to match. Older worlds without the field still validate. I checked the risky contract paths (schema.ts, types.ts). They are additive and optional, so no existing save is invalidated, and ARCH-4 dependency direction is unchanged. The compact packer spreads ...w into world and back and only special-cases people, matchModel/npcSeason and managerHistory, so transfers and the flag travel inline unchanged. The adapters correctly needed no code change. The three required contract cases and the pack round-trip case are present. Worker evidence covers typecheck, lint, format and the contract/unit tests. The round-trip case is integration-tier and not run yet; it is deferred to the batch."
+      },
+      "review": {
+        "id": "0a6962ce-010a-4368-a648-73772c71c629",
+        "owner": "5e71552c-d786-4397-812f-471cd5a919a4/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T510 adds Manager.trustWarned?: true and World.transfers?: TransferRecords (TransferFact, TransferRecords exported). The schemas match the impl-notes shape and reuse the existing id, text, amount, season and seasonDay helpers. They are strict like their neighbours: the manager object is z.object, which is non-strict, but the flag is z.literal(true), so other values fail. The fact and records objects are strictObject. Events cap at 100000 and ledgerBefore is capped to match. Older worlds without the field still validate. I checked the risky contract paths (schema.ts, types.ts). They are additive and optional, so no existing save is invalidated, and ARCH-4 dependency direction is unchanged. The compact packer spreads ...w into world and back and only special-cases people, matchModel/npcSeason and managerHistory, so transfers and the flag travel inline unchanged. The adapters correctly needed no code change. The three required contract cases and the pack round-trip case are present. Worker evidence covers typecheck, lint, format and the contract/unit tests. The round-trip case is integration-tier and not run yet; it is deferred to the batch.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/adapters/packing.test.ts:63",
+            "message": "T510: the pack round-trip case for trustWarned and transfers is in an integration-tier file (tests/config/test-tiers.ts), so the worker has not run it yet. The coordinator's final gate should confirm it passes under pnpm run test:integration before T510 is marked done. Per the task, the SAVE-13 100-season storage profile is also left to the batch."
+          }
+        ],
+        "commit": "2eca62231d071dd3334d8cae988606b04ee9eaf9",
+        "baseCommit": "7efb82e62a3ec7183fe644ea6314426b9662570c",
+        "submissionId": "b41ab09d-47e1-4c65-8a16-c3a2c1b2467e",
+        "createdAt": "2026-10-27T08:16:35.912Z",
+        "finishedAt": "2026-10-27T08:17:16.306Z"
+      },
+      "steps": [
+        {
+          "taskId": "T510",
+          "commit": "2eca62231d071dd3334d8cae988606b04ee9eaf9",
+          "at": "2026-10-27T08:16:34.618Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-27T08:12:59.594Z",
+              "finishedAt": "2026-10-27T08:16:34.379Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-27T08:12:59.594Z",
+          "finishedAt": "2026-10-27T08:16:34.379Z"
+        }
+      ]
+    },
+    {
+      "id": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+      "group": "h7t3",
+      "taskId": "T512",
+      "tasks": [
+        "T512"
+      ],
+      "lane": "interim-history",
+      "owner": "5e71552c-d786-4397-812f-471cd5a919a4/worker-2",
+      "contributors": [
+        "1b8b061a-3b4e-479e-96cd-05e34a415cdb/worker-2",
+        "5e71552c-d786-4397-812f-471cd5a919a4/worker-2"
+      ],
+      "status": "blocked",
+      "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요.",
+      "createdAt": "2026-10-27T07:28:41.342Z",
+      "startCommit": "2716a53d57267d5fac949ef6c2ff06f441dc3c71",
+      "dispatch": {
+        "id": "748ef963-fd81-4084-9c6f-53abc8925f45",
+        "runner": "1b8b061a-3b4e-479e-96cd-05e34a415cdb",
+        "role": "worker",
+        "slot": 2,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-27T07:28:42.320Z",
+        "finishedAt": "2026-10-27T07:36:47.771Z",
+        "error": "T512: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+        "summary": "T512 구현을 마쳤습니다. 경기를 한 번도 지휘하지 않았고 인정된 성과(우승·순위·승격)도 없는 감독대행은 이제 감독 이력에 나오지 않습니다. 해당 감독이 현재 감독이어도 마찬가지입니다. 저장된 사실(w.managerHistory)과 기록 코드는 건드리지 않았습니다.\n\n변경 내용 (packages/engine/src/manager-achievements.ts):\n- 경기 집계 직후, 성과 집계 전에 숨길 대행 목록을 정합니다. 기준은 대행이면서 경기 0, 인정된 성과 0(중복 성과는 한 번만 셈)입니다.\n- 숨긴 대행은 목록 행, 총 개수, 페이지 넘김에서 모두 빠집니다. 숨긴 행을 가리키는 페이지 위치 값은 invalid-cursor 오류가 됩니다. 정렬 순서와 위치 값 형식(manager-history:1:)은 그대로입니다.\n- 한 시즌에 감독이 여럿이었는지(sharedSeason) 판단할 때도 숨긴 대행은 빼고 셉니다.\n- 경기나 성과가 하나라도 있는 대행은 선임일부터 이전처럼 나옵니다.\n- ManagerHistory.tsx와 managerHistoryView.ts는 받은 페이지 행과 총 개수만 보여 주므로 고칠 필요가 없었습니다.\n\n테스트:\n- manager-achievements.test.ts에 지정된 4개 테스트를 추가했습니다.\n- 기존 테스트 2개는 경기 없는 대행에 기대고 있어 조정했습니다. 페이지 테스트는 대행이 아닌 선임 45건으로 바꿨고, 경계 테스트는 대행에게 경기 1개를 줬습니다.\n- touches 밖 파일인 apps/web/src/ui/managerHistoryView.test.ts는 예전 규칙(경기 없는 대행을 0경기 기록으로 표시)을 확인하고 있었습니다. 새 규칙(목록에서 빠지되 사실에는 남음)을 확인하도록 고쳤습니다.\n\n실제로 돌린 검사: typecheck, lint, format:check, 변경 영향 단위 테스트(`vitest --project unit --changed 2716a53d`, 3개 파일 32개 테스트) 모두 통과했습니다.\n\n돌리지 않은 검사(묶음 관문에 넘김): tests/e2e/manager-history.spec.ts, tests/e2e/records.spec.ts, 전체 unit·integration 스위트입니다. 특히 manager-history.spec.ts는 준비된 manager-journey 월드의 5번째 감독 기록(career.interim)이 경기를 지휘했다고 가정합니다. 만약 경기 없는 대행이라면 tests/fixtures/manager-careers.ts의 view(4)가 비게 됩니다. 커밋은 하지 않았습니다."
+      }
+    },
+    {
+      "id": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+      "group": "h7t3",
+      "taskId": "T515",
+      "tasks": [
+        "T515"
+      ],
+      "lane": "heatmap",
+      "owner": "5e71552c-d786-4397-812f-471cd5a919a4/worker-1",
+      "contributors": [
+        "1b8b061a-3b4e-479e-96cd-05e34a415cdb/worker-3",
+        "5e71552c-d786-4397-812f-471cd5a919a4/worker-1"
+      ],
+      "status": "blocked",
+      "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요.",
+      "createdAt": "2026-10-27T07:28:42.788Z",
+      "startCommit": "2716a53d57267d5fac949ef6c2ff06f441dc3c71",
+      "dispatch": {
+        "id": "706502a5-22b5-48ac-8bb1-299d15464055",
+        "runner": "1b8b061a-3b4e-479e-96cd-05e34a415cdb",
+        "role": "worker",
+        "slot": 3,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-27T07:28:44.225Z",
+        "finishedAt": "2026-10-27T07:36:53.430Z",
+        "error": "T515: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+        "summary": "T515 구현 완료. 새 heatPaint.ts가 분리형 가우시안 필드(heatField), 파랑→빨강 색 램프(heatColour, floor 아래는 alpha 0), putImageData로 그려 data URL을 돌려주는 paintHeat를 제공하고, heatPaint.test.ts의 이름 붙은 테스트 5개가 모두 통과합니다. 새 HeatPitch.tsx에는 MatchMaterial에서 옮겨 온 공용 MaterialPitch/Markings/FIELD가 들어 있고, 히트맵을 잔디 위·라인 아래의 <image> 레이어로 그립니다. 그린 결과는 칸 값 기준으로 캐시해서(32개 보관) 탭을 바꿔도 다시 그리지 않습니다. 캔버스가 없으면 예전처럼 칸 단위 음영으로 그립니다. aria-label에는 가장 많이 터치한 칸 이름이 붙습니다. MatchMaterial 히트맵 탭과 PlayerSheetDialog 시즌 히트맵(HeatGrid 대체)이 이 컴포넌트를 씁니다. 실행한 검사: typecheck, lint, format:check, vitest unit --changed(5개 파일, 34개 테스트), build. 모두 통과했고, HeatPitch는 진입 청크가 아니라 별도 지연 청크로 나옵니다. 브라우저 여정(match-material, player-profile, match-themes 스펙)은 실행하지 않았고 배치 관문에 넘겼습니다. 스펙 선택자는 바꾸지 않았습니다. 권한 문제로 sed를 이용한 줄 삭제와 복합 셸 명령은 거부되어 Edit 도구와 단일 명령으로 대신했습니다."
+      }
+    }
+  ],
+  "history": [
+    {
+      "sequence": 621,
+      "at": "2026-10-27T07:28:33.354Z",
+      "type": "group",
+      "group": "h7t3",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "h7t3",
+        "branch": "work/h7t3",
+        "status": "preparing",
+        "createdAt": "2026-10-27T07:28:33.307Z",
+        "limits": {
+          "workers": 4,
+          "reviewers": 1,
+          "maxPending": 6
+        },
+        "review": "risky"
+      }
+    },
+    {
+      "sequence": 622,
+      "at": "2026-10-27T07:28:33.454Z",
+      "type": "group",
+      "group": "h7t3",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 623,
+      "at": "2026-10-27T07:28:38.738Z",
+      "type": "group",
+      "group": "h7t3",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "1b8b061a-3b4e-479e-96cd-05e34a415cdb",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T07:28:38.699Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 624,
+      "at": "2026-10-27T07:28:39.123Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+        "group": "h7t3",
+        "taskId": "T510",
+        "tasks": [
+          "T510"
+        ],
+        "lane": null,
+        "owner": "1b8b061a-3b4e-479e-96cd-05e34a415cdb/worker-1",
+        "contributors": [
+          "1b8b061a-3b4e-479e-96cd-05e34a415cdb/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-27T07:28:39.123Z",
+        "startCommit": "2716a53d57267d5fac949ef6c2ff06f441dc3c71"
+      }
+    },
+    {
+      "sequence": 625,
+      "at": "2026-10-27T07:28:39.998Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 626,
+      "at": "2026-10-27T07:28:40.798Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "39f9ae79-a5a6-4afb-b156-73e491852527",
+          "runner": "1b8b061a-3b4e-479e-96cd-05e34a415cdb",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T07:28:40.798Z"
+        }
+      }
+    },
+    {
+      "sequence": 627,
+      "at": "2026-10-27T07:28:40.993Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "39f9ae79-a5a6-4afb-b156-73e491852527",
+          "runner": "1b8b061a-3b4e-479e-96cd-05e34a415cdb",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T07:28:40.798Z"
+        }
+      }
+    },
+    {
+      "sequence": 628,
+      "at": "2026-10-27T07:28:41.342Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+      "taskId": "T512",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+        "group": "h7t3",
+        "taskId": "T512",
+        "tasks": [
+          "T512"
+        ],
+        "lane": "interim-history",
+        "owner": "1b8b061a-3b4e-479e-96cd-05e34a415cdb/worker-2",
+        "contributors": [
+          "1b8b061a-3b4e-479e-96cd-05e34a415cdb/worker-2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-27T07:28:41.342Z",
+        "startCommit": "2716a53d57267d5fac949ef6c2ff06f441dc3c71"
+      }
+    },
+    {
+      "sequence": 629,
+      "at": "2026-10-27T07:28:42.168Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+      "taskId": "T512",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 630,
+      "at": "2026-10-27T07:28:42.320Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+      "taskId": "T512",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "748ef963-fd81-4084-9c6f-53abc8925f45",
+          "runner": "1b8b061a-3b4e-479e-96cd-05e34a415cdb",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T07:28:42.320Z"
+        }
+      }
+    },
+    {
+      "sequence": 631,
+      "at": "2026-10-27T07:28:42.501Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+      "taskId": "T512",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "748ef963-fd81-4084-9c6f-53abc8925f45",
+          "runner": "1b8b061a-3b4e-479e-96cd-05e34a415cdb",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T07:28:42.320Z"
+        }
+      }
+    },
+    {
+      "sequence": 632,
+      "at": "2026-10-27T07:28:42.788Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+      "taskId": "T515",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+        "group": "h7t3",
+        "taskId": "T515",
+        "tasks": [
+          "T515"
+        ],
+        "lane": "heatmap",
+        "owner": "1b8b061a-3b4e-479e-96cd-05e34a415cdb/worker-3",
+        "contributors": [
+          "1b8b061a-3b4e-479e-96cd-05e34a415cdb/worker-3"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-27T07:28:42.788Z",
+        "startCommit": "2716a53d57267d5fac949ef6c2ff06f441dc3c71"
+      }
+    },
+    {
+      "sequence": 633,
+      "at": "2026-10-27T07:28:43.572Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+      "taskId": "T515",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 634,
+      "at": "2026-10-27T07:28:44.225Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+      "taskId": "T515",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "706502a5-22b5-48ac-8bb1-299d15464055",
+          "runner": "1b8b061a-3b4e-479e-96cd-05e34a415cdb",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T07:28:44.225Z"
+        }
+      }
+    },
+    {
+      "sequence": 635,
+      "at": "2026-10-27T07:28:44.426Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+      "taskId": "T515",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "706502a5-22b5-48ac-8bb1-299d15464055",
+          "runner": "1b8b061a-3b4e-479e-96cd-05e34a415cdb",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T07:28:44.225Z"
+        }
+      }
+    },
+    {
+      "sequence": 636,
+      "at": "2026-10-27T07:36:47.508Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+      "taskId": "T512",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 637,
+      "at": "2026-10-27T07:36:47.682Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+      "taskId": "T512",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T512: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+      }
+    },
+    {
+      "sequence": 638,
+      "at": "2026-10-27T07:36:47.771Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+      "taskId": "T512",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "748ef963-fd81-4084-9c6f-53abc8925f45",
+          "runner": "1b8b061a-3b4e-479e-96cd-05e34a415cdb",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T07:28:42.320Z",
+          "finishedAt": "2026-10-27T07:36:47.771Z",
+          "error": "T512: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+          "summary": "T512 구현을 마쳤습니다. 경기를 한 번도 지휘하지 않았고 인정된 성과(우승·순위·승격)도 없는 감독대행은 이제 감독 이력에 나오지 않습니다. 해당 감독이 현재 감독이어도 마찬가지입니다. 저장된 사실(w.managerHistory)과 기록 코드는 건드리지 않았습니다.\n\n변경 내용 (packages/engine/src/manager-achievements.ts):\n- 경기 집계 직후, 성과 집계 전에 숨길 대행 목록을 정합니다. 기준은 대행이면서 경기 0, 인정된 성과 0(중복 성과는 한 번만 셈)입니다.\n- 숨긴 대행은 목록 행, 총 개수, 페이지 넘김에서 모두 빠집니다. 숨긴 행을 가리키는 페이지 위치 값은 invalid-cursor 오류가 됩니다. 정렬 순서와 위치 값 형식(manager-history:1:)은 그대로입니다.\n- 한 시즌에 감독이 여럿이었는지(sharedSeason) 판단할 때도 숨긴 대행은 빼고 셉니다.\n- 경기나 성과가 하나라도 있는 대행은 선임일부터 이전처럼 나옵니다.\n- ManagerHistory.tsx와 managerHistoryView.ts는 받은 페이지 행과 총 개수만 보여 주므로 고칠 필요가 없었습니다.\n\n테스트:\n- manager-achievements.test.ts에 지정된 4개 테스트를 추가했습니다.\n- 기존 테스트 2개는 경기 없는 대행에 기대고 있어 조정했습니다. 페이지 테스트는 대행이 아닌 선임 45건으로 바꿨고, 경계 테스트는 대행에게 경기 1개를 줬습니다.\n- touches 밖 파일인 apps/web/src/ui/managerHistoryView.test.ts는 예전 규칙(경기 없는 대행을 0경기 기록으로 표시)을 확인하고 있었습니다. 새 규칙(목록에서 빠지되 사실에는 남음)을 확인하도록 고쳤습니다.\n\n실제로 돌린 검사: typecheck, lint, format:check, 변경 영향 단위 테스트(`vitest --project unit --changed 2716a53d`, 3개 파일 32개 테스트) 모두 통과했습니다.\n\n돌리지 않은 검사(묶음 관문에 넘김): tests/e2e/manager-history.spec.ts, tests/e2e/records.spec.ts, 전체 unit·integration 스위트입니다. 특히 manager-history.spec.ts는 준비된 manager-journey 월드의 5번째 감독 기록(career.interim)이 경기를 지휘했다고 가정합니다. 만약 경기 없는 대행이라면 tests/fixtures/manager-careers.ts의 view(4)가 비게 됩니다. 커밋은 하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 639,
+      "at": "2026-10-27T07:36:53.164Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+      "taskId": "T515",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 640,
+      "at": "2026-10-27T07:36:53.332Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+      "taskId": "T515",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T515: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+      }
+    },
+    {
+      "sequence": 641,
+      "at": "2026-10-27T07:36:53.430Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+      "taskId": "T515",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "706502a5-22b5-48ac-8bb1-299d15464055",
+          "runner": "1b8b061a-3b4e-479e-96cd-05e34a415cdb",
+          "role": "worker",
+          "slot": 3,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T07:28:44.225Z",
+          "finishedAt": "2026-10-27T07:36:53.430Z",
+          "error": "T515: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+          "summary": "T515 구현 완료. 새 heatPaint.ts가 분리형 가우시안 필드(heatField), 파랑→빨강 색 램프(heatColour, floor 아래는 alpha 0), putImageData로 그려 data URL을 돌려주는 paintHeat를 제공하고, heatPaint.test.ts의 이름 붙은 테스트 5개가 모두 통과합니다. 새 HeatPitch.tsx에는 MatchMaterial에서 옮겨 온 공용 MaterialPitch/Markings/FIELD가 들어 있고, 히트맵을 잔디 위·라인 아래의 <image> 레이어로 그립니다. 그린 결과는 칸 값 기준으로 캐시해서(32개 보관) 탭을 바꿔도 다시 그리지 않습니다. 캔버스가 없으면 예전처럼 칸 단위 음영으로 그립니다. aria-label에는 가장 많이 터치한 칸 이름이 붙습니다. MatchMaterial 히트맵 탭과 PlayerSheetDialog 시즌 히트맵(HeatGrid 대체)이 이 컴포넌트를 씁니다. 실행한 검사: typecheck, lint, format:check, vitest unit --changed(5개 파일, 34개 테스트), build. 모두 통과했고, HeatPitch는 진입 청크가 아니라 별도 지연 청크로 나옵니다. 브라우저 여정(match-material, player-profile, match-themes 스펙)은 실행하지 않았고 배치 관문에 넘겼습니다. 스펙 선택자는 바꾸지 않았습니다. 권한 문제로 sed를 이용한 줄 삭제와 복합 셸 명령은 거부되어 Edit 도구와 단일 명령으로 대신했습니다."
+        }
+      }
+    },
+    {
+      "sequence": 642,
+      "at": "2026-10-27T07:38:09.168Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+      "taskId": "T512",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 643,
+      "at": "2026-10-27T07:38:10.218Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+      "taskId": "T515",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 644,
+      "at": "2026-10-27T07:39:15.145Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 645,
+      "at": "2026-10-27T07:39:15.528Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 646,
+      "at": "2026-10-27T07:39:15.599Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 647,
+      "at": "2026-10-27T07:59:57.262Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+      }
+    },
+    {
+      "sequence": 648,
+      "at": "2026-10-27T07:59:57.373Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "39f9ae79-a5a6-4afb-b156-73e491852527",
+          "runner": "1b8b061a-3b4e-479e-96cd-05e34a415cdb",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T07:28:40.798Z",
+          "finishedAt": "2026-10-27T07:59:57.373Z",
+          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "summary": "T510 작업을 끝냈습니다. 감독의 신뢰 바닥 경고 표시와 우리 구단 이적 기록을 world 계약에 넣었습니다.\n- types.ts: `Manager.trustWarned?: true`, 새 타입 `TransferFact`와 `TransferRecords { ledgerBefore, facts }`를 내보내고, `World.transfers?`를 추가했습니다.\n- schema.ts: 감독 스키마에 `trustWarned: z.literal(true).optional()`를 넣어 다른 값은 거부합니다. 이적 기록은 엄격한(strict) 스키마이고 기존 헬퍼(`amount`, `season`, `seasonDay`, `id`, `text`)를 다시 썼습니다. 필드가 없는 기존 world도 그대로 통과합니다.\n- 압축 패커(adapters/packing.ts)는 world 키를 하나씩 나열하지 않고 world를 통째로 펼쳐 담았다가 그대로 되돌립니다. 그래서 두 필드도 그대로 실려 가고, 어댑터 코드는 고칠 필요가 없었습니다.\n- 테스트: schema.contract.test.ts에 지정된 세 케이스를 추가했습니다. packing.test.ts에는 왕복 케이스(저장 → 압축 → 불러오기 후 내용이 완전히 같은지 확인)를 추가했습니다.\n- 실행한 검사: typecheck, lint, format:check 통과. 컨트랙트 테스트(schema.contract.test.ts) 17/17 통과, 새 세 케이스 포함. 이번 변경과 관련된 단위 테스트 72개 파일 551개 통과.\n- 실행하지 않은 것: packing.test.ts는 통합 테스트로 분류된 파일이라 새 왕복 케이스는 작성만 했고 돌리지 않았습니다. 묶음 최종 검사의 `pnpm run test:integration`에서 처음 실행됩니다. 100시즌 저장 용량 측정도 계획대로 그 단계로 넘겼습니다.\n- 결과와 한계는 태스크 문서의 result 칸에 적었습니다."
+        }
+      }
+    },
+    {
+      "sequence": 649,
+      "at": "2026-10-27T07:59:57.770Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+      "taskId": "T512",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+      }
+    },
+    {
+      "sequence": 650,
+      "at": "2026-10-27T07:59:57.856Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+      "taskId": "T515",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+      }
+    },
+    {
+      "sequence": 651,
+      "at": "2026-10-27T07:59:58.446Z",
+      "type": "group",
+      "group": "h7t3",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "1b8b061a-3b4e-479e-96cd-05e34a415cdb",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T07:28:38.699Z",
+          "stoppedAt": "2026-10-27T07:59:58.446Z",
+          "dispatched": 3,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+              "role": "worker",
+              "error": "T512: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            },
+            {
+              "attempt": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+              "role": "worker",
+              "error": "T515: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            },
+            {
+              "attempt": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+              "role": "worker",
+              "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+            },
+            {
+              "attempt": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+              "role": "worker",
+              "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+            },
+            {
+              "attempt": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+              "role": "worker",
+              "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 652,
+      "at": "2026-10-27T08:12:18.100Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 653,
+      "at": "2026-10-27T08:12:19.749Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+      "taskId": "T512",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 654,
+      "at": "2026-10-27T08:12:21.365Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+      "taskId": "T515",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 655,
+      "at": "2026-10-27T08:12:25.574Z",
+      "type": "group",
+      "group": "h7t3",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "5e71552c-d786-4397-812f-471cd5a919a4",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T08:12:25.539Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 656,
+      "at": "2026-10-27T08:12:25.659Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "5e71552c-d786-4397-812f-471cd5a919a4/worker-1",
+        "contributors": [
+          "1b8b061a-3b4e-479e-96cd-05e34a415cdb/worker-1",
+          "5e71552c-d786-4397-812f-471cd5a919a4/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 657,
+      "at": "2026-10-27T08:12:25.819Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "2522e494-fc9c-4aad-98e6-a7852e0032c4",
+          "runner": "5e71552c-d786-4397-812f-471cd5a919a4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T08:12:25.819Z"
+        }
+      }
+    },
+    {
+      "sequence": 658,
+      "at": "2026-10-27T08:12:26.040Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "2522e494-fc9c-4aad-98e6-a7852e0032c4",
+          "runner": "5e71552c-d786-4397-812f-471cd5a919a4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T08:12:25.819Z"
+        }
+      }
+    },
+    {
+      "sequence": 659,
+      "at": "2026-10-27T08:12:26.099Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+      "taskId": "T512",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "5e71552c-d786-4397-812f-471cd5a919a4/worker-2",
+        "contributors": [
+          "1b8b061a-3b4e-479e-96cd-05e34a415cdb/worker-2",
+          "5e71552c-d786-4397-812f-471cd5a919a4/worker-2"
+        ]
+      }
+    },
+    {
+      "sequence": 660,
+      "at": "2026-10-27T08:12:26.196Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+      "taskId": "T512",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+      }
+    },
+    {
+      "sequence": 661,
+      "at": "2026-10-27T08:12:58.485Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 662,
+      "at": "2026-10-27T08:12:59.170Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 663,
+      "at": "2026-10-27T08:12:59.268Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 664,
+      "at": "2026-10-27T08:16:34.671Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "2eca62231d071dd3334d8cae988606b04ee9eaf9",
+        "submittedBase": "7efb82e62a3ec7183fe644ea6314426b9662570c",
+        "submissionId": "b41ab09d-47e1-4c65-8a16-c3a2c1b2467e",
+        "submittedAt": "2026-10-27T08:16:34.671Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "review paths: packages/contracts/src/schema.ts packages/contracts/src/types.ts"
+          ],
+          "lines": 162,
+          "files": 4
+        },
+        "steps": [
+          {
+            "taskId": "T510",
+            "commit": "2eca62231d071dd3334d8cae988606b04ee9eaf9",
+            "at": "2026-10-27T08:16:34.618Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-27T08:12:59.594Z",
+                "finishedAt": "2026-10-27T08:16:34.379Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-27T08:12:59.594Z",
+            "finishedAt": "2026-10-27T08:16:34.379Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 665,
+      "at": "2026-10-27T08:16:34.730Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "2522e494-fc9c-4aad-98e6-a7852e0032c4",
+          "runner": "5e71552c-d786-4397-812f-471cd5a919a4",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T08:12:25.819Z",
+          "finishedAt": "2026-10-27T08:16:34.730Z",
+          "error": null,
+          "summary": "T510 작업을 이어받아 확인만 했고, 바꿀 코드는 없었습니다. 구현 커밋 d54f24db와 기획 브랜치 병합 커밋 9a53c557이 이미 있고, 병합은 spec 파일만 건드려 계약 코드에는 변화가 없습니다.\n\n이번에 고친 것은 태스크 문서의 result 두 줄뿐입니다.\n- `at`을 d54f24db로 바꿨습니다.\n- `verified`에 조정자가 d54f24db에서 돌린 task verify 통과 결과(typecheck·lint·format, unit+contract 1719개)를 덧붙였습니다. 이 검사는 제가 이번에 다시 돌린 것이 아닙니다.\n\n이 문서 수정은 아직 커밋되지 않았습니다. 지시에 따라 커밋과 제출은 하지 않았고 호스트 실행기에 맡깁니다.\n\n남은 한계는 그대로입니다. 저장 → 압축 → 불러오기 왕복 테스트(`apps/web/src/adapters/packing.test.ts`)는 통합 테스트 파일이라 아직 한 번도 실행되지 않았습니다. 묶음 최종 검사의 `pnpm run test:integration`에서 처음 돌아갑니다. 100시즌 저장 용량 측정도 그 단계로 넘어가 있습니다."
+        }
+      }
+    },
+    {
+      "sequence": 666,
+      "at": "2026-10-27T08:16:34.797Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+      "taskId": "T515",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "5e71552c-d786-4397-812f-471cd5a919a4/worker-1",
+        "contributors": [
+          "1b8b061a-3b4e-479e-96cd-05e34a415cdb/worker-3",
+          "5e71552c-d786-4397-812f-471cd5a919a4/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 667,
+      "at": "2026-10-27T08:16:34.878Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+      "taskId": "T515",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+      }
+    },
+    {
+      "sequence": 668,
+      "at": "2026-10-27T08:16:35.912Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "0a6962ce-010a-4368-a648-73772c71c629",
+          "owner": "5e71552c-d786-4397-812f-471cd5a919a4/reviewer-1",
+          "status": "reviewing",
+          "commit": "2eca62231d071dd3334d8cae988606b04ee9eaf9",
+          "baseCommit": "7efb82e62a3ec7183fe644ea6314426b9662570c",
+          "submissionId": "b41ab09d-47e1-4c65-8a16-c3a2c1b2467e",
+          "createdAt": "2026-10-27T08:16:35.912Z"
+        }
+      }
+    },
+    {
+      "sequence": 669,
+      "at": "2026-10-27T08:16:37.642Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "edb5639d-422e-4c2a-a8f9-0a61869bf378",
+          "runner": "5e71552c-d786-4397-812f-471cd5a919a4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T08:16:37.642Z"
+        }
+      }
+    },
+    {
+      "sequence": 670,
+      "at": "2026-10-27T08:16:37.714Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "edb5639d-422e-4c2a-a8f9-0a61869bf378",
+          "runner": "5e71552c-d786-4397-812f-471cd5a919a4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T08:16:37.642Z"
+        }
+      }
+    },
+    {
+      "sequence": 671,
+      "at": "2026-10-27T08:17:16.306Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "0a6962ce-010a-4368-a648-73772c71c629",
+          "owner": "5e71552c-d786-4397-812f-471cd5a919a4/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T510 adds Manager.trustWarned?: true and World.transfers?: TransferRecords (TransferFact, TransferRecords exported). The schemas match the impl-notes shape and reuse the existing id, text, amount, season and seasonDay helpers. They are strict like their neighbours: the manager object is z.object, which is non-strict, but the flag is z.literal(true), so other values fail. The fact and records objects are strictObject. Events cap at 100000 and ledgerBefore is capped to match. Older worlds without the field still validate. I checked the risky contract paths (schema.ts, types.ts). They are additive and optional, so no existing save is invalidated, and ARCH-4 dependency direction is unchanged. The compact packer spreads ...w into world and back and only special-cases people, matchModel/npcSeason and managerHistory, so transfers and the flag travel inline unchanged. The adapters correctly needed no code change. The three required contract cases and the pack round-trip case are present. Worker evidence covers typecheck, lint, format and the contract/unit tests. The round-trip case is integration-tier and not run yet; it is deferred to the batch.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/adapters/packing.test.ts:63",
+              "message": "T510: the pack round-trip case for trustWarned and transfers is in an integration-tier file (tests/config/test-tiers.ts), so the worker has not run it yet. The coordinator's final gate should confirm it passes under pnpm run test:integration before T510 is marked done. Per the task, the SAVE-13 100-season storage profile is also left to the batch."
+            }
+          ],
+          "commit": "2eca62231d071dd3334d8cae988606b04ee9eaf9",
+          "baseCommit": "7efb82e62a3ec7183fe644ea6314426b9662570c",
+          "submissionId": "b41ab09d-47e1-4c65-8a16-c3a2c1b2467e",
+          "createdAt": "2026-10-27T08:16:35.912Z",
+          "finishedAt": "2026-10-27T08:17:16.306Z"
+        }
+      }
+    },
+    {
+      "sequence": 672,
+      "at": "2026-10-27T08:17:16.368Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "edb5639d-422e-4c2a-a8f9-0a61869bf378",
+          "runner": "5e71552c-d786-4397-812f-471cd5a919a4",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T08:16:37.642Z",
+          "finishedAt": "2026-10-27T08:17:16.368Z",
+          "error": null,
+          "summary": "T510 adds Manager.trustWarned?: true and World.transfers?: TransferRecords (TransferFact, TransferRecords exported). The schemas match the impl-notes shape and reuse the existing id, text, amount, season and seasonDay helpers. They are strict like their neighbours: the manager object is z.object, which is non-strict, but the flag is z.literal(true), so other values fail. The fact and records objects are strictObject. Events cap at 100000 and ledgerBefore is capped to match. Older worlds without the field still validate. I checked the risky contract paths (schema.ts, types.ts). They are additive and optional, so no existing save is invalidated, and ARCH-4 dependency direction is unchanged. The compact packer spreads ...w into world and back and only special-cases people, matchModel/npcSeason and managerHistory, so transfers and the flag travel inline unchanged. The adapters correctly needed no code change. The three required contract cases and the pack round-trip case are present. Worker evidence covers typecheck, lint, format and the contract/unit tests. The round-trip case is integration-tier and not run yet; it is deferred to the batch."
+        }
+      }
+    },
+    {
+      "sequence": 673,
+      "at": "2026-10-27T08:17:16.675Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 674,
+      "at": "2026-10-27T08:21:13.761Z",
+      "type": "attempt",
+      "group": "h7t3",
+      "attemptId": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+      "taskId": "T510",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run test:unit && pnpm run test:contract"
+      }
+    },
+    {
+      "sequence": 675,
+      "at": "2026-10-27T08:21:15.450Z",
+      "type": "group",
+      "group": "h7t3",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "5e71552c-d786-4397-812f-471cd5a919a4",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T08:12:25.539Z",
+          "stoppedAt": "2026-10-27T08:21:15.450Z",
+          "dispatched": 2,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "f89cd722-a6fa-4224-8bee-297319e1aa1b",
+              "role": "worker",
+              "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+            },
+            {
+              "attempt": "71645506-b1ee-4c37-9665-f8896e5ac77e",
+              "role": "worker",
+              "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+            },
+            {
+              "attempt": "260a9add-40cc-4ca2-9738-daf63e3fc105",
+              "submissionId": "b41ab09d-47e1-4c65-8a16-c3a2c1b2467e",
+              "commit": "2eca62231d071dd3334d8cae988606b04ee9eaf9",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    }
+  ]
+}
