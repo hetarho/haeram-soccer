@@ -190,10 +190,10 @@ export class ProgressionController {
   private unsubscribe: () => void;
   private unsubscribeClock: () => void;
   private inFlight = false;
-  /** The day the shown clock is computing ahead and its handling, which a read waits for. */
-  private computing?: Promise<void>;
   /** Reads outside the command queue still unanswered: nothing is computed ahead meanwhile. */
   private reads = 0;
+  /** Reads waiting until every held day is shown at the pace and no step is in flight (→WEB-18). */
+  private waitingReads: (() => void)[] = [];
   /** The pace interval of the day being computed, which a pace change can shorten. */
   private sending?: { ms: number };
   /** Days computed ahead of the shown date, oldest first, as the client holds them. */
@@ -572,9 +572,10 @@ export class ProgressionController {
   }
   /**
    * A read the engine answers outside the command queue answers from its newest computed day: a
-   * shown clock first shows at once every day computed ahead, a step in flight once it lands, and
-   * computes nothing ahead until the read is answered; a running clock keeps running (→WEB-18).
-   * Stopped, hidden or in manual mode the shown date is the engine's and the read goes at once.
+   * shown clock computes nothing ahead from its start until it is answered, and posts it once every
+   * held day has been shown at the pace and no step is in flight, so no view shows a day early and
+   * the calendar never jumps; a running clock keeps running (→WEB-18). Stopped, hidden or in manual
+   * mode the shown date is the engine's and the read goes at once.
    */
   private beforeRead() {
     if (this.disposed || this.hidden || (!this.store.getState().running && !this.draining))
@@ -587,20 +588,16 @@ export class ProgressionController {
       this.reads--;
       if (!this.reads && !this.hidden && this.store.getState().running) this.wake();
     };
-    // A read posted behind a step is answered after it, so the step lands and is shown first.
-    if (!this.computing) {
-      this.showAhead();
-      return { settled };
-    }
-    return { ready: this.computing.then(() => this.showAhead()), settled };
+    if (!this.ahead.length && !this.inFlight) return { settled };
+    return { ready: new Promise<void>((post) => this.waitingReads.push(post)), settled };
   }
   /**
-   * Shows every computed day at once; the owner's stop ends there and saves (→SAVE-8). A running
-   * clock stays in view, so our result among them is announced as at the pace (→WEB-18).
+   * Posts the waiting reads once every held day is shown and no step is in flight: on each day
+   * revealed, each step landed and on dispose.
    */
-  private showAhead() {
-    this.reveal(true, true);
-    this.drained();
+  private postReads() {
+    if (!this.disposed && (this.ahead.length || this.inFlight)) return;
+    for (const post of this.waitingReads.splice(0)) post();
   }
   /**
    * The owner's own stop: nothing resumes it until the owner starts it again. The days computed
@@ -794,10 +791,7 @@ export class ProgressionController {
     if (this.ahead.length >= Math.max(depth, Date.now() >= this.due! ? 1 : 0)) return;
     // The day on screen may itself stop the clock: a start on a match eve.
     if (!last && this.eveStop(head)) return;
-    const computing = this.step(head).finally(() => {
-      if (this.computing === computing) this.computing = undefined;
-    });
-    this.computing = computing;
+    void this.step(head);
   }
   /** One day computed ahead; it is shown on its turn. */
   private async step(before: World) {
@@ -854,6 +848,8 @@ export class ProgressionController {
         stops: this.stopsAt(before, after),
         at: Date.now(),
       });
+    // A step that brought no day to show (refused, cancelled or failed) no longer holds a read.
+    this.postReads();
     return reply;
   }
   /**
@@ -866,13 +862,13 @@ export class ProgressionController {
     return !!eve && eve.id !== this.passedMatch;
   }
   /**
-   * Shows the next computed day on its beat, or all of them at once; `announce` lets a day shown
-   * with the clock running in view announce our result.
+   * Shows the next computed day on its beat, or all of them at once; a read waiting for the last
+   * of them goes then.
    */
-  private reveal(all: boolean, announce = !all) {
+  private reveal(all: boolean) {
     const days = this.ahead.splice(0, all ? this.ahead.length : 1);
     // The client no longer holds them when another load replaced its views.
-    if (!days.length || !this.client.reveal(all)) return;
+    if (!days.length || !this.client.reveal(all)) return this.postReads();
     if (!all) {
       // The next day follows one interval after this one: after its turn when it was ready on
       // time, so a timer firing a little late does not slow the pace, else after it showed.
@@ -883,8 +879,9 @@ export class ProgressionController {
       this.stepAt = now;
       this.due = (late ? now : due) + interval;
     }
-    for (const day of days) this.shown(day, announce);
+    for (const day of days) this.shown(day, !all);
     this.writeClock();
+    this.postReads();
   }
   /** Shows every computed day at once: in the office, as the tab hides and for a blocker. */
   private flush() {
@@ -892,9 +889,9 @@ export class ProgressionController {
   }
   /**
    * A computed day is on screen: it stops the clock where it would have without computing ahead,
-   * and a day shown at the pace or for a read announces our result.
+   * and a day shown at the pace announces our result.
    */
-  private shown({ before, after }: Held, announce: boolean) {
+  private shown({ before, after }: Held, paced: boolean) {
     // The client state stops the clock for these (constructor).
     if (after.critical || after.bankrupt) return;
     const running = this.store.getState().running,
@@ -913,7 +910,7 @@ export class ProgressionController {
       if (fresh.kind === 'match') this.store.setState({ matchEve: fresh.ref });
       return;
     }
-    if (running && !this.eveStop(after) && announce)
+    if (running && !this.eveStop(after) && paced)
       this.announce(after, before.ownMatches.at(-1)?.id);
   }
   /** The owner's stop ends once every computed day is shown; its save holds that date (→SAVE-8). */
@@ -1007,6 +1004,7 @@ export class ProgressionController {
     this.unsubscribeClock();
     this.suspensionSources.clear();
     this.client.readGate = undefined;
+    this.postReads();
   }
 }
 export function useProgression<T>(

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-27T15:56:24.655Z",
-  "sourceCommit": "174af69100a3276d065905b5f7c50a811b8771ec",
+  "snapshotAt": "2026-10-27T16:12:26.060Z",
+  "sourceCommit": "10b334c99f2c62347259508ec59836f75b89fe1c",
   "group": {
     "id": "auto-play-2",
     "branch": "work/auto-play-2",
@@ -14,6 +14,32 @@
     },
     "push": null,
     "review": "risky",
+    "runner": {
+      "id": "816ac175-d66a-42f4-9e89-e9135265279b",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-27T15:58:53.392Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    },
     "lastRun": {
       "id": "9d92bbae-924a-462f-8c2e-343169281dcd",
       "adapter": "builtin",
@@ -54,8 +80,8 @@
     }
   },
   "summary": {
-    "total": 3,
-    "completed": 2,
+    "total": 4,
+    "completed": 3,
     "remaining": 1,
     "running": 0,
     "review": 0,
@@ -353,6 +379,88 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
           "startedAt": "2026-10-27T15:33:59.316Z",
           "finishedAt": "2026-10-27T15:34:31.643Z"
+        }
+      ]
+    },
+    {
+      "id": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "group": "auto-play-2",
+      "taskId": "T525",
+      "tasks": [
+        "T525"
+      ],
+      "lane": null,
+      "owner": "816ac175-d66a-42f4-9e89-e9135265279b/worker-1",
+      "contributors": [
+        "816ac175-d66a-42f4-9e89-e9135265279b/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-27T15:58:53.645Z",
+      "startCommit": "10b334c99f2c62347259508ec59836f75b89fe1c",
+      "verifiedCommit": "67beecbc4504a02740d1b907122cd4955229548d",
+      "submittedBase": "10b334c99f2c62347259508ec59836f75b89fe1c",
+      "submissionId": "9e64c56e-8af1-4ebb-b175-bc05ea34c519",
+      "submittedAt": "2026-10-27T16:08:21.493Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 260,
+        "files": 2
+      },
+      "dispatch": {
+        "id": "4f6d8158-1f4f-4afa-894a-8458b8dd03f8",
+        "runner": "816ac175-d66a-42f4-9e89-e9135265279b",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-27T16:08:23.380Z",
+        "finishedAt": "2026-10-27T16:12:24.415Z",
+        "error": null,
+        "summary": "T525 meets its acceptance criteria and WEB-18 r163. `beforeRead` keeps T524's `reads` counter, so nothing is computed ahead once a read starts. When days are held or a step is in flight, `ready` is now a promise in `waitingReads` instead of `showAhead()`. `postReads()` releases it only when `ahead` is empty and `inFlight` is false. It is called at the end of every `reveal()` path (beat, flush, refused client reveal, empty list), after every `send()` lands, and on `dispose()`. `GameClient.command` never rejects because `enqueue` catches errors, so the `postReads()` after `send()`'s finally always runs and a failed step cannot strand a read. Stop, eve-stop and fresh-event stops all flush and then post. A cancelled in-flight step during stop or pause posts through `send()` or through `step()`'s flush. Mode or world changes go through `stop('')` and flush. Removing `computing`, `showAhead` and `announce` leaves no stale references. Our result is still announced only on paced reveals. The rewritten fake-worker cases check what acceptance asks for: 100 ms gaps, no posting or computing while waiting, an in-flight step, a slow step, identical drain timing with one save, office entry and hiding, dispose, nothing held or in flight, x1 per-round reads 1 s apart, and the nine read types. The worker's evidence (81 targeted unit tests, typecheck, lint, format, `--changed` unit+contract) matches the task. I did not run tests in this read-only review. Risk reason 'autopilot decisions awaiting the owner' refers to the WEB-18 r163 inbox decision. The code follows that decision as written, and confirming it is for the owner, not this review. `records.spec` e2e and the full gates are left for the coordinator batch, as the result limits say."
+      },
+      "review": {
+        "id": "7890eccf-3cc8-4440-a431-e43c8a756e1a",
+        "owner": "816ac175-d66a-42f4-9e89-e9135265279b/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T525 meets its acceptance criteria and WEB-18 r163. `beforeRead` keeps T524's `reads` counter, so nothing is computed ahead once a read starts. When days are held or a step is in flight, `ready` is now a promise in `waitingReads` instead of `showAhead()`. `postReads()` releases it only when `ahead` is empty and `inFlight` is false. It is called at the end of every `reveal()` path (beat, flush, refused client reveal, empty list), after every `send()` lands, and on `dispose()`. `GameClient.command` never rejects because `enqueue` catches errors, so the `postReads()` after `send()`'s finally always runs and a failed step cannot strand a read. Stop, eve-stop and fresh-event stops all flush and then post. A cancelled in-flight step during stop or pause posts through `send()` or through `step()`'s flush. Mode or world changes go through `stop('')` and flush. Removing `computing`, `showAhead` and `announce` leaves no stale references. Our result is still announced only on paced reveals. The rewritten fake-worker cases check what acceptance asks for: 100 ms gaps, no posting or computing while waiting, an in-flight step, a slow step, identical drain timing with one save, office entry and hiding, dispose, nothing held or in flight, x1 per-round reads 1 s apart, and the nine read types. The worker's evidence (81 targeted unit tests, typecheck, lint, format, `--changed` unit+contract) matches the task. I did not run tests in this read-only review. Risk reason 'autopilot decisions awaiting the owner' refers to the WEB-18 r163 inbox decision. The code follows that decision as written, and confirming it is for the owner, not this review. `records.spec` e2e and the full gates are left for the coordinator batch, as the result limits say.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/runtime/progression.ts:750",
+            "message": "T525: an old drain stall (from T521, not introduced here) now also holds reads. If the owner pauses, the drain starts, and they open the league page's match tab during it, LiveSeason's `setWatching(true)` sets `watching` without `beginWatch` (the clock isn't running). `tick()` then returns early, clears `due` and schedules nothing. Leaving the tab runs `endWatch()`, which also does nothing because `resumeAfterWatch` is false. The drain stays stuck with days held and management locked. Under T524, a read in this state called `showAhead()` and ended the drain. Under T525 the read waits until play, office entry, hiding or dispose. Not blocking for T525. Hand to planning: decide whether watching during a drain should flush the held days or resume the drain when watching ends, and add a regression case for a read waiting through it."
+          }
+        ],
+        "commit": "67beecbc4504a02740d1b907122cd4955229548d",
+        "baseCommit": "10b334c99f2c62347259508ec59836f75b89fe1c",
+        "submissionId": "9e64c56e-8af1-4ebb-b175-bc05ea34c519",
+        "createdAt": "2026-10-27T16:08:22.325Z",
+        "finishedAt": "2026-10-27T16:12:24.393Z"
+      },
+      "steps": [
+        {
+          "taskId": "T525",
+          "commit": "67beecbc4504a02740d1b907122cd4955229548d",
+          "at": "2026-10-27T16:08:21.444Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-27T16:07:25.403Z",
+              "finishedAt": "2026-10-27T16:08:21.175Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-27T16:07:25.403Z",
+          "finishedAt": "2026-10-27T16:08:21.175Z"
         }
       ]
     }
@@ -2224,6 +2332,372 @@
           "autopilot": true,
           "decisionWaitMs": 900000
         }
+      }
+    },
+    {
+      "sequence": 1450,
+      "at": "2026-10-27T15:58:53.410Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "816ac175-d66a-42f4-9e89-e9135265279b",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T15:58:53.392Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1451,
+      "at": "2026-10-27T15:58:53.645Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+        "group": "auto-play-2",
+        "taskId": "T525",
+        "tasks": [
+          "T525"
+        ],
+        "lane": null,
+        "owner": "816ac175-d66a-42f4-9e89-e9135265279b/worker-1",
+        "contributors": [
+          "816ac175-d66a-42f4-9e89-e9135265279b/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-27T15:58:53.645Z",
+        "startCommit": "10b334c99f2c62347259508ec59836f75b89fe1c"
+      }
+    },
+    {
+      "sequence": 1452,
+      "at": "2026-10-27T15:58:54.344Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1453,
+      "at": "2026-10-27T15:58:54.559Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c082fece-f181-4ab3-a89d-be24968b62d5",
+          "runner": "816ac175-d66a-42f4-9e89-e9135265279b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T15:58:54.559Z"
+        }
+      }
+    },
+    {
+      "sequence": 1454,
+      "at": "2026-10-27T15:58:54.766Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c082fece-f181-4ab3-a89d-be24968b62d5",
+          "runner": "816ac175-d66a-42f4-9e89-e9135265279b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T15:58:54.559Z"
+        }
+      }
+    },
+    {
+      "sequence": 1455,
+      "at": "2026-10-27T16:07:23.989Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1456,
+      "at": "2026-10-27T16:07:24.952Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1457,
+      "at": "2026-10-27T16:07:25.025Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1458,
+      "at": "2026-10-27T16:08:21.493Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "67beecbc4504a02740d1b907122cd4955229548d",
+        "submittedBase": "10b334c99f2c62347259508ec59836f75b89fe1c",
+        "submissionId": "9e64c56e-8af1-4ebb-b175-bc05ea34c519",
+        "submittedAt": "2026-10-27T16:08:21.493Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 260,
+          "files": 2
+        },
+        "steps": [
+          {
+            "taskId": "T525",
+            "commit": "67beecbc4504a02740d1b907122cd4955229548d",
+            "at": "2026-10-27T16:08:21.444Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-27T16:07:25.403Z",
+                "finishedAt": "2026-10-27T16:08:21.175Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-27T16:07:25.403Z",
+            "finishedAt": "2026-10-27T16:08:21.175Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1459,
+      "at": "2026-10-27T16:08:21.521Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "c082fece-f181-4ab3-a89d-be24968b62d5",
+          "runner": "816ac175-d66a-42f4-9e89-e9135265279b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T15:58:54.559Z",
+          "finishedAt": "2026-10-27T16:08:21.521Z",
+          "error": null,
+          "summary": "I implemented T525: during automatic play a read now waits until the held days have been shown at the pace, so the calendar no longer jumps. The unit tests, typecheck, lint and format checks pass; the e2e records spec has not been run and is left for the batch.\n\n**What changed in `apps/web/src/runtime/progression.ts`**\n- T524's gate stays: `beforeRead` still returns `{ ready, settled }`, and its `reads` counter still stops `compute()` from the read's start. Only `ready` changed.\n- If nothing is held and no step is in flight, the read is sent at once. Otherwise `ready` is a promise that `postReads()` resolves once nothing is held and nothing is in flight.\n- `postReads()` runs after every `reveal()` (on each beat and in the office, hide, blocker and stop paths), after every step lands in `send()`, and on `dispose()`.\n- I removed `showAhead()`, the `computing` promise and T524's `announce` parameter. Our match result is now announced when its day is shown at the pace, as it is without a read.\n\n**What the tests show (`progression.runahead.test.ts`)**\n- **Days held at x10:** the read goes out at 1.0 s with the last held day, with all nine gaps exactly 100 ms. Nothing is computed while it waits or until it is answered.\n- **Step in flight:** the read waits for that step and the held days. With only a slow step in flight, it goes when that day is shown.\n- **Owner's stop:** the shown times, the unlock and the single save are identical with and without a read. The read goes out with the last day.\n- **Office, hiding and dispose:** each releases a waiting read at once.\n- **Running clock with nothing held:** the read goes at once.\n- **Records view open at x1:** 19 days are shown exactly 1 s apart with no early days, where T524 showed 3 early days per round.\n- **All nine read types:** each now waits for the held days.\n\n**Checks run**\n- `pnpm exec vitest run --project unit` on `progression.test.ts` and `progression.runahead.test.ts`: 81 tests passed.\n- `pnpm run typecheck`, `pnpm run lint` and `pnpm run format:check` passed.\n- The changed-files unit and contract run (`--changed 10b334c9`) passed 121 tests in 7 files.\n\n**Left for the batch (not run)**\n- `tests/e2e/records.spec.ts`. The spec is unchanged and expects `1950년 8월 4일` within 10 s.\n- The `client.test.ts` integration tests (untouched).\n- `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`.\n\n**Behaviour to know about** (also in the task's result limits)\n- After a read goes out, nothing is held and computing waits for its answer, so the next day can stall by about the read's round trip plus one step. The impl notes accept this cost.\n- Catch-up steps (hidden tab or returning after being away) still aren't held by reads, as in T524.\n- `dispose` sends a waiting read without showing the held days, since the page is leaving."
+        }
+      }
+    },
+    {
+      "sequence": 1460,
+      "at": "2026-10-27T16:08:22.325Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "7890eccf-3cc8-4440-a431-e43c8a756e1a",
+          "owner": "816ac175-d66a-42f4-9e89-e9135265279b/reviewer-1",
+          "status": "reviewing",
+          "commit": "67beecbc4504a02740d1b907122cd4955229548d",
+          "baseCommit": "10b334c99f2c62347259508ec59836f75b89fe1c",
+          "submissionId": "9e64c56e-8af1-4ebb-b175-bc05ea34c519",
+          "createdAt": "2026-10-27T16:08:22.325Z"
+        }
+      }
+    },
+    {
+      "sequence": 1461,
+      "at": "2026-10-27T16:08:23.380Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "4f6d8158-1f4f-4afa-894a-8458b8dd03f8",
+          "runner": "816ac175-d66a-42f4-9e89-e9135265279b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-27T16:08:23.380Z"
+        }
+      }
+    },
+    {
+      "sequence": 1462,
+      "at": "2026-10-27T16:08:23.405Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "4f6d8158-1f4f-4afa-894a-8458b8dd03f8",
+          "runner": "816ac175-d66a-42f4-9e89-e9135265279b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-27T16:08:23.380Z"
+        }
+      }
+    },
+    {
+      "sequence": 1463,
+      "at": "2026-10-27T16:12:24.393Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "7890eccf-3cc8-4440-a431-e43c8a756e1a",
+          "owner": "816ac175-d66a-42f4-9e89-e9135265279b/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T525 meets its acceptance criteria and WEB-18 r163. `beforeRead` keeps T524's `reads` counter, so nothing is computed ahead once a read starts. When days are held or a step is in flight, `ready` is now a promise in `waitingReads` instead of `showAhead()`. `postReads()` releases it only when `ahead` is empty and `inFlight` is false. It is called at the end of every `reveal()` path (beat, flush, refused client reveal, empty list), after every `send()` lands, and on `dispose()`. `GameClient.command` never rejects because `enqueue` catches errors, so the `postReads()` after `send()`'s finally always runs and a failed step cannot strand a read. Stop, eve-stop and fresh-event stops all flush and then post. A cancelled in-flight step during stop or pause posts through `send()` or through `step()`'s flush. Mode or world changes go through `stop('')` and flush. Removing `computing`, `showAhead` and `announce` leaves no stale references. Our result is still announced only on paced reveals. The rewritten fake-worker cases check what acceptance asks for: 100 ms gaps, no posting or computing while waiting, an in-flight step, a slow step, identical drain timing with one save, office entry and hiding, dispose, nothing held or in flight, x1 per-round reads 1 s apart, and the nine read types. The worker's evidence (81 targeted unit tests, typecheck, lint, format, `--changed` unit+contract) matches the task. I did not run tests in this read-only review. Risk reason 'autopilot decisions awaiting the owner' refers to the WEB-18 r163 inbox decision. The code follows that decision as written, and confirming it is for the owner, not this review. `records.spec` e2e and the full gates are left for the coordinator batch, as the result limits say.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/progression.ts:750",
+              "message": "T525: an old drain stall (from T521, not introduced here) now also holds reads. If the owner pauses, the drain starts, and they open the league page's match tab during it, LiveSeason's `setWatching(true)` sets `watching` without `beginWatch` (the clock isn't running). `tick()` then returns early, clears `due` and schedules nothing. Leaving the tab runs `endWatch()`, which also does nothing because `resumeAfterWatch` is false. The drain stays stuck with days held and management locked. Under T524, a read in this state called `showAhead()` and ended the drain. Under T525 the read waits until play, office entry, hiding or dispose. Not blocking for T525. Hand to planning: decide whether watching during a drain should flush the held days or resume the drain when watching ends, and add a regression case for a read waiting through it."
+            }
+          ],
+          "commit": "67beecbc4504a02740d1b907122cd4955229548d",
+          "baseCommit": "10b334c99f2c62347259508ec59836f75b89fe1c",
+          "submissionId": "9e64c56e-8af1-4ebb-b175-bc05ea34c519",
+          "createdAt": "2026-10-27T16:08:22.325Z",
+          "finishedAt": "2026-10-27T16:12:24.393Z"
+        }
+      }
+    },
+    {
+      "sequence": 1464,
+      "at": "2026-10-27T16:12:24.415Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "4f6d8158-1f4f-4afa-894a-8458b8dd03f8",
+          "runner": "816ac175-d66a-42f4-9e89-e9135265279b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-27T16:08:23.380Z",
+          "finishedAt": "2026-10-27T16:12:24.415Z",
+          "error": null,
+          "summary": "T525 meets its acceptance criteria and WEB-18 r163. `beforeRead` keeps T524's `reads` counter, so nothing is computed ahead once a read starts. When days are held or a step is in flight, `ready` is now a promise in `waitingReads` instead of `showAhead()`. `postReads()` releases it only when `ahead` is empty and `inFlight` is false. It is called at the end of every `reveal()` path (beat, flush, refused client reveal, empty list), after every `send()` lands, and on `dispose()`. `GameClient.command` never rejects because `enqueue` catches errors, so the `postReads()` after `send()`'s finally always runs and a failed step cannot strand a read. Stop, eve-stop and fresh-event stops all flush and then post. A cancelled in-flight step during stop or pause posts through `send()` or through `step()`'s flush. Mode or world changes go through `stop('')` and flush. Removing `computing`, `showAhead` and `announce` leaves no stale references. Our result is still announced only on paced reveals. The rewritten fake-worker cases check what acceptance asks for: 100 ms gaps, no posting or computing while waiting, an in-flight step, a slow step, identical drain timing with one save, office entry and hiding, dispose, nothing held or in flight, x1 per-round reads 1 s apart, and the nine read types. The worker's evidence (81 targeted unit tests, typecheck, lint, format, `--changed` unit+contract) matches the task. I did not run tests in this read-only review. Risk reason 'autopilot decisions awaiting the owner' refers to the WEB-18 r163 inbox decision. The code follows that decision as written, and confirming it is for the owner, not this review. `records.spec` e2e and the full gates are left for the coordinator batch, as the result limits say."
+        }
+      }
+    },
+    {
+      "sequence": 1465,
+      "at": "2026-10-27T16:12:24.475Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "5617af9a-0730-46f0-b432-fc3ec12fb181",
+      "taskId": "T525",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

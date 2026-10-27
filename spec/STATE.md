@@ -368,7 +368,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | doing@261027.n3w8 |
-| T525 | Reads wait for the computed days at the pace | WEB | T524 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -384,12 +383,13 @@
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 | h7t3 | 4 | 6 | 0 | 6 | 0 | 1 | 2 | 2026-10-27T08:21:16.497Z | [history](work/h7t3.json) |
 | auto-play | 4 | 7 | 4 | 3 | 0 | 1 | 0 | 2026-10-27T11:34:29.863Z | [history](work/auto-play.json) |
-| auto-play-2 | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-27T15:56:24.655Z | [history](work/auto-play-2.json) |
+| auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:12:26.060Z | [history](work/auto-play-2.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261027 T525 integrated
 - 261028 update-ssot WEB r163 + create-task → T525 (n3w8): reads wait for the computed days at the pace instead of showing them at once; T524 integrated, its gate run failed records.spec on the calendar jump
 - 261027 T524 integrated
 - 261027 update-ssot WEB r162 + create-task → T524 (n3w8, T521 review P3): reads outside the command queue first show the computed days and hold computing ahead
@@ -409,4 +409,3 @@
 - 261027 T495 done: 32 competition-specific trophy variants across four themes, country-aware cabinet selection and safe fallback; unit/integration/contract and all 299 Chromium journeys passed, with unchanged-timeout recovery for load-related tests.
 - 261027 T494 done: redrew all 21 print/pixel/sticker trophies in their theme's illustration style; preserved the seven standard photographs; asset integrity and task checks passed.
 - 261027 u3b8 closed: T500–T503 batch gate passed on f25cae1a (unit 1171, integration 1158 after a quiet-host rerun of 3 load timeouts, contract 39, catalogs, presentation, build, Chromium 299/299), pushed to main
-- 261027 T503 done: competition keys, Elo reads, request label and empty table moved to leaves; UI exception list 43→38 files
