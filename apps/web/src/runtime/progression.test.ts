@@ -4,7 +4,7 @@ import type { MatchPlayback } from '../../../../packages/contracts/src/types';
 import type { GameClient } from './client';
 import { gameStore, initialClientState } from './store';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
-import { MATCH_DAY_MOMENT_MS, ProgressionController, RESULT_NOTICE_MS } from './progression';
+import { PACE_MS, ProgressionController, RESULT_NOTICE_MS } from './progression';
 import { useMatchView } from './matchView';
 import type { View } from './protocol';
 
@@ -843,7 +843,7 @@ describe('explicit automatic and manual modes', () => {
   });
 });
 
-describe('match-day moment (WEB-18)', () => {
+describe('own fixture days at the pace (WEB-18)', () => {
   /** Match-eve stops are off so a step from the eve settles the match day itself. */
   const at = (day: number) => {
     const world = structuredClone(w);
@@ -879,7 +879,6 @@ describe('match-day moment (WEB-18)', () => {
         ),
     );
   }
-  const moment = () => controller!.store.getState().matchMoment;
   const notice = () => controller!.store.getState().resultNotice;
 
   it('a visible late step carries no owed days', async () => {
@@ -892,88 +891,52 @@ describe('match-day moment (WEB-18)', () => {
     const calls = s.command.mock.calls as unknown as [{ days: number }][];
     expect(calls.length).toBeGreaterThan(3);
     expect(calls.map(([cmd]) => cmd.days)).toEqual(Array(calls.length).fill(1));
-    expect(moment()).toBeUndefined();
   });
-  it('an own fixture day holds the next step for MATCH_DAY_MOMENT_MS when it lands early', async () => {
-    const s = setup(undefined, at(6));
-    controller = s.controller;
-    host(s, after(), 300);
-    controller.setPace('x10');
-    controller.start();
-    await vi.advanceTimersByTimeAsync(100);
-    expect(s.command).toHaveBeenCalledTimes(1);
-    expect(moment()).toBe(nextOwnFixture(at(6))!.id);
-    // Landed at 0.4 s; the moment still holds the next day until 2 s after the step was sent.
-    await vi.advanceTimersByTimeAsync(MATCH_DAY_MOMENT_MS - 1);
-    expect(s.command).toHaveBeenCalledTimes(1);
-    expect(moment()).toBeDefined();
-    await vi.advanceTimersByTimeAsync(1);
-    expect(moment()).toBeUndefined();
-    await vi.advanceTimersByTimeAsync(100);
-    expect(s.command).toHaveBeenCalledTimes(2);
-    // The step itself is unchanged: one day, and the clock keeps running.
-    expect(s.command).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({ type: 'advance-days', days: 1 }),
-      { background: true, automatic: true },
-    );
-    expect(controller.store.getState().running).toBe(true);
+  it('own fixture day at x10 is followed by the next day one pace interval after its step lands', async () => {
+    // Early (within the interval), late (a slow match day): either way only the step is waited for.
+    for (const ms of [50, 2500]) {
+      const s = setup(undefined, at(6));
+      controller = s.controller;
+      host(s, after(), ms);
+      controller.setPace('x10');
+      controller.start();
+      await vi.advanceTimersByTimeAsync(PACE_MS.x10);
+      expect(s.command).toHaveBeenCalledTimes(1);
+      expect(s.command).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ type: 'advance-days', days: 1 }),
+        { background: true, automatic: true },
+      );
+      await vi.advanceTimersByTimeAsync(ms - 1);
+      expect(s.command).toHaveBeenCalledTimes(1);
+      await vi.advanceTimersByTimeAsync(1 + PACE_MS.x10);
+      expect(s.command).toHaveBeenCalledTimes(2);
+      const state = controller.store.getState();
+      expect(state.running).toBe(true);
+      expect('matchMoment' in state).toBe(false);
+      controller.dispose();
+      await vi.advanceTimersByTimeAsync(ms);
+    }
   });
-  it('a match day longer than MATCH_DAY_MOMENT_MS ends its moment on landing', async () => {
-    const s = setup(undefined, at(6));
-    controller = s.controller;
-    host(s, after(), MATCH_DAY_MOMENT_MS + 500);
-    controller.start();
-    await vi.advanceTimersByTimeAsync(1000);
-    expect(s.command).toHaveBeenCalledTimes(1);
-    await vi.advanceTimersByTimeAsync(MATCH_DAY_MOMENT_MS + 499);
-    expect(moment()).toBeDefined();
-    await vi.advanceTimersByTimeAsync(1);
-    expect(moment()).toBeUndefined();
-    expect(s.command).toHaveBeenCalledTimes(1);
-    await vi.advanceTimersByTimeAsync(1000);
-    expect(s.command).toHaveBeenCalledTimes(2);
-  });
-  it("a day with only other clubs' fixtures has no moment", async () => {
-    // Day 7 keeps the other clubs' fixtures; the own club's round-1 match is gone.
-    const quiet = at(6);
-    quiet.fixtures = quiet.fixtures.filter(
-      (f) => f.round !== 1 || (f.home !== w.playerClub && f.away !== w.playerClub),
-    );
-    expect(quiet.fixtures.some((f) => f.round === 1)).toBe(true);
-    const s = setup(undefined, quiet);
-    controller = s.controller;
-    const seen: unknown[] = [];
-    controller.store.subscribe((state) => seen.push(state.matchMoment));
-    host(s, quiet, 50);
-    controller.setPace('x10');
-    controller.start();
-    await vi.advanceTimersByTimeAsync(1000);
-    expect(s.command.mock.calls.length).toBeGreaterThan(5);
-    expect(seen.filter(Boolean)).toEqual([]);
-  });
-  it('stop and hide end the moment without a notice', async () => {
+  it('a stopped clock or a hidden tab announces no result', async () => {
     const s = setup(undefined, at(6));
     controller = s.controller;
     controller.setBackground({ resultNotice: true });
     host(s, played(), 300);
     controller.start();
     await vi.advanceTimersByTimeAsync(1000);
-    expect(moment()).toBeDefined();
     controller.pause();
-    expect(moment()).toBeUndefined();
     expect(s.client.cancel).toHaveBeenCalled();
-    await vi.advanceTimersByTimeAsync(MATCH_DAY_MOMENT_MS);
+    await vi.advanceTimersByTimeAsync(300);
     expect(notice()).toBeUndefined();
 
     gameStore.publish({ ...gameStore.getSnapshot(), view: { world: at(6) } as View });
     controller.start();
-    await vi.advanceTimersByTimeAsync(1500);
-    // Landed and still in its moment: hiding the tab ends it at once, the day stays settled.
-    expect(moment()).toBeDefined();
+    await vi.advanceTimersByTimeAsync(800);
+    expect(s.command).toHaveBeenCalledTimes(2);
+    // The step is in flight when the tab hides: it lands and stays settled, unannounced.
     controller.setHidden(true);
-    expect(moment()).toBeUndefined();
-    await vi.advanceTimersByTimeAsync(MATCH_DAY_MOMENT_MS);
+    await vi.advanceTimersByTimeAsync(300);
     expect(notice()).toBeUndefined();
     expect(gameStore.getSnapshot().view?.world.calendar?.day).toBe(7);
   });
@@ -984,24 +947,27 @@ describe('match-day moment (WEB-18)', () => {
     controller.setHidden(true);
     controller.start();
     await vi.advanceTimersByTimeAsync(1000);
-    // A throttled hidden tab wakes 5 s later: five days owed, in one step, with no moment.
+    // A throttled hidden tab wakes 5 s later: five days owed, in one step.
     vi.setSystemTime(Date.now() + 4000);
     await vi.advanceTimersByTimeAsync(1000);
     const calls = s.command.mock.calls as unknown as [{ days: number }][];
     expect(calls.map(([cmd]) => cmd.days)).toEqual([1, 5]);
-    expect(moment()).toBeUndefined();
   });
-  it('the result notice follows the moment only with the preference on', async () => {
+  it('result notice shows after the own fixture day when the preference is on, never when off', async () => {
     for (const on of [false, true]) {
       const s = setup(undefined, at(6));
       controller = s.controller;
       controller.setBackground({ resultNotice: on });
       host(s, played(), 300);
       controller.start();
-      await vi.advanceTimersByTimeAsync(1000 + MATCH_DAY_MOMENT_MS);
-      expect(moment()).toBeUndefined();
+      // The step leaves at 1 s and lands 0.3 s later: nothing shows before its day does.
+      await vi.advanceTimersByTimeAsync(1299);
+      expect(notice()).toBeUndefined();
+      await vi.advanceTimersByTimeAsync(1);
       expect(notice()).toEqual(on ? { matchId: 'own-day-7' } : undefined);
-      await vi.advanceTimersByTimeAsync(RESULT_NOTICE_MS);
+      await vi.advanceTimersByTimeAsync(RESULT_NOTICE_MS - 1);
+      expect(notice()).toEqual(on ? { matchId: 'own-day-7' } : undefined);
+      await vi.advanceTimersByTimeAsync(1);
       expect(notice()).toBeUndefined();
       // A step still in flight lands before the next setup.
       controller.dispose();
@@ -1013,12 +979,14 @@ describe('match-day moment (WEB-18)', () => {
     world.settings!.mode = 'manual';
     const s = setup(undefined, world);
     controller = s.controller;
-    host(s, world, 3000);
+    controller.setBackground({ resultNotice: true });
+    const reached = played();
+    reached.settings!.mode = 'manual';
+    host(s, reached, 300);
     void controller.nextEvent();
     await vi.advanceTimersByTimeAsync(1000);
     expect(s.command).toHaveBeenCalledWith({ type: 'next-event' }, { background: true });
-    expect(moment()).toBeUndefined();
-    await vi.advanceTimersByTimeAsync(3000);
+    expect(notice()).toBeUndefined();
   });
 });
 
