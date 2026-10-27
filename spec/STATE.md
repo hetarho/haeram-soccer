@@ -374,7 +374,6 @@
 | T520 | Lighter match-day view publication | ARCH WEB | - | todo |
 | T521 | Automatic play computes ahead of the shown date | WEB SAVE MATCH | T516 T520 | todo |
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | todo |
-| T530 | Work-based owner office and shared approval controls | WEB ARCH | - | todo |
 | T531 | Home approval requests visit their working desk | WEB ARCH | T530 | todo |
 | T532 | Season and History competition hubs | WEB ARCH | T531 | todo |
 | T533 | First-team, academy and coaching navigation | WEB ARCH | T532 | todo |
@@ -398,6 +397,7 @@
 - Preserve existing T516–T522 performance work and unrelated ideation for a separate run.
 
 ## log
+- 261028 T530 done: 141 affected unit cases, type/lint/format/build passed; host finalized the commit after restricted child Git writes.
 - 261028 create-task WEB r162: T530–T533 serial UI chain; existing performance tasks remain outside this requested slice.
 - 261028 update-ssot WEB r162 done: work desks, shared inline approval, request round trips and audience-based navigation.
 - 261028 update-ssot WEB start: business desks, approval round trips, season/history and personnel navigation.
@@ -417,4 +417,3 @@
 - 261027 T503 done: competition keys, Elo reads, request label and empty table moved to leaves; UI exception list 43→38 files
 - 261027 T502 done: staff catalogue and member reads moved to staff-info.ts; UI exception list 46→43 files
 - 261027 T501 done: tactic labels, founding years and injury reads moved to engine leaves; UI exception list 53→46 files
-- 261027 T500 done: UI→engine orchestration guard with a shrink-only list (53 files, 38 modules)

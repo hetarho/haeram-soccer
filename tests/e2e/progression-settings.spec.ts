@@ -457,9 +457,12 @@ for (const width of [390, 1280]) {
     const office = await openOffice(page);
     const bulk = office.getByRole('group', { name: '전체 보고·위임 설정', exact: true });
     const rows = office.getByRole('region', { name: '보고·위임 설정', exact: true });
-    const allDelegated = bulk.getByRole('button', { name: '전체 위임', exact: true });
+    const allDelegated = bulk.getByRole('button', { name: '전체 자동', exact: true });
     const report = rows.getByRole('group', { name: '경기 전날 보고', exact: true });
-    const delegatedDialog = page.getByRole('dialog', { name: '위임하겠습니다.', exact: true });
+    const delegatedDialog = page.getByRole('dialog', {
+      name: '자동으로 처리하겠습니다.',
+      exact: true,
+    });
     // Business already matches: the confirmation must still include both changed reports.
     await allDelegated.click();
     await expect(delegatedDialog).toContainText('경기 전날 보고');
@@ -492,23 +495,29 @@ for (const width of [390, 1280]) {
         requestAnimationFrame(frame);
       });
     });
-    await delegatedDialog.getByRole('button', { name: '위임하기', exact: true }).click();
+    await delegatedDialog.getByRole('button', { name: '자동으로 맡기기', exact: true }).click();
     const frames = await page.evaluate(
       () => (window as typeof window & { officeExitFrames: Promise<boolean[]> }).officeExitFrames,
     );
     const gone = frames.indexOf(false);
     expect(gone).toBeGreaterThanOrEqual(0);
     expect(frames.slice(gone)).not.toContain(true);
-    await expect(rows.locator('button[aria-pressed="true"]')).toHaveText(Array(9).fill('위임'));
+    await expect(rows.locator('button[aria-pressed="true"]')).toHaveText([
+      ...Array(2).fill('위임'),
+      ...Array(7).fill('자동'),
+    ]);
     await expect(allDelegated).toHaveAttribute('aria-pressed', 'true');
     await dismissSettingsToast(page);
-    await bulk.getByRole('button', { name: '전체 보고받기', exact: true }).click();
-    const reportDialog = page.getByRole('dialog', { name: '보고받겠습니다.', exact: true });
+    await bulk.getByRole('button', { name: '전체 직접', exact: true }).click();
+    const reportDialog = page.getByRole('dialog', { name: '직접 결재하겠습니다.', exact: true });
     await expect(reportDialog).toContainText('경기 전날 보고');
     await expect(reportDialog).toContainText('선수 영입');
-    await reportDialog.getByRole('button', { name: '보고받기', exact: true }).click();
-    await expect(rows.locator('button[aria-pressed="true"]')).toHaveText(Array(9).fill('보고받기'));
-    await expect(bulk.getByRole('button', { name: '전체 보고받기', exact: true })).toHaveAttribute(
+    await reportDialog.getByRole('button', { name: '직접 결재하기', exact: true }).click();
+    await expect(rows.locator('button[aria-pressed="true"]')).toHaveText([
+      ...Array(2).fill('보고받기'),
+      ...Array(7).fill('직접'),
+    ]);
+    await expect(bulk.getByRole('button', { name: '전체 직접', exact: true })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
@@ -527,7 +536,10 @@ for (const width of [390, 1280]) {
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
     await openOffice(page);
-    await expect(rows.locator('button[aria-pressed="true"]')).toHaveText(Array(9).fill('보고받기'));
+    await expect(rows.locator('button[aria-pressed="true"]')).toHaveText([
+      ...Array(2).fill('보고받기'),
+      ...Array(7).fill('직접'),
+    ]);
     await leaveOffice(page);
     await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toContainText(
       'MANUAL',
@@ -544,23 +556,24 @@ for (const width of [390, 1280]) {
     const w = pendingAcquisitionCareer();
     await importResponsibilityCareer(page, w);
     const office = await openOffice(page);
-    await expect(page).toHaveURL(/view=office/);
-    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await expect(
+      page.getByRole('dialog', { name: '결재라인 모아보기', exact: true }),
+    ).toBeVisible();
     const choice = office.getByRole('group', { name: '선수 영입', exact: true });
-    await choice.getByRole('button', { name: '위임', exact: true }).click();
-    const dialog = page.getByRole('dialog', { name: '위임하겠습니다.', exact: true });
+    await choice.getByRole('button', { name: '자동', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: '자동으로 처리하겠습니다.', exact: true });
     await expect(dialog.locator('[data-facility-art="staff"]')).toBeVisible();
     await expect(dialog.getByRole('region', { name: '대기 업무 이관 미리보기' })).toContainText(
       '선수 영입',
     );
     await dialog.getByRole('button', { name: '취소', exact: true }).click();
-    await expect(choice.getByRole('button', { name: '보고받기', exact: true })).toHaveAttribute(
+    await expect(choice.getByRole('button', { name: '직접', exact: true })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
-    await choice.getByRole('button', { name: '위임', exact: true }).click();
-    await dialog.getByRole('button', { name: '위임하기', exact: true }).click();
-    await expect(choice.getByRole('button', { name: '위임', exact: true })).toHaveAttribute(
+    await choice.getByRole('button', { name: '자동', exact: true }).click();
+    await dialog.getByRole('button', { name: '자동으로 맡기기', exact: true }).click();
+    await expect(choice.getByRole('button', { name: '자동', exact: true })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
@@ -570,11 +583,11 @@ for (const width of [390, 1280]) {
     const box = (await toast.boundingBox())!;
     expect(box.y + box.height).toBeLessThanOrEqual(page.viewportSize()!.height);
     await expect(toast).toHaveCount(0, { timeout: 6000 });
-    await choice.getByRole('button', { name: '보고받기', exact: true }).click();
-    const direct = page.getByRole('dialog', { name: '보고받겠습니다.', exact: true });
+    await choice.getByRole('button', { name: '직접', exact: true }).click();
+    const direct = page.getByRole('dialog', { name: '직접 결재하겠습니다.', exact: true });
     await expect(direct.locator('[data-facility-art="manager"]')).toBeVisible();
     await page.keyboard.press('Escape');
-    await expect(choice.getByRole('button', { name: '위임', exact: true })).toHaveAttribute(
+    await expect(choice.getByRole('button', { name: '자동', exact: true })).toHaveAttribute(
       'aria-pressed',
       'true',
     );

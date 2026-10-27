@@ -1,3 +1,4 @@
+import { openOfficeLibrary } from './office';
 import { expect, test } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
 import { leaveOffice, openOfficeArea } from './office';
@@ -9,7 +10,7 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  await openOfficeArea(page, '운영 방침');
+  await openOfficeLibrary(page);
   const board = page.getByTestId('strategy-board');
   await board.getByText('구단 전체 방침 불러오기·저장', { exact: true }).click();
   // The owner reads a strategy, never a "build" (빌드업 is the football phase of play).
@@ -234,7 +235,7 @@ for (const viewport of [
     await expect(page.getByTestId('club-hub')).toBeVisible();
     const launcher = page.getByTestId('communications-button');
     await expect(launcher).toBeVisible();
-    await openOfficeArea(page, '운영 방침');
+    await openOfficeLibrary(page);
     // The focused office keeps only its bar: no notifications launcher or tab bar (→WEB-39).
     await expect(launcher).toHaveCount(0);
     const board = page.getByTestId('strategy-board');
@@ -272,13 +273,13 @@ for (const viewport of [
     await preset.click();
     await expect(fold).toHaveAttribute('aria-expanded', 'false');
 
-    await openOfficeArea(page, '시설');
-    await openOfficeArea(page, '운영 방침');
+    await openOfficeArea(page, '후원');
+    await openOfficeLibrary(page);
     await expect(fold).toHaveAttribute('aria-expanded', 'false');
     // Out of the office the launcher is back; the unapplied draft waits for the owner's return.
     await leaveOffice(page);
     await expect(launcher).toBeVisible();
-    await openOfficeArea(page, '운영 방침');
+    await openOfficeLibrary(page);
     await expect(fold).toHaveAttribute('aria-expanded', 'false');
     await draft.getByRole('button', { name: '적용', exact: true }).click();
     await expect(draft).toHaveCount(0);

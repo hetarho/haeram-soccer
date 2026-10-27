@@ -3268,3 +3268,12 @@
     padding-right: 2px;
   }
 }
+
+.modalBackdrop.centered {
+  align-items: center;
+  padding: 12px;
+}
+.centered > .modal {
+  max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  border-radius: var(--dialog-radius);
+}

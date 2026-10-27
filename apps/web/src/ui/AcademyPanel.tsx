@@ -182,7 +182,7 @@ export function AcademyPanel({ w, client }: { w: World; client: GameClient }) {
           onClick={() => openDirection('youth')}
         >
           <span>
-            <b>유소년 투자 · 유입 방식은 운영 방침에서</b>
+            <b>유소년 투자 · 유입 방식은 업무 기준에서</b>
             <small>
               지금 {investment} · {cardOf(buildOf(w), 'youth').label} · 반복 운영비와 다음 입단에
               반영

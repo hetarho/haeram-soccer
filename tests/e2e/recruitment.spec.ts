@@ -383,7 +383,7 @@ test('the market ends with who answers offers and names the recruitment level, o
   const offers = page.getByRole('region', { name: '이적 제안 위임' });
   const owner = offers.getByTestId('decision-owner-sales');
   await expect(offers.getByRole('checkbox')).toHaveCount(0);
-  await expect(owner).toContainText('보고받기');
+  await expect(owner).toContainText('직접');
 
   // The sale bar the staff apply shows at every level.
   await expect(offers).toContainText('130%');
@@ -391,28 +391,27 @@ test('the market ends with who answers offers and names the recruitment level, o
   await closeMarketPanel(page, '영입 정보');
   await chooseLevel(page, 4);
   await marketInfo(page);
-  await expect(owner).toContainText('위임');
+  await expect(owner).toContainText('자동');
 
-  // The local ownership link opens the office's shared explicit-apply screen, 결재 라인.
-  await owner.getByRole('button', { name: /결재 라인 열기$/ }).click();
+  // The local ownership link opens the office's shared explicit-apply screen, 결재라인 모아보기.
+  await owner.getByRole('button', { name: /결재라인 모아보기$/ }).click();
   const office = page.getByTestId('owner-office');
   for (const name of ['선수 매각', '선수 영입'])
     await expect(
       office
         .getByRole('group', { name, exact: true })
-        .getByRole('button', { name: '위임', exact: true }),
+        .getByRole('button', { name: '자동', exact: true }),
     ).toHaveAttribute('aria-pressed', 'true');
   // 나가기 returns to the market the link left (→WEB-39/74).
   await leaveOffice(page);
   await expect(page).toHaveURL(/\/people\?view=market$/);
-  await marketInfo(page);
   expect(await horizontalOverflow(page)).toBe(0);
   // The recruitment level is a line that opens its home on the 방향 board (→WEB-71).
   await page.getByRole('button', { name: /^영입 기조 · 균형/ }).click();
-  await expect(page.getByRole('dialog', { name: '영입 운영 방침', exact: true })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: '영입 업무 기준', exact: true })).toBeVisible();
   await expect(
     page
-      .getByRole('dialog', { name: '영입 운영 방침', exact: true })
+      .getByRole('dialog', { name: '영입 업무 기준', exact: true })
       .getByRole('radio', { name: '영입 기조 균형', exact: true }),
   ).toHaveAttribute('aria-checked', 'true');
   await expect(page).toHaveURL(/\/people\?view=market$/);

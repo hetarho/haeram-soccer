@@ -287,7 +287,7 @@ export function StrategyBoard({
         <>
           <header className={s.head}>
             <details>
-              <summary>운영 방침 바꾸는 방법</summary>
+              <summary>방향 바꾸는 방법</summary>
               <p>
                 줄마다 하나씩 골라요. 카드 줄은 구단이 어떻게 할지, 투자 줄은 얼마나 쓸지예요. 누른
                 것은 화면 아래 초안에 모이고, 적용하면 한 번에 반영돼요. 언제든 다시 바꿀 수 있어요.
@@ -314,7 +314,7 @@ export function StrategyBoard({
       )}
       <section className={s.areas} aria-label="부문별 방향">
         <h3>
-          부문별 운영 방침 <small>필요한 부문을 열어 현재 설정을 바꿔요</small>
+          부문별 업무 기준 <small>필요한 부문을 열어 현재 설정을 바꿔요</small>
         </h3>
         {DIRECTION_AREAS.filter((area) => !department || area.key === department).map((area) => {
           const key = area.key,

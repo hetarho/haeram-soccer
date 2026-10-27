@@ -5,16 +5,14 @@ import { ClubCrest } from './ClubCrest';
 import { FacilityArt } from './FacilityArt';
 import { officeFacts } from './officeSummary';
 import { PixelIcon } from './PixelIcon';
-import { BUSINESS_TABS, type BusinessView } from './state';
-import { useStrategies } from './strategies';
+import { BUSINESS_TABS, openOwnerOffice, type BusinessView } from './state';
 import o from './OfficeLobby.module.css';
 
 const ICONS: Record<Exclude<BusinessView, 'identity'>, PixelIconName> = {
-  strategy: 'trend',
-  build: 'home',
-  finance: 'star',
+  players: 'people',
+  staff: 'people',
+  investment: 'star',
   sponsor: 'medal',
-  office: 'check',
 };
 
 /**
@@ -30,11 +28,13 @@ export function OfficeLobby({
   sponsors: readonly SponsorSlotView[];
   onOpen: (view: BusinessView) => void;
 }) {
-  const saved = useStrategies((state) => state.items);
-  const facts = officeFacts(w, sponsors, saved);
+  const facts = officeFacts(w, sponsors);
   return (
     <section className={o.lobby} aria-label="구단주 사무실" data-testid="office-lobby">
       <FacilityArt kind="manager" world={w} className={o.room} eager />
+      <button type="button" data-ui="primary" onClick={openOwnerOffice}>
+        결재라인 모아보기
+      </button>
       <ul className={o.areas} aria-label="사무실 업무">
         {BUSINESS_TABS.map(([view, label]) => (
           <li key={view}>

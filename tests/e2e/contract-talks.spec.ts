@@ -129,7 +129,7 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   // 선수 ends with who answers talks: the owner, at level 1 (→WEB-43).
   await expect(
     page.getByRole('region', { name: '계약 협상 위임' }).getByTestId('decision-owner-contracts'),
-  ).toContainText('보고받기');
+  ).toContainText('직접');
   await expect(roster.getByText('언해피 · 재계약 거절')).toBeVisible();
   await expect(roster).toContainText('시장');
 
@@ -175,7 +175,7 @@ test('the talk rule shows under 선수 and applies', async ({ page, browserName 
   // The owner holds contracts; the delegated criteria remain visible for a later handover.
   const talks = page.getByRole('region', { name: '계약 협상 위임' });
   await expect(talks.getByRole('checkbox')).toHaveCount(0);
-  await expect(talks.getByTestId('decision-owner-contracts')).toContainText('보고받기');
+  await expect(talks.getByTestId('decision-owner-contracts')).toContainText('직접');
   await expect(talks.getByRole('button', { name: /^재정 기조 · 표준/ })).toBeVisible();
   await expect(talks).toContainText('시장가의 110%까지');
   await expect(talks).toContainText('32세부터 1시즌');
@@ -184,7 +184,7 @@ test('the talk rule shows under 선수 and applies', async ({ page, browserName 
   // The row is chosen on the 방향 board, its area unfolded by the line.
   await talks.getByRole('button', { name: /^재계약 기조 · 표준/ }).click();
   const squad = page
-    .getByRole('dialog', { name: '선수단·계약 운영 방침', exact: true })
+    .getByRole('dialog', { name: '선수단·계약 업무 기준', exact: true })
     .getByRole('region', { name: '선수단·계약', exact: true });
   await squad.getByRole('radio', { name: '재계약 기조 짠물', exact: true }).click();
   const draft = page.getByTestId('strategy-draft');

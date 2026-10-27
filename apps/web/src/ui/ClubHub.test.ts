@@ -170,12 +170,14 @@ describe('home season card', () => {
 });
 
 describe('owner office entrance', () => {
-  it('is one button named for the office that lists its areas (→WEB-11/39)', () => {
+  it('is one full illustration with only its entrance action (→WEB-11/39)', () => {
     const markup = renderToStaticMarkup(createElement(OfficeEntrance, { w: world() }));
-    expect(markup).toMatch(/^<button[^>]*aria-label="구단주 사무실"/);
+    expect(markup).toMatch(/^<button[^>]*aria-label="구단주 사무실 들어가기"/);
     expect(markup).toContain('data-home-part="office"');
-    expect(markup).toContain('aria-describedby="hub-office-areas"');
-    expect(markup).toContain('운영 방침 · 시설 · 재정 · 후원 · 구단 디자인 · 결재 라인');
+    expect(markup).not.toContain('aria-describedby');
+    expect(markup).toContain('구단주 사무실 들어가기');
+    expect(markup).not.toContain('운영 방침');
+    expect(markup).not.toContain('<small');
     expect(markup).toContain('data-facility-art="manager"');
   });
 });

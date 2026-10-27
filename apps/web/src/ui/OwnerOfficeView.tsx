@@ -36,18 +36,20 @@ const OBSERVATIONS = [
   ['matchEve', '경기 전날 보고', '위임하면 스태프가 경기를 치르고 결과를 전달해요.'],
   ['windowOpen', '이적시장 개장 보고', '위임하면 개장 보고 확인을 기다리지 않고 업무를 계속해요.'],
 ] as const;
-function OfficeRow({
+export function OfficeRow({
   label,
   detail,
   delegated,
   blocked,
   onSelect,
+  observation = false,
 }: {
   label: string;
   detail: string;
   delegated: boolean;
   blocked: boolean;
   onSelect: (delegated: boolean) => void;
+  observation?: boolean;
 }) {
   return (
     <div className={s.row}>
@@ -65,7 +67,7 @@ function OfficeRow({
               if (delegated !== value) onSelect(value);
             }}
           >
-            {value ? '위임' : '보고받기'}
+            {observation ? (value ? '위임' : '보고받기') : value ? '자동' : '직접'}
           </button>
         ))}
       </div>
@@ -98,9 +100,11 @@ export function PendingHandover({ proposal }: { proposal: OfficeProposal }) {
 export function OwnerOffice({
   client,
   controller,
+  scope,
 }: {
   client: GameClient;
   controller: ProgressionController;
+  scope?: readonly ResponsibilityKey[];
 }) {
   const state = useGameState((state) => state),
     w = state.view!.world,
@@ -113,7 +117,6 @@ export function OwnerOffice({
   const blocked = modeSwitchBlocked(state) || applying;
   const propose = (change: OfficeChange) => {
     if (blocked) return;
-    controller.pause();
     setMessage('');
     setProposal(officeProposal(w, change));
   };
@@ -149,33 +152,35 @@ export function OwnerOffice({
     (keys.length > 0
       ? proposal.change.responsibilities?.[keys[0]] === 'delegated'
       : observations.length > 0 && proposal.change.observations?.[observations[0][0]] === false);
-  const title = delegated ? '위임하겠습니다.' : '보고받겠습니다.';
+  const title = delegated ? '자동으로 처리하겠습니다.' : '직접 결재하겠습니다.';
   const { delegated: delegatedCount, total: totalCount } = delegationCounts(w);
   return (
-    <div className={s.office} data-testid="owner-office">
-      <div
-        className={s.bulkActions}
-        role="group"
-        aria-label="전체 보고·위임 설정"
-        data-ui="choices"
-      >
-        {(['direct', 'delegated'] as const).map((value) => (
-          <button
-            key={value}
-            aria-pressed={
-              value === 'delegated' ? delegatedCount === totalCount : delegatedCount === 0
-            }
-            disabled={blocked}
-            onClick={() => {
-              const change = officeBulkChange(w, value);
-              if (change) propose(change);
-            }}
-          >
-            {value === 'delegated' ? '전체 위임' : '전체 보고받기'}
-          </button>
-        ))}
-      </div>
-      <FacilityArt kind="manager" world={w} className={s.hero} eager />
+    <div className={s.office} data-testid={scope ? 'desk-responsibilities' : 'owner-office'}>
+      {!scope && (
+        <div
+          className={s.bulkActions}
+          role="group"
+          aria-label="전체 보고·위임 설정"
+          data-ui="choices"
+        >
+          {(['direct', 'delegated'] as const).map((value) => (
+            <button
+              key={value}
+              aria-pressed={
+                value === 'delegated' ? delegatedCount === totalCount : delegatedCount === 0
+              }
+              disabled={blocked}
+              onClick={() => {
+                const change = officeBulkChange(w, value);
+                if (change) propose(change);
+              }}
+            >
+              {value === 'delegated' ? '전체 자동' : '전체 직접'}
+            </button>
+          ))}
+        </div>
+      )}
+      {!scope && <FacilityArt kind="manager" world={w} className={s.hero} eager />}
       {state.readonly && <p className={s.message}>읽기 전용 상태에서는 변경할 수 없어요.</p>}
       {message && !proposal && (
         <p role="alert" className={s.message}>
@@ -184,29 +189,31 @@ export function OwnerOffice({
       )}
       <section data-surface="panel" className={s.section} aria-label="보고·위임 설정">
         <div className={s.sectionHead}>
-          <h3>보고받기 / 위임</h3>
+          <h3>결재 담당</h3>
           <small>
-            {delegatedCount} / {totalCount}개 위임
+            {scope
+              ? scope.filter((key) => settings.responsibilities[key] === 'delegated').length
+              : delegatedCount}{' '}
+            / {scope?.length ?? totalCount}개 자동
           </small>
         </div>
-        <p>
-          보고받기는 구단주의 확인·승인을 기다립니다. 위임은 스태프가 방침에 따라 처리하고 결과를
-          보고합니다.
-        </p>
+        <p>직접은 구단주가 승인해요. 자동은 담당 스태프가 기준에 따라 처리하고 결과를 보고해요.</p>
         <div className={s.rows}>
-          {OBSERVATIONS.map(([key, label, detail]) => (
-            <OfficeRow
-              key={key}
-              label={label}
-              detail={detail}
-              delegated={!settings.observations[key]}
-              blocked={blocked}
-              onSelect={(delegated) =>
-                void apply(officeProposal(w, { observations: { [key]: !delegated } }))
-              }
-            />
-          ))}
-          {RESPONSIBILITY_KEYS.map((key) => (
+          {!scope &&
+            OBSERVATIONS.map(([key, label, detail]) => (
+              <OfficeRow
+                key={key}
+                observation
+                label={label}
+                detail={detail}
+                delegated={!settings.observations[key]}
+                blocked={blocked}
+                onSelect={(delegated) =>
+                  void apply(officeProposal(w, { observations: { [key]: !delegated } }))
+                }
+              />
+            ))}
+          {(scope ?? RESPONSIBILITY_KEYS).map((key) => (
             <OfficeRow
               key={key}
               label={RESPONSIBILITY_LABELS[key]}
@@ -220,7 +227,7 @@ export function OwnerOffice({
           ))}
         </div>
       </section>
-      {settings.mode === 'automatic' && (
+      {!scope && settings.mode === 'automatic' && (
         <section data-surface="panel" className={s.section} aria-label="경기 결과 알림">
           <label className={s.check}>
             <input
@@ -233,7 +240,7 @@ export function OwnerOffice({
           </label>
         </section>
       )}
-      {settings.mode === 'automatic' && (
+      {!scope && settings.mode === 'automatic' && (
         <section
           data-surface="panel"
           className={s.section}
@@ -280,7 +287,7 @@ export function OwnerOffice({
                 disabled={blocked || w.id !== proposal.id}
                 onClick={() => void apply(proposal)}
               >
-                {delegated ? '위임하기' : '보고받기'}
+                {delegated ? '자동으로 맡기기' : '직접 결재하기'}
               </button>
             </div>
           }

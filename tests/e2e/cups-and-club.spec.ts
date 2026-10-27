@@ -103,7 +103,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     // The 코치 기조 line opens its area on the 방향 board, where it is chosen like any row.
     await page.getByRole('button', { name: /^코치 기조 · 표준/ }).click();
     const staffArea = page
-      .getByRole('dialog', { name: '스태프 운영 방침', exact: true })
+      .getByRole('dialog', { name: '스태프 업무 기준', exact: true })
       .getByRole('region', { name: '스태프', exact: true });
     await expect(staffArea.locator('button[aria-controls^="sheet-area-body-"]')).toHaveAttribute(
       'aria-expanded',
@@ -114,7 +114,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(draft).toContainText('코치 기조 표준 → 최고 수준');
     await draft.getByRole('button', { name: '적용', exact: true }).click();
     await expect(draft).toHaveCount(0);
-    await expect(page.getByRole('dialog', { name: '스태프 운영 방침', exact: true })).toHaveCount(
+    await expect(page.getByRole('dialog', { name: '스태프 업무 기준', exact: true })).toHaveCount(
       0,
     );
     await closeOutcome(page, '방향을 바꿨어요');
@@ -124,7 +124,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     // Level 3 hands every department to the staff at once.
     await chooseLevel(page, 3);
     await expect(page.getByTestId('coaching-mode')).toContainText('자동');
-    await expect(page.getByTestId('decision-owner-staff')).toContainText('위임');
+    await expect(page.getByTestId('decision-owner-staff')).toContainText('자동');
     expect(await horizontalOverflow(page)).toBe(0);
   });
 

@@ -1,3 +1,4 @@
+import { openOfficeLibrary } from './office';
 import { gameHud } from './layout';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -265,7 +266,7 @@ test('navigation detours and passing days keep the draft beside the policy draft
     await expect(applyButton(current)).toBeEnabled();
   };
   // Another office area and back.
-  await openOfficeArea(page, '시설');
+  await openOfficeArea(page, '투자');
   await openOfficeArea(page, '구단 디자인');
   view = await designView(page);
   await expectDraft(view);
@@ -289,7 +290,7 @@ test('navigation detours and passing days keep the draft beside the policy draft
   view = await designView(page);
   await expectDraft(view);
   // A policy-board draft is a separate department draft (→WEB-60/77).
-  await openOfficeArea(page, '운영 방침');
+  await openOfficeLibrary(page);
   await expect(page.getByTestId('view-scroller').getByTestId('strategy-board')).toBeVisible();
   const finance = page.getByRole('region', { name: '재정', exact: true });
   await finance.getByRole('button', { name: /어디서 벌고/ }).click();
@@ -303,7 +304,7 @@ test('navigation detours and passing days keep the draft beside the policy draft
   expect(await commands(page)).toBe(1);
   expect(await ownIdentity(page)).toEqual(drafted);
   // Applying the design left the policy draft unapplied and in place.
-  await openOfficeArea(page, '운영 방침');
+  await openOfficeLibrary(page);
   await expect(page.getByTestId('strategy-draft')).toBeVisible();
 });
 

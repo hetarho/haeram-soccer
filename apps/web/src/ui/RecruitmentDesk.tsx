@@ -713,7 +713,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             <span>
               영입 기조 · <b>{currentStepName(w, 'recruitment')}</b>
             </span>
-            <small>운영 방침에서 바꿔요</small>
+            <small>업무 기준에서 바꿔요</small>
           </button>
           <div className={s.summary}>
             <span>

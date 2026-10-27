@@ -1,42 +1,45 @@
-import { describe, expect, it } from 'vitest';
-import { createWorld } from '../../../../packages/engine/src/index';
-import { RESPONSIBILITY_KEYS } from '../../../../packages/engine/src/responsibilities';
-import { sponsorSlots } from '../../../../packages/engine/src/sponsors';
+import { describe, expect, it, vi } from 'vitest';
+import type { World } from '../../../../packages/contracts/src/types';
+import type { SponsorSlotView } from '../../../../packages/engine/src/sponsors';
+import {
+  defaultSettings,
+  RESPONSIBILITY_KEYS,
+} from '../../../../packages/engine/src/responsibilities';
 import { delegationCounts, officeFacts } from './officeSummary';
-
+vi.mock('./teamState', () => ({ cashState: () => ({ value: '약 12주' }) }));
 const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Office Club',
-    color: '#24664f',
-    seed: 'office-lobby',
-    level: 'easy' as const,
-  });
-
-describe('office lobby facts (→WEB-39)', () => {
-  it('names the direction, the ground, money, sponsors and who decides', () => {
-    const w = world();
-    const facts = officeFacts(w, sponsorSlots(w), []);
-    expect(facts.strategy).toBe('기본 방향');
-    expect(facts.build).toBe('동네 구장 · 2,500석');
-    expect(facts.finance).toMatch(
-      /^£[\d,.KMB]+ · 자금 여력 약 \d+(주|개월)$|^.+ · 자금 여력 1년 이상$/,
-    );
-    // A 1950 English club has only the local slot open, unsigned.
+  ({
+    playerClub: 'club',
+    year: 1950,
+    cash: '10000',
+    clubs: [{ id: 'club', country: 'ENG' }],
+    players: [{ status: 'active' }, { status: 'sold' }],
+    academy: { players: [{ id: 'youth' }] },
+    manager: { name: 'Manager' },
+    staff: [],
+    settings: defaultSettings(),
+  }) as unknown as World;
+const slots = [{ open: true }, { open: false }] as SponsorSlotView[];
+describe('office lobby facts', () => {
+  it('leads with actual work and retains independent saved choices on inspection', () => {
+    const w = world(),
+      before = structuredClone(w);
+    const facts = officeFacts(w, slots);
+    expect(facts.players).toBe('1군 1명 · 유소년 1명');
+    expect(facts.staff).toBe('감독 Manager · 스태프 0명');
+    expect(facts.investment).toContain('자금 여력 약 12주');
     expect(facts.sponsor).toBe('후원 0/1자리');
-    const counts = delegationCounts(w);
-    expect(facts.office).toBe(`보고받기 ${counts.direct} · 위임 ${counts.delegated}`);
+    expect(w).toEqual(before);
   });
-
-  it('reports works under way instead of the ground', () => {
+  it('keeps ongoing construction visible alongside finance', () => {
     const w = world();
-    w.facilityWorks = { stadium: { to: 1, year: 1950, day: 180 } };
-    expect(officeFacts(w, sponsorSlots(w), []).build).toBe('공사 중 1건');
-    w.facilityWorks.training = { to: 1, year: 1950, day: 90 };
-    expect(officeFacts(w, sponsorSlots(w), []).build).toBe('공사 중 2건');
+    w.facilityWorks = {
+      stadium: { to: 1, year: 1950, day: 180 },
+      training: { to: 1, year: 1950, day: 90 },
+    };
+    expect(officeFacts(w, slots).investment).toContain('공사 중 2건');
   });
-
-  it('counts the nine report rows the way 결재 라인 shows them', () => {
+  it('counts observations and all seven responsibilities without conflating them', () => {
     const w = world();
     for (const key of RESPONSIBILITY_KEYS) w.settings!.responsibilities[key] = 'direct';
     w.settings!.observations = { matchEve: true, windowOpen: true };
@@ -45,13 +48,10 @@ describe('office lobby facts (→WEB-39)', () => {
     w.settings!.observations.windowOpen = false;
     expect(delegationCounts(w)).toEqual({ delegated: 2, direct: 7, total: 9 });
   });
-
   it('counts signed sponsor slots among the open ones', () => {
-    const w = world();
-    const slots = sponsorSlots(w).map((slot) => ({ ...slot, open: true }));
-    const signed = slots.map((slot, i) =>
-      i === 0 ? { ...slot, contract: { slot: slot.slot } as never } : slot,
-    );
-    expect(officeFacts(w, signed, []).sponsor).toBe(`후원 1/${slots.length}자리`);
+    expect(
+      officeFacts(world(), [{ open: true, contract: {} }, { open: false }] as SponsorSlotView[])
+        .sponsor,
+    ).toBe('후원 1/1자리');
   });
 });

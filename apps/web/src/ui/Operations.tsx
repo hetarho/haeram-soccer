@@ -14,12 +14,15 @@ import {
 } from './state';
 import { OfficeBar } from './OfficeBar';
 import { OfficeLobby } from './OfficeLobby';
-import s from './App.module.css';
+import { Dialog } from './Dialog';
+import { DIRECTION_AREAS } from './areas';
+import { areaBase, areaSummary } from './board';
+import { DESK_AREAS, DESK_RESPONSIBILITIES } from './officeDesks';
+import { openDirection } from './state';
+import lines from './DirectionLines.module.css';
 
 /**
- * The owner office (→WEB-39): a lobby of six areas, each opening full-screen under the office bar
- * — the direction board (→WEB-60), building, money with any campaign started before rules 1.19,
- * sponsors, the club design and 결재 라인.
+ * Five working desks compose the authoritative command panels and scoped criteria (→WEB-39).
  */
 /** The direction board and its composer load on first visit, outside the entry (→ARCH-28). */
 const StrategyBoard = lazy(() =>
@@ -40,11 +43,13 @@ export function OperationsView({
   client,
   legacy,
   controller,
+  personnel,
 }: {
   controller: ProgressionController;
   state: ClientState;
   client: GameClient;
   legacy: ReactNode;
+  personnel: (desk: 'players' | 'staff') => ReactNode;
 }) {
   const w = state.view!.world;
   const [view, setView] = useState<OfficeView>(() =>
@@ -63,6 +68,7 @@ export function OperationsView({
       scrolls: { ...memory.scrolls, [LOBBY_SCROLL]: scroller()?.scrollTop ?? 0 },
     }));
     fromLobby.current = true;
+    backToLobby = true;
     history.pushState(null, '', officeAddress(next));
     setView(next);
     requestAnimationFrame(() => scroller()?.scrollTo({ top: 0 }));
@@ -87,6 +93,13 @@ export function OperationsView({
           client={client}
         />
         <OfficeLobby w={w} sponsors={state.view!.sponsors} onOpen={openArea} />
+        {view === 'office' && (
+          <Dialog label="결재라인 모아보기" wide centered onClose={toLobby}>
+            <Suspense fallback={<p role="status">결재라인을 여는 중…</p>}>
+              <OwnerOffice key={w.id} client={client} controller={controller} />
+            </Suspense>
+          </Dialog>
+        )}
       </>
     );
   const [id, label] = area;
@@ -95,27 +108,53 @@ export function OperationsView({
       <OfficeBar back={{ label: '사무실', onClick: toLobby }} title={label} client={client} />
       {/* The bar names the area; its own panels carry their regions. */}
       <div data-office-view={id}>
-        {id === 'office' ? (
+        {DESK_RESPONSIBILITIES[id].length > 0 && (
           <Suspense fallback={null}>
-            <OwnerOffice key={w.id} client={client} controller={controller} />
+            <OwnerOffice
+              key={`${w.id}:${id}`}
+              client={client}
+              controller={controller}
+              scope={DESK_RESPONSIBILITIES[id]}
+            />
           </Suspense>
-        ) : id === 'strategy' ? (
-          <Suspense
-            fallback={
-              <div className={s.loading} role="status">
-                방향을 여는 중…
-              </div>
-            }
-          >
-            <StrategyBoard w={w} client={client} />
-          </Suspense>
-        ) : id === 'finance' ? (
+        )}
+        {DESK_AREAS[id].length > 0 && (
+          <section className={lines.lines} aria-label="적용 중인 업무 기준">
+            {DESK_AREAS[id].map((key) => {
+              const area = DIRECTION_AREAS.find((area) => area.key === key)!;
+              return (
+                <button
+                  type="button"
+                  className={lines.line}
+                  data-ui="link"
+                  key={key}
+                  onClick={() => openDirection(key)}
+                >
+                  <span>
+                    {area.label} · {areaSummary(w, area)} {areaBase(w, area)}
+                  </span>
+                  <small>기준 편집</small>
+                </button>
+              );
+            })}
+          </section>
+        )}
+        {id === 'players' || id === 'staff' ? (
+          personnel(id)
+        ) : id === 'investment' ? (
           <>
             <FinanceOutlook w={w} />
             <BusinessWorkbench state={state} client={client} part="finance" legacy={legacy} />
+            <BusinessWorkbench state={state} client={client} part="build" />
             {w.campaigns.length > 0 && (
               <BusinessWorkbench state={state} client={client} part="marketing" legacy={legacy} />
             )}
+            <details data-testid="office-library">
+              <summary>구단 전체 방향·저장 설정</summary>
+              <Suspense fallback={<p role="status">방향을 여는 중…</p>}>
+                <StrategyBoard w={w} client={client} />
+              </Suspense>
+            </details>
           </>
         ) : (
           <BusinessWorkbench state={state} client={client} part={id} legacy={legacy} />

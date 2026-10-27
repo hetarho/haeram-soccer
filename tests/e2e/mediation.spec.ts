@@ -222,13 +222,13 @@ test('mediation-handover-on-apply discloses work and never replays its recorded 
   const office = await openOffice(page);
   await office
     .getByRole('group', { name: '선수 영입', exact: true })
-    .getByRole('button', { name: '위임', exact: true })
+    .getByRole('button', { name: '자동', exact: true })
     .click();
-  const dialog = page.getByRole('dialog', { name: '위임하겠습니다.', exact: true });
+  const dialog = page.getByRole('dialog', { name: '자동으로 처리하겠습니다.', exact: true });
   await expect(dialog.getByRole('region', { name: '대기 업무 이관 미리보기' })).toContainText(
     '선수 영입 1건',
   );
-  await dialog.getByRole('button', { name: '위임하기', exact: true }).click();
+  await dialog.getByRole('button', { name: '자동으로 맡기기', exact: true }).click();
   await page
     .getByTestId('action-outcome')
     .getByRole('button', { name: /^(확인|알림 닫기)$/ })

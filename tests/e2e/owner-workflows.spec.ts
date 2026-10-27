@@ -1,3 +1,4 @@
+import { openOfficeLibrary } from './office';
 import { gameHud } from './layout';
 import { marketRows, marketFilters, marketInfo, closeMarketPanel } from './market';
 import { advanceOneRound } from './season-progression';
@@ -7,7 +8,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { createWorld, simulateSeason } from '../../packages/engine/src/index';
 import { settle } from './layout';
 import { continueSlot, seedSlot } from './slots';
-import { leaveOffice, officeTitle, openOfficeArea } from './office';
+import { leaveOffice, officeTitle } from './office';
 
 async function found(page: Page) {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -18,9 +19,9 @@ async function found(page: Page) {
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
 const nav = (page: Page) => page.getByRole('navigation', { name: '모바일 게임 메뉴' });
-/** 구단주 사무실 › 운영 방침, entered from home (→WEB-39). */
+/** 구단주 사무실 › 업무 기준, entered from home (→WEB-39). */
 async function openOperations(page: Page) {
-  await openOfficeArea(page, '운영 방침');
+  await openOfficeLibrary(page);
   await expect(page.getByTestId('view-scroller').getByTestId('strategy-board')).toBeVisible();
 }
 
@@ -39,7 +40,7 @@ test('contextual-sheet-restores-candidate', async ({ page }) => {
   const trigger = page.getByRole('button', { name: /^영입 기조/ });
   const url = page.url();
   await trigger.click();
-  const dialog = page.getByRole('dialog', { name: '영입 운영 방침', exact: true });
+  const dialog = page.getByRole('dialog', { name: '영입 업무 기준', exact: true });
   await expect(dialog.getByRole('region', { name: '영입', exact: true })).toBeVisible();
   await expect(dialog.getByRole('region', { name: '재정', exact: true })).toHaveCount(0);
   expect(page.url()).toBe(url);
@@ -83,7 +84,7 @@ test('department-sheet-preserves-other-drafts', async ({ page }) => {
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
   await marketInfo(page);
   await page.getByRole('button', { name: /^영입 기조/ }).click();
-  const sheet = page.getByRole('dialog', { name: '영입 운영 방침', exact: true });
+  const sheet = page.getByRole('dialog', { name: '영입 업무 기준', exact: true });
   await sheet.getByRole('radio', { name: '스카우팅 데이터 스카우팅', exact: true }).click();
   await sheet
     .getByTestId('strategy-draft')
@@ -114,15 +115,15 @@ test('retains an unapplied academy investment through a detour and discards it e
   await page.getByRole('button', { name: /^유소년 투자 · 유입 방식/ }).click();
   const youth = page.getByRole('region', { name: '유소년', exact: true });
   await youth.getByRole('radio', { name: '유소년 투자 육성 강화', exact: true }).click();
-  const sheet = page.getByRole('dialog', { name: '유소년 운영 방침', exact: true });
+  const sheet = page.getByRole('dialog', { name: '유소년 업무 기준', exact: true });
   await expect(sheet.getByTestId('strategy-draft')).toContainText(
     '유소년 투자 기본 운영 → 육성 강화',
   );
   await page
-    .getByRole('dialog', { name: '유소년 운영 방침', exact: true })
+    .getByRole('dialog', { name: '유소년 업무 기준', exact: true })
     .getByRole('button', { name: '창 닫기', exact: true })
     .click();
-  await expect(page.getByRole('dialog', { name: '유소년 운영 방침', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('dialog', { name: '유소년 업무 기준', exact: true })).toHaveCount(0);
   await expect(page.getByRole('tab', { name: '유소년', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
@@ -228,7 +229,7 @@ test('recruitment needs open on demand and academy operations open their exact w
   await page.getByRole('button', { name: /유소년 시설 .*공사 보기/ }).click();
   await expect(page.getByTestId('facility-academy')).toBeVisible();
   // The office opened on 시설; leaving it returns to the academy that asked (→WEB-39/74).
-  await expect(officeTitle(page)).toHaveText('시설');
+  await expect(officeTitle(page)).toHaveText('투자');
   await leaveOffice(page);
   await expect(page.getByRole('tab', { name: '유소년', exact: true })).toHaveAttribute(
     'aria-selected',
@@ -417,7 +418,7 @@ test('department sheet is readonly in a second tab and restores its task', async
     await marketInfo(viewer);
     const trigger = viewer.getByRole('button', { name: /^영입 기조/ });
     await trigger.click();
-    const sheet = viewer.getByRole('dialog', { name: '영입 운영 방침', exact: true });
+    const sheet = viewer.getByRole('dialog', { name: '영입 업무 기준', exact: true });
     await expect(sheet).toContainText('읽기 전용 상태에서는 방침을 적용할 수 없어요.');
     await expect(sheet.getByRole('radio').first()).toBeDisabled();
     const bounds = await sheet.evaluate((element) => ({
@@ -440,7 +441,7 @@ test('recruitment support round-trips between department sheet and full board', 
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
   await marketInfo(page);
   const trigger = page.getByRole('button', { name: /^영입 기조/ });
-  const sheet = page.getByRole('dialog', { name: '영입 운영 방침', exact: true });
+  const sheet = page.getByRole('dialog', { name: '영입 업무 기준', exact: true });
   await trigger.click();
   await expect(
     sheet.getByRole('radio', { name: '단장·감독 지원 균형', exact: true }),

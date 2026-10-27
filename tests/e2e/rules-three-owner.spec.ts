@@ -1,3 +1,4 @@
+import { openOfficeLibrary } from './office';
 import { marketInfo, closeMarketPanel } from './market';
 import { openOffice } from './events';
 import { closeOutcome } from './events';
@@ -7,11 +8,11 @@ import { importResponsibilityCareer } from './responsibility-fixtures';
 import { transferOffers } from '../../packages/engine/src/index';
 import { detectMediations } from '../../packages/engine/src/mediation';
 import { lineOf } from '../../packages/engine/src/player';
-import { leaveOffice, openOfficeArea } from './office';
+import { leaveOffice } from './office';
 const nav = (page: Page) => page.getByRole('navigation', { name: '모바일 게임 메뉴' });
-/** 구단주 사무실 › 운영 방침, entered from home (→WEB-39). */
+/** 구단주 사무실 › 업무 기준, entered from home (→WEB-39). */
 async function operations(page: Page) {
-  await openOfficeArea(page, '운영 방침');
+  await openOfficeLibrary(page);
   await expect(page.getByTestId('strategy-board')).toBeVisible();
 }
 
@@ -42,7 +43,7 @@ test('rules three retains a joint career and promise through scoped drafts, hand
   await page.getByRole('tab', { name: '이적시장', exact: true }).click();
   await marketInfo(page);
   await page.getByRole('button', { name: /^영입 기조/ }).click();
-  const sheet = page.getByRole('dialog', { name: '영입 운영 방침', exact: true });
+  const sheet = page.getByRole('dialog', { name: '영입 업무 기준', exact: true });
   await sheet.getByRole('radio', { name: '스카우팅 데이터 스카우팅', exact: true }).click();
   await sheet
     .getByTestId('strategy-draft')
@@ -54,13 +55,13 @@ test('rules three retains a joint career and promise through scoped drafts, hand
   const office = await openOffice(page);
   await office
     .getByRole('group', { name: '선수 영입', exact: true })
-    .getByRole('button', { name: '위임', exact: true })
+    .getByRole('button', { name: '자동', exact: true })
     .click();
-  const settings = page.getByRole('dialog', { name: '위임하겠습니다.', exact: true });
+  const settings = page.getByRole('dialog', { name: '자동으로 처리하겠습니다.', exact: true });
   await expect(settings.getByRole('region', { name: '대기 업무 이관 미리보기' })).toContainText(
     '선수 영입 1건',
   );
-  await settings.getByRole('button', { name: '위임하기', exact: true }).click();
+  await settings.getByRole('button', { name: '자동으로 맡기기', exact: true }).click();
   await page
     .getByTestId('action-outcome')
     .getByRole('button', { name: /^(확인|알림 닫기)$/ })

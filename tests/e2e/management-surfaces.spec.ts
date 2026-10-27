@@ -83,7 +83,7 @@ for (const themeId of ['standard', 'pixel']) {
       .getByRole('dialog', { name: '게임 진행 방식이 변경됩니다.', exact: true })
       .getByRole('button', { name: '수동 모드로 변경', exact: true })
       .click();
-    await openOfficeArea(page, '결재 라인');
+    await openOfficeArea(page, '결재라인 모아보기');
     const office = page.getByTestId('owner-office');
     // The focused office has neither the bottom controls nor a mode control of its own (→WEB-39/96).
     await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
@@ -212,7 +212,7 @@ for (const themeId of ['standard', 'pixel']) {
       await expect(page.getByRole('region', { name: '선수 프로필', exact: true })).toBeVisible();
       await page.getByRole('dialog').getByRole('button', { name: '창 닫기', exact: true }).click();
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-      await openOfficeArea(page, '결재 라인');
+      await openOfficeArea(page, '결재라인 모아보기');
     }
   });
 }

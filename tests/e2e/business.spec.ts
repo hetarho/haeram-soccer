@@ -1,3 +1,4 @@
+import { openOfficeLibrary } from './office';
 import { watchNext } from './watch';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -52,8 +53,9 @@ async function found(page: Page, seed: string) {
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
 
-/** The owner office's area `area`, 운영 방침 unless named, from home's entrance (→WEB-39). */
-const openBusiness = (page: Page, area = '운영 방침') => openOfficeArea(page, area);
+/** The owner office's area `area`, 업무 기준 unless named, from home's entrance (→WEB-39). */
+const openBusiness = (page: Page, area?: string) =>
+  area ? openOfficeArea(page, area) : openOfficeLibrary(page);
 
 async function playNext(page: Page) {
   await outsideOffice(page);
@@ -84,13 +86,13 @@ test('older operations addresses open their office area', async ({ page }) => {
   // Every older /business address opens its area under /direction.
   for (const [asked, area, now] of [
     ['/business', LOBBY, /\/direction$/],
-    ['/business?view=facility', '시설', /\/direction\?view=build$/],
-    ['/business?view=marketing', '재정', /\/direction\?view=finance$/],
-    ['/business?view=strategy', '운영 방침', /\/direction\?view=strategy$/],
-    ['/business?view=build', '시설', /\/direction\?view=build$/],
-    ['/business?view=finance', '재정', /\/direction\?view=finance$/],
+    ['/business?view=facility', '투자', /\/direction\?view=investment$/],
+    ['/business?view=marketing', '투자', /\/direction\?view=investment$/],
+    ['/business?view=strategy', '투자', /\/direction\?view=investment$/],
+    ['/business?view=build', '투자', /\/direction\?view=investment$/],
+    ['/business?view=finance', '투자', /\/direction\?view=investment$/],
     ['/business?view=sponsor', '후원', /\/direction\?view=sponsor$/],
-    ['/direction?view=build', '시설', /\/direction\?view=build$/],
+    ['/direction?view=build', '투자', /\/direction\?view=investment$/],
   ] as const) {
     await page.goto(asked);
     await expect(officeTitle(page)).toHaveText(area);
@@ -98,7 +100,7 @@ test('older operations addresses open their office area', async ({ page }) => {
   }
   await expect(page.getByRole('region', { name: '캠페인', exact: true })).toHaveCount(0);
   // Campaigns are no more (→ECON-7): 자금 shows none to start.
-  await openBusiness(page, '재정');
+  await openBusiness(page, '투자');
   await expect(page.getByRole('region', { name: '클럽 재정', exact: true })).toBeVisible();
   await expect(page.getByRole('region', { name: '캠페인', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '캠페인 시작' })).toHaveCount(0);
@@ -117,7 +119,7 @@ for (const viewport of [
     const preview = facilityInvestmentPreview(before, 'stadium');
     // Every amount reads in the one notation (→WEB-67); the exact value opens on tap or hover.
     const format = (value: string) => compactMoney(value, clubOf(before).country, before.year);
-    await openBusiness(page, '시설');
+    await openBusiness(page, '투자');
     // Three parts built separately (→ECON-32): the stadium's ladder, the training ground and the
     // academy facilities.
     await expect(page.getByTestId('facility-stadium')).toContainText('동네 구장');
@@ -163,7 +165,7 @@ for (const viewport of [
     await expect(
       page.getByRole('button', { name: '경기장 공사 검토', exact: true }),
     ).toBeDisabled();
-    await openBusiness(page, '재정');
+    await openBusiness(page, '투자');
     await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
     await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toContainText('시설 공사');
     await page.getByRole('button', { name: '장부 확인 마치기', exact: true }).click();
@@ -229,7 +231,7 @@ test("at level 4 the commercial staff sign an empty slot's best offer", async ({
   const delegation = page.getByRole('region', { name: '후원 위임' });
   const owner = delegation.getByTestId('decision-owner-sponsors');
   await expect(delegation.getByRole('checkbox')).toHaveCount(0);
-  await expect(owner).toContainText('보고받기');
+  await expect(owner).toContainText('직접');
   await expect(owner).toContainText('후원 계약은 직접 골라요');
   await expect(page.getByTestId('sponsor-local-stable')).toBeVisible();
   const delegated = await exportWorld(page);
@@ -238,7 +240,7 @@ test("at level 4 the commercial staff sign an empty slot's best offer", async ({
     .reduce((top, offer) => (BigInt(offer.annual) > BigInt(top.annual) ? offer : top));
   // Applying sponsor delegation hands over the already pending empty slot immediately.
   await chooseLevel(page, 4);
-  await expect(owner).toContainText('위임');
+  await expect(owner).toContainText('자동');
   await expect(owner).toContainText('안정형 제안 중 보장 금액이 가장 큰');
   const signed = await exportWorld(page);
   expect(signed.sponsors).toEqual([
@@ -252,7 +254,7 @@ test("at level 4 the commercial staff sign an empty slot's best offer", async ({
   await openBusiness(page, '후원');
   await expect(page.getByTestId('sponsor-contract-local')).toContainText(best.name);
   await expect(page.getByRole('button', { name: '지역 후원 계약', exact: true })).toHaveCount(0);
-  await expect(page.getByTestId('decision-owner-sponsors')).toContainText('위임');
+  await expect(page.getByTestId('decision-owner-sponsors')).toContainText('자동');
 });
 
 test('drafts a 지역 investment row with its spend and builds 지역 기반 over real rounds', async ({
@@ -394,7 +396,7 @@ test('recovers a genuine negative operating balance and enforces the three-contr
   await expect(page.getByTestId('club-hub')).toBeVisible();
   // The imported mid-season career carries unread attention events (e.g. the winter window).
   await acknowledgeEvents(page);
-  await openBusiness(page, '재정');
+  await openBusiness(page, '투자');
   const support = page.getByRole('button', { name: '추가 출자', exact: true });
   await expect(support).toBeEnabled();
   await support.click();

@@ -684,51 +684,31 @@ button.resources:active:not(:disabled) {
 .office {
   grid-area: office;
   display: grid;
-  grid-template-columns: minmax(96px, 34%) minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 12px;
+  gap: 0;
   width: 100%;
-  min-height: 72px;
-  padding: 8px 12px 8px 8px;
+  min-width: 0;
+  align-self: start;
+  padding: 0;
+  overflow: hidden;
   border: 1px solid var(--popover-edge);
   border-radius: var(--card-radius);
   background: var(--surface-grain, none) var(--surface);
   color: inherit;
-  text-align: left;
   font: inherit;
-}
-.office:active:not(:disabled) {
-  transform: translateY(1px);
 }
 .officeArt {
   width: 100%;
-  aspect-ratio: 2 / 1;
-  border-radius: calc(var(--card-radius) / 2);
-}
-.officeText {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-}
-.officeText b {
-  font-size: 17px;
-  font-weight: 800;
-  line-height: 1.25;
-}
-.officeText small {
-  font-size: 12px;
-  line-height: 1.4;
-  color: var(--text-muted);
-  word-break: keep-all;
-  font-family: var(--display);
+  aspect-ratio: 3 / 1;
 }
 .officeEnter {
-  display: inline-flex;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 2px;
-  font-size: 13px;
+  gap: 6px;
+  min-height: 44px;
+  padding: 8px;
+  font-size: 14px;
   font-weight: 700;
-  white-space: nowrap;
   color: var(--accent-text);
   font-family: var(--display);
 }
@@ -855,9 +835,6 @@ button.resources:active:not(:disabled) {
   .hub {
     grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
     grid-template-areas: 'header office' 'stage stage' 'state state' 'fixture fixture';
-  }
-  .office {
-    align-self: stretch;
   }
   /* Strength takes its place in the one row of five conditions. */
   .state ul {

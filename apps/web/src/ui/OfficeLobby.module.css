@@ -9,7 +9,6 @@
 .room {
   width: 100%;
   aspect-ratio: 3 / 1;
-  max-height: 260px;
   border: 1px solid var(--line);
   border-radius: var(--scene-radius, var(--card-radius));
 }

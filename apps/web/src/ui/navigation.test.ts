@@ -63,7 +63,7 @@ describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
 
   it('routeOf opens the office lobby at /direction and every area by its ?view= (→WEB-39)', () => {
     expect(routeOf('/direction', '')).toEqual({ page: 'business', view: 'lobby' });
-    for (const view of ['strategy', 'build', 'finance', 'sponsor', 'identity', 'office'])
+    for (const view of ['players', 'staff', 'investment', 'sponsor', 'identity', 'office'])
       expect(routeOf('/direction', `?view=${view}`)).toEqual({ page: 'business', view });
     // An unknown view opens the lobby.
     expect(routeOf('/direction', '?view=campaigns')).toEqual({
@@ -73,26 +73,25 @@ describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
     });
     for (const [search, view, address] of [
       ['', 'lobby', '/direction'],
-      ['?view=strategy', 'strategy', '/direction?view=strategy'],
-      ['?view=build', 'build', '/direction?view=build'],
-      ['?view=finance', 'finance', '/direction?view=finance'],
+      ['?view=strategy', 'investment', '/direction?view=investment'],
+      ['?view=build', 'investment', '/direction?view=investment'],
+      ['?view=finance', 'investment', '/direction?view=investment'],
       ['?view=sponsor', 'sponsor', '/direction?view=sponsor'],
       ['?view=office', 'office', '/direction?view=office'],
       // Views from before 방향: 시설 is 증축 now, 마케팅 and its campaigns sit under 자금.
-      ['?view=facility', 'build', '/direction?view=build'],
-      ['?view=marketing', 'finance', '/direction?view=finance'],
+      ['?view=facility', 'investment', '/direction?view=investment'],
+      ['?view=marketing', 'investment', '/direction?view=investment'],
     ] as const)
       expect(routeOf('/business', search)).toEqual({ page: 'business', view, address });
   });
 
-  it('names the six office areas in lobby order, with 결재 라인 for reports and delegation', () => {
+  it('names five working desks, with office reserved for the overview modal', () => {
     expect(BUSINESS_TABS.map(([id, label]) => `${id}:${label}`)).toEqual([
-      'strategy:운영 방침',
-      'build:시설',
-      'finance:재정',
+      'players:선수 계약',
+      'staff:스태프 계약',
+      'investment:투자',
       'sponsor:후원',
       'identity:구단 디자인',
-      'office:결재 라인',
     ]);
     expect(officeView('identity')).toBe('identity');
     expect(officeView(null)).toBe('lobby');

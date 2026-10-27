@@ -163,7 +163,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
   'apps/web/src/ui/cupRoute.ts': ['packages/engine/src/stages.ts'],
   'apps/web/src/ui/discipline.ts': ['packages/engine/src/world.ts'],
   'apps/web/src/ui/officeChanges.ts': ['packages/engine/src/pending-work-preview.ts'],
-  'apps/web/src/ui/officeSummary.ts': ['packages/engine/src/presets.ts'],
   'apps/web/src/ui/outcome.ts': [
     'packages/engine/src/strategy.ts',
     'packages/engine/src/training.ts',

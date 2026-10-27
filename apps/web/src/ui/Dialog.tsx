@@ -92,6 +92,7 @@ export function Dialog({
   onClose,
   wide = false,
   picker = false,
+  centered = false,
   actions: footerActions,
 }: {
   label: string;
@@ -100,6 +101,8 @@ export function Dialog({
   wide?: boolean;
   /** A small centered panel over a light dim that keeps the page behind it visible. */
   picker?: boolean;
+  /** Keep a large overview centered on phones as well as desktop. */
+  centered?: boolean;
   actions?: ReactNode;
 }) {
   const element = useRef<HTMLElement>(null);
@@ -124,7 +127,7 @@ export function Dialog({
       active instanceof HTMLElement && active !== document.body ? active : pointerTrigger?.deref();
     const layer = backdrop.current!;
     const unlock = lockLayer(layer);
-    const mobile = !picker && sheet();
+    const mobile = !picker && !centered && sheet();
     play(layer, [{ opacity: 0 }, { opacity: 1 }], { duration: 200 });
     play(
       element.current,
@@ -214,7 +217,7 @@ export function Dialog({
   return createPortal(
     <div
       ref={backdrop}
-      className={`${s.modalBackdrop} ${picker ? s.picker : ''}`}
+      className={`${s.modalBackdrop} ${picker ? s.picker : ''} ${centered ? s.centered : ''}`}
       onClick={(e) => {
         if (e.target === e.currentTarget) requestClose();
       }}

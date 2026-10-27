@@ -155,10 +155,10 @@ export const EventCenter = memo(function EventCenter({
           {resumeOpen ? '관전 중인 경기' : eve ? '경기 준비 보고' : `이벤트 ${events.length}개`}
         </h2>
         {/* The group can cover home's office entrance; waiting work can still be handed over
-            from 결재 라인 (→WEB-79/82). The match eve card names it itself. */}
+            from 결재라인 모아보기 (→WEB-79/82). The match eve card names it itself. */}
         {!eve && !resumeOpen && (
           <button data-ui="link" type="button" className={s.groupOffice} onClick={openOwnerOffice}>
-            결재 라인
+            결재라인 모아보기
           </button>
         )}
       </div>
@@ -226,7 +226,7 @@ const EventCard = memo(function EventCard({
     return (
       <MatchReportCard w={w} fixture={eve} ref={cardExit}>
         <button data-ui="link" type="button" className={s.stops} onClick={openOwnerOffice}>
-          결재 라인
+          결재라인 모아보기
         </button>
         <div className={s.actions}>
           <button

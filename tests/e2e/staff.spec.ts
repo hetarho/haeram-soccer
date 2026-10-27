@@ -132,7 +132,7 @@ test.describe('사람 at 360x740', () => {
     const post = page.getByRole('region', { name: '감독 선임 위임' });
     await expect(post).toBeVisible();
     await expect(post.getByRole('checkbox')).toHaveCount(0);
-    await expect(post.getByTestId('decision-owner-manager')).toContainText('보고받기');
+    await expect(post.getByTestId('decision-owner-manager')).toContainText('직접');
     await expect(post.getByTestId('decision-owner-manager')).toContainText(
       '아래 방침은 이 업무를 위임할 때 사용해요.',
     );
@@ -234,7 +234,7 @@ test('with the manager post delegated a resignation is filled at once and the cl
   await chooseLevel(page, 4);
   await openPeople(page);
   await tab(page, '감독').click();
-  await expect(page.getByTestId('decision-owner-manager')).toContainText('위임');
+  await expect(page.getByTestId('decision-owner-manager')).toContainText('자동');
   const founding = page.getByRole('heading', { name: 'William Hawkins', exact: true });
   await expect(founding).toBeVisible();
   for (const tactic of ['counter', 'press']) {

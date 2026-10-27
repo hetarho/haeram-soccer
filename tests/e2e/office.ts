@@ -25,18 +25,15 @@ async function dismissCelebration(page: Page) {
 
 /**
  * Enters the owner office through home's entrance (→WEB-11/39): it has no menu entry, and the
- * shell hides the HUD, calendar, controls and menus while it is open. An open event group covers
- * home, so its own 결재 라인 link opens the office instead (→WEB-79). A no-op inside the office.
+ * shell hides the HUD, calendar, controls and menus while it is open. Dismiss an observation
+ * dialog before using the entrance; dismissing never resolves its work. A no-op inside the office.
  */
 export async function enterOffice(page: Page, options: { timeout?: number } = {}) {
   if (await inOffice(page)) return;
   await dismissCelebration(page);
-  const group = page.getByTestId('event-group');
-  if (await group.isVisible()) {
-    await group.getByRole('button', { name: '결재 라인', exact: true }).first().click(options);
-    await expect(officeBar(page)).toBeVisible();
-    return;
-  }
+  const covering = page.getByRole('dialog').filter({ has: page.getByTestId('event-group') });
+  if (await covering.isVisible())
+    await covering.getByRole('button', { name: '창 닫기', exact: true }).click();
   // The selected tab decides, not what is drawn: a deferred view can still show home. The tab is
   // found by its icon, since a locale pack renames it.
   const home = page
@@ -47,19 +44,46 @@ export async function enterOffice(page: Page, options: { timeout?: number } = {}
   if ((await home.getAttribute('aria-current')) !== 'page') await home.click(options);
   const hub = page.getByTestId('club-hub');
   await expect(hub).toBeVisible();
-  await hub.getByRole('button', { name: '구단주 사무실', exact: true }).click(options);
+  const entrance = hub.getByRole('button', { name: '구단주 사무실 들어가기', exact: true });
+  await entrance.evaluate((element) => element.scrollIntoView({ block: 'start' }));
+  await entrance.click(options);
   await expect(officeBar(page)).toBeVisible();
+}
+
+export async function closeOfficeOverview(page: Page) {
+  const overview = page.getByRole('dialog', { name: '결재라인 모아보기', exact: true });
+  if (await overview.isVisible())
+    await overview.getByRole('button', { name: '창 닫기', exact: true }).click();
 }
 
 /** Back to the lobby from an area by ← 사무실; a no-op in the lobby. */
 export async function officeLobby(page: Page) {
+  await closeOfficeOverview(page);
   if ((await officeTitle(page).innerText()).trim() !== LOBBY)
     await officeBar(page).getByRole('button', { name: '사무실', exact: true }).click();
   await expect(officeTitle(page)).toHaveText(LOBBY);
 }
 
-/** Opens one office area (운영 방침, 시설, 재정, 후원, 구단 디자인, 결재 라인) from its lobby card. */
+/** Opens one office area (선수 계약, 스태프 계약, 투자, 후원, 구단 디자인, 결재라인 모아보기) from its lobby card. */
 export async function openOfficeArea(page: Page, area: string, options: { timeout?: number } = {}) {
+  if (area === '결재라인 모아보기') {
+    const overview = page.getByRole('dialog', { name: area, exact: true });
+    if (await overview.isVisible()) return;
+    const group = page.getByTestId('event-group');
+    if (await group.isVisible())
+      await group.getByRole('button', { name: area, exact: true }).first().click(options);
+    else {
+      await enterOffice(page, options);
+      await officeLobby(page);
+      await page
+        .getByTestId('office-lobby')
+        .getByRole('button', { name: area, exact: true })
+        .click(options);
+    }
+    await expect(overview).toBeVisible();
+    return;
+  }
+  await closeOfficeOverview(page);
   await enterOffice(page, options);
   if ((await officeTitle(page).innerText()).trim() === area) return;
   await officeLobby(page);
@@ -71,8 +95,19 @@ export async function openOfficeArea(page: Page, area: string, options: { timeou
   await expect(officeTitle(page)).toHaveText(area);
 }
 
+/** Whole-club configuration is a secondary disclosure within investment. */
+export async function openOfficeLibrary(page: Page) {
+  await openOfficeArea(page, '투자');
+  const library = page.getByTestId('office-library');
+  if ((await library.getAttribute('open')) === null)
+    await library.locator(':scope > summary').click();
+  await expect(page.getByTestId('strategy-board')).toBeVisible();
+}
+
 /** Leaves the office by its 나가기 (through the lobby), back where it was entered from. */
 export async function leaveOffice(page: Page) {
+  await closeOfficeOverview(page);
+  if (!(await inOffice(page))) return;
   await officeLobby(page);
   await officeBar(page).getByRole('button', { name: '나가기', exact: true }).click();
   await expect(officeBar(page)).toHaveCount(0);
@@ -80,6 +115,7 @@ export async function leaveOffice(page: Page) {
 
 /** Steps out of the office when inside it, for helpers that need the HUD or the menus. */
 export async function outsideOffice(page: Page) {
+  await closeOfficeOverview(page);
   if (await inOffice(page)) await leaveOffice(page);
 }
 
@@ -91,9 +127,12 @@ export async function outsideOffice(page: Page) {
 export async function aroundOffice<T>(page: Page, action: () => Promise<T>) {
   if (!(await inOffice(page))) return action();
   const area = (await officeTitle(page).innerText()).trim();
+  const library = page.getByTestId('office-library');
+  const libraryOpen = (await library.count()) ? await library.getAttribute('open') : null;
   await leaveOffice(page);
   const result = await action();
   if (area === LOBBY) await enterOffice(page);
+  else if (area === '투자' && libraryOpen !== null) await openOfficeLibrary(page);
   else await openOfficeArea(page, area);
   return result;
 }

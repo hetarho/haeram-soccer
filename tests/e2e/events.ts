@@ -26,33 +26,8 @@ export async function dismissMatchReport(page: Page) {
 }
 export async function openOffice(page: Page) {
   await dismissMatchReport(page);
-  // The address changes at once, while a page left a moment ago may still show its office until
-  // the deferred view commits (a gate run read it there just after returning home).
-  const open =
-    new URL(page.url()).pathname === '/direction' &&
-    (await page.getByTestId('owner-office').isVisible());
-  if (!open) {
-    // The office has no menu entry: it opens from home's entrance, then its 결재 라인 card (→WEB-39).
-    for (let attempt = 0; ; attempt++) {
-      try {
-        await openOfficeArea(page, '결재 라인', { timeout: 2000 });
-        break;
-      } catch (error) {
-        if (attempt >= 3) throw error;
-        // A running clock can reach a match eve before the office stops it, and the eve's
-        // backdrop takes the click (CI Firefox 40243569140). A decision's outcome toast can cover
-        // a card until it hides (CI 39952590526), and an event card may cover the toast's own
-        // close button in turn, so that click is bounded too.
-        await dismissMatchReport(page);
-        await page
-          .getByTestId('action-outcome')
-          .getByRole('button', { name: /^(확인|알림 닫기)$/ })
-          .click({ timeout: 2000 })
-          .catch(() => undefined);
-      }
-    }
-  }
-  await expect(page.getByTestId('owner-office')).toBeVisible();
+  await openOfficeArea(page, '결재라인 모아보기', { timeout: 5000 });
+  await expect(page.getByRole('dialog', { name: '결재라인 모아보기', exact: true })).toBeVisible();
   return page.getByTestId('owner-office');
 }
 export async function dismissSettingsToast(page: Page) {
@@ -68,16 +43,16 @@ async function confirmAuthority(page: Page, label: string, value: 'direct' | 'de
   const choice = page
     .getByTestId('owner-office')
     .getByRole('group', { name: label, exact: true })
-    .getByRole('button', { name: value === 'delegated' ? '위임' : '보고받기', exact: true });
+    .getByRole('button', { name: value === 'delegated' ? '자동' : '직접', exact: true });
   if ((await choice.getAttribute('aria-pressed')) === 'true') return;
   await choice.click();
   const dialog = page.getByRole('dialog', {
-    name: value === 'delegated' ? '위임하겠습니다.' : '보고받겠습니다.',
+    name: value === 'delegated' ? '자동으로 처리하겠습니다.' : '직접 결재하겠습니다.',
     exact: true,
   });
   await dialog
     .getByRole('button', {
-      name: value === 'delegated' ? '위임하기' : '보고받기',
+      name: value === 'delegated' ? '자동으로 맡기기' : '직접 결재하기',
       exact: true,
     })
     .click();
@@ -131,18 +106,18 @@ export async function configureResponsibilities(
       : undefined;
   if (bulkValue && office) {
     const choice = office.getByRole('button', {
-      name: bulkValue === 'delegated' ? '전체 위임' : '전체 보고받기',
+      name: bulkValue === 'delegated' ? '전체 자동' : '전체 직접',
       exact: true,
     });
     if ((await choice.getAttribute('aria-pressed')) !== 'true') {
       await choice.click();
       const dialog = page.getByRole('dialog', {
-        name: bulkValue === 'delegated' ? '위임하겠습니다.' : '보고받겠습니다.',
+        name: bulkValue === 'delegated' ? '자동으로 처리하겠습니다.' : '직접 결재하겠습니다.',
         exact: true,
       });
       await dialog
         .getByRole('button', {
-          name: bulkValue === 'delegated' ? '위임하기' : '보고받기',
+          name: bulkValue === 'delegated' ? '자동으로 맡기기' : '직접 결재하기',
           exact: true,
         })
         .click();

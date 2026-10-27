@@ -123,7 +123,7 @@ export function ClubFounding({
             >
               <option
                 value="default"
-                data-hint="모든 줄이 표준 · 창단 뒤 운영 방침에서 언제든 바꿔요"
+                data-hint="모든 줄이 표준 · 창단 뒤 업무 기준에서 언제든 바꿔요"
               >
                 기본 방향
               </option>

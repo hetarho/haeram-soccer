@@ -37,14 +37,14 @@ export function DecisionOwner({
       data-testid={`decision-owner-${decision}`}
     >
       <div className={s.row}>
-        <span className={s.mode}>{on ? '위임' : '보고받기'}</span>
+        <span className={s.mode}>{on ? '자동' : '직접'}</span>
         <button
           type="button"
           className={s.level}
-          aria-label={`${name} · ${on ? '위임' : '보고받기'} · 결재 라인 열기`}
+          aria-label={`${name} · ${on ? '자동' : '직접'} · 결재라인 모아보기`}
           onClick={openOwnerOffice}
         >
-          결재 라인
+          결재라인 모아보기
           <PixelIcon name="chevronRight" size={14} />
         </button>
       </div>

@@ -7,7 +7,8 @@ import type { ClientState, GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
 import type { View } from '../runtime/protocol';
 import { gameStore, initialClientState } from '../runtime/store';
-import { OwnerOffice, PendingHandover } from './OwnerOfficeView';
+import { OfficeRow, OwnerOffice, PendingHandover } from './OwnerOfficeView';
+import { DESK_RESPONSIBILITIES } from './officeDesks';
 import { officeBulkChange, officeProposal, officeSettings } from './officeChanges';
 vi.mock('../runtime/store', async (original) => ({
   ...(await original<typeof import('../runtime/store')>()),
@@ -58,14 +59,14 @@ describe('owner office page', () => {
     expect(markup).toContain('data-testid="owner-office"');
     expect(markup).toContain('data-facility-art="manager"');
     expect(markup).toContain('aria-label="선수 영입"');
-    expect(markup).toMatch(/aria-pressed="true"[^>]*>보고받기/);
-    expect(markup.match(/>보고받기<\/button>/g)).toHaveLength(9);
-    expect(markup.match(/>위임<\/button>/g)).toHaveLength(9);
-    expect(markup.indexOf('전체 보고받기')).toBeLessThan(markup.indexOf('data-facility-art'));
+    expect(markup).toMatch(/aria-pressed="true"[^>]*>직접/);
+    expect(markup.match(/>보고받기<\/button>/g)).toHaveLength(2);
+    expect(markup.match(/>위임<\/button>/g)).toHaveLength(2);
+    expect(markup.indexOf('전체 직접')).toBeLessThan(markup.indexOf('data-facility-art'));
     expect(markup).not.toContain('진행 방식 변경');
     expect(markup).not.toContain('진행 모드');
-    expect(markup).toMatch(/aria-pressed="false"[^>]*>전체 보고받기/);
-    expect(markup).toMatch(/aria-pressed="false"[^>]*>전체 위임/);
+    expect(markup).toMatch(/aria-pressed="false"[^>]*>전체 직접/);
+    expect(markup).toMatch(/aria-pressed="false"[^>]*>전체 자동/);
     expect(markup).not.toContain('role="dialog"');
     expect(markup).not.toContain('>적용</button>');
     // The result notice preference sits on its own, above the 자리를 비운 동안 section.
@@ -108,13 +109,44 @@ describe('owner office page', () => {
       w.settings = officeSettings(w, officeBulkChange(w, value)!);
       const markup = render();
       expect(markup).toMatch(
-        new RegExp(
-          `aria-pressed="true"[^>]*>${value === 'direct' ? '전체 보고받기' : '전체 위임'}`,
-        ),
+        new RegExp(`aria-pressed="true"[^>]*>${value === 'direct' ? '전체 직접' : '전체 자동'}`),
       );
-      expect(markup).toContain(`${value === 'direct' ? 0 : 9} / 9개 위임`);
+      expect(markup).toContain(`${value === 'direct' ? 0 : 9} / 9개 자동`);
     },
   );
+  it('shares the editor with each desk without exposing unrelated authority or background settings', () => {
+    const before = structuredClone(gameStore.getState().view!.world.settings);
+    for (const desk of ['players', 'staff', 'sponsor'] as const) {
+      const markup = renderToStaticMarkup(
+        createElement(OwnerOffice, {
+          client: {} as GameClient,
+          controller,
+          scope: DESK_RESPONSIBILITIES[desk],
+        }),
+      );
+      expect(markup.match(/>직접<\/button>/g)).toHaveLength(DESK_RESPONSIBILITIES[desk].length);
+      expect(markup.match(/>자동<\/button>/g)).toHaveLength(DESK_RESPONSIBILITIES[desk].length);
+      expect(markup).not.toContain('전체 직접');
+      expect(markup).not.toContain('경기 전날 보고');
+      expect(markup).not.toContain('경기 결과 알림');
+    }
+    expect(gameStore.getState().view!.world.settings).toEqual(before);
+  });
+  it('only proposes a changed explicit choice; inspecting an applied choice submits nothing', () => {
+    const select = vi.fn();
+    const row = OfficeRow({
+      label: '선수 계약',
+      detail: '계약',
+      delegated: true,
+      blocked: false,
+      onSelect: select,
+    });
+    const choices = row.props.children[1].props.children;
+    choices[1].props.onClick();
+    expect(select).not.toHaveBeenCalled();
+    choices[0].props.onClick();
+    expect(select).toHaveBeenCalledExactlyOnceWith(false);
+  });
   it('disables every mutation in readonly state', () => {
     gameStore.setState({ readonly: true });
     const markup = render();

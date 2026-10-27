@@ -182,30 +182,22 @@ function ClubScene({ w }: { w: World }) {
   );
 }
 
-/** The office's six areas, named on its entrance (→WEB-11/39). */
-const OFFICE_AREAS = '운영 방침 · 시설 · 재정 · 후원 · 구단 디자인 · 결재 라인';
-/** Home's door to the owner office, where every club lever is (→WEB-11, WEB-39). */
+/** Home's illustrated office entrance (→WEB-11/39). */
 export function OfficeEntrance({ w }: { w: World }) {
   return (
     <button
       type="button"
       className={s.office}
       data-home-part="office"
-      aria-label="구단주 사무실"
-      aria-describedby="hub-office-areas"
+      aria-label="구단주 사무실 들어가기"
       onClick={(event) => {
         event.currentTarget.focus();
         openOfficeLobby();
       }}
     >
       <FacilityArt kind="manager" world={w} className={s.officeArt} />
-      <span className={s.officeText}>
-        <b>구단주 사무실</b>
-        <small id="hub-office-areas">{OFFICE_AREAS}</small>
-      </span>
-      <span className={s.officeEnter} aria-hidden="true">
-        들어가기
-        <PixelIcon name="chevronRight" size={14} />
+      <span className={s.officeEnter}>
+        구단주 사무실 들어가기 <PixelIcon name="chevronRight" size={14} />
       </span>
     </button>
   );

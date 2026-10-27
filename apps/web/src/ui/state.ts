@@ -1,3 +1,4 @@
+import { OFFICE_DESKS, resolveOffice, type WorkDesk } from './officeDesks';
 import { rememberTask, taskAddress, useTaskMemory } from './taskMemory';
 import { create } from 'zustand';
 import type { BoardRequest } from './board';
@@ -50,24 +51,11 @@ export type TrainingTab = (typeof TRAINING_TABS)[number][0];
 const tabOf = <T extends string>(tabs: readonly (readonly [T, string])[], id: string | null) =>
   tabs.find(([tab]) => tab === id)?.[0];
 /** The owner office's areas (→WEB-39), in lobby order; each keeps its ?view= in the address. */
-export const BUSINESS_TABS = [
-  ['strategy', '운영 방침'],
-  ['build', '시설'],
-  ['finance', '재정'],
-  ['sponsor', '후원'],
-  // The authoritative club-design editor (→WEB-71/86).
-  ['identity', '구단 디자인'],
-  ['office', '결재 라인'],
-] as const;
-export type BusinessView = (typeof BUSINESS_TABS)[number][0];
-/** Where the office opens: its lobby (no ?view=) or one of its areas. */
-export type OfficeView = 'lobby' | BusinessView;
-/** Views from before 방향 open the tab that now holds their content. */
-const OLDER_BUSINESS: Record<string, BusinessView> = { facility: 'build', marketing: 'finance' };
-/** The office area a ?view= asks for, an older view's new home, else the lobby. */
-export function officeView(view: string | null): OfficeView {
-  return tabOf(BUSINESS_TABS, view) ?? OLDER_BUSINESS[view ?? ''] ?? 'lobby';
-}
+export const BUSINESS_TABS = OFFICE_DESKS;
+export type BusinessView = WorkDesk;
+/** `office` is the overview modal over the lobby, never a desk. */
+export type OfficeView = 'lobby' | 'office' | BusinessView;
+export const officeView = resolveOffice;
 /** The office's address for a view: the lobby keeps no ?view=. */
 export function officeAddress(view: OfficeView) {
   return `${paths.business}${view === 'lobby' ? '' : `?view=${view}`}`;
@@ -212,10 +200,10 @@ export function leaveOffice() {
   }
   useNavigation.getState().setPage(useNavigation.getState().officeFrom ?? 'dashboard');
 }
-/** 결재 라인, the authoritative responsibility and background page of the office (→WEB-79). */
+/** Overview overlays the current task, including an existing department sheet. */
 export function openOwnerOffice() {
-  beginTaskDetour('business');
-  openBusiness('office');
+  const memory = useTaskMemory.getState();
+  useTaskMemory.setState({ values: { ...memory.values, 'office-overview': true } });
 }
 /** Opens 훈련 (유소년 for the youth director) on a coach's training sheet (→WEB-70). */
 export function openCoachSheet(
@@ -256,8 +244,10 @@ export function openTraining(tab: TrainingTab) {
   useNavigation.getState().setPage('training');
 }
 /** Opens the office on a view: from elsewhere through its address, while it shows by request. */
-export function openBusiness(view: OfficeView) {
-  if (view === 'strategy') beginTaskDetour('business');
+export function openBusiness(
+  destination: OfficeView | 'strategy' | 'build' | 'finance' | 'facility' | 'marketing',
+) {
+  const view = officeView(destination);
   if (useNavigation.getState().page === 'business') {
     useBusinessView.getState().open(view);
     return;
@@ -557,7 +547,7 @@ export const useFacilityRequest = oneShot<'stadium' | 'training' | 'academy'>();
 export function openFacility(part: 'stadium' | 'training' | 'academy') {
   beginTaskDetour('business');
   useFacilityRequest.getState().open(part);
-  openBusiness('build');
+  openBusiness('investment');
 }
 
 export const useRecordRequest = oneShot<{ year: number }>();

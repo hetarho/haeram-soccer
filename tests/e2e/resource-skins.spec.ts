@@ -55,11 +55,11 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
     await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
     await navigate('클럽 홈');
     await page
-      .getByRole('button', { name: '결재 라인', exact: true })
+      .getByRole('button', { name: '결재라인 모아보기', exact: true })
       .filter({ visible: true })
       .first()
       .click();
-    await openOfficeArea(page, '시설');
+    await openOfficeArea(page, '투자');
     const steps = page.locator('[data-ui="facility-steps"]');
     await steps.scrollIntoViewIfNeeded();
     await imageSkin(steps.locator('li').first());

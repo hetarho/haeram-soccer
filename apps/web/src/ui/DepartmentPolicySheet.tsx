@@ -40,8 +40,8 @@ export function DepartmentPolicySheet({ client }: { client: GameClient }) {
     ? DIRECTION_AREAS.find((item) => item.key === request.area)!
     : areaOf(request.policy?.key ?? 'ticket');
   return (
-    <Dialog label={`${area.label} 운영 방침`} onClose={close} wide>
-      <Suspense fallback={<p role="status">운영 방침을 불러오고 있어요.</p>}>
+    <Dialog label={`${area.label} 업무 기준`} onClose={close} wide>
+      <Suspense fallback={<p role="status">업무 기준을 불러오고 있어요.</p>}>
         <StrategyBoard w={w} client={client} department={area.key} onApplied={close} />
       </Suspense>
     </Dialog>

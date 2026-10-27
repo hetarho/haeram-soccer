@@ -1,3 +1,4 @@
+import { OfficeOverviewHost } from './OfficeOverviewHost';
 import { CashAlarm } from './CashAlarm';
 import { FeedbackOverlay } from './FeedbackOverlay';
 import { openClubSeason, openPeople, useNavigation, type Page } from './state';
@@ -1266,6 +1267,9 @@ export function App() {
       {playing && client && <PlayerSheetHost client={client} />}
       {playing && client && <PlayerPreparationHost client={client} />}
       {playing && client && <DepartmentPolicySheet client={client} />}
+      {playing && client && controller && (
+        <OfficeOverviewHost client={client} controller={controller} />
+      )}
       {playing && <CelebrationHost />}
       {playing && controller && <AwayHost controller={controller} />}
       {pendingImport && (

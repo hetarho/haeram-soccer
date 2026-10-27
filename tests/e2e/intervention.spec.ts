@@ -72,7 +72,7 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await page.reload();
   await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await expect(page.getByTestId('hub-preparation')).toContainText('감독 자동 선발');
-  await openOfficeArea(page, '재정');
+  await openOfficeArea(page, '투자');
   await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
   await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '돈이 들어오고 나간 이유' })).toBeVisible();
@@ -128,7 +128,7 @@ for (const viewport of [
     await expect(page).toHaveURL(contextUrl);
     await expect(country).toHaveAttribute('data-value', 'FRA');
 
-    await openOfficeArea(page, '시설');
+    await openOfficeArea(page, '투자');
     const review = page.getByRole('button', { name: '경기장 공사 검토', exact: true });
     await review.click();
     const plan = page.getByRole('dialog', { name: '경기장 공사 확인' });

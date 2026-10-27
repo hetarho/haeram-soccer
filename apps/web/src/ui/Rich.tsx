@@ -87,7 +87,8 @@ import {
   ManagerRenewal,
   TalkRulePanel,
 } from './ClubStaff';
-import { PageTabs, TabPanel } from './PageTabs';
+import { PageTabs, TabList, TabPanel } from './PageTabs';
+import { AcademyPanel } from './AcademyPanel';
 import { TrainingView } from './TrainingView';
 import { FacilityOverview } from './FacilityOverview';
 import management from './ManagementView.module.css';
@@ -200,20 +201,69 @@ function People({ state, client }: Props) {
               : `감독 ${w.manager.name} · ${tacticLabel[w.tactic]}`}
           </FacilityOverview>
         )}
-        {tab === 'players' ? (
-          <Roster state={state} client={client} />
-        ) : tab === 'market' ? (
-          <RecruitmentDesk state={state} client={client} />
-        ) : tab === 'manager' ? (
-          <>
-            <ManagerOffice state={state} client={client} onReplace={() => setMarket(true)} />
-            <ManagerPost w={w} client={client} />
-          </>
+        <PersonnelPanel tab={tab} state={state} client={client} onReplace={() => setMarket(true)} />
+      </TabPanel>
+      {market && <ManagerMarket state={state} client={client} onClose={() => setMarket(false)} />}
+    </>
+  );
+}
+/** Personnel and office screens compose these same action panels; neither copies commands. */
+function PersonnelPanel({
+  tab,
+  state,
+  client,
+  onReplace,
+}: Props & { tab: PeopleTab; onReplace: () => void }) {
+  const w = state.view!.world;
+  return tab === 'players' ? (
+    <Roster state={state} client={client} />
+  ) : tab === 'market' ? (
+    <RecruitmentDesk state={state} client={client} />
+  ) : tab === 'manager' ? (
+    <>
+      <ManagerOffice state={state} client={client} onReplace={onReplace} />
+      <ManagerPost w={w} client={client} />
+    </>
+  ) : (
+    <>
+      <CoachingStaff w={w} client={client} />
+      <CoachingPlan w={w} />
+    </>
+  );
+}
+const PLAYER_WORK = [
+  ['market', '영입·매각 협상'],
+  ['players', '재계약·매각'],
+  ['academy', '유소년 승격·방출'],
+] as const;
+const STAFF_WORK = [
+  ['manager', '감독 계약'],
+  ['coaches', '스태프 계약'],
+] as const;
+function OfficePersonnelWork({ desk, state, client }: Props & { desk: 'players' | 'staff' }) {
+  const w = state.view!.world;
+  const tabs = desk === 'players' ? PLAYER_WORK : STAFF_WORK;
+  const [tab, setTab] = useTaskState<string>(w.id, `office-work-${desk}`, tabs[0][0]);
+  const [market, setMarket] = useState(false);
+  return (
+    <>
+      <TabList
+        tabs={tabs}
+        value={tab}
+        onChange={setTab}
+        label={`${desk === 'players' ? '선수' : '스태프'} 계약 업무`}
+        idPrefix={`office-${desk}`}
+      />
+      <TabPanel idPrefix={`office-${desk}`} value={tab}>
+        {tab === 'academy' ? (
+          <AcademyPanel w={w} client={client} />
         ) : (
-          <>
-            <CoachingStaff w={w} client={client} />
-            <CoachingPlan w={w} />
-          </>
+          <PersonnelPanel
+            tab={tab as PeopleTab}
+            state={state}
+            client={client}
+            onReplace={() => setMarket(true)}
+          />
         )}
       </TabPanel>
       {market && <ManagerMarket state={state} client={client} onClose={() => setMarket(false)} />}
@@ -1144,6 +1194,14 @@ function Business({ state, client, controller }: Props & { controller: Progressi
         state={state}
         client={client}
         legacy={<EconomicContext state={state} />}
+        personnel={(desk) => (
+          <OfficePersonnelWork
+            key={`${state.view!.world.id}:${desk}`}
+            desk={desk}
+            state={state}
+            client={client}
+          />
+        )}
       />
     </>
   );

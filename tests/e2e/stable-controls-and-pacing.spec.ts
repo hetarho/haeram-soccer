@@ -76,10 +76,10 @@ test('surveys every management destination during uninterrupted calendar play', 
   // a running calendar locks, and it hides the stop control (→WEB-97/98).
   await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
   await continues();
-  await openOfficeArea(page, '결재 라인');
+  await openOfficeArea(page, '결재라인 모아보기');
   const office = page.getByTestId('owner-office');
-  await expect(office.getByRole('button', { name: '전체 보고받기', exact: true })).toBeEnabled();
-  await openOfficeArea(page, '재정');
+  await expect(office.getByRole('button', { name: '전체 직접', exact: true })).toBeEnabled();
+  await openOfficeArea(page, '투자');
   await page.getByText('운영을 이어갈 추가 출자', { exact: true }).click();
   await expect(page.getByRole('button', { name: '추가 출자', exact: true })).toBeEnabled();
   await openOfficeArea(page, '구단 디자인');

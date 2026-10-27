@@ -391,7 +391,7 @@ interface DriverRow {
 }
 const homeName: Record<DevelopmentHome, string> = {
   'training/training': '1군 훈련',
-  'business/strategy': '운영 방침',
+  'business/strategy': '투자',
   'people/manager': '감독',
   'people/coaches': '스태프',
   'business/facility': '시설',

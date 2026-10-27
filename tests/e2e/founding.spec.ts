@@ -1,3 +1,4 @@
+import { openOfficeLibrary } from './office';
 import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { chooseOption, selectOptions } from './select';
@@ -7,7 +8,6 @@ import { decode } from '../../apps/web/src/adapters/persistence';
 import { createWorld, operatingCost } from '../../packages/engine/src/index';
 import type { World } from '../../packages/contracts/src/types';
 import { settle, viewGeometry } from './layout';
-import { enterOffice, openOfficeArea } from './office';
 
 async function completeFoundingGeometry(page: Page) {
   const view = await viewGeometry(page);
@@ -264,12 +264,8 @@ test('founds with a preset as its direction', async ({ page }) => {
   expect(w.build).toEqual({ youth: 'elite', culture: 'meritocracy' });
   expect(w.policy).toMatchObject({ academy: 4, recruitment: 1 });
   expect(w.direction).toMatchObject({ debut: 'early', coaches: 'elite' });
-  // The office lobby names the applied direction on its 운영 방침 card (→WEB-39).
-  await enterOffice(page);
-  await expect(page.getByTestId('office-lobby').locator('#office-fact-strategy')).toHaveText(
-    '유스 명가',
-  );
-  await openOfficeArea(page, '운영 방침');
+  // The applied direction remains available in investment's secondary configuration.
+  await openOfficeLibrary(page);
   await expect(page.getByTestId('current-strategy')).toHaveText('유스 명가');
 });
 

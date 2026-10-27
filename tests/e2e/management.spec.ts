@@ -1,3 +1,4 @@
+import { openOfficeLibrary } from './office';
 import { marketRows, marketInfo, closeMarketPanel } from './market';
 import { finishSeason, advanceOneRound } from './season-progression';
 import { openCurrentClubSeason, openSeasonReview } from './record-navigation';
@@ -40,7 +41,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await expect(localSponsor.getByTestId('sponsor-contract-local')).toBeVisible();
   await expect(page.getByRole('button', { name: '지역 후원 계약', exact: true })).toHaveCount(0);
   // Campaigns are no more: the owner spends on the town or abroad through the board's rows.
-  await openOfficeArea(page, '운영 방침');
+  await openOfficeLibrary(page);
   const global = page.getByRole('region', { name: '글로벌', exact: true });
   await global.locator('button[aria-controls^="board-area-body-"]').click();
   await global.getByRole('radio', { name: '해외 마케팅 해외 홍보', exact: true }).click();
