@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-27T13:33:06.364Z",
-  "sourceCommit": "43974477e0414381536b4bc82fd680b5dbaf2e2d",
+  "snapshotAt": "2026-10-27T13:56:34.103Z",
+  "sourceCommit": "7247a1a4a854e19cb1a70c71c0a345d31b31022c",
   "group": {
     "id": "auto-play-2",
     "branch": "work/auto-play-2",
@@ -14,7 +14,7 @@
     },
     "push": null,
     "review": "risky",
-    "runner": {
+    "lastRun": {
       "id": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
       "adapter": "builtin",
       "providers": {
@@ -37,6 +37,18 @@
         }
       ],
       "startedAt": "2026-10-27T12:17:06.695Z",
+      "stoppedAt": "2026-10-27T13:56:32.711Z",
+      "dispatched": 4,
+      "outcome": "needs-attention",
+      "failures": [
+        {
+          "role": "finish",
+          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
+          "details": [
+            "stderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness\n[presentation:locale] Missing message \"navigation.league\" (en-US); using the registered default (ko-KR). {\n  code: 'missing-message',\n  locale: 'en-US',\n  messageId: 'navigation.league',\n  message: 'Missing message \"navigation.league\" (en-US); using the registered default (ko-KR).'\n}\n\n(node:90412) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90415) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90485) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90544) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90552) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90554) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90682) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  |unit| packages/engine/src/staff.hiring.test.ts > contract terms (STAFF-11, STAFF-14) > never signs a manager past his 70th year, and the firefighter for one season\nError: Test timed out in 30000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ packages/engine/src/staff.hiring.test.ts:323:3\n    321|   });\n    322|\n    323|   it('never signs a manager past his 70th year, and the firefighter fo…\n       |   ^\n    324|     const w = world('seventy');\n    325|     expect(managerTermLimit({ born: w.year - 50 }, w.year)).toBe(5);\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n FAIL  |unit| packages/engine/src/grid/decide.test.ts > grid decisions > shoots less when ahead and more when behind, all match long\nError: Test timed out in 30000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ packages/engine/src/grid/decide.test.ts:615:3\n    613|   });\n    614|\n    615|   it('shoots less when ahead and more when behind, all match long', ()…\n       |   ^\n    616|     const at = centre(6, 2);\n    617|     const shot = (lead: number) => mixAt(ST, at, (t) => ({ ...t, lead,…\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n"
+          ]
+        }
+      ],
       "autopilot": true,
       "decisionWaitMs": 900000
     }
@@ -84,6 +96,8 @@
       "submittedBase": "43974477e0414381536b4bc82fd680b5dbaf2e2d",
       "submissionId": "2414e70c-374d-4c08-af71-87d0719639b2",
       "submittedAt": "2026-10-27T13:26:21.806Z",
+      "integratedCommit": "7247a1a4a854e19cb1a70c71c0a345d31b31022c",
+      "integratedAt": "2026-10-27T13:33:37.877Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -198,6 +212,13 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --project contract --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
           "startedAt": "2026-10-27T13:25:47.377Z",
           "finishedAt": "2026-10-27T13:26:21.480Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-27T13:33:06.474Z",
+          "finishedAt": "2026-10-27T13:33:37.656Z"
         }
       ]
     }
@@ -967,6 +988,89 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1407,
+      "at": "2026-10-27T13:33:37.809Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-27T13:33:06.474Z",
+            "finishedAt": "2026-10-27T13:33:37.656Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1408,
+      "at": "2026-10-27T13:33:37.877Z",
+      "type": "attempt",
+      "group": "auto-play-2",
+      "attemptId": "9d2bcb73-b83c-41f0-bfbf-ad8180825326",
+      "taskId": "T521",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "7247a1a4a854e19cb1a70c71c0a345d31b31022c",
+        "integratedAt": "2026-10-27T13:33:37.877Z"
+      }
+    },
+    {
+      "sequence": 1409,
+      "at": "2026-10-27T13:56:32.711Z",
+      "type": "group",
+      "group": "auto-play-2",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "ead0e6fb-544d-4cb0-89b5-fb33840ed96a",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-27T12:17:06.695Z",
+          "stoppedAt": "2026-10-27T13:56:32.711Z",
+          "dispatched": 4,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "role": "finish",
+              "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
+              "details": [
+                "stderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness\n[presentation:locale] Missing message \"navigation.league\" (en-US); using the registered default (ko-KR). {\n  code: 'missing-message',\n  locale: 'en-US',\n  messageId: 'navigation.league',\n  message: 'Missing message \"navigation.league\" (en-US); using the registered default (ko-KR).'\n}\n\n(node:90412) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90415) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90485) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90544) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90552) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90554) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:90682) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  |unit| packages/engine/src/staff.hiring.test.ts > contract terms (STAFF-11, STAFF-14) > never signs a manager past his 70th year, and the firefighter for one season\nError: Test timed out in 30000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ packages/engine/src/staff.hiring.test.ts:323:3\n    321|   });\n    322|\n    323|   it('never signs a manager past his 70th year, and the firefighter fo…\n       |   ^\n    324|     const w = world('seventy');\n    325|     expect(managerTermLimit({ born: w.year - 50 }, w.year)).toBe(5);\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n FAIL  |unit| packages/engine/src/grid/decide.test.ts > grid decisions > shoots less when ahead and more when behind, all match long\nError: Test timed out in 30000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ packages/engine/src/grid/decide.test.ts:615:3\n    613|   });\n    614|\n    615|   it('shoots less when ahead and more when behind, all match long', ()…\n       |   ^\n    616|     const at = centre(6, 2);\n    617|     const shot = (lead: number) => mixAt(ST, at, (t) => ({ ...t, lead,…\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n"
+              ]
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
