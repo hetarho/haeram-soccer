@@ -366,7 +366,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | todo |
+| T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | doing@261027.n3w8 |
 | T524 | Reads during automatic play wait for the shown date | WEB | T521 | todo |
 
 ## work
