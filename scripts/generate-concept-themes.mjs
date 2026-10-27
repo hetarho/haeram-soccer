@@ -315,7 +315,22 @@ export const CONCEPT_THEMES = {
   },
 };
 
-async function generateConceptThemes({ check = false } = {}) {
+function themedTrophy(entry, id) {
+  const themed = (resource) => ({
+    ...resource,
+    resource: resource.resource.replace('/art/trophies/standard/', `/art/trophies/${id}/`),
+  });
+  return {
+    default: themed(entry.default),
+    ...(entry.variants && {
+      variants: Object.fromEntries(
+        Object.entries(entry.variants).map(([variant, resource]) => [variant, themed(resource)]),
+      ),
+    }),
+  };
+}
+
+async function generateConceptThemes({ check = false, trophiesOnly = false } = {}) {
   const output = async (name, value) => {
     const path = resolve(root, `apps/web/public/presentation/themes/${name}`);
     const generated = JSON.stringify(value, null, 2) + '\n';
@@ -327,6 +342,17 @@ async function generateConceptThemes({ check = false } = {}) {
   const standard = JSON.parse(
     await readFile(resolve(root, 'apps/web/public/presentation/themes/standard.json'), 'utf8'),
   );
+  if (trophiesOnly) {
+    for (const id of Object.keys(CONCEPT_THEMES)) {
+      const theme = JSON.parse(
+        await readFile(resolve(root, `apps/web/public/presentation/themes/${id}.json`), 'utf8'),
+      );
+      for (const [role, entry] of Object.entries(standard.icons))
+        if (role.startsWith('trophy.')) theme.icons[role] = themedTrophy(entry, id);
+      await output(`${id}.json`, theme);
+    }
+    return;
+  }
   for (const [id, config] of Object.entries(CONCEPT_THEMES)) {
     const theme = structuredClone(standard);
     theme.id = id;
@@ -343,19 +369,10 @@ async function generateConceptThemes({ check = false } = {}) {
       overlay: 'transparent',
     };
     theme.icons = Object.fromEntries(
-      Object.keys(standard.icons).map((role) => [
-        role,
-        {
-          default: role.startsWith('trophy.')
-            ? {
-                type: 'image',
-                resource: `/art/trophies/${id}/${role.slice('trophy.'.length)}.webp`,
-                width: 336,
-                height: 336,
-              }
-            : conceptIcon(role, id),
-        },
-      ]),
+      Object.entries(standard.icons).map(([role, entry]) => {
+        if (!role.startsWith('trophy.')) return [role, { default: conceptIcon(role, id) }];
+        return [role, themedTrophy(entry, id)];
+      }),
     );
     theme.images.facility = {
       pattern: `/art/${id}/{era}/{kind}-{stage}.webp`,
@@ -381,8 +398,9 @@ async function generateConceptThemes({ check = false } = {}) {
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const check = process.argv.includes('--check');
-  await generateConceptThemes({ check });
+  const trophiesOnly = process.argv.includes('--trophies-only');
+  await generateConceptThemes({ check, trophiesOnly });
   console.log(
-    `${check ? 'Verified' : 'Generated'} two complete concept packs with semantic pictograms and generated trophy artwork.`,
+    `${check ? 'Verified' : 'Generated'} ${trophiesOnly ? 'concept trophy resources and competition variants' : 'two complete concept packs with semantic pictograms and generated trophy artwork'}.`,
   );
 }

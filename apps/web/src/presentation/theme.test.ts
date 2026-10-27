@@ -240,22 +240,34 @@ describe('theme resource resolution', () => {
       );
       const theme = createThemeResolver(pack, { url: packUrl });
       for (const role of THEME_ICON_ROLES.filter((role) => role.startsWith('trophy.'))) {
-        const resource = theme.icon(role);
-        if (resource.type !== 'image')
-          throw new Error(`Expected trophy artwork: ${entry.id}/${role}`);
-        const image = readFileSync(new URL(`../../public${resource.resource}`, import.meta.url));
-        expect(image.toString('ascii', 8, 12), resource.resource).toBe('WEBP');
-        expect(image.toString('ascii', 12, 16), resource.resource).toBe('VP8X');
-        expect(image[20] & 0x10, `${resource.resource} keeps transparency`).toBe(0x10);
-        expect(image.length, `${resource.resource} stays compact`).toBeLessThan(100_000);
-        artwork.add(createHash('sha256').update(image).digest('hex'));
+        const variants = Object.keys(pack.icons[role].variants ?? {});
+        const required =
+          role === 'trophy.league'
+            ? ['tier-2', 'tier-3', 'tier-4', 'amateur']
+            : role === 'trophy.continental'
+              ? ['cwc', 'uel', 'uecl', 'super']
+              : [];
+        expect(variants, `${entry.id}/${role} competition inventory`).toEqual(required);
+        for (const variant of [undefined, ...variants]) {
+          const resource = theme.icon(role, variant);
+          if (resource.type !== 'image')
+            throw new Error(`Expected trophy artwork: ${entry.id}/${role}`);
+          const image = readFileSync(new URL(`../../public${resource.resource}`, import.meta.url));
+          expect(image.toString('ascii', 8, 12), resource.resource).toBe('WEBP');
+          expect(image.toString('ascii', 12, 16), resource.resource).toBe('VP8X');
+          expect(image[20] & 0x10, `${resource.resource} keeps transparency`).toBe(0x10);
+          expect(image.length, `${resource.resource} stays compact`).toBeLessThan(100_000);
+          expect(image.readUIntLE(24, 3) + 1, resource.resource).toBe(resource.width);
+          expect(image.readUIntLE(27, 3) + 1, resource.resource).toBe(resource.height);
+          artwork.add(createHash('sha256').update(image).digest('hex'));
+        }
         // Unearned treatment is applied by TrophyIcon while reusing the same image.
-        expect(theme.icon(role, 'unearned')).toEqual(resource);
+        expect(theme.icon(role, 'unearned')).toEqual(theme.icon(role));
       }
     }
     expect(artwork.size).toBe(
       registryData.entries.length *
-        THEME_ICON_ROLES.filter((role) => role.startsWith('trophy.')).length,
+        (THEME_ICON_ROLES.filter((role) => role.startsWith('trophy.')).length + 8),
     );
   });
 

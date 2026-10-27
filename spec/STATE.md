@@ -14,7 +14,6 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
-| cups | hq-dev1-pve2-vm2 | pair | 2026-10-27T03:06Z | 2026-10-27T03:06Z | T495 |
 
 ## inbox
 - 261027 decided WEB-79 WEB-39: a better name for the report/delegation menu → 결재 라인 (alt: 업무 분장 | 권한 위임 | 보고 체계), the owner signs off or staff settle; 구단주 사무실 becomes the whole place holding every club lever
@@ -356,7 +355,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T495 | Give competition trophies distinct silhouettes | WEB ARCH | T494 | doing@261027.cups |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -372,12 +370,14 @@
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 
 ## next
+- T494–T495 complete: theme-matched trophy artwork and distinct division/continental silhouettes; all required batch stages passed before publication.
 - o7h4 pushed T490–T493 (owner office, home season card, records sub-screen) to main after the ARCH-30 batch passed on eaf5f3d1; confirm its decided inbox items.
 - T473 T474 T475 T476 are complete; no implementation task remains.
 - module-1026 passed the final ARCH-30 gate on 5afd5956; main b050ce93 passed CI 40336122845 on every browser. Parked product ideations remain parked.
 - k2d7: final batch gate on the committed head in a clean worktree, then one push to main and CI.
 
 ## log
+- 261027 T495 done: 32 competition-specific trophy variants across four themes, country-aware cabinet selection and safe fallback; unit/integration/contract and all 299 Chromium journeys passed, with unchanged-timeout recovery for load-related tests.
 - 261027 T494 done: redrew all 21 print/pixel/sticker trophies in their theme's illustration style; preserved the seven standard photographs; asset integrity and task checks passed.
 - 261027 o7h4 closed: T490–T493 and gate fixes; batch passed on eaf5f3d1 (299/299 Chromium), pushed to main
 - 261027 batch gate (o7h4) 279/299 Chromium: fixed office-aware helpers (address-based office, selected home tab, celebration and event cards), event groups link 결재 라인, wide home pairs the entrance with the season card, short-phone spacing keeps seven standings rows; the 20 journeys pass on rerun
@@ -397,4 +397,3 @@
 - 261027 ideation dead-balls-and-finishing ready (owner): every stoppage rush ≥ 2× → still beat by kind, both tied to speed; named free-kick taker only in shooting/crossing range; shot choice from the chance bent by position (FW > MF > DF, role), school and tactic, traits, then recalibrated; corners 2–3 back / 1–2 up drawn, score from 80′, keeper up in added time one behind
 - 261027 m6p4 closed: T473 T474 T475 T476 complete on main b050ce93; final local batch and all nine jobs of CI 40336122845 passed, including every browser; API confirmed success after the observer HTML fallback could not read completed conclusions
 - 261027 ideation dead-balls-and-finishing start (owner): dead balls crawl, forwards walk back for free kicks, forwards pass up open goals, corners crowd — measured diagnosis recorded
-- 261027 k2d7 batch gate passed on 92c81b24 (clean worktree): typecheck/lint/format, unit 1145, integration 1158 + 4 skips, contract 39, catalogs, presentation, build, Chromium 299; the first run failed one goal-cue journey whose fixture lost a goal under revision 4 (fixed in 92c81b24)

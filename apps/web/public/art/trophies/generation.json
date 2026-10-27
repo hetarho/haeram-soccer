@@ -1,5 +1,5 @@
 {
-  "method": "Built-in image_gen; theme illustrations use their existing UI and approved illustrated league trophy as style references, with isolated alpha cleanup, FFmpeg preparation and the shared Chromium WebP encoding pipeline; pixel sprites remain native 48x48 for CSS nearest-neighbor display. Standard photographic artwork retained.",
+  "method": "Built-in image_gen; theme-matched trophy illustrations and competition-specific silhouettes use the existing UI as style references, with isolated alpha cleanup, FFmpeg preparation and shared Chromium WebP encoding. Standard retains photographic treatment; pixel sprites remain native 48x48 for CSS nearest-neighbor display.",
   "date": "2026-10-27",
   "references": [
     {
@@ -601,6 +601,774 @@
       "height": 336,
       "bytes": 26238,
       "sha256": "b6201eabfda19401336b4dcc097ff5f1aae4e4df69a9429b149e1d3567db50c5"
+    },
+    {
+      "theme": "matchday-print",
+      "kind": "league-tier-2",
+      "role": "trophy.league",
+      "variant": "tier-2",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: SECOND-DIVISION TITLE: a very WIDE, LOW, shallow golden open bowl with a broad rounded belly, small outward CURL handles at bowl height, a short narrow stem and a low black circular pedestal. Width greater than height. NO crown, NO lid, NO tall urn. A squat bowl silhouette, clearly unlike a tall crowned league cup. Style/medium: Clearly drawn TWO-DIMENSIONAL WOODCUT / LINOCUT sports programme art matching the supplied interface's carved stadium. Warm charcoal outlines and ink shapes, big cream negative-space cuts, coarse hand-carved hatching with restrained ochre and vermilion accent inks. Silver is cream negative-space and charcoal cuts, gold is flat ochre. At most four inks. No photographic reflections, smooth shading, gradients or 3D render. Do not copy any object or UI layout from the style reference. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/design/home-themes/captures/print.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-1d14791f-4411-4213-940e-a98013760aa1.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 0,
+          "y": 348,
+          "width": 1254,
+          "height": 743
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "matchday-print/league-tier-2.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 26312,
+      "sha256": "569cd6410af1917b44abf9b1abee2ac276f256a5d7216a6e90be2bf787921025"
+    },
+    {
+      "theme": "matchday-print",
+      "kind": "league-tier-3",
+      "role": "trophy.league",
+      "variant": "tier-3",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: THIRD-DIVISION TITLE: a SQUARE silver Art Deco cup with a straight-sided BOX-shaped bowl, two rigid RECTANGULAR 90-degree handles, a straight short stem and a dark blue stepped SQUARE base. Angular geometric silhouette. NO crown, NO lid, NO curved urn or round handles. Style/medium: Clearly drawn TWO-DIMENSIONAL WOODCUT / LINOCUT sports programme art matching the supplied interface's carved stadium. Warm charcoal outlines and ink shapes, big cream negative-space cuts, coarse hand-carved hatching with restrained ochre and vermilion accent inks. Silver is cream negative-space and charcoal cuts, gold is flat ochre. At most four inks. No photographic reflections, smooth shading, gradients or 3D render. Do not copy any object or UI layout from the style reference. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/design/home-themes/captures/print.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-f6c0a516-5abe-4c82-bd55-61b6b4dba494.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 130,
+          "y": 110,
+          "width": 994,
+          "height": 1058
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "matchday-print/league-tier-3.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 37668,
+      "sha256": "adb1f223d8f247687d05166b9d110bf8750e736b3286446c4bbce266962cfbc3"
+    },
+    {
+      "theme": "matchday-print",
+      "kind": "league-tier-4",
+      "role": "trophy.league",
+      "variant": "tier-4",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: FOURTH-DIVISION TITLE: a round bronze FOOTBALL SHIELD / salver standing upright on a short dark wooden support. Large circular plate with a restrained embossed football at center and a plain raised rim, small horizontal rectangular dark wood base. NO cup bowl, handles, crown or wreath. A round shield trophy. Style/medium: Clearly drawn TWO-DIMENSIONAL WOODCUT / LINOCUT sports programme art matching the supplied interface's carved stadium. Warm charcoal outlines and ink shapes, big cream negative-space cuts, coarse hand-carved hatching with restrained ochre and vermilion accent inks. Silver is cream negative-space and charcoal cuts, gold is flat ochre. At most four inks. No photographic reflections, smooth shading, gradients or 3D render. Do not copy any object or UI layout from the style reference. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/design/home-themes/captures/print.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-21802321-3f73-463c-a48a-3a0d33b85136.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 94,
+          "y": 37,
+          "width": 1067,
+          "height": 1172
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "matchday-print/league-tier-4.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 49500,
+      "sha256": "e5d17cc2412c7b925489293ae525599d0aeec76ad24309f1a3edc76e51a8d83e"
+    },
+    {
+      "theme": "matchday-print",
+      "kind": "league-amateur",
+      "role": "trophy.league",
+      "variant": "amateur",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: AMATEUR LEAGUE TITLE: a simple warm dark WOODEN RECTANGULAR award plaque standing vertically, a small bronze football relief near its upper center and short restrained bronze laurel sprigs, mounted on a plain low wooden foot. A modest, tactile local football award. NO cup bowl, handles, crown, letters or numbers. Clearly rectangular silhouette. Style/medium: Clearly drawn TWO-DIMENSIONAL WOODCUT / LINOCUT sports programme art matching the supplied interface's carved stadium. Warm charcoal outlines and ink shapes, big cream negative-space cuts, coarse hand-carved hatching with restrained ochre and vermilion accent inks. Silver is cream negative-space and charcoal cuts, gold is flat ochre. At most four inks. No photographic reflections, smooth shading, gradients or 3D render. Do not copy any object or UI layout from the style reference. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/design/home-themes/captures/print.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-b3cf2a4c-3636-41b6-b823-ff17e38f0f9e.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 200,
+          "y": 112,
+          "width": 855,
+          "height": 1033
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "matchday-print/league-amateur.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 40250,
+      "sha256": "d8725d1a89a0a5276b1f5c459ff278aa5ef621a4e2eaf04bb1b216ccff9f80f6"
+    },
+    {
+      "theme": "matchday-print",
+      "kind": "continental-cwc",
+      "role": "trophy.continental",
+      "variant": "cwc",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: CUP WINNERS' CUP TITLE: a very slender antique-bronze lidded CHALICE, small tulip-shaped fluted bowl, ornate pointed spire lid, two very thin outward S-shaped handles, an unusually LONG thin stem and small circular metal foot. Height much greater than bowl width. Bronze rather than silver. No crown, no broad urn or black pedestal. Style/medium: Clearly drawn TWO-DIMENSIONAL WOODCUT / LINOCUT sports programme art matching the supplied interface's carved stadium. Warm charcoal outlines and ink shapes, big cream negative-space cuts, coarse hand-carved hatching with restrained ochre and vermilion accent inks. Silver is cream negative-space and charcoal cuts, gold is flat ochre. At most four inks. No photographic reflections, smooth shading, gradients or 3D render. Do not copy any object or UI layout from the style reference. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/design/home-themes/captures/print.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-0d38a0f2-4f29-4918-813c-15e5c9dad743.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 373,
+          "y": 32,
+          "width": 508,
+          "height": 1186
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "matchday-print/continental-cwc.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 15028,
+      "sha256": "2d6b8104bac62f9a78240620b1fcb0dc5ed935f9c811f7785a6711901df8f30f"
+    },
+    {
+      "theme": "matchday-print",
+      "kind": "continental-uel",
+      "role": "trophy.continental",
+      "variant": "uel",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: EUROPA TITLE: a tall, SOLID SILVER faceted octagonal tapered VESSEL, very broad flat open top and sides narrowing downwards to a small amber-brown octagonal pedestal. Angular hammered silver planes, thick substantial upper body. Absolutely NO handles, lid, crown or stem. Resembles a tall sculptural silver tower/vase, clearly unlike a handled cup. Style/medium: Clearly drawn TWO-DIMENSIONAL WOODCUT / LINOCUT sports programme art matching the supplied interface's carved stadium. Warm charcoal outlines and ink shapes, big cream negative-space cuts, coarse hand-carved hatching with restrained ochre and vermilion accent inks. Silver is cream negative-space and charcoal cuts, gold is flat ochre. At most four inks. No photographic reflections, smooth shading, gradients or 3D render. Do not copy any object or UI layout from the style reference. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/design/home-themes/captures/print.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-6624c4d6-3d1f-469c-a10f-15bf85dd1c4d.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 288,
+          "y": 74,
+          "width": 678,
+          "height": 1105
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "matchday-print/continental-uel.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 28010,
+      "sha256": "e0329d98270a0f6facaa3c16b7db21da7538e0ac449950a527881ad86ad0e1e6"
+    },
+    {
+      "theme": "matchday-print",
+      "kind": "continental-uecl",
+      "role": "trophy.continental",
+      "variant": "uecl",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: CONFERENCE TITLE: a slim modern SILVER CAGE COLUMN made from clearly separated vertical curved metal ribs winding slightly around an open hollow core, the ribs flare gently at top and meet a dark emerald circular base. Visible transparent openings between the thick ribs. NO bowl, handles, lid, crown or football. A tall openwork ribbed column silhouette. Style/medium: Clearly drawn TWO-DIMENSIONAL WOODCUT / LINOCUT sports programme art matching the supplied interface's carved stadium. Warm charcoal outlines and ink shapes, big cream negative-space cuts, coarse hand-carved hatching with restrained ochre and vermilion accent inks. Silver is cream negative-space and charcoal cuts, gold is flat ochre. At most four inks. No photographic reflections, smooth shading, gradients or 3D render. Do not copy any object or UI layout from the style reference. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/design/home-themes/captures/print.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-00ce932f-65ed-4c6a-8d20-6d364bff0181.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 384,
+          "y": 49,
+          "width": 488,
+          "height": 1161
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "matchday-print/continental-uecl.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 21446,
+      "sha256": "e0f12f7a9e7f5b600100ac03e09e00f7de0c52d2264344bb6d0bd7f042829e77"
+    },
+    {
+      "theme": "matchday-print",
+      "kind": "continental-super",
+      "role": "trophy.continental",
+      "variant": "super",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: SUPER CUP TITLE: a compact smooth SILVER FOOTBALL ORB lifted by two sweeping silver arms forming an open V / wishbone, set on a low midnight-blue ROUND base. Silver sphere with simple football panel seams; open transparent gap inside the V support. NO cup bowl, handles, crown, lid or gold ball. Clearly a silver ball-on-wishbone sculpture. Style/medium: Clearly drawn TWO-DIMENSIONAL WOODCUT / LINOCUT sports programme art matching the supplied interface's carved stadium. Warm charcoal outlines and ink shapes, big cream negative-space cuts, coarse hand-carved hatching with restrained ochre and vermilion accent inks. Silver is cream negative-space and charcoal cuts, gold is flat ochre. At most four inks. No photographic reflections, smooth shading, gradients or 3D render. Do not copy any object or UI layout from the style reference. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/design/home-themes/captures/print.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-fa4155ca-060c-4acf-8798-82de2088a75a.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 303,
+          "y": 47,
+          "width": 657,
+          "height": 1164
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "matchday-print/continental-super.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 23860,
+      "sha256": "cb7da63c8c2cc293b3ca6d821a57e4480178319fed74093b93646bcd029c6242"
+    },
+    {
+      "theme": "pixel",
+      "kind": "league-tier-2",
+      "role": "trophy.league",
+      "variant": "tier-2",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: SECOND-DIVISION TITLE: a very WIDE, LOW, shallow golden open bowl with a broad rounded belly, small outward CURL handles at bowl height, a short narrow stem and a low black circular pedestal. Width greater than height. NO crown, NO lid, NO tall urn. A squat bowl silhouette, clearly unlike a tall crowned league cup. Style/medium: LOW-RESOLUTION 16-bit football inventory PIXEL SPRITE designed on a 48x48 grid, nearest-neighbor square pixels and obvious chunky 1px clusters. Restricted ivory/silver gray/ochre-gold/dark forest/charcoal/navy palette, stepped dark contour, 2 or 3 hard-edged shade levels. No antialiasing, smooth curves, gradients, realistic chrome or photography. The white cup glyph reference demonstrates ONLY pixel edge language: do not copy its cup silhouette; draw the specified entirely different award. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/public/art/pixel/ui/icon-cup.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-928cb3f6-a423-49f9-ab7f-6e6238b7b97e.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 26,
+          "y": 369,
+          "width": 1202,
+          "height": 686
+        },
+        "filter": "scale=40:40:force_original_aspect_ratio=decrease:flags=neighbor,format=rgba,lut=a='if(lt(val,128),0,255)',pad=48:48:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "pixel/league-tier-2.webp",
+      "width": 48,
+      "height": 48,
+      "bytes": 1388,
+      "sha256": "5ed571381ab2a6f188c250149ff381a54455361f5b016feec10854751f107372"
+    },
+    {
+      "theme": "pixel",
+      "kind": "league-tier-3",
+      "role": "trophy.league",
+      "variant": "tier-3",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: THIRD-DIVISION TITLE: a SQUARE silver Art Deco cup with a straight-sided BOX-shaped bowl, two rigid RECTANGULAR 90-degree handles, a straight short stem and a dark blue stepped SQUARE base. Angular geometric silhouette. NO crown, NO lid, NO curved urn or round handles. Style/medium: LOW-RESOLUTION 16-bit football inventory PIXEL SPRITE designed on a 48x48 grid, nearest-neighbor square pixels and obvious chunky 1px clusters. Restricted ivory/silver gray/ochre-gold/dark forest/charcoal/navy palette, stepped dark contour, 2 or 3 hard-edged shade levels. No antialiasing, smooth curves, gradients, realistic chrome or photography. The white cup glyph reference demonstrates ONLY pixel edge language: do not copy its cup silhouette; draw the specified entirely different award. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/public/art/pixel/ui/icon-cup.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-5c88f603-815c-47b6-b18d-f313a548b047.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 128,
+          "y": 147,
+          "width": 998,
+          "height": 992
+        },
+        "filter": "scale=40:40:force_original_aspect_ratio=decrease:flags=neighbor,format=rgba,lut=a='if(lt(val,128),0,255)',pad=48:48:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "pixel/league-tier-3.webp",
+      "width": 48,
+      "height": 48,
+      "bytes": 1520,
+      "sha256": "481ccf5bee0055f86694999b5d8c8d40d301854d188283b13ec1574f5788bc3e"
+    },
+    {
+      "theme": "pixel",
+      "kind": "league-tier-4",
+      "role": "trophy.league",
+      "variant": "tier-4",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: FOURTH-DIVISION TITLE: a round bronze FOOTBALL SHIELD / salver standing upright on a short dark wooden support. Large circular plate with a restrained embossed football at center and a plain raised rim, small horizontal rectangular dark wood base. NO cup bowl, handles, crown or wreath. A round shield trophy. Style/medium: LOW-RESOLUTION 16-bit football inventory PIXEL SPRITE designed on a 48x48 grid, nearest-neighbor square pixels and obvious chunky 1px clusters. Restricted ivory/silver gray/ochre-gold/dark forest/charcoal/navy palette, stepped dark contour, 2 or 3 hard-edged shade levels. No antialiasing, smooth curves, gradients, realistic chrome or photography. The white cup glyph reference demonstrates ONLY pixel edge language: do not copy its cup silhouette; draw the specified entirely different award. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/public/art/pixel/ui/icon-cup.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-674e2b1d-ed4c-4d76-bd3f-8ab1377fbe92.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 141,
+          "y": 121,
+          "width": 962,
+          "height": 1041
+        },
+        "filter": "scale=40:40:force_original_aspect_ratio=decrease:flags=neighbor,format=rgba,lut=a='if(lt(val,128),0,255)',pad=48:48:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "pixel/league-tier-4.webp",
+      "width": 48,
+      "height": 48,
+      "bytes": 1906,
+      "sha256": "d45c8e8929e6c30028864d84b6cb3537536d592bf2ec8eda7395e5662a605e8f"
+    },
+    {
+      "theme": "pixel",
+      "kind": "league-amateur",
+      "role": "trophy.league",
+      "variant": "amateur",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: AMATEUR LEAGUE TITLE: a simple warm dark WOODEN RECTANGULAR award plaque standing vertically, a small bronze football relief near its upper center and short restrained bronze laurel sprigs, mounted on a plain low wooden foot. A modest, tactile local football award. NO cup bowl, handles, crown, letters or numbers. Clearly rectangular silhouette. Style/medium: LOW-RESOLUTION 16-bit football inventory PIXEL SPRITE designed on a 48x48 grid, nearest-neighbor square pixels and obvious chunky 1px clusters. Restricted ivory/silver gray/ochre-gold/dark forest/charcoal/navy palette, stepped dark contour, 2 or 3 hard-edged shade levels. No antialiasing, smooth curves, gradients, realistic chrome or photography. The white cup glyph reference demonstrates ONLY pixel edge language: do not copy its cup silhouette; draw the specified entirely different award. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/public/art/pixel/ui/icon-cup.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-7e37df46-7f0b-4770-b887-910e141fbc79.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 229,
+          "y": 148,
+          "width": 795,
+          "height": 995
+        },
+        "filter": "scale=40:40:force_original_aspect_ratio=decrease:flags=neighbor,format=rgba,lut=a='if(lt(val,128),0,255)',pad=48:48:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "pixel/league-amateur.webp",
+      "width": 48,
+      "height": 48,
+      "bytes": 1594,
+      "sha256": "f3e4b9c403533a4950b906308b578b3c2b118f6e6b9d36539391e326d0bc0645"
+    },
+    {
+      "theme": "pixel",
+      "kind": "continental-cwc",
+      "role": "trophy.continental",
+      "variant": "cwc",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: CUP WINNERS' CUP TITLE: a very slender antique-bronze lidded CHALICE, small tulip-shaped fluted bowl, ornate pointed spire lid, two very thin outward S-shaped handles, an unusually LONG thin stem and small circular metal foot. Height much greater than bowl width. Bronze rather than silver. No crown, no broad urn or black pedestal. Style/medium: LOW-RESOLUTION 16-bit football inventory PIXEL SPRITE designed on a 48x48 grid, nearest-neighbor square pixels and obvious chunky 1px clusters. Restricted ivory/silver gray/ochre-gold/dark forest/charcoal/navy palette, stepped dark contour, 2 or 3 hard-edged shade levels. No antialiasing, smooth curves, gradients, realistic chrome or photography. The white cup glyph reference demonstrates ONLY pixel edge language: do not copy its cup silhouette; draw the specified entirely different award. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/public/art/pixel/ui/icon-cup.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-796e9363-77fc-4de0-a124-7a5d121b4fa2.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 401,
+          "y": 35,
+          "width": 452,
+          "height": 1145
+        },
+        "filter": "scale=40:40:force_original_aspect_ratio=decrease:flags=neighbor,format=rgba,lut=a='if(lt(val,128),0,255)',pad=48:48:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "pixel/continental-cwc.webp",
+      "width": 48,
+      "height": 48,
+      "bytes": 1152,
+      "sha256": "336941283d3a1b34c28a2f253588593c913bfad22efaf0862d41f7e4f0a784df"
+    },
+    {
+      "theme": "pixel",
+      "kind": "continental-uel",
+      "role": "trophy.continental",
+      "variant": "uel",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: EUROPA TITLE: a tall, SOLID SILVER faceted octagonal tapered VESSEL, very broad flat open top and sides narrowing downwards to a small amber-brown octagonal pedestal. Angular hammered silver planes, thick substantial upper body. Absolutely NO handles, lid, crown or stem. Resembles a tall sculptural silver tower/vase, clearly unlike a handled cup. Style/medium: LOW-RESOLUTION 16-bit football inventory PIXEL SPRITE designed on a 48x48 grid, nearest-neighbor square pixels and obvious chunky 1px clusters. Restricted ivory/silver gray/ochre-gold/dark forest/charcoal/navy palette, stepped dark contour, 2 or 3 hard-edged shade levels. No antialiasing, smooth curves, gradients, realistic chrome or photography. The white cup glyph reference demonstrates ONLY pixel edge language: do not copy its cup silhouette; draw the specified entirely different award. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/public/art/pixel/ui/icon-cup.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-748b7c48-dc6f-4dbe-aa8e-d3cb2a601c5f.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 259,
+          "y": 97,
+          "width": 736,
+          "height": 1063
+        },
+        "filter": "scale=40:40:force_original_aspect_ratio=decrease:flags=neighbor,format=rgba,lut=a='if(lt(val,128),0,255)',pad=48:48:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "pixel/continental-uel.webp",
+      "width": 48,
+      "height": 48,
+      "bytes": 1480,
+      "sha256": "6d78af1d8857fa8a5dcf53e921f93d5a5439ea59bb0c7489f5661a4cffdd679f"
+    },
+    {
+      "theme": "pixel",
+      "kind": "continental-uecl",
+      "role": "trophy.continental",
+      "variant": "uecl",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: CONFERENCE TITLE: a slim modern SILVER CAGE COLUMN made from clearly separated vertical curved metal ribs winding slightly around an open hollow core, the ribs flare gently at top and meet a dark emerald circular base. Visible transparent openings between the thick ribs. NO bowl, handles, lid, crown or football. A tall openwork ribbed column silhouette. Style/medium: LOW-RESOLUTION 16-bit football inventory PIXEL SPRITE designed on a 48x48 grid, nearest-neighbor square pixels and obvious chunky 1px clusters. Restricted ivory/silver gray/ochre-gold/dark forest/charcoal/navy palette, stepped dark contour, 2 or 3 hard-edged shade levels. No antialiasing, smooth curves, gradients, realistic chrome or photography. The white cup glyph reference demonstrates ONLY pixel edge language: do not copy its cup silhouette; draw the specified entirely different award. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/public/art/pixel/ui/icon-cup.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-52a080d5-ed52-41f2-aa8a-d78dba1d5069.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 358,
+          "y": 77,
+          "width": 543,
+          "height": 1118
+        },
+        "filter": "scale=40:40:force_original_aspect_ratio=decrease:flags=neighbor,format=rgba,lut=a='if(lt(val,128),0,255)',pad=48:48:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "pixel/continental-uecl.webp",
+      "width": 48,
+      "height": 48,
+      "bytes": 1446,
+      "sha256": "6c30b5a1a95a3d01bbd5d033fe64a23e52f93469fcaead6fa2ef419ed8dba7a9"
+    },
+    {
+      "theme": "pixel",
+      "kind": "continental-super",
+      "role": "trophy.continental",
+      "variant": "super",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: SUPER CUP TITLE: a compact smooth SILVER FOOTBALL ORB lifted by two sweeping silver arms forming an open V / wishbone, set on a low midnight-blue ROUND base. Silver sphere with simple football panel seams; open transparent gap inside the V support. NO cup bowl, handles, crown, lid or gold ball. Clearly a silver ball-on-wishbone sculpture. Style/medium: LOW-RESOLUTION 16-bit football inventory PIXEL SPRITE designed on a 48x48 grid, nearest-neighbor square pixels and obvious chunky 1px clusters. Restricted ivory/silver gray/ochre-gold/dark forest/charcoal/navy palette, stepped dark contour, 2 or 3 hard-edged shade levels. No antialiasing, smooth curves, gradients, realistic chrome or photography. The white cup glyph reference demonstrates ONLY pixel edge language: do not copy its cup silhouette; draw the specified entirely different award. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/public/art/pixel/ui/icon-cup.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-acdb3384-a3ba-46ac-ab8b-6617840d9a1e.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 313,
+          "y": 88,
+          "width": 628,
+          "height": 1097
+        },
+        "filter": "scale=40:40:force_original_aspect_ratio=decrease:flags=neighbor,format=rgba,lut=a='if(lt(val,128),0,255)',pad=48:48:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "pixel/continental-super.webp",
+      "width": 48,
+      "height": 48,
+      "bytes": 1404,
+      "sha256": "89a3fd2316ccd344d9aff7983155bb9ee4672b35b6bff184b51130df137ddc03"
+    },
+    {
+      "theme": "sticker-club",
+      "kind": "league-tier-2",
+      "role": "trophy.league",
+      "variant": "tier-2",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: SECOND-DIVISION TITLE: a very WIDE, LOW, shallow golden open bowl with a broad rounded belly, small outward CURL handles at bowl height, a short narrow stem and a low black circular pedestal. Width greater than height. NO crown, NO lid, NO tall urn. A squat bowl silhouette, clearly unlike a tall crowned league cup. Style/medium: FLAT 2D CARTOON football collector sticker matching the supplied interface's cheerful illustrated icons. Thick rounded dark-forest outline, simple shapes, flat silver gray/cream/honey-gold/navy/bronze colours with just one hard-edged cel shadow per shape. Cream die-cut rim following complete outer silhouette, transparent outside rim and through intended openings. No glossy metal, photograph, 3D or finely modeled reflections. Do not copy any cup shape or UI layout from the reference. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/design/home-themes/captures/sticker.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-63722f0a-b169-4182-9c2a-675c5cb38a48.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 6,
+          "y": 311,
+          "width": 1242,
+          "height": 677
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "sticker-club/league-tier-2.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 19598,
+      "sha256": "7e728843a816449f1e0f5dd1d3715df3fa14cac8cf79606f34c4a0cf97d04c40"
+    },
+    {
+      "theme": "sticker-club",
+      "kind": "league-tier-3",
+      "role": "trophy.league",
+      "variant": "tier-3",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: THIRD-DIVISION TITLE: a SQUARE silver Art Deco cup with a straight-sided BOX-shaped bowl, two rigid RECTANGULAR 90-degree handles, a straight short stem and a dark blue stepped SQUARE base. Angular geometric silhouette. NO crown, NO lid, NO curved urn or round handles. Style/medium: FLAT 2D CARTOON football collector sticker matching the supplied interface's cheerful illustrated icons. Thick rounded dark-forest outline, simple shapes, flat silver gray/cream/honey-gold/navy/bronze colours with just one hard-edged cel shadow per shape. Cream die-cut rim following complete outer silhouette, transparent outside rim and through intended openings. No glossy metal, photograph, 3D or finely modeled reflections. Do not copy any cup shape or UI layout from the reference. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/design/home-themes/captures/sticker.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-ac6a887b-2e8c-430e-b1ee-e0eae10f5631.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 93,
+          "y": 86,
+          "width": 1066,
+          "height": 1102
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "sticker-club/league-tier-3.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 22152,
+      "sha256": "4913411daa40821186abf8d42e8d976f486b7dabe1e3e1c9f41d5458f72d1184"
+    },
+    {
+      "theme": "sticker-club",
+      "kind": "league-tier-4",
+      "role": "trophy.league",
+      "variant": "tier-4",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: FOURTH-DIVISION TITLE: a round bronze FOOTBALL SHIELD / salver standing upright on a short dark wooden support. Large circular plate with a restrained embossed football at center and a plain raised rim, small horizontal rectangular dark wood base. NO cup bowl, handles, crown or wreath. A round shield trophy. Style/medium: FLAT 2D CARTOON football collector sticker matching the supplied interface's cheerful illustrated icons. Thick rounded dark-forest outline, simple shapes, flat silver gray/cream/honey-gold/navy/bronze colours with just one hard-edged cel shadow per shape. Cream die-cut rim following complete outer silhouette, transparent outside rim and through intended openings. No glossy metal, photograph, 3D or finely modeled reflections. Do not copy any cup shape or UI layout from the reference. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/design/home-themes/captures/sticker.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-5ef7b503-8533-478c-953b-bba2a52c117d.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 142,
+          "y": 65,
+          "width": 967,
+          "height": 1100
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "sticker-club/league-tier-4.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 28868,
+      "sha256": "71798880d163f131e9e6338a641d53d277c710b0a8c883d79af254da159e896a"
+    },
+    {
+      "theme": "sticker-club",
+      "kind": "league-amateur",
+      "role": "trophy.league",
+      "variant": "amateur",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: AMATEUR LEAGUE TITLE: a simple warm dark WOODEN RECTANGULAR award plaque standing vertically, a small bronze football relief near its upper center and short restrained bronze laurel sprigs, mounted on a plain low wooden foot. A modest, tactile local football award. NO cup bowl, handles, crown, letters or numbers. Clearly rectangular silhouette. Style/medium: FLAT 2D CARTOON football collector sticker matching the supplied interface's cheerful illustrated icons. Thick rounded dark-forest outline, simple shapes, flat silver gray/cream/honey-gold/navy/bronze colours with just one hard-edged cel shadow per shape. Cream die-cut rim following complete outer silhouette, transparent outside rim and through intended openings. No glossy metal, photograph, 3D or finely modeled reflections. Do not copy any cup shape or UI layout from the reference. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/design/home-themes/captures/sticker.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-53618065-2fd0-4949-ab1f-55aa14401f46.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 190,
+          "y": 102,
+          "width": 875,
+          "height": 1056
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "sticker-club/league-amateur.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 21652,
+      "sha256": "c332df32fd878118a3b6873785fa819f95963f3fdc9204daf2eea386993e9373"
+    },
+    {
+      "theme": "sticker-club",
+      "kind": "continental-cwc",
+      "role": "trophy.continental",
+      "variant": "cwc",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: CUP WINNERS' CUP TITLE: a very slender antique-bronze lidded CHALICE, small tulip-shaped fluted bowl, ornate pointed spire lid, two very thin outward S-shaped handles, an unusually LONG thin stem and small circular metal foot. Height much greater than bowl width. Bronze rather than silver. No crown, no broad urn or black pedestal. Style/medium: FLAT 2D CARTOON football collector sticker matching the supplied interface's cheerful illustrated icons. Thick rounded dark-forest outline, simple shapes, flat silver gray/cream/honey-gold/navy/bronze colours with just one hard-edged cel shadow per shape. Cream die-cut rim following complete outer silhouette, transparent outside rim and through intended openings. No glossy metal, photograph, 3D or finely modeled reflections. Do not copy any cup shape or UI layout from the reference. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/design/home-themes/captures/sticker.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-dcca947e-07ca-40ff-b475-9d90dcffbee3.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 368,
+          "y": 30,
+          "width": 518,
+          "height": 1185
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "sticker-club/continental-cwc.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 16618,
+      "sha256": "50a5b0e4761c2ad465f64328604c28a0d68cbc0606f0d06fdec7aa5e12925cd2"
+    },
+    {
+      "theme": "sticker-club",
+      "kind": "continental-uel",
+      "role": "trophy.continental",
+      "variant": "uel",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: EUROPA TITLE: a tall, SOLID SILVER faceted octagonal tapered VESSEL, very broad flat open top and sides narrowing downwards to a small amber-brown octagonal pedestal. Angular hammered silver planes, thick substantial upper body. Absolutely NO handles, lid, crown or stem. Resembles a tall sculptural silver tower/vase, clearly unlike a handled cup. Style/medium: FLAT 2D CARTOON football collector sticker matching the supplied interface's cheerful illustrated icons. Thick rounded dark-forest outline, simple shapes, flat silver gray/cream/honey-gold/navy/bronze colours with just one hard-edged cel shadow per shape. Cream die-cut rim following complete outer silhouette, transparent outside rim and through intended openings. No glossy metal, photograph, 3D or finely modeled reflections. Do not copy any cup shape or UI layout from the reference. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/design/home-themes/captures/sticker.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-46c77f40-ed99-4586-b6a8-d6b12b973cde.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 248,
+          "y": 52,
+          "width": 759,
+          "height": 1156
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "sticker-club/continental-uel.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 19540,
+      "sha256": "6d0d560251bf49ea232d6ac7cfe6df7b2d26a93ed3dd2779ee8ab03ab7fc4bca"
+    },
+    {
+      "theme": "sticker-club",
+      "kind": "continental-uecl",
+      "role": "trophy.continental",
+      "variant": "uecl",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: CONFERENCE TITLE: a slim modern SILVER CAGE COLUMN made from clearly separated vertical curved metal ribs winding slightly around an open hollow core, the ribs flare gently at top and meet a dark emerald circular base. Visible transparent openings between the thick ribs. NO bowl, handles, lid, crown or football. A tall openwork ribbed column silhouette. Style/medium: FLAT 2D CARTOON football collector sticker matching the supplied interface's cheerful illustrated icons. Thick rounded dark-forest outline, simple shapes, flat silver gray/cream/honey-gold/navy/bronze colours with just one hard-edged cel shadow per shape. Cream die-cut rim following complete outer silhouette, transparent outside rim and through intended openings. No glossy metal, photograph, 3D or finely modeled reflections. Do not copy any cup shape or UI layout from the reference. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/design/home-themes/captures/sticker.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-7e41dc77-7d68-423c-9609-aa7f7f8aa30d.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 304,
+          "y": 43,
+          "width": 646,
+          "height": 1175
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "sticker-club/continental-uecl.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 22804,
+      "sha256": "e1119eb02f08ee744b2433ae4352ab0526a2a7cc0e110ad1d5da29785158b363"
+    },
+    {
+      "theme": "sticker-club",
+      "kind": "continental-super",
+      "role": "trophy.continental",
+      "variant": "super",
+      "prompt": "Use case: illustration-story. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: SUPER CUP TITLE: a compact smooth SILVER FOOTBALL ORB lifted by two sweeping silver arms forming an open V / wishbone, set on a low midnight-blue ROUND base. Silver sphere with simple football panel seams; open transparent gap inside the V support. NO cup bowl, handles, crown, lid or gold ball. Clearly a silver ball-on-wishbone sculpture. Style/medium: FLAT 2D CARTOON football collector sticker matching the supplied interface's cheerful illustrated icons. Thick rounded dark-forest outline, simple shapes, flat silver gray/cream/honey-gold/navy/bronze colours with just one hard-edged cel shadow per shape. Cream die-cut rim following complete outer silhouette, transparent outside rim and through intended openings. No glossy metal, photograph, 3D or finely modeled reflections. Do not copy any cup shape or UI layout from the reference. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/design/home-themes/captures/sticker.png"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-50e0a463-2c1d-48a5-988b-932acc43b241.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 299,
+          "y": 71,
+          "width": 655,
+          "height": 1126
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "sticker-club/continental-super.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 21818,
+      "sha256": "99831bbc0ced9185ca34644e37913aa39c5b0cbf793a34ec6d4a542384b83fa3"
+    },
+    {
+      "theme": "standard",
+      "kind": "league-tier-2",
+      "role": "trophy.league",
+      "variant": "tier-2",
+      "prompt": "Use case: product-mockup. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: SECOND-DIVISION TITLE: a very WIDE, LOW, shallow golden open bowl with a broad rounded belly, small outward CURL handles at bowl height, a short narrow stem and a low black circular pedestal. Width greater than height. NO crown, NO lid, NO tall urn. A squat bowl silhouette, clearly unlike a tall crowned league cup. Style/medium: Premium realistic STUDIO PRODUCT PHOTOGRAPH of the specified physical football award. Convincing polished silver, warm antique gold or bronze and dark bases as specified, warm soft upper-left light with a subtle emerald reflected tint. Crisp object edges, no cartoon outlines. IMPORTANT: the supplied photograph is a reference ONLY for photographic lighting and material realism. Completely replace its shape with the Subject description; absolutely do not copy its crown, urn body, handles or base. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/public/art/trophies/standard/league.webp"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-356ebd0d-1268-4236-94e8-32ef9a504680.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 22,
+          "y": 345,
+          "width": 1211,
+          "height": 800
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "standard/league-tier-2.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 23704,
+      "sha256": "d296bb7757bc04cbc2d6c39b4c73191b1d561bcad36aae33c6e391932e109e15"
+    },
+    {
+      "theme": "standard",
+      "kind": "league-tier-3",
+      "role": "trophy.league",
+      "variant": "tier-3",
+      "prompt": "Use case: product-mockup. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: THIRD-DIVISION TITLE: a SQUARE silver Art Deco cup with a straight-sided BOX-shaped bowl, two rigid RECTANGULAR 90-degree handles, a straight short stem and a dark blue stepped SQUARE base. Angular geometric silhouette. NO crown, NO lid, NO curved urn or round handles. Style/medium: Premium realistic STUDIO PRODUCT PHOTOGRAPH of the specified physical football award. Convincing polished silver, warm antique gold or bronze and dark bases as specified, warm soft upper-left light with a subtle emerald reflected tint. Crisp object edges, no cartoon outlines. IMPORTANT: the supplied photograph is a reference ONLY for photographic lighting and material realism. Completely replace its shape with the Subject description; absolutely do not copy its crown, urn body, handles or base. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/public/art/trophies/standard/league.webp"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-62152977-a49a-4485-afa4-ac8790608261.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 138,
+          "y": 113,
+          "width": 980,
+          "height": 1049
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "standard/league-tier-3.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 26264,
+      "sha256": "1e23b48c50391b1e494b96df10acaeed0f4981efab38ebd0a72c59c901b251f2"
+    },
+    {
+      "theme": "standard",
+      "kind": "league-tier-4",
+      "role": "trophy.league",
+      "variant": "tier-4",
+      "prompt": "Use case: product-mockup. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: FOURTH-DIVISION TITLE: a round bronze FOOTBALL SHIELD / salver standing upright on a short dark wooden support. Large circular plate with a restrained embossed football at center and a plain raised rim, small horizontal rectangular dark wood base. NO cup bowl, handles, crown or wreath. A round shield trophy. Style/medium: Premium realistic STUDIO PRODUCT PHOTOGRAPH of the specified physical football award. Convincing polished silver, warm antique gold or bronze and dark bases as specified, warm soft upper-left light with a subtle emerald reflected tint. Crisp object edges, no cartoon outlines. IMPORTANT: the supplied photograph is a reference ONLY for photographic lighting and material realism. Completely replace its shape with the Subject description; absolutely do not copy its crown, urn body, handles or base. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/public/art/trophies/standard/league.webp"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-6d35c8d3-238f-4a23-8048-9b343d9e9c49.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 138,
+          "y": 62,
+          "width": 974,
+          "height": 1106
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "standard/league-tier-4.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 31194,
+      "sha256": "95a2c8f8271f79a72aba75422b38d33fb772278ecbb8ea1da7c17d39036884f4"
+    },
+    {
+      "theme": "standard",
+      "kind": "league-amateur",
+      "role": "trophy.league",
+      "variant": "amateur",
+      "prompt": "Use case: product-mockup. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: AMATEUR LEAGUE TITLE: a simple warm dark WOODEN RECTANGULAR award plaque standing vertically, a small bronze football relief near its upper center and short restrained bronze laurel sprigs, mounted on a plain low wooden foot. A modest, tactile local football award. NO cup bowl, handles, crown, letters or numbers. Clearly rectangular silhouette. Style/medium: Premium realistic STUDIO PRODUCT PHOTOGRAPH of the specified physical football award. Convincing polished silver, warm antique gold or bronze and dark bases as specified, warm soft upper-left light with a subtle emerald reflected tint. Crisp object edges, no cartoon outlines. IMPORTANT: the supplied photograph is a reference ONLY for photographic lighting and material realism. Completely replace its shape with the Subject description; absolutely do not copy its crown, urn body, handles or base. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/public/art/trophies/standard/league.webp"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-fe719b50-c8d1-49e2-8025-6899b63a9f5d.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 225,
+          "y": 114,
+          "width": 804,
+          "height": 1024
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "standard/league-amateur.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 27330,
+      "sha256": "7e2d35e7338f94d52bed490e1a42ea99defa8ba2670aca1fa9ddd2a28ceed925"
+    },
+    {
+      "theme": "standard",
+      "kind": "continental-cwc",
+      "role": "trophy.continental",
+      "variant": "cwc",
+      "prompt": "Use case: product-mockup. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: CUP WINNERS' CUP TITLE: a very slender antique-bronze lidded CHALICE, small tulip-shaped fluted bowl, ornate pointed spire lid, two very thin outward S-shaped handles, an unusually LONG thin stem and small circular metal foot. Height much greater than bowl width. Bronze rather than silver. No crown, no broad urn or black pedestal. Style/medium: Premium realistic STUDIO PRODUCT PHOTOGRAPH of the specified physical football award. Convincing polished silver, warm antique gold or bronze and dark bases as specified, warm soft upper-left light with a subtle emerald reflected tint. Crisp object edges, no cartoon outlines. IMPORTANT: the supplied photograph is a reference ONLY for photographic lighting and material realism. Completely replace its shape with the Subject description; absolutely do not copy its crown, urn body, handles or base. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/public/art/trophies/standard/league.webp"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-3ac17233-2c07-4759-8eff-8626d17691c2.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 367,
+          "y": 15,
+          "width": 523,
+          "height": 1206
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "standard/continental-cwc.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 15128,
+      "sha256": "eef9d1783ea995453239c102730241034a3cc96b4862373a175d3f4217ba65fa"
+    },
+    {
+      "theme": "standard",
+      "kind": "continental-uel",
+      "role": "trophy.continental",
+      "variant": "uel",
+      "prompt": "Use case: product-mockup. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: EUROPA TITLE: a tall, SOLID SILVER faceted octagonal tapered VESSEL, very broad flat open top and sides narrowing downwards to a small amber-brown octagonal pedestal. Angular hammered silver planes, thick substantial upper body. Absolutely NO handles, lid, crown or stem. Resembles a tall sculptural silver tower/vase, clearly unlike a handled cup. Style/medium: Premium realistic STUDIO PRODUCT PHOTOGRAPH of the specified physical football award. Convincing polished silver, warm antique gold or bronze and dark bases as specified, warm soft upper-left light with a subtle emerald reflected tint. Crisp object edges, no cartoon outlines. IMPORTANT: the supplied photograph is a reference ONLY for photographic lighting and material realism. Completely replace its shape with the Subject description; absolutely do not copy its crown, urn body, handles or base. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/public/art/trophies/standard/league.webp"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-47baea20-508d-4f0b-81cd-ac36a326548e.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 266,
+          "y": 95,
+          "width": 728,
+          "height": 1107
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "standard/continental-uel.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 24956,
+      "sha256": "a778382e4d26191d5b13d45b6b7738a48b80000eae12191c1027a6668b8fb967"
+    },
+    {
+      "theme": "standard",
+      "kind": "continental-uecl",
+      "role": "trophy.continental",
+      "variant": "uecl",
+      "prompt": "Use case: product-mockup. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: CONFERENCE TITLE: a slim modern SILVER CAGE COLUMN made from clearly separated vertical curved metal ribs winding slightly around an open hollow core, the ribs flare gently at top and meet a dark emerald circular base. Visible transparent openings between the thick ribs. NO bowl, handles, lid, crown or football. A tall openwork ribbed column silhouette. Style/medium: Premium realistic STUDIO PRODUCT PHOTOGRAPH of the specified physical football award. Convincing polished silver, warm antique gold or bronze and dark bases as specified, warm soft upper-left light with a subtle emerald reflected tint. Crisp object edges, no cartoon outlines. IMPORTANT: the supplied photograph is a reference ONLY for photographic lighting and material realism. Completely replace its shape with the Subject description; absolutely do not copy its crown, urn body, handles or base. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/public/art/trophies/standard/league.webp"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-b0430d45-a372-40d7-8ad6-1b23525d2378.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 331,
+          "y": 19,
+          "width": 593,
+          "height": 1219
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "standard/continental-uecl.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 21180,
+      "sha256": "bfbf3f8cbbd381f3230f53a6c51da954f6771cfd027abf92bab0a123ffaf03d0"
+    },
+    {
+      "theme": "standard",
+      "kind": "continental-super",
+      "role": "trophy.continental",
+      "variant": "super",
+      "prompt": "Use case: product-mockup. Asset: exactly ONE isolated football trophy for a game's cabinet. Primary request: a NEW DISTINCT AWARD SHAPE; every competition must have a visibly different silhouette at 88px. Subject: SUPER CUP TITLE: a compact smooth SILVER FOOTBALL ORB lifted by two sweeping silver arms forming an open V / wishbone, set on a low midnight-blue ROUND base. Silver sphere with simple football panel seams; open transparent gap inside the V support. NO cup bowl, handles, crown, lid or gold ball. Clearly a silver ball-on-wishbone sculpture. Style/medium: Premium realistic STUDIO PRODUCT PHOTOGRAPH of the specified physical football award. Convincing polished silver, warm antique gold or bronze and dark bases as specified, warm soft upper-left light with a subtle emerald reflected tint. Crisp object edges, no cartoon outlines. IMPORTANT: the supplied photograph is a reference ONLY for photographic lighting and material realism. Completely replace its shape with the Subject description; absolutely do not copy its crown, urn body, handles or base. Composition: square canvas, near-front view, centered full object with at least 8% transparent margin on every side, all parts and pedestal complete, about 80% canvas height. Subject proportions and geometry take priority over the style reference's object. Background: genuine transparent alpha, no scene, floor, cast shadow, rectangle, card, fake checkerboard, text, logo, letters, numbers, watermark, ribbons or unrelated objects. Keep only the specified award.",
+      "references": ["apps/web/public/art/trophies/standard/league.webp"],
+      "source": "/home/deep/.codex/generated_images/01a17acb-7aa6-7ad0-8fd5-90a926c61943/exec-7147542b-e247-44f6-b550-34b27e70e528.png",
+      "preparation": {
+        "alphaCleanup": "Remove detached components smaller than 0.2% of the main silhouette; retain remaining alpha",
+        "crop": {
+          "x": 310,
+          "y": 49,
+          "width": 634,
+          "height": 1156
+        },
+        "filter": "scale=280:280:force_original_aspect_ratio=decrease:flags=lanczos,pad=336:336:(ow-iw)/2:(oh-ih)/2:color=black@0"
+      },
+      "file": "standard/continental-super.webp",
+      "width": 336,
+      "height": 336,
+      "bytes": 20856,
+      "sha256": "fc1494b936f264730c5aa6e035bc3bdde9b2455fb3deea14332781e62693300c"
     }
   ]
 }

@@ -522,56 +522,108 @@
       "default": {
         "type": "image",
         "resource": "/art/trophies/pixel/league.webp",
-        "width": 336,
-        "height": 336
+        "width": 48,
+        "height": 48
+      },
+      "variants": {
+        "tier-2": {
+          "type": "image",
+          "resource": "/art/trophies/pixel/league-tier-2.webp",
+          "width": 48,
+          "height": 48
+        },
+        "tier-3": {
+          "type": "image",
+          "resource": "/art/trophies/pixel/league-tier-3.webp",
+          "width": 48,
+          "height": 48
+        },
+        "tier-4": {
+          "type": "image",
+          "resource": "/art/trophies/pixel/league-tier-4.webp",
+          "width": 48,
+          "height": 48
+        },
+        "amateur": {
+          "type": "image",
+          "resource": "/art/trophies/pixel/league-amateur.webp",
+          "width": 48,
+          "height": 48
+        }
       }
     },
     "trophy.cup": {
       "default": {
         "type": "image",
         "resource": "/art/trophies/pixel/cup.webp",
-        "width": 336,
-        "height": 336
+        "width": 48,
+        "height": 48
       }
     },
     "trophy.continental": {
       "default": {
         "type": "image",
         "resource": "/art/trophies/pixel/continental.webp",
-        "width": 336,
-        "height": 336
+        "width": 48,
+        "height": 48
+      },
+      "variants": {
+        "cwc": {
+          "type": "image",
+          "resource": "/art/trophies/pixel/continental-cwc.webp",
+          "width": 48,
+          "height": 48
+        },
+        "uel": {
+          "type": "image",
+          "resource": "/art/trophies/pixel/continental-uel.webp",
+          "width": 48,
+          "height": 48
+        },
+        "uecl": {
+          "type": "image",
+          "resource": "/art/trophies/pixel/continental-uecl.webp",
+          "width": 48,
+          "height": 48
+        },
+        "super": {
+          "type": "image",
+          "resource": "/art/trophies/pixel/continental-super.webp",
+          "width": 48,
+          "height": 48
+        }
       }
     },
     "trophy.final": {
       "default": {
         "type": "image",
         "resource": "/art/trophies/pixel/final.webp",
-        "width": 336,
-        "height": 336
+        "width": 48,
+        "height": 48
       }
     },
     "trophy.promotion": {
       "default": {
         "type": "image",
         "resource": "/art/trophies/pixel/promotion.webp",
-        "width": 336,
-        "height": 336
+        "width": 48,
+        "height": 48
       }
     },
     "trophy.relegation": {
       "default": {
         "type": "image",
         "resource": "/art/trophies/pixel/relegation.webp",
-        "width": 336,
-        "height": 336
+        "width": 48,
+        "height": 48
       }
     },
     "trophy.best": {
       "default": {
         "type": "image",
         "resource": "/art/trophies/pixel/best.webp",
-        "width": 336,
-        "height": 336
+        "width": 48,
+        "height": 48
       }
     },
     "more": {

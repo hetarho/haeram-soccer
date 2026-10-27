@@ -945,6 +945,32 @@
         "resource": "/art/trophies/matchday-print/league.webp",
         "width": 336,
         "height": 336
+      },
+      "variants": {
+        "tier-2": {
+          "type": "image",
+          "resource": "/art/trophies/matchday-print/league-tier-2.webp",
+          "width": 336,
+          "height": 336
+        },
+        "tier-3": {
+          "type": "image",
+          "resource": "/art/trophies/matchday-print/league-tier-3.webp",
+          "width": 336,
+          "height": 336
+        },
+        "tier-4": {
+          "type": "image",
+          "resource": "/art/trophies/matchday-print/league-tier-4.webp",
+          "width": 336,
+          "height": 336
+        },
+        "amateur": {
+          "type": "image",
+          "resource": "/art/trophies/matchday-print/league-amateur.webp",
+          "width": 336,
+          "height": 336
+        }
       }
     },
     "trophy.cup": {
@@ -961,6 +987,32 @@
         "resource": "/art/trophies/matchday-print/continental.webp",
         "width": 336,
         "height": 336
+      },
+      "variants": {
+        "cwc": {
+          "type": "image",
+          "resource": "/art/trophies/matchday-print/continental-cwc.webp",
+          "width": 336,
+          "height": 336
+        },
+        "uel": {
+          "type": "image",
+          "resource": "/art/trophies/matchday-print/continental-uel.webp",
+          "width": 336,
+          "height": 336
+        },
+        "uecl": {
+          "type": "image",
+          "resource": "/art/trophies/matchday-print/continental-uecl.webp",
+          "width": 336,
+          "height": 336
+        },
+        "super": {
+          "type": "image",
+          "resource": "/art/trophies/matchday-print/continental-super.webp",
+          "width": 336,
+          "height": 336
+        }
       }
     },
     "trophy.final": {

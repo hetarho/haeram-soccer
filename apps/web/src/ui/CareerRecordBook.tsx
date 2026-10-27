@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { country } from '../../../../packages/catalogs/src/index';
 import type { Player, SeasonArchive, World } from '../../../../packages/contracts/src/types';
 import { Panel } from './App';
 import {
@@ -137,15 +138,17 @@ function Trophy({
   years,
   kind,
   tone,
+  variant,
 }: {
   label: string;
   years: number[];
   kind: TrophyKind;
   tone: Tone;
+  variant?: string;
 }) {
   return (
     <li data-tone={years.length ? tone : 'empty'}>
-      <TrophyIcon kind={kind} earned={years.length > 0} />
+      <TrophyIcon kind={kind} earned={years.length > 0} variant={variant} />
       <strong>{years.length}회</strong>
       <span>{label}</span>
       {years.length > 0 && <small>{seasonsText(years)}</small>}
@@ -160,7 +163,8 @@ function Trophy({
 export function TrophyCabinet({ w }: { w: World }) {
   const cabinet = trophyCabinet(w),
     best = cabinet.best,
-    code = ownCountry(w);
+    code = ownCountry(w),
+    professionalTiers = country(code).groups.length;
   return (
     <Panel title="트로피 진열장" note={`${cabinet.seasons}시즌`}>
       <div className={s.panelBody}>
@@ -174,6 +178,7 @@ export function TrophyCabinet({ w }: { w: World }) {
                     label={`${title.label} 우승`}
                     years={title.years}
                     kind="league"
+                    variant={title.tier >= professionalTiers ? 'amateur' : `tier-${title.tier + 1}`}
                     tone="gold"
                   />
                 ))
@@ -187,6 +192,7 @@ export function TrophyCabinet({ w }: { w: World }) {
                   label={`${title.name} 우승`}
                   years={title.years}
                   kind="continental"
+                  variant={title.kind}
                   tone="gold"
                 />
               ))}
