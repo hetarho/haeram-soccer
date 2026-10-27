@@ -14,7 +14,6 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
-| n3w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T12:15Z | 2026-10-27T12:15Z | - |
 
 ## inbox
 - 261028 decided T531 WEB-100 WEB-74: how to keep request identity through submission and browser history → world-named request addresses and session snapshots, with a scoped client forwarding the existing forms/commands (alt: consume a one-shot request only | copy each form into the office); history can revisit resolved work safely, late replies cannot redirect another request/game, and business rules stay authoritative.
@@ -370,7 +369,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | doing@261027.n3w8 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -391,6 +389,7 @@
 ## next
 - T530-T533 implementation scope is complete locally; host finalizes T533 and owns the single integrated batch, main push and CI wait.
 - Keep unrelated T516-T522 work as previously pending; preserve n3w8's T522 ownership and integrated automatic-play code. Remote reservations remain until host publication.
+- n3w8 closed (report 261027-n3w8): automatic play T516–T525 on main (group gate on 2573791c); T522 read on the built game: 0 stalls at x1/x2/x5/x10, x10 10 days a second, no main-thread long task, helpers on (M1 Max, headless Chromium) — a CPU-throttled phone-class read is the open question. Inbox: confirm the WEB-18 read decisions (T524 → T525) and the WEB-69 framed-tabs suggestion.
 
 ## log
 - 261028 fix navigation-tools: screenshot capture and the unchanged 30-click first-play sample use the six gameplay destinations; syntax and type/lint/format checks passed; no new benchmark claim.
@@ -406,10 +405,10 @@
 - 261028 update-ssot WEB r162 done: work desks, shared inline approval, request round trips and audience-based navigation.
 - 261028 update-ssot WEB start: business desks, approval round trips, season/history and personnel navigation.
 - 261028 share WEB r164/T530–T533 planning and reserve the gameplay hierarchy implementation for g8u6.
+- 261028 T522 done (n3w8): built-game read 0 stalls at every pace, x10 10.0 days/s, season-close jump only; reports/automatic-play-read-261028
 - 261027 T523 done (n3w8): main CI fix after T504 — chart tabs readable on their new surfaces, mediation choice inputs skip the 20 px skin, pitch/facility specs follow the framed header and responsive art; 3 Chromium spec files 25/25
 - 261027 merge publication: preserved remote WEB r159 (transfer records/heat maps); local resource skins r159→r160 and play-pace r160→r161, decision content unchanged; p9a4 task bases keep their recorded content and can refresh on next sync
 - 261027 ideation play-pace-and-owner-surfaces converted: owner dropped the action / standing choice / dashboard split and home ordering; automatic play scope fully in WEB r160, SAVE r55, ARCH r24
 - 261027 create-task WEB r160 SAVE r55 ARCH r24 → T516–T522 (moment removal, grid cuts + day bench, two-phase round, helper workers, lighter publication, run-ahead clock, browser read)
 - 261027 update-ssot WEB r160 SAVE r55 ARCH r24 from ideation/play-pace-and-owner-surfaces: no match-day moment, computing ahead 3/5/7 days with stop/office/hidden rules, helper workers beside the sole-writer engine; doc stays ready for the owner-surfaces slice
 - 261027 ideation play-pace-and-owner-surfaces: owner removed the 2 s match-day beat; integrated result-identical prototypes measured (own match day 0.54–0.77×, x10 season 54 → about 10 stalls at depth 7, worlds identical)
-- 261027 fix home-header: league/date now share a framed header row and season statistics have inner padding; typecheck, targeted lint/format and 5 ProgressControls cases passed; sticker home visually checked, owner review complete; ready for publication verification

@@ -157,15 +157,18 @@ async function run(browser, origin, raw, pace, days) {
 
   const shown = read.days.filter(([at]) => at >= start).slice(0, days);
   const gaps = [];
-  let skipped = 0;
+  const jumps = [];
   for (let i = 1; i < shown.length; i++) {
     const [at, text] = shown[i];
     const [before, previous] = shown[i - 1];
     // A gap spanning a stop measures the owner's resume, not the clock.
     if (stops.some((stop) => stop.at > before && stop.at < at)) continue;
     gaps.push(at - before);
-    skipped += Math.max(0, dayNumber(text) - dayNumber(previous) - 1);
+    const missing = dayNumber(text) - dayNumber(previous) - 1;
+    if (missing > 0)
+      jumps.push({ from: previous, to: text, missing, gapMs: Math.round(at - before) });
   }
+  const skipped = jumps.reduce((sum, jump) => sum + jump.missing, 0);
   const ms = PACE_MS[pace];
   const running = gaps.reduce((sum, gap) => sum + gap, 0);
   const end = shown.at(-1)[0];
@@ -185,6 +188,7 @@ async function run(browser, origin, raw, pace, days) {
     daysPerSecond: Number(((gaps.length / running) * 1000).toFixed(2)),
     targetDaysPerSecond: 1000 / ms,
     skippedDays: skipped,
+    jumps: jumps.slice(0, 20),
     stops,
     longTasks: {
       count: tasks.length,
