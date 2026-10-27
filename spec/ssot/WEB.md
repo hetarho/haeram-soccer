@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r161 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r162 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -76,6 +76,7 @@
     - nothing is computed past a day that will stop the clock — a stopping event, a pending decision, a critical alert, bankruptcy or an own match eve that stops for observation — so every stop lands on the same day as it would without computing ahead, with the world on the shown date.
     - the owner's stop shows the computed days still ahead at the pace and then stops; management stays locked until they are shown (→WEB-97). Entering the owner office shows them at once (→WEB-98).
     - a pace change applies to days computed from then on; days already computed are shown at the faster of the old and new pace.
+    - a read the engine answers outside the command queue — records, head-to-head, manager history, season archives, careers, other leagues' fixtures, full statistics, recruitment history and previews — first shows the computed days at once, and nothing is computed ahead until it is answered. No view shows a day's results before the calendar shows that day. ← the engine answers from its newest computed day
     - computing ahead and every speed-up of a day's step never change any day's step or its results: the world is identical to computing each day in order on one engine (→MATCH-7).
   - once our fixture's day is shown, a result notice — our fixture's score with both clubs for a few seconds, opening its match record — appears only while the owner's 경기 결과 알림 preference is on; it is off by default and kept per browser (→WEB-79).
   - pace selection changes pace only. A stopped automatic clock stays stopped until play; an event stop does not change the selected progression mode.
@@ -552,6 +553,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r162 261027 WEB-18✎ reads outside the command queue answered from the newest computed day→first show the computed days at once, nothing computed ahead until answered
 - r161 261027 WEB-18✎ ≥ 2 s match-day animation→none; +compute ahead 3/5/7 days (x1·x2/x5/x10), never past a stopping day, stop shows computed days at the pace, results identical; WEB-11✎ NEXT MATCH moment→removed; WEB-64✎ no moment while hidden→nothing computed ahead; WEB-97✎ lock→also until computed days shown; WEB-98✎ ends the moment→shows computed days at once
 - r160 261027 WEB-91✎ CSS control borders and stylesheet-owned visual mappings→portable JSON skins with common resource-based controls, meters, facility steps and notices; unbounded image delivery→budgeted compressed responsive assets and demand-driven image staging
 - r159 261027 WEB-54✎ +이적 기록 view (영입/매각 fee boards, all-time or one season, today's money), 감독 이력 all appointments→without interim tenures that took no match; WEB-92✎ +interim tenures without a credited match not listed; WEB-99+ heat maps as smooth blobs on a continuous cold-to-hot ramp on a 2D canvas, no new dependency

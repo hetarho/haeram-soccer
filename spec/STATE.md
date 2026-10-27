@@ -17,6 +17,7 @@
 | n3w8 | ihaelam-ui-MacBookPro | autopilot | 2026-10-27T12:15Z | 2026-10-27T12:15Z | - |
 
 ## inbox
+- 261027 decided WEB-18 T524: reads outside the command queue answer from the newest computed day, up to 7 days past the shown date → they first show the computed days at once and nothing is computed ahead until answered (alt: record that reads may show computed-ahead days | cut each read at the shown date, which cumulative statistics cannot do)
 - 261027 suggest WEB-69 T504: T504's shared skin frames every `[role=tab]` with a button frame and a quiet/canvas fill, while WEB-69 still says page tab bars have no filled or outlined boxes (label over a hairline, accent underline) — confirm the framed tabs in WEB-69 or restore hairline tabs
 - 261027 decided T518 ARCH-31: round-jobs.test.ts tier → integration (it advances days, which tests/config/test-tiers keeps out of unit), acceptance command updated (alt: keep it unit and shrink it below advanceDays)
 - 261027 decided HIST-18 WEB-92: how to drop caretakers that never took a match → keep the tenure fact, leave interim tenures with no credited match or outcome out of every summary/list/count (alt: never record such an interim | hide every zero-match tenure, interim or not)
@@ -340,7 +341,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 24 | 24 | - | 2 |
-| WEB | 161 | 161 | - | 0 |
+| WEB | 162 | 162 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -366,6 +367,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T522 | Read automatic play in the built browser game | WEB ARCH | T517 T519 T520 T521 | todo |
+| T524 | Reads during automatic play wait for the shown date | WEB | T521 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -387,7 +389,8 @@
 - inspect work board for remaining tasks
 
 ## log
-- 261027 T521 integrated
+- 261027 update-ssot WEB r162 + create-task → T524 (n3w8, T521 review P3): reads outside the command queue first show the computed days and hold computing ahead
+- 261027 T521 done (n3w8 group auto-play-2): run-ahead clock; gate fixes for the recovery (helper worker) and training (eve after the stop) journeys
 - 261027 n3w8: T519 integrated on work/auto-play-2 (p9a4's approved submission fe75453e merged as-is; CI on 8db55791 unit, integration ×3 and checks passed)
 - 261027 T523 done (n3w8): main CI fix after T504 — chart tabs readable on their new surfaces, mediation choice inputs skip the 20 px skin, pitch/facility specs follow the framed header and responsive art; 3 Chromium spec files 25/25
 - 261027 p9a4: T516 T517 T518 T520 integrated on work/auto-play; T519 T521 T522 base WEB@160→161 (renumbered on the main merge, content unchanged)
@@ -406,4 +409,3 @@
 - 261027 T503 done: competition keys, Elo reads, request label and empty table moved to leaves; UI exception list 43→38 files
 - 261027 T502 done: staff catalogue and member reads moved to staff-info.ts; UI exception list 46→43 files
 - 261027 T501 done: tactic labels, founding years and injury reads moved to engine leaves; UI exception list 53→46 files
-- 261027 T500 done: UI→engine orchestration guard with a shrink-only list (53 files, 38 modules)
