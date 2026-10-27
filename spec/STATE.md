@@ -386,11 +386,15 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- inspect work board for remaining tasks
+- n3w8 (work auto-play-2): T516–T521, T524, T525 on main after the group gate passed on 2573791c (typecheck, lint, format, unit, integration, contract, catalogs, presentation, build, Chromium); explore T522 (automatic play read in the built game, `pnpm exec tsx scripts/automatic-play-read.mjs`) runs next in the main session on a quiet machine.
+- inbox: confirm the WEB-18 read decisions (T524 → T525) and the WEB-69 framed-tabs suggestion.
+- T504 complete: portable resource skins, responsive facilities and image budgets; its journeys fixed in T523 and main CI green on 3aa6f4aa.
+- review/ui-engine-boundary-261027 F1–F4 done (T500–T503): UI→orchestration exceptions 53→38 files, 38→35 engine modules; F5 (domain reads on the main thread) waits for a measured decision.
 
 ## log
 - 261027 T525 integrated
 - 261028 update-ssot WEB r163 + create-task → T525 (n3w8): reads wait for the computed days at the pace instead of showing them at once; T524 integrated, its gate run failed records.spec on the calendar jump
+- 261028 T525 done (n3w8): a read during play waits for the computed days at the pace; group gate passed on 2573791c
 - 261027 T524 integrated
 - 261027 update-ssot WEB r162 + create-task → T524 (n3w8, T521 review P3): reads outside the command queue first show the computed days and hold computing ahead
 - 261027 T521 done (n3w8 group auto-play-2): run-ahead clock; gate fixes for the recovery (helper worker) and training (eve after the stop) journeys
@@ -408,4 +412,3 @@
 - 261027 update-ssot WEB start (r6u2): portable resource skins and asset delivery audit
 - 261027 T495 done: 32 competition-specific trophy variants across four themes, country-aware cabinet selection and safe fallback; unit/integration/contract and all 299 Chromium journeys passed, with unchanged-timeout recovery for load-related tests.
 - 261027 T494 done: redrew all 21 print/pixel/sticker trophies in their theme's illustration style; preserved the seven standard photographs; asset integrity and task checks passed.
-- 261027 u3b8 closed: T500–T503 batch gate passed on f25cae1a (unit 1171, integration 1158 after a quiet-host rerun of 3 load timeouts, contract 39, catalogs, presentation, build, Chromium 299/299), pushed to main
