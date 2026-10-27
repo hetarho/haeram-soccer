@@ -353,6 +353,52 @@ function awardRequestTrust(w: World, amount: number) {
   history.trustAwarded = true;
 }
 
+/**
+ * The floor of the owner's trust (→STAFF-47): at `warn` or less a manager may resign each settled
+ * league round, with `chance`, or `zeroChance` at trust 0.
+ */
+export const TRUST_FLOOR_CONFIG = { warn: 10, chance: 0.1, zeroChance: 0.25 } as const;
+const TRUST_COLLAPSE = '구단주와의 신뢰가 무너져 사임했습니다.';
+
+/**
+ * Once per settled league round (→STAFF-47): the first round a manager is at the floor warns the
+ * owner without a draw, so he can back him first (→CLUB-20); later rounds draw his resignation
+ * from a stream of his own, so matches and other draws stay put. Interims never resign this way.
+ */
+export function settleManagerTrust(w: World) {
+  const m = w.manager;
+  // Recovering above the floor lifts the warning; a later fall warns again.
+  if (m.trust > TRUST_FLOOR_CONFIG.warn) {
+    delete m.trustWarned;
+    return;
+  }
+  if (m.interim) return;
+  if (!m.trustWarned) {
+    m.trustWarned = true;
+    addEvent(
+      w,
+      'manager-trust-warning',
+      `${m.name} 감독, 사임 고민`,
+      `구단주 신뢰 ${m.trust} · 관계가 바닥까지 내려앉았어요`,
+    );
+    pushInbox(w, {
+      kind: 'staff-report',
+      title: `${m.name} 감독이 사임을 고민하고 있어요`,
+      detail: [
+        `구단주와의 신뢰가 ${m.trust}까지 떨어졌어요`,
+        '이대로면 어느 라운드에든 사임할 수 있어요',
+        '공개 신임(감독 재신임 발표)이 신뢰를 되살릴 수 있어요',
+      ].join(' · '),
+      attention: true,
+      ref: m.id,
+    });
+    return;
+  }
+  const odds = m.trust === 0 ? TRUST_FLOOR_CONFIG.zeroChance : TRUST_FLOOR_CONFIG.chance;
+  if (random(`${w.seed}:trust-floor:${m.id}:${w.year}:${w.round}`)() < odds)
+    resign(w, TRUST_COLLAPSE, 'resigned');
+}
+
 /** Season boundary for the manager: a season of growth or fading, retirement and his contract. */
 export function yearlyStaff(w: World) {
   const m = w.manager,
@@ -377,7 +423,12 @@ export function yearlyStaff(w: World) {
     if (m.person && w.people?.[m.person]?.management)
       Object.assign(w.people[m.person].management!, next);
   }
-  if (!m.interim && (age !== undefined ? age >= MANAGER_CAREER.retire : m.since + 25 <= w.year))
+  // A manager still at trust 0 leaves before retirement, expiry or renewal (→STAFF-47).
+  if (!m.interim && m.trust === 0) resign(w, TRUST_COLLAPSE, 'resigned');
+  else if (
+    !m.interim &&
+    (age !== undefined ? age >= MANAGER_CAREER.retire : m.since + 25 <= w.year)
+  )
     resign(w, '긴 지도자 생활을 마치고 은퇴했습니다.', 'retired');
   // No manager renews himself (→STAFF-14): an unrenewed contract ends at the close.
   else if (m.until <= w.year && !m.interim)
