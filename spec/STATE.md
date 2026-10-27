@@ -13,9 +13,14 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
+| h7t3 | local | autopilot | 2026-10-27T07:25Z | 2026-10-27T07:25Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 
 ## inbox
+- 261027 decided HIST-18 WEB-92: how to drop caretakers that never took a match → keep the tenure fact, leave interim tenures with no credited match or outcome out of every summary/list/count (alt: never record such an interim | hide every zero-match tenure, interim or not)
+- 261027 decided STAFF-47: what trust 0 means → at trust ≤10 a 10%/round resignation chance (25% at 0), certain resignation at the close at 0, warning notice on first reaching ≤10 (alt: trust drifts back toward 50 | morale-only penalty as now)
+- 261027 decided HIST-20 WEB-54: transfer fee rankings → structured own-club fee transfer facts, 영입/매각 boards all-time or by season in today's money, older careers ranked from ledger amounts by entry text (alt: ledger-only ranking | include free transfers)
+- 261027 decided WEB-99: heat map technology → 2D canvas blobs with a continuous colour ramp, no new dependency (alt: WebGL shader | heatmap.js / simpleheat package)
 - 261027 decided ARCH-4 review/ui-engine-boundary-261027: how the UI may use engine code → only engine read leaves (closure reaches no world/season/match/grid execution), today's orchestration imports a shrink-only list guarded by an architecture test, leaves extracted for labels/constants/simple reads first (alt: publish every domain read in the worker view, which grows each view message and needs measurement | keep unrestricted imports with no guard) — F5's real domain reads (NPC squads, cost projections) stay open for a measured decision
 - 261027 decided T500 T501 T502 T503: task numbering while the cups session holds T494/T495 in the shared checkout → start this slice at T500 so neither session renumbers (alt: next free T496, which the cups session is likely to take)
 - 261027 decided WEB-79 WEB-39: a better name for the report/delegation menu → 결재 라인 (alt: 업무 분장 | 권한 위임 | 보고 체계), the owner signs off or staff settle; 구단주 사무실 becomes the whole place holding every club lever
@@ -333,16 +338,16 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 23 | 23 | - | 2 |
-| WEB | 158 | 158 | - | 0 |
+| WEB | 159 | 158 | WEB-54✎ WEB-92✎ WEB-99+ | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
 | MATCH | 33 | 33 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
-| STAFF | 35 | 35 | - | 0 |
+| STAFF | 36 | 35 | STAFF-47+ | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 17 | 17 | - | 0 |
+| HIST | 18 | 17 | HIST-18✎ HIST-20+ | 0 |
 | SAVE | 54 | 54 | - | 0 |
 | PLAYER | 10 | 10 | - | 0 |
 
@@ -378,6 +383,7 @@
 - o7h4 pushed T490–T493 (owner office, home season card, records sub-screen) to main after the ARCH-30 batch passed on eaf5f3d1; confirm its decided inbox items.
 
 ## log
+- 261027 update-ssot STAFF r36 HIST r18 WEB r159 (h7t3): trust floor resignations, zero-match interims hidden, transfer fee records, broadcast heat maps
 - 261027 T495 done: 32 competition-specific trophy variants across four themes, country-aware cabinet selection and safe fallback; unit/integration/contract and all 299 Chromium journeys passed, with unchanged-timeout recovery for load-related tests.
 - 261027 T494 done: redrew all 21 print/pixel/sticker trophies in their theme's illustration style; preserved the seven standard photographs; asset integrity and task checks passed.
 - 261027 u3b8 closed: T500–T503 batch gate passed on f25cae1a (unit 1171, integration 1158 after a quiet-host rerun of 3 load timeouts, contract 39, catalogs, presentation, build, Chromium 299/299), pushed to main
@@ -397,4 +403,3 @@
 - 261027 update-ssot WEB r158 (autopilot o7h4, owner request): season card on home (round·rank·record), strength in team state, spacing below the HUD, focused 구단주 사무실 entered from home with six areas and 결재 라인, office stops the clock (WEB-98), records season sub-screen with a navigator bar, player totals up to 100
 - 261027 update-ssot WEB start (autopilot o7h4)
 - 261027 T483 done: eleven complete language packs; 29 locale cases, all fast/unit/integration/contract/resource checks, 277 existing Chromium journeys and the repaired 22 locale journeys passed; concurrent T477–T482 contracts preserved
-- 261027 T483 start: WEB-1/90 r157 adds eleven language packs; renamed from this session’s T477 to preserve the concurrent T477–T482 football tasks

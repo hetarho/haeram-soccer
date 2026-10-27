@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r35 | Define the browser-demo rules for manager demands and personality.
+> r36 | Define the browser-demo rules for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -259,11 +259,18 @@
   - nobody instructs a single player: the owner has no freedom control and acts through the manager (→STAFF-19/22).
   - clubs nobody owns use their named manager's flexibility the same way; the founding manager and an interim give the neutral freedom of his flexibility band's middle.
 
+- STAFF-47 [o] A manager at the floor of the owner's trust leaves. ← trust is the owner–manager relationship; one at its floor cannot carry on unchanged for seasons
+  - at each settled league round a manager who is not an interim resigns with 10% at trust 10 or less, 25% at trust 0, from a stream of his own so matches and other draws stay put; pride plays no part (→STAFF-5 is the separate proud-manager rule).
+  - at the season close, before contract expiry and renewal (→STAFF-14), a manager still at trust 0 resigns.
+  - the first settled round he is at 10 or less (again after recovering above it) is an event and an inbox notice that he is considering resigning, so the owner can act first (a public vote of confidence →CLUB-20).
+  - the departure is a resignation (→STAFF-7, departure reason resigned) reported as a breakdown of trust; with the manager post delegated the staff appoint a successor at once (→STAFF-18).
+
 ## flow
 
 - Second career: active-player aptitude evaluation → retirement announcement and optional one-time encouragement → playing-coach appointment or retirement/coaching candidacy → actual coaching employment for at least three cumulative years → management candidacy only with managerial aptitude → direct/delegated appointment.
 
 ## chg
+- r36 261027 STAFF-47+ trust floor: 10%/round at trust ≤10, 25% at 0, certain resignation at the close at 0, warning on first reaching ≤10
 - r35 261025 STAFF-46+ the manager gives each player a positional freedom from his flexibility × the role's creativity × the player's 판단력; no owner control
 - r34 261019 STAFF-14✎ +styles bend decision tables and duels in the grid engine, re-measured; STAFF-21✎ 동기부여형 체력→체력/침착성, 데이터 헤드코치 시야/위치선정→판단력/위치선정; STAFF-22✎ +each slot's place in the formation's shape per phase; STAFF-45+ substitution habits by style and selection trait
 - r33 261016 STAFF-11✎ traits +closer (속전속결, the 단장's); STAFF-13✎ +window-close call-ups skip readiness and the promotion floor; STAFF-20✎ negotiator his only trait→negotiator, closer or none, setting how he bids (→CLUB-41)

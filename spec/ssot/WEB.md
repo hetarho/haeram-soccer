@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r158 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r159 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -279,14 +279,15 @@
   - "뉴스 표시 안 함" (in the inbox and the news sheet, kept per browser) turns banners off: achievements then only collect behind the news button.
   - Reduced motion shows the banner without confetti.
 - WEB-53 [o] A metrics glossary explains every advanced term with the industry definition (Opta, StatsBomb, FBref), this engine's exact count and how to read it, with typical ranges; it also maps the pitch's 40 named cells (→MATCH-14) and the per-touch tags (→MATCH-15) in the words the commentary uses. Metric names in reports, player details and the season review open their entry; the HUD menu opens the whole glossary.
-- WEB-54 [o] Club records opens on 시즌별 기록, followed by 구단 성장, 명예·최고기록, 선수 통산 and 감독 이력; one focused view at a time. The generic 요약 gate and competing season-list/detail categories are removed.
+- WEB-54 [o] Club records opens on 시즌별 기록, followed by 구단 성장, 명예·최고기록, 선수 통산, 이적 기록 and 감독 이력; one focused view at a time. The generic 요약 gate and competing season-list/detail categories are removed.
   - 시즌별 기록 starts with the current season distinguished by a subtle background and leading accent rule, then closed seasons newest first. Keep current and closed seasons as compact single-line rows; the current status is accessible without a separate visible 진행 중 label. A row opens our selected season's review as a records sub-screen, with 분석, 경기 and 결정 views and the existing competition filter governing analysis/export/matches.
   - The sub-screen replaces the records page tabs with a navigator bar at the top of the content: a back action on the left — ← 시즌별 기록, or ← 감독 이력 when 감독 이력 opened it — and the season's name, marked in progress for the current season. Back restores the list it came from and its position; the HUD, information row and navigation bar stay.
   - The selected season keeps the existing club analysis (→WEB-47), season figures, venue splits, league-points and goal-difference charts, exports, matches and major decisions. Current competitive context is explicitly in progress. No other club's competition table is embedded as our season record.
   - Separate links open this season's league table and cup run, retaining the selected club season/view/filter on return (→WEB-74).
   - 구단 성장 retains pyramid position, Elo with current world/league standing and spread, values, supporters and season-end cash; financial comparisons clearly say today's money. Show one metric chart at a time with its high/low/latest values and existing season-selection bubble.
   - 명예·최고기록 retains the full trophy cabinet, honours/seasons, match records and career record book in named focused subviews. Match runs count 90-minute results, cross seasons and identify an ongoing run.
-  - 선수 통산 retains all-time appearance/goal/assist/save boards, including departed players where recorded. Each board shows its top ten; 더 보기 adds the next ten each time, up to 100 players, and disappears when the board is exhausted or at 100. Switching boards starts again at ten. 감독 이력 retains all appointments/departures and the current manager.
+  - 선수 통산 retains all-time appearance/goal/assist/save boards, including departed players where recorded. Each board shows its top ten; 더 보기 adds the next ten each time, up to 100 players, and disappears when the board is exhausted or at 100. Switching boards starts again at ten. 감독 이력 retains all appointments/departures and the current manager, apart from interim tenures without a match (→WEB-92).
+  - 이적 기록 ranks our transfer fees (→HIST-20) on two boards, 영입 and 매각, each over all seasons or one chosen season: rank, player, other club, season, permanent or loan, the fee in today's money with the original amount. Each board shows its top ten with →WEB-54's 더 보기 steps; a player name opens his sheet when his identity is retained (→WEB-59), a club its team sheet (→WEB-58). An empty board says no fee transfer is recorded.
   - Existing records deep links resolve to their matching new content; a return preserves tab, season, inner view/filter and scroll. Data retention remains →HIST-1/2/12/13.
 
 - WEB-55 [o] Players are judged by their overall rating (OVR), the number football games lead with: a rating-card chip (bronze below 65, silver 65–74, gold 75+, his main position under the number, one scale for every position →PLAYER-6) leads roster cards, academy rows and transfer candidates; the full roster table has an OVR column and the "OVR 높은 순" order. ← owners compare and recruit by OVR first
@@ -446,6 +447,9 @@
   - every owner-held decision in the group must be resolved before the next advance. Resolving the group leaves manual progression stopped until another explicit progression action (→WEB-5/42).
 
 - WEB-84 [o] An own match of the current season opens its post-match material (→MATCH-25) from the final analysis and from the fixture lists: shot map, heat maps by player and side, pass network and tactical report, each on the 1.9:1 pitch with the cells' names on touch. After the season close those matches say their maps are not kept and point to the players' season heat maps. ← grounds for manager and signing decisions without filling the save
+- WEB-99 [o] Every heat map — a match's by player or side and a player's season map (→WEB-59) — reads as a broadcast heat map: the 40-cell shares (→MATCH-14) drawn as smooth overlapping blobs over the pitch lines, coloured on one continuous cold-to-hot ramp (transparent where nothing happened, blue through green and yellow to red at the most touched area) and scaled to the map's own maximum. ← separate shaded cells read as a spreadsheet, not as where a player lived
+  - drawn by the browser's own 2D canvas in the material bundle (→ARCH-28) with no new runtime dependency; the same input always draws the same picture.
+  - cell names on touch, the pitch's 1.9:1 ratio, a text summary for assistive technology and every theme's pitch colours stay (→WEB-17/38/91); reduced motion draws without animation.
 - WEB-85 [o] Preparation shows the manager's bench and set-piece and penalty takers with the lineup (→CLUB-6), and unavailable players with their injury or ban; the era's substitute rule is named (→MATCH-20).
 
 - WEB-86 [o] One club-design editor is available before founding and under 구단주 사무실 › 구단 디자인 afterwards.
@@ -498,6 +502,7 @@
   - Preserve semantic status meanings, readable data, accessible HTML labels, keyboard/touch behavior, reduced-motion support and the supported layout bounds in every theme (→WEB-10/17/38/46/73). Missing resources and loading failures follow the shared pack policy (→ARCH-32).
 
 - WEB-92 [o] The records room's 감독 이력 shows what each manager achieved at our club alongside his service period (→HIST-18/19), retaining the appointment/departure story and current manager from →WEB-54.
+  - interim tenures without a credited match are not listed (→HIST-18).
   - show a compact summary per tenure: name, service period, current/interim status, honours/promotions, best final league finishes, recorded match record and longest winning/unbeaten runs. Reappointments remain separate; a trophyless fully tracked tenure still has its actual results or an explicit no-accomplishment state.
   - season/competition/division labels make each accomplishment understandable. A mid-season appointment's final table is labelled as a season result finalised during that tenure, not his personal full-season W-D-L. Current season standings remain explicitly provisional.
   - mark partially tracked periods and unavailable old attribution; show neither synthetic zeros nor an assertion of no achievements where history is missing. Preserve older readable tenure events and distinguish loading, retryable error and genuinely empty records.
@@ -545,6 +550,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r159 261027 WEB-54✎ +이적 기록 view (영입/매각 fee boards, all-time or one season, today's money), 감독 이력 all appointments→without interim tenures that took no match; WEB-92✎ +interim tenures without a credited match not listed; WEB-99+ heat maps as smooth blobs on a continuous cold-to-hot ramp on a 2D canvas, no new dependency
 - r158 261027 WEB-10✎ seven tabs incl. 구단→six, office from home, +spacing below HUD; WEB-11✎ rank·strength·record on the scene→season card round·rank·record, +office entrance (beside the season card on wide screens); WEB-18✎ round on home→in the season card; WEB-39✎ 구단 운영 page tabs→focused 구단주 사무실 lobby of six areas, /direction strategy→lobby; WEB-44✎ +strength tile; WEB-54✎ 목록으로 under tabs→sub-screen navigator bar, top ten→+10 per 더 보기 to 100; WEB-69✎ −방향; WEB-71/79/86✎ 구단 운영›→구단주 사무실›, 구단주 사무실 tab→결재 라인, +event groups link 결재 라인; WEB-97✎ +office exception; WEB-98+ office stops the clock
 - r157 261027 WEB-1/90✎ Korean-only foundation→Korean default plus eleven complete packs for the extracted UI messages, native labels, locale plurals and Arabic RTL; complete feature/engine extraction remains subsequent work
 - r156 261027 WEB-32✎ set-piece preparation (corner, free kick, goal kick) in ~1.5 real s at every speed, other stoppages at running speed→every stoppage a dead-ball beat: rush at ≥ 2× the running rate (≤ 1.5 s at 1x), a still beat per kind (0.4–2.0 s at 1x, captions for cards, injuries, substitutions), both scaled with speed
