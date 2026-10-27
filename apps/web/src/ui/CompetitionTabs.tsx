@@ -1,3 +1,4 @@
+import s from './App.module.css';
 import { TabList } from './PageTabs';
 import { useLocale } from '../presentation/react';
 import { useNavigation, type Page } from './state';
@@ -20,6 +21,7 @@ export function CompetitionTabs({ page }: { page: Page }) {
       ];
   return (
     <TabList
+      className={`${s.seasonTabs} ${s.operationsTabs} ${s.competitionTabs}`}
       tabs={tabs}
       value={page}
       onChange={setPage}

@@ -394,6 +394,7 @@
 - n3w8 closed (report 261027-n3w8): automatic play T516–T525 on main (group gate on 2573791c); T522 read on the built game: 0 stalls at x1/x2/x5/x10, x10 10 days a second, no main-thread long task, helpers on (M1 Max, headless Chromium) — a CPU-throttled phone-class read is the open question. Inbox: confirm the WEB-18 read decisions (T524 → T525) and the WEB-69 framed-tabs suggestion.
 
 ## log
+- 261028 fix compact-competition-hub: remove 10 px of inter-row margin while retaining 44 px targets and seven complete phone standings rows; office helper dismisses a newly arrived match-eve report before retrying entry.
 - 261028 T535 done: settings feedback survives dialog handoff without a copied toast; request helper waits for home return; remaining cup journeys follow Season.
 - 261028 T534 done: repaired integrated UI layering, history retention and canonical browser journeys; task checks/build pass, coordinator browser gate pending.
 - 261028 T534 start: coordinator repairs initial Chromium integration failures; no implementation code was pushed.
@@ -413,4 +414,3 @@
 - 261028 T522 done (n3w8): built-game read 0 stalls at every pace, x10 10.0 days/s, season-close jump only; reports/automatic-play-read-261028
 - 261027 T523 done (n3w8): main CI fix after T504 — chart tabs readable on their new surfaces, mediation choice inputs skip the 20 px skin, pitch/facility specs follow the framed header and responsive art; 3 Chromium spec files 25/25
 - 261027 merge publication: preserved remote WEB r159 (transfer records/heat maps); local resource skins r159→r160 and play-pace r160→r161, decision content unchanged; p9a4 task bases keep their recorded content and can refresh on next sync
-- 261027 ideation play-pace-and-owner-surfaces converted: owner dropped the action / standing choice / dashboard split and home ordering; automatic play scope fully in WEB r160, SAVE r55, ARCH r24

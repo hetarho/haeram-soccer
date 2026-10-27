@@ -57,7 +57,16 @@ export async function enterOffice(page: Page, options: { timeout?: number } = {}
     await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
   const entrance = hub.getByRole('button', { name: '구단주 사무실 들어가기', exact: true });
   await entrance.evaluate((element) => element.scrollIntoView({ block: 'start' }));
-  await entrance.click(options);
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await entrance.click({ ...options, timeout: 2000 });
+      break;
+    } catch (error) {
+      // Leaving a watched match may resume the clock and open the next eve after our dismissal.
+      if (attempt >= 2 || !(await covering.isVisible())) throw error;
+      await covering.getByRole('button', { name: '창 닫기', exact: true }).click();
+    }
+  }
   await expect(officeBar(page)).toBeVisible();
 }
 

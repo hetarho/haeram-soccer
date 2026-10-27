@@ -2683,6 +2683,10 @@
   overflow-x: auto;
   scrollbar-width: none;
 }
+/* Competition hubs have a second local tab row; preserve the compact table viewport. */
+.competitionTabs {
+  margin-bottom: 4px;
+}
 .operationsTabs button {
   flex: 1 0 auto;
   white-space: nowrap;
