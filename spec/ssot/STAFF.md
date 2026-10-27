@@ -262,7 +262,7 @@
 - STAFF-47 [o] A manager at the floor of the owner's trust leaves. ← trust is the owner–manager relationship; one at its floor cannot carry on unchanged for seasons
   - at each settled league round a manager who is not an interim resigns with 10% at trust 10 or less, 25% at trust 0, from a stream of his own so matches and other draws stay put; pride plays no part (→STAFF-5 is the separate proud-manager rule).
   - at the season close, before contract expiry and renewal (→STAFF-14), a manager still at trust 0 resigns.
-  - the first settled round he is at 10 or less (again after recovering above it) is an event and an inbox notice that he is considering resigning, so the owner can act first (a public vote of confidence →CLUB-20).
+  - the first settled round he is at 10 or less (again after recovering above it) is an event and an inbox notice that he is considering resigning, with no resignation draw that round, so the owner can act first (a public vote of confidence →CLUB-20).
   - the departure is a resignation (→STAFF-7, departure reason resigned) reported as a breakdown of trust; with the manager post delegated the staff appoint a successor at once (→STAFF-18).
 
 ## flow

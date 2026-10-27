@@ -338,16 +338,16 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 23 | 23 | - | 2 |
-| WEB | 159 | 158 | WEB-54✎ WEB-92✎ WEB-99+ | 0 |
+| WEB | 159 | 159 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
 | MATCH | 33 | 33 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
-| STAFF | 36 | 35 | STAFF-47+ | 0 |
+| STAFF | 36 | 36 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 3 | 3 | - | 0 |
-| HIST | 18 | 17 | HIST-18✎ HIST-20+ | 0 |
+| HIST | 18 | 18 | - | 0 |
 | SAVE | 54 | 54 | - | 0 |
 | PLAYER | 10 | 10 | - | 0 |
 
@@ -363,6 +363,12 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T510 | Contracts for the trust-floor warning and own-club transfer facts | STAFF HIST SAVE ARCH | - | todo |
+| T511 | Managers at the floor of trust resign | STAFF CLUB HIST | T510 | todo |
+| T512 | Hide interim tenures that never took a match | HIST WEB | - | todo |
+| T513 | Record own-club transfer facts and rank them | HIST ECON SAVE WORLD | T510 | todo |
+| T514 | 이적 기록 view in the records room | WEB HIST | T513 | todo |
+| T515 | Broadcast-style heat maps on a 2D canvas | WEB MATCH ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -378,11 +384,13 @@
 | module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
 
 ## next
+- h7t3 work group (work/h7t3): T510 foundation → lanes manager-trust T511, interim-history T512, transfer-records T513–T514, heatmap T515; batch then merge to main.
 - T494–T495 complete: theme-matched trophy artwork and distinct division/continental silhouettes; all required batch stages passed before publication.
 - review/ui-engine-boundary-261027 F1–F4 done (T500–T503): UI→orchestration exceptions 53→38 files, 38→35 engine modules; F5 (domain reads on the main thread) waits for a measured decision.
 - o7h4 pushed T490–T493 (owner office, home season card, records sub-screen) to main after the ARCH-30 batch passed on eaf5f3d1; confirm its decided inbox items.
 
 ## log
+- 261027 create-task STAFF@36 HIST@18 WEB@159 (h7t3): T510–T515 (foundation + 4 lanes)
 - 261027 update-ssot STAFF r36 HIST r18 WEB r159 (h7t3): trust floor resignations, zero-match interims hidden, transfer fee records, broadcast heat maps
 - 261027 T495 done: 32 competition-specific trophy variants across four themes, country-aware cabinet selection and safe fallback; unit/integration/contract and all 299 Chromium journeys passed, with unchanged-timeout recovery for load-related tests.
 - 261027 T494 done: redrew all 21 print/pixel/sticker trophies in their theme's illustration style; preserved the seven standard photographs; asset integrity and task checks passed.
@@ -402,4 +410,3 @@
 - 261027 create-task WEB r158 (autopilot o7h4): T490 home season card and strength tile, T491 focused office and clock, T492 office lobby and 결재 라인, T493 records season screen and player totals to 100
 - 261027 update-ssot WEB r158 (autopilot o7h4, owner request): season card on home (round·rank·record), strength in team state, spacing below the HUD, focused 구단주 사무실 entered from home with six areas and 결재 라인, office stops the clock (WEB-98), records season sub-screen with a navigator bar, player totals up to 100
 - 261027 update-ssot WEB start (autopilot o7h4)
-- 261027 T483 done: eleven complete language packs; 29 locale cases, all fast/unit/integration/contract/resource checks, 277 existing Chromium journeys and the repaired 22 locale journeys passed; concurrent T477–T482 contracts preserved

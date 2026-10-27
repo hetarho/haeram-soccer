@@ -448,7 +448,7 @@
 
 - WEB-84 [o] An own match of the current season opens its post-match material (→MATCH-25) from the final analysis and from the fixture lists: shot map, heat maps by player and side, pass network and tactical report, each on the 1.9:1 pitch with the cells' names on touch. After the season close those matches say their maps are not kept and point to the players' season heat maps. ← grounds for manager and signing decisions without filling the save
 - WEB-99 [o] Every heat map — a match's by player or side and a player's season map (→WEB-59) — reads as a broadcast heat map: the 40-cell shares (→MATCH-14) drawn as smooth overlapping blobs over the pitch lines, coloured on one continuous cold-to-hot ramp (transparent where nothing happened, blue through green and yellow to red at the most touched area) and scaled to the map's own maximum. ← separate shaded cells read as a spreadsheet, not as where a player lived
-  - drawn by the browser's own 2D canvas in the material bundle (→ARCH-28) with no new runtime dependency; the same input always draws the same picture.
+  - drawn by the browser's own 2D canvas inside the lazily loaded screens that show it (→ARCH-28), with no new runtime dependency; the same input always draws the same picture.
   - cell names on touch, the pitch's 1.9:1 ratio, a text summary for assistive technology and every theme's pitch colours stay (→WEB-17/38/91); reduced motion draws without animation.
 - WEB-85 [o] Preparation shows the manager's bench and set-piece and penalty takers with the lineup (→CLUB-6), and unavailable players with their injury or ban; the era's substitute rule is named (→MATCH-20).
 
