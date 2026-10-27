@@ -113,7 +113,11 @@ try {
     if ((await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))) !== saved)
       throw new Error('Save manifest changed');
     await page.setViewportSize({ width: 1380, height: 920 });
-    await page.locator('aside').getByRole('button', { name: '훈련·육성', exact: true }).click();
+    await page.locator('aside').getByRole('button', { name: '1군', exact: true }).click();
+    await page
+      .getByRole('tablist', { name: '1군', exact: true })
+      .getByRole('tab', { name: '훈련', exact: true })
+      .click();
     const training = page.locator('[data-facility-art="training"] img');
     await training.waitFor({ state: 'visible' });
     await training.evaluate((image) => image.decode());
