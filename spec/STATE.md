@@ -414,6 +414,7 @@
 - club-places: implement T557/T558 engine foundations while live T550 owns UI, then T552 market UI and T553 choices in parallel with the T554→T555 places-office lane; T556 connects all results. Existing T548–T550 remain with their current sessions.
 
 ## log
+- 261029 cp29 extend unclaimed T553 to update the existing rest-day morale summary assertion identified by T557; keep full-world integration execution at the coordinator gate.
 - 261029 cp29 redivide unclaimed T552/T553 into engine foundations T558/T557 and UI consumers so live T550 UI ownership does not stop independent engine work; no policy change.
 - 261029 cp29 narrow unclaimed T552 runtime touches to protocol/host/client plus dedicated query tests; unrelated T548 owns host/protocol legacy tests.
 - 261029 cp29 create-task T552–T556: three independent lanes and convergence; task checks are isolated unit/quick/build, coordinator owns final batch.
@@ -433,4 +434,3 @@
 - 261028 T543 done (dev3, 407a5e9d): figure poses and action windows; PL re-ran its 16 unit tests and typecheck; merged into feat/player-figures-kits.
 - 261028 T547 (dev1) and T543 (dev3) start in worktrees task/T542 (renumbered T547 at merge) and task/T543 (pl1).
 - 261028 create-task done (pl1): T543–T547 from KIT r4 MATCH r36 WEB r166 SAVE r56; foundation T547 ‖ T543 → T544, lanes match-figures T545 and kit-editor T546.
-- 261028 create-task KIT MATCH WEB SAVE start (pl1): player figures and full kits on branch feat/player-figures-kits.
