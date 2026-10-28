@@ -389,7 +389,6 @@
 | T554 | Six-place navigation and competition clubhouse | WEB ECON ARCH | - | todo |
 | T555 | Work-oriented owner office and scoped player approvals | WEB ECON ARCH | T554 | todo |
 | T556 | Connect place choices and verify the complete owner workflow | WEB CLUB ARCH | T552 T553 T555 | todo |
-| T557 | Real disadvantages for free owner requests | CLUB WEB ARCH | - | todo |
 | T558 | World market query and identity-based transfer engine | WEB CLUB ARCH | - | todo |
 
 ## work
@@ -408,11 +407,13 @@
 | auto-play | 4 | 7 | 4 | 3 | 0 | 1 | 0 | 2026-10-27T11:34:29.863Z | [history](work/auto-play.json) |
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 | v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
+| club-places | 3 | 8 | 1 | 7 | 1 | 0 | 0 | 2026-10-28T15:59:14.591Z | [history](work/club-places.json) |
 
 ## next
-- club-places: finish T557/T558 foundations, then T552/T553 and T554→T555 UI lanes; T556 connects all results. T549/T550 are integrated from their owning group; T548 remains with its existing session.
+- inspect work board for remaining tasks
 
 ## log
+- 261028 T557 integrated
 - 261029 fix outcome: align the existing rest-day summary assertion with CLUB-20 morale -2; paired validation belongs to the already implemented T557 foundation before integration.
 - 261029 cp29 merge the owner-reviewed v07-beta integration so completed T549/T550 no longer block independent UI work; preserve current SSOT and T552–T558 scope.
 - 261028 T550 integrated
@@ -432,4 +433,3 @@
 - 261028 T546 done (dev4, fe455032): kit editor, goalkeeper tab, figure previews, fallback notice; PL committed it (Codex sandbox could not write the worktree index) after re-running its 43 unit tests; merged.
 - 261028 lanes start (pl1): T545 match-figures (dev3) and T546 kit-editor (dev4) in worktrees task/T545 and task/T546.
 - 261028 T544 done (dev3, 1f605f49): figure painter and number tags; PL re-ran 40 unit tests and typecheck; merged.
-- 261028 T544 start (dev3) in worktree task/T544 (pl1).

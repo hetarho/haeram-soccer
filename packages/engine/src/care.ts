@@ -111,10 +111,10 @@ export const CARE_INFO: Record<CareKind, CareRule> = {
   backing: {
     label: '감독 재신임 발표',
     by: '구단주',
-    summary: '구단주가 감독을 공개적으로 신임해 흔들림을 막아요',
+    summary: '감독을 공개적으로 신임하지만 불만을 가진 선수들의 분위기는 가라앉아요',
     cost: 0,
     cooldown: 10,
-    outcomes: () => [effect(1, '감독과 선수단이 안정을 찾음', 2, 0, 8)],
+    outcomes: () => [effect(1, '감독 신뢰 상승, 선수단 불만', -2, 0, 8)],
   },
   camp: {
     label: '단기 전지훈련 캠프',
@@ -127,10 +127,10 @@ export const CARE_INFO: Record<CareKind, CareRule> = {
   'rest-day': {
     label: '휴식일 부여 요청',
     by: '감독',
-    summary: '감독에게 훈련을 쉬고 이틀 휴식을 주자고 요청해요',
+    summary: '감독에게 이틀 휴식을 요청해 피로를 풀지만 함께 준비할 시간을 잃어요',
     cost: 0,
     cooldown: 4,
-    outcomes: () => [effect(1, '휴식으로 회복', 2, -6)],
+    outcomes: () => [effect(1, '휴식으로 회복, 함께 준비할 시간 감소', -2, -6)],
   },
   recovery: {
     label: '회복 집중 지원',
