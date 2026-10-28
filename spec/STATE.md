@@ -14,7 +14,7 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
-| e7q4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T01:49Z | 2026-10-28T01:51Z | - |
+| e7q4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T01:49Z | 2026-10-28T01:54Z | T537 |
 | u7m4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T00:48Z | 2026-10-28T00:48Z | - |
 
 ## inbox
@@ -373,7 +373,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T537 | European qualification by association, domestic results and titles | EURO ARCH | - | todo |
+| T537 | European qualification by association, domestic results and titles | EURO ARCH | - | doing@261028.e7q4 |
 | T536 | Compact facility entrances and app-wide spacing hierarchy | WEB ARCH | - | doing@261028.u7m4 |
 
 ## work
