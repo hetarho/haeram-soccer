@@ -6,7 +6,7 @@ import { worldMarketFixture } from '../../../../packages/engine/src/world-market
 import type { ClientState, GameClient } from '../runtime/client';
 import { initialClientState } from '../runtime/store';
 import { RecruitmentDesk } from './RecruitmentDesk';
-import { DEFAULT_MARKET_QUERY, type MarketDetail } from './worldMarket';
+import { DEFAULT_MARKET_QUERY, type MarketDetail, type MarketQuery } from './worldMarket';
 
 const { choices, reads } = vi.hoisted(() => ({
   choices: {} as Record<string, unknown>,
@@ -201,6 +201,42 @@ describe('paged whole-world recruitment desk', () => {
     expect(choices['world-market-query']).toMatchObject({ page: 0 });
     expect(choices['world-market-comparison']).toHaveLength(2);
   });
+  it.each([
+    ['position', '영입 포지션', '모든 포지션'],
+    ['league', '영입 리그', '모든 리그'],
+    ['team', '영입 구단', '모든 구단·자유계약'],
+  ] as const)(
+    'clears only the %s restriction using its selectable all option',
+    (field, label, allLabel) => {
+      const query: MarketQuery = {
+        ...DEFAULT_MARKET_QUERY,
+        page: 3,
+        name: 'Ada',
+        recommendedOnly: true,
+        fit: 'improves',
+        position: 'GK',
+        league: { country: 'ESP', tier: 0, group: 0 },
+        team: 'foreign',
+        sort: 'wage',
+        direction: 'asc',
+      };
+      choices['world-market-query'] = query;
+      choices['market-panel'] = 'filters';
+      render();
+      const select = control(label);
+      const all = elements(select.props.children as ReactNode).find(
+        (node) => node.props.children === allLabel,
+      )!;
+      // Shared Select removes empty option values from its actual selectable list.
+      expect(all.props.value).toBeTruthy();
+      (select.props.onValueChange as (value: string) => void)(all.props.value as string);
+      const next = choices['world-market-query'] as MarketQuery;
+      expect(next).toEqual({ ...query, page: 0, [field]: undefined });
+      render();
+      expect(reads.query.mock.lastCall?.[3]).toEqual(next);
+      expect(control(label).props.value).toBe(all.props.value);
+    },
+  );
   it('distinguishes loading, retryable failures and empty filters with a clear action', () => {
     reads.page = undefined;
     expect(render()).toContain('세계 선수 목록을 불러오고 있어요.');
@@ -249,6 +285,43 @@ describe('paged whole-world recruitment desk', () => {
       { background: true },
     );
   });
+  it.each([true, false])(
+    'offers only a permanent signing for a free agent with window open=%s',
+    (open) => {
+      const day = w.calendar!.day;
+      w.calendar!.day = open ? 3 : 60;
+      try {
+        choices['world-market-viewing'] = offer.target;
+        reads.detail = detail();
+        reads.detail.offer = {
+          ...offer,
+          freeAgent: true,
+          fee: '0',
+          source: undefined,
+          target: { world: w.id, kind: 'offer', playerId: offer.player.id },
+        };
+        // The preview permits the prepared player financially and for registration. The UI must
+        // additionally honor the stable-target command's unsupported free-agent loan contract.
+        reads.detail.buy.fee = '0';
+        const markup = render();
+        expect(markup).toMatch(/<button[^>]*disabled=""[^>]*>1시즌 임대<\/button>/);
+        expect(markup).toContain(
+          '자유계약 선수는 임대할 수 없어요. 자유계약 영입을 이용해 주세요.',
+        );
+        expect(markup).toMatch(/<button(?![^>]*disabled)[^>]*>자유계약 영입<\/button>/);
+        const card = elements(tree).find((node) => node.props.candidate)!;
+        (card.props.onRecruit as (loan: boolean) => void)(true);
+        expect(client.command).not.toHaveBeenCalled();
+        (card.props.onRecruit as (loan: boolean) => void)(false);
+        expect(client.command).toHaveBeenCalledExactlyOnceWith(
+          { type: 'recruit', target: reads.detail.offer.target, loan: false },
+          { background: true },
+        );
+      } finally {
+        w.calendar!.day = day;
+      }
+    },
+  );
   it('keeps inspection enabled during automatic play and rejects a late command from another game', async () => {
     reads.blocked = true;
     render();

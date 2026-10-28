@@ -51,7 +51,10 @@ describe('market query and stable selection transformations', () => {
   it('keeps filters on page changes and clears dependent team/position/line choices', () => {
     const current = { ...DEFAULT_MARKET_QUERY, name: 'Ada', team: 'old', line: 'DF' as const };
     expect(changeMarketQuery(current, { page: 2 })).toEqual({ ...current, page: 2 });
-    expect(changeMarketQuery(current, { league: undefined }).team).toBeUndefined();
+    expect(changeMarketQuery(current, { league: undefined }).team).toBe('old');
+    expect(
+      changeMarketQuery(current, { league: { country: 'ESP', tier: 0, group: 0 } }).team,
+    ).toBeUndefined();
     expect(changeMarketQuery(current, { position: 'RWB' }).line).toBeUndefined();
     expect(
       changeMarketQuery({ ...current, position: 'CB' }, { line: 'MF' }).position,

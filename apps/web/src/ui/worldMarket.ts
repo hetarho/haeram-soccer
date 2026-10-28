@@ -16,7 +16,7 @@ export const DEFAULT_MARKET_QUERY: MarketQuery = {
 export function changeMarketQuery(current: MarketQuery, patch: Partial<MarketQuery>): MarketQuery {
   const next = { ...current, ...patch };
   if (Object.keys(patch).some((key) => key !== 'page')) next.page = 0;
-  if ('league' in patch) next.team = undefined;
+  if (patch.league) next.team = undefined;
   if ('position' in patch) next.line = undefined;
   if ('line' in patch) next.position = undefined;
   return next;

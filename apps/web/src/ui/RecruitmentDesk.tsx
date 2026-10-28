@@ -277,12 +277,18 @@ function CandidateCard({
             </div>
             <div>
               <button
-                disabled={blocked || !window.open || !loan.eligible || !loan.affordable}
+                disabled={
+                  offer.freeAgent || blocked || !window.open || !loan.eligible || !loan.affordable
+                }
                 onClick={() => onRecruit(true)}
               >
                 1시즌 임대
               </button>
-              {(!loan.eligible || !loan.affordable) && <small>{loan.reason}</small>}
+              {offer.freeAgent ? (
+                <small>자유계약 선수는 임대할 수 없어요. 자유계약 영입을 이용해 주세요.</small>
+              ) : (
+                (!loan.eligible || !loan.affordable) && <small>{loan.reason}</small>
+              )}
             </div>
           </div>
         ))}
@@ -386,6 +392,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
     if (
       blocked ||
       candidate.offer.own ||
+      (loan && candidate.offer.freeAgent) ||
       !preview.eligible ||
       !preview.affordable ||
       !currentWorld() ||
@@ -692,12 +699,14 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
               포지션
               <Select
                 aria-label="영입 포지션"
-                value={query.position ?? ''}
+                value={query.position ?? 'all'}
                 onValueChange={(value) =>
-                  changeQuery({ position: value ? (value as MarketQuery['position']) : undefined })
+                  changeQuery({
+                    position: value === 'all' ? undefined : (value as MarketQuery['position']),
+                  })
                 }
               >
-                <option value="">모든 포지션</option>
+                <option value="all">모든 포지션</option>
                 {POSITIONS.map((position) => (
                   <option key={position} value={position}>
                     {position} · {POSITION_LABEL[position]}
@@ -709,12 +718,12 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
               리그
               <Select
                 aria-label="영입 리그"
-                value={leagueKey}
+                value={leagueKey || 'all'}
                 onValueChange={(value) =>
                   changeQuery({ league: leagues.find(([key]) => key === value)?.[1] })
                 }
               >
-                <option value="">모든 리그</option>
+                <option value="all">모든 리그</option>
                 {leagues.map(([key]) => {
                   const team = w.clubs.find((team) => marketLeagueKey(team) === key)!;
                   return (
@@ -729,10 +738,12 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
               소속 구단
               <Select
                 aria-label="영입 구단"
-                value={query.team ?? ''}
-                onValueChange={(value) => changeQuery({ team: value || undefined })}
+                value={query.team ?? 'all'}
+                onValueChange={(value) =>
+                  changeQuery({ team: value === 'all' ? undefined : value })
+                }
               >
-                <option value="">모든 구단·자유계약</option>
+                <option value="all">모든 구단·자유계약</option>
                 {teams.map((team) => (
                   <option key={team.id} value={team.id}>
                     {team.name}
