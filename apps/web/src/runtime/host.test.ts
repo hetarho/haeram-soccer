@@ -878,7 +878,7 @@ it('reports supported match-model metadata and refuses a future one without acti
       type: 'inspect',
       raw: await sealed({
         ...source,
-        matchModel: { ...matchModel, revision: 'continuous-aggregate-5' },
+        matchModel: { ...matchModel, revision: 'continuous-aggregate-6' },
       } as unknown as World),
       metadataOnly: true,
     }),
@@ -1081,7 +1081,7 @@ describe('prospective match-model activation (→SAVE-23)', () => {
       'model-future',
       await sealed({
         ...source,
-        matchModel: { ...host.world!.matchModel!, revision: 'continuous-aggregate-5' },
+        matchModel: { ...host.world!.matchModel!, revision: 'continuous-aggregate-6' },
       } as unknown as World),
     );
     expect(future.ok).toBe(false);

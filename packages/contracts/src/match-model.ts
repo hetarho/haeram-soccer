@@ -30,17 +30,20 @@ import {
  * outside shooting and crossing range to the nearest suitable player, draws a corner's numbers
  * and lets the late score set them, chooses shots from the chance in a forward ≥ midfielder ≥
  * defender order and recalibrates its scoring (T479–T482, →MATCH-16, MATCH-18); careers on
- * revisions 1–3 take it the same way.
+ * revisions 1–3 take it the same way. Revision 5 has the carrier take open ground ahead, recycle
+ * backward or sideways only to a free receiver along a clear lane and, with room near the box, never
+ * play it far back (T538, →MATCH-16); careers on revisions 1–4 take it the same way.
  */
 export const MATCH_MODEL_REVISIONS = [
   'continuous-aggregate-1',
   'continuous-aggregate-2',
   'continuous-aggregate-3',
   'continuous-aggregate-4',
+  'continuous-aggregate-5',
 ] as const;
 export type MatchModelRevision = (typeof MATCH_MODEL_REVISIONS)[number];
 /** The revision new careers and upgraded ones play. */
-export const MATCH_MODEL_REVISION: MatchModelRevision = 'continuous-aggregate-4';
+export const MATCH_MODEL_REVISION: MatchModelRevision = 'continuous-aggregate-5';
 export const isMatchModelRevision = (value: unknown): value is MatchModelRevision =>
   (MATCH_MODEL_REVISIONS as readonly unknown[]).includes(value);
 /** A revision's number: 1 for the first. */

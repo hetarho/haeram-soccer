@@ -960,11 +960,12 @@ describe('grid decisions', () => {
       });
     expect(entry(true, 0.2) / entry(true, 1)).toBeCloseTo(0.2, 12);
     expect(entry(false, 0.2)).toBeCloseTo(entry(false, 1), 12);
-    // A carry from the middle of the pitch: the same draws, `carry` times as far.
+    // A carry from the middle of the pitch: the same draws, `carry` times as far (revision 4: on
+    // revision 5 an open pitch stretches the carry to its space, T538).
     const carried = (candidate: boolean, value: number) =>
       withCandidate({ finalThird: { ...neutral, carry: value } }, () => {
         const sc = scene(CM, [50, 34]);
-        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISIONS[3] };
         const end = chooseCarry(sc.s, 0, CM, sc.tags(), random('t408-carry'));
         return Math.hypot(end[0] - 50, end[1] - 34);
       });
@@ -1136,5 +1137,137 @@ describe('revision 4 shot choice (T481, →MATCH-16)', () => {
         9,
       );
     }
+  });
+});
+
+describe('revision 5 carrier judgement (T538, →MATCH-16)', () => {
+  const [, , , fourth, fifth] = MATCH_MODEL_REVISIONS;
+  const J = DECISION_CONFIG.candidate.revision5;
+  /** A neutral carrier (no traits, every attribute 60) at `at` on `model`; everyone else parked. */
+  const judged = (slot: number, at: Point, model: MatchModelRevision) => {
+    const sc = scene(slot, at);
+    sc.s.setup = { ...sc.s.setup, model };
+    sc.me.player.traits = [];
+    setSkills(sc.s, slot, Object.fromEntries(ATTRIBUTES.map((a) => [a, 60])));
+    return sc;
+  };
+  const foe = (sc: ReturnType<typeof scene>, idx: number, p: Point) =>
+    (sc.s.players[1][idx]!.pos = [...p]);
+
+  it('revision 5: a free carrier with open ground carries more, and further, than one closed down', () => {
+    const carry = (model: MatchModelRevision, closed: boolean) => {
+      const sc = judged(CM, [40, 34], model);
+      // Ten metres straight ahead: not pressing him (`TAG_CONFIG.pressureRadius`), but in his way.
+      if (closed) foe(sc, 5, [50, 34]);
+      const tags = sc.tags();
+      expect(tags.pressure).toBe(0);
+      const mix = actionMix(sc.s, 0, CM, tags);
+      const end = chooseCarry(sc.s, 0, CM, tags, () => 0);
+      return { odds: mix.carry / mix.pass, length: Math.hypot(end[0] - 40, end[1] - 34) };
+    };
+    const open = carry(fifth, false);
+    const closed = carry(fifth, true);
+    expect(open.odds).toBeGreaterThan(2 * closed.odds);
+    expect(open.length).toBeCloseTo(J.space.most, 6);
+    expect(closed.length).toBeLessThan(J.space.most);
+    // Revision 4 reads no space ahead.
+    expect(carry(fourth, false)).toEqual(carry(fourth, true));
+  });
+
+  it('revision 5: no back or sideways pass to a marked receiver or through a cut-out lane, forward ones still allowed', () => {
+    const options = (model: MatchModelRevision) => {
+      const sc = judged(CM, [60, 34], model);
+      place(sc.s, 4, [45, 34]); // back, an opponent on him
+      foe(sc, 5, [44, 35.5]);
+      place(sc.s, 5, [60, 54]); // sideways, an opponent standing in the lane
+      foe(sc, 6, [60, 44]);
+      place(sc.s, 1, [78, 34]); // forward, an opponent on him
+      foe(sc, 7, [79, 35]);
+      place(sc.s, 2, [44, 4]); // back, free and clear
+      const tags = sc.tags();
+      expect(tags.pressure).toBe(0);
+      const r = random(`t538-recycle-${model}`);
+      const chosen = new Set<number>();
+      for (let i = 0; i < 2000; i++) chosen.add(choosePass(sc.s, 0, CM, tags, r)!.target);
+      return {
+        targets: passOptions(sc.s, 0, CM, tags, { judge: true }).map((o) => o.target),
+        chosen,
+      };
+    };
+    const now = options(fifth);
+    expect(now.targets.sort()).toEqual([1, 2]);
+    expect([...now.chosen].sort()).toEqual([1, 2]);
+    // Revision 4 weighs all four.
+    expect(options(fourth).targets.sort()).toEqual([1, 2, 4, 5]);
+  });
+
+  it('revision 5: a forward through near the box never plays it far back', () => {
+    const options = (model: MatchModelRevision) => {
+      const sc = judged(ST, [J.room.from + 5, 34], model);
+      place(sc.s, CM, [J.room.from - 15, 34]); // 20 m back, free
+      place(sc.s, 4, [J.room.from + 2, 42]); // a short lay-off
+      const tags = sc.tags();
+      const r = random(`t538-room-${model}`);
+      let back = 0;
+      for (let i = 0; i < 2000; i++) if (choosePass(sc.s, 0, ST, tags, r)!.target === CM) back++;
+      return {
+        targets: passOptions(sc.s, 0, ST, tags, { judge: true }).map((o) => o.target),
+        back,
+      };
+    };
+    const now = options(fifth);
+    expect(now.targets).not.toContain(CM);
+    expect(now.targets).toContain(4);
+    expect(now.back).toBe(0);
+    const before = options(fourth);
+    expect(before.targets).toContain(CM);
+    expect(before.back).toBeGreaterThan(0);
+  });
+
+  it('revision 5: a winger with the flank open carries down the line and crosses later', () => {
+    const wide = (model: MatchModelRevision, closed: boolean) => {
+      // In front of the box on the left wing, nobody ahead unless the flank is closed.
+      const sc = judged(CM, [75, 5], model);
+      if (closed) foe(sc, 5, [83, 5]);
+      const tags = sc.tags();
+      expect(tags.pressure).toBe(0);
+      const mix = actionMix(sc.s, 0, CM, tags);
+      const r = random(`t538-wing-${model}-${closed}`);
+      let line = 0;
+      for (let i = 0; i < 2000; i++) {
+        const end = chooseCarry(sc.s, 0, CM, tags, r);
+        if (end[0] > 75 + 3 && Math.abs(end[1] - 5) < 2) line++;
+      }
+      return { odds: mix.carry / mix.pass, line: line / 2000 };
+    };
+    const [open4, open5] = [fourth, fifth].map((m) => wide(m, false));
+    expect(open5!.odds / open4!.odds).toBeCloseTo(J.wing.carry, 9);
+    expect(open5!.line).toBeGreaterThan(open4!.line + 0.2);
+    // A closed flank keeps revision 4's choice.
+    const [closed4, closed5] = [fourth, fifth].map((m) => wide(m, true));
+    expect(closed5!.odds).toBeCloseTo(closed4!.odds, 12);
+  });
+
+  it('revision 5: a free wide teammate with room is found more often', () => {
+    const scores = (model: MatchModelRevision) => {
+      const sc = judged(CM, [60, 34], model);
+      place(sc.s, 1, [72, 6]); // on the wing, the flank open
+      place(sc.s, 2, [72, 30]); // central
+      const options = passOptions(sc.s, 0, CM, sc.tags(), { judge: true });
+      const of = (target: number) => options.find((o) => o.target === target)!.score;
+      return [of(1), of(2)] as const;
+    };
+    const [wing4, centre4] = scores(fourth);
+    const [wing5, centre5] = scores(fifth);
+    expect(wing5 - wing4).toBeCloseTo(J.wing.find, 12);
+    expect(centre5).toBeCloseTo(centre4, 12);
+  });
+
+  it('revision 4 keeps its options whether or not the carrier judges them', () => {
+    const sc = judged(CM, [60, 34], fourth);
+    place(sc.s, 4, [45, 34]);
+    foe(sc, 5, [44, 35.5]);
+    const tags = sc.tags();
+    expect(passOptions(sc.s, 0, CM, tags, { judge: true })).toEqual(passOptions(sc.s, 0, CM, tags));
   });
 });

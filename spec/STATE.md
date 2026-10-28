@@ -374,7 +374,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T537 | European qualification by association, domestic results and titles | EURO ARCH | - | doing@261028.e7q4 |
-| T538 | Match-model revision 5: carriers take open ground, recycle only safely, never far back with room near the box | MATCH SAVE ARCH | - | doing@261028.f5j2 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -393,11 +392,11 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- implement-task T538: revision 5 carrier judgement (f5j2).
 - implement-task T537: correct association access, continental titleholders, EPS and qualification causes.
 - UI scope T536 is complete; await its main CI result. Manager/training room activities need separate product planning.
 
 ## log
+- 261028 T538 done: revision 5 carrier judgement — open ground, safe recycling, no far back pass with room, wide play; 600-match read 29/37 inside the tolerance.
 - 261028 T539 done: MATCH-23 rows, scorer rows and MATCH-30 counters judged within 25% of the real mean (match-parity-6).
 - 261028 T539 start (f5j2): tolerant target bands.
 - 261028 update-ssot MATCH r35 + create-task T539: MATCH-23/MATCH-30 rows held within 25% of the real-football mean.
@@ -417,4 +416,3 @@
 - 261028 T534 start: coordinator repairs initial Chromium integration failures; no implementation code was pushed.
 - 261028 fix navigation-tools: screenshot capture and the unchanged 30-click first-play sample use the six gameplay destinations; syntax and type/lint/format checks passed; no new benchmark claim.
 - 261028 fix personnel-deep-links: canonical personnel entries serve the SPA with no-cache HTML; missing assets remain 404; HTTP checks, type/lint/format/build passed; preview regression extended for the final batch.
-- 261028 fix approval-return: cancellation/home actions stay disabled while a command is queued or in flight; 26 focused cases and type/lint/format/build passed.

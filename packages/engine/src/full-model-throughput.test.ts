@@ -131,11 +131,13 @@ const facts = (w: World) => ({
  * revision 4 (lines FW 1, MF 0.8, DF 0.5 at scale 0.25) changed the candidate rounds only;
  * f63576f95ac36c4c before. T482's recalibration of revision 4 (shot quality, pass gain 0.3, shot
  * scale 0.28, crossed deliveries 0.7, fouls ×1.5) changed the candidate rounds only;
- * 2837deaef4826be0 before.
+ * 2837deaef4826be0 before. T538's match-model revision 5 (the carrier takes open ground, recycles
+ * only safely, never far back with room near the box, plays down the wing) changed both, label and
+ * football; aa876ab8eda9f1c2 and 8ea7fa36b38d041f before.
  */
 const BEFORE = {
-  aggregateRecords: 'aa876ab8eda9f1c2',
-  candidateRounds: '8ea7fa36b38d041f',
+  aggregateRecords: 'cfafcd75d6be2337',
+  candidateRounds: 'c85a6bd47699f2f2',
 };
 
 describe('complete-result throughput (T285)', () => {

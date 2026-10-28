@@ -184,6 +184,27 @@ export const DECISION_CONFIG = {
       ] as readonly RoleId[],
     },
     /**
+     * Revision 5 (T538, →MATCH-16): the carrier's judgement. `space`: his space is the distance to
+     * the nearest opponent in front of him within `cone` degrees of straight ahead; below `upTo` m
+     * up the pitch and with nobody closing him his carry weight is multiplied by up to
+     * `1 + carry`, rising linearly from `from` to `full` metres, and a carry stretches toward that
+     * space (leaving `keep` m, at most `most` m). In the final third the defence is set and `room`
+     * governs instead: carrying there as freely took goals to 3.4–3.9 a match (150-match reads).
+     * `contested`: a backward or lateral pass never goes to a receiver with an opponent within
+     * `mark` m or along a lane an opponent reaches cleanly. `room`: a carrier at least `from` m up
+     * the pitch with `space` m in front of him (or in behind) has no backward option more than
+     * `back` m behind him. `wing`: a carrier on the wing (a wide lane, the opponents' half, outside
+     * the box, `open` m of space ahead) has a carry heading straight down the line scoring `line`
+     * more, and in front of the box (band 5) crosses `early` and carries `carry` times as often, so
+     * he crosses from near the byline; a receiver on the wing scores `find` more as a pass target.
+     */
+    revision5: {
+      space: { cone: 40, from: 8, full: 25, carry: 2, keep: 5, most: 12, upTo: 70 },
+      contested: { mark: 3 },
+      room: { from: 75, space: 6, back: 10 },
+      wing: { open: 12, line: 1.5, early: 0.4, carry: 2, find: 0.6 },
+    },
+    /**
      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
      * `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+.
      * T370: 4 → 3.5, so fewer box shots do not push the shot places outside and from 30 m+.
@@ -504,6 +525,18 @@ export function actionMix(
     tags.band < 6
   )
     mix.carry *= F.carry;
+  // Open ground ahead of him (revision 5, T538): he takes it on the carry.
+  const r5 = candidate && modelAtLeast(s.setup, 5) ? C.candidate.revision5 : undefined;
+  if (r5 && tags.pressure < 1 && c[0] < r5.space.upTo) {
+    const S = r5.space;
+    const ahead = Math.min(spaceAhead(s, side, c), S.full);
+    mix.carry *= 1 + S.carry * clamp((ahead - S.from) / (S.full - S.from), 0, 1);
+  }
+  // The flank open ahead of a wide carrier (revision 5, T538): down the line, not an early cross.
+  if (r5 && tags.pressure < 1 && tags.band === 5 && onWing(s, side, c)) {
+    mix.cross *= r5.wing.early;
+    mix.carry *= r5.wing.carry;
+  }
   // His head on shots.
   const decisions = skill(s, side, idx, 'decisions');
   if (cell.xgPerShot !== null && cell.xgPerShot < C.lowXg) mix.shot *= 1 - (decisions - 50) / 200;
@@ -568,6 +601,39 @@ function pressureAt(s: GridState, side: 0 | 1, p: Point): number {
 }
 
 /**
+ * Metres from the attack-frame point `c` to the nearest opponent in front of it within
+ * `revision5.space.cone` degrees of straight ahead (T538); Infinity with nobody there.
+ */
+export function spaceAhead(s: GridState, side: 0 | 1, c: Point): number {
+  const { atan2, hypot } = s.math;
+  const cone = DECISION_CONFIG.candidate.revision5.space.cone;
+  let best = Infinity;
+  for (const opp of s.players[other(side)]) {
+    if (!onPitch(opp)) continue;
+    const o = attackFrame(side, opp.pos);
+    const dx = o[0] - c[0],
+      dy = o[1] - c[1];
+    if (dx <= 0 || Math.abs(atan2(dy, dx)) / DEG > cone) continue;
+    best = Math.min(best, hypot(dx, dy));
+  }
+  return best;
+}
+
+/**
+ * Whether the attack-frame point `c` is on the wing with the flank open (T538): a wide lane in the
+ * opponents' half, outside the box, with `revision5.wing.open` m of space ahead.
+ */
+function onWing(s: GridState, side: 0 | 1, c: Point): boolean {
+  const lane = cellLane(cellOf(c));
+  return (
+    (lane === 0 || lane === 4) &&
+    c[0] >= PITCH.length / 2 &&
+    !inBox(c) &&
+    spaceAhead(s, side, c) >= DECISION_CONFIG.candidate.revision5.wing.open
+  );
+}
+
+/**
  * What `gp`'s intention offers carrier `idx`, whose attack-frame place is `c` (candidate model,
  * →MATCH-16): `show` when he shows for him, an overlap that is `waiting` behind the carrier or ready
  * to `release` level with or ahead of him, else nothing.
@@ -596,6 +662,8 @@ export function passOptions(
     backBias?: number;
     riskScale?: number;
     filter?: (gp: GridPlayer) => boolean;
+    /** The carrier's own choice on revision 5 (T538): no unsafe recycling, no far back pass with room. */
+    judge?: boolean;
   } = {},
 ): PassOption[] {
   const P = DECISION_CONFIG.pass;
@@ -638,12 +706,21 @@ export function passOptions(
   const settled = rule && c[0] <= rule.upTo ? rule : undefined;
   const candidate = s.setup.model !== undefined;
   const past = DECISION_CONFIG.candidate.past;
+  // The carrier's judgement on revision 5 (T538): who he never plays back or across to.
+  const judge =
+    opts.judge && modelAtLeast(s.setup, 5) ? DECISION_CONFIG.candidate.revision5 : undefined;
+  const room =
+    judge &&
+    c[0] >= judge.room.from &&
+    (tags.inBehind || spaceAhead(s, side, c) >= judge.room.space);
   const gainWeight = !candidate
     ? 1
     : modelAtLeast(s.setup, 4)
       ? DECISION_CONFIG.candidate.revision4.gain
       : DECISION_CONFIG.candidate.gain;
-  return candidates.map(({ gp, p, dist, dir }) => {
+  const options: PassOption[] = [];
+  for (const { gp, p, dist, dir } of candidates) {
+    if (room && dir === 'back' && p[0] < c[0] - judge.room.back) continue;
     const gain = (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100 * gainWeight;
     let nearest = Infinity,
       risk = 0;
@@ -666,7 +743,10 @@ export function passOptions(
       if (t > 0 && t < 1) risk += exp(-hypot(o[0] - (c[0] + t * dx), o[1] - (c[1] + t * dy)) / 2);
     }
     // The candidate weighs who reaches the path as it stands (→MATCH-16, MATCH-31, T441).
-    if (candidate) risk = reachOnPath(s, side, me.pos, gp.pos, 0).weight;
+    const path = candidate ? reachOnPath(s, side, me.pos, gp.pos, 0) : undefined;
+    if (path) risk = path.weight;
+    // A contested target is only ever a forward pass's risk (T538).
+    if (judge && dir !== 'forward' && (nearest < judge.contested.mark || path?.clean)) continue;
     const open = Math.min(1, (Number.isFinite(nearest) ? nearest : 8) / 8);
     const behindRun = gp.run?.kind === 'behind' && gp.run.until > s.elapsed;
     // A man already past the offside line as the ball is played (candidate model, T397).
@@ -678,6 +758,8 @@ export function passOptions(
           (beyondLine ? past.through : 1)
         : 0;
     const combo = combination(s, gp, idx, c);
+    // A teammate free on the wing with room ahead (revision 5, T538).
+    const wing = judge && onWing(s, side, p) ? judge.wing.find : 0;
     const kind: PassOption['kind'] =
       through > 0
         ? 'through'
@@ -694,6 +776,7 @@ export function passOptions(
       P.risk * (opts.riskScale ?? 1) * risk -
       Math.max(0, dist - P.tooFar) / 10 +
       through +
+      wing +
       (combo === 'show'
         ? DECISION_CONFIG.combination.show
         : combo === 'release'
@@ -712,8 +795,9 @@ export function passOptions(
     const lineBreaking =
       (dfDeep !== undefined && c[0] <= dfDeep && p[0] > dfDeep) ||
       (mfDeep !== undefined && c[0] <= mfDeep && p[0] > mfDeep);
-    return { target: gp.idx, score, prior, direction: dir, kind, lineBreaking };
-  });
+    options.push({ target: gp.idx, score, prior, direction: dir, kind, lineBreaking });
+  }
+  return options;
 }
 
 /**
@@ -798,7 +882,7 @@ export function choosePass(
   r: () => number,
   opts: { crossOnly?: boolean; backBias?: number } = {},
 ): { target: number; kind: NonNullable<Decision['kind']>; lineBreaking: boolean } | undefined {
-  const options = passOptions(s, side, idx, tags, opts);
+  const options = passOptions(s, side, idx, tags, { ...opts, judge: true });
   if (!options.length) return undefined;
   const chosen = draw(
     options,
@@ -844,12 +928,24 @@ export function chooseCarry(
   const c = attackFrame(side, me.pos);
   const toGoal = atan2(PITCH.width / 2 - c[1], PITCH.length - c[0]);
   const [base, spread] = inBox(c) ? K.boxLength : K.length;
-  const length =
+  const drawn =
     (base + spread * r()) *
     (s.setup.model !== undefined && !inBox(c) ? DECISION_CONFIG.candidate.finalThird.carry : 1);
+  // Into the open ground ahead of him on revision 5 (T538).
+  const S = DECISION_CONFIG.candidate.revision5.space;
+  const length =
+    modelAtLeast(s.setup, 5) && tags.pressure < 1 && c[0] < S.upTo
+      ? Math.max(drawn, Math.min(spaceAhead(s, side, c) - S.keep, S.most))
+      : drawn;
   const xt0 = CELL_BASELINES[tags.cell]!.xT;
-  const ends = K.headings.map((deg): Point => {
-    const a = toGoal + deg * DEG;
+  // Down the line on the wing (revision 5, T538): straight up the pitch, as a sixth heading.
+  const wing =
+    modelAtLeast(s.setup, 5) && tags.pressure < 1 && onWing(s, side, c)
+      ? DECISION_CONFIG.candidate.revision5.wing.line
+      : undefined;
+  const angles = K.headings.map((deg) => toGoal + deg * DEG);
+  if (wing !== undefined) angles.push(0);
+  const ends = angles.map((a): Point => {
     return [
       clamp(c[0] + length * cos(a), K.margin, PITCH.length - K.margin),
       clamp(c[1] + length * sin(a), K.margin, PITCH.width - K.margin),
@@ -862,7 +958,8 @@ export function chooseCarry(
   const goalAreaCarry =
     s.setup.model !== undefined && !inGoalArea(c) ? DECISION_CONFIG.candidate.goalAreaCarry : 0;
   const scores = ends.map(
-    (p) =>
+    (p, i) =>
+      (wing !== undefined && i === K.headings.length ? wing : 0) +
       (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100 -
       K.pressure * pressureAt(s, side, p) -
       (boxCarry && inBox(p) ? boxCarry : 0) -
