@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r56 | Define the browser-demo rules for browser persistence and protocol.
+> r57 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -25,7 +25,7 @@
   - a background save during automatic play may hold days computed ahead of the shown date (→WEB-18); the save on stopping follows once those days are shown, so it holds the date the clock stopped on.
 - SAVE-9 [o] Export/import uses the same envelope; checksum provides corruption detection only. All successful changes remain local.
 
-- SAVE-10 [o] Current engine rules are 4.0.0; only 4.0.0 gameplay checkpoints are accepted (→SAVE-19). Earlier gameplay is never converted; the bounded recognized-legacy reset and future/unrecognized-version protection follow →SAVE-19 and →SAVE-11.
+- SAVE-10 [o] The game is version 0.7.0, a beta before 1.0: the app and its engine rules carry that one version, raised with each release, and a match-model revision (→SAVE-23) ships inside a version. Rules-4.0.0 checkpoints are the same rules line and load as 0.7.0, only their version label rewritten; only 0.7.0 gameplay checkpoints are accepted after that (→SAVE-19). ← one number the player sees and the save checks; 1.0 is kept for the release Earlier gameplay is never converted; the bounded recognized-legacy reset and future/unrecognized-version protection follow →SAVE-19 and →SAVE-11.
   - A supported world pinned to recognized catalog 2026-demo-1 or 2026-demo-2 moves to 2026-demo-3 on writer activation; prices and the football index are unchanged, so recorded facts stay.
   - Supported writer activation upgrades metadata/world revision through a pure transformation preserving all retained facts and missing optional defaults, committed through →SAVE-3. Failure preserves old disk data and exportable new memory state; read-only views do not perform disk upgrades.
   - Device strategy-library compatibility remains →SAVE-15 and →ECON-22; it grants no legacy-gameplay conversion. Historical rules and transformations are recorded in chg.
@@ -93,6 +93,7 @@
   - derived totals and display text are not a second persisted accomplishment database. Retain all source facts losslessly within the existing century and capacity limits (→SAVE-4/13), including repeated/interim appointments and a settled round after the century.
 
 ## chg
+- r57 261028 SAVE-10✎ current engine rules 4.0.0→game version 0.7.0 (beta) shared by the app and the engine rules, raised each release, match-model revisions shipping inside it; 4.0.0 checkpoints load as 0.7.0 with the label rewritten
 - r56 261028 SAVE-20✎ applied shirts and own-shirt selection→kits with shorts/socks, the goalkeeper kit and own-kit selection; SAVE-21✎ missing shirt designs supplied→missing shirt/shorts/socks designs supplied
 - r55 261027 SAVE-8+ background saves may hold days computed ahead of the shown date; the stop save waits until they are shown
 - r54 261026 SAVE-3✎ active checkpoint localStorage slot:a→IndexedDB key active, moved on the first commit; SAVE-4✎ checkpoint cap→every store, localStorage total→settings and fallback only; SAVE-14✎ reason localStorage copy→predecessor and autosaves

@@ -350,17 +350,17 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 166 | 166 | - | 0 |
+| WEB | 167 | 167 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 38 | 38 | - | 0 |
+| MATCH | 39 | 39 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 18 | 18 | - | 0 |
-| SAVE | 56 | 56 | - | 0 |
+| SAVE | 57 | 57 | - | 0 |
 | PLAYER | 10 | 10 | - | 0 |
 
 ## review
@@ -375,6 +375,9 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T548 | Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it | MATCH SAVE ARCH | - | todo |
+| T549 | One game version 0.7.0 for the app and the engine rules; 4.0.0 saves load as 0.7.0 | SAVE ARCH | - | todo |
+| T550 | BETA mark on every screen and v0.7 BETA on the start and save-slot screens | WEB SAVE ARCH | T549 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -393,10 +396,12 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- next MATCH planning (f5j2 suggestion): a defence goal-side near its box so clear chances arise as often as real football's, then read a clear chance from the men ahead only (T542 limits).
+- implement-task T548 (0.7 football: chased shots blocked by closing defenders, measured every step), T549 (game version 0.7.0), then T550 (BETA mark).
 - UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
+- 261028 create-task (f5j2): T548 MATCH r39, T549 SAVE r57, T550 WEB r167.
+- 261028 update-ssot (f5j2): MATCH r39 chased forward's clear chance and closing blocks; SAVE r57 one game version 0.7.0 (beta), 4.0.0 saves load as 0.7.0; WEB r167 WEB-101 BETA mark.
 - 261028 feat/player-figures-kits merge verified against main f5672a67 and feature 3a13057e: typecheck, lint, format:check, unit (175 files / 1,435 passed), contract (3 files / 47 passed), catalog/presentation validation and production build passed; the 12 pure kit-selection cases also passed (2 world-integration cases excluded). Full integration and browser suites omitted under the owner's requested unit/static scope.
 - 261028 merge review: renumber the incoming kit-wear task from T542 to T547 and update its references, preserving main's independent T542 revision-6 task; reconcile completed MATCH/KIT/WEB/SAVE status and retain both histories. Owner requests unit tests and static checks for this merge; browser and integration suites are outside this local verification scope.
 - 261028 pl1 end: T543–T547 merged on feat/player-figures-kits; full unit project 1422 passed; other suites left to the receiver by owner instruction; branch pushed for handoff.
@@ -415,18 +420,3 @@
 - 261028 T542 start (f5j2): revision 6, explore 3h.
 - 261028 update-ssot MATCH r37 + create-task T542 (f5j2): MATCH-16 clear chances, beaten man, free man ahead, calm clearance; MATCH-17 spread support; MATCH-31 misplaced pass kept in play. MATCH-36/37 stay pending (pl1).
 - 261028 f5j2 end: T538/T539 pushed to main at the owner's request without the rerun batch (first batch: 3 integration failures, fixed or load timeouts passing alone; e2e not run locally).
-- 261028 T538 done: revision 5 carrier judgement — open ground, safe recycling, no far back pass with room, wide play; 600-match read 29/37 inside the tolerance.
-- 261028 T539 done: MATCH-23 rows, scorer rows and MATCH-30 counters judged within 25% of the real mean (match-parity-6).
-- 261028 T538 start (f5j2): revision 5 carrier judgement, explore 2h.
-- 261028 create-task MATCH r34: T538 opens revision 5 for the carrier's space, safe recycling and room near the box.
-- 261028 update-ssot MATCH start and r34 done: MATCH-16 space ahead, contested passes only forward, no far back pass with room near the box.
-- 261028 T536 planning shared for strict session claim; WEB r165.
-- 261028 T541 done: one object shape for grid players, state and intentions, formation facts and slots read once; grid 0.73× (paired), own match days 0.866× with the same 60-day world hash; aggregate cuts showed no difference and were reverted.
-- 261028 T540 done: paired same-machine harness `scripts/perf/ab.mjs`; same-tree reads aggregate 0.999 (0.990–1.007), grid 0.9992 (0.9886–1.0104), no difference.
-- 261028 warning (pl1): doing T538/T539 now sit below MATCH r36 and SAVE r56; those deltas (MATCH-36/37 player figures, SAVE-20/21 kits) are presentation and identity only and change none of their decisions.
-- 261028 update-ssot done (pl1): KIT r4, MATCH r36, WEB r166, SAVE r56 — player figures in kits, shorts/socks and goalkeeper kit editing; create-task next.
-- 261028 update-ssot KIT MATCH WEB SAVE start (pl1): top-down player figures in observation, shorts/socks and goalkeeper kit editing.
-- 261028 T537 published at main 0add0e71; CI #594 Success (37m 3s), including Chromium 311 and Firefox/WebKit. CLI false timeout diagnosed by direct run summary; report 261028-e7q4.
-- 261028 T537 done: association quotas, continental titleholders, recorded coefficients/EPS and qualification causes; existing 2034 draw preserved. Unit/integration/contract/build passed; Chromium 310 plus one unchanged isolated retry passed.
-- 261028 update-ssot EURO start and r4 done: modern access, holders, EPS and forward-only save compatibility; create-task EURO next.
-- 261028 gameplay hierarchy shipped: WEB r164, T530-T535 and verified test repairs; main 8af246fa passed all nine CI jobs; report 261028-g8u4.

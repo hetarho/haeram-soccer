@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r166 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r167 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -537,6 +537,7 @@
   - The home card provides a concise status and an explicit review action. The desk shows request-specific facts and the existing authoritative approval/decline/form controls; reading or entering never resolves it. Match-eve/window observations keep their existing observation flows.
   - Successful submission returns to home and its refreshed requests; cancellation or the named 홈으로 action returns without resolving the work. Failed submission stays with the request and error. A resolved or stale request shows its current state instead of applying it twice. Other pending requests retain their identity and priority.
   - Request navigation and return context are scoped to the active world and do not leak into another game. Preserve browser back/forward, the office's clock-stop rules and all command protections (→WEB-74/97/98).
+- WEB-101 [o] Until version 1.0 every screen shows a BETA mark at its top — beside the club name in the play HUD (→WEB-10) and beside the game's name on screens without it — and the start and save-slot screens show the game version as `v0.7 BETA` (→SAVE-10). ← players should know the game still changes before release
 
 ## flow
 
@@ -547,6 +548,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r167 261028 WEB-101+ a BETA mark at the top of every screen until 1.0, start and save-slot screens show `v0.7 BETA`
 - r166 261028 WEB-2✎ shirts→kits and goalkeeper kit; WEB-49✎ shirts, automatic goalkeeper colours→figures in kits, goalkeeper kit or fallback; WEB-50✎ readable shirt patterns→figures with number tags and team colours; WEB-86✎ no shorts/socks/goalkeeper editing→shorts/socks per kit, 골키퍼 tab; WEB-87✎ shirt sample, phone patterns→figure sample, phones keep tags/colours/facing; WEB-88✎ goalkeeper colours→kits, goalkeepers, fallback notice
 - r165 261028 WEB-10✎ compact controls→explicit inset cards, quiet content-width review actions and grouped competition controls; WEB-11✎ one large owner illustration→three compact dimmed entrances, owner opens office and manager/training show preparation notices; WEB-72✎ native 3:1 home stadium→bounded cover-cropped dimmed background with bright inset labels
 - r164 261028 WEB-10✎ league/cup/records/squad/training→Season/History/home/first-team/youth/staff; WEB-11✎ thumbnail and area copy→full illustration and entrance action; WEB-14/39/60/71/77✎ operating-policy destination→work desks with scoped shared editors; WEB-40/47/54✎ separate current/archive competition destinations→Season current League/Cup and History club/previous league/previous cup; WEB-43/70✎ function-first people/training groups→first-team/youth/coaching; WEB-42/45/79✎ central-only responsibility page→overview modal and shared inline direct/automatic controls; WEB-100+ home approval desk round trips
