@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-28T19:38:08.190Z",
-  "sourceCommit": "27a2c5da0fd38195b9372479bcfbfec6e5885001",
+  "snapshotAt": "2026-10-28T20:39:32.438Z",
+  "sourceCommit": "4378f10562fde88e7b15b8ded580ddbed339beed",
   "group": {
     "id": "club-browser-fix",
     "branch": "work/club-browser-fix",
@@ -11,6 +11,18 @@
       "workers": 2,
       "reviewers": 1,
       "maxPending": 8
+    },
+    "verified": {
+      "commit": "4378f10562fde88e7b15b8ded580ddbed339beed",
+      "checks": [
+        {
+          "command": "git diff --quiet 89bbdaf9 -- . \":!spec/**\" && npx --no-install haeram-spec-creator lint",
+          "startedAt": "2026-10-28T20:39:31.098Z",
+          "finishedAt": "2026-10-28T20:39:31.644Z"
+        }
+      ],
+      "at": "2026-10-28T20:39:31.712Z",
+      "excluded": []
     },
     "push": null,
     "review": "all",
@@ -4000,6 +4012,28 @@
           "failures": [],
           "autopilot": true,
           "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1941,
+      "at": "2026-10-28T20:39:31.728Z",
+      "type": "group",
+      "group": "club-browser-fix",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "verified": {
+          "commit": "4378f10562fde88e7b15b8ded580ddbed339beed",
+          "checks": [
+            {
+              "command": "git diff --quiet 89bbdaf9 -- . \":!spec/**\" && npx --no-install haeram-spec-creator lint",
+              "startedAt": "2026-10-28T20:39:31.098Z",
+              "finishedAt": "2026-10-28T20:39:31.644Z"
+            }
+          ],
+          "at": "2026-10-28T20:39:31.712Z",
+          "excluded": []
         }
       }
     }
