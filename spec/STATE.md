@@ -16,7 +16,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | p9c3 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T14:22Z | 2026-10-28T14:22Z | - |
-| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T16:14Z | - |
+| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T17:29Z | - |
 
 ## inbox
 - 261029 decided T553 WEB-102 ARCH-4: expose the actual academy promotion wage without importing orchestration into UI → allow the minimal engine/contracts read-leaf extraction and compatibility re-export, preserving the existing formula and contract behaviour (alt: duplicate pricing in UI | a separate prerequisite task); this is implementation scope, not a new wage policy.
@@ -410,7 +410,7 @@
 | club-places-ui | 1 | 7 | 2 | 5 | 0 | 0 | 0 | 2026-10-28T16:52:26.857Z | [history](work/club-places-ui.json) |
 
 ## next
-- inspect work board for remaining tasks
+- cp29: finish the retained-position correction in club-market-fix, merge its approved T558, then implement T552 market UI and T556 convergence; T553/T554/T555/T557 are approved and integrated. T548 remains owned by its original session.
 
 ## log
 - 261028 T553 integrated
