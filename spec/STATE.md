@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T17:57Z | - |
+| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T18:34Z | - |
 
 ## inbox
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
@@ -413,9 +413,10 @@
 | club-places-ui | 1 | 7 | 2 | 5 | 0 | 0 | 0 | 2026-10-28T16:52:26.857Z | [history](work/club-places-ui.json) |
 
 ## next
-- inspect work board for remaining tasks
+- cp29: complete the final club-places batch gate on the integrated candidate, fix any failures, then publish once and wait for CI. All requested T552–T558 are integrated.
 
 ## log
+- 261029 cp29 all requested tasks integrated at c3aad1f4; final synchronized batch begins before one main publication.
 - 261028 T556 integrated
 - 261029 doc-review CLUB-26 tidied (rev unchanged): replace the stale duplicated area label with the authoritative ECON-25 reference; contract conditions, exceptions, figures, negations, obligations and references are preserved.
 - 261029 doc-review CLUB-26 start.
@@ -433,5 +434,3 @@
 - 261028 T553 integrated
 - 261029 cp29 move unclaimed T552 shared browser edits to T556 while preserving every required journey; keep independent UI file ownership disjoint.
 - 261029 cp29 merge approved club-places-ui lane T554/T555; synchronize completed tasks before further allocation, keeping any superseded draft isolated.
-- 261029 cp29 authorize the minimal T553 read-leaf wage extraction for existing acceptance; keep formula/exports and saved facts unchanged.
-- 261029 cp29 refine unclaimed T556 convergence notes to prevent the .ts/.tsx casing collision reproduced by both UI lanes; no product policy change.
