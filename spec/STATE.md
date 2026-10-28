@@ -386,11 +386,13 @@
 | T548 | Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it | MATCH SAVE ARCH | - | todo |
 | T549 | One game version 0.7.0 for the app and the engine rules; 4.0.0 saves load as 0.7.0 | SAVE ARCH | - | todo |
 | T550 | BETA mark on every screen and v0.7 BETA on the start and save-slot screens | WEB SAVE ARCH | T549 | todo |
-| T552 | Paged world player market and identity-based approaches | WEB CLUB ARCH | - | todo |
-| T553 | Consequential owner choices and shared place activity panels | WEB CLUB ARCH | - | todo |
+| T552 | Paged whole-world recruitment workbench | WEB CLUB ARCH | T558 | todo |
+| T553 | Consequential owner choices and shared place activity panels | WEB CLUB ARCH | T557 | todo |
 | T554 | Six-place navigation and competition clubhouse | WEB ECON ARCH | - | todo |
 | T555 | Work-oriented owner office and scoped player approvals | WEB ECON ARCH | T554 | todo |
 | T556 | Connect place choices and verify the complete owner workflow | WEB CLUB ARCH | T552 T553 T555 | todo |
+| T557 | Real disadvantages for free owner requests | CLUB WEB ARCH | - | todo |
+| T558 | World market query and identity-based transfer engine | WEB CLUB ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -409,9 +411,10 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- club-places: implement T552 world market and T553 consequential choices in parallel with the T554→T555 places-office lane; T556 connects all results. Existing T548–T550 remain with their current sessions.
+- club-places: implement T557/T558 engine foundations while live T550 owns UI, then T552 market UI and T553 choices in parallel with the T554→T555 places-office lane; T556 connects all results. Existing T548–T550 remain with their current sessions.
 
 ## log
+- 261029 cp29 redivide unclaimed T552/T553 into engine foundations T558/T557 and UI consumers so live T550 UI ownership does not stop independent engine work; no policy change.
 - 261029 cp29 narrow unclaimed T552 runtime touches to protocol/host/client plus dedicated query tests; unrelated T548 owns host/protocol legacy tests.
 - 261029 cp29 create-task T552–T556: three independent lanes and convergence; task checks are isolated unit/quick/build, coordinator owns final batch.
 - 261029 cp29 update-ssot WEB r168 ECON r39 CLUB r43: six places, focused owner work, whole-world market and consequential choices; independent club-places checkout preserves live T548 changes.
