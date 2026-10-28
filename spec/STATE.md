@@ -415,9 +415,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- cp29: all place/market corrections integrated; scoped training/market proofs pass. Complete the frozen final gate, publish verified main and wait for CI.
+- cp29: source published and complete local gate passed; verify the comparison-readiness CI fix, then publish its verified follow-up and finish the actual CI run.
 
 ## log
+- 261029 fix recruitment browser readiness: await both asynchronously loaded comparison articles before retaining the unchanged exact two-player identity assertion; initial CI Chromium330pass1premature-read failure.
 - 261029 cp29 all five corrected record/replay/loan/live-stat browser scopes pass; preserve exact financial/continuity checks and freeze the complete fourth final gate.
 - 261029 fix live-state browser expectation: recognize the real first match-eve automatic pause during a navigation detour; require a running transport or the exact dated observation, retaining all continuity/statistics checks.
 - 261029 fix recruitment cost fixture: hold unrelated staff appointments for direct approval so the unchanged exact loan wage/cash/save assertions isolate the transfer; reproduced staff wage delta338322 separately.
@@ -437,4 +438,3 @@
 - 261028 T563 integrated
 - 261029 create-task T566 (cp29): coalesce real world-market reads during automatic revisions while preserving stopped-state authoritative guards; sequence unclaimed browser consumers after their source fixes.
 - 261029 create-task T565 (cp29): explicit academy prospect fixture and current training return label; preserve all effect/cancel/full-visibility assertions.
-- 261029 create-task T564 (cp29): duplicate-name global results span pages; preserve stable player identity and all mediation/recruitment assertions through real page controls.

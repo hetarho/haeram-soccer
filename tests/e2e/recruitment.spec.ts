@@ -345,6 +345,8 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   await closeMarketPanel(page, '영입 필터');
   await desk.getByRole('button', { name: '선택한 2명 비교', exact: true }).click();
   const comparison = page.getByRole('dialog', { name: '영입 후보 비교' });
+  // Each comparison detail is a worker read; wait for both before checking their identities.
+  await expect(comparison.getByRole('article')).toHaveCount(2);
   expect(
     (
       await comparison
