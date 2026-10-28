@@ -19,6 +19,7 @@
 | cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T17:29Z | - |
 
 ## inbox
+- 261029 decided T552 T558 ARCH-30: start UI against the independently approved pinned T558 source while the existing integration gate waits for another session’s heavy lock → merge approved 66302d4f into the isolated aggregation draft and remove only the unstarted UI scheduling dependency; preserve T558 runtime, all completion checks and the final synchronized batch (alt: idle until the unrelated browser batch ends).
 - 261029 decided T553 WEB-102 ARCH-4: expose the actual academy promotion wage without importing orchestration into UI → allow the minimal engine/contracts read-leaf extraction and compatibility re-export, preserving the existing formula and contract behaviour (alt: duplicate pricing in UI | a separate prerequisite task); this is implementation scope, not a new wage policy.
 - 261029 decided T558 ARCH-30: unchanged grid sampling tests hit 30 s limits under parallel affected-unit runs → preserve the same assertions and select the same affected unit scope with one worker and serial files (alt: raise timeouts | skip sampling tests); host dependencies use the verified offline cache.
 - 261029 decided WEB-10 WEB-43 WEB-102: place terminology and interaction scope → 클럽하우스, 구단주 사무실, 감독 사무실, 코칭스태프실, 훈련장, 유소년 훈련장; reuse real manager/staff/training/academy choices with disclosed costs (alt: generic dashboard and coach room | decorative place events).
@@ -386,7 +387,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T548 | Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it | MATCH SAVE ARCH | - | todo |
-| T552 | Paged whole-world recruitment workbench | WEB CLUB ARCH | T558 | todo |
+| T552 | Paged whole-world recruitment workbench | WEB CLUB ARCH | - | todo |
 | T556 | Connect place choices and verify the complete owner workflow | WEB CLUB ARCH | T552 T553 T555 | todo |
 | T558 | World market query and identity-based transfer engine | WEB CLUB ARCH | - | todo |
 
@@ -410,9 +411,10 @@
 | club-places-ui | 1 | 7 | 2 | 5 | 0 | 0 | 0 | 2026-10-28T16:52:26.857Z | [history](work/club-places-ui.json) |
 
 ## next
-- cp29: finish the retained-position correction in club-market-fix, merge its approved T558, then implement T552 market UI and T556 convergence; T553/T554/T555/T557 are approved and integrated. T548 remains owned by its original session.
+- cp29: implement T552 against approved pinned T558 source while its integration gate completes; merge the resulting T558 archive, then finish T556 and the final batch. T553/T554/T555/T557 are integrated; T548 remains with its original session.
 
 ## log
+- 261029 cp29 stage independently approved T558 source 66302d4f in the isolated draft so T552 can start during the unrelated heavy-gate wait; do not claim or publish engine completion before integration succeeds.
 - 261028 T553 integrated
 - 261029 cp29 move unclaimed T552 shared browser edits to T556 while preserving every required journey; keep independent UI file ownership disjoint.
 - 261029 cp29 merge approved club-places-ui lane T554/T555; synchronize completed tasks before further allocation, keeping any superseded draft isolated.

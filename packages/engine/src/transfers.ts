@@ -1,9 +1,17 @@
+import { worldMarketOffer } from './world-market';
 import { openNeed, windowCallUps } from './replacements';
 import { bidCeiling, haggling } from './director-bidding';
 import { registrationRoom } from './registration';
 import { endPlayingCoachForDeparture, playingCoachDepartureCost } from './playing-coach';
 import { movePerson } from './npc-continuity';
-import type { Club, Player, TransferBid, TransferStance, World } from '../../contracts/src/types';
+import type {
+  Club,
+  Player,
+  TransferBid,
+  TransferStance,
+  World,
+  WorldMarketTarget,
+} from '../../contracts/src/types';
 import { currency } from '../../catalogs/src/index';
 import { currentDay, dayCountedFrom, seasonDayLabel } from './calendar';
 import {
@@ -12,7 +20,16 @@ import {
   transferWindowDays,
   WINDOW_INFO,
 } from './transfer-window';
-import { clamp, compareIds, hash, integer, random, ratio, scaleBy } from './primitives';
+import {
+  clamp,
+  compareIds,
+  hash,
+  integer,
+  random,
+  ratio,
+  scaleBy,
+  zeroMetrics,
+} from './primitives';
 import {
   activePlayers,
   clubOf,
@@ -101,12 +118,20 @@ function marketOffer(w: World, bid: TransferBid): MarketOffer | undefined {
   if (!bid.offer)
     return transferOffers(w, bid.year, true).find((o) => o.player.id === bid.playerId);
   const { player, fee, loanFee } = bid.offer;
+  const current = bid.club
+    ? worldMarketOffer(w, { world: w.id, kind: 'club', clubId: bid.club, playerId: player.id })
+    : undefined;
   return {
-    player,
+    // Older pinned offers may lack the returning player's own academy qualification.
+    player: current?.player.graduate ? { ...player, graduate: true } : player,
     fee,
     loanFee,
     freeAgent: false,
-    available: !w.players.some((owned) => owned.id === player.id),
+    available:
+      !w.players.some(
+        (owned) => owned.id === player.id && (!bid.club || owned.status === 'active'),
+      ) &&
+      (!bid.club || !!current?.available),
   };
 }
 function askingFee(offer: MarketOffer, loan?: boolean) {
@@ -126,12 +151,28 @@ function signingBlocker(w: World, offer: MarketOffer | undefined, fee: string, l
 function completeSigning(w: World, bid: TransferBid, offer: MarketOffer, fee: string) {
   // The bid keeps its record of him; the squad gets its own copy.
   const p = structuredClone(offer.player);
+  const prior = w.players.findIndex((player) => player.id === p.id);
+  if (prior >= 0) {
+    // Inactive rows are not reset at rollover. Only restore minutes earned in this season;
+    // the employment/transfer facts date the departure without inventing absent history.
+    const sameSeason =
+      w.people?.[p.id]?.employment.some(
+        (job) => job.role === 'player' && job.club === w.playerClub && job.to?.year === w.year,
+      ) ||
+      w.transfers?.facts.some(
+        (fact) => fact.player === p.id && fact.direction === 'out' && fact.year === w.year,
+      );
+    p.career = [...w.players[prior].career];
+    p.season = sameSeason ? [...w.players[prior].season] : zeroMetrics();
+    if (w.players[prior].graduate) p.graduate = true;
+  }
   debit(w, fee);
   // A loan keeps his club's contract; a transfer signs one with its own clauses (→CLUB-29).
   if (bid.loan) p.loanUntil = w.year + 1;
   else p.clauses = signingClauses(w, p);
-  w.players.push(p);
-  noteSigning(w, p);
+  if (prior >= 0) w.players[prior] = p;
+  else w.players.push(p);
+  noteSigning(w, p, bid.club);
   recordTransfer(w, { direction: 'in', loan: !!bid.loan, player: p, club: bid.club, fee });
   addEvent(
     w,
@@ -185,12 +226,13 @@ const clip = (text: string, max: number) =>
 /** Our offer for a market player; the selling club answers in two to four days. */
 export function placeBid(
   w: World,
-  candidate: number,
+  candidate: number | WorldMarketTarget,
   fee: string,
   loan = false,
   staff?: TransferBid['staff'],
 ): void {
-  const offer = transferOffers(w)[candidate];
+  const offer =
+    typeof candidate === 'number' ? transferOffers(w)[candidate] : worldMarketOffer(w, candidate);
   if (!offer?.available) throw new Error('이미 계약했거나 없는 선수입니다.');
   if (offer.freeAgent) throw new Error('자유계약 선수는 이적료 협상 없이 바로 영입할 수 있어요.');
   if (
@@ -221,7 +263,10 @@ export function placeBid(
     playerId: offer.player.id,
     fee,
     ...(loan ? { loan: true } : {}),
-    offer: { player: offer.player, fee: offer.fee, loanFee: offer.loanFee },
+    offer: { player: structuredClone(offer.player), fee: offer.fee, loanFee: offer.loanFee },
+    ...(typeof candidate !== 'number' && candidate.kind === 'club'
+      ? { club: candidate.clubId }
+      : {}),
     year: w.year,
     day,
     due: Math.min(day + wait, window.until ?? day + wait),
@@ -275,8 +320,14 @@ export interface BidOutlook {
   counterPossible: boolean;
 }
 /** Read model for the bid form; never a guarantee. */
-export function bidOutlook(w: World, candidate: number, fee: string, loan = false): BidOutlook {
-  const offer = transferOffers(w)[candidate];
+export function bidOutlook(
+  w: World,
+  candidate: number | WorldMarketTarget,
+  fee: string,
+  loan = false,
+): BidOutlook {
+  const offer =
+    typeof candidate === 'number' ? transferOffers(w)[candidate] : worldMarketOffer(w, candidate);
   const asking = offer ? askingFee(offer, loan) : '0';
   const valid =
     !!offer?.available && !offer.freeAgent && /^\d{1,80}$/.test(fee) && BigInt(fee) >= 1n;
@@ -486,7 +537,7 @@ function settleBids(w: World, open: boolean) {
     if (bid.year !== w.year && currency(code, bid.year).code !== w.currency) {
       expire(w, bid, '이적', '화폐 단위가 바뀌어 이전 금액의 협상이 끝났어요.');
     } else if (bid.direction === 'out') {
-      const signed = w.players.find((x) => x.id === bid.playerId);
+      const signed = activePlayers(w).find((x) => x.id === bid.playerId);
       if (signed) expire(w, bid, signed.name, '이미 우리 선수가 되어 협상을 정리했어요.');
       else if (!open)
         expire(
