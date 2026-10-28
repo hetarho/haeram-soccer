@@ -22,6 +22,7 @@ import { recruitmentPreview, recruitmentContext, recruitmentFit } from './recrui
 
 const recommendedIds = (w: World) =>
   new Set(w.shortlist?.year === w.year ? w.shortlist.entries.map((entry) => entry.playerId) : []);
+const graduateIds = (w: World) => new Set(w.players.filter((p) => p.graduate).map((p) => p.id));
 
 function clubOffer(
   w: World,
@@ -30,6 +31,7 @@ function clubOffer(
   recommended: Set<string>,
   feeMultiplier = staffEffects(w).feeMultiplier,
   owned = new Set(activePlayers(w).map((p) => p.id)),
+  graduates = graduateIds(w),
 ): WorldMarketOffer {
   const own = club.id === w.playerClub;
   // Asking fees and contractual wages are quoted in the buying club's currency, as scout offers
@@ -53,7 +55,12 @@ function clubOffer(
     },
     player: own
       ? player
-      : { ...player, wage: marketWageAt(buyer.country, w.year, buyer.tier, player) },
+      : {
+          ...player,
+          // Our academy qualification survives a spell at another club (→CLUB-44).
+          ...(graduates.has(player.id) ? { graduate: true as const } : {}),
+          wage: marketWageAt(buyer.country, w.year, buyer.tier, player),
+        },
     fee: scaleBy(fee, feeMultiplier, 1000n),
     loanFee: scaleBy(fee, MARKET_CONFIG.loan, 1000n),
     freeAgent: false,
@@ -98,6 +105,7 @@ export function worldMarketPage(w: World, input: WorldMarketQuery): WorldMarketP
   const recommended = recommendedIds(w);
   const feeMultiplier = staffEffects(w).feeMultiplier;
   const owned = new Set(activePlayers(w).map((p) => p.id));
+  const graduates = graduateIds(w);
   const rows: WorldMarketOffer[] = [];
   const seen = new Set<string>();
   const name = q.name?.trim().toLowerCase();
@@ -142,7 +150,7 @@ export function worldMarketPage(w: World, input: WorldMarketQuery): WorldMarketP
     )
       continue;
     for (const player of squad(w, club))
-      include(clubOffer(w, club, player, recommended, feeMultiplier, owned));
+      include(clubOffer(w, club, player, recommended, feeMultiplier, owned, graduates));
   }
   for (const offer of transferOffers(w)) {
     // An already signed scout identity is represented by its current club row.

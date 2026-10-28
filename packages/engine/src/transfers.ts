@@ -20,7 +20,16 @@ import {
   transferWindowDays,
   WINDOW_INFO,
 } from './transfer-window';
-import { clamp, compareIds, hash, integer, random, ratio, scaleBy } from './primitives';
+import {
+  clamp,
+  compareIds,
+  hash,
+  integer,
+  random,
+  ratio,
+  scaleBy,
+  zeroMetrics,
+} from './primitives';
 import {
   activePlayers,
   clubOf,
@@ -109,8 +118,12 @@ function marketOffer(w: World, bid: TransferBid): MarketOffer | undefined {
   if (!bid.offer)
     return transferOffers(w, bid.year, true).find((o) => o.player.id === bid.playerId);
   const { player, fee, loanFee } = bid.offer;
+  const current = bid.club
+    ? worldMarketOffer(w, { world: w.id, kind: 'club', clubId: bid.club, playerId: player.id })
+    : undefined;
   return {
-    player,
+    // Older pinned offers may lack the returning player's own academy qualification.
+    player: current?.player.graduate ? { ...player, graduate: true } : player,
     fee,
     loanFee,
     freeAgent: false,
@@ -118,9 +131,7 @@ function marketOffer(w: World, bid: TransferBid): MarketOffer | undefined {
       !w.players.some(
         (owned) => owned.id === player.id && (!bid.club || owned.status === 'active'),
       ) &&
-      (!bid.club ||
-        !!worldMarketOffer(w, { world: w.id, kind: 'club', clubId: bid.club, playerId: player.id })
-          ?.available),
+      (!bid.club || !!current?.available),
   };
 }
 function askingFee(offer: MarketOffer, loan?: boolean) {
@@ -142,9 +153,17 @@ function completeSigning(w: World, bid: TransferBid, offer: MarketOffer, fee: st
   const p = structuredClone(offer.player);
   const prior = w.players.findIndex((player) => player.id === p.id);
   if (prior >= 0) {
-    // A returning player keeps his one own-club row and its already earned totals.
+    // Inactive rows are not reset at rollover. Only restore minutes earned in this season;
+    // the employment/transfer facts date the departure without inventing absent history.
+    const sameSeason =
+      w.people?.[p.id]?.employment.some(
+        (job) => job.role === 'player' && job.club === w.playerClub && job.to?.year === w.year,
+      ) ||
+      w.transfers?.facts.some(
+        (fact) => fact.player === p.id && fact.direction === 'out' && fact.year === w.year,
+      );
     p.career = [...w.players[prior].career];
-    p.season = [...w.players[prior].season];
+    p.season = sameSeason ? [...w.players[prior].season] : zeroMetrics();
     if (w.players[prior].graduate) p.graduate = true;
   }
   debit(w, fee);

@@ -9,6 +9,9 @@ import { transferOffers, squadCommand } from './ops-squad';
 import { placeBid, respondBid, bidBoard, dailyMarket } from './transfers';
 import { movePerson, returnLoan } from './npc-continuity';
 import { overall } from './player-state';
+import { registration } from './registration';
+import { zeroMetrics } from './primitives';
+import { recordTransfer } from './transfer-records';
 
 const query = (w: ReturnType<typeof worldMarketFixture>, q: Omit<WorldMarketQuery, 'world'> = {}) =>
   worldMarketPage(w, { ...q, world: w.id });
@@ -18,6 +21,23 @@ const foreignTarget = (w: ReturnType<typeof worldMarketFixture>) => ({
   clubId: 'foreign',
   playerId: squad(w, w.clubs[1])[0].id,
 });
+
+function spanishReturnFixture(age = 22, graduate = true) {
+  const w = worldMarketFixture();
+  w.year = 2001;
+  w.clubs[0].country = 'ESP';
+  for (const p of w.players) p.born = w.year - 25;
+  const original = w.players[0];
+  original.born = w.year - age;
+  if (graduate) original.graduate = true;
+  movePerson(w, original, w.playerClub, true);
+  original.status = 'sold';
+  movePerson(w, original, 'foreign', true);
+  while (w.players.length < 26)
+    w.players.push({ ...w.players[1], id: `counted:${w.players.length}` });
+  const target = { world: w.id, kind: 'club' as const, clubId: 'foreign', playerId: original.id };
+  return { w, original, target };
+}
 
 // The fixture holds just current squads. Dated cases settle only the market, never fixtures or a whole day.
 describe('bounded whole-world market', () => {
@@ -262,25 +282,100 @@ describe('stable-identity approaches', () => {
     expect(() => placeBid(w, target, offer.fee)).not.toThrow();
   });
 
-  it('returns a former own player to his one row without losing earned club career totals', () => {
-    const w = worldMarketFixture();
-    const original = w.players[0];
-    original.career[0] = 123;
-    original.season[0] = 45;
-    original.status = 'sold';
-    movePerson(w, original, 'foreign', true);
-    const target = { world: w.id, kind: 'club' as const, clubId: 'foreign', playerId: original.id };
-    const offer = worldMarketOffer(w, target)!;
-    placeBid(w, target, offer.fee);
-    w.bids![0].status = 'countered';
-    respondBid(w, w.bids![0].id, true);
-    expect(w.players.filter((p) => p.id === original.id)).toHaveLength(1);
-    expect(w.players.find((p) => p.id === original.id)).toMatchObject({
-      status: 'active',
-      career: original.career,
-      season: original.season,
-    });
-    expect(squad(w, w.clubs[1]).some((p) => p.id === original.id)).toBe(false);
+  it.each([
+    ['employment', 0],
+    ['employment', 1],
+    ['transfer', 0],
+    ['transfer', 1],
+  ] as const)(
+    'keeps returning-player season totals only in their season (%s, years away=%s)',
+    (record, years) => {
+      const w = worldMarketFixture();
+      const original = w.players[0];
+      original.career[0] = 123;
+      original.season[0] = 45;
+      if (record === 'employment') movePerson(w, original, w.playerClub, true);
+      original.status = 'sold';
+      movePerson(w, original, 'foreign', true);
+      if (record === 'transfer')
+        recordTransfer(w, {
+          direction: 'out',
+          loan: false,
+          player: original,
+          club: 'foreign',
+          fee: '100',
+        });
+      w.year += years;
+      const target = {
+        world: w.id,
+        kind: 'club' as const,
+        clubId: 'foreign',
+        playerId: original.id,
+      };
+      const offer = worldMarketOffer(w, target)!;
+      placeBid(w, target, offer.fee);
+      w.bids![0].status = 'countered';
+      respondBid(w, w.bids![0].id, true);
+      expect(w.players.filter((p) => p.id === original.id)).toHaveLength(1);
+      expect(w.players.find((p) => p.id === original.id)).toMatchObject({
+        status: 'active',
+        career: original.career,
+        season: years === 0 ? original.season : zeroMetrics(),
+      });
+      expect(squad(w, w.clubs[1]).some((p) => p.id === original.id)).toBe(false);
+    },
+  );
+
+  it.each([false, true])(
+    'recognizes a returning graduate before previews, submission and a saved counter acceptance (loan=%s)',
+    (loan) => {
+      const { w, original, target } = spanishReturnFixture();
+      expect(registration(w)).toMatchObject({ counted: 25, exempt: 0, total: 25 });
+      const beforeReads = structuredClone(w);
+      const offer = worldMarketOffer(w, target)!;
+      expect(offer.player.graduate).toBe(true);
+      expect(query(w, { name: original.name, team: 'foreign' }).items[0].player.graduate).toBe(
+        true,
+      );
+      expect(worldMarketDetail(w, target)).toMatchObject({
+        buy: { eligible: true },
+        loan: { eligible: true },
+      });
+      expect(w).toEqual(beforeReads);
+
+      placeBid(w, target, loan ? offer.loanFee : offer.fee, loan);
+      const saved = JSON.parse(JSON.stringify(w)) as typeof w;
+      // Older saved offers did not carry the retained own-club graduate qualification.
+      delete saved.bids![0].offer!.player.graduate;
+      saved.bids![0].status = 'countered';
+      respondBid(saved, saved.bids![0].id, true);
+      expect(saved.bids![0].status).toBe('completed');
+      expect(saved.players.filter((p) => p.id === original.id)).toHaveLength(1);
+      expect(saved.players.find((p) => p.id === original.id)).toMatchObject({
+        status: 'active',
+        graduate: true,
+      });
+      expect(registration(saved)).toMatchObject({ counted: 25, exempt: 1, total: 26 });
+    },
+  );
+
+  it('still blocks older graduates, non-graduates and returns above the total ceiling', () => {
+    for (const [age, graduate, total] of [
+      [23, true, 25],
+      [22, false, 25],
+      [22, true, 40],
+    ] as const) {
+      const { w, target } = spanishReturnFixture(age, graduate);
+      while (w.players.length < total + 1)
+        w.players.push({ ...w.players[1], id: `counted:${w.players.length}` });
+      const offer = worldMarketOffer(w, target)!;
+      expect(worldMarketDetail(w, target).buy.eligible).toBe(false);
+      const before = structuredClone(w);
+      expect(() => placeBid(w, target, offer.fee)).toThrow(
+        total === 40 ? '최대 40명' : '등록 한도',
+      );
+      expect(w).toEqual(before);
+    }
   });
 
   it.each([false, true])(
@@ -290,6 +385,7 @@ describe('stable-identity approaches', () => {
       const original = w.players[0];
       original.career[0] = 123;
       original.season[0] = 45;
+      movePerson(w, original, w.playerClub, true);
       original.status = 'sold';
       movePerson(w, original, 'foreign', true);
       const target = {
