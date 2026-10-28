@@ -396,6 +396,7 @@
 | T565 | Keep place journey fixtures and named returns valid | WEB ARCH | T563 | todo |
 | T566 | Keep world-market reads usable during automatic progression | WEB ARCH | - | todo |
 | T567 | Align remaining place, keyboard and owner-helper journeys | WEB ARCH | - | todo |
+| T568 | Keep the primary training action fully visible on entry | WEB ARCH | T563 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -421,6 +422,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261029 create-task T568 (cp29): scoped browser proof confirms remaining360px training action clipping after the approved global layout correction.
 - 261028 T562 integrated
 - 261029 cp29 reconcile published plan metadata with approved T563 archive; remove only the obsolete active duplicate descriptor, retaining completed source and result.
 - 261029 create-task T567 (cp29): remaining actual browser-contract drift in skins, primary/local keyboard history, resolved-office export and editable policy ownership.
@@ -438,5 +440,3 @@
 - 261029 cp29 T552 reviewed/corrected/integrated; T556 now owns the final place composition and shared browser journeys, including the authoritative paid-loan bid lifecycle.
 - 261028 T552 integrated
 - 261029 cp29 synchronize main 59446b09, including completed T548/T561 and MATCH r41, before final workflow convergence.
-- 261029 T561 done (p9c3, explore): match-model revision 8 — the showing teammate offers at 14 m, with the ball teammates spread 14 m and keep 10 m around the carrier; crowds of seven within 10 m 7.0% → 2.9%; 600 matches goals 3.38, 25/37 (one row fewer: long shots).
-- 261029 update-ssot MATCH r41 + create-task T561 (p9c3, owner): players swarm the ball like playground football → MATCH-17 nobody piles onto the ball; T561 revision 8, explore 2 h.
