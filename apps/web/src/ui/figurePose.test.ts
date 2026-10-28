@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { PlayerMotion } from '../../../../packages/contracts/src/types';
+import { FIGURE_TORSO } from '../../../../packages/engine/src/kit-patterns';
 import type { FigureActionKind, FigureActionWindow } from './figureActions';
 import {
   FIGURE_POSE_CONFIG,
@@ -137,6 +138,17 @@ describe('figure poses (→MATCH-37)', () => {
       if (Math.abs(ahead) > 1e-6)
         expect(Math.sign(arms[0].end[1] - arms[1].end[1])).toBe(-Math.sign(ahead));
     }
+  });
+
+  it('a standing knee stays under the chest', () => {
+    // The torso's front edge is half its depth ahead of the centre (→MATCH-36's FIGURE_TORSO).
+    const chest = 0.5 / FIGURE_TORSO.aspect;
+    for (const figure of [input(), input({ keeper: true })])
+      for (const options of [MOVING, STILL])
+        for (const { root, joint } of poseAt(figure, [], options).legs) {
+          expect(joint[1]).toBeGreaterThan(root[1]);
+          expect(joint[1]).toBeLessThan(chest);
+        }
   });
 
   it('phase follows distance not time', () => {
