@@ -165,7 +165,22 @@ export function setIntention(
   if (gp.intention && rank(gp.intention.priority) < rank(spec.priority)) return false;
   endIntention(s, gp, reason);
   const target = inside(spec.target);
-  gp.intention = { ...spec, target, since: s.elapsed };
+  // Every field in one order, absent ones undefined: one object shape for every intention, so the
+  // reads of its fields stay monomorphic (JSON and `canonical` leave undefined fields out).
+  gp.intention = {
+    kind: spec.kind,
+    priority: spec.priority,
+    target,
+    teammate: spec.teammate,
+    opponent: spec.opponent,
+    shadow: spec.shadow,
+    run: spec.run,
+    support: spec.support,
+    zone: spec.zone,
+    box: spec.box,
+    since: s.elapsed,
+    until: spec.until,
+  };
   if (spec.kind === 'run' && spec.run)
     gp.run = { kind: spec.run, until: spec.until, target: [target[0], target[1]] };
   return true;
@@ -211,7 +226,7 @@ export function depart(
       // A lane's receiver (T442): a screen ends with him, a press only loses its cover shadow.
       else if (side !== gp.side && i.shadow === gp.idx) {
         if (i.kind === 'screen') endIntention(s, p, 'departed');
-        else delete i.shadow;
+        else i.shadow = undefined;
       }
     }
 }
@@ -538,8 +553,7 @@ export function applyCoordination(s: GridState, plan: CoordinationPlan): void {
   }
   for (const { side, idx, option } of plan.shadows) {
     const gp = s.players[side][idx]!;
-    if (option === undefined) delete gp.intention!.shadow;
-    else gp.intention!.shadow = option;
+    gp.intention!.shadow = option;
     gp.intention!.target = inside(intentionTarget(s, gp));
   }
   for (const job of plan.jobs) {
