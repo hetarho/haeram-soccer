@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T18:34Z | - |
+| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T19:10Z | - |
 
 ## inbox
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
@@ -396,6 +396,7 @@
 | T564 | Find exact player identities through paged market journeys | WEB ARCH | - | todo |
 | T565 | Keep place journey fixtures and named returns valid | WEB ARCH | T563 | todo |
 | T566 | Keep world-market reads usable during automatic progression | WEB ARCH | - | todo |
+| T567 | Align remaining place, keyboard and owner-helper journeys | WEB ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -421,6 +422,8 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261029 cp29 reconcile published plan metadata with approved T563 archive; remove only the obsolete active duplicate descriptor, retaining completed source and result.
+- 261029 create-task T567 (cp29): remaining actual browser-contract drift in skins, primary/local keyboard history, resolved-office export and editable policy ownership.
 - 261028 T563 integrated
 - 261029 create-task T566 (cp29): coalesce real world-market reads during automatic revisions while preserving stopped-state authoritative guards; sequence unclaimed browser consumers after their source fixes.
 - 261029 create-task T565 (cp29): explicit academy prospect fixture and current training return label; preserve all effect/cancel/full-visibility assertions.
@@ -437,6 +440,3 @@
 - 261029 cp29 synchronize main 59446b09, including completed T548/T561 and MATCH r41, before final workflow convergence.
 - 261029 T561 done (p9c3, explore): match-model revision 8 — the showing teammate offers at 14 m, with the ball teammates spread 14 m and keep 10 m around the carrier; crowds of seven within 10 m 7.0% → 2.9%; 600 matches goals 3.38, 25/37 (one row fewer: long shots).
 - 261029 update-ssot MATCH r41 + create-task T561 (p9c3, owner): players swarm the ball like playground football → MATCH-17 nobody piles onto the ball; T561 revision 8, explore 2 h.
-- 261029 T550 done (v07-beta worker, 9c54de75 7b037ec1): one shared BETA mark beside the club or game name on every screen, v0.7 BETA from CURRENT_ENGINE_VERSION on the start and slot screens.
-- 261029 T549 done (v07-beta worker, f38dc554): game version 0.7.0 in every package and as the rules version; 4.0.0 saves load as 0.7.0 through the writer activation, read-only views write nothing.
-- 261029 T548 done (p9c3, explore 3 h): match-model revision 7 — chased forwards take the clear chance (corridor 14), men within 6 m close the shot down, MATCH r40 keeper off his line to a carrier in his box; 600 matches goals 3.18 (3.71), 26/37; penalty goals 12.4% and goal-area shots 17.9% the next levers.
