@@ -377,7 +377,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T548 | Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it | MATCH SAVE ARCH | - | todo |
-| T550 | BETA mark on every screen and v0.7 BETA on the start and save-slot screens | WEB SAVE ARCH | T549 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -394,12 +393,13 @@
 | h7t3 | 4 | 6 | 0 | 6 | 0 | 1 | 2 | 2026-10-27T08:21:16.497Z | [history](work/h7t3.json) |
 | auto-play | 4 | 7 | 4 | 3 | 0 | 1 | 0 | 2026-10-27T11:34:29.863Z | [history](work/auto-play.json) |
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
-| v07-beta | 4 | 3 | 1 | 2 | 0 | 0 | 0 | 2026-10-28T14:52:36.028Z | [history](work/v07-beta.json) |
+| v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261028 T550 integrated
 - 261028 T549 integrated
 - 261028 create-task (f5j2): T548 MATCH r39, T549 SAVE r57, T550 WEB r167.
 - 261028 update-ssot (f5j2): MATCH r39 chased forward's clear chance and closing blocks; SAVE r57 one game version 0.7.0 (beta), 4.0.0 saves load as 0.7.0; WEB r167 WEB-101 BETA mark.
@@ -419,4 +419,3 @@
 - 261028 T542 done and pushed at the owner's request after the unit stage: revision 6; 600-match goals 3.71 above the tolerance, follow-up in next.
 - 261028 update-ssot MATCH r38 (f5j2): MATCH-32 goal-side defenders move across onto the ball–goal line by 위치선정 with the ball central within 50 m.
 - 261028 T542 start (f5j2): revision 6, explore 3h.
-- 261028 update-ssot MATCH r37 + create-task T542 (f5j2): MATCH-16 clear chances, beaten man, free man ahead, calm clearance; MATCH-17 spread support; MATCH-31 misplaced pass kept in play. MATCH-36/37 stay pending (pl1).
