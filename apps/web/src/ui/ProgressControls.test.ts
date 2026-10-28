@@ -137,22 +137,35 @@ describe('unified bottom progression controls', () => {
 });
 
 describe('controller approval overview', () => {
-  it('offers the shared modal entry even while changes are locked', () => {
-    const controller = {
-      store: createStore(() => ({ running: true, pace: 'x1' })),
-    } as unknown as ProgressionController;
-    gameStore.setState({ busy: true, readonly: true });
-    const markup = renderToStaticMarkup(
-      createElement(ProgressControls, { client: {} as GameClient, controller }),
-    );
-    expect(markup).toMatch(/<button[^>]*aria-haspopup="dialog"[^>]*>결재라인 모아보기<\/button>/);
-    useTaskMemory.getState().activate('overview-test');
-    useTaskMemory.setState({ values: { 'board-draft': { support: 4 } } });
-    openOwnerOffice();
-    expect(useTaskMemory.getState().values).toEqual({
-      'board-draft': { support: 4 },
-      'office-overview': true,
-    });
-    expect(controller.store.getState().running).toBe(true);
-  });
+  it.each(['manual', 'automatic'] as const)(
+    'offers the shared modal entry in %s mode even while changes are locked',
+    (mode) => {
+      gameStore.getState().view!.world.settings!.mode = mode;
+      const controller = {
+        store: createStore(() => ({ running: true, pace: 'x1' })),
+      } as unknown as ProgressionController;
+      gameStore.setState({ busy: true, readonly: true });
+      const markup = renderToStaticMarkup(
+        createElement(ProgressControls, { client: {} as GameClient, controller }),
+      );
+      expect(markup).toMatch(
+        /<button(?![^>]*disabled)[^>]*aria-haspopup="dialog"[^>]*>결재라인 모아보기<\/button>/,
+      );
+      expect(markup).toMatch(/<button[^>]*data-progress-mode[^>]*disabled=""/);
+      if (mode === 'automatic') {
+        expect(markup).toMatch(/<button(?![^>]*disabled)[^>]*aria-label="자동 진행 정지"/);
+        expect(markup).toMatch(/<button[^>]*aria-label="자동 진행 배속"[^>]*disabled=""/);
+      } else {
+        expect(markup).toMatch(/<button[^>]*disabled=""[^>]*>다음 이벤트/);
+      }
+      useTaskMemory.getState().activate('overview-test');
+      useTaskMemory.setState({ values: { 'board-draft': { support: 4 } } });
+      openOwnerOffice();
+      expect(useTaskMemory.getState().values).toEqual({
+        'board-draft': { support: 4 },
+        'office-overview': true,
+      });
+      expect(controller.store.getState().running).toBe(true);
+    },
+  );
 });

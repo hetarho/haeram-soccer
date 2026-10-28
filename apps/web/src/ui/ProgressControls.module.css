@@ -257,9 +257,23 @@
   font-size: 12px;
 }
 @media (max-width: 760px) {
+  /* Reflow the two long actions inside one transport row, retaining every touch target. */
+  .modeGroup {
+    flex: 1 0 auto;
+    gap: 4px;
+  }
+  .modeSwitch {
+    width: 68px;
+    padding: 3px 6px;
+    white-space: normal;
+    word-break: keep-all;
+  }
   .approvals {
-    order: -1;
-    flex-basis: 100%;
-    text-align: left;
+    flex: 0 0 60px;
+    width: 60px;
+    padding: 4px 6px;
+    line-height: 1.5;
+    white-space: normal;
+    word-break: keep-all;
   }
 }
