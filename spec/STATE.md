@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T20:09Z | - |
+| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T20:13Z | - |
 
 ## inbox
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
@@ -417,6 +417,7 @@
 - cp29: all place/market corrections integrated; scoped training/market proofs pass. Complete the frozen final gate, publish verified main and wait for CI.
 
 ## log
+- 261029 cp29 all five corrected record/replay/loan/live-stat browser scopes pass; preserve exact financial/continuity checks and freeze the complete fourth final gate.
 - 261029 fix live-state browser expectation: recognize the real first match-eve automatic pause during a navigation detour; require a running transport or the exact dated observation, retaining all continuity/statistics checks.
 - 261029 fix recruitment cost fixture: hold unrelated staff appointments for direct approval so the unchanged exact loan wage/cash/save assertions isolate the transfer; reproduced staff wage delta338322 separately.
 - 261029 cp29 integrate all T562–T568; training three viewports and market compact/running-clock three actual browser probes pass; freeze the complete final candidate.
@@ -436,4 +437,3 @@
 - 261029 create-task T566 (cp29): coalesce real world-market reads during automatic revisions while preserving stopped-state authoritative guards; sequence unclaimed browser consumers after their source fixes.
 - 261029 create-task T565 (cp29): explicit academy prospect fixture and current training return label; preserve all effect/cancel/full-visibility assertions.
 - 261029 create-task T564 (cp29): duplicate-name global results span pages; preserve stable player identity and all mediation/recruitment assertions through real page controls.
-- 261029 create-task T563 (cp29): restore measured mobile target and standings viewport regressions without reducing existing accessibility or row-count checks.
