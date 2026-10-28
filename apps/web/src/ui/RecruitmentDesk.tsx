@@ -352,7 +352,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   const [step, setStep] = useTaskState(w.id, 'market-step', 1);
   const [expanded, setExpanded] = useTaskState(w.id, 'market-expanded', false);
   const registered = squadRegistration(w);
-  const blocked = useGameState(gameActionsBlocked);
+  const blocked = useGameState(gameActionsBlocked) || !!w.critical;
   const recommended = recruitmentLineNeed(w);
   const market = useMarketPage(client, w.id, w.revision, query);
   const page = market.value;
@@ -390,10 +390,13 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   const toggle = (target: WorldMarketTarget) =>
     setComparison((current) => toggleMarketComparison(current, target));
   const currentWorld = () => client.state.view?.world.id === w.id;
+  const currentActionsBlocked = () =>
+    blocked || gameActionsBlocked(client.state) || !!client.state.view?.world.critical;
   const recruit = async (candidate: Candidate, loan: boolean) => {
     const preview = loan ? candidate.loan : candidate.buy;
     if (
-      blocked ||
+      currentActionsBlocked() ||
+      candidate.world !== w.id ||
       candidate.offer.own ||
       (loan && candidate.offer.freeAgent) ||
       !preview.eligible ||
@@ -436,17 +439,17 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
     // Inside a control that already answers the tap: the notation, the exact amount as its title.
     plain = (value: string) => <Money value={value} code={club.country} year={w.year} plain />,
     text = (value: string) => compactMoney(value, club.country, w.year);
-  const render = (candidate: Candidate, actions = true) => (
+  const render = (candidate: Candidate, current: boolean, actions = true) => (
     <CandidateCard
       key={candidate.offer.player.id}
       w={w}
       candidate={candidate}
       actions={actions}
-      blocked={blocked || candidate.revision !== w.revision || candidate.offer.own}
+      blocked={blocked || !current || candidate.revision !== w.revision || candidate.offer.own}
       selected={selectedComparison.some((target) => target.playerId === candidate.offer.player.id)}
       onCompare={() => toggle(candidate.offer.target)}
       onRecruit={(loan) => {
-        void recruit(candidate, loan);
+        if (current) void recruit(candidate, loan);
       }}
       onBid={() => {
         setComparing(false);
@@ -951,7 +954,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             {[comparisonA, comparisonB].map((reading, index) => (
               <div key={selectedComparison[index]?.playerId ?? index}>
                 {reading.value ? (
-                  render(reading.value)
+                  render(reading.value, reading.current)
                 ) : (
                   <p role="status">{reading.error ?? '비교 선수 정보를 불러오고 있어요.'}</p>
                 )}
@@ -973,6 +976,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                 className={s.primary}
                 disabled={
                   blocked ||
+                  !bidDetail.current ||
                   !outlook ||
                   !bidDetail.value?.buy.eligible ||
                   bidDetail.value?.offer.own ||
@@ -985,12 +989,13 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                 onClick={async () => {
                   if (
                     !bidDetail.value ||
+                    !bidDetail.current ||
                     !outlook ||
                     !bidDetail.value.buy.eligible ||
                     bidDetail.value.offer.own ||
                     !currentWorld() ||
                     bidDetail.value.revision !== client.state.view?.world.revision ||
-                    blocked ||
+                    currentActionsBlocked() ||
                     BigInt(fee) > BigInt(w.cash) ||
                     BigInt(fee) < 1n ||
                     !window.open ||
@@ -1022,7 +1027,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             </p>
           )}
           {bidDetail.value ? (
-            render(bidDetail.value, false)
+            render(bidDetail.value, bidDetail.current, false)
           ) : (
             <p role="status">{bidDetail.error ?? '제안 조건을 확인하고 있어요.'}</p>
           )}
@@ -1076,7 +1081,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             </p>
           )}
           {detail.value ? (
-            render(detail.value)
+            render(detail.value, detail.current)
           ) : (
             <p role="status">{detail.error ?? '선수 정보를 불러오고 있어요.'}</p>
           )}

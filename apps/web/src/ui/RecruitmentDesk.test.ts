@@ -6,7 +6,12 @@ import { worldMarketFixture } from '../../../../packages/engine/src/world-market
 import type { ClientState, GameClient } from '../runtime/client';
 import { initialClientState } from '../runtime/store';
 import { RecruitmentDesk } from './RecruitmentDesk';
-import { DEFAULT_MARKET_QUERY, type MarketDetail, type MarketQuery } from './worldMarket';
+import {
+  DEFAULT_MARKET_QUERY,
+  createMarketReader,
+  type MarketDetail,
+  type MarketQuery,
+} from './worldMarket';
 
 const { choices, reads } = vi.hoisted(() => ({
   choices: {} as Record<string, unknown>,
@@ -15,6 +20,7 @@ const { choices, reads } = vi.hoisted(() => ({
     detail: undefined as MarketDetail | undefined,
     error: undefined as string | undefined,
     blocked: false,
+    current: true,
     query: vi.fn(),
     inspect: vi.fn(),
   },
@@ -27,7 +33,7 @@ vi.mock('./worldMarket', async (original) => ({
   },
   useMarketDetail: (...args: unknown[]) => {
     reads.inspect(...args);
-    return { value: args[3] ? reads.detail : undefined, retry: vi.fn() };
+    return { value: args[3] ? reads.detail : undefined, current: reads.current, retry: vi.fn() };
   },
 }));
 vi.mock('./taskMemory', () => ({
@@ -136,8 +142,17 @@ beforeEach(() => {
   reads.detail = undefined;
   reads.error = undefined;
   reads.blocked = false;
+  reads.current = true;
   w.bids = undefined;
   vi.clearAllMocks();
+  Object.assign(client.state, {
+    ...initialClientState,
+    busy: false,
+    processing: false,
+    readonly: false,
+    clockRunning: false,
+    error: undefined,
+  });
   client.state.view = state.view;
 });
 
@@ -155,6 +170,52 @@ describe('paged whole-world recruitment desk', () => {
     expect(markup).not.toContain('<article');
     expect(reads.query.mock.lastCall?.[3]).toEqual(DEFAULT_MARKET_QUERY);
     expect(reads.inspect.mock.calls.every((args) => args[3] === undefined)).toBe(true);
+  });
+  it('displays accepted rows after multiple running-clock revisions without another request', async () => {
+    reads.page = undefined;
+    client.state.clockRunning = true;
+    const current = { ...state.view!.world };
+    client.state.view = { ...state.view!, world: current };
+    let resolve!: (value: WorldMarketPage) => void;
+    const pending = new Promise<WorldMarketPage>((yes) => (resolve = yes));
+    const load = vi.fn(() => pending);
+    const reader = createMarketReader<WorldMarketPage>(
+      () => ({ world: current.id, revision: current.revision }),
+      (result) => {
+        reads.page = result.value;
+        reads.error = result.error;
+      },
+    );
+    const update = () =>
+      reader.update({
+        world: current.id,
+        revision: current.revision,
+        key: 'current-query',
+        snapshot: true,
+        attempt: 0,
+        load,
+      });
+    update();
+    expect(render()).toContain('세계 선수 목록을 불러오고 있어요.');
+    for (let revision = w.revision + 1; revision < w.revision + 10; revision++) {
+      current.revision = revision;
+      update();
+    }
+    resolve({
+      world: w.id,
+      revision: w.revision + 2,
+      page: 0,
+      pageSize: 50,
+      total: 1,
+      items: [offer],
+    });
+    await pending;
+    await Promise.resolve();
+    expect(ids(render())).toEqual(['external']);
+    expect(render()).not.toContain('세계 선수 목록을 불러오고 있어요.');
+    expect(load).toHaveBeenCalledOnce();
+    expect(client.state.clockRunning).toBe(true);
+    reader.cancel();
   });
   it('passes filters/sorts to the worker and resets pages on search', () => {
     choices['world-market-query'] = {
@@ -353,6 +414,71 @@ describe('paged whole-world recruitment desk', () => {
       expect(submit().props.disabled).toBe(true);
       expect(markup).toContain('External Player');
       await (submit().props.onClick as () => Promise<void>)();
+      expect(client.command).not.toHaveBeenCalled();
+    },
+  );
+  it('keeps a running read snapshot inspectable after stop until refreshed conditions permit a bid', async () => {
+    choices['world-market-bidding'] = { target: offer.target, asking: offer.fee };
+    reads.detail = detail();
+    reads.current = false;
+    expect(render()).toContain('External Player');
+    expect(submit().props.disabled).toBe(true);
+    await (submit().props.onClick as () => Promise<void>)();
+    expect(client.command).not.toHaveBeenCalled();
+    reads.current = true;
+    reads.detail = detail();
+    reads.detail.buy.eligible = false;
+    render();
+    await (submit().props.onClick as () => Promise<void>)();
+    expect(client.command).not.toHaveBeenCalled();
+    reads.detail = detail();
+    render();
+    expect(submit().props.disabled).toBe(false);
+    await (submit().props.onClick as () => Promise<void>)();
+    expect(client.command).toHaveBeenCalledOnce();
+  });
+  it('cannot sign a free agent from a retained same-revision snapshot while stopped checks are pending', () => {
+    choices['world-market-viewing'] = offer.target;
+    reads.detail = { ...detail(), offer: { ...offer, freeAgent: true } };
+    reads.current = false;
+    const markup = render();
+    expect(markup).toContain('External Player');
+    expect(markup).toMatch(/<button[^>]*disabled=""[^>]*>자유계약 영입<\/button>/);
+    const card = elements(tree).find((node) => node.props.candidate)!;
+    (card.props.onRecruit as (loan: boolean) => void)(false);
+    expect(client.command).not.toHaveBeenCalled();
+    reads.current = true;
+    render();
+    const refreshed = elements(tree).find((node) => node.props.candidate)!;
+    (refreshed.props.onRecruit as (loan: boolean) => void)(false);
+    expect(client.command).toHaveBeenCalledOnce();
+  });
+  it.each(['clockRunning', 'processing', 'readonly', 'error', 'critical', 'revision'] as const)(
+    'rechecks live %s protection for bids and contracts after rendering an eligible preview',
+    async (guard) => {
+      choices['world-market-bidding'] = { target: offer.target, asking: offer.fee };
+      reads.detail = detail();
+      render();
+      const bid = submit();
+      choices['world-market-bidding'] = undefined;
+      choices['world-market-viewing'] = offer.target;
+      reads.detail = { ...detail(), offer: { ...offer, freeAgent: true } };
+      render();
+      const card = elements(tree).find((node) => node.props.candidate)!;
+      if (guard === 'critical' || guard === 'revision') {
+        client.state.view = {
+          ...state.view!,
+          world: {
+            ...state.view!.world,
+            ...(guard === 'critical'
+              ? { critical: 'blocking-alert' }
+              : { revision: w.revision + 1 }),
+          },
+        };
+      } else if (guard === 'error') client.state.error = 'worker failed';
+      else client.state[guard] = true;
+      await (bid.props.onClick as () => Promise<void>)();
+      (card.props.onRecruit as (loan: boolean) => void)(false);
       expect(client.command).not.toHaveBeenCalled();
     },
   );
