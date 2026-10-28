@@ -15,8 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | e7q4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T01:49Z | 2026-10-28T01:54Z | T537 |
-| u7m4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T00:48Z | 2026-10-28T02:45Z | - |
-| f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T03:04Z | 2026-10-28T03:05Z | T538 |
+| f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T03:04Z | 2026-10-28T03:15Z | T539 |
 
 ## inbox
 - 261028 decided EURO-11 EURO-13 EURO-14: modern access fidelity → association quota bands, recorded five-year ranking and EPS, direct admission instead of new qualifiers, next-season activation (alt: keep uniform demo quotas | retcon active draws); keep the single domestic cup and explicitly label unmodelled EFL/domestic playoffs and eight-association ranking scope.
@@ -324,6 +323,7 @@
 - 261027 decided WEB-18 T524: reads outside the command queue answer from the newest computed day, up to 7 days past the shown date → they first show the computed days at once and nothing is computed ahead until answered (alt: record that reads may show computed-ahead days | cut each read at the shown date, which cumulative statistics cannot do)
 - 261027 decided T518 ARCH-31: round-jobs.test.ts tier → integration (it advances days, which tests/config/test-tiers keeps out of unit), acceptance command updated (alt: keep it unit and shrink it below advanceDays)
 - 261028 decided WEB-11 WEB-72 T536: facility scope and image treatment → three compact background-art entrances with manager/training preparation notices, plus a larger cover-cropped stadium (alt: implement unplanned room activities | keep one large owner entrance); detailed room activities await their own planning.
+- 261028 decided ARCH-31 ARCH-34: whether release throughput stays a gate once the owner rules out targets in seconds ("작업한 기기에서 노이즈 이상으로 빨라지면 성공") → throughput is compared with the previous release on one machine and reported, capacity stays the only release gate, and a speed-up is judged by ARCH-34's paired same-machine call (alt: gate on not being slower than the previous release beyond the noise, which would block every model revision that adds football | keep the 1 ms / 15 s reference-machine budgets)
 
 ## ideation
 | id | st |
@@ -347,12 +347,12 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 24 | 24 | - | 2 |
+| ARCH | 25 | 25 | - | 2 |
 | WEB | 165 | 165 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 34 | 34 | - | 0 |
+| MATCH | 35 | 35 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -375,6 +375,9 @@
 |---|---|---|---|---|
 | T537 | European qualification by association, domestic results and titles | EURO ARCH | - | doing@261028.e7q4 |
 | T538 | Match-model revision 5: carriers take open ground, recycle only safely, never far back with room near the box | MATCH SAVE ARCH | - | doing@261028.f5j2 |
+| T539 | Hold the football targets within 25% of the real-football mean | MATCH ARCH | - | doing@261028.f5j2 |
+| T540 | Paired same-machine speed harness | ARCH | - | todo |
+| T541 | Result-identical engine cuts judged by the paired harness | ARCH MATCH | T540 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -395,7 +398,9 @@
 ## next
 - implement-task T537: correct association access, continental titleholders, EPS and qualification causes.
 - implement-task T538: revision 5 carrier judgement (f5j2).
-- UI scope T536 is complete; await its main CI result. Manager/training room activities need separate product planning.
+- implement-task T540: paired same-machine speed harness, then T541 (explore 3h) result-identical engine cuts.
+- implement-task T539: tolerant target bands (f5j2).
+- UI scope T536 is complete and published at b1886d69. Main CI remains unconfirmed after one bounded 60-minute observation; follow run 40622906430. Manager/training room activities need separate product planning.
 
 ## log
 - 261028 create-task EURO r4: T537 covers allocation, recorded coefficients, compatibility and qualification explanation.
@@ -411,10 +416,10 @@
 - 261028 fix navigation-tools: screenshot capture and the unchanged 30-click first-play sample use the six gameplay destinations; syntax and type/lint/format checks passed; no new benchmark claim.
 - 261028 fix personnel-deep-links: canonical personnel entries serve the SPA with no-cache HTML; missing assets remain 404; HTTP checks, type/lint/format/build passed; preview regression extended for the final batch.
 - 261028 fix approval-return: cancellation/home actions stay disabled while a command is queued or in flight; 26 focused cases and type/lint/format/build passed.
-- 261028 T533 done: host finalized the verified child implementation and task commit.
-- 261028 T532 done: host finalized the verified child implementation and task commit.
-- 261028 reconcile shared planning: local T530/T531 stay archived and complete; g8u6 continues T532/T533 under strict remote claims.
 - 261028 T536 planning shared for strict session claim; WEB r165.
 - 261028 T538 start (f5j2): revision 5 carrier judgement, explore 2h.
 - 261028 create-task MATCH r34: T538 opens revision 5 for the carrier's space, safe recycling and room near the box.
 - 261028 update-ssot MATCH start and r34 done: MATCH-16 space ahead, contested passes only forward, no far back pass with room near the box.
+- 261028 create-task ARCH r25: T540 paired speed harness, T541 result-identical engine cuts (explore 3h). Warning: T538 (doing, f5j2) cites ARCH-31 at ARCH@24; its throughput read is now a reported same-machine ratio (ARCH-34), not the 1 ms / 15 s budget.
+- 261028 update-ssot ARCH r25: ARCH-31✎ no absolute throughput budget, ARCH-34+ same-machine paired speed-up call (owner: success = faster on the machine measured, beyond noise).
+- 261028 T536 done: compact facilities, inset cards and quiet navigation; final local batch passed, including 311 Chromium journeys. Main b1886d69 published; CI observation timed out while the run remained in progress.

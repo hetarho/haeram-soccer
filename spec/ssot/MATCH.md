@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r34 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r35 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -203,6 +203,7 @@
   | ball in play (a match) | 54–58 min |
   - rows that read ball positions or possession sequences (possessions and median passes in one, possessions ending in a shot, mean shot distance, shots from 30 m+ and from the own half) bind the detailed engine only: the aggregate path records no such facts (→MATCH-26).
   - a top-tier 38-round league season holds: each club's top scorer takes 20–30% of its league goals on average, the league's top scorer scores 22–32 goals, and hat-tricks come at 0.02–0.05 a match.
+  - every band in this decision is a real-football range, not the window a row must hit: a row holds within 25% of its range's mean either side, never narrower than the range itself, and a row bounded at 0 (an at-most row) holds up to 25% above its cap. →MATCH-30's counters hold the same way. ← play that reads right is judged against real averages with room, not tuned into a narrow window at the cost of sensible choices
 - MATCH-24 [o] The live event line narrates notable actions with their cell and tags in Korean football media's terms (하프스페이스, 라인 사이, 뒷공간, 아크 정면, 컷백, 니어/파 포스트, 레스트 디펜스, 세컨드 볼, 수적 우위, 라인 브레이킹, 역습, 게겐프레싱 and the like), derived from recorded events only; it never changes outcomes and uses no invented zone names.
 - MATCH-25 [o] After an own match its post-match material is shown and kept as →MATCH-5 allows: a shot map (place, xG, outcome, header or foot), heat maps for each player and side, a pass network (average positions and passes between pairs) and a tactical report — where attacks came from by lane and band, entries, where the ball was won and lost, set pieces and decisive duels. ← it gives the owner grounds for manager and signing decisions
 - MATCH-26 [o] The aggregate path produces the same complete numerical result contract as detailed play, with the same meanings and units (→MATCH-3/4/13/27).
@@ -236,6 +237,7 @@
 - MATCH-30 [o] Both engines hold every →MATCH-13 advanced counter at its real-football level for equal top-tier sides under MATCH-13's definitions; each counter's band and public source are kept below, and a counter with no comparable public source is listed as unbanded and held to →MATCH-28 parity only. ← an advanced counter without an intended level cannot show which engine is wrong
   - both paths count a counter by the same definition before its band is read; a definition changes only in MATCH-13.
   - a band is never set from either engine's own output.
+  - a counter holds within →MATCH-23's tolerance of its band: 25% of the band's mean either side, never narrower than the band.
   - Bands are per team per match, normalized to 90 minutes when extra time is played. Take the minimum and maximum cited league-season means and round outward: steps of 0.05 below 1, 0.1 from 1 to 10, 0.5 from 10 to 100, and 1 from 100. PPDA uses the ratio of league-wide numerator and denominator sums, never the mean of team ratios. `ADVANCED_COUNTER_TARGET` in `scripts/lib/match-parity.ts` implements these bands.
   | counter | band | public source |
   |---|---|---|
@@ -294,6 +296,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r35 261028 MATCH-23✎ each row held inside its real-football range→within 25% of the range's mean either side (never narrower; at-most rows 25% above the cap), scorer rows too. MATCH-30✎ counters held inside their bands→the same ±25% tolerance
 - r34 261028 MATCH-16✎ + the carrier takes open ground ahead on the carry; + a contested pass (receiver marked or lane cut out) only forward, backward/sideways passes only to a free receiver on a clear lane, else he keeps the ball; + around the box with room he shoots, carries on or holds for support instead of playing it far back; + wide play: with the flank open a wide carrier goes down the line and crosses from near the byline, crossing early or cutting in mostly with the line closed; a free wide teammate with room is an option
 - r33 261027 MATCH-12✎ set-piece preparation→dead-ball beat for every stoppage, no straight-line glide. MATCH-16✎ + shot choice from the chance bent by position (FW ≥ MF ≥ DF), role, traits, tactic, own school; no line suppression. MATCH-18✎ named taker for every free kick→only in shooting/crossing range; + corners 2–3 back / 1–2 up, late score, keeper
 - r32 261026 MATCH-2✎ a club nobody owns adds a flat 4 for its unmodelled manager→(its named manager's ability − 50)/4 and neutral morale, the own club's terms on the same formula, from match-model revision 3 (earlier revisions keep 4); calibration curve held by the own club's fixtures at home and away too
