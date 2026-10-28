@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
+import { ATTRIBUTES } from '../../../contracts/src/player';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { FORMATIONS } from '../player';
 import { BOX_CONFIG, boxScene, boxSide, boxZones } from './box';
@@ -754,6 +755,11 @@ function freeLab(
   s.ball = [ball[0], ball[1]];
   s.players[0][6]!.pos = [ball[0], ball[1]];
   s.players[1].forEach((gp, i) => i < 11 && (gp.pos = [104, 4 + 6 * i]));
+  // No sense of space with the ball, so revision 6's spread leaves each place to freedom (T542).
+  for (const gp of s.players[0]) {
+    gp.base[ATTRIBUTES.indexOf('decisions')] = 30;
+    gp.base[ATTRIBUTES.indexOf('positioning')] = 30;
+  }
   s.elapsed = 600;
   return s;
 }

@@ -89,8 +89,9 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * their second balls, for T437's recalibration, for T446's lofted deliveries over the crowd and
  * for T447's box zone depths, for T432's freedom on revision 2, for T433's tendencies in
  * revision 2's movement, for T466's revision 3, for T479's revision 4, for T480's corner numbers
- * for T481's shot choice, for T482's recalibration and for T538's revision 5, the first tie of
- * each kind; T482's were 6/31, 5/29 and 7/11 (revision 4's, `REVISION_4_CASES`), T481's were
+ * for T481's shot choice, for T482's recalibration, for T538's revision 5 and for T542's revision
+ * 6, the first tie of each kind; T538's were 3/2, 6/1 and 23/0 (revision 5's, `REVISION_5_CASES`),
+ * T482's were 6/31, 5/29 and 7/11 (revision 4's, `REVISION_4_CASES`), T481's were
  * 10/19, 3/11 and 0/6, T480's were 14/6, 8/4 and 9/0, T479's
  * were 7/4, 7/6 and 0/1, T466's were 9/2, 7/5 and 4/3
  * (revision 3's, `REVISION_3_CASES`), T433's were 3/0,
@@ -104,9 +105,9 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * and 5/15, T446's 0/1, 0/3 and 2/0, T447's 4/2, 2/5 and 16/0 — revision 1's, `REVISION_1_CASES`).
  */
 const CASES = {
-  1975: { extraTime: 3, shootout: 2 },
-  1995: { extraTime: 6, shootout: 1 },
-  2024: { extraTime: 23, shootout: 0 },
+  1975: { extraTime: 7, shootout: 20 },
+  1995: { extraTime: 5, shootout: 3 },
+  2024: { extraTime: 12, shootout: 7 },
 } as const;
 type Year = keyof typeof CASES;
 
@@ -334,8 +335,49 @@ interface CandidateDigests {
  * it far back with room near the box and plays down the wing; 600 matches in result) moved every
  * value and the knockout ties (rescanned above); before it, the values now revision 4's
  * (`REVISION_4`). Revisions 1–4's and the pre-feature facts did not move.
+ * T542's match-model revision 6 (a clear chance taken, a beaten man left behind, a free man ahead
+ * found, a misplaced pass kept in play, support spread and the shooting line screened; 600 matches
+ * in result) moved every value and the knockout ties (rescanned above); before it, the values now
+ * revision 5's (`REVISION_5`). Revisions 1–5's and the pre-feature facts did not move.
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
+  1975: {
+    facts: {
+      league: '526a52ec99908b8d',
+      extraTime: '83eeedc8ac37884b',
+      shootout: '196e08d9231ea4a8',
+    },
+    positions: { observed: 'eda0b0fe52316ed0', shootout: '1ac727ef2315eb47' },
+  },
+  1995: {
+    facts: {
+      league: '82b9aa6e0e54987c',
+      extraTime: 'a07a3626576891fe',
+      shootout: '9c9ae1780fc3cb23',
+    },
+    positions: { observed: 'cf2aa0248f68f1ee', shootout: '36cf4e547e8938a1' },
+  },
+  2024: {
+    facts: {
+      league: '88b2271c8defc4ed',
+      extraTime: 'c1a476dd31b735f2',
+      shootout: 'ea16324d5a414cd8',
+    },
+    positions: { observed: '68d2cf6e309b37f1', shootout: 'dcc5f9f366e9fba0' },
+  },
+};
+
+/**
+ * Revision 5's knockout ties and digests (T542): T538's facts with T541's positions, the football
+ * revision 5 plays before revision 6. Their facts never move again (→SAVE-23); a
+ * presentation-only change re-records their positions.
+ */
+const REVISION_5_CASES = {
+  1975: { extraTime: 3, shootout: 2 },
+  1995: { extraTime: 6, shootout: 1 },
+  2024: { extraTime: 23, shootout: 0 },
+} as const satisfies Record<Year, { extraTime: number; shootout: number }>;
+const REVISION_5: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
       league: 'cf67feb0f94fdc25',
@@ -548,9 +590,12 @@ describe('detailed engine throughput (T325)', () => {
         positions: { observed: positionsOf(watched), shootout: positionsOf(pens) },
       };
       expect(got, `${year} candidate digests on ${HOST}`).toEqual(CANDIDATE[year]);
-      // Revisions 1–4 play as they did before later revisions moved (→SAVE-23): their matches
+      // Revisions 1–5 play as they did before later revisions moved (→SAVE-23): their matches
       // replay under them.
-      const earlier = (revision: 0 | 1 | 2 | 3, cases: { extraTime: number; shootout: number }) => {
+      const earlier = (
+        revision: 0 | 1 | 2 | 3 | 4,
+        cases: { extraTime: number; shootout: number },
+      ) => {
         const on = (id: string, opts: Parameters<typeof play>[2] = {}) =>
           play(kit, id, { ...opts, model: MATCH_MODEL_REVISIONS[revision] });
         const pens = on(`knockout-${year}-${cases.shootout}`, { decide: LEVEL, observe: true });
@@ -575,6 +620,9 @@ describe('detailed engine throughput (T325)', () => {
       );
       expect(earlier(3, REVISION_4_CASES[year]), `${year} revision-4 digests`).toEqual(
         REVISION_4[year],
+      );
+      expect(earlier(4, REVISION_5_CASES[year]), `${year} revision-5 digests`).toEqual(
+        REVISION_5[year],
       );
       const recorded = PRE_FEATURE[HOST]?.[year];
       if (recorded === undefined)

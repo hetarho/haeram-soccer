@@ -133,11 +133,12 @@ const facts = (w: World) => ({
  * scale 0.28, crossed deliveries 0.7, fouls ×1.5) changed the candidate rounds only;
  * 2837deaef4826be0 before. T538's match-model revision 5 (the carrier takes open ground, recycles
  * only safely, never far back with room near the box, plays down the wing) changed both, label and
- * football; aa876ab8eda9f1c2 and 8ea7fa36b38d041f before.
+ * football; aa876ab8eda9f1c2 and 8ea7fa36b38d041f before. T542's match-model revision 6 changed
+ * both, label and football; cfafcd75d6be2337 and c85a6bd47699f2f2 before.
  */
 const BEFORE = {
-  aggregateRecords: 'cfafcd75d6be2337',
-  candidateRounds: 'c85a6bd47699f2f2',
+  aggregateRecords: '8e5fd3764d2248b6',
+  candidateRounds: '899ddefb86dc54e6',
 };
 
 describe('complete-result throughput (T285)', () => {

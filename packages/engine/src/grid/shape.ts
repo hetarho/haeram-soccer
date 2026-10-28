@@ -47,6 +47,20 @@ export const SHAPE_CONFIG = {
    * fell toward the others' mean (−0.122 → −0.081 on validation rounds 53+54).
    */
   candidate: {
+    /**
+     * Revision 6 (T542, →MATCH-17): with the ball an outfielder off it, supporting or in his shape,
+     * moves his target away from each teammate within `radius` m by `push` × (radius − distance),
+     * scaled by his sense of space: the mean of 판단력 and 위치선정, 0 at `from`, 1 at `full`.
+     */
+    spread: { radius: 10, push: 1, from: 40, full: 90 },
+    /**
+     * Revision 6 (T542, →MATCH-32): with the ball in a central lane at least `from` m up the
+     * attacking side's frame, a defending outfielder in his shape or covering a zone, goal-side of
+     * the ball and within `reach` m across of the line from the ball to his goal, moves his target
+     * across at his own depth `pull` × his sense (위치선정, 0 at `spread.from`, 1 at `spread.full`)
+     * of the way onto that line.
+     */
+    screen: { from: 55, reach: 34, pull: 1 },
     tactic: {
       possession: {
         advance: 7,
@@ -354,7 +368,69 @@ export function targetOf(
   // A loose shape (revision 2, T432): an outfielder keeps part of his distance from his place, less
   // the more disciplined he is (T433).
   const k = gp.slot > 0 ? looseness(s, side) * disciplineScale(s, side, idx) : 0;
-  return k ? [place[0] + (gp.pos[0] - place[0]) * k, place[1] + (gp.pos[1] - place[1]) * k] : place;
+  const loose: [number, number] = k
+    ? [place[0] + (gp.pos[0] - place[0]) * k, place[1] + (gp.pos[1] - place[1]) * k]
+    : place;
+  return screen(s, gp, spread(s, gp, loose));
+}
+
+/**
+ * Revision 6 (T542, →MATCH-32): without the ball, with it central in front of his goal, a
+ * defender's target drawn onto the line from the ball to his goal by his 위치선정
+ * (`SHAPE_CONFIG.candidate.screen`); any other target unchanged.
+ */
+function screen(s: GridState, gp: GridPlayer, target: [number, number]): [number, number] {
+  if (!modelAtLeast(s.setup, 6) || s.possession === gp.side || lineOfSlot(s, gp) === 'GK')
+    return target;
+  const S = SHAPE_CONFIG.candidate.screen;
+  const attacking = other(gp.side);
+  const b = attackFrame(attacking, s.ball);
+  if (b[0] < S.from || b[1] < LANE_EDGES[1] || b[1] > LANE_EDGES[4]) return target;
+  const R = SHAPE_CONFIG.candidate.spread;
+  const sense = clamp(
+    (skill(s, gp.side, gp.idx, 'positioning') - R.from) / (R.full - R.from),
+    0,
+    1,
+  );
+  if (sense === 0) return target;
+  const t = attackFrame(attacking, target);
+  // Only a defender goal-side of the ball, across at his own depth, so each tactic keeps its block.
+  if (t[0] <= b[0]) return target;
+  const line = b[1] + ((PITCH.width / 2 - b[1]) * (t[0] - b[0])) / (PITCH.length - b[0]);
+  if (Math.abs(t[1] - line) > S.reach) return target;
+  return toEngine(attacking, [t[0], t[1] + (line - t[1]) * S.pull * sense]);
+}
+
+/**
+ * Revision 6 (T542, →MATCH-17): with the ball, an outfielder's target kept clear of his teammates
+ * by his sense of space (`SHAPE_CONFIG.candidate.spread`); any other target unchanged. A support
+ * intention takes it when it is set (`setIntention`), a place in the shape every time it is read.
+ */
+export function spread(s: GridState, gp: GridPlayer, target: [number, number]): [number, number] {
+  if (!modelAtLeast(s.setup, 6) || s.possession !== gp.side || lineOfSlot(s, gp) === 'GK')
+    return target;
+  if (s.owner && s.owner[0] === gp.side && s.owner[1] === gp.idx) return target;
+  const S = SHAPE_CONFIG.candidate.spread;
+  const sense = clamp(
+    ((skill(s, gp.side, gp.idx, 'decisions') + skill(s, gp.side, gp.idx, 'positioning')) / 2 -
+      S.from) /
+      (S.full - S.from),
+    0,
+    1,
+  );
+  if (sense === 0) return target;
+  let [x, y] = target;
+  for (const mate of s.players[gp.side]) {
+    if (mate === gp || !onPitch(mate) || lineOfSlot(s, mate) === 'GK') continue;
+    const dx = x - mate.pos[0],
+      dy = y - mate.pos[1];
+    const d = s.math.hypot(dx, dy);
+    if (d >= S.radius || d < 1e-9) continue;
+    const k = (S.push * sense * (S.radius - d)) / d;
+    x += dx * k;
+    y += dy * k;
+  }
+  return [clamp(x, 0, PITCH.length), clamp(y, 0, PITCH.width)];
 }
 
 /**
@@ -555,8 +631,10 @@ export function intentionTarget(s: GridState, gp: GridPlayer): [number, number] 
   if (foe && onPitch(foe) && i.kind === 'mark')
     return boxMarkPoint(side, foe) ?? goalSideOf(side, foe);
   if (i.kind === 'cover' && i.box) return boxGuardTarget(s, gp, i.box.zone, i.box.ball);
-  if (i.kind === 'cover' && i.zone) return guardPoint(s, gp, i.zone);
-  if (mate && onPitch(mate) && i.kind === 'cover') return coverPoint(side, mate, s.math);
+  // A zone or a teammate covered keeps to the shooting line in front of goal (revision 6, T542).
+  if (i.kind === 'cover' && i.zone) return screen(s, gp, guardPoint(s, gp, i.zone));
+  if (mate && onPitch(mate) && i.kind === 'cover')
+    return screen(s, gp, coverPoint(side, mate, s.math));
   return [i.target[0], i.target[1]];
 }
 

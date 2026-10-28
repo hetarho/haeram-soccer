@@ -352,7 +352,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 3 | KIT-3✎ KIT-4✎ KIT-7✎ KIT-8✎ KIT-11✎ KIT-12✎ KIT-15✎ | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 37 | 35 | MATCH-36+ MATCH-37+ | 0 |
+| MATCH | 38 | 35 | MATCH-36+ MATCH-37+ | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 38 | 38 | - | 0 |

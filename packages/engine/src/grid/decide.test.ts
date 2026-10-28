@@ -57,6 +57,11 @@ function scene(slot: number, at: Point, tactics: [Tactic, Tactic] = ['balanced',
 }
 const place = (s: ReturnType<typeof scene>['s'], idx: number, p: Point) =>
   (s.players[0][idx]!.pos = [...p]);
+/**
+ * An opponent (side 1's slot 3) standing at `p`, in the carrier's way: in his path to goal it makes
+ * the scene no clear chance (T542), in front of him it closes his open ground (T538).
+ */
+const guard = (s: ReturnType<typeof scene>['s'], p: Point) => (s.players[1][3]!.pos = [...p]);
 function setSkills(
   s: ReturnType<typeof scene>['s'],
   idx: number,
@@ -284,6 +289,8 @@ describe('grid decisions', () => {
         ] as Point[]
       ).forEach((p, i) => place(sc.s, 1 + i, p));
       sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      // A defender in his path to goal, so it is no clear chance (T542).
+      guard(sc.s, [high[0] + 12, high[1]]);
       return {
         passes: passOptions(sc.s, 0, CM, sc.tags()).filter((o) => o.target <= 4),
         mix: actionMix(sc.s, 0, CM, sc.tags()),
@@ -497,8 +504,11 @@ describe('grid decisions', () => {
   it('has a runner through on goal shoot first on the candidate model', () => {
     const K = DECISION_CONFIG;
     const bend = (band: number, candidate: boolean) => {
-      const sc = scene(ST, centre(band, 2));
+      const at = centre(band, 2);
+      const sc = scene(ST, at);
       if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      // The last defender between him and goal: alone he would have a clear chance (T542).
+      guard(sc.s, [Math.min(at[0] + 6.5, 104), at[1]]);
       const mix = (inBehind: boolean) => actionMix(sc.s, 0, ST, { ...sc.tags(), inBehind });
       const [on, off] = [mix(true), mix(false)];
       return {
@@ -631,6 +641,8 @@ describe('grid decisions', () => {
     const ratio = (lead: number, candidate: boolean) => {
       const sc = scene(ST, at);
       if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      // A defender in his path, so it is no clear chance (T542).
+      guard(sc.s, [at[0] + 6.5, at[1]]);
       const mix = actionMix(sc.s, 0, ST, { ...sc.tags(), lead, minute: 20 });
       return mix.shot / mix.pass;
     };
@@ -960,12 +972,13 @@ describe('grid decisions', () => {
       });
     expect(entry(true, 0.2) / entry(true, 1)).toBeCloseTo(0.2, 12);
     expect(entry(false, 0.2)).toBeCloseTo(entry(false, 1), 12);
-    // A carry from the middle of the pitch: the same draws, `carry` times as far (revision 4: on
-    // revision 5 an open pitch stretches the carry to its space, T538).
+    // A carry from the middle of the pitch: the same draws, `carry` times as far. An opponent 8 m
+    // ahead closes his open ground, which would stretch the carry to it (T538).
     const carried = (candidate: boolean, value: number) =>
       withCandidate({ finalThird: { ...neutral, carry: value } }, () => {
         const sc = scene(CM, [50, 34]);
-        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISIONS[3] };
+        guard(sc.s, [58, 34]);
+        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
         const end = chooseCarry(sc.s, 0, CM, sc.tags(), random('t408-carry'));
         return Math.hypot(end[0] - 50, end[1] - 34);
       });
@@ -1269,5 +1282,82 @@ describe('revision 5 carrier judgement (T538, →MATCH-16)', () => {
     foe(sc, 5, [44, 35.5]);
     const tags = sc.tags();
     expect(passOptions(sc.s, 0, CM, tags, { judge: true })).toEqual(passOptions(sc.s, 0, CM, tags));
+  });
+});
+
+describe('revision 6 carrier judgement (T542, →MATCH-16)', () => {
+  const [, , , , fifth, sixth] = MATCH_MODEL_REVISIONS;
+  const K = DECISION_CONFIG.candidate.revision6;
+  const on = (slot: number, at: Point, model: MatchModelRevision, decisions = 60) => {
+    const sc = scene(slot, at);
+    sc.s.setup = { ...sc.s.setup, model };
+    sc.me.player.traits = [];
+    setSkills(sc.s, slot, { ...Object.fromEntries(ATTRIBUTES.map((a) => [a, 60])), decisions });
+    return sc;
+  };
+
+  it('revision 6: a striker in a clear chance in the box shoots on most decisions, more with better 판단력', () => {
+    const shot = (model: MatchModelRevision, decisions: number) => {
+      const sc = on(ST, [92, 34], model, decisions);
+      return actionMix(sc.s, 0, ST, sc.tags()).shot;
+    };
+    expect(shot(sixth, 40)).toBeCloseTo(K.clear.shot, 9);
+    expect(shot(sixth, 90)).toBeCloseTo(K.clear.sharp, 9);
+    expect(shot(fifth, 60)).toBeLessThan(K.clear.shot);
+    // A defender in his path makes it no clear chance.
+    const blocked = on(ST, [92, 34], sixth);
+    blocked.s.players[1][3]!.pos = [98, 34];
+    expect(actionMix(blocked.s, 0, ST, blocked.tags()).shot).toBeLessThan(K.clear.shot);
+  });
+
+  it('revision 6: a clear chance further out carries at goal, never square', () => {
+    const sc = on(ST, [75, 34], sixth);
+    place(sc.s, CM, [74, 50]); // square, free
+    const tags = sc.tags();
+    expect(actionMix(sc.s, 0, ST, tags).carry).toBeGreaterThanOrEqual(K.clear.carry - 1e-12);
+    expect(passOptions(sc.s, 0, ST, tags, { judge: true }).map((o) => o.target)).not.toContain(CM);
+    const r = random('t542-clear-carry');
+    for (let i = 0; i < 200; i++) {
+      const end = chooseCarry(sc.s, 0, ST, tags, r);
+      const off = Math.abs(Math.atan2(end[1] - 34, end[0] - 75)) / (Math.PI / 180);
+      expect(off).toBeLessThanOrEqual(30 + 1e-9);
+    }
+  });
+
+  it('revision 6: after beating his man no backward pass nor a square one behind him', () => {
+    const options = (model: MatchModelRevision) => {
+      const sc = on(CM, [60, 34], model);
+      sc.s.beat = [0, CM];
+      place(sc.s, 4, [45, 30]); // back
+      place(sc.s, 5, [58, 50]); // square, behind him
+      place(sc.s, 1, [64, 52]); // square, ahead of him
+      place(sc.s, 2, [75, 34]); // forward
+      return passOptions(sc.s, 0, CM, sc.tags(), { judge: true }).map((o) => o.target);
+    };
+    expect(options(sixth).sort()).toEqual([1, 2]);
+    expect(options(fifth).sort()).toEqual([1, 2, 4, 5]);
+  });
+
+  it('revision 6: a free man ahead is found more than the safe square ball', () => {
+    const scores = (model: MatchModelRevision) => {
+      const sc = on(3, [30, 34], model);
+      place(sc.s, 7, [45, 34]); // free, ahead
+      place(sc.s, 4, [30, 14]); // the other centre-back
+      const options = passOptions(sc.s, 0, 3, sc.tags(), { judge: true });
+      const of = (t: number) => options.find((o) => o.target === t)!.score;
+      return [of(7), of(4)] as const;
+    };
+    const [ahead5, square5] = scores(fifth);
+    const [ahead6, square6] = scores(sixth);
+    expect(ahead6 - ahead5).toBeCloseTo(K.free.score, 12);
+    expect(square6).toBeCloseTo(square5, 12);
+  });
+
+  it('revision 6: an unpressed defender rarely clears', () => {
+    const clearance = (model: MatchModelRevision) => {
+      const sc = on(3, centre(2, 2), model);
+      return actionMix(sc.s, 0, 3, { ...sc.tags(), pressure: 0 }).clearance;
+    };
+    expect(clearance(sixth)).toBeLessThan(clearance(fifth) * 0.5);
   });
 });

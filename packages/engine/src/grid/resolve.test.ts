@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
+import {
+  MATCH_MODEL_REVISION,
+  MATCH_MODEL_REVISIONS,
+  type MatchModelRevision,
+} from '../../../contracts/src/match-model';
 import { ATTRIBUTES } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
@@ -254,10 +258,11 @@ describe('grid open-play resolution', () => {
       expect(lost(P.intercepted - 1e-6, I.upTo + 5, tactic, true)).toBe('intercepted');
       expect(lost(P.intercepted + 1e-6, I.upTo + 5, tactic, true)).not.toBe('intercepted');
       expect(lost(P.intercepted + 1e-6, 40, tactic, false)).not.toBe('intercepted');
-      // The extra interceptions come from the loose balls: as many passes still leave play.
+      // The extra interceptions come from the loose balls; the rest are misplaced, and in midfield
+      // a misplaced pass runs on loose past its target instead of leaving play (T542).
       const out = P.intercepted + DUEL_CONFIG.candidate.passLoose;
-      expect(lost(out + 1e-6, 40, tactic, true)).toBe('out');
-      expect(lost(out - 1e-6, 40, tactic, true)).not.toBe('out');
+      expect(lost(out + 1e-6, 40, tactic, true)).toBe('loose');
+      expect(lost(out - 1e-6, 40, tactic, true)).toBe('loose');
     }
   });
 
@@ -273,18 +278,26 @@ describe('grid open-play resolution', () => {
     return Array.from({ length: n }, () => resolvePass(sc.s, 0, 7, 8, tags, 'short', false, r));
   };
   const lostAt = (o: Outcome) => (o.kind === 'loose' || o.kind === 'foul' ? o.at : undefined);
+  /** Where `failing`'s misplaced pass comes to rest: past its receiver by its overrun (T542). */
+  const M = DUEL_CONFIG.candidate.misplaced;
+  const overrun: Point = [75 + Math.min(M.most, M.overrun * 15), 34];
+  const atReceiver = (at: Point) =>
+    at[1] === 34 && (at[0] === 75 || Math.abs(at[0] - overrun[0]) < 1e-9);
 
   it('a pass whose lane nobody reaches is never intercepted (T441)', () => {
     const outcomes = failing(20000, 't441-open');
     const kinds = tally(outcomes.length, (i) => outcomes[i]!);
     expect(kinds.intercepted ?? 0).toBe(0);
     expect(kinds.loose).toBeGreaterThan(1000);
-    expect(kinds.out).toBeGreaterThan(100);
-    // Lost only at its receiver: every loose ball and 50/50 foul is where he stands.
+    // A misplaced pass through midfield stays in play (T542).
+    expect(kinds.out ?? 0).toBe(0);
+    // Lost only at its receiver: every loose ball and 50/50 foul is where he stands, or a few
+    // metres past him where a misplaced pass comes to rest.
     for (const o of outcomes) {
       const at = lostAt(o);
-      if (at) expect(at).toEqual([75, 34]);
+      if (at) expect(atReceiver(at)).toBe(true);
     }
+    expect(outcomes.some((o) => lostAt(o)?.[0] === overrun[0])).toBe(true);
   });
 
   it('a failed pass is won where the man in the lane meets it, or deflected there at full stretch (T441)', () => {
@@ -305,7 +318,7 @@ describe('grid open-play resolution', () => {
     expect(stretched.filter((o) => o.kind === 'intercepted')).toHaveLength(0);
     const deflected = stretched.filter((o) => {
       const at = lostAt(o);
-      return at && (at[0] !== 75 || at[1] !== 34);
+      return at && !atReceiver(at);
     });
     expect(Math.abs(deflected.length - won.length)).toBeLessThan(won.length * 0.25);
     for (const o of deflected) {
@@ -872,6 +885,9 @@ describe('grid open-play resolution', () => {
     const factor = (decisions: number) => {
       const plain = shotScene(at, []);
       set(plain.s, 0, 9, 'decisions', decisions);
+      // A defender 5 m behind him, out of the shot's path and of pressing range: alone he would
+      // have a clear chance and take it whatever the bodies (T542).
+      plain.s.players[1][10]!.pos = [at[0] - 5, at[1]];
       const tagsOf = plain.tags();
       const before = actionMix(plain.s, 0, 9, tagsOf);
       lines[2]!.forEach((p, i) => (plain.s.players[1][2 + i]!.pos = [p[0], p[1]]));
@@ -958,5 +974,24 @@ describe('grid open-play resolution', () => {
       expect(o.xg).toBeCloseTo(chanceXg([92, 34]), 9);
       expect(o.recordedXg).toBeCloseTo(Math.min(0.8, o.xg * ctx.levelFactor), 9);
     }
+  });
+});
+
+describe('revision 6 misplaced passes (T542, →MATCH-31)', () => {
+  it('revision 6: a misplaced pass in midfield stays in play, one aimed at the touchline goes out', () => {
+    const outs = (model: MatchModelRevision, receiver: Point) => {
+      const sc = scene(7, [50, 34]);
+      sc.s.setup = { ...sc.s.setup, model };
+      sc.s.players[0][8]!.pos = [...receiver];
+      // A poor passer, so a share of the passes fail with nobody near to cut them out.
+      set(sc.s, 0, 7, 'passing', 1);
+      const r = random(`t542-misplaced-${model}-${receiver[1]}`);
+      const tags = sc.tags();
+      return tally(4000, () => resolvePass(sc.s, 0, 7, 8, tags, 'short', false, r)).out ?? 0;
+    };
+    const [, , , , fifth, sixth] = MATCH_MODEL_REVISIONS;
+    expect(outs(fifth, [62, 34])).toBeGreaterThan(0);
+    expect(outs(sixth, [62, 34])).toBe(0);
+    expect(outs(sixth, [58, 66])).toBeGreaterThan(0);
   });
 });

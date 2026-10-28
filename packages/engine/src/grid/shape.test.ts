@@ -4,6 +4,7 @@ import {
   MATCH_MODEL_REVISIONS,
   type MatchModelRevision,
 } from '../../../contracts/src/match-model';
+import { ATTRIBUTES } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { FORMATIONS, lineOf } from '../player';
@@ -298,6 +299,10 @@ describe('grid shape and movement', () => {
       kit.state.ball = [52.5, 34];
       kit.state.possession = 0;
       kit.state.owner = [0, 9];
+      // A midfielder with no sense of space, so revision 6's spread leaves his target (T542).
+      const mf = kit.state.players[0][6]!;
+      mf.base[ATTRIBUTES.indexOf('decisions')] = 30;
+      mf.base[ATTRIBUTES.indexOf('positioning')] = 30;
       const before = targets(kit)[6]!;
       kit.state.setup = { ...kit.state.setup, model: MATCH_MODEL_REVISION };
       const shape = SHAPE_CONFIG.candidate.tactic[tactic] ?? SHAPE_CONFIG.tactic[tactic];
@@ -635,5 +640,60 @@ describe('revision 4 corner numbers (T480, →MATCH-18)', () => {
     expect(scene).toEqual(setPieceTargets(s, 0, taker));
     expect(scene.rest).toBeUndefined();
     expect(scene.up).toHaveLength(SHAPE_CONFIG.setPiece.box.length + 1);
+  });
+});
+
+describe('revision 6 spread and screen (T542, →MATCH-17, MATCH-32)', () => {
+  const [, , , , fifth, sixth] = MATCH_MODEL_REVISIONS;
+  const sense = (gp: GridPlayer, v: number) => {
+    gp.player.attrs.decisions = v;
+    gp.player.attrs.positioning = v;
+    gp.base.fill(v);
+  };
+
+  it('revision 6: a sharper supporter keeps more space from a teammate', () => {
+    const gap = (model: MatchModelRevision, v: number) => {
+      const kit = gridKit(['balanced', 'balanced'], undefined, DISABLED_RELEASE);
+      const s = kit.state;
+      s.setup = { ...s.setup, model };
+      s.possession = 0;
+      s.owner = [0, 9];
+      const me = s.players[0][7]!;
+      me.intention = undefined;
+      me.run = undefined;
+      sense(me, v);
+      const place = targetOf(s, 0, 7);
+      // A teammate standing right on his target.
+      const mate = s.players[0][6]!;
+      mate.pos = [place[0] + 1, place[1]];
+      const t = targetOf(s, 0, 7);
+      return Math.hypot(t[0] - mate.pos[0], t[1] - mate.pos[1]);
+    };
+    expect(gap(sixth, 90)).toBeGreaterThan(gap(sixth, 50) + 1);
+    expect(gap(sixth, 30)).toBeCloseTo(gap(fifth, 90), 9);
+  });
+
+  it('revision 6: a defender drops onto the ball–goal line when the ball is central in front of his box', () => {
+    const offLine = (model: MatchModelRevision, ballX: number) => {
+      const kit = gridKit(['balanced', 'balanced'], undefined, DISABLED_RELEASE);
+      const s = kit.state;
+      s.setup = { ...s.setup, model };
+      // Side 0 attacks; side 1's left centre-back (slot 2) defends the goal at x = 105 of side 0's
+      // frame.
+      s.possession = 0;
+      s.owner = [0, 9];
+      s.ball = toEngine(0, [ballX, 34]);
+      s.players[0][9]!.pos = [...s.ball];
+      const d = s.players[1][2]!;
+      d.intention = undefined;
+      d.run = undefined;
+      sense(d, 90);
+      const t = attackFrame(0, targetOf(s, 1, 2));
+      return Math.abs(t[1] - 34);
+    };
+    expect(offLine(fifth, 80)).toBeGreaterThan(1);
+    expect(offLine(sixth, 80)).toBeLessThan(offLine(fifth, 80));
+    // Far from goal the shape holds.
+    expect(offLine(sixth, 50)).toBeCloseTo(offLine(fifth, 50), 9);
   });
 });

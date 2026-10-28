@@ -8,6 +8,7 @@ import { CELL_BASELINES, OVERALL_PROFILE, POSITION_PROFILES, profileKey } from '
 import { BOX_CONFIG, deliveries, DELIVERY_ACTION, type Delivery, type DeliveryAim } from './box';
 import {
   attackFrame,
+  BAND_EDGES,
   cellBand,
   cellLane,
   cellOf,
@@ -203,6 +204,27 @@ export const DECISION_CONFIG = {
       contested: { mark: 3 },
       room: { from: 75, space: 6, back: 10 },
       wing: { open: 12, line: 1.5, early: 0.4, carry: 2, find: 0.6 },
+    },
+    /**
+     * Revision 6 (T542, →MATCH-16): `clear`: a carrier in a central lane at least `from` m up the
+     * pitch, unpressed, with no outfield opponent within `corridor` m of his line to the goal
+     * centre nor within `near` m of him, has a clear chance (about 1.7 a team a match, near real
+     * football's big chances; with 3 m and 6 m it was 10 and goals ran to 8 a match). In the box or
+     * within `shootFrom` m of goal his shot share is at least `shot`, rising to `sharp` from 판단력
+     * 40 to 90; further out his carry share is at least `carry`. He carries only within 30° of the
+     * goal direction and plays no backward or lateral pass unless its receiver has a clear chance
+     * nearer goal. `beat`: having just beaten his man he carries only within 30° of the goal
+     * direction, `carry` times as often (3 took goals up 0.7 a match), with no backward option nor
+     * a lateral one that is not ahead of him. `free`: a forward option whose receiver has nobody
+     * within `near` m and whose lane nobody reaches cleanly and weighs below `lane` scores `score`
+     * more. `calm`: unpressed and outside his own box his clearance weight is multiplied by
+     * `clearance`.
+     */
+    revision6: {
+      clear: { from: 70, corridor: 10, near: 8, shootFrom: 20, shot: 0.6, sharp: 0.85, carry: 0.6 },
+      beat: { carry: 1 },
+      free: { near: 8, lane: 0.3, score: 0.8 },
+      calm: { clearance: 0.15 },
     },
     /**
      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
@@ -537,6 +559,11 @@ export function actionMix(
     mix.cross *= r5.wing.early;
     mix.carry *= r5.wing.carry;
   }
+  // Revision 6 (T542): he goes on after beating his man, and clears only when pressed.
+  const r6 = candidate && modelAtLeast(s.setup, 6) ? C.candidate.revision6 : undefined;
+  if (r6 && beaten(s, side, idx)) mix.carry *= r6.beat.carry;
+  const ownBox = c[0] < BAND_EDGES[2] && tags.lane >= 1 && tags.lane <= 3;
+  if (r6 && tags.pressure === 0 && !ownBox) mix.clearance *= r6.calm.clearance;
   // His head on shots.
   const decisions = skill(s, side, idx, 'decisions');
   if (cell.xgPerShot !== null && cell.xgPerShot < C.lowXg) mix.shot *= 1 - (decisions - 50) / 200;
@@ -560,6 +587,19 @@ export function actionMix(
   for (const a of ACTIONS) total += mix[a];
   if (total <= 0) return { ...mix, carry: 1 };
   for (const a of ACTIONS) mix[a] /= total;
+  // A clear chance is taken (revision 6, T542): near goal he shoots, further out he carries at it;
+  // the rest of the mix keeps its proportions.
+  if (r6 && tags.pressure < 1 && clearChance(s, side, c)) {
+    const K = r6.clear;
+    const close = inBox(c) || goalDistance(c, s.math) <= K.shootFrom;
+    const key: Action = close ? 'shot' : 'carry';
+    const floor = close
+      ? K.shot + (K.sharp - K.shot) * clamp((decisions - 40) / 50, 0, 1)
+      : K.carry;
+    const rest = 1 - mix[key];
+    if (mix[key] < floor && rest > 0)
+      for (const a of ACTIONS) mix[a] = a === key ? floor : (mix[a] * (1 - floor)) / rest;
+  }
   return mix;
 }
 
@@ -632,6 +672,35 @@ function onWing(s: GridState, side: 0 | 1, c: Point): boolean {
     spaceAhead(s, side, c) >= DECISION_CONFIG.candidate.revision5.wing.open
   );
 }
+
+/**
+ * Whether the attack-frame point `c` is a clear chance for `side` (T542): a central lane at least
+ * `revision6.clear.from` m up the pitch with no outfield opponent within `clear.near` m of it nor
+ * within `clear.corridor` m of its line to the goal centre. Pressure is the caller's to read.
+ */
+export function clearChance(s: GridState, side: 0 | 1, c: Point): boolean {
+  const K = DECISION_CONFIG.candidate.revision6.clear;
+  const lane = cellLane(cellOf(c));
+  if (c[0] < K.from || lane < 1 || lane > 3) return false;
+  const { hypot } = s.math;
+  const vx = PITCH.length - c[0],
+    vy = PITCH.width / 2 - c[1];
+  const length = hypot(vx, vy);
+  for (const opp of s.players[other(side)]) {
+    if (!onPitch(opp) || slotOf(s, opp).position === 'GK') continue;
+    const o = attackFrame(side, opp.pos);
+    const dx = o[0] - c[0],
+      dy = o[1] - c[1];
+    if (hypot(dx, dy) < K.near) return false;
+    const t = (dx * vx + dy * vy) / (length * length);
+    if (t > 0 && t < 1 && Math.abs(dx * vy - dy * vx) / length < K.corridor) return false;
+  }
+  return true;
+}
+
+/** Whether carrier `idx` of `side` has just beaten his man (revision 6, T542). */
+const beaten = (s: GridState, side: 0 | 1, idx: number) =>
+  modelAtLeast(s.setup, 6) && s.beat?.[0] === side && s.beat[1] === idx;
 
 /**
  * What `gp`'s intention offers carrier `idx`, whose attack-frame place is `c` (candidate model,
@@ -713,6 +782,11 @@ export function passOptions(
     judge &&
     c[0] >= judge.room.from &&
     (tags.inBehind || spaceAhead(s, side, c) >= judge.room.space);
+  // Revision 6 (T542): a clear chance, a beaten man and a free man ahead.
+  const r6 =
+    opts.judge && modelAtLeast(s.setup, 6) ? DECISION_CONFIG.candidate.revision6 : undefined;
+  const clear = r6 !== undefined && tags.pressure < 1 && clearChance(s, side, c);
+  const beat = r6 !== undefined && beaten(s, side, idx);
   const gainWeight = !candidate
     ? 1
     : modelAtLeast(s.setup, 4)
@@ -720,7 +794,16 @@ export function passOptions(
       : DECISION_CONFIG.candidate.gain;
   const options: PassOption[] = [];
   for (const { gp, p, dist, dir } of candidates) {
-    if (room && dir === 'back' && p[0] < c[0] - judge.room.back) continue;
+    if (room && dir === 'back' && p[0] < c[0] - judge!.room.back) continue;
+    // Past his man he plays nothing that goes back past him (T542).
+    if (beat && (dir === 'back' || (dir === 'lateral' && p[0] <= c[0]))) continue;
+    // In a clear chance only a teammate with a clearer one nearer goal is worth turning to.
+    if (
+      clear &&
+      dir !== 'forward' &&
+      !(clearChance(s, side, p) && goalDistance(p, s.math) < goalDistance(c, s.math))
+    )
+      continue;
     const gain = (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100 * gainWeight;
     let nearest = Infinity,
       risk = 0;
@@ -760,6 +843,16 @@ export function passOptions(
     const combo = combination(s, gp, idx, c);
     // A teammate free on the wing with room ahead (revision 5, T538).
     const wing = judge && onWing(s, side, p) ? judge.wing.find : 0;
+    // A free man ahead (revision 6, T542).
+    const free =
+      r6 &&
+      dir === 'forward' &&
+      nearest >= r6.free.near &&
+      path !== undefined &&
+      !path.clean &&
+      path.weight < r6.free.lane
+        ? r6.free.score
+        : 0;
     const kind: PassOption['kind'] =
       through > 0
         ? 'through'
@@ -777,6 +870,7 @@ export function passOptions(
       Math.max(0, dist - P.tooFar) / 10 +
       through +
       wing +
+      free +
       (combo === 'show'
         ? DECISION_CONFIG.combination.show
         : combo === 'release'
@@ -943,7 +1037,12 @@ export function chooseCarry(
     modelAtLeast(s.setup, 5) && tags.pressure < 1 && onWing(s, side, c)
       ? DECISION_CONFIG.candidate.revision5.wing.line
       : undefined;
-  const angles = K.headings.map((deg) => toGoal + deg * DEG);
+  // Straight at goal in a clear chance or past a beaten man (revision 6, T542).
+  const onward =
+    modelAtLeast(s.setup, 6) &&
+    (beaten(s, side, idx) || (tags.pressure < 1 && clearChance(s, side, c)));
+  const headings = onward ? K.headings.filter((deg) => Math.abs(deg) <= 30) : K.headings;
+  const angles = headings.map((deg) => toGoal + deg * DEG);
   if (wing !== undefined) angles.push(0);
   const ends = angles.map((a): Point => {
     return [
@@ -959,7 +1058,7 @@ export function chooseCarry(
     s.setup.model !== undefined && !inGoalArea(c) ? DECISION_CONFIG.candidate.goalAreaCarry : 0;
   const scores = ends.map(
     (p, i) =>
-      (wing !== undefined && i === K.headings.length ? wing : 0) +
+      (wing !== undefined && i === headings.length ? wing : 0) +
       (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100 -
       K.pressure * pressureAt(s, side, p) -
       (boxCarry && inBox(p) ? boxCarry : 0) -

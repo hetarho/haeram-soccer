@@ -156,6 +156,12 @@ export const DUEL_CONFIG = {
     crossPressure: 0.15,
     passLoose: 0.8,
     /**
+     * Revision 6 (T542, →MATCH-31): a failed pass neither cut out nor run loose by the draws above
+     * ends `overrun` × its length past its target, at most `most` m; it leaves play only when that
+     * point is off the pitch, and runs loose there otherwise.
+     */
+    misplaced: { overrun: 0.3, most: 10 },
+    /**
      * A pass played within the final third (T411, →MATCH-13): from and to at least `from` m up
      * the pitch, completed `malus` less often, the crowded ground in front of the box. Neutral
      * at 0. T411 kept none: 0.15 with fewer entries (`DECISION_CONFIG.candidate.finalThird`) took
@@ -664,7 +670,17 @@ export function resolvePass(
   }
   const loose = onCandidate(s) ? DUEL_CONFIG.candidate.passLoose : P.lost.loose;
   if (u < P.lost.intercepted + loose) return looseBall(s, toEngine(side, to), r, [side, target]);
-  const exit = exitPoint(toEngine(side, from), toEngine(side, to));
+  // A misplaced pass runs a few metres past its target; only near a line does it leave play (T542).
+  let end: Point = to;
+  if (modelAtLeast(s.setup, 6) && dist > 0) {
+    const M = DUEL_CONFIG.candidate.misplaced;
+    const over = Math.min(M.most, M.overrun * dist);
+    end = [to[0] + ((to[0] - from[0]) / dist) * over, to[1] + ((to[1] - from[1]) / dist) * over];
+    // Nobody meant it for where it stops: its receiver has no head start there.
+    if (end[0] >= 0 && end[0] <= PITCH.length && end[1] >= 0 && end[1] <= PITCH.width)
+      return looseBall(s, toEngine(side, end), r);
+  }
+  const exit = exitPoint(toEngine(side, from), toEngine(side, end));
   return { kind: 'out', at: exit.at, lastTouch: side, over: exit.over };
 }
 

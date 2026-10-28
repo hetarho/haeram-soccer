@@ -70,6 +70,11 @@ export interface GridState {
    * (T397): his first touch is a decision of its own (`DECISION_CONFIG.candidate.firstTouch`).
    */
   received?: [0 | 1, number];
+  /**
+   * The carrier who has just beaten his man (a completed, opposed take-on) until his next action
+   * is decided (T542): on revision 6 he goes on rather than turning it back.
+   */
+  beat?: [0 | 1, number];
   /** Match seconds when the possessing side got the ball. */
   possessionSince: number;
   /** Each side's substitutions and injuries so far (→MATCH-20, §8.1). */
@@ -291,6 +296,7 @@ export function createState(setup: GridSetup): GridState {
     setPieceAt: undefined,
     lastPass: undefined,
     received: undefined,
+    beat: undefined,
   };
 }
 

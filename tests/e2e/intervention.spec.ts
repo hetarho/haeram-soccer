@@ -57,8 +57,15 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
   const inspector = page.getByRole('combobox', { name: '살펴볼 선수', exact: true });
-  await chooseOption(inspector, { label: `1. ${keeperName} · GK` });
-  await expect(inspector).toContainText(keeperName);
+  // The keeper chosen above started; the match decides whether he finished it, so he is either
+  // on the inspector's list or on the bench line as injured (the model revision moves which).
+  const keeperOption = (await selectOptions(inspector)).find((option) =>
+    option.label.includes(keeperName),
+  );
+  if (keeperOption) {
+    await chooseOption(inspector, keeperOption.value);
+    await expect(inspector).toContainText(keeperName);
+  } else await expect(page.getByText(`${keeperName} (부상)`)).toBeVisible();
   await page
     .getByTestId('match-theatre')
     .getByRole('button', { name: '전술·선발 준비', exact: true })

@@ -904,6 +904,7 @@ export function playGrid(setup: GridSetup): GridResult {
       if (pending) {
         prevBeat = undefined;
         justBeat = undefined;
+        s.beat = undefined;
         // A dead ball (an injury's drop ball, the whistle) ends a delivery's unplayed finish and
         // a second ball's first-time shot.
         finishing = undefined;
@@ -1012,6 +1013,8 @@ export function playGrid(setup: GridSetup): GridResult {
         const owner = s.owner!;
         prevBeat = justBeat;
         justBeat = undefined;
+        // His next action is decided now, knowing he has just beaten his man (T542).
+        s.beat = prevBeat;
         from = [...s.players[owner[0]][owner[1]]!.pos] as [number, number];
         const tags = computeTags(s, owner[0], owner[1]);
         tally.material?.touch(owner[0], owner[1], from, tags.phase);

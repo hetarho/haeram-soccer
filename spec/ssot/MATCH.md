@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r37 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r38 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -279,6 +279,7 @@
   - the presser approaches on a curve that keeps the carrier's most dangerous nearby option behind him (his cover shadow), leaving open the pass the defence prefers — backward or wide.
   - the nearest free midfielder or defender screens the lane into a receiver between the lines or in a half-space, stepping only as far as his line and his job allow (→MATCH-17: one job each, the rest defence and the line keep their places).
   - each tactic shuts lanes from its own block height and press reach (→MATCH-8).
+  - with the ball central within 50 m of his goal, a defender goal-side of it and not pressing, marking a runner or guarding a box zone moves across onto the line between the ball and his goal at his own depth, the more surely the better his 위치선정; each tactic keeps its block height (→MATCH-8). ← open shooting lanes in front of the box made clear chances far more common than real football's; goals are held by fewer such chances, not by fewer shots taken in them
 - MATCH-33 [o] When the ball is wide in the final third or in a cut-back zone, the attack occupies the box's zones and the ball is delivered into them. ← many entries that each make a poor chance is not how football scores; an entry is worth the runs that meet it
   - the forwards attack the near post and the far post, an arriving midfielder or the far-side winger the penalty spot or a post left free, and another midfielder holds the edge of the box (아크 정면) for the cut-back and the second ball; roles and traits decide who goes where (→PLAYER-5, →PLAYER-9), the rest defence stays home (→MATCH-17), and each run is timed to arrive as the ball is delivered rather than to wait there.
   - the delivery is played into a zone a teammate attacks — driven to the near post, lofted to the far post, pulled back to the penalty spot or the edge, or squared across the goal area — and its target is the runner arriving there, weighed by how free he arrives and whether the ball suits him (his head for a lofted ball, his feet for a low one).
@@ -323,6 +324,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r38 261028 MATCH-32✎ + with the ball central within 50 m of goal, a goal-side defender not pressing, marking or guarding a box zone moves across onto the ball–goal line at his depth by 위치선정
 - r37 261028 MATCH-16✎ + a clear chance (no outfield opponent to goal, unpressed, box or within 20 m) is shot on most decisions, further out carried at goal, never squared or turned away unless a teammate is clearly better; + after beating his man he carries on or shoots, no backward ball; + a free teammate ahead preferred over a safe square/back ball; + clears only when pressed or in danger. MATCH-17✎ + supporting players spread by 판단력 and 위치선정. MATCH-31✎ + a misplaced pass leaves play only near a line, otherwise runs loose past its target
 - r36 261028 MATCH-36+ players as top-down human figures in their kits at marker scale, number tags, stable appearance, diagrams keep markers; MATCH-37+ poses only from recorded facts, same instant same pose, reduced-motion stance
 - r35 261028 MATCH-23✎ each row held inside its real-football range→within 25% of the range's mean either side (never narrower; at-most rows 25% above the cap), scorer rows too. MATCH-30✎ counters held inside their bands→the same ±25% tolerance

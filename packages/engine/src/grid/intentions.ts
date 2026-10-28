@@ -29,7 +29,14 @@ import {
 } from './coordination';
 import { pressScale } from './freedom';
 import { attackFrame, PITCH, toEngine } from './pitch';
-import { intentionTarget, offsideLine, secondBallOver, speedOf, type SetPieceScene } from './shape';
+import {
+  intentionTarget,
+  offsideLine,
+  secondBallOver,
+  speedOf,
+  spread,
+  type SetPieceScene,
+} from './shape';
 import { onPitch, other, type GridPlayer, type GridState } from './state';
 
 export type IntentionKind = (typeof INTENTION_KINDS)[number];
@@ -164,7 +171,8 @@ export function setIntention(
 ): boolean {
   if (gp.intention && rank(gp.intention.priority) < rank(spec.priority)) return false;
   endIntention(s, gp, reason);
-  const target = inside(spec.target);
+  // A supporting player's spot keeps clear of his teammates (revision 6, T542).
+  const target = inside(spec.kind === 'support' ? spread(s, gp, spec.target) : spec.target);
   // Every field in one order, absent ones undefined: one object shape for every intention, so the
   // reads of its fields stay monomorphic (JSON and `canonical` leave undefined fields out).
   gp.intention = {
