@@ -393,7 +393,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T562 | Align facility and competition browser journeys with the six places | WEB ARCH | - | todo |
-| T563 | Restore mobile place targets and compact standings | WEB ARCH | - | todo |
 | T564 | Find exact player identities through paged market journeys | WEB ARCH | - | todo |
 | T565 | Keep place journey fixtures and named returns valid | WEB ARCH | T563 | todo |
 | T566 | Keep world-market reads usable during automatic progression | WEB ARCH | - | todo |
@@ -416,11 +415,13 @@
 | v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
 | club-places | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-28T18:33:15.546Z | [history](work/club-places.json) |
 | club-places-ui | 1 | 7 | 2 | 5 | 0 | 0 | 0 | 2026-10-28T16:52:26.857Z | [history](work/club-places-ui.json) |
+| club-browser-fix | 2 | 5 | 1 | 4 | 2 | 0 | 0 | 2026-10-28T19:13:33.622Z | [history](work/club-browser-fix.json) |
 
 ## next
-- cp29: complete the final club-places batch gate on the integrated candidate, fix any failures, then publish once and wait for CI. All requested T552–T558 are integrated.
+- inspect work board for remaining tasks
 
 ## log
+- 261028 T563 integrated
 - 261029 create-task T566 (cp29): coalesce real world-market reads during automatic revisions while preserving stopped-state authoritative guards; sequence unclaimed browser consumers after their source fixes.
 - 261029 create-task T565 (cp29): explicit academy prospect fixture and current training return label; preserve all effect/cancel/full-visibility assertions.
 - 261029 create-task T564 (cp29): duplicate-name global results span pages; preserve stable player identity and all mediation/recruitment assertions through real page controls.

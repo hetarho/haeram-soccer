@@ -2120,6 +2120,10 @@
     line-height: 1.2;
     font-family: var(--display);
   }
+  /* The image skin resets nav widths; the place targets keep the shell's touch floor. */
+  .layout > .mobileNav > button[data-ui='navigation'] {
+    min-width: 44px;
+  }
   .mobileNav button .navIcon {
     color: inherit;
   }
@@ -3235,6 +3239,12 @@
   top: var(--task-offset, 0px);
 }
 @media (max-width: 760px) {
+  .taskReturn {
+    padding-block: 0;
+  }
+  .scroller:has(.taskReturn) {
+    --task-offset: var(--control-min-height);
+  }
   .taskReturn small {
     display: none;
   }
@@ -3319,4 +3329,9 @@
   min-height: var(--control-min-height);
   padding-inline: 8px;
   font-size: 12px;
+}
+@media (max-width: 760px) {
+  .competitionScope {
+    margin-block: 0;
+  }
 }
