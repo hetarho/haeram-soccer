@@ -334,6 +334,8 @@
 - 261029 decided WEB-39 ECON-25: player-work grouping → 개요 then 계약/영입/매각/유소년 승격·방출 with scoped decision owner; culture in manager first-team work, support/renewal in finance (alt: one combined player policy block).
 - 261029 decided WEB-43: global market scope → every active player represented by the simulated world's supported clubs plus free agents, queried in pages with stable identity-based approaches and real source affiliations (alt: enlarge the scout list | download every generated roster into each worker view).
 - 261029 decided CLUB-20: free guaranteed backing/rest improvements → backing trades morale for manager trust and rest trades morale for fatigue recovery (alt: add random hidden penalties | add a new persistent expectations system); paid and stochastic actions retain their existing real disadvantages.
+- 261029 decided T553 WEB-102 ARCH-4: expose the actual academy promotion wage without importing orchestration into UI → allow the minimal engine/contracts read-leaf extraction and compatibility re-export, preserving the existing formula and contract behaviour (alt: duplicate pricing in UI | a separate prerequisite task); this is implementation scope, not a new wage policy.
+- 261029 decided T558 ARCH-30: unchanged grid sampling tests hit 30 s limits under parallel affected-unit runs → preserve the same assertions and select the same affected unit scope with one worker and serial files (alt: raise timeouts | skip sampling tests); host dependencies use the verified offline cache.
 
 ## ideation
 | id | st |
@@ -420,6 +422,7 @@
 - 261029 cp29 redivide unclaimed T552/T553 into engine foundations T558/T557 and UI consumers so live T550 UI ownership does not stop independent engine work; no policy change.
 - 261029 cp29 extend unclaimed T553 to update the existing rest-day morale summary assertion identified by T557; keep full-world integration execution at the coordinator gate.
 - 261029 cp29 refine unclaimed T556 convergence notes to prevent the .ts/.tsx casing collision reproduced by both UI lanes; no product policy change.
+- 261029 cp29 authorize the minimal T553 read-leaf wage extraction for existing acceptance; keep formula/exports and saved facts unchanged.
 - 261028 T551 done (p9c3): main CI fix after the figures/kits and forward-intent merges — editor samples mid-step, kit pixel floor, faster wornFigures, in-page goal-hold minute, clock-derived 16× bound, appearance digest.
 - 261028 create-task (f5j2): T548 MATCH r39, T549 SAVE r57, T550 WEB r167.
 - 261028 update-ssot (f5j2): MATCH r39 chased forward's clear chance and closing blocks; SAVE r57 one game version 0.7.0 (beta), 4.0.0 saves load as 0.7.0; WEB r167 WEB-101 BETA mark.
@@ -428,7 +431,6 @@
 - 261028 pl1 end: T543–T547 merged on feat/player-figures-kits; full unit project 1422 passed; other suites left to the receiver by owner instruction; branch pushed for handoff.
 - 261028 T545 done (dev3, 1617365a): match observation and replay draw posed figures, standing knee fixed in figurePose; merged; PL unit run next.
 - 261028 T546 done (dev4, fe455032): kit editor, goalkeeper tab, figure previews, fallback notice; PL committed it (Codex sandbox could not write the worktree index) after re-running its 43 unit tests; merged.
-- 261028 lanes start (pl1): T545 match-figures (dev3) and T546 kit-editor (dev4) in worktrees task/T545 and task/T546.
 - 261028 T544 start (dev3) in worktree task/T544 (pl1).
 - 261028 T547 done (dev1, 158a5b64): kit wear v2, torso selection, keeper fallback; PL re-ran typecheck, 57 unit and 23 contract tests; merged.
 - 261028 T543 done (dev3, 407a5e9d): figure poses and action windows; PL re-ran its 16 unit tests and typecheck; merged into feat/player-figures-kits.
