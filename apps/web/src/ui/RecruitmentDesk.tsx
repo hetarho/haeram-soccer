@@ -468,17 +468,17 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   );
   return (
     <section className={s.desk} aria-label="선수 영입 데스크">
-      <div
-        className={`${s.window} ${window.open ? s.windowOpen : ''}`}
-        data-testid="transfer-window"
-      >
-        <span aria-hidden="true" className={s.windowDot} />
-        <span>{window.label}</span>
-      </div>
       <header className={s.toolbar}>
         <h3>
           영입 후보 <span>{page ? `총 ${page.total}명` : '조회 중'}</span>
         </h3>
+        <div
+          className={`${s.window} ${window.open ? s.windowOpen : ''}`}
+          data-testid="transfer-window"
+        >
+          <span aria-hidden="true" className={s.windowDot} />
+          <span>{window.label}</span>
+        </div>
         <div className={s.tools}>
           {selectedComparison.length > 0 && (
             <button
@@ -535,7 +535,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         </p>
       )}
       <label className={s.search}>
-        선수 이름 검색
+        <span>선수 이름 검색</span>
         <input
           type="search"
           value={query.name ?? ''}
@@ -543,9 +543,6 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           onChange={(event) => changeQuery({ name: event.target.value })}
         />
       </label>
-      <p className={s.note}>
-        전 세계 현역 선수·자유계약 선수{query.recommendedOnly ? ' · 스카우트 추천만' : ''}
-      </p>
       {market.error && (
         <p role="alert" className={s.warning}>
           {market.error} <button onClick={market.retry}>목록 다시 조회</button>
@@ -577,6 +574,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           {page?.items.map((offer) => {
             const player = offer.player;
             const pending = pendingFor(player.id);
+            const source = sourceLabel(w, offer);
             return (
               <tr
                 key={player.id}
@@ -599,7 +597,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                     onClick={() => setViewing(offer.target)}
                   >
                     <b>{player.name}</b>
-                    <small>
+                    <small title={source}>
                       {player.position} · {w.year - player.born}세
                       {offer.own
                         ? ' · 우리 선수'
@@ -609,8 +607,9 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                             ? ' · 협상 중'
                             : ''}
                       {offer.recommended ? ' · 스카우트 추천' : ''}
+                      {' · '}
+                      {source}
                     </small>
-                    <small>{sourceLabel(w, offer)}</small>
                   </button>
                 </td>
                 <td>
@@ -695,6 +694,9 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             </div>
           }
         >
+          <p className={s.note}>
+            전 세계 현역 선수·자유계약 선수{query.recommendedOnly ? ' · 스카우트 추천만' : ''}
+          </p>
           <div className={s.roles} role="group" aria-label="영입 포지션 선택">
             {(['all', 'GK', 'DF', 'MF', 'FW'] as const).map((value) => (
               <button

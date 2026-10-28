@@ -171,6 +171,37 @@ describe('paged whole-world recruitment desk', () => {
     expect(reads.query.mock.lastCall?.[3]).toEqual(DEFAULT_MARKET_QUERY);
     expect(reads.inspect.mock.calls.every((args) => args[3] === undefined)).toBe(true);
   });
+  it('keeps four compact rows inspectable with source and status while scope help lives in filters', () => {
+    const offers = Array.from({ length: 4 }, (_, index) => ({
+      ...offer,
+      player: { ...offer.player, id: `external-${index}`, name: `Player ${index}` },
+      target: { ...offer.target, playerId: `external-${index}` },
+      own: index === 1,
+      recommended: index === 2,
+    }));
+    reads.page = { ...reads.page!, items: offers };
+    w.bids = [
+      { direction: 'out', playerId: offers[3].player.id, status: 'pending' },
+    ] as typeof w.bids;
+    const markup = render();
+    expect(ids(markup)).toEqual(offers.map(({ player }) => player.id));
+    expect(markup).not.toContain('전 세계 현역 선수·자유계약 선수');
+    expect(markup).toContain('우리 선수');
+    expect(markup).toContain('스카우트 추천');
+    expect(markup).toContain('협상 중');
+    for (const candidate of offers) {
+      const inspector = control(`${candidate.player.name} 상세 보기`);
+      const metadata = elements(inspector).find((node) => node.type === 'small')!;
+      expect(metadata.props.title).toBe('Foreign Club · 스페인 1부');
+      expect(renderToStaticMarkup(metadata)).toContain(`${w.year - candidate.player.born}세`);
+      expect(renderToStaticMarkup(metadata)).toContain('Foreign Club');
+      (inspector.props.onClick as () => void)();
+      expect(choices['world-market-viewing']).toEqual(candidate.target);
+      expect(control(`${candidate.player.name} 비교`)).toBeDefined();
+    }
+    (control('영입 필터').props.onClick as () => void)();
+    expect(render()).toContain('전 세계 현역 선수·자유계약 선수');
+  });
   it('displays accepted rows after multiple running-clock revisions without another request', async () => {
     reads.page = undefined;
     client.state.clockRunning = true;
