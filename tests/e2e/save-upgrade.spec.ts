@@ -102,9 +102,11 @@ test('a rules-4.0.0 save opens as game version 0.7.0, read-only tabs leaving it 
   await holder.goto('/');
   await expect(holder.getByRole('button', { name: '클럽 창단' })).toBeVisible();
   await seed(page, stored);
-  await page.goto('/');
-  // A read-only tab shows the career and never writes the upgrade.
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  // A read-only tab shows the career and never writes the upgrade; with another tab playing, its
+  // start screen is the slot list, so it opens the career by a deep link.
+  await page.goto('/journal');
+  await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
+  await expect(page.getByRole('status').filter({ hasText: '읽기 전용' }).first()).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBe(stored);
   await holder.close();
   // Taking over as the writer activates it as 0.7.0 and commits it to IndexedDB, whose first
