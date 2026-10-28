@@ -236,14 +236,23 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
   });
 });
 
-describe('rules 4.0.0 (→SAVE-10, →SAVE-16, →SAVE-19)', () => {
+describe('game version 0.7.0 on the rules-4.0.0 line (→SAVE-10, →SAVE-16, →SAVE-19)', () => {
   it('refuses every recognized earlier gameplay version', () => {
     const w = world();
-    expect(SUPPORTED_ENGINE_VERSIONS).toEqual(['4.0.0']);
+    expect(w.engine).toBe('0.7.0');
+    expect(SUPPORTED_ENGINE_VERSIONS).toEqual(['0.7.0', '4.0.0']);
     for (const engine of LEGACY_ENGINE_VERSIONS)
       expect(() => upgradeWorldRules({ ...w, engine }, CURRENT_CATALOG)).toThrow(
         SaveCompatibilityError,
       );
+  });
+  it('validates a rules-4.0.0 world and activates it as 0.7.0 with only its label and revision changed', () => {
+    const w = world();
+    const stored = { ...structuredClone(w), engine: '4.0.0' };
+    expect(validateWorld(structuredClone(stored), LOAD_CATALOG).engine).toBe('4.0.0');
+    const upgraded = upgradeWorldRules(stored, CURRENT_CATALOG);
+    expect(canonical(upgraded)).toBe(canonical({ ...w, revision: w.revision + 1 }));
+    expect(stored.engine).toBe('4.0.0');
   });
   it('refuses a player without his main position among his positions, or a trait twice', () => {
     const w = world();

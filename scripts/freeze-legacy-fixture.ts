@@ -2,8 +2,9 @@ import { writeFileSync } from 'node:fs';
 import { createWorld, advanceRound } from '../packages/engine/src/index';
 import { encode } from '../apps/web/src/adapters/persistence';
 import { CURRENT_ENGINE_VERSION } from '../packages/contracts/src/versions';
-// Freezes a genuine rules 3.0.0 checkpoint envelope so the 4.0.0 legacy reset is tested against a
-// real old save (→SAVE-19, →SAVE-18). Only today's 3.0.0 code may write it; the file is then frozen.
+// Freezes a genuine rules 3.0.0 checkpoint envelope so the legacy reset of the rules-4.0.0 line
+// (game version 0.7.0) is tested against a real old save (→SAVE-19, →SAVE-18). Only the 3.0.0 code
+// could write it; the file stays a frozen 3.0.0 input whatever the current version.
 const FIXTURE = 'tests/fixtures/legacy-rules3.haeram-save.json';
 async function main() {
   if ((CURRENT_ENGINE_VERSION as string) !== '3.0.0') {

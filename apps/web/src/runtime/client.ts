@@ -364,7 +364,7 @@ export class GameClient {
       );
       if (cleared > 0)
         notificationStore.add(
-          `이전 규칙 커리어 ${cleared}개를 정리했어요. 새 경기 엔진(규칙 ${CURRENT_ENGINE_VERSION})으로 새 커리어를 시작하세요.`,
+          `이전 규칙 커리어 ${cleared}개를 정리했어요. 새 경기 엔진(게임 버전 ${CURRENT_ENGINE_VERSION})으로 새 커리어를 시작하세요.`,
         );
     }
     const result = await this.saves.load();
