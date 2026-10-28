@@ -417,6 +417,8 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261029 doc-review CLUB-26 tidied (rev unchanged): replace the stale duplicated area label with the authoritative ECON-25 reference; contract conditions, exceptions, figures, negations, obligations and references are preserved.
+- 261029 doc-review CLUB-26 start.
 - 261029 cp29 T552 reviewed/corrected/integrated; T556 now owns the final place composition and shared browser journeys, including the authoritative paid-loan bid lifecycle.
 - 261028 T552 integrated
 - 261029 cp29 synchronize main 59446b09, including completed T548/T561 and MATCH r41, before final workflow convergence.
@@ -435,6 +437,3 @@
 - 261029 cp29 refine unclaimed T556 convergence notes to prevent the .ts/.tsx casing collision reproduced by both UI lanes; no product policy change.
 - 261029 fix outcome: align the existing rest-day summary assertion with CLUB-20 morale -2; paired validation belongs to the already implemented T557 foundation before integration.
 - 261029 cp29 merge the owner-reviewed v07-beta integration so completed T549/T550 no longer block independent UI work; preserve current SSOT and T552–T558 scope.
-- 261029 cp29 extend unclaimed T553 to update the existing rest-day morale summary assertion identified by T557; keep full-world integration execution at the coordinator gate.
-- 261029 cp29 redivide unclaimed T552/T553 into engine foundations T558/T557 and UI consumers so live T550 UI ownership does not stop independent engine work; no policy change.
-- 261029 cp29 narrow unclaimed T552 runtime touches to protocol/host/client plus dedicated query tests; unrelated T548 owns host/protocol legacy tests.
