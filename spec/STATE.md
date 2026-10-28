@@ -437,6 +437,3 @@
 - 261029 cp29 refine unclaimed T556 convergence notes to prevent the .ts/.tsx casing collision reproduced by both UI lanes; no product policy change.
 - 261029 fix outcome: align the existing rest-day summary assertion with CLUB-20 morale -2; paired validation belongs to the already implemented T557 foundation before integration.
 - 261029 cp29 merge the owner-reviewed v07-beta integration so completed T549/T550 no longer block independent UI work; preserve current SSOT and T552–T558 scope.
-- 261029 cp29 extend unclaimed T553 to update the existing rest-day morale summary assertion identified by T557; keep full-world integration execution at the coordinator gate.
-- 261029 cp29 redivide unclaimed T552/T553 into engine foundations T558/T557 and UI consumers so live T550 UI ownership does not stop independent engine work; no policy change.
-- 261029 cp29 narrow unclaimed T552 runtime touches to protocol/host/client plus dedicated query tests; unrelated T548 owns host/protocol legacy tests.
