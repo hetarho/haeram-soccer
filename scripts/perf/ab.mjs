@@ -104,6 +104,13 @@ const [baseFile, candFile] = await Promise.all([
 const sha = (f) => createHash('sha256').update(readFileSync(f)).digest('hex').slice(0, 16);
 const bundles = { base: sha(baseFile), cand: sha(candFile) };
 
+/**
+ * A pair both of whose sides took under `MIN_MS` of CPU (a quiet day of the `day` workload) is too
+ * short for the CPU clock's resolution and is left out of every ratio.
+ */
+const MIN_MS = 5;
+const timed = (x) => x.a.cpu >= MIN_MS || x.b.cpu >= MIN_MS;
+
 const loads = [loadavg()[0]];
 const runs = [];
 for (let p = 0; p < procs; p++) {
@@ -115,19 +122,22 @@ for (let p = 0; p < procs; p++) {
   if (r.status !== 0) throw new Error(`pair.mjs failed:\n${r.stderr}`);
   runs.push(JSON.parse(r.stdout.trim().split('\n').at(-1)));
   loads.push(loadavg()[0]);
-  const logs = runs.at(-1).pairs.map((x) => Math.log(x.b.cpu / x.a.cpu));
+  const logs = runs
+    .at(-1)
+    .pairs.filter(timed)
+    .map((x) => Math.log(x.b.cpu / x.a.cpu));
   console.error(`process ${p + 1}/${procs}: cpu ×${Math.exp(median(logs)).toFixed(3)}`);
 }
 
-const labels = [...new Set(runs.flatMap((r) => r.pairs.map((x) => x.label)))];
+const labels = [...new Set(runs.flatMap((r) => r.pairs.filter(timed).map((x) => x.label)))];
 const byLabel = Object.fromEntries(
   labels.map((label) => {
     const per = (k) =>
       runs
-        .map((r) => r.pairs.filter((x) => x.label === label))
+        .map((r) => r.pairs.filter((x) => x.label === label && timed(x)))
         .filter((xs) => xs.length)
         .map((xs) => median(xs.map((x) => Math.log(x.b[k] / x.a[k]))));
-    const all = runs.flatMap((r) => r.pairs.filter((x) => x.label === label));
+    const all = runs.flatMap((r) => r.pairs.filter((x) => x.label === label && timed(x)));
     return [
       label,
       {
