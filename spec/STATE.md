@@ -374,7 +374,6 @@
 |---|---|---|---|---|
 | T538 | Match-model revision 5: carriers take open ground, recycle only safely, never far back with room near the box | MATCH SAVE ARCH | - | doing@261028.f5j2 |
 | T539 | Hold the football targets within 25% of the real-football mean | MATCH ARCH | - | doing@261028.f5j2 |
-| T540 | Paired same-machine speed harness | ARCH | - | todo |
 | T541 | Result-identical engine cuts judged by the paired harness | ARCH MATCH | T540 | todo |
 
 ## work
@@ -395,10 +394,11 @@
 
 ## next
 - implement-task T538 and T539: revision 5 carrier judgement and tolerant target bands (f5j2).
-- implement-task T540: paired same-machine speed harness, then T541 (explore 3h) result-identical engine cuts.
+- implement-task T541 (explore 3h): result-identical engine cuts judged by `scripts/perf/ab.mjs`.
 - UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
+- 261028 T540 done: paired same-machine harness `scripts/perf/ab.mjs`; same-tree reads aggregate 0.999 (0.990–1.007), grid 0.9992 (0.9886–1.0104), no difference.
 - 261028 T537 published at main 0add0e71; CI #594 Success (37m 3s), including Chromium 311 and Firefox/WebKit. CLI false timeout diagnosed by direct run summary; report 261028-e7q4.
 - 261028 T537 done: association quotas, continental titleholders, recorded coefficients/EPS and qualification causes; existing 2034 draw preserved. Unit/integration/contract/build passed; Chromium 310 plus one unchanged isolated retry passed.
 - 261028 update-ssot EURO start and r4 done: modern access, holders, EPS and forward-only save compatibility; create-task EURO next.
