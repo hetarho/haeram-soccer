@@ -13,6 +13,8 @@ export interface NumberTagInput {
   y: number;
   /** Half the figure's torso width, CSS px (the painter's `radius`). */
   radius: number;
+  /** Enlarge only the number plate and its text; the figure and its clearance keep their size. */
+  scale?: number;
 }
 
 /** A placed tag: its text and its upright box centred at (x, y) in CSS px. */
@@ -45,9 +47,11 @@ export const TAG_CONFIG = Object.freeze({
 const clamp = (v: number, low: number, high: number) => Math.min(Math.max(v, low), high);
 
 /** The tag size for one figure: font px and the box around its digits, whole px. */
-export function numberTagSize(input: Pick<NumberTagInput, 'number' | 'radius'>) {
+export function numberTagSize(input: Pick<NumberTagInput, 'number' | 'radius' | 'scale'>) {
   const text = String(input.number);
-  const size = clamp(input.radius * TAG_CONFIG.fontScale, TAG_CONFIG.minFont, TAG_CONFIG.maxFont);
+  const size =
+    clamp(input.radius * TAG_CONFIG.fontScale, TAG_CONFIG.minFont, TAG_CONFIG.maxFont) *
+    (input.scale ?? 1);
   const pad = size * TAG_CONFIG.padding;
   const height = Math.ceil(size + pad * 2);
   return {
