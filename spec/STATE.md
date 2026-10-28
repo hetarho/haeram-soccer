@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | pl1 | Seonghyunui-MacBookAir | pair | 2026-10-28T06:12Z | 2026-10-28T06:40Z | - |
+| f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | T542 |
 
 ## inbox
 - 261028 decided EURO-11 EURO-13 EURO-14: modern access fidelity → association quota bands, recorded five-year ranking and EPS, direct admission instead of new qualifiers, next-season activation (alt: keep uniform demo quotas | retcon active draws); keep the single domestic cup and explicitly label unmodelled EFL/domestic playoffs and eight-association ranking scope.
@@ -351,7 +352,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 3 | KIT-3✎ KIT-4✎ KIT-7✎ KIT-8✎ KIT-11✎ KIT-12✎ KIT-15✎ | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 36 | 35 | MATCH-36+ MATCH-37+ | 0 |
+| MATCH | 37 | 35 | MATCH-36+ MATCH-37+ | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -372,6 +373,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T542 | Match-model revision 6: clear chances taken, beaten men left behind, free men found, misplaced passes kept in play, support spread | MATCH SAVE ARCH | - | doing@261028.f5j2 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -390,10 +392,13 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
+- implement-task T542: revision 6 clear chances, beaten men, free men, misplaced passes, spread support (f5j2).
 - create-task KIT MATCH WEB SAVE: top-down player figures (MATCH-36/37), shorts/socks and goalkeeper kit editing (pl1).
 - UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
+- 261028 T542 start (f5j2): revision 6, explore 3h.
+- 261028 update-ssot MATCH r37 + create-task T542 (f5j2): MATCH-16 clear chances, beaten man, free man ahead, calm clearance; MATCH-17 spread support; MATCH-31 misplaced pass kept in play. MATCH-36/37 stay pending (pl1).
 - 261028 f5j2 end: T538/T539 pushed to main at the owner's request without the rerun batch (first batch: 3 integration failures, fixed or load timeouts passing alone; e2e not run locally).
 - 261028 T538 done: revision 5 carrier judgement — open ground, safe recycling, no far back pass with room, wide play; 600-match read 29/37 inside the tolerance.
 - 261028 T539 done: MATCH-23 rows, scorer rows and MATCH-30 counters judged within 25% of the real mean (match-parity-6).
@@ -412,5 +417,3 @@
 - 261028 gameplay hierarchy shipped: WEB r164, T530-T535 and verified test repairs; main 8af246fa passed all nine CI jobs; report 261028-g8u4.
 - 261028 fix live-observation-order: cover both match-eve-before-selection and interleaved browsing, dismiss/reopen pending observation for the remaining read-only visit, and scope date assertions to the active calendar/theatre. All date, score, scorer and retained-node assertions remain.
 - 261028 fix coach-hiring-unit-setup: use the known criteria-change-85 seed and assert its candidate condition, eliminating 86 cold world generations; keep all hiring/contract assertions and the 30 s timeout.
-- 261028 fix personnel-navigation-geometry: wait for the incoming hub animation before clicking its local tab, preserving exact zero-scroll and facility-image assertions in Firefox; no production code change.
-- 261028 fix compact-competition-hub: remove 10 px of inter-row margin while retaining 44 px targets and seven complete phone standings rows; office helper dismisses a newly arrived match-eve report before retrying entry.
