@@ -240,6 +240,33 @@ export const BOX_ROLES: readonly RoleId[] = ['boxToBox', 'mezzala', 'shadowStrik
 const CENTRE = PITCH.width / 2;
 const MID = PITCH.length / 2;
 
+/**
+ * Per tactic, read by `shapePlace` from its formation instead of on every call: its centre-back
+ * slots, the widest of them toward the left (smallest y, first on a tie) and right touchline, and
+ * whether it fields two forwards or more.
+ */
+const FORMATION_FACTS = Object.fromEntries(
+  (Object.keys(FORMATIONS) as Tactic[]).map((tactic) => {
+    const slots = FORMATIONS[tactic].slots;
+    const cbs = slots.flatMap((slot, i) => (slot.position === 'CB' ? [i] : []));
+    const y = (i: number) => SPOTS[tactic][i]![1];
+    const widest = (left: boolean) =>
+      cbs.length ? cbs.reduce((a, b) => ((left ? y(b) < y(a) : y(b) > y(a)) ? b : a)) : -1;
+    return [
+      tactic,
+      {
+        backThree: cbs.length >= 3,
+        wideLeft: widest(true),
+        wideRight: widest(false),
+        twoForwards: slots.filter((slot) => lineOf(slot.position) === 'FW').length >= 2,
+      },
+    ];
+  }),
+) as Record<
+  Tactic,
+  { backThree: boolean; wideLeft: number; wideRight: number; twoForwards: boolean }
+>;
+
 const lineOfSlot = (s: GridState, gp: GridPlayer): 'GK' | Line =>
   lineOf(slotOf(s, gp).position) as 'GK' | Line;
 
@@ -391,23 +418,13 @@ export function shapePlace(
     Math.abs(by - CENTRE) >= F.wide &&
     bx <= F.upTo
   ) {
-    const slots = FORMATIONS[tactic].slots;
-    const cbs = slots.flatMap((slot, i) => (slot.position === 'CB' ? [i] : []));
-    if (cbs.length >= 3) {
+    const facts = FORMATION_FACTS[tactic];
+    if (facts.backThree) {
       const left = by < CENTRE;
       const pos = jobSlot.position;
       if ((left && pos === 'LWB') || (!left && pos === 'RWB')) y += (by - y) * F.follow;
       else if ((left && pos === 'RWB') || (!left && pos === 'LWB')) y += (CENTRE - y) * F.tuck;
-      const wide = cbs.reduce((a, b) =>
-        (
-          left
-            ? SPOTS[tactic][b]![1] < SPOTS[tactic][a]![1]
-            : SPOTS[tactic][b]![1] > SPOTS[tactic][a]![1]
-        )
-          ? b
-          : a,
-      );
-      if (job === wide) y += left ? -F.channel : F.channel;
+      if (job === (left ? facts.wideLeft : facts.wideRight)) y += left ? -F.channel : F.channel;
     }
   }
   if (inPossession) {
@@ -419,7 +436,7 @@ export function shapePlace(
       s.setup.model !== undefined &&
       bandOf(bx) >= 5 &&
       SS.roles.includes(jobSlot.role) &&
-      FORMATIONS[tactic].slots.filter((slot) => lineOf(slot.position) === 'FW').length >= 2
+      FORMATION_FACTS[tactic].twoForwards
     )
       x -= SS.drop;
     x = Math.min(x, (cache.offside[foe] ??= offsideLine(s, foe)) - 0.5);
