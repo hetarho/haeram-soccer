@@ -392,7 +392,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T562 | Align facility and competition browser journeys with the six places | WEB ARCH | - | todo |
 | T564 | Find exact player identities through paged market journeys | WEB ARCH | - | todo |
 | T565 | Keep place journey fixtures and named returns valid | WEB ARCH | T563 | todo |
 | T566 | Keep world-market reads usable during automatic progression | WEB ARCH | - | todo |
@@ -416,12 +415,13 @@
 | v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
 | club-places | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-28T18:33:15.546Z | [history](work/club-places.json) |
 | club-places-ui | 1 | 7 | 2 | 5 | 0 | 0 | 0 | 2026-10-28T16:52:26.857Z | [history](work/club-places-ui.json) |
-| club-browser-fix | 2 | 5 | 1 | 4 | 2 | 0 | 0 | 2026-10-28T19:13:33.622Z | [history](work/club-browser-fix.json) |
+| club-browser-fix | 2 | 6 | 2 | 4 | 2 | 2 | 0 | 2026-10-28T19:22:21.340Z | [history](work/club-browser-fix.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261028 T562 integrated
 - 261029 cp29 reconcile published plan metadata with approved T563 archive; remove only the obsolete active duplicate descriptor, retaining completed source and result.
 - 261029 create-task T567 (cp29): remaining actual browser-contract drift in skins, primary/local keyboard history, resolved-office export and editable policy ownership.
 - 261028 T563 integrated
