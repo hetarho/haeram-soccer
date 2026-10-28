@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-28T17:13:23.746Z",
-  "sourceCommit": "1f4761feb72b982993e2e8c1ce746fa0afa8b4c1",
+  "snapshotAt": "2026-10-28T17:15:46.100Z",
+  "sourceCommit": "4b0d79b3e4e525928b9b1c75d26a57d57533e7d4",
   "group": {
     "id": "club-market-fix",
     "branch": "work/club-market-fix",
@@ -14,7 +14,7 @@
     },
     "review": "all",
     "lastRun": {
-      "id": "6abc1208-fa06-465c-8a96-25e8e4e181e8",
+      "id": "ba51ee3a-f893-4bda-beb4-704622f4f022",
       "adapter": "builtin",
       "providers": {
         "worker": {
@@ -35,15 +35,15 @@
           "version": "codex-cli 0.160.1"
         }
       ],
-      "startedAt": "2026-10-28T17:04:35.807Z",
-      "stoppedAt": "2026-10-28T17:13:22.500Z",
-      "dispatched": 1,
-      "outcome": "dispatch-limit",
+      "startedAt": "2026-10-28T17:15:44.892Z",
+      "stoppedAt": "2026-10-28T17:15:45.331Z",
+      "dispatched": 0,
+      "outcome": "needs-attention",
       "failures": [
         {
           "attempt": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
           "role": "worker",
-          "error": "T558: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+          "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
         }
       ],
       "autopilot": true,
@@ -127,12 +127,13 @@
         "T558"
       ],
       "lane": "market-engine",
-      "owner": "6abc1208-fa06-465c-8a96-25e8e4e181e8/worker-1",
+      "owner": "ba51ee3a-f893-4bda-beb4-704622f4f022/worker-1",
       "contributors": [
-        "6abc1208-fa06-465c-8a96-25e8e4e181e8/worker-1"
+        "6abc1208-fa06-465c-8a96-25e8e4e181e8/worker-1",
+        "ba51ee3a-f893-4bda-beb4-704622f4f022/worker-1"
       ],
       "status": "blocked",
-      "reason": "T558: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+      "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요.",
       "createdAt": "2026-10-28T17:04:36.485Z",
       "startCommit": "1f4761feb72b982993e2e8c1ce746fa0afa8b4c1",
       "dispatch": {
@@ -393,6 +394,134 @@
               "attempt": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
               "role": "worker",
               "error": "T558: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1687,
+      "at": "2026-10-28T17:15:44.229Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1688,
+      "at": "2026-10-28T17:15:44.912Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "ba51ee3a-f893-4bda-beb4-704622f4f022",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T17:15:44.892Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1689,
+      "at": "2026-10-28T17:15:44.955Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "ba51ee3a-f893-4bda-beb4-704622f4f022/worker-1",
+        "contributors": [
+          "6abc1208-fa06-465c-8a96-25e8e4e181e8/worker-1",
+          "ba51ee3a-f893-4bda-beb4-704622f4f022/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 1690,
+      "at": "2026-10-28T17:15:45.045Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+      }
+    },
+    {
+      "sequence": 1691,
+      "at": "2026-10-28T17:15:45.331Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "ba51ee3a-f893-4bda-beb4-704622f4f022",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T17:15:44.892Z",
+          "stoppedAt": "2026-10-28T17:15:45.331Z",
+          "dispatched": 0,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+              "role": "worker",
+              "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
             }
           ],
           "autopilot": true,
