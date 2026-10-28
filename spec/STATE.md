@@ -397,6 +397,7 @@
 - UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
+- 261028 T540/T541 published at main a15ea6eb after a passing local batch (unit 1362, integration 1182, contract 42, Chromium 311); main CI 40643650323 all 9 jobs succeeded.
 - 261028 T542 start (f5j2): revision 6, explore 3h.
 - 261028 update-ssot MATCH r37 + create-task T542 (f5j2): MATCH-16 clear chances, beaten man, free man ahead, calm clearance; MATCH-17 spread support; MATCH-31 misplaced pass kept in play. MATCH-36/37 stay pending (pl1).
 - 261028 f5j2 end: T538/T539 pushed to main at the owner's request without the rerun batch (first batch: 3 integration failures, fixed or load timeouts passing alone; e2e not run locally).
