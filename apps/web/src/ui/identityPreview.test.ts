@@ -140,14 +140,20 @@ describe('editor pitch preview pairing (→KIT-6/7/8, WEB-87)', () => {
     expect(lines[3]).toBe(
       `골키퍼는 자동으로 골라요: 밝은 상대 예시 ${appearance.sides[0].goalkeeper}, 우리 팀 ${appearance.sides[1].goalkeeper}.`,
     );
-    // The blue-and-white away shirt is close to the light example: the caption says so.
-    expect(appearance.warnings).toEqual(['teams']);
-    expect(lines.slice(4)).toEqual(['경고: 두 팀 유니폼이 비슷해 구분하기 어려워요.']);
-    // A clear pairing says there is nothing to warn about.
-    const clear = editorPreviewAppearance(OWN, 'home', 'light');
-    const clearLines = previewLines(clear.appearance, clear.labels);
-    expect(clearLines.slice(4)).toEqual(['경고 없음: 두 팀과 골키퍼를 구분할 수 있어요.']);
-    for (const line of [...lines, ...clearLines])
+    // On the figure the away shirt's gold trim shows on the sleeves and collar, so it stands
+    // apart from the light example: the caption says there is nothing to warn about.
+    expect(appearance.warnings).toEqual([]);
+    expect(lines.slice(4)).toEqual(['경고 없음: 두 팀과 골키퍼를 구분할 수 있어요.']);
+    // A white home shirt is close to the light example: the caption says so.
+    const white: ClubIdentity = {
+      ...OWN,
+      kits: { ...OWN.kits, home: { pattern: 'plain', primary: '#ffffff' } },
+    };
+    const clash = editorPreviewAppearance(white, 'home', 'light');
+    const clashLines = previewLines(clash.appearance, clash.labels);
+    expect(clash.appearance.warnings).toEqual(['teams']);
+    expect(clashLines.slice(4)).toEqual(['경고: 두 팀 유니폼이 비슷해 구분하기 어려워요.']);
+    for (const line of [...lines, ...clashLines])
       expect(line).not.toMatch(/\d+\s*[–:-]\s*\d+|득점|스코어|승리/);
   });
 });

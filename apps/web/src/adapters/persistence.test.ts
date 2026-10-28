@@ -627,7 +627,7 @@ describe('checkpoint container schema 2', () => {
         SaveCompatibilityError,
       );
     await expect(decode(JSON.stringify({ ...current, schema: '2' }))).rejects.toThrow('헤더');
-    const future = withIdentity(w, { ...IDENTITY, version: 2 });
+    const future = withIdentity(w, { ...IDENTITY, version: 3 as 2 });
     for (const raw of [await encode(future), await seal(future)])
       await expect(decode(raw)).rejects.toBeInstanceOf(SaveCompatibilityError);
     // The preflight runs before unpacking: damage elsewhere is not reported for a newer game.
@@ -655,7 +655,7 @@ describe('checkpoint container schema 2', () => {
       const saves = new Saves(port);
       await saves.save(world());
       await saves.save(observed(1));
-      const newer = await encode(withIdentity(observed(1), { ...IDENTITY, version: 2 }), 2, 1);
+      const newer = await encode(withIdentity(observed(1), { ...IDENTITY, version: 3 as 2 }), 2, 1);
       port.data.set('haeram-soccor:slot:b', newer);
       if (!manifest) port.removeItem('haeram-soccor:manifest');
       const before = new Map(port.data);
@@ -921,7 +921,7 @@ describe('club identities and recorded appearances (→SAVE-20, SAVE-22)', () =>
     expect(isSaveCompatibilityError(damaged)).toBe(false);
     for (const newer of [
       (p: ReturnType<typeof pack>) => (p.appearances!.version = 2 as 1),
-      (p: ReturnType<typeof pack>) => (p.appearances!.values[1].version = 2 as 1),
+      (p: ReturnType<typeof pack>) => (p.appearances!.values[1].version = 3 as 1),
     ]) {
       const packed = pack(w);
       newer(packed);

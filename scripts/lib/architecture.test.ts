@@ -73,6 +73,8 @@ describe('runtime architecture boundaries', () => {
     'competition-keys',
     'elo',
     'transfer-records',
+    'kit-wear',
+    'kit-patterns',
   ])('%s stays below world generation, campaign and match orchestration', (leaf) => {
     const files = closure(`packages/engine/src/${leaf}.ts`);
     for (const forbidden of ['world', 'season', 'transfers', 'managerMarket', 'match'])

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { canonical } from '../../../../packages/contracts/src/index';
-import type { ClubIdentity } from '../../../../packages/contracts/src/identity';
+import type { ClubIdentity, MatchAppearance } from '../../../../packages/contracts/src/identity';
 import type { PlayerMotion, PlayerMotionState } from '../../../../packages/contracts/src/types';
 import { identityOf } from '../../../../packages/engine/src/club-identity';
 import { createWorld, simulateMatch } from '../../../../packages/engine/src/index';
@@ -35,11 +35,22 @@ describe('recorded match appearance (→KIT-12, SAVE-22)', () => {
     const { w, record } = played();
     const look = matchLook(record);
     expect(look.recorded).toBe(true);
+    expect(record.appearance!.version).toBe(2);
     record.appearance!.sides.forEach((side, i) => {
       expect(look.sides[i].crest).toBe(side.crest);
       expect(look.sides[i].shirt).toBe(side.shirt);
       expect(look.sides[i].keeper).toEqual({ pattern: 'plain', primary: side.goalkeeper });
       expect(look.sides[i].role).toBe(side.role);
+      // The recorded kits themselves: shorts, socks and the keeper's kit with its gloves.
+      expect(look.sides[i].kit).toEqual({
+        shirt: side.shirt,
+        shorts: side.shorts,
+        socks: side.socks,
+      });
+      expect(look.sides[i].kit.shirt).toBe(side.shirt);
+      expect(look.sides[i].keeperKit).toBe(side.keeper);
+      expect(look.sides[i].keeper).toBe(side.keeper!.shirt);
+      expect(look.sides[i].keeperFallback).toBe(false);
     });
     expect(look.warnings).toBe(record.appearance!.warnings);
     const before = canonical(look);
@@ -65,6 +76,73 @@ describe('recorded match appearance (→KIT-12, SAVE-22)', () => {
     expect(after.sides[side].crest).not.toEqual(identityOf(w, w.playerClub).crest);
   });
 
+  it('version-1 record derives shorts and socks from its shirt', () => {
+    const { w, record } = played();
+    // A record settled before kits had shorts and socks: shirts and keeper colours only.
+    const v1: MatchAppearance = {
+      version: 1,
+      sides: [
+        {
+          ...record.appearance!.sides[0],
+          shirt: { pattern: 'stripes', primary: '#d62828', secondary: '#FFFFFF', trim: '#0b1f44' },
+          goalkeeper: '#f5e663',
+        },
+        {
+          ...record.appearance!.sides[1],
+          shirt: { pattern: 'plain', primary: '#0b1f44' },
+          goalkeeper: '#6a0dad',
+        },
+      ],
+      warnings: [],
+    };
+    for (const side of v1.sides) {
+      delete side.shorts;
+      delete side.socks;
+      delete side.keeper;
+      delete side.keeperFallback;
+    }
+    const legacy = { ...record, appearance: v1 };
+    const look = matchLook(legacy);
+    expect(look.recorded).toBe(true);
+    expect(look.sides.map((side) => side.kit)).toEqual([
+      { shirt: v1.sides[0].shirt, shorts: '#FFFFFF', socks: '#d62828' },
+      { shirt: v1.sides[1].shirt, shorts: '#ffffff', socks: '#0b1f44' },
+    ]);
+    expect(look.sides.map((side) => side.keeperKit)).toEqual([
+      {
+        shirt: { pattern: 'plain', primary: '#f5e663' },
+        shorts: '#f5e663',
+        socks: '#f5e663',
+        gloves: '#111111',
+      },
+      {
+        shirt: { pattern: 'plain', primary: '#6a0dad' },
+        shorts: '#6a0dad',
+        socks: '#6a0dad',
+        gloves: '#ffffff',
+      },
+    ]);
+    look.sides.forEach((side, i) => {
+      expect(side.shirt).toBe(v1.sides[i].shirt);
+      expect(side.kit.shirt).toBe(v1.sides[i].shirt);
+      expect(side.keeper).toBe(side.keeperKit.shirt);
+      expect(side.keeperFallback).toBe(false);
+      expect(side.role).toBe(v1.sides[i].role);
+    });
+    // Reading it never upgrades the record, and today's own kit parts stay out of it.
+    expect(legacy.appearance.version).toBe(1);
+    expect('shorts' in legacy.appearance.sides[0]).toBe(false);
+    operate(w, {
+      type: 'club-identity',
+      identity: {
+        ...identityOf(w, w.playerClub),
+        version: 2,
+        parts: { home: { shorts: '#00e5ff', socks: '#00e5ff' } },
+      },
+    });
+    expect(canonical(matchLook(legacy))).toBe(canonical(look));
+  });
+
   it('never corrects a snapshot that names other clubs from anything current', () => {
     const { record } = played();
     const swapped = { ...record, home: record.away, away: record.home };
@@ -81,6 +159,14 @@ describe('recorded match appearance (→KIT-12, SAVE-22)', () => {
     expect(UNRECORDED_KIT).toBe('유니폼 미기록');
     expect(look.sides.map((side) => side.crest)).toEqual([PLACEHOLDER_CREST, PLACEHOLDER_CREST]);
     expect(look.sides.map((side) => side.role)).toEqual([undefined, undefined]);
+    // Stand-in shorts, socks and keeper kits by the version-1 rules, claiming nothing either.
+    expect(look.sides.map((side) => side.kit)).toEqual([
+      { shirt: { pattern: 'plain', primary: '#e4e0d4' }, shorts: '#111111', socks: '#e4e0d4' },
+      { shirt: { pattern: 'plain', primary: '#59636d' }, shorts: '#ffffff', socks: '#59636d' },
+    ]);
+    expect(look.sides.map((side) => side.keeperKit.shirt.primary)).toEqual(['#f2c94c', '#56ccf2']);
+    expect(look.sides.map((side) => side.keeperFallback)).toEqual([false, false]);
+    expect(look.sides[0].keeper).toBe(look.sides[0].keeperKit.shirt);
     // Neither side borrows a club's current crest or shirt for the unrecorded match.
     for (const id of [record.home, record.away]) {
       const current = identityOf(w, id);

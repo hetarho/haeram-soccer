@@ -3,12 +3,20 @@ import { createWorld } from '../../engine/src/index';
 import { nextOwnFixture } from '../../engine/src/calendar';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { canonical } from './index';
-import { CREST_PALETTE, type ClubIdentity, type MatchAppearance } from './identity';
 import {
+  CREST_PALETTE,
+  type ClubIdentity,
+  type GoalkeeperKit,
+  type MatchAppearance,
+  type WornKeeper,
+} from './identity';
+import {
+  CURRENT_IDENTITY_VERSION,
   assertAppearanceFormatVersion,
   assertIdentityFormatVersions,
   clubIdentitySchema,
   matchAppearanceSchema,
+  normaliseIdentity,
   shirtDesignSchema,
 } from './identitySchema';
 import { validateWorld } from './schema';
@@ -134,6 +142,133 @@ describe('club identity vocabulary (→KIT-1, KIT-2, KIT-3)', () => {
   });
 });
 
+const KEEPER: GoalkeeperKit = {
+  shirt: { pattern: 'hoops', primary: '#F5E663', secondary: '#121212', trim: '#ffffff' },
+  shorts: '#121212',
+  socks: '#F5E663',
+  gloves: '#00a6c8',
+};
+const v2 = (extra: Partial<ClubIdentity>): ClubIdentity => ({
+  ...identity(),
+  version: 2,
+  ...extra,
+});
+/** A version-2 appearance: whole kits on both sides, the away keeper a fallback. */
+const kitAppearance = (home: string, away: string): MatchAppearance => {
+  const [first, second] = appearance(home, away).sides;
+  return {
+    version: 2,
+    sides: [
+      {
+        ...first,
+        goalkeeper: '#F5E663',
+        shorts: '#FFFFFF',
+        socks: '#224466',
+        keeper: structuredClone(KEEPER),
+      },
+      {
+        ...second,
+        shorts: '#224466',
+        socks: '#ffffff',
+        keeper: {
+          shirt: { pattern: 'plain', primary: '#9ccc3d' },
+          shorts: '#9ccc3d',
+          socks: '#9ccc3d',
+          gloves: '#111111',
+        },
+        keeperFallback: true,
+      },
+    ],
+    warnings: ['goalkeepers'],
+  };
+};
+
+describe('identity versions 1 and 2 (→KIT-3, KIT-8, SAVE-20)', () => {
+  it('accepts version 1 unchanged and version 2 with kit parts and/or a goalkeeper kit', () => {
+    expect(parses(identity())).toBe(true);
+    for (const extra of [
+      { parts: { home: { shorts: '#121212' } } },
+      { parts: { away: { socks: '#FFFFFF' }, third: { shorts: '#d62828', socks: '#d62828' } } },
+      { goalkeeper: KEEPER },
+      { parts: { home: { shorts: '#121212' } }, goalkeeper: KEEPER },
+      // Entries that set nothing are harmless beside a set part or a goalkeeper kit.
+      { parts: { home: {}, away: { socks: '#121212' } } },
+      { parts: {}, goalkeeper: KEEPER },
+    ])
+      expect(parses(v2(extra)), JSON.stringify(extra)).toBe(true);
+    // Any shirt pattern and free colours, the literal spelling kept.
+    const parsed = clubIdentitySchema.parse(v2({ goalkeeper: KEEPER }));
+    expect(parsed.goalkeeper).toEqual(KEEPER);
+  });
+
+  it('rejects version 2 without either field and version 1 with one', () => {
+    for (const extra of [{}, { parts: {} }, { parts: { home: {}, third: {} } }])
+      expect(parses(v2(extra)), JSON.stringify(extra)).toBe(false);
+    for (const extra of [{ parts: { home: { shorts: '#121212' } } }, { goalkeeper: KEEPER }])
+      expect(parses({ ...identity(), ...extra }), JSON.stringify(extra)).toBe(false);
+    // Malformed parts and goalkeeper kits.
+    for (const extra of [
+      { parts: { fourth: { shorts: '#121212' } } },
+      { parts: { home: { boots: '#121212' } } },
+      { parts: { home: { shorts: 'black' } } },
+      { goalkeeper: { ...KEEPER, gloves: undefined } },
+      { goalkeeper: { ...KEEPER, cap: '#121212' } },
+      { goalkeeper: { ...KEEPER, shirt: { pattern: 'checks', primary: '#121212' } } },
+    ])
+      expect(parses(v2(extra as Partial<ClubIdentity>)), JSON.stringify(extra)).toBe(false);
+    expect(parses({ ...v2({ goalkeeper: KEEPER }), version: 3 })).toBe(false);
+  });
+
+  it('normalises to the canonical version', () => {
+    // Empty entries go, and the version follows what is left.
+    expect(normaliseIdentity(v2({ parts: { home: {}, away: { socks: '#121212' } } }))).toEqual(
+      v2({ parts: { away: { socks: '#121212' } } }),
+    );
+    expect(normaliseIdentity(v2({ parts: { home: {} } }))).toEqual(identity());
+    expect(normaliseIdentity({ ...identity(), parts: { third: { shorts: '#121212' } } })).toEqual(
+      v2({ parts: { third: { shorts: '#121212' } } }),
+    );
+    expect(normaliseIdentity(v2({ parts: {}, goalkeeper: KEEPER }))).toEqual(
+      v2({ goalkeeper: KEEPER }),
+    );
+    expect(normaliseIdentity(identity())).toEqual(identity());
+    // A copy every time.
+    const source = v2({ goalkeeper: structuredClone(KEEPER) });
+    const copy = normaliseIdentity(source);
+    expect(copy.goalkeeper).not.toBe(source.goalkeeper);
+    expect(copy.kits).not.toBe(source.kits);
+    for (const extra of [{ parts: { home: { shorts: '#121212' }, away: {} } }, {}])
+      expect(parses(normaliseIdentity(v2(extra)))).toBe(true);
+  });
+
+  it('accepts version-1 and version-2 appearances and nothing in between', () => {
+    expect(matchAppearanceSchema.safeParse(appearance('a', 'b')).success).toBe(true);
+    const value = kitAppearance('a', 'b');
+    expect(matchAppearanceSchema.parse(value)).toEqual(value);
+    const damaged: [string, (a: MatchAppearance) => unknown][] = [
+      ['v2 without shorts', (a) => (delete a.sides[0].shorts, a)],
+      ['v2 without socks', (a) => (delete a.sides[1].socks, a)],
+      ['v2 without keeper', (a) => (delete a.sides[1].keeper, a)],
+      [
+        'v2 shirt-only sides',
+        (a) => ({ ...appearance('a', 'b'), version: 2, warnings: a.warnings }),
+      ],
+      ['v1 with whole kits', (a) => ({ ...a, version: 1 })],
+      ['v3', (a) => ({ ...a, version: 3 })],
+      ['keeper colour mismatch', (a) => ((a.sides[0].goalkeeper = '#000000'), a)],
+      ['false fallback', (a) => ((a.sides[1].keeperFallback = false as never), a)],
+      [
+        'keeper without gloves',
+        (a) => (delete (a.sides[0].keeper as Partial<WornKeeper>).gloves, a),
+      ],
+    ];
+    for (const [name, damage] of damaged)
+      expect(matchAppearanceSchema.safeParse(damage(kitAppearance('a', 'b'))).success, name).toBe(
+        false,
+      );
+  });
+});
+
 describe('optional identity fields on a compatible world (→SAVE-20, SAVE-21)', () => {
   it('preserves the absence of identity, kit choice and appearance', () => {
     const w = compatible();
@@ -159,14 +294,34 @@ describe('optional identity fields on a compatible world (→SAVE-20, SAVE-21)',
 
 describe('identity version preflight (→SAVE-22)', () => {
   it('names a future club identity version as a compatibility error, not corruption', () => {
+    expect(CURRENT_IDENTITY_VERSION).toBe(2);
     const w = world();
-    (w.clubs[3] as unknown as { identity: unknown }).identity = { ...identity(), version: 2 };
+    (w.clubs[3] as unknown as { identity: unknown }).identity = {
+      ...v2({ goalkeeper: KEEPER }),
+      version: 3,
+    };
     expect(() => assertIdentityFormatVersions(w)).toThrow(SaveCompatibilityError);
     expect(() => validateWorld(w)).toThrow(SaveCompatibilityError);
   });
 
+  it('keeps version-1 and version-2 identities and appearances in a world exactly', () => {
+    const w = simulatedWorld(founding, { rounds: 2 });
+    const own = w.clubs.find((c) => c.id === w.playerClub)!;
+    own.identity = v2({ parts: { home: { shorts: '#121212' } }, goalkeeper: KEEPER });
+    const [first, second] = w.ownMatches;
+    first.appearance = appearance(first.home, first.away);
+    second.appearance = kitAppearance(second.home, second.away);
+    expect(() => assertIdentityFormatVersions(w)).not.toThrow();
+    const parsed = validateWorld(structuredClone(w));
+    expect(parsed.clubs.find((c) => c.id === w.playerClub)!.identity).toEqual(own.identity);
+    expect(parsed.ownMatches[0].appearance).toEqual(first.appearance);
+    expect(parsed.ownMatches[1].appearance).toEqual(second.appearance);
+    // Other clubs keep their version-1 designs as they were.
+    expect(parsed.clubs.filter((c) => c.identity?.version === 1).length).toBe(w.clubs.length - 1);
+  });
+
   it('lets current, missing and invalid markers through to strict validation', () => {
-    for (const version of [1, undefined, 0, -1, 1.5, '2', null]) {
+    for (const version of [1, 2, undefined, 0, -1, 1.5, '3', null]) {
       const w = world();
       (w.clubs[0] as unknown as { identity: unknown }).identity = { ...identity(), version };
       expect(() => assertIdentityFormatVersions(w)).not.toThrow();
@@ -178,10 +333,14 @@ describe('identity version preflight (→SAVE-22)', () => {
   it('checks one appearance version and bounds the scan', () => {
     expect(() => assertAppearanceFormatVersion({ version: 3 })).toThrow(SaveCompatibilityError);
     expect(() => assertAppearanceFormatVersion({ version: 1 })).not.toThrow();
+    expect(() => assertAppearanceFormatVersion({ version: 2 })).not.toThrow();
     expect(() => assertAppearanceFormatVersion(undefined)).not.toThrow();
     expect(() =>
-      assertIdentityFormatVersions({ ownMatches: [{ appearance: { version: 2 } }] }),
+      assertIdentityFormatVersions({ ownMatches: [{ appearance: { version: 3 } }] }),
     ).toThrow(SaveCompatibilityError);
+    expect(() =>
+      assertIdentityFormatVersions({ ownMatches: [{ appearance: { version: 2 } }] }),
+    ).not.toThrow();
     expect(() => assertIdentityFormatVersions({ clubs: new Array(1001).fill({}) })).toThrow(
       /허용 범위/,
     );
