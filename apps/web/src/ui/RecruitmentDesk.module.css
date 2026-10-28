@@ -3,7 +3,10 @@
 }
 .search {
   display: grid;
-  gap: 4px;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
   color: var(--text-muted);
   font-family: var(--display);
   font-size: 12px;
@@ -335,12 +338,12 @@
 }
 
 .window {
+  flex-basis: 100%;
+  order: 1;
   display: flex;
   align-items: center;
   gap: 7px;
-  min-height: 28px;
-  padding: 4px 0;
-  border-bottom: 1px solid var(--line);
+  min-height: 18px;
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.5;
@@ -366,7 +369,8 @@
 .toolbar {
   justify-content: space-between;
   flex-wrap: wrap;
-  padding: 8px 0;
+  gap: 0 6px;
+  padding: 4px 0;
 }
 .toolbar h3 {
   margin: 0;
@@ -427,6 +431,10 @@
   border-bottom: 1px solid var(--line);
   text-align: center;
 }
+.candidateTable td {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
 .candidateTable th {
   height: 28px;
   color: var(--text-muted);
@@ -479,7 +487,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   width: 100%;
   min-width: 44px;
   min-height: 44px;
@@ -500,10 +508,12 @@
 }
 .playerName b {
   font-size: 13px;
+  line-height: 18px;
 }
 .playerName small {
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
+  line-height: 16px;
   font-weight: 500;
 }
 .potentialValue {

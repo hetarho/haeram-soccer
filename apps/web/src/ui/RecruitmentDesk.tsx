@@ -352,7 +352,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   const [step, setStep] = useTaskState(w.id, 'market-step', 1);
   const [expanded, setExpanded] = useTaskState(w.id, 'market-expanded', false);
   const registered = squadRegistration(w);
-  const blocked = useGameState(gameActionsBlocked);
+  const blocked = useGameState(gameActionsBlocked) || !!w.critical;
   const recommended = recruitmentLineNeed(w);
   const market = useMarketPage(client, w.id, w.revision, query);
   const page = market.value;
@@ -390,10 +390,13 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   const toggle = (target: WorldMarketTarget) =>
     setComparison((current) => toggleMarketComparison(current, target));
   const currentWorld = () => client.state.view?.world.id === w.id;
+  const currentActionsBlocked = () =>
+    blocked || gameActionsBlocked(client.state) || !!client.state.view?.world.critical;
   const recruit = async (candidate: Candidate, loan: boolean) => {
     const preview = loan ? candidate.loan : candidate.buy;
     if (
-      blocked ||
+      currentActionsBlocked() ||
+      candidate.world !== w.id ||
       candidate.offer.own ||
       (loan && candidate.offer.freeAgent) ||
       !preview.eligible ||
@@ -436,17 +439,17 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
     // Inside a control that already answers the tap: the notation, the exact amount as its title.
     plain = (value: string) => <Money value={value} code={club.country} year={w.year} plain />,
     text = (value: string) => compactMoney(value, club.country, w.year);
-  const render = (candidate: Candidate, actions = true) => (
+  const render = (candidate: Candidate, current: boolean, actions = true) => (
     <CandidateCard
       key={candidate.offer.player.id}
       w={w}
       candidate={candidate}
       actions={actions}
-      blocked={blocked || candidate.revision !== w.revision || candidate.offer.own}
+      blocked={blocked || !current || candidate.revision !== w.revision || candidate.offer.own}
       selected={selectedComparison.some((target) => target.playerId === candidate.offer.player.id)}
       onCompare={() => toggle(candidate.offer.target)}
       onRecruit={(loan) => {
-        void recruit(candidate, loan);
+        if (current) void recruit(candidate, loan);
       }}
       onBid={() => {
         setComparing(false);
@@ -465,17 +468,17 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   );
   return (
     <section className={s.desk} aria-label="선수 영입 데스크">
-      <div
-        className={`${s.window} ${window.open ? s.windowOpen : ''}`}
-        data-testid="transfer-window"
-      >
-        <span aria-hidden="true" className={s.windowDot} />
-        <span>{window.label}</span>
-      </div>
       <header className={s.toolbar}>
         <h3>
           영입 후보 <span>{page ? `총 ${page.total}명` : '조회 중'}</span>
         </h3>
+        <div
+          className={`${s.window} ${window.open ? s.windowOpen : ''}`}
+          data-testid="transfer-window"
+        >
+          <span aria-hidden="true" className={s.windowDot} />
+          <span>{window.label}</span>
+        </div>
         <div className={s.tools}>
           {selectedComparison.length > 0 && (
             <button
@@ -532,7 +535,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         </p>
       )}
       <label className={s.search}>
-        선수 이름 검색
+        <span>선수 이름 검색</span>
         <input
           type="search"
           value={query.name ?? ''}
@@ -540,9 +543,6 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           onChange={(event) => changeQuery({ name: event.target.value })}
         />
       </label>
-      <p className={s.note}>
-        전 세계 현역 선수·자유계약 선수{query.recommendedOnly ? ' · 스카우트 추천만' : ''}
-      </p>
       {market.error && (
         <p role="alert" className={s.warning}>
           {market.error} <button onClick={market.retry}>목록 다시 조회</button>
@@ -574,6 +574,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           {page?.items.map((offer) => {
             const player = offer.player;
             const pending = pendingFor(player.id);
+            const source = sourceLabel(w, offer);
             return (
               <tr
                 key={player.id}
@@ -596,7 +597,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                     onClick={() => setViewing(offer.target)}
                   >
                     <b>{player.name}</b>
-                    <small>
+                    <small title={source}>
                       {player.position} · {w.year - player.born}세
                       {offer.own
                         ? ' · 우리 선수'
@@ -606,8 +607,9 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                             ? ' · 협상 중'
                             : ''}
                       {offer.recommended ? ' · 스카우트 추천' : ''}
+                      {' · '}
+                      {source}
                     </small>
-                    <small>{sourceLabel(w, offer)}</small>
                   </button>
                 </td>
                 <td>
@@ -692,6 +694,9 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             </div>
           }
         >
+          <p className={s.note}>
+            전 세계 현역 선수·자유계약 선수{query.recommendedOnly ? ' · 스카우트 추천만' : ''}
+          </p>
           <div className={s.roles} role="group" aria-label="영입 포지션 선택">
             {(['all', 'GK', 'DF', 'MF', 'FW'] as const).map((value) => (
               <button
@@ -951,7 +956,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             {[comparisonA, comparisonB].map((reading, index) => (
               <div key={selectedComparison[index]?.playerId ?? index}>
                 {reading.value ? (
-                  render(reading.value)
+                  render(reading.value, reading.current)
                 ) : (
                   <p role="status">{reading.error ?? '비교 선수 정보를 불러오고 있어요.'}</p>
                 )}
@@ -973,6 +978,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                 className={s.primary}
                 disabled={
                   blocked ||
+                  !bidDetail.current ||
                   !outlook ||
                   !bidDetail.value?.buy.eligible ||
                   bidDetail.value?.offer.own ||
@@ -985,12 +991,13 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                 onClick={async () => {
                   if (
                     !bidDetail.value ||
+                    !bidDetail.current ||
                     !outlook ||
                     !bidDetail.value.buy.eligible ||
                     bidDetail.value.offer.own ||
                     !currentWorld() ||
                     bidDetail.value.revision !== client.state.view?.world.revision ||
-                    blocked ||
+                    currentActionsBlocked() ||
                     BigInt(fee) > BigInt(w.cash) ||
                     BigInt(fee) < 1n ||
                     !window.open ||
@@ -1022,7 +1029,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             </p>
           )}
           {bidDetail.value ? (
-            render(bidDetail.value, false)
+            render(bidDetail.value, bidDetail.current, false)
           ) : (
             <p role="status">{bidDetail.error ?? '제안 조건을 확인하고 있어요.'}</p>
           )}
@@ -1076,7 +1083,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             </p>
           )}
           {detail.value ? (
-            render(detail.value)
+            render(detail.value, detail.current)
           ) : (
             <p role="status">{detail.error ?? '선수 정보를 불러오고 있어요.'}</p>
           )}
