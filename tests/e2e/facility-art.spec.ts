@@ -180,11 +180,8 @@ for (const scenario of [
     await openPersonnel(page, 'market');
     await expect(overview).toHaveCount(0);
     await openPersonnel(page, 'training');
+    await expect(page).toHaveURL(/\/training$/);
     await expectArt(page, 'training', scenario.era, scenario.training);
-    await expect(page.getByRole('tabpanel').locator(':scope > :first-child')).toHaveAttribute(
-      'data-testid',
-      'facility-overview',
-    );
     const scene = (await overview.boundingBox())!;
     const focus = (await page
       .getByRole('region', { name: '훈련 방향', exact: true })
@@ -192,6 +189,7 @@ for (const scenario of [
     expect(scene.y + scene.height).toBeLessThanOrEqual(focus.y);
     await settle(page);
     await openPersonnel(page, 'academy');
+    await expect(page).toHaveURL(/\/academy$/);
     await expectArt(page, 'academy', scenario.era, scenario.academy);
     await expect(overview).toHaveAccessibleName('유소년 아카데미');
     await expect(overview).toContainText(

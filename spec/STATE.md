@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T19:10Z | - |
+| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T19:25Z | - |
 
 ## inbox
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
@@ -392,11 +392,9 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T562 | Align facility and competition browser journeys with the six places | WEB ARCH | - | todo |
-| T564 | Find exact player identities through paged market journeys | WEB ARCH | - | todo |
-| T565 | Keep place journey fixtures and named returns valid | WEB ARCH | T563 | todo |
 | T566 | Keep world-market reads usable during automatic progression | WEB ARCH | - | todo |
 | T567 | Align remaining place, keyboard and owner-helper journeys | WEB ARCH | - | todo |
+| T568 | Keep the primary training action fully visible on entry | WEB ARCH | T563 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -416,12 +414,17 @@
 | v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
 | club-places | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-28T18:33:15.546Z | [history](work/club-places.json) |
 | club-places-ui | 1 | 7 | 2 | 5 | 0 | 0 | 0 | 2026-10-28T16:52:26.857Z | [history](work/club-places-ui.json) |
-| club-browser-fix | 2 | 5 | 1 | 4 | 2 | 0 | 0 | 2026-10-28T19:13:33.622Z | [history](work/club-browser-fix.json) |
+| club-browser-fix | 2 | 7 | 4 | 3 | 2 | 0 | 0 | 2026-10-28T19:26:33.108Z | [history](work/club-browser-fix.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261028 T565 integrated
+- 261029 cp29 synchronize published corrective task IDs and retain authoritative integrated archives.
+- 261028 T564 integrated
+- 261029 create-task T568 (cp29): scoped browser proof confirms remaining360px training action clipping after the approved global layout correction.
+- 261028 T562 integrated
 - 261029 cp29 reconcile published plan metadata with approved T563 archive; remove only the obsolete active duplicate descriptor, retaining completed source and result.
 - 261029 create-task T567 (cp29): remaining actual browser-contract drift in skins, primary/local keyboard history, resolved-office export and editable policy ownership.
 - 261028 T563 integrated
@@ -430,13 +433,3 @@
 - 261029 create-task T564 (cp29): duplicate-name global results span pages; preserve stable player identity and all mediation/recruitment assertions through real page controls.
 - 261029 create-task T563 (cp29): restore measured mobile target and standings viewport regressions without reducing existing accessibility or row-count checks.
 - 261029 create-task T562 (cp29): reproduced facility and route-transition browser drift; implement in an isolated worker while the coordinator completes the frozen browser run.
-- 261029 fix host.world-market fixture: use the protocol’s legal stale revision -1 instead of invalid -100; preserve bounded reads, source identity, settlement and idempotency assertions.
-- 261029 cp29 all requested tasks integrated at c3aad1f4; final synchronized batch begins before one main publication.
-- 261028 T556 integrated
-- 261029 doc-review CLUB-26 tidied (rev unchanged): replace the stale duplicated area label with the authoritative ECON-25 reference; contract conditions, exceptions, figures, negations, obligations and references are preserved.
-- 261029 doc-review CLUB-26 start.
-- 261029 cp29 T552 reviewed/corrected/integrated; T556 now owns the final place composition and shared browser journeys, including the authoritative paid-loan bid lifecycle.
-- 261028 T552 integrated
-- 261029 cp29 synchronize main 59446b09, including completed T548/T561 and MATCH r41, before final workflow convergence.
-- 261029 T561 done (p9c3, explore): match-model revision 8 — the showing teammate offers at 14 m, with the ball teammates spread 14 m and keep 10 m around the carrier; crowds of seven within 10 m 7.0% → 2.9%; 600 matches goals 3.38, 25/37 (one row fewer: long shots).
-- 261029 update-ssot MATCH r41 + create-task T561 (p9c3, owner): players swarm the ball like playground football → MATCH-17 nobody piles onto the ball; T561 revision 8, explore 2 h.
