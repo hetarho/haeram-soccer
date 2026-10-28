@@ -16,7 +16,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | p9c3 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T14:22Z | 2026-10-28T14:22Z | - |
-| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T15:17Z | - |
+| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T16:14Z | - |
 
 ## inbox
 - 261029 decided WEB-10 WEB-43 WEB-102: place terminology and interaction scope → 클럽하우스, 구단주 사무실, 감독 사무실, 코칭스태프실, 훈련장, 유소년 훈련장; reuse real manager/staff/training/academy choices with disclosed costs (alt: generic dashboard and coach room | decorative place events).
