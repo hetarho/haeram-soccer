@@ -4,10 +4,10 @@ import type { WorldMarketQuery } from '../../contracts/src/types';
 import { WORLD_MARKET_PAGE_SIZE } from '../../contracts/src/schema';
 import { worldMarketDetail, worldMarketOffer, worldMarketPage } from './world-market';
 import { worldMarketFixture } from './world-market.testkit';
-import { squad, invalidateNpcSquads } from './world';
+import { squad, invalidateNpcSquads, makePlayer } from './world';
 import { transferOffers, squadCommand } from './ops-squad';
 import { placeBid, respondBid, bidBoard, dailyMarket } from './transfers';
-import { movePerson, returnLoan } from './npc-continuity';
+import { continuousSquad, movePerson, returnLoan } from './npc-continuity';
 import { overall } from './player-state';
 import { registration } from './registration';
 import { zeroMetrics } from './primitives';
@@ -485,6 +485,63 @@ describe('stable-identity approaches', () => {
     );
     expect(query(w, { team: club.id }).total).toBe(natives.length + 1);
   });
+
+  it.each(['LWB', 'RWB'] as const)(
+    'keeps an overflow %s arrival at his actual position and discoverable in the market',
+    (position) => {
+      const w = worldMarketFixture(),
+        club = w.clubs[1];
+      const natives = structuredClone(squad(w, club));
+      expect(natives.every((p) => p.position !== position)).toBe(true);
+      for (const [slot, player] of natives.entries()) {
+        const person = movePerson(w, player, club.id);
+        person.origin = { club: club.id, slot };
+      }
+      const arrival = makePlayer('ENG', w.seed, `own:${position}`, w.year, 80, position, 21, 0);
+      arrival.status = 'sold';
+      w.players.push(arrival);
+      const person = movePerson(w, arrival, club.id, true);
+      const before = structuredClone(w);
+
+      const roster = continuousSquad(w, club);
+      expect(roster).toHaveLength(natives.length + 1);
+      expect(new Set(roster.map((p) => p.id))).toEqual(
+        new Set([...natives.map((p) => p.id), arrival.id]),
+      );
+      expect(roster.slice(0, natives.length)).toEqual(natives);
+      const shown = roster.find((p) => p.id === arrival.id)!;
+      expect(shown).toMatchObject({
+        id: arrival.id,
+        name: arrival.name,
+        born: arrival.born,
+        position,
+        positions: { [position]: 3 },
+        qualities: arrival.qualities,
+        personality: { professionalism: arrival.personality.professionalism },
+        status: 'active',
+      });
+      expect(Math.abs(overall(shown) - club.strength)).toBeLessThanOrEqual(1);
+      expect(shown.fatigue).toBe(natives[0].fatigue);
+      expect(person.position).toBe(position);
+      expect(continuousSquad(w, club)).toEqual(roster);
+
+      expect(query(w, { team: club.id }).total).toBe(natives.length + 1);
+      const filtered = query(w, { team: club.id, position, line: 'DF' });
+      expect(filtered.items.some((o) => o.player.id === arrival.id)).toBe(true);
+      const target = { world: w.id, kind: 'club' as const, clubId: club.id, playerId: arrival.id };
+      expect(worldMarketOffer(w, target)).toMatchObject({
+        target,
+        source: { club: club.id, country: club.country },
+        player: { position, positions: { [position]: 3 }, qualities: arrival.qualities },
+        available: true,
+        own: false,
+      });
+      expect(query(w, { team: w.playerClub }).items.some((o) => o.player.id === arrival.id)).toBe(
+        false,
+      );
+      expect(w).toEqual(before);
+    },
+  );
 
   it('retains legacy index bids, pinned generated bids and saved bids without offer snapshots', () => {
     const w = worldMarketFixture(),
