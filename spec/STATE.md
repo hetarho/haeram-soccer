@@ -417,6 +417,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261029 fix browser navigation: accept remembered root clubhouse aliases and dismiss/reopen early match-eve observations through real controls; preserve history, calendar and rendered-data assertions.
 - 261028 T566 integrated
 - 261028 T568 integrated
 - 261028 T567 integrated
