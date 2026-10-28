@@ -276,9 +276,17 @@ export function createState(setup: GridSetup): GridState {
     lineups: 0,
     math: setup.model === undefined ? HOST_MATH : PORTABLE_MATH,
     // Revision 2's movement needs its per-match tendencies (T432).
-    ...(setup.tendencies && setup.model && matchModelNumber(setup.model) >= 2
-      ? { freedom: { plans: [] } }
-      : {}),
+    freedom:
+      setup.tendencies && setup.model && matchModelNumber(setup.model) >= 2
+        ? { plans: [] }
+        : undefined,
+    // The fields a match sets later, present from the start: one object shape for the state, so
+    // the reads of its fields stay monomorphic.
+    lastRegain: undefined,
+    lastLoss: undefined,
+    setPieceAt: undefined,
+    lastPass: undefined,
+    received: undefined,
   };
 }
 
