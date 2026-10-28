@@ -28,6 +28,7 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
     .getByRole('navigation', { name: '모바일 게임 메뉴', exact: true })
     .getByRole('button', { name: '클럽하우스', exact: true });
   await home.click();
+  await expect(page).toHaveURL(/\/journal$/);
   await resumeLeague(page);
   await expect(page).toHaveURL(leagueAddress);
   await expect(page.getByRole('combobox', { name: '국가', exact: true })).toHaveAttribute(
@@ -54,6 +55,7 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
   await expect(page).toHaveURL(leagueAddress);
   // A separate fresh current-league entry deliberately selects our competition.
   await home.click();
+  await expect(page).toHaveURL(/\/journal$/);
   await openLeague(page);
   await expect(page.getByRole('combobox', { name: '국가', exact: true })).toHaveAttribute(
     'data-value',

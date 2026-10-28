@@ -1,4 +1,4 @@
-import { openLeague } from './competition-navigation';
+import { openLeague, resumeLeague } from './competition-navigation';
 import { watchNext } from './watch';
 import { test, expect, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -60,7 +60,7 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
   // day before the match eve is sure to be on screen.
   await expect(date).not.toHaveText('1950년 8월 1일');
   // Looking at the league keeps the run going; the selected statistics view is kept.
-  await openLeague(page);
+  await resumeLeague(page);
   await expect(mini.getByRole('button', { name: '자동 진행 정지' })).toBeVisible();
   await expect(rankTab).toHaveAttribute('aria-selected', 'true');
   const eveDialog = matchReport(page);

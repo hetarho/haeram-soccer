@@ -105,8 +105,11 @@ export async function expectHomeSceneRatio(page: Page) {
       statsInside: !!stage.querySelector('[data-home-part="season-stats"]'),
     };
   });
-  expect(geometry.height).toBeGreaterThanOrEqual(156);
-  expect(geometry.height).toBeLessThanOrEqual(244);
+  // Layout/transform precision can report the 156px clamp as 155.99996948242188px.
+  // Round to 0.01 CSS px for both bounds, retaining real size regressions.
+  const height = Math.round(geometry.height * 100) / 100;
+  expect(height).toBeGreaterThanOrEqual(156);
+  expect(height).toBeLessThanOrEqual(244);
   expect(await image.evaluate((node) => getComputedStyle(node).objectFit)).toBe('cover');
   // The season figures sit in their own card above the scene, never on it (→WEB-11).
   expect(geometry.statsInside).toBe(false);
