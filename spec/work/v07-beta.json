@@ -1,0 +1,718 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-10-28T14:52:36.028Z",
+  "sourceCommit": "dcf0ccbd1c778690d3c381f468c6ceae8b4d0186",
+  "group": {
+    "id": "v07-beta",
+    "branch": "work/v07-beta",
+    "status": "active",
+    "createdAt": "2026-10-28T14:22:51.163Z",
+    "limits": {
+      "workers": 4,
+      "reviewers": 1,
+      "maxPending": 8
+    },
+    "push": null,
+    "review": "risky",
+    "runner": {
+      "id": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-28T14:48:03.648Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    },
+    "lastRun": {
+      "id": "52a4ab1e-140a-451a-a438-df11db1c998f",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-28T14:23:13.280Z",
+      "stoppedAt": "2026-10-28T14:42:32.870Z",
+      "dispatched": 1,
+      "outcome": "needs-attention",
+      "failures": [
+        {
+          "attempt": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+          "role": "worker",
+          "error": "T549: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+        }
+      ],
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    }
+  },
+  "summary": {
+    "total": 3,
+    "completed": 1,
+    "remaining": 2,
+    "running": 0,
+    "review": 0,
+    "blocked": 0,
+    "unassigned": 2
+  },
+  "tasks": [
+    {
+      "id": "T548",
+      "title": "Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it",
+      "dep": [],
+      "status": "todo"
+    },
+    {
+      "id": "T550",
+      "title": "BETA mark on every screen and v0.7 BETA on the start and save-slot screens",
+      "dep": [
+        "T549"
+      ],
+      "status": "todo"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "group": "v07-beta",
+      "taskId": "T549",
+      "tasks": [
+        "T549"
+      ],
+      "lane": null,
+      "owner": "52a4ab1e-140a-451a-a438-df11db1c998f/worker-1",
+      "contributors": [
+        "52a4ab1e-140a-451a-a438-df11db1c998f/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-28T14:23:13.609Z",
+      "startCommit": "be72fa7c15668c28e42da6f91131785b34662d81",
+      "verifiedCommit": "f38dc554d31c5eb794f4a7988ea6915e9d9847b2",
+      "submittedBase": "dcf0ccbd1c778690d3c381f468c6ceae8b4d0186",
+      "submissionId": "1685ce03-7636-4a6d-8ac9-d3a76e658e15",
+      "submittedAt": "2026-10-28T14:47:41.223Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "397 changed lines (limit 300)",
+          "review paths: packages/contracts/src/match-model.test.ts packages/contracts/src/schema.contract.test.ts packages/contracts/src/types.ts packages/contracts/src/versions.test.ts packages/contracts/src/versions.ts"
+        ],
+        "lines": 397,
+        "files": 28
+      },
+      "dispatch": {
+        "id": "9b76b712-dfc8-42f1-b8b7-5d8e4bce4625",
+        "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-28T14:48:06.528Z",
+        "finishedAt": "2026-10-28T14:52:33.498Z",
+        "error": null,
+        "summary": "T549 meets its acceptance and SAVE-10/11/19/23. All five package.json files and CURRENT_ENGINE_VERSION say 0.7.0, with the required doc comment. SUPPORTED_ENGINE_VERSIONS is exactly [0.7.0, 4.0.0], and the 4.0.0→0.7.0 rewrite lives only in the pure upgradeWorldRules step. In host.ts that step runs before adoptIdentities, adoptModel and adoptManagerHistory, so a 4.0.0 world reaches activatesMatchModel already labelled 0.7.0. Read-only inspects (upgrade:false) keep it as 4.0.0 and write nothing. isEarlierEngine is now membership in LEGACY_ENGINE_VERSIONS, which keeps legacy reset and its messages unchanged; the change is needed because 0.7.0 is lower than 4.0.0 under semver. Every other version, 1.9.9 and 0.6.0 included, gets NEWER_GAME_MESSAGE, which keeps the '지원하지 않는 저장' prefix the future-save e2e matches. Copy in earlierRulesMessage, the client.ts reset notice and the slot continue refusal now reads '게임 버전 0.7.0'. Every consumer of engine, SUPPORTED, LEGACY and isEarlierEngine was traced: persistence readEnvelope/decode, recognizedLegacy, legacyReset, client.earlierRules, slots display/continue, and createWorld/ENGINE_VERSION. None still treats 4.0.0 as unsupported, and no test or e2e asserts the old copy. Fixtures are handled as required: portable-v1.json changed only its header label; legacy-rules3 and the engine match-model test keep their old versions on purpose, each with a stated reason. The risk reasons (397 changed lines, contract paths) are explained by the version bump, the new tests and comment-only edits in types.ts, advanced.ts and match-model*.ts. Verification follows ARCH-30: typecheck, lint, format:check, changed unit tests, contract tests and build passed. The integration-tier files and save-upgrade.spec.ts are correctly left to the batch run. I read the new client and persistence tests against the host adoption logic, and the simulatedWorld default release means only the label and revision should change. They should pass, but nobody has run them yet; the coordinator gate must confirm. Findings below are optional (P3) only."
+      },
+      "review": {
+        "id": "327e789b-677c-4ffe-ba65-992f10a7664b",
+        "owner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T549 meets its acceptance and SAVE-10/11/19/23. All five package.json files and CURRENT_ENGINE_VERSION say 0.7.0, with the required doc comment. SUPPORTED_ENGINE_VERSIONS is exactly [0.7.0, 4.0.0], and the 4.0.0→0.7.0 rewrite lives only in the pure upgradeWorldRules step. In host.ts that step runs before adoptIdentities, adoptModel and adoptManagerHistory, so a 4.0.0 world reaches activatesMatchModel already labelled 0.7.0. Read-only inspects (upgrade:false) keep it as 4.0.0 and write nothing. isEarlierEngine is now membership in LEGACY_ENGINE_VERSIONS, which keeps legacy reset and its messages unchanged; the change is needed because 0.7.0 is lower than 4.0.0 under semver. Every other version, 1.9.9 and 0.6.0 included, gets NEWER_GAME_MESSAGE, which keeps the '지원하지 않는 저장' prefix the future-save e2e matches. Copy in earlierRulesMessage, the client.ts reset notice and the slot continue refusal now reads '게임 버전 0.7.0'. Every consumer of engine, SUPPORTED, LEGACY and isEarlierEngine was traced: persistence readEnvelope/decode, recognizedLegacy, legacyReset, client.earlierRules, slots display/continue, and createWorld/ENGINE_VERSION. None still treats 4.0.0 as unsupported, and no test or e2e asserts the old copy. Fixtures are handled as required: portable-v1.json changed only its header label; legacy-rules3 and the engine match-model test keep their old versions on purpose, each with a stated reason. The risk reasons (397 changed lines, contract paths) are explained by the version bump, the new tests and comment-only edits in types.ts, advanced.ts and match-model*.ts. Verification follows ARCH-30: typecheck, lint, format:check, changed unit tests, contract tests and build passed. The integration-tier files and save-upgrade.spec.ts are correctly left to the batch run. I read the new client and persistence tests against the host adoption logic, and the simulatedWorld default release means only the label and revision should change. They should pass, but nobody has run them yet; the coordinator gate must confirm. Findings below are optional (P3) only.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "tests/e2e/save-upgrade.spec.ts:106-108 (T549)",
+            "message": "The read-only step only checks that localStorage slot:a still equals the stored save right after club-hub appears. If this tab were the writer but had not yet committed, the check would still pass, so it does not prove the tab is read-only. Before the slot:a check, assert the '읽기 전용' status as tests/e2e/manager-history.spec.ts:187 does, so the step proves 'a read-only view never writes the upgrade'."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/runtime/slots.ts:208 (T549)",
+            "message": "The new branch in GameSlots continue (an unsupported, non-legacy index entry refused with NEWER_GAME_MESSAGE) has no unit test; only the persistence decode path tests the newer-game message. Add a case that continues a '9.0.0' slot and expects NEWER_GAME_MESSAGE, and a case that continues a legacy slot and expects earlierRulesMessage, e.g. in client.test.ts next to the existing earlierRules import."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/GameSlotScreen.tsx:178-191 (T549, outside touches; hand-off to planning)",
+            "message": "A slot from a newer game (e.g. 9.0.0) is still labelled with slots.earlierRules ('이전 규칙 (9.0.0)' / 'Earlier rules'), but its continue now refuses as from a newer game. This labelling existed before T549, and the worker noted it in limits. Deciding whether the slot card needs a newer-game label and locale string is a WEB/SAVE-11 copy decision for the planner, not for this task."
+          },
+          {
+            "priority": "P3",
+            "where": "spec/ssot/SAVE.md SAVE-19 (hand-off to planning)",
+            "message": "SAVE-19 still reads 'active engine rules are 4.0.0', while SAVE-10 r57 makes 0.7.0 the current version on the same rules line. The code follows SAVE-10. The planner should align SAVE-19's wording, e.g. 'the rules-4.0.0 line, game version 0.7.0'. No code change is needed."
+          }
+        ],
+        "commit": "f38dc554d31c5eb794f4a7988ea6915e9d9847b2",
+        "baseCommit": "dcf0ccbd1c778690d3c381f468c6ceae8b4d0186",
+        "submissionId": "1685ce03-7636-4a6d-8ac9-d3a76e658e15",
+        "createdAt": "2026-10-28T14:48:04.685Z",
+        "finishedAt": "2026-10-28T14:52:33.461Z"
+      },
+      "steps": [
+        {
+          "taskId": "T549",
+          "commit": "f38dc554d31c5eb794f4a7988ea6915e9d9847b2",
+          "at": "2026-10-28T14:47:41.112Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-10-28T14:45:56.912Z",
+              "finishedAt": "2026-10-28T14:47:40.440Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "startedAt": "2026-10-28T14:45:56.912Z",
+          "finishedAt": "2026-10-28T14:47:40.440Z"
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1470,
+      "at": "2026-10-28T14:22:51.188Z",
+      "type": "group",
+      "group": "v07-beta",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "v07-beta",
+        "branch": "work/v07-beta",
+        "status": "preparing",
+        "createdAt": "2026-10-28T14:22:51.163Z",
+        "limits": {
+          "workers": 4,
+          "reviewers": 1,
+          "maxPending": 8
+        },
+        "push": null,
+        "review": "risky"
+      }
+    },
+    {
+      "sequence": 1471,
+      "at": "2026-10-28T14:22:52.138Z",
+      "type": "group",
+      "group": "v07-beta",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 1472,
+      "at": "2026-10-28T14:23:13.297Z",
+      "type": "group",
+      "group": "v07-beta",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "52a4ab1e-140a-451a-a438-df11db1c998f",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-28T14:23:13.280Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1473,
+      "at": "2026-10-28T14:23:13.609Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+        "group": "v07-beta",
+        "taskId": "T549",
+        "tasks": [
+          "T549"
+        ],
+        "lane": null,
+        "owner": "52a4ab1e-140a-451a-a438-df11db1c998f/worker-1",
+        "contributors": [
+          "52a4ab1e-140a-451a-a438-df11db1c998f/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-28T14:23:13.609Z",
+        "startCommit": "be72fa7c15668c28e42da6f91131785b34662d81"
+      }
+    },
+    {
+      "sequence": 1474,
+      "at": "2026-10-28T14:23:14.213Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1475,
+      "at": "2026-10-28T14:23:14.377Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "61dcde24-baff-4738-919b-50d380ac97cf",
+          "runner": "52a4ab1e-140a-451a-a438-df11db1c998f",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T14:23:14.377Z"
+        }
+      }
+    },
+    {
+      "sequence": 1476,
+      "at": "2026-10-28T14:23:14.564Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "61dcde24-baff-4738-919b-50d380ac97cf",
+          "runner": "52a4ab1e-140a-451a-a438-df11db1c998f",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T14:23:14.377Z"
+        }
+      }
+    },
+    {
+      "sequence": 1477,
+      "at": "2026-10-28T14:42:30.617Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1478,
+      "at": "2026-10-28T14:42:30.919Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T549: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+      }
+    },
+    {
+      "sequence": 1479,
+      "at": "2026-10-28T14:42:30.990Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "61dcde24-baff-4738-919b-50d380ac97cf",
+          "runner": "52a4ab1e-140a-451a-a438-df11db1c998f",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T14:23:14.377Z",
+          "finishedAt": "2026-10-28T14:42:30.990Z",
+          "error": "T549: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+          "summary": "T549 is done: the game now carries one version, 0.7.0, and rules-4.0.0 saves load as 0.7.0. The fast checks, the changed unit tests, the contract tests and the build all pass; the integration tests and the browser spec I edited were not run and are left to the batch gate.\n\n**What changed**\n- All five package.json files say 0.7.0, and `CURRENT_ENGINE_VERSION` is '0.7.0'. Its doc comment says 0.7.0 continues the 4.0.0 rules line as the beta's first numbered version.\n- The only accepted versions are 0.7.0 and the 4.0.0 alias (new constant `CONTINUED_ENGINE_VERSION`), with no older range.\n- The 4.0.0 → 0.7.0 rewrite happens in the existing pure `upgradeWorldRules` step. Checkpoint loads, imports and parked-slot switches all use it. Only the writer tab rewrites the label (plus the usual revision +1). A read-only tab keeps the save as 4.0.0 and writes nothing.\n- `isEarlierEngine` now just checks the released legacy list. Comparing version numbers broke once numbering restarted at 0.7.0: 1.x, 2.0.0 and 3.0.0 would have looked newer than the current version.\n- Legacy versions keep their reset, export-and-delete handling and their message. That message, the legacy-reset notice and the slot `continue` refusal now read \"게임 버전 0.7.0\".\n- Any other version (for example 9.0.0, 0.8.0, 1.9.9, 4.0.1) is refused with a new `NEWER_GAME_MESSAGE`. It keeps the \"지원하지 않는 저장\" prefix that the existing future-save e2e test matches.\n- `portable-v1.json` was re-recorded with `scripts/update-golden.ts --write` and prettier. Only the engine label line changed, so every recorded fact is identical. The frozen 3.0.0 legacy fixture and one engine test's 4.0.0 input are kept on purpose, each with a one-line reason. `full-model-continuity.ts` founds its career fresh, so it stores no old label.\n\n**Tests**\n- New unit file `packages/contracts/src/versions.test.ts`: package versions, the 4.0.0 upgrade with facts unchanged, legacy refusal and message, unknown versions refused.\n- One new contract case: a full 4.0.0 world validates and activates as 0.7.0.\n- New integration cases (not run): the 4.0.0 load-and-upgrade path and the newer-game message in `persistence.test.ts`; the writer commit and a read-only tab loading without writing in `client.test.ts`.\n- New browser journey (not run) in `save-upgrade.spec.ts`: a read-only tab leaves a 4.0.0 save untouched, then after the other tab closes the save exports as 0.7.0.\n- Test fixtures that used '4.0.0' to mean \"current\" now use 0.7.0.\n\n**Checks run**\n- `pnpm install --frozen-lockfile`: lockfile still accepted after the version bump.\n- typecheck, lint, format:check: pass.\n- Unit tests affected since the base commit (`--changed`): 92 files, 765 tests passed in 136 s.\n- `pnpm run test:contract`: 3 files, 48 tests passed.\n- `pnpm run build`: pass.\n\n**Not run (left to the batch gate)**\n- Integration files: `persistence.test.ts`, `legacyReset.test.ts`, `client.test.ts`, `packages/engine/src/match-model.test.ts`.\n- Browser spec: `tests/e2e/save-upgrade.spec.ts`.\n- Changing `versions.ts` invalidates the cached test worlds, so the batch run will rebuild them.\n- Spec lint: the haeram CLI isn't allowed in worker sessions.\n\n**Worth knowing**\n- On the slot screen, a slot whose version this game doesn't recognise still shows the \"이전 규칙 (x)\" card with export and delete only. Pressing continue now refuses it with the newer-game message. The card itself lives in `GameSlotScreen.tsx` and the locale strings, which are outside this task's files, and it only prints the slot's own stored version.\n- The WEB-101 `v0.7 BETA` mark is not part of this task.\n\nEverything is written up in the task file's result section."
+        }
+      }
+    },
+    {
+      "sequence": 1480,
+      "at": "2026-10-28T14:42:32.870Z",
+      "type": "group",
+      "group": "v07-beta",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "52a4ab1e-140a-451a-a438-df11db1c998f",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-28T14:23:13.280Z",
+          "stoppedAt": "2026-10-28T14:42:32.870Z",
+          "dispatched": 1,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+              "role": "worker",
+              "error": "T549: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1481,
+      "at": "2026-10-28T14:45:48.111Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1482,
+      "at": "2026-10-28T14:45:56.603Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1483,
+      "at": "2026-10-28T14:47:41.223Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "f38dc554d31c5eb794f4a7988ea6915e9d9847b2",
+        "submittedBase": "dcf0ccbd1c778690d3c381f468c6ceae8b4d0186",
+        "submissionId": "1685ce03-7636-4a6d-8ac9-d3a76e658e15",
+        "submittedAt": "2026-10-28T14:47:41.223Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "397 changed lines (limit 300)",
+            "review paths: packages/contracts/src/match-model.test.ts packages/contracts/src/schema.contract.test.ts packages/contracts/src/types.ts packages/contracts/src/versions.test.ts packages/contracts/src/versions.ts"
+          ],
+          "lines": 397,
+          "files": 28
+        },
+        "steps": [
+          {
+            "taskId": "T549",
+            "commit": "f38dc554d31c5eb794f4a7988ea6915e9d9847b2",
+            "at": "2026-10-28T14:47:41.112Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-28T14:45:56.912Z",
+                "finishedAt": "2026-10-28T14:47:40.440Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-10-28T14:45:56.912Z",
+            "finishedAt": "2026-10-28T14:47:40.440Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1484,
+      "at": "2026-10-28T14:48:03.669Z",
+      "type": "group",
+      "group": "v07-beta",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-28T14:48:03.648Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1485,
+      "at": "2026-10-28T14:48:04.685Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "327e789b-677c-4ffe-ba65-992f10a7664b",
+          "owner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/reviewer-1",
+          "status": "reviewing",
+          "commit": "f38dc554d31c5eb794f4a7988ea6915e9d9847b2",
+          "baseCommit": "dcf0ccbd1c778690d3c381f468c6ceae8b4d0186",
+          "submissionId": "1685ce03-7636-4a6d-8ac9-d3a76e658e15",
+          "createdAt": "2026-10-28T14:48:04.685Z"
+        }
+      }
+    },
+    {
+      "sequence": 1486,
+      "at": "2026-10-28T14:48:06.528Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "9b76b712-dfc8-42f1-b8b7-5d8e4bce4625",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T14:48:06.528Z"
+        }
+      }
+    },
+    {
+      "sequence": 1487,
+      "at": "2026-10-28T14:48:06.600Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "9b76b712-dfc8-42f1-b8b7-5d8e4bce4625",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T14:48:06.528Z"
+        }
+      }
+    },
+    {
+      "sequence": 1488,
+      "at": "2026-10-28T14:52:33.461Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "327e789b-677c-4ffe-ba65-992f10a7664b",
+          "owner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T549 meets its acceptance and SAVE-10/11/19/23. All five package.json files and CURRENT_ENGINE_VERSION say 0.7.0, with the required doc comment. SUPPORTED_ENGINE_VERSIONS is exactly [0.7.0, 4.0.0], and the 4.0.0→0.7.0 rewrite lives only in the pure upgradeWorldRules step. In host.ts that step runs before adoptIdentities, adoptModel and adoptManagerHistory, so a 4.0.0 world reaches activatesMatchModel already labelled 0.7.0. Read-only inspects (upgrade:false) keep it as 4.0.0 and write nothing. isEarlierEngine is now membership in LEGACY_ENGINE_VERSIONS, which keeps legacy reset and its messages unchanged; the change is needed because 0.7.0 is lower than 4.0.0 under semver. Every other version, 1.9.9 and 0.6.0 included, gets NEWER_GAME_MESSAGE, which keeps the '지원하지 않는 저장' prefix the future-save e2e matches. Copy in earlierRulesMessage, the client.ts reset notice and the slot continue refusal now reads '게임 버전 0.7.0'. Every consumer of engine, SUPPORTED, LEGACY and isEarlierEngine was traced: persistence readEnvelope/decode, recognizedLegacy, legacyReset, client.earlierRules, slots display/continue, and createWorld/ENGINE_VERSION. None still treats 4.0.0 as unsupported, and no test or e2e asserts the old copy. Fixtures are handled as required: portable-v1.json changed only its header label; legacy-rules3 and the engine match-model test keep their old versions on purpose, each with a stated reason. The risk reasons (397 changed lines, contract paths) are explained by the version bump, the new tests and comment-only edits in types.ts, advanced.ts and match-model*.ts. Verification follows ARCH-30: typecheck, lint, format:check, changed unit tests, contract tests and build passed. The integration-tier files and save-upgrade.spec.ts are correctly left to the batch run. I read the new client and persistence tests against the host adoption logic, and the simulatedWorld default release means only the label and revision should change. They should pass, but nobody has run them yet; the coordinator gate must confirm. Findings below are optional (P3) only.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "tests/e2e/save-upgrade.spec.ts:106-108 (T549)",
+              "message": "The read-only step only checks that localStorage slot:a still equals the stored save right after club-hub appears. If this tab were the writer but had not yet committed, the check would still pass, so it does not prove the tab is read-only. Before the slot:a check, assert the '읽기 전용' status as tests/e2e/manager-history.spec.ts:187 does, so the step proves 'a read-only view never writes the upgrade'."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/slots.ts:208 (T549)",
+              "message": "The new branch in GameSlots continue (an unsupported, non-legacy index entry refused with NEWER_GAME_MESSAGE) has no unit test; only the persistence decode path tests the newer-game message. Add a case that continues a '9.0.0' slot and expects NEWER_GAME_MESSAGE, and a case that continues a legacy slot and expects earlierRulesMessage, e.g. in client.test.ts next to the existing earlierRules import."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/GameSlotScreen.tsx:178-191 (T549, outside touches; hand-off to planning)",
+              "message": "A slot from a newer game (e.g. 9.0.0) is still labelled with slots.earlierRules ('이전 규칙 (9.0.0)' / 'Earlier rules'), but its continue now refuses as from a newer game. This labelling existed before T549, and the worker noted it in limits. Deciding whether the slot card needs a newer-game label and locale string is a WEB/SAVE-11 copy decision for the planner, not for this task."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/ssot/SAVE.md SAVE-19 (hand-off to planning)",
+              "message": "SAVE-19 still reads 'active engine rules are 4.0.0', while SAVE-10 r57 makes 0.7.0 the current version on the same rules line. The code follows SAVE-10. The planner should align SAVE-19's wording, e.g. 'the rules-4.0.0 line, game version 0.7.0'. No code change is needed."
+            }
+          ],
+          "commit": "f38dc554d31c5eb794f4a7988ea6915e9d9847b2",
+          "baseCommit": "dcf0ccbd1c778690d3c381f468c6ceae8b4d0186",
+          "submissionId": "1685ce03-7636-4a6d-8ac9-d3a76e658e15",
+          "createdAt": "2026-10-28T14:48:04.685Z",
+          "finishedAt": "2026-10-28T14:52:33.461Z"
+        }
+      }
+    },
+    {
+      "sequence": 1489,
+      "at": "2026-10-28T14:52:33.498Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "9b76b712-dfc8-42f1-b8b7-5d8e4bce4625",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T14:48:06.528Z",
+          "finishedAt": "2026-10-28T14:52:33.498Z",
+          "error": null,
+          "summary": "T549 meets its acceptance and SAVE-10/11/19/23. All five package.json files and CURRENT_ENGINE_VERSION say 0.7.0, with the required doc comment. SUPPORTED_ENGINE_VERSIONS is exactly [0.7.0, 4.0.0], and the 4.0.0→0.7.0 rewrite lives only in the pure upgradeWorldRules step. In host.ts that step runs before adoptIdentities, adoptModel and adoptManagerHistory, so a 4.0.0 world reaches activatesMatchModel already labelled 0.7.0. Read-only inspects (upgrade:false) keep it as 4.0.0 and write nothing. isEarlierEngine is now membership in LEGACY_ENGINE_VERSIONS, which keeps legacy reset and its messages unchanged; the change is needed because 0.7.0 is lower than 4.0.0 under semver. Every other version, 1.9.9 and 0.6.0 included, gets NEWER_GAME_MESSAGE, which keeps the '지원하지 않는 저장' prefix the future-save e2e matches. Copy in earlierRulesMessage, the client.ts reset notice and the slot continue refusal now reads '게임 버전 0.7.0'. Every consumer of engine, SUPPORTED, LEGACY and isEarlierEngine was traced: persistence readEnvelope/decode, recognizedLegacy, legacyReset, client.earlierRules, slots display/continue, and createWorld/ENGINE_VERSION. None still treats 4.0.0 as unsupported, and no test or e2e asserts the old copy. Fixtures are handled as required: portable-v1.json changed only its header label; legacy-rules3 and the engine match-model test keep their old versions on purpose, each with a stated reason. The risk reasons (397 changed lines, contract paths) are explained by the version bump, the new tests and comment-only edits in types.ts, advanced.ts and match-model*.ts. Verification follows ARCH-30: typecheck, lint, format:check, changed unit tests, contract tests and build passed. The integration-tier files and save-upgrade.spec.ts are correctly left to the batch run. I read the new client and persistence tests against the host adoption logic, and the simulatedWorld default release means only the label and revision should change. They should pass, but nobody has run them yet; the coordinator gate must confirm. Findings below are optional (P3) only."
+        }
+      }
+    },
+    {
+      "sequence": 1490,
+      "at": "2026-10-28T14:52:33.605Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    }
+  ]
+}

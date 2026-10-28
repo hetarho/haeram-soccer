@@ -18,7 +18,8 @@ import { DISABLED_RELEASE, ENABLED_RELEASE } from './releases';
 
 /**
  * Marked synthetic fixture for the full-model continuity journey (T402, T286; →SAVE-22/23, HIST-17,
- * WEB-89/94/95, KIT-12). A supported rules-4.0.0 career founded before the full model's release
+ * WEB-89/94/95, KIT-12). A supported career founded before the full model's release (founded here,
+ * so it carries the current game version, 0.7.0 of the rules-4.0.0 line, and no stored label)
  * plays its first rounds on the pre-feature model and is saved without model data. With the
  * release switch on (since T286) the build imports it as it is and its writer load
  * (`Host.adoptModel`) records the full model mid-season at the next unplayed day; with the switch

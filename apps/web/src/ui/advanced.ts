@@ -150,8 +150,8 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
 }
 
 /**
- * The grid engine's counters (rules 4.0.0, →MATCH-13): only its records carry `lineCounts`, so
- * older matches show none of these rows instead of zeros.
+ * The grid engine's counters (the rules-4.0.0 line, game version 0.7.0, →MATCH-13): only its
+ * records carry `lineCounts`, so older matches show none of these rows instead of zeros.
  */
 function spatialRows(detail: [number[], number[]]): ComparisonRow[] {
   const pair = (index: number): [number, number] => [detail[0][index], detail[1][index]];
@@ -198,8 +198,8 @@ export interface PlayerAdvanced {
   minutes: number;
   totals: number[];
   /**
-   * Matches and minutes of the grid engine (rules 4.0.0, records with `lineCounts`): only they count
-   * box entries, line-breaking passes, xT, cut-backs and progressive carries (→MATCH-13).
+   * Matches and minutes of the grid engine (the rules-4.0.0 line, records with `lineCounts`): only
+   * they count box entries, line-breaking passes, xT, cut-backs and progressive carries (→MATCH-13).
    */
   spatialMatches: number;
   spatialMinutes: number;

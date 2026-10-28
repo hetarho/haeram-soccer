@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
 import {
+  CURRENT_ENGINE_VERSION,
   envelopeEngine,
   FULL_MODEL_CHECKPOINT_SCHEMA,
   MANAGER_HISTORY_CHECKPOINT_SCHEMA,
@@ -84,7 +85,7 @@ describe('bounded writer legacy reset', () => {
       parked = new Parked(),
       index = new GameIndexStore(storage);
     const legacy = await saved('2.0.0'),
-      current = await saved('4.0.0'),
+      current = await saved(CURRENT_ENGINE_VERSION),
       future = await saved('9.0.0');
     storage.setItem(ACTIVE_SAVE_KEYS[1], legacy);
     storage.setItem(ACTIVE_SAVE_KEYS[2], legacy);
@@ -99,7 +100,11 @@ describe('bounded writer legacy reset', () => {
     index.write({
       owner: { kind: 'device', id: 'owner' },
       active: 0,
-      slots: [entry('old', '2.0.0'), entry('new', '4.0.0'), entry('future', '9.0.0')],
+      slots: [
+        entry('old', '2.0.0'),
+        entry('new', CURRENT_ENGINE_VERSION),
+        entry('future', '9.0.0'),
+      ],
     });
     await parked.put('old', legacy);
     await parked.put('new', current);
@@ -172,8 +177,8 @@ describe('bounded writer legacy reset', () => {
     expect(await saves.load()).toBeNull();
     expect(saves.incompatibleCheckpoint).toBe(false);
     expect(saves.incompatibleBackup).toBeUndefined();
-    await saves.commit(await saved('4.0.0'));
-    expect((await saves.load())?.world.engine).toBe('4.0.0');
+    await saves.commit(await saved(CURRENT_ENGINE_VERSION));
+    expect((await saves.load())?.world.engine).toBe(CURRENT_ENGINE_VERSION);
   });
   it('preserves unknown older versions, corrupt legacy and protected selected manifests', async () => {
     for (const raw of [
@@ -202,6 +207,8 @@ describe('bounded writer legacy reset', () => {
 
 it('does not create device metadata while preserving current, future or unclassified corrupt data', async () => {
   for (const raw of [
+    await saved(CURRENT_ENGINE_VERSION),
+    // The rules-4.0.0 label of the current line is supported, never legacy (→SAVE-10).
     await saved('4.0.0'),
     await saved('9.0.0'),
     JSON.stringify({ ...JSON.parse(await saved('2.0.0')), checksum: '0'.repeat(64) }),
@@ -264,7 +271,7 @@ it('unknown envelope never grants legacy reset permission', async () => {
 });
 
 it('clears the frozen real rules 3.0.0 save and reports it', async () => {
-  // A genuine rules 3.0.0 envelope (scripts/freeze-legacy-fixture.ts) that 4.0.0 cannot unpack.
+  // A genuine rules 3.0.0 envelope (scripts/freeze-legacy-fixture.ts) that 0.7.0 cannot unpack.
   const raw = readFileSync(
     new URL('../../../../tests/fixtures/legacy-rules3.haeram-save.json', import.meta.url),
     'utf8',

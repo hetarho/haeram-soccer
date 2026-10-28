@@ -3,6 +3,8 @@ import {
   CURRENT_ENGINE_VERSION,
   earlierRulesMessage,
   envelopeEngine,
+  isEarlierEngine,
+  NEWER_GAME_MESSAGE,
   SUPPORTED_ENGINE_VERSIONS,
 } from '../../../../packages/contracts/src/versions';
 import { country } from '../../../../packages/catalogs/src/index';
@@ -42,7 +44,10 @@ export function summarize(w: World): SlotSummary {
   };
 }
 
-/** The rules version of a slot's game when it is a career of earlier rules (→SAVE-16). */
+/**
+ * The rules version of a slot's game when this version cannot open it: a career of earlier rules
+ * (→SAVE-16) or of a newer game (→SAVE-11), both kept for export or deletion only.
+ */
 export const earlierRules = (entry: Pick<GameEntry, 'engine'>) =>
   entry.engine !== undefined && !SUPPORTED_ENGINE_VERSIONS.includes(entry.engine)
     ? entry.engine
@@ -199,7 +204,8 @@ export class GameSlots {
     const entry = this.display(inPlay).slots[slot];
     if (!entry) throw new Error('빈 슬롯이에요.');
     const earlier = earlierRules(entry);
-    if (earlier) throw new Error(earlierRulesMessage(earlier));
+    if (earlier)
+      throw new Error(isEarlierEngine(earlier) ? earlierRulesMessage(earlier) : NEWER_GAME_MESSAGE);
     if (inPlay?.id === entry.worldId) {
       this.sync(inPlay, true);
       return;

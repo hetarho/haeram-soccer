@@ -51,6 +51,7 @@ import {
   isEarlierEngine,
   isSaveCompatibilityError,
   MANAGER_HISTORY_CHECKPOINT_SCHEMA,
+  NEWER_GAME_MESSAGE,
   PRIOR_CATALOG_HASHES,
   SaveCompatibilityError,
   SUPPORTED_CHECKPOINT_SCHEMAS,
@@ -404,14 +405,44 @@ describe('compatible rule upgrades', () => {
     expect(failure).toBeInstanceOf(SaveCompatibilityError);
     expect((failure as SaveCompatibilityError).engine).toBe('1.22.0');
     expect((failure as Error).message).toBe(
-      `이 저장은 규칙 1.22.0 커리어입니다 — 규칙 ${CURRENT_ENGINE_VERSION} 커리어만 열 수 있습니다. 새 커리어를 시작하세요`,
+      `이 저장은 규칙 1.22.0 커리어입니다 — 게임 버전 ${CURRENT_ENGINE_VERSION} 커리어만 열 수 있습니다. 새 커리어를 시작하세요`,
     );
-    // Earlier, never later or malformed.
+    // Released earlier rules only, never the current line, a later, unreleased or malformed one.
     expect(isEarlierEngine('1.22.0')).toBe(true);
-    expect(isEarlierEngine('1.9.9')).toBe(true);
+    expect(isEarlierEngine('3.0.0')).toBe(true);
+    expect(isEarlierEngine('1.9.9')).toBe(false);
     expect(isEarlierEngine(CURRENT_ENGINE_VERSION)).toBe(false);
+    expect(isEarlierEngine('4.0.0')).toBe(false);
     expect(isEarlierEngine('9.0.0')).toBe(false);
     expect(isEarlierEngine('x.y.z')).toBe(false);
+  });
+
+  it('a rules-4.0.0 checkpoint loads and is written as 0.7.0, its facts unchanged (→SAVE-10)', async () => {
+    const current = world();
+    const stored = { ...structuredClone(current), engine: '4.0.0' };
+    const raw = await encode(stored);
+    expect(envelopeEngine(raw)).toBe('4.0.0');
+    // Reading never rewrites it: the career loads exactly as stored.
+    const loaded = (await decode(raw)).world;
+    expect(canonical(loaded)).toBe(canonical(stored));
+    // Writer activation rewrites the label alone, through the shared rules step.
+    const upgraded = upgradeWorldRules(loaded, CURRENT_CATALOG);
+    expect(canonical(upgraded)).toBe(
+      canonical({ ...current, engine: CURRENT_ENGINE_VERSION, revision: current.revision + 1 }),
+    );
+    const written = await decode(await encode(upgraded, 2, 1));
+    expect(written.envelope.engine).toBe('0.7.0');
+    expect(canonical(written.world)).toBe(canonical(upgraded));
+  });
+
+  it('an unknown engine version is refused as from a newer game (→SAVE-11)', async () => {
+    for (const engine of ['9.0.0', '0.8.0', '1.9.9']) {
+      const failure = await decode(await encode({ ...world(), engine })).catch(
+        (error: unknown) => error,
+      );
+      expect(failure).toBeInstanceOf(SaveCompatibilityError);
+      expect((failure as Error).message).toBe(NEWER_GAME_MESSAGE);
+    }
   });
 
   for (const catalog of ['2026-demo-1', '2026-demo-2'])
@@ -566,7 +597,7 @@ describe('checkpoint container schema 2', () => {
       FULL_MODEL_CHECKPOINT_SCHEMA,
       MANAGER_HISTORY_CHECKPOINT_SCHEMA,
     ]);
-    expect(SUPPORTED_ENGINE_VERSIONS).toEqual([CURRENT_ENGINE_VERSION]);
+    expect(SUPPORTED_ENGINE_VERSIONS).toEqual([CURRENT_ENGINE_VERSION, '4.0.0']);
     // A career saved before the full model and manager history, which a new founding tracks
     // (→SAVE-23/24).
     const w = withoutManagerHistory(withIdentity(unmodelled(1), IDENTITY));
