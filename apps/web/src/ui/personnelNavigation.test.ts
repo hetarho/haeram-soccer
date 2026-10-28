@@ -19,6 +19,9 @@ import {
   useContractTalk,
   openContractTalk,
   activateTaskWorld,
+  openPrimary,
+  leaveOffice,
+  openOfficeLobby,
 } from './state';
 import { useTaskMemory } from './taskMemory';
 
@@ -60,11 +63,11 @@ describe('personnel actions and task continuity', () => {
     browser();
     openPeople('players');
     openCoachSheet('assistant', 'recovery', 'player-1');
-    expect(location.pathname + location.search).toBe('/first-team?view=training');
+    expect(location.pathname + location.search).toBe('/training');
     expect(useTaskMemory.getState().returning).toMatchObject({
       address: '/first-team?view=players',
       label: '선수 목록',
-      target: 'firstTeam',
+      target: 'training',
     });
     expect(useCoachRequest.getState().request).toEqual({
       coach: 'assistant',
@@ -76,8 +79,8 @@ describe('personnel actions and task continuity', () => {
     openTraining('training');
     openContractTalk('player-1');
     expect(useTaskMemory.getState().returning).toMatchObject({
-      address: '/first-team?view=training',
-      label: '훈련',
+      address: '/training',
+      label: '훈련장',
     });
     expect(useContractTalk.getState().id).toBe('player-1');
     activateTaskWorld('new-game');
@@ -88,11 +91,14 @@ describe('personnel actions and task continuity', () => {
 
   it('resolves every engine personnel home without a competing page', () => {
     expect(personnelAddress(personnelHome('players'))).toBe('/first-team?view=players');
-    expect(personnelAddress(personnelHome('training'))).toBe('/first-team?view=training');
+    expect(personnelAddress(personnelHome('training'))).toBe('/training');
     expect(personnelAddress(personnelHome('academy'))).toBe('/academy');
-    expect(personnelAddress(personnelHome('manager'))).toBe('/staff?view=manager');
+    expect(personnelAddress(personnelHome('manager'))).toBe('/first-team?view=manager');
     expect(personnelAddress(personnelHome('coaches'))).toBe('/staff?view=coaches');
-    expect(developmentDestination('people/manager')).toEqual({ page: 'staff', view: 'manager' });
+    expect(developmentDestination('people/manager')).toEqual({
+      page: 'firstTeam',
+      view: 'manager',
+    });
     expect(developmentDestination('people/coaches')).toEqual({ page: 'staff', view: 'coaches' });
     expect(developmentDestination('business/facility')).toEqual({
       page: 'business',
@@ -114,9 +120,9 @@ describe('personnel actions and task continuity', () => {
     useNavigation.getState().setPage('firstTeam');
     expect(history.at(-1)).toBe('/first-team?view=market');
     openTraining('training');
-    expect(history.at(-1)).toBe('/first-team?view=training');
+    expect(history.at(-1)).toBe('/training');
     openPeople('candidates');
-    expect(history.at(-1)).toBe('/staff?view=manager&market=1');
+    expect(history.at(-1)).toBe('/first-team?view=manager&market=1');
     expect(useTaskMemory.getState().values).toMatchObject({
       'market-role': 'DF',
       'market-viewingId': 'candidate-1',
@@ -134,16 +140,30 @@ describe('personnel actions and task continuity', () => {
     expect(location.pathname + location.search).toBe('/staff?view=coaches');
     expect(useStaffRequest.getState().request).toBe('assistant');
     expect(useTaskMemory.getState().returning).toMatchObject({
-      page: 'firstTeam',
-      label: '훈련',
+      page: 'training',
+      label: '훈련장',
       target: 'staff',
     });
     returnToTask();
-    expect(location.pathname + location.search).toBe('/first-team?view=training');
+    expect(location.pathname + location.search).toBe('/training');
     openCoachSheet('youth');
     expect(location.pathname).toBe('/academy');
     expect(useCoachRequest.getState().request).toEqual({ coach: 'youth' });
     beginTaskDetour('business');
     expect(useTaskMemory.getState().returning).toMatchObject({ page: 'academy', label: '유소년' });
+  });
+});
+
+describe('primary office entry', () => {
+  it('returns a primary office visit to the clubhouse and a contextual visit to its place', () => {
+    browser();
+    openTraining('training');
+    openOfficeLobby();
+    leaveOffice();
+    expect(useNavigation.getState().page).toBe('training');
+    openPrimary('business');
+    expect(location.pathname).toBe('/direction');
+    leaveOffice();
+    expect(useNavigation.getState().page).toBe('dashboard');
   });
 });

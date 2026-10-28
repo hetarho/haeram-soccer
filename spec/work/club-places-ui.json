@@ -1,0 +1,1392 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-10-28T16:52:26.857Z",
+  "sourceCommit": "590dd56d15cdb02d36ba41eaa1003432545902bc",
+  "group": {
+    "id": "club-places-ui",
+    "branch": "work/club-places-ui",
+    "status": "active",
+    "createdAt": "2026-10-28T15:50:23.562Z",
+    "limits": {
+      "workers": 1,
+      "reviewers": 1,
+      "maxPending": 8
+    },
+    "review": "all",
+    "lastRun": {
+      "id": "de2cefe4-c18a-4b50-b47d-56e08939f775",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.160.1"
+        },
+        "reviewer": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.160.1"
+        }
+      },
+      "workers": [
+        {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.160.1"
+        }
+      ],
+      "startedAt": "2026-10-28T16:41:58.456Z",
+      "stoppedAt": "2026-10-28T16:52:26.092Z",
+      "dispatched": 2,
+      "outcome": "dispatch-limit",
+      "failures": [],
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    }
+  },
+  "summary": {
+    "total": 7,
+    "completed": 2,
+    "remaining": 5,
+    "running": 0,
+    "review": 0,
+    "blocked": 0,
+    "unassigned": 5
+  },
+  "tasks": [
+    {
+      "id": "T548",
+      "title": "Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it",
+      "dep": [],
+      "status": "todo"
+    },
+    {
+      "id": "T552",
+      "title": "Paged whole-world recruitment workbench",
+      "dep": [
+        "T558"
+      ],
+      "lane": "market-ui",
+      "status": "todo"
+    },
+    {
+      "id": "T553",
+      "title": "Consequential owner choices and shared place activity panels",
+      "dep": [
+        "T557"
+      ],
+      "lane": "place-choices",
+      "status": "todo"
+    },
+    {
+      "id": "T556",
+      "title": "Connect place choices and verify the complete owner workflow",
+      "dep": [
+        "T552",
+        "T553",
+        "T555"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T558",
+      "title": "World market query and identity-based transfer engine",
+      "dep": [],
+      "lane": "market-engine",
+      "status": "todo"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "group": "club-places-ui",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "lane": "places-office",
+      "owner": "de2cefe4-c18a-4b50-b47d-56e08939f775/worker-1",
+      "contributors": [
+        "865e3d9a-6994-43b4-80c4-e175f0e8eb5d/worker-1",
+        "de2cefe4-c18a-4b50-b47d-56e08939f775/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-28T15:50:36.818Z",
+      "startCommit": "1fb24a736057a805adbe94a975e29e045d833897",
+      "verifiedCommit": "55bc45a8e1b087f57a55f4a72946a6b5df2c30d2",
+      "submittedBase": "0e853d7159e0dd801aa369b7e4afbcf0a96dd4f5",
+      "submissionId": "f90de76f-5409-493e-8380-bf47fab6e2f6",
+      "submittedAt": "2026-10-28T16:48:58.941Z",
+      "integratedCommit": "590dd56d15cdb02d36ba41eaa1003432545902bc",
+      "integratedAt": "2026-10-28T16:52:25.908Z",
+      "risk": null,
+      "dispatch": {
+        "id": "7bbc979c-8234-483e-9c59-7e1007395224",
+        "runner": "de2cefe4-c18a-4b50-b47d-56e08939f775",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "codex",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-28T16:49:01.022Z",
+        "finishedAt": "2026-10-28T16:51:48.794Z",
+        "error": null,
+        "summary": "고정 커밋의 T554·T555를 acceptance·SSOT·ARCH와 대조했고, 이전 지적 두 건의 수정도 확인했습니다. 추가 수정 요청은 없습니다. 워커 검증 근거를 확인했으며 최종 통합·브라우저 게이트는 조정자에게 남깁니다."
+      },
+      "review": {
+        "id": "e63f8d84-934d-47fe-a398-d7a79a7a213f",
+        "owner": "de2cefe4-c18a-4b50-b47d-56e08939f775/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "고정 커밋의 T554·T555를 acceptance·SSOT·ARCH와 대조했고, 이전 지적 두 건의 수정도 확인했습니다. 추가 수정 요청은 없습니다. 워커 검증 근거를 확인했으며 최종 통합·브라우저 게이트는 조정자에게 남깁니다.",
+        "findings": [],
+        "commit": "55bc45a8e1b087f57a55f4a72946a6b5df2c30d2",
+        "baseCommit": "0e853d7159e0dd801aa369b7e4afbcf0a96dd4f5",
+        "submissionId": "f90de76f-5409-493e-8380-bf47fab6e2f6",
+        "createdAt": "2026-10-28T16:48:59.326Z",
+        "finishedAt": "2026-10-28T16:51:48.766Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "0e103a18-66d8-444a-9a0d-00e3c8dda016",
+          "owner": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Found a current-cup status defect and a browser-journey regression. Worker verification evidence reviewed; final integration/browser gate remains with the coordinator.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/ui/competitionNavigation.ts:92",
+              "message": "T554: After qualifying into the 1991–1993 continental group stage, retained qualifier rounds take precedence over cup.stage, so the clubhouse still displays the completed qualifier. An isolated reproduction returned 예선 2라운드 while the retained current stage was 조별 리그. Account for phase transitions and add a focused regression test."
+            },
+            {
+              "priority": "P2",
+              "where": "tests/e2e/competition-navigation.ts:14",
+              "message": "T554: openLeague now clicks the explicit own-league shortcut whenever outside Season. That invokes openLeagueSeason and clears the selected league, but intervention.spec.ts:135–137 still expects its previously selected FRA address/filter after returning from home. Separate fresh competition entry from resume navigation and update affected journeys without weakening their context-preservation assertions."
+            }
+          ],
+          "commit": "647ef1cb8f55ce70f152852eff5e24757ffb9967",
+          "baseCommit": "77cdea91889558a50281676b86c44c931177ebd0",
+          "submissionId": "8963b3d9-a22f-491f-a9d5-737f5dad5c26",
+          "createdAt": "2026-10-28T16:33:23.257Z",
+          "finishedAt": "2026-10-28T16:38:48.049Z",
+          "invalidatedAt": "2026-10-28T16:41:59.343Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T554",
+          "commit": "0773ea1d79243e40e6c4514ed49ceb0bcf790b31",
+          "at": "2026-10-28T16:11:42.176Z",
+          "verification": [
+            {
+              "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-10-28T16:10:57.529Z",
+              "finishedAt": "2026-10-28T16:11:41.656Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T555",
+          "commit": "55bc45a8e1b087f57a55f4a72946a6b5df2c30d2",
+          "at": "2026-10-28T16:48:58.916Z",
+          "verification": [
+            {
+              "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-10-28T16:48:07.583Z",
+              "finishedAt": "2026-10-28T16:48:58.381Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "startedAt": "2026-10-28T16:48:07.583Z",
+          "finishedAt": "2026-10-28T16:48:58.381Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-28T16:51:50.481Z",
+          "finishedAt": "2026-10-28T16:52:25.636Z"
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1550,
+      "at": "2026-10-28T15:50:23.635Z",
+      "type": "group",
+      "group": "club-places-ui",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "club-places-ui",
+        "branch": "work/club-places-ui",
+        "status": "preparing",
+        "createdAt": "2026-10-28T15:50:23.562Z",
+        "limits": {
+          "workers": 1,
+          "reviewers": 1,
+          "maxPending": 8
+        },
+        "review": "all"
+      }
+    },
+    {
+      "sequence": 1551,
+      "at": "2026-10-28T15:50:26.344Z",
+      "type": "group",
+      "group": "club-places-ui",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 1552,
+      "at": "2026-10-28T15:50:35.145Z",
+      "type": "group",
+      "group": "club-places-ui",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T15:50:35.070Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1553,
+      "at": "2026-10-28T15:50:36.818Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T554",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "d23ee082-a3f1-4503-a612-a20364bb319b",
+        "group": "club-places-ui",
+        "taskId": "T554",
+        "tasks": [
+          "T554",
+          "T555"
+        ],
+        "lane": "places-office",
+        "owner": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d/worker-1",
+        "contributors": [
+          "865e3d9a-6994-43b4-80c4-e175f0e8eb5d/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-28T15:50:36.818Z",
+        "startCommit": "1fb24a736057a805adbe94a975e29e045d833897"
+      }
+    },
+    {
+      "sequence": 1554,
+      "at": "2026-10-28T15:50:39.113Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T554",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1555,
+      "at": "2026-10-28T15:50:40.027Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T554",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "3b5dc484-6454-4613-b1d9-091ef2e5a576",
+          "runner": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T15:50:40.027Z"
+        }
+      }
+    },
+    {
+      "sequence": 1556,
+      "at": "2026-10-28T15:50:41.226Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T554",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "3b5dc484-6454-4613-b1d9-091ef2e5a576",
+          "runner": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T15:50:40.027Z"
+        }
+      }
+    },
+    {
+      "sequence": 1589,
+      "at": "2026-10-28T16:10:55.842Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T554",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1590,
+      "at": "2026-10-28T16:10:57.028Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T554",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1591,
+      "at": "2026-10-28T16:10:57.087Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T554",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1592,
+      "at": "2026-10-28T16:11:42.192Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T555",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T554",
+            "commit": "0773ea1d79243e40e6c4514ed49ceb0bcf790b31",
+            "at": "2026-10-28T16:11:42.176Z",
+            "verification": [
+              {
+                "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-28T16:10:57.529Z",
+                "finishedAt": "2026-10-28T16:11:41.656Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1593,
+      "at": "2026-10-28T16:11:42.222Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "3b5dc484-6454-4613-b1d9-091ef2e5a576",
+          "runner": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T15:50:40.027Z",
+          "finishedAt": "2026-10-28T16:11:42.222Z",
+          "error": null,
+          "summary": "T554 구현과 acceptance/result 갱신 완료. 격리 검사 18개 파일·163개 테스트, 타입·린트·포맷·빌드 통과. 브라우저·통합 검증은 조정자에게 인계했습니다. 기존 초기 번들 예산 초과와 재실행하지 않은 월드 기반 검사도 result에 기록했습니다. 커밋·제출은 하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1594,
+      "at": "2026-10-28T16:11:42.356Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "0d3dc7a2-94da-47a5-b916-63f51a736244",
+          "runner": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T16:11:42.356Z"
+        }
+      }
+    },
+    {
+      "sequence": 1595,
+      "at": "2026-10-28T16:11:42.574Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "0d3dc7a2-94da-47a5-b916-63f51a736244",
+          "runner": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T16:11:42.356Z"
+        }
+      }
+    },
+    {
+      "sequence": 1606,
+      "at": "2026-10-28T16:29:00.740Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1607,
+      "at": "2026-10-28T16:29:02.695Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1608,
+      "at": "2026-10-28T16:29:02.779Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1613,
+      "at": "2026-10-28T16:33:19.993Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "steps": [
+          {
+            "taskId": "T554",
+            "commit": "0773ea1d79243e40e6c4514ed49ceb0bcf790b31",
+            "at": "2026-10-28T16:11:42.176Z",
+            "verification": [
+              {
+                "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-28T16:10:57.529Z",
+                "finishedAt": "2026-10-28T16:11:41.656Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T555",
+            "commit": "647ef1cb8f55ce70f152852eff5e24757ffb9967",
+            "at": "2026-10-28T16:33:19.923Z",
+            "verification": [
+              {
+                "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-28T16:29:03.570Z",
+                "finishedAt": "2026-10-28T16:33:16.730Z"
+              }
+            ]
+          }
+        ],
+        "verifiedCommit": "647ef1cb8f55ce70f152852eff5e24757ffb9967",
+        "submittedBase": "77cdea91889558a50281676b86c44c931177ebd0",
+        "submissionId": "8963b3d9-a22f-491f-a9d5-737f5dad5c26",
+        "submittedAt": "2026-10-28T16:33:19.993Z",
+        "risk": null,
+        "verification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-10-28T16:29:03.570Z",
+            "finishedAt": "2026-10-28T16:33:16.730Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1614,
+      "at": "2026-10-28T16:33:20.094Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "0d3dc7a2-94da-47a5-b916-63f51a736244",
+          "runner": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T16:11:42.356Z",
+          "finishedAt": "2026-10-28T16:33:20.094Z",
+          "error": null,
+          "summary": "Implemented T555: player overview, scoped work tabs and approvals, live office facts, finance policy ownership, and preserved navigation. Passed 133 isolated tests, typecheck, lint, formatting and build. Updated task results and browser journeys; deferred browser/world-dependent checks to the coordinator. No commits or submission."
+        }
+      }
+    },
+    {
+      "sequence": 1615,
+      "at": "2026-10-28T16:33:23.257Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "0e103a18-66d8-444a-9a0d-00e3c8dda016",
+          "owner": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d/reviewer-1",
+          "status": "reviewing",
+          "commit": "647ef1cb8f55ce70f152852eff5e24757ffb9967",
+          "baseCommit": "77cdea91889558a50281676b86c44c931177ebd0",
+          "submissionId": "8963b3d9-a22f-491f-a9d5-737f5dad5c26",
+          "createdAt": "2026-10-28T16:33:23.257Z"
+        }
+      }
+    },
+    {
+      "sequence": 1616,
+      "at": "2026-10-28T16:33:33.047Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "5ba6ae07-a67e-40f1-8ed1-ae87611cc8c4",
+          "runner": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T16:33:33.047Z"
+        }
+      }
+    },
+    {
+      "sequence": 1617,
+      "at": "2026-10-28T16:33:33.297Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "5ba6ae07-a67e-40f1-8ed1-ae87611cc8c4",
+          "runner": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T16:33:33.047Z"
+        }
+      }
+    },
+    {
+      "sequence": 1623,
+      "at": "2026-10-28T16:38:48.049Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "Found a current-cup status defect and a browser-journey regression. Worker verification evidence reviewed; final integration/browser gate remains with the coordinator.",
+        "review": {
+          "id": "0e103a18-66d8-444a-9a0d-00e3c8dda016",
+          "owner": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "Found a current-cup status defect and a browser-journey regression. Worker verification evidence reviewed; final integration/browser gate remains with the coordinator.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/ui/competitionNavigation.ts:92",
+              "message": "T554: After qualifying into the 1991–1993 continental group stage, retained qualifier rounds take precedence over cup.stage, so the clubhouse still displays the completed qualifier. An isolated reproduction returned 예선 2라운드 while the retained current stage was 조별 리그. Account for phase transitions and add a focused regression test."
+            },
+            {
+              "priority": "P2",
+              "where": "tests/e2e/competition-navigation.ts:14",
+              "message": "T554: openLeague now clicks the explicit own-league shortcut whenever outside Season. That invokes openLeagueSeason and clears the selected league, but intervention.spec.ts:135–137 still expects its previously selected FRA address/filter after returning from home. Separate fresh competition entry from resume navigation and update affected journeys without weakening their context-preservation assertions."
+            }
+          ],
+          "commit": "647ef1cb8f55ce70f152852eff5e24757ffb9967",
+          "baseCommit": "77cdea91889558a50281676b86c44c931177ebd0",
+          "submissionId": "8963b3d9-a22f-491f-a9d5-737f5dad5c26",
+          "createdAt": "2026-10-28T16:33:23.257Z",
+          "finishedAt": "2026-10-28T16:38:48.049Z"
+        }
+      }
+    },
+    {
+      "sequence": 1624,
+      "at": "2026-10-28T16:38:48.345Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "5ba6ae07-a67e-40f1-8ed1-ae87611cc8c4",
+          "runner": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T16:33:33.047Z",
+          "finishedAt": "2026-10-28T16:38:48.345Z",
+          "error": null,
+          "summary": "Found a current-cup status defect and a browser-journey regression. Worker verification evidence reviewed; final integration/browser gate remains with the coordinator."
+        }
+      }
+    },
+    {
+      "sequence": 1625,
+      "at": "2026-10-28T16:38:49.720Z",
+      "type": "group",
+      "group": "club-places-ui",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T15:50:35.070Z",
+          "stoppedAt": "2026-10-28T16:38:49.720Z",
+          "dispatched": 3,
+          "outcome": "dispatch-limit",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1632,
+      "at": "2026-10-28T16:41:58.608Z",
+      "type": "group",
+      "group": "club-places-ui",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "de2cefe4-c18a-4b50-b47d-56e08939f775",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T16:41:58.456Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1633,
+      "at": "2026-10-28T16:41:59.343Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "owner": "de2cefe4-c18a-4b50-b47d-56e08939f775/worker-1",
+        "contributors": [
+          "865e3d9a-6994-43b4-80c4-e175f0e8eb5d/worker-1",
+          "de2cefe4-c18a-4b50-b47d-56e08939f775/worker-1"
+        ],
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "0e103a18-66d8-444a-9a0d-00e3c8dda016",
+            "owner": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "Found a current-cup status defect and a browser-journey regression. Worker verification evidence reviewed; final integration/browser gate remains with the coordinator.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/ui/competitionNavigation.ts:92",
+                "message": "T554: After qualifying into the 1991–1993 continental group stage, retained qualifier rounds take precedence over cup.stage, so the clubhouse still displays the completed qualifier. An isolated reproduction returned 예선 2라운드 while the retained current stage was 조별 리그. Account for phase transitions and add a focused regression test."
+              },
+              {
+                "priority": "P2",
+                "where": "tests/e2e/competition-navigation.ts:14",
+                "message": "T554: openLeague now clicks the explicit own-league shortcut whenever outside Season. That invokes openLeagueSeason and clears the selected league, but intervention.spec.ts:135–137 still expects its previously selected FRA address/filter after returning from home. Separate fresh competition entry from resume navigation and update affected journeys without weakening their context-preservation assertions."
+              }
+            ],
+            "commit": "647ef1cb8f55ce70f152852eff5e24757ffb9967",
+            "baseCommit": "77cdea91889558a50281676b86c44c931177ebd0",
+            "submissionId": "8963b3d9-a22f-491f-a9d5-737f5dad5c26",
+            "createdAt": "2026-10-28T16:33:23.257Z",
+            "finishedAt": "2026-10-28T16:38:48.049Z",
+            "invalidatedAt": "2026-10-28T16:41:59.343Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1634,
+      "at": "2026-10-28T16:41:59.850Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "df7d3afb-46c0-4843-a82d-337ba7d5d278",
+          "runner": "de2cefe4-c18a-4b50-b47d-56e08939f775",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T16:41:59.850Z"
+        }
+      }
+    },
+    {
+      "sequence": 1635,
+      "at": "2026-10-28T16:42:00.818Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "df7d3afb-46c0-4843-a82d-337ba7d5d278",
+          "runner": "de2cefe4-c18a-4b50-b47d-56e08939f775",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T16:41:59.850Z"
+        }
+      }
+    },
+    {
+      "sequence": 1640,
+      "at": "2026-10-28T16:48:05.202Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1641,
+      "at": "2026-10-28T16:48:06.689Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1642,
+      "at": "2026-10-28T16:48:06.764Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1647,
+      "at": "2026-10-28T16:48:58.941Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "0e853d7159e0dd801aa369b7e4afbcf0a96dd4f5",
+        "submissionId": "f90de76f-5409-493e-8380-bf47fab6e2f6",
+        "submittedAt": "2026-10-28T16:48:58.941Z",
+        "steps": [
+          {
+            "taskId": "T554",
+            "commit": "0773ea1d79243e40e6c4514ed49ceb0bcf790b31",
+            "at": "2026-10-28T16:11:42.176Z",
+            "verification": [
+              {
+                "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-28T16:10:57.529Z",
+                "finishedAt": "2026-10-28T16:11:41.656Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T555",
+            "commit": "55bc45a8e1b087f57a55f4a72946a6b5df2c30d2",
+            "at": "2026-10-28T16:48:58.916Z",
+            "verification": [
+              {
+                "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-28T16:48:07.583Z",
+                "finishedAt": "2026-10-28T16:48:58.381Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-10-28T16:48:07.583Z",
+            "finishedAt": "2026-10-28T16:48:58.381Z"
+          }
+        ],
+        "verifiedCommit": "55bc45a8e1b087f57a55f4a72946a6b5df2c30d2"
+      }
+    },
+    {
+      "sequence": 1648,
+      "at": "2026-10-28T16:48:58.970Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "df7d3afb-46c0-4843-a82d-337ba7d5d278",
+          "runner": "de2cefe4-c18a-4b50-b47d-56e08939f775",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T16:41:59.850Z",
+          "finishedAt": "2026-10-28T16:48:58.970Z",
+          "error": null,
+          "summary": "Fixed both correction findings: continental group-stage status and league resume navigation. Preserved FRA context assertions and added regressions. Passed 34 isolated tests, typecheck, lint, format and build. Updated task results; browser execution remains deferred to the coordinator. No commits or submission."
+        }
+      }
+    },
+    {
+      "sequence": 1649,
+      "at": "2026-10-28T16:48:59.326Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "e63f8d84-934d-47fe-a398-d7a79a7a213f",
+          "owner": "de2cefe4-c18a-4b50-b47d-56e08939f775/reviewer-1",
+          "status": "reviewing",
+          "commit": "55bc45a8e1b087f57a55f4a72946a6b5df2c30d2",
+          "baseCommit": "0e853d7159e0dd801aa369b7e4afbcf0a96dd4f5",
+          "submissionId": "f90de76f-5409-493e-8380-bf47fab6e2f6",
+          "createdAt": "2026-10-28T16:48:59.326Z"
+        }
+      }
+    },
+    {
+      "sequence": 1650,
+      "at": "2026-10-28T16:49:01.022Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "7bbc979c-8234-483e-9c59-7e1007395224",
+          "runner": "de2cefe4-c18a-4b50-b47d-56e08939f775",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T16:49:01.022Z"
+        }
+      }
+    },
+    {
+      "sequence": 1651,
+      "at": "2026-10-28T16:49:01.068Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "7bbc979c-8234-483e-9c59-7e1007395224",
+          "runner": "de2cefe4-c18a-4b50-b47d-56e08939f775",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T16:49:01.022Z"
+        }
+      }
+    },
+    {
+      "sequence": 1653,
+      "at": "2026-10-28T16:51:48.766Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "e63f8d84-934d-47fe-a398-d7a79a7a213f",
+          "owner": "de2cefe4-c18a-4b50-b47d-56e08939f775/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "고정 커밋의 T554·T555를 acceptance·SSOT·ARCH와 대조했고, 이전 지적 두 건의 수정도 확인했습니다. 추가 수정 요청은 없습니다. 워커 검증 근거를 확인했으며 최종 통합·브라우저 게이트는 조정자에게 남깁니다.",
+          "findings": [],
+          "commit": "55bc45a8e1b087f57a55f4a72946a6b5df2c30d2",
+          "baseCommit": "0e853d7159e0dd801aa369b7e4afbcf0a96dd4f5",
+          "submissionId": "f90de76f-5409-493e-8380-bf47fab6e2f6",
+          "createdAt": "2026-10-28T16:48:59.326Z",
+          "finishedAt": "2026-10-28T16:51:48.766Z"
+        }
+      }
+    },
+    {
+      "sequence": 1654,
+      "at": "2026-10-28T16:51:48.794Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "7bbc979c-8234-483e-9c59-7e1007395224",
+          "runner": "de2cefe4-c18a-4b50-b47d-56e08939f775",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T16:49:01.022Z",
+          "finishedAt": "2026-10-28T16:51:48.794Z",
+          "error": null,
+          "summary": "고정 커밋의 T554·T555를 acceptance·SSOT·ARCH와 대조했고, 이전 지적 두 건의 수정도 확인했습니다. 추가 수정 요청은 없습니다. 워커 검증 근거를 확인했으며 최종 통합·브라우저 게이트는 조정자에게 남깁니다."
+        }
+      }
+    },
+    {
+      "sequence": 1655,
+      "at": "2026-10-28T16:51:48.870Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1657,
+      "at": "2026-10-28T16:52:25.806Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-28T16:51:50.481Z",
+            "finishedAt": "2026-10-28T16:52:25.636Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1658,
+      "at": "2026-10-28T16:52:25.908Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "590dd56d15cdb02d36ba41eaa1003432545902bc",
+        "integratedAt": "2026-10-28T16:52:25.908Z"
+      }
+    },
+    {
+      "sequence": 1659,
+      "at": "2026-10-28T16:52:26.092Z",
+      "type": "group",
+      "group": "club-places-ui",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "de2cefe4-c18a-4b50-b47d-56e08939f775",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T16:41:58.456Z",
+          "stoppedAt": "2026-10-28T16:52:26.092Z",
+          "dispatched": 2,
+          "outcome": "dispatch-limit",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    }
+  ]
+}

@@ -276,7 +276,7 @@ test('updates era, training and academy scenes only on actual completion, retain
   await openPersonnel(page, 'academy');
   await expectArt(page, 'academy', 'terraces', 1);
   await expect(page.getByTestId('facility-overview')).toContainText('1단계 유소년 시설');
-  await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
+  await page.getByRole('button', { name: '클럽하우스', exact: true }).click();
   await expectArt(page, 'stadium', 'terraces', 0);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();

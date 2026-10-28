@@ -31,7 +31,7 @@ import type {
   ManagerHistoryPage,
   ManagerSourceSeason,
 } from '../../../../packages/contracts/src/manager-history-view';
-/** The six gameplay destinations, their competition lenses and the focused office. */
+/** The six places and their retained competition and match views. */
 export type Page =
   | 'dashboard'
   | 'match'
@@ -39,6 +39,7 @@ export type Page =
   | 'europe'
   | 'firstTeam'
   | 'academy'
+  | 'training'
   | 'staff'
   | 'business'
   | 'history'
@@ -93,6 +94,9 @@ export function routeOf(pathname: string, search: string): Route {
     };
   const route: Route = { page: 'business', view: officeView(asked) };
   let address = officeAddress(route.view as OfficeView);
+  const work = new URLSearchParams(search).get('work');
+  if (work && (route.view === 'players' || route.view === 'staff'))
+    address += `&work=${encodeURIComponent(work)}`;
   const request = new URLSearchParams(search).get('request');
   if (route.page === 'business' && request)
     address += `${address.includes('?') ? '&' : '?'}request=${encodeURIComponent(request)}`;
@@ -133,6 +137,12 @@ export const useNavigation = create<{
 
 /** A primary entry resumes its last lens; explicit local tabs select their own lens. */
 export function openPrimary(page: Page) {
+  if (page === 'business') {
+    useTaskMemory.setState({ returning: undefined, parents: [] });
+    openOfficeLobby();
+    useNavigation.setState({ officeFrom: 'dashboard' });
+    return;
+  }
   const pages = page === 'league' ? SEASON_PAGES : page === 'history' ? HISTORY_PAGES : undefined;
   const saved = useTaskMemory.getState().values[`hub-${page}`] as Page | undefined;
   useNavigation
@@ -300,6 +310,8 @@ export function activateTaskWorld(world: string) {
     useCoachRequest.getState().take();
     useStaffRequest.getState().take();
     useContractTalk.getState().close();
+    useCupRequest.getState().take();
+    useLeagueSeason.getState().take();
   }
   useTaskMemory.getState().activate(world);
 }
@@ -575,15 +587,17 @@ export function beginTaskDetour(target: Page, address?: string) {
       ? (FIRST_TEAM_TABS.find(([id]) => id === (view ?? 'players'))?.[1] ?? '1군')
       : page === 'staff'
         ? (STAFF_TABS.find(([id]) => id === (view ?? 'manager'))?.[1] ?? '코치진')
-        : page === 'academy'
-          ? '유소년'
-          : page === 'history'
-            ? '클럽 시즌 기록'
-            : page === 'league' || page === 'leagueHistory'
-              ? '리그'
-              : page === 'europe' || page === 'cupHistory'
-                ? '컵 대회'
-                : '클럽 홈';
+        : page === 'training'
+          ? '훈련장'
+          : page === 'academy'
+            ? '유소년'
+            : page === 'history'
+              ? '클럽 시즌 기록'
+              : page === 'league' || page === 'leagueHistory'
+                ? '리그'
+                : page === 'europe' || page === 'cupHistory'
+                  ? '컵 대회'
+                  : '클럽 홈';
   useTaskMemory.setState({
     parents: prior.returning?.target === page ? [...prior.parents, prior.returning] : [],
     returning: { page, address: taskAddress(), label, target },

@@ -132,7 +132,7 @@ for (const { seed: worldSeed, ...viewport } of [
 
     // Start the shared clock on home; it keeps running on other views until the owner stops it.
     const date = page.getByTestId('game-date');
-    await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
+    await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
     await expect(date).toHaveText('1950년 8월 1일');
     await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
     await expect(date).toHaveText('1950년 8월 2일');
@@ -169,7 +169,7 @@ for (const { seed: worldSeed, ...viewport } of [
     // The owner suggests or orders right in 훈련 (→WEB-70, STAFF-19): a volunteer takes an order
     // without leaving.
     await page.getByRole('button', { name: /^수석코치에게 훈련 제안·강행/ }).click();
-    await expect(page).toHaveURL(/\/first-team\?view=training$/);
+    await expect(page).toHaveURL(/\/training$/);
     const sheet = page.getByRole('dialog', { name: '수석코치 훈련 제안' });
     await expect(sheet).toContainText('무급 자원봉사 코치는 강행해도 떠나지 않아요');
     await sheet.getByRole('button', { name: '하드 트레이닝 강행 · 사임 확률 0%' }).click();
@@ -213,13 +213,13 @@ for (const { seed: worldSeed, ...viewport } of [
     expect(planned.round).toBe(0);
     expect(abilities(planned)).toEqual(abilities(before));
 
-    await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
+    await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
     // An offer that arrived while the clock ran waits on home as a card; answer it first.
     await acknowledgeEvents(page);
     await watchNext(page, { manual: true });
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
-    await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
+    await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
     const settled = await exportWorld(page);
     expect(settled.round).toBe(1);
     expect(settled.ownMatches).toHaveLength(1);

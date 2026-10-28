@@ -5,9 +5,16 @@ import type { World } from '../../../../packages/contracts/src/types';
 import type { ClientState, GameClient } from '../runtime/client';
 import type { View } from '../runtime/protocol';
 import { gameStore, initialClientState } from '../runtime/store';
-import { NextMatchCard, OfficeEntrance, SeasonCard, TeamState } from './ClubHub';
+import { NextMatchCard, OfficeEntrance, SeasonCard, TeamState, CupBriefing } from './ClubHub';
+import korean from '../../public/presentation/locales/ko-KR.json';
 import { cashState, teamStates, type TeamStateItem } from './teamState';
 
+vi.mock('../presentation/react', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../presentation/react')>()),
+  useLocale: () => ({
+    t: (key: string) => korean.messages[key as keyof typeof korean.messages] ?? key,
+  }),
+}));
 vi.mock('../runtime/store', async (importOriginal) => {
   const original = await importOriginal<typeof import('../runtime/store')>();
   return {
@@ -127,7 +134,7 @@ describe('home season card', () => {
 
   it('groups the round, our rank and the record in one button above the progress rule', () => {
     const markup = render(true);
-    const button = markup.match(/<button[^>]*aria-label="시즌 상세"[^>]*>.*?<\/button>/)?.[0];
+    const button = markup.match(/<button[^>]*aria-label="현재 리그 보기"[^>]*>.*?<\/button>/)?.[0];
     expect(button).toBeDefined();
     for (const label of ['라운드', '리그 순위', '시즌 전적']) expect(button).toContain(label);
     expect(button).toContain('data-testid="hub-rank"');
@@ -150,13 +157,20 @@ describe('home season card', () => {
 });
 
 describe('facility entrances', () => {
-  it('offers three named compact visits with decorative background art (→WEB-11/39)', () => {
+  it('offers five real named place entrances with decorative background art (→WEB-11/39)', () => {
     const markup = renderToStaticMarkup(createElement(OfficeEntrance, { w: world() }));
     expect(markup).toContain('aria-label="구단 시설 방문"');
-    for (const label of ['구단주 사무실 입장', '감독 사무실 방문', '훈련장 방문'])
+    for (const label of [
+      '구단주 사무실 입장',
+      '감독 사무실 입장',
+      '코칭스태프실 입장',
+      '훈련장 입장',
+      '유소년 훈련장 입장',
+    ])
       expect(markup).toContain(`aria-label="${label}"`);
-    expect(markup.match(/<button/g)).toHaveLength(3);
-    expect(markup.match(/aria-haspopup="dialog"/g)).toHaveLength(2);
+    expect(markup.match(/<button/g)).toHaveLength(5);
+    expect(markup).not.toContain('aria-haspopup="dialog"');
+    expect(markup).not.toContain('준비 중');
     expect(markup.match(/aria-hidden="true"/g)?.length).toBeGreaterThanOrEqual(3);
     expect(markup).toContain('data-facility-art="training"');
     expect(markup).not.toContain('운영 방침');
@@ -244,5 +258,27 @@ describe('home condition warnings', () => {
     expect(
       renderConditions(states.map((state) => ({ ...state, advice: undefined }))),
     ).not.toContain('팀이 안정적이에요.');
+  });
+});
+
+describe('current competition briefing markup', () => {
+  it('names each precise competition and its actual participation state', () => {
+    const w = world();
+    w.clubs[0].country = 'ENG';
+    w.europe = [
+      {
+        key: 'ucl',
+        name: 'Champions League',
+        clubs: [],
+        rounds: [],
+        fixtures: [],
+        stage: '조별 리그',
+      },
+    ] as unknown as World['europe'];
+    const markup = renderToStaticMarkup(createElement(CupBriefing, { w }));
+    expect(markup).toContain('aria-label="잉글랜드 컵 현재 대회 보기"');
+    expect(markup).toContain('aria-label="Champions League 현재 대회 보기"');
+    expect(markup).toContain('대진 정보 없음');
+    expect(markup.match(/미참가/g)).toHaveLength(1);
   });
 });

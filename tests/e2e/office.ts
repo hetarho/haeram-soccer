@@ -47,7 +47,7 @@ export async function enterOffice(page: Page, options: { timeout?: number } = {}
     .getByRole('button')
     .filter({ has: page.locator('[data-pixel-icon="home"]') })
     .first();
-  if ((await home.getAttribute('aria-current')) !== 'page') await home.click(options);
+  if (new URL(page.url()).pathname !== '/journal') await home.click(options);
   const hub = page.getByTestId('club-hub');
   await expect(hub).toBeVisible();
   if (await covering.isVisible())
@@ -84,8 +84,9 @@ export async function officeLobby(page: Page) {
   await expect(officeTitle(page)).toHaveText(LOBBY);
 }
 
-/** Opens one office area (선수 계약, 스태프 계약, 투자, 후원, 구단 디자인, 결재라인 모아보기) from its lobby card. */
+/** Opens one office area (선수 계약, 스태프 계약, 재정·투자, 후원, 구단 디자인, 결재라인 모아보기) from its lobby card. */
 export async function openOfficeArea(page: Page, area: string, options: { timeout?: number } = {}) {
+  if (area === '투자') area = '재정·투자';
   if (area === '결재라인 모아보기') {
     const overview = page.getByRole('dialog', { name: area, exact: true });
     if (await overview.isVisible()) return;
@@ -147,7 +148,7 @@ export async function aroundOffice<T>(page: Page, action: () => Promise<T>) {
   await leaveOffice(page);
   const result = await action();
   if (area === LOBBY) await enterOffice(page);
-  else if (area === '투자' && libraryOpen !== null) await openOfficeLibrary(page);
+  else if (area === '재정·투자' && libraryOpen !== null) await openOfficeLibrary(page);
   else await openOfficeArea(page, area);
   return result;
 }

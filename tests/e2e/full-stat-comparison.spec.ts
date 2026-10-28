@@ -142,7 +142,7 @@ test('names a partial season start and sample through reload and import', async 
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   // A reload restores the page it left; the ledger comes back from the saved checkpoint.
-  await expect(nav(page).getByRole('button', { name: '시즌', exact: true })).toBeVisible();
+  await expect(nav(page).getByRole('button', { name: '클럽하우스', exact: true })).toBeVisible();
   expect(await coverage()).toBe(imported);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });

@@ -25,7 +25,7 @@ async function found(page: Page, seed = 'short-contract') {
 
 const tab = (page: Page, name: string) =>
   page
-    .getByRole('tablist', { name: name === '감독' || name === '스태프' ? '코치진' : '1군' })
+    .getByRole('tablist', { name: name === '스태프' ? '코칭스태프실' : '감독 사무실' })
     .getByRole('tab', { name: name === '선수' ? '선수 목록' : name, exact: true });
 /** 사람 from the tab bar or the sidebar; it opens on 선수. */
 const openPeople = (page: Page) => openPersonnel(page, 'players');
@@ -79,9 +79,9 @@ test.describe('사람 at 360x740', () => {
     await chooseLevel(page, 2);
     await setResponsibility(page, '스폰서 계약', 'delegated');
     await openPersonnel(page, 'players');
-    const tabs = page.getByRole('tablist', { name: '1군' }).getByRole('tab');
+    const tabs = page.getByRole('tablist', { name: '감독 사무실' }).getByRole('tab');
     // The manager market sits behind the manager's 교체, not in a tab of its own (→WEB-43).
-    await expect(tabs).toHaveText(['선수 목록', '이적시장', '훈련']);
+    await expect(tabs).toHaveText(['감독', '선수 목록', '이적시장']);
     await expect(tab(page, '선수')).toHaveAttribute('aria-selected', 'true');
     await expect(page).toHaveURL(/\/first-team\?view=players$/);
     for (const box of await tabs.evaluateAll((all) =>
@@ -89,7 +89,7 @@ test.describe('사람 at 360x740', () => {
     ))
       expect(box).toBeGreaterThanOrEqual(44);
     await openPersonnel(page, 'manager');
-    await expect(page).toHaveURL(/\/staff\?view=manager(?:&market=1)?$/);
+    await expect(page).toHaveURL(/\/first-team\?view=manager(?:&market=1)?$/);
     // The manager's office keeps what 육성 means one labelled disclosure away (→WEB-10/43); the
     // coaches wait in their tab.
     const youth = page.getByText('27세 미만 선수 성장').first();
@@ -173,7 +173,7 @@ test.describe('사람 at 360x740', () => {
     await expect(tab(page, '감독')).toHaveAttribute('aria-selected', 'true');
     const market = page.getByRole('dialog', { name: '감독 교체' });
     await expect(freeAgents(market).getByRole('article').first()).toBeVisible();
-    await expect(page).toHaveURL(/\/staff\?view=manager(?:&market=1)?$/);
+    await expect(page).toHaveURL(/\/first-team\?view=manager(?:&market=1)?$/);
     await market.getByRole('button', { name: '창 닫기' }).click();
     // The older staff addresses land on their tabs of 사람.
     await page.goto('/manager?view=coaches');
@@ -210,9 +210,9 @@ test('an unrenewed firefighter leaves at the close and the alert opens the marke
   const alert = page.getByRole('status').filter({ hasText: '감독이 떠났어요' });
   await expect(alert).toContainText('임시 감독이 팀을 맡고 있어요');
   await alert.getByRole('button', { name: '감독 선임하러 가기', exact: true }).click();
-  await expect(page.getByRole('tablist', { name: '코치진', exact: true })).toBeVisible();
+  await expect(page.getByRole('tablist', { name: '감독 사무실', exact: true })).toBeVisible();
   await expect(tab(page, '감독')).toHaveAttribute('aria-selected', 'true');
-  await expect(page).toHaveURL(/\/staff\?view=manager(?:&market=1)?$/);
+  await expect(page).toHaveURL(/\/first-team\?view=manager(?:&market=1)?$/);
   // The interim's market is open; it keeps at least four free agents (→STAFF-17).
   const market = page.getByRole('dialog', { name: '감독 선임' });
   await expect(market).toContainText('(임시 감독)');
@@ -266,7 +266,7 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   await setResponsibility(page, '선수 영입', 'direct');
   await openPeople(page);
   await hireFirefighter(page);
-  await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
+  await page.getByRole('button', { name: '클럽하우스', exact: true }).click();
   const progress = page.getByRole('region', { name: '시즌 진행', exact: true });
   const pace = progress.getByRole('combobox', { name: '자동 진행 배속', exact: true });
   const play = progress.getByRole('button', { name: '자동 진행 시작', exact: true }),

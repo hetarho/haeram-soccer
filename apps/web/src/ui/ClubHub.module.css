@@ -1,7 +1,7 @@
 .hub {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: 'header' 'stage' 'office' 'state' 'fixture';
+  grid-template-areas: 'header' 'competitions' 'links' 'stage' 'office' 'state' 'fixture';
   align-content: start;
   gap: 16px;
   width: 100%;
@@ -823,7 +823,7 @@ button.resources:active:not(:disabled) {
 @media (min-width: 1100px) {
   .hub {
     grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-    grid-template-areas: 'header office' 'stage stage' 'state state' 'fixture fixture';
+    grid-template-areas: 'header office' 'competitions competitions' 'links links' 'stage stage' 'state state' 'fixture fixture';
   }
   /* Strength takes its place in the one row of five conditions. */
   .state ul {
@@ -832,4 +832,35 @@ button.resources:active:not(:disabled) {
   .state li[data-condition='strength'] {
     grid-column: auto;
   }
+}
+
+.competitions {
+  grid-area: competitions;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 8px;
+  min-width: 0;
+}
+.competitions button {
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+  min-height: 44px;
+  padding: 8px 12px;
+  text-align: start;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.competitions small {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.clubLinks {
+  grid-area: links;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.clubLinks button {
+  min-height: 44px;
 }

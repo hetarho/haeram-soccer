@@ -171,13 +171,13 @@ describe('direction areas', () => {
     expect(areaBase(w, area('finance'))).toBeUndefined();
     send(w, { type: 'direction', key: 'finance', option: 'careful' });
     send(w, { type: 'direction', key: 'renewal', option: 'frugal' });
-    expect(areaSummary(w, area('finance'))).toBe('표준 · 신중');
-    expect(areaSummary(w, area('squad'))).toBe('표준 · 표준 · 짠물');
+    expect(areaSummary(w, area('finance'))).toBe('표준 · 신중 · 표준 · 짠물');
+    expect(areaSummary(w, area('squad'))).toBe('표준');
   });
 
   it('holds eight areas, 지역 and 글로벌 with the investment rows, every row once', () => {
     expect(DIRECTION_AREAS.map((area) => area.label)).toEqual([
-      '선수단·계약',
+      '선수단',
       '영입',
       '매각',
       '유소년',
@@ -365,7 +365,8 @@ describe('dial steps', () => {
     send(w, { type: 'policy', key: 'support', level: 1 });
     send(w, { type: 'direction', key: 'renewal', option: 'frugal' });
     // Card first, then each row in the area's order: a dial, then a direction row.
-    expect(areaSummary(w, area('squad'))).toBe('표준 · 긴축 · 짠물');
+    expect(areaSummary(w, area('squad'))).toBe('표준');
+    expect(areaSummary(w, area('finance'))).toBe('표준 · 표준 · 긴축 · 짠물');
     expect(areaSummary(w, area('scouting'))).toBe('데이터 스카우팅 · 즉시 전력 · 균형');
     // Direction rows before the academy dial, as the youth area lists them.
     expect(areaSummary(w, area('youth'))).toBe('표준 · 표준 · 표준 · 육성 강화');

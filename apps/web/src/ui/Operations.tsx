@@ -1,5 +1,5 @@
 import type { ProgressionController } from '../runtime/progression';
-import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import { useTaskMemory } from './taskMemory';
 import { ApprovalRequestHost } from './ApprovalRequestHost';
 import { stoppingEvents } from '../runtime/progression';
@@ -21,11 +21,8 @@ import {
 import { OfficeBar } from './OfficeBar';
 import { OfficeLobby } from './OfficeLobby';
 import { Dialog } from './Dialog';
-import { DIRECTION_AREAS } from './areas';
-import { areaBase, areaSummary } from './board';
+import { AreaCriteria } from './DirectionLines';
 import { DESK_AREAS, DESK_RESPONSIBILITIES } from './officeDesks';
-import { openDirection } from './state';
-import lines from './DirectionLines.module.css';
 
 /**
  * Five working desks compose the authoritative command panels and scoped criteria (→WEB-39).
@@ -80,7 +77,6 @@ export function OperationsView({
     officeView(new URLSearchParams(location.search).get('view')),
   );
   // An area opened from the lobby returns there through history, so browser back agrees.
-  const fromLobby = useRef(false);
   useEffect(() => {
     if (view !== 'lobby' || !backToLobby) return;
     backToLobby = false;
@@ -91,9 +87,8 @@ export function OperationsView({
     useTaskMemory.setState((memory) => ({
       scrolls: { ...memory.scrolls, [LOBBY_SCROLL]: scroller()?.scrollTop ?? 0 },
     }));
-    fromLobby.current = true;
     backToLobby = true;
-    history.pushState(null, '', officeAddress(next));
+    history.pushState({ officeLobbyDepth: 1 }, '', officeAddress(next));
     setView(next);
     requestAnimationFrame(() => scroller()?.scrollTo({ top: 0 }));
   };
@@ -102,9 +97,9 @@ export function OperationsView({
       returnApprovalHome();
       return;
     }
-    if (fromLobby.current) {
+    if (history.state?.officeLobbyDepth) {
       backToLobby = true;
-      history.back();
+      history.go(-history.state.officeLobbyDepth);
       return;
     }
     history.replaceState(null, '', officeAddress('lobby'));
@@ -120,7 +115,12 @@ export function OperationsView({
           title="구단주 사무실"
           client={client}
         />
-        <OfficeLobby w={w} sponsors={state.view!.sponsors} onOpen={openArea} />
+        <OfficeLobby
+          w={w}
+          sponsors={state.view!.sponsors}
+          pending={stoppingEvents(w).filter((item) => !!eventDesk(item))}
+          onOpen={openArea}
+        />
         {view === 'office' && (
           <Dialog label="결재라인 모아보기" wide centered onClose={toLobby}>
             <Suspense fallback={<p role="status">결재라인을 여는 중…</p>}>
@@ -166,7 +166,7 @@ export function OperationsView({
         ) : null}
         {!requestId && (
           <>
-            {DESK_RESPONSIBILITIES[id].length > 0 && (
+            {id !== 'players' && id !== 'staff' && DESK_RESPONSIBILITIES[id].length > 0 && (
               <Suspense fallback={null}>
                 <OwnerOffice
                   key={`${w.id}:${id}`}
@@ -176,27 +176,7 @@ export function OperationsView({
                 />
               </Suspense>
             )}
-            {DESK_AREAS[id].length > 0 && (
-              <section className={lines.lines} aria-label="적용 중인 업무 기준">
-                {DESK_AREAS[id].map((key) => {
-                  const area = DIRECTION_AREAS.find((area) => area.key === key)!;
-                  return (
-                    <button
-                      type="button"
-                      className={lines.line}
-                      data-ui="link"
-                      key={key}
-                      onClick={() => openDirection(key)}
-                    >
-                      <span>
-                        {area.label} · {areaSummary(w, area)} {areaBase(w, area)}
-                      </span>
-                      <small>기준 편집</small>
-                    </button>
-                  );
-                })}
-              </section>
-            )}
+            {id !== 'players' && id !== 'staff' && <AreaCriteria w={w} areas={DESK_AREAS[id]} />}
             {id === 'players' || id === 'staff' ? (
               personnel(id, client)
             ) : id === 'investment' ? (

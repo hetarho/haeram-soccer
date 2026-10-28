@@ -39,7 +39,7 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   // The office hides the menu, so a long tabbed page stands in for it (→WEB-39).
   await openPersonnel(page, 'training');
   const scroller = page.getByTestId('view-scroller');
-  await expect(page.getByRole('tablist', { name: '1군', exact: true })).toBeVisible();
+  await expect(page.getByTestId('training-focus')).toBeVisible();
   await scroller.evaluate((element) => element.scrollTo(0, 240));
   const before = await scroller.evaluate((element) => element.scrollTop);
   expect(before).toBeGreaterThan(0);
@@ -84,7 +84,7 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   expect(await page.evaluate(() => scrollY)).toBe(0);
 
   await more.click();
-  await expect(dialog.getByRole('button', { name: '1군', exact: true })).toHaveCount(0);
+  await expect(dialog.getByRole('button', { name: '감독 사무실', exact: true })).toHaveCount(0);
   await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(dialog).toHaveCount(0);
   await openPersonnel(page, 'players');

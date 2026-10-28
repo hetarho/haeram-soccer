@@ -15,7 +15,7 @@ async function identity(page: Page) {
 }
 async function manual(page: Page, all = false) {
   await dismissMatchReport(page);
-  await page.getByRole('button', { name: '클럽 홈', exact: true }).first().click();
+  await page.getByRole('button', { name: '클럽하우스', exact: true }).first().click();
   await configureResponsibilities(page, {
     responsibilities: all ? ALL_DELEGATED : { recruitment: 'delegated', sales: 'delegated' },
     mode: 'manual',

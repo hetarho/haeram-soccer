@@ -10,6 +10,7 @@ import { gameStore, initialClientState } from '../runtime/store';
 import { ApprovalRequestHost } from './ApprovalRequestHost';
 import type { ApprovalRequest } from './eventRouting';
 import { OfficeRow, OwnerOffice, PendingHandover } from './OwnerOfficeView';
+import { PLAYER_WORK_SCOPES } from './playerOfficeWork';
 import { DESK_RESPONSIBILITIES } from './officeDesks';
 import { officeBulkChange, officeProposal, officeSettings } from './officeChanges';
 vi.mock('../runtime/store', async (original) => ({
@@ -120,6 +121,22 @@ describe('owner office page', () => {
       expect(markup).toContain(`${value === 'direct' ? 0 : 9} / 9개 자동`);
     },
   );
+  it('scopes each player work confirmation to its single saved responsibility', () => {
+    for (const scope of Object.values(PLAYER_WORK_SCOPES)) {
+      const html = renderToStaticMarkup(
+        createElement(OwnerOffice, {
+          client: {} as GameClient,
+          controller,
+          scope: [scope.responsibility],
+        }),
+      );
+      expect(html.match(/>직접<\/button>/g)).toHaveLength(1);
+      expect(html.match(/>자동<\/button>/g)).toHaveLength(1);
+      expect(html).not.toContain('전체 자동');
+      expect(html).not.toContain('경기 전날 보고');
+      expect(html).not.toContain('경기 결과 알림');
+    }
+  });
   it('shares the editor with each desk without exposing unrelated authority or background settings', () => {
     const before = structuredClone(gameStore.getState().view!.world.settings);
     for (const desk of ['players', 'staff', 'sponsor'] as const) {

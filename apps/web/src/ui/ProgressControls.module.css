@@ -5,6 +5,7 @@
   align-items: center;
   justify-content: space-between;
   flex: none;
+  flex-wrap: wrap;
   gap: 8px;
   min-height: 50px;
   margin: 0;
@@ -249,4 +250,16 @@
   background: var(--accent-fill);
   border-color: var(--accent-edge);
   color: var(--on-accent);
+}
+
+.approvals {
+  min-height: 44px;
+  font-size: 12px;
+}
+@media (max-width: 760px) {
+  .approvals {
+    order: -1;
+    flex-basis: 100%;
+    text-align: left;
+  }
 }

@@ -213,7 +213,7 @@ for (const viewport of VIEWPORTS)
     // Saved, reloaded, exported and imported: the same aggregates, boundary and appearances.
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
-    await expect(nav(page).getByRole('button', { name: '시즌', exact: true })).toBeVisible();
+    await expect(nav(page).getByRole('button', { name: '클럽하우스', exact: true })).toBeVisible();
     // The records load after the page: wait for the line rather than read it at once.
     await expect(await coverageLine(page)).toHaveText(played);
     const raw = await exportRaw(page);
