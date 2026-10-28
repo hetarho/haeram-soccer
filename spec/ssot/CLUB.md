@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r42 | Define the browser-demo rules for squad and growth.
+> r43 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 20 players (→CLUB-40), a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating sits at its league's average club XI plus its difficulty level's offset (→WEB-3: 쉬움 0, 보통 −2, 어려움 −4, 최상 −6; ±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -65,16 +65,16 @@
 
 - CLUB-19 [o] Squad morale (0–100, new clubs 60) moves +6/+1/−6 after own wins/draws/defeats (±2 more for a two-goal margin; a motivator manager takes 2 off a defeat), drifts 15% per settled round toward a baseline of 58 + 4 per squad-investment level above standard + (manager trust − 50)/10 + the manager style, build and synergy terms + 1 for each 리더 in the last starting XI (at most 3, →PLAYER-9), within 30–80, falls 2 more per round while starters average fatigue ≥ 40, and 1 more in each settled round from the squad's third 하드 round in a row (→CLUB-11). Match strength adds (morale − 60)/10; older saves without morale stay exactly unchanged.
 
-- CLUB-20 [o] The owner does not run the dressing room: morale and fitness actions are requests to the manager or the staff, made once per cooldown (settled rounds since the last use). Requests that depend on people can work, do little or backfire; every chance is stated before the request and drawn from the world's own stream for that request and round. ← a chairman paying random bonuses or treating the squad himself is not how football clubs work
+- CLUB-20 [o] The owner does not run the dressing room: morale and fitness actions are requests to the manager or the staff, made once per cooldown (settled rounds since the last use). Every request exposes a concrete disadvantage as well as its possible gain: an expense/obligation, fatigue, morale/trust loss, or a real backfire outcome. Requests that depend on people can work, do little or backfire; every chance is stated before the request and drawn from the world's own stream for that request and round. ← a chairman paying random bonuses or treating the squad himself is not how football clubs work
   | request | by | cost (1901 units) | outcomes | cooldown |
   |---|---|---|---|---|
   | squad meeting | manager | free | works: morale +7 · nothing much: +2 · backfires: −3 and trust −2; works 0.5 + 0.2 for a motivator + (trust − 50)/200 + 0.1 when morale < 45 (0.2–0.9) | 4 |
   | team-building day | staff | 15 | morale +5 (75%) or +2 | 3 |
   | win bonus for the next 5 matches | owner | 8 per win, owed even when cash is short | morale +3 now, +2 after each win | 8 |
   | owner's dressing-room visit | owner | free | morale +4 (35%) / +1 (30%) / −3 and trust −3 (35%): an owner addressing the squad tends to undermine the manager | 4 |
-  | public vote of confidence | owner | free | trust +8, morale +2; not while trust ≥ 85 or for an interim | 10 |
+  | public vote of confidence | owner | free | trust +8, morale −2 as discontented players see the manager protected; not while trust ≥ 85 or for an interim | 10 |
   | short training camp | staff | 60 | morale +5, every active player fatigue −8 | 12 |
-  | rest days | manager | free | every active player fatigue −6, morale +2 | 4 |
+  | rest days | manager | free | every active player fatigue −6, morale −2 from losing shared preparation | 4 |
   | recovery support | staff | 30 | every active player fatigue −10 | 2 |
   | friendly match | operations | income 12 + supporters/600 (max 60) | every active player fatigue +8 | 4 |
   - insufficient cash fails cleanly; older saves without morale start from 60 when a request changes it; no request touches past matches.
@@ -269,6 +269,7 @@
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r43 261029 CLUB-20✎ requests may be unopposed gains→all disclose a real cost/obligation/adverse outcome; backing morale +2→−2, rest-day morale +2→−2; existing paid requests and stochastic chances preserved
 - r42 261019 CLUB-6✎ +the manager names the era's substitutes and the set-piece/penalty takers, never injured or suspended players; CLUB-23✎ own players after the match→every player during it, by minutes; CLUB-45+ suspended players unavailable, bans reported
 - r41 261016 CLUB-5✎ maximum squad size 26→the league's registration limit; CLUB-43✎ squad maximum→registration limit; CLUB-44+ real registration rules by country, division and year (ENG 25/25/22 from 2010/2020, ESP 25, ITA 25 and Serie B 18+2, POR 27/30, BEL 25, age exemptions) and a 40-player ceiling where none applied
 - r40 261016 CLUB-1✎ founding 18→20 players; CLUB-3✎ close top-up to 18 by generated youths→to 20, delegated academy call-ups first; CLUB-33✎ short squad under 18→under 20, +replacement needs before upgrades with daily looks, asking-fee bids (공격적 110%) accepting counters→bids by the 단장's trait; CLUB-40+ squad target 20; CLUB-41+ trait bidding (협상가 80% +5 a day to 100%, none 100%, 속전속결 110%); CLUB-42+ replacement need after a starter's departure or under 20; CLUB-43+ window-close academy call-ups
