@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r39 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r40 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -295,6 +295,7 @@
   - the chance's xG reads those bodies as part of its situation (→MATCH-11), so goals minus xG still measures finishing.
   - a block, a parry or a save the keeper cannot hold falls where the shot and the save send it; the players of both sides contest that second ball by who reaches it first (→MATCH-31), and an attacker who wins it near goal may shoot again at once.
   - the carrier weighs a blocked view when he chooses to shoot, more surely with better 판단력 (→MATCH-16); a blocked shot still counts as a shot (→MATCH-3).
+  - with an opponent carrying the ball in his box, the keeper comes off his line toward him along the line from the middle of his goal, narrowing the angle, most of the way and only so far out; closer, the chance is under his pressure. ← a keeper rooted on his line left a forward through on goal a goal far more often than real football; the chance he narrows, not the forward's hesitation, holds it (→MATCH-16)
 - MATCH-36 [o] Observed playback draws every player as a top-down human figure wearing his side's selected kit (→KIT-3/8, →WEB-49). ← a moving disc reads as a counter, not a footballer; seeing where a player faces and how he strikes the ball is why the match is watched
   - seen from directly above: a hair-covered head centred on shoulders wider than they are deep, arms at the sides, shorts, and legs with socks and boots that stride out in front and behind. The shirt pattern and trim show on the shoulders and back; goalkeepers wear their kit with gloves.
   - scale: the torso is as wide as the current player-marker diameter at each screen width (`markerRadius`, `apps/web/src/ui/pitchPainting.ts`); limbs, the ball and the number tag may extend beyond it. Detail reduces with size: at phone widths team colours, facing and large actions stay readable and pattern regions may merge.
@@ -325,6 +326,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r40 261029 MATCH-35✎ none→with an opponent carrying the ball in his box the keeper comes off his line toward him, narrowing the angle
 - r39 261028 MATCH-16✎ clear chance: no outfield opponent between him and goal and nobody closing him→no outfield opponent ahead of him, a chaser behind or beside not taking it away. MATCH-35✎ + an outfielder within a few metres of the shooter, any side, may block or deflect the shot as it is struck, by distance, 태클 and 위치선정
 - r38 261028 MATCH-32✎ none→with the ball central within 50 m of goal, a goal-side defender not pressing, marking or guarding a box zone moves across onto the ball–goal line at his depth by 위치선정
 - r37 261028 MATCH-16✎ none→a clear chance (no outfield opponent to goal, unpressed, box or within 20 m) is shot on most decisions, further out carried at goal, never squared or turned away unless a teammate is clearly better; + after beating his man he carries on or shoots, no backward ball; + a free teammate ahead preferred over a safe square/back ball; + clears only when pressed or in danger. MATCH-17✎ none→supporting players spread by 판단력 and 위치선정. MATCH-31✎ none→a misplaced pass leaves play only near a line, otherwise runs loose past its target

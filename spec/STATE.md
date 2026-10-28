@@ -15,9 +15,13 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| p9c3 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T14:22Z | 2026-10-28T15:04Z | T548 |
+| p9c3 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T14:22Z | 2026-10-28T15:48Z | - |
 
 ## inbox
+- 261029 decided MATCH-35 T548: goals 4.9 a match with the closing block alone, blocked shots past a third before they fell → the keeper comes off his line to a carrier in his box (MATCH r40, 0.8 of the way, at most 12 m): goals 3.18 at 600 (alt: stronger closing blocks, 44% blocked and on target out | a recovery sprint for beaten defenders, within noise).
+- 261029 decided MATCH-16 T548: clear-chance corridor 10 → 14 m on revision 7, fewer chased chances counted clear with the shot floor untouched (alt: keep 10 and carry it all on blocks).
+- 261029 decided MATCH-35 T548: a header has no closing men, its marker priced by its aerial duel as the path's header scale assumes (alt: close headers too).
+- 261029 suggest MATCH-35 T548: penalty goals 12.4% on revision 7 (keeper off his line fouls carriers) — next lever a keeper's smother or claim instead of a foul; goal-area shots 17.9% — a chased carrier in behind shoots earlier.
 - 261028 decided WEB-87 KIT-3 T551: the large kit sample stood still and its torso hid the shorts and socks it edits → every editor preview figure (large samples and pitch preview) is drawn at full pace a quarter into its gait, legs furthest apart; the pitch-preview journey checks socks, the large sample both (alt: a jog at three quarters pace, socks 8 px on the pitch | stride only the large sample).
 - 261028 decided T551: CI's 11 minutes in 8 nominal at 16× after revision 6 → the bound comes from the presentation clock's fastest stretch of the watched match (15 here) instead of a fixed 10 (alt: raise the constant to 12).
 - 261028 decided KIT-3 KIT-8 SAVE-20 T547: how to store shorts/socks and the goalkeeper kit → optional `parts`/`goalkeeper` on ClubIdentity with version 2 only when present, appearances version 2 with worn kits (alt: wrap every kit in a new outfit type | always write version 2); old builds read new saves as a newer game, existing v1 saves stay untouched.
@@ -357,7 +361,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 39 | 39 | - | 0 |
+| MATCH | 40 | 40 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -378,7 +382,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T548 | Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it | MATCH SAVE ARCH | - | todo |
 | T549 | One game version 0.7.0 for the app and the engine rules; 4.0.0 saves load as 0.7.0 | SAVE ARCH | - | todo |
 | T550 | BETA mark on every screen and v0.7 BETA on the start and save-slot screens | WEB SAVE ARCH | T549 | todo |
 
@@ -403,6 +406,7 @@
 - UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
+- 261029 T548 done (p9c3, explore 3 h): match-model revision 7 — chased forwards take the clear chance (corridor 14), men within 6 m close the shot down, MATCH r40 keeper off his line to a carrier in his box; 600 matches goals 3.18 (3.71), 26/37; penalty goals 12.4% and goal-area shots 17.9% the next levers.
 - 261029 fix match-figures (p9c3, owner): bodies face the drawn run and turn into a new one within 0.2 s (were the recorded velocities blended across the sample gap); a calm visible gait (6 m a cycle, reach 0.6, arms 0.55; 18.6 m showed none).
 - 261028 T551 done (p9c3): main CI fix after the figures/kits and forward-intent merges — editor samples mid-step, kit pixel floor, faster wornFigures, in-page goal-hold minute, clock-derived 16× bound, appearance digest.
 - 261028 create-task (f5j2): T548 MATCH r39, T549 SAVE r57, T550 WEB r167.
@@ -422,4 +426,3 @@
 - 261028 create-task KIT MATCH WEB SAVE start (pl1): player figures and full kits on branch feat/player-figures-kits.
 - 261028 T542 done and pushed at the owner's request after the unit stage: revision 6; 600-match goals 3.71 above the tolerance, follow-up in next.
 - 261028 update-ssot MATCH r38 (f5j2): MATCH-32 goal-side defenders move across onto the ball–goal line by 위치선정 with the ball central within 50 m.
-- 261028 T542 start (f5j2): revision 6, explore 3h.

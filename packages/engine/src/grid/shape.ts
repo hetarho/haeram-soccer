@@ -2,7 +2,7 @@
 import type { RoleId } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
 import type { Point } from './pitch';
-import { attackFrame, bandOf, clamp, LANE_EDGES, PITCH, toEngine } from './pitch';
+import { attackFrame, bandOf, clamp, inBox, LANE_EDGES, PITCH, toEngine } from './pitch';
 import { FORMATIONS, lineOf } from '../player';
 import { actionWeight } from '../match-weights';
 import type { MatchMath } from '../portable-math';
@@ -61,6 +61,8 @@ export const SHAPE_CONFIG = {
      * of the way onto that line.
      */
     screen: { from: 55, reach: 34, pull: 1 },
+    /** Revision 7 (T548, `keeperOut`): how far the keeper comes out to a carrier in his box. */
+    keeperOut: { share: 0.8, most: 12 },
     tactic: {
       possession: {
         advance: 7,
@@ -452,6 +454,8 @@ export function shapePlace(
   const bx = side === 0 ? s.ball[0] : PITCH.length - s.ball[0];
   const by = side === 0 ? s.ball[1] : PITCH.width - s.ball[1];
   if (own === 'GK') {
+    const out = keeperOut(s, side, bx, by);
+    if (out) return toEngine(side, out);
     const sweeper = slotOf(s, gp).role === 'sweeperKeeper';
     const df = (cache.defence[side] ??= lineX(s, side, 'DF'));
     const high = sweeper && df >= 40;
@@ -698,6 +702,22 @@ export function speedOf(s: GridState, gp: GridPlayer): number {
   return lostRecently(s, gp.side, SHAPE_CONFIG.transitionSeconds)
     ? v * SHAPE_CONFIG.recoverySpeed
     : v;
+}
+
+/**
+ * Revision 7 (T548, `SHAPE_CONFIG.candidate.keeperOut`): with an opponent carrying the ball in
+ * his box, the keeper comes off his line toward it along the line from his goal's middle, `share`
+ * of the way and at most `most` m out, narrowing the angle; `undefined` otherwise. `bx`, `by`: the
+ * ball in his side's attack frame (his goal at x 0).
+ */
+function keeperOut(s: GridState, side: 0 | 1, bx: number, by: number): Point | undefined {
+  if (!modelAtLeast(s.setup, 7) || s.possession === side || !s.owner) return undefined;
+  const K = SHAPE_CONFIG.candidate.keeperOut;
+  if (!inBox(attackFrame(other(side), s.ball))) return undefined;
+  const d = s.math.hypot(bx, by - CENTRE);
+  if (d <= 0) return undefined;
+  const reach = Math.min(K.most, d * K.share);
+  return [(bx / d) * reach, CENTRE + ((by - CENTRE) / d) * reach];
 }
 
 /** Every on-pitch player but the carrier takes a step toward his target. */

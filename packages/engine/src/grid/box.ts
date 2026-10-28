@@ -165,6 +165,14 @@ export const BOX_CONFIG = {
      * goals 8.7 → 18.0% (20–28%).
      */
     header: 0.15,
+    /**
+     * Revision 7 (T548, →MATCH-35; `closingBlockers`): as a shot with the foot is struck, every
+     * outfield opponent within `radius` m of the shooter who is not one of the bodies in its path
+     * closes it down — chasing, beside or in front — and blocks it with `block` × (1 − his distance
+     * / `radius`) × the mean of his 태클 and 위치선정 against `skill`, within 0–1, before the path's
+     * bodies and the keeper.
+     */
+    close: { radius: 6, block: 0.35, skill: 60 },
     rebound: {
       block: [4, 9] as readonly [number, number],
       save: [5, 10] as readonly [number, number],

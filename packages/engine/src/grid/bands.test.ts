@@ -70,8 +70,11 @@ describe('grid engine distributions', () => {
     // T542's revision 6 (clear chances taken, the ball kept in play, support spread) plays these
     // at 4.02 with 13.1 shots a team; its 600-match read is 3.71, above MATCH-23's tolerance
     // (2.06–3.44): the next lever is how often clear chances arise (a defence goal-side near its
-    // box), never fewer shots taken in them (MATCH-16).
-    expect(goals / n).toBeLessThanOrEqual(4.5);
+    // box), never fewer shots taken in them (MATCH-16). T548's revision 7 (a chased forward takes
+    // his chance, the men around him close it down, the keeper comes off his line to a carrier in
+    // his box) plays them at 3.33 with 16.1 shots a team; its 600-match read is 3.18 goals and 16.0
+    // shots, so the ceiling comes back to 3.9.
+    expect(goals / n).toBeLessThanOrEqual(3.9);
     expect(shots / n / 2).toBeGreaterThanOrEqual(9);
     expect(shots / n / 2).toBeLessThanOrEqual(17);
     expect(passes / n / 2).toBeGreaterThanOrEqual(350);
@@ -135,7 +138,10 @@ describe('grid engine distributions', () => {
     // play only near a line, MATCH-31) and the ball in play 62.5 min; its 600-match read is 3.71
     // goals, 9.7 throw-ins and 63.1 min. Goals and throw-ins sit outside MATCH-23's tolerance until
     // the defence keeps goal-side near its box and touchline duels exist (follow-ups in T542).
-    expect(goals / n).toBeLessThanOrEqual(5.0);
+    // T548's revision 7 plays them at 3.3, fouls 12.5, throw-ins 8.8 and the ball in play 60.9
+    // min; its 600-match read is 3.18 goals (inside the tolerance), 8.9 throw-ins and 61.6 min, so
+    // the goal ceiling comes back to 3.9 and throw-ins stay a follow-up.
+    expect(goals / n).toBeLessThanOrEqual(3.9);
     expect(fouls / n / 2).toBeGreaterThanOrEqual(9);
     expect(fouls / n / 2).toBeLessThanOrEqual(14);
     expect(throwIns / n / 2).toBeGreaterThanOrEqual(8);

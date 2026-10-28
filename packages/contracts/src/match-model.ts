@@ -36,6 +36,9 @@ import {
  * has the carrier take a clear chance, go on after beating his man, find a free man ahead and clear
  * only when pressed, keeps a misplaced pass in play away from the lines and spreads the supporting
  * players (T542, →MATCH-16, MATCH-17, MATCH-31); careers on revisions 1–5 take it the same way.
+ * Revision 7, the release of game version 0.7, lets a forward with nobody ahead of him take his
+ * clear chance though a man chases him, and has the outfielders within a few metres of the shooter
+ * close the shot down (T548, →MATCH-16, MATCH-35); careers on revisions 1–6 take it the same way.
  */
 export const MATCH_MODEL_REVISIONS = [
   'continuous-aggregate-1',
@@ -44,10 +47,11 @@ export const MATCH_MODEL_REVISIONS = [
   'continuous-aggregate-4',
   'continuous-aggregate-5',
   'continuous-aggregate-6',
+  'continuous-aggregate-7',
 ] as const;
 export type MatchModelRevision = (typeof MATCH_MODEL_REVISIONS)[number];
 /** The revision new careers and upgraded ones play. */
-export const MATCH_MODEL_REVISION: MatchModelRevision = 'continuous-aggregate-6';
+export const MATCH_MODEL_REVISION: MatchModelRevision = 'continuous-aggregate-7';
 export const isMatchModelRevision = (value: unknown): value is MatchModelRevision =>
   (MATCH_MODEL_REVISIONS as readonly unknown[]).includes(value);
 /** A revision's number: 1 for the first. */

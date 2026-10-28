@@ -9,6 +9,7 @@ import { setIntention } from './intentions';
 import { BAND_EDGES, cellOf, clamp, LANE_EDGES, toEngine, type Point } from './pitch';
 import {
   chanceXg,
+  closingBlockers,
   resolveShot,
   SHOT_CONFIG,
   shotBlockers,
@@ -273,9 +274,14 @@ describe('the bodies in front of goal (→MATCH-35, T445)', () => {
   it('a shot with nobody in its path is never blocked', () => {
     const from: Point = [90, 34];
     // Beside the triangle to the posts by more than `lane` (1.76 m off its edge, 1.71 m square to
-    // it), a step behind the ball and well wide; the keeper is no outfielder.
-    const s = shotLab(from, { 4: [100, 38.2], 5: [89, 34], 6: [96, 25] });
+    // it), behind the ball beyond closing reach (T548) and well wide; the keeper is no outfielder.
+    const s = shotLab(from, { 4: [100, 38.2], 5: [83, 34], 6: [96, 25] });
     expect(shotBlockers(s, 0, from)).toEqual([]);
+    expect(closingBlockers(s, 0, from, [])).toEqual([]);
+    // A step behind the ball he is no body in its path, but on revision 7 he closes it down.
+    const chased = shotLab(from, { 5: [89, 34] });
+    expect(shotBlockers(chased, 0, from)).toEqual([]);
+    expect(closingBlockers(chased, 0, from, []).map((b) => b.gp.idx)).toEqual([5]);
     expect(shoot(s, 5000, 'open').block).toBe(0);
     // With nobody in its path the shot's xG is the chance's.
     const tags = computeTags(s, 0, 9);

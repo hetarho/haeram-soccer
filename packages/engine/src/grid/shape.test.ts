@@ -697,3 +697,38 @@ describe('revision 6 spread and screen (T542, →MATCH-17, MATCH-32)', () => {
     expect(offLine(sixth, 50)).toBeCloseTo(offLine(fifth, 50), 9);
   });
 });
+
+describe('revision 7 keeper off his line (T548, →MATCH-35)', () => {
+  const [, , , , , sixth, seventh] = MATCH_MODEL_REVISIONS;
+  const K = SHAPE_CONFIG.candidate.keeperOut;
+  /** Side 1's keeper's target in side 0's frame with side 0's striker carrying it at `ball`. */
+  const keeper = (model: MatchModelRevision, ball: Point, owner = true) => {
+    const kit = gridKit(['balanced', 'balanced'], undefined, DISABLED_RELEASE);
+    const s = kit.state;
+    s.setup = { ...s.setup, model };
+    s.possession = 0;
+    s.owner = owner ? [0, 9] : undefined;
+    s.ball = toEngine(0, ball);
+    s.players[0][9]!.pos = [...s.ball];
+    return attackFrame(0, targetOf(s, 1, 0));
+  };
+
+  it('revision 7: the keeper comes off his line toward a carrier in his box, narrowing the angle', () => {
+    // 15 m out, straight in front: the keeper stands `share` of the way out, on the line to the ball.
+    const centre = keeper(seventh, [90, 34]);
+    expect(PITCH.length - centre[0]).toBeCloseTo(15 * K.share, 9);
+    expect(centre[1]).toBeCloseTo(34, 9);
+    // From an angle he stays on the line from his goal's middle to the ball, never beyond `most`.
+    const angled = keeper(seventh, [92, 22]);
+    const out = Math.hypot(PITCH.length - angled[0], angled[1] - 34);
+    expect(out).toBeLessThanOrEqual(K.most + 1e-9);
+    expect((34 - angled[1]) / (PITCH.length - angled[0])).toBeCloseTo((34 - 22) / 13, 9);
+    // On revision 6, outside his box or with the ball loose he keeps his place.
+    for (const held of [
+      keeper(sixth, [90, 34]),
+      keeper(seventh, [80, 34]),
+      keeper(seventh, [90, 34], false),
+    ])
+      expect(PITCH.length - held[0]).toBeLessThan(5);
+  });
+});
