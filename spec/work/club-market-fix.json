@@ -1,0 +1,404 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-10-28T17:13:23.746Z",
+  "sourceCommit": "1f4761feb72b982993e2e8c1ce746fa0afa8b4c1",
+  "group": {
+    "id": "club-market-fix",
+    "branch": "work/club-market-fix",
+    "status": "active",
+    "createdAt": "2026-10-28T17:01:41.642Z",
+    "limits": {
+      "workers": 1,
+      "reviewers": 1,
+      "maxPending": 8
+    },
+    "review": "all",
+    "lastRun": {
+      "id": "6abc1208-fa06-465c-8a96-25e8e4e181e8",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.160.1"
+        },
+        "reviewer": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.160.1"
+        }
+      },
+      "workers": [
+        {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.160.1"
+        }
+      ],
+      "startedAt": "2026-10-28T17:04:35.807Z",
+      "stoppedAt": "2026-10-28T17:13:22.500Z",
+      "dispatched": 1,
+      "outcome": "dispatch-limit",
+      "failures": [
+        {
+          "attempt": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+          "role": "worker",
+          "error": "T558: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+        }
+      ],
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    }
+  },
+  "summary": {
+    "total": 7,
+    "completed": 0,
+    "remaining": 7,
+    "running": 0,
+    "review": 0,
+    "blocked": 1,
+    "unassigned": 6
+  },
+  "tasks": [
+    {
+      "id": "T548",
+      "title": "Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it",
+      "dep": [],
+      "status": "todo"
+    },
+    {
+      "id": "T552",
+      "title": "Paged whole-world recruitment workbench",
+      "dep": [
+        "T558"
+      ],
+      "lane": "market-ui",
+      "status": "todo"
+    },
+    {
+      "id": "T553",
+      "title": "Consequential owner choices and shared place activity panels",
+      "dep": [
+        "T557"
+      ],
+      "lane": "place-choices",
+      "status": "todo"
+    },
+    {
+      "id": "T554",
+      "title": "Six-place navigation and competition clubhouse",
+      "dep": [],
+      "lane": "places-office",
+      "status": "todo"
+    },
+    {
+      "id": "T555",
+      "title": "Work-oriented owner office and scoped player approvals",
+      "dep": [
+        "T554"
+      ],
+      "lane": "places-office",
+      "status": "todo"
+    },
+    {
+      "id": "T556",
+      "title": "Connect place choices and verify the complete owner workflow",
+      "dep": [
+        "T552",
+        "T553",
+        "T555"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T558",
+      "title": "World market query and identity-based transfer engine",
+      "dep": [],
+      "lane": "market-engine",
+      "status": "blocked"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "group": "club-market-fix",
+      "taskId": "T558",
+      "tasks": [
+        "T558"
+      ],
+      "lane": "market-engine",
+      "owner": "6abc1208-fa06-465c-8a96-25e8e4e181e8/worker-1",
+      "contributors": [
+        "6abc1208-fa06-465c-8a96-25e8e4e181e8/worker-1"
+      ],
+      "status": "blocked",
+      "reason": "T558: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+      "createdAt": "2026-10-28T17:04:36.485Z",
+      "startCommit": "1f4761feb72b982993e2e8c1ce746fa0afa8b4c1",
+      "dispatch": {
+        "id": "a4a9ea05-2e9d-4919-8f0b-753083dd6b33",
+        "runner": "6abc1208-fa06-465c-8a96-25e8e4e181e8",
+        "role": "worker",
+        "slot": 1,
+        "provider": "codex",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-28T17:04:38.479Z",
+        "finishedAt": "2026-10-28T17:13:22.286Z",
+        "error": "T558: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+        "summary": "T558 overflow 선수의 실제 포지션 보존을 수정하고 LWB/RWB 회귀 테스트와 acceptance/result를 갱신했습니다. 영향 단위 테스트 653개, 타입·린트·포맷·diff 검사가 통과했습니다. 빌드·통합·e2e 검증은 호스트 최종 관문에 이월했으며 커밋하지 않았습니다."
+      }
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1671,
+      "at": "2026-10-28T17:01:41.671Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "club-market-fix",
+        "branch": "work/club-market-fix",
+        "status": "preparing",
+        "createdAt": "2026-10-28T17:01:41.642Z",
+        "limits": {
+          "workers": 1,
+          "reviewers": 1,
+          "maxPending": 8
+        },
+        "review": "all"
+      }
+    },
+    {
+      "sequence": 1672,
+      "at": "2026-10-28T17:01:42.787Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 1673,
+      "at": "2026-10-28T17:04:35.833Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "6abc1208-fa06-465c-8a96-25e8e4e181e8",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T17:04:35.807Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1674,
+      "at": "2026-10-28T17:04:36.485Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+        "group": "club-market-fix",
+        "taskId": "T558",
+        "tasks": [
+          "T558"
+        ],
+        "lane": "market-engine",
+        "owner": "6abc1208-fa06-465c-8a96-25e8e4e181e8/worker-1",
+        "contributors": [
+          "6abc1208-fa06-465c-8a96-25e8e4e181e8/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-28T17:04:36.485Z",
+        "startCommit": "1f4761feb72b982993e2e8c1ce746fa0afa8b4c1"
+      }
+    },
+    {
+      "sequence": 1675,
+      "at": "2026-10-28T17:04:38.206Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1676,
+      "at": "2026-10-28T17:04:38.479Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a4a9ea05-2e9d-4919-8f0b-753083dd6b33",
+          "runner": "6abc1208-fa06-465c-8a96-25e8e4e181e8",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T17:04:38.479Z"
+        }
+      }
+    },
+    {
+      "sequence": 1677,
+      "at": "2026-10-28T17:04:38.901Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a4a9ea05-2e9d-4919-8f0b-753083dd6b33",
+          "runner": "6abc1208-fa06-465c-8a96-25e8e4e181e8",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T17:04:38.479Z"
+        }
+      }
+    },
+    {
+      "sequence": 1679,
+      "at": "2026-10-28T17:13:21.931Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1680,
+      "at": "2026-10-28T17:13:22.225Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T558: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+      }
+    },
+    {
+      "sequence": 1681,
+      "at": "2026-10-28T17:13:22.286Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "a4a9ea05-2e9d-4919-8f0b-753083dd6b33",
+          "runner": "6abc1208-fa06-465c-8a96-25e8e4e181e8",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T17:04:38.479Z",
+          "finishedAt": "2026-10-28T17:13:22.286Z",
+          "error": "T558: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+          "summary": "T558 overflow 선수의 실제 포지션 보존을 수정하고 LWB/RWB 회귀 테스트와 acceptance/result를 갱신했습니다. 영향 단위 테스트 653개, 타입·린트·포맷·diff 검사가 통과했습니다. 빌드·통합·e2e 검증은 호스트 최종 관문에 이월했으며 커밋하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1682,
+      "at": "2026-10-28T17:13:22.500Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "6abc1208-fa06-465c-8a96-25e8e4e181e8",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T17:04:35.807Z",
+          "stoppedAt": "2026-10-28T17:13:22.500Z",
+          "dispatched": 1,
+          "outcome": "dispatch-limit",
+          "failures": [
+            {
+              "attempt": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+              "role": "worker",
+              "error": "T558: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    }
+  ]
+}
