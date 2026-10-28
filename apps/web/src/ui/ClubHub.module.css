@@ -686,8 +686,8 @@ button.resources:active:not(:disabled) {
   object-fit: cover !important;
   object-position: center !important;
 }
-.sceneArt::after,
-.officeArt::after {
+.scene .sceneArt::after,
+.office .officeArt::after {
   background: rgb(5 12 10 / 58%);
 }
 .sceneCaption,
