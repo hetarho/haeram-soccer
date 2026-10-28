@@ -16,7 +16,6 @@
 | u7m4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T00:48Z | 2026-10-28T02:00Z | T536 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | e7q4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T01:49Z | 2026-10-28T01:54Z | T537 |
-| u7m4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T00:48Z | 2026-10-28T00:48Z | - |
 
 ## inbox
 - 261028 decided WEB-11 WEB-72 T536: facility scope and image treatment → three compact background-art entrances with manager/training preparation notices, plus a larger cover-cropped stadium (alt: implement unplanned room activities | keep one large owner entrance); detailed room activities await their own planning.
@@ -377,7 +376,6 @@
 |---|---|---|---|---|
 | T536 | Compact facility entrances and app-wide spacing hierarchy | WEB ARCH | - | doing@261028.u7m4 |
 | T537 | European qualification by association, domestic results and titles | EURO ARCH | - | doing@261028.e7q4 |
-| T536 | Compact facility entrances and app-wide spacing hierarchy | WEB ARCH | - | doing@261028.u7m4 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -398,7 +396,6 @@
 ## next
 - implement-task T536: compact facility visits and shared UI spacing.
 - implement-task T537: correct association access, continental titleholders, EPS and qualification causes.
-- implement-task T536: compact home entrances, dimmed stadium and shared app spacing/control hierarchy.
 
 ## log
 - 261028 T536 planning shared for strict session claim; WEB r165.
@@ -421,4 +418,3 @@
 - 261028 sync origin/main: preserve automatic-play r162/r163 and serialize the gameplay redesign as WEB r164; T530/T531 remain complete.
 - 261028 T531 done: host finalized the verified child implementation and task commit.
 - 261028 T530 done: 141 affected unit cases, type/lint/format/build passed; host finalized the commit after restricted child Git writes.
-- 261028 create-task WEB r162: T530–T533 serial UI chain; existing performance tasks remain outside this requested slice.
