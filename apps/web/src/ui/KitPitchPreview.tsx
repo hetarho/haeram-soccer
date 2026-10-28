@@ -1,7 +1,9 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import type { MatchAppearance, ShirtDesign } from '../../../../packages/contracts/src/identity';
-import { previewLines } from './identityPreview';
-import { createKitPainter, type KitDrawOptions } from './kitPainting';
+import type { MatchAppearance } from '../../../../packages/contracts/src/identity';
+import { previewLines, previewPose } from './identityPreview';
+import { createFigurePainter, playerLook, type FigurePainter } from './figurePainting';
+import { matchLook } from './matchAppearance';
+import { drawNumberTag, numberTagStyle, placeNumberTags, type NumberTagInput } from './numberTags';
 import s from './KitPitchPreview.module.css';
 import {
   createGroundPainter,
@@ -30,25 +32,10 @@ export const PREVIEW_FORMATION: readonly (readonly [number, number])[] = [
   [45, 50],
   [43, 78],
 ];
-/** Anything that draws a shirt marker the way `KitPainter.draw` does. */
-interface MarkerPainter {
-  draw(
-    ctx: CanvasRenderingContext2D,
-    shirt: ShirtDesign,
-    x: number,
-    y: number,
-    radius: number,
-    options?: KitDrawOptions,
-  ): void;
-}
-/**
- * One still frame of the preview: the pitch, then both sides' outfield players in their selected
- * shirts and each keeper in its automatic colour, all through the shared shirt painter at the live
- * pitch's marker size, number font and outline.
- */
+/** One still frame at match scale, through observation's figure painter and upright number tags. */
 export function paintKitPreview(
   ctx: CanvasRenderingContext2D,
-  painter: MarkerPainter,
+  painter: Pick<FigurePainter, 'draw'>,
   appearance: MatchAppearance,
   width: number,
   height: number,
@@ -63,20 +50,38 @@ export function paintKitPreview(
   ctx.imageSmoothingEnabled = !skin.pixelSize;
   const pad = width * 0.065;
   const radius = markerRadius(width);
-  const options = {
-    dpr: skin.pixelSize ? 1 / skin.pixelSize : dpr,
-    outline: skin.markerOutline,
-    outlineWidth: skin.markerWidth,
-    font: `${Math.max(8, width * 0.012)}px ${font}`,
-  };
-  appearance.sides.forEach(({ shirt, goalkeeper }, side) => {
-    const keeper: ShirtDesign = { pattern: 'plain', primary: goalkeeper };
+  const look = matchLook({
+    home: appearance.sides[0].club,
+    away: appearance.sides[1].club,
+    appearance,
+  });
+  const tags: NumberTagInput[] = [];
+  look.sides.forEach(({ kit, keeperKit }, side) => {
     PREVIEW_FORMATION.forEach(([px, py], i) => {
       const x = pad + ((width - pad * 2) * (side === 0 ? px : 100 - px)) / 100;
       const y = pad + ((height - pad * 2) * py) / 100;
-      painter.draw(ctx, i === 0 ? keeper : shirt, x, y, radius, { ...options, number: i + 1 });
+      const id = `preview:${side}:${i}`;
+      const keeper = i === 0;
+      painter.draw(
+        ctx,
+        previewPose(id, keeper, [width / 2 - x, height / 2 - y]),
+        keeper ? keeperKit : kit,
+        {
+          x,
+          y,
+          radius,
+          dpr: skin.pixelSize ? 1 / skin.pixelSize : dpr,
+          look: playerLook(id),
+          outline: skin.markerOutline,
+          outlineWidth: skin.markerWidth,
+        },
+      );
+      tags.push({ id, number: i + 1, x, y, radius });
     });
   });
+  const style = numberTagStyle(skin, font);
+  for (const tag of placeNumberTags(tags, { width, height, avoid: [] }))
+    drawNumberTag(ctx, tag, style);
 }
 
 /**
@@ -97,7 +102,7 @@ export function KitPitchPreview({
   const skin = usePitchSkin(canvas);
   const [ground] = useState(() => createGroundPainter());
   // One painter, and so one sprite cache, per mounted preview.
-  const [painter] = useState(() => createKitPainter());
+  const [painter] = useState(() => createFigurePainter());
   const lines = previewLines(appearance, labels);
 
   useEffect(() => {

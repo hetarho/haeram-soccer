@@ -9,12 +9,19 @@ import {
   reduceIdentityDraft,
   type IdentityDraftAction,
 } from '../../apps/web/src/ui/clubIdentityDraft';
-import type { ClubIdentity } from '../../packages/contracts/src/identity';
+import { KIT_ROLES, type ClubIdentity } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
 import { openSaveMenu } from './save-menu';
 import { aroundOffice, leaveOffice, openOfficeArea, outsideOffice } from './office';
-import { savedWorld } from './club-identity-helpers';
+import {
+  savedWorld,
+  KIT_LABEL,
+  editKitParts,
+  editGoalkeeper,
+  goalkeeperTab,
+  applyDesign as applyAndCloseOutcome,
+} from './club-identity-helpers';
 
 /**
  * KIT-9/10/12, WEB-39/71/74/86, SAVE-20: 구단주 사무실 › 구단 디자인 keeps a per-career draft until an
@@ -407,4 +414,68 @@ test('a stale applied identity is never silently overwritten', async ({ page }) 
   await expect(colourCode(stale, '홈 색 코드')).toHaveValue('#123456');
   expect(await commands(page)).toBe(0);
   expect(await ownIdentity(page)).toEqual(newer);
+});
+
+test('shorts, socks and the designed keeper apply once and survive reload', async ({ page }) => {
+  test.slow();
+  await watchIdentityCommands(page);
+  await found(page, 'identity-management-kit-parts');
+  const before = await ownIdentity(page);
+  const view = await openDesign(page);
+  await goalkeeperTab(view);
+  // Merely inspecting the automatic draft neither creates a keeper nor enables apply.
+  await expect(applyButton(view)).toBeDisabled();
+  expect(ownClub(await savedWorld(page)).identity).toEqual(before);
+  const parts = {
+    home: { shorts: '#12AB34', socks: '#F1C23D' },
+    away: { shorts: '#42BCEF', socks: '#9C37DA' },
+    third: { shorts: '#A012BC', socks: '#CDEF12' },
+  };
+  for (const role of KIT_ROLES) await editKitParts(view, role, parts[role]);
+  const goalkeeper = {
+    shirt: {
+      pattern: 'chevron' as const,
+      primary: '#FACC15',
+      secondary: '#1E40AF',
+      trim: '#F0ABFC',
+    },
+    shorts: '#345678',
+    socks: '#ABCDEF',
+    gloves: '#FEDCBA',
+  };
+  await editGoalkeeper(view, goalkeeper);
+  await expect(applyButton(view)).toBeEnabled();
+  // Cancel restores the applied design, including absence of a designed keeper.
+  await bar(view).getByRole('button', { name: '되돌리기', exact: true }).click();
+  await expect(applyButton(view)).toBeDisabled();
+  for (const role of KIT_ROLES) await editKitParts(view, role, parts[role]);
+  await editGoalkeeper(view, goalkeeper);
+  await applyAndCloseOutcome(page, view);
+  const expected = { ...before, version: 2, parts, goalkeeper };
+  expect(ownClub(await savedWorld(page)).identity).toEqual(expected);
+  expect(await commands(page)).toBe(1);
+  await outsideOffice(page);
+  await page.reload();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  const reopened = await openDesign(page);
+  expect(ownClub(await savedWorld(page)).identity).toEqual(expected);
+  for (const role of KIT_ROLES) {
+    await reopened
+      .getByRole('group', { name: '편집할 유니폼', exact: true })
+      .getByRole('button', {
+        name: `${KIT_LABEL[role]} 유니폼`,
+        exact: true,
+      })
+      .click();
+    const label = KIT_LABEL[role];
+    await expect(colourCode(reopened, `${label} 하의 색 코드`)).toHaveValue(parts[role].shorts);
+    await expect(colourCode(reopened, `${label} 양말 색 코드`)).toHaveValue(parts[role].socks);
+  }
+  await goalkeeperTab(reopened);
+  await expect(colourCode(reopened, '골키퍼 장갑 색 코드')).toHaveValue(goalkeeper.gloves);
+  await expect(
+    reopened
+      .getByRole('group', { name: '골키퍼 유니폼 무늬', exact: true })
+      .getByRole('button', { name: '갈매기 무늬', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true');
 });

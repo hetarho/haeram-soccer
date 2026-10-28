@@ -151,7 +151,33 @@ describe('fixture kit selector markup (→WEB-88)', () => {
     expect(all.every((b) => b.disabled)).toBe(true);
     // Both sides' shirts and automatic keepers are shown before anything is committed.
     expect(html).toMatch(/aria-label="Kit Town (홈|어웨이|세컨) 유니폼: /);
-    expect(html).toContain(`골키퍼 자동 색 ${automatic.sides[1].goalkeeper}`);
+    expect(html).toContain(`골키퍼 착용 색 ${automatic.sides[1].goalkeeper}`);
+  });
+
+  it('states the keeper fallback', () => {
+    const w = structuredClone(W);
+    const club = w.clubs.find((c) => c.id === w.playerClub)!;
+    const identity = identityOf(w, w.playerClub);
+    club.identity = {
+      ...identity,
+      version: 2,
+      goalkeeper: {
+        shirt: { ...identity.kits.home },
+        shorts: '#123456',
+        socks: '#654321',
+        gloves: '#ABCDEF',
+      },
+    };
+    const before = structuredClone(club.identity);
+    const preview = fixtureKitAppearance(w, HOME, 'home');
+    expect(preview.sides[0].keeperFallback).toBe(true);
+    const html = render({ w, role: 'home' });
+    expect(html).toContain('data-testid="fixture-kit-keeper-fallback"');
+    expect(html).toContain(`이번 경기만 자동 색 ${preview.sides[0].goalkeeper}으로 대체해요.`);
+    expect(html).toContain('저장한 골키퍼 디자인은 그대로예요.');
+    expect(club.identity).toEqual(before);
+    club.identity.goalkeeper = structuredClone(preview.sides[0].keeper!);
+    expect(render({ w, role: 'home' })).not.toContain('data-testid="fixture-kit-keeper-fallback"');
   });
 
   it('marks automatic selection with no role checked and a stored role as chosen', () => {

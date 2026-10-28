@@ -11,6 +11,7 @@ import { clubIdentitySchema } from '../../packages/contracts/src/identitySchema'
 import type { World } from '../../packages/contracts/src/types';
 import { createIdentityDraft } from '../../packages/engine/src/club-identity';
 import { createWorld } from '../../packages/engine/src/index';
+import { canvasPixels, editKitParts, goalkeeperTab } from './club-identity-helpers';
 import { chooseOption } from './select';
 import { continueSlot, seedSlot } from './slots';
 
@@ -29,6 +30,9 @@ const CUSTOMISED: IdentityDraftAction[] = [
   { type: 'crest-preset', index: 4 },
   { type: 'shirt-pattern', role: 'away', pattern: 'halves' },
   { type: 'kit-colour', role: 'away', colour: '#E0218A' },
+  { type: 'part', role: 'away', part: 'shorts', colour: '#38BDF8' },
+  { type: 'part', role: 'away', part: 'socks', colour: '#FACC15' },
+  { type: 'keeper', patch: { gloves: '#00D4FF' } },
 ];
 
 /** The design a founding session starts from: its seed and the first country, ENG. */
@@ -81,23 +85,12 @@ async function customise(editor: Locator) {
     .getByRole('button', { name: '좌우 반반', exact: true })
     .click();
   await editor.getByLabel('어웨이 색 코드', { exact: true }).fill('#E0218A');
+  await editKitParts(editor, 'away', { shorts: '#38BDF8', socks: '#FACC15' });
+  await goalkeeperTab(editor);
+  await editor.getByLabel('골키퍼 장갑 색 코드', { exact: true }).fill('#00D4FF');
 }
 const useDesign = (editor: Locator) =>
   editor.getByRole('button', { name: '이 디자인 사용', exact: true }).click();
-
-/** Canvas pixels within a small distance of `hex`: the painted shirts, not a legend. */
-function colourPixels(canvas: Locator, hex: string) {
-  return canvas.evaluate((element, hex) => {
-    const c = element as HTMLCanvasElement;
-    const data = c.getContext('2d')!.getImageData(0, 0, c.width, c.height).data;
-    const [r, g, b] = [1, 3, 5].map((i) => Number.parseInt(hex.slice(i, i + 2), 16));
-    let count = 0;
-    for (let i = 0; i < data.length; i += 4)
-      if (Math.abs(data[i] - r) + Math.abs(data[i + 1] - g) + Math.abs(data[i + 2] - b) <= 30)
-        count++;
-    return count;
-  }, hex);
-}
 
 test('the exact previewed design is the founded identity after reload and continuing the slot', async ({
   page,
@@ -110,9 +103,21 @@ test('the exact previewed design is the founded identity after reload and contin
   const editor = await openDesign(page);
   // WEB-87: the pitch preview paints the shirt being edited while choosing, before 사용.
   const pitch = editor.getByRole('img', { name: '경기장 유니폼 미리보기' });
-  const before = await colourPixels(pitch, '#E0218A');
+  const before = await canvasPixels(pitch, '#E0218A');
   await customise(editor);
-  await expect.poll(() => colourPixels(pitch, '#E0218A')).toBeGreaterThan(before + 20);
+  // The large keeper sample includes the edited gloves; the pitch wears every selected part.
+  const keeperFigure = editor.getByRole('img', { name: /^골키퍼 유니폼 확대 미리보기:/ });
+  await expect.poll(() => canvasPixels(keeperFigure, '#00D4FF')).toBeGreaterThan(20);
+  await editor
+    .getByRole('group', { name: '편집할 유니폼', exact: true })
+    .getByRole('button', { name: '어웨이 유니폼', exact: true })
+    .click();
+  const figure = editor.getByRole('img', { name: /^어웨이 유니폼 확대 미리보기:/ });
+  for (const colour of ['#38BDF8', '#FACC15']) {
+    await expect.poll(() => canvasPixels(figure, colour)).toBeGreaterThan(20);
+    await expect.poll(() => canvasPixels(pitch, colour)).toBeGreaterThan(10);
+  }
+  await expect.poll(() => canvasPixels(pitch, '#E0218A')).toBeGreaterThan(before + 20);
   await useDesign(editor);
   await expect(editor).toHaveCount(0);
   // The summary on the basic screen shows the used crest.

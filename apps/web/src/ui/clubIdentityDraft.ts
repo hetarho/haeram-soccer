@@ -10,11 +10,18 @@ import {
   type CrestEmblem,
   type CrestPattern,
   type CrestShape,
+  type GoalkeeperKit,
   type IdentityColours,
   type KitRole,
   type ShirtDesign,
   type ShirtPattern,
 } from '../../../../packages/contracts/src/identity';
+import {
+  goalkeeperKitSchema,
+  normaliseIdentity,
+} from '../../../../packages/contracts/src/identitySchema';
+import { keeperAvoiding } from '../../../../packages/engine/src/kit-selection';
+import { automaticKeeper, startingShorts } from '../../../../packages/engine/src/kit-wear';
 
 /**
  * KIT-2/4/5/9/10/14, WEB-86: the club-design editor's draft as a pure reducer
@@ -24,6 +31,9 @@ import {
  * the editor's own UI state, not part of the identity.
  */
 export type IdentityDraftAction =
+  | { type: 'part'; role: KitRole; part: 'shorts' | 'socks'; colour: string | null }
+  | { type: 'keeper'; patch: Partial<GoalkeeperKit> | { shirt: Partial<ShirtDesign> } }
+  | { type: 'keeper-reset' }
   /** One of the three named shirt colours, linked to the crest and other shirt regions. */
   | { type: 'kit-colour'; role: KitRole; colour: string }
   /** A locally drawn composition, with all current colours and shirts preserved. */
@@ -104,15 +114,32 @@ function shirtOf(
 }
 /** A deep copy holding only the identity's own fields. */
 export function cloneIdentity(identity: ClubIdentity): ClubIdentity {
-  const { crest, kits } = identity;
-  const shirt = (role: KitRole) =>
-    shirtOf(kits[role].pattern, kits[role].primary, kits[role].secondary, kits[role].trim);
-  return {
-    version: 1,
+  const { crest, kits, goalkeeper } = identity;
+  const shirt = (s: ShirtDesign) => shirtOf(s.pattern, s.primary, s.secondary, s.trim);
+  return normaliseIdentity({
+    version: identity.version,
     colours: [...identity.colours] as IdentityColours,
     crest: crestOf(crest, crest.primary, crest.secondary, crest.accent),
-    kits: { home: shirt('home'), away: shirt('away'), third: shirt('third') },
-  };
+    kits: { home: shirt(kits.home), away: shirt(kits.away), third: shirt(kits.third) },
+    ...(identity.parts ? { parts: identity.parts } : {}),
+    ...(goalkeeper
+      ? {
+          goalkeeper: {
+            shirt: shirt(goalkeeper.shirt),
+            shorts: goalkeeper.shorts,
+            socks: goalkeeper.socks,
+            gloves: goalkeeper.gloves,
+          },
+        }
+      : {}),
+  });
+}
+
+/** A missing keeper is only a preview draft until a control changes it (KIT-8/15). */
+export function goalkeeperDraft(identity: ClubIdentity): GoalkeeperKit {
+  return (
+    identity.goalkeeper ?? automaticKeeper(keeperAvoiding(KIT_ROLES.map((r) => identity.kits[r])))
+  );
 }
 
 const withShirt = (value: ClubIdentity, role: KitRole, shirt: ShirtDesign): ClubIdentity => ({
@@ -179,14 +206,48 @@ export function reduceIdentityDraft(
   action: IdentityDraftAction,
 ): ClubIdentity {
   if ('colour' in action) {
-    // Only the optional regions — crest secondary/accent and shirt trim — can be removed.
+    // Removing an optional region clears it; removing a set part returns it to following.
     const optional =
       (action.type === 'crest-colour' && action.region !== 'primary') ||
-      (action.type === 'shirt-colour' && action.region === 'trim');
+      (action.type === 'shirt-colour' && action.region === 'trim') ||
+      action.type === 'part';
     if (action.colour === null ? !optional : !isDraftColour(action.colour)) return value;
   }
   const { colours, crest } = value;
   switch (action.type) {
+    case 'part': {
+      const parts = { ...value.parts };
+      const set = { ...parts[action.role] };
+      if (action.colour === null) delete set[action.part];
+      else set[action.part] = action.colour;
+      parts[action.role] = set;
+      return normaliseIdentity({ ...value, parts });
+    }
+    case 'keeper': {
+      const current = goalkeeperDraft(value);
+      const shirt = { ...current.shirt, ...action.patch.shirt };
+      const next = {
+        ...current,
+        ...action.patch,
+        shirt: shirtOf(
+          shirt.pattern,
+          shirt.primary,
+          shirt.secondary ?? startingShorts(current.shirt),
+          shirt.trim,
+        ),
+      };
+      if (
+        !goalkeeperKitSchema.safeParse(next).success ||
+        JSON.stringify(next) === JSON.stringify(current)
+      )
+        return value;
+      return normaliseIdentity({ ...value, goalkeeper: next });
+    }
+    case 'keeper-reset': {
+      const next = { ...value };
+      delete next.goalkeeper;
+      return normaliseIdentity(next);
+    }
     case 'kit-colour':
       return KIT_ROLES.includes(action.role)
         ? linkedIdentityColours(

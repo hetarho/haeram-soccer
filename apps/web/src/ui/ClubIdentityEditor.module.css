@@ -71,7 +71,7 @@
 }
 .roles {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 6px;
 }
 .choice {
@@ -165,4 +165,31 @@
 .composer {
   display: grid;
   gap: 12px;
+}
+.kitControls {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.part {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+}
+.part button {
+  justify-self: start;
+  min-height: 44px;
+}
+.editor :is(button, input):focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+@media (min-width: 600px) {
+  .roles {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .kitControls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

@@ -11,11 +11,14 @@ import {
   type CrestEmblem,
   type CrestPattern,
   type CrestShape,
-  type KitRole,
+  type ShirtPattern,
 } from '../../../../packages/contracts/src/identity';
+import { normaliseIdentity } from '../../../../packages/contracts/src/identitySchema';
+import { startingShorts, wornKit } from '../../../../packages/engine/src/kit-wear';
 import { CrestMark } from './ClubCrest';
 import {
   colourInput,
+  goalkeeperDraft,
   randomCrestAction,
   reduceIdentityDraft,
   type IdentityDraftAction,
@@ -25,6 +28,7 @@ import {
   KIT_ROLE_LABELS,
   PREVIEW_OPPONENTS,
   type PreviewOpponent,
+  type EditorKitRole,
 } from './identityPreview';
 import { SHIRT_PATTERN_LABELS } from './kitPainting';
 import { KitPitchPreview } from './KitPitchPreview';
@@ -196,7 +200,7 @@ export function ClubIdentityEditor({
 }) {
   const id = useId();
   const { crest, kits } = value;
-  const [role, setRole] = useState<KitRole>('home');
+  const [role, setRole] = useState<EditorKitRole>('home');
   // WEB-87: the pitch preview wears the shirt being edited against an example opponent.
   const [opponent, setOpponent] = useState<PreviewOpponent>('light');
   const preview = useMemo(
@@ -210,10 +214,16 @@ export function ClubIdentityEditor({
   const act = (action: IdentityDraftAction) => {
     if (readonly) return;
     const next = reduceIdentityDraft(value, action);
-    if (next !== value) onChange(next);
+    if (next !== value) onChange(normaliseIdentity(next));
   };
-  const shirt = kits[role];
-  const roleName = `${KIT_ROLE_LABELS[role]} 유니폼`;
+  const keeper = useMemo(() => goalkeeperDraft(value), [value]);
+  const worn = role === 'goalkeeper' ? keeper : wornKit(value, role);
+  const shirt = worn.shirt;
+  const roleName = role === 'goalkeeper' ? '골키퍼 유니폼' : `${KIT_ROLE_LABELS[role]} 유니폼`;
+  const patternAction = (pattern: ShirtPattern): IdentityDraftAction =>
+    role === 'goalkeeper'
+      ? { type: 'keeper', patch: { shirt: { pattern } } }
+      : { type: 'shirt-pattern', role, pattern };
   const partLabel = (parts: Pick<CrestDesign, 'shape' | 'emblem'>) =>
     `${CREST_SHAPE_LABELS[parts.shape]} · ${CREST_EMBLEM_LABELS[parts.emblem]}`;
   /** What the crest looks like after an action, for the choice that would take it. */
@@ -368,10 +378,28 @@ export function ClubIdentityEditor({
               <KitSwatch shirt={kits[kit]} label={`${KIT_ROLE_LABELS[kit]} 유니폼`} size={28} />
             </Choice>
           ))}
+          <Choice
+            label="골키퍼 유니폼"
+            pressed={role === 'goalkeeper'}
+            disabled={false}
+            onSelect={() => setRole('goalkeeper')}
+          >
+            <KitSwatch shirt={keeper.shirt} kit={keeper} label="골키퍼 유니폼" size={28} />
+          </Choice>
         </div>
         <div className={s.preview}>
-          <KitSwatch shirt={shirt} label={roleName} size={96} number={10} />
-          <p className={s.note}>골키퍼 색은 경기마다 두 팀 유니폼을 보고 자동으로 골라요.</p>
+          <KitSwatch
+            shirt={shirt}
+            kit={worn}
+            label={`${roleName} 확대 미리보기`}
+            size={160}
+            number={role === 'goalkeeper' ? 1 : 10}
+          />
+          <p className={s.note}>
+            {role === 'goalkeeper'
+              ? '골키퍼 유니폼은 한 벌을 디자인해요. 경기에서 구분하기 어려우면 그 경기만 자동 색으로 대체돼요.'
+              : '하의와 양말은 직접 고르기 전까지 유니폼 색을 따라가요.'}
+          </p>
         </div>
         <fieldset className={s.group}>
           <legend>{roleName} 무늬</legend>
@@ -382,11 +410,13 @@ export function ClubIdentityEditor({
                 label={SHIRT_PATTERN_LABELS[pattern]}
                 pressed={shirt.pattern === pattern}
                 disabled={readonly}
-                onSelect={() => act({ type: 'shirt-pattern', role, pattern })}
+                onSelect={() => act(patternAction(pattern))}
               >
                 <KitSwatch
                   shirt={
-                    reduceIdentityDraft(value, { type: 'shirt-pattern', role, pattern }).kits[role]
+                    role === 'goalkeeper'
+                      ? goalkeeperDraft(reduceIdentityDraft(value, patternAction(pattern))).shirt
+                      : reduceIdentityDraft(value, patternAction(pattern)).kits[role]
                   }
                   label={SHIRT_PATTERN_LABELS[pattern]}
                   size={28}
@@ -395,6 +425,85 @@ export function ClubIdentityEditor({
             ))}
           </div>
         </fieldset>
+        <div className={s.kitControls}>
+          {role === 'goalkeeper' && (
+            <>
+              <ColourField
+                label="골키퍼 상의"
+                hint="상의 기본색"
+                colour={shirt.primary}
+                disabled={readonly}
+                onColour={(primary) => act({ type: 'keeper', patch: { shirt: { primary } } })}
+              />
+              {shirt.pattern !== 'plain' && (
+                <ColourField
+                  label="골키퍼 보조색"
+                  hint="상의 무늬색"
+                  colour={shirt.secondary!}
+                  disabled={readonly}
+                  onColour={(secondary) => act({ type: 'keeper', patch: { shirt: { secondary } } })}
+                />
+              )}
+              <ColourField
+                label="골키퍼 테두리"
+                hint="소매와 목 테두리"
+                colour={shirt.trim ?? startingShorts(shirt)}
+                disabled={readonly}
+                onColour={(trim) => act({ type: 'keeper', patch: { shirt: { trim } } })}
+              />
+            </>
+          )}
+          {(['shorts', 'socks'] as const).map((part) => {
+            const label = `${role === 'goalkeeper' ? '골키퍼' : KIT_ROLE_LABELS[role]} ${part === 'shorts' ? '하의' : '양말'}`;
+            const follows = role !== 'goalkeeper' && value.parts?.[role]?.[part] === undefined;
+            return (
+              <div key={part} className={s.part}>
+                <ColourField
+                  label={label}
+                  hint={follows ? '유니폼 색을 따라가요' : '직접 고른 색'}
+                  colour={worn[part]}
+                  disabled={readonly}
+                  onColour={(colour) =>
+                    act(
+                      role === 'goalkeeper'
+                        ? { type: 'keeper', patch: { [part]: colour } }
+                        : { type: 'part', role, part, colour },
+                    )
+                  }
+                />
+                {role !== 'goalkeeper' && (
+                  <button
+                    type="button"
+                    disabled={readonly || follows}
+                    aria-label={`${label} 기본값으로`}
+                    onClick={() => act({ type: 'part', role, part, colour: null })}
+                  >
+                    기본값으로
+                  </button>
+                )}
+              </div>
+            );
+          })}
+          {role === 'goalkeeper' && (
+            <ColourField
+              label="골키퍼 장갑"
+              hint="두 손의 장갑색"
+              colour={keeper.gloves}
+              disabled={readonly}
+              onColour={(gloves) => act({ type: 'keeper', patch: { gloves } })}
+            />
+          )}
+        </div>
+        {role === 'goalkeeper' && (
+          <button
+            type="button"
+            className={s.toggle}
+            disabled={readonly || !value.goalkeeper}
+            onClick={() => act({ type: 'keeper-reset' })}
+          >
+            골키퍼 기본값으로
+          </button>
+        )}
       </fieldset>
 
       <fieldset className={s.section}>

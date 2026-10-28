@@ -16,6 +16,7 @@ import { competitionLabel } from './format';
 import { KIT_ROLE_LABELS } from './identityPreview';
 import { KitPitchPreview } from './KitPitchPreview';
 import { KitSwatch } from './KitSwatch';
+import { matchLook } from './matchAppearance';
 import { worldSelector } from './liveState';
 import s from './FixtureKitSelector.module.css';
 
@@ -105,6 +106,7 @@ export function FixtureKitView({
   const recommended = fixtureKitAppearance(w, fixture, null);
   const automatic = recommended.sides[own].role;
   const preview = role ? fixtureKitAppearance(w, fixture, role) : recommended;
+  const look = matchLook({ home: fixture.home, away: fixture.away, appearance: preview });
   const elsewhere =
     w.kitChoice && w.kitChoice.fixtureId !== fixture.id
       ? ownSeasonFixtures(w).find((f) => f.id === w.kitChoice!.fixtureId)
@@ -125,25 +127,34 @@ export function FixtureKitView({
             <div key={side.club} className={s.side}>
               <KitSwatch
                 shirt={side.shirt}
+                kit={look.sides[i].kit}
                 label={`${names[i]} ${KIT_ROLE_LABELS[side.role]} 유니폼`}
                 size={40}
                 number={10}
               />
               <KitSwatch
-                shirt={{ pattern: 'plain', primary: side.goalkeeper }}
-                label={`${names[i]} 골키퍼 자동 색 ${side.goalkeeper}`}
-                size={28}
+                shirt={look.sides[i].keeper}
+                kit={look.sides[i].keeperKit}
+                label={`${names[i]} 골키퍼 착용 색 ${side.goalkeeper}`}
+                size={40}
                 number={1}
               />
               <span>
                 <b>{names[i]}</b>
                 <small>
-                  {i === 0 ? '홈' : '원정'} · {KIT_ROLE_LABELS[side.role]} 유니폼 · 골키퍼 자동
+                  {i === 0 ? '홈' : '원정'} · {KIT_ROLE_LABELS[side.role]} 유니폼
                 </small>
               </span>
             </div>
           ))}
         </div>
+        {look.sides[own].keeperFallback && (
+          <p className={s.notice} role="status" data-testid="fixture-kit-keeper-fallback">
+            우리 골키퍼 유니폼이 이번 경기의 다른 유니폼과 비슷해요. 이번 경기만 자동 색{' '}
+            {look.sides[own].keeperKit.shirt.primary}으로 대체해요. 저장한 골키퍼 디자인은
+            그대로예요.
+          </p>
+        )}
         <p className={s.note} data-testid="fixture-kit-recommendation">
           자동 추천: 우리 {KIT_ROLE_LABELS[automatic]} 유니폼 · 상대{' '}
           {KIT_ROLE_LABELS[recommended.sides[1 - own].role]} 유니폼
