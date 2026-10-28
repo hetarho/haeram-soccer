@@ -15,14 +15,14 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | e7q4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T01:49Z | 2026-10-28T01:54Z | T537 |
-| u7m4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T00:48Z | 2026-10-28T02:00Z | T536 |
+| u7m4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T00:48Z | 2026-10-28T02:45Z | - |
+| f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T03:04Z | 2026-10-28T03:05Z | T538 |
 
 ## inbox
 - 261028 decided EURO-11 EURO-13 EURO-14: modern access fidelity → association quota bands, recorded five-year ranking and EPS, direct admission instead of new qualifiers, next-season activation (alt: keep uniform demo quotas | retcon active draws); keep the single domestic cup and explicitly label unmodelled EFL/domestic playoffs and eight-association ranking scope.
 - 261028 decided T531 WEB-100 WEB-74: how to keep request identity through submission and browser history → world-named request addresses and session snapshots, with a scoped client forwarding the existing forms/commands (alt: consume a one-shot request only | copy each form into the office); history can revisit resolved work safely, late replies cannot redirect another request/game, and business rules stay authoritative.
 - 261028 decided WEB-39 WEB-79: work grouping → player contracts (incl. youth), staff contracts (incl. manager), investment (finance/local/global/facilities), sponsors and identity; keep all seven saved responsibility keys (alt: merge stored responsibilities or retain an operating-policy gate). Shared inline controls and eligible direct actions use existing commands.
 - 261028 decided WEB-10 WEB-40 WEB-43: navigation depth → six primary entries Season/History/home/first-team/youth/coaching, with competition and people lenses inside each (alt: keep people and training as competing functional groups). Preserve old deep links and world-scoped context.
-- 261027 suggest WEB-69 T504: T504's shared skin frames every `[role=tab]` with a button frame and a quiet/canvas fill, while WEB-69 still says page tab bars have no filled or outlined boxes (label over a hairline, accent underline) — confirm the framed tabs in WEB-69 or restore hairline tabs
 - 261027 decided HIST-18 WEB-92: how to drop caretakers that never took a match → keep the tenure fact, leave interim tenures with no credited match or outcome out of every summary/list/count (alt: never record such an interim | hide every zero-match tenure, interim or not)
 - 261027 decided STAFF-47: what trust 0 means → at trust ≤10 a 10%/round resignation chance (25% at 0), certain resignation at the close at 0, warning notice on first reaching ≤10 (alt: trust drifts back toward 50 | morale-only penalty as now)
 - 261027 decided HIST-20 WEB-54: transfer fee rankings → structured own-club fee transfer facts, 영입/매각 boards all-time or by season in today's money, older careers ranked from ledger amounts by entry text (alt: ledger-only ranking | include free transfers)
@@ -352,7 +352,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 33 | 33 | - | 0 |
+| MATCH | 34 | 34 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -374,7 +374,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T537 | European qualification by association, domestic results and titles | EURO ARCH | - | doing@261028.e7q4 |
-| T536 | Compact facility entrances and app-wide spacing hierarchy | WEB ARCH | - | doing@261028.u7m4 |
+| T538 | Match-model revision 5: carriers take open ground, recycle only safely, never far back with room near the box | MATCH SAVE ARCH | - | doing@261028.f5j2 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -394,8 +394,8 @@
 
 ## next
 - implement-task T537: correct association access, continental titleholders, EPS and qualification causes.
-- implement-task T536: compact home entrances, dimmed stadium and shared app spacing/control hierarchy.
-- implement-task T536: compact facility visits and shared UI spacing.
+- implement-task T538: revision 5 carrier judgement (f5j2).
+- UI scope T536 is complete; await its main CI result. Manager/training room activities need separate product planning.
 
 ## log
 - 261028 create-task EURO r4: T537 covers allocation, recorded coefficients, compatibility and qualification explanation.
@@ -414,7 +414,7 @@
 - 261028 T533 done: host finalized the verified child implementation and task commit.
 - 261028 T532 done: host finalized the verified child implementation and task commit.
 - 261028 reconcile shared planning: local T530/T531 stay archived and complete; g8u6 continues T532/T533 under strict remote claims.
-- 261028 sync origin/main: preserve automatic-play r162/r163 and serialize the gameplay redesign as WEB r164; T530/T531 remain complete.
-- 261028 T531 done: host finalized the verified child implementation and task commit.
-- 261028 T530 done: 141 affected unit cases, type/lint/format/build passed; host finalized the commit after restricted child Git writes.
 - 261028 T536 planning shared for strict session claim; WEB r165.
+- 261028 T538 start (f5j2): revision 5 carrier judgement, explore 2h.
+- 261028 create-task MATCH r34: T538 opens revision 5 for the carrier's space, safe recycling and room near the box.
+- 261028 update-ssot MATCH start and r34 done: MATCH-16 space ahead, contested passes only forward, no far back pass with room near the box.
