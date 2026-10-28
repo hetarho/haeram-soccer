@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T15:17Z | - |
 
 ## inbox
 - 261028 decided KIT-3 KIT-8 SAVE-20 T547: how to store shorts/socks and the goalkeeper kit → optional `parts`/`goalkeeper` on ClubIdentity with version 2 only when present, appearances version 2 with worn kits (alt: wrap every kit in a new outfit type | always write version 2); old builds read new saves as a newer game, existing v1 saves stay untouched.
@@ -326,6 +327,10 @@
 - 261027 decided T518 ARCH-31: round-jobs.test.ts tier → integration (it advances days, which tests/config/test-tiers keeps out of unit), acceptance command updated (alt: keep it unit and shrink it below advanceDays)
 - 261028 decided WEB-11 WEB-72 T536: facility scope and image treatment → three compact background-art entrances with manager/training preparation notices, plus a larger cover-cropped stadium (alt: implement unplanned room activities | keep one large owner entrance); detailed room activities await their own planning.
 - 261028 decided ARCH-31 ARCH-34: whether release throughput stays a gate once the owner rules out targets in seconds ("작업한 기기에서 노이즈 이상으로 빨라지면 성공") → throughput is compared with the previous release on one machine and reported, capacity stays the only release gate, and a speed-up is judged by ARCH-34's paired same-machine call (alt: gate on not being slower than the previous release beyond the noise, which would block every model revision that adds football | keep the 1 ms / 15 s reference-machine budgets)
+- 261029 decided WEB-10 WEB-43 WEB-102: place terminology and interaction scope → 클럽하우스, 구단주 사무실, 감독 사무실, 코칭스태프실, 훈련장, 유소년 훈련장; reuse real manager/staff/training/academy choices with disclosed costs (alt: generic dashboard and coach room | decorative place events).
+- 261029 decided WEB-39 ECON-25: player-work grouping → 개요 then 계약/영입/매각/유소년 승격·방출 with scoped decision owner; culture in manager first-team work, support/renewal in finance (alt: one combined player policy block).
+- 261029 decided WEB-43: global market scope → every active player represented by the simulated world's supported clubs plus free agents, queried in pages with stable identity-based approaches and real source affiliations (alt: enlarge the scout list | download every generated roster into each worker view).
+- 261029 decided CLUB-20: free guaranteed backing/rest improvements → backing trades morale for manager trust and rest trades morale for fatigue recovery (alt: add random hidden penalties | add a new persistent expectations system); paid and stochastic actions retain their existing real disadvantages.
 
 ## ideation
 | id | st |
@@ -350,14 +355,14 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 167 | 167 | - | 0 |
+| WEB | 168 | 168 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
-| CLUB | 42 | 42 | - | 0 |
+| CLUB | 43 | 43 | - | 0 |
 | MATCH | 39 | 39 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
-| ECON | 38 | 38 | - | 0 |
+| ECON | 39 | 39 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 18 | 18 | - | 0 |
 | SAVE | 57 | 57 | - | 0 |
@@ -378,6 +383,11 @@
 | T548 | Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it | MATCH SAVE ARCH | - | todo |
 | T549 | One game version 0.7.0 for the app and the engine rules; 4.0.0 saves load as 0.7.0 | SAVE ARCH | - | todo |
 | T550 | BETA mark on every screen and v0.7 BETA on the start and save-slot screens | WEB SAVE ARCH | T549 | todo |
+| T552 | Paged world player market and identity-based approaches | WEB CLUB ARCH | - | todo |
+| T553 | Consequential owner choices and shared place activity panels | WEB CLUB ARCH | - | todo |
+| T554 | Six-place navigation and competition clubhouse | WEB ECON ARCH | - | todo |
+| T555 | Work-oriented owner office and scoped player approvals | WEB ECON ARCH | T554 | todo |
+| T556 | Connect place choices and verify the complete owner workflow | WEB CLUB ARCH | T552 T553 T555 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -396,10 +406,11 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- implement-task T548 (0.7 football: chased shots blocked by closing defenders, measured every step), T549 (game version 0.7.0), then T550 (BETA mark).
-- UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
+- club-places: implement T552 world market and T553 consequential choices in parallel with the T554→T555 places-office lane; T556 connects all results. Existing T548–T550 remain with their current sessions.
 
 ## log
+- 261029 cp29 create-task T552–T556: three independent lanes and convergence; task checks are isolated unit/quick/build, coordinator owns final batch.
+- 261029 cp29 update-ssot WEB r168 ECON r39 CLUB r43: six places, focused owner work, whole-world market and consequential choices; independent club-places checkout preserves live T548 changes.
 - 261028 create-task (f5j2): T548 MATCH r39, T549 SAVE r57, T550 WEB r167.
 - 261028 update-ssot (f5j2): MATCH r39 chased forward's clear chance and closing blocks; SAVE r57 one game version 0.7.0 (beta), 4.0.0 saves load as 0.7.0; WEB r167 WEB-101 BETA mark.
 - 261028 feat/player-figures-kits merge verified against main f5672a67 and feature 3a13057e: typecheck, lint, format:check, unit (175 files / 1,435 passed), contract (3 files / 47 passed), catalog/presentation validation and production build passed; the 12 pure kit-selection cases also passed (2 world-integration cases excluded). Full integration and browser suites omitted under the owner's requested unit/static scope.
@@ -417,6 +428,4 @@
 - 261028 create-task KIT MATCH WEB SAVE start (pl1): player figures and full kits on branch feat/player-figures-kits.
 - 261028 T542 done and pushed at the owner's request after the unit stage: revision 6; 600-match goals 3.71 above the tolerance, follow-up in next.
 - 261028 update-ssot MATCH r38 (f5j2): MATCH-32 goal-side defenders move across onto the ball–goal line by 위치선정 with the ball central within 50 m.
-- 261028 T542 start (f5j2): revision 6, explore 3h.
-- 261028 update-ssot MATCH r37 + create-task T542 (f5j2): MATCH-16 clear chances, beaten man, free man ahead, calm clearance; MATCH-17 spread support; MATCH-31 misplaced pass kept in play. MATCH-36/37 stay pending (pl1).
 - 261028 f5j2 end: T538/T539 pushed to main at the owner's request without the rerun batch (first batch: 3 integration failures, fixed or load timeouts passing alone; e2e not run locally).
