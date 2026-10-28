@@ -125,8 +125,13 @@ export const FIGURE_POSE_CONFIG = {
     shin: 0.95,
     upperArm: 0.62,
     forearm: 0.58,
-    /** Share of a limb's slack that bends the knee or elbow out of line. */
+    /** Share of an arm's slack that bends the elbow out of line. */
     bend: 0.35,
+    /**
+     * Share of a leg's slack that bends the knee forward. Seen from above most of a leg's slack is
+     * the hip's height over the foot, so a standing knee stays under the chest.
+     */
+    kneeBend: 0.12,
   },
   /** The ready stance standing and running, and the keeper's crouch with his hands out. */
   stance: { foot: [0.24, 0.14], hand: [0.54, 0.04] },
@@ -439,21 +444,20 @@ function actionLayer(
   return layer;
 }
 
-/** The middle joint of a limb from `root` to `end`, bent toward `out` by as much slack as the limb has. */
+/** The middle joint of a limb from `root` to `end`, bent toward `out` by `bend` of the limb's slack. */
 function limb(
   root: FigurePoint,
   end: FigurePoint,
   a: number,
   b: number,
   out: FigurePoint,
+  bend: number,
 ): FigureLimb {
   const length = Math.hypot(end[0] - root[0], end[1] - root[1]);
   // A limb never comes apart: an end beyond its reach is drawn at full stretch.
   const reach = length > a + b ? (a + b) / length : 1;
   const tip = lerp(root, end, reach);
-  const slack =
-    (Math.sqrt(Math.max(0, (a + b) ** 2 - (length * reach) ** 2)) / 2) *
-    FIGURE_POSE_CONFIG.body.bend;
+  const slack = (Math.sqrt(Math.max(0, (a + b) ** 2 - (length * reach) ** 2)) / 2) * bend;
   const along = lerp(root, tip, a / (a + b));
   return { root, joint: [along[0] + out[0] * slack, along[1] + out[1] * slack], end: tip };
 }
@@ -590,13 +594,18 @@ export function poseAt(
       B.thigh,
       B.shin,
       turn([side(i) * 0.29, 0.96], twist),
+      B.kneeBend,
     ),
   );
   const arms = [0, 1].map((i) =>
-    limb([side(i) * B.shoulder[0], B.shoulder[1]], hands[i]!, B.upperArm, B.forearm, [
-      side(i) * 0.93,
-      -0.37,
-    ]),
+    limb(
+      [side(i) * B.shoulder[0], B.shoulder[1]],
+      hands[i]!,
+      B.upperArm,
+      B.forearm,
+      [side(i) * 0.93, -0.37],
+      B.bend,
+    ),
   );
   return {
     facing: wrap(facing + upper + roll),

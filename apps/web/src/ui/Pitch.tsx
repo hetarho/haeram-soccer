@@ -35,8 +35,13 @@ const MatchReport = lazy(() =>
 import { MatchMoments } from './MatchMoments';
 import { MatchCharts } from './MatchCharts';
 import { CrestMark } from './ClubCrest';
-import { createKitPainter } from './kitPainting';
-import { createGroundPainter, markerRadius, paintPitchBall } from './pitchPainting';
+import { figureActionWindows } from './figureActions';
+import { createFigurePainter, figurePoint, playerLook, type PlayerLook } from './figurePainting';
+import { gaitDistances, poseAt, type FigurePose } from './figurePose';
+import { reducedMotion } from './motion';
+import { drawNumberTag, numberTagStyle, placeNumberTags } from './numberTags';
+import { figureInputs, type PitchFigure } from './pitchFigures';
+import { createGroundPainter, markerRadius, paintPitchBall, type PitchSkin } from './pitchPainting';
 import { usePitchSkin } from './usePitchSkin';
 import { keepersBySample, matchLook, UNRECORDED_KIT } from './matchAppearance';
 import { incidentFrame, sampleAt, sentOff } from './moments';
@@ -81,25 +86,57 @@ const intentionLabels: Partial<Record<NonNullable<PlayerMotion['intention']>['ki
 /** What the inspector says a player is doing: an intention he still holds that has a label, else his motion state. */
 const motionLabel = ({ state, intention }: PlayerMotion) =>
   (intention && !intention.ended && intentionLabels[intention.kind]) || stateLabels[state];
-/**
- * An archived match without motion stands each side in this fixed shape: an illustration of its
- * shirts, not of any recorded player, with the keeper on his line.
- */
-const initialShape: { at: [number, number]; keeper?: true }[] = [
-  { at: [5, 50], keeper: true },
-  { at: [22, 15] },
-  { at: [20, 38] },
-  { at: [20, 62] },
-  { at: [22, 85] },
-  { at: [46, 25] },
-  { at: [43, 50] },
-  { at: [46, 75] },
-  { at: [72, 20] },
-  { at: [76, 50] },
-  { at: [72, 80] },
-];
 /** Height (pitch units) at which a lofted ball reaches its largest drawn size. */
 const BALL_PEAK = MATCH_MOTION_CONFIG.ball.maxLoft;
+/** A still figure facing up the screen, drawn off-screen only to build the worn kits' torso sprites. */
+const WARM_POSE: FigurePose = poseAt(
+  {
+    id: '',
+    keeper: false,
+    time: 0,
+    position: [50, 50],
+    speed: 0,
+    velocity: [0, 0],
+    velocityBefore: [0, 0],
+    toBall: [0, -1],
+    ballHeight: 0,
+    carrier: false,
+    distance: 0,
+  },
+  undefined,
+  { reducedMotion: true },
+);
+const NO_KEEPERS: readonly [undefined, undefined] = [undefined, undefined];
+
+/**
+ * How the ball is drawn `height` above the pitch (ball track units) on a pitch `width` px wide and
+ * `fh` px deep: a lofted ball rises over its shadow, looks closer and its shadow fades.
+ */
+function ballLook(height: number, width: number, fh: number) {
+  const air = Math.min(1, Math.max(0, height) / BALL_PEAK);
+  const size = Math.max(3.2, width * 0.0065);
+  return {
+    air,
+    radius: size * (1 + air * 0.35),
+    shadow: size * (1 - air * 0.3),
+    lift: (Math.max(0, height) * fh) / 100,
+  };
+}
+
+/** The ball over its point (x, y) on the grass, CSS px: the shadow stays on the ground. */
+function paintBall(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  ball: ReturnType<typeof ballLook>,
+  skin: PitchSkin,
+) {
+  ctx.fillStyle = `rgba(0, 0, 0, ${0.4 - ball.air * 0.18})`;
+  ctx.beginPath();
+  ctx.ellipse(x + 1.5, y + 2, ball.shadow, ball.shadow * 0.6, 0, 0, Math.PI * 2);
+  ctx.fill();
+  paintPitchBall(ctx, x, y - ball.lift, ball.radius, skin);
+}
 
 const phaseLabels = {
   possession: '볼 운반',
@@ -195,9 +232,21 @@ export function Pitch({
     for (const sample of samples) starts[sample.frame] ??= sample.time;
     return goalInstants(p.record, p.frames, starts);
   }, [p, samples]);
-  // Each player's place in his matchday roster (starters, then the bench) numbers his dot.
+  // Each player's place in his matchday roster (starters, then the bench) numbers his figure.
   const numbers = useMemo(
     () => new Map(p?.squads.flatMap((squad) => squad.map((player, i) => [player.id, i] as const))),
+    [p],
+  );
+  // What the figures are posed from besides the presented instant (→MATCH-37): every recorded
+  // action's window and every player's metres travelled, built once per playback.
+  const windows = useMemo(() => figureActionWindows(p?.frames ?? []), [p]);
+  const distances = useMemo(() => gaitDistances(samples), [samples]);
+  // Each player's own skin and hair (→MATCH-36), the same in every match.
+  const looks = useMemo(
+    () =>
+      new Map<string, PlayerLook>(
+        p?.squads.flatMap((squad) => squad.map((player) => [player.id, playerLook(player.id)])),
+      ),
     [p],
   );
   const names = useMemo(
@@ -210,8 +259,8 @@ export function Pitch({
   const look = useMemo(() => (p ? matchLook(p.record) : undefined), [p]);
   // Who is in goal in each sample, found by player over the whole matchday roster.
   const keepers = useMemo(() => keepersBySample(samples, p?.squads ?? [[], []]), [samples, p]);
-  // One painter, and so one sprite cache, per mounted pitch: rAF only blits cached shirts.
-  const [painter] = useState(() => createKitPainter());
+  // One painter, and so one torso-sprite cache, per mounted pitch: rAF only blits cached shirts.
+  const [painter] = useState(() => createFigurePainter());
   const [selectedSide, selectedIndex] = selection.split(':').map(Number);
   const visibleIndex = sampleMatchId === p?.record.id ? sampleIndex : 0;
   const sample = samples[Math.min(visibleIndex, samples.length - 1)];
@@ -316,7 +365,7 @@ export function Pitch({
   }, [summary]);
 
   useEffect(() => {
-    // Build the four shirt sprites (both outfield shirts, both keepers) for the size the pitch is
+    // Build the four torso sprites (both outfield kits, both keepers) for the size the pitch is
     // drawn at before the frame loop needs them, and again when that size changes, so the loop
     // below only blits cached sprites (ARCH-7).
     const element = canvas.current;
@@ -328,8 +377,16 @@ export function Pitch({
       const dpr = skin.pixelSize ? 1 / skin.pixelSize : Math.min(2, window.devicePixelRatio || 1);
       const radius = markerRadius(width);
       for (const side of look.sides)
-        for (const shirt of [side.shirt, side.keeper])
-          painter.draw(scratch, shirt, radius, radius, radius, { dpr });
+        for (const kit of [side.kit, side.keeperKit])
+          painter.draw(scratch, WARM_POSE, kit, {
+            x: radius * 3,
+            y: radius * 3,
+            radius,
+            dpr,
+            look: playerLook(''),
+            outline: skin.markerOutline,
+            outlineWidth: skin.markerWidth,
+          });
     };
     warm();
     if (typeof ResizeObserver === 'undefined') return;
@@ -345,6 +402,7 @@ export function Pitch({
       ? getComputedStyle(canvas.current).fontFamily
       : 'Galmuri11, sans-serif';
     const carrierMark = skin.carrier;
+    const tagStyle = numberTagStyle(skin, pitchFont);
     const draw = (time: number) => {
       const elapsed = last.current ? Math.min(60, time - last.current) : 0;
       last.current = time;
@@ -422,95 +480,6 @@ export function Pitch({
         const y = (v: number) => pad + (fh * v) / 100;
         if (p && current && look) {
           const radius = markerRadius(width);
-          let carrierAt: [number, number] | undefined;
-          const marker = {
-            dpr: skin.pixelSize ? 1 / skin.pixelSize : dpr,
-            outline: skin.markerOutline,
-            outlineWidth: skin.markerWidth,
-            font: `${Math.max(8, width * 0.012)}px ${pitchFont}`,
-          };
-          for (const side of [0, 1] as const) {
-            const { shirt, keeper: keeperShirt } = look.sides[side];
-            const keeper = keepers[index]?.[side];
-            // The players on the pitch in this sample; an archived match without motion stands
-            // its sides in a fixed shape.
-            const dots =
-              current.players?.[side].map((motion) => ({
-                motion,
-                position: motion.position,
-                target: next.players?.[side]?.find((m) => m.id === motion.id)?.position,
-                number: (numbers.get(motion.id) ?? 0) + 1,
-                keeper: motion.id === keeper,
-              })) ??
-              initialShape.map((base, i) => ({
-                motion: undefined,
-                position: [side === 0 ? base.at[0] : 100 - base.at[0], base.at[1]] as [
-                  number,
-                  number,
-                ],
-                target: undefined,
-                number: i + 1,
-                keeper: !!base.keeper,
-              }));
-            for (const { motion, position, target, number, keeper: isKeeper } of dots) {
-              const px = position[0] * (1 - mix) + (target?.[0] ?? position[0]) * mix;
-              const py = position[1] * (1 - mix) + (target?.[1] ?? position[1]) * mix;
-              const selected = inspect && !!motion && motion.id === selectedId;
-              if (selected && motion) {
-                ctx.strokeStyle = skin.selection;
-                ctx.lineWidth = 1.5;
-                ctx.setLineDash([4, 4]);
-                ctx.beginPath();
-                ctx.moveTo(x(px), y(py));
-                ctx.lineTo(x(motion.intent[0]), y(motion.intent[1]));
-                ctx.stroke();
-                ctx.setLineDash([]);
-                ctx.beginPath();
-                ctx.arc(x(motion.intent[0]), y(motion.intent[1]), 4, 0, Math.PI * 2);
-                ctx.stroke();
-              }
-              if (selected) {
-                ctx.beginPath();
-                ctx.arc(x(px), y(py), radius + 4, 0, Math.PI * 2);
-                ctx.strokeStyle = skin.selection;
-                ctx.lineWidth = 2;
-                ctx.stroke();
-              }
-              // The side's recorded shirt with its pattern and trim (or the unrecorded stand-in),
-              // or its keeper's colour.
-              painter.draw(ctx, isKeeper ? keeperShirt : shirt, x(px), y(py), radius, {
-                ...marker,
-                number,
-              });
-              if (motion && motion.id === ownership.carrierId) carrierAt = [x(px), y(py)];
-            }
-          }
-          // The recorded carrier, drawn over every shirt: a ring outside his and a pointer above,
-          // so his number and the ball stay clear.
-          if (carrierAt) {
-            const [cx, cy] = carrierAt;
-            const top = cy - radius - 6;
-            // A dark edge under the theme's mark keeps it clear on any shirt or stripe.
-            for (const [colour, width] of [
-              ['#101314', 4.5],
-              [carrierMark, 2.5],
-            ] as const) {
-              ctx.strokeStyle = colour;
-              ctx.lineWidth = width;
-              ctx.beginPath();
-              ctx.arc(cx, cy, radius + 3, 0, Math.PI * 2);
-              ctx.stroke();
-              ctx.beginPath();
-              ctx.moveTo(cx - 5, top - 6);
-              ctx.lineTo(cx + 5, top - 6);
-              ctx.lineTo(cx, top);
-              ctx.closePath();
-              ctx.lineJoin = 'round';
-              ctx.stroke();
-            }
-            ctx.fillStyle = carrierMark;
-            ctx.fill();
-          }
           let bx = current.ball[0] * (1 - mix) + next.ball[0] * mix;
           let by = current.ball[1] * (1 - mix) + next.ball[1] * mix;
           let bh = 0;
@@ -523,16 +492,133 @@ export function Pitch({
             by = a[1] * (1 - f) + b[1] * f;
             bh = a[2] * (1 - f) + b[2] * f;
           }
-          // The shadow stays on the ground; a lofted ball rises above it and looks closer.
-          const air = Math.min(1, Math.max(0, bh) / BALL_PEAK);
-          const ballRadius = Math.max(3.2, width * 0.0065) * (1 + air * 0.35);
-          const shadowRadius = Math.max(3.2, width * 0.0065) * (1 - air * 0.3);
-          const lift = (Math.max(0, bh) * fh) / 100;
-          ctx.fillStyle = `rgba(0, 0, 0, ${0.4 - air * 0.18})`;
-          ctx.beginPath();
-          ctx.ellipse(x(bx) + 1.5, y(by) + 2, shadowRadius, shadowRadius * 0.6, 0, 0, Math.PI * 2);
-          ctx.fill();
-          paintPitchBall(ctx, x(bx), y(by) - lift, ballRadius, skin);
+          // Every player on the pitch in this sample, posed from what the record says at this
+          // instant (→MATCH-37); an archived match without motion stands its sides in a fixed
+          // shape.
+          const figures = figureInputs(current, next, mix, {
+            time: now,
+            index,
+            timeline: timed,
+            distances,
+            mapping: { pad, fw, fh },
+            ball: [bx, by],
+            ballHeight: bh,
+            carrierId: ownership.carrierId,
+            keepers: keepers[index] ?? NO_KEEPERS,
+            numbers,
+          });
+          const poseOptions = {
+            reducedMotion: reducedMotion(),
+            unit: [fw / 100, fh / 100] as const,
+          };
+          const poses = figures.map(({ input }) =>
+            poseAt(input, windows.get(input.id), poseOptions),
+          );
+          // The ball goes with the figure holding it most firmly, eased from its track into his
+          // socket (→MATCH-37); that figure is drawn last, so no other body covers it.
+          let holder = -1;
+          poses.forEach((pose, i) => {
+            if (pose.ball && pose.ball.hold > (poses[holder]?.ball?.hold ?? 0)) holder = i;
+          });
+          let ballX = x(bx),
+            ballY = y(by),
+            ballHeight = bh;
+          const held = poses[holder]?.ball;
+          if (held) {
+            const { x: fx, y: fy } = figures[holder]!;
+            const [sx, sy] = figurePoint(poses[holder]!, held.at, { x: fx, y: fy, radius });
+            ballX += (sx - ballX) * held.hold;
+            ballY += (sy - ballY) * held.hold;
+            ballHeight += (held.height - ballHeight) * held.hold;
+          }
+          const ball = ballLook(ballHeight, width, fh);
+          // On the grass under the figures: the inspected player's chosen move and ring, and the
+          // recorded carrier's ring (→WEB-95), so neither hides a number or the ball.
+          let carrier: PitchFigure | undefined;
+          for (const figure of figures) {
+            const { motion } = figure;
+            if (motion && motion.id === ownership.carrierId) carrier = figure;
+            if (!inspect || !motion || motion.id !== selectedId) continue;
+            ctx.strokeStyle = skin.selection;
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(figure.x, figure.y);
+            ctx.lineTo(x(motion.intent[0]), y(motion.intent[1]));
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.beginPath();
+            ctx.arc(x(motion.intent[0]), y(motion.intent[1]), 4, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(figure.x, figure.y, radius + 4, 0, Math.PI * 2);
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          }
+          // A dark edge under the theme's mark keeps the carrier's cue clear on any ground or kit.
+          const cueEdges = [
+            ['#101314', 4.5],
+            [carrierMark, 2.5],
+          ] as const;
+          if (carrier)
+            for (const [colour, lineWidth] of cueEdges) {
+              ctx.strokeStyle = colour;
+              ctx.lineWidth = lineWidth;
+              ctx.beginPath();
+              ctx.arc(carrier.x, carrier.y, radius + 3, 0, Math.PI * 2);
+              ctx.stroke();
+            }
+          // Each side's recorded kit (or the unrecorded stand-in), its keeper in the keeper kit.
+          const paint = (i: number) => {
+            const { side, x: fx, y: fy, input } = figures[i]!;
+            const { kit, keeperKit } = look.sides[side];
+            painter.draw(ctx, poses[i]!, input.keeper ? keeperKit : kit, {
+              x: fx,
+              y: fy,
+              radius,
+              dpr: skin.pixelSize ? 1 / skin.pixelSize : dpr,
+              look: looks.get(input.id) ?? playerLook(input.id),
+              outline: skin.markerOutline,
+              outlineWidth: skin.markerWidth,
+              ball: i === holder ? () => paintBall(ctx, ballX, ballY, ball, skin) : undefined,
+            });
+          };
+          for (let i = 0; i < figures.length; i++) if (i !== holder) paint(i);
+          if (holder >= 0) paint(holder);
+          else paintBall(ctx, ballX, ballY, ball, skin);
+          // The carrier's pointer above him, over every figure.
+          const top = carrier ? carrier.y - radius - 6 : 0;
+          if (carrier) {
+            for (const [colour, lineWidth] of cueEdges) {
+              ctx.strokeStyle = colour;
+              ctx.lineWidth = lineWidth;
+              ctx.lineJoin = 'round';
+              ctx.beginPath();
+              ctx.moveTo(carrier.x - 5, top - 6);
+              ctx.lineTo(carrier.x + 5, top - 6);
+              ctx.lineTo(carrier.x, top);
+              ctx.closePath();
+              ctx.stroke();
+            }
+            ctx.fillStyle = carrierMark;
+            ctx.fill();
+          }
+          // Every number upright beside its figure, clear of the ball and the carrier's cue
+          // (→MATCH-36).
+          const avoid: [number, number, number][] = [[ballX, ballY - ball.lift, ball.radius]];
+          if (carrier)
+            avoid.push([carrier.x, carrier.y, radius + 3 + 2.25], [carrier.x, top - 3, 6]);
+          const tags = placeNumberTags(
+            figures.map(({ input, number, x: fx, y: fy }) => ({
+              id: input.id,
+              number,
+              x: fx,
+              y: fy,
+              radius,
+            })),
+            { width, height, avoid },
+          );
+          for (const tag of tags) drawNumberTag(ctx, tag, tagStyle);
         } else {
           ctx.fillStyle = skin.idleText;
           ctx.font = `14px ${pitchFont}`;
@@ -553,6 +639,9 @@ export function Pitch({
     goals,
     track,
     numbers,
+    windows,
+    distances,
+    looks,
     paused,
     speed,
     look,
@@ -778,7 +867,7 @@ export function Pitch({
           )}
         </div>
         {look && !look.recorded && (
-          // Older playback: neutral markers, never today's designs presented as this match's.
+          // Older playback: neutral stand-in kits, never today's designs presented as this match's.
           <span className={t.unrecorded} data-testid="match-kit-unrecorded">
             {UNRECORDED_KIT}
           </span>
