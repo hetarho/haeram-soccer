@@ -1,5 +1,5 @@
 import { KIT_ROLES, type ClubIdentity, type KitRole } from '../../contracts/src/identity';
-import { clubIdentitySchema } from '../../contracts/src/identitySchema';
+import { clubIdentitySchema, normaliseIdentity } from '../../contracts/src/identitySchema';
 import type { World } from '../../contracts/src/types';
 import { nextOwnFixture } from './calendar';
 import { clubOf } from './player-state';
@@ -13,10 +13,10 @@ import { clubOf } from './player-state';
 export const KIT_FIXTURE_CHANGED = '다음 경기가 변경됐어요. 유니폼을 다시 골라 주세요.';
 
 /**
- * KIT-9: applies a complete design to the own club — the command names no club — as a copy, and
- * moves the club's representative colour to its new primary. The whole design is checked first,
- * so a malformed one changes nothing; the replaced identity object is left as it was for any
- * snapshot still holding it.
+ * KIT-9: applies a complete design to the own club — the command names no club — as a normalised
+ * copy, and moves the club's representative colour to its new primary. The whole design, kit parts
+ * and goalkeeper kit included, is checked first, so a malformed one changes nothing; the replaced
+ * identity object is left as it was for any snapshot still holding it.
  */
 export function applyClubIdentity(w: World, identity: ClubIdentity) {
   if (!clubIdentitySchema.safeParse(identity).success)
@@ -26,7 +26,7 @@ export function applyClubIdentity(w: World, identity: ClubIdentity) {
   if (w.clubs.some((club) => !club.identity))
     throw new Error('구단 디자인 정보를 갱신한 뒤 다시 적용해 주세요.');
   const club = clubOf(w);
-  club.identity = structuredClone(identity);
+  club.identity = normaliseIdentity(identity);
   club.color = identity.colours[0];
 }
 

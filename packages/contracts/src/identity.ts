@@ -1,7 +1,7 @@
 /**
- * KIT-1–5, KIT-12: club identity vocabulary — representative colours, crest parts, three saved shirts,
- * a fixture's shirt choice and the appearance frozen on a played own match. Types and constants only:
- * no React, DOM, engine imports or random draws (spec/ssot/KIT.md).
+ * KIT-1–5, KIT-8, KIT-12: club identity vocabulary — representative colours, crest parts, three saved
+ * kits, the goalkeeper kit, a fixture's shirt choice and the appearance frozen on a played own match.
+ * Types and constants only: no React, DOM, engine imports or random draws (spec/ssot/KIT.md).
  */
 
 /** The 24 crest colours of WEB-49, in their original order. */
@@ -106,27 +106,70 @@ export interface ShirtDesign {
   secondary?: string;
   trim?: string;
 }
+/** KIT-3: a kit part the owner set; an absent part follows the starting rule until set. */
+export interface KitParts {
+  shorts?: string;
+  socks?: string;
+}
+/** KIT-8: the club's one designed goalkeeper kit — any shirt pattern, every colour free. */
+export interface GoalkeeperKit {
+  shirt: ShirtDesign;
+  shorts: string;
+  socks: string;
+  gloves: string;
+}
+/** What an outfield figure wears, always complete. */
+export interface WornKit {
+  shirt: ShirtDesign;
+  shorts: string;
+  socks: string;
+}
+/** What a goalkeeper figure wears, always complete: the designed kit or an automatic one. */
+export interface WornKeeper {
+  shirt: ShirtDesign;
+  shorts: string;
+  socks: string;
+  gloves: string;
+}
+/**
+ * Version 2 exactly when `parts` sets at least one part or `goalkeeper` is present; otherwise
+ * version 1 with neither field, so a save without them stays readable by older builds.
+ */
 export interface ClubIdentity {
-  version: 1;
+  version: 1 | 2;
   colours: IdentityColours;
   crest: CrestDesign;
   kits: Record<KitRole, ShirtDesign>;
+  parts?: Partial<Record<KitRole, KitParts>>;
+  goalkeeper?: GoalkeeperKit;
 }
 /** KIT-7: the owner's shirt for exactly one named unplayed own fixture. */
 export interface FixtureKitChoice {
   fixtureId: string;
   role: KitRole;
 }
+/**
+ * One side as it took the field. `goalkeeper` is the keeper shirt's base colour. Version-2
+ * appearances also carry the worn shorts, socks and keeper kit, and `keeperFallback` when the
+ * side's designed keeper kit gave way to an automatic one in this match (KIT-8, KIT-12).
+ */
 export interface AppearanceSide {
   club: string;
   crest: CrestDesign;
   role: KitRole;
   shirt: ShirtDesign;
   goalkeeper: string;
+  shorts?: string;
+  socks?: string;
+  keeper?: WornKeeper;
+  keeperFallback?: true;
 }
-/** KIT-12: what both sides actually wore, frozen when the own match settled. */
+/**
+ * KIT-12: what both sides actually wore, frozen when the own match settled. Version 2 exactly when
+ * the sides carry `shorts`, `socks` and `keeper`.
+ */
 export interface MatchAppearance {
-  version: 1;
+  version: 1 | 2;
   /** Home, then away. */
   sides: [AppearanceSide, AppearanceSide];
   warnings: KitWarning[];

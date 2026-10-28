@@ -1,17 +1,19 @@
 /**
- * KIT-3–5: the one geometry of the eight shirt patterns and the optional trim
- * (spec/ssot/KIT.md). Kit selection samples it and both Canvas previews paint it,
- * so a point gets the same colour everywhere. Pure data and arithmetic: no Canvas, DOM or React.
+ * KIT-3–5, KIT-7, MATCH-36: the one geometry of the eight shirt patterns and the optional trim
+ * (spec/ssot/KIT.md), on the tactical marker and on the player figure's torso. Kit selection samples
+ * the torso and the painters draw both, so a point gets the same colour everywhere. Pure data and
+ * arithmetic: no Canvas, DOM or React.
  *
  * Coordinates are normalized to the shirt's box, 0–1 on both axes, with y growing downward like
  * Canvas (y=0 is the top edge). The marker is the circle inscribed in the box: centre (0.5, 0.5),
- * radius 0.5.
+ * radius 0.5. The figure torso maps the same unit square onto the shoulders (`FIGURE_TORSO`).
  *
  * Edge convention, the same for every test here: all boundaries are inclusive. A point on a
  * pattern polygon's edge or vertex is inside it and takes the secondary colour; a point at distance
  * 0.5 from the centre is inside the marker; the trim ring includes both its inner (0.84) and outer
- * (1) normalized radius. "On" means within `EDGE_EPSILON`, so float rounding of a boundary point
- * written as a decimal does not flip its colour.
+ * (1) normalized radius; the torso includes its outline and the sleeve and collar bands their
+ * edges, while the head covers its own rim. "On" means within `EDGE_EPSILON`, so float rounding of
+ * a boundary point written as a decimal does not flip its colour.
  */
 import type { ShirtDesign, ShirtPattern } from '../../contracts/src/identity';
 
@@ -137,6 +139,15 @@ export function insideShirtTrim(x: number, y: number): boolean {
   return r >= SHIRT_TRIM_INNER - EDGE_EPSILON && r <= 1 + EDGE_EPSILON;
 }
 
+/** Secondary inside a pattern polygon, else the primary field. */
+function patternColourAt(shirt: ShirtDesign, x: number, y: number): string {
+  const secondary = shirt.secondary;
+  if (secondary !== undefined)
+    for (const polygon of REGIONS[shirt.pattern])
+      if (insidePolygon(polygon, x, y)) return secondary;
+  return shirt.primary;
+}
+
 /**
  * The colour a shirt shows at a normalized point: trim on the ring when the shirt has one (applied
  * last, over everything), else secondary inside a pattern polygon, else the primary field. Returns
@@ -145,9 +156,68 @@ export function insideShirtTrim(x: number, y: number): boolean {
  */
 export function shirtColourAt(shirt: ShirtDesign, x: number, y: number): string {
   if (shirt.trim !== undefined && insideShirtTrim(x, y)) return shirt.trim;
-  const secondary = shirt.secondary;
-  if (secondary !== undefined)
-    for (const polygon of REGIONS[shirt.pattern])
-      if (insidePolygon(polygon, x, y)) return secondary;
-  return shirt.primary;
+  return patternColourAt(shirt, x, y);
+}
+
+/**
+ * The torso of a top-down player figure (MATCH-36), seen from directly above. Its unit square runs x
+ * across the shoulders from the player's left (0) to his right (1) and y from the chest (0) to the
+ * back (1); the shoulders are `aspect` times as wide as they are deep. Each length names its unit:
+ * - `cornerRadius`: of the depth, so `cornerRadius / aspect` across and `cornerRadius` deep;
+ * - `sleeveTrim`: of the width, the trim band at each shoulder end;
+ * - `head.r`: of the width, a circle on the body, so `r` across and `r * aspect` deep;
+ * - `collar.rx` across and `collar.ry` deep in their own axes, the ellipse around the head; its trim
+ *   band is `collar.band` of the width wide, inside the ellipse.
+ * The head hides the shirt under it; the collar band is the ring the head leaves showing.
+ */
+export const FIGURE_TORSO = Object.freeze({
+  aspect: 2.5,
+  cornerRadius: 0.45,
+  sleeveTrim: 0.07,
+  collar: Object.freeze({ cx: 0.5, cy: 0.42, rx: 0.25, ry: 0.625, band: 0.05 }),
+  head: Object.freeze({ cx: 0.5, cy: 0.42, r: 0.2 }),
+});
+
+/** A point's normalized radius in an axis-aligned ellipse: 1 on its outline. */
+function ellipseRadius(x: number, y: number, cx: number, cy: number, rx: number, ry: number) {
+  return Math.hypot((x - cx) / rx, (y - cy) / ry);
+}
+
+/**
+ * Whether a torso point shows its shirt from above: inside the rounded rectangle, outline included,
+ * and outside the head circle, whose rim the head covers.
+ */
+export function insideFigureTorso(x: number, y: number): boolean {
+  const { aspect, cornerRadius, head } = FIGURE_TORSO;
+  if (x < -EDGE_EPSILON || x > 1 + EDGE_EPSILON || y < -EDGE_EPSILON || y > 1 + EDGE_EPSILON)
+    return false;
+  // Past a corner's centre, the point must lie within that corner's quarter ellipse.
+  const rx = cornerRadius / aspect,
+    ry = cornerRadius;
+  const dx = Math.max(rx - x, 0, x - (1 - rx)),
+    dy = Math.max(ry - y, 0, y - (1 - ry));
+  if (Math.hypot(dx / rx, dy / ry) > 1 + EDGE_EPSILON) return false;
+  return ellipseRadius(x, y, head.cx, head.cy, head.r, head.r * aspect) > 1 + EDGE_EPSILON;
+}
+
+/** Whether a torso point lies on a sleeve band or the collar band, their edges included. */
+export function insideFigureTrim(x: number, y: number): boolean {
+  const { aspect, sleeveTrim, collar } = FIGURE_TORSO;
+  if (x <= sleeveTrim + EDGE_EPSILON || x >= 1 - sleeveTrim - EDGE_EPSILON) return true;
+  const { cx, cy, rx, ry, band } = collar;
+  return (
+    ellipseRadius(x, y, cx, cy, rx, ry) <= 1 + EDGE_EPSILON &&
+    ellipseRadius(x, y, cx, cy, rx - band, ry - band * aspect) >= 1 - EDGE_EPSILON
+  );
+}
+
+/**
+ * The colour a shirt shows at a torso point: trim on the sleeve and collar bands when the shirt has
+ * one, else the pattern colour of `shirtPatternRegions` in the same unit square. Returns the
+ * design's own colour string unchanged. Outside the visible torso it answers for the unclipped
+ * square; callers that need what is seen test `insideFigureTorso` first.
+ */
+export function figureShirtColourAt(shirt: ShirtDesign, x: number, y: number): string {
+  if (shirt.trim !== undefined && insideFigureTrim(x, y)) return shirt.trim;
+  return patternColourAt(shirt, x, y);
 }

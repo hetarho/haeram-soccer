@@ -2,8 +2,12 @@ import { describe, it, expect } from 'vitest';
 import { SHIRT_PATTERNS } from '../../contracts/src/identity';
 import type { ShirtDesign, ShirtPattern } from '../../contracts/src/identity';
 import {
+  FIGURE_TORSO,
   SHIRT_MARKER_RADIUS,
   SHIRT_TRIM_INNER,
+  figureShirtColourAt,
+  insideFigureTorso,
+  insideFigureTrim,
   insidePolygon,
   insideShirtMarker,
   insideShirtTrim,
@@ -230,5 +234,142 @@ describe('colours', () => {
   it('a shirt whose primary equals its secondary still shows one colour', () => {
     const same: ShirtDesign = { pattern: 'checks', primary: '#121212', secondary: '#121212' };
     expect(visibleColours(same)).toEqual(new Set(['#121212']));
+  });
+});
+
+/** The figure torso sampled at the centres of an n×n grid: ` ` hidden, else as `grid`. */
+function torso(design: ShirtDesign, n: number): string[] {
+  const glyph: Record<string, string> = {
+    [design.primary]: '.',
+    ...(design.secondary ? { [design.secondary]: '#' } : {}),
+    ...(design.trim ? { [design.trim]: 'T' } : {}),
+  };
+  return Array.from({ length: n }, (_, row) =>
+    Array.from({ length: n }, (_, col) => {
+      const x = (col + 0.5) / n,
+        y = (row + 0.5) / n;
+      return insideFigureTorso(x, y) ? glyph[figureShirtColourAt(design, x, y)] : ' ';
+    }).join(''),
+  );
+}
+
+describe('figure torso (→MATCH-36, KIT-7)', () => {
+  it('keeps the defined proportions, the collar ringing the head', () => {
+    expect(FIGURE_TORSO).toEqual({
+      aspect: 2.5,
+      cornerRadius: 0.45,
+      sleeveTrim: 0.07,
+      collar: { cx: 0.5, cy: 0.42, rx: 0.25, ry: 0.625, band: 0.05 },
+      head: { cx: 0.5, cy: 0.42, r: 0.2 },
+    });
+    const { aspect, collar, head } = FIGURE_TORSO;
+    // The collar's inner edge is the head's outline, so the band is what the head leaves showing.
+    expect([collar.cx, collar.cy]).toEqual([head.cx, head.cy]);
+    expect(collar.rx - collar.band).toBeCloseTo(head.r, 12);
+    expect(collar.ry - collar.band * aspect).toBeCloseTo(head.r * aspect, 12);
+    expect(Object.isFrozen(FIGURE_TORSO) && Object.isFrozen(FIGURE_TORSO.collar)).toBe(true);
+  });
+
+  it('shows the rounded shoulders from above, not under the head', () => {
+    // The outline is included; the rounded corners and everything outside the square are not.
+    for (const [x, y] of [
+      [0, 0.5],
+      [1, 0.5],
+      [0.2, 0],
+      [0.8, 1],
+      [0.18, 0],
+      [0, 0.45],
+    ])
+      expect(insideFigureTorso(x!, y!), `${x},${y}`).toBe(true);
+    for (const [x, y] of [
+      [0, 0],
+      [1, 1],
+      [0.02, 0.05],
+      [-0.01, 0.5],
+      [0.5, 1.01],
+    ])
+      expect(insideFigureTorso(x!, y!), `${x},${y}`).toBe(false);
+    // The head is a circle on the body: 0.2 of the width across, so 0.5 of the depth deep, and its
+    // rim is the head's.
+    expect(insideFigureTorso(0.5, 0.42)).toBe(false);
+    expect(insideFigureTorso(0.3, 0.42)).toBe(false);
+    expect(insideFigureTorso(0.29, 0.42)).toBe(true);
+    expect(insideFigureTorso(0.5, 0.92)).toBe(false);
+    expect(insideFigureTorso(0.5, 0.93)).toBe(true);
+  });
+
+  it('puts trim on the sleeve ends and the collar band, over every pattern', () => {
+    const halves: ShirtDesign = { ...shirt('halves'), trim: TRIM };
+    expect(torso(halves, 16)).toEqual([
+      '  ...T    T###  ',
+      ' ....T    T#### ',
+      ' ...T      T### ',
+      'T...T      T###T',
+      'T...T      T###T',
+      'T...T      T###T',
+      'T...T      T###T',
+      'T...T      T###T',
+      'T...T      T###T',
+      'T...T      T###T',
+      'T...T      T###T',
+      'T...T      T###T',
+      'T....T    T####T',
+      ' ....T    T#### ',
+      ' ....TT  TT#### ',
+      '  ....TTTT####  ',
+    ]);
+    // Band edges are included: 0.07 of the width at each end, the collar from the head out 0.05.
+    for (const [x, y] of [
+      [0.07, 0.5],
+      [0.93, 0.5],
+      [0.25, 0.42],
+      [0.3, 0.42],
+      [0.75, 0.42],
+      [0.5, 0.92],
+      [0.5, 1],
+    ])
+      expect(insideFigureTrim(x!, y!), `${x},${y}`).toBe(true);
+    for (const [x, y] of [
+      [0.08, 0.5],
+      [0.24, 0.42],
+      [0.5, 0.5],
+    ])
+      expect(insideFigureTrim(x!, y!), `${x},${y}`).toBe(false);
+    for (const pattern of SHIRT_PATTERNS)
+      for (let row = 0; row <= 20; row++)
+        for (let col = 0; col <= 20; col++) {
+          const x = col / 20,
+            y = row / 20;
+          const trimmed = { ...shirt(pattern), trim: TRIM };
+          expect(figureShirtColourAt(trimmed, x, y)).toBe(
+            insideFigureTrim(x, y) ? TRIM : shirtColourAt(shirt(pattern), x, y),
+          );
+        }
+  });
+
+  it('without trim, shows the pattern regions of the same unit square', () => {
+    // Hoops run across the shoulders on either side of the head.
+    expect(torso(shirt('hoops'), 8)).toEqual([
+      ' ..  .. ',
+      '...  ...',
+      '##    ##',
+      '..    ..',
+      '..    ..',
+      '###  ###',
+      '...  ...',
+      ' ...... ',
+    ]);
+    for (const pattern of SHIRT_PATTERNS)
+      for (let row = 0; row <= 20; row++)
+        for (let col = 0; col <= 20; col++) {
+          const x = col / 20,
+            y = row / 20;
+          expect(figureShirtColourAt(shirt(pattern), x, y)).toBe(
+            shirtColourAt(shirt(pattern), x, y),
+          );
+        }
+    expect(
+      figureShirtColourAt({ pattern: 'stripes', primary: '#AbCdEf', secondary: '#0A0b0C' }, 0.3, 0),
+    ).toBe('#0A0b0C');
   });
 });

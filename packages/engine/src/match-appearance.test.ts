@@ -1,12 +1,19 @@
 import { describe, expect, it } from 'vitest';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { canonical } from '../../contracts/src/index';
-import { KIT_ROLES, type ClubIdentity } from '../../contracts/src/identity';
+import {
+  KIT_ROLES,
+  type ClubIdentity,
+  type GoalkeeperKit,
+  type ShirtDesign,
+} from '../../contracts/src/identity';
+import { matchAppearanceSchema } from '../../contracts/src/identitySchema';
 import type { Fixture, Founding, MatchPlayback, World } from '../../contracts/src/types';
 import { currentDay, fixtureDay, nextOwnFixture } from './calendar';
 import { identityOf } from './club-identity';
 import { playFixture } from './knockout';
 import { selectMatchKits } from './kit-selection';
+import { automaticKeeper, startingShorts } from './kit-wear';
 import { appearanceForFixture } from './match-appearance';
 import { operate } from './operations';
 import { advanceDays, recordMatch } from './season';
@@ -58,7 +65,7 @@ describe('settled own-match appearance (→KIT-12, SAVE-22)', () => {
     const w = simulatedWorld(FOUNDING);
     const next = nextOwnFixture(w)!;
     const expected = appearanceForFixture(w, next);
-    expect(expected.version).toBe(1);
+    expect(expected.version).toBe(2);
     expect(expected.sides.map((s) => s.club)).toEqual([next.home, next.away]);
     const live = playTo(w, next);
     const saved = recorded(w, next.id);
@@ -121,6 +128,76 @@ describe('settled own-match appearance (→KIT-12, SAVE-22)', () => {
     expect(bare.record.appearance).toBeUndefined();
     expect(canonical(recorded(w, first.id).appearance)).toBe(frozen);
     expect(w.kitChoice).toEqual({ fixtureId: following.id, role: 'third' });
+  });
+
+  it('version-2 appearance records worn kits and fallback', () => {
+    const w = simulatedWorld(FOUNDING);
+    const next = nextOwnFixture(w)!;
+    const side = ownSide(w, next);
+    const rivalId = side === 0 ? next.away : next.home;
+    const rival = w.clubs.find((club) => club.id === rivalId)!;
+    const keeper: GoalkeeperKit = {
+      shirt: { pattern: 'band', primary: '#f5e663', secondary: '#121212' },
+      shorts: '#121212',
+      socks: '#f5e663',
+      gloves: '#00A6C8',
+    };
+    operate(w, {
+      type: 'club-identity',
+      identity: {
+        ...clubOf(w).identity!,
+        version: 2,
+        kits: {
+          home: { pattern: 'plain', primary: '#ffffff', trim: '#0b1f44' },
+          away: { pattern: 'plain', primary: '#0b1f44' },
+          third: { pattern: 'stripes', primary: '#d62828', secondary: '#ffffff' },
+        },
+        parts: { home: { shorts: '#d62828' }, away: { socks: '#ffffff' } },
+        goalkeeper: keeper,
+      },
+    });
+    const own = clubOf(w).identity!;
+    const saved = canonical(own);
+    /** The appearance against the rival wearing `shirt` in all three roles. */
+    const against = (shirt: ShirtDesign) => {
+      rival.identity = { ...rival.identity!, kits: { home: shirt, away: shirt, third: shirt } };
+      const appearance = appearanceForFixture(w, next);
+      expect(matchAppearanceSchema.parse(appearance)).toEqual(appearance);
+      expect(appearance.version).toBe(2);
+      const kits = selectMatchKits(identityOf(w, next.home), identityOf(w, next.away));
+      appearance.sides.forEach((s, i) => {
+        expect(s.role).toBe(kits.roles[i]);
+        expect([s.shirt, s.shorts, s.socks]).toEqual([
+          kits.kits[i].shirt,
+          kits.kits[i].shorts,
+          kits.kits[i].socks,
+        ]);
+        expect(s.keeper).toEqual(kits.keepers[i]);
+        expect(s.goalkeeper).toBe(s.keeper!.shirt.primary);
+      });
+      // The own side wears its own kit's parts: set ones as set, the rest by the starting rule.
+      const ours = appearance.sides[side];
+      const identity = clubOf(w).identity!;
+      expect({ shorts: ours.shorts, socks: ours.socks }).toEqual({
+        shorts: identity.parts?.[ours.role]?.shorts ?? startingShorts(ours.shirt),
+        socks: identity.parts?.[ours.role]?.socks ?? ours.shirt.primary,
+      });
+      // An opponent has no designed keeper, so nothing of its own can fall back.
+      expect('keeperFallback' in appearance.sides[1 - side]).toBe(false);
+      return ours;
+    };
+    // Against purple the designed kit is worn as saved.
+    const kept = against({ pattern: 'plain', primary: '#6a0dad' });
+    expect(kept.keeper).toEqual(keeper);
+    expect('keeperFallback' in kept).toBe(false);
+    // Against yellow it gives way to an automatic colour in this fixture only.
+    const fallback = against({ pattern: 'plain', primary: '#f5e663' });
+    expect(fallback.keeperFallback).toBe(true);
+    expect(fallback.keeper).toEqual(automaticKeeper(fallback.goalkeeper));
+    expect(canonical(clubOf(w).identity)).toBe(saved);
+    // The capture is a copy: no recorded object is the saved kit itself.
+    expect(kept.keeper).not.toBe(own.goalkeeper);
+    expect(kept.keeper!.shirt).not.toBe(own.goalkeeper!.shirt);
   });
 
   it('legacy records remain absent', () => {

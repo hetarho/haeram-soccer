@@ -116,7 +116,7 @@ describe('founding drafts (→KIT-14)', () => {
       { ...CUSTOM, kits: { home: CUSTOM.kits.home, away: CUSTOM.kits.away } },
     ],
     ['an unknown field', { ...CUSTOM, sponsor: 'x' }],
-    ['a future version', { ...CUSTOM, version: 2 }],
+    ['a future version', { ...CUSTOM, version: 3 }],
     [
       'a named colour',
       { ...CUSTOM, kits: { ...CUSTOM.kits, away: { pattern: 'plain', primary: 'red' } } },
