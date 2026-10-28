@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-28T17:25:01.864Z",
-  "sourceCommit": "906419a9aae979f35b3fce4df6ef35dec49840d2",
+  "snapshotAt": "2026-10-28T18:06:13.309Z",
+  "sourceCommit": "e010e23a05a2f23fd247fb14523717b4157b9897",
   "group": {
     "id": "club-places",
     "branch": "work/club-places",
@@ -13,8 +13,8 @@
       "maxPending": 8
     },
     "review": "all",
-    "lastRun": {
-      "id": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+    "runner": {
+      "id": "96f28371-1638-466a-8bdf-7c21ffce80bd",
       "adapter": "builtin",
       "providers": {
         "worker": {
@@ -35,56 +35,51 @@
           "version": "codex-cli 0.160.1"
         }
       ],
-      "startedAt": "2026-10-28T15:25:53.955Z",
-      "stoppedAt": "2026-10-28T17:14:21.328Z",
-      "dispatched": 12,
-      "outcome": "needs-attention",
-      "failures": [
-        {
-          "attempt": "18f15189-426e-4d9d-aeb7-e73fe2fd517b",
-          "role": "worker",
-          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+      "startedAt": "2026-10-28T17:56:52.243Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    },
+    "lastRun": {
+      "id": "4a1d5e06-e761-466e-83d5-d2c7a7d70cd8",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.160.1"
         },
+        "reviewer": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.160.1"
+        }
+      },
+      "workers": [
         {
-          "attempt": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
-          "role": "worker",
-          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
-        },
-        {
-          "attempt": "330d4804-4e50-4dfa-9303-59999e110506",
-          "role": "worker",
-          "error": "committing할 수 없는 상태입니다: blocked"
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.160.1"
         }
       ],
+      "startedAt": "2026-10-28T17:44:21.928Z",
+      "stoppedAt": "2026-10-28T17:55:48.442Z",
+      "dispatched": 1,
+      "outcome": "dispatch-limit",
+      "failures": [],
       "autopilot": true,
       "decisionWaitMs": 900000
     }
   },
   "summary": {
-    "total": 6,
-    "completed": 2,
-    "remaining": 4,
+    "total": 4,
+    "completed": 3,
+    "remaining": 1,
     "running": 0,
     "review": 0,
     "blocked": 0,
-    "unassigned": 4
+    "unassigned": 1
   },
   "tasks": [
-    {
-      "id": "T548",
-      "title": "Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it",
-      "dep": [],
-      "status": "todo"
-    },
-    {
-      "id": "T552",
-      "title": "Paged whole-world recruitment workbench",
-      "dep": [
-        "T558"
-      ],
-      "lane": "market-ui",
-      "status": "todo"
-    },
     {
       "id": "T556",
       "title": "Connect place choices and verify the complete owner workflow",
@@ -93,13 +88,6 @@
         "T553",
         "T555"
       ],
-      "status": "todo"
-    },
-    {
-      "id": "T558",
-      "title": "World market query and identity-based transfer engine",
-      "dep": [],
-      "lane": "market-engine",
       "status": "todo"
     }
   ],
@@ -349,6 +337,8 @@
       "submittedBase": "76629cde9ee0d0e43eab8e7185e2b0775ff900dc",
       "submissionId": "5979b14e-2c12-46ec-a4e7-9ce52344c24b",
       "submittedAt": "2026-10-28T16:57:16.870Z",
+      "integratedCommit": "1a36341e8c1a362562fbd9c2e6503cd8733e3c3f",
+      "integratedAt": "2026-10-28T17:25:37.201Z",
       "risk": null,
       "dispatch": {
         "id": "6cceb325-0c4a-4fb4-af71-beb02a464f1d",
@@ -419,6 +409,13 @@
           "startedAt": "2026-10-28T16:54:31.166Z",
           "finishedAt": "2026-10-28T16:57:16.352Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-28T17:25:02.134Z",
+          "finishedAt": "2026-10-28T17:25:36.740Z"
+        }
       ]
     },
     {
@@ -434,10 +431,11 @@
       "contributors": [
         "5ecc0d46-f5b6-429d-b199-970b7b925b44/worker-1"
       ],
-      "status": "blocked",
-      "reason": "committing할 수 없는 상태입니다: blocked",
+      "status": "released",
+      "reason": "Dispatch has now finished. Approved T554/T555 from club-places-ui are already archived in the parent; keep the superseded isolated draft without integrating it.",
       "createdAt": "2026-10-28T16:57:17.290Z",
       "startCommit": "76629cde9ee0d0e43eab8e7185e2b0775ff900dc",
+      "releasedAt": "2026-10-28T17:29:17.441Z",
       "dispatch": {
         "id": "c8daf01b-83ec-4604-8787-bb86ccf1ba33",
         "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
@@ -451,6 +449,104 @@
         "error": "committing할 수 없는 상태입니다: blocked",
         "summary": "T554 구현과 acceptance/result 갱신 완료. 격리 단위 테스트 136개, typecheck·lint·format·빌드 통과. 브라우저·전체 월드 검사는 호스트로 이관했습니다. 기존 초기 번들 예산 초과가 남아 있으며 309,648→310,949바이트 측정값을 기록했습니다. 커밋·제출은 수행하지 않았습니다."
       }
+    },
+    {
+      "id": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "group": "club-places",
+      "taskId": "T552",
+      "tasks": [
+        "T552"
+      ],
+      "lane": "market-ui",
+      "owner": "96f28371-1638-466a-8bdf-7c21ffce80bd/worker-1",
+      "contributors": [
+        "4a1d5e06-e761-466e-83d5-d2c7a7d70cd8/worker-1",
+        "96f28371-1638-466a-8bdf-7c21ffce80bd/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-28T17:44:22.653Z",
+      "startCommit": "8089802cab6ee2dcb3f5ce58f0a3f52a74887cbd",
+      "verifiedCommit": "11ef1465dce69777d91a69c96cb0dae36db2a61f",
+      "submittedBase": "8e3166fc7e9f23e3b14c1a68e949713c5fe978b2",
+      "submissionId": "d6bc481f-117c-4c68-be3c-236a741d745a",
+      "submittedAt": "2026-10-28T18:03:58.529Z",
+      "risk": null,
+      "dispatch": {
+        "id": "9c389d5a-7f01-4ddd-b067-1b24e02beb2a",
+        "runner": "96f28371-1638-466a-8bdf-7c21ffce80bd",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "codex",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-28T18:04:00.326Z",
+        "finishedAt": "2026-10-28T18:06:12.061Z",
+        "error": null,
+        "summary": "T552 커밋 11ef1465를 baseCommit·acceptance·SSOT와 대조했습니다. 이전 두 결함의 수정과 워커 검증 근거를 확인했으며 추가 수정 사항은 발견하지 못했습니다. 최종 통합·브라우저 검증은 조정자에게 남깁니다."
+      },
+      "review": {
+        "id": "5488966f-79aa-46e3-931e-ef8ad147b1da",
+        "owner": "96f28371-1638-466a-8bdf-7c21ffce80bd/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T552 커밋 11ef1465를 baseCommit·acceptance·SSOT와 대조했습니다. 이전 두 결함의 수정과 워커 검증 근거를 확인했으며 추가 수정 사항은 발견하지 못했습니다. 최종 통합·브라우저 검증은 조정자에게 남깁니다.",
+        "findings": [],
+        "commit": "11ef1465dce69777d91a69c96cb0dae36db2a61f",
+        "baseCommit": "8e3166fc7e9f23e3b14c1a68e949713c5fe978b2",
+        "submissionId": "d6bc481f-117c-4c68-be3c-236a741d745a",
+        "createdAt": "2026-10-28T18:03:59.311Z",
+        "finishedAt": "2026-10-28T18:06:12.031Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "beda9c41-c914-4318-a330-3695c51c416b",
+          "owner": "96f28371-1638-466a-8bdf-7c21ffce80bd/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T552 has two reproduced UI contract defects. Worker checks passed; final integration and browser verification remain with the coordinator.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/ui/RecruitmentDesk.tsx:717",
+              "message": "T552 uses empty-string values for the all-leagues, all-teams and all-positions options, but shared Select excludes empty-string options from its list. After selecting a restriction, users cannot clear it individually without resetting every filter. Use selectable non-empty sentinels mapped to undefined, and verify that clearing one filter preserves the others."
+            },
+            {
+              "priority": "P2",
+              "where": "apps/web/src/ui/RecruitmentDesk.tsx:280",
+              "message": "T552 enables ‘1시즌 임대’ for eligible, affordable free agents during an open window. The new stable-target command routes this request through placeBid, which always rejects free agents. This was reproduced with the minimal market fixture. Hide or disable unsupported free-agent loans with an explanation, and add a focused regression test."
+            }
+          ],
+          "commit": "74f654ea3aba567934c02c35f956a545d087062e",
+          "baseCommit": "99300537613baaf29d0ea5cbc2c6d577f40bdc2a",
+          "submissionId": "09867172-f9f0-4a47-8e34-494a4e88743a",
+          "createdAt": "2026-10-28T17:56:52.994Z",
+          "finishedAt": "2026-10-28T18:00:34.208Z",
+          "invalidatedAt": "2026-10-28T18:00:34.306Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T552",
+          "commit": "11ef1465dce69777d91a69c96cb0dae36db2a61f",
+          "at": "2026-10-28T18:03:58.503Z",
+          "verification": [
+            {
+              "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "startedAt": "2026-10-28T18:03:21.973Z",
+              "finishedAt": "2026-10-28T18:03:58.098Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "startedAt": "2026-10-28T18:03:21.973Z",
+          "finishedAt": "2026-10-28T18:03:58.098Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -3059,6 +3155,813 @@
       "group": "club-places",
       "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
       "taskId": "T553",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1694,
+      "at": "2026-10-28T17:25:37.129Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-28T17:25:02.134Z",
+            "finishedAt": "2026-10-28T17:25:36.740Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1695,
+      "at": "2026-10-28T17:25:37.201Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "1a36341e8c1a362562fbd9c2e6503cd8733e3c3f",
+        "integratedAt": "2026-10-28T17:25:37.201Z"
+      }
+    },
+    {
+      "sequence": 1704,
+      "at": "2026-10-28T17:29:17.441Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "330d4804-4e50-4dfa-9303-59999e110506",
+      "taskId": "T554",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "blocked",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "reason": "Dispatch has now finished. Approved T554/T555 from club-places-ui are already archived in the parent; keep the superseded isolated draft without integrating it.",
+        "releasedAt": "2026-10-28T17:29:17.441Z"
+      }
+    },
+    {
+      "sequence": 1711,
+      "at": "2026-10-28T17:44:21.962Z",
+      "type": "group",
+      "group": "club-places",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "4a1d5e06-e761-466e-83d5-d2c7a7d70cd8",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T17:44:21.928Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1712,
+      "at": "2026-10-28T17:44:22.653Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "6af1f076-d519-44f7-be38-44b068a0385e",
+        "group": "club-places",
+        "taskId": "T552",
+        "tasks": [
+          "T552"
+        ],
+        "lane": "market-ui",
+        "owner": "4a1d5e06-e761-466e-83d5-d2c7a7d70cd8/worker-1",
+        "contributors": [
+          "4a1d5e06-e761-466e-83d5-d2c7a7d70cd8/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-28T17:44:22.653Z",
+        "startCommit": "8089802cab6ee2dcb3f5ce58f0a3f52a74887cbd"
+      }
+    },
+    {
+      "sequence": 1713,
+      "at": "2026-10-28T17:44:23.805Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1714,
+      "at": "2026-10-28T17:44:24.202Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a7727973-2303-487e-8185-f81e6a7419ba",
+          "runner": "4a1d5e06-e761-466e-83d5-d2c7a7d70cd8",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T17:44:24.202Z"
+        }
+      }
+    },
+    {
+      "sequence": 1715,
+      "at": "2026-10-28T17:44:24.433Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a7727973-2303-487e-8185-f81e6a7419ba",
+          "runner": "4a1d5e06-e761-466e-83d5-d2c7a7d70cd8",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T17:44:24.202Z"
+        }
+      }
+    },
+    {
+      "sequence": 1716,
+      "at": "2026-10-28T17:55:08.044Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1717,
+      "at": "2026-10-28T17:55:08.769Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1718,
+      "at": "2026-10-28T17:55:08.831Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1719,
+      "at": "2026-10-28T17:55:48.228Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "74f654ea3aba567934c02c35f956a545d087062e",
+        "submittedBase": "8089802cab6ee2dcb3f5ce58f0a3f52a74887cbd",
+        "submissionId": "09867172-f9f0-4a47-8e34-494a4e88743a",
+        "submittedAt": "2026-10-28T17:55:48.228Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T552",
+            "commit": "74f654ea3aba567934c02c35f956a545d087062e",
+            "at": "2026-10-28T17:55:48.203Z",
+            "verification": [
+              {
+                "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "startedAt": "2026-10-28T17:55:09.168Z",
+                "finishedAt": "2026-10-28T17:55:47.750Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "startedAt": "2026-10-28T17:55:09.168Z",
+            "finishedAt": "2026-10-28T17:55:47.750Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1720,
+      "at": "2026-10-28T17:55:48.261Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "a7727973-2303-487e-8185-f81e6a7419ba",
+          "runner": "4a1d5e06-e761-466e-83d5-d2c7a7d70cd8",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T17:44:24.202Z",
+          "finishedAt": "2026-10-28T17:55:48.261Z",
+          "error": null,
+          "summary": "T552 세계 선수시장 페이지·필터·정렬과 안정된 ID 기반 영입을 구현했습니다. 영향 단위 테스트 58개, typecheck·lint·format·빌드가 통과했습니다. T556 브라우저 검증 인계를 결과에 기록했으며, 커밋·제출은 수행하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1721,
+      "at": "2026-10-28T17:55:48.442Z",
+      "type": "group",
+      "group": "club-places",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "4a1d5e06-e761-466e-83d5-d2c7a7d70cd8",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T17:44:21.928Z",
+          "stoppedAt": "2026-10-28T17:55:48.442Z",
+          "dispatched": 1,
+          "outcome": "dispatch-limit",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1724,
+      "at": "2026-10-28T17:56:52.262Z",
+      "type": "group",
+      "group": "club-places",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "96f28371-1638-466a-8bdf-7c21ffce80bd",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T17:56:52.243Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1725,
+      "at": "2026-10-28T17:56:52.994Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "beda9c41-c914-4318-a330-3695c51c416b",
+          "owner": "96f28371-1638-466a-8bdf-7c21ffce80bd/reviewer-1",
+          "status": "reviewing",
+          "commit": "74f654ea3aba567934c02c35f956a545d087062e",
+          "baseCommit": "99300537613baaf29d0ea5cbc2c6d577f40bdc2a",
+          "submissionId": "09867172-f9f0-4a47-8e34-494a4e88743a",
+          "createdAt": "2026-10-28T17:56:52.994Z"
+        }
+      }
+    },
+    {
+      "sequence": 1726,
+      "at": "2026-10-28T17:56:54.180Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "1dbd8335-7118-4885-98d5-45d5d3f5f074",
+          "runner": "96f28371-1638-466a-8bdf-7c21ffce80bd",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T17:56:54.180Z"
+        }
+      }
+    },
+    {
+      "sequence": 1727,
+      "at": "2026-10-28T17:56:54.213Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "1dbd8335-7118-4885-98d5-45d5d3f5f074",
+          "runner": "96f28371-1638-466a-8bdf-7c21ffce80bd",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T17:56:54.180Z"
+        }
+      }
+    },
+    {
+      "sequence": 1728,
+      "at": "2026-10-28T18:00:34.208Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T552 has two reproduced UI contract defects. Worker checks passed; final integration and browser verification remain with the coordinator.",
+        "review": {
+          "id": "beda9c41-c914-4318-a330-3695c51c416b",
+          "owner": "96f28371-1638-466a-8bdf-7c21ffce80bd/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T552 has two reproduced UI contract defects. Worker checks passed; final integration and browser verification remain with the coordinator.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/ui/RecruitmentDesk.tsx:717",
+              "message": "T552 uses empty-string values for the all-leagues, all-teams and all-positions options, but shared Select excludes empty-string options from its list. After selecting a restriction, users cannot clear it individually without resetting every filter. Use selectable non-empty sentinels mapped to undefined, and verify that clearing one filter preserves the others."
+            },
+            {
+              "priority": "P2",
+              "where": "apps/web/src/ui/RecruitmentDesk.tsx:280",
+              "message": "T552 enables ‘1시즌 임대’ for eligible, affordable free agents during an open window. The new stable-target command routes this request through placeBid, which always rejects free agents. This was reproduced with the minimal market fixture. Hide or disable unsupported free-agent loans with an explanation, and add a focused regression test."
+            }
+          ],
+          "commit": "74f654ea3aba567934c02c35f956a545d087062e",
+          "baseCommit": "99300537613baaf29d0ea5cbc2c6d577f40bdc2a",
+          "submissionId": "09867172-f9f0-4a47-8e34-494a4e88743a",
+          "createdAt": "2026-10-28T17:56:52.994Z",
+          "finishedAt": "2026-10-28T18:00:34.208Z"
+        }
+      }
+    },
+    {
+      "sequence": 1729,
+      "at": "2026-10-28T18:00:34.238Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "1dbd8335-7118-4885-98d5-45d5d3f5f074",
+          "runner": "96f28371-1638-466a-8bdf-7c21ffce80bd",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T17:56:54.180Z",
+          "finishedAt": "2026-10-28T18:00:34.238Z",
+          "error": null,
+          "summary": "T552 has two reproduced UI contract defects. Worker checks passed; final integration and browser verification remain with the coordinator."
+        }
+      }
+    },
+    {
+      "sequence": 1730,
+      "at": "2026-10-28T18:00:34.306Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "owner": "96f28371-1638-466a-8bdf-7c21ffce80bd/worker-1",
+        "contributors": [
+          "4a1d5e06-e761-466e-83d5-d2c7a7d70cd8/worker-1",
+          "96f28371-1638-466a-8bdf-7c21ffce80bd/worker-1"
+        ],
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "beda9c41-c914-4318-a330-3695c51c416b",
+            "owner": "96f28371-1638-466a-8bdf-7c21ffce80bd/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T552 has two reproduced UI contract defects. Worker checks passed; final integration and browser verification remain with the coordinator.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/ui/RecruitmentDesk.tsx:717",
+                "message": "T552 uses empty-string values for the all-leagues, all-teams and all-positions options, but shared Select excludes empty-string options from its list. After selecting a restriction, users cannot clear it individually without resetting every filter. Use selectable non-empty sentinels mapped to undefined, and verify that clearing one filter preserves the others."
+              },
+              {
+                "priority": "P2",
+                "where": "apps/web/src/ui/RecruitmentDesk.tsx:280",
+                "message": "T552 enables ‘1시즌 임대’ for eligible, affordable free agents during an open window. The new stable-target command routes this request through placeBid, which always rejects free agents. This was reproduced with the minimal market fixture. Hide or disable unsupported free-agent loans with an explanation, and add a focused regression test."
+              }
+            ],
+            "commit": "74f654ea3aba567934c02c35f956a545d087062e",
+            "baseCommit": "99300537613baaf29d0ea5cbc2c6d577f40bdc2a",
+            "submissionId": "09867172-f9f0-4a47-8e34-494a4e88743a",
+            "createdAt": "2026-10-28T17:56:52.994Z",
+            "finishedAt": "2026-10-28T18:00:34.208Z",
+            "invalidatedAt": "2026-10-28T18:00:34.306Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1731,
+      "at": "2026-10-28T18:00:34.422Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "2f15c1a9-5cb5-402f-843d-81e4be57653d",
+          "runner": "96f28371-1638-466a-8bdf-7c21ffce80bd",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T18:00:34.422Z"
+        }
+      }
+    },
+    {
+      "sequence": 1732,
+      "at": "2026-10-28T18:00:34.628Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "2f15c1a9-5cb5-402f-843d-81e4be57653d",
+          "runner": "96f28371-1638-466a-8bdf-7c21ffce80bd",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T18:00:34.422Z"
+        }
+      }
+    },
+    {
+      "sequence": 1733,
+      "at": "2026-10-28T18:03:20.981Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1734,
+      "at": "2026-10-28T18:03:21.602Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1735,
+      "at": "2026-10-28T18:03:21.663Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1736,
+      "at": "2026-10-28T18:03:58.529Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "8e3166fc7e9f23e3b14c1a68e949713c5fe978b2",
+        "submissionId": "d6bc481f-117c-4c68-be3c-236a741d745a",
+        "submittedAt": "2026-10-28T18:03:58.529Z",
+        "steps": [
+          {
+            "taskId": "T552",
+            "commit": "11ef1465dce69777d91a69c96cb0dae36db2a61f",
+            "at": "2026-10-28T18:03:58.503Z",
+            "verification": [
+              {
+                "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "startedAt": "2026-10-28T18:03:21.973Z",
+                "finishedAt": "2026-10-28T18:03:58.098Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "startedAt": "2026-10-28T18:03:21.973Z",
+            "finishedAt": "2026-10-28T18:03:58.098Z"
+          }
+        ],
+        "verifiedCommit": "11ef1465dce69777d91a69c96cb0dae36db2a61f"
+      }
+    },
+    {
+      "sequence": 1737,
+      "at": "2026-10-28T18:03:58.563Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "2f15c1a9-5cb5-402f-843d-81e4be57653d",
+          "runner": "96f28371-1638-466a-8bdf-7c21ffce80bd",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T18:00:34.422Z",
+          "finishedAt": "2026-10-28T18:03:58.563Z",
+          "error": null,
+          "summary": "두 리뷰 항목을 수정했습니다. 개별 필터 해제 시 다른 조건을 유지하고, 자유계약 선수의 임대를 설명과 함께 차단합니다. 영향 단위 테스트 63개와 typecheck·lint·format·빌드가 통과했습니다. 브라우저 검증은 T556에 인계했으며 커밋·제출하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1738,
+      "at": "2026-10-28T18:03:59.311Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "5488966f-79aa-46e3-931e-ef8ad147b1da",
+          "owner": "96f28371-1638-466a-8bdf-7c21ffce80bd/reviewer-1",
+          "status": "reviewing",
+          "commit": "11ef1465dce69777d91a69c96cb0dae36db2a61f",
+          "baseCommit": "8e3166fc7e9f23e3b14c1a68e949713c5fe978b2",
+          "submissionId": "d6bc481f-117c-4c68-be3c-236a741d745a",
+          "createdAt": "2026-10-28T18:03:59.311Z"
+        }
+      }
+    },
+    {
+      "sequence": 1739,
+      "at": "2026-10-28T18:04:00.326Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "9c389d5a-7f01-4ddd-b067-1b24e02beb2a",
+          "runner": "96f28371-1638-466a-8bdf-7c21ffce80bd",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T18:04:00.326Z"
+        }
+      }
+    },
+    {
+      "sequence": 1740,
+      "at": "2026-10-28T18:04:00.358Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "9c389d5a-7f01-4ddd-b067-1b24e02beb2a",
+          "runner": "96f28371-1638-466a-8bdf-7c21ffce80bd",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T18:04:00.326Z"
+        }
+      }
+    },
+    {
+      "sequence": 1741,
+      "at": "2026-10-28T18:06:12.031Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "5488966f-79aa-46e3-931e-ef8ad147b1da",
+          "owner": "96f28371-1638-466a-8bdf-7c21ffce80bd/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T552 커밋 11ef1465를 baseCommit·acceptance·SSOT와 대조했습니다. 이전 두 결함의 수정과 워커 검증 근거를 확인했으며 추가 수정 사항은 발견하지 못했습니다. 최종 통합·브라우저 검증은 조정자에게 남깁니다.",
+          "findings": [],
+          "commit": "11ef1465dce69777d91a69c96cb0dae36db2a61f",
+          "baseCommit": "8e3166fc7e9f23e3b14c1a68e949713c5fe978b2",
+          "submissionId": "d6bc481f-117c-4c68-be3c-236a741d745a",
+          "createdAt": "2026-10-28T18:03:59.311Z",
+          "finishedAt": "2026-10-28T18:06:12.031Z"
+        }
+      }
+    },
+    {
+      "sequence": 1742,
+      "at": "2026-10-28T18:06:12.061Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "9c389d5a-7f01-4ddd-b067-1b24e02beb2a",
+          "runner": "96f28371-1638-466a-8bdf-7c21ffce80bd",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T18:04:00.326Z",
+          "finishedAt": "2026-10-28T18:06:12.061Z",
+          "error": null,
+          "summary": "T552 커밋 11ef1465를 baseCommit·acceptance·SSOT와 대조했습니다. 이전 두 결함의 수정과 워커 검증 근거를 확인했으며 추가 수정 사항은 발견하지 못했습니다. 최종 통합·브라우저 검증은 조정자에게 남깁니다."
+        }
+      }
+    },
+    {
+      "sequence": 1743,
+      "at": "2026-10-28T18:06:12.184Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

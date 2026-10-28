@@ -48,6 +48,39 @@ vi.mock('./Dialog', () => ({
 vi.mock('./FacilityArt', () => ({
   FacilityArt: () => createElement('img', { alt: 'Club room' }),
 }));
+// Recruitment rows now arrive asynchronously. Isolate the calendar lock from the worker read
+// with one prepared current-page row, retaining the candidate-inspection assertion below.
+vi.mock('./worldMarket', async (original) => ({
+  ...(await original<typeof import('./worldMarket')>()),
+  useMarketPage: () => ({
+    value: {
+      world: world.id,
+      revision: world.revision,
+      page: 0,
+      pageSize: 50,
+      total: 1,
+      items: [
+        {
+          player: world.players[0],
+          target: {
+            world: world.id,
+            kind: 'club',
+            clubId: world.playerClub,
+            playerId: world.players[0].id,
+          },
+          own: true,
+          available: false,
+          recommended: false,
+          foreign: false,
+          fee: '0',
+          loanFee: '0',
+          freeAgent: false,
+        },
+      ],
+    },
+    retry: vi.fn(),
+  }),
+}));
 
 const world = createWorld({
   country: 'ENG',

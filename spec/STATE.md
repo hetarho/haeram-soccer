@@ -392,7 +392,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T552 | Paged whole-world recruitment workbench | WEB CLUB ARCH | - | todo |
 | T556 | Connect place choices and verify the complete owner workflow | WEB CLUB ARCH | T552 T553 T555 | todo |
 
 ## work
@@ -411,14 +410,14 @@
 | auto-play | 4 | 7 | 4 | 3 | 0 | 1 | 0 | 2026-10-27T11:34:29.863Z | [history](work/auto-play.json) |
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 | v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
-| club-places | 3 | 6 | 2 | 4 | 0 | 0 | 0 | 2026-10-28T17:25:01.864Z | [history](work/club-places.json) |
+| club-places | 3 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-28T18:06:13.309Z | [history](work/club-places.json) |
 | club-places-ui | 1 | 7 | 2 | 5 | 0 | 0 | 0 | 2026-10-28T16:52:26.857Z | [history](work/club-places-ui.json) |
 
 ## next
-- cp29: review/integrate submitted T552, then implement T556 and run the synchronized final batch. T553/T554/T555/T557/T558 are integrated; T548/T561 from the completed other session are synchronized.
-- Revision 8 (T561) shipped with 0.7.0: next levers shots from outside the box 25.4% / goal-area shots 20.7% and penalty goals 13.7% (keeper smother instead of a foul); see inbox suggest lines.
+- inspect work board for remaining tasks
 
 ## log
+- 261028 T552 integrated
 - 261029 cp29 synchronize main 59446b09, including completed T548/T561 and MATCH r41, before final workflow convergence.
 - 261029 T561 done (p9c3, explore): match-model revision 8 — the showing teammate offers at 14 m, with the ball teammates spread 14 m and keep 10 m around the carrier; crowds of seven within 10 m 7.0% → 2.9%; 600 matches goals 3.38, 25/37 (one row fewer: long shots).
 - 261029 update-ssot MATCH r41 + create-task T561 (p9c3, owner): players swarm the ball like playground football → MATCH-17 nobody piles onto the ball; T561 revision 8, explore 2 h.
@@ -438,16 +437,3 @@
 - 261029 cp29 extend unclaimed T553 to update the existing rest-day morale summary assertion identified by T557; keep full-world integration execution at the coordinator gate.
 - 261029 cp29 redivide unclaimed T552/T553 into engine foundations T558/T557 and UI consumers so live T550 UI ownership does not stop independent engine work; no policy change.
 - 261029 cp29 narrow unclaimed T552 runtime touches to protocol/host/client plus dedicated query tests; unrelated T548 owns host/protocol legacy tests.
-- 261029 cp29 create-task T552–T556: three independent lanes and convergence; task checks are isolated unit/quick/build, coordinator owns final batch.
-- 261029 cp29 update-ssot WEB r168 ECON r39 CLUB r43: six places, focused owner work, whole-world market and consequential choices; independent club-places checkout preserves live T548 changes.
-- 261028 T555 integrated
-- 261028 T554 integrated
-- 261028 T557 integrated
-- 261028 T550 integrated
-- 261028 T549 integrated
-- 261028 T551 done (p9c3): main CI fix after the figures/kits and forward-intent merges — editor samples mid-step, kit pixel floor, faster wornFigures, in-page goal-hold minute, clock-derived 16× bound, appearance digest.
-- 261028 create-task (f5j2): T548 MATCH r39, T549 SAVE r57, T550 WEB r167.
-- 261028 update-ssot (f5j2): MATCH r39 chased forward's clear chance and closing blocks; SAVE r57 one game version 0.7.0 (beta), 4.0.0 saves load as 0.7.0; WEB r167 WEB-101 BETA mark.
-- 261028 feat/player-figures-kits merge verified against main f5672a67 and feature 3a13057e: typecheck, lint, format:check, unit (175 files / 1,435 passed), contract (3 files / 47 passed), catalog/presentation validation and production build passed; the 12 pure kit-selection cases also passed (2 world-integration cases excluded). Full integration and browser suites omitted under the owner's requested unit/static scope.
-- 261028 pl1 end: T543–T547 merged on feat/player-figures-kits; full unit project 1422 passed; other suites left to the receiver by owner instruction; branch pushed for handoff.
-- 261028 T545 done (dev3, 1617365a): match observation and replay draw posed figures, standing knee fixed in figurePose; merged; PL unit run next.
