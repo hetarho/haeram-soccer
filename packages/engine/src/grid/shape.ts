@@ -387,9 +387,9 @@ export function shapePlace(
   // Revision 2 (T432): the slot whose job he plays after a swap, and where his freedom takes him.
   const freedom = freedomPlan(s, side);
   const job = freedom ? freedom.job[idx]! : gp.slot;
-  const jobSlot = FORMATIONS[tactic].slots[job]!;
+  const jobSlot = s.formation[side][job]!;
   const line = job === gp.slot ? own : (lineOf(jobSlot.position) as Line);
-  const spot = SPOTS[tactic][job]!;
+  const spot = s.spots[side][job]!;
   const inPossession = s.possession === side;
   let x = spot[0],
     y = spot[1];

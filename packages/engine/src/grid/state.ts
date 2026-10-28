@@ -1,6 +1,6 @@
 /** The live state of a grid match: where everyone stands and what each player's skills are worth now (→MATCH-11). */
 import { ATTRIBUTES, type Attribute } from '../../../contracts/src/player';
-import type { Player } from '../../../contracts/src/types';
+import type { Player, Tactic } from '../../../contracts/src/types';
 import { FORMATIONS, levelFactor, lineOf } from '../player';
 import { HOST_MATH, PORTABLE_MATH, type MatchMath } from '../portable-math';
 import { fatigueLoad, slotOvr, unhappyPenalty } from '../player-state';
@@ -44,6 +44,9 @@ export interface GridPlayer {
 
 export interface GridState {
   setup: GridSetup;
+  /** Each side's formation slots and their spots, read once from its tactic (`setup.tactics`). */
+  formation: [(typeof FORMATIONS)[Tactic]['slots'], (typeof FORMATIONS)[Tactic]['slots']];
+  spots: [readonly Point[], readonly Point[]];
   players: [GridPlayer[], GridPlayer[]];
   ball: [number, number];
   owner?: [0 | 1, number];
@@ -126,8 +129,7 @@ export function regMinute(s: GridState): number {
 export const onPitch = (gp: GridPlayer) => gp.onPitch && !gp.sentOff;
 export const other = (side: 0 | 1) => (1 - side) as 0 | 1;
 /** The formation slot of a player on the pitch. */
-export const slotOf = (s: GridState, gp: GridPlayer) =>
-  FORMATIONS[s.setup.tactics[gp.side]].slots[gp.slot]!;
+export const slotOf = (s: GridState, gp: GridPlayer) => s.formation[gp.side][gp.slot]!;
 
 const HANDS: readonly Attribute[] = ['reflexes', 'handling'];
 
@@ -260,6 +262,8 @@ export function createState(setup: GridSetup): GridState {
   ) as [number, number];
   return {
     setup,
+    formation: [FORMATIONS[setup.tactics[0]].slots, FORMATIONS[setup.tactics[1]].slots],
+    spots: [SPOTS[setup.tactics[0]], SPOTS[setup.tactics[1]]],
     players,
     level: matchLevel,
     scale: candidate ? C.candidate.skillScale : C.skillScale,
