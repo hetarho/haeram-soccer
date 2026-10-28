@@ -190,9 +190,12 @@ for (const { seed: worldSeed, ...viewport } of [
     await expect(roster.first()).toBeVisible();
     for (const player of await roster.all()) await expect(player).toContainText('성장 +0.00');
     // A clock left running resumes after a reload (→WEB-64); stop the run so the reload starts
-    // stopped. A start landing just after the eve stopped it is ignored by the clock itself.
+    // stopped. A start landing just after the eve stopped it is ignored by the clock itself, and a
+    // run that reaches the eve first stops itself and opens the eve's report over the controls,
+    // so a stop the report covers only confirms that report.
     const toggle = mini.getByRole('button', { name: /^자동 진행 (정지|시작)$/ });
-    if ((await toggle.getAttribute('aria-label')) === '자동 진행 정지') await toggle.click();
+    if ((await toggle.getAttribute('aria-label')) === '자동 진행 정지')
+      await toggle.click({ timeout: 5_000 }).catch(() => expect(matchReport(page)).toBeVisible());
     await expect(mini.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     // The stop shows the days computed ahead first, so the run may rest on the first match eve,
