@@ -379,7 +379,6 @@
 | T538 | Match-model revision 5: carriers take open ground, recycle only safely, never far back with room near the box | MATCH SAVE ARCH | - | doing@261028.f5j2 |
 | T539 | Hold the football targets within 25% of the real-football mean | MATCH ARCH | - | doing@261028.f5j2 |
 | T545 | Match observation draws posed player figures | MATCH WEB KIT ARCH | T544 | doing@261028.pl1 |
-| T546 | Kit editor with shorts, socks and goalkeeper kit; figure previews | KIT WEB SAVE MATCH ARCH | T544 | doing@261028.pl1 |
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
@@ -402,6 +401,7 @@
 - UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
+- 261028 T546 done (dev4, fe455032): kit editor, goalkeeper tab, figure previews, fallback notice; PL committed it (Codex sandbox could not write the worktree index) after re-running its 43 unit tests; merged.
 - 261028 lanes start (pl1): T545 match-figures (dev3) and T546 kit-editor (dev4) in worktrees task/T545 and task/T546.
 - 261028 T544 done (dev3, 1f605f49): figure painter and number tags; PL re-ran 40 unit tests and typecheck; merged.
 - 261028 T544 start (dev3) in worktree task/T544 (pl1).
@@ -421,4 +421,3 @@
 - 261028 gameplay hierarchy shipped: WEB r164, T530-T535 and verified test repairs; main 8af246fa passed all nine CI jobs; report 261028-g8u4.
 - 261028 fix live-observation-order: cover both match-eve-before-selection and interleaved browsing, dismiss/reopen pending observation for the remaining read-only visit, and scope date assertions to the active calendar/theatre. All date, score, scorer and retained-node assertions remain.
 - 261028 fix coach-hiring-unit-setup: use the known criteria-change-85 seed and assert its candidate condition, eliminating 86 cold world generations; keep all hiring/contract assertions and the 30 s timeout.
-- 261028 fix personnel-navigation-geometry: wait for the incoming hub animation before clicking its local tab, preserving exact zero-scroll and facility-image assertions in Firefox; no production code change.
