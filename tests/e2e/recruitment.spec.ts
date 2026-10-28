@@ -274,10 +274,11 @@ test('pages the global market, filters and sorts all scopes, and approaches a no
   const readonly = await context.newPage();
   await readonly.goto('/first-team?view=market');
   await expect(readonly.getByText('읽기 전용', { exact: false }).first()).toBeVisible();
-  await readonly
-    .getByRole('searchbox', { name: '선수 이름 검색', exact: true })
-    .fill(first.items[0].player.name);
-  const readCard = await marketCandidate(readonly, first.items[0].player.id);
+  const readCard = await marketCandidate(
+    readonly,
+    first.items[0].player.id,
+    first.items[0].player.name,
+  );
   await expect(
     readCard.getByRole('button', { name: /^(이적 제안|자유계약 영입|계약 완료)$/ }),
   ).toBeDisabled();

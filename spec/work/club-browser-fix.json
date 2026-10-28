@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-28T19:22:21.340Z",
-  "sourceCommit": "770cbb40b71dbdb2ebd420b4703484b34afe86e5",
+  "snapshotAt": "2026-10-28T19:24:50.949Z",
+  "sourceCommit": "65b43c636ccc6899e15f522f8bc04f251b740c16",
   "group": {
     "id": "club-browser-fix",
     "branch": "work/club-browser-fix",
@@ -93,22 +93,15 @@
     }
   },
   "summary": {
-    "total": 6,
-    "completed": 2,
+    "total": 7,
+    "completed": 3,
     "remaining": 4,
     "running": 2,
-    "review": 2,
+    "review": 1,
     "blocked": 0,
-    "unassigned": 0
+    "unassigned": 1
   },
   "tasks": [
-    {
-      "id": "T564",
-      "title": "Find exact player identities through paged market journeys",
-      "dep": [],
-      "lane": "market-browser-identity",
-      "status": "ready"
-    },
     {
       "id": "T565",
       "title": "Keep place journey fixtures and named returns valid",
@@ -131,6 +124,15 @@
       "dep": [],
       "lane": "remaining-place-journeys",
       "status": "doing"
+    },
+    {
+      "id": "T568",
+      "title": "Keep the primary training action fully visible on entry",
+      "dep": [
+        "T563"
+      ],
+      "lane": "training-entry-layout",
+      "status": "todo"
     }
   ],
   "attempts": [
@@ -154,6 +156,8 @@
       "submittedBase": "770cbb40b71dbdb2ebd420b4703484b34afe86e5",
       "submissionId": "e56b40c5-7725-4773-9455-32c400909f4d",
       "submittedAt": "2026-10-28T19:18:53.710Z",
+      "integratedCommit": "cba46754727353965b1c61affe63816f5a2e41b3",
+      "integratedAt": "2026-10-28T19:23:09.936Z",
       "risk": null,
       "dispatch": {
         "id": "c3f95b99-7752-45ed-8eb7-540c10578b12",
@@ -223,6 +227,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
           "startedAt": "2026-10-28T19:18:20.448Z",
           "finishedAt": "2026-10-28T19:18:53.288Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-28T19:22:35.478Z",
+          "finishedAt": "2026-10-28T19:23:09.640Z"
         }
       ]
     },
@@ -316,7 +327,7 @@
       "contributors": [
         "b919f9a3-8d8b-4bf1-a347-14177cb200e0/worker-2"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-28T19:11:50.069Z",
       "startCommit": "843836e7887c3ab73e64dbbd99f509a971252e0c",
@@ -326,17 +337,30 @@
       "submittedAt": "2026-10-28T19:20:11.283Z",
       "risk": null,
       "dispatch": {
-        "id": "a41cbd90-8756-4d77-94de-2c7b348630ac",
-        "runner": "b919f9a3-8d8b-4bf1-a347-14177cb200e0",
-        "role": "worker",
-        "slot": 2,
+        "id": "14bd0eff-9604-453b-b593-3d637349557a",
+        "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+        "role": "reviewer",
+        "slot": 1,
         "provider": "codex",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-28T19:11:51.105Z",
-        "finishedAt": "2026-10-28T19:16:50.590Z",
-        "error": "상위 브랜치의 태스크/STATE를 먼저 정리하고 커밋하세요.",
-        "summary": "T564 구현 완료. 정확한 선수 ID를 마지막 페이지까지 탐색하도록 수정하고 회귀 단언을 추가했습니다. 관련 단위 테스트 74개, 타입·린트·포맷·빌드·spec 검사 통과. acceptance/result를 갱신했으며 브라우저 검증은 coordinator에 인계합니다. 커밋·제출은 하지 않았습니다."
+        "startedAt": "2026-10-28T19:23:11.281Z",
+        "finishedAt": "2026-10-28T19:24:48.995Z",
+        "error": null,
+        "summary": "T564 고정 커밋을 baseCommit·완료 조건·SSOT와 대조한 결과 수정이 필요한 결함은 발견하지 못했습니다. 워커 검증 기록을 확인했으며 최종 통합·브라우저 게이트는 조정자 호스트에 맡깁니다."
+      },
+      "review": {
+        "id": "01e06915-3bac-4d0a-9591-88803d5f9efb",
+        "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T564 고정 커밋을 baseCommit·완료 조건·SSOT와 대조한 결과 수정이 필요한 결함은 발견하지 못했습니다. 워커 검증 기록을 확인했으며 최종 통합·브라우저 게이트는 조정자 호스트에 맡깁니다.",
+        "findings": [],
+        "commit": "0d7c0bce85fd30a87aa472061d1ace209c667835",
+        "baseCommit": "cba46754727353965b1c61affe63816f5a2e41b3",
+        "submissionId": "f21399fc-52d8-42e6-a8cd-881d5ab0f22b",
+        "createdAt": "2026-10-28T19:23:10.035Z",
+        "finishedAt": "2026-10-28T19:24:48.961Z"
       },
       "steps": [
         {
@@ -429,6 +453,7 @@
         "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-1"
       ],
       "status": "doing",
+      "reason": null,
       "createdAt": "2026-10-28T19:20:42.263Z",
       "startCommit": "770cbb40b71dbdb2ebd420b4703484b34afe86e5",
       "dispatch": {
@@ -455,6 +480,7 @@
         "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-2"
       ],
       "status": "doing",
+      "reason": null,
       "createdAt": "2026-10-28T19:20:43.837Z",
       "startCommit": "770cbb40b71dbdb2ebd420b4703484b34afe86e5",
       "dispatch": {
@@ -2188,6 +2214,196 @@
       "group": "club-browser-fix",
       "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
       "taskId": "T562",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1863,
+      "at": "2026-10-28T19:23:09.839Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-28T19:22:35.478Z",
+            "finishedAt": "2026-10-28T19:23:09.640Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1864,
+      "at": "2026-10-28T19:23:09.936Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "cba46754727353965b1c61affe63816f5a2e41b3",
+        "integratedAt": "2026-10-28T19:23:09.936Z"
+      }
+    },
+    {
+      "sequence": 1865,
+      "at": "2026-10-28T19:23:10.035Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "01e06915-3bac-4d0a-9591-88803d5f9efb",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "reviewing",
+          "commit": "0d7c0bce85fd30a87aa472061d1ace209c667835",
+          "baseCommit": "cba46754727353965b1c61affe63816f5a2e41b3",
+          "submissionId": "f21399fc-52d8-42e6-a8cd-881d5ab0f22b",
+          "createdAt": "2026-10-28T19:23:10.035Z"
+        }
+      }
+    },
+    {
+      "sequence": 1866,
+      "at": "2026-10-28T19:23:11.281Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "14bd0eff-9604-453b-b593-3d637349557a",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T19:23:11.281Z"
+        }
+      }
+    },
+    {
+      "sequence": 1867,
+      "at": "2026-10-28T19:23:11.314Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "14bd0eff-9604-453b-b593-3d637349557a",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T19:23:11.281Z"
+        }
+      }
+    },
+    {
+      "sequence": 1868,
+      "at": "2026-10-28T19:23:57.685Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1869,
+      "at": "2026-10-28T19:23:58.123Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1870,
+      "at": "2026-10-28T19:24:48.961Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "01e06915-3bac-4d0a-9591-88803d5f9efb",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T564 고정 커밋을 baseCommit·완료 조건·SSOT와 대조한 결과 수정이 필요한 결함은 발견하지 못했습니다. 워커 검증 기록을 확인했으며 최종 통합·브라우저 게이트는 조정자 호스트에 맡깁니다.",
+          "findings": [],
+          "commit": "0d7c0bce85fd30a87aa472061d1ace209c667835",
+          "baseCommit": "cba46754727353965b1c61affe63816f5a2e41b3",
+          "submissionId": "f21399fc-52d8-42e6-a8cd-881d5ab0f22b",
+          "createdAt": "2026-10-28T19:23:10.035Z",
+          "finishedAt": "2026-10-28T19:24:48.961Z"
+        }
+      }
+    },
+    {
+      "sequence": 1871,
+      "at": "2026-10-28T19:24:48.995Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "14bd0eff-9604-453b-b593-3d637349557a",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T19:23:11.281Z",
+          "finishedAt": "2026-10-28T19:24:48.995Z",
+          "error": null,
+          "summary": "T564 고정 커밋을 baseCommit·완료 조건·SSOT와 대조한 결과 수정이 필요한 결함은 발견하지 못했습니다. 워커 검증 기록을 확인했으며 최종 통합·브라우저 게이트는 조정자 호스트에 맡깁니다."
+        }
+      }
+    },
+    {
+      "sequence": 1872,
+      "at": "2026-10-28T19:24:49.085Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
