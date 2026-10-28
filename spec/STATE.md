@@ -435,5 +435,3 @@
 - 261029 cp29 merge approved club-places-ui lane T554/T555; synchronize completed tasks before further allocation, keeping any superseded draft isolated.
 - 261029 cp29 authorize the minimal T553 read-leaf wage extraction for existing acceptance; keep formula/exports and saved facts unchanged.
 - 261029 cp29 refine unclaimed T556 convergence notes to prevent the .ts/.tsx casing collision reproduced by both UI lanes; no product policy change.
-- 261029 fix outcome: align the existing rest-day summary assertion with CLUB-20 morale -2; paired validation belongs to the already implemented T557 foundation before integration.
-- 261029 cp29 merge the owner-reviewed v07-beta integration so completed T549/T550 no longer block independent UI work; preserve current SSOT and T552–T558 scope.
