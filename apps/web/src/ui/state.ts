@@ -94,6 +94,9 @@ export function routeOf(pathname: string, search: string): Route {
     };
   const route: Route = { page: 'business', view: officeView(asked) };
   let address = officeAddress(route.view as OfficeView);
+  const work = new URLSearchParams(search).get('work');
+  if (work && (route.view === 'players' || route.view === 'staff'))
+    address += `&work=${encodeURIComponent(work)}`;
   const request = new URLSearchParams(search).get('request');
   if (route.page === 'business' && request)
     address += `${address.includes('?') ? '&' : '?'}request=${encodeURIComponent(request)}`;

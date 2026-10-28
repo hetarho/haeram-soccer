@@ -12,13 +12,18 @@ describe('work desk coverage', () => {
     );
     expect(DESK_RESPONSIBILITIES.investment).toEqual([]);
     expect(DESK_RESPONSIBILITIES.players).toContain('academy');
+    expect(OFFICE_DESKS.find(([key]) => key === 'investment')?.[1]).toBe('재정·투자');
+    expect(DESK_AREAS.players).not.toContain('squad');
+    expect(DESK_AREAS.investment).not.toContain('squad');
   });
   it('keeps every criteria area and every recurring spend reachable', () => {
     expect([...new Set(Object.values(DESK_AREAS).flat())].sort()).toEqual(
-      DIRECTION_AREAS.map((a) => a.key).sort(),
+      DIRECTION_AREAS.filter((a) => a.key !== 'squad')
+        .map((a) => a.key)
+        .sort(),
     );
     expect(DESK_AREAS.investment).toEqual(
-      expect.arrayContaining(['squad', 'youth', 'local', 'global', 'finance']),
+      expect.arrayContaining(['youth', 'local', 'global', 'finance']),
     );
   });
   it.each(['strategy', 'build', 'finance', 'facility', 'marketing'])(

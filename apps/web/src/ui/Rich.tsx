@@ -1,8 +1,13 @@
+import { openOfficeWork } from './officeDesks';
+import { PlayerOfficeWork, OfficeWorkResponsibility } from './PlayerOfficePanel';
+import { saleOfferItems } from './playerOfficeWork';
+import { AreaCriteria } from './DirectionLines';
+import { stoppingEvents } from '../runtime/progression';
 import { PersonnelHub } from './PersonnelHubs';
 import type { ProgressionController } from '../runtime/progression';
 import { squadRegistration } from './squadRegistration';
 import { PersonCareerLink } from './PersonCareer';
-import { useTaskState } from './taskMemory';
+import { useTaskState, useTaskMemory } from './taskMemory';
 import { PixelIcon } from './PixelIcon';
 import { Select } from './Select';
 import { lazy, Suspense, useEffect, useState } from 'react';
@@ -90,7 +95,7 @@ import {
   ManagerRenewal,
   TalkRulePanel,
 } from './ClubStaff';
-import { TabList, TabPanel } from './PageTabs';
+import { TabList, TabPanel, useAddressTab } from './PageTabs';
 import { AcademyPanel } from './AcademyPanel';
 import { TrainingView } from './TrainingView';
 import management from './ManagementView.module.css';
@@ -161,7 +166,10 @@ function PersonnelPanel({
 }: Props & { tab: PeopleTab; onReplace: () => void }) {
   const w = state.view!.world;
   return tab === 'players' ? (
-    <Roster state={state} client={client} />
+    <>
+      <AreaCriteria w={w} areas={['squad']} />
+      <Roster state={state} client={client} />
+    </>
   ) : tab === 'market' ? (
     <RecruitmentDesk state={state} client={client} />
   ) : tab === 'manager' ? (
@@ -176,40 +184,91 @@ function PersonnelPanel({
     </>
   );
 }
-const PLAYER_WORK = [
-  ['market', '영입·매각 협상'],
-  ['players', '재계약·매각'],
-  ['academy', '유소년 승격·방출'],
-] as const;
 const STAFF_WORK = [
   ['manager', '감독 계약'],
   ['coaches', '스태프 계약'],
 ] as const;
-function OfficePersonnelWork({ desk, state, client }: Props & { desk: 'players' | 'staff' }) {
+function OfficePersonnelWork({
+  desk,
+  state,
+  client,
+  controller,
+}: Props & { desk: 'players' | 'staff'; controller: ProgressionController }) {
+  const offers = desk === 'players' ? saleOfferItems(state.view!.world) : [];
+  if (desk === 'players')
+    return (
+      <PlayerOfficeWork
+        w={state.view!.world}
+        client={client}
+        controller={controller}
+        pending={stoppingEvents(state.view!.world)}
+        work={(tab) =>
+          tab === 'recruitment' ? (
+            <RecruitmentDesk state={state} client={client} />
+          ) : tab === 'academy' ? (
+            <AcademyPanel w={state.view!.world} client={client} />
+          ) : (
+            <>
+              {tab === 'sales' && (
+                <section aria-label="들어온 매각 제안">
+                  {offers.map((item) => (
+                    <EventCard
+                      key={item.id}
+                      client={client}
+                      controller={controller}
+                      item={item}
+                      inDesk
+                    />
+                  ))}
+                  {!offers.length && <p>현재 답변할 매각 제안이 없어요.</p>}
+                </section>
+              )}
+              <Roster state={state} client={client} work={tab} />
+            </>
+          )
+        }
+      />
+    );
+  return <StaffOfficeWork state={state} client={client} controller={controller} />;
+}
+function StaffOfficeWork({
+  state,
+  client,
+  controller,
+}: Props & { controller: ProgressionController }) {
   const w = state.view!.world;
-  const tabs = desk === 'players' ? PLAYER_WORK : STAFF_WORK;
-  const [tab, setTab] = useTaskState<string>(w.id, `office-work-${desk}`, tabs[0][0]);
+  const [tab, setTab] = useAddressTab('work', STAFF_WORK, 'manager', {
+    world: w.id,
+    key: 'office-work-staff',
+    path: '/direction?view=staff',
+    keepFirst: true,
+    older: (params) =>
+      (params.get('work') ?? useTaskMemory.getState().values['office-work-staff']) === 'coaches'
+        ? 'coaches'
+        : 'manager',
+  });
   const [market, setMarket] = useState(false);
   return (
     <>
       <TabList
-        tabs={tabs}
+        tabs={STAFF_WORK}
         value={tab}
-        onChange={setTab}
-        label={`${desk === 'players' ? '선수' : '스태프'} 계약 업무`}
-        idPrefix={`office-${desk}`}
+        label="스태프 계약 업무"
+        idPrefix="office-staff"
+        onChange={(next) => {
+          if (next === tab) return;
+          setTab(next);
+          openOfficeWork(next);
+        }}
       />
-      <TabPanel idPrefix={`office-${desk}`} value={tab}>
-        {tab === 'academy' ? (
-          <AcademyPanel w={w} client={client} />
-        ) : (
-          <PersonnelPanel
-            tab={tab as PeopleTab}
-            state={state}
-            client={client}
-            onReplace={() => setMarket(true)}
-          />
-        )}
+      <TabPanel idPrefix="office-staff" value={tab}>
+        <OfficeWorkResponsibility
+          w={w}
+          client={client}
+          controller={controller}
+          scope={[tab === 'manager' ? 'manager' : 'staff']}
+        />
+        <PersonnelPanel tab={tab} state={state} client={client} onReplace={() => setMarket(true)} />
       </TabPanel>
       {market && <ManagerMarket state={state} client={client} onClose={() => setMarket(false)} />}
     </>
@@ -926,16 +985,17 @@ function ContractTalkSheet({
   );
 }
 /** 사람's 선수: the roster with each player's stance and contract talks (→WEB-43). */
-function Roster({ state, client }: Props) {
+function Roster({ state, client, work }: Props & { work?: 'contracts' | 'sales' }) {
+  const prefix = work ? `office-roster-${work}` : 'roster';
   const v = state.view!,
     w = v.world,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
-    [view, setView] = useTaskState<RosterView>(w.id, 'roster-view', DEFAULT_ROSTER_VIEW),
-    [comparing, setComparing] = useTaskState(w.id, 'roster-comparing', false),
-    [fullTable, setFullTable] = useTaskState(w.id, 'roster-table', false),
-    [playerQuery, setPlayerQuery] = useTaskState(w.id, 'roster-query', ''),
-    [playerPage, setPlayerPage] = useTaskState(w.id, 'roster-page', 0),
-    [stanceId, setStanceId] = useTaskState<string | undefined>(w.id, 'roster-stance', undefined);
+    [view, setView] = useTaskState<RosterView>(w.id, `${prefix}-view`, DEFAULT_ROSTER_VIEW),
+    [comparing, setComparing] = useTaskState(w.id, `${prefix}-comparing`, false),
+    [fullTable, setFullTable] = useTaskState(w.id, `${prefix}-table`, false),
+    [playerQuery, setPlayerQuery] = useTaskState(w.id, `${prefix}-query`, ''),
+    [playerPage, setPlayerPage] = useTaskState(w.id, `${prefix}-page`, 0),
+    [stanceId, setStanceId] = useTaskState<string | undefined>(w.id, `${prefix}-stance`, undefined);
   const talkId = useContractTalk((state) => state.id),
     { open: openTalk, close: closeTalk } = useContractTalk.getState();
   const disabled = useGameState(gameActionsBlocked);
@@ -943,7 +1003,7 @@ function Roster({ state, client }: Props) {
   const registered = squadRegistration(w);
   const window = transferWindow(w);
   const stancePlayer = w.players.find((p) => p.id === stanceId && canSetStance(p));
-  const talkPlayer = active.find((p) => p.id === talkId),
+  const talkPlayer = work !== 'sales' ? active.find((p) => p.id === talkId) : undefined,
     talk = talkPlayer && talkFor(w, talkPlayer);
   const { scope } = view;
   const tallies = v.tallies.players;
@@ -1020,7 +1080,7 @@ function Roster({ state, client }: Props) {
                 <small>성장 +{(p.developed || 0).toFixed(2)}</small>
               </div>
               <div className={s.rosterActions}>
-                {p.status === 'active' && talkFor(w, p) && (
+                {work !== 'sales' && p.status === 'active' && talkFor(w, p) && (
                   <button
                     type="button"
                     className={s.stanceBadge}
@@ -1033,7 +1093,7 @@ function Roster({ state, client }: Props) {
                     협상
                   </button>
                 )}
-                {canSetStance(p) && (
+                {work !== 'contracts' && canSetStance(p) && (
                   <StanceBadge player={p} disabled={disabled} onOpen={() => setStanceId(p.id)} />
                 )}
               </div>
@@ -1119,7 +1179,7 @@ function Roster({ state, client }: Props) {
                         </td>
                         <td>{p.until}</td>
                         <td>
-                          {canSetStance(p) && (
+                          {work !== 'contracts' && canSetStance(p) && (
                             <StanceBadge
                               player={p}
                               disabled={disabled}
@@ -1137,12 +1197,14 @@ function Roster({ state, client }: Props) {
         </details>
         <div className={s.panelFoot}>
           감독이 포메이션 자리마다 실효 능력과 피로를 따져 선발을 고르고, 부상 선수는 빼요. 선수마다
-          이적 상태 뱃지(이적 명단·협상 가능·이적 불가)를 눌러 바꿀 수 있어요. 제안은 이적시장
-          기간에 실제 구단이 보내고, 수락해야 이적이 성사돼요. 최소 14명·골키퍼 1명을 유지해야 해요.
-          지금: {window.label}
+          {work === 'contracts'
+            ? '계약 협상이 열려 있으면 하한과 기간, 비용을 확인하고 답변할 수 있어요.'
+            : '이적 상태 뱃지(이적 명단·협상 가능·이적 불가)를 눌러 바꿀 수 있어요.'}{' '}
+          제안은 이적시장 기간에 실제 구단이 보내고, 수락해야 이적이 성사돼요. 최소 14명·골키퍼
+          1명을 유지해야 해요. 지금: {window.label}
         </div>
       </Panel>
-      <TalkRulePanel w={w} client={client} />
+      {!work && <TalkRulePanel w={w} client={client} />}
       {comparing && (
         <PlayerComparison
           w={w}
@@ -1253,6 +1315,7 @@ function Business({ state, client, controller }: Props & { controller: Progressi
             <OfficePersonnelWork
               key={`${state.view!.world.id}:${desk}`}
               desk={desk}
+              controller={controller}
               state={state}
               client={scoped}
             />

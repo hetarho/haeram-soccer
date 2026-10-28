@@ -100,6 +100,8 @@ for (const viewport of [
     await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
     await page.getByRole('button', { name: '구단주 사무실 입장', exact: true }).click();
     await page.getByRole('button', { name: '선수 계약', exact: true }).click();
+    await expect(page.getByTestId('player-office-overview')).toBeVisible();
+    await page.getByRole('tab', { name: '영입', exact: true }).click();
     await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
     await settle(page);
     expect(await horizontalOverflow(page)).toBe(0);

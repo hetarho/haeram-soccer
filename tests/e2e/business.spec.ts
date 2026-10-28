@@ -86,13 +86,13 @@ test('older operations addresses open their office area', async ({ page }) => {
   // Every older /business address opens its area under /direction.
   for (const [asked, area, now] of [
     ['/business', LOBBY, /\/direction$/],
-    ['/business?view=facility', '투자', /\/direction\?view=investment$/],
-    ['/business?view=marketing', '투자', /\/direction\?view=investment$/],
-    ['/business?view=strategy', '투자', /\/direction\?view=investment$/],
-    ['/business?view=build', '투자', /\/direction\?view=investment$/],
-    ['/business?view=finance', '투자', /\/direction\?view=investment$/],
+    ['/business?view=facility', '재정·투자', /\/direction\?view=investment$/],
+    ['/business?view=marketing', '재정·투자', /\/direction\?view=investment$/],
+    ['/business?view=strategy', '재정·투자', /\/direction\?view=investment$/],
+    ['/business?view=build', '재정·투자', /\/direction\?view=investment$/],
+    ['/business?view=finance', '재정·투자', /\/direction\?view=investment$/],
     ['/business?view=sponsor', '후원', /\/direction\?view=sponsor$/],
-    ['/direction?view=build', '투자', /\/direction\?view=investment$/],
+    ['/direction?view=build', '재정·투자', /\/direction\?view=investment$/],
   ] as const) {
     await page.goto(asked);
     await expect(officeTitle(page)).toHaveText(area);

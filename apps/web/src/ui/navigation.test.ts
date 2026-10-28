@@ -87,7 +87,7 @@ describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
     expect(BUSINESS_TABS.map(([id, label]) => `${id}:${label}`)).toEqual([
       'players:선수 계약',
       'staff:스태프 계약',
-      'investment:투자',
+      'investment:재정·투자',
       'sponsor:후원',
       'identity:구단 디자인',
     ]);

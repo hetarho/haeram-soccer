@@ -1,3 +1,4 @@
+import type { StopReason } from '../../../../packages/engine/src/stopping';
 import type { World } from '../../../../packages/contracts/src/types';
 import type { SponsorSlotView } from '../../../../packages/engine/src/sponsors';
 import type { PixelIconName } from './PixelIcon';
@@ -5,7 +6,7 @@ import { ClubCrest } from './ClubCrest';
 import { FacilityArt } from './FacilityArt';
 import { officeFacts } from './officeSummary';
 import { PixelIcon } from './PixelIcon';
-import { BUSINESS_TABS, openOwnerOffice, type BusinessView } from './state';
+import { BUSINESS_TABS, openOwnerOffice, openApprovalRequest, type BusinessView } from './state';
 import o from './OfficeLobby.module.css';
 
 const ICONS: Record<Exclude<BusinessView, 'identity'>, PixelIconName> = {
@@ -22,15 +23,29 @@ const ICONS: Record<Exclude<BusinessView, 'identity'>, PixelIconName> = {
 export function OfficeLobby({
   w,
   sponsors,
+  pending = [],
   onOpen,
 }: {
   w: World;
   sponsors: readonly SponsorSlotView[];
+  pending?: readonly StopReason[];
   onOpen: (view: BusinessView) => void;
 }) {
-  const facts = officeFacts(w, sponsors);
+  const facts = officeFacts(w, sponsors, pending);
   return (
     <section className={o.lobby} aria-label="구단주 사무실" data-testid="office-lobby">
+      <section className={o.pending} aria-label="결재 대기 업무">
+        <h2>결재 대기 {pending.length}건</h2>
+        {pending.length ? (
+          pending.map((item) => (
+            <button key={item.id} data-ui="link" onClick={() => openApprovalRequest(w.id, item)}>
+              {item.title} · 검토하기
+            </button>
+          ))
+        ) : (
+          <p>현재 결재 대기 업무가 없어요.</p>
+        )}
+      </section>
       <FacilityArt kind="manager" world={w} className={o.room} eager />
       <button type="button" data-ui="primary" onClick={openOwnerOffice}>
         결재라인 모아보기

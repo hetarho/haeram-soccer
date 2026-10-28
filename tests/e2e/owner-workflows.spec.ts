@@ -230,7 +230,7 @@ test('recruitment needs open on demand and academy operations open their exact w
   await page.getByRole('button', { name: /유소년 시설 .*공사 보기/ }).click();
   await expect(page.getByTestId('facility-academy')).toBeVisible();
   // The office opened on 시설; leaving it returns to the academy that asked (→WEB-39/74).
-  await expect(officeTitle(page)).toHaveText('투자');
+  await expect(officeTitle(page)).toHaveText('재정·투자');
   await leaveOffice(page);
   await expect(
     nav(page).getByRole('button', { name: '유소년 훈련장', exact: true }),

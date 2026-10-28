@@ -187,8 +187,8 @@ test('the talk rule shows under 선수 and applies', async ({ page, browserName 
   // The row is chosen on the 방향 board, its area unfolded by the line.
   await talks.getByRole('button', { name: /^재계약 기조 · 표준/ }).click();
   const squad = page
-    .getByRole('dialog', { name: '선수단·계약 업무 기준', exact: true })
-    .getByRole('region', { name: '선수단·계약', exact: true });
+    .getByRole('dialog', { name: '재정 업무 기준', exact: true })
+    .getByRole('region', { name: '재정', exact: true });
   await squad.getByRole('radio', { name: '재계약 기조 짠물', exact: true }).click();
   const draft = page.getByTestId('strategy-draft');
   await expect(draft).toContainText('재계약 기조 표준 → 짠물');
