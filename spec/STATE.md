@@ -393,13 +393,18 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- UI scope T536 is complete and published at b1886d69. Main CI remains unconfirmed after one bounded 60-minute observation; follow run 40622906430. Manager/training room activities need separate product planning.
-- implement-task T537: correct association access, continental titleholders, EPS and qualification causes.
 - implement-task T538: revision 5 carrier judgement (f5j2).
 - implement-task T539: tolerant target bands (f5j2).
+- implement-task T537: correct association access, continental titleholders, EPS and qualification causes.
+- UI scope T536 is complete and published at b1886d69. Main CI remains unconfirmed after one bounded 60-minute observation; follow run 40622906430. Manager/training room activities need separate product planning.
 
 ## log
 - 261028 T536 done: compact facilities, inset cards and quiet navigation; final local batch passed, including 311 Chromium journeys. Main b1886d69 published; CI observation timed out while the run remained in progress.
+- 261028 T539 start (f5j2): tolerant target bands.
+- 261028 update-ssot MATCH r35 + create-task T539: MATCH-23/MATCH-30 rows held within 25% of the real-football mean.
+- 261028 T538 start (f5j2): revision 5 carrier judgement, explore 2h.
+- 261028 create-task MATCH r34: T538 opens revision 5 for the carrier's space, safe recycling and room near the box.
+- 261028 update-ssot MATCH start and r34 done: MATCH-16 space ahead, contested passes only forward, no far back pass with room near the box.
 - 261028 T536 planning shared for strict session claim; WEB r165.
 - 261028 create-task EURO r4: T537 covers allocation, recorded coefficients, compatibility and qualification explanation.
 - 261028 update-ssot EURO start and r4 done: modern access, holders, EPS and forward-only save compatibility; create-task EURO next.
@@ -414,8 +419,3 @@
 - 261028 fix navigation-tools: screenshot capture and the unchanged 30-click first-play sample use the six gameplay destinations; syntax and type/lint/format checks passed; no new benchmark claim.
 - 261028 fix personnel-deep-links: canonical personnel entries serve the SPA with no-cache HTML; missing assets remain 404; HTTP checks, type/lint/format/build passed; preview regression extended for the final batch.
 - 261028 fix approval-return: cancellation/home actions stay disabled while a command is queued or in flight; 26 focused cases and type/lint/format/build passed.
-- 261028 T533 done: host finalized the verified child implementation and task commit.
-- 261028 T539 start (f5j2): tolerant target bands.
-- 261028 update-ssot MATCH r35 + create-task T539: MATCH-23/MATCH-30 rows held within 25% of the real-football mean.
-- 261028 T538 start (f5j2): revision 5 carrier judgement, explore 2h.
-- 261028 create-task MATCH r34: T538 opens revision 5 for the carrier's space, safe recycling and room near the box.
