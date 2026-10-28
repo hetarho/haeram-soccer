@@ -79,6 +79,7 @@ export function currentCupBriefings(w: World) {
     const next = ownFixtures.find((fixture) => !fixture.score);
     const last = ownFixtures.findLast((fixture) => fixture.score);
     const eliminated = !!tie?.winner && tie.winner !== w.playerClub;
+    // The continental stage advances while completed qualifier rounds remain retained.
     const status =
       cup.key === 'cup' && !domestic
         ? '대진 정보 없음'
@@ -87,9 +88,7 @@ export function currentCupBriefings(w: World) {
           : cup.winner === w.playerClub
             ? '우승'
             : cup.ownExit ||
-              (eliminated
-                ? `${round!.label} 탈락`
-                : (round?.label ?? cup.stage) || '대진 추첨 대기');
+              (eliminated ? `${round!.label} 탈락` : cup.stage || round?.label || '대진 추첨 대기');
     const detail =
       entered && next && !eliminated && !cup.ownExit && !cup.winner
         ? `다음 ${fixtureDate(w, next)} · ${next.home === w.playerClub ? '홈' : '원정'} ${clubName(next.home === w.playerClub ? next.away : next.home)}`

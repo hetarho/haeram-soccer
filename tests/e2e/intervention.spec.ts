@@ -1,4 +1,4 @@
-import { openLeague } from './competition-navigation';
+import { openLeague, resumeLeague } from './competition-navigation';
 import { watchNext } from './watch';
 import { chooseOption, selectOptions } from './select';
 import { chooseLevel, delegateSales } from './events';
@@ -132,7 +132,7 @@ for (const viewport of [
     const stop = page.getByRole('button', { name: '자동 진행 정지', exact: true });
     await expect(stop).toBeVisible();
     await stop.click();
-    await openLeague(page);
+    await resumeLeague(page);
     await expect(page).toHaveURL(contextUrl);
     await expect(country).toHaveAttribute('data-value', 'FRA');
 
@@ -145,7 +145,7 @@ for (const viewport of [
     await expect(plan).toHaveCount(0);
     await expect(review).toBeFocused();
     await leaveOffice(page);
-    await openLeague(page);
+    await resumeLeague(page);
     await expect(page).toHaveURL(contextUrl);
     await expect(country).toHaveAttribute('data-value', 'FRA');
 

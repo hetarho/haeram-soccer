@@ -1,7 +1,12 @@
 import type { Page } from '@playwright/test';
 
-/** Enter via the primary group, then its local lens; retain all the journey's real UI steps. */
-async function openLens(page: Page, hub: string, lens: string) {
+/** Enter through the clubhouse, then its local lens, using the journey's real UI steps. */
+async function openLens(
+  page: Page,
+  hub: string,
+  lens: string,
+  entry: 'current' | 'resume' = 'current',
+) {
   const tabs = page.getByRole('tablist', { name: hub, exact: true });
   if (!(await tabs.isVisible())) {
     const mobile = (page.viewportSize()?.width ?? 1280) <= 760;
@@ -11,7 +16,14 @@ async function openLens(page: Page, hub: string, lens: string) {
       .click();
     if (hub === '역사')
       await page.getByRole('button', { name: '클럽 기록실', exact: true }).click();
-    else await page.getByRole('button', { name: '현재 리그 보기', exact: true }).click();
+    else if (entry === 'resume') {
+      // This link restores the notebook; the explicit current-league shortcut selects our league.
+      await page.getByRole('button', { name: '클럽 소식·시즌 브리핑', exact: true }).click();
+      await page
+        .getByRole('dialog', { name: '시즌 상세와 클럽 소식', exact: true })
+        .getByRole('button', { name: '전체 리그 보기 →', exact: true })
+        .click();
+    } else await page.getByRole('button', { name: '현재 리그 보기', exact: true }).click();
   }
   if (hub === '역사' && !(await tabs.isVisible())) {
     const back = page
@@ -26,6 +38,8 @@ async function openLens(page: Page, hub: string, lens: string) {
 }
 export const openLeague = (page: Page, archive = false) =>
   openLens(page, archive ? '역사' : '시즌', archive ? '이전 리그 기록' : '리그');
+/** Resume the selected current-season league/lens without an own-league selection request. */
+export const resumeLeague = (page: Page) => openLens(page, '시즌', '리그', 'resume');
 export const openCups = (page: Page, archive = false) =>
   openLens(page, archive ? '역사' : '시즌', archive ? '이전 컵대회 기록' : '컵 대회');
 export const openClubRecords = (page: Page) => openLens(page, '역사', '클럽 기록실');
