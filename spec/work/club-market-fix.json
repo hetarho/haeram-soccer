@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-28T17:29:45.234Z",
-  "sourceCommit": "f97a1b57035b42391660bfb34d7499f3cd477bac",
+  "snapshotAt": "2026-10-28T17:33:07.167Z",
+  "sourceCommit": "e65b4fa7a8516f74ba9246dafef424118e517bdd",
   "group": {
     "id": "club-market-fix",
     "branch": "work/club-market-fix",
@@ -46,10 +46,10 @@
   },
   "summary": {
     "total": 7,
-    "completed": 0,
-    "remaining": 7,
+    "completed": 1,
+    "remaining": 6,
     "running": 0,
-    "review": 1,
+    "review": 0,
     "blocked": 0,
     "unassigned": 6
   },
@@ -103,13 +103,6 @@
         "T555"
       ],
       "status": "todo"
-    },
-    {
-      "id": "T558",
-      "title": "World market query and identity-based transfer engine",
-      "dep": [],
-      "lane": "market-engine",
-      "status": "ready"
     }
   ],
   "attempts": [
@@ -127,7 +120,7 @@
         "ba51ee3a-f893-4bda-beb4-704622f4f022/worker-1",
         "cc2979cd-aa44-44bd-95b6-80da42dcad52/worker-1"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-28T17:04:36.485Z",
       "startCommit": "1f4761feb72b982993e2e8c1ce746fa0afa8b4c1",
@@ -148,6 +141,19 @@
         "finishedAt": "2026-10-28T17:29:43.964Z",
         "error": null,
         "summary": "pnpm run build가 통과했습니다(Vite 2.25초). T558의 마지막 acceptance를 [v]로 표시하고 빌드 결과를 기록했습니다. 이번에는 태스크 문서만 수정했으며 테스트 재실행이나 커밋은 하지 않았습니다."
+      },
+      "review": {
+        "id": "80dbb703-2b38-4f38-b0e6-5e1e3231edcd",
+        "owner": "cp29-review",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T558 correction resolves review 019a31b8: an overflow arrival absent from the raw formation receives a deterministic ordinary club-strength model at his retained position and age. Inspected the complete pinned diff, unchanged prior market implementation, LWB/RWB red/green regressions and affected-unit/quick/build evidence. No P1/P2 findings remain in the submitted correction. Full integration and browser validation remain at the coordinator gate.",
+        "findings": [],
+        "commit": "66302d4f2cb71966b12c5be0691c32acda09847d",
+        "baseCommit": "e65b4fa7a8516f74ba9246dafef424118e517bdd",
+        "submissionId": "29e35979-7580-420d-8197-a20832ec1889",
+        "createdAt": "2026-10-28T17:32:25.056Z",
+        "finishedAt": "2026-10-28T17:33:02.939Z"
       },
       "steps": [
         {
@@ -804,6 +810,67 @@
           "autopilot": true,
           "decisionWaitMs": 900000
         }
+      }
+    },
+    {
+      "sequence": 1708,
+      "at": "2026-10-28T17:32:25.056Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "80dbb703-2b38-4f38-b0e6-5e1e3231edcd",
+          "owner": "cp29-review",
+          "status": "reviewing",
+          "commit": "66302d4f2cb71966b12c5be0691c32acda09847d",
+          "baseCommit": "e65b4fa7a8516f74ba9246dafef424118e517bdd",
+          "submissionId": "29e35979-7580-420d-8197-a20832ec1889",
+          "createdAt": "2026-10-28T17:32:25.056Z"
+        }
+      }
+    },
+    {
+      "sequence": 1709,
+      "at": "2026-10-28T17:33:02.939Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "80dbb703-2b38-4f38-b0e6-5e1e3231edcd",
+          "owner": "cp29-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T558 correction resolves review 019a31b8: an overflow arrival absent from the raw formation receives a deterministic ordinary club-strength model at his retained position and age. Inspected the complete pinned diff, unchanged prior market implementation, LWB/RWB red/green regressions and affected-unit/quick/build evidence. No P1/P2 findings remain in the submitted correction. Full integration and browser validation remain at the coordinator gate.",
+          "findings": [],
+          "commit": "66302d4f2cb71966b12c5be0691c32acda09847d",
+          "baseCommit": "e65b4fa7a8516f74ba9246dafef424118e517bdd",
+          "submissionId": "29e35979-7580-420d-8197-a20832ec1889",
+          "createdAt": "2026-10-28T17:32:25.056Z",
+          "finishedAt": "2026-10-28T17:33:02.939Z"
+        }
+      }
+    },
+    {
+      "sequence": 1710,
+      "at": "2026-10-28T17:33:03.916Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

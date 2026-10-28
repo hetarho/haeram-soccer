@@ -391,7 +391,6 @@
 | T554 | Six-place navigation and competition clubhouse | WEB ECON ARCH | - | todo |
 | T555 | Work-oriented owner office and scoped player approvals | WEB ECON ARCH | T554 | todo |
 | T556 | Connect place choices and verify the complete owner workflow | WEB CLUB ARCH | T552 T553 T555 | todo |
-| T558 | World market query and identity-based transfer engine | WEB CLUB ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -410,12 +409,13 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 | v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
 | club-places | 3 | 8 | 1 | 7 | 1 | 0 | 0 | 2026-10-28T15:59:14.591Z | [history](work/club-places.json) |
-| club-market-fix | 1 | 7 | 0 | 7 | 0 | 1 | 0 | 2026-10-28T17:29:45.234Z | [history](work/club-market-fix.json) |
+| club-market-fix | 1 | 7 | 1 | 6 | 0 | 0 | 0 | 2026-10-28T17:33:07.167Z | [history](work/club-market-fix.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261028 T558 integrated
 - 261029 cp29 move unapproved T558 e7c5ce2 into isolated club-market-fix draft after the third review reproduced an overflow LWB becoming a GK; refresh unclaimed task notes and reopen affected checks.
 - 261029 cp29 authorize the minimal T553 read-leaf wage extraction for existing acceptance; keep formula/exports and saved facts unchanged.
 - 261029 cp29 refine unclaimed T556 convergence notes to prevent the .ts/.tsx casing collision reproduced by both UI lanes; no product policy change.
@@ -435,4 +435,3 @@
 - 261028 feat/player-figures-kits merge verified against main f5672a67 and feature 3a13057e: typecheck, lint, format:check, unit (175 files / 1,435 passed), contract (3 files / 47 passed), catalog/presentation validation and production build passed; the 12 pure kit-selection cases also passed (2 world-integration cases excluded). Full integration and browser suites omitted under the owner's requested unit/static scope.
 - 261028 merge review: renumber the incoming kit-wear task from T542 to T547 and update its references, preserving main's independent T542 revision-6 task; reconcile completed MATCH/KIT/WEB/SAVE status and retain both histories. Owner requests unit tests and static checks for this merge; browser and integration suites are outside this local verification scope.
 - 261028 pl1 end: T543–T547 merged on feat/player-figures-kits; full unit project 1422 passed; other suites left to the receiver by owner instruction; branch pushed for handoff.
-- 261028 T545 done (dev3, 1617365a): match observation and replay draw posed figures, standing knee fixed in figurePose; merged; PL unit run next.

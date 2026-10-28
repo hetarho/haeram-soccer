@@ -99,8 +99,19 @@ export function continuousSquad(w: World, c: Club): Player[] {
     if (slot < 0) {
       // All generated places already represent retained players. Keep the arrival with the same
       // ordinary club-strength attribute model rather than silently dropping either identity.
-      const model = raw.find((p) => p.position === person.position) ?? raw[0];
-      players.push(identity(model, person));
+      const model =
+        raw.find((p) => p.position === person.position) ??
+        makePlayer(
+          COUNTRIES.some((country) => country.code === c.country) ? c.country : 'ENG',
+          w.seed,
+          person.id,
+          w.year,
+          c.strength,
+          person.position,
+          w.year - person.born,
+          c.tier,
+        );
+      players.push(identity({ ...model, fatigue: raw[0].fatigue }, person));
       occupied.add(players.length - 1);
       continue;
     }
