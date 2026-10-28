@@ -410,7 +410,7 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 | v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
 | club-places | 3 | 8 | 1 | 7 | 1 | 0 | 0 | 2026-10-28T15:59:14.591Z | [history](work/club-places.json) |
-| club-market-fix | 1 | 7 | 0 | 7 | 0 | 0 | 1 | 2026-10-28T17:15:46.100Z | [history](work/club-market-fix.json) |
+| club-market-fix | 1 | 7 | 0 | 7 | 0 | 1 | 0 | 2026-10-28T17:29:45.234Z | [history](work/club-market-fix.json) |
 
 ## next
 - inspect work board for remaining tasks

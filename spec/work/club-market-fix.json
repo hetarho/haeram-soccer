@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-28T17:15:46.100Z",
-  "sourceCommit": "4b0d79b3e4e525928b9b1c75d26a57d57533e7d4",
+  "snapshotAt": "2026-10-28T17:29:45.234Z",
+  "sourceCommit": "f97a1b57035b42391660bfb34d7499f3cd477bac",
   "group": {
     "id": "club-market-fix",
     "branch": "work/club-market-fix",
@@ -14,7 +14,7 @@
     },
     "review": "all",
     "lastRun": {
-      "id": "ba51ee3a-f893-4bda-beb4-704622f4f022",
+      "id": "cc2979cd-aa44-44bd-95b6-80da42dcad52",
       "adapter": "builtin",
       "providers": {
         "worker": {
@@ -35,17 +35,11 @@
           "version": "codex-cli 0.160.1"
         }
       ],
-      "startedAt": "2026-10-28T17:15:44.892Z",
-      "stoppedAt": "2026-10-28T17:15:45.331Z",
-      "dispatched": 0,
-      "outcome": "needs-attention",
-      "failures": [
-        {
-          "attempt": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
-          "role": "worker",
-          "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
-        }
-      ],
+      "startedAt": "2026-10-28T17:25:54.593Z",
+      "stoppedAt": "2026-10-28T17:29:44.177Z",
+      "dispatched": 1,
+      "outcome": "dispatch-limit",
+      "failures": [],
       "autopilot": true,
       "decisionWaitMs": 900000
     }
@@ -55,8 +49,8 @@
     "completed": 0,
     "remaining": 7,
     "running": 0,
-    "review": 0,
-    "blocked": 1,
+    "review": 1,
+    "blocked": 0,
     "unassigned": 6
   },
   "tasks": [
@@ -115,7 +109,7 @@
       "title": "World market query and identity-based transfer engine",
       "dep": [],
       "lane": "market-engine",
-      "status": "blocked"
+      "status": "ready"
     }
   ],
   "attempts": [
@@ -127,28 +121,55 @@
         "T558"
       ],
       "lane": "market-engine",
-      "owner": "ba51ee3a-f893-4bda-beb4-704622f4f022/worker-1",
+      "owner": "cc2979cd-aa44-44bd-95b6-80da42dcad52/worker-1",
       "contributors": [
         "6abc1208-fa06-465c-8a96-25e8e4e181e8/worker-1",
-        "ba51ee3a-f893-4bda-beb4-704622f4f022/worker-1"
+        "ba51ee3a-f893-4bda-beb4-704622f4f022/worker-1",
+        "cc2979cd-aa44-44bd-95b6-80da42dcad52/worker-1"
       ],
-      "status": "blocked",
-      "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요.",
+      "status": "ready",
+      "reason": null,
       "createdAt": "2026-10-28T17:04:36.485Z",
       "startCommit": "1f4761feb72b982993e2e8c1ce746fa0afa8b4c1",
+      "verifiedCommit": "66302d4f2cb71966b12c5be0691c32acda09847d",
+      "submittedBase": "f97a1b57035b42391660bfb34d7499f3cd477bac",
+      "submissionId": "29e35979-7580-420d-8197-a20832ec1889",
+      "submittedAt": "2026-10-28T17:29:43.929Z",
+      "risk": null,
       "dispatch": {
-        "id": "a4a9ea05-2e9d-4919-8f0b-753083dd6b33",
-        "runner": "6abc1208-fa06-465c-8a96-25e8e4e181e8",
+        "id": "16ee0b6e-14ac-427f-b1d9-14e31f4df0a5",
+        "runner": "cc2979cd-aa44-44bd-95b6-80da42dcad52",
         "role": "worker",
         "slot": 1,
         "provider": "codex",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-28T17:04:38.479Z",
-        "finishedAt": "2026-10-28T17:13:22.286Z",
-        "error": "T558: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
-        "summary": "T558 overflow 선수의 실제 포지션 보존을 수정하고 LWB/RWB 회귀 테스트와 acceptance/result를 갱신했습니다. 영향 단위 테스트 653개, 타입·린트·포맷·diff 검사가 통과했습니다. 빌드·통합·e2e 검증은 호스트 최종 관문에 이월했으며 커밋하지 않았습니다."
-      }
+        "startedAt": "2026-10-28T17:25:54.831Z",
+        "finishedAt": "2026-10-28T17:29:43.964Z",
+        "error": null,
+        "summary": "pnpm run build가 통과했습니다(Vite 2.25초). T558의 마지막 acceptance를 [v]로 표시하고 빌드 결과를 기록했습니다. 이번에는 태스크 문서만 수정했으며 테스트 재실행이나 커밋은 하지 않았습니다."
+      },
+      "steps": [
+        {
+          "taskId": "T558",
+          "commit": "66302d4f2cb71966b12c5be0691c32acda09847d",
+          "at": "2026-10-28T17:29:43.901Z",
+          "verification": [
+            {
+              "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "startedAt": "2026-10-28T17:26:53.891Z",
+              "finishedAt": "2026-10-28T17:29:43.458Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "startedAt": "2026-10-28T17:26:53.891Z",
+          "finishedAt": "2026-10-28T17:29:43.458Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -524,6 +545,262 @@
               "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
             }
           ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1696,
+      "at": "2026-10-28T17:25:53.890Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1697,
+      "at": "2026-10-28T17:25:54.614Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "cc2979cd-aa44-44bd-95b6-80da42dcad52",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T17:25:54.593Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1698,
+      "at": "2026-10-28T17:25:54.659Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "cc2979cd-aa44-44bd-95b6-80da42dcad52/worker-1",
+        "contributors": [
+          "6abc1208-fa06-465c-8a96-25e8e4e181e8/worker-1",
+          "ba51ee3a-f893-4bda-beb4-704622f4f022/worker-1",
+          "cc2979cd-aa44-44bd-95b6-80da42dcad52/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 1699,
+      "at": "2026-10-28T17:25:54.831Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "16ee0b6e-14ac-427f-b1d9-14e31f4df0a5",
+          "runner": "cc2979cd-aa44-44bd-95b6-80da42dcad52",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T17:25:54.831Z"
+        }
+      }
+    },
+    {
+      "sequence": 1700,
+      "at": "2026-10-28T17:25:55.046Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "16ee0b6e-14ac-427f-b1d9-14e31f4df0a5",
+          "runner": "cc2979cd-aa44-44bd-95b6-80da42dcad52",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T17:25:54.831Z"
+        }
+      }
+    },
+    {
+      "sequence": 1701,
+      "at": "2026-10-28T17:26:52.739Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1702,
+      "at": "2026-10-28T17:26:53.471Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1703,
+      "at": "2026-10-28T17:26:53.534Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1705,
+      "at": "2026-10-28T17:29:43.929Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "66302d4f2cb71966b12c5be0691c32acda09847d",
+        "submittedBase": "f97a1b57035b42391660bfb34d7499f3cd477bac",
+        "submissionId": "29e35979-7580-420d-8197-a20832ec1889",
+        "submittedAt": "2026-10-28T17:29:43.929Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T558",
+            "commit": "66302d4f2cb71966b12c5be0691c32acda09847d",
+            "at": "2026-10-28T17:29:43.901Z",
+            "verification": [
+              {
+                "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "startedAt": "2026-10-28T17:26:53.891Z",
+                "finishedAt": "2026-10-28T17:29:43.458Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "startedAt": "2026-10-28T17:26:53.891Z",
+            "finishedAt": "2026-10-28T17:29:43.458Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1706,
+      "at": "2026-10-28T17:29:43.964Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "16ee0b6e-14ac-427f-b1d9-14e31f4df0a5",
+          "runner": "cc2979cd-aa44-44bd-95b6-80da42dcad52",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T17:25:54.831Z",
+          "finishedAt": "2026-10-28T17:29:43.964Z",
+          "error": null,
+          "summary": "pnpm run build가 통과했습니다(Vite 2.25초). T558의 마지막 acceptance를 [v]로 표시하고 빌드 결과를 기록했습니다. 이번에는 태스크 문서만 수정했으며 테스트 재실행이나 커밋은 하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1707,
+      "at": "2026-10-28T17:29:44.177Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "cc2979cd-aa44-44bd-95b6-80da42dcad52",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T17:25:54.593Z",
+          "stoppedAt": "2026-10-28T17:29:44.177Z",
+          "dispatched": 1,
+          "outcome": "dispatch-limit",
+          "failures": [],
           "autopilot": true,
           "decisionWaitMs": 900000
         }
