@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-28T16:52:26.857Z",
-  "sourceCommit": "590dd56d15cdb02d36ba41eaa1003432545902bc",
+  "snapshotAt": "2026-10-28T20:43:28.891Z",
+  "sourceCommit": "636f2e4a6af482731090a51f2a395b1449caaf0a",
   "group": {
     "id": "club-places-ui",
     "branch": "work/club-places-ui",
@@ -11,6 +11,18 @@
       "workers": 1,
       "reviewers": 1,
       "maxPending": 8
+    },
+    "verified": {
+      "commit": "636f2e4a6af482731090a51f2a395b1449caaf0a",
+      "checks": [
+        {
+          "command": "git diff --quiet 89bbdaf9 -- . \":!spec/**\" && npx --no-install haeram-spec-creator lint",
+          "startedAt": "2026-10-28T20:43:27.616Z",
+          "finishedAt": "2026-10-28T20:43:28.056Z"
+        }
+      ],
+      "at": "2026-10-28T20:43:28.159Z",
+      "excluded": []
     },
     "review": "all",
     "lastRun": {
@@ -45,57 +57,15 @@
     }
   },
   "summary": {
-    "total": 7,
+    "total": 2,
     "completed": 2,
-    "remaining": 5,
+    "remaining": 0,
     "running": 0,
     "review": 0,
     "blocked": 0,
-    "unassigned": 5
+    "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T548",
-      "title": "Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it",
-      "dep": [],
-      "status": "todo"
-    },
-    {
-      "id": "T552",
-      "title": "Paged whole-world recruitment workbench",
-      "dep": [
-        "T558"
-      ],
-      "lane": "market-ui",
-      "status": "todo"
-    },
-    {
-      "id": "T553",
-      "title": "Consequential owner choices and shared place activity panels",
-      "dep": [
-        "T557"
-      ],
-      "lane": "place-choices",
-      "status": "todo"
-    },
-    {
-      "id": "T556",
-      "title": "Connect place choices and verify the complete owner workflow",
-      "dep": [
-        "T552",
-        "T553",
-        "T555"
-      ],
-      "status": "todo"
-    },
-    {
-      "id": "T558",
-      "title": "World market query and identity-based transfer engine",
-      "dep": [],
-      "lane": "market-engine",
-      "status": "todo"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "d23ee082-a3f1-4503-a612-a20364bb319b",
@@ -1385,6 +1355,28 @@
           "failures": [],
           "autopilot": true,
           "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1942,
+      "at": "2026-10-28T20:43:28.180Z",
+      "type": "group",
+      "group": "club-places-ui",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "verified": {
+          "commit": "636f2e4a6af482731090a51f2a395b1449caaf0a",
+          "checks": [
+            {
+              "command": "git diff --quiet 89bbdaf9 -- . \":!spec/**\" && npx --no-install haeram-spec-creator lint",
+              "startedAt": "2026-10-28T20:43:27.616Z",
+              "finishedAt": "2026-10-28T20:43:28.056Z"
+            }
+          ],
+          "at": "2026-10-28T20:43:28.159Z",
+          "excluded": []
         }
       }
     }

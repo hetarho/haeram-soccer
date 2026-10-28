@@ -410,7 +410,7 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 | v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
 | club-places | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-28T20:38:37.582Z | [history](work/club-places.json) |
-| club-places-ui | 1 | 7 | 2 | 5 | 0 | 0 | 0 | 2026-10-28T16:52:26.857Z | [history](work/club-places-ui.json) |
+| club-places-ui | 1 | 2 | 2 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:28.891Z | [history](work/club-places-ui.json) |
 | club-browser-fix | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-10-28T20:39:32.438Z | [history](work/club-browser-fix.json) |
 
 ## next
