@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T15:17Z | - |
+| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T19:10Z | - |
 
 ## inbox
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
@@ -400,6 +400,9 @@
 | T558 | World market query and identity-based transfer engine | WEB CLUB ARCH | - | todo |
 
 | T562 | Align facility and competition browser journeys with the six places | WEB ARCH | - | todo |
+| T563 | Restore mobile place targets and compact standings | WEB ARCH | - | todo |
+| T564 | Find exact player identities through paged market journeys | WEB ARCH | - | todo |
+| T565 | Keep place journey fixtures and named returns valid | WEB ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -423,6 +426,7 @@
 - club-places: implement T557/T558 engine foundations while live T550 owns UI, then T552 market UI and T553 choices in parallel with the T554→T555 places-office lane; T556 connects all results. Existing T548–T550 remain with their current sessions.
 
 ## log
+- 261029 create-task T563–T565 (cp29): reserve browser-gate follow-up IDs for mobile layout, paged identities and explicit place fixtures; current code remains in isolated work branches.
 - 261029 create-task T562 (cp29): reproduced browser facility/competition drift; preserve all layout/navigation contracts and coordinator-only browser execution.
 - 261029 T561 done (p9c3, explore): match-model revision 8 — the showing teammate offers at 14 m, with the ball teammates spread 14 m and keep 10 m around the carrier; crowds of seven within 10 m 7.0% → 2.9%; 600 matches goals 3.38, 25/37 (one row fewer: long shots).
 - 261029 update-ssot MATCH r41 + create-task T561 (p9c3, owner): players swarm the ball like playground football → MATCH-17 nobody piles onto the ball; T561 revision 8, explore 2 h.
@@ -440,4 +444,3 @@
 - 261029 cp29 move unclaimed T552 shared browser edits to T556 while preserving every required journey; keep independent UI file ownership disjoint.
 - 261028 T551 done (p9c3): main CI fix after the figures/kits and forward-intent merges — editor samples mid-step, kit pixel floor, faster wornFigures, in-page goal-hold minute, clock-derived 16× bound, appearance digest.
 - 261028 create-task (f5j2): T548 MATCH r39, T549 SAVE r57, T550 WEB r167.
-- 261028 update-ssot (f5j2): MATCH r39 chased forward's clear chance and closing blocks; SAVE r57 one game version 0.7.0 (beta), 4.0.0 saves load as 0.7.0; WEB r167 WEB-101 BETA mark.
