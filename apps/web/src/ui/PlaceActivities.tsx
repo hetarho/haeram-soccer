@@ -201,6 +201,13 @@ function Activities({ place, state, client }: PlaceActivitiesProps) {
                   </option>
                 ))}
               </Select>
+              {selected && (
+                <p>
+                  승격 후 연봉{' '}
+                  <Money value={selected.promotionWage} code={club.country} year={w.year} /> · 계약
+                  종료 {w.year + 3}년
+                </p>
+              )}
               {!selected && (
                 <p className={s.note}>아카데미가 비어 있어요. 다음 유소년 입단을 기다려 주세요.</p>
               )}
@@ -309,6 +316,10 @@ function Activities({ place, state, client }: PlaceActivitiesProps) {
               <p>
                 승격: 즉시 1군 합류 · 시장 급여를 지급하는 첫 프로 계약 · 아카데미의 연령별 성장
                 대신 1군 훈련과 출전 경쟁. 선발 출전은 보장되지 않아요.
+              </p>
+              <p>
+                승격 후 연봉{' '}
+                <Money value={reviewed.promotionWage} code={club.country} year={w.year} />
               </p>
               <p>
                 현재 {reviewedGroup?.label} 성장 ×{reviewedGroup?.factor} · 승격 후 계약 종료{' '}

@@ -14,6 +14,7 @@ import type { GameClient } from '../runtime/client';
 import type { Reply, View } from '../runtime/protocol';
 import { initialClientState } from '../runtime/store';
 import { PlaceActivities } from './PlaceActivities.tsx';
+import { Money } from './Money';
 import { careRequest } from './teamState';
 import { activityUnavailable, placeActivities, placeActivityClient } from './placeActivities';
 
@@ -159,19 +160,42 @@ describe('care disclosure units', () => {
 });
 
 describe('place activity units', () => {
-  it('quotes the actual annual wage before the existing promotion signs its contract', () => {
-    const { world } = fixture();
-    const before = structuredClone(world);
-    const preview = placeActivities(world, 'academy').academy!.players.find(
-      (one) => one.player.id === 'ready',
-    )!;
-    expect(world).toEqual(before);
-    const settled = structuredClone(world);
-    promoteYouth(settled, preview.player.id);
-    const contract = settled.players.find((one) => one.id === preview.player.id)!;
-    expect(BigInt(contract.wage)).toBeGreaterThan(0n);
-    expect(preview).toMatchObject({ promotionWage: contract.wage });
-  });
+  it.each([
+    { country: 'ENG', year: 1950, tier: 0, age: 18 },
+    { country: 'ENG', year: 2020, tier: 1, age: 17 },
+    { country: 'ESP', year: 2005, tier: 2, age: 19 },
+    { country: 'ITA', year: 1990, tier: 2, age: 20 },
+  ])(
+    'quotes the actual annual wage before promotion in $country $year',
+    ({ country, year, tier, age }) => {
+      const { world, state, client, command } = fixture();
+      world.year = year;
+      Object.assign(world.clubs[0], { country, tier });
+      world.academy!.players = world.academy!.players.filter((one) => one.id === 'ready');
+      world.academy!.players[0].born = year - age;
+      const before = structuredClone(world);
+      const preview = placeActivities(world, 'academy').academy!.players.find(
+        (one) => one.player.id === 'ready',
+      )!;
+      expect(world).toEqual(before);
+      const settled = structuredClone(world);
+      promoteYouth(settled, preview.player.id);
+      const contract = settled.players.find((one) => one.id === preview.player.id)!;
+      expect(BigInt(contract.wage)).toBeGreaterThan(0n);
+      expect(contract.wage).not.toBe(preview.player.wage);
+      expect(preview).toMatchObject({ promotionWage: contract.wage });
+      const html = renderToStaticMarkup(
+        createElement(PlaceActivities, { place: 'academy', state, client }),
+      );
+      const wage = renderToStaticMarkup(
+        createElement(Money, { value: contract.wage, code: country, year }),
+      );
+      expect(html).toContain(`승격 후 연봉 ${wage}`);
+      expect(html).toContain(`계약 종료 ${contract.until}년`);
+      expect(command).not.toHaveBeenCalled();
+      expect(world).toEqual(before);
+    },
+  );
 
   it('groups every care kind into a small set of real requests without changing facts', () => {
     const { world } = fixture();

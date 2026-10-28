@@ -27,6 +27,7 @@ import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import { operatingCosts } from '../../../../packages/engine/src/finance';
 import { careOffer, effectText, outcomeText } from '../../../../packages/engine/src/care';
 import { academySummary, YOUTH_FOCUS_INFO } from '../../../../packages/engine/src/academy';
+import { marketWage } from '../../../../packages/engine/src/market-prices';
 import { staffMember, STAFF_INFO } from '../../../../packages/engine/src/staff-info';
 import { buildEffects } from '../../../../packages/engine/src/build';
 import { compactMoney } from './format';
@@ -174,6 +175,7 @@ export function placeAcademy(w: World) {
     ...summary,
     players: summary.players.map((prospect) => ({
       ...prospect,
+      promotionWage: marketWage(w, prospect.player),
       promotionUnavailable:
         prospect.age < summary.promotionAge
           ? `첫 프로 계약은 ${summary.promotionAge}세부터 맺을 수 있어요.`

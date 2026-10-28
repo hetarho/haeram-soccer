@@ -66,6 +66,7 @@ describe('runtime architecture boundaries', () => {
   it.each([
     'events',
     'quotes',
+    'market-prices',
     'player-state',
     'tactics',
     'calendar',
@@ -79,6 +80,13 @@ describe('runtime architecture boundaries', () => {
     const files = closure(`packages/engine/src/${leaf}.ts`);
     for (const forbidden of ['world', 'season', 'transfers', 'managerMarket', 'match'])
       expect(files, forbidden).not.toContain(`packages/engine/src/${forbidden}.ts`);
+  });
+  it('reads promotion wages without contract signing or grid execution', () => {
+    const files = closure('packages/engine/src/market-prices.ts');
+    for (const forbidden of ['contracts', 'academy', 'grid/engine'])
+      expect(files, forbidden).not.toContain(`packages/engine/src/${forbidden}.ts`);
+    expect(files.filter((name) => name.startsWith('apps/'))).toEqual([]);
+    expect(packages(files).filter((name) => FRAMEWORK.test(name))).toEqual([]);
   });
   it('executes an already prepared grid match without campaign or presentation code', () => {
     const files = closure('packages/engine/src/grid/engine.ts');
