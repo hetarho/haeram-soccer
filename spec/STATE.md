@@ -413,6 +413,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261029 cp29 refine unclaimed T556 convergence notes to prevent the .ts/.tsx casing collision reproduced by both UI lanes; no product policy change.
 - 261028 T557 integrated
 - 261029 fix outcome: align the existing rest-day summary assertion with CLUB-20 morale -2; paired validation belongs to the already implemented T557 foundation before integration.
 - 261029 cp29 merge the owner-reviewed v07-beta integration so completed T549/T550 no longer block independent UI work; preserve current SSOT and T552–T558 scope.
@@ -432,4 +433,3 @@
 - 261028 T545 done (dev3, 1617365a): match observation and replay draw posed figures, standing knee fixed in figurePose; merged; PL unit run next.
 - 261028 T546 done (dev4, fe455032): kit editor, goalkeeper tab, figure previews, fallback notice; PL committed it (Codex sandbox could not write the worktree index) after re-running its 43 unit tests; merged.
 - 261028 lanes start (pl1): T545 match-figures (dev3) and T546 kit-editor (dev4) in worktrees task/T545 and task/T546.
-- 261028 T544 done (dev3, 1f605f49): figure painter and number tags; PL re-ran 40 unit tests and typecheck; merged.
