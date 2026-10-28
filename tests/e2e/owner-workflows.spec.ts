@@ -209,7 +209,7 @@ for (const viewport of [
     const staff = page.getByRole('dialog', { name: '수석코치 선임', exact: true });
     await expect(staff).toBeVisible();
     await staff.getByRole('button', { name: '창 닫기', exact: true }).click();
-    await page.getByRole('button', { name: '← 돌아가기 · 훈련', exact: true }).click();
+    await page.getByRole('button', { name: '← 돌아가기 · 훈련장', exact: true }).click();
     await expect(page.getByTestId('training-focus')).toBeVisible();
   });
 
