@@ -149,7 +149,10 @@ for (const viewport of VIEWPORTS)
     expect(covered).toBeGreaterThanOrEqual(
       3 - (holds * GOAL_FEEDBACK_CONFIG.holdMs) / FAST_MINUTE_MS,
     );
-    expect(covered).toBeLessThanOrEqual(10);
+    // Never beyond the presentation clock's fastest stretch of this match (dead-ball rushes run
+    // faster than running play, →WEB-32), give or take a minute boundary at each end: a catch-up
+    // after a hold or a skipped stretch would show as more.
+    expect(covered).toBeLessThanOrEqual(Math.ceil(next.fastest(8 * FAST_MINUTE_MS)) + 1);
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({
       timeout: watchBudgetMs + 10_000,
     });

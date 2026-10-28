@@ -206,6 +206,12 @@ function idHash(id: string) {
   return h >>> 0;
 }
 
+/** Metres travelled at which `id`'s gait stands at `cycle` (0–1) of its cycle, for a set still step. */
+export function gaitDistanceAt(id: string, cycle: number) {
+  const offset = (idHash(id) % 1024) / 1024;
+  return ((((cycle - offset) % 1) + 1) % 1) * FIGURE_POSE_CONFIG.strideMetres;
+}
+
 /** A local point as a screen offset in px: +y along `facing`, +x to his right, `scale` px a torso width. */
 export function figureOffset(
   facing: number,

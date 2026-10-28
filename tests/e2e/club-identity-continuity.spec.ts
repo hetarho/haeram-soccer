@@ -83,11 +83,12 @@ const DRAFT_COLOUR = '#00A6A6';
 /**
  * Base-colour pixels that prove the live pitch paints the worn kit. At phone width each outfield
  * figure's torso is 12 × 4.8 px (→MATCH-36); its pattern, trim bands, the head, the shaded back and
- * the highlight leave its unshaded front, and the socks wear the base colour too (→KIT-3), so the
- * founded kits show about 80–180 exact base pixels in all at the final whistle, more while
- * striding legs bare the socks.
+ * the highlight leave its unshaded front, and the socks wear the base colour too (→KIT-3). Since
+ * the softer gait and twelve o'clock number plates (261028) the players standing at the final
+ * whistle show 18–28 exact base pixels in all (Chromium and Firefox, 360 and 390 px), and a colour
+ * nobody wears shows none.
  */
-const WORN_PIXELS = 40;
+const WORN_PIXELS = 10;
 
 for (const viewport of PHONE_VIEWPORTS)
   test(`founded, worn, edited and moved by file, designs and the earlier kit stay exact at ${viewport.width}x${viewport.height}`, async ({

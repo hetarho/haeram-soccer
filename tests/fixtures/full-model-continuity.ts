@@ -8,7 +8,10 @@ import {
 } from '../../packages/engine/src/index';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
 import {
+  deadBallBeats,
+  presentationAdvance,
   presentationSamples,
+  runningLength,
   WATCH_MINUTE_MS,
   WATCH_SPEEDS,
 } from '../../apps/web/src/ui/presentationClock';
@@ -71,6 +74,11 @@ export interface ContinuityCareer {
     samples: number;
     /** Real ms the whole match runs at `FAST_SPEED`, every goal's hold (→WEB-94) included. */
     watchMs: number;
+    /**
+     * The most running minutes the presentation clock covers in `realMs` at `FAST_SPEED` from any
+     * second of the match: dead-ball rushes (→WEB-32) run faster than running play.
+     */
+    fastest: (realMs: number) => number;
     /** A sample of a delivered set piece where six or more defenders hold set-piece jobs (T348). */
     setPiece: { index: number; label: string; marker: Who };
   };
@@ -170,6 +178,14 @@ export function continuityCareer(): ContinuityCareer {
         samples: scene.samples,
         watchMs:
           playback.frames.length * FAST_MINUTE_MS + goals.length * GOAL_FEEDBACK_CONFIG.holdMs,
+        fastest: (realMs: number) => {
+          const length = runningLength(playback.frames.length);
+          const beats = deadBallBeats(playback.frames);
+          let most = 0;
+          for (let at = 0; at < length; at++)
+            most = Math.max(most, presentationAdvance(at, realMs, FAST_SPEED, length, beats) - at);
+          return most / 60;
+        },
         setPiece: scene.shot,
       },
     };

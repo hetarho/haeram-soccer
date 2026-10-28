@@ -6,7 +6,7 @@ import type {
   MatchAppearance,
 } from '../../../../packages/contracts/src/identity';
 import { selectMatchKits } from '../../../../packages/engine/src/kit-selection';
-import { poseAt } from './figurePose';
+import { FIGURE_POSE_CONFIG, gaitDistanceAt, poseAt } from './figurePose';
 import { describeShirt } from './kitPainting';
 
 /**
@@ -24,24 +24,34 @@ export const KIT_ROLE_LABELS: Readonly<Record<KitRole, string>> = {
 export type PreviewOpponent = 'light' | 'dark';
 export type EditorKitRole = KitRole | 'goalkeeper';
 
-/** A still preview figure, facing down-screen unless it is looking into the pitch. */
+/** The preview's set step: pace of top speed and the point of the gait cycle, legs furthest apart. */
+export const PREVIEW_STEP = { pace: 1, cycle: 0.25 } as const;
+
+/**
+ * A still preview figure caught mid-step toward the ball (down-screen unless it is looking into the
+ * pitch), so the legs clear the torso and the shorts and socks show (→WEB-87, KIT-3). It is one
+ * drawn instant, never animated, so reduced motion draws it the same.
+ */
 export function previewPose(id: string, keeper: boolean, toBall: [number, number] = [0, 1]) {
+  const speed = FIGURE_POSE_CONFIG.topSpeed * PREVIEW_STEP.pace;
+  const length = Math.hypot(toBall[0], toBall[1]) || 1;
+  const velocity: [number, number] = [(toBall[0] / length) * speed, (toBall[1] / length) * speed];
   return poseAt(
     {
       id,
       keeper,
       time: 0,
       position: [0, 0],
-      speed: 0,
-      velocity: [0, 0],
-      velocityBefore: [0, 0],
+      speed,
+      velocity,
+      velocityBefore: velocity,
       toBall,
       ballHeight: 0,
       carrier: false,
-      distance: 0,
+      distance: gaitDistanceAt(id, PREVIEW_STEP.cycle),
     },
     undefined,
-    { reducedMotion: true },
+    { reducedMotion: false },
   );
 }
 /** The own side in the preview, never a club of any world. */

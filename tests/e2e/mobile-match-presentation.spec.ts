@@ -181,19 +181,39 @@ function goalWorld() {
   return world;
 }
 
-/** Counts every GOAL cue the page mounts, so a rerender that repeated one would show. */
+/**
+ * Counts every GOAL cue the page mounts, so a rerender that repeated one would show, and records
+ * the presented minute each cue opened on and any change of it while a cue still shows. The goal
+ * hold is one real second, shorter than a few test steps, so only the page itself can watch it.
+ */
 async function countCues(page: Page) {
   await page.evaluate(() => {
     const cues: string[] = [];
+    const held: string[] = [];
+    const moved: string[] = [];
+    let minute: string | undefined;
     new MutationObserver((records) => {
       for (const record of records)
         for (const added of record.addedNodes)
           if (added instanceof HTMLElement && added.dataset.testid === 'goal-cue')
             cues.push(added.textContent ?? '');
-    }).observe(document.body, { childList: true, subtree: true });
-    Object.assign(window, { goalCues: cues });
+      const shown =
+        document.querySelector('[data-testid="match-latest-event"] span')?.textContent ?? '';
+      if (!document.querySelector('[data-testid="goal-cue"]')) minute = undefined;
+      else if (minute === undefined) held.push((minute = shown));
+      else if (shown !== minute) moved.push(`${minute} → ${shown}`);
+    }).observe(document.body, { childList: true, subtree: true, characterData: true });
+    Object.assign(window, { goalCues: cues, goalCueMinutes: { held, moved } });
   });
-  return () => page.evaluate(() => (window as unknown as { goalCues: string[] }).goalCues);
+  return {
+    cues: () => page.evaluate(() => (window as unknown as { goalCues: string[] }).goalCues),
+    minutes: () =>
+      page.evaluate(
+        () =>
+          (window as unknown as { goalCueMinutes: { held: string[]; moved: string[] } })
+            .goalCueMinutes,
+      ),
+  };
 }
 
 for (const viewport of [
@@ -266,8 +286,7 @@ for (const viewport of [
     const pulse = await emphasis.evaluate((node) => getComputedStyle(node).animationName);
     if (viewport.width === 390) expect(pulse).toBe('none');
     else expect(pulse).toMatch(/goal-pulse/);
-    // The presented minute stays put while the cue shows, and the cue clears the corner controls.
-    const minute = await page.getByTestId('match-latest-event').locator('span').innerText();
+    // The cue clears the corner controls.
     const cueBox = (await cue.boundingBox())!;
     const canvasBox = (await page.getByLabel('22명의 선수와 공으로 표현하는 경기').boundingBox())!;
     expect(cueBox.x).toBeGreaterThanOrEqual(canvasBox.x);
@@ -275,8 +294,9 @@ for (const viewport of [
     expect(cueBox.y).toBeGreaterThanOrEqual(canvasBox.y);
     expect(cueBox.y + cueBox.height).toBeLessThanOrEqual(canvasBox.y + canvasBox.height);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
-    await expect(page.getByTestId('match-latest-event').locator('span')).toHaveText(minute);
     await expect(cue).toHaveCount(0, { timeout: 3000 });
+    // The presented minute opened on the goal's and stayed put while the cue showed.
+    expect(await cues.minutes()).toEqual({ held: [`${openingGoal!.minute}′`], moved: [] });
     await expect(score).toHaveText('1 : 0');
     if (viewport.width !== 360) return;
     // Include actual added time and every goal hold using the presentation clock's own rule.
@@ -289,7 +309,7 @@ for (const viewport of [
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({ timeout: restMs });
     await expect(score).toHaveText(`${expected.score.home} : ${expected.score.away}`);
     await expect(cue).toHaveCount(0);
-    const seen = await cues();
+    const seen = await cues.cues();
     expect(seen).toHaveLength(expected.highlights.length);
     expect(seen.every((text) => text.startsWith('GOAL'))).toBe(true);
     const states = await page.evaluate(() => [

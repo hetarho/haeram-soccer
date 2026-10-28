@@ -18,6 +18,8 @@
 | p9c3 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T14:22Z | 2026-10-28T14:22Z | - |
 
 ## inbox
+- 261028 decided WEB-87 KIT-3 T551: the large kit sample stood still and its torso hid the shorts and socks it edits → every editor preview figure (large samples and pitch preview) is drawn at full pace a quarter into its gait, legs furthest apart; the pitch-preview journey checks socks, the large sample both (alt: a jog at three quarters pace, socks 8 px on the pitch | stride only the large sample).
+- 261028 decided T551: CI's 11 minutes in 8 nominal at 16× after revision 6 → the bound comes from the presentation clock's fastest stretch of the watched match (15 here) instead of a fixed 10 (alt: raise the constant to 12).
 - 261028 decided KIT-3 KIT-8 SAVE-20 T547: how to store shorts/socks and the goalkeeper kit → optional `parts`/`goalkeeper` on ClubIdentity with version 2 only when present, appearances version 2 with worn kits (alt: wrap every kit in a new outfit type | always write version 2); old builds read new saves as a newer game, existing v1 saves stay untouched.
 - 261028 decided KIT-3 KIT-12 T547: starting rule → shorts = shirt second colour, else trim, else contrast ink; socks = shirt base, one shirt-based rule for live kits and v1 records (alt: derive from the club palette).
 - 261028 decided MATCH-37 T543: tackle poses → only a lost carry/take-on with a named opponent tackles, a slide only beyond standing reach; interceptions show no tackle (alt: every lost ball a tackle).
@@ -401,6 +403,7 @@
 - UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
+- 261028 T551 done (p9c3): main CI fix after the figures/kits and forward-intent merges — editor samples mid-step, kit pixel floor, faster wornFigures, in-page goal-hold minute, clock-derived 16× bound, appearance digest.
 - 261028 create-task (f5j2): T548 MATCH r39, T549 SAVE r57, T550 WEB r167.
 - 261028 update-ssot (f5j2): MATCH r39 chased forward's clear chance and closing blocks; SAVE r57 one game version 0.7.0 (beta), 4.0.0 saves load as 0.7.0; WEB r167 WEB-101 BETA mark.
 - 261028 feat/player-figures-kits merge verified against main f5672a67 and feature 3a13057e: typecheck, lint, format:check, unit (175 files / 1,435 passed), contract (3 files / 47 passed), catalog/presentation validation and production build passed; the 12 pure kit-selection cases also passed (2 world-integration cases excluded). Full integration and browser suites omitted under the owner's requested unit/static scope.
@@ -420,4 +423,3 @@
 - 261028 update-ssot MATCH r38 (f5j2): MATCH-32 goal-side defenders move across onto the ball–goal line by 위치선정 with the ball central within 50 m.
 - 261028 T542 start (f5j2): revision 6, explore 3h.
 - 261028 update-ssot MATCH r37 + create-task T542 (f5j2): MATCH-16 clear chances, beaten man, free man ahead, calm clearance; MATCH-17 spread support; MATCH-31 misplaced pass kept in play. MATCH-36/37 stay pending (pl1).
-- 261028 f5j2 end: T538/T539 pushed to main at the owner's request without the rerun batch (first batch: 3 integration failures, fixed or load timeouts passing alone; e2e not run locally).

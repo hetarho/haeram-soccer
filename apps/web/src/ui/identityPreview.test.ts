@@ -13,11 +13,13 @@ import { selectMatchKits } from '../../../../packages/engine/src/kit-selection';
 import {
   editorPreviewAppearance,
   PREVIEW_OPPONENTS,
+  PREVIEW_STEP,
   previewLines,
+  previewPose,
   type PreviewOpponent,
 } from './identityPreview';
 import { createFigurePainter, type FigureDrawOptions } from './figurePainting';
-import type { FigurePose } from './figurePose';
+import { FIGURE_POSE_CONFIG, type FigurePose } from './figurePose';
 import { wornKit } from '../../../../packages/engine/src/kit-wear';
 import { markerRadius, paintKitPreview, PREVIEW_FORMATION } from './KitPitchPreview';
 
@@ -239,10 +241,25 @@ describe('preview pitch drawing', () => {
           expect(call.options.radius).toBe(markerRadius(width));
           expect(call.options).toMatchObject({ dpr: 2, outline: '#ffffffcc' });
           expect(side === 0 ? call.options.x < width / 2 : call.options.x > width / 2).toBe(true);
-          expect(call.pose.stride).toBe(0);
+          expect(call.pose.stride).toBeCloseTo(FIGURE_POSE_CONFIG.stride * PREVIEW_STEP.pace);
           expect(Number.isFinite(call.pose.facing)).toBe(true);
         }
       }
+    }
+  });
+
+  it('catches every preview figure mid-step, legs furthest apart, the same pose each time', () => {
+    for (const [id, keeper] of [
+      ['preview:player', false],
+      ['preview:keeper', true],
+      ['preview:own:7', false],
+    ] as const) {
+      const pose = previewPose(id, keeper);
+      expect(pose.stride).toBeCloseTo(FIGURE_POSE_CONFIG.stride * PREVIEW_STEP.pace);
+      // A quarter into the gait cycle one foot is furthest forward and the other furthest back,
+      // whatever the figure's own phase offset: the shorts and socks clear the torso.
+      expect(Math.sin(pose.phase)).toBeCloseTo(1);
+      expect(previewPose(id, keeper)).toEqual(pose);
     }
   });
 

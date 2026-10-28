@@ -234,16 +234,19 @@ function wornFigures(args: {
     const mx = sx / n,
       my = sy / n;
     if (worn.some(([x, y]) => Math.hypot(x - mx, y - my) < R)) continue;
-    const [own, ...rivals] = templates.map((points) => best(points, mx, my));
+    const own = best(templates[0]!, mx, my);
     const total = templates[0]!.length;
     if (
-      rivals.every((rival) => own!.score > rival.score) &&
-      own!.agreed >= total * (kinds === 1 ? 0.4 : 0.35) &&
-      own!.agreed >= own!.judged * 0.9 &&
-      own!.seen.slice(0, kinds).every((count) => count >= total * 0.05) &&
-      worn.every(([x, y]) => Math.hypot(x - own!.cx, y - own!.cy) >= R)
+      own.agreed < total * (kinds === 1 ? 0.4 : 0.35) ||
+      own.agreed < own.judged * 0.9 ||
+      own.seen.slice(0, kinds).some((count) => count < total * 0.05) ||
+      worn.some(([x, y]) => Math.hypot(x - own.cx, y - own.cy) < R)
     )
-      worn.push([own!.cx, own!.cy]);
+      continue;
+    // Only a fit that would count is judged against the rival patterns: skin-toned heads and limbs
+    // are many candidates, and fitting every rival around each took tens of seconds.
+    if (templates.slice(1).every((points) => own.score > best(points, mx, my).score))
+      worn.push([own.cx, own.cy]);
   }
   return worn.length;
 }
