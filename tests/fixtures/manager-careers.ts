@@ -1,5 +1,7 @@
 import type { World } from '../../packages/contracts/src/types';
 import type { ManagerHistoryPage } from '../../packages/contracts/src/manager-history-view';
+import { upgradeWorldRules } from '../../packages/contracts/src/versions';
+import { CURRENT_CATALOG } from '../../packages/catalogs/src/index';
 import { activateMatchModel } from '../../packages/engine/src/match-model';
 import { ensureManagerHistory } from '../../packages/engine/src/manager-history-capture';
 import { MATCH_MODEL_RELEASE } from '../../packages/engine/src/match-model-release';
@@ -70,10 +72,12 @@ export interface ManagerJourneyCareer {
  */
 /** A validated prepared career; UI changes do not rebuild its two seasons. */
 export async function managerJourneyCareer(): Promise<ManagerJourneyCareer> {
-  const w = preparedWorld('manager-journey');
-  // Prepared on an earlier match-model revision: the build's writer moves it to the released one
-  // at load (→SAVE-23, Host.adoptModel), so the journey imports and compares the world as held.
-  if (activateMatchModel(w, MATCH_MODEL_RELEASE)) w.revision++;
+  const stored = preparedWorld('manager-journey');
+  // Prepared on rules 4.0.0 and an earlier match-model revision: the build's writer rewrites the
+  // rules label (→SAVE-10, upgradeWorldRules) and moves it to the released model (→SAVE-23,
+  // Host.adoptModel) in one revision at load, so the journey imports and compares it as held.
+  const w = upgradeWorldRules(stored, CURRENT_CATALOG);
+  if (activateMatchModel(w, MATCH_MODEL_RELEASE) && w === stored) w.revision++;
   const { pages, views } = await managerHistoryRead(w);
   const tenures = tenureViews(views),
     facts = w.managerHistory!.tenures;
