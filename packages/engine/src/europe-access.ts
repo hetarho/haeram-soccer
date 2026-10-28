@@ -141,7 +141,8 @@ export function europeanAccess(w: AccessWorld): Map<string, EuropeanEntry> {
           : rank <= 6
             ? q.sixth
             : q.remaining;
-    table.slice(0, quota[0]).forEach((id) => give(id, 'ucl', leagueReason(id)));
+    const allocatedReason = (id: string) => `${leagueReason(id)} · 국가 순위 ${rank}위 배분`;
+    table.slice(0, quota[0]).forEach((id) => give(id, 'ucl', allocatedReason(id)));
     give(cup, 'uel', `${season} 국내 컵 우승`);
     for (const competition of ['uel', 'uecl'] as const) {
       const target = quota[competition === 'uel' ? 1 : 2];
@@ -155,7 +156,7 @@ export function europeanAccess(w: AccessWorld): Map<string, EuropeanEntry> {
           give(
             id,
             competition,
-            `${leagueReason(id)}${cup ? ' · 국내 컵 배분 반영' : ''}${c.code === 'ENG' && competition === 'uecl' ? ' · 리그컵 미실시 배분' : ''}`,
+            `${allocatedReason(id)}${cup ? ' · 국내 컵 배분 반영' : ''}${c.code === 'ENG' && competition === 'uecl' ? ' · 리그컵 미실시 배분' : ''}`,
           );
       }
     }

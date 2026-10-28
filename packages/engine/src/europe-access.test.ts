@@ -75,6 +75,7 @@ describe('European access from closed facts', () => {
       undefined,
     ]);
     expect(europeanAccess(w).get('ENG:5')?.reason).toContain('2033/34시즌 리그 5위');
+    expect(europeanAccess(w).get('ENG:5')?.reason).toContain('국가 순위 1위 배분');
     expect(performanceAssociations(w)).toEqual([]);
   });
 
