@@ -416,6 +416,7 @@
 - cp29: complete the final club-places batch gate on the integrated candidate, fix any failures, then publish once and wait for CI. All requested T552–T558 are integrated.
 
 ## log
+- 261029 fix host.world-market fixture: use the protocol’s legal stale revision -1 instead of invalid -100; preserve bounded reads, source identity, settlement and idempotency assertions.
 - 261029 cp29 all requested tasks integrated at c3aad1f4; final synchronized batch begins before one main publication.
 - 261028 T556 integrated
 - 261029 doc-review CLUB-26 tidied (rev unchanged): replace the stale duplicated area label with the authoritative ECON-25 reference; contract conditions, exceptions, figures, negations, obligations and references are preserved.

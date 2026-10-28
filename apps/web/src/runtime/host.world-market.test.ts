@@ -13,7 +13,7 @@ describe('world market worker integration', () => {
     const w = host.world!;
     const before = structuredClone(w);
     const page = await host.handle(
-      req('market', -100, {
+      req('market', -1, {
         type: 'world-market',
         query: { world: w.id, pageSize: 3, sort: 'name', direction: 'asc' },
       }),
