@@ -4,6 +4,7 @@ import { readPresentationBaselines } from '../fixtures/presentation';
 import { preparedWorld } from '../fixtures/prepared-world';
 import { textContrast } from './contrast';
 import { gameHud, horizontalOverflow } from './layout';
+import { enterOffice, LOBBY, officeBar, officeTitle } from './office';
 import { continueSlot, seedSlot } from './slots';
 
 test.use({ reducedMotion: 'reduce' });
@@ -49,9 +50,14 @@ async function expectTargets(controls: Locator[]) {
   }
 }
 
-/** Opens the slot screen over a prepared game, checks its mark, then continues into play. */
+/**
+ * Opens the slot screen over a prepared game and checks its mark, then the play HUD's and the
+ * owner office bar's, which stands in for the HUD while the office is open (→WEB-39).
+ */
 async function slotsThenPlay(page: Page, theme?: string) {
-  await seedSlot(page, world());
+  const seeded = world();
+  seeded.settings!.mode = 'manual';
+  await seedSlot(page, seeded);
   await page.goto('/');
   if (theme) await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
   const slots = page.getByTestId('game-slots');
@@ -77,6 +83,15 @@ async function slotsThenPlay(page: Page, theme?: string) {
   ]);
   expect((await page.getByTestId('hud-cash').boundingBox())!.width).toBeGreaterThanOrEqual(44);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+
+  // The office hides the HUD; its bar carries the mark beside the place name, outside the heading.
+  await enterOffice(page);
+  const bar = officeBar(page);
+  await expect(officeTitle(page)).toHaveText(LOBBY);
+  await expectMark(officeTitle(page), bar.getByTestId('beta-mark'), 'BETA');
+  await expectTargets([bar.getByRole('button', { name: '나가기', exact: true })]);
+  expect((await bar.getByTestId('hud-cash').boundingBox())!.width).toBeGreaterThanOrEqual(44);
+  expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 }
 
 for (const viewport of VIEWPORTS) {
@@ -97,7 +112,7 @@ for (const viewport of VIEWPORTS) {
     await expectTargets([start.getByTestId('presentation-settings-trigger')]);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
-    // The slot screen and the play HUD, over a game kept in slot 1.
+    // The slot screen, the play HUD and the owner office bar, over a game kept in slot 1.
     const context = await browser.newContext({ viewport, reducedMotion: 'reduce' });
     try {
       await slotsThenPlay(await context.newPage());
@@ -108,7 +123,9 @@ for (const viewport of VIEWPORTS) {
 }
 
 for (const theme of readPresentationBaselines().themeRegistry.entries) {
-  test(`${theme.id}: the BETA mark reads on the save slots and the play HUD`, async ({ page }) => {
+  test(`${theme.id}: the BETA mark reads on the save slots, the play HUD and the office bar`, async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript(
       (themeId) =>
