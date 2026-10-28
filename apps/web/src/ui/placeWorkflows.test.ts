@@ -118,6 +118,10 @@ describe('live place composition', () => {
       expect(html).toContain(`place-activities-${view}`);
       if (view === 'training') {
         expect(html.match(/수석코치에게 훈련 제안·강행/g)).toHaveLength(1);
+        const activities = html.indexOf('place-activities-training');
+        expect(html.indexOf('data-testid="training-focus"')).toBeLessThan(activities);
+        expect(html.indexOf('수석코치에게 훈련 제안·강행')).toBeLessThan(activities);
+        expect(activities).toBeLessThan(html.indexOf('data-testid="adaptation-list"'));
         expect(html).toContain('휴식일 부여 요청 검토');
         expect(html).toContain('분위기 −2');
       } else {

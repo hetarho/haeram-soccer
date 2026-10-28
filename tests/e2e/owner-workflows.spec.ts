@@ -187,22 +187,31 @@ test('a different game never inherits the first career policy draft', async ({ p
   await expect(page.getByRole('button', { name: /^← 돌아가기/ })).toHaveCount(0);
 });
 
-test('training exposes the team action first and opens its named responsible coach', async ({
-  page,
-}) => {
-  await found(page);
-  await openPersonnel(page, 'training');
-  const focus = page.getByRole('region', { name: '훈련 방향', exact: true });
-  const action = focus.getByRole('button', { name: /^수석코치에게 훈련 제안·강행/ });
-  await expect(action).toBeInViewport();
-  await expect(page.getByRole('list', { name: '훈련 방향별 효과' })).toHaveCount(0);
-  await focus.getByRole('button', { name: / · 보기$/ }).click();
-  const staff = page.getByRole('dialog', { name: '수석코치 선임', exact: true });
-  await expect(staff).toBeVisible();
-  await staff.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await page.getByRole('button', { name: '← 돌아가기 · 훈련', exact: true }).click();
-  await expect(page.getByTestId('training-focus')).toBeVisible();
-});
+for (const viewport of [
+  { width: 360, height: 740 },
+  { width: 390, height: 844 },
+  { width: 1280, height: 900 },
+])
+  test(`training exposes the team action first and opens its named responsible coach at ${viewport.width}x${viewport.height}`, async ({
+    page,
+  }) => {
+    await found(page);
+    await page.setViewportSize(viewport);
+    await openPersonnel(page, 'training');
+    const focus = page.getByRole('region', { name: '훈련 방향', exact: true });
+    const action = focus.getByRole('button', { name: /^수석코치에게 훈련 제안·강행/ });
+    await expect(action).toBeInViewport({ ratio: 1 });
+    const target = await action.boundingBox();
+    expect(target!.height).toBeGreaterThanOrEqual(44);
+    expect(target!.width).toBeGreaterThanOrEqual(44);
+    await expect(page.getByRole('list', { name: '훈련 방향별 효과' })).toHaveCount(0);
+    await focus.getByRole('button', { name: / · 보기$/ }).click();
+    const staff = page.getByRole('dialog', { name: '수석코치 선임', exact: true });
+    await expect(staff).toBeVisible();
+    await staff.getByRole('button', { name: '창 닫기', exact: true }).click();
+    await page.getByRole('button', { name: '← 돌아가기 · 훈련', exact: true }).click();
+    await expect(page.getByTestId('training-focus')).toBeVisible();
+  });
 
 test('a player profile leads to that player training and keeps the squad search', async ({
   page,

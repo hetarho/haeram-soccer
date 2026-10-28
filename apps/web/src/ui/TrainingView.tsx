@@ -129,10 +129,12 @@ export function FirstTeamTraining({
         {focusName(outlook.focus.focus)} · 수석코치{' '}
         {w.staff?.find((person) => person.role === 'assistant')?.name ?? '공석'}
       </FacilityOverview>
-      <PlaceActivities place="training" state={state} client={client} />
       <div className={`${s.stack} ${s.pair}`}>
         <TrainingFocusPanel w={w} outlook={outlook} onSheet={onSheet} />
         <DevelopmentDrivers outlook={outlook} />
+        <div className={s.wide}>
+          <PlaceActivities place="training" state={state} client={client} />
+        </div>
         <PlayerTraining w={w} onSheet={onSheet} />
       </div>
     </>
