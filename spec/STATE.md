@@ -419,6 +419,7 @@
 - 261029 cp29 narrow unclaimed T552 runtime touches to protocol/host/client plus dedicated query tests; unrelated T548 owns host/protocol legacy tests.
 - 261029 cp29 redivide unclaimed T552/T553 into engine foundations T558/T557 and UI consumers so live T550 UI ownership does not stop independent engine work; no policy change.
 - 261029 cp29 extend unclaimed T553 to update the existing rest-day morale summary assertion identified by T557; keep full-world integration execution at the coordinator gate.
+- 261029 cp29 refine unclaimed T556 convergence notes to prevent the .ts/.tsx casing collision reproduced by both UI lanes; no product policy change.
 - 261028 T551 done (p9c3): main CI fix after the figures/kits and forward-intent merges — editor samples mid-step, kit pixel floor, faster wornFigures, in-page goal-hold minute, clock-derived 16× bound, appearance digest.
 - 261028 create-task (f5j2): T548 MATCH r39, T549 SAVE r57, T550 WEB r167.
 - 261028 update-ssot (f5j2): MATCH r39 chased forward's clear chance and closing blocks; SAVE r57 one game version 0.7.0 (beta), 4.0.0 saves load as 0.7.0; WEB r167 WEB-101 BETA mark.
@@ -428,7 +429,6 @@
 - 261028 T545 done (dev3, 1617365a): match observation and replay draw posed figures, standing knee fixed in figurePose; merged; PL unit run next.
 - 261028 T546 done (dev4, fe455032): kit editor, goalkeeper tab, figure previews, fallback notice; PL committed it (Codex sandbox could not write the worktree index) after re-running its 43 unit tests; merged.
 - 261028 lanes start (pl1): T545 match-figures (dev3) and T546 kit-editor (dev4) in worktrees task/T545 and task/T546.
-- 261028 T544 done (dev3, 1f605f49): figure painter and number tags; PL re-ran 40 unit tests and typecheck; merged.
 - 261028 T544 start (dev3) in worktree task/T544 (pl1).
 - 261028 T547 done (dev1, 158a5b64): kit wear v2, torso selection, keeper fallback; PL re-ran typecheck, 57 unit and 23 contract tests; merged.
 - 261028 T543 done (dev3, 407a5e9d): figure poses and action windows; PL re-ran its 16 unit tests and typecheck; merged into feat/player-figures-kits.
