@@ -1,0 +1,877 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-10-28T17:33:07.167Z",
+  "sourceCommit": "e65b4fa7a8516f74ba9246dafef424118e517bdd",
+  "group": {
+    "id": "club-market-fix",
+    "branch": "work/club-market-fix",
+    "status": "active",
+    "createdAt": "2026-10-28T17:01:41.642Z",
+    "limits": {
+      "workers": 1,
+      "reviewers": 1,
+      "maxPending": 8
+    },
+    "review": "all",
+    "lastRun": {
+      "id": "cc2979cd-aa44-44bd-95b6-80da42dcad52",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.160.1"
+        },
+        "reviewer": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.160.1"
+        }
+      },
+      "workers": [
+        {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.160.1"
+        }
+      ],
+      "startedAt": "2026-10-28T17:25:54.593Z",
+      "stoppedAt": "2026-10-28T17:29:44.177Z",
+      "dispatched": 1,
+      "outcome": "dispatch-limit",
+      "failures": [],
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    }
+  },
+  "summary": {
+    "total": 7,
+    "completed": 1,
+    "remaining": 6,
+    "running": 0,
+    "review": 0,
+    "blocked": 0,
+    "unassigned": 6
+  },
+  "tasks": [
+    {
+      "id": "T548",
+      "title": "Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it",
+      "dep": [],
+      "status": "todo"
+    },
+    {
+      "id": "T552",
+      "title": "Paged whole-world recruitment workbench",
+      "dep": [
+        "T558"
+      ],
+      "lane": "market-ui",
+      "status": "todo"
+    },
+    {
+      "id": "T553",
+      "title": "Consequential owner choices and shared place activity panels",
+      "dep": [
+        "T557"
+      ],
+      "lane": "place-choices",
+      "status": "todo"
+    },
+    {
+      "id": "T554",
+      "title": "Six-place navigation and competition clubhouse",
+      "dep": [],
+      "lane": "places-office",
+      "status": "todo"
+    },
+    {
+      "id": "T555",
+      "title": "Work-oriented owner office and scoped player approvals",
+      "dep": [
+        "T554"
+      ],
+      "lane": "places-office",
+      "status": "todo"
+    },
+    {
+      "id": "T556",
+      "title": "Connect place choices and verify the complete owner workflow",
+      "dep": [
+        "T552",
+        "T553",
+        "T555"
+      ],
+      "status": "todo"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "group": "club-market-fix",
+      "taskId": "T558",
+      "tasks": [
+        "T558"
+      ],
+      "lane": "market-engine",
+      "owner": "cc2979cd-aa44-44bd-95b6-80da42dcad52/worker-1",
+      "contributors": [
+        "6abc1208-fa06-465c-8a96-25e8e4e181e8/worker-1",
+        "ba51ee3a-f893-4bda-beb4-704622f4f022/worker-1",
+        "cc2979cd-aa44-44bd-95b6-80da42dcad52/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-28T17:04:36.485Z",
+      "startCommit": "1f4761feb72b982993e2e8c1ce746fa0afa8b4c1",
+      "verifiedCommit": "66302d4f2cb71966b12c5be0691c32acda09847d",
+      "submittedBase": "f97a1b57035b42391660bfb34d7499f3cd477bac",
+      "submissionId": "29e35979-7580-420d-8197-a20832ec1889",
+      "submittedAt": "2026-10-28T17:29:43.929Z",
+      "risk": null,
+      "dispatch": {
+        "id": "16ee0b6e-14ac-427f-b1d9-14e31f4df0a5",
+        "runner": "cc2979cd-aa44-44bd-95b6-80da42dcad52",
+        "role": "worker",
+        "slot": 1,
+        "provider": "codex",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-28T17:25:54.831Z",
+        "finishedAt": "2026-10-28T17:29:43.964Z",
+        "error": null,
+        "summary": "pnpm run build가 통과했습니다(Vite 2.25초). T558의 마지막 acceptance를 [v]로 표시하고 빌드 결과를 기록했습니다. 이번에는 태스크 문서만 수정했으며 테스트 재실행이나 커밋은 하지 않았습니다."
+      },
+      "review": {
+        "id": "80dbb703-2b38-4f38-b0e6-5e1e3231edcd",
+        "owner": "cp29-review",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T558 correction resolves review 019a31b8: an overflow arrival absent from the raw formation receives a deterministic ordinary club-strength model at his retained position and age. Inspected the complete pinned diff, unchanged prior market implementation, LWB/RWB red/green regressions and affected-unit/quick/build evidence. No P1/P2 findings remain in the submitted correction. Full integration and browser validation remain at the coordinator gate.",
+        "findings": [],
+        "commit": "66302d4f2cb71966b12c5be0691c32acda09847d",
+        "baseCommit": "e65b4fa7a8516f74ba9246dafef424118e517bdd",
+        "submissionId": "29e35979-7580-420d-8197-a20832ec1889",
+        "createdAt": "2026-10-28T17:32:25.056Z",
+        "finishedAt": "2026-10-28T17:33:02.939Z"
+      },
+      "steps": [
+        {
+          "taskId": "T558",
+          "commit": "66302d4f2cb71966b12c5be0691c32acda09847d",
+          "at": "2026-10-28T17:29:43.901Z",
+          "verification": [
+            {
+              "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "startedAt": "2026-10-28T17:26:53.891Z",
+              "finishedAt": "2026-10-28T17:29:43.458Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "startedAt": "2026-10-28T17:26:53.891Z",
+          "finishedAt": "2026-10-28T17:29:43.458Z"
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1671,
+      "at": "2026-10-28T17:01:41.671Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "club-market-fix",
+        "branch": "work/club-market-fix",
+        "status": "preparing",
+        "createdAt": "2026-10-28T17:01:41.642Z",
+        "limits": {
+          "workers": 1,
+          "reviewers": 1,
+          "maxPending": 8
+        },
+        "review": "all"
+      }
+    },
+    {
+      "sequence": 1672,
+      "at": "2026-10-28T17:01:42.787Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 1673,
+      "at": "2026-10-28T17:04:35.833Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "6abc1208-fa06-465c-8a96-25e8e4e181e8",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T17:04:35.807Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1674,
+      "at": "2026-10-28T17:04:36.485Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+        "group": "club-market-fix",
+        "taskId": "T558",
+        "tasks": [
+          "T558"
+        ],
+        "lane": "market-engine",
+        "owner": "6abc1208-fa06-465c-8a96-25e8e4e181e8/worker-1",
+        "contributors": [
+          "6abc1208-fa06-465c-8a96-25e8e4e181e8/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-28T17:04:36.485Z",
+        "startCommit": "1f4761feb72b982993e2e8c1ce746fa0afa8b4c1"
+      }
+    },
+    {
+      "sequence": 1675,
+      "at": "2026-10-28T17:04:38.206Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1676,
+      "at": "2026-10-28T17:04:38.479Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a4a9ea05-2e9d-4919-8f0b-753083dd6b33",
+          "runner": "6abc1208-fa06-465c-8a96-25e8e4e181e8",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T17:04:38.479Z"
+        }
+      }
+    },
+    {
+      "sequence": 1677,
+      "at": "2026-10-28T17:04:38.901Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "a4a9ea05-2e9d-4919-8f0b-753083dd6b33",
+          "runner": "6abc1208-fa06-465c-8a96-25e8e4e181e8",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T17:04:38.479Z"
+        }
+      }
+    },
+    {
+      "sequence": 1679,
+      "at": "2026-10-28T17:13:21.931Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1680,
+      "at": "2026-10-28T17:13:22.225Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T558: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+      }
+    },
+    {
+      "sequence": 1681,
+      "at": "2026-10-28T17:13:22.286Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "a4a9ea05-2e9d-4919-8f0b-753083dd6b33",
+          "runner": "6abc1208-fa06-465c-8a96-25e8e4e181e8",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T17:04:38.479Z",
+          "finishedAt": "2026-10-28T17:13:22.286Z",
+          "error": "T558: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요.",
+          "summary": "T558 overflow 선수의 실제 포지션 보존을 수정하고 LWB/RWB 회귀 테스트와 acceptance/result를 갱신했습니다. 영향 단위 테스트 653개, 타입·린트·포맷·diff 검사가 통과했습니다. 빌드·통합·e2e 검증은 호스트 최종 관문에 이월했으며 커밋하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1682,
+      "at": "2026-10-28T17:13:22.500Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "6abc1208-fa06-465c-8a96-25e8e4e181e8",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T17:04:35.807Z",
+          "stoppedAt": "2026-10-28T17:13:22.500Z",
+          "dispatched": 1,
+          "outcome": "dispatch-limit",
+          "failures": [
+            {
+              "attempt": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+              "role": "worker",
+              "error": "T558: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1687,
+      "at": "2026-10-28T17:15:44.229Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1688,
+      "at": "2026-10-28T17:15:44.912Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "ba51ee3a-f893-4bda-beb4-704622f4f022",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T17:15:44.892Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1689,
+      "at": "2026-10-28T17:15:44.955Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "ba51ee3a-f893-4bda-beb4-704622f4f022/worker-1",
+        "contributors": [
+          "6abc1208-fa06-465c-8a96-25e8e4e181e8/worker-1",
+          "ba51ee3a-f893-4bda-beb4-704622f4f022/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 1690,
+      "at": "2026-10-28T17:15:45.045Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+      }
+    },
+    {
+      "sequence": 1691,
+      "at": "2026-10-28T17:15:45.331Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "ba51ee3a-f893-4bda-beb4-704622f4f022",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T17:15:44.892Z",
+          "stoppedAt": "2026-10-28T17:15:45.331Z",
+          "dispatched": 0,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+              "role": "worker",
+              "error": "미커밋·미추적 변경이 있습니다. 해당 작업을 먼저 정리하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1696,
+      "at": "2026-10-28T17:25:53.890Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1697,
+      "at": "2026-10-28T17:25:54.614Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "cc2979cd-aa44-44bd-95b6-80da42dcad52",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T17:25:54.593Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1698,
+      "at": "2026-10-28T17:25:54.659Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "cc2979cd-aa44-44bd-95b6-80da42dcad52/worker-1",
+        "contributors": [
+          "6abc1208-fa06-465c-8a96-25e8e4e181e8/worker-1",
+          "ba51ee3a-f893-4bda-beb4-704622f4f022/worker-1",
+          "cc2979cd-aa44-44bd-95b6-80da42dcad52/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 1699,
+      "at": "2026-10-28T17:25:54.831Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "16ee0b6e-14ac-427f-b1d9-14e31f4df0a5",
+          "runner": "cc2979cd-aa44-44bd-95b6-80da42dcad52",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T17:25:54.831Z"
+        }
+      }
+    },
+    {
+      "sequence": 1700,
+      "at": "2026-10-28T17:25:55.046Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "16ee0b6e-14ac-427f-b1d9-14e31f4df0a5",
+          "runner": "cc2979cd-aa44-44bd-95b6-80da42dcad52",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T17:25:54.831Z"
+        }
+      }
+    },
+    {
+      "sequence": 1701,
+      "at": "2026-10-28T17:26:52.739Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1702,
+      "at": "2026-10-28T17:26:53.471Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1703,
+      "at": "2026-10-28T17:26:53.534Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1705,
+      "at": "2026-10-28T17:29:43.929Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "66302d4f2cb71966b12c5be0691c32acda09847d",
+        "submittedBase": "f97a1b57035b42391660bfb34d7499f3cd477bac",
+        "submissionId": "29e35979-7580-420d-8197-a20832ec1889",
+        "submittedAt": "2026-10-28T17:29:43.929Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T558",
+            "commit": "66302d4f2cb71966b12c5be0691c32acda09847d",
+            "at": "2026-10-28T17:29:43.901Z",
+            "verification": [
+              {
+                "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "startedAt": "2026-10-28T17:26:53.891Z",
+                "finishedAt": "2026-10-28T17:29:43.458Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "startedAt": "2026-10-28T17:26:53.891Z",
+            "finishedAt": "2026-10-28T17:29:43.458Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1706,
+      "at": "2026-10-28T17:29:43.964Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "16ee0b6e-14ac-427f-b1d9-14e31f4df0a5",
+          "runner": "cc2979cd-aa44-44bd-95b6-80da42dcad52",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T17:25:54.831Z",
+          "finishedAt": "2026-10-28T17:29:43.964Z",
+          "error": null,
+          "summary": "pnpm run build가 통과했습니다(Vite 2.25초). T558의 마지막 acceptance를 [v]로 표시하고 빌드 결과를 기록했습니다. 이번에는 태스크 문서만 수정했으며 테스트 재실행이나 커밋은 하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1707,
+      "at": "2026-10-28T17:29:44.177Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "cc2979cd-aa44-44bd-95b6-80da42dcad52",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T17:25:54.593Z",
+          "stoppedAt": "2026-10-28T17:29:44.177Z",
+          "dispatched": 1,
+          "outcome": "dispatch-limit",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1708,
+      "at": "2026-10-28T17:32:25.056Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "80dbb703-2b38-4f38-b0e6-5e1e3231edcd",
+          "owner": "cp29-review",
+          "status": "reviewing",
+          "commit": "66302d4f2cb71966b12c5be0691c32acda09847d",
+          "baseCommit": "e65b4fa7a8516f74ba9246dafef424118e517bdd",
+          "submissionId": "29e35979-7580-420d-8197-a20832ec1889",
+          "createdAt": "2026-10-28T17:32:25.056Z"
+        }
+      }
+    },
+    {
+      "sequence": 1709,
+      "at": "2026-10-28T17:33:02.939Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "80dbb703-2b38-4f38-b0e6-5e1e3231edcd",
+          "owner": "cp29-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T558 correction resolves review 019a31b8: an overflow arrival absent from the raw formation receives a deterministic ordinary club-strength model at his retained position and age. Inspected the complete pinned diff, unchanged prior market implementation, LWB/RWB red/green regressions and affected-unit/quick/build evidence. No P1/P2 findings remain in the submitted correction. Full integration and browser validation remain at the coordinator gate.",
+          "findings": [],
+          "commit": "66302d4f2cb71966b12c5be0691c32acda09847d",
+          "baseCommit": "e65b4fa7a8516f74ba9246dafef424118e517bdd",
+          "submissionId": "29e35979-7580-420d-8197-a20832ec1889",
+          "createdAt": "2026-10-28T17:32:25.056Z",
+          "finishedAt": "2026-10-28T17:33:02.939Z"
+        }
+      }
+    },
+    {
+      "sequence": 1710,
+      "at": "2026-10-28T17:33:03.916Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    }
+  ]
+}

@@ -1,6 +1,7 @@
+import { PlaceActivities } from './PlaceActivities';
 import { useLocale } from '../presentation/react';
 import { useEffect, type ReactNode } from 'react';
-import type { ClientState } from '../runtime/client';
+import type { ClientState, GameClient } from '../runtime/client';
 import { FIRST_TEAM_TABS, STAFF_TABS } from './personnelNavigation';
 import { openPersonnel, usePeopleView, type PeopleTab } from './state';
 import { useTaskState } from './taskMemory';
@@ -12,14 +13,14 @@ import { tacticLabel } from '../../../../packages/engine/src/tactics';
 export function PersonnelHub({
   page,
   state,
+  client,
   panel,
-  training,
   market,
 }: {
   page: 'firstTeam' | 'staff';
   state: ClientState;
+  client: GameClient;
   panel: (tab: PeopleTab, replace: () => void) => ReactNode;
-  training: ReactNode;
   market: (close: () => void) => ReactNode;
 }) {
   const { t } = useLocale();
@@ -34,7 +35,7 @@ export function PersonnelHub({
   const request = usePeopleView((store) => store.request);
   const [showMarket, setMarket] = useTaskState(w.id, 'manager-market-open', false);
   useEffect(() => {
-    if (page !== 'staff') return;
+    if (page !== 'firstTeam') return;
     const restore = () => setMarket(new URLSearchParams(location.search).get('market') === '1');
     restore();
     if (request) usePeopleView.getState().take();
@@ -47,11 +48,11 @@ export function PersonnelHub({
   }, [page, tab, request, setMarket]);
   const replace = () => {
     setMarket(true);
-    openPersonnel({ page: 'staff', view: 'manager' }, true);
+    openPersonnel({ page: 'firstTeam', view: 'manager' }, true);
   };
   const closeMarket = () => {
     setMarket(false);
-    openPersonnel({ page: 'staff', view: 'manager' });
+    openPersonnel({ page: 'firstTeam', view: 'manager' });
   };
   return (
     <>
@@ -69,28 +70,27 @@ export function PersonnelHub({
         idPrefix={page}
       />
       <TabPanel idPrefix={page} value={tab}>
-        {tab === 'training' ? (
-          training
-        ) : (
-          <>
-            {tab !== 'market' && (
-              <FacilityOverview
-                w={w}
-                kind={tab === 'coaches' ? 'staff' : tab === 'manager' ? 'manager' : 'locker'}
-                title={
-                  tab === 'players' ? '드레싱 룸' : tab === 'manager' ? '감독실' : '스태프 사무실'
-                }
-              >
-                {tab === 'coaches'
-                  ? `스태프 ${w.staff?.length ?? 0}명 · 감독 ${w.manager.name}`
-                  : `감독 ${w.manager.name} · ${tacticLabel[w.tactic]}`}
-              </FacilityOverview>
-            )}
-            {panel(tab as PeopleTab, replace)}
-          </>
+        {tab !== 'market' && (
+          <FacilityOverview
+            w={w}
+            kind={tab === 'coaches' ? 'staff' : tab === 'manager' ? 'manager' : 'locker'}
+            title={tab === 'players' ? '드레싱 룸' : tab === 'manager' ? '감독실' : '스태프 사무실'}
+          >
+            {tab === 'coaches'
+              ? `스태프 ${w.staff?.length ?? 0}명 · 감독 ${w.manager.name}`
+              : `감독 ${w.manager.name} · ${tacticLabel[w.tactic]}`}
+          </FacilityOverview>
         )}
+        {(tab === 'manager' || tab === 'coaches') && (
+          <PlaceActivities
+            place={tab === 'manager' ? 'manager' : 'coaching'}
+            state={state}
+            client={client}
+          />
+        )}
+        {panel(tab as PeopleTab, replace)}
       </TabPanel>
-      {page === 'staff' && tab === 'manager' && showMarket && market(closeMarket)}
+      {page === 'firstTeam' && tab === 'manager' && showMarket && market(closeMarket)}
     </>
   );
 }

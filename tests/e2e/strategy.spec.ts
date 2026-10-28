@@ -22,12 +22,12 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   // direction rows of the same area (→ECON-25); 스태프 and 글로벌 have rows only. No separate dial
   // list, no training dial (훈련 owns the focus).
   const areas: [string, string | undefined, string[]][] = [
-    ['선수단·계약', '라커룸 문화', ['선수단 투자', '재계약 기조']],
+    ['선수단', '라커룸 문화', []],
     ['영입', '스카우팅', ['영입 기조', '단장·감독 지원']],
     ['매각', '매각 기조', []],
     ['유소년', '유입 방식', ['육성 목표', '데뷔 시점', '유소년 투자']],
     ['스태프', undefined, ['선호 학파', '감독 기조', '코치 기조']],
-    ['재정', '수익 모델', ['재정 기조']],
+    ['재정', '수익 모델', ['재정 기조', '선수단 투자', '재계약 기조']],
     ['지역', '지역 관계 방식', ['주변 투자', '풀뿌리 유망주 투자', '티켓 가격']],
     ['글로벌', undefined, ['해외 마케팅', '해외 스카우트망', '해외 투어']],
   ];
@@ -89,7 +89,7 @@ test('applies a preset at once, changes it again at once, and saves its own stra
   await expect(draft).toContainText('유스 순혈주의');
   await expect(draft).toContainText('시너지 우리 동네 아이들 발동');
   await expect(board.getByTestId('synergy-local-heroes')).toContainText('적용하면 발동');
-  const squad = board.getByRole('region', { name: '선수단·계약', exact: true });
+  const squad = finance;
   const generous = squad.getByRole('radio', { name: '선수단 투자 후한 지원', exact: true });
   await generous.click();
   // The area of a drafted row stays open and says it holds a draft.

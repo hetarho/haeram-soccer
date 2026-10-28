@@ -71,7 +71,7 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
     await page.screenshot({ path: `.tmp/resource-audit/${theme.id}-academy.png` });
     await openPersonnel(page, 'coaches');
     await page.screenshot({ path: `.tmp/resource-audit/${theme.id}-staff.png` });
-    await navigate('클럽 홈');
+    await navigate('클럽하우스');
     await page
       .getByRole('button', { name: '결재라인 모아보기', exact: true })
       .filter({ visible: true })

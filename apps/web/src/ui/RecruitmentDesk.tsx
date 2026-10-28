@@ -4,8 +4,15 @@ import { PlayerLink } from './PlayerSheet';
 import { useTaskState } from './taskMemory';
 import { Select } from './Select';
 import { PixelIcon } from './PixelIcon';
-import { useState } from 'react';
-import type { Line, TransferBid, World } from '../../../../packages/contracts/src/types';
+import { useEffect, useRef, useState } from 'react';
+import type {
+  Line,
+  TransferBid,
+  World,
+  WorldMarketTarget,
+  WorldMarketOffer,
+} from '../../../../packages/contracts/src/types';
+import { POSITIONS } from '../../../../packages/contracts/src/player';
 import type { Personality } from '../../../../packages/contracts/src/player';
 import {
   lineOf,
@@ -17,15 +24,11 @@ import {
 import { releaseCost, staffMember } from '../../../../packages/engine/src/staff-info';
 import { positionsLabel } from './FormationPitch';
 import { gradeLabel, PlayerProfile } from './PlayerProfile';
-import { bidBoard, bidOutlook } from '../../../../packages/engine/src/transfers';
+import { bidBoard } from '../../../../packages/engine/src/transfers';
 import { transferWindow } from '../../../../packages/engine/src/transfer-window';
 import { bidKind, freeSigning, visibleBids } from './bids';
 import { clubOf, overall } from '../../../../packages/engine/src/player-state';
-import {
-  recruitmentPreview,
-  recruitmentLineNeed,
-  type TransferOffer,
-} from '../../../../packages/engine/src/recruitment';
+import { recruitmentLineNeed } from '../../../../packages/engine/src/recruitment';
 import type { ClientState, GameClient } from '../runtime/client';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
@@ -36,11 +39,26 @@ import { OfferAnswers } from './ClubStaff';
 import { RecruitmentNeeds, ScoutShortlist } from './ScoutShortlist';
 import { openCoachSheet, openDirection } from './state';
 import { currentStepName } from './board';
+import { clubDivision } from './league';
+import {
+  DEFAULT_MARKET_QUERY,
+  changeMarketQuery,
+  marketLeagueKey,
+  marketLeagues,
+  toggleMarketComparison,
+  useMarketDetail,
+  useMarketPage,
+  type MarketDetail,
+  type MarketQuery,
+} from './worldMarket';
 import s from './RecruitmentDesk.module.css';
 
-type Preview = ReturnType<typeof recruitmentPreview>;
-type Candidate = { index: number; offer: TransferOffer; buy: Preview; loan: Preview };
-type Order = 'impact' | 'potential' | 'fee';
+type Candidate = MarketDetail;
+function sourceLabel(w: World, offer: WorldMarketOffer) {
+  if (!offer.source) return offer.freeAgent ? '자유계약 선수' : '스카우트 후보';
+  const source = w.clubs.find((club) => club.id === offer.source!.club);
+  return `${offer.source.name} · ${source ? clubDivision(w, source) : offer.source.country}`;
+}
 const lineNames: Record<Line, string> = {
   GK: '골키퍼',
   DF: '수비수',
@@ -67,6 +85,7 @@ function CandidateCard({
   onRecruit,
   onBid,
   pending,
+  actions = true,
 }: {
   w: World;
   candidate: Candidate;
@@ -76,6 +95,7 @@ function CandidateCard({
   onRecruit: (loan: boolean) => void;
   onBid: () => void;
   pending?: TransferBid;
+  actions?: boolean;
 }) {
   const { offer, buy, loan } = candidate,
     player = offer.player,
@@ -114,6 +134,14 @@ function CandidateCard({
           성장 여지 <b>+{Math.max(0, Math.round(player.potential) - overall(player))}</b>
         </span>
       </div>
+      <p className={s.context}>
+        {sourceLabel(w, offer)}
+        {offer.own
+          ? ' · 우리 선수 · 재영입할 수 없어요'
+          : offer.recommended
+            ? ' · 스카우트 추천'
+            : ' · 직접 발굴'}
+      </p>
       <p className={s.traits}>
         {player.traits.length
           ? player.traits.map((trait) => TRAIT_LABEL[trait]).join(' · ')
@@ -123,7 +151,7 @@ function CandidateCard({
         {(Object.keys(PERSONALITY_LABEL) as (keyof Personality)[])
           .map(
             (key) =>
-              `${PERSONALITY_LABEL[key]} ${gradeLabel(player.personality[key], false, scout)}`,
+              `${PERSONALITY_LABEL[key]} ${gradeLabel(player.personality[key], offer.own, scout)}`,
           )
           .join(' · ')}
       </p>
@@ -153,6 +181,9 @@ function CandidateCard({
             </div>
           </div>
           <p className={s.context}>
+            {offer.foreign
+              ? '해외에서 합류 · 적응에 시간이 필요해요. '
+              : '국내에서 합류 · 적응에 시간이 필요해요. '}
             {buy.manual
               ? '수동 선발 교체 예시예요. 영입 후 선발을 직접 정해야 적용돼요.'
               : buy.willStart
@@ -201,56 +232,69 @@ function CandidateCard({
           </p>
         </>
       )}
-      {pending ? (
-        <p className={s.pending} data-testid="pending-bid">
-          {pending.status === 'countered' ? (
-            <>역제안 {cash(pending.counterFee || pending.fee)} · 알림·결정에서 답해 주세요</>
-          ) : (
-            <>
-              협상 중 · 제안 {cash(pending.fee)} ·{' '}
-              {Math.max(0, pending.due - (w.calendar?.day ?? 0))}일 안에 답이 와요
-            </>
-          )}
-        </p>
-      ) : (
-        <div className={s.transactions}>
-          <div>
-            {offer.freeAgent ? (
-              <button
-                data-ui="primary"
-                className={s.primary}
-                disabled={blocked || !buy.eligible || !buy.affordable}
-                onClick={() => onRecruit(false)}
-              >
-                {offer.available ? '자유계약 영입' : '계약 완료'}
-              </button>
-            ) : (
-              <button
-                data-ui="primary"
-                className={s.primary}
-                disabled={blocked || !offer.available || !window.open || !buy.eligible}
-                onClick={onBid}
-              >
-                {offer.available ? '이적 제안' : '계약 완료'}
-              </button>
-            )}
-            {offer.available && !offer.freeAgent && !window.open ? (
-              <small>{window.label}</small>
-            ) : (
-              (!buy.eligible || !buy.affordable) && <small>{buy.reason}</small>
-            )}
-          </div>
-          <div>
-            <button
-              disabled={blocked || !window.open || !loan.eligible || !loan.affordable}
-              onClick={() => onRecruit(true)}
-            >
-              1시즌 임대
-            </button>
-            {(!loan.eligible || !loan.affordable) && <small>{loan.reason}</small>}
-          </div>
-        </div>
+      {(!buy.eligible || !buy.affordable) && (
+        <p className={s.note}>{offer.own ? '우리 선수는 재영입할 수 없어요.' : buy.reason}</p>
       )}
+      {actions &&
+        (pending ? (
+          <p className={s.pending} data-testid="pending-bid">
+            {pending.status === 'countered' ? (
+              <>역제안 {cash(pending.counterFee || pending.fee)} · 알림·결정에서 답해 주세요</>
+            ) : (
+              <>
+                협상 중 · 제안 {cash(pending.fee)} ·{' '}
+                {Math.max(0, pending.due - (w.calendar?.day ?? 0))}일 안에 답이 와요
+              </>
+            )}
+          </p>
+        ) : (
+          <div className={s.transactions}>
+            <div>
+              {offer.freeAgent ? (
+                <button
+                  data-ui="primary"
+                  className={s.primary}
+                  disabled={blocked || !buy.eligible || !buy.affordable}
+                  onClick={() => onRecruit(false)}
+                >
+                  {offer.available ? '자유계약 영입' : '계약 완료'}
+                </button>
+              ) : (
+                <button
+                  data-ui="primary"
+                  className={s.primary}
+                  disabled={blocked || !offer.available || !window.open || !buy.eligible}
+                  onClick={onBid}
+                >
+                  {offer.available ? '이적 제안' : '계약 완료'}
+                </button>
+              )}
+              {offer.available && !offer.freeAgent && !window.open ? (
+                <small>{window.label}</small>
+              ) : (
+                (!buy.eligible || !buy.affordable) && <small>{buy.reason}</small>
+              )}
+            </div>
+            <div>
+              <button
+                disabled={
+                  offer.freeAgent || blocked || !window.open || !loan.eligible || !loan.affordable
+                }
+                onClick={() => onRecruit(true)}
+              >
+                1시즌 임대
+              </button>
+              {offer.available && !offer.freeAgent && (
+                <small>판매 구단이 2–4일 뒤 답해요. 수락 시 임대료와 연봉이 발생해요.</small>
+              )}
+              {offer.freeAgent ? (
+                <small>자유계약 선수는 임대할 수 없어요. 자유계약 영입을 이용해 주세요.</small>
+              ) : (
+                (!loan.eligible || !loan.affordable) && <small>{loan.reason}</small>
+              )}
+            </div>
+          </div>
+        ))}
       {w.players.some((person) => person.id === player.id && person.status === 'active') && (
         <div className={s.transactions} aria-label="합류한 선수 관리">
           <PlayerLink id={player.id} name={player.name} />
@@ -261,7 +305,7 @@ function CandidateCard({
       )}
       <details className={s.details}>
         <summary>능력 자세히</summary>
-        <PlayerProfile w={w} player={player} own={false} compact />
+        <PlayerProfile w={w} player={player} own={offer.own} compact />
       </details>
     </article>
   );
@@ -270,25 +314,34 @@ function CandidateCard({
 export function RecruitmentDesk({ state, client }: { state: ClientState; client: GameClient }) {
   const w = state.view!.world,
     club = clubOf(w);
-  const [role, setRole] = useTaskState<Line | 'all'>(w.id, 'market-role', 'all');
-  const [order, setOrder] = useTaskState<Order>(w.id, 'market-order', 'impact');
-  const [boostOnly, setBoostOnly] = useTaskState(w.id, 'market-boost', false);
-  const [comparison, setComparison] = useTaskState<string[]>(w.id, 'market-comparison', []);
-  const [comparisonOffers, setComparisonOffers] = useTaskState<Record<string, TransferOffer>>(
+  const [query, setQuery] = useTaskState<MarketQuery>(
     w.id,
-    'market-comparison-offers',
-    {},
+    'world-market-query',
+    DEFAULT_MARKET_QUERY,
+  );
+  const changeQuery = (patch: Partial<MarketQuery>) =>
+    setQuery((current) => changeMarketQuery(current, patch));
+  const [comparison, setComparison] = useTaskState<WorldMarketTarget[]>(
+    w.id,
+    'world-market-comparison',
+    [],
   );
   const [comparing, setComparing] = useTaskState(w.id, 'market-comparing', false);
-  const [message, setMessage] = useState('');
-  const [biddingId, setBiddingId] = useTaskState<string | undefined>(
+  const [message, setMessage] = useState<{ world: string; text: string }>();
+  const [bidding, setBidding] = useTaskState<
+    { target: WorldMarketTarget; asking: string } | undefined
+  >(w.id, 'world-market-bidding', undefined);
+  const activeBid = useRef(bidding);
+  activeBid.current = bidding;
+  useEffect(() => {
+    activeBid.current = bidding;
+    return () => {
+      activeBid.current = undefined;
+    };
+  }, [bidding]);
+  const [viewing, setViewing] = useTaskState<WorldMarketTarget | undefined>(
     w.id,
-    'market-biddingId',
-    undefined,
-  );
-  const [viewingId, setViewingId] = useTaskState<string | undefined>(
-    w.id,
-    'market-viewingId',
+    'world-market-viewing',
     undefined,
   );
   const [panel, setPanel] = useTaskState<'filters' | 'info' | 'negotiations' | undefined>(
@@ -297,81 +350,78 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
     undefined,
   );
   const [step, setStep] = useTaskState(w.id, 'market-step', 1);
-  // 모두 보기 on the 이적 협상 list: closed bids past the first rows.
   const [expanded, setExpanded] = useTaskState(w.id, 'market-expanded', false);
   const registered = squadRegistration(w);
   const blocked = useGameState(gameActionsBlocked);
   const recommended = recruitmentLineNeed(w);
-  const candidates: Candidate[] = state.view!.transfers.map((offer, index) => ({
-    index,
-    offer,
-    buy: recruitmentPreview(w, offer),
-    loan: recruitmentPreview(w, offer, true),
-  }));
-  const viewing = candidates.find((candidate) => candidate.offer.player.id === viewingId);
-  const bidding = candidates.find((candidate) => candidate.offer.player.id === biddingId);
-  const ordered = candidates
-    .filter(
-      ({ offer, buy }) =>
-        (role === 'all' || lineOf(offer.player.position) === role) &&
-        (!boostOnly || buy.strengthDelta > 0 || buy.fitDelta > 0),
-    )
-    .sort((a, b) => {
-      if (order === 'potential')
-        return (
-          b.offer.player.potential - a.offer.player.potential ||
-          a.offer.player.id.localeCompare(b.offer.player.id)
-        );
-      if (order === 'fee')
-        return BigInt(a.offer.fee) < BigInt(b.offer.fee)
-          ? -1
-          : BigInt(a.offer.fee) > BigInt(b.offer.fee)
-            ? 1
-            : a.offer.player.id.localeCompare(b.offer.player.id);
-      return (
-        b.buy.strengthDelta - a.buy.strengthDelta ||
-        b.buy.fitDelta - a.buy.fitDelta ||
-        overall(b.offer.player) - overall(a.offer.player) ||
-        a.offer.player.id.localeCompare(b.offer.player.id)
-      );
-    });
-  const compared = comparison.flatMap((id) => {
-    const current = candidates.find((candidate) => candidate.offer.player.id === id);
-    if (current) return [current];
-    const offer = comparisonOffers[id];
-    return offer
-      ? [
-          {
-            index: -1,
-            offer,
-            buy: recruitmentPreview(w, offer),
-            loan: recruitmentPreview(w, offer, true),
-          },
-        ]
-      : [];
-  });
-  const selectedComparison = compared.map((candidate) => candidate.offer.player.id);
-  const toggle = (id: string) => {
-    const offer = candidates.find((candidate) => candidate.offer.player.id === id)?.offer;
-    if (offer) setComparisonOffers((current) => ({ ...current, [id]: offer }));
-    setComparison((current) =>
-      current.includes(id)
-        ? current.filter((candidate) => candidate !== id)
-        : [...current.slice(-1), id],
-    );
-  };
+  const market = useMarketPage(client, w.id, w.revision, query);
+  const page = market.value;
+  const selectedComparison = comparison.filter((target) => target.world === w.id).slice(0, 2);
+  const detail = useMarketDetail(client, w.id, w.revision, viewing);
+  const comparisonA = useMarketDetail(
+    client,
+    w.id,
+    w.revision,
+    comparing ? selectedComparison[0] : undefined,
+  );
+  const comparisonB = useMarketDetail(
+    client,
+    w.id,
+    w.revision,
+    comparing ? selectedComparison[1] : undefined,
+  );
+  const asking = BigInt(bidding?.asking ?? '0');
+  const steps = [80n, 100n, 115n, 130n];
+  const fee = ((asking * steps[step]) / 100n).toString();
+  const bidDetail = useMarketDetail(client, w.id, w.revision, bidding?.target, fee);
+  const outlook = bidDetail.value?.bid;
+  const leagues = marketLeagues(w.clubs);
+  const leagueKey = query.league ? marketLeagueKey(query.league) : '';
+  const teams = w.clubs.filter((team) => !leagueKey || marketLeagueKey(team) === leagueKey);
+  const filtered = !!(
+    query.name ||
+    query.recommendedOnly ||
+    query.league ||
+    query.team ||
+    query.position ||
+    query.line ||
+    query.fit === 'improves'
+  );
+  const toggle = (target: WorldMarketTarget) =>
+    setComparison((current) => toggleMarketComparison(current, target));
+  const currentWorld = () => client.state.view?.world.id === w.id;
   const recruit = async (candidate: Candidate, loan: boolean) => {
     const preview = loan ? candidate.loan : candidate.buy;
-    if (blocked || !preview.eligible || !preview.affordable) return;
+    if (
+      blocked ||
+      candidate.offer.own ||
+      (loan && candidate.offer.freeAgent) ||
+      !preview.eligible ||
+      !preview.affordable ||
+      !currentWorld() ||
+      candidate.revision !== client.state.view?.world.revision
+    )
+      return;
     const reply = await client.command(
-      { type: 'recruit', candidate: candidate.index, loan },
+      candidate.offer.freeAgent
+        ? { type: 'recruit', target: candidate.offer.target, loan: false }
+        : {
+            type: 'bid',
+            target: candidate.offer.target,
+            fee: loan ? candidate.offer.loanFee : candidate.offer.fee,
+            loan,
+          },
       { background: true },
     );
-    setMessage(
-      reply?.ok
-        ? `${candidate.offer.player.name} ${loan ? '임대를' : '영입을'} 저장했어요.`
+    if (!currentWorld()) return;
+    setMessage({
+      world: w.id,
+      text: reply?.ok
+        ? candidate.offer.freeAgent
+          ? `${candidate.offer.player.name} 영입을 저장했어요.`
+          : `${candidate.offer.player.name} 임대 제안을 보냈어요. 구단이 수락하면 계약이 완료돼요.`
         : client.state.error || '계약을 적용하지 못했어요.',
-    );
+    });
   };
   const bids = w.bids || [];
   const pendingFor = (id: string) =>
@@ -386,21 +436,24 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
     // Inside a control that already answers the tap: the notation, the exact amount as its title.
     plain = (value: string) => <Money value={value} code={club.country} year={w.year} plain />,
     text = (value: string) => compactMoney(value, club.country, w.year);
-  const render = (candidate: Candidate) => (
+  const render = (candidate: Candidate, actions = true) => (
     <CandidateCard
       key={candidate.offer.player.id}
       w={w}
       candidate={candidate}
-      blocked={blocked || candidate.index < 0}
-      selected={comparison.includes(candidate.offer.player.id)}
-      onCompare={() => toggle(candidate.offer.player.id)}
+      actions={actions}
+      blocked={blocked || candidate.revision !== w.revision || candidate.offer.own}
+      selected={selectedComparison.some((target) => target.playerId === candidate.offer.player.id)}
+      onCompare={() => toggle(candidate.offer.target)}
       onRecruit={(loan) => {
         void recruit(candidate, loan);
       }}
       onBid={() => {
-        setViewingId(undefined);
+        setComparing(false);
+        setViewing(undefined);
+        setMessage(undefined);
         setStep(1);
-        setBiddingId(candidate.offer.player.id);
+        setBidding({ target: candidate.offer.target, asking: candidate.offer.fee });
       }}
       pending={pendingFor(candidate.offer.player.id)}
     />
@@ -410,10 +463,6 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   const outgoing = bids.filter(
     (bid) => bid.direction === 'out' && (bid.status === 'pending' || bid.status === 'countered'),
   );
-  const asking = bidding ? BigInt(bidding.offer.fee) : 0n;
-  const steps = [80n, 100n, 115n, 130n];
-  const fee = bidding ? ((asking * steps[step]) / 100n).toString() : '0';
-  const outlook = bidding ? bidOutlook(w, bidding.index, fee) : undefined;
   return (
     <section className={s.desk} aria-label="선수 영입 데스크">
       <div
@@ -425,11 +474,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       </div>
       <header className={s.toolbar}>
         <h3>
-          영입 후보{' '}
-          <span>
-            {ordered.length}
-            {ordered.length !== candidates.length ? ` / ${candidates.length}` : ''}명
-          </span>
+          영입 후보 <span>{page ? `총 ${page.total}명` : '조회 중'}</span>
         </h3>
         <div className={s.tools}>
           {selectedComparison.length > 0 && (
@@ -451,7 +496,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           >
             <PixelIcon name="filter" size={16} />
             필터
-            {(role !== 'all' || boostOnly || order !== 'impact') && (
+            {(filtered || query.sort !== 'ovr' || query.direction !== 'desc') && (
               <i className={s.activeDot} aria-label="적용 중" />
             )}
           </button>
@@ -481,11 +526,29 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           </button>
         </div>
       </header>
-      {message && (
+      {message?.world === w.id && (
         <p className={s.message} role="status">
-          {message}
+          {message.text}
         </p>
       )}
+      <label className={s.search}>
+        선수 이름 검색
+        <input
+          type="search"
+          value={query.name ?? ''}
+          maxLength={160}
+          onChange={(event) => changeQuery({ name: event.target.value })}
+        />
+      </label>
+      <p className={s.note}>
+        전 세계 현역 선수·자유계약 선수{query.recommendedOnly ? ' · 스카우트 추천만' : ''}
+      </p>
+      {market.error && (
+        <p role="alert" className={s.warning}>
+          {market.error} <button onClick={market.retry}>목록 다시 조회</button>
+        </p>
+      )}
+      {!page && !market.error && <p role="status">세계 선수 목록을 불러오고 있어요.</p>}
       <table className={s.candidateTable} aria-label="영입 후보 목록">
         <thead>
           <tr>
@@ -508,7 +571,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           </tr>
         </thead>
         <tbody>
-          {ordered.map(({ offer }) => {
+          {page?.items.map((offer) => {
             const player = offer.player;
             const pending = pendingFor(player.id);
             return (
@@ -517,10 +580,12 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                 data-testid={`market-candidate-${player.id}`}
                 data-candidate-id={player.id}
                 data-line={lineOf(player.position)}
-                data-selected={selectedComparison.includes(player.id) || undefined}
+                data-selected={
+                  selectedComparison.some((target) => target.playerId === player.id) || undefined
+                }
                 onClick={(event) => {
                   if ((event.target as Element).closest('button, input, a')) return;
-                  setViewingId(player.id);
+                  setViewing(offer.target);
                 }}
               >
                 <td>
@@ -528,13 +593,21 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                     type="button"
                     className={s.playerName}
                     aria-label={`${player.name} 상세 보기`}
-                    onClick={() => setViewingId(player.id)}
+                    onClick={() => setViewing(offer.target)}
                   >
                     <b>{player.name}</b>
                     <small>
                       {player.position} · {w.year - player.born}세
-                      {!offer.available ? ' · 계약 완료' : pending ? ' · 협상 중' : ''}
+                      {offer.own
+                        ? ' · 우리 선수'
+                        : !offer.available
+                          ? ' · 접근 불가'
+                          : pending
+                            ? ' · 협상 중'
+                            : ''}
+                      {offer.recommended ? ' · 스카우트 추천' : ''}
                     </small>
+                    <small>{sourceLabel(w, offer)}</small>
                   </button>
                 </td>
                 <td>
@@ -550,26 +623,50 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                     type="button"
                     className={s.compareToggle}
                     aria-label={`${player.name} 비교`}
-                    aria-pressed={selectedComparison.includes(player.id)}
-                    onClick={() => toggle(player.id)}
+                    aria-pressed={selectedComparison.some(
+                      (target) => target.playerId === player.id,
+                    )}
+                    onClick={() => toggle(offer.target)}
                   >
                     <span aria-hidden="true">
-                      {selectedComparison.includes(player.id) ? '✓' : '+'}
+                      {selectedComparison.some((target) => target.playerId === player.id)
+                        ? '✓'
+                        : '+'}
                     </span>
                   </button>
                 </td>
               </tr>
             );
           })}
-          {!ordered.length && (
+          {page?.total === 0 && (
             <tr>
               <td colSpan={6} className={s.empty}>
-                이 조건에 맞는 후보가 없어요. 필터를 바꿔보세요.
+                {filtered
+                  ? '이 조건에 맞는 선수가 없어요. 필터를 지우고 다시 찾아보세요.'
+                  : '현재 조회할 수 있는 현역 선수가 없어요.'}
+                <button onClick={() => setQuery(DEFAULT_MARKET_QUERY)}>필터 지우기</button>
               </td>
             </tr>
           )}
         </tbody>
       </table>
+      {page && (
+        <nav className={s.pagination} aria-label="영입 목록 페이지">
+          <button disabled={page.page === 0} onClick={() => changeQuery({ page: page.page - 1 })}>
+            이전 페이지
+          </button>
+          <span role="status">
+            총 {page.total}명 · {page.page + 1} /{' '}
+            {Math.max(1, Math.ceil(page.total / page.pageSize))} 페이지 · {page.items.length}명 표시
+          </span>
+          <button
+            disabled={(page.page + 1) * page.pageSize >= page.total}
+            onClick={() => changeQuery({ page: page.page + 1 })}
+          >
+            다음 페이지
+          </button>
+        </nav>
+      )}
       {panel === 'filters' && (
         <Dialog
           label="영입 필터"
@@ -579,9 +676,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
               <button
                 type="button"
                 onClick={() => {
-                  setRole('all');
-                  setOrder('impact');
-                  setBoostOnly(false);
+                  setQuery(DEFAULT_MARKET_QUERY);
                 }}
               >
                 초기화
@@ -592,35 +687,120 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                 className={s.primary}
                 onClick={() => setPanel(undefined)}
               >
-                {ordered.length}명 목록 보기
+                {page ? `${page.total}명 목록 보기` : '목록으로'}
               </button>
             </div>
           }
         >
           <div className={s.roles} role="group" aria-label="영입 포지션 선택">
             {(['all', 'GK', 'DF', 'MF', 'FW'] as const).map((value) => (
-              <button key={value} aria-pressed={role === value} onClick={() => setRole(value)}>
+              <button
+                key={value}
+                aria-pressed={(query.line ?? 'all') === value && !query.position}
+                onClick={() => changeQuery({ line: value === 'all' ? undefined : value })}
+              >
                 {value === 'all' ? '전체' : value}
               </button>
             ))}
           </div>
           <div className={s.filters}>
-            <button className={s.recommendation} onClick={() => setRole(recommended)}>
+            <button className={s.recommendation} onClick={() => changeQuery({ line: recommended })}>
               추천 포지션: {lineNames[recommended]} · {recommended}
             </button>
             <label>
-              후보 정렬{' '}
+              포지션
               <Select
-                aria-label="영입 후보 정렬"
-                value={order}
-                onValueChange={(value) => setOrder(value as Order)}
+                aria-label="영입 포지션"
+                value={query.position ?? 'all'}
+                onValueChange={(value) =>
+                  changeQuery({
+                    position: value === 'all' ? undefined : (value as MarketQuery['position']),
+                  })
+                }
               >
-                <option value="impact">즉시 전력</option>
-                <option value="potential">잠재력</option>
-                <option value="fee">낮은 이적료</option>
+                <option value="all">모든 포지션</option>
+                {POSITIONS.map((position) => (
+                  <option key={position} value={position}>
+                    {position} · {POSITION_LABEL[position]}
+                  </option>
+                ))}
               </Select>
             </label>
-            <button aria-pressed={boostOnly} onClick={() => setBoostOnly(!boostOnly)}>
+            <label>
+              리그
+              <Select
+                aria-label="영입 리그"
+                value={leagueKey || 'all'}
+                onValueChange={(value) =>
+                  changeQuery({ league: leagues.find(([key]) => key === value)?.[1] })
+                }
+              >
+                <option value="all">모든 리그</option>
+                {leagues.map(([key]) => {
+                  const team = w.clubs.find((team) => marketLeagueKey(team) === key)!;
+                  return (
+                    <option key={key} value={key}>
+                      {team.country} · {clubDivision(w, team)}
+                    </option>
+                  );
+                })}
+              </Select>
+            </label>
+            <label>
+              소속 구단
+              <Select
+                aria-label="영입 구단"
+                value={query.team ?? 'all'}
+                onValueChange={(value) =>
+                  changeQuery({ team: value === 'all' ? undefined : value })
+                }
+              >
+                <option value="all">모든 구단·자유계약</option>
+                {teams.map((team) => (
+                  <option key={team.id} value={team.id}>
+                    {team.name}
+                  </option>
+                ))}
+              </Select>
+            </label>
+            <label>
+              후보 정렬
+              <Select
+                aria-label="영입 후보 정렬"
+                value={query.sort ?? 'ovr'}
+                onValueChange={(value) => changeQuery({ sort: value as MarketQuery['sort'] })}
+              >
+                <option value="name">이름</option>
+                <option value="age">나이</option>
+                <option value="ovr">OVR</option>
+                <option value="potential">잠재력</option>
+                <option value="fee">이적료</option>
+                <option value="wage">연봉</option>
+              </Select>
+            </label>
+            <label>
+              정렬 방향
+              <Select
+                aria-label="영입 정렬 방향"
+                value={query.direction ?? 'desc'}
+                onValueChange={(value) =>
+                  changeQuery({ direction: value as MarketQuery['direction'] })
+                }
+              >
+                <option value="desc">내림차순</option>
+                <option value="asc">오름차순</option>
+              </Select>
+            </label>
+            <button
+              aria-pressed={!!query.recommendedOnly}
+              onClick={() => changeQuery({ recommendedOnly: !query.recommendedOnly })}
+            >
+              스카우트 추천만
+            </button>
+            <button
+              aria-pressed={query.fit === 'improves'}
+              onClick={() => changeQuery({ fit: query.fit === 'improves' ? 'all' : 'improves' })}
+            >
               {w.lineup ? '수동 교체 보강 후보' : '선발 보강 후보'}
             </button>
           </div>
@@ -716,7 +896,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             w={w}
             offers={state.view!.transfers}
             onRole={(line) => {
-              setRole(line);
+              changeQuery({ line });
               setPanel(undefined);
             }}
           />
@@ -747,10 +927,10 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             offers={state.view!.transfers}
             disabled={false}
             onOpen={(index) => {
-              const candidate = candidates[index];
-              if (!candidate) return;
+              const offer = state.view!.transfers[index];
+              if (!offer) return;
               setPanel(undefined);
-              setViewingId(candidate.offer.player.id);
+              setViewing({ world: w.id, kind: 'offer', playerId: offer.player.id });
             }}
           />
           <OfferAnswers w={w} />
@@ -768,38 +948,67 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           }
         >
           <div className={s.cards}>
-            {compared.some((candidate) => candidate.index < 0) && (
-              <p role="status">
-                현재 후보 목록에서 빠진 선수는 선택 당시 정보로 비교해요. 영입하려면 현재 후보
-                목록에서 다시 선택해 주세요.
-              </p>
-            )}
-            {compared.map(render)}
+            {[comparisonA, comparisonB].map((reading, index) => (
+              <div key={selectedComparison[index]?.playerId ?? index}>
+                {reading.value ? (
+                  render(reading.value)
+                ) : (
+                  <p role="status">{reading.error ?? '비교 선수 정보를 불러오고 있어요.'}</p>
+                )}
+                {reading.error && <button onClick={reading.retry}>선수 다시 조회</button>}
+              </div>
+            ))}
           </div>
         </Dialog>
       )}
-      {bidding && outlook && (
+      {bidding && (
         <Dialog
           label="이적 제안"
-          onClose={() => setBiddingId(undefined)}
+          onClose={() => setBidding(undefined)}
           actions={
             <div className={s.bidActions}>
-              <button onClick={() => setBiddingId(undefined)}>취소</button>
+              <button onClick={() => setBidding(undefined)}>취소</button>
               <button
                 data-ui="primary"
                 className={s.primary}
-                disabled={blocked || BigInt(fee) > BigInt(w.cash) || BigInt(fee) < 1n}
+                disabled={
+                  blocked ||
+                  !outlook ||
+                  !bidDetail.value?.buy.eligible ||
+                  bidDetail.value?.offer.own ||
+                  bidDetail.value?.revision !== w.revision ||
+                  !!pendingFor(bidding.target.playerId) ||
+                  !window.open ||
+                  BigInt(fee) > BigInt(w.cash) ||
+                  BigInt(fee) < 1n
+                }
                 onClick={async () => {
+                  if (
+                    !bidDetail.value ||
+                    !outlook ||
+                    !bidDetail.value.buy.eligible ||
+                    bidDetail.value.offer.own ||
+                    !currentWorld() ||
+                    bidDetail.value.revision !== client.state.view?.world.revision ||
+                    blocked ||
+                    BigInt(fee) > BigInt(w.cash) ||
+                    BigInt(fee) < 1n ||
+                    !window.open ||
+                    pendingFor(bidding.target.playerId)
+                  )
+                    return;
                   const reply = await client.command(
-                    { type: 'bid', candidate: bidding.index, fee },
+                    { type: 'bid', target: bidding.target, fee },
                     { background: true },
                   );
-                  setMessage(
-                    reply?.ok
-                      ? `${bidding.offer.player.name}에게 ${text(fee)} 제안을 보냈어요. 며칠 안에 답이 와요.`
+                  if (!currentWorld() || activeBid.current !== bidding) return;
+                  setMessage({
+                    world: w.id,
+                    text: reply?.ok
+                      ? `${bidDetail.value.offer.player.name}에게 ${text(fee)} 제안을 보냈어요. 며칠 안에 답이 와요.`
                       : client.state.error || '제안을 보내지 못했어요.',
-                  );
-                  setBiddingId(undefined);
+                  });
+                  if (reply?.ok) setBidding(undefined);
                 }}
               >
                 {plain(fee)} 제안 보내기
@@ -807,9 +1016,19 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             </div>
           }
         >
-          <h3>{bidding.offer.player.name}</h3>
+          {message?.world === w.id && (
+            <p className={s.message} role="status">
+              {message.text}
+            </p>
+          )}
+          {bidDetail.value ? (
+            render(bidDetail.value, false)
+          ) : (
+            <p role="status">{bidDetail.error ?? '제안 조건을 확인하고 있어요.'}</p>
+          )}
+          {bidDetail.error && <button onClick={bidDetail.retry}>제안 조건 다시 조회</button>}
           <p className={s.note}>
-            요구 이적료 {format(outlook.asking || bidding.offer.fee)} · 상대 구단은 2–4일 뒤
+            요구 이적료 {format(outlook?.asking || bidding.asking)} · 상대 구단은 2–4일 뒤
             수락·거절·역제안 중 하나로 답해요. 수락되면 그날 이적료가 나가요.
           </p>
           <div className={s.bidSteps} role="radiogroup" aria-label="제안 이적료">
@@ -830,7 +1049,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             <div>
               <dt>수락 가능성</dt>
               <dd>
-                {outlook.label} · 약 {Math.round(outlook.chance * 100)}%
+                {outlook ? `${outlook.label} · 약 ${Math.round(outlook.chance * 100)}%` : '확인 중'}
               </dd>
             </div>
             <div>
@@ -841,28 +1060,27 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           {BigInt(fee) > BigInt(w.cash) && <p className={s.warning}>자금이 부족해요.</p>}
         </Dialog>
       )}
-      {viewingId && (
+      {viewing && (
         <Dialog
           label="영입 후보 상세"
-          onClose={() => setViewingId(undefined)}
+          onClose={() => setViewing(undefined)}
           actions={
             <div className={s.close}>
-              <button onClick={() => setViewingId(undefined)}>닫기</button>
+              <button onClick={() => setViewing(undefined)}>닫기</button>
             </div>
           }
         >
-          {message && (
+          {message?.world === w.id && (
             <p className={s.message} role="status">
-              {message}
+              {message.text}
             </p>
           )}
-          {viewing ? (
-            render(viewing)
+          {detail.value ? (
+            render(detail.value)
           ) : (
-            <p role="status">
-              이 선수는 현재 이적시장 목록에서 빠졌어요. 다른 후보를 선택해 주세요.
-            </p>
+            <p role="status">{detail.error ?? '선수 정보를 불러오고 있어요.'}</p>
           )}
+          {detail.error && <button onClick={detail.retry}>선수 다시 조회</button>}
         </Dialog>
       )}
     </section>

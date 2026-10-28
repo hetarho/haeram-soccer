@@ -35,7 +35,11 @@ test('contextual-sheet-restores-candidate', async ({ page }) => {
   const roles = filter.getByRole('group', { name: '영입 포지션 선택' });
   await roles.getByRole('button', { name: 'GK', exact: true }).click();
   await closeMarketPanel(page, '영입 필터');
-  for (const row of await marketRows(page).all())
+  await expect(marketRows(page).first()).toBeVisible();
+  const selectedPage = await marketRows(page).evaluateAll((rows) =>
+    rows.map((row) => row.getAttribute('data-candidate-id')),
+  );
+  for (const row of (await marketRows(page).all()).slice(0, 2))
     await row.getByRole('button', { name: / 비교$/ }).click();
   await expect(page.locator('button[aria-label="선택한 2명 비교"]')).toBeEnabled();
   await marketInfo(page);
@@ -50,9 +54,13 @@ test('contextual-sheet-restores-candidate', async ({ page }) => {
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
   await expect(trigger).toBeFocused();
-  await expect(marketRows(page)).toHaveCount(2);
-  for (const row of await marketRows(page).all())
-    await expect(row).toHaveAttribute('data-line', 'GK');
+  await expect
+    .poll(() =>
+      marketRows(page).evaluateAll((rows) =>
+        rows.map((row) => row.getAttribute('data-candidate-id')),
+      ),
+    )
+    .toEqual(selectedPage);
   await expect(page.locator('button[aria-label="선택한 2명 비교"]')).toBeEnabled();
   await trigger.click();
   await dialog
@@ -64,8 +72,14 @@ test('contextual-sheet-restores-candidate', async ({ page }) => {
   // The applied scouting level redraws the candidate list, so its rows may change; the GK filter
   // and both compared players, kept as their selection-time snapshots, stay (→WEB-43/77).
   await expect(marketRows(page).first()).toBeVisible();
-  for (const row of await marketRows(page).all())
-    await expect(row).toHaveAttribute('data-line', 'GK');
+  await closeMarketPanel(page, '영입 정보');
+  const retainedFilter = await marketFilters(page);
+  await expect(retainedFilter.getByRole('button', { name: 'GK', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await closeMarketPanel(page, '영입 필터');
+  await marketInfo(page);
   await expect(page.locator('button[aria-label="선택한 2명 비교"]')).toBeEnabled();
   expect(page.url()).toBe(url);
   await trigger.click();
@@ -126,10 +140,9 @@ test('retains an unapplied academy investment through a detour and discards it e
     .getByRole('button', { name: '창 닫기', exact: true })
     .click();
   await expect(page.getByRole('dialog', { name: '유소년 업무 기준', exact: true })).toHaveCount(0);
-  await expect(nav(page).getByRole('button', { name: '유소년', exact: true })).toHaveAttribute(
-    'aria-current',
-    'page',
-  );
+  await expect(
+    nav(page).getByRole('button', { name: '유소년 훈련장', exact: true }),
+  ).toHaveAttribute('aria-current', 'page');
   await openOperations(page);
   const draft = page.getByTestId('strategy-board').getByTestId('strategy-draft');
   await expect(draft).toContainText('유소년 투자 기본 운영 → 육성 강화');
@@ -174,22 +187,31 @@ test('a different game never inherits the first career policy draft', async ({ p
   await expect(page.getByRole('button', { name: /^← 돌아가기/ })).toHaveCount(0);
 });
 
-test('training exposes the team action first and opens its named responsible coach', async ({
-  page,
-}) => {
-  await found(page);
-  await openPersonnel(page, 'training');
-  const focus = page.getByRole('region', { name: '훈련 방향', exact: true });
-  const action = focus.getByRole('button', { name: /^수석코치에게 훈련 제안·강행/ });
-  await expect(action).toBeInViewport();
-  await expect(page.getByRole('list', { name: '훈련 방향별 효과' })).toHaveCount(0);
-  await focus.getByRole('button', { name: / · 보기$/ }).click();
-  const staff = page.getByRole('dialog', { name: '수석코치 선임', exact: true });
-  await expect(staff).toBeVisible();
-  await staff.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await page.getByRole('button', { name: '← 돌아가기 · 훈련', exact: true }).click();
-  await expect(page.getByTestId('training-focus')).toBeVisible();
-});
+for (const viewport of [
+  { width: 360, height: 740 },
+  { width: 390, height: 844 },
+  { width: 1280, height: 900 },
+])
+  test(`training exposes the team action first and opens its named responsible coach at ${viewport.width}x${viewport.height}`, async ({
+    page,
+  }) => {
+    await found(page);
+    await page.setViewportSize(viewport);
+    await openPersonnel(page, 'training');
+    const focus = page.getByRole('region', { name: '훈련 방향', exact: true });
+    const action = focus.getByRole('button', { name: /^수석코치에게 훈련 제안·강행/ });
+    await expect(action).toBeInViewport({ ratio: 1 });
+    const target = await action.boundingBox();
+    expect(target!.height).toBeGreaterThanOrEqual(44);
+    expect(target!.width).toBeGreaterThanOrEqual(44);
+    await expect(page.getByRole('list', { name: '훈련 방향별 효과' })).toHaveCount(0);
+    await focus.getByRole('button', { name: / · 보기$/ }).click();
+    const staff = page.getByRole('dialog', { name: '수석코치 선임', exact: true });
+    await expect(staff).toBeVisible();
+    await staff.getByRole('button', { name: '창 닫기', exact: true }).click();
+    await page.getByRole('button', { name: '← 돌아가기 · 훈련', exact: true }).click();
+    await expect(page.getByTestId('training-focus')).toBeVisible();
+  });
 
 test('a player profile leads to that player training and keeps the squad search', async ({
   page,
@@ -231,12 +253,11 @@ test('recruitment needs open on demand and academy operations open their exact w
   await page.getByRole('button', { name: /유소년 시설 .*공사 보기/ }).click();
   await expect(page.getByTestId('facility-academy')).toBeVisible();
   // The office opened on 시설; leaving it returns to the academy that asked (→WEB-39/74).
-  await expect(officeTitle(page)).toHaveText('투자');
+  await expect(officeTitle(page)).toHaveText('재정·투자');
   await leaveOffice(page);
-  await expect(nav(page).getByRole('button', { name: '유소년', exact: true })).toHaveAttribute(
-    'aria-current',
-    'page',
-  );
+  await expect(
+    nav(page).getByRole('button', { name: '유소년 훈련장', exact: true }),
+  ).toHaveAttribute('aria-current', 'page');
 });
 
 test('opens club seasons in records and retains the detail scope through league and cup visits', async ({
@@ -327,7 +348,7 @@ test('keeps the home briefing informational alongside the public clock and links
   const hub = page.getByTestId('club-hub');
   await expect(hub.getByRole('button', { name: '시즌 진행 도구', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
-  await hub.getByRole('button', { name: '시즌 상세', exact: true }).click();
+  await hub.getByRole('button', { name: '클럽 소식·시즌 브리핑', exact: true }).click();
   const briefing = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
   await expect(briefing.getByRole('button', { name: '한 라운드 진행', exact: true })).toHaveCount(
     0,
@@ -338,7 +359,7 @@ test('keeps the home briefing informational alongside the public clock and links
   await briefing.getByRole('button', { name: '이번 시즌 구단 기록 →', exact: true }).click();
   await expect(briefing).toHaveCount(0);
   await expect(page).toHaveURL(/\/history\?section=club&season=1950/);
-  await nav(page).getByRole('button', { name: '클럽 홈', exact: true }).click();
+  await nav(page).getByRole('button', { name: '클럽하우스', exact: true }).click();
   await advanceOneRound(page);
   await expect(page.getByTestId('game-round')).toHaveText('1');
 });

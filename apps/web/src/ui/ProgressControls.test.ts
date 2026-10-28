@@ -8,6 +8,8 @@ import type { ClientState, GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
 import type { View } from '../runtime/protocol';
 import { gameStore, initialClientState } from '../runtime/store';
+import { openOwnerOffice } from './state';
+import { useTaskMemory } from './taskMemory';
 import { ProgressControls, ProgressOverview } from './ProgressControls';
 
 vi.mock('../runtime/store', async (importOriginal) => ({
@@ -131,5 +133,26 @@ describe('unified bottom progression controls', () => {
     expect(markup).not.toContain('progress-mode');
     expect(markup).not.toContain('MANUAL');
     expect(markup).not.toContain('AUTO');
+  });
+});
+
+describe('controller approval overview', () => {
+  it('offers the shared modal entry even while changes are locked', () => {
+    const controller = {
+      store: createStore(() => ({ running: true, pace: 'x1' })),
+    } as unknown as ProgressionController;
+    gameStore.setState({ busy: true, readonly: true });
+    const markup = renderToStaticMarkup(
+      createElement(ProgressControls, { client: {} as GameClient, controller }),
+    );
+    expect(markup).toMatch(/<button[^>]*aria-haspopup="dialog"[^>]*>결재라인 모아보기<\/button>/);
+    useTaskMemory.getState().activate('overview-test');
+    useTaskMemory.setState({ values: { 'board-draft': { support: 4 } } });
+    openOwnerOffice();
+    expect(useTaskMemory.getState().values).toEqual({
+      'board-draft': { support: 4 },
+      'office-overview': true,
+    });
+    expect(controller.store.getState().running).toBe(true);
   });
 });

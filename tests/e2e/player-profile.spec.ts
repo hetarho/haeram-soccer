@@ -96,7 +96,7 @@ for (const viewport of [
 
     await closeMarketPanel(page, '영입 후보 상세');
     // The lineup tab draws the formation: each slot its position, role, player and 실효 OVR.
-    await page.getByRole('button', { name: '클럽 홈', exact: true }).first().click();
+    await page.getByRole('button', { name: '클럽하우스', exact: true }).first().click();
     await page
       .getByTestId('club-hub')
       .getByRole('button', { name: '전술·선발 준비', exact: true })

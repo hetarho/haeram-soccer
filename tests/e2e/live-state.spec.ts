@@ -51,7 +51,7 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toBeVisible();
   const mini = page.getByRole('region', { name: '시즌 진행', exact: true });
   await expect(mini.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
-  await menu.getByRole('button', { name: '클럽 홈', exact: true }).click();
+  await menu.getByRole('button', { name: '클럽하우스', exact: true }).click();
   const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
   await chooseOption(pace, 'x2');
   await expect(pace).toHaveAttribute('data-value', 'x2');
@@ -268,6 +268,10 @@ test("the fatigue remedy opens the assistant's training sheet with 회복 ready,
   const state = page.getByRole('region', { name: '팀 상태' });
   await state.getByRole('button', { name: /^피로 .* 대처 방법 보기$/ }).click();
   const sheet = page.getByRole('dialog', { name: '피로 관리' });
+  const rest = sheet.getByRole('listitem').filter({ hasText: '휴식일 부여 요청' });
+  await expect(rest).toContainText('분위기 −2');
+  await expect(rest).toContainText('전원 피로 −6');
+  await expect(rest).toContainText('즉시 반영 · 재요청 4라운드 후');
   await sheet
     .getByRole('listitem')
     .filter({ hasText: '수석코치에게 회복 훈련 제안' })
@@ -276,7 +280,7 @@ test("the fatigue remedy opens the assistant's training sheet with 회복 ready,
   // The sheet closes and 훈련 opens the assistant's sheet with 회복 first; nothing has changed yet
   // (→WEB-44, STAFF-19).
   await expect(sheet).toBeHidden();
-  await expect(page).toHaveURL(/\/first-team\?view=training$/);
+  await expect(page).toHaveURL(/\/training$/);
   const training = page.getByRole('dialog', { name: '수석코치 훈련 제안' });
   await expect(training.getByRole('listitem').first()).toContainText('회복 훈련');
   await expect(training.getByTestId('training-call-assistant')).toContainText('하드 트레이닝');

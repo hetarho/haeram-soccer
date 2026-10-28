@@ -3,7 +3,7 @@ z.config({ jitless: true });
 import type { SponsorSlot, World } from './types';
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from './detail';
 import { BUILD_OPTIONS, STRATEGY_NAME_LIMIT } from './build';
-import { ATTRIBUTES, PLAY_TRAITS, POSITIONS } from './player';
+import { ATTRIBUTES, LINES, PLAY_TRAITS, POSITIONS } from './player';
 import {
   assertIdentityFormatVersions,
   clubIdentitySchema,
@@ -26,6 +26,37 @@ const term = z.literal([1, 2, 3, 4, 5]);
 const rating = z.number().finite().min(0).max(100);
 const text = z.string().max(160);
 const id = z.string().min(1).max(100);
+/** Bounded world-market reads and stable approach targets (WEB-43). */
+export const WORLD_MARKET_PAGE_SIZE = 50;
+export const worldMarketTargetSchema = z.discriminatedUnion('kind', [
+  z.strictObject({
+    kind: z.literal('club'),
+    world: z.string().min(1).max(300),
+    playerId: id,
+    clubId: id,
+  }),
+  z.strictObject({ kind: z.literal('offer'), world: z.string().min(1).max(300), playerId: id }),
+]);
+export const worldMarketQuerySchema = z.strictObject({
+  world: z.string().min(1).max(300),
+  page: z.number().int().min(0).max(Number.MAX_SAFE_INTEGER).optional(),
+  pageSize: z.number().int().min(1).max(WORLD_MARKET_PAGE_SIZE).optional(),
+  name: z.string().max(160).optional(),
+  recommendedOnly: z.boolean().optional(),
+  league: z
+    .strictObject({
+      country: z.string().regex(/^[A-Z]{3}$/),
+      tier: z.number().int().min(0).max(20),
+      group: z.number().int().min(0).max(20),
+    })
+    .optional(),
+  team: id.optional(),
+  position: z.enum(POSITIONS).optional(),
+  line: z.enum(LINES).optional(),
+  fit: z.enum(['all', 'improves']).optional(),
+  sort: z.enum(['name', 'age', 'ovr', 'potential', 'fee', 'wage']).optional(),
+  direction: z.enum(['asc', 'desc']).optional(),
+});
 const number = z.number().finite().min(-Number.MAX_SAFE_INTEGER).max(Number.MAX_SAFE_INTEGER);
 const metrics = z.array(z.number().int().nonnegative()).length(12);
 const teamDetail = z.array(z.number().int().nonnegative()).length(TEAM_DETAIL_SIZE);

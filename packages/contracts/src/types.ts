@@ -492,12 +492,54 @@ export interface Academy {
   /** Last season year whose intake was settled. */
   intakeYear?: number;
 }
+/** A recruitment target is never a page offset or a scout-list index. */
+export type WorldMarketTarget = { world: string } & (
+  { kind: 'club'; playerId: string; clubId: string } | { kind: 'offer'; playerId: string }
+);
+export interface WorldMarketQuery {
+  world: string;
+  page?: number;
+  pageSize?: number;
+  name?: string;
+  recommendedOnly?: boolean;
+  league?: { country: string; tier: number; group: number };
+  team?: string;
+  position?: Position;
+  line?: Line;
+  /** The existing roster-fit filter: improves predicted XI strength or tactical fit. */
+  fit?: 'all' | 'improves';
+  sort?: 'name' | 'age' | 'ovr' | 'potential' | 'fee' | 'wage';
+  direction?: 'asc' | 'desc';
+}
+export interface WorldMarketOffer {
+  player: Player;
+  fee: string;
+  loanFee: string;
+  freeAgent: boolean;
+  available: boolean;
+  target: WorldMarketTarget;
+  source?: { club: string; name: string; country: string; tier: number; group: number };
+  recommended: boolean;
+  own: boolean;
+  /** Same-country or cross-country recruitment adaptation, retained on approach. */
+  foreign: boolean;
+}
+export interface WorldMarketPage {
+  world: string;
+  revision: number;
+  total: number;
+  /** Zero-based; clamped to the last existing page, or zero when empty. */
+  page: number;
+  pageSize: number;
+  items: WorldMarketOffer[];
+}
+
 export interface TransferBid {
   id: string;
   /** `out`: our offer for a market player. `in`: another club's offer for our player. */
   direction: 'out' | 'in';
   playerId: string;
-  /** The bidding club for `in` bids. */
+  /** The bidder for `in`, or actual seller for identity-based `out` bids. */
   club?: string;
   fee: string;
   loan?: boolean;
@@ -1301,7 +1343,8 @@ export type Command =
   | { type: 'promote-youth'; id: string }
   | { type: 'release-youth'; id: string }
   | { type: 'intervention'; level: InterventionLevel }
-  | { type: 'bid'; candidate: number; fee: string; loan?: boolean }
+  /** Exactly one of the legacy index or stable target is required at the boundary. */
+  | { type: 'bid'; candidate?: number; target?: WorldMarketTarget; fee: string; loan?: boolean }
   | { type: 'respond-bid'; id: string; accept: boolean }
   | { type: 'read-inbox'; id?: string }
   | { type: 'encourage-coaching'; player: string }
@@ -1323,7 +1366,7 @@ export type Command =
   | { type: 'contract-decline'; player: string }
   /** Signs a slot's offer, by its index among that slot's offers (→ECON-8). */
   | { type: 'sign-sponsor'; slot: SponsorSlot; offer: number }
-  | { type: 'recruit'; candidate: number; loan?: boolean }
+  | { type: 'recruit'; candidate?: number; target?: WorldMarketTarget; loan?: boolean }
   /** Lists a player, opens him to offers or declares him untouchable. */
   | { type: 'transfer-stance'; id: string; stance: TransferStance }
   | { type: 'campaign'; kind: string }

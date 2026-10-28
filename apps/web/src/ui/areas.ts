@@ -38,11 +38,11 @@ export const isDirectionRow = (key: RowKey): key is DirectionKey =>
 export const DIRECTION_AREAS: readonly DirectionArea[] = [
   {
     key: 'squad',
-    label: '선수단·계약',
+    label: '선수단',
     icon: '★',
-    question: '선수단을 어떤 분위기로 키우고, 누구를 붙잡을까',
+    question: '선수단의 라커룸 문화를 어떻게 만들까',
     card: 'culture',
-    rows: ['support', 'renewal'],
+    rows: [],
   },
   {
     key: 'scouting',
@@ -81,7 +81,7 @@ export const DIRECTION_AREAS: readonly DirectionArea[] = [
     icon: '₤',
     question: '어디서 벌고, 맡긴 돈은 얼마나 과감하게 쓸까',
     card: 'revenue',
-    rows: ['finance'],
+    rows: ['finance', 'support', 'renewal'],
   },
   {
     key: 'local',

@@ -8,7 +8,17 @@ import { competitionLabel, number } from './format';
 import { cashState, teamStates, type StateKey } from './teamState';
 import { RemedySheet } from './RemedySheet';
 import type { GameClient } from '../runtime/client';
-import { openOfficeLobby, useNavigation } from './state';
+import {
+  openOfficeLobby,
+  openPrimary,
+  openLeagueSeason,
+  openCupSeason,
+  beginTaskDetour,
+  useNavigation,
+} from './state';
+import { currentCupBriefings } from './competitionNavigation';
+import { divisionName } from './league';
+import { useLocale } from '../presentation/react';
 import { ClubLink } from './ClubLink';
 import { StrategyPanel } from './LazyStrategyPanel';
 import { Dialog } from './Dialog';
@@ -161,50 +171,60 @@ function ClubScene({ w }: { w: World }) {
   );
 }
 
-/** Compact visits; only the owner's office currently has a management workflow (→WEB-11/39). */
+/** Place entrances open the same real workflows as the shared navigation. */
 export function OfficeEntrance({ w }: { w: World }) {
-  const [visit, setVisit] = useState<string>();
+  const { t } = useLocale();
   return (
-    <>
-      <section className={s.entrances} aria-label="구단 시설 방문" data-home-part="entrances">
-        {(
-          [
-            ['owner', 'manager', '구단주 사무실', '입장'],
-            ['manager', 'manager', '감독 사무실', '방문'],
-            ['training', 'training', '훈련장', '방문'],
-          ] as const
-        ).map(([id, kind, name, action]) => (
-          <button
-            key={id}
-            type="button"
-            className={s.office}
-            data-home-part="office"
-            aria-label={`${name} ${action}`}
-            aria-haspopup={id === 'owner' ? undefined : 'dialog'}
-            onClick={(event) => {
-              event.currentTarget.focus();
-              if (id === 'owner') openOfficeLobby();
-              else setVisit(name);
-            }}
-          >
-            <span className={s.officeBackdrop} aria-hidden="true">
-              <FacilityArt kind={kind} world={w} className={s.officeArt} />
+    <section className={s.entrances} aria-label="구단 시설 방문" data-home-part="entrances">
+      {(
+        [
+          ['business', 'manager'],
+          ['firstTeam', 'manager'],
+          ['staff', 'staff'],
+          ['training', 'training'],
+          ['academy', 'academy'],
+        ] as const
+      ).map(([page, kind]) => (
+        <button
+          key={page}
+          type="button"
+          className={s.office}
+          data-home-part="office"
+          aria-label={`${t(`navigation.${page}`)} 입장`}
+          onClick={() => (page === 'business' ? openOfficeLobby() : openPrimary(page))}
+        >
+          <span className={s.officeBackdrop} aria-hidden="true">
+            <FacilityArt kind={kind} world={w} className={s.officeArt} />
+          </span>
+          <span className={s.officeEnter}>
+            <b>{t(`navigation.${page}`)}</b>{' '}
+            <span>
+              입장 <PixelIcon name="chevronRight" size={12} />
             </span>
-            <span className={s.officeEnter}>
-              <b>{name}</b>{' '}
-              <span>
-                {action} <PixelIcon name="chevronRight" size={12} />
-              </span>
-            </span>
-          </button>
-        ))}
-      </section>
-      {visit && (
-        <Dialog label={`${visit} · 준비 중`} onClose={() => setVisit(undefined)}>
-          <p>{visit}에서 할 수 있는 활동을 준비 중이에요.</p>
-        </Dialog>
-      )}
-    </>
+          </span>
+        </button>
+      ))}
+    </section>
+  );
+}
+
+export function CupBriefing({ w }: { w: World }) {
+  return (
+    <section className={s.competitions} aria-label="현재 컵 대회">
+      {currentCupBriefings(w).map((cup) => (
+        <button
+          key={cup.key}
+          data-ui="link"
+          aria-label={`${cup.name} 현재 대회 보기`}
+          onClick={() => openCupSeason(w.year, cup.key, w.year)}
+        >
+          <b>{cup.name}</b>
+          <span>{cup.status}</span>
+          {cup.detail && <small>{cup.detail}</small>}
+          {cup.winner && <small>{cup.winner}</small>}
+        </button>
+      ))}
+    </section>
   );
 }
 
@@ -237,7 +257,7 @@ export function SeasonCard({
       <button
         className={s.resources}
         data-home-part="season-stats"
-        aria-label="시즌 상세"
+        aria-label="현재 리그 보기"
         aria-describedby="hub-stats-hint"
         onClick={(event) => {
           event.currentTarget.focus();
@@ -245,7 +265,7 @@ export function SeasonCard({
         }}
       >
         <span id="hub-stats-hint" className={s.srOnly}>
-          라운드·리그 순위·시즌 전적과 현재 구단 브리핑을 자세히 봐요
+          현재 우리 리그의 순위표를 열어요
         </span>
         <div aria-label={`우리 리그 ${round.total}라운드 중 ${round.played}라운드`}>
           <span>라운드</span>
@@ -269,7 +289,9 @@ export function SeasonCard({
             </span>
             <small>/{ids.length}위</small>
           </b>
-          <small>{w.lower ? '아마추어 리그' : `${club.tier + 1}부`}</small>
+          <small>
+            {w.lower ? '아마추어 리그' : divisionName(club.country, club.tier, club.group)}
+          </small>
         </div>
         <div>
           <span>시즌 전적</span>
@@ -318,7 +340,22 @@ export function ClubHub({
       data-home-active={!away}
       aria-label="클럽 키우기"
     >
-      <SeasonCard w={w} active={!away} onOpen={() => setJournalOpen(true)} />
+      <SeasonCard w={w} active={!away} onOpen={() => openLeagueSeason(w.year, w.year)} />
+      <CupBriefing w={w} />
+      <div className={s.clubLinks}>
+        <button
+          data-ui="link"
+          onClick={() => {
+            beginTaskDetour('history');
+            useNavigation.getState().setPage('history');
+          }}
+        >
+          클럽 기록실
+        </button>
+        <button data-ui="link" onClick={() => setJournalOpen(true)}>
+          클럽 소식·시즌 브리핑
+        </button>
+      </div>
       {/* The scene's frame stays its own part; season figures live in the card above. */}
       <div className={s.stage} data-home-part="stage">
         <ClubScene w={w} />

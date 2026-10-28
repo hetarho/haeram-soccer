@@ -132,7 +132,7 @@ for (const viewport of [
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
     await page
       .getByRole('navigation', { name: viewport.width < 760 ? '모바일 게임 메뉴' : '게임 메뉴' })
-      .getByRole('button', { name: '클럽 홈', exact: true })
+      .getByRole('button', { name: '클럽하우스', exact: true })
       .click();
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();

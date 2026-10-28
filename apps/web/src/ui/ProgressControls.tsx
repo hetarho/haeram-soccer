@@ -17,6 +17,7 @@ import { ProgressModeSwitch } from './ProgressModeSwitch';
 import { ownDivisionRound } from './league';
 import { useLocale } from '../presentation/react';
 import { Dialog } from './Dialog';
+import { openOwnerOffice } from './state';
 import p from './ProgressControls.module.css';
 
 // The result notice's report loads only when opened, outside the main chunk (→ARCH-28).
@@ -170,6 +171,17 @@ export const ProgressControls = memo(function ProgressControls({
           {manual ? 'MANUAL' : 'AUTO'}
         </span>
       </div>
+      <button
+        className={p.approvals}
+        data-ui="link"
+        aria-haspopup="dialog"
+        onClick={(event) => {
+          event.currentTarget.focus();
+          openOwnerOffice();
+        }}
+      >
+        결재라인 모아보기
+      </button>
       {noticed && (
         <button
           className={p.resultNotice}

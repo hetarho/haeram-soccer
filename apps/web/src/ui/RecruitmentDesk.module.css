@@ -1,6 +1,43 @@
 .desk {
   min-width: 0;
 }
+.search {
+  display: grid;
+  gap: 4px;
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: 12px;
+}
+.search input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+}
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 12px 0;
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: 12px;
+}
+.pagination button,
+.empty button,
+.warning button {
+  min-height: 44px;
+  padding: 8px;
+}
+.pagination span {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.empty button {
+  display: block;
+  margin: 8px auto;
+}
 .summary {
   display: flex;
   justify-content: space-between;
@@ -60,6 +97,10 @@
   font-size: 12px;
   color: var(--text-muted);
   font-family: var(--display);
+  min-width: 0;
+}
+.filters :global([data-select-trigger]) {
+  max-width: 100%;
 }
 .recommendation {
   background: var(--surface-grain, none) var(--surface-2);

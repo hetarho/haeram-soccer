@@ -12,6 +12,7 @@ import {
 } from '../../packages/engine/src/index';
 import { detectMediations, resolveMediation } from '../../packages/engine/src/mediation';
 import { judgePromises } from '../../packages/engine/src/promises';
+import { worldMarketPage } from '../../packages/engine/src/world-market';
 import { lineOf } from '../../packages/engine/src/player';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { horizontalOverflow } from './layout';
@@ -269,30 +270,86 @@ for (const arrival of ['none', 'loan', 'free'] as const)
     const { advanceDays } = await import('../../packages/engine/src/index');
     w.settings!.responsibilities.contracts = 'delegated';
     w.settings!.responsibilities.sales = 'delegated';
-    advanceDays(w, promise.deadline.day, undefined, false);
+    // A paid loan must be offered before the deadline and answered through the real bid flow.
+    // Prepare a counter awaiting the owner's final signature on deadline day; its eventual
+    // acceptance, cost and promise fulfilment still happen through the public browser control.
+    advanceDays(w, promise.deadline.day - (arrival === 'loan' ? 4 : 0), undefined, false);
+    let loan: { id: string; player: string; name: string; fee: string } | undefined;
+    if (arrival === 'loan') {
+      for (const offer of worldMarketPage(w, {
+        world: w.id,
+        line: promise.target.line,
+        sort: 'fee',
+        direction: 'asc',
+      }).items.filter(
+        (one) =>
+          one.available &&
+          !one.freeAgent &&
+          BigInt(one.loanFee) >= 2n &&
+          lineOf(one.player.position) === promise.target.line &&
+          one.player.id !== promise.target.pick,
+      )) {
+        const copy = structuredClone(w);
+        operate(copy, {
+          type: 'bid',
+          target: offer.target,
+          loan: true,
+          fee: ((BigInt(offer.loanFee) * 80n) / 100n).toString(),
+        });
+        advanceDays(copy, 4, undefined, false);
+        const bid = copy.bids?.find(
+          (bid) => bid.playerId === offer.player.id && bid.loan && bid.status === 'countered',
+        );
+        if (!bid) continue;
+        Object.assign(w, copy);
+        loan = { id: bid.id, player: bid.playerId, name: offer.player.name, fee: bid.counterFee! };
+        break;
+      }
+      expect(loan, 'seeded paid loan counter on the unchanged promise deadline').toBeDefined();
+    }
     // Other real winter-window conflicts are explicitly postponed; the original promise stays.
     for (const record of w.mediations!.filter((m) => m.status === 'pending'))
       operate(w, { type: 'resolve-mediation', id: record.id, support: 'director' });
     await market(page, w);
-    if (arrival !== 'none') {
+    if (loan) {
+      await page.getByRole('button', { name: /^이적 협상 ·/ }).click();
+      const dialog = page.getByRole('dialog', { name: '이적 협상', exact: true });
+      const counter = dialog.locator('[data-status="countered"]').filter({ hasText: loan.name });
+      await counter.getByRole('button', { name: '수락', exact: true }).click();
+      await expect(
+        dialog.locator('[data-status="completed"]').filter({ hasText: loan.name }),
+      ).toBeVisible();
+      await closeMarketPanel(page, '이적 협상');
+    } else if (arrival === 'free') {
       const offer = transferOffers(w).find(
         (o) =>
           o.available &&
           lineOf(o.player.position) === promise.target.line &&
           o.player.id !== promise.target.pick &&
-          (arrival === 'free' ? o.freeAgent : !o.freeAgent),
+          o.freeAgent,
       )!;
       expect(offer).toBeDefined();
-      const card = await marketCandidate(page, offer.player.id);
+      const card = await marketCandidate(page, offer.player.id, offer.player.name);
       await card
         .getByRole('button', {
-          name: arrival === 'free' ? '자유계약 영입' : '1시즌 임대',
+          name: '자유계약 영입',
           exact: true,
         })
         .click();
       await closeMarketPanel(page, '영입 후보 상세');
     }
     const before = await exportedCareer(page);
+    if (loan) {
+      expect(before.bids!.find((bid) => bid.id === loan.id)).toMatchObject({
+        status: 'completed',
+        playerId: loan.player,
+        loan: true,
+      });
+      expect(before.players.find((player) => player.id === loan.player)?.loanUntil).toBe(
+        w.year + 1,
+      );
+      expect(BigInt(w.cash) - BigInt(before.cash)).toBe(BigInt(loan.fee));
+    }
     expect(before.promises![0].deadline).toEqual(promise.deadline);
     expect(before.promises![0].status).toBe('pending');
     await page.reload();

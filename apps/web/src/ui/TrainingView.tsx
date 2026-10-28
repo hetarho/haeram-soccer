@@ -1,3 +1,4 @@
+import { areaOf } from './areas';
 import { developmentDestination } from './personnelNavigation';
 import { useTaskState } from './taskMemory';
 import { useEffect } from 'react';
@@ -38,7 +39,7 @@ import {
   ATTRIBUTE_LABEL,
 } from '../../../../packages/engine/src/player';
 import type { ClientState, GameClient } from '../runtime/client';
-import { AcademyPanel } from './AcademyPanel';
+import { PlaceActivities } from './PlaceActivities';
 import { PlayerLink } from './PlayerSheet';
 import { openHome, openStaff, openDirection, useCoachRequest, type TrainingTab } from './state';
 import { callLine, playerCallLine, TrainingOrderSheet } from './TrainingOrderSheet';
@@ -92,9 +93,9 @@ export function TrainingView({ state, client, view }: Props & { view: TrainingTa
   return (
     <>
       {view === 'training' ? (
-        <FirstTeamTraining w={w} onSheet={setSheet} />
+        <FirstTeamTraining state={state} client={client} onSheet={setSheet} />
       ) : (
-        <AcademyTraining w={w} client={client} />
+        <AcademyTraining state={state} client={client} />
       )}
       {sheet && (!sheet.player || sheetPlayer) && (
         <TrainingOrderSheet
@@ -111,7 +112,12 @@ export function TrainingView({ state, client, view }: Props & { view: TrainingTa
 }
 
 /** First-team training and academy can compose independently without copying their actions. */
-export function FirstTeamTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => void }) {
+export function FirstTeamTraining({
+  state,
+  client,
+  onSheet,
+}: Props & { onSheet: (sheet: Sheet) => void }) {
+  const w = state.view!.world;
   const outlook = developmentOutlook(w);
   return (
     <>
@@ -126,19 +132,23 @@ export function FirstTeamTraining({ w, onSheet }: { w: World; onSheet: (sheet: S
       <div className={`${s.stack} ${s.pair}`}>
         <TrainingFocusPanel w={w} outlook={outlook} onSheet={onSheet} />
         <DevelopmentDrivers outlook={outlook} />
+        <div className={s.wide}>
+          <PlaceActivities place="training" state={state} client={client} />
+        </div>
         <PlayerTraining w={w} onSheet={onSheet} />
       </div>
     </>
   );
 }
-export function AcademyTraining({ w, client }: { w: World; client: GameClient }) {
+export function AcademyTraining({ state, client }: Props) {
+  const w = state.view!.world;
   return (
     <>
       <FacilityOverview w={w} kind="academy" title="유소년 아카데미">
         {w.academyFacility ? `${w.academyFacility}단계 유소년 시설` : '기본 유소년 시설'} · 유소년
         총괄 {w.staff?.find((person) => person.role === 'youth')?.name ?? '공석'}
       </FacilityOverview>
-      <AcademyPanel w={w} client={client} />
+      <PlaceActivities place="academy" state={state} client={client} />
     </>
   );
 }
@@ -392,7 +402,7 @@ function openDriver(home: DevelopmentHome, label: string) {
     return;
   }
   if (home === 'business/strategy') {
-    openDirection(label === '선수단 투자' ? 'squad' : 'youth');
+    openDirection(label === '선수단 투자' ? areaOf('support').key : 'youth');
     return;
   }
   openHome(developmentDestination(home));

@@ -1,3 +1,4 @@
+import type { WorldMarketQuery, WorldMarketTarget } from '../../../../packages/contracts/src/types';
 import type { Command, Founding, World } from '../../../../packages/contracts/src/types';
 import type { FullStatsScope } from '../../../../packages/contracts/src/match-model';
 import { SaveRepository, type SaveWorldMetadata } from '../adapters/repository';
@@ -803,6 +804,27 @@ export class GameClient {
     const reply = await this.read({ type: 'club-records' });
     if (!reply.clubRecords) throw new Error('클럽 기록 응답이 없습니다.');
     return reply.clubRecords;
+  }
+  /** Bounded market page, admitted through the same displayed-day read gate as other previews. */
+  async worldMarket(query: Omit<WorldMarketQuery, 'world'> = {}) {
+    const world = this.state.view?.world.id;
+    if (!world) throw new Error('먼저 클럽을 창단하세요.');
+    const reply = await this.read({ type: 'world-market', query: { ...query, world } });
+    if (!reply.ok || !reply.worldMarket)
+      throw new Error(reply.error ?? '이적시장 응답이 없습니다.');
+    if (this.state.view?.world.id !== world || reply.worldMarket.world !== world)
+      throw new Error('다른 커리어의 이적시장입니다.');
+    return reply.worldMarket;
+  }
+  async worldMarketDetail(target: WorldMarketTarget, fee?: string, loan = false) {
+    const world = this.state.view?.world.id;
+    if (!world || target.world !== world) throw new Error('다른 커리어의 이적 대상입니다.');
+    const reply = await this.read({ type: 'world-market-detail', target, fee, loan });
+    if (!reply.ok || !reply.worldMarketDetail)
+      throw new Error(reply.error ?? '영입 미리보기 응답이 없습니다.');
+    if (this.state.view?.world.id !== world || reply.worldMarketDetail.world !== world)
+      throw new Error('다른 커리어의 영입 미리보기입니다.');
+    return reply.worldMarketDetail;
   }
   /**
    * One page of our managers' history (→HIST-18/19, WEB-92), summarised from every own match the

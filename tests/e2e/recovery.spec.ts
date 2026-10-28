@@ -58,7 +58,7 @@ test('one writer, live read-only updates and ownership after reload', async ({ p
   await expect(second.getByTestId('game-round')).toHaveText('1', { timeout: 10000 });
   await page.close();
   await second.reload();
-  await second.getByRole('button', { name: '클럽 홈', exact: true }).first().click();
+  await second.getByRole('button', { name: '클럽하우스', exact: true }).first().click();
   await expect(second.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
   await second.close();
 });
@@ -241,13 +241,13 @@ test('a new game goes into another slot, both careers survive switching and back
   await found(page);
   await openPersonnel(page, 'players');
   await expect(page).toHaveURL(/\/first-team\?view=players$/);
-  await expect(page.getByRole('tablist', { name: '1군', exact: true })).toBeVisible();
+  await expect(page.getByRole('tablist', { name: '감독 사무실', exact: true })).toBeVisible();
   await page.goBack();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   // Whichever tab a game was left on, a game entered from the slot screen opens on home.
   await openPersonnel(page, 'training');
-  await expect(page).toHaveURL(/\/first-team\?view=training$/);
-  await expect(page.getByRole('tablist', { name: '1군', exact: true })).toBeVisible();
+  await expect(page).toHaveURL(/\/training$/);
+  await expect(page.getByTestId('training-focus')).toBeVisible();
   await (await openSaveMenu(page)).getByRole('button', { name: '게임 슬롯', exact: true }).click();
   const slotScreen = page.getByTestId('game-slots');
   await expect(slotScreen.getByRole('listitem', { name: '슬롯 1' })).toContainText('진행 중');

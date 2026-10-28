@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T15:17Z | - |
+| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T18:34Z | - |
 
 ## inbox
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
@@ -25,6 +25,13 @@
 - 261029 decided MATCH-16 T548: clear-chance corridor 10 → 14 m on revision 7, fewer chased chances counted clear with the shot floor untouched (alt: keep 10 and carry it all on blocks).
 - 261029 decided MATCH-35 T548: a header has no closing men, its marker priced by its aerial duel as the path's header scale assumes (alt: close headers too).
 - 261029 suggest MATCH-35 T548: penalty goals 12.4% on revision 7 (keeper off his line fouls carriers) — next lever a keeper's smother or claim instead of a foul; goal-area shots 17.9% — a chased carrier in behind shoots earlier.
+- 261029 decided T552 T558 ARCH-30: start UI against the independently approved pinned T558 source while the existing integration gate waits for another session’s heavy lock → merge approved 66302d4f into the isolated aggregation draft and remove only the unstarted UI scheduling dependency; preserve T558 runtime, all completion checks and the final synchronized batch (alt: idle until the unrelated browser batch ends).
+- 261029 decided T553 WEB-102 ARCH-4: expose the actual academy promotion wage without importing orchestration into UI → allow the minimal engine/contracts read-leaf extraction and compatibility re-export, preserving the existing formula and contract behaviour (alt: duplicate pricing in UI | a separate prerequisite task); this is implementation scope, not a new wage policy.
+- 261029 decided T558 ARCH-30: unchanged grid sampling tests hit 30 s limits under parallel affected-unit runs → preserve the same assertions and select the same affected unit scope with one worker and serial files (alt: raise timeouts | skip sampling tests); host dependencies use the verified offline cache.
+- 261029 decided WEB-10 WEB-43 WEB-102: place terminology and interaction scope → 클럽하우스, 구단주 사무실, 감독 사무실, 코칭스태프실, 훈련장, 유소년 훈련장; reuse real manager/staff/training/academy choices with disclosed costs (alt: generic dashboard and coach room | decorative place events).
+- 261029 decided WEB-39 ECON-25: player-work grouping → 개요 then 계약/영입/매각/유소년 승격·방출 with scoped decision owner; culture in manager first-team work, support/renewal in finance (alt: one combined player policy block).
+- 261029 decided WEB-43: global market scope → every active player represented by the simulated world's supported clubs plus free agents, queried in pages with stable identity-based approaches and real source affiliations (alt: enlarge the scout list | download every generated roster into each worker view).
+- 261029 decided CLUB-20: free guaranteed backing/rest improvements → backing trades morale for manager trust and rest trades morale for fatigue recovery (alt: add random hidden penalties | add a new persistent expectations system); paid and stochastic actions retain their existing real disadvantages.
 - 261028 decided WEB-87 KIT-3 T551: the large kit sample stood still and its torso hid the shorts and socks it edits → every editor preview figure (large samples and pitch preview) is drawn at full pace a quarter into its gait, legs furthest apart; the pitch-preview journey checks socks, the large sample both (alt: a jog at three quarters pace, socks 8 px on the pitch | stride only the large sample).
 - 261028 decided T551: CI's 11 minutes in 8 nominal at 16× after revision 6 → the bound comes from the presentation clock's fastest stretch of the watched match (15 here) instead of a fixed 10 (alt: raise the constant to 12).
 - 261028 decided KIT-3 KIT-8 SAVE-20 T547: how to store shorts/socks and the goalkeeper kit → optional `parts`/`goalkeeper` on ClubIdentity with version 2 only when present, appearances version 2 with worn kits (alt: wrap every kit in a new outfit type | always write version 2); old builds read new saves as a newer game, existing v1 saves stay untouched.
@@ -336,12 +343,6 @@
 - 261027 decided T518 ARCH-31: round-jobs.test.ts tier → integration (it advances days, which tests/config/test-tiers keeps out of unit), acceptance command updated (alt: keep it unit and shrink it below advanceDays)
 - 261028 decided WEB-11 WEB-72 T536: facility scope and image treatment → three compact background-art entrances with manager/training preparation notices, plus a larger cover-cropped stadium (alt: implement unplanned room activities | keep one large owner entrance); detailed room activities await their own planning.
 - 261028 decided ARCH-31 ARCH-34: whether release throughput stays a gate once the owner rules out targets in seconds ("작업한 기기에서 노이즈 이상으로 빨라지면 성공") → throughput is compared with the previous release on one machine and reported, capacity stays the only release gate, and a speed-up is judged by ARCH-34's paired same-machine call (alt: gate on not being slower than the previous release beyond the noise, which would block every model revision that adds football | keep the 1 ms / 15 s reference-machine budgets)
-- 261029 decided WEB-10 WEB-43 WEB-102: place terminology and interaction scope → 클럽하우스, 구단주 사무실, 감독 사무실, 코칭스태프실, 훈련장, 유소년 훈련장; reuse real manager/staff/training/academy choices with disclosed costs (alt: generic dashboard and coach room | decorative place events).
-- 261029 decided WEB-39 ECON-25: player-work grouping → 개요 then 계약/영입/매각/유소년 승격·방출 with scoped decision owner; culture in manager first-team work, support/renewal in finance (alt: one combined player policy block).
-- 261029 decided WEB-43: global market scope → every active player represented by the simulated world's supported clubs plus free agents, queried in pages with stable identity-based approaches and real source affiliations (alt: enlarge the scout list | download every generated roster into each worker view).
-- 261029 decided CLUB-20: free guaranteed backing/rest improvements → backing trades morale for manager trust and rest trades morale for fatigue recovery (alt: add random hidden penalties | add a new persistent expectations system); paid and stochastic actions retain their existing real disadvantages.
-- 261029 decided T553 WEB-102 ARCH-4: expose the actual academy promotion wage without importing orchestration into UI → allow the minimal engine/contracts read-leaf extraction and compatibility re-export, preserving the existing formula and contract behaviour (alt: duplicate pricing in UI | a separate prerequisite task); this is implementation scope, not a new wage policy.
-- 261029 decided T558 ARCH-30: unchanged grid sampling tests hit 30 s limits under parallel affected-unit runs → preserve the same assertions and select the same affected unit scope with one worker and serial files (alt: raise timeouts | skip sampling tests); host dependencies use the verified offline cache.
 
 ## ideation
 | id | st |
@@ -391,14 +392,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T552 | Paged whole-world recruitment workbench | WEB CLUB ARCH | T558 | todo |
-| T553 | Consequential owner choices and shared place activity panels | WEB CLUB ARCH | T557 | todo |
-| T554 | Six-place navigation and competition clubhouse | WEB ECON ARCH | - | todo |
-| T555 | Work-oriented owner office and scoped player approvals | WEB ECON ARCH | T554 | todo |
-| T556 | Connect place choices and verify the complete owner workflow | WEB CLUB ARCH | T552 T553 T555 | todo |
-| T557 | Real disadvantages for free owner requests | CLUB WEB ARCH | - | todo |
-| T558 | World market query and identity-based transfer engine | WEB CLUB ARCH | - | todo |
-
 | T562 | Align facility and competition browser journeys with the six places | WEB ARCH | - | todo |
 
 ## work
@@ -417,27 +410,28 @@
 | auto-play | 4 | 7 | 4 | 3 | 0 | 1 | 0 | 2026-10-27T11:34:29.863Z | [history](work/auto-play.json) |
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 | v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
+| club-places | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-28T18:33:15.546Z | [history](work/club-places.json) |
+| club-places-ui | 1 | 7 | 2 | 5 | 0 | 0 | 0 | 2026-10-28T16:52:26.857Z | [history](work/club-places-ui.json) |
 
 ## next
-- Revision 8 (T561) shipped with 0.7.0: next levers shots from outside the box 25.4% / goal-area shots 20.7% and penalty goals 13.7% (keeper smother instead of a foul); see inbox suggest lines.
-- club-places: implement T557/T558 engine foundations while live T550 owns UI, then T552 market UI and T553 choices in parallel with the T554→T555 places-office lane; T556 connects all results. Existing T548–T550 remain with their current sessions.
+- cp29: complete the final club-places batch gate on the integrated candidate, fix any failures, then publish once and wait for CI. All requested T552–T558 are integrated.
 
 ## log
-- 261029 create-task T562 (cp29): reproduced browser facility/competition drift; preserve all layout/navigation contracts and coordinator-only browser execution.
+- 261029 create-task T562 (cp29): reproduced facility and route-transition browser drift; implement in an isolated worker while the coordinator completes the frozen browser run.
+- 261029 fix host.world-market fixture: use the protocol’s legal stale revision -1 instead of invalid -100; preserve bounded reads, source identity, settlement and idempotency assertions.
+- 261029 cp29 all requested tasks integrated at c3aad1f4; final synchronized batch begins before one main publication.
+- 261028 T556 integrated
+- 261029 doc-review CLUB-26 tidied (rev unchanged): replace the stale duplicated area label with the authoritative ECON-25 reference; contract conditions, exceptions, figures, negations, obligations and references are preserved.
+- 261029 doc-review CLUB-26 start.
+- 261029 cp29 T552 reviewed/corrected/integrated; T556 now owns the final place composition and shared browser journeys, including the authoritative paid-loan bid lifecycle.
+- 261028 T552 integrated
+- 261029 cp29 synchronize main 59446b09, including completed T548/T561 and MATCH r41, before final workflow convergence.
 - 261029 T561 done (p9c3, explore): match-model revision 8 — the showing teammate offers at 14 m, with the ball teammates spread 14 m and keep 10 m around the carrier; crowds of seven within 10 m 7.0% → 2.9%; 600 matches goals 3.38, 25/37 (one row fewer: long shots).
 - 261029 update-ssot MATCH r41 + create-task T561 (p9c3, owner): players swarm the ball like playground football → MATCH-17 nobody piles onto the ball; T561 revision 8, explore 2 h.
 - 261029 T550 done (v07-beta worker, 9c54de75 7b037ec1): one shared BETA mark beside the club or game name on every screen, v0.7 BETA from CURRENT_ENGINE_VERSION on the start and slot screens.
 - 261029 T549 done (v07-beta worker, f38dc554): game version 0.7.0 in every package and as the rules version; 4.0.0 saves load as 0.7.0 through the writer activation, read-only views write nothing.
 - 261029 T548 done (p9c3, explore 3 h): match-model revision 7 — chased forwards take the clear chance (corridor 14), men within 6 m close the shot down, MATCH r40 keeper off his line to a carrier in his box; 600 matches goals 3.18 (3.71), 26/37; penalty goals 12.4% and goal-area shots 17.9% the next levers.
 - 261029 fix match-figures (p9c3, owner): bodies face the drawn run and turn into a new one within 0.2 s (were the recorded velocities blended across the sample gap); a calm visible gait (6 m a cycle, reach 0.6, arms 0.55; 18.6 m showed none).
-- 261029 cp29 create-task T552–T556: three independent lanes and convergence; task checks are isolated unit/quick/build, coordinator owns final batch.
-- 261029 cp29 update-ssot WEB r168 ECON r39 CLUB r43: six places, focused owner work, whole-world market and consequential choices; independent club-places checkout preserves live T548 changes.
-- 261029 cp29 narrow unclaimed T552 runtime touches to protocol/host/client plus dedicated query tests; unrelated T548 owns host/protocol legacy tests.
-- 261029 cp29 redivide unclaimed T552/T553 into engine foundations T558/T557 and UI consumers so live T550 UI ownership does not stop independent engine work; no policy change.
-- 261029 cp29 extend unclaimed T553 to update the existing rest-day morale summary assertion identified by T557; keep full-world integration execution at the coordinator gate.
-- 261029 cp29 refine unclaimed T556 convergence notes to prevent the .ts/.tsx casing collision reproduced by both UI lanes; no product policy change.
-- 261029 cp29 authorize the minimal T553 read-leaf wage extraction for existing acceptance; keep formula/exports and saved facts unchanged.
-- 261029 cp29 move unclaimed T552 shared browser edits to T556 while preserving every required journey; keep independent UI file ownership disjoint.
-- 261028 T551 done (p9c3): main CI fix after the figures/kits and forward-intent merges — editor samples mid-step, kit pixel floor, faster wornFigures, in-page goal-hold minute, clock-derived 16× bound, appearance digest.
-- 261028 create-task (f5j2): T548 MATCH r39, T549 SAVE r57, T550 WEB r167.
-- 261028 update-ssot (f5j2): MATCH r39 chased forward's clear chance and closing blocks; SAVE r57 one game version 0.7.0 (beta), 4.0.0 saves load as 0.7.0; WEB r167 WEB-101 BETA mark.
+- 261029 cp29 merge approved T558 integration/archive from club-market-fix after its normal quick gate passes; source was already staged at the same reviewed commit.
+- 261029 cp29 stage independently approved T558 source 66302d4f in the isolated draft so T552 can start during the unrelated heavy-gate wait; do not claim or publish engine completion before integration succeeds.
+- 261028 T553 integrated

@@ -1,3 +1,9 @@
+import type { WorldMarketPage } from '../../../../packages/contracts/src/types';
+import type { worldMarketDetail } from '../../../../packages/engine/src/world-market';
+import {
+  worldMarketQuerySchema,
+  worldMarketTargetSchema,
+} from '../../../../packages/contracts/src/schema';
 import type { mediationPreview } from '../../../../packages/engine/src/mediation';
 import type { PersonCareerDetail } from './personCareer';
 import type { StaffRole } from '../../../../packages/contracts/src/types';
@@ -144,12 +150,18 @@ const command = z.discriminatedUnion('type', [
     type: z.literal('intervention'),
     level: z.literal([1, 2, 3, 4]),
   }),
-  z.object({
-    type: z.literal('bid'),
-    candidate: index,
-    fee: z.string().regex(/^\d{1,40}$/),
-    loan: z.boolean().optional(),
-  }),
+  z
+    .strictObject({
+      type: z.literal('bid'),
+      candidate: index.optional(),
+      target: worldMarketTargetSchema.optional(),
+      fee: z.string().regex(/^\d{1,40}$/),
+      loan: z.boolean().optional(),
+    })
+    .refine(
+      (c) => (c.candidate === undefined) !== (c.target === undefined),
+      'Choose one recruitment target',
+    ),
   z.object({ type: z.literal('respond-bid'), id: ref, accept: z.boolean() }),
   z.object({ type: z.literal('read-inbox'), id: ref.optional() }),
   z.object({ type: z.literal('encourage-coaching'), player: ref }),
@@ -193,7 +205,17 @@ const command = z.discriminatedUnion('type', [
     slot: z.enum(['local', 'kit', 'shirt', 'stadium', 'sleeve']),
     offer: index,
   }),
-  z.object({ type: z.literal('recruit'), candidate: index, loan: z.boolean().optional() }),
+  z
+    .strictObject({
+      type: z.literal('recruit'),
+      candidate: index.optional(),
+      target: worldMarketTargetSchema.optional(),
+      loan: z.boolean().optional(),
+    })
+    .refine(
+      (c) => (c.candidate === undefined) !== (c.target === undefined),
+      'Choose one recruitment target',
+    ),
   z.object({
     type: z.literal('transfer-stance'),
     id: ref,
@@ -254,6 +276,16 @@ export const requestSchema = z.object({
       type: z.literal('manager-history'),
       cursor: z.string().min(1).max(2000).optional(),
       world: z.string().min(1).max(300).optional(),
+    }),
+    z.strictObject({ type: z.literal('world-market'), query: worldMarketQuerySchema }),
+    z.strictObject({
+      type: z.literal('world-market-detail'),
+      target: worldMarketTargetSchema,
+      fee: z
+        .string()
+        .regex(/^\d{1,40}$/)
+        .optional(),
+      loan: z.boolean().optional(),
     }),
     z.object({ type: z.literal('head-to-head'), club: ref }),
     z.object({ type: z.literal('club-records') }),
@@ -457,6 +489,8 @@ export interface Reply {
   fullStats?: FullStatsRead;
   /** One page of the manager history, summarised from every retained own match (→HIST-18/19). */
   managerHistory?: ManagerHistoryPage;
+  worldMarket?: WorldMarketPage;
+  worldMarketDetail?: ReturnType<typeof worldMarketDetail>;
   progress?: number;
   cancelled?: boolean;
   /** A save request handed this world revision to the codec worker; its checkpoint follows there. */

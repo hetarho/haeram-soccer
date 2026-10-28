@@ -175,7 +175,7 @@ for (const viewport of [
     await expect(career).toHaveAttribute('aria-checked', 'true');
     await page.keyboard.press('Escape');
     const marketTab = page
-      .getByRole('tablist', { name: '1군' })
+      .getByRole('tablist', { name: '감독 사무실' })
       .getByRole('tab', { name: '이적시장', exact: true });
     await expectTouchControl(marketTab, viewport);
     await marketTab.click();
@@ -185,7 +185,7 @@ for (const viewport of [
     await chooseOption(order, 'potential');
     await expect(order).toHaveAttribute('data-value', 'potential');
     await closeMarketPanel(page, '영입 필터');
-    await expect(marketRows(page)).toHaveCount(8);
+    await expect(marketRows(page)).toHaveCount(50);
     await openLeague(page);
     await page.getByRole('tab', { name: '순위표', exact: true }).click();
     const country = page.getByRole('combobox', { name: '국가', exact: true });

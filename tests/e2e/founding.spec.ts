@@ -308,7 +308,7 @@ test('starts with generous capital and shows a fact-aware guide without changing
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '클럽 홈', exact: true })
+    .getByRole('button', { name: '클럽하우스', exact: true })
     .click();
   const played = await exportWorld(page);
   expect(played.ownMatches).toHaveLength(1);
