@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-28T19:32:51.475Z",
-  "sourceCommit": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
+  "snapshotAt": "2026-10-28T19:35:06.331Z",
+  "sourceCommit": "1d2cf0a65093c9456d6de1959c820aeb11fdccde",
   "group": {
     "id": "club-browser-fix",
     "branch": "work/club-browser-fix",
@@ -94,9 +94,9 @@
   },
   "summary": {
     "total": 7,
-    "completed": 5,
-    "remaining": 2,
-    "running": 1,
+    "completed": 6,
+    "remaining": 1,
+    "running": 0,
     "review": 1,
     "blocked": 0,
     "unassigned": 0
@@ -107,15 +107,6 @@
       "title": "Keep world-market reads usable during automatic progression",
       "dep": [],
       "lane": "market-progress-reads",
-      "status": "doing"
-    },
-    {
-      "id": "T568",
-      "title": "Keep the primary training action fully visible on entry",
-      "dep": [
-        "T563"
-      ],
-      "lane": "training-entry-layout",
       "status": "ready"
     }
   ],
@@ -468,13 +459,14 @@
         "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-1",
         "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-2"
       ],
-      "status": "doing",
-      "reason": "조회 병합과 실행 보호의 검증 기록은 확인했지만, compact market의 네 행 노출 acceptance가 충족되지 않았습니다.",
+      "status": "ready",
+      "reason": null,
       "createdAt": "2026-10-28T19:20:42.263Z",
       "startCommit": "770cbb40b71dbdb2ebd420b4703484b34afe86e5",
-      "submittedBase": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
-      "submissionId": "2a7ae530-7829-4ada-b8d5-30820a8bcfce",
-      "submittedAt": "2026-10-28T19:27:59.047Z",
+      "verifiedCommit": "db91f970ae04f100f1a4e1b687a836fd752f3fde",
+      "submittedBase": "1d2cf0a65093c9456d6de1959c820aeb11fdccde",
+      "submissionId": "2d4dc5dd-2930-434d-9d3a-47c2365cea5a",
+      "submittedAt": "2026-10-28T19:35:04.467Z",
       "risk": null,
       "dispatch": {
         "id": "7cddcdaf-46c8-4166-9c81-91fb9dcd928c",
@@ -483,8 +475,11 @@
         "slot": 2,
         "provider": "codex",
         "model": null,
-        "status": "running",
-        "startedAt": "2026-10-28T19:30:13.597Z"
+        "status": "finished",
+        "startedAt": "2026-10-28T19:30:13.597Z",
+        "finishedAt": "2026-10-28T19:35:04.502Z",
+        "error": null,
+        "summary": "compact 시장의 헤더·검색·선수 행 배치를 줄이고 44px 터치 영역과 출처·상태 정보를 유지했습니다. 단위 테스트 26개와 타입·린트·포맷·빌드가 통과했습니다. 첫 네 행의 실제 화면 노출 재검증은 코디네이터에 인계하고 태스크 결과에 기록했습니다."
       },
       "reviewHistory": [
         {
@@ -512,13 +507,13 @@
       "steps": [
         {
           "taskId": "T566",
-          "commit": "a58674d1e9225b932deaeec316c792f508f8cb23",
-          "at": "2026-10-28T19:27:59.022Z",
+          "commit": "db91f970ae04f100f1a4e1b687a836fd752f3fde",
+          "at": "2026-10-28T19:35:04.444Z",
           "verification": [
             {
               "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
-              "startedAt": "2026-10-28T19:27:25.013Z",
-              "finishedAt": "2026-10-28T19:27:58.654Z"
+              "startedAt": "2026-10-28T19:34:30.199Z",
+              "finishedAt": "2026-10-28T19:35:04.089Z"
             }
           ]
         }
@@ -526,8 +521,8 @@
       "verification": [
         {
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
-          "startedAt": "2026-10-28T19:27:25.013Z",
-          "finishedAt": "2026-10-28T19:27:58.654Z"
+          "startedAt": "2026-10-28T19:34:30.199Z",
+          "finishedAt": "2026-10-28T19:35:04.089Z"
         }
       ]
     },
@@ -551,6 +546,8 @@
       "submittedBase": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
       "submissionId": "69b7cfa2-4bec-460f-a828-0d3e57e2a457",
       "submittedAt": "2026-10-28T19:28:33.719Z",
+      "integratedCommit": "1d2cf0a65093c9456d6de1959c820aeb11fdccde",
+      "integratedAt": "2026-10-28T19:33:29.069Z",
       "risk": null,
       "dispatch": {
         "id": "10309228-9f39-41bc-83fd-e125d1010872",
@@ -598,6 +595,13 @@
           "startedAt": "2026-10-28T19:28:00.737Z",
           "finishedAt": "2026-10-28T19:28:33.323Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-28T19:32:51.771Z",
+          "finishedAt": "2026-10-28T19:33:28.604Z"
+        }
       ]
     },
     {
@@ -612,7 +616,7 @@
       "contributors": [
         "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-1"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-28T19:28:34.012Z",
       "startCommit": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
@@ -622,17 +626,30 @@
       "submittedAt": "2026-10-28T19:32:49.361Z",
       "risk": null,
       "dispatch": {
-        "id": "14ff3a9f-f6c0-48c8-a065-7f28c75c1ed7",
+        "id": "89a5e2f6-792c-4936-91c0-18004ba75be7",
         "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
-        "role": "worker",
+        "role": "reviewer",
         "slot": 1,
         "provider": "codex",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-10-28T19:28:34.997Z",
-        "finishedAt": "2026-10-28T19:32:49.396Z",
+        "startedAt": "2026-10-28T19:33:30.716Z",
+        "finishedAt": "2026-10-28T19:35:05.133Z",
         "error": null,
-        "summary": "T568: 기존 훈련 버튼을 현재 훈련 상태 바로 아래로 이동하고 회귀 테스트와 acceptance/result를 갱신했습니다. 영향 단위 테스트 23개와 타입·린트·포맷·빌드·spec 검사가 통과했습니다. 검사는 Node 26.8.1에서 실행했으며, 브라우저 검증은 기존 엄격한 조건 그대로 호스트에 인계했습니다. 커밋·제출·runtime 변경은 하지 않았습니다."
+        "summary": "T568의 fef599e3을 baseCommit·acceptance·SSOT·ARCH와 대조했으며 필수 수정 사항을 발견하지 못했습니다. 기존 동작 보존과 워커 검증 근거를 확인했습니다. 실제 뷰포트·포커스 및 최종 통합 검증은 coordinator가 수행해야 합니다."
+      },
+      "review": {
+        "id": "229ec76b-0061-4709-8761-096c3a016ff2",
+        "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T568의 fef599e3을 baseCommit·acceptance·SSOT·ARCH와 대조했으며 필수 수정 사항을 발견하지 못했습니다. 기존 동작 보존과 워커 검증 근거를 확인했습니다. 실제 뷰포트·포커스 및 최종 통합 검증은 coordinator가 수행해야 합니다.",
+        "findings": [],
+        "commit": "fef599e3acbae19451293f0305b650a80a9a26e6",
+        "baseCommit": "1d2cf0a65093c9456d6de1959c820aeb11fdccde",
+        "submissionId": "17d37cfe-3a40-4667-837e-5af4d8c814c5",
+        "createdAt": "2026-10-28T19:33:29.393Z",
+        "finishedAt": "2026-10-28T19:35:05.105Z"
       },
       "steps": [
         {
@@ -3498,6 +3515,273 @@
       "group": "club-browser-fix",
       "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
       "taskId": "T567",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1916,
+      "at": "2026-10-28T19:33:28.987Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-28T19:32:51.771Z",
+            "finishedAt": "2026-10-28T19:33:28.604Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1917,
+      "at": "2026-10-28T19:33:29.069Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "1d2cf0a65093c9456d6de1959c820aeb11fdccde",
+        "integratedAt": "2026-10-28T19:33:29.069Z"
+      }
+    },
+    {
+      "sequence": 1918,
+      "at": "2026-10-28T19:33:29.393Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "229ec76b-0061-4709-8761-096c3a016ff2",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "reviewing",
+          "commit": "fef599e3acbae19451293f0305b650a80a9a26e6",
+          "baseCommit": "1d2cf0a65093c9456d6de1959c820aeb11fdccde",
+          "submissionId": "17d37cfe-3a40-4667-837e-5af4d8c814c5",
+          "createdAt": "2026-10-28T19:33:29.393Z"
+        }
+      }
+    },
+    {
+      "sequence": 1919,
+      "at": "2026-10-28T19:33:30.716Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "89a5e2f6-792c-4936-91c0-18004ba75be7",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T19:33:30.716Z"
+        }
+      }
+    },
+    {
+      "sequence": 1920,
+      "at": "2026-10-28T19:33:30.753Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "89a5e2f6-792c-4936-91c0-18004ba75be7",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T19:33:30.716Z"
+        }
+      }
+    },
+    {
+      "sequence": 1921,
+      "at": "2026-10-28T19:34:29.222Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1922,
+      "at": "2026-10-28T19:34:29.842Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1923,
+      "at": "2026-10-28T19:34:29.906Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1924,
+      "at": "2026-10-28T19:35:04.467Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "1d2cf0a65093c9456d6de1959c820aeb11fdccde",
+        "submissionId": "2d4dc5dd-2930-434d-9d3a-47c2365cea5a",
+        "submittedAt": "2026-10-28T19:35:04.467Z",
+        "steps": [
+          {
+            "taskId": "T566",
+            "commit": "db91f970ae04f100f1a4e1b687a836fd752f3fde",
+            "at": "2026-10-28T19:35:04.444Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "startedAt": "2026-10-28T19:34:30.199Z",
+                "finishedAt": "2026-10-28T19:35:04.089Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "startedAt": "2026-10-28T19:34:30.199Z",
+            "finishedAt": "2026-10-28T19:35:04.089Z"
+          }
+        ],
+        "verifiedCommit": "db91f970ae04f100f1a4e1b687a836fd752f3fde"
+      }
+    },
+    {
+      "sequence": 1925,
+      "at": "2026-10-28T19:35:04.502Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "7cddcdaf-46c8-4166-9c81-91fb9dcd928c",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "worker",
+          "slot": 2,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T19:30:13.597Z",
+          "finishedAt": "2026-10-28T19:35:04.502Z",
+          "error": null,
+          "summary": "compact 시장의 헤더·검색·선수 행 배치를 줄이고 44px 터치 영역과 출처·상태 정보를 유지했습니다. 단위 테스트 26개와 타입·린트·포맷·빌드가 통과했습니다. 첫 네 행의 실제 화면 노출 재검증은 코디네이터에 인계하고 태스크 결과에 기록했습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1926,
+      "at": "2026-10-28T19:35:05.105Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "229ec76b-0061-4709-8761-096c3a016ff2",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T568의 fef599e3을 baseCommit·acceptance·SSOT·ARCH와 대조했으며 필수 수정 사항을 발견하지 못했습니다. 기존 동작 보존과 워커 검증 근거를 확인했습니다. 실제 뷰포트·포커스 및 최종 통합 검증은 coordinator가 수행해야 합니다.",
+          "findings": [],
+          "commit": "fef599e3acbae19451293f0305b650a80a9a26e6",
+          "baseCommit": "1d2cf0a65093c9456d6de1959c820aeb11fdccde",
+          "submissionId": "17d37cfe-3a40-4667-837e-5af4d8c814c5",
+          "createdAt": "2026-10-28T19:33:29.393Z",
+          "finishedAt": "2026-10-28T19:35:05.105Z"
+        }
+      }
+    },
+    {
+      "sequence": 1927,
+      "at": "2026-10-28T19:35:05.133Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "89a5e2f6-792c-4936-91c0-18004ba75be7",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T19:33:30.716Z",
+          "finishedAt": "2026-10-28T19:35:05.133Z",
+          "error": null,
+          "summary": "T568의 fef599e3을 baseCommit·acceptance·SSOT·ARCH와 대조했으며 필수 수정 사항을 발견하지 못했습니다. 기존 동작 보존과 워커 검증 근거를 확인했습니다. 실제 뷰포트·포커스 및 최종 통합 검증은 coordinator가 수행해야 합니다."
+        }
+      }
+    },
+    {
+      "sequence": 1928,
+      "at": "2026-10-28T19:35:05.215Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
