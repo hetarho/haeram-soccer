@@ -393,6 +393,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T562 | Align facility and competition browser journeys with the six places | WEB ARCH | - | todo |
+| T563 | Restore mobile place targets and compact standings | WEB ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -417,6 +418,7 @@
 - cp29: complete the final club-places batch gate on the integrated candidate, fix any failures, then publish once and wait for CI. All requested T552–T558 are integrated.
 
 ## log
+- 261029 create-task T563 (cp29): restore measured mobile target and standings viewport regressions without reducing existing accessibility or row-count checks.
 - 261029 create-task T562 (cp29): reproduced facility and route-transition browser drift; implement in an isolated worker while the coordinator completes the frozen browser run.
 - 261029 fix host.world-market fixture: use the protocol’s legal stale revision -1 instead of invalid -100; preserve bounded reads, source identity, settlement and idempotency assertions.
 - 261029 cp29 all requested tasks integrated at c3aad1f4; final synchronized batch begins before one main publication.
@@ -434,4 +436,3 @@
 - 261029 fix match-figures (p9c3, owner): bodies face the drawn run and turn into a new one within 0.2 s (were the recorded velocities blended across the sample gap); a calm visible gait (6 m a cycle, reach 0.6, arms 0.55; 18.6 m showed none).
 - 261029 cp29 merge approved T558 integration/archive from club-market-fix after its normal quick gate passes; source was already staged at the same reviewed commit.
 - 261029 cp29 stage independently approved T558 source 66302d4f in the isolated draft so T552 can start during the unrelated heavy-gate wait; do not claim or publish engine completion before integration succeeds.
-- 261028 T553 integrated
