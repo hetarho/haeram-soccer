@@ -831,6 +831,65 @@ describe('full match-model activation (→SAVE-23)', () => {
   });
 });
 
+/**
+ * A current career under the rules-4.0.0 label that game version 0.7.0 continues, the game in play
+ * at generation 7 (→SAVE-10).
+ */
+async function rules4Checkpoint() {
+  const career = simulatedWorld(founding, { rounds: 2 });
+  const raw = await encode({ ...structuredClone(career), engine: '4.0.0' }, 7, 6);
+  storage.setItem('haeram-soccor:slot:a', raw);
+  storage.setItem(
+    'haeram-soccor:manifest',
+    JSON.stringify({ slot: 0, worldId: career.id, generation: 7, parentGeneration: 6 }),
+  );
+  return { career, raw };
+}
+
+describe('rules-4.0.0 checkpoints in game version 0.7.0 (→SAVE-10)', () => {
+  it('a rules-4.0.0 checkpoint loads and is written as 0.7.0, its facts unchanged', async () => {
+    const { career, raw } = await rules4Checkpoint();
+    const client = new GameClient(() => {});
+    clients.push(client);
+    await client.start();
+    expect(client.state.error).toBeUndefined();
+    expect(client.state.view!.world.engine).toBe(CURRENT_ENGINE_VERSION);
+    const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
+    expect(manifest).toMatchObject({ worldId: career.id, generation: 8, parentGeneration: 7 });
+    const saved = await decode(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'b' : 'a'}`)!);
+    // Only the version label and the world revision of the activation change.
+    expect(saved.envelope.engine).toBe(CURRENT_ENGINE_VERSION);
+    expect(canonical(saved.world)).toBe(
+      canonical({ ...career, engine: CURRENT_ENGINE_VERSION, revision: career.revision + 1 }),
+    );
+    // The career as it was stays the previous copy until a newer save commits.
+    expect(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'a' : 'b'}`)).toBe(raw);
+    // Loading it again changes nothing.
+    const committed = new Map(storage.data);
+    await client.reload();
+    expect(storage.data).toEqual(committed);
+  });
+
+  it('a read-only view loads a 4.0.0 save without writing it', async () => {
+    const { career } = await rules4Checkpoint();
+    const stored = new Map(storage.data);
+    vi.stubGlobal('navigator', {
+      locks: {
+        request: (_name: string, _options: unknown, callback: (lock: null) => Promise<void>) =>
+          callback(null),
+      },
+    });
+    const reader = new GameClient(() => {});
+    clients.push(reader);
+    await reader.start();
+    expect(reader.state.readonly).toBe(true);
+    expect(reader.state.error).toBeUndefined();
+    expect(reader.state.view!.world.id).toBe(career.id);
+    expect(reader.state.view!.world.engine).toBe('4.0.0');
+    expect(storage.data).toEqual(stored);
+  });
+});
+
 describe('manager-history reads (→HIST-18, WEB-92)', () => {
   it('reads a page in a read-only tab without the command queue, a write or a view', async () => {
     await start();

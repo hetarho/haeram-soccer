@@ -31,6 +31,7 @@
     "shell.division": "Divisie {division}",
     "shell.readonly": "Alleen-lezen",
     "shell.readonlyNotice": "Er wordt in een ander tabblad gespeeld. Dit tabblad is alleen-lezen.",
+    "shell.beta": "Bètaversie {version} · het spel kan nog veranderen vóór de volledige release",
     "shell.guide": "Gids voor clubgroei",
     "shell.responsibilities": "Kantoor van de eigenaar",
     "shell.news": "Meldingen en nieuws",

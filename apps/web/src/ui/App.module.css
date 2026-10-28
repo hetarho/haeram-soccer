@@ -1754,9 +1754,16 @@
   border: 2px solid var(--field-line);
   box-shadow: none;
 }
+/* The name and its BETA mark share the first row; the name gives way first, the start line spans. */
 .hudClub > div {
   min-width: 0;
   display: grid;
+  grid-template-columns: minmax(0, max-content) auto;
+  align-items: center;
+  column-gap: 6px;
+}
+.hudClub > div > small {
+  grid-column: 1 / -1;
 }
 .hudCrest {
   width: 26px;

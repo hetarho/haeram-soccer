@@ -31,6 +31,7 @@
     "shell.division": "Liga {division}",
     "shell.readonly": "Schreibgeschützt",
     "shell.readonlyNotice": "In einem anderen Tab wird gespielt. Dieser Tab ist schreibgeschützt.",
+    "shell.beta": "Betaversion {version} · das Spiel kann sich bis zur vollständigen Veröffentlichung noch ändern",
     "shell.guide": "Leitfaden zum Vereinsaufbau",
     "shell.responsibilities": "Büro des Eigentümers",
     "shell.news": "Mitteilungen und Nachrichten",

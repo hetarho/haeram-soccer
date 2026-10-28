@@ -53,7 +53,7 @@ class MemoryPrevious implements PreviousStore {
 function checkpoint(generation: number, size = 100, worldId = 'w1') {
   const envelope: Envelope = {
     schema: 1,
-    engine: '4.0.0',
+    engine: '0.7.0',
     catalog: 'c',
     catalogHash: 'h',
     worldId,

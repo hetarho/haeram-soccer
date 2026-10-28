@@ -16,6 +16,7 @@ import { useLocale } from '../presentation/react';
 import type { Translator } from '../presentation/locale';
 import { PresentationSettingsTrigger } from './PresentationSettings';
 import { AppMenu } from './AppMenu';
+import { BetaMark } from './BetaMark';
 import {
   lazy,
   memo,
@@ -540,6 +541,8 @@ const GameHud = memo(function GameHud({
         )}
         <div>
           <b>{own?.name || 'Haeram Football'}</b>
+          {/* Beside the club name in play; beside the game's name with its version elsewhere. */}
+          <BetaMark version={!own} />
           {!own && <small data-testid="calendar">1950 · A NEW BEGINNING</small>}
         </div>
       </div>

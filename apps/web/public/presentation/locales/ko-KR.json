@@ -31,6 +31,7 @@
     "shell.division": "{division}부",
     "shell.readonly": "읽기 전용",
     "shell.readonlyNotice": "다른 탭이 플레이 중입니다. 이 탭은 읽기 전용입니다.",
+    "shell.beta": "베타 버전 {version} · 정식 출시 전까지 게임이 바뀔 수 있어요",
     "shell.guide": "클럽 키우기 가이드",
     "shell.responsibilities": "구단주 사무실",
     "shell.news": "알림·뉴스",

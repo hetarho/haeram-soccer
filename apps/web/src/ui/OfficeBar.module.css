@@ -4,7 +4,8 @@
   top: 0;
   z-index: 30;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  /* The way back and the cash keep their whole controls; the place name gives way first. */
+  grid-template-columns: minmax(max-content, 1fr) minmax(0, max-content) minmax(max-content, 1fr);
   align-items: center;
   gap: 8px;
   min-height: 52px;
@@ -24,6 +25,14 @@
   font-size: 15px;
   font-weight: 700;
   white-space: nowrap;
+}
+/* The place name and its BETA mark, centred together. */
+.centre {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
 }
 .title {
   display: inline-flex;

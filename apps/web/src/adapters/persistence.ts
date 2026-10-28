@@ -27,6 +27,7 @@ import {
   LEGACY_ENGINE_VERSIONS,
   earlierRulesMessage,
   isEarlierEngine,
+  NEWER_GAME_MESSAGE,
   PRIOR_CATALOG_HASHES,
   SUPPORTED_ENGINE_VERSIONS,
   SaveCompatibilityError,
@@ -81,9 +82,7 @@ async function readEnvelope(raw: string, supported: readonly string[]) {
   if (typeof e.engine !== 'string') throw new Error('저장 엔진 헤더가 올바르지 않습니다.');
   if (!supported.includes(e.engine))
     throw new SaveCompatibilityError(
-      isEarlierEngine(e.engine)
-        ? earlierRulesMessage(e.engine)
-        : '지원하지 않는 저장 엔진 버전입니다. 원본 파일을 보관하세요.',
+      isEarlierEngine(e.engine) ? earlierRulesMessage(e.engine) : NEWER_GAME_MESSAGE,
       e.engine,
     );
   if (typeof e.catalog !== 'string') throw new Error('저장 카탈로그 헤더가 올바르지 않습니다.');

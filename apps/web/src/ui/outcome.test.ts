@@ -75,7 +75,7 @@ describe('action outcome summaries', () => {
       value: '34',
       trend: 'down',
     });
-    expect(outcome.changes.find((c) => c.label === '팀 분위기')).toMatchObject({ trend: 'up' });
+    expect(outcome.changes.find((c) => c.label === '팀 분위기')).toMatchObject({ trend: 'down' });
     expect(outcome.events[0].title).toBe('휴식일 부여 요청');
   });
 

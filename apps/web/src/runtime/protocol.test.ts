@@ -111,7 +111,7 @@ it('carries supported match-model metadata and refuses a future one, changing no
     coverage: 'activation' as const,
   };
   const world = (extra: object) =>
-    ({ id: 'world', revision: 41, engine: '4.0.0', ownMatches: [], ...extra }) as unknown as World;
+    ({ id: 'world', revision: 41, engine: '0.7.0', ownMatches: [], ...extra }) as unknown as World;
   expect(worldMetadataOf(world({}))).toEqual({ id: 'world', revision: 41 });
 
   const activated = world({ matchModel });
