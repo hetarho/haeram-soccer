@@ -402,7 +402,9 @@
 | T562 | Align facility and competition browser journeys with the six places | WEB ARCH | - | todo |
 | T563 | Restore mobile place targets and compact standings | WEB ARCH | - | todo |
 | T564 | Find exact player identities through paged market journeys | WEB ARCH | - | todo |
-| T565 | Keep place journey fixtures and named returns valid | WEB ARCH | - | todo |
+| T565 | Keep place journey fixtures and named returns valid | WEB ARCH | T563 | todo |
+| T566 | Keep world-market reads usable during automatic progression | WEB ARCH | - | todo |
+| T567 | Align remaining place, keyboard and owner-helper journeys | WEB ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -426,6 +428,7 @@
 - club-places: implement T557/T558 engine foundations while live T550 owns UI, then T552 market UI and T553 choices in parallel with the T554→T555 places-office lane; T556 connects all results. Existing T548–T550 remain with their current sessions.
 
 ## log
+- 261029 create-task T566–T567 (cp29): reserve running-clock market-read and final place-journey corrections after the complete browser failure audit.
 - 261029 create-task T563–T565 (cp29): reserve browser-gate follow-up IDs for mobile layout, paged identities and explicit place fixtures; current code remains in isolated work branches.
 - 261029 create-task T562 (cp29): reproduced browser facility/competition drift; preserve all layout/navigation contracts and coordinator-only browser execution.
 - 261029 T561 done (p9c3, explore): match-model revision 8 — the showing teammate offers at 14 m, with the ball teammates spread 14 m and keep 10 m around the carrier; crowds of seven within 10 m 7.0% → 2.9%; 600 matches goals 3.38, 25/37 (one row fewer: long shots).
@@ -443,4 +446,3 @@
 - 261029 cp29 authorize the minimal T553 read-leaf wage extraction for existing acceptance; keep formula/exports and saved facts unchanged.
 - 261029 cp29 move unclaimed T552 shared browser edits to T556 while preserving every required journey; keep independent UI file ownership disjoint.
 - 261028 T551 done (p9c3): main CI fix after the figures/kits and forward-intent merges — editor samples mid-step, kit pixel floor, faster wornFigures, in-page goal-hold minute, clock-derived 16× bound, appearance digest.
-- 261028 create-task (f5j2): T548 MATCH r39, T549 SAVE r57, T550 WEB r167.
