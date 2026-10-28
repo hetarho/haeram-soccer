@@ -412,6 +412,7 @@
 | club-places | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-28T20:38:37.582Z | [history](work/club-places.json) |
 | club-places-ui | 1 | 2 | 2 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:28.891Z | [history](work/club-places-ui.json) |
 | club-browser-fix | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-10-28T20:39:32.438Z | [history](work/club-browser-fix.json) |
+| club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
 - cp29: all place/market corrections integrated; scoped training/market proofs pass. Complete the frozen final gate, publish verified main and wait for CI.

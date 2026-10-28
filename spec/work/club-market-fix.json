@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-28T17:33:07.167Z",
-  "sourceCommit": "e65b4fa7a8516f74ba9246dafef424118e517bdd",
+  "snapshotAt": "2026-10-28T20:43:31.901Z",
+  "sourceCommit": "27feb538ff8bdba6cd2354fc09c689f9aa58da0a",
   "group": {
     "id": "club-market-fix",
     "branch": "work/club-market-fix",
@@ -11,6 +11,18 @@
       "workers": 1,
       "reviewers": 1,
       "maxPending": 8
+    },
+    "verified": {
+      "commit": "27feb538ff8bdba6cd2354fc09c689f9aa58da0a",
+      "checks": [
+        {
+          "command": "git diff --quiet 89bbdaf9 -- . \":!spec/**\" && npx --no-install haeram-spec-creator lint",
+          "startedAt": "2026-10-28T20:43:30.651Z",
+          "finishedAt": "2026-10-28T20:43:31.087Z"
+        }
+      ],
+      "at": "2026-10-28T20:43:31.168Z",
+      "excluded": []
     },
     "review": "all",
     "lastRun": {
@@ -45,66 +57,15 @@
     }
   },
   "summary": {
-    "total": 7,
+    "total": 1,
     "completed": 1,
-    "remaining": 6,
+    "remaining": 0,
     "running": 0,
     "review": 0,
     "blocked": 0,
-    "unassigned": 6
+    "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T548",
-      "title": "Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it",
-      "dep": [],
-      "status": "todo"
-    },
-    {
-      "id": "T552",
-      "title": "Paged whole-world recruitment workbench",
-      "dep": [
-        "T558"
-      ],
-      "lane": "market-ui",
-      "status": "todo"
-    },
-    {
-      "id": "T553",
-      "title": "Consequential owner choices and shared place activity panels",
-      "dep": [
-        "T557"
-      ],
-      "lane": "place-choices",
-      "status": "todo"
-    },
-    {
-      "id": "T554",
-      "title": "Six-place navigation and competition clubhouse",
-      "dep": [],
-      "lane": "places-office",
-      "status": "todo"
-    },
-    {
-      "id": "T555",
-      "title": "Work-oriented owner office and scoped player approvals",
-      "dep": [
-        "T554"
-      ],
-      "lane": "places-office",
-      "status": "todo"
-    },
-    {
-      "id": "T556",
-      "title": "Connect place choices and verify the complete owner workflow",
-      "dep": [
-        "T552",
-        "T553",
-        "T555"
-      ],
-      "status": "todo"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
@@ -128,6 +89,8 @@
       "submittedBase": "f97a1b57035b42391660bfb34d7499f3cd477bac",
       "submissionId": "29e35979-7580-420d-8197-a20832ec1889",
       "submittedAt": "2026-10-28T17:29:43.929Z",
+      "integratedCommit": "975b67979bf7b78e33c1aebeadc486a5a8b2f1b9",
+      "integratedAt": "2026-10-28T17:56:02.267Z",
       "risk": null,
       "dispatch": {
         "id": "16ee0b6e-14ac-427f-b1d9-14e31f4df0a5",
@@ -174,6 +137,13 @@
           "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
           "startedAt": "2026-10-28T17:26:53.891Z",
           "finishedAt": "2026-10-28T17:29:43.458Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-28T17:55:25.827Z",
+          "finishedAt": "2026-10-28T17:56:02.008Z"
         }
       ]
     }
@@ -871,6 +841,62 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1722,
+      "at": "2026-10-28T17:56:02.194Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-28T17:55:25.827Z",
+            "finishedAt": "2026-10-28T17:56:02.008Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1723,
+      "at": "2026-10-28T17:56:02.267Z",
+      "type": "attempt",
+      "group": "club-market-fix",
+      "attemptId": "5589e43c-0d0f-4e18-b55b-28f5d3620095",
+      "taskId": "T558",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "975b67979bf7b78e33c1aebeadc486a5a8b2f1b9",
+        "integratedAt": "2026-10-28T17:56:02.267Z"
+      }
+    },
+    {
+      "sequence": 1943,
+      "at": "2026-10-28T20:43:31.185Z",
+      "type": "group",
+      "group": "club-market-fix",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "verified": {
+          "commit": "27feb538ff8bdba6cd2354fc09c689f9aa58da0a",
+          "checks": [
+            {
+              "command": "git diff --quiet 89bbdaf9 -- . \":!spec/**\" && npx --no-install haeram-spec-creator lint",
+              "startedAt": "2026-10-28T20:43:30.651Z",
+              "finishedAt": "2026-10-28T20:43:31.087Z"
+            }
+          ],
+          "at": "2026-10-28T20:43:31.168Z",
+          "excluded": []
+        }
       }
     }
   ]
