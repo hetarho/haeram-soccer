@@ -14,7 +14,6 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
-| e7q4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T01:49Z | 2026-10-28T04:06Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T03:04Z | 2026-10-28T03:15Z | T539 |
 
 ## inbox
@@ -400,6 +399,7 @@
 - UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
+- 261028 T537 published at main 0add0e71; CI #594 Success (37m 3s), including Chromium 311 and Firefox/WebKit. CLI false timeout diagnosed by direct run summary; report 261028-e7q4.
 - 261028 T537 done: association quotas, continental titleholders, recorded coefficients/EPS and qualification causes; existing 2034 draw preserved. Unit/integration/contract/build passed; Chromium 310 plus one unchanged isolated retry passed.
 - 261028 update-ssot EURO start and r4 done: modern access, holders, EPS and forward-only save compatibility; create-task EURO next.
 - 261028 gameplay hierarchy shipped: WEB r164, T530-T535 and verified test repairs; main 8af246fa passed all nine CI jobs; report 261028-g8u4.
@@ -419,4 +419,3 @@
 - 261028 update-ssot MATCH start and r34 done: MATCH-16 space ahead, contested passes only forward, no far back pass with room near the box.
 - 261028 create-task ARCH r25: T540 paired speed harness, T541 result-identical engine cuts (explore 3h). Warning: T538 (doing, f5j2) cites ARCH-31 at ARCH@24; its throughput read is now a reported same-machine ratio (ARCH-34), not the 1 ms / 15 s budget.
 - 261028 update-ssot ARCH r25: ARCH-31✎ no absolute throughput budget, ARCH-34+ same-machine paired speed-up call (owner: success = faster on the machine measured, beyond noise).
-- 261028 T536 done: compact facilities, inset cards and quiet navigation; final local batch passed, including 311 Chromium journeys. Main b1886d69 published; CI observation timed out while the run remained in progress.
