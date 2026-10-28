@@ -518,7 +518,7 @@ function settleBids(w: World, open: boolean) {
     if (bid.year !== w.year && currency(code, bid.year).code !== w.currency) {
       expire(w, bid, '이적', '화폐 단위가 바뀌어 이전 금액의 협상이 끝났어요.');
     } else if (bid.direction === 'out') {
-      const signed = w.players.find((x) => x.id === bid.playerId);
+      const signed = activePlayers(w).find((x) => x.id === bid.playerId);
       if (signed) expire(w, bid, signed.name, '이미 우리 선수가 되어 협상을 정리했어요.');
       else if (!open)
         expire(

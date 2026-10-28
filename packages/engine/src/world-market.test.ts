@@ -6,7 +6,7 @@ import { worldMarketDetail, worldMarketOffer, worldMarketPage } from './world-ma
 import { worldMarketFixture } from './world-market.testkit';
 import { squad, invalidateNpcSquads } from './world';
 import { transferOffers, squadCommand } from './ops-squad';
-import { placeBid, respondBid, bidBoard } from './transfers';
+import { placeBid, respondBid, bidBoard, dailyMarket } from './transfers';
 import { movePerson, returnLoan } from './npc-continuity';
 import { overall } from './player-state';
 
@@ -19,7 +19,7 @@ const foreignTarget = (w: ReturnType<typeof worldMarketFixture>) => ({
   playerId: squad(w, w.clubs[1])[0].id,
 });
 
-// The fixture holds just current squads. These tests never create a career or play a day/match.
+// The fixture holds just current squads. Dated cases settle only the market, never fixtures or a whole day.
 describe('bounded whole-world market', () => {
   it('finds every represented club and available scout identity, including our inspectable players', () => {
     const w = worldMarketFixture();
@@ -281,6 +281,72 @@ describe('stable-identity approaches', () => {
       season: original.season,
     });
     expect(squad(w, w.clubs[1]).some((p) => p.id === original.id)).toBe(false);
+  });
+
+  it.each([false, true])(
+    'keeps a returning-player bid pending until its daily answer and completes once (loan=%s)',
+    (loan) => {
+      const w = worldMarketFixture();
+      const original = w.players[0];
+      original.career[0] = 123;
+      original.season[0] = 45;
+      original.status = 'sold';
+      movePerson(w, original, 'foreign', true);
+      const target = {
+        world: w.id,
+        kind: 'club' as const,
+        clubId: 'foreign',
+        playerId: original.id,
+      };
+      const offer = worldMarketOffer(w, target)!;
+      const fee = (BigInt(loan ? offer.loanFee : offer.fee) * 2n).toString();
+      placeBid(w, target, fee, loan);
+      const bid = w.bids![0],
+        cash = BigInt(w.cash);
+      expect(bid).toMatchObject({ day: 3, due: 5, status: 'pending' });
+
+      w.calendar = { day: 4 };
+      dailyMarket(w);
+      expect(bid.status).toBe('pending');
+      expect(BigInt(w.cash)).toBe(cash);
+      expect(w.people![original.id].club).toBe('foreign');
+
+      w.calendar = { day: bid.due };
+      dailyMarket(w);
+      expect(bid.status).toBe('completed');
+      expect(BigInt(w.cash)).toBe(cash - BigInt(fee));
+      expect(w.players.filter((p) => p.id === original.id)).toHaveLength(1);
+      expect(w.players.find((p) => p.id === original.id)).toMatchObject({
+        status: 'active',
+        career: original.career,
+        season: original.season,
+      });
+      expect(w.people![original.id].club).toBe(w.playerClub);
+      expect(squad(w, w.clubs[1]).some((p) => p.id === original.id)).toBe(false);
+      expect(w.transfers!.facts).toEqual([
+        expect.objectContaining({ player: original.id, club: 'foreign', fee, loan }),
+      ]);
+      if (loan) expect(w.people![original.id].loan?.club).toBe('foreign');
+
+      w.calendar = { day: bid.due + 1 };
+      dailyMarket(w);
+      expect(BigInt(w.cash)).toBe(cash - BigInt(fee));
+      expect(w.transfers!.facts).toHaveLength(1);
+    },
+  );
+
+  it('expires an outgoing bid when its target is already an active own player', () => {
+    const w = worldMarketFixture(),
+      target = foreignTarget(w),
+      offer = worldMarketOffer(w, target)!;
+    placeBid(w, target, offer.fee);
+    const bid = w.bids![0],
+      cash = w.cash;
+    w.players.push(structuredClone(offer.player));
+    w.calendar = { day: 4 };
+    dailyMarket(w);
+    expect(bid.status).toBe('expired');
+    expect(w.cash).toBe(cash);
   });
 
   it('rechecks cash, registration, window and source availability when a saved bid settles', () => {
