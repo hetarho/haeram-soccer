@@ -392,8 +392,11 @@ test('an old imported record says 유니폼 미기록 and never draws today’s 
   await expect(dialog.getByTestId('match-kit-unrecorded')).toHaveText('유니폼 미기록');
   await expect(dialog.getByRole('img', { name: /엠블럼 미기록$/ })).toHaveCount(2);
   // Neutral stand-in kits are worn; today's home shirt is not presented as this match's.
-  // The dark neutral side remains separable from the print theme's warm paper ground.
-  await expect.poll(() => figures(page, UNRECORDED_LOOK.sides[1].shirt)).toBeGreaterThanOrEqual(3);
+  // The dark neutral side remains separable from the print theme's warm paper ground. One read
+  // takes about 3 s, so the poll gets room for several beyond the 5 s local default.
+  await expect
+    .poll(() => figures(page, UNRECORDED_LOOK.sides[1].shirt), { timeout: 20_000 })
+    .toBeGreaterThanOrEqual(3);
   // Today's whole design: its base colour alone is close to a skin tone, which every head and
   // limb shows, so only its two colours in its pattern are identity.
   expect(todayShirt.secondary).toBeDefined();
