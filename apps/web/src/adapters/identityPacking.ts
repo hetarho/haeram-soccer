@@ -10,7 +10,9 @@ import { SaveCompatibilityError } from '../../../../packages/contracts/src/versi
 /**
  * The own records' appearance snapshots (KIT-12, SAVE-22) beside the compact match columns
  * (spec/ssot/KIT.md and spec/ssot/SAVE.md): each distinct snapshot once, in the
- * order it first occurs, and one ref per record — 0 absent, n the n-th snapshot.
+ * order it first occurs, and one ref per record — 0 absent, n the n-th snapshot. The stream's own
+ * version stays 1; each snapshot keeps its recorded version (1 shirts only, 2 whole kits) and is
+ * never rewritten to another.
  */
 export interface PackedAppearances {
   version: 1;
@@ -48,8 +50,9 @@ export function packAppearances(matches: readonly MatchRecord[]): PackedAppearan
 
 /**
  * Attaches the stream's snapshots to `records`, rebuilt from the columns in their original order.
- * Every count, ref and future version marker is checked before anything is expanded; each record
- * gets its own copy, and a record whose ref is 0 keeps no appearance at all.
+ * Every count, ref and future version marker (a stream above 1, a snapshot above the current
+ * appearance version) is checked before anything is expanded; each record gets its own copy, and a
+ * record whose ref is 0 keeps no appearance at all.
  */
 export function readAppearances(stream: unknown, records: MatchRecord[]) {
   if (stream === undefined) return;

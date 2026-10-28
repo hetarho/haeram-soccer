@@ -7,10 +7,16 @@ import {
   KIT_ROLES,
   type ClubIdentity,
 } from '../../../../packages/contracts/src/identity';
-import { clubIdentitySchema } from '../../../../packages/contracts/src/identitySchema';
+import {
+  clubIdentitySchema,
+  normaliseIdentity,
+} from '../../../../packages/contracts/src/identitySchema';
+import { automaticKeeper, wornKit } from '../../../../packages/engine/src/kit-wear';
+import { keeperAvoiding } from '../../../../packages/engine/src/kit-selection';
 import {
   cloneIdentity,
   colourInput,
+  goalkeeperDraft,
   linkedIdentityColours,
   randomCrestAction,
   reduceIdentityDraft,
@@ -387,5 +393,94 @@ describe('three linked editor colours and random crests (→KIT-1/2/4/10/13)', (
       valid(reduceIdentityDraft(entry, first));
     }
     expect(ENTRY).toEqual(SNAPSHOT);
+  });
+});
+
+describe('kit parts and goalkeeper drafts (→KIT-3/8/15)', () => {
+  it('unset shorts follow named colours', () => {
+    const next = reduceIdentityDraft(ENTRY, {
+      type: 'kit-colour',
+      role: 'away',
+      colour: '#123AbC',
+    });
+    expect(next.parts).toBeUndefined();
+    expect(wornKit(next, 'home').shorts).toBe('#123AbC');
+    const changed = apply(
+      next,
+      { type: 'part', role: 'home', part: 'shorts', colour: '#abcdef' },
+      { type: 'part', role: 'home', part: 'shorts', colour: null },
+    );
+    expect(wornKit(changed, 'home').shorts).toBe('#123AbC');
+    expect(changed).not.toHaveProperty('parts');
+    expect(changed.version).toBe(1);
+  });
+
+  it('set socks keep their colour after a named-colour edit', () => {
+    for (const role of KIT_ROLES) {
+      const next = apply(
+        ENTRY,
+        { type: 'part', role, part: 'socks', colour: '#aB1234' },
+        { type: 'part', role, part: 'shorts', colour: '#Cd9876' },
+        { type: 'kit-colour', role, colour: '#112233' },
+      );
+      expect(wornKit(next, role)).toMatchObject({ shorts: '#Cd9876', socks: '#aB1234' });
+      expect(next.parts?.[role]).toEqual({ socks: '#aB1234', shorts: '#Cd9876' });
+      expect(next.version).toBe(2);
+      valid(next);
+    }
+  });
+
+  it('goalkeeper stays absent until edited', () => {
+    expect(goalkeeperDraft(ENTRY)).toEqual(
+      automaticKeeper(keeperAvoiding(KIT_ROLES.map((r) => ENTRY.kits[r]))),
+    );
+    expect(ENTRY).not.toHaveProperty('goalkeeper');
+    expect(reduceIdentityDraft(ENTRY, { type: 'keeper', patch: {} })).toBe(ENTRY);
+    const next = apply(
+      ENTRY,
+      { type: 'keeper', patch: { shirt: { pattern: 'sash' } } },
+      { type: 'keeper', patch: { shirt: { secondary: '#C01234', trim: '#123456' } } },
+      { type: 'keeper', patch: { shorts: '#112233', socks: '#445566', gloves: '#778899' } },
+    );
+    expect(next.goalkeeper).toMatchObject({
+      shirt: { pattern: 'sash', secondary: '#C01234', trim: '#123456' },
+      shorts: '#112233',
+      socks: '#445566',
+      gloves: '#778899',
+    });
+    valid(next);
+    const recoloured = reduceIdentityDraft(next, {
+      type: 'kit-colour',
+      role: 'home',
+      colour: '#876543',
+    });
+    expect(recoloured.goalkeeper).toEqual(next.goalkeeper);
+    const reset = reduceIdentityDraft(next, { type: 'keeper-reset' });
+    expect(reset).not.toHaveProperty('goalkeeper');
+    expect(reset.version).toBe(1);
+    expect(ENTRY).toEqual(SNAPSHOT);
+    expect(reduceIdentityDraft(ENTRY, { type: 'keeper', patch: { gloves: 'red' } })).toBe(ENTRY);
+  });
+
+  it('normalised apply is version 1 without parts', () => {
+    const applied = normaliseIdentity({ ...ENTRY, version: 2, parts: { home: {}, away: {} } });
+    expect(applied).toEqual(ENTRY);
+    expect(applied.version).toBe(1);
+    valid(applied);
+  });
+
+  it('cancel copies parts and keeper from entry without sharing their nested fields', () => {
+    const entry = apply(
+      ENTRY,
+      { type: 'part', role: 'away', part: 'socks', colour: '#987654' },
+      { type: 'keeper', patch: { gloves: '#123456' } },
+    );
+    const reset = reduceIdentityDraft(ENTRY, { type: 'reset', entry });
+    expect(reset).toEqual(entry);
+    reset.parts!.away!.socks = '#000000';
+    reset.goalkeeper!.shirt.primary = '#000000';
+    expect(entry.parts!.away!.socks).toBe('#987654');
+    expect(entry.goalkeeper!.shirt.primary).not.toBe('#000000');
+    valid(reset);
   });
 });

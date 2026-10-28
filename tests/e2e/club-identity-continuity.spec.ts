@@ -81,11 +81,13 @@ const PRESET = '프렌치 방패 · 왕관';
 /** An unapplied representative colour that no applied design uses. */
 const DRAFT_COLOUR = '#00A6A6';
 /**
- * Base-colour pixels that prove the live pitch paints the worn shirt. At phone width each outfield
- * marker is a 12px disc; an away or third shirt keeps its linked trim ring (→KIT-4/10), so the
- * ring, pattern, outline and number leave about three exact base pixels per marker, ~30 in all.
+ * Base-colour pixels that prove the live pitch paints the worn kit. At phone width each outfield
+ * figure's torso is 12 × 4.8 px (→MATCH-36); its pattern, trim bands, the head, the shaded back and
+ * the highlight leave its unshaded front, and the socks wear the base colour too (→KIT-3), so the
+ * founded kits show about 80–180 exact base pixels in all at the final whistle, more while
+ * striding legs bare the socks.
  */
-const WORN_PIXELS = 20;
+const WORN_PIXELS = 40;
 
 for (const viewport of PHONE_VIEWPORTS)
   test(`founded, worn, edited and moved by file, designs and the earlier kit stay exact at ${viewport.width}x${viewport.height}`, async ({

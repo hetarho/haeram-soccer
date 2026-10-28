@@ -6,6 +6,7 @@ import type {
   MatchAppearance,
 } from '../../../../packages/contracts/src/identity';
 import { selectMatchKits } from '../../../../packages/engine/src/kit-selection';
+import { poseAt } from './figurePose';
 import { describeShirt } from './kitPainting';
 
 /**
@@ -21,6 +22,28 @@ export const KIT_ROLE_LABELS: Readonly<Record<KitRole, string>> = {
 };
 
 export type PreviewOpponent = 'light' | 'dark';
+export type EditorKitRole = KitRole | 'goalkeeper';
+
+/** A still preview figure, facing down-screen unless it is looking into the pitch. */
+export function previewPose(id: string, keeper: boolean, toBall: [number, number] = [0, 1]) {
+  return poseAt(
+    {
+      id,
+      keeper,
+      time: 0,
+      position: [0, 0],
+      speed: 0,
+      velocity: [0, 0],
+      velocityBefore: [0, 0],
+      toBall,
+      ballHeight: 0,
+      carrier: false,
+      distance: 0,
+    },
+    undefined,
+    { reducedMotion: true },
+  );
+}
 /** The own side in the preview, never a club of any world. */
 const OWN = { id: 'preview:own', label: '우리 팀' } as const;
 
@@ -96,9 +119,10 @@ export interface EditorPreview {
  */
 export function editorPreviewAppearance(
   own: ClubIdentity,
-  role: KitRole,
+  selected: EditorKitRole,
   opponent: PreviewOpponent,
 ): EditorPreview {
+  const role = selected === 'goalkeeper' ? 'home' : selected;
   const other = PREVIEW_OPPONENTS[opponent];
   const ownSide: 0 | 1 = role === 'home' ? 0 : 1;
   const clubs = ownSide === 0 ? [OWN, other] : [other, OWN];
@@ -110,9 +134,13 @@ export function editorPreviewAppearance(
     role: kits.roles[i],
     shirt: kits.shirts[i],
     goalkeeper: kits.goalkeepers[i],
+    shorts: kits.kits[i].shorts,
+    socks: kits.kits[i].socks,
+    keeper: kits.keepers[i],
+    ...(kits.keeperFallback[i] ? { keeperFallback: true as const } : {}),
   });
   return {
-    appearance: { version: 1, sides: [side(0), side(1)], warnings: kits.warnings },
+    appearance: { version: 2, sides: [side(0), side(1)], warnings: kits.warnings },
     labels: [clubs[0].label, clubs[1].label],
     ownSide,
   };
@@ -124,18 +152,22 @@ const WARNING_TEXT: Readonly<Record<KitWarning, string>> = {
   goalkeepers: '골키퍼 색을 충분히 구분하지 못했어요.',
 };
 /**
- * The preview's caption, one line each: what it is, both sides' shirts, the automatic keepers and
+ * The preview's caption, one line each: what it is, both sides' shirts, the worn keepers and
  * every warning (or that there is none). The pitch's accessible description is the same text.
  */
 export function previewLines(appearance: MatchAppearance, labels: [string, string]): string[] {
   const [home, away] = appearance.sides;
   const shirt = (side: AppearanceSide, label: string, venue: string) =>
     `${venue} ${label}: ${KIT_ROLE_LABELS[side.role]} 유니폼 (${describeShirt(side.shirt)})`;
+  const keeper = (side: AppearanceSide, i: number) => {
+    const design = side.keeper?.shirt ?? { pattern: 'plain' as const, primary: side.goalkeeper };
+    return `${labels[i]} ${describeShirt(design)}${side.keeperFallback ? ' (이번 경기 자동 대체)' : ''}`;
+  };
   return [
     '미리보기 · 실제 경기가 아닌 예시 배치예요.',
     shirt(home, labels[0], '홈'),
     shirt(away, labels[1], '원정'),
-    `골키퍼는 자동으로 골라요: ${labels[0]} ${home.goalkeeper}, ${labels[1]} ${away.goalkeeper}.`,
+    `골키퍼 착용: ${appearance.sides.map(keeper).join(' · ')}.`,
     ...(appearance.warnings.length
       ? appearance.warnings.map((warning) => `경고: ${WARNING_TEXT[warning]}`)
       : ['경고 없음: 두 팀과 골키퍼를 구분할 수 있어요.']),

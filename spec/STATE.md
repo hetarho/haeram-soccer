@@ -14,10 +14,12 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
-| pl1 | Seonghyunui-MacBookAir | pair | 2026-10-28T06:12Z | 2026-10-28T06:40Z | - |
-| f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z 
+| f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261028 decided KIT-3 KIT-8 SAVE-20 T547: how to store shorts/socks and the goalkeeper kit → optional `parts`/`goalkeeper` on ClubIdentity with version 2 only when present, appearances version 2 with worn kits (alt: wrap every kit in a new outfit type | always write version 2); old builds read new saves as a newer game, existing v1 saves stay untouched.
+- 261028 decided KIT-3 KIT-12 T547: starting rule → shorts = shirt second colour, else trim, else contrast ink; socks = shirt base, one shirt-based rule for live kits and v1 records (alt: derive from the club palette).
+- 261028 decided MATCH-37 T543: tackle poses → only a lost carry/take-on with a named opponent tackles, a slide only beyond standing reach; interceptions show no tackle (alt: every lost ball a tackle).
 - 261028 decided EURO-11 EURO-13 EURO-14: modern access fidelity → association quota bands, recorded five-year ranking and EPS, direct admission instead of new qualifiers, next-season activation (alt: keep uniform demo quotas | retcon active draws); keep the single domestic cup and explicitly label unmodelled EFL/domestic playoffs and eight-association ranking scope.
 - 261028 decided T531 WEB-100 WEB-74: how to keep request identity through submission and browser history → world-named request addresses and session snapshots, with a scoped client forwarding the existing forms/commands (alt: consume a one-shot request only | copy each form into the office); history can revisit resolved work safely, late replies cannot redirect another request/game, and business rules stay authoritative.
 - 261028 decided WEB-39 WEB-79: work grouping → player contracts (incl. youth), staff contracts (incl. manager), investment (finance/local/global/facilities), sponsors and identity; keep all seven saved responsibility keys (alt: merge stored responsibilities or retain an operating-policy gate). Shared inline controls and eligible direct actions use existing commands.
@@ -348,17 +350,17 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 166 | 165 | WEB-2✎ WEB-49✎ WEB-50✎ WEB-86✎ WEB-87✎ WEB-88✎ | 0 |
+| WEB | 166 | 166 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
-| KIT | 4 | 3 | KIT-3✎ KIT-4✎ KIT-7✎ KIT-8✎ KIT-11✎ KIT-12✎ KIT-15✎ | 0 |
+| KIT | 4 | 4 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 38 | 35 | MATCH-36+ MATCH-37+ | 0 |
+| MATCH | 38 | 38 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 18 | 18 | - | 0 |
-| SAVE | 56 | 55 | SAVE-20✎ SAVE-21✎ | 0 |
+| SAVE | 56 | 56 | - | 0 |
 | PLAYER | 10 | 10 | - | 0 |
 
 ## review
@@ -373,7 +375,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T542 | Match-model revision 6: clear chances taken, beaten men left behind, free men found, misplaced passes kept in play, support spread | MATCH SAVE ARCH | - | doing@261028.f5j2 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -393,10 +394,22 @@
 
 ## next
 - next MATCH planning (f5j2 suggestion): a defence goal-side near its box so clear chances arise as often as real football's, then read a clear chance from the men ahead only (T542 limits).
-- create-task KIT MATCH WEB SAVE: top-down player figures (MATCH-36/37), shorts/socks and goalkeeper kit editing (pl1).
 - UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
+- 261028 feat/player-figures-kits merge verified against main f5672a67 and feature 3a13057e: typecheck, lint, format:check, unit (175 files / 1,435 passed), contract (3 files / 47 passed), catalog/presentation validation and production build passed; the 12 pure kit-selection cases also passed (2 world-integration cases excluded). Full integration and browser suites omitted under the owner's requested unit/static scope.
+- 261028 merge review: renumber the incoming kit-wear task from T542 to T547 and update its references, preserving main's independent T542 revision-6 task; reconcile completed MATCH/KIT/WEB/SAVE status and retain both histories. Owner requests unit tests and static checks for this merge; browser and integration suites are outside this local verification scope.
+- 261028 pl1 end: T543–T547 merged on feat/player-figures-kits; full unit project 1422 passed; other suites left to the receiver by owner instruction; branch pushed for handoff.
+- 261028 T545 done (dev3, 1617365a): match observation and replay draw posed figures, standing knee fixed in figurePose; merged; PL unit run next.
+- 261028 T546 done (dev4, fe455032): kit editor, goalkeeper tab, figure previews, fallback notice; PL committed it (Codex sandbox could not write the worktree index) after re-running its 43 unit tests; merged.
+- 261028 lanes start (pl1): T545 match-figures (dev3) and T546 kit-editor (dev4) in worktrees task/T545 and task/T546.
+- 261028 T544 done (dev3, 1f605f49): figure painter and number tags; PL re-ran 40 unit tests and typecheck; merged.
+- 261028 T544 start (dev3) in worktree task/T544 (pl1).
+- 261028 T547 done (dev1, 158a5b64): kit wear v2, torso selection, keeper fallback; PL re-ran typecheck, 57 unit and 23 contract tests; merged.
+- 261028 T543 done (dev3, 407a5e9d): figure poses and action windows; PL re-ran its 16 unit tests and typecheck; merged into feat/player-figures-kits.
+- 261028 T547 (dev1) and T543 (dev3) start in worktrees task/T542 (renumbered T547 at merge) and task/T543 (pl1).
+- 261028 create-task done (pl1): T543–T547 from KIT r4 MATCH r36 WEB r166 SAVE r56; foundation T547 ‖ T543 → T544, lanes match-figures T545 and kit-editor T546.
+- 261028 create-task KIT MATCH WEB SAVE start (pl1): player figures and full kits on branch feat/player-figures-kits.
 - 261028 T542 done and pushed at the owner's request after the unit stage: revision 6; 600-match goals 3.71 above the tolerance, follow-up in next.
 - 261028 update-ssot MATCH r38 (f5j2): MATCH-32 goal-side defenders move across onto the ball–goal line by 위치선정 with the ball central within 50 m.
 - 261028 T542 start (f5j2): revision 6, explore 3h.

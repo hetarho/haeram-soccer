@@ -4,12 +4,27 @@ import {
   CREST_PALETTE,
   KIT_ROLES,
   type ClubIdentity,
+  type GoalkeeperKit,
   type ShirtDesign,
 } from '../../contracts/src/identity';
 import type { Founding } from '../../contracts/src/types';
 import { identityOf } from './club-identity';
 import { colourDistance } from './identity-legacy';
-import { GRASS, KEEPER_DISTANCE_MIN, selectMatchKits, type KitSelection } from './kit-selection';
+import {
+  figureShirtColourAt,
+  insideFigureTorso,
+  insideShirtMarker,
+  shirtColourAt,
+} from './kit-patterns';
+import {
+  GRASS,
+  KEEPER_DISTANCE_MIN,
+  TEAM_SEPARATION_MIN,
+  keeperAvoiding,
+  selectMatchKits,
+  type KitSelection,
+} from './kit-selection';
+import { automaticKeeper, wornKit } from './kit-wear';
 import { operate } from './operations';
 
 /**
@@ -40,12 +55,21 @@ const club = (home: ShirtDesign, away = home, third = home): ClubIdentity => ({
   kits: { home, away, third },
 });
 const CUBE = /^#(00|33|66|99|cc|ff){3}$/;
-/** Shirts are the saved designs of the chosen roles, and keepers stand apart from everything. */
+/**
+ * Shirts are the saved designs of the chosen roles with their own kits' shorts and socks, and
+ * automatic keepers stand apart from everything.
+ */
 function expectSound(selection: KitSelection, home: ClubIdentity, away: ClubIdentity) {
   expect(selection.shirts[0]).toEqual(home.kits[selection.roles[0]]);
   expect(selection.shirts[1]).toEqual(away.kits[selection.roles[1]]);
   expect(selection.shirts[0]).not.toBe(home.kits[selection.roles[0]]);
   expect(selection.shirts[1]).not.toBe(away.kits[selection.roles[1]]);
+  expect(selection.kits).toEqual([
+    wornKit(home, selection.roles[0]),
+    wornKit(away, selection.roles[1]),
+  ]);
+  expect(selection.keepers).toEqual(selection.goalkeepers.map(automaticKeeper));
+  expect(selection.keeperFallback).toEqual([false, false]);
   const outfield = selection.shirts.flatMap((shirt) =>
     [shirt.primary, shirt.secondary, shirt.trim].filter((c): c is string => c !== undefined),
   );
@@ -159,6 +183,139 @@ describe('automatic kit pairing (→KIT-7)', () => {
       expectSound(selection, home, away);
       expect(selectMatchKits(home, away)).toEqual(selection);
     }
+  });
+
+  it('pairing samples the figure torso', () => {
+    // White-and-red checks against plain red: only the white share of what is seen separates them
+    // (white–red 534.7), so the separation is that share × 534.7 / 2. The head hides the centre
+    // check, leaving white on 78 of the torso's 162 sample points (128.7, a clash) where the old
+    // marker disc showed it on 120 of 208 (154.2, none).
+    const checks = patterned('checks', WHITE, RED);
+    const share = (inside: typeof insideFigureTorso, colourAt: typeof shirtColourAt) => {
+      let seen = 0,
+        white = 0;
+      for (let row = 0; row < 16; row++)
+        for (let col = 0; col < 16; col++) {
+          const x = (col + 0.5) / 16,
+            y = (row + 0.5) / 16;
+          if (!inside(x, y)) continue;
+          seen++;
+          if (colourAt(checks, x, y) === WHITE) white++;
+        }
+      return [white, seen];
+    };
+    expect(share(insideFigureTorso, figureShirtColourAt)).toEqual([78, 162]);
+    expect(share(insideShirtMarker, shirtColourAt)).toEqual([120, 208]);
+    expect(((78 / 162) * colourDistance(WHITE, RED)) / 2).toBeLessThan(TEAM_SEPARATION_MIN);
+    expect(((120 / 208) * colourDistance(WHITE, RED)) / 2).toBeGreaterThan(TEAM_SEPARATION_MIN);
+    const home = club(checks),
+      away = club(plain(RED));
+    const selection = selectMatchKits(home, away);
+    expect(selection.warnings).toEqual(['teams']);
+    expectSound(selection, home, away);
+  });
+});
+
+/** A designed keeper kit with shorts, socks and gloves of its own. */
+const designed = (shirt: ShirtDesign): GoalkeeperKit => ({
+  shirt,
+  shorts: '#121212',
+  socks: shirt.primary,
+  gloves: '#ffffff',
+});
+const withKeeper = (identity: ClubIdentity, goalkeeper: GoalkeeperKit): ClubIdentity => ({
+  ...identity,
+  version: 2,
+  goalkeeper,
+});
+const YELLOW = '#f5e663',
+  ORANGE = '#f77f00';
+/** Every colour a shirt can show, for distance checks against an automatic keeper. */
+const shown = (shirt: ShirtDesign) =>
+  [shirt.primary, shirt.secondary, shirt.trim].filter((c): c is string => c !== undefined);
+
+describe('goalkeeper kits (→KIT-8)', () => {
+  it('designed keeper kept when distinguishable', () => {
+    // Orange hoops on black with yellow trim, far enough from white and navy on average.
+    const kit = designed({ pattern: 'hoops', primary: ORANGE, secondary: '#121212', trim: YELLOW });
+    const home = club(plain(WHITE)),
+      away = withKeeper(club(plain(NAVY)), kit);
+    const selection = selectMatchKits(home, away);
+    expect(selection.keepers[1]).toEqual(kit);
+    expect(selection.keepers[1]).not.toBe(away.goalkeeper);
+    expect(selection.goalkeepers[1]).toBe(ORANGE);
+    expect(selection.keeperFallback).toEqual([false, false]);
+    expect(selection.warnings).toEqual([]);
+    // The other side's automatic keeper stands apart from the outfield, the grass and the kit.
+    const auto = selection.goalkeepers[0];
+    expect(selection.keepers[0]).toEqual(automaticKeeper(auto));
+    for (const colour of [WHITE, NAVY, GRASS, ...shown(kit.shirt)])
+      expect(colourDistance(auto, colour)).toBeGreaterThanOrEqual(KEEPER_DISTANCE_MIN);
+    // The same holds with the sides swapped.
+    const swapped = selectMatchKits(away, home);
+    expect(swapped.keepers[0]).toEqual(kit);
+    expect(swapped.keeperFallback).toEqual([false, false]);
+  });
+
+  it('designed keeper falls back only for this fixture', () => {
+    // Yellow is far from white (228) and navy (546) but close to gold (87).
+    const own = withKeeper(club(plain(WHITE)), designed(plain(YELLOW)));
+    const saved = JSON.stringify(own);
+    const golds = club(plain(GOLD)),
+      navies = club(plain(NAVY));
+    for (const [home, away, side] of [
+      [own, golds, 0],
+      [golds, own, 1],
+    ] as const) {
+      const selection = selectMatchKits(home, away);
+      expect(selection.keeperFallback[side]).toBe(true);
+      expect(selection.keeperFallback[1 - side]).toBe(false);
+      const auto = selection.goalkeepers[side];
+      expect(selection.keepers[side]).toEqual(automaticKeeper(auto));
+      for (const colour of [WHITE, GOLD, GRASS, selection.goalkeepers[1 - side]])
+        expect(colourDistance(auto, colour)).toBeGreaterThanOrEqual(KEEPER_DISTANCE_MIN);
+      expect(selection.warnings).not.toContain('goalkeepers');
+    }
+    // Against navy the same saved kit is worn; the fallback never edited it.
+    const kept = selectMatchKits(own, navies);
+    expect(kept.keepers[0]).toEqual(own.goalkeeper);
+    expect(kept.keeperFallback).toEqual([false, false]);
+    expect(JSON.stringify(own)).toBe(saved);
+    // Two designed kits that cannot be told apart: the away one gives way.
+    const rival = withKeeper(club(plain(NAVY)), designed(plain(GOLD)));
+    const both = selectMatchKits(own, rival);
+    expect(both.keepers[0]).toEqual(own.goalkeeper);
+    expect(both.keeperFallback).toEqual([false, true]);
+    expect(colourDistance(both.goalkeepers[1], YELLOW)).toBeGreaterThanOrEqual(KEEPER_DISTANCE_MIN);
+  });
+
+  it('automatic colours avoid a designed keeper', () => {
+    const home = club(plain(WHITE)),
+      away = club(plain(NAVY));
+    const auto = selectMatchKits(home, away).goalkeepers;
+    // The away club designs exactly the colour the home keeper would otherwise get.
+    const rival = withKeeper(away, designed(plain(auto[0])));
+    const selection = selectMatchKits(home, rival);
+    expect(selection.keepers[1]).toEqual(rival.goalkeeper);
+    expect(selection.goalkeepers[0]).not.toBe(auto[0]);
+    expect(colourDistance(selection.goalkeepers[0], auto[0])).toBeGreaterThanOrEqual(
+      KEEPER_DISTANCE_MIN,
+    );
+    expect(selection.keepers[0]).toEqual(automaticKeeper(selection.goalkeepers[0]));
+    expect(selection.keeperFallback).toEqual([false, false]);
+  });
+
+  it("keeper draft avoids the club's three kits", () => {
+    const kits = [
+      patterned('stripes', RED, WHITE),
+      { pattern: 'plain', primary: WHITE, trim: NAVY },
+      patterned('sash', GOLD, FOREST),
+    ] satisfies ShirtDesign[];
+    const colour = keeperAvoiding(kits);
+    expect((CREST_PALETTE as readonly string[]).includes(colour) || CUBE.test(colour)).toBe(true);
+    for (const avoided of [...kits.flatMap(shown), GRASS])
+      expect(colourDistance(colour, avoided), avoided).toBeGreaterThanOrEqual(KEEPER_DISTANCE_MIN);
+    expect(keeperAvoiding(kits)).toBe(colour);
   });
 });
 

@@ -1,5 +1,5 @@
 import type { Founding, World } from '../../contracts/src/types';
-import { clubIdentitySchema } from '../../contracts/src/identitySchema';
+import { clubIdentitySchema, normaliseIdentity } from '../../contracts/src/identitySchema';
 import { clubOf } from './player-state';
 import { createBase } from './world';
 import { prepareSeason, advanceRound, closeSeason } from './season';
@@ -28,10 +28,10 @@ export function createWorld(input: Founding, release: MatchModelRelease = MATCH_
     throw new Error('구단 디자인을 확인해 주세요.');
   const w = createBase(input);
   prepareSeason(w);
-  // Every club starts with a complete identity; the previewed founding draft is the own club's
-  // exactly as confirmed (→KIT-11, KIT-14).
+  // Every club starts with a complete identity; the previewed founding draft, kit parts and
+  // goalkeeper kit included, is the own club's as confirmed, in its normalised form (→KIT-11, KIT-14).
   installMissingIdentities(w);
-  if (input.identity) clubOf(w).identity = structuredClone(input.identity);
+  if (input.identity) clubOf(w).identity = normaliseIdentity(input.identity);
   // New clubs start with unpaid basic coaches at the "important decisions" intervention level:
   // the staff run training, the academy and contract talks, the owner the rest (→STAFF-13).
   w.staff = basicStaff(w);

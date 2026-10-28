@@ -1,4 +1,9 @@
-import type { ClubIdentity, KitRole, MatchAppearance } from '../../contracts/src/identity';
+import type {
+  AppearanceSide,
+  ClubIdentity,
+  KitRole,
+  MatchAppearance,
+} from '../../contracts/src/identity';
 import type { Fixture, MatchRecord, World } from '../../contracts/src/types';
 import { identityOf } from './club-identity';
 import { selectMatchKits, type KitSelection } from './kit-selection';
@@ -10,21 +15,35 @@ import { selectMatchKits, type KitSelection } from './kit-selection';
  * so later identity edits cannot reach a recorded appearance.
  */
 
-/** One side as it took the field: its crest, the selected shirt and its keeper's colour. */
-function side(club: string, identity: ClubIdentity, kits: KitSelection, index: 0 | 1) {
+/**
+ * One side as it took the field: its crest, the selected kit's shirt, shorts and socks, and its
+ * keeper's kit with its shirt base colour, flagged when a designed keeper kit gave way.
+ */
+function side(
+  club: string,
+  identity: ClubIdentity,
+  kits: KitSelection,
+  index: 0 | 1,
+): AppearanceSide {
+  const keeper = kits.keepers[index];
   return {
     club,
     crest: identity.crest,
     role: kits.roles[index],
     shirt: kits.shirts[index],
-    goalkeeper: kits.goalkeepers[index],
+    goalkeeper: keeper.shirt.primary,
+    shorts: kits.kits[index].shorts,
+    socks: kits.kits[index].socks,
+    keeper,
+    ...(kits.keeperFallback[index] ? { keeperFallback: true as const } : {}),
   };
 }
 
 /**
- * The appearance of `fixture`, home then away: each club's applied identity (or the default it
- * would adopt), the owner's role when the stored choice names this fixture and automatic
- * selection otherwise, with automatic goalkeeper colours (KIT-6/7/8). A deep copy.
+ * The version-2 appearance of `fixture`, home then away: each club's applied identity (or the
+ * default it would adopt), the owner's role when the stored choice names this fixture and
+ * automatic selection otherwise, with each goalkeeper's designed kit or fallback (KIT-6/7/8).
+ * A deep copy.
  */
 export function appearanceForFixture(w: World, fixture: Fixture): MatchAppearance {
   const home = identityOf(w, fixture.home),
@@ -38,7 +57,7 @@ export function appearanceForFixture(w: World, fixture: Fixture): MatchAppearanc
     role && ownSide !== undefined ? { side: ownSide, role } : undefined,
   );
   return structuredClone({
-    version: 1,
+    version: 2,
     sides: [side(fixture.home, home, kits, 0), side(fixture.away, away, kits, 1)],
     warnings: kits.warnings,
   });

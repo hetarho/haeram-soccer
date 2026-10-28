@@ -90,6 +90,7 @@ describe('club identity editor markup (→KIT-2/4/5, WEB-86)', () => {
       ['홈 유니폼', 'true'],
       ['어웨이 유니폼', 'false'],
       ['세컨 유니폼', 'false'],
+      ['골키퍼 유니폼', 'false'],
     ]);
     const patterns = buttons(group(html, '홈 유니폼 무늬'));
     expect(patterns.map((b) => b.label)).toEqual(
@@ -98,16 +99,34 @@ describe('club identity editor markup (→KIT-2/4/5, WEB-86)', () => {
     expect(pressed(group(html, '홈 유니폼 무늬')).map((b) => b.label)).toEqual(['세로 줄무늬']);
     expect(buttons(html).some((b) => b.label === '엠블럼 랜덤 선택')).toBe(true);
     expect(html).not.toContain('대표색 적용');
-    // No shorts, socks, goalkeeper, upload or sponsor control, and no apply/cancel of its own.
+    // No upload or sponsor control, and no apply/cancel of its own.
     const controls = [
       ...buttons(html).map((b) => b.label),
       ...inputs(html).map((tag) => attr(tag, 'aria-label') ?? ''),
       ...[...html.matchAll(/<label[^>]*>(.*?)<\/label>/g)].map(([, text]) => text),
     ];
-    for (const control of controls)
-      expect(control).not.toMatch(/반바지|양말|골키퍼|업로드|스폰서|로고/);
+    for (const control of controls) expect(control).not.toMatch(/업로드|스폰서|로고/);
     expect(inputs(html).some((tag) => attr(tag, 'type') === 'file')).toBe(false);
     expect(buttons(html).filter((b) => /^(적용|취소|저장)$/.test(b.label))).toEqual([]);
+  });
+
+  it('labels shorts and socks controls, reset actions and the goalkeeper tab', () => {
+    const value: ClubIdentity = { ...IDENTITY, version: 2, parts: { home: { socks: '#AbCdEf' } } };
+    const html = render(value);
+    expect(inputs(html).find((tag) => attr(tag, 'aria-label') === '홈 하의 색 코드')).toContain(
+      'value="#FFFFFF"',
+    );
+    expect(inputs(html).find((tag) => attr(tag, 'aria-label') === '홈 양말 색 코드')).toContain(
+      'value="#AbCdEf"',
+    );
+    expect(buttons(html).find((b) => b.label === '홈 하의 기본값으로')?.disabled).toBe(true);
+    expect(buttons(html).find((b) => b.label === '홈 양말 기본값으로')?.disabled).toBe(false);
+    expect(buttons(html).find((b) => b.label === '골키퍼 유니폼')).toMatchObject({
+      pressed: 'false',
+      disabled: false,
+    });
+    expect(html).toContain('홈 유니폼 확대 미리보기');
+    expect(value).not.toHaveProperty('goalkeeper');
   });
 
   it('opens 직접 꾸미기 on a composed crest with every shape, field pattern and emblem', () => {
@@ -143,7 +162,11 @@ describe('club identity editor markup (→KIT-2/4/5, WEB-86)', () => {
     // The writer's editor enables the same controls.
     const writable = render(IDENTITY);
     expect(writable).not.toContain('읽기 전용');
-    expect(buttons(writable).filter((b) => b.disabled)).toEqual([]);
+    expect(
+      buttons(writable)
+        .filter((b) => b.disabled)
+        .map((b) => b.label),
+    ).toEqual(['홈 하의 기본값으로', '홈 양말 기본값으로']);
     expect(inputs(writable).filter((tag) => tag.includes(' disabled=""'))).toEqual([]);
   });
 
@@ -184,7 +207,7 @@ describe('club identity editor markup (→KIT-2/4/5, WEB-86)', () => {
         ['어웨이 색 코드', IDENTITY.kits.away.primary],
         ['세컨 색 코드', IDENTITY.kits.third.primary],
       ]);
-      expect(inputs(html)).toHaveLength(6);
+      expect(inputs(html)).toHaveLength(10);
       expect(buttons(group(html, '색상'))).toEqual([]);
       expect(html).not.toMatch(/대표색|대표 주색|대표 보조색|테두리 추가|무늬색 추가/);
       expect(html).toContain('엠블럼은 홈·어웨이 색으로 배색돼요.');

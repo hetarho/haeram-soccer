@@ -5,12 +5,14 @@ import {
   KIT_ROLES,
   type AppearanceSide,
   type ClubIdentity,
+  type GoalkeeperKit,
   type KitRole,
   type ShirtDesign,
 } from '../../contracts/src/identity';
 import type { Fixture, Founding, World } from '../../contracts/src/types';
 import { nextOwnFixture } from './calendar';
 import { identityOf } from './club-identity';
+import { createWorld } from './founding';
 import { KIT_FIXTURE_CHANGED } from './identity-operations';
 import { selectMatchKits } from './kit-selection';
 import { BANKRUPT_MESSAGE, operate } from './operations';
@@ -44,6 +46,12 @@ const DESIGN: ClubIdentity = {
   },
 };
 const design = () => structuredClone(DESIGN);
+const KEEPER: GoalkeeperKit = {
+  shirt: { pattern: 'checks', primary: '#F5E663', secondary: '#121212', trim: '#ffffff' },
+  shorts: '#121212',
+  socks: '#F5E663',
+  gloves: '#00a6c8',
+};
 const apply = (w: World, identity: unknown) =>
   operate(w, { type: 'club-identity', identity: identity as ClubIdentity });
 /** The world without what may change: the own identity and colour, and the revision. */
@@ -96,6 +104,43 @@ describe('the own-club design command (→KIT-9, KIT-13)', () => {
     expect(own.identity).not.toBe(previous);
   });
 
+  it('applies and normalises a version-2 identity', () => {
+    const w = simulatedWorld(FOUNDING);
+    const before = untouched(w);
+    // A draft carrying an entry that sets nothing beside real parts and a goalkeeper kit.
+    const draft: ClubIdentity = {
+      ...design(),
+      version: 2,
+      parts: { home: { shorts: '#0b1f44' }, away: {}, third: { socks: '#FfFfFf' } },
+      goalkeeper: structuredClone(KEEPER),
+    };
+    apply(w, draft);
+    const own = clubOf(w).identity!;
+    expect(own).toEqual({
+      ...DESIGN,
+      version: 2,
+      parts: { home: { shorts: '#0b1f44' }, third: { socks: '#FfFfFf' } },
+      goalkeeper: KEEPER,
+    });
+    expect('away' in own.parts!).toBe(false);
+    expect(own.goalkeeper).not.toBe(draft.goalkeeper);
+    expect(own.goalkeeper!.shirt).not.toBe(draft.goalkeeper!.shirt);
+    expect(untouched(w)).toBe(before);
+    // Only a goalkeeper kit, its parts all empty: still version 2, without `parts`.
+    apply(w, { ...design(), version: 2, parts: {}, goalkeeper: structuredClone(KEEPER) });
+    expect(clubOf(w).identity).toEqual({ ...DESIGN, version: 2, goalkeeper: KEEPER });
+    // Founding takes the confirmed version-2 draft the same way, and refuses an invalid one.
+    const founded = createWorld({ ...FOUNDING, color: DESIGN.colours[0], identity: draft });
+    expect(clubOf(founded).identity).toEqual(own);
+    expect(() =>
+      createWorld({
+        ...FOUNDING,
+        color: DESIGN.colours[0],
+        identity: { ...design(), version: 2, parts: { away: {} } },
+      }),
+    ).toThrow('구단 디자인을 확인해');
+  });
+
   it('malformed edit leaves canonical world unchanged', () => {
     const w = simulatedWorld(FOUNDING);
     const before = canonical(w);
@@ -116,6 +161,20 @@ describe('the own-club design command (→KIT-9, KIT-13)', () => {
           ...DESIGN.kits,
           away: { pattern: 'plain', primary: '#ffffff', secondary: '#000000' },
         },
+      },
+      // Kit parts and the goalkeeper kit belong to version 2 only, and version 2 needs one of them.
+      { ...design(), parts: { home: { shorts: '#000000' } } },
+      { ...design(), goalkeeper: KEEPER },
+      { ...design(), version: 2, parts: { home: {} } },
+      { ...design(), version: 3, goalkeeper: KEEPER },
+      { ...design(), version: 2, parts: { fourth: { shorts: '#000000' } } },
+      { ...design(), version: 2, parts: { home: { boots: '#000000' } } },
+      { ...design(), version: 2, parts: { home: { socks: 'white' } } },
+      { ...design(), version: 2, goalkeeper: { ...KEEPER, gloves: undefined } },
+      {
+        ...design(),
+        version: 2,
+        goalkeeper: { ...KEEPER, shirt: { pattern: 'sash', primary: '#000000' } },
       },
     ];
     for (const identity of malformed) {

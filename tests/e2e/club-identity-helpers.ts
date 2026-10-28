@@ -3,7 +3,13 @@ import { expect, type Locator, type Page, type TestInfo } from '@playwright/test
 import { readFile } from 'node:fs/promises';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import { SHIRT_PATTERN_LABELS } from '../../apps/web/src/ui/kitPainting';
-import { KIT_ROLES, type ClubIdentity, type KitRole } from '../../packages/contracts/src/identity';
+import {
+  KIT_ROLES,
+  type ClubIdentity,
+  type KitRole,
+  type KitParts,
+  type GoalkeeperKit,
+} from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
 import { watchNext } from './watch';
@@ -324,6 +330,39 @@ export async function editShirt(editor: Locator, role: KitRole) {
   await roleButton(editor, role).click();
   return editor.getByRole('group', { name: '색상', exact: true });
 }
+/** Sets a kit's freely chosen parts through the editor's colour controls. */
+export async function editKitParts(editor: Locator, role: KitRole, parts: KitParts) {
+  await editShirt(editor, role);
+  if (parts.shorts !== undefined)
+    await colourCode(editor, `${KIT_LABEL[role]} 하의 색 코드`).fill(parts.shorts);
+  if (parts.socks !== undefined)
+    await colourCode(editor, `${KIT_LABEL[role]} 양말 색 코드`).fill(parts.socks);
+}
+/** Opens the goalkeeper's design without saving an automatic draft. */
+export async function goalkeeperTab(editor: Locator) {
+  const button = editor
+    .getByRole('group', { name: '편집할 유니폼', exact: true })
+    .getByRole('button', { name: '골키퍼 유니폼', exact: true });
+  await button.click();
+  await expect(button).toHaveAttribute('aria-pressed', 'true');
+}
+/** Sets the complete designed keeper, including every visible shirt region and gloves. */
+export async function editGoalkeeper(editor: Locator, kit: GoalkeeperKit) {
+  await goalkeeperTab(editor);
+  await editor
+    .getByRole('group', { name: '골키퍼 유니폼 무늬', exact: true })
+    .getByRole('button', { name: SHIRT_PATTERN_LABELS[kit.shirt.pattern], exact: true })
+    .click();
+  for (const [label, colour] of [
+    ['상의', kit.shirt.primary],
+    ['보조색', kit.shirt.secondary],
+    ['테두리', kit.shirt.trim],
+    ['하의', kit.shorts],
+    ['양말', kit.socks],
+    ['장갑', kit.gloves],
+  ])
+    if (colour !== undefined) await colourCode(editor, `골키퍼 ${label} 색 코드`).fill(colour);
+}
 /** Set the three named colours, ready-made crest and shirt patterns through real controls. */
 export async function designInEditor(editor: Locator, design: ClubIdentity, preset: string) {
   for (const role of KIT_ROLES)
@@ -338,7 +377,9 @@ export async function designInEditor(editor: Locator, design: ClubIdentity, pres
       .getByRole('group', { name: `${KIT_LABEL[role]} 유니폼 무늬`, exact: true })
       .getByRole('button', { name: SHIRT_PATTERN_LABELS[design.kits[role].pattern], exact: true })
       .click();
+    if (design.parts?.[role]) await editKitParts(editor, role, design.parts[role]);
   }
+  if (design.goalkeeper) await editGoalkeeper(editor, design.goalkeeper);
 }
 
 /** 구단주 사무실 › 구단 디자인 from home, once its lazily loaded editor is there (→WEB-39). */

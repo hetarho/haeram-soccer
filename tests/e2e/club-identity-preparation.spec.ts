@@ -13,7 +13,7 @@ import {
 } from '../../packages/engine/src/index';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import { ALL_DELEGATED } from './events';
-import { savedWorld } from './club-identity-helpers';
+import { savedWorld, canvasPixels } from './club-identity-helpers';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { watchNext } from './watch';
 
@@ -110,7 +110,7 @@ test('our home league shirt is previewed, committed once, kept through reload an
   // Both sides' shirts and automatic keepers are named before anything is chosen.
   const caption = kit.locator('figcaption');
   await expect(caption).toContainText(`홈 Kit Town: ${LABEL[automatic]} 유니폼`);
-  await expect(caption).toContainText('골키퍼는 자동으로 골라요');
+  await expect(caption).toContainText('골키퍼 착용:');
   await expect(kit.getByRole('radio', { checked: true })).toHaveCount(0);
   // Choosing redraws only the preview: our side stays at home and nothing is saved.
   await radio(kit, role).click();
@@ -333,4 +333,45 @@ test('automatic play moving the next fixture restarts the preview and never appl
   await stop.click();
   await expect.poll(() => recorded(page, next.id), { timeout: 20000 }).toEqual(automatic);
   expect('kitChoice' in (await savedWorld(page))).toBe(false);
+});
+
+test('preparation states a fixture-only keeper fallback without changing the saved design', async ({
+  page,
+}) => {
+  test.slow();
+  await page.setViewportSize({ width: 360, height: 740 });
+  const w = career(0);
+  const next = nextOwnFixture(w)!;
+  const own = ownSide(w, next);
+  const club = w.clubs.find((c) => c.id === w.playerClub)!;
+  const identity = identityOf(w, w.playerClub);
+  club.identity = {
+    ...identity,
+    version: 2,
+    goalkeeper: {
+      shirt: { ...identity.kits.home },
+      shorts: '#123456',
+      socks: '#654321',
+      gloves: '#ABCDEF',
+    },
+  };
+  const designed = structuredClone(club.identity);
+  const expected = chosenAppearance(w, next, 'home');
+  expect(expected.sides[own].keeperFallback).toBe(true);
+  await importResponsibilityCareer(page, w);
+  const { dialog, kit } = await openKit(page, hubPreparation(page));
+  await radio(kit, 'home').click();
+  const notice = kit.getByTestId('fixture-kit-keeper-fallback');
+  await expect(notice).toContainText(
+    `이번 경기만 자동 색 ${expected.sides[own].goalkeeper}으로 대체해요.`,
+  );
+  await expect(notice).toContainText('저장한 골키퍼 디자인은 그대로예요.');
+  const pitch = kit.getByRole('img', { name: '경기장 유니폼 미리보기', exact: true });
+  await expect.poll(() => canvasPixels(pitch, expected.sides[own].goalkeeper)).toBeGreaterThan(10);
+  await kit.getByRole('button', { name: '이 유니폼으로 정하기', exact: true }).click();
+  await expect(kit.getByTestId('fixture-kit-message')).toContainText('홈 유니폼으로 정했어요.');
+  expect((await savedWorld(page)).clubs.find((c) => c.id === w.playerClub)!.identity).toEqual(
+    designed,
+  );
+  await closePreparation(page, dialog, true);
 });

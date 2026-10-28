@@ -165,10 +165,10 @@ export const FUTURE_CHECKPOINTS: Record<
       ...JSON.parse(await encode(w, generation, parentGeneration)),
       schema: MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1,
     }),
-  'identity format 2': async (w, generation, parentGeneration) => {
+  'identity format 3': async (w, generation, parentGeneration) => {
     const future = structuredClone(w);
     const own = future.clubs.find((club) => club.id === future.playerClub)!;
-    own.identity = { ...identityOf(future, own.id), version: 2 } as unknown as ClubIdentity;
+    own.identity = { ...identityOf(future, own.id), version: 3 } as unknown as ClubIdentity;
     return encode(future, generation, parentGeneration);
   },
 };

@@ -595,7 +595,7 @@ describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
     const earlier = preIdentity();
     earlier.engine = '3.0.0';
     const future = simulatedWorld(input);
-    future.clubs[0].identity = { ...future.clubs[0].identity!, version: 2 as 1 };
+    future.clubs[0].identity = { ...future.clubs[0].identity!, version: 3 as 2 };
     for (const world of [earlier, future]) {
       const h = new Host();
       const reply = await h.handle(activate('incompatible', await encode(world)));

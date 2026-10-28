@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ClubIdentity } from '../../../../packages/contracts/src/identity';
+import { normaliseIdentity } from '../../../../packages/contracts/src/identitySchema';
 import { identityOf } from '../../../../packages/engine/src/club-identity';
 import type { ClientState, GameClient } from '../runtime/client';
 import { gameActionsBlocked, gameStore, useGameState } from '../runtime/store';
@@ -92,7 +93,7 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
   const apply = async () => {
     if (!draft || !changed || stale || blocked || pending) return;
     const worldId = w.id;
-    const sent = draft.draft;
+    const sent = normaliseIdentity(draft.draft);
     setPending(true);
     setNotice(undefined);
     // The existing queue carries the current revision and saves the decision (→SAVE-6/8).
