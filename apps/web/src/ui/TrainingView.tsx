@@ -181,15 +181,6 @@ function TrainingFocusPanel({
           {focus.rounds ? ` · ${focus.rounds}라운드 남음` : ''}
         </span>
       </header>
-      <p data-surface="tile" className={s.advice} data-testid="training-advice">
-        {call.reason}
-      </p>
-      <p className={s.actor}>
-        담당 수석코치{' '}
-        <button type="button" onClick={() => openStaff('assistant')}>
-          {w.staff?.find((person) => person.role === 'assistant')?.name ?? '공석'} · 보기
-        </button>
-      </p>
       <button
         data-ui="link"
         type="button"
@@ -204,6 +195,15 @@ function TrainingFocusPanel({
           ›
         </span>
       </button>
+      <p data-surface="tile" className={s.advice} data-testid="training-advice">
+        {call.reason}
+      </p>
+      <p className={s.actor}>
+        담당 수석코치{' '}
+        <button type="button" onClick={() => openStaff('assistant')}>
+          {w.staff?.find((person) => person.role === 'assistant')?.name ?? '공석'} · 보기
+        </button>
+      </p>
       <details className={s.reference}>
         <summary>훈련 효과·자동 판단 기준</summary>
         <ul className={s.focuses} aria-label="훈련 방향별 효과">
