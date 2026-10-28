@@ -378,9 +378,8 @@
 |---|---|---|---|---|
 | T538 | Match-model revision 5: carriers take open ground, recycle only safely, never far back with room near the box | MATCH SAVE ARCH | - | doing@261028.f5j2 |
 | T539 | Hold the football targets within 25% of the real-football mean | MATCH ARCH | - | doing@261028.f5j2 |
-| T544 | Paint top-down player figures in their kits | MATCH KIT WEB ARCH | T542 T543 | doing@261028.pl1 |
-| T545 | Match observation draws posed player figures | MATCH WEB KIT ARCH | T544 | todo |
-| T546 | Kit editor with shorts, socks and goalkeeper kit; figure previews | KIT WEB SAVE MATCH ARCH | T544 | todo |
+| T545 | Match observation draws posed player figures | MATCH WEB KIT ARCH | T544 | doing@261028.pl1 |
+| T546 | Kit editor with shorts, socks and goalkeeper kit; figure previews | KIT WEB SAVE MATCH ARCH | T544 | doing@261028.pl1 |
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
@@ -403,6 +402,8 @@
 - UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
+- 261028 lanes start (pl1): T545 match-figures (dev3) and T546 kit-editor (dev4) in worktrees task/T545 and task/T546.
+- 261028 T544 done (dev3, 1f605f49): figure painter and number tags; PL re-ran 40 unit tests and typecheck; merged.
 - 261028 T544 start (dev3) in worktree task/T544 (pl1).
 - 261028 T542 done (dev1, 158a5b64): kit wear v2, torso selection, keeper fallback; PL re-ran typecheck, 57 unit and 23 contract tests; merged.
 - 261028 T543 done (dev3, 407a5e9d): figure poses and action windows; PL re-ran its 16 unit tests and typecheck; merged into feat/player-figures-kits.
@@ -421,5 +422,3 @@
 - 261028 fix live-observation-order: cover both match-eve-before-selection and interleaved browsing, dismiss/reopen pending observation for the remaining read-only visit, and scope date assertions to the active calendar/theatre. All date, score, scorer and retained-node assertions remain.
 - 261028 fix coach-hiring-unit-setup: use the known criteria-change-85 seed and assert its candidate condition, eliminating 86 cold world generations; keep all hiring/contract assertions and the 30 s timeout.
 - 261028 fix personnel-navigation-geometry: wait for the incoming hub animation before clicking its local tab, preserving exact zero-scroll and facility-image assertions in Firefox; no production code change.
-- 261028 fix compact-competition-hub: remove 10 px of inter-row margin while retaining 44 px targets and seven complete phone standings rows; office helper dismisses a newly arrived match-eve report before retrying entry.
-- 261028 T535 done: settings feedback survives dialog handoff without a copied toast; request helper waits for home return; remaining cup journeys follow Season.
