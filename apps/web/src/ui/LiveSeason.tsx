@@ -61,6 +61,7 @@ import {
   type LeagueChoice,
 } from './league';
 import { LeaguePicker, leagueName, useLeagueFixtures } from './LeaguePicker';
+import { CompetitionTabs } from './CompetitionTabs';
 import {
   selectLeagueWorld,
   selectMatchWorld,
@@ -382,6 +383,7 @@ const LeagueScope = memo(function LeagueScope({
   const w = useGameState(selectLeagueWorld)!;
   return (
     <div className={s.competitionScope} aria-label="선택한 리그와 시즌">
+      <CompetitionTabs page="league" />
       <b className={s.srOnly}>
         {leagueName(league ?? ownLeague(w))} · {seasonName(w.year)}
       </b>

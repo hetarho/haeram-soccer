@@ -2688,7 +2688,7 @@
   margin-bottom: 4px;
 }
 .operationsTabs button {
-  flex: 1 0 auto;
+  flex: 0 0 auto;
   white-space: nowrap;
 }
 /* Debt or a short runway: a red band on every view, never a stop (→ECON-24). */
@@ -3231,8 +3231,10 @@
 }
 
 .competitionScope {
-  display: grid;
-  gap: 4px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--control-gap) var(--row-padding);
   margin: 4px 0;
   font-size: var(--label-size);
 }
@@ -3280,4 +3282,31 @@
 .centered > .modal {
   max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   border-radius: var(--dialog-radius);
+}
+
+/* Competition navigation and its scope share a row before the view tabs. */
+.competitionScope > .competitionTabs {
+  flex: 0 0 auto;
+  margin: 0;
+}
+.competitionScope .leaguePicker {
+  flex: 1 1 180px;
+  flex-wrap: nowrap;
+  gap: 4px;
+  margin: 0;
+}
+.competitionScope .leaguePicker > label {
+  flex: 1 1 60px;
+}
+.competitionScope .leaguePicker > label:first-child {
+  flex-basis: 80px;
+}
+.competitionScope .leaguePicker :global([data-select-trigger]) {
+  padding-inline: 6px;
+  font-size: 12px;
+}
+.competitionScope .leagueHome {
+  min-height: var(--control-min-height);
+  padding-inline: 8px;
+  font-size: 12px;
 }

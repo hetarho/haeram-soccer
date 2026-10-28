@@ -21,10 +21,24 @@ for (const width of [390, 1280]) {
     for (const key of RESPONSIBILITY_KEYS) w.settings!.responsibilities[key] = 'delegated';
     const before = structuredClone(w.settings);
     await importResponsibilityCareer(page, w);
-    const entrance = page.getByRole('button', { name: '구단주 사무실 들어가기', exact: true });
-    await expect(entrance).toHaveText('구단주 사무실 들어가기');
-    const art = await entrance.locator('[data-facility-art="manager"]').boundingBox();
-    expect(art!.width / art!.height).toBeCloseTo(3, 1);
+    const entrance = page.getByRole('button', { name: '구단주 사무실 입장', exact: true });
+    await expect(entrance).toHaveText('구단주 사무실 입장');
+    const visits = page.getByRole('region', { name: '구단 시설 방문' });
+    await expect(visits.getByRole('button')).toHaveCount(3);
+    const stadium = await page.locator('[data-home-part="scene"]').boundingBox();
+    const bounds = await entrance.boundingBox();
+    expect(bounds!.height).toBeGreaterThanOrEqual(44);
+    expect(bounds!.height).toBeLessThan(stadium!.height);
+    const address = page.url();
+    for (const destination of ['감독 사무실', '훈련장']) {
+      await visits.getByRole('button', { name: `${destination} 방문`, exact: true }).click();
+      const notice = page.getByRole('dialog', { name: `${destination} · 준비 중` });
+      await expect(notice).toContainText('활동을 준비 중이에요.');
+      expect(page.url()).toBe(address);
+      await page.keyboard.press('Escape');
+      await expect(notice).toHaveCount(0);
+      await expect(visits.getByRole('button', { name: `${destination} 방문` })).toBeFocused();
+    }
     await enterOffice(page);
     const lobby = page.getByTestId('office-lobby');
     await expect(lobby.locator('[data-office-area]')).toHaveCount(5);

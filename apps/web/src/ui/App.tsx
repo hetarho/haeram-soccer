@@ -1213,7 +1213,7 @@ export function App() {
                   <div className={s.coreContent} hidden={contentPage !== 'dashboard'}>
                     <ConnectedDashboard client={client} />
                   </div>
-                  <CompetitionTabs page={contentPage} />
+                  {contentPage !== 'league' && <CompetitionTabs page={contentPage} />}
                   <div
                     id="competition-hub-panel"
                     className={s.views}

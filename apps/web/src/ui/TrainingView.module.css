@@ -16,7 +16,7 @@
 }
 .card {
   min-width: 0;
-  padding: 20px;
+  padding: var(--panel-padding);
   border-radius: var(--radius);
   border: 1px solid var(--line);
   background: var(--surface-grain, none) var(--surface);
@@ -72,8 +72,8 @@
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px 14px;
-  min-height: 84px;
-  padding: 14px;
+  min-height: 60px;
+  padding: var(--panel-padding);
   border-radius: var(--card-radius);
   border: 1px solid var(--line);
   background: var(--inset-fill, rgba(0, 0, 0, 0.22));

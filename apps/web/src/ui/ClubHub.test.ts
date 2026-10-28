@@ -149,16 +149,17 @@ describe('home season card', () => {
   });
 });
 
-describe('owner office entrance', () => {
-  it('is one full illustration with only its entrance action (→WEB-11/39)', () => {
+describe('facility entrances', () => {
+  it('offers three named compact visits with decorative background art (→WEB-11/39)', () => {
     const markup = renderToStaticMarkup(createElement(OfficeEntrance, { w: world() }));
-    expect(markup).toMatch(/^<button[^>]*aria-label="구단주 사무실 들어가기"/);
-    expect(markup).toContain('data-home-part="office"');
-    expect(markup).not.toContain('aria-describedby');
-    expect(markup).toContain('구단주 사무실 들어가기');
+    expect(markup).toContain('aria-label="구단 시설 방문"');
+    for (const label of ['구단주 사무실 입장', '감독 사무실 방문', '훈련장 방문'])
+      expect(markup).toContain(`aria-label="${label}"`);
+    expect(markup.match(/<button/g)).toHaveLength(3);
+    expect(markup.match(/aria-haspopup="dialog"/g)).toHaveLength(2);
+    expect(markup.match(/aria-hidden="true"/g)?.length).toBeGreaterThanOrEqual(3);
+    expect(markup).toContain('data-facility-art="training"');
     expect(markup).not.toContain('운영 방침');
-    expect(markup).not.toContain('<small');
-    expect(markup).toContain('data-facility-art="manager"');
   });
 });
 

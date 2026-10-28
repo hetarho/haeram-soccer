@@ -190,8 +190,8 @@
   align-items: center;
   gap: 10px;
   width: 100%;
-  min-height: 56px;
-  padding: 12px;
+  min-height: var(--control-min-height);
+  padding: var(--row-padding) var(--panel-padding);
   border: 0;
   border-radius: var(--card-radius);
   background: transparent;
