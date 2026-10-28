@@ -434,4 +434,3 @@
 - 261028 T547 (dev1) and T543 (dev3) start in worktrees task/T542 (renumbered T547 at merge) and task/T543 (pl1).
 - 261028 create-task done (pl1): T543–T547 from KIT r4 MATCH r36 WEB r166 SAVE r56; foundation T547 ‖ T543 → T544, lanes match-figures T545 and kit-editor T546.
 - 261028 create-task KIT MATCH WEB SAVE start (pl1): player figures and full kits on branch feat/player-figures-kits.
-- 261028 T542 done and pushed at the owner's request after the unit stage: revision 6; 600-match goals 3.71 above the tolerance, follow-up in next.
