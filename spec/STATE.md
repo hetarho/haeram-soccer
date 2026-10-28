@@ -417,6 +417,7 @@
 - cp29: all place/market corrections integrated; scoped training/market proofs pass. Complete the frozen final gate, publish verified main and wait for CI.
 
 ## log
+- 261029 fix recruitment cost fixture: hold unrelated staff appointments for direct approval so the unchanged exact loan wage/cash/save assertions isolate the transfer; reproduced staff wage delta338322 separately.
 - 261029 cp29 integrate all T562–T568; training three viewports and market compact/running-clock three actual browser probes pass; freeze the complete final candidate.
 - 261029 cp29 audit331 Chromium cases(296pass35fail); scoped T563 proof4pass2fail, corrective units T562–T568 remain under review/implementation.
 - 261029 fix browser navigation: accept remembered root clubhouse aliases and dismiss/reopen early match-eve observations through real controls; preserve history, calendar and rendered-data assertions.
@@ -436,4 +437,3 @@
 - 261029 create-task T564 (cp29): duplicate-name global results span pages; preserve stable player identity and all mediation/recruitment assertions through real page controls.
 - 261029 create-task T563 (cp29): restore measured mobile target and standings viewport regressions without reducing existing accessibility or row-count checks.
 - 261029 create-task T562 (cp29): reproduced facility and route-transition browser drift; implement in an isolated worker while the coordinator completes the frozen browser run.
-- 261029 fix host.world-market fixture: use the protocol’s legal stale revision -1 instead of invalid -100; preserve bounded reads, source identity, settlement and idempotency assertions.

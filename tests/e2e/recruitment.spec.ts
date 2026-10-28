@@ -311,6 +311,8 @@ test('filters and compares stable candidates, discloses free wages, and saves re
 }) => {
   test.slow();
   await foundMarket(page, 'recruitment-ui');
+  // Isolate the loan's annual wage change from unrelated delegated staff appointments.
+  await configureResponsibilities(page, { responsibilities: { staff: 'direct' } });
   const before = await exportWorld(page);
   const offers = transferOffers(before);
   const desk = page.getByRole('region', { name: '선수 영입 데스크' });
