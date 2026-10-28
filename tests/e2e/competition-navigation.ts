@@ -1,6 +1,9 @@
 import { expect, type Page } from '@playwright/test';
 import { settle } from './layout';
 
+// Imported careers can retain the root address as their remembered dashboard route.
+const isClubhouseRoute = (url: URL) => url.pathname === '/journal' || url.pathname === '/';
+
 /** Enter through the clubhouse, then its local lens, using the journey's real UI steps. */
 async function openLens(
   page: Page,
@@ -17,7 +20,7 @@ async function openLens(
       .getByRole('navigation', { name: mobile ? '모바일 게임 메뉴' : '게임 메뉴', exact: true })
       .getByRole('button', { name: '클럽하우스', exact: true })
       .click();
-    await expect(page).toHaveURL((url) => url.pathname === '/journal');
+    await expect(page).toHaveURL(isClubhouseRoute);
     const home = page.getByTestId('club-hub');
     await expect(home).toBeVisible();
     await settle(page);
@@ -53,7 +56,7 @@ export const resumeLeague = (page: Page) => openLens(page, '시즌', '리그', '
 /** Retrace the league detour through the clubhouse to the retained match. */
 export async function returnToMatch(page: Page) {
   await page.goBack();
-  await expect(page).toHaveURL((url) => url.pathname === '/journal');
+  await expect(page).toHaveURL(isClubhouseRoute);
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await page.goBack();
   await expect(page).toHaveURL((url) => url.pathname === '/matches');
