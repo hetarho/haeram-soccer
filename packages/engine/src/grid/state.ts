@@ -209,6 +209,14 @@ export function createState(setup: GridSetup): GridState {
         onAt: 0,
         onMin: 0,
         base: new Float64Array(ATTRIBUTES.length),
+        // The fields a match sets later, present from the start: one object shape for every player,
+        // so the reads of his fields stay monomorphic (JSON and `canonical` leave undefined out).
+        vel: undefined,
+        run: undefined,
+        intention: undefined,
+        ended: undefined,
+        offAt: undefined,
+        offMin: undefined,
       };
       fillBase(setup, gp, gp.slot);
       return gp;
