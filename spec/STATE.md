@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| p9c3 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T14:22Z | 2026-10-28T14:22Z | - |
 
 ## inbox
 - 261028 decided KIT-3 KIT-8 SAVE-20 T547: how to store shorts/socks and the goalkeeper kit → optional `parts`/`goalkeeper` on ClubIdentity with version 2 only when present, appearances version 2 with worn kits (alt: wrap every kit in a new outfit type | always write version 2); old builds read new saves as a newer game, existing v1 saves stay untouched.
