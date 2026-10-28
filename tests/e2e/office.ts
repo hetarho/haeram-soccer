@@ -47,7 +47,7 @@ export async function enterOffice(page: Page, options: { timeout?: number } = {}
     .getByRole('button')
     .filter({ has: page.locator('[data-pixel-icon="home"]') })
     .first();
-  if ((await home.getAttribute('aria-current')) !== 'page') await home.click(options);
+  if (new URL(page.url()).pathname !== '/journal') await home.click(options);
   const hub = page.getByTestId('club-hub');
   await expect(hub).toBeVisible();
   if (await covering.isVisible())

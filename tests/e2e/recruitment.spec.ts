@@ -42,7 +42,9 @@ async function foundMarket(page: Page, seed: string, difficulty: '쉬움' | '어
 
 /** The market is 사람's second tab. */
 const marketTab = (page: Page) =>
-  page.getByRole('tablist', { name: '1군' }).getByRole('tab', { name: '이적시장', exact: true });
+  page
+    .getByRole('tablist', { name: '감독 사무실' })
+    .getByRole('tab', { name: '이적시장', exact: true });
 async function openMarket(page: Page) {
   await openPersonnel(page, 'players');
   await marketTab(page).click();

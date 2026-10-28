@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { competitionRoute, selectedYear } from './competitionNavigation';
+import { competitionRoute, selectedYear, currentCupBriefings } from './competitionNavigation';
 import {
   beginTaskDetour,
+  useCupRequest,
+  activateTaskWorld,
   openClubSeason,
   openCupSeason,
   openLeagueSeason,
@@ -10,6 +12,7 @@ import {
   routeOf,
   useNavigation,
 } from './state';
+import type { World } from '../../../../packages/contracts/src/types';
 import { useTaskMemory } from './taskMemory';
 
 const paramsOf = (address: string) => new URL(address, 'https://example.test').searchParams;
@@ -116,6 +119,20 @@ describe('competition session continuity', () => {
     openClubSeason(1950);
     expect(useNavigation.getState().page).toBe('history');
   });
+  it('opens the exact current cup from home, keeps a named return and clears stale requests for a new world', () => {
+    openCupSeason(1952, 'ucl', 1952);
+    expect(useNavigation.getState().page).toBe('europe');
+    expect(useCupRequest.getState().request).toEqual({ year: 1952, competition: 'ucl' });
+    expect(useTaskMemory.getState().returning).toMatchObject({
+      page: 'dashboard',
+      target: 'europe',
+      address: '/journal',
+    });
+    returnToTask();
+    expect(location.pathname).toBe('/journal');
+    activateTaskWorld('different-cup-world');
+    expect(useCupRequest.getState().request).toBeUndefined();
+  });
   it('resumes group lenses and complete addresses, then clears them on a world change', () => {
     useNavigation.getState().setPage('cupHistory');
     history.replaceState(null, '', '/history?section=cup&cup=cup&country=GER&season=1950');
@@ -132,5 +149,104 @@ describe('competition session continuity', () => {
     expect(location.search).toBe('?section=club');
     beginTaskDetour('leagueHistory');
     expect(useTaskMemory.getState().returning?.target).toBe('leagueHistory');
+  });
+});
+
+describe('clubhouse cup facts', () => {
+  const world = () =>
+    ({
+      year: 1956,
+      playerClub: 'own',
+      clubs: [
+        { id: 'own', country: 'ENG', name: 'Own FC' },
+        { id: 'rival', name: 'Rival FC' },
+      ],
+      cups: [],
+      europe: [],
+    }) as unknown as World;
+  const cup = () =>
+    ({
+      country: 'ENG',
+      name: 'Synthetic Cup',
+      clubs: ['own', 'rival'],
+      rounds: [{ label: '결승', round: 8, legs: 1, ties: [{ home: 'own', away: 'rival' }] }],
+      fixtures: [{ id: 'final', year: 1956, round: 8, kind: 'cup', home: 'own', away: 'rival' }],
+    }) as NonNullable<World['cups']>[number];
+
+  it('does not invent entry or results before a domestic draw', () => {
+    expect(currentCupBriefings(world())).toEqual([
+      { key: 'cup', name: '잉글랜드 컵', status: '대진 정보 없음', detail: '', winner: '' },
+    ]);
+  });
+  it('labels a retained field without our club as not entered', () => {
+    const w = world();
+    const c = cup();
+    c.clubs = ['rival'];
+    w.cups = [c];
+    expect(currentCupBriefings(w)[0].status).toBe('미참가');
+  });
+  it('reports the next retained tie with its actual opponent and home orientation', () => {
+    const w = world();
+    w.cups = [cup()];
+    const before = JSON.stringify(w);
+    expect(currentCupBriefings(w)[0]).toMatchObject({
+      key: 'cup',
+      status: '결승',
+      detail: expect.stringContaining('홈 Rival FC'),
+    });
+    expect(JSON.stringify(w)).toBe(before);
+  });
+  it.each(['own', 'rival'])('reports a settled final and current winner %s', (winner) => {
+    const w = world();
+    const c = cup();
+    w.cups = [c];
+    c.winner = winner;
+    c.rounds[0].ties[0].winner = winner;
+    c.fixtures[0].score = { home: winner === 'own' ? 2 : 0, away: 1 };
+    expect(currentCupBriefings(w)[0]).toMatchObject({
+      status: winner === 'own' ? '우승' : '결승 탈락',
+      winner: `대회 우승 · ${winner === 'own' ? 'Own FC' : 'Rival FC'}`,
+      detail: expect.stringContaining('최근 Own FC'),
+    });
+  });
+  it('keeps continental stage, recorded exit and nonparticipation separate', () => {
+    const w = world();
+    w.europe = [
+      {
+        key: 'ucl',
+        name: 'European Cup',
+        clubs: ['own'],
+        rounds: [],
+        fixtures: [],
+        stage: '조별 리그',
+      },
+      {
+        key: 'uel',
+        name: 'UEFA Cup',
+        clubs: ['own'],
+        rounds: [],
+        fixtures: [],
+        stage: '16강',
+        ownExit: '조별 리그 탈락',
+      },
+      {
+        key: 'uecl',
+        name: 'Conference',
+        clubs: ['rival'],
+        rounds: [],
+        fixtures: [],
+        stage: '결승',
+        winner: 'rival',
+      },
+    ] as unknown as World['europe'];
+    expect(
+      currentCupBriefings(w)
+        .slice(1)
+        .map(({ key, status }) => [key, status]),
+    ).toEqual([
+      ['ucl', '조별 리그'],
+      ['uel', '조별 리그 탈락'],
+      ['uecl', '미참가'],
+    ]);
   });
 });

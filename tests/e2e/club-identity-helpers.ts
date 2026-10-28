@@ -414,7 +414,7 @@ export async function openKit(page: Page, opener?: Locator) {
     if (!(await page.getByTestId('club-hub').isVisible()))
       await page
         .getByRole('navigation')
-        .getByRole('button', { name: '클럽 홈', exact: true })
+        .getByRole('button', { name: '클럽하우스', exact: true })
         .first()
         .click();
   }

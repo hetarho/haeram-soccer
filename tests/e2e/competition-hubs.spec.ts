@@ -9,6 +9,11 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단 →', exact: true }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
+  await page.getByRole('button', { name: '잉글랜드 컵 현재 대회 보기', exact: true }).click();
+  await expect(page).toHaveURL(/season\?competition=cup.*cup=cup/);
+  await expect(page.getByRole('region', { name: '잉글랜드 컵', exact: true })).toBeVisible();
+  await page.goBack();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
   await openLeague(page);
   const leagueTab = await page.getByRole('tab', { name: '리그', exact: true }).boundingBox();
   const countrySelect = await page
@@ -70,6 +75,6 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
   await expect(
     page
       .getByRole('navigation', { name: '모바일 게임 메뉴', exact: true })
-      .getByRole('button', { name: '역사', exact: true }),
+      .getByRole('button', { name: '클럽하우스', exact: true }),
   ).toHaveAttribute('aria-current', 'page');
 });

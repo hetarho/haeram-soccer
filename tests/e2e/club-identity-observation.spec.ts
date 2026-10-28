@@ -348,7 +348,7 @@ test('a design applied while the match is paused mid-match leaves its recorded s
   await leaveOffice(page);
   await page
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '클럽 홈', exact: true })
+    .getByRole('button', { name: '클럽하우스', exact: true })
     .click();
   const back = await openWatchAction(page);
   await expect(back).toHaveAccessibleName('관전 이어보기');

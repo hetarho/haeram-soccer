@@ -78,7 +78,7 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await dialog.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
-  await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
+  await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
   await expect(page.getByTestId('hub-preparation')).toContainText('감독 자동 선발');
   await openOfficeArea(page, '투자');
   await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
@@ -116,7 +116,7 @@ for (const viewport of [
     await chooseOption(country, 'FRA');
     const contextUrl = page.url();
     // The clock runs on home; sheets opened there never pause it.
-    await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
+    await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
     const date = page.getByTestId('game-date');
     await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
     await expect(date).toHaveText('1950년 8월 2일');
@@ -149,7 +149,7 @@ for (const viewport of [
     await expect(page).toHaveURL(contextUrl);
     await expect(country).toHaveAttribute('data-value', 'FRA');
 
-    await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
+    await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
     await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: /^\d+시즌 진행$/ })).toHaveCount(0);
   });

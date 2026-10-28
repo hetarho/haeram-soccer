@@ -19,10 +19,10 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await openPersonnel(page, 'players');
-  await expect(page.getByRole('tablist', { name: '1군', exact: true })).toBeVisible();
+  await expect(page.getByRole('tablist', { name: '감독 사무실', exact: true })).toBeVisible();
   // First-team work starts on the roster; coaching work has its own primary hub.
   const peopleTab = (name: string) =>
-    page.getByRole('tablist', { name: '1군' }).getByRole('tab', { name, exact: true });
+    page.getByRole('tablist', { name: '감독 사무실' }).getByRole('tab', { name, exact: true });
   await expect(peopleTab('선수 목록')).toHaveAttribute('aria-selected', 'true');
   await openPersonnel(page, 'coaches');
   await expect(page.getByRole('region', { name: '스태프', exact: true })).toBeVisible();
@@ -64,7 +64,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await closeMarketPanel(page, '영입 정보');
   await peopleTab('선수 목록').click();
   await expect(page.getByText('선수단 21/40', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
+  await page.getByRole('button', { name: '클럽하우스', exact: true }).click();
   await finishSeason(page);
   await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1951');
   await expect(page.getByTestId('game-round')).toHaveText('0');
@@ -114,7 +114,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await saveMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   const raw = readFileSync((await file.path())!);
   expect(JSON.parse(raw.toString()).codec).toBe('gzip-cjk14');
-  await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
+  await page.getByRole('button', { name: '클럽하우스', exact: true }).click();
   await advanceOneRound(page);
   await expect(page.getByTestId('game-round')).toHaveText('1');
   await (

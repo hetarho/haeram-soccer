@@ -227,7 +227,7 @@ for (const width of [390, 1380])
       expect(homeSkin.frame).toContain(assetPath);
       expect(homeSkin.fill).toContain(assetPath);
       await expectHomeSceneRatio(page);
-      const stats = page.getByRole('button', { name: '시즌 상세', exact: true });
+      const stats = page.getByRole('button', { name: '현재 리그 보기', exact: true });
       await expect(stats.locator('[data-pixel-icon="chevronRight"]')).toHaveCount(1);
       await expect(stats.locator('[data-pixel-icon="play"]')).toHaveCount(0);
       await page.getByRole('button', { name: /^피로/ }).click();
@@ -289,7 +289,7 @@ for (const width of [390, 1380])
       await page.getByRole('dialog').getByRole('button', { name: '창 닫기', exact: true }).click();
       await page
         .getByRole('navigation')
-        .getByRole('button', { name: '클럽 홈', exact: true })
+        .getByRole('button', { name: '클럽하우스', exact: true })
         .click();
       await expect(page.getByTestId('club-hub')).toBeVisible();
       await expect(page.getByTestId('game-date')).toHaveText(date);

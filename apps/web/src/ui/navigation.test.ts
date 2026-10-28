@@ -10,27 +10,32 @@ describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
     for (const [path, search, page, view, address] of [
       ['/squad', '', 'firstTeam', 'players', '/first-team?view=players'],
       ['/transfers', '', 'firstTeam', 'market', '/first-team?view=market'],
-      ['/people', '?view=manager', 'staff', 'manager', '/staff?view=manager'],
+      ['/people', '?view=manager', 'firstTeam', 'manager', '/first-team?view=manager'],
       ['/manager', '?view=coaches', 'staff', 'coaches', '/staff?view=coaches'],
-      ['/manager', '?view=delegation', 'staff', 'manager', '/staff?view=manager'],
-      ['/training', '', 'firstTeam', 'training', '/first-team?view=training'],
+      ['/manager', '?view=delegation', 'firstTeam', 'manager', '/first-team?view=manager'],
+      ['/first-team', '?view=training', 'training', undefined, '/training'],
     ])
-      expect(routeOf(path, search)).toEqual({ page, view, address });
+      expect(routeOf(path!, search!)).toEqual({ page, ...(view ? { view } : {}), address });
     expect(routeOf('/training', '?view=academy')).toEqual({ page: 'academy', address: '/academy' });
     for (const path of ['/manager', '/people'])
       expect(routeOf(path, '?view=candidates')).toEqual({
-        page: 'staff',
+        page: 'firstTeam',
         view: 'manager',
         market: true,
-        address: '/staff?view=manager&market=1',
+        address: '/first-team?view=manager&market=1',
       });
   });
 
   it('retains canonical subviews, meaningful filters and direct-load defaults', () => {
-    for (const view of ['players', 'market', 'training'])
+    for (const view of ['manager', 'players', 'market'])
       expect(routeOf('/first-team', `?view=${view}`)).toEqual({ page: 'firstTeam', view });
-    for (const view of ['manager', 'coaches'])
-      expect(routeOf('/staff', `?view=${view}`)).toEqual({ page: 'staff', view });
+    expect(routeOf('/staff', '?view=coaches')).toEqual({ page: 'staff', view: 'coaches' });
+    expect(routeOf('/training', '')).toEqual({ page: 'training' });
+    expect(routeOf('/staff', '?view=manager&player=p1')).toEqual({
+      page: 'firstTeam',
+      view: 'manager',
+      address: '/first-team?view=manager&player=p1',
+    });
     expect(routeOf('/academy', '')).toEqual({ page: 'academy' });
     expect(routeOf('/first-team', '')).toEqual({
       page: 'firstTeam',
@@ -39,8 +44,8 @@ describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
     });
     expect(routeOf('/staff', '?view=unknown')).toEqual({
       page: 'staff',
-      view: 'manager',
-      address: '/staff?view=manager',
+      view: 'coaches',
+      address: '/staff?view=coaches',
     });
     expect(routeOf('/people', '?view=market&player=p1&line=DF')).toEqual({
       page: 'firstTeam',

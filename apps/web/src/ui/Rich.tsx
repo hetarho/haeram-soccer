@@ -1277,10 +1277,10 @@ export default function Rich({
         panel={(tab, replace) => (
           <PersonnelPanel tab={tab} state={state} client={client} onReplace={replace} />
         )}
-        training={<TrainingView state={state} client={client} view="training" />}
         market={(close) => <ManagerMarket state={state} client={client} onClose={close} />}
       />
     );
+  if (page === 'training') return <TrainingView state={state} client={client} view="training" />;
   if (page === 'academy') return <TrainingView state={state} client={client} view="academy" />;
   if (page === 'business')
     return <Business state={state} client={client} controller={controller} />;

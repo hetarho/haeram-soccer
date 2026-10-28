@@ -136,7 +136,7 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await expect(roster.getByText('언해피 · 재계약 거절')).toBeVisible();
   await expect(roster).toContainText('시장');
 
-  await page.getByRole('button', { name: '클럽 홈', exact: true }).click();
+  await page.getByRole('button', { name: '클럽하우스', exact: true }).click();
   await expect(card).toHaveCount(0);
 
   // Six weeks later he hands in a transfer request.

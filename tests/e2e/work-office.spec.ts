@@ -24,20 +24,20 @@ for (const width of [390, 1280]) {
     const entrance = page.getByRole('button', { name: '구단주 사무실 입장', exact: true });
     await expect(entrance).toHaveText('구단주 사무실 입장');
     const visits = page.getByRole('region', { name: '구단 시설 방문' });
-    await expect(visits.getByRole('button')).toHaveCount(3);
+    await expect(visits.getByRole('button')).toHaveCount(5);
     const stadium = await page.locator('[data-home-part="scene"]').boundingBox();
     const bounds = await entrance.boundingBox();
     expect(bounds!.height).toBeGreaterThanOrEqual(44);
     expect(bounds!.height).toBeLessThan(stadium!.height);
-    const address = page.url();
-    for (const destination of ['감독 사무실', '훈련장']) {
-      await visits.getByRole('button', { name: `${destination} 방문`, exact: true }).click();
-      const notice = page.getByRole('dialog', { name: `${destination} · 준비 중` });
-      await expect(notice).toContainText('활동을 준비 중이에요.');
-      expect(page.url()).toBe(address);
-      await page.keyboard.press('Escape');
-      await expect(notice).toHaveCount(0);
-      await expect(visits.getByRole('button', { name: `${destination} 방문` })).toBeFocused();
+    for (const [destination, content] of [
+      ['감독 사무실', '감독실'],
+      ['훈련장', '1군 훈련장'],
+    ] as const) {
+      await visits.getByRole('button', { name: `${destination} 입장`, exact: true }).click();
+      if (destination === '훈련장') await expect(page.getByTestId('training-focus')).toBeVisible();
+      else await expect(page.getByTestId('facility-overview')).toHaveAccessibleName(content);
+      await page.goBack();
+      await expect(visits).toBeVisible();
     }
     await enterOffice(page);
     const lobby = page.getByTestId('office-lobby');

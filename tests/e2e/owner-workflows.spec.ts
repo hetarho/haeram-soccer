@@ -126,10 +126,9 @@ test('retains an unapplied academy investment through a detour and discards it e
     .getByRole('button', { name: '창 닫기', exact: true })
     .click();
   await expect(page.getByRole('dialog', { name: '유소년 업무 기준', exact: true })).toHaveCount(0);
-  await expect(nav(page).getByRole('button', { name: '유소년', exact: true })).toHaveAttribute(
-    'aria-current',
-    'page',
-  );
+  await expect(
+    nav(page).getByRole('button', { name: '유소년 훈련장', exact: true }),
+  ).toHaveAttribute('aria-current', 'page');
   await openOperations(page);
   const draft = page.getByTestId('strategy-board').getByTestId('strategy-draft');
   await expect(draft).toContainText('유소년 투자 기본 운영 → 육성 강화');
@@ -233,10 +232,9 @@ test('recruitment needs open on demand and academy operations open their exact w
   // The office opened on 시설; leaving it returns to the academy that asked (→WEB-39/74).
   await expect(officeTitle(page)).toHaveText('투자');
   await leaveOffice(page);
-  await expect(nav(page).getByRole('button', { name: '유소년', exact: true })).toHaveAttribute(
-    'aria-current',
-    'page',
-  );
+  await expect(
+    nav(page).getByRole('button', { name: '유소년 훈련장', exact: true }),
+  ).toHaveAttribute('aria-current', 'page');
 });
 
 test('opens club seasons in records and retains the detail scope through league and cup visits', async ({
@@ -327,7 +325,7 @@ test('keeps the home briefing informational alongside the public clock and links
   const hub = page.getByTestId('club-hub');
   await expect(hub.getByRole('button', { name: '시즌 진행 도구', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
-  await hub.getByRole('button', { name: '시즌 상세', exact: true }).click();
+  await hub.getByRole('button', { name: '클럽 소식·시즌 브리핑', exact: true }).click();
   const briefing = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
   await expect(briefing.getByRole('button', { name: '한 라운드 진행', exact: true })).toHaveCount(
     0,
@@ -338,7 +336,7 @@ test('keeps the home briefing informational alongside the public clock and links
   await briefing.getByRole('button', { name: '이번 시즌 구단 기록 →', exact: true }).click();
   await expect(briefing).toHaveCount(0);
   await expect(page).toHaveURL(/\/history\?section=club&season=1950/);
-  await nav(page).getByRole('button', { name: '클럽 홈', exact: true }).click();
+  await nav(page).getByRole('button', { name: '클럽하우스', exact: true }).click();
   await advanceOneRound(page);
   await expect(page.getByTestId('game-round')).toHaveText('1');
 });

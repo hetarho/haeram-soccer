@@ -183,7 +183,7 @@ describe('management screen calendar locks', () => {
   it('locks manager requests while navigation and replacement-market inspection remain available', () => {
     vi.stubGlobal('location', {
       origin: 'https://game.test',
-      pathname: '/staff',
+      pathname: '/first-team',
       search: '?view=manager',
     });
     expectLocked(
@@ -191,7 +191,7 @@ describe('management screen calendar locks', () => {
         createElement(Rich, {
           state: gameStore.getState(),
           client,
-          page: 'staff',
+          page: 'firstTeam',
           controller,
         }),
       /감독에게 제안하기/,
@@ -200,7 +200,7 @@ describe('management screen calendar locks', () => {
       createElement(Rich, {
         state: gameStore.getState(),
         client,
-        page: 'staff',
+        page: 'firstTeam',
         controller,
       }),
     );

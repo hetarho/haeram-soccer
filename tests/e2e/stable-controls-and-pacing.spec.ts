@@ -70,7 +70,7 @@ test('surveys every management destination during uninterrupted calendar play', 
   await training.getByRole('button', { name: '창 닫기', exact: true }).click();
   // The owner office is the one place that stops the clock: its work is management change, which
   // a running calendar locks, and it hides the stop control (→WEB-97/98).
-  await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
+  await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
   await continues();
   await openOfficeArea(page, '결재라인 모아보기');
   const office = page.getByTestId('owner-office');

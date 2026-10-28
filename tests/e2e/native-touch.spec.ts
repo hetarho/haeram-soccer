@@ -175,7 +175,7 @@ for (const viewport of [
     await expect(career).toHaveAttribute('aria-checked', 'true');
     await page.keyboard.press('Escape');
     const marketTab = page
-      .getByRole('tablist', { name: '1군' })
+      .getByRole('tablist', { name: '감독 사무실' })
       .getByRole('tab', { name: '이적시장', exact: true });
     await expectTouchControl(marketTab, viewport);
     await marketTab.click();
