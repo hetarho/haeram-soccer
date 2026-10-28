@@ -84,17 +84,26 @@ export function continuousSquad(w: World, c: Club): Player[] {
     if (w.people?.[p.id]) return replacement(w, c, p, slot);
     return p;
   });
-  // Actual arrivals occupy matching playing places without altering the base attribute model.
+  // Actual arrivals use unretained playing places first. A retained native must remain
+  // represented too: replacing his slot must not hide an active person from the roster/market.
   const occupied = new Set<number>();
   for (const person of people) {
     if (used.has(person.id)) continue;
-    let slot = players.findIndex((p, i) => !occupied.has(i) && p.position === person.position);
+    const vacant = (p: Player, i: number) => !occupied.has(i) && !used.has(p.id);
+    let slot = players.findIndex((p, i) => vacant(p, i) && p.position === person.position);
     if (slot < 0)
       slot = players.findIndex(
-        (p, i) => !occupied.has(i) && lineOf(p.position) === lineOf(person.position),
+        (p, i) => vacant(p, i) && lineOf(p.position) === lineOf(person.position),
       );
-    if (slot < 0) slot = players.findIndex((_, i) => !occupied.has(i));
-    if (slot < 0) continue;
+    if (slot < 0) slot = players.findIndex(vacant);
+    if (slot < 0) {
+      // All generated places already represent retained players. Keep the arrival with the same
+      // ordinary club-strength attribute model rather than silently dropping either identity.
+      const model = raw.find((p) => p.position === person.position) ?? raw[0];
+      players.push(identity(model, person));
+      occupied.add(players.length - 1);
+      continue;
+    }
     occupied.add(slot);
     players[slot] = identity(players[slot], person);
   }

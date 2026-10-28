@@ -1,3 +1,4 @@
+import { worldMarketOffer } from './world-market';
 import { registrationRoom } from './registration';
 import type { Position } from '../../contracts/src/types';
 import type { Command, World } from '../../contracts/src/types';
@@ -155,9 +156,13 @@ export function squadCommand(w: World, cmd: SquadCommand) {
     case 'release-youth':
       releaseYouth(w, cmd.id);
       break;
-    case 'bid':
-      placeBid(w, cmd.candidate, cmd.fee, cmd.loan);
+    case 'bid': {
+      const target = cmd.target ?? cmd.candidate;
+      if (target === undefined || (cmd.target && cmd.candidate !== undefined))
+        throw new Error('영입 대상을 확인하세요.');
+      placeBid(w, target, cmd.fee, cmd.loan);
       break;
+    }
     case 'respond-bid':
       respondBid(w, cmd.id, cmd.accept);
       break;
@@ -180,8 +185,14 @@ export function squadCommand(w: World, cmd: SquadCommand) {
       break;
     }
     case 'recruit': {
-      const o = transferOffers(w)[cmd.candidate];
+      if ((cmd.candidate === undefined) === (cmd.target === undefined))
+        throw new Error('영입 대상을 확인하세요.');
+      const o = cmd.target ? worldMarketOffer(w, cmd.target) : transferOffers(w)[cmd.candidate!];
       if (!o?.available) throw new Error('이미 계약했거나 없는 선수입니다.');
+      if (cmd.target && (!o.freeAgent || cmd.loan)) {
+        placeBid(w, cmd.target, cmd.loan ? o.loanFee : o.fee, cmd.loan);
+        break;
+      }
       const room = registrationRoom(w, {
         ...o.player,
         joined: w.year,

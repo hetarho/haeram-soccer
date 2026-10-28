@@ -21,6 +21,7 @@ import { MARKET_REFRESH_ROUNDS } from './managerMarket';
 import { clamp, compareIds, ratio, scaleBy } from './primitives';
 import {
   activePlayers,
+  clubOf,
   lineOfPlayer,
   overall,
   formationOf,
@@ -410,7 +411,12 @@ export function openShortlistWindow(w: World) {
  * A player joined the squad: he starts to settle (→PLAYER-11), and a request he fits is met for the
  * window (→CLUB-33): a short line's, or a slot's whose position he plays at 준수 or better.
  */
-export function noteSigning(w: World, player: Player) {
+export function noteSigning(w: World, player: Player, sourceClub?: string) {
+  const source = sourceClub ? w.clubs.find((club) => club.id === sourceClub) : undefined;
+  // Establish the real seller before moving a previously unretained player, including his loan
+  // parent. Reads never enroll players; only the completed move opens this employment fact.
+  if (source) movePerson(w, player, source.id);
+  const foreign = source ? source.country !== clubOf(w).country : isForeignCandidate(player.id);
   closeNeedFor(w, player);
   movePerson(w, player, w.playerClub, true, player.loanUntil);
   (w.recruitmentArrivals ??= []).push({
@@ -420,7 +426,7 @@ export function noteSigning(w: World, player: Player) {
     positions: { ...player.positions },
     at: careerDate(w),
   });
-  joinClub(player, isForeignCandidate(player.id) ? 'abroad' : 'domestic', w.year);
+  joinClub(player, foreign ? 'abroad' : 'domestic', w.year);
   const window = w.shortlist?.window;
   if (
     window &&

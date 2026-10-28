@@ -1,9 +1,17 @@
+import { worldMarketOffer } from './world-market';
 import { openNeed, windowCallUps } from './replacements';
 import { bidCeiling, haggling } from './director-bidding';
 import { registrationRoom } from './registration';
 import { endPlayingCoachForDeparture, playingCoachDepartureCost } from './playing-coach';
 import { movePerson } from './npc-continuity';
-import type { Club, Player, TransferBid, TransferStance, World } from '../../contracts/src/types';
+import type {
+  Club,
+  Player,
+  TransferBid,
+  TransferStance,
+  World,
+  WorldMarketTarget,
+} from '../../contracts/src/types';
 import { currency } from '../../catalogs/src/index';
 import { currentDay, dayCountedFrom, seasonDayLabel } from './calendar';
 import {
@@ -106,7 +114,13 @@ function marketOffer(w: World, bid: TransferBid): MarketOffer | undefined {
     fee,
     loanFee,
     freeAgent: false,
-    available: !w.players.some((owned) => owned.id === player.id),
+    available:
+      !w.players.some(
+        (owned) => owned.id === player.id && (!bid.club || owned.status === 'active'),
+      ) &&
+      (!bid.club ||
+        !!worldMarketOffer(w, { world: w.id, kind: 'club', clubId: bid.club, playerId: player.id })
+          ?.available),
   };
 }
 function askingFee(offer: MarketOffer, loan?: boolean) {
@@ -126,12 +140,20 @@ function signingBlocker(w: World, offer: MarketOffer | undefined, fee: string, l
 function completeSigning(w: World, bid: TransferBid, offer: MarketOffer, fee: string) {
   // The bid keeps its record of him; the squad gets its own copy.
   const p = structuredClone(offer.player);
+  const prior = w.players.findIndex((player) => player.id === p.id);
+  if (prior >= 0) {
+    // A returning player keeps his one own-club row and its already earned totals.
+    p.career = [...w.players[prior].career];
+    p.season = [...w.players[prior].season];
+    if (w.players[prior].graduate) p.graduate = true;
+  }
   debit(w, fee);
   // A loan keeps his club's contract; a transfer signs one with its own clauses (→CLUB-29).
   if (bid.loan) p.loanUntil = w.year + 1;
   else p.clauses = signingClauses(w, p);
-  w.players.push(p);
-  noteSigning(w, p);
+  if (prior >= 0) w.players[prior] = p;
+  else w.players.push(p);
+  noteSigning(w, p, bid.club);
   recordTransfer(w, { direction: 'in', loan: !!bid.loan, player: p, club: bid.club, fee });
   addEvent(
     w,
@@ -185,12 +207,13 @@ const clip = (text: string, max: number) =>
 /** Our offer for a market player; the selling club answers in two to four days. */
 export function placeBid(
   w: World,
-  candidate: number,
+  candidate: number | WorldMarketTarget,
   fee: string,
   loan = false,
   staff?: TransferBid['staff'],
 ): void {
-  const offer = transferOffers(w)[candidate];
+  const offer =
+    typeof candidate === 'number' ? transferOffers(w)[candidate] : worldMarketOffer(w, candidate);
   if (!offer?.available) throw new Error('이미 계약했거나 없는 선수입니다.');
   if (offer.freeAgent) throw new Error('자유계약 선수는 이적료 협상 없이 바로 영입할 수 있어요.');
   if (
@@ -221,7 +244,10 @@ export function placeBid(
     playerId: offer.player.id,
     fee,
     ...(loan ? { loan: true } : {}),
-    offer: { player: offer.player, fee: offer.fee, loanFee: offer.loanFee },
+    offer: { player: structuredClone(offer.player), fee: offer.fee, loanFee: offer.loanFee },
+    ...(typeof candidate !== 'number' && candidate.kind === 'club'
+      ? { club: candidate.clubId }
+      : {}),
     year: w.year,
     day,
     due: Math.min(day + wait, window.until ?? day + wait),
@@ -275,8 +301,14 @@ export interface BidOutlook {
   counterPossible: boolean;
 }
 /** Read model for the bid form; never a guarantee. */
-export function bidOutlook(w: World, candidate: number, fee: string, loan = false): BidOutlook {
-  const offer = transferOffers(w)[candidate];
+export function bidOutlook(
+  w: World,
+  candidate: number | WorldMarketTarget,
+  fee: string,
+  loan = false,
+): BidOutlook {
+  const offer =
+    typeof candidate === 'number' ? transferOffers(w)[candidate] : worldMarketOffer(w, candidate);
   const asking = offer ? askingFee(offer, loan) : '0';
   const valid =
     !!offer?.available && !offer.freeAgent && /^\d{1,80}$/.test(fee) && BigInt(fee) >= 1n;

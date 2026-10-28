@@ -1,3 +1,4 @@
+import { worldMarketPage, worldMarketDetail } from '../../../../packages/engine/src/world-market';
 import { mediationPreview } from '../../../../packages/engine/src/mediation';
 import { fullStatsRead } from '../../../../packages/engine/src/npc-stats';
 import { personCareer } from './personCareer';
@@ -313,6 +314,8 @@ export class Host {
     // command, its watchdog would run out while only the command reports progress.
     const type = (input as { body?: { type?: unknown } } | null)?.body?.type;
     if (
+      type === 'world-market' ||
+      type === 'world-market-detail' ||
       type === 'head-to-head' ||
       type === 'person-career' ||
       type === 'recruitment-history' ||
@@ -466,6 +469,18 @@ export class Host {
       if (this.session && this.session !== request.session)
         throw new Error('이전 세션의 요청입니다.');
       if (!w) throw new Error('먼저 클럽을 창단하세요.');
+      if (body.type === 'world-market')
+        return {
+          requestId: request.requestId,
+          ok: true,
+          worldMarket: worldMarketPage(w, body.query),
+        };
+      if (body.type === 'world-market-detail')
+        return {
+          requestId: request.requestId,
+          ok: true,
+          worldMarketDetail: worldMarketDetail(w, body.target, body.fee, body.loan),
+        };
       if (body.type === 'recruitment-history')
         return {
           requestId: request.requestId,
