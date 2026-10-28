@@ -166,7 +166,9 @@ describe('settling a played match into the world (→MATCH-21, PLAYER-12, CLUB-2
       played(w, first, { minute: 70, side, kind: 'red', player: sent.id, reason: 'dogso' }),
       true,
     );
-    expect(w.discipline!.bans).toEqual([
+    // The match's own cards may ban others too (on match-model revision 5 this fixture sends a
+    // teammate off on a second yellow, T538); his red card bans him alone for one match.
+    expect(w.discipline!.bans.filter((b) => b.player === sent.id)).toEqual([
       { player: sent.id, club: w.playerClub, matches: 1, scope: 'domestic', reason: 'dogso' },
     ]);
     // Banned for the next fixture: he is not in its XI or on its bench, and it serves his ban.
