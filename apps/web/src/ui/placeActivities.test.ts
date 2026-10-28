@@ -9,6 +9,7 @@ import {
   resolveCare,
 } from '../../../../packages/engine/src/care';
 import { makePlayer } from '../../../../packages/engine/src/world';
+import { promoteYouth } from '../../../../packages/engine/src/academy';
 import type { GameClient } from '../runtime/client';
 import type { Reply, View } from '../runtime/protocol';
 import { initialClientState } from '../runtime/store';
@@ -158,6 +159,20 @@ describe('care disclosure units', () => {
 });
 
 describe('place activity units', () => {
+  it('quotes the actual annual wage before the existing promotion signs its contract', () => {
+    const { world } = fixture();
+    const before = structuredClone(world);
+    const preview = placeActivities(world, 'academy').academy!.players.find(
+      (one) => one.player.id === 'ready',
+    )!;
+    expect(world).toEqual(before);
+    const settled = structuredClone(world);
+    promoteYouth(settled, preview.player.id);
+    const contract = settled.players.find((one) => one.id === preview.player.id)!;
+    expect(BigInt(contract.wage)).toBeGreaterThan(0n);
+    expect(preview).toMatchObject({ promotionWage: contract.wage });
+  });
+
   it('groups every care kind into a small set of real requests without changing facts', () => {
     const { world } = fixture();
     const before = structuredClone(world);
