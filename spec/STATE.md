@@ -366,7 +366,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
 | CLUB | 43 | 43 | - | 0 |
-| MATCH | 40 | 40 | - | 0 |
+| MATCH | 41 | 41 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 39 | 39 | - | 0 |
@@ -388,6 +388,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T552 | Paged whole-world recruitment workbench | WEB CLUB ARCH | T558 | todo |
+| T561 | Match-model revision 8: nobody piles onto the ball — supporters offer at a passing distance, the rest keep the shape | MATCH SAVE ARCH | - | todo |
 | T553 | Consequential owner choices and shared place activity panels | WEB CLUB ARCH | T557 | todo |
 | T554 | Six-place navigation and competition clubhouse | WEB ECON ARCH | - | todo |
 | T555 | Work-oriented owner office and scoped player approvals | WEB ECON ARCH | T554 | todo |
@@ -416,6 +417,7 @@
 - club-places: implement T557/T558 engine foundations while live T550 owns UI, then T552 market UI and T553 choices in parallel with the T554→T555 places-office lane; T556 connects all results. Existing T548–T550 remain with their current sessions.
 
 ## log
+- 261029 update-ssot MATCH r41 + create-task T561 (p9c3, owner): players swarm the ball like playground football → MATCH-17 nobody piles onto the ball; T561 revision 8, explore 2 h.
 - 261029 T550 done (v07-beta worker, 9c54de75 7b037ec1): one shared BETA mark beside the club or game name on every screen, v0.7 BETA from CURRENT_ENGINE_VERSION on the start and slot screens.
 - 261029 T549 done (v07-beta worker, f38dc554): game version 0.7.0 in every package and as the rules version; 4.0.0 saves load as 0.7.0 through the writer activation, read-only views write nothing.
 - 261029 T548 done (p9c3, explore 3 h): match-model revision 7 — chased forwards take the clear chance (corridor 14), men within 6 m close the shot down, MATCH r40 keeper off his line to a carrier in his box; 600 matches goals 3.18 (3.71), 26/37; penalty goals 12.4% and goal-area shots 17.9% the next levers.
@@ -435,4 +437,3 @@
 - 261028 T546 done (dev4, fe455032): kit editor, goalkeeper tab, figure previews, fallback notice; PL committed it (Codex sandbox could not write the worktree index) after re-running its 43 unit tests; merged.
 - 261028 lanes start (pl1): T545 match-figures (dev3) and T546 kit-editor (dev4) in worktrees task/T545 and task/T546.
 - 261028 T544 done (dev3, 1f605f49): figure painter and number tags; PL re-ran 40 unit tests and typecheck; merged.
-- 261028 T544 start (dev3) in worktree task/T544 (pl1).

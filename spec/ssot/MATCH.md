@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r40 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r41 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -141,6 +141,7 @@
   - position swaps: wingers switch flanks and a full-back and his winger rotate when their freedom allows, each doing the other's job until they swap back.
   - the tendencies act in movement (→PLAYER-26): 규율 holds his place, 압박 성향 sets how often he presses, 예측력 how early he reads play.
   - with the ball, supporting players spread: each keeps space from his teammates, the more surely the better his 판단력 and 위치선정; poorer players still bunch at times. ← bunched support gives the carrier no option and reads as unintelligent football
+  - nobody piles onto the ball: in open play the carrier, the teammate showing for him and the presser with his cover are the ones near it; a showing teammate offers at a passing distance (about 10–15 m), the other players hold their shape's width and depth on both sides, and a marker stays goal-side of his man rather than following him into a crowd. Seven or more outfielders within 10 m of the ball are a set piece or a goal-mouth scramble, rarely open play. ← players swarming the ball read as playground football, not as a side with a shape
 - MATCH-18 [o] Fouls, set pieces, restarts and offside are real scenes at their real spot. ← set pieces and penalties score about a quarter to a third of real goals
   - a challenge may be a foul, more often for a reckless 태클, under the press tactic and when stopping a counter, less often by a booked player; a foul gives a free kick at its spot, inside the box a penalty.
   - ball out of play: a throw-in at its touchline spot, a goal kick, or a corner when the defending side touched it last over its byline.
@@ -326,6 +327,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r41 261029 MATCH-17✎ none→nobody piles onto the ball: a showing teammate offers at a passing distance, the rest hold width and depth, markers stay goal-side; crowds of seven within 10 m are rare in open play
 - r40 261029 MATCH-35✎ none→with an opponent carrying the ball in his box the keeper comes off his line toward him, narrowing the angle
 - r39 261028 MATCH-16✎ clear chance: no outfield opponent between him and goal and nobody closing him→no outfield opponent ahead of him, a chaser behind or beside not taking it away. MATCH-35✎ + an outfielder within a few metres of the shooter, any side, may block or deflect the shot as it is struck, by distance, 태클 and 위치선정
 - r38 261028 MATCH-32✎ none→with the ball central within 50 m of goal, a goal-side defender not pressing, marking or guarding a box zone moves across onto the ball–goal line at his depth by 위치선정
