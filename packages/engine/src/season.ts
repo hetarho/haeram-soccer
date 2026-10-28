@@ -19,6 +19,7 @@ import {
   europeFinal,
 } from './europe';
 import { advanceCups, cupKey, finishCups, prepareCups } from './cups';
+import { associationCoefficients } from './europe-coefficients';
 import { archivedRounds, finalOf, ownReached, type Settlement } from './knockout';
 import { clubValuation, eloOf, eloRange, eloRank, settleElo, squadValue } from './ratings';
 import { evolveClubs } from './dynamics';
@@ -625,6 +626,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     };
   });
   const valuation = clubValuation(w);
+  const europeCoefficients = associationCoefficients(w);
   w.history.push({
     year: w.year,
     tier: oldTier,
@@ -654,6 +656,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
         return [w.clubs.indexOf(c), c.tier, c.group, t.points, t.gf, t.ga];
       }),
     champions,
+    ...(europeCoefficients ? { europeCoefficients } : {}),
     europe: w.europe
       .filter((t) => t.winner)
       .map((t) => {

@@ -469,6 +469,17 @@ const archive = z.object({
     .max(10),
   elo: z.number().finite().min(0).max(4000).optional(),
   eloRank: z.number().int().min(1).max(5000).optional(),
+  europeCoefficients: z
+    .array(
+      z.strictObject({
+        country: z.enum(['ENG', 'ESP', 'GER', 'ITA', 'FRA', 'POR', 'NED', 'BEL']),
+        points: z.number().int().min(0).max(1000000),
+        clubs: z.number().int().min(1).max(100),
+      }),
+    )
+    .max(8)
+    .refine((rows) => new Set(rows.map((row) => row.country)).size === rows.length)
+    .optional(),
   squadValue: money.optional(),
   clubValue: money.optional(),
   runs: z
@@ -553,6 +564,7 @@ const tournament = z.object({
   standings: z.record(id, table),
   winner: id.optional(),
   ownExit: text.optional(),
+  ownQualification: text.optional(),
   firstStandings: z.array(z.array(number).length(6)).max(100).optional(),
   secondStandings: z.array(z.array(number).length(6)).max(100).optional(),
   rounds: z.array(knockoutRound).max(12).optional(),
