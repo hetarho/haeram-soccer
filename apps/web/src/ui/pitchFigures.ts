@@ -90,13 +90,56 @@ const blend = (
 ];
 
 /**
+ * His drawn velocity over sample `k` to `k + 1` (playback units per second): the way his figure
+ * actually moves between them; `undefined` across a break, at the last sample, with no time
+ * between them or where either sample leaves him out.
+ */
+function segmentVelocity(
+  timeline: FigureTimeline,
+  side: 0 | 1,
+  id: string,
+  k: number,
+): [number, number] | undefined {
+  const { samples, times, sampleBreak } = timeline;
+  if (k < 0 || k + 1 >= samples.length || sampleBreak(k)) return undefined;
+  const dt = times[k + 1]! - times[k]!;
+  const from = motionIn(samples[k], side, id);
+  const to = motionIn(samples[k + 1], side, id);
+  if (!(dt > 0) || !from || !to) return undefined;
+  return [(to.position[0] - from.position[0]) / dt, (to.position[1] - from.position[1]) / dt];
+}
+
+/**
+ * His velocity as drawn at running second `t`: the segment he is on, turned into from the one
+ * before over `FIGURE_POSE_CONFIG.turn` seconds after the sample where his path bends; the
+ * recorded velocities where the segment has none (`segmentVelocity`).
+ */
+function drawnVelocity(
+  timeline: FigureTimeline,
+  side: 0 | 1,
+  id: string,
+  t: number,
+): [number, number] | undefined {
+  const at = locate(timeline.times, t, timeline.sampleBreak);
+  const k = Math.floor(at);
+  const now = segmentVelocity(timeline, side, id, k);
+  if (!now) return undefined;
+  const was = segmentVelocity(timeline, side, id, k - 1) ?? now;
+  const into = (t - timeline.times[k]!) / FIGURE_POSE_CONFIG.turn;
+  return blend(was, now, Math.min(1, Math.max(0, into)));
+}
+
+/**
  * Every player's figure between `sample` and `next`, `mix` of the way (→MATCH-12/37), in side
  * order and the sample's own player order:
- * - position and velocity interpolate between his two samples; a player the next sample leaves
- *   out holds his position, velocity and distance;
+ * - position interpolates between his two samples; a player the next sample leaves out holds his
+ *   position, velocity and distance;
+ * - his velocity is the one he is drawn moving at (`drawnVelocity`), so the body faces where the
+ *   figure goes and turns with it within `FIGURE_POSE_CONFIG.turn` seconds; where a segment has
+ *   none, his recorded velocities interpolate;
  * - velocities reach the pose on screen, playback units scaled by the canvas mapping, and his
- *   speed in m/s; `velocityBefore` is his interpolated velocity `FIGURE_POSE_CONFIG.hipLag`
- *   seconds earlier on the same clock, his current one where no earlier sample has him;
+ *   speed in m/s; `velocityBefore` is his velocity `FIGURE_POSE_CONFIG.hipLag` seconds earlier on
+ *   the same clock, his current one where no earlier sample has him;
  * - `distance` interpolates his `gaitDistances` row; `toBall` runs to the drawn ball on screen;
  *   only the possession cue's recorded carrier holds the ball;
  * - a sample without players stands both sides in `FIXED_SHAPE`, home facing +x and away −x.
@@ -140,7 +183,8 @@ export function figureInputs(
   }
   const { samples, times, sampleBreak } = frame.timeline;
   // The samples around the instant `hipLag` earlier, for the way the hips still face.
-  const earlier = locate(times, frame.time - FIGURE_POSE_CONFIG.hipLag, sampleBreak);
+  const hipTime = frame.time - FIGURE_POSE_CONFIG.hipLag;
+  const earlier = locate(times, hipTime, sampleBreak);
   const k = Math.floor(earlier);
   const before = samples[k],
     beforeNext = samples[Math.min(samples.length - 1, k + 1)],
@@ -151,10 +195,13 @@ export function figureInputs(
       const { id } = motion;
       const target = motionIn(next, side, id);
       const position = blend(motion.position, target?.position, mix);
-      const velocity = blend(motion.velocity, target?.velocity, mix);
+      const velocity =
+        drawnVelocity(frame.timeline, side, id, frame.time) ??
+        blend(motion.velocity, target?.velocity, mix);
       const then = motionIn(before, side, id);
       const velocityThen = then
-        ? blend(then.velocity, motionIn(beforeNext, side, id)?.velocity, beforeMix)
+        ? (drawnVelocity(frame.timeline, side, id, hipTime) ??
+          blend(then.velocity, motionIn(beforeNext, side, id)?.velocity, beforeMix))
         : velocity;
       const row = frame.distances.get(id);
       const from = row?.[frame.index] ?? NaN,
