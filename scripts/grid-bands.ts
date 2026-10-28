@@ -72,6 +72,7 @@ import {
   buildInvariantReport,
   buildOutcomeTargetReport,
   buildTargetReport,
+  tolerantBand,
   calibrationSize,
   conditionOf,
   CORPUS_CONFIG,
@@ -944,18 +945,19 @@ if (args.includes('--worker')) {
     `grid bands: ${matches} matches, year ${year}, seeds grid-bands-1..4, model ${bandModel ?? 'pre-feature'}`,
   );
   console.log(`${'measure'.padEnd(width)}  band            value    ok`);
+  // MATCH-23's rows are judged with its tolerance (T539), printed to three significant figures.
+  const judged = (row: (typeof rows)[number]) => tolerantBand(row.band);
+  const inside = (row: (typeof rows)[number]) =>
+    row.value >= judged(row)[0] && row.value <= judged(row)[1];
   for (const row of rows) {
-    const ok = row.value >= row.band[0] && row.value <= row.band[1];
-    // A tolerant band (T539) prints to three significant figures.
+    const ok = inside(row);
     const edge = (x: number) => +x.toPrecision(3);
-    const band = `${edge(row.band[0])}–${edge(row.band[1])}`.padEnd(14);
+    const band = `${edge(judged(row)[0])}–${edge(judged(row)[1])}`.padEnd(14);
     console.log(
       `${row.label.padEnd(width)}  ${band}  ${row.value.toFixed(2).padStart(7)}  ${ok ? 'pass' : 'FAIL'}`,
     );
   }
   console.log(`added time per match ${added.toFixed(2)} min`);
-  console.log(
-    `passed ${rows.filter((r) => r.value >= r.band[0] && r.value <= r.band[1]).length}/${rows.length}`,
-  );
+  console.log(`passed ${rows.filter(inside).length}/${rows.length}`);
   console.log(`${((performance.now() - started) / matches).toFixed(1)} ms a match`);
 }
