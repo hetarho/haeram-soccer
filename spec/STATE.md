@@ -408,6 +408,7 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 | v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
 | club-places | 3 | 8 | 1 | 7 | 1 | 0 | 0 | 2026-10-28T15:59:14.591Z | [history](work/club-places.json) |
+| club-places-ui | 1 | 7 | 0 | 7 | 0 | 0 | 2 | 2026-10-28T16:38:55.910Z | [history](work/club-places-ui.json) |
 
 ## next
 - inspect work board for remaining tasks
