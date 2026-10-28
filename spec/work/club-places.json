@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-28T15:59:14.591Z",
-  "sourceCommit": "1fb24a736057a805adbe94a975e29e045d833897",
+  "snapshotAt": "2026-10-28T17:14:22.641Z",
+  "sourceCommit": "84a9f8bf1204a841977e85198637508c84ff2931",
   "group": {
     "id": "club-places",
     "branch": "work/club-places",
@@ -13,7 +13,7 @@
       "maxPending": 8
     },
     "review": "all",
-    "runner": {
+    "lastRun": {
       "id": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
       "adapter": "builtin",
       "providers": {
@@ -36,48 +36,38 @@
         }
       ],
       "startedAt": "2026-10-28T15:25:53.955Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "425d2c7e-fea2-4a7b-8594-ef1e8f806676",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.160.1"
-        },
-        "reviewer": {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.160.1"
-        }
-      },
-      "workers": [
+      "stoppedAt": "2026-10-28T17:14:21.328Z",
+      "dispatched": 12,
+      "outcome": "needs-attention",
+      "failures": [
         {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.160.1"
+          "attempt": "18f15189-426e-4d9d-aeb7-e73fe2fd517b",
+          "role": "worker",
+          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+        },
+        {
+          "attempt": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+          "role": "worker",
+          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+        },
+        {
+          "attempt": "330d4804-4e50-4dfa-9303-59999e110506",
+          "role": "worker",
+          "error": "committing할 수 없는 상태입니다: blocked"
         }
       ],
-      "startedAt": "2026-10-28T15:22:00.050Z",
-      "stoppedAt": "2026-10-28T15:22:03.115Z",
-      "dispatched": 0,
-      "outcome": "needs-attention",
-      "failures": [],
       "autopilot": true,
       "decisionWaitMs": 900000
     }
   },
   "summary": {
-    "total": 8,
+    "total": 6,
     "completed": 1,
-    "remaining": 7,
-    "running": 1,
-    "review": 0,
+    "remaining": 5,
+    "running": 0,
+    "review": 1,
     "blocked": 0,
-    "unassigned": 6
+    "unassigned": 4
   },
   "tasks": [
     {
@@ -102,23 +92,7 @@
         "T557"
       ],
       "lane": "place-choices",
-      "status": "todo"
-    },
-    {
-      "id": "T554",
-      "title": "Six-place navigation and competition clubhouse",
-      "dep": [],
-      "lane": "places-office",
-      "status": "todo"
-    },
-    {
-      "id": "T555",
-      "title": "Work-oriented owner office and scoped player approvals",
-      "dep": [
-        "T554"
-      ],
-      "lane": "places-office",
-      "status": "todo"
+      "status": "reviewing"
     },
     {
       "id": "T556",
@@ -135,7 +109,7 @@
       "title": "World market query and identity-based transfer engine",
       "dep": [],
       "lane": "market-engine",
-      "status": "doing"
+      "status": "todo"
     }
   ],
   "attempts": [
@@ -159,6 +133,8 @@
       "submittedBase": "1fb24a736057a805adbe94a975e29e045d833897",
       "submissionId": "56fe7ffa-c5bb-44bf-b1d2-3027148d718b",
       "submittedAt": "2026-10-28T15:52:49.200Z",
+      "integratedCommit": "77cdea91889558a50281676b86c44c931177ebd0",
+      "integratedAt": "2026-10-28T16:09:04.577Z",
       "risk": null,
       "dispatch": {
         "id": "97ebed54-cdca-4a84-bcd2-ebfddf7d6c90",
@@ -206,6 +182,13 @@
           "startedAt": "2026-10-28T15:50:14.258Z",
           "finishedAt": "2026-10-28T15:52:48.544Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-28T16:08:28.114Z",
+          "finishedAt": "2026-10-28T16:09:04.188Z"
+        }
       ]
     },
     {
@@ -216,28 +199,33 @@
         "T558"
       ],
       "lane": "market-engine",
-      "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/worker-1",
+      "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/worker-2",
       "contributors": [
         "5ecc0d46-f5b6-429d-b199-970b7b925b44/worker-2",
         "5ecc0d46-f5b6-429d-b199-970b7b925b44/worker-1"
       ],
-      "status": "doing",
-      "reason": "T558: 복귀 영입 입찰이 답변일 전에 잘못 만료됩니다. 워커 검증 기록은 확인했으며 최종 통합 검증은 조정자 호스트에 위임합니다.",
+      "status": "released",
+      "reason": "Unapproved T558 submission and final P2 move to an isolated corrective runner after three worker runs; no worker is active. Preserve submission e7c5ce2 and all prior reviews for re-review.",
       "createdAt": "2026-10-28T15:26:04.619Z",
       "startCommit": "97017fca014ee01b3a25478a9aad30e8686eb10a",
-      "submittedBase": "1fb24a736057a805adbe94a975e29e045d833897",
-      "submissionId": "ad0ee9b6-1298-4730-b325-4d0241ffa09e",
-      "submittedAt": "2026-10-28T15:51:36.693Z",
+      "verifiedCommit": "e7c5ce2942231db73421b4065b125b49dbac4352",
+      "submittedBase": "76629cde9ee0d0e43eab8e7185e2b0775ff900dc",
+      "submissionId": "f324c329-f6f1-4eb8-b78a-e9834bee6a77",
+      "submittedAt": "2026-10-28T16:49:36.619Z",
+      "releasedAt": "2026-10-28T17:01:14.429Z",
       "risk": null,
       "dispatch": {
-        "id": "71b3ce4c-0cac-4d36-8e7c-43c9ca25bc78",
+        "id": "3588276c-91e7-4319-8f1b-0d0c3a40b952",
         "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
         "role": "worker",
-        "slot": 1,
+        "slot": 2,
         "provider": "codex",
         "model": null,
-        "status": "running",
-        "startedAt": "2026-10-28T15:56:48.579Z"
+        "status": "finished",
+        "startedAt": "2026-10-28T16:16:47.227Z",
+        "finishedAt": "2026-10-28T16:27:34.662Z",
+        "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+        "summary": "두 P2 결함을 수정하고 T558 결과를 갱신했습니다. 복귀 선수의 아카데미 등록 예외를 사전 반영하고, 이전 시즌 기록 복원을 차단했습니다. 유닛 테스트 28개와 타입·린트·포맷 검사가 통과했습니다. 통합·브라우저·빌드는 호스트 최종 검증으로 남겼습니다."
       },
       "reviewHistory": [
         {
@@ -260,27 +248,74 @@
           "finishedAt": "2026-10-28T15:56:48.163Z",
           "invalidatedAt": "2026-10-28T15:56:48.361Z",
           "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "c884e9dc-dad7-4307-bc54-645d192793eb",
+          "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T558: 이전 입찰 만료 수정은 확인했으나, 복귀 선수의 등록 예외와 시즌 기록에 P2 결함 2건이 남습니다. 워커 검증 기록은 확인했으며 최종 통합 검증은 조정자 호스트에 위임합니다.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/world-market.ts:54",
+              "message": "T558: 외부 선수로 조회한 복귀 선수에게 기존 graduate 정보가 전달되지 않습니다. 스페인 구단의 등록 인원이 25명일 때, 22세 이하인 우리 아카데미 출신은 CLUB-44의 등록 예외인데도 입찰 제출과 역제안 수락이 한도 초과로 거절되는 것을 재현했습니다. completeSigning에서 graduate를 복원하는 시점은 등록 검사 이후입니다. 미리보기와 제출·체결 검사 전에 이 자격을 반영하고 회귀 테스트를 추가하세요."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/transfers.ts:147",
+              "message": "T558: 복귀 시 과거 소속 행의 season을 무조건 복사합니다. 시즌 전환은 activePlayers의 season만 초기화하므로, 이전 시즌에 매각된 선수의 행에는 당시 기록이 남습니다. 1950년에 season[0]=45로 매각한 선수를 1951년에 재영입하는 fixture에서, 현재 시즌 출전이 없어도 season[0]=45가 복원됐습니다. career는 보존하되 season은 해당 시즌의 기록만 유지하도록 처리하고, 같은 시즌 복귀와 다음 시즌 복귀를 구분하는 회귀 테스트를 추가하세요."
+            }
+          ],
+          "commit": "efa7b39b91765293cd34ba7a6cb2bf2d82bb2aeb",
+          "baseCommit": "77cdea91889558a50281676b86c44c931177ebd0",
+          "submissionId": "5a12853e-06c4-45d1-960a-c01b54393cf6",
+          "createdAt": "2026-10-28T16:10:41.298Z",
+          "finishedAt": "2026-10-28T16:16:46.868Z",
+          "invalidatedAt": "2026-10-28T16:16:47.034Z",
+          "invalidationReason": "correction assigned"
+        },
+        {
+          "id": "019a31b8-8267-470e-9854-047017164b04",
+          "owner": "cp29-review",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T558 returning-player registration, current-season records and premature-expiry fixes are sound, but the new retained-roster overflow branch can turn an arriving wing-back into a goalkeeper and hide him from position filters.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/npc-continuity.ts:102 (T558)",
+              "message": "When every generated place is occupied by a retained native and an arrival has a position absent from the raw formation, the new overflow branch falls back to raw[0] (a goalkeeper). Read-only reproduction on e7c5ce2 with worldMarketFixture, all foreign natives retained with origins, and a newly moved LWB returned retainedPosition=LWB, shownPosition=GK, positions={GK:3}, and zero matches in the LWB market filter. Generate/use a model compatible with the retained actual position (and ordinary club-strength attribute rules) rather than the arbitrary first player, and add a small-fixture rare-position/position-filter regression. Preserve every native and arrival identity."
+            }
+          ],
+          "commit": "e7c5ce2942231db73421b4065b125b49dbac4352",
+          "baseCommit": "76629cde9ee0d0e43eab8e7185e2b0775ff900dc",
+          "submissionId": "f324c329-f6f1-4eb8-b78a-e9834bee6a77",
+          "createdAt": "2026-10-28T16:51:51.252Z",
+          "finishedAt": "2026-10-28T17:01:05.249Z",
+          "invalidatedAt": "2026-10-28T17:01:14.429Z",
+          "invalidationReason": "attempt released"
         }
       ],
       "steps": [
         {
           "taskId": "T558",
-          "commit": "9479b0f6e066b044c72d4cb3cb4e346c3ba039bf",
-          "at": "2026-10-28T15:51:36.653Z",
+          "commit": "e7c5ce2942231db73421b4065b125b49dbac4352",
+          "at": "2026-10-28T16:49:36.592Z",
           "verification": [
             {
-              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-              "startedAt": "2026-10-28T15:48:38.603Z",
-              "finishedAt": "2026-10-28T15:51:35.751Z"
+              "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "startedAt": "2026-10-28T16:46:26.811Z",
+              "finishedAt": "2026-10-28T16:49:36.130Z"
             }
           ]
         }
       ],
       "verification": [
         {
-          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
-          "startedAt": "2026-10-28T15:48:38.603Z",
-          "finishedAt": "2026-10-28T15:51:35.751Z"
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "startedAt": "2026-10-28T16:46:26.811Z",
+          "finishedAt": "2026-10-28T16:49:36.130Z"
         }
       ]
     },
@@ -302,6 +337,125 @@
       "createdAt": "2026-10-28T15:45:44.028Z",
       "startCommit": "2ea70719b18300accfd9e1d31c501783cdd21b88",
       "releasedAt": "2026-10-28T15:50:13.493Z"
+    },
+    {
+      "id": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "group": "club-places",
+      "taskId": "T553",
+      "tasks": [
+        "T553"
+      ],
+      "lane": "place-choices",
+      "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/worker-1",
+      "contributors": [
+        "5ecc0d46-f5b6-429d-b199-970b7b925b44/worker-1"
+      ],
+      "status": "reviewing",
+      "reason": null,
+      "createdAt": "2026-10-28T16:10:39.186Z",
+      "startCommit": "77cdea91889558a50281676b86c44c931177ebd0",
+      "verifiedCommit": "ddf34265c6dc2f5cb8e497a61dc879bc49a6de1d",
+      "submittedBase": "76629cde9ee0d0e43eab8e7185e2b0775ff900dc",
+      "submissionId": "5979b14e-2c12-46ec-a4e7-9ce52344c24b",
+      "submittedAt": "2026-10-28T16:57:16.870Z",
+      "risk": null,
+      "dispatch": {
+        "id": "6cceb325-0c4a-4fb4-af71-beb02a464f1d",
+        "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+        "role": "worker",
+        "slot": 1,
+        "provider": "codex",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-28T16:48:38.556Z",
+        "finishedAt": "2026-10-28T16:57:16.905Z",
+        "error": null,
+        "summary": "T553 수정 완료: 승격 전 실제 연봉 표시, 순수 급여 계산 분리 및 기존 호환성 유지. 단위 테스트 50개와 타입·린트·포맷·빌드 통과. 작업 결과를 갱신했으며 통합·브라우저 검증과 커밋은 호스트에 남겼습니다."
+      },
+      "review": {
+        "id": "d4824d64-1925-4b88-ac8d-499214003c6e",
+        "owner": "cp29-review",
+        "status": "reviewing",
+        "commit": "ddf34265c6dc2f5cb8e497a61dc879bc49a6de1d",
+        "baseCommit": "84a9f8bf1204a841977e85198637508c84ff2931",
+        "submissionId": "5979b14e-2c12-46ec-a4e7-9ce52344c24b",
+        "createdAt": "2026-10-28T17:13:42.748Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "7a671a63-4e0b-4085-80e7-9e4d1e5e15b1",
+          "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T553: 아카데미 승격 전 실제 급여 안내가 누락됐습니다. 워커 검증 기록은 확인했으며 최종 통합 검증은 조정자 호스트에 위임합니다.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/ui/PlaceActivities.tsx:310",
+              "message": "T553 / WEB-102: 승격 검토에는 ‘시장 급여’와 계약 종료 연도만 표시되며, 포함된 AcademyPanel에도 실제 연봉이 없습니다. 승격 버튼은 즉시 promoteYouth를 실행해 marketWage(w, player)의 연봉으로 계약하므로, 사용자는 금액을 모른 채 지급 의무를 확정합니다. 승격 전에 권위 있는 급여 계산값을 Money로 표시하고, 안내한 금액이 실제 계약 연봉과 일치하는 단위 테스트를 추가하세요."
+            }
+          ],
+          "commit": "686e13bc014065dfbea48f6fcb0fd8cd5bea2fca",
+          "baseCommit": "825a46f07ad3240600b665fd987f25dea2af6ff2",
+          "submissionId": "a60152fa-c4b4-4115-8a3d-474a42e82cfa",
+          "createdAt": "2026-10-28T16:35:23.018Z",
+          "finishedAt": "2026-10-28T16:39:32.191Z",
+          "invalidatedAt": "2026-10-28T16:39:33.527Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T553",
+          "commit": "ddf34265c6dc2f5cb8e497a61dc879bc49a6de1d",
+          "at": "2026-10-28T16:57:16.838Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+              "startedAt": "2026-10-28T16:54:31.166Z",
+              "finishedAt": "2026-10-28T16:57:16.352Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "startedAt": "2026-10-28T16:54:31.166Z",
+          "finishedAt": "2026-10-28T16:57:16.352Z"
+        }
+      ]
+    },
+    {
+      "id": "330d4804-4e50-4dfa-9303-59999e110506",
+      "group": "club-places",
+      "taskId": "T554",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "lane": "places-office",
+      "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/worker-1",
+      "contributors": [
+        "5ecc0d46-f5b6-429d-b199-970b7b925b44/worker-1"
+      ],
+      "status": "blocked",
+      "reason": "committing할 수 없는 상태입니다: blocked",
+      "createdAt": "2026-10-28T16:57:17.290Z",
+      "startCommit": "76629cde9ee0d0e43eab8e7185e2b0775ff900dc",
+      "dispatch": {
+        "id": "c8daf01b-83ec-4604-8787-bb86ccf1ba33",
+        "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+        "role": "worker",
+        "slot": 1,
+        "provider": "codex",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-28T16:57:18.310Z",
+        "finishedAt": "2026-10-28T17:14:19.272Z",
+        "error": "committing할 수 없는 상태입니다: blocked",
+        "summary": "T554 구현과 acceptance/result 갱신 완료. 격리 단위 테스트 136개, typecheck·lint·format·빌드 통과. 브라우저·전체 월드 검사는 호스트로 이관했습니다. 기존 초기 번들 예산 초과가 남아 있으며 309,648→310,949바이트 측정값을 기록했습니다. 커밋·제출은 수행하지 않았습니다."
+      }
     }
   ],
   "history": [
@@ -1283,6 +1437,1598 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1575,
+      "at": "2026-10-28T16:09:04.496Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "18f15189-426e-4d9d-aeb7-e73fe2fd517b",
+      "taskId": "T557",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-28T16:08:28.114Z",
+            "finishedAt": "2026-10-28T16:09:04.188Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1576,
+      "at": "2026-10-28T16:09:04.577Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "18f15189-426e-4d9d-aeb7-e73fe2fd517b",
+      "taskId": "T557",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "77cdea91889558a50281676b86c44c931177ebd0",
+        "integratedAt": "2026-10-28T16:09:04.577Z"
+      }
+    },
+    {
+      "sequence": 1577,
+      "at": "2026-10-28T16:09:04.662Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1578,
+      "at": "2026-10-28T16:09:05.435Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1579,
+      "at": "2026-10-28T16:09:05.493Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1580,
+      "at": "2026-10-28T16:10:38.808Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "77cdea91889558a50281676b86c44c931177ebd0",
+        "submissionId": "5a12853e-06c4-45d1-960a-c01b54393cf6",
+        "submittedAt": "2026-10-28T16:10:38.808Z",
+        "steps": [
+          {
+            "taskId": "T558",
+            "commit": "efa7b39b91765293cd34ba7a6cb2bf2d82bb2aeb",
+            "at": "2026-10-28T16:10:38.782Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-28T16:09:05.886Z",
+                "finishedAt": "2026-10-28T16:10:38.347Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-28T16:09:05.886Z",
+            "finishedAt": "2026-10-28T16:10:38.347Z"
+          }
+        ],
+        "verifiedCommit": "efa7b39b91765293cd34ba7a6cb2bf2d82bb2aeb"
+      }
+    },
+    {
+      "sequence": 1581,
+      "at": "2026-10-28T16:10:38.840Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "71b3ce4c-0cac-4d36-8e7c-43c9ca25bc78",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T15:56:48.579Z",
+          "finishedAt": "2026-10-28T16:10:38.840Z",
+          "error": null,
+          "summary": "복귀 입찰의 조기 만료를 수정하고 영입·임대의 날짜별 정산 회귀 테스트를 추가했습니다. 영향 단위 테스트 22개와 타입·린트·포맷 검사가 통과했습니다. 결과를 기록했으며 커밋·제출은 하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1582,
+      "at": "2026-10-28T16:10:39.186Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+        "group": "club-places",
+        "taskId": "T553",
+        "tasks": [
+          "T553"
+        ],
+        "lane": "place-choices",
+        "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/worker-1",
+        "contributors": [
+          "5ecc0d46-f5b6-429d-b199-970b7b925b44/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-28T16:10:39.186Z",
+        "startCommit": "77cdea91889558a50281676b86c44c931177ebd0"
+      }
+    },
+    {
+      "sequence": 1583,
+      "at": "2026-10-28T16:10:40.249Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1584,
+      "at": "2026-10-28T16:10:40.411Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "79fd02bf-4182-4759-bb15-f0720147a483",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T16:10:40.411Z"
+        }
+      }
+    },
+    {
+      "sequence": 1585,
+      "at": "2026-10-28T16:10:40.641Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "79fd02bf-4182-4759-bb15-f0720147a483",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T16:10:40.411Z"
+        }
+      }
+    },
+    {
+      "sequence": 1586,
+      "at": "2026-10-28T16:10:41.298Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "c884e9dc-dad7-4307-bc54-645d192793eb",
+          "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/reviewer-1",
+          "status": "reviewing",
+          "commit": "efa7b39b91765293cd34ba7a6cb2bf2d82bb2aeb",
+          "baseCommit": "77cdea91889558a50281676b86c44c931177ebd0",
+          "submissionId": "5a12853e-06c4-45d1-960a-c01b54393cf6",
+          "createdAt": "2026-10-28T16:10:41.298Z"
+        }
+      }
+    },
+    {
+      "sequence": 1587,
+      "at": "2026-10-28T16:10:42.432Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "c04318b9-3da7-4a57-acb8-45ea84368e67",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T16:10:42.432Z"
+        }
+      }
+    },
+    {
+      "sequence": 1588,
+      "at": "2026-10-28T16:10:42.461Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "c04318b9-3da7-4a57-acb8-45ea84368e67",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T16:10:42.432Z"
+        }
+      }
+    },
+    {
+      "sequence": 1596,
+      "at": "2026-10-28T16:16:46.868Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T558: 이전 입찰 만료 수정은 확인했으나, 복귀 선수의 등록 예외와 시즌 기록에 P2 결함 2건이 남습니다. 워커 검증 기록은 확인했으며 최종 통합 검증은 조정자 호스트에 위임합니다.",
+        "review": {
+          "id": "c884e9dc-dad7-4307-bc54-645d192793eb",
+          "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T558: 이전 입찰 만료 수정은 확인했으나, 복귀 선수의 등록 예외와 시즌 기록에 P2 결함 2건이 남습니다. 워커 검증 기록은 확인했으며 최종 통합 검증은 조정자 호스트에 위임합니다.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/world-market.ts:54",
+              "message": "T558: 외부 선수로 조회한 복귀 선수에게 기존 graduate 정보가 전달되지 않습니다. 스페인 구단의 등록 인원이 25명일 때, 22세 이하인 우리 아카데미 출신은 CLUB-44의 등록 예외인데도 입찰 제출과 역제안 수락이 한도 초과로 거절되는 것을 재현했습니다. completeSigning에서 graduate를 복원하는 시점은 등록 검사 이후입니다. 미리보기와 제출·체결 검사 전에 이 자격을 반영하고 회귀 테스트를 추가하세요."
+            },
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/transfers.ts:147",
+              "message": "T558: 복귀 시 과거 소속 행의 season을 무조건 복사합니다. 시즌 전환은 activePlayers의 season만 초기화하므로, 이전 시즌에 매각된 선수의 행에는 당시 기록이 남습니다. 1950년에 season[0]=45로 매각한 선수를 1951년에 재영입하는 fixture에서, 현재 시즌 출전이 없어도 season[0]=45가 복원됐습니다. career는 보존하되 season은 해당 시즌의 기록만 유지하도록 처리하고, 같은 시즌 복귀와 다음 시즌 복귀를 구분하는 회귀 테스트를 추가하세요."
+            }
+          ],
+          "commit": "efa7b39b91765293cd34ba7a6cb2bf2d82bb2aeb",
+          "baseCommit": "77cdea91889558a50281676b86c44c931177ebd0",
+          "submissionId": "5a12853e-06c4-45d1-960a-c01b54393cf6",
+          "createdAt": "2026-10-28T16:10:41.298Z",
+          "finishedAt": "2026-10-28T16:16:46.868Z"
+        }
+      }
+    },
+    {
+      "sequence": 1597,
+      "at": "2026-10-28T16:16:46.907Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "c04318b9-3da7-4a57-acb8-45ea84368e67",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T16:10:42.432Z",
+          "finishedAt": "2026-10-28T16:16:46.907Z",
+          "error": null,
+          "summary": "T558: 이전 입찰 만료 수정은 확인했으나, 복귀 선수의 등록 예외와 시즌 기록에 P2 결함 2건이 남습니다. 워커 검증 기록은 확인했으며 최종 통합 검증은 조정자 호스트에 위임합니다."
+        }
+      }
+    },
+    {
+      "sequence": 1598,
+      "at": "2026-10-28T16:16:47.034Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/worker-2",
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "a0ec9c03-5bcd-457f-8076-0d2afcce051b",
+            "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T558: 복귀 영입 입찰이 답변일 전에 잘못 만료됩니다. 워커 검증 기록은 확인했으며 최종 통합 검증은 조정자 호스트에 위임합니다.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:118",
+                "message": "T558: 이 변경은 과거 소속 선수의 복귀 입찰을 허용하지만, settleBids는 w.players에 동일 ID의 과거 기록만 있어도 현재 소유 선수로 판단해 입찰을 만료시킵니다. 작은 fixture에서 status가 sold인 선수에게 day 3에 제출한 due 5 입찰이 dailyMarket의 day 4 처리에서 expired로 바뀌는 것을 재현했습니다. 현재 활성 소유 여부로 만료를 판단하도록 수정하고, 즉시 countered로 바꾸는 기존 테스트 외에 날짜 처리를 거치는 복귀 입찰 회귀 테스트를 추가하세요."
+              }
+            ],
+            "commit": "9479b0f6e066b044c72d4cb3cb4e346c3ba039bf",
+            "baseCommit": "1fb24a736057a805adbe94a975e29e045d833897",
+            "submissionId": "ad0ee9b6-1298-4730-b325-4d0241ffa09e",
+            "createdAt": "2026-10-28T15:51:39.198Z",
+            "finishedAt": "2026-10-28T15:56:48.163Z",
+            "invalidatedAt": "2026-10-28T15:56:48.361Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "c884e9dc-dad7-4307-bc54-645d192793eb",
+            "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T558: 이전 입찰 만료 수정은 확인했으나, 복귀 선수의 등록 예외와 시즌 기록에 P2 결함 2건이 남습니다. 워커 검증 기록은 확인했으며 최종 통합 검증은 조정자 호스트에 위임합니다.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/world-market.ts:54",
+                "message": "T558: 외부 선수로 조회한 복귀 선수에게 기존 graduate 정보가 전달되지 않습니다. 스페인 구단의 등록 인원이 25명일 때, 22세 이하인 우리 아카데미 출신은 CLUB-44의 등록 예외인데도 입찰 제출과 역제안 수락이 한도 초과로 거절되는 것을 재현했습니다. completeSigning에서 graduate를 복원하는 시점은 등록 검사 이후입니다. 미리보기와 제출·체결 검사 전에 이 자격을 반영하고 회귀 테스트를 추가하세요."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:147",
+                "message": "T558: 복귀 시 과거 소속 행의 season을 무조건 복사합니다. 시즌 전환은 activePlayers의 season만 초기화하므로, 이전 시즌에 매각된 선수의 행에는 당시 기록이 남습니다. 1950년에 season[0]=45로 매각한 선수를 1951년에 재영입하는 fixture에서, 현재 시즌 출전이 없어도 season[0]=45가 복원됐습니다. career는 보존하되 season은 해당 시즌의 기록만 유지하도록 처리하고, 같은 시즌 복귀와 다음 시즌 복귀를 구분하는 회귀 테스트를 추가하세요."
+              }
+            ],
+            "commit": "efa7b39b91765293cd34ba7a6cb2bf2d82bb2aeb",
+            "baseCommit": "77cdea91889558a50281676b86c44c931177ebd0",
+            "submissionId": "5a12853e-06c4-45d1-960a-c01b54393cf6",
+            "createdAt": "2026-10-28T16:10:41.298Z",
+            "finishedAt": "2026-10-28T16:16:46.868Z",
+            "invalidatedAt": "2026-10-28T16:16:47.034Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1599,
+      "at": "2026-10-28T16:16:47.227Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "3588276c-91e7-4319-8f1b-0d0c3a40b952",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "worker",
+          "slot": 2,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T16:16:47.227Z"
+        }
+      }
+    },
+    {
+      "sequence": 1600,
+      "at": "2026-10-28T16:16:47.717Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "3588276c-91e7-4319-8f1b-0d0c3a40b952",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "worker",
+          "slot": 2,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T16:16:47.227Z"
+        }
+      }
+    },
+    {
+      "sequence": 1601,
+      "at": "2026-10-28T16:23:51.692Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1602,
+      "at": "2026-10-28T16:23:54.444Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1603,
+      "at": "2026-10-28T16:23:54.560Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1604,
+      "at": "2026-10-28T16:27:34.546Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+      }
+    },
+    {
+      "sequence": 1605,
+      "at": "2026-10-28T16:27:34.662Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "3588276c-91e7-4319-8f1b-0d0c3a40b952",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "worker",
+          "slot": 2,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T16:16:47.227Z",
+          "finishedAt": "2026-10-28T16:27:34.662Z",
+          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+          "summary": "두 P2 결함을 수정하고 T558 결과를 갱신했습니다. 복귀 선수의 아카데미 등록 예외를 사전 반영하고, 이전 시즌 기록 복원을 차단했습니다. 유닛 테스트 28개와 타입·린트·포맷 검사가 통과했습니다. 통합·브라우저·빌드는 호스트 최종 검증으로 남겼습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1609,
+      "at": "2026-10-28T16:30:43.914Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1610,
+      "at": "2026-10-28T16:30:50.059Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1611,
+      "at": "2026-10-28T16:30:50.354Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1612,
+      "at": "2026-10-28T16:31:29.749Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1618,
+      "at": "2026-10-28T16:35:17.989Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "686e13bc014065dfbea48f6fcb0fd8cd5bea2fca",
+        "submittedBase": "825a46f07ad3240600b665fd987f25dea2af6ff2",
+        "submissionId": "a60152fa-c4b4-4115-8a3d-474a42e82cfa",
+        "submittedAt": "2026-10-28T16:35:17.989Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T553",
+            "commit": "686e13bc014065dfbea48f6fcb0fd8cd5bea2fca",
+            "at": "2026-10-28T16:35:17.901Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-28T16:30:51.465Z",
+                "finishedAt": "2026-10-28T16:35:15.749Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-28T16:30:51.465Z",
+            "finishedAt": "2026-10-28T16:35:15.749Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1619,
+      "at": "2026-10-28T16:35:18.101Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "79fd02bf-4182-4759-bb15-f0720147a483",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T16:10:40.411Z",
+          "finishedAt": "2026-10-28T16:35:18.101Z",
+          "error": null,
+          "summary": "T553 구현과 acceptance/result 갱신을 완료했습니다. 장소별 선택·손해 공개, 기존 훈련·유소년 흐름 재사용, 비동기 실행 보호를 추가했습니다. 선별 단위 테스트 36개와 타입·린트·포맷·빌드가 통과했습니다. 브라우저·통합 검사는 호스트에 인계하며 커밋·제출은 하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1620,
+      "at": "2026-10-28T16:35:23.018Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "7a671a63-4e0b-4085-80e7-9e4d1e5e15b1",
+          "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/reviewer-1",
+          "status": "reviewing",
+          "commit": "686e13bc014065dfbea48f6fcb0fd8cd5bea2fca",
+          "baseCommit": "825a46f07ad3240600b665fd987f25dea2af6ff2",
+          "submissionId": "a60152fa-c4b4-4115-8a3d-474a42e82cfa",
+          "createdAt": "2026-10-28T16:35:23.018Z"
+        }
+      }
+    },
+    {
+      "sequence": 1621,
+      "at": "2026-10-28T16:35:30.138Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "6516d405-27bd-46a1-9070-8adfcf5a49fb",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T16:35:30.138Z"
+        }
+      }
+    },
+    {
+      "sequence": 1622,
+      "at": "2026-10-28T16:35:30.447Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "6516d405-27bd-46a1-9070-8adfcf5a49fb",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T16:35:30.138Z"
+        }
+      }
+    },
+    {
+      "sequence": 1626,
+      "at": "2026-10-28T16:39:32.191Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T553: 아카데미 승격 전 실제 급여 안내가 누락됐습니다. 워커 검증 기록은 확인했으며 최종 통합 검증은 조정자 호스트에 위임합니다.",
+        "review": {
+          "id": "7a671a63-4e0b-4085-80e7-9e4d1e5e15b1",
+          "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T553: 아카데미 승격 전 실제 급여 안내가 누락됐습니다. 워커 검증 기록은 확인했으며 최종 통합 검증은 조정자 호스트에 위임합니다.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/ui/PlaceActivities.tsx:310",
+              "message": "T553 / WEB-102: 승격 검토에는 ‘시장 급여’와 계약 종료 연도만 표시되며, 포함된 AcademyPanel에도 실제 연봉이 없습니다. 승격 버튼은 즉시 promoteYouth를 실행해 marketWage(w, player)의 연봉으로 계약하므로, 사용자는 금액을 모른 채 지급 의무를 확정합니다. 승격 전에 권위 있는 급여 계산값을 Money로 표시하고, 안내한 금액이 실제 계약 연봉과 일치하는 단위 테스트를 추가하세요."
+            }
+          ],
+          "commit": "686e13bc014065dfbea48f6fcb0fd8cd5bea2fca",
+          "baseCommit": "825a46f07ad3240600b665fd987f25dea2af6ff2",
+          "submissionId": "a60152fa-c4b4-4115-8a3d-474a42e82cfa",
+          "createdAt": "2026-10-28T16:35:23.018Z",
+          "finishedAt": "2026-10-28T16:39:32.191Z"
+        }
+      }
+    },
+    {
+      "sequence": 1627,
+      "at": "2026-10-28T16:39:33.127Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "6516d405-27bd-46a1-9070-8adfcf5a49fb",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T16:35:30.138Z",
+          "finishedAt": "2026-10-28T16:39:33.127Z",
+          "error": null,
+          "summary": "T553: 아카데미 승격 전 실제 급여 안내가 누락됐습니다. 워커 검증 기록은 확인했으며 최종 통합 검증은 조정자 호스트에 위임합니다."
+        }
+      }
+    },
+    {
+      "sequence": 1628,
+      "at": "2026-10-28T16:39:33.527Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "7a671a63-4e0b-4085-80e7-9e4d1e5e15b1",
+            "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T553: 아카데미 승격 전 실제 급여 안내가 누락됐습니다. 워커 검증 기록은 확인했으며 최종 통합 검증은 조정자 호스트에 위임합니다.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/ui/PlaceActivities.tsx:310",
+                "message": "T553 / WEB-102: 승격 검토에는 ‘시장 급여’와 계약 종료 연도만 표시되며, 포함된 AcademyPanel에도 실제 연봉이 없습니다. 승격 버튼은 즉시 promoteYouth를 실행해 marketWage(w, player)의 연봉으로 계약하므로, 사용자는 금액을 모른 채 지급 의무를 확정합니다. 승격 전에 권위 있는 급여 계산값을 Money로 표시하고, 안내한 금액이 실제 계약 연봉과 일치하는 단위 테스트를 추가하세요."
+              }
+            ],
+            "commit": "686e13bc014065dfbea48f6fcb0fd8cd5bea2fca",
+            "baseCommit": "825a46f07ad3240600b665fd987f25dea2af6ff2",
+            "submissionId": "a60152fa-c4b4-4115-8a3d-474a42e82cfa",
+            "createdAt": "2026-10-28T16:35:23.018Z",
+            "finishedAt": "2026-10-28T16:39:32.191Z",
+            "invalidatedAt": "2026-10-28T16:39:33.527Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1629,
+      "at": "2026-10-28T16:39:34.057Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e30ce504-c241-4c95-acb9-c21c60fd51c9",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T16:39:34.057Z"
+        }
+      }
+    },
+    {
+      "sequence": 1630,
+      "at": "2026-10-28T16:39:35.632Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e30ce504-c241-4c95-acb9-c21c60fd51c9",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T16:39:34.057Z"
+        }
+      }
+    },
+    {
+      "sequence": 1631,
+      "at": "2026-10-28T16:41:05.051Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked"
+      }
+    },
+    {
+      "sequence": 1636,
+      "at": "2026-10-28T16:46:06.365Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "decision: 실제 승격 연봉을 표시하면서 ARCH-4를 지키도록 T553의 엔진·계약 파일 수정 금지 범위를 조정할까요?"
+      }
+    },
+    {
+      "sequence": 1637,
+      "at": "2026-10-28T16:46:06.448Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "e30ce504-c241-4c95-acb9-c21c60fd51c9",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T16:39:34.057Z",
+          "finishedAt": "2026-10-28T16:46:06.448Z",
+          "error": null,
+          "summary": "실제 승격 연봉 누락을 재현하는 단위 테스트를 추가했습니다(1건 실패). 타입·린트·포맷은 통과했습니다. 권위 있는 급여 함수를 사용하려면 ARCH-4와 작업의 엔진 수정 금지 범위 사이의 구현 공백을 해결해야 합니다. 차단 사유와 검사 결과를 task result에 기록했습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1638,
+      "at": "2026-10-28T16:46:07.775Z",
+      "type": "group",
+      "group": "club-places",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T15:25:53.955Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000,
+          "decisionWait": {
+            "startedAt": "2026-10-28T16:46:07.760Z",
+            "deadlineAt": "2026-10-28T17:01:06.151Z",
+            "attempts": [
+              {
+                "attempt": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+                "taskId": "T553",
+                "question": "실제 승격 연봉을 표시하면서 ARCH-4를 지키도록 T553의 엔진·계약 파일 수정 금지 범위를 조정할까요?",
+                "requestedAt": "2026-10-28T16:46:06.365Z"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "sequence": 1639,
+      "at": "2026-10-28T16:46:26.367Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1643,
+      "at": "2026-10-28T16:48:35.024Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1644,
+      "at": "2026-10-28T16:48:38.325Z",
+      "type": "group",
+      "group": "club-places",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T15:25:53.955Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1645,
+      "at": "2026-10-28T16:48:38.556Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "6cceb325-0c4a-4fb4-af71-beb02a464f1d",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T16:48:38.556Z"
+        }
+      }
+    },
+    {
+      "sequence": 1646,
+      "at": "2026-10-28T16:48:38.816Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "6cceb325-0c4a-4fb4-af71-beb02a464f1d",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T16:48:38.556Z"
+        }
+      }
+    },
+    {
+      "sequence": 1652,
+      "at": "2026-10-28T16:49:36.619Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "submittedBase": "76629cde9ee0d0e43eab8e7185e2b0775ff900dc",
+        "submissionId": "f324c329-f6f1-4eb8-b78a-e9834bee6a77",
+        "submittedAt": "2026-10-28T16:49:36.619Z",
+        "steps": [
+          {
+            "taskId": "T558",
+            "commit": "e7c5ce2942231db73421b4065b125b49dbac4352",
+            "at": "2026-10-28T16:49:36.592Z",
+            "verification": [
+              {
+                "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "startedAt": "2026-10-28T16:46:26.811Z",
+                "finishedAt": "2026-10-28T16:49:36.130Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "startedAt": "2026-10-28T16:46:26.811Z",
+            "finishedAt": "2026-10-28T16:49:36.130Z"
+          }
+        ],
+        "verifiedCommit": "e7c5ce2942231db73421b4065b125b49dbac4352"
+      }
+    },
+    {
+      "sequence": 1656,
+      "at": "2026-10-28T16:51:51.252Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "019a31b8-8267-470e-9854-047017164b04",
+          "owner": "cp29-review",
+          "status": "reviewing",
+          "commit": "e7c5ce2942231db73421b4065b125b49dbac4352",
+          "baseCommit": "76629cde9ee0d0e43eab8e7185e2b0775ff900dc",
+          "submissionId": "f324c329-f6f1-4eb8-b78a-e9834bee6a77",
+          "createdAt": "2026-10-28T16:51:51.252Z"
+        }
+      }
+    },
+    {
+      "sequence": 1660,
+      "at": "2026-10-28T16:54:28.740Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1661,
+      "at": "2026-10-28T16:54:30.216Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1662,
+      "at": "2026-10-28T16:54:30.311Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1663,
+      "at": "2026-10-28T16:57:16.870Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "76629cde9ee0d0e43eab8e7185e2b0775ff900dc",
+        "submissionId": "5979b14e-2c12-46ec-a4e7-9ce52344c24b",
+        "submittedAt": "2026-10-28T16:57:16.870Z",
+        "steps": [
+          {
+            "taskId": "T553",
+            "commit": "ddf34265c6dc2f5cb8e497a61dc879bc49a6de1d",
+            "at": "2026-10-28T16:57:16.838Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+                "startedAt": "2026-10-28T16:54:31.166Z",
+                "finishedAt": "2026-10-28T16:57:16.352Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests",
+            "startedAt": "2026-10-28T16:54:31.166Z",
+            "finishedAt": "2026-10-28T16:57:16.352Z"
+          }
+        ],
+        "verifiedCommit": "ddf34265c6dc2f5cb8e497a61dc879bc49a6de1d"
+      }
+    },
+    {
+      "sequence": 1664,
+      "at": "2026-10-28T16:57:16.905Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "6cceb325-0c4a-4fb4-af71-beb02a464f1d",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T16:48:38.556Z",
+          "finishedAt": "2026-10-28T16:57:16.905Z",
+          "error": null,
+          "summary": "T553 수정 완료: 승격 전 실제 연봉 표시, 순수 급여 계산 분리 및 기존 호환성 유지. 단위 테스트 50개와 타입·린트·포맷·빌드 통과. 작업 결과를 갱신했으며 통합·브라우저 검증과 커밋은 호스트에 남겼습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1665,
+      "at": "2026-10-28T16:57:17.290Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "330d4804-4e50-4dfa-9303-59999e110506",
+      "taskId": "T554",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "330d4804-4e50-4dfa-9303-59999e110506",
+        "group": "club-places",
+        "taskId": "T554",
+        "tasks": [
+          "T554",
+          "T555"
+        ],
+        "lane": "places-office",
+        "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/worker-1",
+        "contributors": [
+          "5ecc0d46-f5b6-429d-b199-970b7b925b44/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-28T16:57:17.290Z",
+        "startCommit": "76629cde9ee0d0e43eab8e7185e2b0775ff900dc"
+      }
+    },
+    {
+      "sequence": 1666,
+      "at": "2026-10-28T16:57:18.163Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "330d4804-4e50-4dfa-9303-59999e110506",
+      "taskId": "T554",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1667,
+      "at": "2026-10-28T16:57:18.310Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "330d4804-4e50-4dfa-9303-59999e110506",
+      "taskId": "T554",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c8daf01b-83ec-4604-8787-bb86ccf1ba33",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T16:57:18.310Z"
+        }
+      }
+    },
+    {
+      "sequence": 1668,
+      "at": "2026-10-28T16:57:18.541Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "330d4804-4e50-4dfa-9303-59999e110506",
+      "taskId": "T554",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c8daf01b-83ec-4604-8787-bb86ccf1ba33",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T16:57:18.310Z"
+        }
+      }
+    },
+    {
+      "sequence": 1669,
+      "at": "2026-10-28T17:01:05.249Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T558 returning-player registration, current-season records and premature-expiry fixes are sound, but the new retained-roster overflow branch can turn an arriving wing-back into a goalkeeper and hide him from position filters.",
+        "review": {
+          "id": "019a31b8-8267-470e-9854-047017164b04",
+          "owner": "cp29-review",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T558 returning-player registration, current-season records and premature-expiry fixes are sound, but the new retained-roster overflow branch can turn an arriving wing-back into a goalkeeper and hide him from position filters.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "packages/engine/src/npc-continuity.ts:102 (T558)",
+              "message": "When every generated place is occupied by a retained native and an arrival has a position absent from the raw formation, the new overflow branch falls back to raw[0] (a goalkeeper). Read-only reproduction on e7c5ce2 with worldMarketFixture, all foreign natives retained with origins, and a newly moved LWB returned retainedPosition=LWB, shownPosition=GK, positions={GK:3}, and zero matches in the LWB market filter. Generate/use a model compatible with the retained actual position (and ordinary club-strength attribute rules) rather than the arbitrary first player, and add a small-fixture rare-position/position-filter regression. Preserve every native and arrival identity."
+            }
+          ],
+          "commit": "e7c5ce2942231db73421b4065b125b49dbac4352",
+          "baseCommit": "76629cde9ee0d0e43eab8e7185e2b0775ff900dc",
+          "submissionId": "f324c329-f6f1-4eb8-b78a-e9834bee6a77",
+          "createdAt": "2026-10-28T16:51:51.252Z",
+          "finishedAt": "2026-10-28T17:01:05.249Z"
+        }
+      }
+    },
+    {
+      "sequence": 1670,
+      "at": "2026-10-28T17:01:14.430Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+      "taskId": "T558",
+      "previousStatus": "changes_requested",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "reason": "Unapproved T558 submission and final P2 move to an isolated corrective runner after three worker runs; no worker is active. Preserve submission e7c5ce2 and all prior reviews for re-review.",
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "a0ec9c03-5bcd-457f-8076-0d2afcce051b",
+            "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T558: 복귀 영입 입찰이 답변일 전에 잘못 만료됩니다. 워커 검증 기록은 확인했으며 최종 통합 검증은 조정자 호스트에 위임합니다.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:118",
+                "message": "T558: 이 변경은 과거 소속 선수의 복귀 입찰을 허용하지만, settleBids는 w.players에 동일 ID의 과거 기록만 있어도 현재 소유 선수로 판단해 입찰을 만료시킵니다. 작은 fixture에서 status가 sold인 선수에게 day 3에 제출한 due 5 입찰이 dailyMarket의 day 4 처리에서 expired로 바뀌는 것을 재현했습니다. 현재 활성 소유 여부로 만료를 판단하도록 수정하고, 즉시 countered로 바꾸는 기존 테스트 외에 날짜 처리를 거치는 복귀 입찰 회귀 테스트를 추가하세요."
+              }
+            ],
+            "commit": "9479b0f6e066b044c72d4cb3cb4e346c3ba039bf",
+            "baseCommit": "1fb24a736057a805adbe94a975e29e045d833897",
+            "submissionId": "ad0ee9b6-1298-4730-b325-4d0241ffa09e",
+            "createdAt": "2026-10-28T15:51:39.198Z",
+            "finishedAt": "2026-10-28T15:56:48.163Z",
+            "invalidatedAt": "2026-10-28T15:56:48.361Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "c884e9dc-dad7-4307-bc54-645d192793eb",
+            "owner": "5ecc0d46-f5b6-429d-b199-970b7b925b44/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T558: 이전 입찰 만료 수정은 확인했으나, 복귀 선수의 등록 예외와 시즌 기록에 P2 결함 2건이 남습니다. 워커 검증 기록은 확인했으며 최종 통합 검증은 조정자 호스트에 위임합니다.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/world-market.ts:54",
+                "message": "T558: 외부 선수로 조회한 복귀 선수에게 기존 graduate 정보가 전달되지 않습니다. 스페인 구단의 등록 인원이 25명일 때, 22세 이하인 우리 아카데미 출신은 CLUB-44의 등록 예외인데도 입찰 제출과 역제안 수락이 한도 초과로 거절되는 것을 재현했습니다. completeSigning에서 graduate를 복원하는 시점은 등록 검사 이후입니다. 미리보기와 제출·체결 검사 전에 이 자격을 반영하고 회귀 테스트를 추가하세요."
+              },
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/transfers.ts:147",
+                "message": "T558: 복귀 시 과거 소속 행의 season을 무조건 복사합니다. 시즌 전환은 activePlayers의 season만 초기화하므로, 이전 시즌에 매각된 선수의 행에는 당시 기록이 남습니다. 1950년에 season[0]=45로 매각한 선수를 1951년에 재영입하는 fixture에서, 현재 시즌 출전이 없어도 season[0]=45가 복원됐습니다. career는 보존하되 season은 해당 시즌의 기록만 유지하도록 처리하고, 같은 시즌 복귀와 다음 시즌 복귀를 구분하는 회귀 테스트를 추가하세요."
+              }
+            ],
+            "commit": "efa7b39b91765293cd34ba7a6cb2bf2d82bb2aeb",
+            "baseCommit": "77cdea91889558a50281676b86c44c931177ebd0",
+            "submissionId": "5a12853e-06c4-45d1-960a-c01b54393cf6",
+            "createdAt": "2026-10-28T16:10:41.298Z",
+            "finishedAt": "2026-10-28T16:16:46.868Z",
+            "invalidatedAt": "2026-10-28T16:16:47.034Z",
+            "invalidationReason": "correction assigned"
+          },
+          {
+            "id": "019a31b8-8267-470e-9854-047017164b04",
+            "owner": "cp29-review",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T558 returning-player registration, current-season records and premature-expiry fixes are sound, but the new retained-roster overflow branch can turn an arriving wing-back into a goalkeeper and hide him from position filters.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "packages/engine/src/npc-continuity.ts:102 (T558)",
+                "message": "When every generated place is occupied by a retained native and an arrival has a position absent from the raw formation, the new overflow branch falls back to raw[0] (a goalkeeper). Read-only reproduction on e7c5ce2 with worldMarketFixture, all foreign natives retained with origins, and a newly moved LWB returned retainedPosition=LWB, shownPosition=GK, positions={GK:3}, and zero matches in the LWB market filter. Generate/use a model compatible with the retained actual position (and ordinary club-strength attribute rules) rather than the arbitrary first player, and add a small-fixture rare-position/position-filter regression. Preserve every native and arrival identity."
+              }
+            ],
+            "commit": "e7c5ce2942231db73421b4065b125b49dbac4352",
+            "baseCommit": "76629cde9ee0d0e43eab8e7185e2b0775ff900dc",
+            "submissionId": "f324c329-f6f1-4eb8-b78a-e9834bee6a77",
+            "createdAt": "2026-10-28T16:51:51.252Z",
+            "finishedAt": "2026-10-28T17:01:05.249Z",
+            "invalidatedAt": "2026-10-28T17:01:14.429Z",
+            "invalidationReason": "attempt released"
+          }
+        ],
+        "releasedAt": "2026-10-28T17:01:14.429Z"
+      }
+    },
+    {
+      "sequence": 1678,
+      "at": "2026-10-28T17:11:08.020Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "330d4804-4e50-4dfa-9303-59999e110506",
+      "taskId": "T554",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "Superseded assignment: T554 and T555 have already been independently approved and integrated by club-places-ui, and the aggregation branch now archives both. Stop implementation and do not submit duplicate changes. Preserve this isolated draft; the coordinator will release the claim after its dispatch has ended."
+      }
+    },
+    {
+      "sequence": 1683,
+      "at": "2026-10-28T17:13:42.748Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "d4824d64-1925-4b88-ac8d-499214003c6e",
+          "owner": "cp29-review",
+          "status": "reviewing",
+          "commit": "ddf34265c6dc2f5cb8e497a61dc879bc49a6de1d",
+          "baseCommit": "84a9f8bf1204a841977e85198637508c84ff2931",
+          "submissionId": "5979b14e-2c12-46ec-a4e7-9ce52344c24b",
+          "createdAt": "2026-10-28T17:13:42.748Z"
+        }
+      }
+    },
+    {
+      "sequence": 1684,
+      "at": "2026-10-28T17:14:19.233Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "330d4804-4e50-4dfa-9303-59999e110506",
+      "taskId": "T554",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "reason": "committing할 수 없는 상태입니다: blocked"
+      }
+    },
+    {
+      "sequence": 1685,
+      "at": "2026-10-28T17:14:19.272Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "330d4804-4e50-4dfa-9303-59999e110506",
+      "taskId": "T554",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "c8daf01b-83ec-4604-8787-bb86ccf1ba33",
+          "runner": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T16:57:18.310Z",
+          "finishedAt": "2026-10-28T17:14:19.272Z",
+          "error": "committing할 수 없는 상태입니다: blocked",
+          "summary": "T554 구현과 acceptance/result 갱신 완료. 격리 단위 테스트 136개, typecheck·lint·format·빌드 통과. 브라우저·전체 월드 검사는 호스트로 이관했습니다. 기존 초기 번들 예산 초과가 남아 있으며 309,648→310,949바이트 측정값을 기록했습니다. 커밋·제출은 수행하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1686,
+      "at": "2026-10-28T17:14:21.328Z",
+      "type": "group",
+      "group": "club-places",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "5ecc0d46-f5b6-429d-b199-970b7b925b44",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T15:25:53.955Z",
+          "stoppedAt": "2026-10-28T17:14:21.328Z",
+          "dispatched": 12,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "18f15189-426e-4d9d-aeb7-e73fe2fd517b",
+              "role": "worker",
+              "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+            },
+            {
+              "attempt": "1336ebe0-3e79-4361-ac75-fd916c8ec844",
+              "role": "worker",
+              "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+            },
+            {
+              "attempt": "330d4804-4e50-4dfa-9303-59999e110506",
+              "role": "worker",
+              "error": "committing할 수 없는 상태입니다: blocked"
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
