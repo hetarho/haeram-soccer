@@ -7,6 +7,7 @@ import { horizontalOverflow, settle } from './layout';
 
 for (const viewport of [
   { width: 360, height: 740 },
+  { width: 390, height: 844 },
   { width: 1280, height: 900 },
 ]) {
   test(`six gameplay entries and personnel workflows at ${viewport.width}px`, async ({ page }) => {
@@ -87,8 +88,10 @@ for (const viewport of [
     await expect(page.getByTestId('youth-focus')).toBeVisible();
     await openPersonnel(page, 'manager');
     await expect(page.getByTestId('facility-overview')).toHaveAccessibleName('감독실');
+    await expect(page.getByTestId('place-activities-manager')).toBeVisible();
     await openPersonnel(page, 'coaches');
     await expect(page.getByTestId('facility-overview')).toHaveAccessibleName('스태프 사무실');
+    await expect(page.getByTestId('place-activities-coaching')).toBeVisible();
     await openPersonnel(page, 'players');
     await expect(search).toHaveValue('Retained work');
     await openPersonnel(page, 'coaches');

@@ -21,7 +21,15 @@ export async function closeMarketPanel(page: Page, name: string) {
   await expect(dialog).toHaveCount(0);
 }
 
-export async function marketCandidate(page: Page, id: string) {
+/** Find a retained identity through the public name search, independently of the current page. */
+export async function marketCandidate(page: Page, id: string, name?: string) {
+  if (name) {
+    const filters = await marketFilters(page);
+    await filters.getByRole('button', { name: '초기화', exact: true }).click();
+    await closeMarketPanel(page, '영입 필터');
+    await page.getByRole('searchbox', { name: '선수 이름 검색', exact: true }).fill(name);
+  }
+  await expect(page.getByTestId(`market-candidate-${id}`)).toBeVisible();
   await page
     .getByTestId(`market-candidate-${id}`)
     .getByRole('button', { name: / 상세 보기$/ })

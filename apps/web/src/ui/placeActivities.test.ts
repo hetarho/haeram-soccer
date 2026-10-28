@@ -13,10 +13,10 @@ import { promoteYouth } from '../../../../packages/engine/src/academy';
 import type { GameClient } from '../runtime/client';
 import type { Reply, View } from '../runtime/protocol';
 import { initialClientState } from '../runtime/store';
-import { PlaceActivities } from './PlaceActivities.tsx';
+import { PlaceActivities } from './PlaceActivities';
 import { Money } from './Money';
 import { careRequest } from './teamState';
-import { activityUnavailable, placeActivities, placeActivityClient } from './placeActivities';
+import { activityUnavailable, placeActivities, placeActivityClient } from './placeActivityChoices';
 
 /** A few synthetic players and staff, one club; no world generation, matches or calendar steps. */
 function fixture() {
@@ -287,6 +287,9 @@ describe('place activity units', () => {
         expect(html).toContain('시장 급여');
         expect(html).toContain('육성 기회를 잃어요');
         expect(html).toContain('U-17 ×1.3');
+        expect(html.match(/aria-label="유소년 아카데미"/g)).toHaveLength(1);
+        expect(html).toContain('승격·방출 검토');
+        expect(html).not.toContain('>1군 승격</button>');
       }
       expect(command).not.toHaveBeenCalled();
       expect(world.revision).toBe(0);

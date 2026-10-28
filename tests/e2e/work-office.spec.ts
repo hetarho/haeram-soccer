@@ -6,7 +6,7 @@ import { exportedCareer } from './career-fixtures';
 import { enterOffice, leaveOffice, officeBar, openOfficeArea } from './office';
 import { horizontalOverflow } from './layout';
 
-for (const width of [390, 1280]) {
+for (const width of [360, 390, 1280]) {
   test(`working desks retain authority and shared command panels at ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     const w = createWorld({
@@ -61,11 +61,21 @@ for (const width of [390, 1280]) {
     const inline = page.getByTestId('desk-responsibilities');
     await expect(page.getByTestId('player-office-overview')).toBeVisible();
     await expect(inline).toHaveCount(0);
+    await expect(
+      page.getByRole('tablist', { name: '선수 계약 업무', exact: true }).getByRole('tab'),
+    ).toHaveText(['개요', '계약', '영입', '매각', '유소년 승격·방출']);
+    await page.getByRole('tab', { name: '계약', exact: true }).click();
+    await expect(inline.getByRole('group', { name: '선수 계약', exact: true })).toBeVisible();
+    const criteria = page.getByRole('region', { name: '적용 중인 업무 기준', exact: true });
+    await expect(criteria).toContainText('재정');
+    await expect(criteria).not.toContainText('라커룸 문화');
+    await expect(page.getByRole('textbox', { name: '선수 찾기', exact: true })).toBeVisible();
     await page.getByRole('tab', { name: '영입', exact: true }).click();
     await expect(inline.getByRole('group')).toHaveCount(1);
     await expect(inline.getByRole('group', { name: '선수 영입', exact: true })).toBeVisible();
     await expect(page.getByRole('table', { name: '영입 후보 목록', exact: true })).toBeVisible();
     await page.getByRole('tab', { name: '매각', exact: true }).click();
+    await expect(inline.getByRole('group', { name: '선수 매각', exact: true })).toBeVisible();
     await expect(page.getByRole('textbox', { name: '선수 찾기', exact: true })).toBeVisible();
     await page
       .getByRole('button', { name: /이적 상태 .*바꾸기$/ })
@@ -74,6 +84,9 @@ for (const width of [390, 1280]) {
     await expect(page.getByRole('dialog', { name: '이적 상태', exact: true })).toBeVisible();
     await page.keyboard.press('Escape');
     await page.getByRole('tab', { name: '유소년 승격·방출', exact: true }).click();
+    await expect(
+      inline.getByRole('group', { name: '유소년 승격·방출', exact: true }),
+    ).toBeVisible();
     await expect(page.getByRole('region', { name: '유소년 아카데미', exact: true })).toBeVisible();
     await openOfficeArea(page, '스태프 계약');
     await expect(page.getByTestId('desk-responsibilities').getByRole('group')).toHaveCount(1);
@@ -88,6 +101,12 @@ for (const width of [390, 1280]) {
     await openOfficeArea(page, '투자');
     for (const part of ['stadium', 'training', 'academy'])
       await expect(page.getByTestId(`facility-${part}`)).toBeVisible();
+    await page.getByRole('button', { name: /^재정 ·/ }).click();
+    const financial = page.getByRole('dialog', { name: '재정 업무 기준', exact: true });
+    await expect(financial).toContainText('재계약 기조');
+    await expect(financial).toContainText('선수단 투자');
+    await expect(financial).not.toContainText('라커룸 문화');
+    await page.keyboard.press('Escape');
     for (const name of ['재정', '유소년', '지역', '글로벌'])
       await expect(page.getByRole('button', { name: new RegExp('^' + name + ' ·') })).toBeVisible();
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);

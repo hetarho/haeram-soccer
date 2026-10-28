@@ -392,7 +392,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T556 | Connect place choices and verify the complete owner workflow | WEB CLUB ARCH | T552 T553 T555 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -410,13 +409,14 @@
 | auto-play | 4 | 7 | 4 | 3 | 0 | 1 | 0 | 2026-10-27T11:34:29.863Z | [history](work/auto-play.json) |
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 | v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
-| club-places | 3 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-28T18:06:48.455Z | [history](work/club-places.json) |
+| club-places | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-28T18:33:15.546Z | [history](work/club-places.json) |
 | club-places-ui | 1 | 7 | 2 | 5 | 0 | 0 | 0 | 2026-10-28T16:52:26.857Z | [history](work/club-places-ui.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261028 T556 integrated
 - 261029 doc-review CLUB-26 tidied (rev unchanged): replace the stale duplicated area label with the authoritative ECON-25 reference; contract conditions, exceptions, figures, negations, obligations and references are preserved.
 - 261029 doc-review CLUB-26 start.
 - 261029 cp29 T552 reviewed/corrected/integrated; T556 now owns the final place composition and shared browser journeys, including the authoritative paid-loan bid lifecycle.

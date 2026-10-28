@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-28T18:06:48.455Z",
-  "sourceCommit": "d8f467b63444873063ff93574ce0e9e2a51a6765",
+  "snapshotAt": "2026-10-28T18:33:15.546Z",
+  "sourceCommit": "00880fb45f28bdb1aa3ef9f61906338c0ef25101",
   "group": {
     "id": "club-places",
     "branch": "work/club-places",
@@ -14,7 +14,7 @@
     },
     "review": "all",
     "lastRun": {
-      "id": "96f28371-1638-466a-8bdf-7c21ffce80bd",
+      "id": "c1d508aa-5e40-408a-afc3-f8666ca864c1",
       "adapter": "builtin",
       "providers": {
         "worker": {
@@ -35,36 +35,31 @@
           "version": "codex-cli 0.160.1"
         }
       ],
-      "startedAt": "2026-10-28T17:56:52.243Z",
-      "stoppedAt": "2026-10-28T18:06:47.704Z",
-      "dispatched": 3,
-      "outcome": "dispatch-limit",
-      "failures": [],
+      "startedAt": "2026-10-28T18:25:12.798Z",
+      "stoppedAt": "2026-10-28T18:30:22.815Z",
+      "dispatched": 2,
+      "outcome": "needs-attention",
+      "failures": [
+        {
+          "attempt": "afc98e71-deb2-4533-b0e6-8373f0355591",
+          "role": "worker",
+          "error": "CLUB: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
+        }
+      ],
       "autopilot": true,
       "decisionWaitMs": 900000
     }
   },
   "summary": {
     "total": 4,
-    "completed": 3,
-    "remaining": 1,
+    "completed": 4,
+    "remaining": 0,
     "running": 0,
     "review": 0,
     "blocked": 0,
-    "unassigned": 1
+    "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T556",
-      "title": "Connect place choices and verify the complete owner workflow",
-      "dep": [
-        "T552",
-        "T553",
-        "T555"
-      ],
-      "status": "todo"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "18f15189-426e-4d9d-aeb7-e73fe2fd517b",
@@ -528,6 +523,99 @@
           "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
           "startedAt": "2026-10-28T18:06:13.527Z",
           "finishedAt": "2026-10-28T18:06:47.274Z"
+        }
+      ]
+    },
+    {
+      "id": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "group": "club-places",
+      "taskId": "T556",
+      "tasks": [
+        "T556"
+      ],
+      "lane": null,
+      "owner": "c1d508aa-5e40-408a-afc3-f8666ca864c1/worker-1",
+      "contributors": [
+        "53feff2f-0764-49f5-80da-9c9551ea1062/worker-1",
+        "c1d508aa-5e40-408a-afc3-f8666ca864c1/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-28T18:07:01.562Z",
+      "startCommit": "d9a279464d302ac920f92eaa5bf6bba3d94e1575",
+      "verifiedCommit": "dd3232003bb048c444e1e1be759be2b77611527c",
+      "submittedBase": "00880fb45f28bdb1aa3ef9f61906338c0ef25101",
+      "submissionId": "610e0d85-7036-4415-ab83-07a1d95e3167",
+      "submittedAt": "2026-10-28T18:31:37.444Z",
+      "risk": null,
+      "dispatch": {
+        "id": "ab54ac91-8018-4cd2-97aa-8d8819fbb935",
+        "runner": "c1d508aa-5e40-408a-afc3-f8666ca864c1",
+        "role": "worker",
+        "slot": 1,
+        "provider": "codex",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-28T18:28:23.508Z",
+        "finishedAt": "2026-10-28T18:30:21.974Z",
+        "error": "CLUB: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요.",
+        "summary": "훈련 상태와 제안·강행 버튼을 보조 요청보다 먼저 배치했습니다. 관련 단위 테스트 4개와 typecheck·lint·format·build가 통과했습니다. 모바일·wide 브라우저 시나리오는 갱신했으며 실행은 호스트 최종 게이트에 남겼습니다. 태스크 result를 갱신했고 커밋·제출은 하지 않았습니다."
+      },
+      "review": {
+        "id": "97903754-6c4e-40e2-acf7-3df17415bba0",
+        "owner": "cp29-review",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T556 correction resolves review e8f648ad: current training focus/action and growth summary retain their existing pair before supplementary activities, which still precede the player list. Reviewed the full pinned product diff, authoritative academy review/guards, stable-target loan wording/commands, small-fixture composition tests and updated browser journeys; compared unchanged source with the prior independent review and verified the correction evidence. The three viewport assertions are strengthened rather than relaxed. No remaining P1/P2 findings; full browser/integration validation belongs to the coordinator gate.",
+        "findings": [],
+        "commit": "dd3232003bb048c444e1e1be759be2b77611527c",
+        "baseCommit": "00880fb45f28bdb1aa3ef9f61906338c0ef25101",
+        "submissionId": "610e0d85-7036-4415-ab83-07a1d95e3167",
+        "createdAt": "2026-10-28T18:31:53.445Z",
+        "finishedAt": "2026-10-28T18:33:13.764Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "e8f648ad-8054-4fe7-9940-e9eb7599e07e",
+          "owner": "c1d508aa-5e40-408a-afc3-f8666ca864c1/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T556의 코드·acceptance·SSOT와 워커 검증 기록을 확인했습니다. 훈련 화면 배치 회귀 1건이 있습니다. 최종 브라우저·통합 검증은 coordinator에 남깁니다.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/ui/TrainingView.tsx:132",
+              "message": "T556이 전체 PlaceActivities를 TrainingFocusPanel 앞에 삽입하면서 세 요청의 설명·버튼과 기록이 핵심 훈련 동작보다 먼저 쌓입니다. 모바일 신규 진입에서는 현재 훈련과 ‘수석코치에게 훈련 제안·강행’ 버튼이 첫 화면 아래로 밀려 WEB-70의 진입 화면 계약과 owner-workflows.spec.ts:197의 초기 viewport 검증을 깨뜨립니다. 핵심 훈련 동작을 보조 요청보다 먼저 배치하거나 활동 패널 상단에 통합하고, coordinator의 360x740·390x844 검증에서 기존 viewport 조건을 유지해 주세요."
+            }
+          ],
+          "commit": "977b222a391b3a35075f6c260204aa645446cd88",
+          "baseCommit": "af880cc4dcffddf45d55aa3052bc319a41fe9e55",
+          "submissionId": "90a1274a-3a02-4268-8007-b093bcbfa815",
+          "createdAt": "2026-10-28T18:25:13.551Z",
+          "finishedAt": "2026-10-28T18:28:23.240Z",
+          "invalidatedAt": "2026-10-28T18:28:23.337Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T556",
+          "commit": "dd3232003bb048c444e1e1be759be2b77611527c",
+          "at": "2026-10-28T18:31:37.419Z",
+          "verification": [
+            {
+              "command": "pnpm install --offline --frozen-lockfile --store-dir /tmp/t556-pnpm-store && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "startedAt": "2026-10-28T18:30:59.298Z",
+              "finishedAt": "2026-10-28T18:31:37.013Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile --store-dir /tmp/t556-pnpm-store && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "startedAt": "2026-10-28T18:30:59.298Z",
+          "finishedAt": "2026-10-28T18:31:37.013Z"
         }
       ]
     }
@@ -4024,6 +4112,790 @@
           "autopilot": true,
           "decisionWaitMs": 900000
         }
+      }
+    },
+    {
+      "sequence": 1747,
+      "at": "2026-10-28T18:07:01.302Z",
+      "type": "group",
+      "group": "club-places",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "53feff2f-0764-49f5-80da-9c9551ea1062",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T18:07:01.282Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1748,
+      "at": "2026-10-28T18:07:01.562Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "afc98e71-deb2-4533-b0e6-8373f0355591",
+        "group": "club-places",
+        "taskId": "T556",
+        "tasks": [
+          "T556"
+        ],
+        "lane": null,
+        "owner": "53feff2f-0764-49f5-80da-9c9551ea1062/worker-1",
+        "contributors": [
+          "53feff2f-0764-49f5-80da-9c9551ea1062/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-28T18:07:01.562Z",
+        "startCommit": "d9a279464d302ac920f92eaa5bf6bba3d94e1575"
+      }
+    },
+    {
+      "sequence": 1749,
+      "at": "2026-10-28T18:07:02.136Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1750,
+      "at": "2026-10-28T18:07:02.276Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "67d69381-4224-4d10-9d2c-eee1b5d499c5",
+          "runner": "53feff2f-0764-49f5-80da-9c9551ea1062",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T18:07:02.276Z"
+        }
+      }
+    },
+    {
+      "sequence": 1751,
+      "at": "2026-10-28T18:07:02.482Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "67d69381-4224-4d10-9d2c-eee1b5d499c5",
+          "runner": "53feff2f-0764-49f5-80da-9c9551ea1062",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T18:07:02.276Z"
+        }
+      }
+    },
+    {
+      "sequence": 1752,
+      "at": "2026-10-28T18:21:59.159Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1753,
+      "at": "2026-10-28T18:21:59.359Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T556: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+      }
+    },
+    {
+      "sequence": 1754,
+      "at": "2026-10-28T18:21:59.419Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "67d69381-4224-4d10-9d2c-eee1b5d499c5",
+          "runner": "53feff2f-0764-49f5-80da-9c9551ea1062",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T18:07:02.276Z",
+          "finishedAt": "2026-10-28T18:21:59.419Z",
+          "error": "T556: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+          "summary": "T556 구현과 acceptance/result 갱신을 완료했습니다. 장소 활동 연결, 중복 조작 정리, 유료 임대 입찰 흐름과 관련 브라우저 시나리오를 반영했습니다. 관련 단위 테스트 122개와 typecheck·lint·format·build가 통과했습니다. 브라우저·통합·전체 검사는 실행하지 않았으며 호스트 최종 게이트로 기록했습니다. 커밋·제출은 하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1755,
+      "at": "2026-10-28T18:22:00.270Z",
+      "type": "group",
+      "group": "club-places",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "53feff2f-0764-49f5-80da-9c9551ea1062",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T18:07:01.282Z",
+          "stoppedAt": "2026-10-28T18:22:00.270Z",
+          "dispatched": 1,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "afc98e71-deb2-4533-b0e6-8373f0355591",
+              "role": "worker",
+              "error": "T556: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1756,
+      "at": "2026-10-28T18:23:32.115Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1757,
+      "at": "2026-10-28T18:23:32.655Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1758,
+      "at": "2026-10-28T18:23:33.448Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism"
+      }
+    },
+    {
+      "sequence": 1759,
+      "at": "2026-10-28T18:24:22.224Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1760,
+      "at": "2026-10-28T18:24:58.906Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "977b222a391b3a35075f6c260204aa645446cd88",
+        "submittedBase": "af880cc4dcffddf45d55aa3052bc319a41fe9e55",
+        "submissionId": "90a1274a-3a02-4268-8007-b093bcbfa815",
+        "submittedAt": "2026-10-28T18:24:58.906Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T556",
+            "commit": "977b222a391b3a35075f6c260204aa645446cd88",
+            "at": "2026-10-28T18:24:58.883Z",
+            "verification": [
+              {
+                "command": "pnpm install --offline --frozen-lockfile --store-dir /tmp/t556-pnpm-store && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "startedAt": "2026-10-28T18:24:22.534Z",
+                "finishedAt": "2026-10-28T18:24:58.519Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile --store-dir /tmp/t556-pnpm-store && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "startedAt": "2026-10-28T18:24:22.534Z",
+            "finishedAt": "2026-10-28T18:24:58.519Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1761,
+      "at": "2026-10-28T18:25:12.818Z",
+      "type": "group",
+      "group": "club-places",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "c1d508aa-5e40-408a-afc3-f8666ca864c1",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T18:25:12.798Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1762,
+      "at": "2026-10-28T18:25:13.551Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "e8f648ad-8054-4fe7-9940-e9eb7599e07e",
+          "owner": "c1d508aa-5e40-408a-afc3-f8666ca864c1/reviewer-1",
+          "status": "reviewing",
+          "commit": "977b222a391b3a35075f6c260204aa645446cd88",
+          "baseCommit": "af880cc4dcffddf45d55aa3052bc319a41fe9e55",
+          "submissionId": "90a1274a-3a02-4268-8007-b093bcbfa815",
+          "createdAt": "2026-10-28T18:25:13.551Z"
+        }
+      }
+    },
+    {
+      "sequence": 1763,
+      "at": "2026-10-28T18:25:14.614Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "8a34dfc9-8076-40ab-91fa-9ddf15eade75",
+          "runner": "c1d508aa-5e40-408a-afc3-f8666ca864c1",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T18:25:14.614Z"
+        }
+      }
+    },
+    {
+      "sequence": 1764,
+      "at": "2026-10-28T18:25:14.643Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "8a34dfc9-8076-40ab-91fa-9ddf15eade75",
+          "runner": "c1d508aa-5e40-408a-afc3-f8666ca864c1",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T18:25:14.614Z"
+        }
+      }
+    },
+    {
+      "sequence": 1765,
+      "at": "2026-10-28T18:28:23.241Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T556의 코드·acceptance·SSOT와 워커 검증 기록을 확인했습니다. 훈련 화면 배치 회귀 1건이 있습니다. 최종 브라우저·통합 검증은 coordinator에 남깁니다.",
+        "review": {
+          "id": "e8f648ad-8054-4fe7-9940-e9eb7599e07e",
+          "owner": "c1d508aa-5e40-408a-afc3-f8666ca864c1/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T556의 코드·acceptance·SSOT와 워커 검증 기록을 확인했습니다. 훈련 화면 배치 회귀 1건이 있습니다. 최종 브라우저·통합 검증은 coordinator에 남깁니다.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/ui/TrainingView.tsx:132",
+              "message": "T556이 전체 PlaceActivities를 TrainingFocusPanel 앞에 삽입하면서 세 요청의 설명·버튼과 기록이 핵심 훈련 동작보다 먼저 쌓입니다. 모바일 신규 진입에서는 현재 훈련과 ‘수석코치에게 훈련 제안·강행’ 버튼이 첫 화면 아래로 밀려 WEB-70의 진입 화면 계약과 owner-workflows.spec.ts:197의 초기 viewport 검증을 깨뜨립니다. 핵심 훈련 동작을 보조 요청보다 먼저 배치하거나 활동 패널 상단에 통합하고, coordinator의 360x740·390x844 검증에서 기존 viewport 조건을 유지해 주세요."
+            }
+          ],
+          "commit": "977b222a391b3a35075f6c260204aa645446cd88",
+          "baseCommit": "af880cc4dcffddf45d55aa3052bc319a41fe9e55",
+          "submissionId": "90a1274a-3a02-4268-8007-b093bcbfa815",
+          "createdAt": "2026-10-28T18:25:13.551Z",
+          "finishedAt": "2026-10-28T18:28:23.240Z"
+        }
+      }
+    },
+    {
+      "sequence": 1766,
+      "at": "2026-10-28T18:28:23.271Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "8a34dfc9-8076-40ab-91fa-9ddf15eade75",
+          "runner": "c1d508aa-5e40-408a-afc3-f8666ca864c1",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T18:25:14.614Z",
+          "finishedAt": "2026-10-28T18:28:23.271Z",
+          "error": null,
+          "summary": "T556의 코드·acceptance·SSOT와 워커 검증 기록을 확인했습니다. 훈련 화면 배치 회귀 1건이 있습니다. 최종 브라우저·통합 검증은 coordinator에 남깁니다."
+        }
+      }
+    },
+    {
+      "sequence": 1767,
+      "at": "2026-10-28T18:28:23.337Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "owner": "c1d508aa-5e40-408a-afc3-f8666ca864c1/worker-1",
+        "contributors": [
+          "53feff2f-0764-49f5-80da-9c9551ea1062/worker-1",
+          "c1d508aa-5e40-408a-afc3-f8666ca864c1/worker-1"
+        ],
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "e8f648ad-8054-4fe7-9940-e9eb7599e07e",
+            "owner": "c1d508aa-5e40-408a-afc3-f8666ca864c1/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T556의 코드·acceptance·SSOT와 워커 검증 기록을 확인했습니다. 훈련 화면 배치 회귀 1건이 있습니다. 최종 브라우저·통합 검증은 coordinator에 남깁니다.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/ui/TrainingView.tsx:132",
+                "message": "T556이 전체 PlaceActivities를 TrainingFocusPanel 앞에 삽입하면서 세 요청의 설명·버튼과 기록이 핵심 훈련 동작보다 먼저 쌓입니다. 모바일 신규 진입에서는 현재 훈련과 ‘수석코치에게 훈련 제안·강행’ 버튼이 첫 화면 아래로 밀려 WEB-70의 진입 화면 계약과 owner-workflows.spec.ts:197의 초기 viewport 검증을 깨뜨립니다. 핵심 훈련 동작을 보조 요청보다 먼저 배치하거나 활동 패널 상단에 통합하고, coordinator의 360x740·390x844 검증에서 기존 viewport 조건을 유지해 주세요."
+              }
+            ],
+            "commit": "977b222a391b3a35075f6c260204aa645446cd88",
+            "baseCommit": "af880cc4dcffddf45d55aa3052bc319a41fe9e55",
+            "submissionId": "90a1274a-3a02-4268-8007-b093bcbfa815",
+            "createdAt": "2026-10-28T18:25:13.551Z",
+            "finishedAt": "2026-10-28T18:28:23.240Z",
+            "invalidatedAt": "2026-10-28T18:28:23.337Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1768,
+      "at": "2026-10-28T18:28:23.508Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "ab54ac91-8018-4cd2-97aa-8d8819fbb935",
+          "runner": "c1d508aa-5e40-408a-afc3-f8666ca864c1",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T18:28:23.508Z"
+        }
+      }
+    },
+    {
+      "sequence": 1769,
+      "at": "2026-10-28T18:28:23.712Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "ab54ac91-8018-4cd2-97aa-8d8819fbb935",
+          "runner": "c1d508aa-5e40-408a-afc3-f8666ca864c1",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T18:28:23.508Z"
+        }
+      }
+    },
+    {
+      "sequence": 1770,
+      "at": "2026-10-28T18:30:21.694Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1771,
+      "at": "2026-10-28T18:30:21.915Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "CLUB: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
+      }
+    },
+    {
+      "sequence": 1772,
+      "at": "2026-10-28T18:30:21.974Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "ab54ac91-8018-4cd2-97aa-8d8819fbb935",
+          "runner": "c1d508aa-5e40-408a-afc3-f8666ca864c1",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T18:28:23.508Z",
+          "finishedAt": "2026-10-28T18:30:21.974Z",
+          "error": "CLUB: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요.",
+          "summary": "훈련 상태와 제안·강행 버튼을 보조 요청보다 먼저 배치했습니다. 관련 단위 테스트 4개와 typecheck·lint·format·build가 통과했습니다. 모바일·wide 브라우저 시나리오는 갱신했으며 실행은 호스트 최종 게이트에 남겼습니다. 태스크 result를 갱신했고 커밋·제출은 하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1773,
+      "at": "2026-10-28T18:30:22.815Z",
+      "type": "group",
+      "group": "club-places",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "c1d508aa-5e40-408a-afc3-f8666ca864c1",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T18:25:12.798Z",
+          "stoppedAt": "2026-10-28T18:30:22.815Z",
+          "dispatched": 2,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "afc98e71-deb2-4533-b0e6-8373f0355591",
+              "role": "worker",
+              "error": "CLUB: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1774,
+      "at": "2026-10-28T18:30:58.444Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1775,
+      "at": "2026-10-28T18:30:58.985Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1776,
+      "at": "2026-10-28T18:31:37.444Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "00880fb45f28bdb1aa3ef9f61906338c0ef25101",
+        "submissionId": "610e0d85-7036-4415-ab83-07a1d95e3167",
+        "submittedAt": "2026-10-28T18:31:37.444Z",
+        "steps": [
+          {
+            "taskId": "T556",
+            "commit": "dd3232003bb048c444e1e1be759be2b77611527c",
+            "at": "2026-10-28T18:31:37.419Z",
+            "verification": [
+              {
+                "command": "pnpm install --offline --frozen-lockfile --store-dir /tmp/t556-pnpm-store && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "startedAt": "2026-10-28T18:30:59.298Z",
+                "finishedAt": "2026-10-28T18:31:37.013Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile --store-dir /tmp/t556-pnpm-store && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "startedAt": "2026-10-28T18:30:59.298Z",
+            "finishedAt": "2026-10-28T18:31:37.013Z"
+          }
+        ],
+        "verifiedCommit": "dd3232003bb048c444e1e1be759be2b77611527c"
+      }
+    },
+    {
+      "sequence": 1777,
+      "at": "2026-10-28T18:31:53.445Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "97903754-6c4e-40e2-acf7-3df17415bba0",
+          "owner": "cp29-review",
+          "status": "reviewing",
+          "commit": "dd3232003bb048c444e1e1be759be2b77611527c",
+          "baseCommit": "00880fb45f28bdb1aa3ef9f61906338c0ef25101",
+          "submissionId": "610e0d85-7036-4415-ab83-07a1d95e3167",
+          "createdAt": "2026-10-28T18:31:53.445Z"
+        }
+      }
+    },
+    {
+      "sequence": 1778,
+      "at": "2026-10-28T18:33:13.764Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "97903754-6c4e-40e2-acf7-3df17415bba0",
+          "owner": "cp29-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T556 correction resolves review e8f648ad: current training focus/action and growth summary retain their existing pair before supplementary activities, which still precede the player list. Reviewed the full pinned product diff, authoritative academy review/guards, stable-target loan wording/commands, small-fixture composition tests and updated browser journeys; compared unchanged source with the prior independent review and verified the correction evidence. The three viewport assertions are strengthened rather than relaxed. No remaining P1/P2 findings; full browser/integration validation belongs to the coordinator gate.",
+          "findings": [],
+          "commit": "dd3232003bb048c444e1e1be759be2b77611527c",
+          "baseCommit": "00880fb45f28bdb1aa3ef9f61906338c0ef25101",
+          "submissionId": "610e0d85-7036-4415-ab83-07a1d95e3167",
+          "createdAt": "2026-10-28T18:31:53.445Z",
+          "finishedAt": "2026-10-28T18:33:13.764Z"
+        }
+      }
+    },
+    {
+      "sequence": 1779,
+      "at": "2026-10-28T18:33:14.315Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]
