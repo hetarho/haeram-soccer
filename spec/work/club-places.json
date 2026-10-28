@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-28T17:14:22.641Z",
-  "sourceCommit": "84a9f8bf1204a841977e85198637508c84ff2931",
+  "snapshotAt": "2026-10-28T17:25:01.864Z",
+  "sourceCommit": "906419a9aae979f35b3fce4df6ef35dec49840d2",
   "group": {
     "id": "club-places",
     "branch": "work/club-places",
@@ -62,10 +62,10 @@
   },
   "summary": {
     "total": 6,
-    "completed": 1,
-    "remaining": 5,
+    "completed": 2,
+    "remaining": 4,
     "running": 0,
-    "review": 1,
+    "review": 0,
     "blocked": 0,
     "unassigned": 4
   },
@@ -84,15 +84,6 @@
       ],
       "lane": "market-ui",
       "status": "todo"
-    },
-    {
-      "id": "T553",
-      "title": "Consequential owner choices and shared place activity panels",
-      "dep": [
-        "T557"
-      ],
-      "lane": "place-choices",
-      "status": "reviewing"
     },
     {
       "id": "T556",
@@ -350,7 +341,7 @@
       "contributors": [
         "5ecc0d46-f5b6-429d-b199-970b7b925b44/worker-1"
       ],
-      "status": "reviewing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-28T16:10:39.186Z",
       "startCommit": "77cdea91889558a50281676b86c44c931177ebd0",
@@ -375,11 +366,15 @@
       "review": {
         "id": "d4824d64-1925-4b88-ac8d-499214003c6e",
         "owner": "cp29-review",
-        "status": "reviewing",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T553 approved at ddf34265. Reviewed the shared care disclosures, live place facts, scoped command guards, selected-only academy form, authoritative promotion-wage previews and contract timing. The authorized market-prices extraction is verbatim with unchanged formulas, configuration and compatibility re-exports; isolated pricing/promotion parity and import-boundary evidence is present. Cancellation/inspection remain mutation-free and replies are scoped to the active world/inspection. Existing responsibility and progression guards are reused. Browser mounting and the already-planned basename cleanup remain correctly owned by T556; no browser or full-suite run was performed for this review.",
+        "findings": [],
         "commit": "ddf34265c6dc2f5cb8e497a61dc879bc49a6de1d",
         "baseCommit": "84a9f8bf1204a841977e85198637508c84ff2931",
         "submissionId": "5979b14e-2c12-46ec-a4e7-9ce52344c24b",
-        "createdAt": "2026-10-28T17:13:42.748Z"
+        "createdAt": "2026-10-28T17:13:42.748Z",
+        "finishedAt": "2026-10-28T17:24:50.453Z"
       },
       "reviewHistory": [
         {
@@ -3029,6 +3024,45 @@
           "autopilot": true,
           "decisionWaitMs": 900000
         }
+      }
+    },
+    {
+      "sequence": 1692,
+      "at": "2026-10-28T17:24:50.453Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "d4824d64-1925-4b88-ac8d-499214003c6e",
+          "owner": "cp29-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T553 approved at ddf34265. Reviewed the shared care disclosures, live place facts, scoped command guards, selected-only academy form, authoritative promotion-wage previews and contract timing. The authorized market-prices extraction is verbatim with unchanged formulas, configuration and compatibility re-exports; isolated pricing/promotion parity and import-boundary evidence is present. Cancellation/inspection remain mutation-free and replies are scoped to the active world/inspection. Existing responsibility and progression guards are reused. Browser mounting and the already-planned basename cleanup remain correctly owned by T556; no browser or full-suite run was performed for this review.",
+          "findings": [],
+          "commit": "ddf34265c6dc2f5cb8e497a61dc879bc49a6de1d",
+          "baseCommit": "84a9f8bf1204a841977e85198637508c84ff2931",
+          "submissionId": "5979b14e-2c12-46ec-a4e7-9ce52344c24b",
+          "createdAt": "2026-10-28T17:13:42.748Z",
+          "finishedAt": "2026-10-28T17:24:50.453Z"
+        }
+      }
+    },
+    {
+      "sequence": 1693,
+      "at": "2026-10-28T17:25:00.141Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "f2864de3-fa93-4831-9569-d57d9ed70de1",
+      "taskId": "T553",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

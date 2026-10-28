@@ -387,7 +387,6 @@
 |---|---|---|---|---|
 | T548 | Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it | MATCH SAVE ARCH | - | todo |
 | T552 | Paged whole-world recruitment workbench | WEB CLUB ARCH | T558 | todo |
-| T553 | Consequential owner choices and shared place activity panels | WEB CLUB ARCH | T557 | todo |
 | T556 | Connect place choices and verify the complete owner workflow | WEB CLUB ARCH | T552 T553 T555 | todo |
 | T558 | World market query and identity-based transfer engine | WEB CLUB ARCH | - | todo |
 
@@ -407,13 +406,14 @@
 | auto-play | 4 | 7 | 4 | 3 | 0 | 1 | 0 | 2026-10-27T11:34:29.863Z | [history](work/auto-play.json) |
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 | v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
-| club-places | 3 | 6 | 1 | 5 | 0 | 1 | 0 | 2026-10-28T17:14:22.641Z | [history](work/club-places.json) |
+| club-places | 3 | 6 | 2 | 4 | 0 | 0 | 0 | 2026-10-28T17:25:01.864Z | [history](work/club-places.json) |
 | club-places-ui | 1 | 7 | 2 | 5 | 0 | 0 | 0 | 2026-10-28T16:52:26.857Z | [history](work/club-places-ui.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261028 T553 integrated
 - 261029 cp29 move unclaimed T552 shared browser edits to T556 while preserving every required journey; keep independent UI file ownership disjoint.
 - 261029 cp29 merge approved club-places-ui lane T554/T555; synchronize completed tasks before further allocation, keeping any superseded draft isolated.
 - 261029 cp29 authorize the minimal T553 read-leaf wage extraction for existing acceptance; keep formula/exports and saved facts unchanged.
@@ -433,4 +433,3 @@
 - 261028 T551 done (p9c3): main CI fix after the figures/kits and forward-intent merges — editor samples mid-step, kit pixel floor, faster wornFigures, in-page goal-hold minute, clock-derived 16× bound, appearance digest.
 - 261028 create-task (f5j2): T548 MATCH r39, T549 SAVE r57, T550 WEB r167.
 - 261028 update-ssot (f5j2): MATCH r39 chased forward's clear chance and closing blocks; SAVE r57 one game version 0.7.0 (beta), 4.0.0 saves load as 0.7.0; WEB r167 WEB-101 BETA mark.
-- 261028 feat/player-figures-kits merge verified against main f5672a67 and feature 3a13057e: typecheck, lint, format:check, unit (175 files / 1,435 passed), contract (3 files / 47 passed), catalog/presentation validation and production build passed; the 12 pure kit-selection cases also passed (2 world-integration cases excluded). Full integration and browser suites omitted under the owner's requested unit/static scope.

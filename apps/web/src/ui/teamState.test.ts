@@ -5,6 +5,7 @@ import type { World } from '../../../../packages/contracts/src/types';
 import { rating } from '../../../../packages/engine/src/world';
 import { ownLeagueIds } from './league';
 import {
+  careRequest,
   cashState,
   remedies,
   runwayText,
@@ -22,6 +23,28 @@ const world = () =>
     seed: 'state',
     level: 'easy' as const,
   });
+
+describe('team-state care preview units', () => {
+  it('discloses both gains and morale loss for backing/rest without world generation', () => {
+    const w = {
+      year: 1950,
+      round: 0,
+      cash: '1000000000',
+      events: [],
+      playerClub: 'own',
+      clubs: [{ id: 'own', country: 'ENG', fans: 800 }],
+      manager: { trust: 50 },
+    } as unknown as World;
+    const before = structuredClone(w);
+    expect(careRequest(w, 'backing').effect).toContain('감독 신뢰 +8');
+    expect(careRequest(w, 'backing').effect).toContain('분위기 −2');
+    expect(careRequest(w, 'rest-day').effect).toContain('전원 피로 −6');
+    expect(careRequest(w, 'rest-day').effect).toContain('분위기 −2');
+    expect(careRequest(w, 'win-bonus').effect).toContain('분위기 +3');
+    expect(careRequest(w, 'win-bonus').effect).toContain('자금이 부족해도 지급');
+    expect(w).toEqual(before);
+  });
+});
 
 describe('team state', () => {
   it('is calm for a new club and keeps cash in the HUD', () => {
