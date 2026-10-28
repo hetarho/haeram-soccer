@@ -17,7 +17,6 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | e7q4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T01:49Z | 2026-10-28T01:54Z | T537 |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T03:04Z | 2026-10-28T03:05Z | T538 |
-| T539 | Hold the football targets within 25% of the real-football mean | MATCH ARCH | - | doing@261028.f5j2 |
 
 ## inbox
 - 261028 decided WEB-11 WEB-72 T536: facility scope and image treatment → three compact background-art entrances with manager/training preparation notices, plus a larger cover-cropped stadium (alt: implement unplanned room activities | keep one large owner entrance); detailed room activities await their own planning.
@@ -376,6 +375,7 @@
 |---|---|---|---|---|
 | T537 | European qualification by association, domestic results and titles | EURO ARCH | - | doing@261028.e7q4 |
 | T538 | Match-model revision 5: carriers take open ground, recycle only safely, never far back with room near the box | MATCH SAVE ARCH | - | doing@261028.f5j2 |
+| T539 | Hold the football targets within 25% of the real-football mean | MATCH ARCH | - | doing@261028.f5j2 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
