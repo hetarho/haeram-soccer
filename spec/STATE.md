@@ -419,9 +419,10 @@
 | club-browser-fix | 2 | 5 | 1 | 4 | 2 | 0 | 0 | 2026-10-28T19:13:33.622Z | [history](work/club-browser-fix.json) |
 
 ## next
-- inspect work board for remaining tasks
+- cp29: finish approved/queued browser corrections in club-browser-fix, merge the completed units, then rerun the complete final gate and publish only after it passes.
 
 ## log
+- 261029 cp29 audit331 Chromium cases(296pass35fail); scoped T563 proof4pass2fail, corrective units T562–T568 remain under review/implementation.
 - 261029 cp29 reconcile published plan metadata with approved T563 archive; remove only the obsolete active duplicate descriptor, retaining completed source and result.
 - 261029 create-task T567 (cp29): remaining actual browser-contract drift in skins, primary/local keyboard history, resolved-office export and editable policy ownership.
 - 261028 T563 integrated
@@ -433,10 +434,3 @@
 - 261029 fix host.world-market fixture: use the protocol’s legal stale revision -1 instead of invalid -100; preserve bounded reads, source identity, settlement and idempotency assertions.
 - 261029 cp29 all requested tasks integrated at c3aad1f4; final synchronized batch begins before one main publication.
 - 261028 T556 integrated
-- 261029 doc-review CLUB-26 tidied (rev unchanged): replace the stale duplicated area label with the authoritative ECON-25 reference; contract conditions, exceptions, figures, negations, obligations and references are preserved.
-- 261029 doc-review CLUB-26 start.
-- 261029 cp29 T552 reviewed/corrected/integrated; T556 now owns the final place composition and shared browser journeys, including the authoritative paid-loan bid lifecycle.
-- 261028 T552 integrated
-- 261029 cp29 synchronize main 59446b09, including completed T548/T561 and MATCH r41, before final workflow convergence.
-- 261029 T561 done (p9c3, explore): match-model revision 8 — the showing teammate offers at 14 m, with the ball teammates spread 14 m and keep 10 m around the carrier; crowds of seven within 10 m 7.0% → 2.9%; 600 matches goals 3.38, 25/37 (one row fewer: long shots).
-- 261029 update-ssot MATCH r41 + create-task T561 (p9c3, owner): players swarm the ball like playground football → MATCH-17 nobody piles onto the ball; T561 revision 8, explore 2 h.
