@@ -39,6 +39,9 @@ import {
  * Revision 7, the release of game version 0.7, lets a forward with nobody ahead of him take his
  * clear chance though a man chases him, and has the outfielders within a few metres of the shooter
  * close the shot down (T548, →MATCH-16, MATCH-35); careers on revisions 1–6 take it the same way.
+ * Revision 8 keeps the side's shape around the ball: a showing teammate offers at a passing
+ * distance and the rest hold width and depth (T561, →MATCH-17); careers on revisions 1–7 take it
+ * the same way.
  */
 export const MATCH_MODEL_REVISIONS = [
   'continuous-aggregate-1',
@@ -48,10 +51,11 @@ export const MATCH_MODEL_REVISIONS = [
   'continuous-aggregate-5',
   'continuous-aggregate-6',
   'continuous-aggregate-7',
+  'continuous-aggregate-8',
 ] as const;
 export type MatchModelRevision = (typeof MATCH_MODEL_REVISIONS)[number];
 /** The revision new careers and upgraded ones play. */
-export const MATCH_MODEL_REVISION: MatchModelRevision = 'continuous-aggregate-7';
+export const MATCH_MODEL_REVISION: MatchModelRevision = 'continuous-aggregate-8';
 export const isMatchModelRevision = (value: unknown): value is MatchModelRevision =>
   (MATCH_MODEL_REVISIONS as readonly unknown[]).includes(value);
 /** A revision's number: 1 for the first. */

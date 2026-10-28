@@ -504,8 +504,8 @@ describe('container-3 match-model streams (→SAVE-23, HIST-17)', () => {
     const w = modelWorld();
     for (const damage of [
       (p: PackedMatchModel) => (p.version = 2 as 1),
-      (p: PackedMatchModel) => (p.revisions = ['continuous-aggregate-8']),
-      (p: PackedMatchModel) => p.revisions.push('continuous-aggregate-8'),
+      (p: PackedMatchModel) => (p.revisions = ['continuous-aggregate-9']),
+      (p: PackedMatchModel) => p.revisions.push('continuous-aggregate-9'),
     ]) {
       const p = sectionOf(w);
       damage(p);

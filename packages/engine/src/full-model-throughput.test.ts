@@ -138,11 +138,12 @@ const facts = (w: World) => ({
  * own record's appearance version 2 keeps shorts, socks and the goalkeeper kit) changed the
  * candidate rounds' appearances only: the same facts without them digest 7184bc5e87bf3202 before
  * and after; 899ddefb86dc54e6 before. T548's match-model revision 7 changed both, label and
- * football; 8e5fd3764d2248b6 and 10765282591340cc before.
+ * football; 8e5fd3764d2248b6 and 10765282591340cc before. T561's match-model revision 8 changed
+ * both, label and football; d1399a4a21838e96 and 467422b4a9e71b20 before.
  */
 const BEFORE = {
-  aggregateRecords: 'd1399a4a21838e96',
-  candidateRounds: '467422b4a9e71b20',
+  aggregateRecords: '6e84c90f4999c036',
+  candidateRounds: '4413c78f084792fc',
 };
 
 describe('complete-result throughput (T285)', () => {

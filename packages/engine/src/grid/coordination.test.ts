@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
+import { MATCH_MODEL_REVISION, MATCH_MODEL_REVISIONS } from '../../../contracts/src/match-model';
 import type { Tactic } from '../../../contracts/src/types';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { lineOf } from '../player';
@@ -127,6 +127,21 @@ function firstShow(s: GridState) {
 }
 
 describe('grid coordination', () => {
+  it('revision 8: a showing teammate offers at a passing distance from the carrier', () => {
+    const [, , , , , , seventh, eighth] = MATCH_MODEL_REVISIONS;
+    const shown = (model: (typeof MATCH_MODEL_REVISIONS)[number]) => {
+      const s = scene(undefined, undefined, undefined, { model });
+      put(s, 1, 7, [64, 35]);
+      put(s, 0, 6, [59, 32]);
+      return gap(firstShow(s).show.intention.target, s.players[0][7]!.pos);
+    };
+    expect(shown(seventh)).toBeLessThanOrEqual(COORDINATION_CONFIG.support.distance + 1e-9);
+    expect(shown(eighth)).toBeGreaterThan(COORDINATION_CONFIG.support.distance + 1);
+    expect(shown(eighth)).toBeLessThanOrEqual(
+      COORDINATION_CONFIG.revision8.support.distance + 1e-9,
+    );
+  });
+
   it('shows to receive while another opens the lane', () => {
     const s = scene();
     put(s, 1, 7, [64, 35]); // presses the carrier
@@ -135,9 +150,9 @@ describe('grid coordination', () => {
     expect(show.idx).toBe(6);
     expect(show.intention).toMatchObject({ kind: 'support', teammate: 7, priority: 'tactical' });
     const target = show.intention.target;
-    // The show stays onside and within reach of the carrier.
+    // The show stays onside and within reach of the carrier (a passing distance on revision 8).
     expect(gap(target, s.players[0][7]!.pos)).toBeLessThanOrEqual(
-      COORDINATION_CONFIG.support.distance + 1e-9,
+      COORDINATION_CONFIG.revision8.support.distance + 1e-9,
     );
     // Nobody stood in the lane, so nobody cleared it.
     expect(planCoordination(s, false).jobs.some((j) => j.intention.support === 'open')).toBe(false);

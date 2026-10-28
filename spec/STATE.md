@@ -19,6 +19,9 @@
 | cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T15:17Z | - |
 
 ## inbox
+- 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
+- 261029 decided MATCH-17 T561: spacing only for the side with the ball; spreading the side without it too opened its box (goals 3.53, 23/37 at 600) (alt: both sides).
+- 261029 suggest MATCH-23 T561: shots from outside the box 25.4% and goal-area shots 20.7% on revision 8 — a carrier with room around the box shoots earlier from the edge.
 - 261029 decided MATCH-35 T548: goals 4.9 a match with the closing block alone, blocked shots past a third before they fell → the keeper comes off his line to a carrier in his box (MATCH r40, 0.8 of the way, at most 12 m): goals 3.18 at 600 (alt: stronger closing blocks, 44% blocked and on target out | a recovery sprint for beaten defenders, within noise).
 - 261029 decided MATCH-16 T548: clear-chance corridor 10 → 14 m on revision 7, fewer chased chances counted clear with the shot floor untouched (alt: keep 10 and carry it all on blocks).
 - 261029 decided MATCH-35 T548: a header has no closing men, its marker priced by its aerial duel as the path's header scale assumes (alt: close headers too).
@@ -390,7 +393,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T552 | Paged whole-world recruitment workbench | WEB CLUB ARCH | T558 | todo |
-| T561 | Match-model revision 8: nobody piles onto the ball — supporters offer at a passing distance, the rest keep the shape | MATCH SAVE ARCH | - | todo |
 | T553 | Consequential owner choices and shared place activity panels | WEB CLUB ARCH | T557 | todo |
 | T554 | Six-place navigation and competition clubhouse | WEB ECON ARCH | - | todo |
 | T555 | Work-oriented owner office and scoped player approvals | WEB ECON ARCH | T554 | todo |
@@ -419,6 +421,7 @@
 - club-places: implement T557/T558 engine foundations while live T550 owns UI, then T552 market UI and T553 choices in parallel with the T554→T555 places-office lane; T556 connects all results. Existing T548–T550 remain with their current sessions.
 
 ## log
+- 261029 T561 done (p9c3, explore): match-model revision 8 — the showing teammate offers at 14 m, with the ball teammates spread 14 m and keep 10 m around the carrier; crowds of seven within 10 m 7.0% → 2.9%; 600 matches goals 3.38, 25/37 (one row fewer: long shots).
 - 261029 update-ssot MATCH r41 + create-task T561 (p9c3, owner): players swarm the ball like playground football → MATCH-17 nobody piles onto the ball; T561 revision 8, explore 2 h.
 - 261029 T550 done (v07-beta worker, 9c54de75 7b037ec1): one shared BETA mark beside the club or game name on every screen, v0.7 BETA from CURRENT_ENGINE_VERSION on the start and slot screens.
 - 261029 T549 done (v07-beta worker, f38dc554): game version 0.7.0 in every package and as the rules version; 4.0.0 saves load as 0.7.0 through the writer activation, read-only views write nothing.
@@ -438,4 +441,3 @@
 - 261028 feat/player-figures-kits merge verified against main f5672a67 and feature 3a13057e: typecheck, lint, format:check, unit (175 files / 1,435 passed), contract (3 files / 47 passed), catalog/presentation validation and production build passed; the 12 pure kit-selection cases also passed (2 world-integration cases excluded). Full integration and browser suites omitted under the owner's requested unit/static scope.
 - 261028 pl1 end: T543–T547 merged on feat/player-figures-kits; full unit project 1422 passed; other suites left to the receiver by owner instruction; branch pushed for handoff.
 - 261028 T545 done (dev3, 1617365a): match observation and replay draw posed figures, standing knee fixed in figurePose; merged; PL unit run next.
-- 261028 T546 done (dev4, fe455032): kit editor, goalkeeper tab, figure previews, fallback notice; PL committed it (Codex sandbox could not write the worktree index) after re-running its 43 unit tests; merged.
