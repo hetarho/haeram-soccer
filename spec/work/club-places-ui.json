@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-28T16:51:50.352Z",
-  "sourceCommit": "0e853d7159e0dd801aa369b7e4afbcf0a96dd4f5",
+  "snapshotAt": "2026-10-28T16:52:26.857Z",
+  "sourceCommit": "590dd56d15cdb02d36ba41eaa1003432545902bc",
   "group": {
     "id": "club-places-ui",
     "branch": "work/club-places-ui",
@@ -13,7 +13,7 @@
       "maxPending": 8
     },
     "review": "all",
-    "runner": {
+    "lastRun": {
       "id": "de2cefe4-c18a-4b50-b47d-56e08939f775",
       "adapter": "builtin",
       "providers": {
@@ -36,34 +36,8 @@
         }
       ],
       "startedAt": "2026-10-28T16:41:58.456Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "865e3d9a-6994-43b4-80c4-e175f0e8eb5d",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.160.1"
-        },
-        "reviewer": {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.160.1"
-        }
-      },
-      "workers": [
-        {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.160.1"
-        }
-      ],
-      "startedAt": "2026-10-28T15:50:35.070Z",
-      "stoppedAt": "2026-10-28T16:38:49.720Z",
-      "dispatched": 3,
+      "stoppedAt": "2026-10-28T16:52:26.092Z",
+      "dispatched": 2,
       "outcome": "dispatch-limit",
       "failures": [],
       "autopilot": true,
@@ -145,6 +119,8 @@
       "submittedBase": "0e853d7159e0dd801aa369b7e4afbcf0a96dd4f5",
       "submissionId": "f90de76f-5409-493e-8380-bf47fab6e2f6",
       "submittedAt": "2026-10-28T16:48:58.941Z",
+      "integratedCommit": "590dd56d15cdb02d36ba41eaa1003432545902bc",
+      "integratedAt": "2026-10-28T16:52:25.908Z",
       "risk": null,
       "dispatch": {
         "id": "7bbc979c-8234-483e-9c59-7e1007395224",
@@ -231,6 +207,13 @@
           "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-10-28T16:48:07.583Z",
           "finishedAt": "2026-10-28T16:48:58.381Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-28T16:51:50.481Z",
+          "finishedAt": "2026-10-28T16:52:25.636Z"
         }
       ]
     }
@@ -1320,6 +1303,89 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1657,
+      "at": "2026-10-28T16:52:25.806Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-28T16:51:50.481Z",
+            "finishedAt": "2026-10-28T16:52:25.636Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1658,
+      "at": "2026-10-28T16:52:25.908Z",
+      "type": "attempt",
+      "group": "club-places-ui",
+      "attemptId": "d23ee082-a3f1-4503-a612-a20364bb319b",
+      "taskId": "T555",
+      "tasks": [
+        "T554",
+        "T555"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "590dd56d15cdb02d36ba41eaa1003432545902bc",
+        "integratedAt": "2026-10-28T16:52:25.908Z"
+      }
+    },
+    {
+      "sequence": 1659,
+      "at": "2026-10-28T16:52:26.092Z",
+      "type": "group",
+      "group": "club-places-ui",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "de2cefe4-c18a-4b50-b47d-56e08939f775",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T16:41:58.456Z",
+          "stoppedAt": "2026-10-28T16:52:26.092Z",
+          "dispatched": 2,
+          "outcome": "dispatch-limit",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
