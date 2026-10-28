@@ -392,7 +392,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T566 | Keep world-market reads usable during automatic progression | WEB ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -412,12 +411,13 @@
 | v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
 | club-places | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-28T18:33:15.546Z | [history](work/club-places.json) |
 | club-places-ui | 1 | 7 | 2 | 5 | 0 | 0 | 0 | 2026-10-28T16:52:26.857Z | [history](work/club-places-ui.json) |
-| club-browser-fix | 2 | 7 | 6 | 1 | 0 | 1 | 0 | 2026-10-28T19:35:06.331Z | [history](work/club-browser-fix.json) |
+| club-browser-fix | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-10-28T19:37:32.253Z | [history](work/club-browser-fix.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261028 T566 integrated
 - 261028 T568 integrated
 - 261028 T567 integrated
 - 261028 T565 integrated
