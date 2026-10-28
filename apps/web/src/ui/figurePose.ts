@@ -105,7 +105,7 @@ export const FIGURE_POSE_CONFIG = {
   /** How long the hips trail the upper body: the caller samples `velocityBefore` this much earlier. */
   hipLag: 0.16,
   /** Metres per visual gait cycle, stretched to keep limbs readable in accelerated playback. */
-  strideMetres: 22.4,
+  strideMetres: 18.6,
   /** Speed (m/s) at which stride, arm swing and lean are full. */
   topSpeed: 8,
   /** Below `still` m/s he turns to the ball; from `moving` he faces his run. */

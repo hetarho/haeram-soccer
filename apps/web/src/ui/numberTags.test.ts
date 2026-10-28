@@ -4,7 +4,6 @@ import { contrast } from '../../../../packages/engine/src/identity-legacy';
 import { createFigurePainter, playerLook, type FigureCanvas } from './figurePainting';
 import { poseAt } from './figurePose';
 import {
-  TAG_OFFSETS,
   drawNumberTag,
   numberTagStyle,
   placeNumberTags,
@@ -96,7 +95,6 @@ const blankCanvas = (width: number, height: number): FigureCanvas => ({
   getContext: () => null,
 });
 
-const AREA = { width: 400, height: 260, avoid: [] };
 const figure = (
   id: string,
   x: number,
@@ -111,10 +109,6 @@ const figure = (
 });
 const boxOf = (t: NumberTag) =>
   [t.x - t.width / 2, t.y - t.height / 2, t.x + t.width / 2, t.y + t.height / 2] as const;
-const disjoint = (a: NumberTag, b: NumberTag) => {
-  const [p, q] = [boxOf(a), boxOf(b)];
-  return p[2] <= q[0] || q[2] <= p[0] || p[3] <= q[1] || q[3] <= p[1];
-};
 const STYLE = numberTagStyle({ markerOutline: '#ffffffdd', ground: '#183a2b' }, 'Pretendard');
 
 describe('number tags (→MATCH-36, WEB-95)', () => {
@@ -157,7 +151,7 @@ describe('number tags (→MATCH-36, WEB-95)', () => {
       );
     });
     expect(ctx.calls.some((c) => c.op === 'rotate')).toBe(true);
-    const tags = placeNumberTags(players, AREA);
+    const tags = placeNumberTags(players);
     const from = ctx.calls.length;
     for (const tag of tags) drawNumberTag(ctx, tag, STYLE);
     const drawn = ctx.calls.slice(from);
@@ -174,55 +168,48 @@ describe('number tags (→MATCH-36, WEB-95)', () => {
       expect(corners.some(([x, y]) => y === bottom && x >= left && x <= right)).toBe(true);
     }
     // The figures' facing is no input to placement: the same places give the same tags.
-    expect(placeNumberTags(players, AREA)).toEqual(tags);
+    expect(placeNumberTags(players)).toEqual(tags);
   });
 
-  it('crowded figures get distinct offsets', () => {
+  it('keeps every number at twelve o’clock even when figures crowd together', () => {
     const crowd = [
       figure('h7', 200, 120, 7),
       figure('a4', 203, 122, 4),
       figure('h10', 198, 126, 10),
       figure('a23', 201, 118, 23),
     ];
-    const tags = placeNumberTags(crowd, AREA);
-    expect(new Set(tags.map((t) => t.offset)).size).toBe(crowd.length);
-    for (let i = 0; i < tags.length; i++)
-      for (let j = i + 1; j < tags.length; j++)
-        expect(disjoint(tags[i]!, tags[j]!), `${tags[i]!.id} / ${tags[j]!.id}`).toBe(true);
-    // Each keeps to one of the eight fixed offsets around its own figure.
-    expect(tags.every((t) => t.offset >= 0 && t.offset < TAG_OFFSETS.length)).toBe(true);
+    const tags = placeNumberTags(crowd);
+    tags.forEach((tag, i) => {
+      expect(tag.x).toBe(crowd[i]!.x);
+      expect(boxOf(tag)[3]).toBeLessThan(crowd[i]!.y - crowd[i]!.radius);
+      expect(placeNumberTags([crowd[i]!])[0]).toEqual(tag);
+    });
   });
 
   it('placement is deterministic', () => {
     const players = Array.from({ length: 22 }, (_, i) =>
       figure(`p${i}`, 30 + ((i * 97) % 340), 30 + ((i * 53) % 200), (i % 11) + 1),
     );
-    const bounds = { ...AREA, avoid: [[180, 120, 6]] as const };
-    const tags = placeNumberTags(players, bounds);
-    expect(placeNumberTags(players, bounds)).toEqual(tags);
+    const tags = placeNumberTags(players);
+    expect(placeNumberTags(players)).toEqual(tags);
     // Input order does not matter: the same figure gets the same tag.
-    const shuffled = placeNumberTags([...players].reverse(), bounds);
+    const shuffled = placeNumberTags([...players].reverse());
     expect(new Map(shuffled.map((t) => [t.id, t]))).toEqual(new Map(tags.map((t) => [t.id, t])));
-    // Returned in input order, on whole pixels.
+    // Returned in input order, centred on each player's exact screen position.
     expect(tags.map((t) => t.id)).toEqual(players.map((p) => p.id));
-    expect(tags.every((t) => Number.isInteger(t.x - t.width / 2))).toBe(true);
+    expect(tags.map((t) => t.x)).toEqual(players.map((p) => p.x));
   });
 
-  it('keeps clear of the ball and the carrier cue, and inside the pitch', () => {
-    const alone = placeNumberTags([figure('a', 200, 120)], AREA)[0]!;
-    expect(alone.offset).toBe(0);
-    // The ball where the first choice would go moves the tag to another offset off it.
-    const ball = [alone.x, alone.y, 5] as const;
-    const moved = placeNumberTags([figure('a', 200, 120)], { ...AREA, avoid: [ball] })[0]!;
-    expect(moved.offset).not.toBe(0);
-    const [left, top, right, bottom] = boxOf(moved);
-    expect(
-      right <= ball[0] - 5 || left >= ball[0] + 5 || bottom <= ball[1] - 5 || top >= ball[1] + 5,
-    ).toBe(true);
-    // A figure in the corner keeps its tag on the pitch.
-    const corner = placeNumberTags([figure('c', 396, 256)], AREA)[0]!;
-    const box = boxOf(corner);
-    expect(box[0] >= 0 && box[1] >= 0 && box[2] <= AREA.width && box[3] <= AREA.height).toBe(true);
+  it('leaves room above an enlarged carrier and keeps top-edge numbers visible', () => {
+    const player = figure('a', 200.25, 120.5, 10);
+    const regular = placeNumberTags([player])[0]!;
+    const enlarged = placeNumberTags([{ ...player, radius: player.radius * 1.3 }])[0]!;
+    expect(regular.x).toBe(player.x);
+    expect(enlarged.x).toBe(player.x);
+    expect(boxOf(enlarged)[3]).toBeLessThan(boxOf(regular)[3]);
+    const corner = placeNumberTags([figure('c', 30.25, 5)])[0]!;
+    expect(corner.x).toBe(30.25);
+    expect(boxOf(corner)[1]).toBe(0);
   });
 
   it('reads on every theme: digits in the ground colour on a marker-outline plate', () => {
@@ -245,7 +232,7 @@ describe('number tags (→MATCH-36, WEB-95)', () => {
         resource,
       ).toBeGreaterThanOrEqual(4.5);
       const ctx = new RecordingContext();
-      drawNumberTag(ctx, placeNumberTags([figure('a', 100, 100, 9)], AREA)[0]!, style);
+      drawNumberTag(ctx, placeNumberTags([figure('a', 100, 100, 9)])[0]!, style);
       const plate = ctx.calls.find((c) => c.op === 'fill')!;
       const text = ctx.calls.find((c) => c.op === 'fillText')!;
       expect([plate.fillStyle, text.fillStyle]).toEqual([style.plate, style.ink]);

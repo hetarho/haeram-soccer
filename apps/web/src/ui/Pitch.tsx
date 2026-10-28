@@ -35,12 +35,13 @@ const MatchReport = lazy(() =>
 import { MatchMoments } from './MatchMoments';
 import { MatchCharts } from './MatchCharts';
 import { CrestMark } from './ClubCrest';
+import { inkOn } from './crests';
 import { figureActionWindows } from './figureActions';
 import { createFigurePainter, figurePoint, playerLook, type PlayerLook } from './figurePainting';
 import { gaitDistances, poseAt, type FigurePose } from './figurePose';
 import { reducedMotion } from './motion';
 import { drawNumberTag, numberTagStyle, placeNumberTags } from './numberTags';
-import { figureInputs, type PitchFigure } from './pitchFigures';
+import { figureInputs } from './pitchFigures';
 import { createGroundPainter, markerRadius, paintPitchBall, type PitchSkin } from './pitchPainting';
 import { usePitchSkin } from './usePitchSkin';
 import { keepersBySample, matchLook, UNRECORDED_KIT } from './matchAppearance';
@@ -107,6 +108,8 @@ const WARM_POSE: FigurePose = poseAt(
   { reducedMotion: true },
 );
 const NO_KEEPERS: readonly [undefined, undefined] = [undefined, undefined];
+/** One treatment for the recorded carrier: enlarged body, outline, ground ring and number plate. */
+const CARRIER_MARK = { scale: 1.3, outlineWidth: 1.5, ringScale: 1.45, ringGap: 3 } as const;
 
 /**
  * How the ball is drawn `height` above the pitch (ball track units) on a pitch `width` px wide and
@@ -403,6 +406,7 @@ export function Pitch({
       : 'Galmuri11, sans-serif';
     const carrierMark = skin.carrier;
     const tagStyle = numberTagStyle(skin, pitchFont);
+    const carrierTagStyle = { ...tagStyle, plate: carrierMark, ink: inkOn(carrierMark) };
     const draw = (time: number) => {
       const elapsed = last.current ? Math.min(60, time - last.current) : 0;
       last.current = time;
@@ -514,6 +518,11 @@ export function Pitch({
           const poses = figures.map(({ input }) =>
             poseAt(input, windows.get(input.id), poseOptions),
           );
+          const radii = figures.map(
+            ({ input }) => radius * (input.carrier ? CARRIER_MARK.scale : 1),
+          );
+          const carrierIndex = figures.findIndex(({ input }) => input.carrier);
+          const carrier = figures[carrierIndex];
           // The ball goes with the figure holding it most firmly, eased from its track into his
           // socket (→MATCH-37); that figure is drawn last, so no other body covers it.
           let holder = -1;
@@ -526,7 +535,11 @@ export function Pitch({
           const held = poses[holder]?.ball;
           if (held) {
             const { x: fx, y: fy } = figures[holder]!;
-            const [sx, sy] = figurePoint(poses[holder]!, held.at, { x: fx, y: fy, radius });
+            const [sx, sy] = figurePoint(poses[holder]!, held.at, {
+              x: fx,
+              y: fy,
+              radius: radii[holder]!,
+            });
             ballX += (sx - ballX) * held.hold;
             ballY += (sy - ballY) * held.hold;
             ballHeight += (held.height - ballHeight) * held.hold;
@@ -534,10 +547,8 @@ export function Pitch({
           const ball = ballLook(ballHeight, width, fh);
           // On the grass under the figures: the inspected player's chosen move and ring, and the
           // recorded carrier's ring (→WEB-95), so neither hides a number or the ball.
-          let carrier: PitchFigure | undefined;
           for (const figure of figures) {
             const { motion } = figure;
-            if (motion && motion.id === ownership.carrierId) carrier = figure;
             if (!inspect || !motion || motion.id !== selectedId) continue;
             ctx.strokeStyle = skin.selection;
             ctx.lineWidth = 1.5;
@@ -565,7 +576,13 @@ export function Pitch({
               ctx.strokeStyle = colour;
               ctx.lineWidth = lineWidth;
               ctx.beginPath();
-              ctx.arc(carrier.x, carrier.y, radius + 3, 0, Math.PI * 2);
+              ctx.arc(
+                carrier.x,
+                carrier.y,
+                radii[carrierIndex]! * CARRIER_MARK.ringScale + CARRIER_MARK.ringGap,
+                0,
+                Math.PI * 2,
+              );
               ctx.stroke();
             }
           // Each side's recorded kit (or the unrecorded stand-in), its keeper in the keeper kit.
@@ -575,50 +592,31 @@ export function Pitch({
             painter.draw(ctx, poses[i]!, input.keeper ? keeperKit : kit, {
               x: fx,
               y: fy,
-              radius,
+              radius: radii[i]!,
               dpr: skin.pixelSize ? 1 / skin.pixelSize : dpr,
               look: looks.get(input.id) ?? playerLook(input.id),
-              outline: skin.markerOutline,
-              outlineWidth: 0,
+              outline: carrierMark,
+              outlineWidth: input.carrier ? CARRIER_MARK.outlineWidth : 0,
               ball: i === holder ? () => paintBall(ctx, ballX, ballY, ball, skin) : undefined,
             });
           };
-          for (let i = 0; i < figures.length; i++) if (i !== holder) paint(i);
+          for (let i = 0; i < figures.length; i++) if (i !== holder && i !== carrierIndex) paint(i);
+          if (carrierIndex >= 0 && carrierIndex !== holder) paint(carrierIndex);
           if (holder >= 0) paint(holder);
           else paintBall(ctx, ballX, ballY, ball, skin);
-          // The carrier's pointer above him, over every figure.
-          const top = carrier ? carrier.y - radius - 6 : 0;
-          if (carrier) {
-            for (const [colour, lineWidth] of cueEdges) {
-              ctx.strokeStyle = colour;
-              ctx.lineWidth = lineWidth;
-              ctx.lineJoin = 'round';
-              ctx.beginPath();
-              ctx.moveTo(carrier.x - 5, top - 6);
-              ctx.lineTo(carrier.x + 5, top - 6);
-              ctx.lineTo(carrier.x, top);
-              ctx.closePath();
-              ctx.stroke();
-            }
-            ctx.fillStyle = carrierMark;
-            ctx.fill();
-          }
-          // Every number upright beside its figure, clear of the ball and the carrier's cue
-          // (→MATCH-36).
-          const avoid: [number, number, number][] = [[ballX, ballY - ball.lift, ball.radius]];
-          if (carrier)
-            avoid.push([carrier.x, carrier.y, radius + 3 + 2.25], [carrier.x, top - 3, 6]);
+          // Numbers stay at twelve o'clock; the carrier's coloured plate replaces the pointer.
           const tags = placeNumberTags(
-            figures.map(({ input, number, x: fx, y: fy }) => ({
+            figures.map(({ input, number, x: fx, y: fy }, i) => ({
               id: input.id,
               number,
               x: fx,
               y: fy,
-              radius,
+              radius: radii[i]!,
             })),
-            { width, height, avoid },
           );
-          for (const tag of tags) drawNumberTag(ctx, tag, tagStyle);
+          for (let i = 0; i < tags.length; i++)
+            if (i !== carrierIndex) drawNumberTag(ctx, tags[i]!, tagStyle);
+          if (carrier) drawNumberTag(ctx, tags[carrierIndex]!, carrierTagStyle);
         } else {
           ctx.fillStyle = skin.idleText;
           ctx.font = `14px ${pitchFont}`;

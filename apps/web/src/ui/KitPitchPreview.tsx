@@ -80,8 +80,7 @@ export function paintKitPreview(
     });
   });
   const style = numberTagStyle(skin, font);
-  for (const tag of placeNumberTags(tags, { width, height, avoid: [] }))
-    drawNumberTag(ctx, tag, style);
+  for (const tag of placeNumberTags(tags)) drawNumberTag(ctx, tag, style);
 }
 
 /**

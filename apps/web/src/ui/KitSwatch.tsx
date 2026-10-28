@@ -63,11 +63,7 @@ export function KitSwatch({
     });
     if (number !== undefined) {
       const family = getComputedStyle(element).fontFamily || 'sans-serif';
-      const tags = placeNumberTags([{ id, number, x: size / 2, y: size / 2, radius }], {
-        width: size,
-        height: size,
-        avoid: [],
-      });
+      const tags = placeNumberTags([{ id, number, x: size / 2, y: size / 2, radius }]);
       for (const tag of tags)
         drawNumberTag(
           ctx,
