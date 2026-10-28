@@ -416,8 +416,6 @@
 ## log
 - 261029 cp29 move unclaimed T552 shared browser edits to T556 while preserving every required journey; keep independent UI file ownership disjoint.
 - 261029 cp29 merge approved club-places-ui lane T554/T555; synchronize completed tasks before further allocation, keeping any superseded draft isolated.
-- 261028 T555 integrated
-- 261028 T554 integrated
 - 261029 cp29 authorize the minimal T553 read-leaf wage extraction for existing acceptance; keep formula/exports and saved facts unchanged.
 - 261029 cp29 refine unclaimed T556 convergence notes to prevent the .ts/.tsx casing collision reproduced by both UI lanes; no product policy change.
 - 261029 fix outcome: align the existing rest-day summary assertion with CLUB-20 morale -2; paired validation belongs to the already implemented T557 foundation before integration.
@@ -427,6 +425,8 @@
 - 261029 cp29 narrow unclaimed T552 runtime touches to protocol/host/client plus dedicated query tests; unrelated T548 owns host/protocol legacy tests.
 - 261029 cp29 create-task T552–T556: three independent lanes and convergence; task checks are isolated unit/quick/build, coordinator owns final batch.
 - 261029 cp29 update-ssot WEB r168 ECON r39 CLUB r43: six places, focused owner work, whole-world market and consequential choices; independent club-places checkout preserves live T548 changes.
+- 261028 T555 integrated
+- 261028 T554 integrated
 - 261028 T557 integrated
 - 261028 T550 integrated
 - 261028 T549 integrated
