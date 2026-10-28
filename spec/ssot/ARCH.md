@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r24 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r25 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -204,12 +204,12 @@
   - a work group collecting local commits maps task → `--task-verify`, quick checks → `--verify`, and the complete batch → `--group-verify`; task commits and WIP checkpoints do not trigger the batch. A group explicitly pushing each integration runs the batch before that push. Reuse successful verification of identical source, command and scope.
   - `pnpm run verify` is the one-go local equivalent of CI, every browser spec included, so no task runs it: it stands in for the batch run when CI is unavailable, and a storage or release gate task that needs local raw reports alongside the benchmarks takes the browser-spec reports from that batch run (→ARCH-22).
 
-- ARCH-31 [o] The continuous-match and full probabilistic-result release has throughput and capacity gates (→SAVE-23); its accuracy (→MATCH-28) is measured and reported with the release, not a gate. ← the model ships first and its football is calibrated on the released model
+- ARCH-31 [o] The continuous-match and full probabilistic-result release has a capacity gate (→SAVE-23); its throughput (→!ARCH-34) and accuracy (→MATCH-28) are measured and reported with the release, not gates. ← the model ships first and its football is calibrated on the released model
   - record a pre-change baseline and final source fingerprint on the same pinned toolchain, machine and fixed worlds. Measure isolated fixture processing, complete season engine time, record settlement, codecs and observation separately; record warm-up, repetitions, medians, samples and memory.
-  - throughput budgets are absolute, on a recorded reference machine (its CPU model, cores, memory and runtime named in the benchmark artifact, timed in a quiet window): a fixture without the own club takes at most 1 ms median with full numerical records enabled, and complete-season engine time at most 15 s median for both existing century workload profiles; do not skip clubs, competitions, calendar effects, player records or business actions to meet them. ← the complete model records about 30 times the facts of the summary path, so a ratio to that path cannot hold
-  - compare paired runs with the same world scenarios and report the ratio to the baseline summary path as context, not as a gate; measurements from another machine are context only. Keep the existing entry, initialization, control and rendering budgets (→ARCH-28) and the unchanged lossless century limits (→SAVE-4/13).
+  - throughput has no absolute budget in milliseconds or seconds. Isolated fixture processing and complete-season engine time are compared with the previous release on one machine (→!ARCH-34) and reported as ratios naming that machine; do not skip clubs, competitions, calendar effects, player records or business actions to improve them.
+  - the ratio to the baseline summary path is reported as context; measurements from another machine are context only. Keep the existing entry, initialization, control and rendering budgets (→ARCH-28) and the unchanged lossless century limits (→SAVE-4/13).
   - version executable metric/condition registries and calibration reports, retain a separate validation corpus, and report unsupported, insufficient and failing cases explicitly. Accuracy work uses timeboxed exploration with recorded residual errors; a timebox ending never reports a failing metric as passing.
-  - the final combined movement, intention and aggregate model passes the throughput and capacity gates together. Reusing a measurement taken before a relevant change, a successful cosmetic benchmark, or an unexecuted planned check is not release evidence. Verification tiers remain →ARCH-30.
+  - the final combined movement, intention and aggregate model passes the capacity gate and reports its throughput ratios together. Reusing a measurement taken before a relevant change, a successful cosmetic benchmark, or an unexecuted planned check is not release evidence. Verification tiers remain →ARCH-30.
 
 - ARCH-32 [o] Locale and theme packs are data loaded through browser presentation adapters, independently of simulation and game checkpoints (→WEB-90/91).
   - `apps/web/public/presentation/locales/index.json` is the sole list of available locales; `apps/web/public/presentation/themes/index.json` is the sole list of available themes. Each registry declares its default and entries with stable IDs, display labels and relative resource URLs. Shared consumers derive choices and loaders from these registries; supported-ID unions, component-specific lists and per-ID branches are not additional registries.
@@ -225,6 +225,12 @@
   - Match rules, action/skill primitives and fixture reconstruction are leaf modules: the grid kernel does not import campaign lifecycle/orchestration, and the save codec rebuilds fixtures without importing the season orchestrator. Existing entry points may re-export leaves for compatibility.
   - Expensive measurement reuse is keyed by the runner/workload and its transitive runtime dependencies, catalog inputs, codec and toolchain. Preserve a separate full-source/build provenance fingerprint; unrelated visual assets or test edits do not invalidate simulation-only phases. A relevant source change always invalidates reuse.
   - Keep historical measurements immutable and label later values by source, command, environment, selected checks and cache state; structural dependency/selection checks do not imply runtime speedups.
+
+- ARCH-34 [o] A speed-up succeeds when the candidate is faster than its baseline on the machine it is measured on, beyond the measurement noise; no speed target is set in milliseconds or seconds. ← phones, desktops and CPUs differ too much for one absolute time to mean anything
+  - `scripts/perf/ab.mjs` measures it: both sides are bundled the same way from their own trees (identical sources give byte-identical bundles), each process loads both and alternates their reps, and the side loaded first alternates across processes. Main-thread CPU time is the primary measure; wall time is reported beside it.
+  - the call: per process the median log-ratio of its pairs, over processes a trimmed mean with a 95% bootstrap interval; faster means the whole interval lies below 1. A small gain that clears the noise counts; a gain inside the noise is not claimed.
+  - a result-identical speed-up keeps every workload's output hash (grid, aggregate, day) equal to its baseline's; changing results makes it a model change (→SAVE-23), not a speed-up.
+  - a result names the machine, its load, the interval and the hashes; a figure from another machine is context only.
 
 ## flow
 - Planning: ARCH → gameplay domain SSOTs → create-task → implementation.
@@ -245,6 +251,7 @@
 - Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
 
 ## chg
+- r25 261028 ARCH-31✎ throughput gates on absolute budgets (fixture ≤1 ms, season ≤15 s median on a reference machine)→no absolute time budget, throughput compared with the previous release on one machine and reported, capacity stays the gate; ARCH-34+ a speed-up succeeds when faster than its baseline on the measuring machine beyond the noise (paired harness, 95% interval, result-identical hashes)
 - r24 261027 ARCH-6+ helper workers may compute an own match day's other league fixtures from a read-only copy; the engine worker stays the sole writer, records in fixture order and falls back to computing them itself; identical worlds tested
 - r23 261027 ARCH-3✎ app/features/rendering/workers path table→the real ui/runtime/adapters/presentation layout, tests/fixtures and scripts, portable fixtures marked planned; ARCH-4✎ no rule for which engine modules the UI names→UI imports engine values only from read leaves, existing orchestration imports a shrink-only list guarded by an architecture test
 - r22 261026 ARCH-11✎ save repository uses localStorage→keeps checkpoints in IndexedDB, localStorage for settings/manifest/slot index and SAVE-3's fallback; ARCH-14✎ never move the active checkpoint to IndexedDB/cloud→never move checkpoints to cloud storage; constraints✎ primary save store localStorage→IndexedDB with the bounded localStorage fallback

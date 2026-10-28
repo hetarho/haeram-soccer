@@ -42,6 +42,69 @@ function legacyIntegers(values: number[]) {
 }
 
 describe('lossless career stream compaction', () => {
+  it('retains optional European qualification causes and association totals without rewriting older facts', () => {
+    const w = career();
+    const opponent = w.clubs.find((c) => c.id !== w.playerClub)!.id;
+    w.europe = [
+      {
+        key: 'ucl',
+        name: 'Champions League',
+        field: 2,
+        format: 'knockout',
+        games: 0,
+        stage: '결승',
+        clubs: [w.playerClub, opponent],
+        fixtures: [],
+        rounds: [],
+        standings: { [w.playerClub]: w.tables[w.playerClub], [opponent]: w.tables[opponent] },
+        ownQualification: '2032/33시즌 Europa League 우승',
+      },
+    ];
+    w.history = [
+      {
+        year: w.year - 1,
+        tier: 4,
+        group: 0,
+        rank: 5,
+        points: 60,
+        played: 46,
+        won: 18,
+        drawn: 6,
+        lost: 22,
+        gf: 60,
+        ga: 70,
+        cash: '0',
+        currency: w.currency,
+        income: '0',
+        expense: '0',
+        fans: 1000,
+        rating: 60,
+        manager: w.manager.name,
+        metrics: Array(12).fill(0),
+        standings: [],
+        champions: [],
+        europe: [],
+        europeCoefficients: [{ country: 'ENG', points: 81, clubs: 7 }],
+      },
+    ];
+    const original = canonical(w);
+    const restored = validateWorld(unpack(JSON.parse(JSON.stringify(pack(w)))));
+    expect(canonical(restored)).toBe(original);
+    expect(restored.history[0].europeCoefficients).toEqual([
+      { country: 'ENG', points: 81, clubs: 7 },
+    ]);
+    expect(restored.europe[0].ownQualification).toBe(w.europe[0].ownQualification);
+    const malformed = structuredClone(restored);
+    malformed.history[0].europeCoefficients!.push({ country: 'ENG', points: 8, clubs: 1 });
+    expect(() => validateWorld(malformed)).toThrow();
+    delete w.history[0].europeCoefficients;
+    delete w.europe[0].ownQualification;
+    const old = validateWorld(unpack(JSON.parse(JSON.stringify(pack(w)))));
+    expect(canonical(old)).toBe(canonical(w));
+    expect(old.history[0]).not.toHaveProperty('europeCoefficients');
+    expect(old.europe[0]).not.toHaveProperty('ownQualification');
+  });
+
   it('keeps the direction rows, the strategy and the manager market through a pack round trip', () => {
     const w = simulatedWorld(COMPACT, { rounds: 8 });
     w.direction = {

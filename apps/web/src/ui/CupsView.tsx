@@ -184,7 +184,7 @@ function Continental({ w, t }: { w: World; t: EuropeTournament }) {
   const second = phaseGroups(t, 'second');
   const qualifyPerGroup = t.field === 40 ? 3 : t.field === 16 || t.field >= 32 ? 2 : 1;
   const status = !entered
-    ? '우리 클럽은 참가하지 않아요. 리그 상위권이나 국내 컵 우승으로 출전권을 얻어요.'
+    ? '우리 클럽은 참가하지 않아요. 국가별 리그 배분, 국내 컵 또는 유럽대항전 우승으로 출전권을 얻어요.'
     : t.winner === w.playerClub
       ? '우승!'
       : (t.ownExit ?? ownStatus(w, rounds, t.fixtures, true));
@@ -214,6 +214,22 @@ function Continental({ w, t }: { w: World; t: EuropeTournament }) {
       <p data-ui="notice" className={c.status}>
         {status}
       </p>
+      {entered && (
+        <p className={c.note}>
+          출전권: {t.ownQualification || '이 저장에는 당시 출전권 사유가 기록되어 있지 않아요.'}
+        </p>
+      )}
+      {w.year >= 2021 ? (
+        <p className={c.note}>
+          예선 진출팀은 이 게임의 본선에 바로 참가해요. 국가 순위는 지원하는 8개국의 5시즌 기록으로
+          계산하며, 기록이 부족하면 기본 순위를 사용해요. 2024년부터 국가 계수 상위 2개국에 추가
+          챔스 티켓(EPS)을 배정하며, 이전 시즌의 국가 계수가 없으면 배정하지 않아요. 잉글랜드
+          리그컵과 네덜란드·벨기에의 국내 출전권 플레이오프는 별도로 치르지 않고 리그 순위로
+          배분해요.
+        </p>
+      ) : (
+        <p className={c.note}>이 시대의 국가별 출전권과 예선 경로는 간소화한 배분을 사용해요.</p>
+      )}
       <Bracket w={w} rounds={rounds} fixtures={t.fixtures} competition={t.key} />
       {second.length > 0 &&
         second.map((ids, g) => (

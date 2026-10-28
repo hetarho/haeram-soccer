@@ -828,6 +828,12 @@ export interface Campaign {
   income: string;
   fans: number;
 }
+/** Association totals in eighth-points, before division by distinct entrants (→EURO-13). */
+export interface AssociationCoefficient {
+  country: string;
+  points: number;
+  clubs: number;
+}
 export interface SeasonArchive {
   year: number;
   tier: number;
@@ -859,6 +865,8 @@ export interface SeasonArchive {
     secondStandings?: number[][];
     final?: CupFinal;
   }[];
+  /** Absent for closes before association coefficients were recorded. */
+  europeCoefficients?: AssociationCoefficient[];
   /** Club Elo at the season's close (→HIST-12). */
   elo?: number;
   /** Rank of that Elo among every club of the world. */
@@ -961,6 +969,8 @@ export interface EuropeTournament {
   standings: Record<string, TableRow>;
   winner?: string;
   ownExit?: string;
+  /** The qualification cause recorded when this season was drawn, never recomputed on load. */
+  ownQualification?: string;
   firstStandings?: number[][];
   secondStandings?: number[][];
   /** Knockout rounds drawn so far (→EURO-10). */

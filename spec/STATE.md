@@ -13,13 +13,10 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| u7m4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T00:48Z | 2026-10-28T02:45Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
-| e7q4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T01:49Z | 2026-10-28T01:54Z | T537 |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T03:04Z | 2026-10-28T03:15Z | T539 |
 
 ## inbox
-- 261028 decided WEB-11 WEB-72 T536: facility scope and image treatment → three compact background-art entrances with manager/training preparation notices, plus a larger cover-cropped stadium (alt: implement unplanned room activities | keep one large owner entrance); detailed room activities await their own planning.
 - 261028 decided EURO-11 EURO-13 EURO-14: modern access fidelity → association quota bands, recorded five-year ranking and EPS, direct admission instead of new qualifiers, next-season activation (alt: keep uniform demo quotas | retcon active draws); keep the single domestic cup and explicitly label unmodelled EFL/domestic playoffs and eight-association ranking scope.
 - 261028 decided T531 WEB-100 WEB-74: how to keep request identity through submission and browser history → world-named request addresses and session snapshots, with a scoped client forwarding the existing forms/commands (alt: consume a one-shot request only | copy each form into the office); history can revisit resolved work safely, late replies cannot redirect another request/game, and business rules stay authoritative.
 - 261028 decided WEB-39 WEB-79: work grouping → player contracts (incl. youth), staff contracts (incl. manager), investment (finance/local/global/facilities), sponsors and identity; keep all seven saved responsibility keys (alt: merge stored responsibilities or retain an operating-policy gate). Shared inline controls and eligible direct actions use existing commands.
@@ -324,6 +321,8 @@
 - 261028 decided WEB-18 T525: T524 showed the computed days at once before a read, and a records view open during play re-reads on a new key, so the shown calendar jumped (1950-08-01 → 08-05, records.spec on 174af691) → a read waits until the computed days are shown at the pace and nothing is computed ahead meanwhile (alt: let reads show computed-ahead days | keep the jump)
 - 261027 decided WEB-18 T524: reads outside the command queue answer from the newest computed day, up to 7 days past the shown date → they first show the computed days at once and nothing is computed ahead until answered (alt: record that reads may show computed-ahead days | cut each read at the shown date, which cumulative statistics cannot do)
 - 261027 decided T518 ARCH-31: round-jobs.test.ts tier → integration (it advances days, which tests/config/test-tiers keeps out of unit), acceptance command updated (alt: keep it unit and shrink it below advanceDays)
+- 261028 decided WEB-11 WEB-72 T536: facility scope and image treatment → three compact background-art entrances with manager/training preparation notices, plus a larger cover-cropped stadium (alt: implement unplanned room activities | keep one large owner entrance); detailed room activities await their own planning.
+- 261028 decided ARCH-31 ARCH-34: whether release throughput stays a gate once the owner rules out targets in seconds ("작업한 기기에서 노이즈 이상으로 빨라지면 성공") → throughput is compared with the previous release on one machine and reported, capacity stays the only release gate, and a speed-up is judged by ARCH-34's paired same-machine call (alt: gate on not being slower than the previous release beyond the noise, which would block every model revision that adds football | keep the 1 ms / 15 s reference-machine budgets)
 
 ## ideation
 | id | st |
@@ -347,7 +346,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 24 | 24 | - | 2 |
+| ARCH | 25 | 25 | - | 2 |
 | WEB | 165 | 165 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
@@ -373,7 +372,8 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T537 | European qualification by association, domestic results and titles | EURO ARCH | - | doing@261028.e7q4 |
+| T540 | Paired same-machine speed harness | ARCH | - | todo |
+| T541 | Result-identical engine cuts judged by the paired harness | ARCH MATCH | T540 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -392,19 +392,17 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- implement-task T537: correct association access, continental titleholders, EPS and qualification causes.
-- UI scope T536 is complete; await its main CI result. Manager/training room activities need separate product planning.
+- implement-task T538 and T539: revision 5 carrier judgement and tolerant target bands (f5j2).
+- implement-task T540: paired same-machine speed harness, then T541 (explore 3h) result-identical engine cuts.
+- UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
 - 261028 T538 done: revision 5 carrier judgement — open ground, safe recycling, no far back pass with room, wide play; 600-match read 29/37 inside the tolerance.
 - 261028 T539 done: MATCH-23 rows, scorer rows and MATCH-30 counters judged within 25% of the real mean (match-parity-6).
-- 261028 T539 start (f5j2): tolerant target bands.
-- 261028 update-ssot MATCH r35 + create-task T539: MATCH-23/MATCH-30 rows held within 25% of the real-football mean.
 - 261028 T538 start (f5j2): revision 5 carrier judgement, explore 2h.
 - 261028 create-task MATCH r34: T538 opens revision 5 for the carrier's space, safe recycling and room near the box.
 - 261028 update-ssot MATCH start and r34 done: MATCH-16 space ahead, contested passes only forward, no far back pass with room near the box.
 - 261028 T536 planning shared for strict session claim; WEB r165.
-- 261028 create-task EURO r4: T537 covers allocation, recorded coefficients, compatibility and qualification explanation.
 - 261028 update-ssot EURO start and r4 done: modern access, holders, EPS and forward-only save compatibility; create-task EURO next.
 - 261028 gameplay hierarchy shipped: WEB r164, T530-T535 and verified test repairs; main 8af246fa passed all nine CI jobs; report 261028-g8u4.
 - 261028 fix live-observation-order: cover both match-eve-before-selection and interleaved browsing, dismiss/reopen pending observation for the remaining read-only visit, and scope date assertions to the active calendar/theatre. All date, score, scorer and retained-node assertions remain.
@@ -416,3 +414,6 @@
 - 261028 T534 start: coordinator repairs initial Chromium integration failures; no implementation code was pushed.
 - 261028 fix navigation-tools: screenshot capture and the unchanged 30-click first-play sample use the six gameplay destinations; syntax and type/lint/format checks passed; no new benchmark claim.
 - 261028 fix personnel-deep-links: canonical personnel entries serve the SPA with no-cache HTML; missing assets remain 404; HTTP checks, type/lint/format/build passed; preview regression extended for the final batch.
+- 261028 T537 published at main 0add0e71; CI #594 Success (37m 3s), including Chromium 311 and Firefox/WebKit. CLI false timeout diagnosed by direct run summary; report 261028-e7q4.
+- 261028 T537 done: association quotas, continental titleholders, recorded coefficients/EPS and qualification causes; existing 2034 draw preserved. Unit/integration/contract/build passed; Chromium 310 plus one unchanged isolated retry passed.
+- 261028 create-task ARCH r25: T540 paired speed harness, T541 result-identical engine cuts (explore 3h). Warning: T538 (doing, f5j2) cites ARCH-31 at ARCH@24; its throughput read is now a reported same-machine ratio (ARCH-34), not the 1 ms / 15 s budget.

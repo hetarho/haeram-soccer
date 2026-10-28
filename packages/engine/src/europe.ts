@@ -1,7 +1,8 @@
 import { awardReputation, REPUTATION_CONFIG } from './reputation';
 import type { World, EuropeTournament, Fixture, KnockoutRound } from '../../contracts/src/types';
-import { COUNTRIES } from '../../catalogs/src/index';
 import { random, integer, compareIds } from './primitives';
+import { europeanAccess } from './europe-access';
+import { europeanTableOrder } from './europe-coefficients';
 import { addEvent } from './events';
 import { broadcastQuote } from './quotes';
 import { clubOf } from './player-state';
@@ -136,31 +137,7 @@ export function ensureRepresentatives(w: World) {
   // The entrants get their own designs; no earlier club's identity moves (→KIT-11).
   installMissingIdentities(w, w.clubs.slice(first));
 }
-function order(w: World, code: string) {
-  const last = w.history.at(-1);
-  if (last)
-    return last.standings
-      .filter((row) => w.clubs[row[0]].country === code && row[1] === 0)
-      .sort(
-        (a, b) =>
-          b[3] - a[3] ||
-          b[4] - b[5] - (a[4] - a[5]) ||
-          b[4] - a[4] ||
-          compareIds(w.clubs[a[0]].id, w.clubs[b[0]].id),
-      )
-      .map((row) => w.clubs[row[0]].id);
-  return w.clubs
-    .filter((c) => c.country === code && c.tier === 0 && !c.representative)
-    .sort((a, b) => b.strength - a.strength || compareIds(a.id, b.id))
-    .map((c) => c.id);
-}
-function sorted(t: EuropeTournament, ids: string[]) {
-  return [...ids].sort((a, b) => {
-    const x = t.standings[a],
-      y = t.standings[b];
-    return y.points - x.points || y.gf - y.ga - (x.gf - x.ga) || y.gf - x.gf || compareIds(a, b);
-  });
-}
+const sorted = europeanTableOrder;
 export function leaguePhasePairs(ids: string[], games: number) {
   if (ids.length !== 36 || ![6, 8].includes(games)) throw new Error('36팀 리그 페이즈 설정 오류');
   const result: [string, string, number][] = [];
@@ -580,24 +557,16 @@ function crown(w: World, t: EuropeTournament, winner: string) {
 export function prepareEurope(w: World) {
   ensureRepresentatives(w);
   w.europe = [];
+  const access = europeanAccess(w);
   const occupied = new Set<string>();
   for (const era of europeanEras(w.year).sort(
     (a, b) =>
       ['ucl', 'cwc', 'uel', 'uecl'].indexOf(a.key) - ['ucl', 'cwc', 'uel', 'uecl'].indexOf(b.key),
   )) {
-    let eligible: string[] = [];
-    for (const c of COUNTRIES) {
-      const table = order(w, c.code),
-        cup = w.lastChampions.find((ch) => ch.country === c.code)?.cup;
-      if (era.key === 'ucl') eligible.push(...table.slice(0, w.year >= 1997 ? 2 : 1));
-      else if (era.key === 'cwc') eligible.push(cup || table[1]);
-      else if (era.key === 'uel')
-        eligible.push(
-          ...(w.year >= 1999 && cup ? [cup] : []),
-          ...table.slice(w.year >= 1997 ? 2 : 1, w.year >= 1997 ? 4 : 3),
-        );
-      else eligible.push(...table.slice(4, 5));
-    }
+    let eligible = [...access]
+      .filter(([, entry]) => entry.competition === era.key)
+      .map(([id]) => id);
+    if (eligible.length > era.field) throw new Error('국내 출전권이 유럽대회 정원을 초과했습니다.');
     const background = w.clubs
       .filter((c) => c.id.startsWith('euro:'))
       .sort(
@@ -622,6 +591,9 @@ export function prepareEurope(w: World) {
       fixtures: [],
       standings: Object.fromEntries(eligible.map((id) => [id, emptyTable()])),
       rounds: [],
+      ...(eligible.includes(w.playerClub) && access.has(w.playerClub)
+        ? { ownQualification: access.get(w.playerClub)!.reason }
+        : {}),
     };
     w.europe.push(t);
     progressEurope(w, t);
@@ -630,7 +602,7 @@ export function prepareEurope(w: World) {
         w,
         'europe-qualification',
         `${t.name} 참가`,
-        '지난 시즌 리그/컵 성적에 따른 데모 배분 · 실제 UEFA 접근 목록을 단순화했습니다.',
+        t.ownQualification || '첫 시즌 초청 · 예선 경로와 배경 대표팀은 간소화합니다.',
       );
   }
 }

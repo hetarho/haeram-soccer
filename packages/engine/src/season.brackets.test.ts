@@ -4,8 +4,32 @@ import { advanceRound, cupKey, legsOf, tieAggregate } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { archiveLastRound, closedSeason, founded, toLastRound } from './season.testkit';
+import { associationCoefficients } from './europe-coefficients';
+import { performanceAssociations } from './europe-access';
 
 describe('closed season archive', () => {
+  it('captures the completed association coefficients before allocating the following season', () => {
+    const lastRound = cachedWorld('association-coefficients-2023-last-round', () => {
+      const w = founded(2023, DISABLED_RELEASE);
+      w.cash = '1000000000000000'; // This fixture checks the close, independently of funding.
+      return toLastRound(w);
+    });
+    const { w, live, season } = closedSeason(lastRound);
+    expect(season.year).toBe(2023);
+    expect(season.europeCoefficients).toHaveLength(8);
+    expect(season.europeCoefficients).toEqual(associationCoefficients(live));
+    expect(season.europeCoefficients!.every((r) => r.clubs > 0 && Number.isInteger(r.points))).toBe(
+      true,
+    );
+    expect(w.year).toBe(2024);
+    expect(performanceAssociations(w)).toHaveLength(2);
+    expect(w.europe.every((t) => t.clubs.length === t.field)).toBe(true);
+    expect(new Set(w.europe.flatMap((t) => t.clubs)).size).toBe(
+      w.europe.reduce((n, t) => n + t.clubs.length, 0),
+    );
+    validateWorld(w);
+  });
+
   it('archives the 1980 cup and continental brackets from the last 32 to the final', () => {
     const { w, live, season } = closedSeason(archiveLastRound(1980));
     const cup = live.cups!.find((c) => c.country === 'ENG')!;

@@ -29,7 +29,7 @@
        `  - over limit ⇒ 429 + retry-after, never a silent drop`
 - [o] decided / [?] open / [x] rejected·not in force
 - change kind: + added / ✎ modified / - removed (e.g. `AUTH-2✎`)
-- reference: →AUTH-3
+- reference: →!AUTH-3 requires the target rule; →=AUTH-3 identifies its canonical owner; →~AUTH-3 is related context; →AUTH-3 is an unclassified existing reference. One marker covers a `/` list or range. Do not reclassify existing references by guessing.
 - finding line: `- Fn [?|o|x] P1|P2|P3 <where>: <what>` + ` ← <why it matters>`; append ` →T###` once a task exists. P1 = correctness/security risk or blocks every change · P2 = slows every change · P3 = nice to have. A functional bug is a finding whose <what> starts with `bug:`
 - acceptance check: `- [ ]` open → `- [v]` done (never mark done with x — [x] means rejected in SSOT)
 - exploratory task: quote field `explore:<N>m|<N>h` is the timebox for work decided by running and measuring (calibrate·tune·balance). Its acceptance carries `- [ ] exit: <what gets recorded and why the task then counts as done when the timebox runs out>`
