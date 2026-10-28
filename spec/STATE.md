@@ -413,6 +413,7 @@
 - club-places: finish T557/T558 foundations, then T552/T553 and T554→T555 UI lanes; T556 connects all results. T549/T550 are integrated from their owning group; T548 remains with its existing session.
 
 ## log
+- 261029 fix outcome: align the existing rest-day summary assertion with CLUB-20 morale -2; paired validation belongs to the already implemented T557 foundation before integration.
 - 261029 cp29 merge the owner-reviewed v07-beta integration so completed T549/T550 no longer block independent UI work; preserve current SSOT and T552–T558 scope.
 - 261028 T550 integrated
 - 261028 T549 integrated
@@ -432,4 +433,3 @@
 - 261028 lanes start (pl1): T545 match-figures (dev3) and T546 kit-editor (dev4) in worktrees task/T545 and task/T546.
 - 261028 T544 done (dev3, 1f605f49): figure painter and number tags; PL re-ran 40 unit tests and typecheck; merged.
 - 261028 T544 start (dev3) in worktree task/T544 (pl1).
-- 261028 T547 done (dev1, 158a5b64): kit wear v2, torso selection, keeper fallback; PL re-ran typecheck, 57 unit and 23 contract tests; merged.
