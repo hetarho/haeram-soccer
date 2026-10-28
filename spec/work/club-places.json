@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-28T18:33:15.546Z",
-  "sourceCommit": "00880fb45f28bdb1aa3ef9f61906338c0ef25101",
+  "snapshotAt": "2026-10-28T20:38:37.582Z",
+  "sourceCommit": "89bbdaf969b40092ad8cd746d48944d894183129",
   "group": {
     "id": "club-places",
     "branch": "work/club-places",
@@ -11,6 +11,18 @@
       "workers": 3,
       "reviewers": 1,
       "maxPending": 8
+    },
+    "verified": {
+      "commit": "89bbdaf969b40092ad8cd746d48944d894183129",
+      "checks": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run verify:batch > /Users/ihaelam/project/haeram-soccer/.tmp/club-places-final-gate4.log 2>&1",
+          "startedAt": "2026-10-28T20:13:12.418Z",
+          "finishedAt": "2026-10-28T20:38:36.322Z"
+        }
+      ],
+      "at": "2026-10-28T20:38:36.420Z",
+      "excluded": []
     },
     "review": "all",
     "lastRun": {
@@ -547,6 +559,8 @@
       "submittedBase": "00880fb45f28bdb1aa3ef9f61906338c0ef25101",
       "submissionId": "610e0d85-7036-4415-ab83-07a1d95e3167",
       "submittedAt": "2026-10-28T18:31:37.444Z",
+      "integratedCommit": "c3aad1f4969edb0cf421c555bc62cce78a800756",
+      "integratedAt": "2026-10-28T18:33:50.885Z",
       "risk": null,
       "dispatch": {
         "id": "ab54ac91-8018-4cd2-97aa-8d8819fbb935",
@@ -616,6 +630,13 @@
           "command": "pnpm install --offline --frozen-lockfile --store-dir /tmp/t556-pnpm-store && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
           "startedAt": "2026-10-28T18:30:59.298Z",
           "finishedAt": "2026-10-28T18:31:37.013Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-28T18:33:15.892Z",
+          "finishedAt": "2026-10-28T18:33:50.519Z"
         }
       ]
     }
@@ -4896,6 +4917,62 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1780,
+      "at": "2026-10-28T18:33:50.801Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-28T18:33:15.892Z",
+            "finishedAt": "2026-10-28T18:33:50.519Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1781,
+      "at": "2026-10-28T18:33:50.885Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "afc98e71-deb2-4533-b0e6-8373f0355591",
+      "taskId": "T556",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "c3aad1f4969edb0cf421c555bc62cce78a800756",
+        "integratedAt": "2026-10-28T18:33:50.885Z"
+      }
+    },
+    {
+      "sequence": 1940,
+      "at": "2026-10-28T20:38:36.442Z",
+      "type": "group",
+      "group": "club-places",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "verified": {
+          "commit": "89bbdaf969b40092ad8cd746d48944d894183129",
+          "checks": [
+            {
+              "command": "pnpm install --offline --frozen-lockfile && pnpm run verify:batch > /Users/ihaelam/project/haeram-soccer/.tmp/club-places-final-gate4.log 2>&1",
+              "startedAt": "2026-10-28T20:13:12.418Z",
+              "finishedAt": "2026-10-28T20:38:36.322Z"
+            }
+          ],
+          "at": "2026-10-28T20:38:36.420Z",
+          "excluded": []
+        }
       }
     }
   ]
