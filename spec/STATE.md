@@ -422,6 +422,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261029 cp29 reconcile published plan metadata with approved T563 archive; remove only the obsolete active duplicate descriptor, retaining completed source and result.
 - 261029 create-task T567 (cp29): remaining actual browser-contract drift in skins, primary/local keyboard history, resolved-office export and editable policy ownership.
 - 261028 T563 integrated
 - 261029 create-task T566 (cp29): coalesce real world-market reads during automatic revisions while preserving stopped-state authoritative guards; sequence unclaimed browser consumers after their source fixes.
@@ -439,4 +440,3 @@
 - 261029 cp29 synchronize main 59446b09, including completed T548/T561 and MATCH r41, before final workflow convergence.
 - 261029 T561 done (p9c3, explore): match-model revision 8 — the showing teammate offers at 14 m, with the ball teammates spread 14 m and keep 10 m around the carrier; crowds of seven within 10 m 7.0% → 2.9%; 600 matches goals 3.38, 25/37 (one row fewer: long shots).
 - 261029 update-ssot MATCH r41 + create-task T561 (p9c3, owner): players swarm the ball like playground football → MATCH-17 nobody piles onto the ball; T561 revision 8, explore 2 h.
-- 261029 T550 done (v07-beta worker, 9c54de75 7b037ec1): one shared BETA mark beside the club or game name on every screen, v0.7 BETA from CURRENT_ENGINE_VERSION on the start and slot screens.
