@@ -31,6 +31,7 @@
     "shell.division": "الدرجة {division}",
     "shell.readonly": "للقراءة فقط",
     "shell.readonlyNotice": "اللعبة قيد التشغيل في علامة تبويب أخرى. هذه العلامة للقراءة فقط.",
+    "shell.beta": "النسخة التجريبية {version} · قد تتغير اللعبة قبل إصدارها الكامل",
     "shell.guide": "دليل تطوير النادي",
     "shell.responsibilities": "مكتب مالك النادي",
     "shell.news": "الإشعارات والأخبار",

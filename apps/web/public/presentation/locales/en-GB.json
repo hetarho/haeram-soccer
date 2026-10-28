@@ -31,6 +31,7 @@
     "shell.division": "Division {division}",
     "shell.readonly": "Read only",
     "shell.readonlyNotice": "Another tab is playing. This tab is read only.",
+    "shell.beta": "Beta version {version} · the game may change before its full release",
     "shell.guide": "Club growth guide",
     "shell.responsibilities": "Owner's office",
     "shell.news": "Notifications & news",
