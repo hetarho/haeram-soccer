@@ -415,7 +415,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- cp29: comparison-readiness follow-up7444daee verified with3/3 full affected CI-mode scenarios and unchanged-source proof; await first Firefox result, publish the verified follow-up and confirm its complete CI.
+- cp29: publish verified comparison-readiness follow-up7444daee and confirm its complete CI; independently follow the first run’s remaining Firefox result for any additional evidence.
 
 ## log
 - 261029 fix recruitment browser readiness: await both asynchronously loaded comparison articles before retaining the unchanged exact two-player identity assertion; initial CI Chromium330pass1premature-read failure.
