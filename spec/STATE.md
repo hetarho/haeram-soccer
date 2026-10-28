@@ -378,8 +378,7 @@
 |---|---|---|---|---|
 | T538 | Match-model revision 5: carriers take open ground, recycle only safely, never far back with room near the box | MATCH SAVE ARCH | - | doing@261028.f5j2 |
 | T539 | Hold the football targets within 25% of the real-football mean | MATCH ARCH | - | doing@261028.f5j2 |
-| T542 | Kits with shorts, socks and a designed goalkeeper kit, judged on the figure torso | KIT SAVE MATCH ARCH | - | doing@261028.pl1 |
-| T544 | Paint top-down player figures in their kits | MATCH KIT WEB ARCH | T542 T543 | todo |
+| T544 | Paint top-down player figures in their kits | MATCH KIT WEB ARCH | T542 T543 | doing@261028.pl1 |
 | T545 | Match observation draws posed player figures | MATCH WEB KIT ARCH | T544 | todo |
 | T546 | Kit editor with shorts, socks and goalkeeper kit; figure previews | KIT WEB SAVE MATCH ARCH | T544 | todo |
 ## work
@@ -404,6 +403,8 @@
 - UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
+- 261028 T544 start (dev3) in worktree task/T544 (pl1).
+- 261028 T542 done (dev1, 158a5b64): kit wear v2, torso selection, keeper fallback; PL re-ran typecheck, 57 unit and 23 contract tests; merged.
 - 261028 T543 done (dev3, 407a5e9d): figure poses and action windows; PL re-ran its 16 unit tests and typecheck; merged into feat/player-figures-kits.
 - 261028 T542 (dev1) and T543 (dev3) start in worktrees task/T542 and task/T543 (pl1).
 - 261028 create-task done (pl1): T542–T546 from KIT r4 MATCH r36 WEB r166 SAVE r56; foundation T542 ‖ T543 → T544, lanes match-figures T545 and kit-editor T546.
@@ -422,5 +423,3 @@
 - 261028 fix personnel-navigation-geometry: wait for the incoming hub animation before clicking its local tab, preserving exact zero-scroll and facility-image assertions in Firefox; no production code change.
 - 261028 fix compact-competition-hub: remove 10 px of inter-row margin while retaining 44 px targets and seven complete phone standings rows; office helper dismisses a newly arrived match-eve report before retrying entry.
 - 261028 T535 done: settings feedback survives dialog handoff without a copied toast; request helper waits for home return; remaining cup journeys follow Season.
-- 261028 T534 done: repaired integrated UI layering, history retention and canonical browser journeys; task checks/build pass, coordinator browser gate pending.
-- 261028 T534 start: coordinator repairs initial Chromium integration failures; no implementation code was pushed.
