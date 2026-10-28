@@ -154,7 +154,7 @@ export function createGroundPainter(
   };
 }
 
-/** A theme's ball contour, with the same centre and bounds in every treatment. */
+/** A theme's ball without an outer outline, with the same centre and bounds in every treatment. */
 export function paintPitchBall(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -186,9 +186,6 @@ export function paintPitchBall(
   } else ctx.arc(x, y, radius, 0, Math.PI * 2);
   ctx.fillStyle = skin.ball;
   ctx.fill();
-  ctx.strokeStyle = skin.ballEdge;
-  ctx.lineWidth = Math.min(1.5, skin.markerWidth);
-  ctx.stroke();
   ctx.fillStyle = skin.ballSeam;
   ctx.fillRect(x - radius * 0.2, y - radius * 0.2, radius * 0.4, radius * 0.4);
   ctx.restore();
