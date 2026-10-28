@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T19:10Z | - |
+| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T19:25Z | - |
 
 ## inbox
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
@@ -405,6 +405,7 @@
 | T565 | Keep place journey fixtures and named returns valid | WEB ARCH | T563 | todo |
 | T566 | Keep world-market reads usable during automatic progression | WEB ARCH | - | todo |
 | T567 | Align remaining place, keyboard and owner-helper journeys | WEB ARCH | - | todo |
+| T568 | Keep the primary training action fully visible on entry | WEB ARCH | T563 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -428,6 +429,7 @@
 - club-places: implement T557/T558 engine foundations while live T550 owns UI, then T552 market UI and T553 choices in parallel with the T554→T555 places-office lane; T556 connects all results. Existing T548–T550 remain with their current sessions.
 
 ## log
+- 261029 create-task T568 (cp29): reserve final scoped training viewport correction after actual browser proof of the shared layout fix.
 - 261029 create-task T566–T567 (cp29): reserve running-clock market-read and final place-journey corrections after the complete browser failure audit.
 - 261029 create-task T563–T565 (cp29): reserve browser-gate follow-up IDs for mobile layout, paged identities and explicit place fixtures; current code remains in isolated work branches.
 - 261029 create-task T562 (cp29): reproduced browser facility/competition drift; preserve all layout/navigation contracts and coordinator-only browser execution.
@@ -439,10 +441,3 @@
 - 261029 fix match-figures (p9c3, owner): bodies face the drawn run and turn into a new one within 0.2 s (were the recorded velocities blended across the sample gap); a calm visible gait (6 m a cycle, reach 0.6, arms 0.55; 18.6 m showed none).
 - 261029 cp29 create-task T552–T556: three independent lanes and convergence; task checks are isolated unit/quick/build, coordinator owns final batch.
 - 261029 cp29 update-ssot WEB r168 ECON r39 CLUB r43: six places, focused owner work, whole-world market and consequential choices; independent club-places checkout preserves live T548 changes.
-- 261029 cp29 narrow unclaimed T552 runtime touches to protocol/host/client plus dedicated query tests; unrelated T548 owns host/protocol legacy tests.
-- 261029 cp29 redivide unclaimed T552/T553 into engine foundations T558/T557 and UI consumers so live T550 UI ownership does not stop independent engine work; no policy change.
-- 261029 cp29 extend unclaimed T553 to update the existing rest-day morale summary assertion identified by T557; keep full-world integration execution at the coordinator gate.
-- 261029 cp29 refine unclaimed T556 convergence notes to prevent the .ts/.tsx casing collision reproduced by both UI lanes; no product policy change.
-- 261029 cp29 authorize the minimal T553 read-leaf wage extraction for existing acceptance; keep formula/exports and saved facts unchanged.
-- 261029 cp29 move unclaimed T552 shared browser edits to T556 while preserving every required journey; keep independent UI file ownership disjoint.
-- 261028 T551 done (p9c3): main CI fix after the figures/kits and forward-intent merges — editor samples mid-step, kit pixel floor, faster wornFigures, in-page goal-hold minute, clock-derived 16× bound, appearance digest.
