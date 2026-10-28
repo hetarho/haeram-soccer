@@ -14,7 +14,6 @@
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
-| f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T03:04Z | 2026-10-28T03:15Z | T539 |
 
 ## inbox
 - 261028 decided EURO-11 EURO-13 EURO-14: modern access fidelity → association quota bands, recorded five-year ranking and EPS, direct admission instead of new qualifiers, next-season activation (alt: keep uniform demo quotas | retcon active draws); keep the single domestic cup and explicitly label unmodelled EFL/domestic playoffs and eight-association ranking scope.
@@ -397,6 +396,7 @@
 - UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
+- 261028 f5j2 end: T538/T539 pushed to main at the owner's request without the rerun batch (first batch: 3 integration failures, fixed or load timeouts passing alone; e2e not run locally).
 - 261028 T538 done: revision 5 carrier judgement — open ground, safe recycling, no far back pass with room, wide play; 600-match read 29/37 inside the tolerance.
 - 261028 T539 done: MATCH-23 rows, scorer rows and MATCH-30 counters judged within 25% of the real mean (match-parity-6).
 - 261028 T538 start (f5j2): revision 5 carrier judgement, explore 2h.
@@ -416,4 +416,3 @@
 - 261028 fix personnel-deep-links: canonical personnel entries serve the SPA with no-cache HTML; missing assets remain 404; HTTP checks, type/lint/format/build passed; preview regression extended for the final batch.
 - 261028 T537 published at main 0add0e71; CI #594 Success (37m 3s), including Chromium 311 and Firefox/WebKit. CLI false timeout diagnosed by direct run summary; report 261028-e7q4.
 - 261028 T537 done: association quotas, continental titleholders, recorded coefficients/EPS and qualification causes; existing 2034 draw preserved. Unit/integration/contract/build passed; Chromium 310 plus one unchanged isolated retry passed.
-- 261028 create-task ARCH r25: T540 paired speed harness, T541 result-identical engine cuts (explore 3h). Warning: T538 (doing, f5j2) cites ARCH-31 at ARCH@24; its throughput read is now a reported same-machine ratio (ARCH-34), not the 1 ms / 15 s budget.
