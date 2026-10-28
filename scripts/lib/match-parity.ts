@@ -21,7 +21,7 @@ import { random, zeroMetrics } from '../../packages/engine/src/primitives';
 import { CHECKPOINT_LIMIT, TOTAL_LIMIT } from '../../apps/web/src/adapters/repository';
 
 /** Changes whenever an entry, unit, band, condition, partition, size or tolerance changes (→MATCH-28). */
-export const MATCH_PARITY_VERSION = 'match-parity-5';
+export const MATCH_PARITY_VERSION = 'match-parity-6';
 
 export type Side = 0 | 1;
 const sides = [0, 1] as const;
@@ -529,7 +529,10 @@ type Contribution = readonly [numerator: number, denominator: number];
 export interface TargetBand {
   id: string;
   label: string;
+  /** The band the row is judged on: its real-football range made tolerant (`tolerantBand`, T539). */
   band: readonly [number, number];
+  /** The real-football range as MATCH-23 or MATCH-30 lists it, when `band` widens it. */
+  real?: readonly [number, number];
   unit: Unit;
   source: string;
   /**
@@ -547,6 +550,20 @@ export interface TargetBand {
    * played, so knockout conditions meet the 90-minute bands on the same footing.
    */
   perNinety: boolean;
+}
+
+/** MATCH-23 (T539): a row holds within this share of its real-football range's mean either side. */
+export const TARGET_TOLERANCE = 0.25;
+/**
+ * The band a row is judged on (MATCH-23, MATCH-30, T539): its real-football range widened to
+ * `TARGET_TOLERANCE` of the range's mean either side, never narrower than the range; a range from 0
+ * (an at-most row) widens above its cap only.
+ */
+export function tolerantBand(range: readonly [number, number]): readonly [number, number] {
+  const [lo, hi] = range;
+  if (lo === 0) return [0, hi * (1 + TARGET_TOLERANCE)];
+  const mid = (lo + hi) / 2;
+  return [Math.min(lo, mid * (1 - TARGET_TOLERANCE)), Math.max(hi, mid * (1 + TARGET_TOLERANCE))];
 }
 
 const both = (s: MatchSample, read: (side: Side) => number | undefined) => {
@@ -613,12 +630,15 @@ function band(
   options: { estimator?: TargetBand['estimator']; source?: string } = {},
 ): TargetBand {
   const estimator = options.estimator ?? 'ratio';
+  // MATCH-23's rows are judged with its tolerance (T539); another decision's keeps its range.
+  const source = options.source ?? 'MATCH-23';
   return {
     id,
     label,
-    band: range,
+    band: source === 'MATCH-23' ? tolerantBand(range) : range,
+    ...(source === 'MATCH-23' && { real: range }),
     unit,
-    source: options.source ?? 'MATCH-23',
+    source,
     reads,
     estimator,
     contribution,
@@ -869,11 +889,12 @@ export const TACTIC_PAIRING_TARGET = {
 export type ScoringRow = 'clubTopScorerShare' | 'leagueTopScorerGoals' | 'hatTricksPerMatch';
 /**
  * MATCH-23's scoring concentration of a top-tier 38-round league season. The source observations
- * are Premier League 2013/14–2023/24; MATCH-23 owns the target bands.
+ * are Premier League 2013/14–2023/24; MATCH-23 owns the target bands. v3 (T539): each is judged
+ * with MATCH-23's tolerance (`tolerantBand`).
  * Readings get verdicts like any band.
  */
 export const SCORING_CONCENTRATION_TARGET = {
-  version: 2,
+  version: 3,
   source: 'MATCH-23',
   rows: {
     clubTopScorerShare: {
@@ -948,7 +969,8 @@ export function scoringConcentrationVerdicts(
   readings: Partial<Record<ScoringRow, MeasureReading>>,
 ): ScoringVerdict[] {
   return (Object.keys(SCORING_CONCENTRATION_TARGET.rows) as ScoringRow[]).map((id) => {
-    const { label, band } = SCORING_CONCENTRATION_TARGET.rows[id];
+    const { label } = SCORING_CONCENTRATION_TARGET.rows[id];
+    const band = tolerantBand(SCORING_CONCENTRATION_TARGET.rows[id].band);
     const r = readings[id];
     if (!r) return { id, label, band, status: 'missing', n: 0 };
     const [lo, hi] = band;
@@ -2169,10 +2191,11 @@ const OPTA_SEQUENCES =
  * a counter without a comparable public source is listed as unbanded with its reason and held to
  * MATCH-28 parity only. Counts are read per 90 minutes played, like MATCH-23's. v2 (T327): high
  * turnovers and PPDA count under MATCH-13 r18's published conventions and are banded from Opta's
- * league-season figures under those conventions.
+ * league-season figures under those conventions. v3 (T539): a band is judged with MATCH-23's
+ * tolerance (`tolerantBand`).
  */
 export const ADVANCED_COUNTER_TARGET = {
-  version: 2,
+  version: 3,
   source: 'MATCH-30',
   counters: [
     {
@@ -2467,7 +2490,9 @@ export function advancedCounterVerdicts(samples: readonly MatchSample[]): Advanc
         ...(measured.value !== undefined && { value: measured.value, interval: measured.interval }),
       };
     }
-    return { ...evaluateTarget(counterBand(c, c.band), samples), counter: c.counter };
+    // MATCH-30's counters hold with MATCH-23's tolerance (T539).
+    const judged = { ...counterBand(c, tolerantBand(c.band)), real: c.band };
+    return { ...evaluateTarget(judged, samples), counter: c.counter };
   });
 }
 

@@ -946,7 +946,9 @@ if (args.includes('--worker')) {
   console.log(`${'measure'.padEnd(width)}  band            value    ok`);
   for (const row of rows) {
     const ok = row.value >= row.band[0] && row.value <= row.band[1];
-    const band = `${row.band[0]}–${row.band[1]}`.padEnd(14);
+    // A tolerant band (T539) prints to three significant figures.
+    const edge = (x: number) => +x.toPrecision(3);
+    const band = `${edge(row.band[0])}–${edge(row.band[1])}`.padEnd(14);
     console.log(
       `${row.label.padEnd(width)}  ${band}  ${row.value.toFixed(2).padStart(7)}  ${ok ? 'pass' : 'FAIL'}`,
     );

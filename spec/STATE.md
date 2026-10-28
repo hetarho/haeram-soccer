@@ -375,7 +375,6 @@
 |---|---|---|---|---|
 | T537 | European qualification by association, domestic results and titles | EURO ARCH | - | doing@261028.e7q4 |
 | T538 | Match-model revision 5: carriers take open ground, recycle only safely, never far back with room near the box | MATCH SAVE ARCH | - | doing@261028.f5j2 |
-| T539 | Hold the football targets within 25% of the real-football mean | MATCH ARCH | - | doing@261028.f5j2 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -395,11 +394,11 @@
 
 ## next
 - implement-task T538: revision 5 carrier judgement (f5j2).
-- implement-task T539: tolerant target bands (f5j2).
 - implement-task T537: correct association access, continental titleholders, EPS and qualification causes.
 - UI scope T536 is complete; await its main CI result. Manager/training room activities need separate product planning.
 
 ## log
+- 261028 T539 done: MATCH-23 rows, scorer rows and MATCH-30 counters judged within 25% of the real mean (match-parity-6).
 - 261028 T539 start (f5j2): tolerant target bands.
 - 261028 update-ssot MATCH r35 + create-task T539: MATCH-23/MATCH-30 rows held within 25% of the real-football mean.
 - 261028 T538 start (f5j2): revision 5 carrier judgement, explore 2h.
@@ -419,4 +418,3 @@
 - 261028 fix navigation-tools: screenshot capture and the unchanged 30-click first-play sample use the six gameplay destinations; syntax and type/lint/format checks passed; no new benchmark claim.
 - 261028 fix personnel-deep-links: canonical personnel entries serve the SPA with no-cache HTML; missing assets remain 404; HTTP checks, type/lint/format/build passed; preview regression extended for the final batch.
 - 261028 fix approval-return: cancellation/home actions stay disabled while a command is queued or in flight; 26 focused cases and type/lint/format/build passed.
-- 261028 T533 done: host finalized the verified child implementation and task commit.

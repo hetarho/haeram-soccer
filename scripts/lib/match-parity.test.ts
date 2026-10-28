@@ -50,6 +50,7 @@ import {
   hatTrickReading,
   INCIDENT_KINDS,
   MATCH_PARITY_VERSION,
+  tolerantBand,
   METRIC_BY_ID,
   METRIC_REGISTRY,
   NEUTRAL_SQUAD_FATIGUE,
@@ -1038,8 +1039,8 @@ describe('MATCH-29 tactic pairings', () => {
   it('reads knockout counts per 90 minutes', () => {
     const kicks = (extraTime: boolean) => {
       const r = record({ detail: [emptyTeamDetail(), emptyTeamDetail()] });
-      r.detail![0]![TD.goalKicks] = 10;
-      r.detail![1]![TD.goalKicks] = 10;
+      r.detail![0]![TD.goalKicks] = 12;
+      r.detail![1]![TD.goalKicks] = 12;
       if (extraTime) r.regulation = { home: 0, away: 0 };
       return sample(r);
     };
@@ -1047,10 +1048,11 @@ describe('MATCH-29 tactic pairings', () => {
       buildTargetReport(samples).find((t) => t.id === id)!;
     const cup = Array.from({ length: 40 }, () => kicks(true));
     expect(read(cup, 'goalKicks').status).toBe('inside');
-    expect(read(cup, 'goalKicks').value).toBeCloseTo(7.5, 12);
+    expect(read(cup, 'goalKicks').value).toBeCloseTo(9, 12);
     expect(read(cup, 'passCompletion').value).toBe(80);
     const league = Array.from({ length: 40 }, () => kicks(false));
-    expect(read(league, 'goalKicks')).toMatchObject({ value: 10, status: 'outside' });
+    // 12 a team is outside even MATCH-23's tolerance of 7–9 (6–10, T539).
+    expect(read(league, 'goalKicks')).toMatchObject({ value: 12, status: 'outside' });
   });
 });
 
@@ -1417,10 +1419,14 @@ describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', 
       expect(by.get(id)!.band).toBeUndefined();
     }
     // T327 counts both under MATCH-13 r18's published conventions and bands them from Opta's
-    // league-season figures (spec/ssot/MATCH.md), never the engines' output.
-    expect(by.get('highTurnovers')).toMatchObject({ status: 'inside', band: [5.7, 7.5] });
+    // league-season figures (spec/ssot/MATCH.md), never the engines' output; judged with MATCH-23's
+    // tolerance (T539).
+    expect(by.get('highTurnovers')).toMatchObject({
+      status: 'inside',
+      band: tolerantBand([5.7, 7.5]),
+    });
     expect(by.get('highTurnovers')!.value).toBeCloseTo(6.5, 9);
-    expect(by.get('ppda')).toMatchObject({ status: 'inside', band: [12, 14] });
+    expect(by.get('ppda')).toMatchObject({ status: 'inside', band: [9.75, 16.25] });
     expect(by.get('ppda')!.value).toBeCloseTo(12.8, 9);
     expect(by.get('lineBreakingPasses')!.value).toBe(0);
     // Too few matches are underpowered; a record without detail rows is missing.
@@ -1432,7 +1438,7 @@ describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', 
       `target v${ADVANCED_COUNTER_TARGET.version}, ${MATCH_PARITY_VERSION}`,
     );
     expect(lines.some((l) => l.includes('fieldTilt: unbanded'))).toBe(true);
-    expect(lines.some((l) => l.includes('ppda: inside [12, 14]'))).toBe(true);
+    expect(lines.some((l) => l.includes('ppda: inside [9.75, 16.25]'))).toBe(true);
   });
 
   it("lists MATCH-23's trace-only rows as detailed-only on the aggregate path", () => {
@@ -1484,7 +1490,7 @@ describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', 
     expect(SCORING_CONCENTRATION_TARGET.source).toBe('MATCH-23');
     const verdicts = scoringConcentrationVerdicts({
       clubTopScorerShare: { value: 0.25, interval: [0.24, 0.26], n: 360 },
-      leagueTopScorerGoals: { value: 33, interval: [32.5, 33.5], n: 360 },
+      leagueTopScorerGoals: { value: 35, interval: [34.5, 35.5], n: 360 },
       hatTricksPerMatch: poissonReading(300, 10000),
     });
     expect(verdicts.map((v) => [v.id, v.status])).toEqual([
@@ -1493,7 +1499,7 @@ describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', 
       ['hatTricksPerMatch', 'inside'],
     ]);
     const thin = scoringConcentrationVerdicts({
-      clubTopScorerShare: { value: 0.29, interval: [0.27, 0.31], n: 360 },
+      clubTopScorerShare: { value: 0.315, interval: [0.3, 0.33], n: 360 },
       leagueTopScorerGoals: { value: 27, interval: [20, 34], n: 12 },
     });
     expect(thin.map((v) => v.status)).toEqual(['unresolved', 'underpowered', 'missing']);
@@ -1505,5 +1511,28 @@ describe('advanced counters and scoring concentration (→MATCH-23, MATCH-30)', 
     const gap = hatTrickReading(300, 10000, conditionOf('gap:20'));
     expect(gap).toMatchObject({ status: 'context', note: HAT_TRICK_CONTEXT });
     expect(gap.value).toBeCloseTo(0.03, 9);
+  });
+});
+
+describe('target tolerance (T539, →MATCH-23)', () => {
+  it('tolerant bands widen to 25% of the mean and never narrow', () => {
+    const near = (b: readonly [number, number], want: readonly [number, number]) => {
+      expect(b[0]).toBeCloseTo(want[0], 12);
+      expect(b[1]).toBeCloseTo(want[1], 12);
+    };
+    near(tolerantBand([2.6, 2.9]), [2.0625, 3.4375]);
+    // A range wider than the tolerance keeps its own edges where they are wider.
+    near(tolerantBand([0.08, 0.15]), [0.08, 0.15]);
+    near(tolerantBand([40, 60]), [37.5, 62.5]);
+    // An at-most row widens above its cap only.
+    near(tolerantBand([0, 0.5]), [0, 0.625]);
+    // MATCH-23's rows are judged on the tolerant band and keep their real range; MATCH-1's added
+    // time is not a MATCH-23 row.
+    const goals = TARGET_BANDS.find((t) => t.id === 'goals')!;
+    expect(goals.real).toEqual([2.6, 2.9]);
+    near(goals.band, [2.0625, 3.4375]);
+    const added = TARGET_BANDS.find((t) => t.id === 'addedTime')!;
+    expect(added.band).toEqual([6, 12]);
+    expect(added.real).toBeUndefined();
   });
 });
