@@ -383,11 +383,13 @@
 | T548 | Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it | MATCH SAVE ARCH | - | todo |
 | T549 | One game version 0.7.0 for the app and the engine rules; 4.0.0 saves load as 0.7.0 | SAVE ARCH | - | todo |
 | T550 | BETA mark on every screen and v0.7 BETA on the start and save-slot screens | WEB SAVE ARCH | T549 | todo |
-| T552 | Paged world player market and identity-based approaches | WEB CLUB ARCH | - | todo |
-| T553 | Consequential owner choices and shared place activity panels | WEB CLUB ARCH | - | todo |
+| T552 | Paged whole-world recruitment workbench | WEB CLUB ARCH | T558 | todo |
+| T553 | Consequential owner choices and shared place activity panels | WEB CLUB ARCH | T557 | todo |
 | T554 | Six-place navigation and competition clubhouse | WEB ECON ARCH | - | todo |
 | T555 | Work-oriented owner office and scoped player approvals | WEB ECON ARCH | T554 | todo |
 | T556 | Connect place choices and verify the complete owner workflow | WEB CLUB ARCH | T552 T553 T555 | todo |
+| T557 | Real disadvantages for free owner requests | CLUB WEB ARCH | - | todo |
+| T558 | World market query and identity-based transfer engine | WEB CLUB ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -406,12 +408,13 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- club-places: implement T552 world market and T553 consequential choices in parallel with the T554→T555 places-office lane; T556 connects all results. Existing T548–T550 remain with their current sessions.
+- club-places: implement T557/T558 engine foundations while live T550 owns UI, then T552 market UI and T553 choices in parallel with the T554→T555 places-office lane; T556 connects all results. Existing T548–T550 remain with their current sessions.
 
 ## log
 - 261029 cp29 create-task T552–T556: three independent lanes and convergence; task checks are isolated unit/quick/build, coordinator owns final batch.
 - 261029 cp29 update-ssot WEB r168 ECON r39 CLUB r43: six places, focused owner work, whole-world market and consequential choices; independent club-places checkout preserves live T548 changes.
 - 261029 cp29 narrow unclaimed T552 runtime touches to protocol/host/client plus dedicated query tests; unrelated T548 owns host/protocol legacy tests.
+- 261029 cp29 redivide unclaimed T552/T553 into engine foundations T558/T557 and UI consumers so live T550 UI ownership does not stop independent engine work; no policy change.
 - 261028 create-task (f5j2): T548 MATCH r39, T549 SAVE r57, T550 WEB r167.
 - 261028 update-ssot (f5j2): MATCH r39 chased forward's clear chance and closing blocks; SAVE r57 one game version 0.7.0 (beta), 4.0.0 saves load as 0.7.0; WEB r167 WEB-101 BETA mark.
 - 261028 feat/player-figures-kits merge verified against main f5672a67 and feature 3a13057e: typecheck, lint, format:check, unit (175 files / 1,435 passed), contract (3 files / 47 passed), catalog/presentation validation and production build passed; the 12 pure kit-selection cases also passed (2 world-integration cases excluded). Full integration and browser suites omitted under the owner's requested unit/static scope.
@@ -428,4 +431,3 @@
 - 261028 create-task done (pl1): T543–T547 from KIT r4 MATCH r36 WEB r166 SAVE r56; foundation T547 ‖ T543 → T544, lanes match-figures T545 and kit-editor T546.
 - 261028 create-task KIT MATCH WEB SAVE start (pl1): player figures and full kits on branch feat/player-figures-kits.
 - 261028 T542 done and pushed at the owner's request after the unit stage: revision 6; 600-match goals 3.71 above the tolerance, follow-up in next.
-- 261028 update-ssot MATCH r38 (f5j2): MATCH-32 goal-side defenders move across onto the ball–goal line by 위치선정 with the ball central within 50 m.
