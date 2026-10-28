@@ -18,6 +18,9 @@
 | pl1 | Seonghyunui-MacBookAir | pair | 2026-10-28T06:12Z | 2026-10-28T06:40Z | - |
 
 ## inbox
+- 261028 decided KIT-3 KIT-8 SAVE-20 T542: how to store shorts/socks and the goalkeeper kit → optional `parts`/`goalkeeper` on ClubIdentity with version 2 only when present, appearances version 2 with worn kits (alt: wrap every kit in a new outfit type | always write version 2); old builds read new saves as a newer game, existing v1 saves stay untouched.
+- 261028 decided KIT-3 KIT-12 T542: starting rule → shorts = shirt second colour, else trim, else contrast ink; socks = shirt base, one shirt-based rule for live kits and v1 records (alt: derive from the club palette).
+- 261028 decided MATCH-37 T543: tackle poses → only a lost carry/take-on with a named opponent tackles, a slide only beyond standing reach; interceptions show no tackle (alt: every lost ball a tackle).
 - 261028 decided EURO-11 EURO-13 EURO-14: modern access fidelity → association quota bands, recorded five-year ranking and EPS, direct admission instead of new qualifiers, next-season activation (alt: keep uniform demo quotas | retcon active draws); keep the single domestic cup and explicitly label unmodelled EFL/domestic playoffs and eight-association ranking scope.
 - 261028 decided T531 WEB-100 WEB-74: how to keep request identity through submission and browser history → world-named request addresses and session snapshots, with a scoped client forwarding the existing forms/commands (alt: consume a one-shot request only | copy each form into the office); history can revisit resolved work safely, late replies cannot redirect another request/game, and business rules stay authoritative.
 - 261028 decided WEB-39 WEB-79: work grouping → player contracts (incl. youth), staff contracts (incl. manager), investment (finance/local/global/facilities), sponsors and identity; keep all seven saved responsibility keys (alt: merge stored responsibilities or retain an operating-policy gate). Shared inline controls and eligible direct actions use existing commands.
@@ -348,17 +351,17 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 166 | 165 | WEB-2✎ WEB-49✎ WEB-50✎ WEB-86✎ WEB-87✎ WEB-88✎ | 0 |
+| WEB | 166 | 166 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
-| KIT | 4 | 3 | KIT-3✎ KIT-4✎ KIT-7✎ KIT-8✎ KIT-11✎ KIT-12✎ KIT-15✎ | 0 |
+| KIT | 4 | 4 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 36 | 35 | MATCH-36+ MATCH-37+ | 0 |
+| MATCH | 36 | 36 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 18 | 18 | - | 0 |
-| SAVE | 56 | 55 | SAVE-20✎ SAVE-21✎ | 0 |
+| SAVE | 56 | 56 | - | 0 |
 | PLAYER | 10 | 10 | - | 0 |
 
 ## review
@@ -375,7 +378,11 @@
 |---|---|---|---|---|
 | T538 | Match-model revision 5: carriers take open ground, recycle only safely, never far back with room near the box | MATCH SAVE ARCH | - | doing@261028.f5j2 |
 | T539 | Hold the football targets within 25% of the real-football mean | MATCH ARCH | - | doing@261028.f5j2 |
-
+| T542 | Kits with shorts, socks and a designed goalkeeper kit, judged on the figure torso | KIT SAVE MATCH ARCH | - | todo |
+| T543 | Figure poses from recorded playback facts | MATCH WEB ARCH | - | todo |
+| T544 | Paint top-down player figures in their kits | MATCH KIT WEB ARCH | T542 T543 | todo |
+| T545 | Match observation draws posed player figures | MATCH WEB KIT ARCH | T544 | todo |
+| T546 | Kit editor with shorts, socks and goalkeeper kit; figure previews | KIT WEB SAVE MATCH ARCH | T544 | todo |
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
@@ -393,11 +400,13 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- create-task KIT MATCH WEB SAVE: top-down player figures (MATCH-36/37), shorts/socks and goalkeeper kit editing (pl1).
+- implement-task T542 and T543 in parallel, then T544, then lanes T545 (match-figures) and T546 (kit-editor); one batch and one push of branch feat/player-figures-kits (pl1).
 - implement-task T538 and T539: revision 5 carrier judgement and tolerant target bands (f5j2).
 - UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
+- 261028 create-task done (pl1): T542–T546 from KIT r4 MATCH r36 WEB r166 SAVE r56; foundation T542 ‖ T543 → T544, lanes match-figures T545 and kit-editor T546.
+- 261028 create-task KIT MATCH WEB SAVE start (pl1): player figures and full kits on branch feat/player-figures-kits.
 - 261028 T541 done: one object shape for grid players, state and intentions, formation facts and slots read once; grid 0.73× (paired), own match days 0.866× with the same 60-day world hash; aggregate cuts showed no difference and were reverted.
 - 261028 T540 done: paired same-machine harness `scripts/perf/ab.mjs`; same-tree reads aggregate 0.999 (0.990–1.007), grid 0.9992 (0.9886–1.0104), no difference.
 - 261028 warning (pl1): doing T538/T539 now sit below MATCH r36 and SAVE r56; those deltas (MATCH-36/37 player figures, SAVE-20/21 kits) are presentation and identity only and change none of their decisions.
@@ -416,5 +425,3 @@
 - 261028 T534 start: coordinator repairs initial Chromium integration failures; no implementation code was pushed.
 - 261028 fix navigation-tools: screenshot capture and the unchanged 30-click first-play sample use the six gameplay destinations; syntax and type/lint/format checks passed; no new benchmark claim.
 - 261028 fix personnel-deep-links: canonical personnel entries serve the SPA with no-cache HTML; missing assets remain 404; HTTP checks, type/lint/format/build passed; preview regression extended for the final batch.
-- 261028 fix approval-return: cancellation/home actions stay disabled while a command is queued or in flight; 26 focused cases and type/lint/format/build passed.
-- 261028 T536 planning shared for strict session claim; WEB r165.
