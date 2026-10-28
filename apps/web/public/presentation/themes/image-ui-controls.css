@@ -550,18 +550,19 @@ html[data-theme] {
   }
 
   [role='tab'] {
+    position: relative;
     min-height: var(--control-min-height);
     padding: 4px 10px;
     border: 0;
     border-image: none;
     border-radius: 0;
     background: none;
-    color: var(--image-tab-text, var(--image-muted));
+    color: var(--image-tab-text, var(--text-muted));
     box-shadow: none;
   }
 
   [role='tab'][aria-selected='true'] {
-    color: var(--image-tab-active, var(--image-accent));
+    color: var(--image-tab-active, var(--accent-text));
     border: 0 !important;
     border-image: none !important;
     background: none !important;
@@ -603,7 +604,17 @@ html[data-theme] {
   }
 
   [role='tab']::after {
+    content: '';
+    position: absolute;
+    inset: auto 8px 0;
     display: block;
+    height: 2px;
+    background: none;
+    pointer-events: none;
+  }
+
+  [role='tab'][aria-selected='true']::after {
+    background: currentColor;
   }
 
   [data-ui='choices'] > button::after {
