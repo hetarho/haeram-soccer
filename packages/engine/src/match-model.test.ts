@@ -9,7 +9,7 @@ import {
 } from '../../contracts/src/match-model';
 import { canonical } from '../../contracts/src/index';
 import type { Fixture, MatchRecord, World } from '../../contracts/src/types';
-import { upgradeWorldRules } from '../../contracts/src/versions';
+import { CURRENT_ENGINE_VERSION, upgradeWorldRules } from '../../contracts/src/versions';
 import {
   declaredRelease,
   DISABLED_RELEASE,
@@ -121,6 +121,7 @@ describe('the full match record (→MATCH-13, MATCH-27)', () => {
     expect(validateFullMatchRecord(old)).toContain('model revision missing');
     expect(old).toEqual(before);
     // A rules upgrade carries older records as stored: no field gains a value or a placeholder.
+    // The world keeps its rules-4.0.0 label on purpose: that line's records load into 0.7.0.
     const world = {
       engine: '4.0.0',
       catalog: '2026-demo-2',
@@ -128,6 +129,7 @@ describe('the full match record (→MATCH-13, MATCH-27)', () => {
       ownMatches: [old],
     } as unknown as World;
     const upgraded = upgradeWorldRules(world, { catalog: '2026-demo-3', catalogHash: 'h' });
+    expect(upgraded.engine).toBe(CURRENT_ENGINE_VERSION);
     expect(upgraded.ownMatches[0]).toBe(old);
     expect(Object.keys(upgraded.ownMatches[0]!).sort()).toEqual(Object.keys(before).sort());
     expect(upgraded.matchModel).toBeUndefined();

@@ -1,0 +1,1519 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-10-28T15:33:48.514Z",
+  "sourceCommit": "6f42bc5fd6452f9bb96159423ca73a677644d4b7",
+  "group": {
+    "id": "v07-beta",
+    "branch": "work/v07-beta",
+    "status": "active",
+    "createdAt": "2026-10-28T14:22:51.163Z",
+    "limits": {
+      "workers": 4,
+      "reviewers": 1,
+      "maxPending": 8
+    },
+    "push": null,
+    "review": "risky",
+    "runner": {
+      "id": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-28T14:48:03.648Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    },
+    "lastRun": {
+      "id": "52a4ab1e-140a-451a-a438-df11db1c998f",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.310 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-10-28T14:23:13.280Z",
+      "stoppedAt": "2026-10-28T14:42:32.870Z",
+      "dispatched": 1,
+      "outcome": "needs-attention",
+      "failures": [
+        {
+          "attempt": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+          "role": "worker",
+          "error": "T549: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+        }
+      ],
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    }
+  },
+  "summary": {
+    "total": 3,
+    "completed": 2,
+    "remaining": 1,
+    "running": 0,
+    "review": 0,
+    "blocked": 0,
+    "unassigned": 1
+  },
+  "tasks": [
+    {
+      "id": "T548",
+      "title": "Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it",
+      "dep": [],
+      "status": "todo"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "group": "v07-beta",
+      "taskId": "T549",
+      "tasks": [
+        "T549"
+      ],
+      "lane": null,
+      "owner": "52a4ab1e-140a-451a-a438-df11db1c998f/worker-1",
+      "contributors": [
+        "52a4ab1e-140a-451a-a438-df11db1c998f/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-28T14:23:13.609Z",
+      "startCommit": "be72fa7c15668c28e42da6f91131785b34662d81",
+      "verifiedCommit": "f38dc554d31c5eb794f4a7988ea6915e9d9847b2",
+      "submittedBase": "dcf0ccbd1c778690d3c381f468c6ceae8b4d0186",
+      "submissionId": "1685ce03-7636-4a6d-8ac9-d3a76e658e15",
+      "submittedAt": "2026-10-28T14:47:41.223Z",
+      "integratedCommit": "6f42bc5fd6452f9bb96159423ca73a677644d4b7",
+      "integratedAt": "2026-10-28T14:53:22.359Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "397 changed lines (limit 300)",
+          "review paths: packages/contracts/src/match-model.test.ts packages/contracts/src/schema.contract.test.ts packages/contracts/src/types.ts packages/contracts/src/versions.test.ts packages/contracts/src/versions.ts"
+        ],
+        "lines": 397,
+        "files": 28
+      },
+      "dispatch": {
+        "id": "9b76b712-dfc8-42f1-b8b7-5d8e4bce4625",
+        "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-28T14:48:06.528Z",
+        "finishedAt": "2026-10-28T14:52:33.498Z",
+        "error": null,
+        "summary": "T549 meets its acceptance and SAVE-10/11/19/23. All five package.json files and CURRENT_ENGINE_VERSION say 0.7.0, with the required doc comment. SUPPORTED_ENGINE_VERSIONS is exactly [0.7.0, 4.0.0], and the 4.0.0→0.7.0 rewrite lives only in the pure upgradeWorldRules step. In host.ts that step runs before adoptIdentities, adoptModel and adoptManagerHistory, so a 4.0.0 world reaches activatesMatchModel already labelled 0.7.0. Read-only inspects (upgrade:false) keep it as 4.0.0 and write nothing. isEarlierEngine is now membership in LEGACY_ENGINE_VERSIONS, which keeps legacy reset and its messages unchanged; the change is needed because 0.7.0 is lower than 4.0.0 under semver. Every other version, 1.9.9 and 0.6.0 included, gets NEWER_GAME_MESSAGE, which keeps the '지원하지 않는 저장' prefix the future-save e2e matches. Copy in earlierRulesMessage, the client.ts reset notice and the slot continue refusal now reads '게임 버전 0.7.0'. Every consumer of engine, SUPPORTED, LEGACY and isEarlierEngine was traced: persistence readEnvelope/decode, recognizedLegacy, legacyReset, client.earlierRules, slots display/continue, and createWorld/ENGINE_VERSION. None still treats 4.0.0 as unsupported, and no test or e2e asserts the old copy. Fixtures are handled as required: portable-v1.json changed only its header label; legacy-rules3 and the engine match-model test keep their old versions on purpose, each with a stated reason. The risk reasons (397 changed lines, contract paths) are explained by the version bump, the new tests and comment-only edits in types.ts, advanced.ts and match-model*.ts. Verification follows ARCH-30: typecheck, lint, format:check, changed unit tests, contract tests and build passed. The integration-tier files and save-upgrade.spec.ts are correctly left to the batch run. I read the new client and persistence tests against the host adoption logic, and the simulatedWorld default release means only the label and revision should change. They should pass, but nobody has run them yet; the coordinator gate must confirm. Findings below are optional (P3) only."
+      },
+      "review": {
+        "id": "327e789b-677c-4ffe-ba65-992f10a7664b",
+        "owner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T549 meets its acceptance and SAVE-10/11/19/23. All five package.json files and CURRENT_ENGINE_VERSION say 0.7.0, with the required doc comment. SUPPORTED_ENGINE_VERSIONS is exactly [0.7.0, 4.0.0], and the 4.0.0→0.7.0 rewrite lives only in the pure upgradeWorldRules step. In host.ts that step runs before adoptIdentities, adoptModel and adoptManagerHistory, so a 4.0.0 world reaches activatesMatchModel already labelled 0.7.0. Read-only inspects (upgrade:false) keep it as 4.0.0 and write nothing. isEarlierEngine is now membership in LEGACY_ENGINE_VERSIONS, which keeps legacy reset and its messages unchanged; the change is needed because 0.7.0 is lower than 4.0.0 under semver. Every other version, 1.9.9 and 0.6.0 included, gets NEWER_GAME_MESSAGE, which keeps the '지원하지 않는 저장' prefix the future-save e2e matches. Copy in earlierRulesMessage, the client.ts reset notice and the slot continue refusal now reads '게임 버전 0.7.0'. Every consumer of engine, SUPPORTED, LEGACY and isEarlierEngine was traced: persistence readEnvelope/decode, recognizedLegacy, legacyReset, client.earlierRules, slots display/continue, and createWorld/ENGINE_VERSION. None still treats 4.0.0 as unsupported, and no test or e2e asserts the old copy. Fixtures are handled as required: portable-v1.json changed only its header label; legacy-rules3 and the engine match-model test keep their old versions on purpose, each with a stated reason. The risk reasons (397 changed lines, contract paths) are explained by the version bump, the new tests and comment-only edits in types.ts, advanced.ts and match-model*.ts. Verification follows ARCH-30: typecheck, lint, format:check, changed unit tests, contract tests and build passed. The integration-tier files and save-upgrade.spec.ts are correctly left to the batch run. I read the new client and persistence tests against the host adoption logic, and the simulatedWorld default release means only the label and revision should change. They should pass, but nobody has run them yet; the coordinator gate must confirm. Findings below are optional (P3) only.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "tests/e2e/save-upgrade.spec.ts:106-108 (T549)",
+            "message": "The read-only step only checks that localStorage slot:a still equals the stored save right after club-hub appears. If this tab were the writer but had not yet committed, the check would still pass, so it does not prove the tab is read-only. Before the slot:a check, assert the '읽기 전용' status as tests/e2e/manager-history.spec.ts:187 does, so the step proves 'a read-only view never writes the upgrade'."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/runtime/slots.ts:208 (T549)",
+            "message": "The new branch in GameSlots continue (an unsupported, non-legacy index entry refused with NEWER_GAME_MESSAGE) has no unit test; only the persistence decode path tests the newer-game message. Add a case that continues a '9.0.0' slot and expects NEWER_GAME_MESSAGE, and a case that continues a legacy slot and expects earlierRulesMessage, e.g. in client.test.ts next to the existing earlierRules import."
+          },
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/GameSlotScreen.tsx:178-191 (T549, outside touches; hand-off to planning)",
+            "message": "A slot from a newer game (e.g. 9.0.0) is still labelled with slots.earlierRules ('이전 규칙 (9.0.0)' / 'Earlier rules'), but its continue now refuses as from a newer game. This labelling existed before T549, and the worker noted it in limits. Deciding whether the slot card needs a newer-game label and locale string is a WEB/SAVE-11 copy decision for the planner, not for this task."
+          },
+          {
+            "priority": "P3",
+            "where": "spec/ssot/SAVE.md SAVE-19 (hand-off to planning)",
+            "message": "SAVE-19 still reads 'active engine rules are 4.0.0', while SAVE-10 r57 makes 0.7.0 the current version on the same rules line. The code follows SAVE-10. The planner should align SAVE-19's wording, e.g. 'the rules-4.0.0 line, game version 0.7.0'. No code change is needed."
+          }
+        ],
+        "commit": "f38dc554d31c5eb794f4a7988ea6915e9d9847b2",
+        "baseCommit": "dcf0ccbd1c778690d3c381f468c6ceae8b4d0186",
+        "submissionId": "1685ce03-7636-4a6d-8ac9-d3a76e658e15",
+        "createdAt": "2026-10-28T14:48:04.685Z",
+        "finishedAt": "2026-10-28T14:52:33.461Z"
+      },
+      "steps": [
+        {
+          "taskId": "T549",
+          "commit": "f38dc554d31c5eb794f4a7988ea6915e9d9847b2",
+          "at": "2026-10-28T14:47:41.112Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-10-28T14:45:56.912Z",
+              "finishedAt": "2026-10-28T14:47:40.440Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "startedAt": "2026-10-28T14:45:56.912Z",
+          "finishedAt": "2026-10-28T14:47:40.440Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-28T14:52:36.331Z",
+          "finishedAt": "2026-10-28T14:53:21.984Z"
+        }
+      ]
+    },
+    {
+      "id": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "group": "v07-beta",
+      "taskId": "T550",
+      "tasks": [
+        "T550"
+      ],
+      "lane": null,
+      "owner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/worker-1",
+      "contributors": [
+        "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-28T14:53:22.678Z",
+      "startCommit": "6f42bc5fd6452f9bb96159423ca73a677644d4b7",
+      "verifiedCommit": "7b037ec12bf9c002f1d32cfedfd5d6e20a6a3a39",
+      "submittedBase": "6f42bc5fd6452f9bb96159423ca73a677644d4b7",
+      "submissionId": "73db9391-54ac-4569-83cc-f11bbf7ab1ec",
+      "submittedAt": "2026-10-28T15:27:26.425Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "368 changed lines (limit 300)",
+          "outside touches: apps/web/public/presentation/locales/ar-SA.json apps/web/public/presentation/locales/de-DE.json apps/web/public/presentation/locales/en-GB.json apps/web/public/presentation/locales/es-ES.json apps/web/public/presentation/locales/fr-FR.json",
+          "reworked after a review or integration failure"
+        ],
+        "lines": 368,
+        "files": 24
+      },
+      "dispatch": {
+        "id": "b360f209-e986-4dd9-bd22-503ed0307310",
+        "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-28T15:27:30.895Z",
+        "finishedAt": "2026-10-28T15:33:29.065Z",
+        "error": null,
+        "summary": "T550 is approved. The correction fixes the one blocking finding from review 89252ecc, and I found nothing else that needs a change.\n\nRisk reasons:\n- **368 lines:** most of it is the e2e spec and the result text. The source change itself is small.\n- **Changes outside the touches list:** each of the 12 `public/presentation/locales` packs gains one `shell.beta` key. That is justified, because the catalog lives there and `locale.test` requires every pack to carry every key.\n- **Rework:** the earlier P2 is addressed as requested.\n  - `OfficeBar` now shows the shared `<BetaMark />` (plain `BETA`) beside the place name. It sits in a centred `.centre` group outside the `<h2>`, so `officeTitle`'s heading text and the `officeLobby`/`openOfficeArea` innerText checks don't change.\n  - The bar's grid is now `minmax(max-content,1fr) minmax(0,max-content) minmax(max-content,1fr)`. The back button and the cash keep their full width, and the title (`min-width:0`, overflow hidden, ellipsis) gives way first. When everything fits, the outer columns are equal, so centring is the same as before.\n  - At 360 px with the 8 px phone gutter, the centre column has about 181 px against the worker's estimate of about 178 px, so it should fit.\n  - The image theme's `[data-ui='office-bar'] h2` rule is a descendant selector, so it still applies.\n  - A new unit case checks that the mark renders after `</h2>`. The e2e now enters the office from home and checks the mark's position and contrast, a 44 px 나가기 button, the cash width and horizontal overflow, at all three viewports and for all four themes.\n  - Acceptance 1 is now legitimately [v].\n\nOther checks:\n- `versionLabel`/`isBetaVersion` derive the label from `CURRENT_ENGINE_VERSION` using the repo's usual import path, and there is no duplicate helper in `versions.ts`.\n- The per-module `.srOnly` matches the existing idiom.\n- I estimated `--accent-text` against `--hud` and `--image-canvas` by hand for all four packs. Every pair comes out at least about 5:1 (matchday about 5.3, sticker about 7.1, standard about 10).\n- `preparedWorld` returns a fresh copy, so setting `settings.mode='manual'` in the e2e does not leak into other specs.\n- GameHud still renders on match, bankrupt and founding screens, so they carry the mark too.\n\nWorker evidence follows ARCH-30 (no browser spec in a task). Typecheck, lint and format:check passed. The `--changed` unit run passed 12 files / 79 tests, and a targeted run of the two BetaMark/versionLabel test files passed 6 tests. The build passed. `tests/e2e/beta-mark.spec.ts` was not run and is left to the coordinator's Chromium batch.\n\nI approved on reading the code, not on the test results alone."
+      },
+      "review": {
+        "id": "3bad54c3-5f5b-4be1-8e21-e49074a0d770",
+        "owner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T550 is approved. The correction fixes the one blocking finding from review 89252ecc, and I found nothing else that needs a change.\n\nRisk reasons:\n- **368 lines:** most of it is the e2e spec and the result text. The source change itself is small.\n- **Changes outside the touches list:** each of the 12 `public/presentation/locales` packs gains one `shell.beta` key. That is justified, because the catalog lives there and `locale.test` requires every pack to carry every key.\n- **Rework:** the earlier P2 is addressed as requested.\n  - `OfficeBar` now shows the shared `<BetaMark />` (plain `BETA`) beside the place name. It sits in a centred `.centre` group outside the `<h2>`, so `officeTitle`'s heading text and the `officeLobby`/`openOfficeArea` innerText checks don't change.\n  - The bar's grid is now `minmax(max-content,1fr) minmax(0,max-content) minmax(max-content,1fr)`. The back button and the cash keep their full width, and the title (`min-width:0`, overflow hidden, ellipsis) gives way first. When everything fits, the outer columns are equal, so centring is the same as before.\n  - At 360 px with the 8 px phone gutter, the centre column has about 181 px against the worker's estimate of about 178 px, so it should fit.\n  - The image theme's `[data-ui='office-bar'] h2` rule is a descendant selector, so it still applies.\n  - A new unit case checks that the mark renders after `</h2>`. The e2e now enters the office from home and checks the mark's position and contrast, a 44 px 나가기 button, the cash width and horizontal overflow, at all three viewports and for all four themes.\n  - Acceptance 1 is now legitimately [v].\n\nOther checks:\n- `versionLabel`/`isBetaVersion` derive the label from `CURRENT_ENGINE_VERSION` using the repo's usual import path, and there is no duplicate helper in `versions.ts`.\n- The per-module `.srOnly` matches the existing idiom.\n- I estimated `--accent-text` against `--hud` and `--image-canvas` by hand for all four packs. Every pair comes out at least about 5:1 (matchday about 5.3, sticker about 7.1, standard about 10).\n- `preparedWorld` returns a fresh copy, so setting `settings.mode='manual'` in the e2e does not leak into other specs.\n- GameHud still renders on match, bankrupt and founding screens, so they carry the mark too.\n\nWorker evidence follows ARCH-30 (no browser spec in a task). Typecheck, lint and format:check passed. The `--changed` unit run passed 12 files / 79 tests, and a targeted run of the two BetaMark/versionLabel test files passed 6 tests. The build passed. `tests/e2e/beta-mark.spec.ts` was not run and is left to the coordinator's Chromium batch.\n\nI approved on reading the code, not on the test results alone.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "apps/web/src/ui/App.tsx:1141-1148 (T550, WEB-101 acceptance 1 'error screens')",
+            "message": "There is one rare error path with no mark. When saved games exist, `initialScreen()` opens `'slots'`. If the client then fails to construct (the catch at App.tsx:928 sets `localError` and leaves `client` unset), the page shows only the `FeedbackOverlay` error over `shell.loadingOffice`. GameHud requires `screen === 'game'` and GameSlotScreen requires `client`, so neither renders and no BETA mark appears. The result's claim that 'the no-client error state shares the start HUD' is true only when `screen === 'game'`. Optional: render GameHud when `!client`, whatever `screen` is, or put a BetaMark in that overlay. Otherwise, note the exception in the result."
+          },
+          {
+            "priority": "P3",
+            "where": "tests/e2e/news.spec.ts:60-70 (T550 impact scope; App.module.css:1758 `.hudClub > div` grid)",
+            "message": "For the coordinator's batch run: the BETA pill now takes about 50 px of the HUD name's row. The existing 360 px check 'keeps the club name and compact cash readable' needs `Haeram Athletic`'s `<b>` to stay unclipped (scrollWidth/scrollHeight). By my estimate it still fits on two lines (about 80 px of column for the name), but the worker's limits don't mention this spec. It is the existing browser test most likely to change, so look at it first if the full e2e run fails."
+          }
+        ],
+        "commit": "7b037ec12bf9c002f1d32cfedfd5d6e20a6a3a39",
+        "baseCommit": "6f42bc5fd6452f9bb96159423ca73a677644d4b7",
+        "submissionId": "73db9391-54ac-4569-83cc-f11bbf7ab1ec",
+        "createdAt": "2026-10-28T15:27:27.604Z",
+        "finishedAt": "2026-10-28T15:33:28.916Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "89252ecc-7ccc-481f-8c2b-b603bdc2216e",
+          "owner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T550 is mostly sound, but I'm requesting changes because the owner office still has no BETA mark.\n\nWhat works:\n- `BetaMark` is one shared, non-interactive pill coloured by theme tokens. Its screen-reader label is localized.\n- `versionLabel` builds `v0.7 BETA` from `CURRENT_ENGINE_VERSION` and is unit-tested.\n- The mark is wired into the play HUD (`BETA`), the start HUD and the save-slot header (`v0.7 BETA`). The start HUD covers founding, recovery and the no-client error state.\n- The HUD grid change keeps the name ellipsizing first. The image themes' `header > div > div > b` rules still apply.\n- Contrast of `--accent-text` on each pack's HUD or canvas looks at least 4.5:1 for all four themes; the e2e will confirm.\n- The e2e helpers, test ids, the `설정` label and the preference key all exist. Manual `browser.newContext()` with `goto('/')` follows a pattern other specs use (`mediation.spec`).\n- The worker evidence follows ARCH-30: task checks plus build, with the browser spec left to the batch run.\n\nOn the risk reasons:\n- The 312 lines are mostly the e2e spec and the result text.\n- The touches outside the task's list (one `shell.beta` key in each of the 12 `public/presentation/locales` packs) are justified. That is where the catalog lives, and `locale.test` requires every pack to carry every key.\n\nThe blocking gap: WEB-101 says \"every screen shows a BETA mark at its top\", and acceptance 1 asks for the mark on \"every screen that has no HUD\". The owner office hides the HUD under WEB-39, so it is such a screen. It has no mark, yet acceptance 1 is checked [v]. The worker raised this under limits but did not resolve it.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/ui/OfficeBar.tsx:23 (T550, WEB-101; App.tsx:1099 `office` hides GameHud)",
+              "message": "T550 acceptance 1 and WEB-101 are not met in the owner office. When `playing && page === 'business'`, App.tsx does not render GameHud (WEB-39 focused office). The office's only chrome is OfficeBar (back, crest and place name, cash), and it carries no BetaMark, so a player doing any owner business never sees the beta mark. That contradicts WEB-101 ('every screen … at its top') and the task goal ('the player always sees that the game is a beta'). Acceptance 1 still has [v] even though the result's limits admit the gap.\n\nNeeded fix: render the shared `<BetaMark />` (plain `BETA`, as in the play HUD) in OfficeBar beside the place name. Keep it outside the `<h2>`, or update `officeTitle` in tests/e2e/events.ts:81, which reads the title's innerText. Check that the back button and HudCash keep their 44 px targets and that there is no horizontal overflow at 360, 390 and 1280 px. Extend tests/e2e/beta-mark.spec.ts with an office step (enter the office from home and run `expectMark` on the bar's title).\n\nIf the planner instead decides the office is exempt despite WEB-101's 'every screen', that is a planning decision. It must be recorded in WEB-101 or in T550's acceptance before this can be approved; the worker should not mark acceptance 1 [v] on that assumption."
+            }
+          ],
+          "commit": "9c54de75033be1621ed4665b1f2d1af96b3013d5",
+          "baseCommit": "6f42bc5fd6452f9bb96159423ca73a677644d4b7",
+          "submissionId": "cf996c64-4cb3-4e9b-b982-22d26c9965cf",
+          "createdAt": "2026-10-28T15:12:45.333Z",
+          "finishedAt": "2026-10-28T15:18:22.155Z",
+          "invalidatedAt": "2026-10-28T15:18:22.403Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T550",
+          "commit": "7b037ec12bf9c002f1d32cfedfd5d6e20a6a3a39",
+          "at": "2026-10-28T15:27:26.358Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-10-28T15:25:52.247Z",
+              "finishedAt": "2026-10-28T15:27:25.905Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "startedAt": "2026-10-28T15:25:52.247Z",
+          "finishedAt": "2026-10-28T15:27:25.905Z"
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1470,
+      "at": "2026-10-28T14:22:51.188Z",
+      "type": "group",
+      "group": "v07-beta",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "v07-beta",
+        "branch": "work/v07-beta",
+        "status": "preparing",
+        "createdAt": "2026-10-28T14:22:51.163Z",
+        "limits": {
+          "workers": 4,
+          "reviewers": 1,
+          "maxPending": 8
+        },
+        "push": null,
+        "review": "risky"
+      }
+    },
+    {
+      "sequence": 1471,
+      "at": "2026-10-28T14:22:52.138Z",
+      "type": "group",
+      "group": "v07-beta",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 1472,
+      "at": "2026-10-28T14:23:13.297Z",
+      "type": "group",
+      "group": "v07-beta",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "52a4ab1e-140a-451a-a438-df11db1c998f",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-28T14:23:13.280Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1473,
+      "at": "2026-10-28T14:23:13.609Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+        "group": "v07-beta",
+        "taskId": "T549",
+        "tasks": [
+          "T549"
+        ],
+        "lane": null,
+        "owner": "52a4ab1e-140a-451a-a438-df11db1c998f/worker-1",
+        "contributors": [
+          "52a4ab1e-140a-451a-a438-df11db1c998f/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-28T14:23:13.609Z",
+        "startCommit": "be72fa7c15668c28e42da6f91131785b34662d81"
+      }
+    },
+    {
+      "sequence": 1474,
+      "at": "2026-10-28T14:23:14.213Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1475,
+      "at": "2026-10-28T14:23:14.377Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "61dcde24-baff-4738-919b-50d380ac97cf",
+          "runner": "52a4ab1e-140a-451a-a438-df11db1c998f",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T14:23:14.377Z"
+        }
+      }
+    },
+    {
+      "sequence": 1476,
+      "at": "2026-10-28T14:23:14.564Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "61dcde24-baff-4738-919b-50d380ac97cf",
+          "runner": "52a4ab1e-140a-451a-a438-df11db1c998f",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T14:23:14.377Z"
+        }
+      }
+    },
+    {
+      "sequence": 1477,
+      "at": "2026-10-28T14:42:30.617Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1478,
+      "at": "2026-10-28T14:42:30.919Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T549: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+      }
+    },
+    {
+      "sequence": 1479,
+      "at": "2026-10-28T14:42:30.990Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "61dcde24-baff-4738-919b-50d380ac97cf",
+          "runner": "52a4ab1e-140a-451a-a438-df11db1c998f",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T14:23:14.377Z",
+          "finishedAt": "2026-10-28T14:42:30.990Z",
+          "error": "T549: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+          "summary": "T549 is done: the game now carries one version, 0.7.0, and rules-4.0.0 saves load as 0.7.0. The fast checks, the changed unit tests, the contract tests and the build all pass; the integration tests and the browser spec I edited were not run and are left to the batch gate.\n\n**What changed**\n- All five package.json files say 0.7.0, and `CURRENT_ENGINE_VERSION` is '0.7.0'. Its doc comment says 0.7.0 continues the 4.0.0 rules line as the beta's first numbered version.\n- The only accepted versions are 0.7.0 and the 4.0.0 alias (new constant `CONTINUED_ENGINE_VERSION`), with no older range.\n- The 4.0.0 → 0.7.0 rewrite happens in the existing pure `upgradeWorldRules` step. Checkpoint loads, imports and parked-slot switches all use it. Only the writer tab rewrites the label (plus the usual revision +1). A read-only tab keeps the save as 4.0.0 and writes nothing.\n- `isEarlierEngine` now just checks the released legacy list. Comparing version numbers broke once numbering restarted at 0.7.0: 1.x, 2.0.0 and 3.0.0 would have looked newer than the current version.\n- Legacy versions keep their reset, export-and-delete handling and their message. That message, the legacy-reset notice and the slot `continue` refusal now read \"게임 버전 0.7.0\".\n- Any other version (for example 9.0.0, 0.8.0, 1.9.9, 4.0.1) is refused with a new `NEWER_GAME_MESSAGE`. It keeps the \"지원하지 않는 저장\" prefix that the existing future-save e2e test matches.\n- `portable-v1.json` was re-recorded with `scripts/update-golden.ts --write` and prettier. Only the engine label line changed, so every recorded fact is identical. The frozen 3.0.0 legacy fixture and one engine test's 4.0.0 input are kept on purpose, each with a one-line reason. `full-model-continuity.ts` founds its career fresh, so it stores no old label.\n\n**Tests**\n- New unit file `packages/contracts/src/versions.test.ts`: package versions, the 4.0.0 upgrade with facts unchanged, legacy refusal and message, unknown versions refused.\n- One new contract case: a full 4.0.0 world validates and activates as 0.7.0.\n- New integration cases (not run): the 4.0.0 load-and-upgrade path and the newer-game message in `persistence.test.ts`; the writer commit and a read-only tab loading without writing in `client.test.ts`.\n- New browser journey (not run) in `save-upgrade.spec.ts`: a read-only tab leaves a 4.0.0 save untouched, then after the other tab closes the save exports as 0.7.0.\n- Test fixtures that used '4.0.0' to mean \"current\" now use 0.7.0.\n\n**Checks run**\n- `pnpm install --frozen-lockfile`: lockfile still accepted after the version bump.\n- typecheck, lint, format:check: pass.\n- Unit tests affected since the base commit (`--changed`): 92 files, 765 tests passed in 136 s.\n- `pnpm run test:contract`: 3 files, 48 tests passed.\n- `pnpm run build`: pass.\n\n**Not run (left to the batch gate)**\n- Integration files: `persistence.test.ts`, `legacyReset.test.ts`, `client.test.ts`, `packages/engine/src/match-model.test.ts`.\n- Browser spec: `tests/e2e/save-upgrade.spec.ts`.\n- Changing `versions.ts` invalidates the cached test worlds, so the batch run will rebuild them.\n- Spec lint: the haeram CLI isn't allowed in worker sessions.\n\n**Worth knowing**\n- On the slot screen, a slot whose version this game doesn't recognise still shows the \"이전 규칙 (x)\" card with export and delete only. Pressing continue now refuses it with the newer-game message. The card itself lives in `GameSlotScreen.tsx` and the locale strings, which are outside this task's files, and it only prints the slot's own stored version.\n- The WEB-101 `v0.7 BETA` mark is not part of this task.\n\nEverything is written up in the task file's result section."
+        }
+      }
+    },
+    {
+      "sequence": 1480,
+      "at": "2026-10-28T14:42:32.870Z",
+      "type": "group",
+      "group": "v07-beta",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "52a4ab1e-140a-451a-a438-df11db1c998f",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-28T14:23:13.280Z",
+          "stoppedAt": "2026-10-28T14:42:32.870Z",
+          "dispatched": 1,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+              "role": "worker",
+              "error": "T549: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1481,
+      "at": "2026-10-28T14:45:48.111Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1482,
+      "at": "2026-10-28T14:45:56.603Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1483,
+      "at": "2026-10-28T14:47:41.223Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "f38dc554d31c5eb794f4a7988ea6915e9d9847b2",
+        "submittedBase": "dcf0ccbd1c778690d3c381f468c6ceae8b4d0186",
+        "submissionId": "1685ce03-7636-4a6d-8ac9-d3a76e658e15",
+        "submittedAt": "2026-10-28T14:47:41.223Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "397 changed lines (limit 300)",
+            "review paths: packages/contracts/src/match-model.test.ts packages/contracts/src/schema.contract.test.ts packages/contracts/src/types.ts packages/contracts/src/versions.test.ts packages/contracts/src/versions.ts"
+          ],
+          "lines": 397,
+          "files": 28
+        },
+        "steps": [
+          {
+            "taskId": "T549",
+            "commit": "f38dc554d31c5eb794f4a7988ea6915e9d9847b2",
+            "at": "2026-10-28T14:47:41.112Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-28T14:45:56.912Z",
+                "finishedAt": "2026-10-28T14:47:40.440Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-10-28T14:45:56.912Z",
+            "finishedAt": "2026-10-28T14:47:40.440Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1484,
+      "at": "2026-10-28T14:48:03.669Z",
+      "type": "group",
+      "group": "v07-beta",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.310 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-10-28T14:48:03.648Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1485,
+      "at": "2026-10-28T14:48:04.685Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "327e789b-677c-4ffe-ba65-992f10a7664b",
+          "owner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/reviewer-1",
+          "status": "reviewing",
+          "commit": "f38dc554d31c5eb794f4a7988ea6915e9d9847b2",
+          "baseCommit": "dcf0ccbd1c778690d3c381f468c6ceae8b4d0186",
+          "submissionId": "1685ce03-7636-4a6d-8ac9-d3a76e658e15",
+          "createdAt": "2026-10-28T14:48:04.685Z"
+        }
+      }
+    },
+    {
+      "sequence": 1486,
+      "at": "2026-10-28T14:48:06.528Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "9b76b712-dfc8-42f1-b8b7-5d8e4bce4625",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T14:48:06.528Z"
+        }
+      }
+    },
+    {
+      "sequence": 1487,
+      "at": "2026-10-28T14:48:06.600Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "9b76b712-dfc8-42f1-b8b7-5d8e4bce4625",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T14:48:06.528Z"
+        }
+      }
+    },
+    {
+      "sequence": 1488,
+      "at": "2026-10-28T14:52:33.461Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "327e789b-677c-4ffe-ba65-992f10a7664b",
+          "owner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T549 meets its acceptance and SAVE-10/11/19/23. All five package.json files and CURRENT_ENGINE_VERSION say 0.7.0, with the required doc comment. SUPPORTED_ENGINE_VERSIONS is exactly [0.7.0, 4.0.0], and the 4.0.0→0.7.0 rewrite lives only in the pure upgradeWorldRules step. In host.ts that step runs before adoptIdentities, adoptModel and adoptManagerHistory, so a 4.0.0 world reaches activatesMatchModel already labelled 0.7.0. Read-only inspects (upgrade:false) keep it as 4.0.0 and write nothing. isEarlierEngine is now membership in LEGACY_ENGINE_VERSIONS, which keeps legacy reset and its messages unchanged; the change is needed because 0.7.0 is lower than 4.0.0 under semver. Every other version, 1.9.9 and 0.6.0 included, gets NEWER_GAME_MESSAGE, which keeps the '지원하지 않는 저장' prefix the future-save e2e matches. Copy in earlierRulesMessage, the client.ts reset notice and the slot continue refusal now reads '게임 버전 0.7.0'. Every consumer of engine, SUPPORTED, LEGACY and isEarlierEngine was traced: persistence readEnvelope/decode, recognizedLegacy, legacyReset, client.earlierRules, slots display/continue, and createWorld/ENGINE_VERSION. None still treats 4.0.0 as unsupported, and no test or e2e asserts the old copy. Fixtures are handled as required: portable-v1.json changed only its header label; legacy-rules3 and the engine match-model test keep their old versions on purpose, each with a stated reason. The risk reasons (397 changed lines, contract paths) are explained by the version bump, the new tests and comment-only edits in types.ts, advanced.ts and match-model*.ts. Verification follows ARCH-30: typecheck, lint, format:check, changed unit tests, contract tests and build passed. The integration-tier files and save-upgrade.spec.ts are correctly left to the batch run. I read the new client and persistence tests against the host adoption logic, and the simulatedWorld default release means only the label and revision should change. They should pass, but nobody has run them yet; the coordinator gate must confirm. Findings below are optional (P3) only.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "tests/e2e/save-upgrade.spec.ts:106-108 (T549)",
+              "message": "The read-only step only checks that localStorage slot:a still equals the stored save right after club-hub appears. If this tab were the writer but had not yet committed, the check would still pass, so it does not prove the tab is read-only. Before the slot:a check, assert the '읽기 전용' status as tests/e2e/manager-history.spec.ts:187 does, so the step proves 'a read-only view never writes the upgrade'."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/runtime/slots.ts:208 (T549)",
+              "message": "The new branch in GameSlots continue (an unsupported, non-legacy index entry refused with NEWER_GAME_MESSAGE) has no unit test; only the persistence decode path tests the newer-game message. Add a case that continues a '9.0.0' slot and expects NEWER_GAME_MESSAGE, and a case that continues a legacy slot and expects earlierRulesMessage, e.g. in client.test.ts next to the existing earlierRules import."
+            },
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/GameSlotScreen.tsx:178-191 (T549, outside touches; hand-off to planning)",
+              "message": "A slot from a newer game (e.g. 9.0.0) is still labelled with slots.earlierRules ('이전 규칙 (9.0.0)' / 'Earlier rules'), but its continue now refuses as from a newer game. This labelling existed before T549, and the worker noted it in limits. Deciding whether the slot card needs a newer-game label and locale string is a WEB/SAVE-11 copy decision for the planner, not for this task."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/ssot/SAVE.md SAVE-19 (hand-off to planning)",
+              "message": "SAVE-19 still reads 'active engine rules are 4.0.0', while SAVE-10 r57 makes 0.7.0 the current version on the same rules line. The code follows SAVE-10. The planner should align SAVE-19's wording, e.g. 'the rules-4.0.0 line, game version 0.7.0'. No code change is needed."
+            }
+          ],
+          "commit": "f38dc554d31c5eb794f4a7988ea6915e9d9847b2",
+          "baseCommit": "dcf0ccbd1c778690d3c381f468c6ceae8b4d0186",
+          "submissionId": "1685ce03-7636-4a6d-8ac9-d3a76e658e15",
+          "createdAt": "2026-10-28T14:48:04.685Z",
+          "finishedAt": "2026-10-28T14:52:33.461Z"
+        }
+      }
+    },
+    {
+      "sequence": 1489,
+      "at": "2026-10-28T14:52:33.498Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "9b76b712-dfc8-42f1-b8b7-5d8e4bce4625",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T14:48:06.528Z",
+          "finishedAt": "2026-10-28T14:52:33.498Z",
+          "error": null,
+          "summary": "T549 meets its acceptance and SAVE-10/11/19/23. All five package.json files and CURRENT_ENGINE_VERSION say 0.7.0, with the required doc comment. SUPPORTED_ENGINE_VERSIONS is exactly [0.7.0, 4.0.0], and the 4.0.0→0.7.0 rewrite lives only in the pure upgradeWorldRules step. In host.ts that step runs before adoptIdentities, adoptModel and adoptManagerHistory, so a 4.0.0 world reaches activatesMatchModel already labelled 0.7.0. Read-only inspects (upgrade:false) keep it as 4.0.0 and write nothing. isEarlierEngine is now membership in LEGACY_ENGINE_VERSIONS, which keeps legacy reset and its messages unchanged; the change is needed because 0.7.0 is lower than 4.0.0 under semver. Every other version, 1.9.9 and 0.6.0 included, gets NEWER_GAME_MESSAGE, which keeps the '지원하지 않는 저장' prefix the future-save e2e matches. Copy in earlierRulesMessage, the client.ts reset notice and the slot continue refusal now reads '게임 버전 0.7.0'. Every consumer of engine, SUPPORTED, LEGACY and isEarlierEngine was traced: persistence readEnvelope/decode, recognizedLegacy, legacyReset, client.earlierRules, slots display/continue, and createWorld/ENGINE_VERSION. None still treats 4.0.0 as unsupported, and no test or e2e asserts the old copy. Fixtures are handled as required: portable-v1.json changed only its header label; legacy-rules3 and the engine match-model test keep their old versions on purpose, each with a stated reason. The risk reasons (397 changed lines, contract paths) are explained by the version bump, the new tests and comment-only edits in types.ts, advanced.ts and match-model*.ts. Verification follows ARCH-30: typecheck, lint, format:check, changed unit tests, contract tests and build passed. The integration-tier files and save-upgrade.spec.ts are correctly left to the batch run. I read the new client and persistence tests against the host adoption logic, and the simulatedWorld default release means only the label and revision should change. They should pass, but nobody has run them yet; the coordinator gate must confirm. Findings below are optional (P3) only."
+        }
+      }
+    },
+    {
+      "sequence": 1490,
+      "at": "2026-10-28T14:52:33.605Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1491,
+      "at": "2026-10-28T14:53:22.228Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-28T14:52:36.331Z",
+            "finishedAt": "2026-10-28T14:53:21.984Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1492,
+      "at": "2026-10-28T14:53:22.359Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "f7659ed1-3e47-4c47-bd6f-aa2461472b81",
+      "taskId": "T549",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "6f42bc5fd6452f9bb96159423ca73a677644d4b7",
+        "integratedAt": "2026-10-28T14:53:22.359Z"
+      }
+    },
+    {
+      "sequence": 1493,
+      "at": "2026-10-28T14:53:22.678Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+        "group": "v07-beta",
+        "taskId": "T550",
+        "tasks": [
+          "T550"
+        ],
+        "lane": null,
+        "owner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/worker-1",
+        "contributors": [
+          "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-28T14:53:22.678Z",
+        "startCommit": "6f42bc5fd6452f9bb96159423ca73a677644d4b7"
+      }
+    },
+    {
+      "sequence": 1494,
+      "at": "2026-10-28T14:53:23.999Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1495,
+      "at": "2026-10-28T14:53:24.563Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "9aa1d712-79b0-46fd-94a1-01b2e8fa38c9",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T14:53:24.563Z"
+        }
+      }
+    },
+    {
+      "sequence": 1496,
+      "at": "2026-10-28T14:53:24.825Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "9aa1d712-79b0-46fd-94a1-01b2e8fa38c9",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T14:53:24.563Z"
+        }
+      }
+    },
+    {
+      "sequence": 1497,
+      "at": "2026-10-28T15:11:28.386Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1498,
+      "at": "2026-10-28T15:11:30.540Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1499,
+      "at": "2026-10-28T15:11:30.733Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1500,
+      "at": "2026-10-28T15:12:44.267Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "9c54de75033be1621ed4665b1f2d1af96b3013d5",
+        "submittedBase": "6f42bc5fd6452f9bb96159423ca73a677644d4b7",
+        "submissionId": "cf996c64-4cb3-4e9b-b982-22d26c9965cf",
+        "submittedAt": "2026-10-28T15:12:44.267Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "312 changed lines (limit 300)",
+            "outside touches: apps/web/public/presentation/locales/ar-SA.json apps/web/public/presentation/locales/de-DE.json apps/web/public/presentation/locales/en-GB.json apps/web/public/presentation/locales/es-ES.json apps/web/public/presentation/locales/fr-FR.json"
+          ],
+          "lines": 312,
+          "files": 22
+        },
+        "steps": [
+          {
+            "taskId": "T550",
+            "commit": "9c54de75033be1621ed4665b1f2d1af96b3013d5",
+            "at": "2026-10-28T15:12:44.211Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-28T15:11:31.693Z",
+                "finishedAt": "2026-10-28T15:12:43.763Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-10-28T15:11:31.693Z",
+            "finishedAt": "2026-10-28T15:12:43.763Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1501,
+      "at": "2026-10-28T15:12:44.301Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "9aa1d712-79b0-46fd-94a1-01b2e8fa38c9",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T14:53:24.563Z",
+          "finishedAt": "2026-10-28T15:12:44.301Z",
+          "error": null,
+          "summary": "I added the BETA mark (T550). The fast checks all pass, but the new Chromium e2e spec has not been run; it is left to the batch run.\n\n**What changed**\n- **One shared mark:** a new `BetaMark` component (`apps/web/src/ui/BetaMark.tsx` and `.module.css`). It is a small outlined pill coloured with existing theme tokens, so no theme files changed. The visible text (`BETA`, or `v0.7 BETA`) is not translated, and a hidden screen-reader label reads the new locale key `shell.beta`. It is a plain label, not a button.\n- **Play HUD:** `BETA` sits after the club name. The club name still shrinks first on narrow screens, and the HTML around it is kept as it was, so the themes' existing rules for the club name still apply.\n- **Start HUD:** `v0.7 BETA` sits after \"Haeram Football\". Founding, save-loading, recovery and error screens all use this same HUD.\n- **Save-slot screen:** `v0.7 BETA` sits beside \"HAERAM FOOTBALL\" in its header.\n- **Version text:** comes from `apps/web/src/ui/versionLabel.ts`, which builds it from `CURRENT_ENGINE_VERSION`. The mark disappears automatically at 1.0.\n- **Screenshot baselines:** none were re-recorded because none are committed; the resource-skin screenshots are written to `.tmp` at run time.\n\n**Checks run, all passing:** install, typecheck, lint, format check, the changed unit tests (12 files, 78 tests), and the presentation/locale unit tests run separately (12 files, 132 tests). The changed-test selection doesn't pick up edits to the locale JSON files, so I ran those separately. The build also passes; its one warning was there before this change. New unit tests: `versionLabel.test.ts` (reads `v0.7 BETA` from the constant) and `BetaMark.test.ts` (rendered text, hidden label, no control).\n\n**Not run:** `tests/e2e/beta-mark.spec.ts`, left for the batch Chromium run. It checks the start screen, save slots and play HUD at 360, 390 and 1280 px:\n- the mark's text, and that it sits beside the name and is not a control\n- contrast of at least 4.5\n- the menu, notification and settings buttons stay at least 44×44\n- no horizontal overflow\n\nIt also checks contrast once per registered theme. The HUD cash button already had a 40 px minimum height, so the spec checks only its width.\n\n**Outside the task's file list:** all 12 locale packs in `apps/web/public/presentation/locales` gained one key each. The task note puts the text in the locale catalog, which lives there, and the locale test requires every pack to have every key. The runner will probably flag this, and the unit may need an extra review.\n\n**Left for the planner:** the owner office has no mark. WEB-39 says its bar holds only the back button, place name and cash, and the task's list of screens without a HUD doesn't include it. A pill in its centred title could crowd the cash at 360 px. The settings menu and pickers are dialogs opened over screens that already show the mark, so they have none of their own."
+        }
+      }
+    },
+    {
+      "sequence": 1502,
+      "at": "2026-10-28T15:12:45.333Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "89252ecc-7ccc-481f-8c2b-b603bdc2216e",
+          "owner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/reviewer-1",
+          "status": "reviewing",
+          "commit": "9c54de75033be1621ed4665b1f2d1af96b3013d5",
+          "baseCommit": "6f42bc5fd6452f9bb96159423ca73a677644d4b7",
+          "submissionId": "cf996c64-4cb3-4e9b-b982-22d26c9965cf",
+          "createdAt": "2026-10-28T15:12:45.333Z"
+        }
+      }
+    },
+    {
+      "sequence": 1503,
+      "at": "2026-10-28T15:12:46.929Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "bd9de22c-a857-426f-b18e-8ba19c3e39c7",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T15:12:46.929Z"
+        }
+      }
+    },
+    {
+      "sequence": 1504,
+      "at": "2026-10-28T15:12:46.965Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "bd9de22c-a857-426f-b18e-8ba19c3e39c7",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T15:12:46.929Z"
+        }
+      }
+    },
+    {
+      "sequence": 1507,
+      "at": "2026-10-28T15:18:22.155Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T550 is mostly sound, but I'm requesting changes because the owner office still has no BETA mark.\n\nWhat works:\n- `BetaMark` is one shared, non-interactive pill coloured by theme tokens. Its screen-reader label is localized.\n- `versionLabel` builds `v0.7 BETA` from `CURRENT_ENGINE_VERSION` and is unit-tested.\n- The mark is wired into the play HUD (`BETA`), the start HUD and the save-slot header (`v0.7 BETA`). The start HUD covers founding, recovery and the no-client error state.\n- The HUD grid change keeps the name ellipsizing first. The image themes' `header > div > div > b` rules still apply.\n- Contrast of `--accent-text` on each pack's HUD or canvas looks at least 4.5:1 for all four themes; the e2e will confirm.\n- The e2e helpers, test ids, the `설정` label and the preference key all exist. Manual `browser.newContext()` with `goto('/')` follows a pattern other specs use (`mediation.spec`).\n- The worker evidence follows ARCH-30: task checks plus build, with the browser spec left to the batch run.\n\nOn the risk reasons:\n- The 312 lines are mostly the e2e spec and the result text.\n- The touches outside the task's list (one `shell.beta` key in each of the 12 `public/presentation/locales` packs) are justified. That is where the catalog lives, and `locale.test` requires every pack to carry every key.\n\nThe blocking gap: WEB-101 says \"every screen shows a BETA mark at its top\", and acceptance 1 asks for the mark on \"every screen that has no HUD\". The owner office hides the HUD under WEB-39, so it is such a screen. It has no mark, yet acceptance 1 is checked [v]. The worker raised this under limits but did not resolve it.",
+        "review": {
+          "id": "89252ecc-7ccc-481f-8c2b-b603bdc2216e",
+          "owner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T550 is mostly sound, but I'm requesting changes because the owner office still has no BETA mark.\n\nWhat works:\n- `BetaMark` is one shared, non-interactive pill coloured by theme tokens. Its screen-reader label is localized.\n- `versionLabel` builds `v0.7 BETA` from `CURRENT_ENGINE_VERSION` and is unit-tested.\n- The mark is wired into the play HUD (`BETA`), the start HUD and the save-slot header (`v0.7 BETA`). The start HUD covers founding, recovery and the no-client error state.\n- The HUD grid change keeps the name ellipsizing first. The image themes' `header > div > div > b` rules still apply.\n- Contrast of `--accent-text` on each pack's HUD or canvas looks at least 4.5:1 for all four themes; the e2e will confirm.\n- The e2e helpers, test ids, the `설정` label and the preference key all exist. Manual `browser.newContext()` with `goto('/')` follows a pattern other specs use (`mediation.spec`).\n- The worker evidence follows ARCH-30: task checks plus build, with the browser spec left to the batch run.\n\nOn the risk reasons:\n- The 312 lines are mostly the e2e spec and the result text.\n- The touches outside the task's list (one `shell.beta` key in each of the 12 `public/presentation/locales` packs) are justified. That is where the catalog lives, and `locale.test` requires every pack to carry every key.\n\nThe blocking gap: WEB-101 says \"every screen shows a BETA mark at its top\", and acceptance 1 asks for the mark on \"every screen that has no HUD\". The owner office hides the HUD under WEB-39, so it is such a screen. It has no mark, yet acceptance 1 is checked [v]. The worker raised this under limits but did not resolve it.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "apps/web/src/ui/OfficeBar.tsx:23 (T550, WEB-101; App.tsx:1099 `office` hides GameHud)",
+              "message": "T550 acceptance 1 and WEB-101 are not met in the owner office. When `playing && page === 'business'`, App.tsx does not render GameHud (WEB-39 focused office). The office's only chrome is OfficeBar (back, crest and place name, cash), and it carries no BetaMark, so a player doing any owner business never sees the beta mark. That contradicts WEB-101 ('every screen … at its top') and the task goal ('the player always sees that the game is a beta'). Acceptance 1 still has [v] even though the result's limits admit the gap.\n\nNeeded fix: render the shared `<BetaMark />` (plain `BETA`, as in the play HUD) in OfficeBar beside the place name. Keep it outside the `<h2>`, or update `officeTitle` in tests/e2e/events.ts:81, which reads the title's innerText. Check that the back button and HudCash keep their 44 px targets and that there is no horizontal overflow at 360, 390 and 1280 px. Extend tests/e2e/beta-mark.spec.ts with an office step (enter the office from home and run `expectMark` on the bar's title).\n\nIf the planner instead decides the office is exempt despite WEB-101's 'every screen', that is a planning decision. It must be recorded in WEB-101 or in T550's acceptance before this can be approved; the worker should not mark acceptance 1 [v] on that assumption."
+            }
+          ],
+          "commit": "9c54de75033be1621ed4665b1f2d1af96b3013d5",
+          "baseCommit": "6f42bc5fd6452f9bb96159423ca73a677644d4b7",
+          "submissionId": "cf996c64-4cb3-4e9b-b982-22d26c9965cf",
+          "createdAt": "2026-10-28T15:12:45.333Z",
+          "finishedAt": "2026-10-28T15:18:22.155Z"
+        }
+      }
+    },
+    {
+      "sequence": 1508,
+      "at": "2026-10-28T15:18:22.193Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "bd9de22c-a857-426f-b18e-8ba19c3e39c7",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T15:12:46.929Z",
+          "finishedAt": "2026-10-28T15:18:22.193Z",
+          "error": null,
+          "summary": "T550 is mostly sound, but I'm requesting changes because the owner office still has no BETA mark.\n\nWhat works:\n- `BetaMark` is one shared, non-interactive pill coloured by theme tokens. Its screen-reader label is localized.\n- `versionLabel` builds `v0.7 BETA` from `CURRENT_ENGINE_VERSION` and is unit-tested.\n- The mark is wired into the play HUD (`BETA`), the start HUD and the save-slot header (`v0.7 BETA`). The start HUD covers founding, recovery and the no-client error state.\n- The HUD grid change keeps the name ellipsizing first. The image themes' `header > div > div > b` rules still apply.\n- Contrast of `--accent-text` on each pack's HUD or canvas looks at least 4.5:1 for all four themes; the e2e will confirm.\n- The e2e helpers, test ids, the `설정` label and the preference key all exist. Manual `browser.newContext()` with `goto('/')` follows a pattern other specs use (`mediation.spec`).\n- The worker evidence follows ARCH-30: task checks plus build, with the browser spec left to the batch run.\n\nOn the risk reasons:\n- The 312 lines are mostly the e2e spec and the result text.\n- The touches outside the task's list (one `shell.beta` key in each of the 12 `public/presentation/locales` packs) are justified. That is where the catalog lives, and `locale.test` requires every pack to carry every key.\n\nThe blocking gap: WEB-101 says \"every screen shows a BETA mark at its top\", and acceptance 1 asks for the mark on \"every screen that has no HUD\". The owner office hides the HUD under WEB-39, so it is such a screen. It has no mark, yet acceptance 1 is checked [v]. The worker raised this under limits but did not resolve it."
+        }
+      }
+    },
+    {
+      "sequence": 1509,
+      "at": "2026-10-28T15:18:22.403Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "89252ecc-7ccc-481f-8c2b-b603bdc2216e",
+            "owner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T550 is mostly sound, but I'm requesting changes because the owner office still has no BETA mark.\n\nWhat works:\n- `BetaMark` is one shared, non-interactive pill coloured by theme tokens. Its screen-reader label is localized.\n- `versionLabel` builds `v0.7 BETA` from `CURRENT_ENGINE_VERSION` and is unit-tested.\n- The mark is wired into the play HUD (`BETA`), the start HUD and the save-slot header (`v0.7 BETA`). The start HUD covers founding, recovery and the no-client error state.\n- The HUD grid change keeps the name ellipsizing first. The image themes' `header > div > div > b` rules still apply.\n- Contrast of `--accent-text` on each pack's HUD or canvas looks at least 4.5:1 for all four themes; the e2e will confirm.\n- The e2e helpers, test ids, the `설정` label and the preference key all exist. Manual `browser.newContext()` with `goto('/')` follows a pattern other specs use (`mediation.spec`).\n- The worker evidence follows ARCH-30: task checks plus build, with the browser spec left to the batch run.\n\nOn the risk reasons:\n- The 312 lines are mostly the e2e spec and the result text.\n- The touches outside the task's list (one `shell.beta` key in each of the 12 `public/presentation/locales` packs) are justified. That is where the catalog lives, and `locale.test` requires every pack to carry every key.\n\nThe blocking gap: WEB-101 says \"every screen shows a BETA mark at its top\", and acceptance 1 asks for the mark on \"every screen that has no HUD\". The owner office hides the HUD under WEB-39, so it is such a screen. It has no mark, yet acceptance 1 is checked [v]. The worker raised this under limits but did not resolve it.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "apps/web/src/ui/OfficeBar.tsx:23 (T550, WEB-101; App.tsx:1099 `office` hides GameHud)",
+                "message": "T550 acceptance 1 and WEB-101 are not met in the owner office. When `playing && page === 'business'`, App.tsx does not render GameHud (WEB-39 focused office). The office's only chrome is OfficeBar (back, crest and place name, cash), and it carries no BetaMark, so a player doing any owner business never sees the beta mark. That contradicts WEB-101 ('every screen … at its top') and the task goal ('the player always sees that the game is a beta'). Acceptance 1 still has [v] even though the result's limits admit the gap.\n\nNeeded fix: render the shared `<BetaMark />` (plain `BETA`, as in the play HUD) in OfficeBar beside the place name. Keep it outside the `<h2>`, or update `officeTitle` in tests/e2e/events.ts:81, which reads the title's innerText. Check that the back button and HudCash keep their 44 px targets and that there is no horizontal overflow at 360, 390 and 1280 px. Extend tests/e2e/beta-mark.spec.ts with an office step (enter the office from home and run `expectMark` on the bar's title).\n\nIf the planner instead decides the office is exempt despite WEB-101's 'every screen', that is a planning decision. It must be recorded in WEB-101 or in T550's acceptance before this can be approved; the worker should not mark acceptance 1 [v] on that assumption."
+              }
+            ],
+            "commit": "9c54de75033be1621ed4665b1f2d1af96b3013d5",
+            "baseCommit": "6f42bc5fd6452f9bb96159423ca73a677644d4b7",
+            "submissionId": "cf996c64-4cb3-4e9b-b982-22d26c9965cf",
+            "createdAt": "2026-10-28T15:12:45.333Z",
+            "finishedAt": "2026-10-28T15:18:22.155Z",
+            "invalidatedAt": "2026-10-28T15:18:22.403Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1510,
+      "at": "2026-10-28T15:18:22.928Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "08220588-8220-4293-bf11-7931e964ab09",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T15:18:22.928Z"
+        }
+      }
+    },
+    {
+      "sequence": 1511,
+      "at": "2026-10-28T15:18:23.322Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "08220588-8220-4293-bf11-7931e964ab09",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T15:18:22.928Z"
+        }
+      }
+    },
+    {
+      "sequence": 1514,
+      "at": "2026-10-28T15:25:48.443Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1515,
+      "at": "2026-10-28T15:25:51.086Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1516,
+      "at": "2026-10-28T15:25:51.220Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1526,
+      "at": "2026-10-28T15:27:26.425Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "73db9391-54ac-4569-83cc-f11bbf7ab1ec",
+        "submittedAt": "2026-10-28T15:27:26.425Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "368 changed lines (limit 300)",
+            "outside touches: apps/web/public/presentation/locales/ar-SA.json apps/web/public/presentation/locales/de-DE.json apps/web/public/presentation/locales/en-GB.json apps/web/public/presentation/locales/es-ES.json apps/web/public/presentation/locales/fr-FR.json",
+            "reworked after a review or integration failure"
+          ],
+          "lines": 368,
+          "files": 24
+        },
+        "steps": [
+          {
+            "taskId": "T550",
+            "commit": "7b037ec12bf9c002f1d32cfedfd5d6e20a6a3a39",
+            "at": "2026-10-28T15:27:26.358Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-10-28T15:25:52.247Z",
+                "finishedAt": "2026-10-28T15:27:25.905Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-10-28T15:25:52.247Z",
+            "finishedAt": "2026-10-28T15:27:25.905Z"
+          }
+        ],
+        "verifiedCommit": "7b037ec12bf9c002f1d32cfedfd5d6e20a6a3a39"
+      }
+    },
+    {
+      "sequence": 1527,
+      "at": "2026-10-28T15:27:26.461Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "08220588-8220-4293-bf11-7931e964ab09",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T15:18:22.928Z",
+          "finishedAt": "2026-10-28T15:27:26.461Z",
+          "error": null,
+          "summary": "I fixed the review finding: the owner office bar now shows the BETA mark beside the place name. The fast checks and build pass. The new office step in the browser spec has not been run; it is left to the batch Chromium run.\n\n**What changed**\n- **Office bar** (`OfficeBar.tsx`): the shared `BetaMark` (plain `BETA`) now sits next to the place name in a centred group. It is outside the `<h2>`, so the office test helpers that read the heading's exact text (`officeTitle`) still work.\n- **Office bar layout** (`OfficeBar.module.css`): the bar's grid now keeps the back button and the cash at their full width. On a short row the place name shortens with an ellipsis instead of crowding them. When everything fits, the layout and centring look as before.\n- **Unit test** (`BetaMark.test.ts`): a new case checks that the office bar renders the mark after the heading and that the heading holds only the place name.\n- **Browser spec** (`tests/e2e/beta-mark.spec.ts`): after the play HUD, each run now enters the office from home and checks the bar:\n  - the mark's text, and that it sits beside the name and not inside a control\n  - contrast of at least 4.5\n  - the 나가기 button at least 44×44\n  - the cash at least 44 px wide\n  - no horizontal overflow\n\n  This runs at 360, 390 and 1280 px and in every registered theme. The seeded game is set to manual mode, as the resource-skins spec does.\n- **Task file:** acceptance 1 stays checked, now that the office is covered. I updated the result and removed the old \"office not covered\" limit.\n\n**Checks run, all passing:** typecheck, lint, format check, the changed unit tests (12 files, 79 tests), the two new unit test files (6 tests) and the build.\n\n**Not run:** `tests/e2e/beta-mark.spec.ts` in a browser. I checked the office bar's fit at 360 px only by reading the CSS: the back button needs about 75 px, crest, name and mark about 178 px, and the cash about 63–72 px. The batch run's overflow and touch-target checks will confirm it.\n\n**Unchanged from before:** the 12 locale packs (`apps/web/public/presentation/locales`, outside the task's file list, each with one `shell.beta` key) are as the reviewer already accepted them. Spec lint was not run; the haeram CLI is outside the worker allow list."
+        }
+      }
+    },
+    {
+      "sequence": 1528,
+      "at": "2026-10-28T15:27:27.604Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "3bad54c3-5f5b-4be1-8e21-e49074a0d770",
+          "owner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/reviewer-1",
+          "status": "reviewing",
+          "commit": "7b037ec12bf9c002f1d32cfedfd5d6e20a6a3a39",
+          "baseCommit": "6f42bc5fd6452f9bb96159423ca73a677644d4b7",
+          "submissionId": "73db9391-54ac-4569-83cc-f11bbf7ab1ec",
+          "createdAt": "2026-10-28T15:27:27.604Z"
+        }
+      }
+    },
+    {
+      "sequence": 1529,
+      "at": "2026-10-28T15:27:30.895Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "b360f209-e986-4dd9-bd22-503ed0307310",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T15:27:30.895Z"
+        }
+      }
+    },
+    {
+      "sequence": 1530,
+      "at": "2026-10-28T15:27:31.000Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "b360f209-e986-4dd9-bd22-503ed0307310",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T15:27:30.895Z"
+        }
+      }
+    },
+    {
+      "sequence": 1531,
+      "at": "2026-10-28T15:33:28.916Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "3bad54c3-5f5b-4be1-8e21-e49074a0d770",
+          "owner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T550 is approved. The correction fixes the one blocking finding from review 89252ecc, and I found nothing else that needs a change.\n\nRisk reasons:\n- **368 lines:** most of it is the e2e spec and the result text. The source change itself is small.\n- **Changes outside the touches list:** each of the 12 `public/presentation/locales` packs gains one `shell.beta` key. That is justified, because the catalog lives there and `locale.test` requires every pack to carry every key.\n- **Rework:** the earlier P2 is addressed as requested.\n  - `OfficeBar` now shows the shared `<BetaMark />` (plain `BETA`) beside the place name. It sits in a centred `.centre` group outside the `<h2>`, so `officeTitle`'s heading text and the `officeLobby`/`openOfficeArea` innerText checks don't change.\n  - The bar's grid is now `minmax(max-content,1fr) minmax(0,max-content) minmax(max-content,1fr)`. The back button and the cash keep their full width, and the title (`min-width:0`, overflow hidden, ellipsis) gives way first. When everything fits, the outer columns are equal, so centring is the same as before.\n  - At 360 px with the 8 px phone gutter, the centre column has about 181 px against the worker's estimate of about 178 px, so it should fit.\n  - The image theme's `[data-ui='office-bar'] h2` rule is a descendant selector, so it still applies.\n  - A new unit case checks that the mark renders after `</h2>`. The e2e now enters the office from home and checks the mark's position and contrast, a 44 px 나가기 button, the cash width and horizontal overflow, at all three viewports and for all four themes.\n  - Acceptance 1 is now legitimately [v].\n\nOther checks:\n- `versionLabel`/`isBetaVersion` derive the label from `CURRENT_ENGINE_VERSION` using the repo's usual import path, and there is no duplicate helper in `versions.ts`.\n- The per-module `.srOnly` matches the existing idiom.\n- I estimated `--accent-text` against `--hud` and `--image-canvas` by hand for all four packs. Every pair comes out at least about 5:1 (matchday about 5.3, sticker about 7.1, standard about 10).\n- `preparedWorld` returns a fresh copy, so setting `settings.mode='manual'` in the e2e does not leak into other specs.\n- GameHud still renders on match, bankrupt and founding screens, so they carry the mark too.\n\nWorker evidence follows ARCH-30 (no browser spec in a task). Typecheck, lint and format:check passed. The `--changed` unit run passed 12 files / 79 tests, and a targeted run of the two BetaMark/versionLabel test files passed 6 tests. The build passed. `tests/e2e/beta-mark.spec.ts` was not run and is left to the coordinator's Chromium batch.\n\nI approved on reading the code, not on the test results alone.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "apps/web/src/ui/App.tsx:1141-1148 (T550, WEB-101 acceptance 1 'error screens')",
+              "message": "There is one rare error path with no mark. When saved games exist, `initialScreen()` opens `'slots'`. If the client then fails to construct (the catch at App.tsx:928 sets `localError` and leaves `client` unset), the page shows only the `FeedbackOverlay` error over `shell.loadingOffice`. GameHud requires `screen === 'game'` and GameSlotScreen requires `client`, so neither renders and no BETA mark appears. The result's claim that 'the no-client error state shares the start HUD' is true only when `screen === 'game'`. Optional: render GameHud when `!client`, whatever `screen` is, or put a BetaMark in that overlay. Otherwise, note the exception in the result."
+            },
+            {
+              "priority": "P3",
+              "where": "tests/e2e/news.spec.ts:60-70 (T550 impact scope; App.module.css:1758 `.hudClub > div` grid)",
+              "message": "For the coordinator's batch run: the BETA pill now takes about 50 px of the HUD name's row. The existing 360 px check 'keeps the club name and compact cash readable' needs `Haeram Athletic`'s `<b>` to stay unclipped (scrollWidth/scrollHeight). By my estimate it still fits on two lines (about 80 px of column for the name), but the worker's limits don't mention this spec. It is the existing browser test most likely to change, so look at it first if the full e2e run fails."
+            }
+          ],
+          "commit": "7b037ec12bf9c002f1d32cfedfd5d6e20a6a3a39",
+          "baseCommit": "6f42bc5fd6452f9bb96159423ca73a677644d4b7",
+          "submissionId": "73db9391-54ac-4569-83cc-f11bbf7ab1ec",
+          "createdAt": "2026-10-28T15:27:27.604Z",
+          "finishedAt": "2026-10-28T15:33:28.916Z"
+        }
+      }
+    },
+    {
+      "sequence": 1532,
+      "at": "2026-10-28T15:33:29.065Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "b360f209-e986-4dd9-bd22-503ed0307310",
+          "runner": "a5f9bec7-d1fa-4a59-8b44-5f89e5be8d00",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T15:27:30.895Z",
+          "finishedAt": "2026-10-28T15:33:29.065Z",
+          "error": null,
+          "summary": "T550 is approved. The correction fixes the one blocking finding from review 89252ecc, and I found nothing else that needs a change.\n\nRisk reasons:\n- **368 lines:** most of it is the e2e spec and the result text. The source change itself is small.\n- **Changes outside the touches list:** each of the 12 `public/presentation/locales` packs gains one `shell.beta` key. That is justified, because the catalog lives there and `locale.test` requires every pack to carry every key.\n- **Rework:** the earlier P2 is addressed as requested.\n  - `OfficeBar` now shows the shared `<BetaMark />` (plain `BETA`) beside the place name. It sits in a centred `.centre` group outside the `<h2>`, so `officeTitle`'s heading text and the `officeLobby`/`openOfficeArea` innerText checks don't change.\n  - The bar's grid is now `minmax(max-content,1fr) minmax(0,max-content) minmax(max-content,1fr)`. The back button and the cash keep their full width, and the title (`min-width:0`, overflow hidden, ellipsis) gives way first. When everything fits, the outer columns are equal, so centring is the same as before.\n  - At 360 px with the 8 px phone gutter, the centre column has about 181 px against the worker's estimate of about 178 px, so it should fit.\n  - The image theme's `[data-ui='office-bar'] h2` rule is a descendant selector, so it still applies.\n  - A new unit case checks that the mark renders after `</h2>`. The e2e now enters the office from home and checks the mark's position and contrast, a 44 px 나가기 button, the cash width and horizontal overflow, at all three viewports and for all four themes.\n  - Acceptance 1 is now legitimately [v].\n\nOther checks:\n- `versionLabel`/`isBetaVersion` derive the label from `CURRENT_ENGINE_VERSION` using the repo's usual import path, and there is no duplicate helper in `versions.ts`.\n- The per-module `.srOnly` matches the existing idiom.\n- I estimated `--accent-text` against `--hud` and `--image-canvas` by hand for all four packs. Every pair comes out at least about 5:1 (matchday about 5.3, sticker about 7.1, standard about 10).\n- `preparedWorld` returns a fresh copy, so setting `settings.mode='manual'` in the e2e does not leak into other specs.\n- GameHud still renders on match, bankrupt and founding screens, so they carry the mark too.\n\nWorker evidence follows ARCH-30 (no browser spec in a task). Typecheck, lint and format:check passed. The `--changed` unit run passed 12 files / 79 tests, and a targeted run of the two BetaMark/versionLabel test files passed 6 tests. The build passed. `tests/e2e/beta-mark.spec.ts` was not run and is left to the coordinator's Chromium batch.\n\nI approved on reading the code, not on the test results alone."
+        }
+      }
+    },
+    {
+      "sequence": 1533,
+      "at": "2026-10-28T15:33:29.246Z",
+      "type": "attempt",
+      "group": "v07-beta",
+      "attemptId": "6f7f7f27-6eb1-4f9b-ae66-934016c63266",
+      "taskId": "T550",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    }
+  ]
+}

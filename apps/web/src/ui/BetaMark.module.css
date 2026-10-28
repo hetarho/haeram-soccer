@@ -1,0 +1,30 @@
+/* A quiet outlined pill in the theme's accent text colour, readable on every pack's HUD (→WEB-101). */
+.mark {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+.pill {
+  display: inline-block;
+  padding: 2px 5px;
+  border: 1px solid currentColor;
+  border-radius: var(--badge-radius);
+  color: var(--accent-text);
+  background: transparent;
+  font-family: var(--display);
+  font-size: var(--label-size);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  font-variant-numeric: var(--numeric-variant);
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

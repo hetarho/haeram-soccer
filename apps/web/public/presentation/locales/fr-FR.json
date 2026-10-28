@@ -31,6 +31,7 @@
     "shell.division": "Division {division}",
     "shell.readonly": "Lecture seule",
     "shell.readonlyNotice": "Une autre fenêtre joue déjà. Cet onglet est en lecture seule.",
+    "shell.beta": "Version bêta {version} · le jeu peut encore changer avant sa sortie complète",
     "shell.guide": "Guide de développement du club",
     "shell.responsibilities": "Bureau du propriétaire",
     "shell.news": "Notifications et actualités",

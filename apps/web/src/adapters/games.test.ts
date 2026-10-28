@@ -22,7 +22,7 @@ const entry = (id: string, crest: unknown): GameEntry => ({
     crest: crest as SlotSummary['crest'],
   },
   playedAt: '2026-10-20T00:00:00.000Z',
-  engine: '4.0.0',
+  engine: '0.7.0',
 });
 /** A summary as every earlier build wrote it: two colours, both required. */
 const twoColour = {
