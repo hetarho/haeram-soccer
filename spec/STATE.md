@@ -389,7 +389,6 @@
 | T548 | Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it | MATCH SAVE ARCH | - | todo |
 | T552 | Paged whole-world recruitment workbench | WEB CLUB ARCH | - | todo |
 | T556 | Connect place choices and verify the complete owner workflow | WEB CLUB ARCH | T552 T553 T555 | todo |
-| T558 | World market query and identity-based transfer engine | WEB CLUB ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -411,9 +410,10 @@
 | club-places-ui | 1 | 7 | 2 | 5 | 0 | 0 | 0 | 2026-10-28T16:52:26.857Z | [history](work/club-places-ui.json) |
 
 ## next
-- cp29: implement T552 against approved pinned T558 source while its integration gate completes; merge the resulting T558 archive, then finish T556 and the final batch. T553/T554/T555/T557 are integrated; T548 remains with its original session.
+- cp29: review/integrate submitted T552, then implement T556 and run the synchronized final batch. T553/T554/T555/T557/T558 are integrated; preserve the other session’s T548/T561 work.
 
 ## log
+- 261029 cp29 merge approved T558 integration/archive from club-market-fix after its normal quick gate passes; source was already staged at the same reviewed commit.
 - 261029 cp29 stage independently approved T558 source 66302d4f in the isolated draft so T552 can start during the unrelated heavy-gate wait; do not claim or publish engine completion before integration succeeds.
 - 261028 T553 integrated
 - 261029 cp29 move unclaimed T552 shared browser edits to T556 while preserving every required journey; keep independent UI file ownership disjoint.
