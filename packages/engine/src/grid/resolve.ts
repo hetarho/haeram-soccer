@@ -402,6 +402,36 @@ export function shotBlockers(
   return found.map(({ gp, chance }) => ({ gp, chance }));
 }
 
+/**
+ * The men closing a shot with the foot from `from` down as it is struck (revision 7, T548,
+ * →MATCH-35, `BOX_CONFIG.shot.close`): every outfield opponent within `close.radius` m of the
+ * shooter who is not among `path` (`shotBlockers`), wherever he stands, nearest first (equal
+ * distances by player ID), with his chance `close.block` × (1 − distance / `close.radius`) × the
+ * mean of his 태클 and 위치선정 / `close.skill`, within 0–1.
+ */
+export function closingBlockers(
+  s: GridState,
+  side: 0 | 1,
+  from: Point,
+  path: readonly ShotBlocker[],
+): ShotBlocker[] {
+  const K = BOX_CONFIG.shot.close;
+  const { hypot } = s.math;
+  const found: (ShotBlocker & { d: number })[] = [];
+  for (const gp of s.players[other(side)]) {
+    if (!onPitch(gp) || gp.slot <= 0 || path.some((b) => b.gp === gp)) continue;
+    const o = attackFrame(side, gp.pos);
+    const d = hypot(o[0] - from[0], o[1] - from[1]);
+    if (d >= K.radius) continue;
+    const foe = other(side);
+    const read =
+      (skill(s, foe, gp.idx, 'tackling') + skill(s, foe, gp.idx, 'positioning')) / 2 / K.skill;
+    found.push({ gp, chance: clamp(K.block * (1 - d / K.radius) * read, 0, 1), d });
+  }
+  found.sort((a, b) => a.d - b.d || byId(a.gp, b.gp));
+  return found.map(({ gp, chance }) => ({ gp, chance }));
+}
+
 /** The chance that none of `blockers` blocks the shot (T445): the chance's share that reaches the keeper. */
 export function unblocked(blockers: readonly ShotBlocker[]): number {
   let open = 1;
@@ -744,7 +774,13 @@ export function resolveShot(
   const goal = goalChance(xg, shooting, skill(s, other(side), keeper.idx, 'reflexes'), s.math);
   const onTarget = targetChance(goal, shooting);
   if (onCandidate(s)) {
-    const blockers = shotBlockers(s, side, from, opts.header);
+    const path = shotBlockers(s, side, from, opts.header);
+    // Revision 7 (T548): the men closing a shot with the foot down come first. A header's marker
+    // is its aerial duel's (`headerPressure`), as for the path's `header` scale.
+    const blockers =
+      modelAtLeast(s.setup, 7) && !opts.header
+        ? [...closingBlockers(s, side, from, path), ...path]
+        : path;
     const through = xg * unblocked(blockers);
     const shot = {
       kind: 'shot',

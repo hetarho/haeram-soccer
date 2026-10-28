@@ -13,6 +13,7 @@ import { CELL_BASELINES } from './baselines';
 import {
   blockRebound,
   chanceXg,
+  closingBlockers,
   DUEL_CONFIG,
   SHOT_CONFIG,
   resolveCross,
@@ -40,7 +41,7 @@ import { buildGridSetup } from './setup';
 import { speedOf } from './shape';
 import { computeTags } from './tags';
 import { gridKit } from './testkit';
-import { strengthScaled, type GridState } from './state';
+import { skill, strengthScaled, type GridState } from './state';
 
 /**
  * Every player at 60 with no day shift or drain, parked far away; side 0 carrier `slot` at `at`,
@@ -885,9 +886,10 @@ describe('grid open-play resolution', () => {
     const factor = (decisions: number) => {
       const plain = shotScene(at, []);
       set(plain.s, 0, 9, 'decisions', decisions);
-      // A defender 5 m behind him, out of the shot's path and of pressing range: alone he would
-      // have a clear chance and take it whatever the bodies (T542).
-      plain.s.players[1][10]!.pos = [at[0] - 5, at[1]];
+      // A defender ahead of him and wide: in the corridor to goal, so no clear chance (alone he
+      // would take it whatever the bodies, T542), out of the shot's path, its closing reach and
+      // pressing range. On revision 7 a man behind him no longer takes the chance away (T548).
+      plain.s.players[1][10]!.pos = [at[0] + 5, at[1] + 8];
       const tagsOf = plain.tags();
       const before = actionMix(plain.s, 0, 9, tagsOf);
       lines[2]!.forEach((p, i) => (plain.s.players[1][2 + i]!.pos = [p[0], p[1]]));
@@ -993,5 +995,81 @@ describe('revision 6 misplaced passes (T542, →MATCH-31)', () => {
     expect(outs(fifth, [62, 34])).toBeGreaterThan(0);
     expect(outs(sixth, [62, 34])).toBe(0);
     expect(outs(sixth, [58, 66])).toBeGreaterThan(0);
+  });
+});
+
+describe('revision 7 closing blocks (T548, →MATCH-35)', () => {
+  const [, , , , , sixth, seventh] = MATCH_MODEL_REVISIONS;
+  const K = BOX_CONFIG.shot.close;
+  const at: Point = [92, 34];
+  /** A shot from `at` with one man `behind` m behind the shooter and nobody in its path. */
+  const chased = (behind: number, model: MatchModelRevision = seventh, read = 60) => {
+    const sc = scene(9, at);
+    sc.s.setup = { ...sc.s.setup, model };
+    sc.s.players[1][10]!.pos = [at[0] - behind, at[1]];
+    set(sc.s, 1, 10, 'tackling', read);
+    set(sc.s, 1, 10, 'positioning', read);
+    return sc;
+  };
+  const closers = (sc: ReturnType<typeof scene>) =>
+    closingBlockers(sc.s, 0, at, shotBlockers(sc.s, 0, at));
+
+  it('revision 7: a chaser within reach blocks some shots, nearer and sharper more often, nobody beyond the radius', () => {
+    const chance = (behind: number, read = 60) =>
+      closers(chased(behind, seventh, read)).find((b) => b.gp.idx === 10)?.chance ?? 0;
+    // His 태클 and 위치선정 as the match reads them (fatigue and strength scaling included).
+    const sc = chased(2);
+    const mean = (skill(sc.s, 1, 10, 'tackling') + skill(sc.s, 1, 10, 'positioning')) / 2;
+    expect(chance(2)).toBeCloseTo(K.block * (1 - 2 / K.radius) * (mean / K.skill), 12);
+    expect(chance(4)).toBeCloseTo(chance(2) / 2, 12);
+    expect(chance(1)).toBeGreaterThan(chance(2));
+    expect(chance(2, 90)).toBeGreaterThan(chance(2) * 1.3);
+    expect(chance(K.radius + 0.5)).toBe(0);
+    // Resolved: his share of the shots is his chance; on revision 6 nobody closes it down.
+    const blocked = (model: MatchModelRevision) => {
+      const sc = chased(2, model);
+      const ctx = shotContext(sc.s);
+      const tags = sc.tags();
+      const r = random(`t548-close-${model}`);
+      let by = 0;
+      let xg = 0;
+      const n = 20000;
+      for (let i = 0; i < n; i++) {
+        const o = resolveShot(sc.s, 0, 9, tags, ctx, r);
+        if (o.kind === 'shot' && o.result === 'block' && o.by === 10) by++;
+        if (o.kind === 'shot') xg = o.xg;
+      }
+      const open = chanceXg(at, { pressure: tags.pressure, candidate: true }, sc.s.math);
+      return { share: by / n, xg, open };
+    };
+    const seventhRead = blocked(seventh);
+    expect(Math.abs(seventhRead.share - chance(2))).toBeLessThan(0.012);
+    // The recorded chance reads him as it reads the bodies in the path (→MATCH-11).
+    expect(seventhRead.xg).toBeCloseTo(seventhRead.open * unblocked(closers(chased(2))), 12);
+    expect(blocked(sixth).share).toBe(0);
+  });
+
+  it("revision 7: the path's bodies are not counted twice and a header has no closing men", () => {
+    const sc = chased(2);
+    sc.s.players[1][2]!.pos = [95, 34];
+    const path = shotBlockers(sc.s, 0, at);
+    expect(path.some((b) => b.gp.idx === 2)).toBe(true);
+    expect(closers(sc).map((b) => b.gp.idx)).toEqual([10]);
+    // The closing man's draw comes first, the path's next, then the keeper's.
+    const draws =
+      (...v: number[]) =>
+      () =>
+        v.shift() ?? 0;
+    const ctx = shotContext(sc.s);
+    expect(resolveShot(sc.s, 0, 9, sc.tags(), ctx, draws(0))).toMatchObject({
+      result: 'block',
+      by: 10,
+    });
+    expect(resolveShot(sc.s, 0, 9, sc.tags(), ctx, draws(0.999, 0))).toMatchObject({
+      result: 'block',
+      by: 2,
+    });
+    const header = resolveShot(sc.s, 0, 9, sc.tags(), ctx, draws(0), { header: true });
+    expect(header).not.toMatchObject({ by: 10 });
   });
 });

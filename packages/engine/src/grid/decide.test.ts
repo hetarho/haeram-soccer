@@ -1361,3 +1361,46 @@ describe('revision 6 carrier judgement (T542, →MATCH-16)', () => {
     expect(clearance(sixth)).toBeLessThan(clearance(fifth) * 0.5);
   });
 });
+
+describe('revision 7 clear chance (T548, →MATCH-16)', () => {
+  const [, , , , , sixth, seventh] = MATCH_MODEL_REVISIONS;
+  const K = DECISION_CONFIG.candidate.revision6.clear;
+  const on = (at: Point, model: MatchModelRevision, chaser?: Point) => {
+    const sc = scene(ST, at);
+    sc.s.setup = { ...sc.s.setup, model };
+    sc.me.player.traits = [];
+    setSkills(sc.s, ST, { ...Object.fromEntries(ATTRIBUTES.map((a) => [a, 60])), decisions: 40 });
+    if (chaser) sc.s.players[1][3]!.pos = [chaser[0], chaser[1]];
+    return sc;
+  };
+
+  it('revision 7: a forward with a chaser behind him and nobody ahead takes the clear chance', () => {
+    const shot = (model: MatchModelRevision, chaser: Point, pressure?: number) => {
+      const sc = on([92, 34], model, chaser);
+      const tags = sc.tags();
+      return actionMix(sc.s, 0, ST, pressure === undefined ? tags : { ...tags, pressure }).shot;
+    };
+    // Two metres behind him, then beside him: revision 6 gave the chance up, revision 7 takes it,
+    // pressed or not.
+    for (const chaser of [
+      [90, 34.5],
+      [92, 36],
+    ] as Point[]) {
+      expect(shot(sixth, chaser)).toBeLessThan(K.shot);
+      expect(shot(seventh, chaser)).toBeCloseTo(K.shot, 9);
+      expect(shot(seventh, chaser, 1)).toBeCloseTo(K.shot, 9);
+    }
+    // A man ahead of him in the corridor to goal still makes it no clear chance.
+    expect(shot(seventh, [98, 34])).toBeLessThan(K.shot);
+    // Further out, chased, he carries straight at goal.
+    const sc = on([75, 34], seventh, [73, 34]);
+    const tags = { ...sc.tags(), pressure: 1 };
+    expect(actionMix(sc.s, 0, ST, tags).carry).toBeGreaterThanOrEqual(K.carry - 1e-12);
+    const r = random('t548-chased-carry');
+    for (let i = 0; i < 200; i++) {
+      const end = chooseCarry(sc.s, 0, ST, tags, r);
+      const off = Math.abs(Math.atan2(end[1] - 34, end[0] - 75)) / (Math.PI / 180);
+      expect(off).toBeLessThanOrEqual(30 + 1e-9);
+    }
+  });
+});

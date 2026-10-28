@@ -28,6 +28,7 @@ import {
   type BoxScene,
 } from './box';
 import { CHANGES_CONFIG } from './changes';
+import { modelAtLeast } from './rules';
 import { pressScale } from './freedom';
 import { dangerousOption, nearbyThreat, SHADOW_CONFIG, threatGain } from './lanes';
 import { attackFrame, clamp, laneOf, PITCH, toEngine } from './pitch';
@@ -61,6 +62,11 @@ export const COORDINATION_CONFIG = {
    * `show` + `composure` × his 침착성; his 판단력 picks the side away from the presser.
    */
   support: { near: 22, distance: 9, show: 0.45, composure: 0.45 },
+  /**
+   * Revision 8 (T561, →MATCH-17): the showing teammate offers `support.distance` m from the carrier,
+   * a passing distance, so he and his marker do not join the crowd around the ball.
+   */
+  revision8: { support: { distance: 14 } },
   /** A teammate within `lane` m of the line the ball would travel to the shower clears it by `distance` m. */
   open: { lane: 3, distance: 8 },
   /** A defender or holding midfielder covers a presser only when his shape place is within this many metres of the cover point. */
@@ -747,9 +753,10 @@ function attackRest(
       const away = r!() < share(s, best.gp, 'decisions');
       const [from, to] = away ? [presser.pos, carrier.pos] : [carrier.pos, best.gp.pos];
       const d = gap(from, to) || 1;
+      const show = modelAtLeast(s.setup, 8) ? CC.revision8.support.distance : CC.support.distance;
       const target = onside(s, side, [
-        carrier.pos[0] + ((to[0] - from[0]) / d) * CC.support.distance,
-        carrier.pos[1] + ((to[1] - from[1]) / d) * CC.support.distance,
+        carrier.pos[0] + ((to[0] - from[0]) / d) * show,
+        carrier.pos[1] + ((to[1] - from[1]) / d) * show,
       ]);
       assignRun(plan, claimed, side, best.gp, {
         kind: 'support',

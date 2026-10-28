@@ -227,6 +227,18 @@ export const DECISION_CONFIG = {
       calm: { clearance: 0.15 },
     },
     /**
+     * Revision 7 (T548, →MATCH-16): a clear chance reads only the outfield opponents ahead of him,
+     * within `clear.corridor` m of his line to the goal centre; a man chasing from behind or beside
+     * him, near or not, and the pressure tag no longer take it away. The rest of `revision6.clear`
+     * (where, the shot share floor, the carry further out) holds as it is. T548's explore: 10 m let
+     * about 12 such decisions a team a match through (goals 4.9 a match on 150 with the closing block
+     * alone); 14 m with the keeper off his line (`SHAPE_CONFIG.candidate.keeperOut`) brought it to
+     * about 9 and goals to 3.1.
+     */
+    revision7: {
+      clear: { corridor: 14 },
+    },
+    /**
      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
      * `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+.
      * T370: 4 → 3.5, so fewer box shots do not push the shot places outside and from 30 m+.
@@ -587,9 +599,9 @@ export function actionMix(
   for (const a of ACTIONS) total += mix[a];
   if (total <= 0) return { ...mix, carry: 1 };
   for (const a of ACTIONS) mix[a] /= total;
-  // A clear chance is taken (revision 6, T542): near goal he shoots, further out he carries at it;
-  // the rest of the mix keeps its proportions.
-  if (r6 && tags.pressure < 1 && clearChance(s, side, c)) {
+  // A clear chance is taken (revision 6, T542; chased too on revision 7, T548): near goal he
+  // shoots, further out he carries at it; the rest of the mix keeps its proportions.
+  if (r6 && takesClearChance(s, side, c, tags)) {
     const K = r6.clear;
     const close = inBox(c) || goalDistance(c, s.math) <= K.shootFrom;
     const key: Action = close ? 'shot' : 'carry';
@@ -675,11 +687,15 @@ function onWing(s: GridState, side: 0 | 1, c: Point): boolean {
 
 /**
  * Whether the attack-frame point `c` is a clear chance for `side` (T542): a central lane at least
- * `revision6.clear.from` m up the pitch with no outfield opponent within `clear.near` m of it nor
- * within `clear.corridor` m of its line to the goal centre. Pressure is the caller's to read.
+ * `revision6.clear.from` m up the pitch with no outfield opponent within `clear.corridor` m of its
+ * line to the goal centre, nor on revision 6 within `clear.near` m of it. On revision 7 (T548) a
+ * man behind or beside him, however near, does not take it away. Pressure is the caller's to read
+ * (`takesClearChance`).
  */
 export function clearChance(s: GridState, side: 0 | 1, c: Point): boolean {
   const K = DECISION_CONFIG.candidate.revision6.clear;
+  const r7 = modelAtLeast(s.setup, 7);
+  const corridor = r7 ? DECISION_CONFIG.candidate.revision7.clear.corridor : K.corridor;
   const lane = cellLane(cellOf(c));
   if (c[0] < K.from || lane < 1 || lane > 3) return false;
   const { hypot } = s.math;
@@ -691,11 +707,23 @@ export function clearChance(s: GridState, side: 0 | 1, c: Point): boolean {
     const o = attackFrame(side, opp.pos);
     const dx = o[0] - c[0],
       dy = o[1] - c[1];
-    if (hypot(dx, dy) < K.near) return false;
+    if (!r7 && hypot(dx, dy) < K.near) return false;
     const t = (dx * vx + dy * vy) / (length * length);
-    if (t > 0 && t < 1 && Math.abs(dx * vy - dy * vx) / length < K.corridor) return false;
+    if (t > 0 && t < 1 && Math.abs(dx * vy - dy * vx) / length < corridor) return false;
   }
   return true;
+}
+
+/**
+ * Whether the carrier at `c` takes his clear chance (T542, T548): on revision 6 only unpressed, on
+ * revision 7 whoever chases him (→MATCH-16; the closing men's block is the shot's, →MATCH-35).
+ */
+function takesClearChance(s: GridState, side: 0 | 1, c: Point, tags: Pick<Tags, 'pressure'>) {
+  return (
+    modelAtLeast(s.setup, 6) &&
+    (modelAtLeast(s.setup, 7) || tags.pressure < 1) &&
+    clearChance(s, side, c)
+  );
 }
 
 /** Whether carrier `idx` of `side` has just beaten his man (revision 6, T542). */
@@ -785,7 +813,7 @@ export function passOptions(
   // Revision 6 (T542): a clear chance, a beaten man and a free man ahead.
   const r6 =
     opts.judge && modelAtLeast(s.setup, 6) ? DECISION_CONFIG.candidate.revision6 : undefined;
-  const clear = r6 !== undefined && tags.pressure < 1 && clearChance(s, side, c);
+  const clear = r6 !== undefined && takesClearChance(s, side, c, tags);
   const beat = r6 !== undefined && beaten(s, side, idx);
   const gainWeight = !candidate
     ? 1
@@ -1039,8 +1067,7 @@ export function chooseCarry(
       : undefined;
   // Straight at goal in a clear chance or past a beaten man (revision 6, T542).
   const onward =
-    modelAtLeast(s.setup, 6) &&
-    (beaten(s, side, idx) || (tags.pressure < 1 && clearChance(s, side, c)));
+    modelAtLeast(s.setup, 6) && (beaten(s, side, idx) || takesClearChance(s, side, c, tags));
   const headings = onward ? K.headings.filter((deg) => Math.abs(deg) <= 30) : K.headings;
   const angles = headings.map((deg) => toGoal + deg * DEG);
   if (wing !== undefined) angles.push(0);

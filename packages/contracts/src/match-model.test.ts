@@ -56,7 +56,7 @@ describe('match-model metadata (→SAVE-23)', () => {
   });
 
   it('rejects unknown model revisions', () => {
-    const future = 'continuous-aggregate-7';
+    const future = 'continuous-aggregate-9';
     const rejects = (value: unknown) => {
       let error: unknown;
       try {

@@ -2,7 +2,7 @@
 import type { RoleId } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
 import type { Point } from './pitch';
-import { attackFrame, bandOf, clamp, LANE_EDGES, PITCH, toEngine } from './pitch';
+import { attackFrame, bandOf, clamp, inBox, LANE_EDGES, PITCH, toEngine } from './pitch';
 import { FORMATIONS, lineOf } from '../player';
 import { actionWeight } from '../match-weights';
 import type { MatchMath } from '../portable-math';
@@ -54,6 +54,16 @@ export const SHAPE_CONFIG = {
      */
     spread: { radius: 10, push: 1, from: 40, full: 90 },
     /**
+     * Revision 8 (T561, →MATCH-17): with the ball each supporting player keeps `radius` m from his
+     * teammates and one in his shape `room` m from the ball (the showing teammate's job is the
+     * coordination's), so the side in possession does not pile onto the ball. The side without it
+     * keeps revision 7's shape: spreading it too opened its box (600 matches: goals 3.18 → 3.53).
+     * T561's reads (six observed matches): seven or more outfielders within 10 m of the ball in
+     * 7.0% of samples on revision 7, 2.9% here; a room of 8 m left 4.7%, one only short of the
+     * final third 3.8%.
+     */
+    revision8: { spread: { radius: 14 }, room: 10 },
+    /**
      * Revision 6 (T542, →MATCH-32): with the ball in a central lane at least `from` m up the
      * attacking side's frame, a defending outfielder in his shape or covering a zone, goal-side of
      * the ball and within `reach` m across of the line from the ball to his goal, moves his target
@@ -61,6 +71,8 @@ export const SHAPE_CONFIG = {
      * of the way onto that line.
      */
     screen: { from: 55, reach: 34, pull: 1 },
+    /** Revision 7 (T548, `keeperOut`): how far the keeper comes out to a carrier in his box. */
+    keeperOut: { share: 0.8, most: 12 },
     tactic: {
       possession: {
         advance: 7,
@@ -407,10 +419,12 @@ function screen(s: GridState, gp: GridPlayer, target: [number, number]): [number
  * intention takes it when it is set (`setIntention`), a place in the shape every time it is read.
  */
 export function spread(s: GridState, gp: GridPlayer, target: [number, number]): [number, number] {
+  const r8 = modelAtLeast(s.setup, 8);
   if (!modelAtLeast(s.setup, 6) || s.possession !== gp.side || lineOfSlot(s, gp) === 'GK')
     return target;
   if (s.owner && s.owner[0] === gp.side && s.owner[1] === gp.idx) return target;
   const S = SHAPE_CONFIG.candidate.spread;
+  const radius = r8 ? SHAPE_CONFIG.candidate.revision8.spread.radius : S.radius;
   const sense = clamp(
     ((skill(s, gp.side, gp.idx, 'decisions') + skill(s, gp.side, gp.idx, 'positioning')) / 2 -
       S.from) /
@@ -418,15 +432,23 @@ export function spread(s: GridState, gp: GridPlayer, target: [number, number]): 
     0,
     1,
   );
-  if (sense === 0) return target;
   let [x, y] = target;
+  // Revision 8 (T561): with the ball, room around the carrier for the showing teammate alone.
+  const room = SHAPE_CONFIG.candidate.revision8.room;
+  if (r8 && s.possession === gp.side && gp.intention?.kind !== 'support') {
+    const dx = x - s.ball[0],
+      dy = y - s.ball[1];
+    const d = s.math.hypot(dx, dy);
+    if (d < room && d > 1e-9) [x, y] = [s.ball[0] + (dx / d) * room, s.ball[1] + (dy / d) * room];
+  }
+  if (sense === 0) return [clamp(x, 0, PITCH.length), clamp(y, 0, PITCH.width)];
   for (const mate of s.players[gp.side]) {
     if (mate === gp || !onPitch(mate) || lineOfSlot(s, mate) === 'GK') continue;
     const dx = x - mate.pos[0],
       dy = y - mate.pos[1];
     const d = s.math.hypot(dx, dy);
-    if (d >= S.radius || d < 1e-9) continue;
-    const k = (S.push * sense * (S.radius - d)) / d;
+    if (d >= radius || d < 1e-9) continue;
+    const k = (S.push * sense * (radius - d)) / d;
     x += dx * k;
     y += dy * k;
   }
@@ -452,6 +474,8 @@ export function shapePlace(
   const bx = side === 0 ? s.ball[0] : PITCH.length - s.ball[0];
   const by = side === 0 ? s.ball[1] : PITCH.width - s.ball[1];
   if (own === 'GK') {
+    const out = keeperOut(s, side, bx, by);
+    if (out) return toEngine(side, out);
     const sweeper = slotOf(s, gp).role === 'sweeperKeeper';
     const df = (cache.defence[side] ??= lineX(s, side, 'DF'));
     const high = sweeper && df >= 40;
@@ -698,6 +722,22 @@ export function speedOf(s: GridState, gp: GridPlayer): number {
   return lostRecently(s, gp.side, SHAPE_CONFIG.transitionSeconds)
     ? v * SHAPE_CONFIG.recoverySpeed
     : v;
+}
+
+/**
+ * Revision 7 (T548, `SHAPE_CONFIG.candidate.keeperOut`): with an opponent carrying the ball in
+ * his box, the keeper comes off his line toward it along the line from his goal's middle, `share`
+ * of the way and at most `most` m out, narrowing the angle; `undefined` otherwise. `bx`, `by`: the
+ * ball in his side's attack frame (his goal at x 0).
+ */
+function keeperOut(s: GridState, side: 0 | 1, bx: number, by: number): Point | undefined {
+  if (!modelAtLeast(s.setup, 7) || s.possession === side || !s.owner) return undefined;
+  const K = SHAPE_CONFIG.candidate.keeperOut;
+  if (!inBox(attackFrame(other(side), s.ball))) return undefined;
+  const d = s.math.hypot(bx, by - CENTRE);
+  if (d <= 0) return undefined;
+  const reach = Math.min(K.most, d * K.share);
+  return [(bx / d) * reach, CENTRE + ((by - CENTRE) / d) * reach];
 }
 
 /** Every on-pitch player but the carrier takes a step toward his target. */

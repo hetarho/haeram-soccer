@@ -64,16 +64,40 @@ describe('pitch figures (→MATCH-12/37, WEB-95)', () => {
     expect(figure!.input.toBall).toEqual([16, 1]);
   });
 
-  it('velocity before is read hipLag earlier on the same clock', () => {
+  it('the body faces where the figure is drawn going, whatever the recorded velocity says', () => {
+    // Recorded as running down the screen, drawn moving right: he faces right at once.
     const samples = [
       sample(10, [motion('h1', [40, 50], [0, 4])]),
       sample(11, [motion('h1', [44, 50], [4, 0])]),
     ];
     const time = 10 + FIGURE_POSE_CONFIG.hipLag + 0.5;
     const [figure] = figureInputs(samples[0]!, samples[1]!, 0.66, frame(samples, 0, time));
-    // Half way between the samples hipLag earlier: [2, 2] units/s.
-    expect(figure!.input.velocityBefore[0]).toBeCloseTo(4);
-    expect(figure!.input.velocityBefore[1]).toBeCloseTo(2);
+    expect(figure!.input.velocity[0]).toBeCloseTo(8);
+    expect(figure!.input.velocity[1]).toBeCloseTo(0);
+    expect(figure!.input.velocityBefore[0]).toBeCloseTo(8);
+    expect(figure!.input.velocityBefore[1]).toBeCloseTo(0);
+  });
+
+  it('where his path bends he turns within `turn` seconds, the hips hipLag behind', () => {
+    const { turn, hipLag } = FIGURE_POSE_CONFIG;
+    const samples = [
+      sample(10, [motion('h1', [40, 50])]),
+      sample(11, [motion('h1', [44, 50])]),
+      sample(12, [motion('h1', [44, 54])]),
+    ];
+    const at = (t: number) =>
+      figureInputs(samples[1]!, samples[2]!, t - 11, frame(samples, 1, t))[0]!.input;
+    // Half way through the turn: between right ([8, 0] px/s) and down ([0, 4] px/s).
+    const half = at(11 + turn / 2);
+    expect(half.velocity[0]).toBeCloseTo(4);
+    expect(half.velocity[1]).toBeCloseTo(2);
+    // Turned: he faces down; his hips are read hipLag earlier, still part way round.
+    const turned = at(11 + turn + 0.05);
+    expect(turned.velocity[0]).toBeCloseTo(0);
+    expect(turned.velocity[1]).toBeCloseTo(4);
+    const hips = (turn + 0.05 - hipLag) / turn;
+    expect(turned.velocityBefore[0]).toBeCloseTo(8 * (1 - hips));
+    expect(turned.velocityBefore[1]).toBeCloseTo(4 * hips);
   });
 
   it('distance interpolates between samples', () => {

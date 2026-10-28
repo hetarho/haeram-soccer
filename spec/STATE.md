@@ -15,10 +15,16 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| p9c3 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T14:22Z | 2026-10-28T14:22Z | - |
 | cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T17:29Z | - |
 
 ## inbox
+- 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
+- 261029 decided MATCH-17 T561: spacing only for the side with the ball; spreading the side without it too opened its box (goals 3.53, 23/37 at 600) (alt: both sides).
+- 261029 suggest MATCH-23 T561: shots from outside the box 25.4% and goal-area shots 20.7% on revision 8 — a carrier with room around the box shoots earlier from the edge.
+- 261029 decided MATCH-35 T548: goals 4.9 a match with the closing block alone, blocked shots past a third before they fell → the keeper comes off his line to a carrier in his box (MATCH r40, 0.8 of the way, at most 12 m): goals 3.18 at 600 (alt: stronger closing blocks, 44% blocked and on target out | a recovery sprint for beaten defenders, within noise).
+- 261029 decided MATCH-16 T548: clear-chance corridor 10 → 14 m on revision 7, fewer chased chances counted clear with the shot floor untouched (alt: keep 10 and carry it all on blocks).
+- 261029 decided MATCH-35 T548: a header has no closing men, its marker priced by its aerial duel as the path's header scale assumes (alt: close headers too).
+- 261029 suggest MATCH-35 T548: penalty goals 12.4% on revision 7 (keeper off his line fouls carriers) — next lever a keeper's smother or claim instead of a foul; goal-area shots 17.9% — a chased carrier in behind shoots earlier.
 - 261029 decided T552 T558 ARCH-30: start UI against the independently approved pinned T558 source while the existing integration gate waits for another session’s heavy lock → merge approved 66302d4f into the isolated aggregation draft and remove only the unstarted UI scheduling dependency; preserve T558 runtime, all completion checks and the final synchronized batch (alt: idle until the unrelated browser batch ends).
 - 261029 decided T553 WEB-102 ARCH-4: expose the actual academy promotion wage without importing orchestration into UI → allow the minimal engine/contracts read-leaf extraction and compatibility re-export, preserving the existing formula and contract behaviour (alt: duplicate pricing in UI | a separate prerequisite task); this is implementation scope, not a new wage policy.
 - 261029 decided T558 ARCH-30: unchanged grid sampling tests hit 30 s limits under parallel affected-unit runs → preserve the same assertions and select the same affected unit scope with one worker and serial files (alt: raise timeouts | skip sampling tests); host dependencies use the verified offline cache.
@@ -365,7 +371,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
 | CLUB | 43 | 43 | - | 0 |
-| MATCH | 39 | 39 | - | 0 |
+| MATCH | 41 | 41 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 39 | 39 | - | 0 |
@@ -386,7 +392,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T548 | Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it | MATCH SAVE ARCH | - | todo |
 | T552 | Paged whole-world recruitment workbench | WEB CLUB ARCH | - | todo |
 | T556 | Connect place choices and verify the complete owner workflow | WEB CLUB ARCH | T552 T553 T555 | todo |
 
@@ -410,9 +415,17 @@
 | club-places-ui | 1 | 7 | 2 | 5 | 0 | 0 | 0 | 2026-10-28T16:52:26.857Z | [history](work/club-places-ui.json) |
 
 ## next
-- cp29: review/integrate submitted T552, then implement T556 and run the synchronized final batch. T553/T554/T555/T557/T558 are integrated; preserve the other session’s T548/T561 work.
+- cp29: review/integrate submitted T552, then implement T556 and run the synchronized final batch. T553/T554/T555/T557/T558 are integrated; T548/T561 from the completed other session are synchronized.
+- Revision 8 (T561) shipped with 0.7.0: next levers shots from outside the box 25.4% / goal-area shots 20.7% and penalty goals 13.7% (keeper smother instead of a foul); see inbox suggest lines.
 
 ## log
+- 261029 cp29 synchronize main 59446b09, including completed T548/T561 and MATCH r41, before final workflow convergence.
+- 261029 T561 done (p9c3, explore): match-model revision 8 — the showing teammate offers at 14 m, with the ball teammates spread 14 m and keep 10 m around the carrier; crowds of seven within 10 m 7.0% → 2.9%; 600 matches goals 3.38, 25/37 (one row fewer: long shots).
+- 261029 update-ssot MATCH r41 + create-task T561 (p9c3, owner): players swarm the ball like playground football → MATCH-17 nobody piles onto the ball; T561 revision 8, explore 2 h.
+- 261029 T550 done (v07-beta worker, 9c54de75 7b037ec1): one shared BETA mark beside the club or game name on every screen, v0.7 BETA from CURRENT_ENGINE_VERSION on the start and slot screens.
+- 261029 T549 done (v07-beta worker, f38dc554): game version 0.7.0 in every package and as the rules version; 4.0.0 saves load as 0.7.0 through the writer activation, read-only views write nothing.
+- 261029 T548 done (p9c3, explore 3 h): match-model revision 7 — chased forwards take the clear chance (corridor 14), men within 6 m close the shot down, MATCH r40 keeper off his line to a carrier in his box; 600 matches goals 3.18 (3.71), 26/37; penalty goals 12.4% and goal-area shots 17.9% the next levers.
+- 261029 fix match-figures (p9c3, owner): bodies face the drawn run and turn into a new one within 0.2 s (were the recorded velocities blended across the sample gap); a calm visible gait (6 m a cycle, reach 0.6, arms 0.55; 18.6 m showed none).
 - 261029 cp29 merge approved T558 integration/archive from club-market-fix after its normal quick gate passes; source was already staged at the same reviewed commit.
 - 261029 cp29 stage independently approved T558 source 66302d4f in the isolated draft so T552 can start during the unrelated heavy-gate wait; do not claim or publish engine completion before integration succeeds.
 - 261028 T553 integrated
@@ -435,3 +448,6 @@
 - 261028 T551 done (p9c3): main CI fix after the figures/kits and forward-intent merges — editor samples mid-step, kit pixel floor, faster wornFigures, in-page goal-hold minute, clock-derived 16× bound, appearance digest.
 - 261028 create-task (f5j2): T548 MATCH r39, T549 SAVE r57, T550 WEB r167.
 - 261028 update-ssot (f5j2): MATCH r39 chased forward's clear chance and closing blocks; SAVE r57 one game version 0.7.0 (beta), 4.0.0 saves load as 0.7.0; WEB r167 WEB-101 BETA mark.
+- 261028 feat/player-figures-kits merge verified against main f5672a67 and feature 3a13057e: typecheck, lint, format:check, unit (175 files / 1,435 passed), contract (3 files / 47 passed), catalog/presentation validation and production build passed; the 12 pure kit-selection cases also passed (2 world-integration cases excluded). Full integration and browser suites omitted under the owner's requested unit/static scope.
+- 261028 pl1 end: T543–T547 merged on feat/player-figures-kits; full unit project 1422 passed; other suites left to the receiver by owner instruction; branch pushed for handoff.
+- 261028 T545 done (dev3, 1617365a): match observation and replay draw posed figures, standing knee fixed in figurePose; merged; PL unit run next.

@@ -22,6 +22,7 @@ import {
   setPieceTargets,
   SHAPE_CONFIG,
   speedOf,
+  spread,
   startRuns,
   tacticShape,
   targetOf,
@@ -296,7 +297,8 @@ describe('grid shape and movement', () => {
     for (const tactic of TACTICS) {
       const kit = gridKit([tactic, 'balanced'], undefined, DISABLED_RELEASE);
       expect(tacticShape(kit.state, 0)).toBe(SHAPE_CONFIG.tactic[tactic]);
-      kit.state.ball = [52.5, 34];
+      // The ball out wide, more than revision 8's room from him (T561).
+      kit.state.ball = [52.5, 64];
       kit.state.possession = 0;
       kit.state.owner = [0, 9];
       // A midfielder with no sense of space, so revision 6's spread leaves his target (T542).
@@ -695,5 +697,88 @@ describe('revision 6 spread and screen (T542, →MATCH-17, MATCH-32)', () => {
     expect(offLine(sixth, 80)).toBeLessThan(offLine(fifth, 80));
     // Far from goal the shape holds.
     expect(offLine(sixth, 50)).toBeCloseTo(offLine(fifth, 50), 9);
+  });
+});
+
+describe('revision 7 keeper off his line (T548, →MATCH-35)', () => {
+  const [, , , , , sixth, seventh] = MATCH_MODEL_REVISIONS;
+  const K = SHAPE_CONFIG.candidate.keeperOut;
+  /** Side 1's keeper's target in side 0's frame with side 0's striker carrying it at `ball`. */
+  const keeper = (model: MatchModelRevision, ball: Point, owner = true) => {
+    const kit = gridKit(['balanced', 'balanced'], undefined, DISABLED_RELEASE);
+    const s = kit.state;
+    s.setup = { ...s.setup, model };
+    s.possession = 0;
+    s.owner = owner ? [0, 9] : undefined;
+    s.ball = toEngine(0, ball);
+    s.players[0][9]!.pos = [...s.ball];
+    return attackFrame(0, targetOf(s, 1, 0));
+  };
+
+  it('revision 7: the keeper comes off his line toward a carrier in his box, narrowing the angle', () => {
+    // 15 m out, straight in front: the keeper stands `share` of the way out, on the line to the ball.
+    const centre = keeper(seventh, [90, 34]);
+    expect(PITCH.length - centre[0]).toBeCloseTo(15 * K.share, 9);
+    expect(centre[1]).toBeCloseTo(34, 9);
+    // From an angle he stays on the line from his goal's middle to the ball, never beyond `most`.
+    const angled = keeper(seventh, [92, 22]);
+    const out = Math.hypot(PITCH.length - angled[0], angled[1] - 34);
+    expect(out).toBeLessThanOrEqual(K.most + 1e-9);
+    expect((34 - angled[1]) / (PITCH.length - angled[0])).toBeCloseTo((34 - 22) / 13, 9);
+    // On revision 6, outside his box or with the ball loose he keeps his place.
+    for (const held of [
+      keeper(sixth, [90, 34]),
+      keeper(seventh, [80, 34]),
+      keeper(seventh, [90, 34], false),
+    ])
+      expect(PITCH.length - held[0]).toBeLessThan(5);
+  });
+});
+
+describe('revision 8 shape around the ball (T561, →MATCH-17)', () => {
+  const [, , , , , , seventh, eighth] = MATCH_MODEL_REVISIONS;
+  const R = SHAPE_CONFIG.candidate.revision8;
+  const state = (model: MatchModelRevision) => {
+    const kit = gridKit(['balanced', 'balanced'], undefined, DISABLED_RELEASE);
+    const s = kit.state;
+    s.setup = { ...s.setup, model };
+    s.possession = 0;
+    s.owner = [0, 9];
+    s.ball = [60, 34];
+    s.players[0][9]!.pos = [60, 34];
+    for (const side of [0, 1] as const)
+      for (const gp of s.players[side]) {
+        gp.intention = undefined;
+        gp.player.attrs.decisions = 90;
+        gp.player.attrs.positioning = 90;
+        gp.base.fill(90);
+      }
+    return s;
+  };
+
+  it('revision 8: a teammate in his shape keeps room around the carrier; the side without it holds its shape', () => {
+    const near: [number, number] = [63, 35];
+    // A teammate with no sense of space (판단력 and 위치선정 at the spread's floor): only the room
+    // rule moves him.
+    const room = (model: MatchModelRevision) => {
+      const s = state(model);
+      const me = s.players[0][7]!;
+      me.player.attrs.decisions = 40;
+      me.player.attrs.positioning = 40;
+      me.base.fill(40);
+      const t = spread(s, me, near);
+      return Math.hypot(t[0] - 60, t[1] - 34);
+    };
+    expect(room(seventh)).toBeLessThan(R.room);
+    expect(room(eighth)).toBeGreaterThanOrEqual(R.room - 1e-9);
+    // Without the ball the shape is revision 7's: spreading it opened the box (T561).
+    const apart = (model: MatchModelRevision) => {
+      const s = state(model);
+      s.players[1][3]!.pos = [70, 30];
+      const t = spread(s, s.players[1][4]!, [70.5, 30]);
+      return Math.hypot(t[0] - 70, t[1] - 30);
+    };
+    expect(apart(seventh)).toBeCloseTo(0.5, 9);
+    expect(apart(eighth)).toBeCloseTo(0.5, 9);
   });
 });
