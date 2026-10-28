@@ -1,4 +1,4 @@
-import { openLeague } from './competition-navigation';
+import { openLeague, returnToMatch } from './competition-navigation';
 import { watchNext } from './watch';
 import { configureResponsibilities } from './events';
 import { expect, test, type Page } from '@playwright/test';
@@ -257,8 +257,8 @@ for (const viewport of [
       .getByRole('button', { name: '순위 추이', exact: true })
       .click();
     await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
-    // Going back returns to the theatre while its playback lasts.
-    await page.goBack();
+    // Retrace the league entry through the clubhouse to the retained theatre.
+    await returnToMatch(page);
     await expectCompactMatch(page, viewport);
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
     await page.getByText('주요 장면 탐색', { exact: true }).click();

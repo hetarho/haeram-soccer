@@ -50,6 +50,16 @@ export const openLeague = (page: Page, archive = false) =>
   openLens(page, archive ? '역사' : '시즌', archive ? '이전 리그 기록' : '리그');
 /** Resume the selected current-season league/lens without an own-league selection request. */
 export const resumeLeague = (page: Page) => openLens(page, '시즌', '리그', 'resume');
+/** Retrace the league detour through the clubhouse to the retained match. */
+export async function returnToMatch(page: Page) {
+  await page.goBack();
+  await expect(page).toHaveURL((url) => url.pathname === '/journal');
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await page.goBack();
+  await expect(page).toHaveURL((url) => url.pathname === '/matches');
+  await expect(page.getByTestId('match-theatre')).toBeVisible();
+  await settle(page);
+}
 export const openCups = (page: Page, archive = false) =>
   openLens(page, archive ? '역사' : '시즌', archive ? '이전 컵대회 기록' : '컵 대회');
 export const openClubRecords = (page: Page) => openLens(page, '역사', '클럽 기록실');

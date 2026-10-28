@@ -1,4 +1,4 @@
-import { openLeague, resumeLeague } from './competition-navigation';
+import { openLeague, resumeLeague, returnToMatch } from './competition-navigation';
 import { watchNext } from './watch';
 import { test, expect, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -199,9 +199,9 @@ test('watching a match pauses the calendar and retains playback across page swit
     'aria-selected',
     'true',
   );
-  // The match has no menu entry; going back returns to it while its playback lasts.
+  // The match has no menu entry; retrace the league entry through the clubhouse.
   await expect(menu.getByRole('button', { name: '경기', exact: true })).toHaveCount(0);
-  await page.goBack();
+  await returnToMatch(page);
   await expect(timeline).toBeVisible();
   expect(Number(await timeline.inputValue())).toBeGreaterThanOrEqual(before);
   expect(
