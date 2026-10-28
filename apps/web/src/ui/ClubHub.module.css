@@ -67,6 +67,7 @@
 }
 
 .scene {
+  height: clamp(156px, 23vw, 244px);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -78,12 +79,10 @@
   background: var(--surface-grain, none) var(--surface-deep);
 }
 .scene > .sceneArt {
-  position: relative;
-  display: block;
-  flex: none;
+  position: absolute;
+  inset: 0;
   width: 100%;
-  height: auto;
-  aspect-ratio: 3 / 1;
+  height: 100%;
 }
 .stageLabel {
   position: absolute;
@@ -592,25 +591,10 @@ button.resources:active:not(:disabled) {
 .remedyOff em {
   color: var(--text-faint);
 }
-/* Both rows participate in layout, so no empty scene spacer survives image resizing. */
-.hub .stage.stage {
+/* The stadium occupies one bounded row without reserving spare viewport height. */
+.stage {
   grid-area: stage;
-  position: relative;
-  display: grid;
-  grid-template-rows: auto auto;
-  height: auto;
-  flex: none;
-  min-height: 0;
-  max-height: none;
-}
-.hub .stage > .scene.scene {
-  flex: none;
-  height: auto;
-  min-height: 0;
-  max-height: none;
-}
-.hub .scene .stageLabel {
-  bottom: 8px;
+  min-width: 0;
 }
 /* The season card: round, rank and record over the season-progress rule (→WEB-11). */
 .seasonCard {
@@ -643,37 +627,79 @@ button.resources:active:not(:disabled) {
 .seasonCard > .seasonMeter {
   padding: 8px 14px 10px;
 }
-/* The owner office's entrance: a pressable door with the office art (→WEB-11). */
-.office {
+/* Compact facility visits: artwork is a dimmed background, labels stay in HTML. */
+.entrances {
   grid-area: office;
+  width: 100%;
   display: grid;
-  gap: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-self: center;
+  gap: var(--control-gap);
+  min-width: 0;
+}
+.office {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-content: center;
   width: 100%;
   min-width: 0;
-  align-self: start;
-  padding: 0;
+  min-height: 64px;
+  padding: 10px 8px;
   overflow: hidden;
-  border: 1px solid var(--popover-edge);
+  border: 1px solid var(--line-strong);
   border-radius: var(--card-radius);
-  background: var(--surface-grain, none) var(--surface);
-  color: inherit;
-  font: inherit;
+  background: var(--surface-deep);
+  color: #fff;
+  font-family: var(--display);
+}
+.officeBackdrop {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
 }
 .officeArt {
   width: 100%;
-  aspect-ratio: 3 / 1;
+  height: 100%;
 }
 .officeEnter {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  min-height: 44px;
-  padding: 8px;
-  font-size: 14px;
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  font-size: 12px;
+  line-height: 1.4;
+  text-shadow: 0 1px 3px #000;
+  color: #fff;
+}
+.officeEnter b {
+  font-size: inherit;
   font-weight: 700;
-  color: var(--accent-text);
-  font-family: var(--display);
+}
+.officeEnter > span {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.sceneArt img,
+.officeArt img {
+  object-fit: cover !important;
+  object-position: center !important;
+}
+.scene .sceneArt::after,
+.office .officeArt::after {
+  background: rgb(5 12 10 / 58%);
+}
+.sceneCaption,
+.stageLabel {
+  background: none;
+  color: #fff;
+  text-shadow: 0 1px 3px #000;
+}
+.sceneCaption b,
+.badge,
+.badge i {
+  color: #fff;
 }
 /* Strength leads team state on a row of its own (→WEB-44). */
 .state li[data-condition='strength'] {

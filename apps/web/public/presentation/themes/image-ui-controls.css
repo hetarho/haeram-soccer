@@ -163,9 +163,7 @@ html[data-theme] {
   }
 
   button[data-ui='primary'],
-  button[type='submit'],
-  button[aria-pressed='true'],
-  button[aria-selected='true']:not([role='tab']) {
+  button[type='submit'] {
     --text: var(--image-on-primary);
     --text-muted: var(--image-on-primary);
     --text-faint: var(--image-on-primary-muted);
@@ -358,9 +356,10 @@ html[data-theme] {
 
   [data-surface='panel'],
   [data-ui='game-shell'] [data-surface='panel'] {
-    border: 4px solid transparent;
+    padding: var(--panel-padding);
+    border: 1px solid transparent;
     border-image: var(--image-tile-frame)
-      var(--image-art-frame-tile-slice, var(--image-frame-slice, 54)) / 10px stretch;
+      var(--image-art-frame-tile-slice, var(--image-frame-slice, 54)) / 4px stretch;
     border-radius: var(--image-panel-radius, var(--image-radius, 0px));
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 256px);
@@ -543,33 +542,30 @@ html[data-theme] {
   }
 
   [role='tablist'] {
-    gap: 4px;
+    gap: 2px;
     padding: 0;
-    border-bottom: 0;
+    border-bottom: 1px solid var(--line);
     border-radius: 0;
     background: none;
   }
 
   [role='tab'] {
-    min-height: 44px;
+    position: relative;
+    min-height: var(--control-min-height);
     padding: 4px 10px;
-    border: 1px solid transparent;
-    border-image: var(--image-button-frame)
-      var(--image-art-frame-button-slice, var(--image-frame-slice, 22)) / 3px stretch;
-    border-radius: var(--image-control-radius, var(--image-radius, 0px));
-    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
-    background-size: var(--image-material-size, 256px);
-    color: var(--image-tab-text, var(--image-muted));
+    border: 0;
+    border-image: none;
+    border-radius: 0;
+    background: none;
+    color: var(--image-tab-text, var(--text-muted));
     box-shadow: none;
   }
 
   [role='tab'][aria-selected='true'] {
-    color: var(--image-tab-active, var(--image-accent));
-    border: 1px solid transparent !important;
-    border-image: var(--image-selected-frame)
-      var(--image-art-frame-selected-slice, var(--image-frame-slice, 22)) / 5px stretch !important;
-    background: var(--image-canvas) var(--image-canvas-material) repeat padding-box !important;
-    background-size: var(--image-material-size, 256px) !important;
+    color: var(--image-tab-active, var(--accent-text));
+    border: 0 !important;
+    border-image: none !important;
+    background: none !important;
     box-shadow: none;
   }
 
@@ -593,20 +589,34 @@ html[data-theme] {
   }
 
   [data-ui='choices'] > button[aria-pressed='true'],
+  button[aria-pressed='true']:not([data-ui='primary']),
   [role='radio'][aria-checked='true'] {
-    --text: var(--image-on-primary);
-    --text-muted: var(--image-on-primary);
-    --text-faint: var(--image-on-primary-muted);
-    color: var(--image-on-primary);
-    /* The shared .selected utility forces a border; replace that complete border here. */
+    --text: var(--image-ink-color);
+    --text-muted: var(--image-muted);
+    --text-faint: var(--image-faint);
+    color: var(--image-ink-color);
     border: 1px solid transparent !important;
     border-image: var(--image-selected-frame)
-      var(--image-art-frame-selected-slice, var(--image-frame-slice, 22)) / 4px stretch !important;
-    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
+      var(--image-art-frame-selected-slice, var(--image-frame-slice, 22)) / 3px stretch !important;
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 256px);
+    font-weight: 700;
   }
 
-  [role='tab']::after,
+  [role='tab']::after {
+    content: '';
+    position: absolute;
+    inset: auto 8px 0;
+    display: block;
+    height: 2px;
+    background: none;
+    pointer-events: none;
+  }
+
+  [role='tab'][aria-selected='true']::after {
+    background: currentColor;
+  }
+
   [data-ui='choices'] > button::after {
     display: none;
   }
@@ -899,8 +909,8 @@ html[data-theme] {
 
   @media (max-width: 760px) {
     [data-surface='panel'] {
-      border-width: 4px;
-      border-image-width: 8px;
+      border-width: 1px;
+      border-image-width: 4px;
     }
     [data-ui='dialog'] {
       border-width: 7px;

@@ -85,9 +85,7 @@ export function FacilityParts({
           </div>
         </div>
         <button
-          data-ui="primary"
           type="button"
-          className={s.primary}
           disabled={blocked || !p.eligible || !p.affordable}
           onClick={(event) => {
             event.currentTarget.focus();

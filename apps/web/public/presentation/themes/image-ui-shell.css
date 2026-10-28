@@ -397,9 +397,9 @@ html[data-theme] {
 
   /* The office lobby's desks wear the team-state tile frame: pressable game tiles (→WEB-39). */
   [data-office-area] {
-    border: 9px solid transparent;
+    border: 1px solid transparent;
     border-image: var(--image-tile-frame)
-      var(--image-art-frame-tile-slice, var(--image-frame-slice, 52)) / 12px stretch;
+      var(--image-art-frame-tile-slice, var(--image-frame-slice, 52)) / 4px stretch;
     border-radius: var(--image-panel-radius, var(--image-radius, 0px));
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 384px);
@@ -410,25 +410,19 @@ html[data-theme] {
     color: var(--image-muted);
   }
 
-  /* Home's door to the owner office wears the selected tile frame so it reads as an action. */
+  /* Facility visits stay smaller than the stadium and keep live labels over dimmed art. */
   [data-home-part='office'] {
-    min-height: 84px;
-    padding: 6px 12px 6px 6px;
-    border: 8px solid transparent;
-    border-image: var(--image-tile-frame)
-      var(--image-art-frame-tile-slice, var(--image-frame-slice, 52)) / 12px stretch;
+    min-height: 64px;
+    padding: 10px 8px;
+    border: 1px solid var(--image-on-dark-muted);
+    border-image: none;
     border-radius: var(--image-panel-radius, var(--image-radius, 0px));
-    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
-    background-size: var(--image-material-size, 384px);
-    color: var(--image-ink-color);
-  }
-
-  [data-home-part='office'] small {
-    color: var(--image-muted);
+    background: var(--image-dark-fill, var(--image-ink-color));
+    color: #fff;
   }
 
   [data-home-part='office'] > span:last-child {
-    color: var(--image-ink-color);
+    color: #fff;
   }
 
   [data-home-part='fixture'] > div:first-child > small {
@@ -455,17 +449,17 @@ html[data-theme] {
   }
 
   [data-home-part='fixture'] > div:last-child > button {
-    min-height: 44px;
+    min-height: var(--control-min-height);
     padding: 4px 10px;
-    border: 4px solid transparent;
-    border-image: var(--image-primary-frame)
-      var(--image-art-frame-stamp-slice, var(--image-frame-slice, 54)) / 13px stretch;
+    border: 1px solid transparent;
+    border-image: var(--image-button-frame)
+      var(--image-art-frame-button-slice, var(--image-frame-slice, 22)) / 3px stretch;
     border-radius: var(--image-radius, 0px);
-    color: var(--image-on-primary);
-    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
+    color: var(--image-ink-color);
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 256px);
-    font-size: 16px;
-    font-weight: 750;
+    font-size: 13px;
+    font-weight: 700;
   }
 
   [data-home-part='season-meter'] {
@@ -522,7 +516,6 @@ html[data-theme] {
     padding: 6px 14px 12px;
   }
 
-  [data-home-part='stage']::after,
   [data-home-part='season-card']::after {
     content: '';
     position: absolute;
@@ -536,14 +529,14 @@ html[data-theme] {
 
   [data-home-part='scene'] {
     min-height: 0;
-    margin: 6px;
+    margin: 0;
     border: 0;
-    border-radius: var(--image-radius, 0px);
-    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
+    border-radius: var(--image-panel-radius, var(--image-radius, 0px));
+    background: var(--image-dark-fill, var(--image-ink-color));
   }
 
   [data-home-part='scene-caption'] {
-    inset: 8px 10px auto;
+    inset: 12px 14px auto;
     padding: 0;
     gap: 8px;
     background: none;
@@ -552,41 +545,29 @@ html[data-theme] {
   [data-home-part='scene-caption'] > span,
   [data-home-part='scene-caption'] > b,
   [data-home-part='stage-label'] {
-    min-height: 32px;
-    padding: 5px 9px;
-    border: 5px solid transparent;
-    border-image: var(--image-dark-frame)
-      var(--image-art-frame-dark-slice, var(--image-frame-slice, 46)) / 7px stretch;
-    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
-      padding-box;
-    background-size: var(--image-material-size, 256px);
-    color: var(--image-on-dark);
-    font-size: 13px;
-    line-height: 1.2;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-image: none;
+    background: none;
+    color: #fff;
+    font-size: 12px;
+    line-height: 1.5;
+    text-shadow: 0 1px 3px #000;
   }
 
   [data-home-part='scene-caption'] > b {
     margin: 0 auto;
-    font-weight: 650;
+    font-weight: 700;
   }
 
   [data-home-part='scene-caption'] i {
-    width: 14px;
-    height: 14px;
-    flex: 0 0 14px;
-    font-size: 0;
-    background: var(--image-on-dark);
-    mask: var(--image-art-icon-people) center / contain no-repeat;
-  }
-
-  [data-home-part='scene-caption'] > span:first-child i {
-    background: var(--image-heart);
-    mask-image: var(--image-art-icon-heart);
+    color: #fff;
   }
 
   [data-home-part='stage-label'] {
-    right: 10px;
-    bottom: 6px;
+    right: 14px;
+    bottom: 12px;
     letter-spacing: 0;
   }
 
@@ -671,11 +652,11 @@ html[data-theme] {
     align-content: center;
     justify-items: start;
     column-gap: 12px;
-    min-height: 88px;
-    padding: 6px 12px;
-    border: 9px solid transparent;
+    min-height: 76px;
+    padding: var(--row-padding) var(--panel-padding);
+    border: 1px solid transparent;
     border-image: var(--image-tile-frame)
-      var(--image-art-frame-tile-slice, var(--image-frame-slice, 52)) / 12px stretch;
+      var(--image-art-frame-tile-slice, var(--image-frame-slice, 52)) / 4px stretch;
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 384px);
     color: var(--image-ink-color);
@@ -1008,7 +989,7 @@ html[data-theme] {
     [data-home-part='fixture'] {
       flex-wrap: nowrap;
       min-height: 0;
-      padding: 4px 6px;
+      padding: var(--panel-padding);
       gap: 8px;
       border-width: 5px;
       border-image-width: 12px;
@@ -1037,8 +1018,8 @@ html[data-theme] {
     [data-home-part='fixture'] > div:last-child > button {
       min-height: 44px;
       padding: 4px 10px;
-      border-width: 4px;
-      border-image-width: 10px;
+      border-width: 1px;
+      border-image-width: 3px;
       font-size: 12px;
     }
     [data-home-part='season-meter'] > span {
@@ -1050,32 +1031,22 @@ html[data-theme] {
     [data-home-part='season-meter'] progress {
       height: 10px;
     }
-    [data-home-part='stage']::after,
     [data-home-part='season-card']::after {
       border-image-width: 8px;
     }
-    [data-home-part='scene'] {
-      margin: 4px;
-    }
     [data-home-part='scene-caption'] {
-      inset: 6px 5px auto;
-      gap: 4px;
-      justify-content: space-between;
-    }
-    [data-home-part='scene-caption'] > span,
-    [data-home-part='stage-label'] {
-      min-height: 27px;
-      padding: 3px 4px;
-      border-width: 4px;
-      border-image-width: 5px;
-      font-size: var(--image-caption-size, 10px);
+      inset: 12px;
+      gap: 6px;
+      flex-wrap: wrap;
     }
     [data-home-part='scene-caption'] > b {
-      display: none;
+      flex: 0 0 100%;
+      order: -1;
+      margin: 0;
     }
     [data-home-part='stage-label'] {
-      bottom: 3px;
-      right: 6px;
+      bottom: 12px;
+      right: 12px;
     }
     [data-home-part='season-stats'] {
       margin: 6px 6px 0;

@@ -67,7 +67,7 @@ for (const viewport of [
       'true',
     );
     await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
-    await page.getByRole('button', { name: '구단주 사무실 들어가기', exact: true }).click();
+    await page.getByRole('button', { name: '구단주 사무실 입장', exact: true }).click();
     await page.getByRole('button', { name: '선수 계약', exact: true }).click();
     await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
     await settle(page);

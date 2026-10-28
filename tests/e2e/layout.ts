@@ -78,7 +78,7 @@ export async function expectHomeBounds(page: Page) {
   expect(geometry.width, measured).toBeLessThanOrEqual(geometry.clientWidth);
 }
 
-/** The complete stadium panorama retains its native ratio, framed alone below the season card. */
+/** A bounded background covers the scene; the stadium remains larger than the visits. */
 export async function expectHomeSceneRatio(page: Page) {
   const artwork = page.locator('[data-home-part="scene"] [data-facility-art="stadium"]');
   const image = artwork.locator('img');
@@ -105,8 +105,9 @@ export async function expectHomeSceneRatio(page: Page) {
       statsInside: !!stage.querySelector('[data-home-part="season-stats"]'),
     };
   });
-  expect(geometry.ratio).toBeCloseTo(3, 2);
-  expect(geometry.imageRatio).toBeCloseTo(geometry.nativeRatio, 2);
+  expect(geometry.height).toBeGreaterThanOrEqual(156);
+  expect(geometry.height).toBeLessThanOrEqual(244);
+  expect(await image.evaluate((node) => getComputedStyle(node).objectFit)).toBe('cover');
   // The season figures sit in their own card above the scene, never on it (→WEB-11).
   expect(geometry.statsInside).toBe(false);
   expect(geometry.stageTop).toBeGreaterThanOrEqual(geometry.seasonCardBottom);
@@ -142,9 +143,9 @@ export async function expectCompactStandings(page: Page) {
   expect(metrics.visibleRows).toBeGreaterThanOrEqual(7);
   expect(metrics.rowHeights.every((height) => height <= 48)).toBe(true);
   expect(metrics.overflow).toBe(true);
-  expect(metrics.tabBorder).toBe(1);
-  expect(metrics.tabBackground).toContain('/art/');
-  expect(metrics.tabFrame).toContain('/art/');
+  expect(metrics.tabBorder).toBe(0);
+  expect(metrics.tabBackground).toBe('none');
+  expect(metrics.tabFrame).toBe('none');
 }
 
 /** The current view fits one screen: nothing scrolls vertically or horizontally. */

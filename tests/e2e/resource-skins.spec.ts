@@ -38,6 +38,16 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
     await page.goto('/');
     await continueSlot(page);
     await expect(page.getByTestId('club-hub')).toBeVisible();
+    const visits = page.locator('[data-home-part="entrances"]');
+    await expect(visits.getByRole('button')).toHaveCount(3);
+    const visitBounds = await visits.boundingBox();
+    const sceneBounds = await page.locator('[data-home-part="scene"]').boundingBox();
+    expect(visitBounds!.height).toBeLessThan(sceneBounds!.height);
+    const dim = await page
+      .locator('[data-home-part="scene"] [data-facility-art]')
+      .evaluate((node) => getComputedStyle(node, '::after').backgroundColor);
+    expect(dim).toBe('rgba(5, 12, 10, 0.58)');
+    await page.screenshot({ path: `.tmp/resource-audit/${theme.id}-home.png` });
     const navigate = async (name: string) =>
       page.getByRole('button', { name, exact: true }).filter({ visible: true }).first().click();
     await openPersonnel(page, 'players');
@@ -55,6 +65,12 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
     await imageSkin(profile.locator('[data-ui="attribute-meter"]').first());
     await dialog.screenshot({ path: `.tmp/resource-audit/${theme.id}-player.png` });
     await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
+    await openPersonnel(page, 'training');
+    await page.screenshot({ path: `.tmp/resource-audit/${theme.id}-training.png` });
+    await openPersonnel(page, 'academy');
+    await page.screenshot({ path: `.tmp/resource-audit/${theme.id}-academy.png` });
+    await openPersonnel(page, 'coaches');
+    await page.screenshot({ path: `.tmp/resource-audit/${theme.id}-staff.png` });
     await navigate('클럽 홈');
     await page
       .getByRole('button', { name: '결재라인 모아보기', exact: true })
@@ -70,6 +86,17 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
       .evaluateAll((nodes) => nodes.every((node) => node.scrollWidth <= node.clientWidth));
     expect(readable).toBe(true);
     await expect(page.getByTestId('facility-stadium')).toBeVisible();
+    const facility = page.getByTestId('facility-stadium');
+    const inset = await facility.evaluate((node) => {
+      const css = getComputedStyle(node);
+      return [css.paddingTop, css.paddingRight, css.paddingBottom, css.paddingLeft].map(parseFloat);
+    });
+    expect(inset.every((value) => value >= 12)).toBe(true);
+    const review = facility.getByRole('button', { name: '경기장 공사 검토', exact: true });
+    await expect(review).not.toHaveAttribute('data-ui', 'primary');
+    const reviewBounds = await review.boundingBox();
+    const facilityBounds = await facility.boundingBox();
+    expect(reviewBounds!.width).toBeLessThan(facilityBounds!.width * 0.8);
     await page.screenshot({ path: `.tmp/resource-audit/${theme.id}-facilities.png` });
     await leaveOffice(page);
     await openCups(page);

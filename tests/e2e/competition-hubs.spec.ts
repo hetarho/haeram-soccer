@@ -10,6 +10,11 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
   await page.getByRole('button', { name: '클럽 창단 →', exact: true }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await openLeague(page);
+  const leagueTab = await page.getByRole('tab', { name: '리그', exact: true }).boundingBox();
+  const countrySelect = await page
+    .getByRole('combobox', { name: '국가', exact: true })
+    .boundingBox();
+  expect(Math.abs(leagueTab!.y - countrySelect!.y)).toBeLessThanOrEqual(2);
   await chooseOption(page.getByRole('combobox', { name: '국가', exact: true }), 'GER');
   await page.getByRole('tab', { name: '선수 기록', exact: true }).click();
   await expect(page).toHaveURL(/competition=league.*view=players.*league=GER\.0\.0/);

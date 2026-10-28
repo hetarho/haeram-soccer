@@ -161,24 +161,50 @@ function ClubScene({ w }: { w: World }) {
   );
 }
 
-/** Home's illustrated office entrance (→WEB-11/39). */
+/** Compact visits; only the owner's office currently has a management workflow (→WEB-11/39). */
 export function OfficeEntrance({ w }: { w: World }) {
+  const [visit, setVisit] = useState<string>();
   return (
-    <button
-      type="button"
-      className={s.office}
-      data-home-part="office"
-      aria-label="구단주 사무실 들어가기"
-      onClick={(event) => {
-        event.currentTarget.focus();
-        openOfficeLobby();
-      }}
-    >
-      <FacilityArt kind="manager" world={w} className={s.officeArt} />
-      <span className={s.officeEnter}>
-        구단주 사무실 들어가기 <PixelIcon name="chevronRight" size={14} />
-      </span>
-    </button>
+    <>
+      <section className={s.entrances} aria-label="구단 시설 방문" data-home-part="entrances">
+        {(
+          [
+            ['owner', 'manager', '구단주 사무실', '입장'],
+            ['manager', 'manager', '감독 사무실', '방문'],
+            ['training', 'training', '훈련장', '방문'],
+          ] as const
+        ).map(([id, kind, name, action]) => (
+          <button
+            key={id}
+            type="button"
+            className={s.office}
+            data-home-part="office"
+            aria-label={`${name} ${action}`}
+            aria-haspopup={id === 'owner' ? undefined : 'dialog'}
+            onClick={(event) => {
+              event.currentTarget.focus();
+              if (id === 'owner') openOfficeLobby();
+              else setVisit(name);
+            }}
+          >
+            <span className={s.officeBackdrop} aria-hidden="true">
+              <FacilityArt kind={kind} world={w} className={s.officeArt} />
+            </span>
+            <span className={s.officeEnter}>
+              <b>{name}</b>{' '}
+              <span>
+                {action} <PixelIcon name="chevronRight" size={12} />
+              </span>
+            </span>
+          </button>
+        ))}
+      </section>
+      {visit && (
+        <Dialog label={`${visit} · 준비 중`} onClose={() => setVisit(undefined)}>
+          <p>{visit}에서 할 수 있는 활동을 준비 중이에요.</p>
+        </Dialog>
+      )}
+    </>
   );
 }
 

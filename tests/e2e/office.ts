@@ -55,7 +55,7 @@ export async function enterOffice(page: Page, options: { timeout?: number } = {}
   const outcome = page.getByTestId('action-outcome');
   if (await outcome.isVisible())
     await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
-  const entrance = hub.getByRole('button', { name: '구단주 사무실 들어가기', exact: true });
+  const entrance = hub.getByRole('button', { name: '구단주 사무실 입장', exact: true });
   await entrance.evaluate((element) => element.scrollIntoView({ block: 'start' }));
   for (let attempt = 0; ; attempt++) {
     try {

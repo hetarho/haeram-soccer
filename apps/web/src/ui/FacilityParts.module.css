@@ -1,16 +1,22 @@
 /* One facility part: its heading, ladder or levels, demand, work in progress and next work. */
 .part {
   display: grid;
-  gap: 10px;
-  padding: 14px 0;
+  gap: var(--row-padding);
+  padding: var(--panel-padding);
+  margin-bottom: var(--panel-padding);
+  min-width: 0;
   border-bottom: 1px solid var(--line);
 }
 .part:last-of-type {
   border-bottom: 0;
 }
 .part > button {
-  min-height: 48px;
-  width: 100%;
+  min-height: var(--control-min-height);
+  width: auto;
+  justify-self: start;
+}
+.part > :first-child {
+  margin-bottom: 0;
 }
 /* The stadium's eight steps as one track: built steps lit, the next work marked. */
 .ladder {
