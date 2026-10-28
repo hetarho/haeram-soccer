@@ -13,11 +13,13 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
+| u7m4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T00:48Z | 2026-10-28T02:00Z | T536 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | e7q4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T01:49Z | 2026-10-28T01:54Z | T537 |
 | u7m4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T00:48Z | 2026-10-28T00:48Z | - |
 
 ## inbox
+- 261028 decided WEB-11 WEB-72 T536: facility scope and image treatment → three compact background-art entrances with manager/training preparation notices, plus a larger cover-cropped stadium (alt: implement unplanned room activities | keep one large owner entrance); detailed room activities await their own planning.
 - 261028 decided EURO-11 EURO-13 EURO-14: modern access fidelity → association quota bands, recorded five-year ranking and EPS, direct admission instead of new qualifiers, next-season activation (alt: keep uniform demo quotas | retcon active draws); keep the single domestic cup and explicitly label unmodelled EFL/domestic playoffs and eight-association ranking scope.
 - 261028 decided T531 WEB-100 WEB-74: how to keep request identity through submission and browser history → world-named request addresses and session snapshots, with a scoped client forwarding the existing forms/commands (alt: consume a one-shot request only | copy each form into the office); history can revisit resolved work safely, late replies cannot redirect another request/game, and business rules stay authoritative.
 - 261028 decided WEB-39 WEB-79: work grouping → player contracts (incl. youth), staff contracts (incl. manager), investment (finance/local/global/facilities), sponsors and identity; keep all seven saved responsibility keys (alt: merge stored responsibilities or retain an operating-policy gate). Shared inline controls and eligible direct actions use existing commands.
@@ -373,6 +375,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T536 | Compact facility entrances and app-wide spacing hierarchy | WEB ARCH | - | doing@261028.u7m4 |
 | T537 | European qualification by association, domestic results and titles | EURO ARCH | - | doing@261028.e7q4 |
 | T536 | Compact facility entrances and app-wide spacing hierarchy | WEB ARCH | - | doing@261028.u7m4 |
 
@@ -393,10 +396,12 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
+- implement-task T536: compact facility visits and shared UI spacing.
 - implement-task T537: correct association access, continental titleholders, EPS and qualification causes.
 - implement-task T536: compact home entrances, dimmed stadium and shared app spacing/control hierarchy.
 
 ## log
+- 261028 T536 planning shared for strict session claim; WEB r165.
 - 261028 create-task EURO r4: T537 covers allocation, recorded coefficients, compatibility and qualification explanation.
 - 261028 update-ssot EURO start and r4 done: modern access, holders, EPS and forward-only save compatibility; create-task EURO next.
 - 261028 gameplay hierarchy shipped: WEB r164, T530-T535 and verified test repairs; main 8af246fa passed all nine CI jobs; report 261028-g8u4.
