@@ -1,4 +1,5 @@
 import { openOfficeWork } from './officeDesks';
+import { PlaceActivities } from './PlaceActivities';
 import { PlayerOfficeWork, OfficeWorkResponsibility } from './PlayerOfficePanel';
 import { saleOfferItems } from './playerOfficeWork';
 import { AreaCriteria } from './DirectionLines';
@@ -105,7 +106,6 @@ import { yellowWarning } from '../../../../packages/engine/src/discipline';
 import { PlayerLink } from './PlayerSheet';
 import { Attributes } from './Attributes';
 import { StyleCard } from './StyleCard';
-import { RemedySheet } from './RemedySheet';
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
 import { MANAGER_TRAIT_INFO } from '../../../../packages/engine/src/staff-info';
 import {
@@ -116,7 +116,7 @@ import {
 } from '../../../../packages/engine/src/ops-staff';
 import { roundsUntilRefresh } from '../../../../packages/engine/src/managerMarket';
 import { ClubLink } from './ClubLink';
-import { runwayText, type StateKey } from './teamState';
+import { runwayText } from './teamState';
 import { PlayerComparison } from './PlayerComparison';
 import { compactMoney, contractLine, number } from './format';
 import { Money } from './Money';
@@ -206,7 +206,7 @@ function OfficePersonnelWork({
           tab === 'recruitment' ? (
             <RecruitmentDesk state={state} client={client} />
           ) : tab === 'academy' ? (
-            <AcademyPanel w={state.view!.world} client={client} />
+            <PlaceActivities place="academy" state={state} client={client} />
           ) : (
             <>
               {tab === 'sales' && (
@@ -355,8 +355,7 @@ function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => 
     m = w.manager,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
     [tactic, setTactic] = useTaskState(w.id, 'manager-tactic', w.tactic),
-    [tone, setTone] = useTaskState(w.id, 'manager-tone', 'respect'),
-    [requests, setRequests] = useState<StateKey>();
+    [tone, setTone] = useTaskState(w.id, 'manager-tone', 'respect');
   const disabled = useGameState(gameActionsBlocked);
   const response = w.events.filter((e) => e.kind === 'manager-response').at(-1);
   // What a conditional acceptance asks the owner to put into training.
@@ -391,8 +390,6 @@ function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => 
             <div className={s.actions}>
               {/* Like a coach's 교체, the market opens as a list over the office (→WEB-40). */}
               <button onClick={onReplace}>{m.interim ? '감독 선임' : '교체'}</button>
-              <button onClick={() => setRequests('manager')}>감독에게 힘 실어주기</button>
-              <button onClick={() => setRequests('morale')}>선수단 분위기 요청</button>
             </div>
             <details className={management.reference}>
               <summary>감독 능력·성향</summary>
@@ -491,14 +488,6 @@ function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => 
           </div>
         </Panel>
       </div>
-      {requests && (
-        <RemedySheet
-          w={w}
-          client={client}
-          state={requests}
-          onClose={() => setRequests(undefined)}
-        />
-      )}
     </>
   );
 }
@@ -1337,6 +1326,7 @@ export default function Rich({
         key={`${state.view!.world.id}:${page}`}
         page={page}
         state={state}
+        client={client}
         panel={(tab, replace) => (
           <PersonnelPanel tab={tab} state={state} client={client} onReplace={replace} />
         )}

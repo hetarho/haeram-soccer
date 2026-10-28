@@ -1,3 +1,6 @@
+import { Money } from './Money';
+import { placeAcademy } from './teamState';
+import { clubOf } from '../../../../packages/engine/src/player-state';
 import { registrationRoom } from '../../../../packages/engine/src/registration';
 import { useTaskState } from './taskMemory';
 import { PlayerLink } from './PlayerSheet';
@@ -49,10 +52,12 @@ export function AcademyPanel({
   w,
   client,
   selected,
+  onReview,
 }: {
   w: World;
   client: GameClient;
   selected?: string;
+  onReview?: (id: string) => void;
 }) {
   const acting = useActing();
   const [promoted, setPromoted] = useTaskState<string | undefined>(
@@ -61,7 +66,8 @@ export function AcademyPanel({
     undefined,
   );
   const arrived = w.players.find((person) => person.id === promoted && person.status === 'active');
-  const summary = academySummary(w);
+  const summary = placeAcademy(w);
+  const club = clubOf(w);
   const groups = selected
     ? summary.groups
         .map((group) => ({
@@ -79,7 +85,7 @@ export function AcademyPanel({
   const investment = currentStepName(w, 'academy');
   return (
     <div className={s.stack}>
-      {arrived && (
+      {!selected && arrived && (
         <section data-surface="panel" className={s.card} aria-label="승격한 선수 관리">
           <h3>1군에 합류했어요</h3>
           <PlayerLink id={arrived.id} name={arrived.name} />
@@ -139,39 +145,60 @@ export function AcademyPanel({
                         </small>
                       </div>
                       <div className={s.prospectActions}>
-                        <button
-                          data-ui="primary"
-                          type="button"
-                          className={readiness === 'ready' ? s.primary : undefined}
-                          aria-label={`${p.name} 1군 승격`}
-                          disabled={
-                            acting ||
-                            !!registrationRoom(w, { ...p, graduate: true, joined: w.year }) ||
-                            age < summary.promotionAge
-                          }
-                          title={
-                            age < summary.promotionAge
-                              ? `첫 프로 계약은 ${summary.promotionAge}세부터`
-                              : undefined
-                          }
-                          onClick={() => {
-                            void client
-                              .command({ type: 'promote-youth', id: p.id })
-                              .then((reply) => {
-                                if (reply?.ok) setPromoted(p.id);
-                              });
-                          }}
-                        >
-                          1군 승격
-                        </button>
-                        <button
-                          type="button"
-                          aria-label={`${p.name} 방출`}
-                          disabled={acting}
-                          onClick={() => void client.command({ type: 'release-youth', id: p.id })}
-                        >
-                          방출
-                        </button>
+                        <small>
+                          승격 후 연봉{' '}
+                          <Money
+                            value={
+                              summary.players.find((one) => one.player.id === p.id)!.promotionWage
+                            }
+                            code={club.country}
+                            year={w.year}
+                          />
+                          {' · '}계약 종료 {w.year + 3}년
+                        </small>
+                        {onReview ? (
+                          <button type="button" onClick={() => onReview(p.id)}>
+                            {p.name} 승격·방출 검토
+                          </button>
+                        ) : (
+                          <>
+                            <button
+                              data-ui="primary"
+                              type="button"
+                              className={readiness === 'ready' ? s.primary : undefined}
+                              aria-label={`${p.name} 1군 승격`}
+                              disabled={
+                                acting ||
+                                !!registrationRoom(w, { ...p, graduate: true, joined: w.year }) ||
+                                age < summary.promotionAge
+                              }
+                              title={
+                                age < summary.promotionAge
+                                  ? `첫 프로 계약은 ${summary.promotionAge}세부터`
+                                  : undefined
+                              }
+                              onClick={() => {
+                                void client
+                                  .command({ type: 'promote-youth', id: p.id })
+                                  .then((reply) => {
+                                    if (reply?.ok) setPromoted(p.id);
+                                  });
+                              }}
+                            >
+                              1군 승격
+                            </button>
+                            <button
+                              type="button"
+                              aria-label={`${p.name} 방출`}
+                              disabled={acting}
+                              onClick={() =>
+                                void client.command({ type: 'release-youth', id: p.id })
+                              }
+                            >
+                              방출
+                            </button>
+                          </>
+                        )}
                       </div>
                     </li>
                   ))}
@@ -186,89 +213,97 @@ export function AcademyPanel({
           <p className={s.note}>선수단의 전체 등록 한도가 가득 차 승격할 수 없어요.</p>
         )}
       </section>
-      <YouthTraining w={w} />
-      <section data-surface="panel" className={s.card} aria-label="유소년 운영">
-        <header className={s.head}>
-          <h3>아카데미 운영</h3>
-        </header>
-        <button
-          data-ui="link"
-          type="button"
-          className={s.homeLine}
-          onClick={() => openDirection('youth')}
-        >
-          <span>
-            <b>유소년 투자 · 유입 방식은 업무 기준에서</b>
-            <small>
-              지금 {investment} · {cardOf(buildOf(w), 'youth').label} · 반복 운영비와 다음 입단에
-              반영
-            </small>
-          </span>
-          <span aria-hidden="true">›</span>
-        </button>
-        <button
-          data-ui="link"
-          type="button"
-          className={s.homeLine}
-          onClick={() => openStaff('youth')}
-        >
-          <span>
-            <b>유스 디렉터 {director?.name ?? '공석'}</b>
-            <small>담당자의 효과와 계약 · 선임·교체</small>
-          </span>
-          <span aria-hidden="true">›</span>
-        </button>
-        <button
-          data-ui="link"
-          type="button"
-          className={s.homeLine}
-          onClick={() => openFacility('academy')}
-        >
-          <span>
-            <b>유소년 시설 {w.academyFacility}단계 · 공사 보기</b>
-            <small>투자 운영비와 별도로 공사비를 내고 완공 후 효과를 받아요</small>
-          </span>
-          <span aria-hidden="true">›</span>
-        </button>
-      </section>
-      <section data-surface="panel" className={s.card} aria-label="유소년 위임">
-        <header className={s.head}>
-          <h3>유스 디렉터</h3>
-          <span>
-            {director ? `${director.name} · 능력 ${Math.round(director.ability)}` : '공석'}
-          </span>
-        </header>
-        <div className={s.delegate}>
-          <DecisionOwner
-            w={w}
-            decision="academy"
-            plain
-            auto="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격과 방출을 정하고 알림·결정에 보고해요."
-            owner="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격 추천과 방출 검토를 보고하고, 결정은 직접 해요."
-          />
-          <DirectionLines w={w} rows={['youthGoal', 'debut', 'finance']} />
-          <ul className={s.rule}>
-            <li>
-              <b>승격</b>
+      {!selected && (
+        <>
+          <p className={s.note}>
+            승격하면 시장 급여의 첫 프로 계약을 맺고 1군의 출전 경쟁에 참여해요. 방출하면 이 선수의
+            잠재력과 남은 육성 기회를 잃어요.
+          </p>
+          <YouthTraining w={w} />
+          <section data-surface="panel" className={s.card} aria-label="유소년 운영">
+            <header className={s.head}>
+              <h3>아카데미 운영</h3>
+            </header>
+            <button
+              data-ui="link"
+              type="button"
+              className={s.homeLine}
+              onClick={() => openDirection('youth')}
+            >
               <span>
-                {summary.promotionAge}세(첫 프로 계약 나이) 이상이고 데뷔 시점이 정한 기준에 이르면,
-                1군과 그 포지션에 자리가 있을 때 · {directionOption(w, 'debut').summary}
+                <b>유소년 투자 · 유입 방식은 업무 기준에서</b>
+                <small>
+                  지금 {investment} · {cardOf(buildOf(w), 'youth').label} · 반복 운영비와 다음
+                  입단에 반영
+                </small>
               </span>
-            </li>
-            <li>
-              <b>방출</b>
+              <span aria-hidden="true">›</span>
+            </button>
+            <button
+              data-ui="link"
+              type="button"
+              className={s.homeLine}
+              onClick={() => openStaff('youth')}
+            >
               <span>
-                {directionOption(w, 'youthGoal').summary} · 나머지는 {ACADEMY_LEAVE_AGE}세가 되면
-                아카데미를 떠나요
+                <b>유스 디렉터 {director?.name ?? '공석'}</b>
+                <small>담당자의 효과와 계약 · 선임·교체</small>
               </span>
-            </li>
-            <li>
-              <b>보류</b>
-              <span>운영자금이 재정 기조가 정한 운영비보다 적으면 승격을 미루고 보고</span>
-            </li>
-          </ul>
-        </div>
-      </section>
+              <span aria-hidden="true">›</span>
+            </button>
+            <button
+              data-ui="link"
+              type="button"
+              className={s.homeLine}
+              onClick={() => openFacility('academy')}
+            >
+              <span>
+                <b>유소년 시설 {w.academyFacility}단계 · 공사 보기</b>
+                <small>투자 운영비와 별도로 공사비를 내고 완공 후 효과를 받아요</small>
+              </span>
+              <span aria-hidden="true">›</span>
+            </button>
+          </section>
+          <section data-surface="panel" className={s.card} aria-label="유소년 위임">
+            <header className={s.head}>
+              <h3>유스 디렉터</h3>
+              <span>
+                {director ? `${director.name} · 능력 ${Math.round(director.ability)}` : '공석'}
+              </span>
+            </header>
+            <div className={s.delegate}>
+              <DecisionOwner
+                w={w}
+                decision="academy"
+                plain
+                auto="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격과 방출을 정하고 알림·결정에 보고해요."
+                owner="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격 추천과 방출 검토를 보고하고, 결정은 직접 해요."
+              />
+              <DirectionLines w={w} rows={['youthGoal', 'debut', 'finance']} />
+              <ul className={s.rule}>
+                <li>
+                  <b>승격</b>
+                  <span>
+                    {summary.promotionAge}세(첫 프로 계약 나이) 이상이고 데뷔 시점이 정한 기준에
+                    이르면, 1군과 그 포지션에 자리가 있을 때 · {directionOption(w, 'debut').summary}
+                  </span>
+                </li>
+                <li>
+                  <b>방출</b>
+                  <span>
+                    {directionOption(w, 'youthGoal').summary} · 나머지는 {ACADEMY_LEAVE_AGE}세가
+                    되면 아카데미를 떠나요
+                  </span>
+                </li>
+                <li>
+                  <b>보류</b>
+                  <span>운영자금이 재정 기조가 정한 운영비보다 적으면 승격을 미루고 보고</span>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </>
+      )}
     </div>
   );
 }

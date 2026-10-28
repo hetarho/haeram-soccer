@@ -284,6 +284,9 @@ function CandidateCard({
               >
                 1시즌 임대
               </button>
+              {offer.available && !offer.freeAgent && (
+                <small>판매 구단이 2–4일 뒤 답해요. 수락 시 임대료와 연봉이 발생해요.</small>
+              )}
               {offer.freeAgent ? (
                 <small>자유계약 선수는 임대할 수 없어요. 자유계약 영입을 이용해 주세요.</small>
               ) : (
@@ -400,14 +403,23 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
     )
       return;
     const reply = await client.command(
-      { type: 'recruit', target: candidate.offer.target, loan },
+      candidate.offer.freeAgent
+        ? { type: 'recruit', target: candidate.offer.target, loan: false }
+        : {
+            type: 'bid',
+            target: candidate.offer.target,
+            fee: loan ? candidate.offer.loanFee : candidate.offer.fee,
+            loan,
+          },
       { background: true },
     );
     if (!currentWorld()) return;
     setMessage({
       world: w.id,
       text: reply?.ok
-        ? `${candidate.offer.player.name} ${loan ? '임대를' : '영입을'} 저장했어요.`
+        ? candidate.offer.freeAgent
+          ? `${candidate.offer.player.name} 영입을 저장했어요.`
+          : `${candidate.offer.player.name} 임대 제안을 보냈어요. 구단이 수락하면 계약이 완료돼요.`
         : client.state.error || '계약을 적용하지 못했어요.',
     });
   };

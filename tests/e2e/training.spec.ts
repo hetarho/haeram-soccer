@@ -349,7 +349,14 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   await expect(page.getByTestId('academy-intake')).toContainText('3월 15일');
   await expect(academy.getByRole('listitem')).toHaveCount(1);
   await expect(academy).toContainText(prospect.name);
-  await academy.getByRole('button', { name: `${prospect.name} 1군 승격`, exact: true }).click();
+  await academy
+    .getByRole('button', { name: `${prospect.name} 승격·방출 검토`, exact: true })
+    .click();
+  const review = page.getByRole('dialog', { name: '유소년 승격·방출 검토', exact: true });
+  await expect(review).toContainText('승격 후 연봉');
+  await review.getByRole('button', { name: `${prospect.name} 1군 승격`, exact: true }).click();
+  await expect(review).toContainText('이미 승격·방출되었거나');
+  await review.getByRole('button', { name: '취소', exact: true }).click();
   await closeOutcome(page, '유소년을 1군으로 올렸어요');
   await expect(academy.getByRole('listitem')).toHaveCount(0);
   await expect(academy).toContainText('아직 아카데미 선수가 없어요');

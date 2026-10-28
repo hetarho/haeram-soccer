@@ -1,6 +1,7 @@
+import { PlaceActivities } from './PlaceActivities';
 import { useLocale } from '../presentation/react';
 import { useEffect, type ReactNode } from 'react';
-import type { ClientState } from '../runtime/client';
+import type { ClientState, GameClient } from '../runtime/client';
 import { FIRST_TEAM_TABS, STAFF_TABS } from './personnelNavigation';
 import { openPersonnel, usePeopleView, type PeopleTab } from './state';
 import { useTaskState } from './taskMemory';
@@ -12,11 +13,13 @@ import { tacticLabel } from '../../../../packages/engine/src/tactics';
 export function PersonnelHub({
   page,
   state,
+  client,
   panel,
   market,
 }: {
   page: 'firstTeam' | 'staff';
   state: ClientState;
+  client: GameClient;
   panel: (tab: PeopleTab, replace: () => void) => ReactNode;
   market: (close: () => void) => ReactNode;
 }) {
@@ -77,6 +80,13 @@ export function PersonnelHub({
               ? `스태프 ${w.staff?.length ?? 0}명 · 감독 ${w.manager.name}`
               : `감독 ${w.manager.name} · ${tacticLabel[w.tactic]}`}
           </FacilityOverview>
+        )}
+        {(tab === 'manager' || tab === 'coaches') && (
+          <PlaceActivities
+            place={tab === 'manager' ? 'manager' : 'coaching'}
+            state={state}
+            client={client}
+          />
         )}
         {panel(tab as PeopleTab, replace)}
       </TabPanel>

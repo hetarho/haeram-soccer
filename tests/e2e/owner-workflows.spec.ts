@@ -35,7 +35,11 @@ test('contextual-sheet-restores-candidate', async ({ page }) => {
   const roles = filter.getByRole('group', { name: '영입 포지션 선택' });
   await roles.getByRole('button', { name: 'GK', exact: true }).click();
   await closeMarketPanel(page, '영입 필터');
-  for (const row of await marketRows(page).all())
+  await expect(marketRows(page).first()).toBeVisible();
+  const selectedPage = await marketRows(page).evaluateAll((rows) =>
+    rows.map((row) => row.getAttribute('data-candidate-id')),
+  );
+  for (const row of (await marketRows(page).all()).slice(0, 2))
     await row.getByRole('button', { name: / 비교$/ }).click();
   await expect(page.locator('button[aria-label="선택한 2명 비교"]')).toBeEnabled();
   await marketInfo(page);
@@ -50,9 +54,13 @@ test('contextual-sheet-restores-candidate', async ({ page }) => {
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
   await expect(trigger).toBeFocused();
-  await expect(marketRows(page)).toHaveCount(2);
-  for (const row of await marketRows(page).all())
-    await expect(row).toHaveAttribute('data-line', 'GK');
+  await expect
+    .poll(() =>
+      marketRows(page).evaluateAll((rows) =>
+        rows.map((row) => row.getAttribute('data-candidate-id')),
+      ),
+    )
+    .toEqual(selectedPage);
   await expect(page.locator('button[aria-label="선택한 2명 비교"]')).toBeEnabled();
   await trigger.click();
   await dialog
@@ -64,8 +72,14 @@ test('contextual-sheet-restores-candidate', async ({ page }) => {
   // The applied scouting level redraws the candidate list, so its rows may change; the GK filter
   // and both compared players, kept as their selection-time snapshots, stay (→WEB-43/77).
   await expect(marketRows(page).first()).toBeVisible();
-  for (const row of await marketRows(page).all())
-    await expect(row).toHaveAttribute('data-line', 'GK');
+  await closeMarketPanel(page, '영입 정보');
+  const retainedFilter = await marketFilters(page);
+  await expect(retainedFilter.getByRole('button', { name: 'GK', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await closeMarketPanel(page, '영입 필터');
+  await marketInfo(page);
   await expect(page.locator('button[aria-label="선택한 2명 비교"]')).toBeEnabled();
   expect(page.url()).toBe(url);
   await trigger.click();

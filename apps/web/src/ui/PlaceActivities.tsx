@@ -6,17 +6,15 @@ import type { ClientState, GameClient } from '../runtime/client';
 import { AcademyPanel } from './AcademyPanel';
 import { activeDialogSurface, Dialog } from './Dialog';
 import { Money } from './Money';
-import { Select } from './Select';
 import { TrainingOrderSheet } from './TrainingOrderSheet';
 import {
   activityUnavailable,
   placeActivities,
   placeActivityClient,
   type ActivityPlace,
-} from './placeActivities';
+} from './placeActivityChoices';
 import s from './PlaceActivities.module.css';
 
-/** Import from './PlaceActivities.tsx' to distinguish the component from placeActivities.ts. */
 export interface PlaceActivitiesProps {
   place: ActivityPlace;
   state: ClientState;
@@ -38,7 +36,6 @@ function Activities({ place, state, client }: PlaceActivitiesProps) {
   const model = placeActivities(w, place);
   const club = clubOf(w);
   const [inspection, setInspection] = useState<Inspection>();
-  const [prospect, setProspect] = useState('');
   const [error, setError] = useState('');
   const [sending, setSending] = useState(false);
   const mounted = useRef(true);
@@ -77,9 +74,6 @@ function Activities({ place, state, client }: PlaceActivitiesProps) {
     inspection?.type === 'care'
       ? activityUnavailable(state, { id: w.id, revision: inspection.revision })
       : lockReason;
-  const selected =
-    model.academy?.players.find(({ player }) => player.id === prospect) ??
-    model.academy?.players[0];
   const reviewed =
     inspection?.type === 'academy'
       ? model.academy?.players.find(({ player }) => player.id === inspection.player)
@@ -139,7 +133,7 @@ function Activities({ place, state, client }: PlaceActivitiesProps) {
             </button>
           </li>
         ))}
-        {place !== 'manager' && (
+        {place === 'coaching' && (
           <li>
             <div>
               <b>{model.training.role}에게 훈련 제안·강행</b>
@@ -152,21 +146,10 @@ function Activities({ place, state, client }: PlaceActivitiesProps) {
                 {model.training.wait > 0 ? ` 재제안 ${model.training.wait}라운드 후.` : ''} 강행 시
                 사임 확률 {Math.round(model.training.risk * 100)}% · 공석이 생길 수 있어요.
               </small>
-              {place === 'academy' ? (
-                <ul className={s.chances} aria-label="유소년 훈련의 성장 교환">
-                  {Object.entries(model.training.youthFocuses).map(([key, focus]) => (
-                    <li key={key}>
-                      {focus.label} · {focus.description} · U-17 ×{focus.growth.u17} / U-19 ×
-                      {focus.growth.u19} / U-21 ×{focus.growth.u21}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <small>
-                  회복은 성장 기회를 줄이고, 하드는 피로·부상·분위기 부담을 늘려요. 비교 후
-                  제안하세요.
-                </small>
-              )}
+              <small>
+                회복은 성장 기회를 줄이고, 하드는 피로·부상·분위기 부담을 늘려요. 비교 후
+                제안하세요.
+              </small>
               {model.training.unavailable && <p className={s.note}>{model.training.unavailable}</p>}
             </div>
             <button type="button" onClick={() => inspect({ type: 'training' })}>
@@ -174,54 +157,14 @@ function Activities({ place, state, client }: PlaceActivitiesProps) {
             </button>
           </li>
         )}
-        {model.academy && (
-          <li>
-            <div>
-              <b>유소년 승격·방출</b>
-              <p>
-                구단주 직접 결정 가능 ·{' '}
-                {model.academy.delegated ? '유스 디렉터가 자동 판단 중' : '구단주 보고받기'} · 결정
-                즉시 반영
-              </p>
-              <small>
-                승격하면 아카데미 성장 대신 1군 훈련을 받고 시장 급여의 첫 프로 계약을 맺어요.
-                방출하면 이 선수의 남은 육성 기회를 잃어요.
-              </small>
-              <Select
-                aria-label="검토할 유망주"
-                value={selected?.player.id ?? ''}
-                onValueChange={setProspect}
-                disabled={!selected}
-              >
-                {!selected && <option value="">승격·방출할 유망주 없음</option>}
-                {model.academy.players.map((one) => (
-                  <option key={one.player.id} value={one.player.id}>
-                    {one.player.name} · {one.age}세 · OVR {one.overall} / POT {one.potential} ·{' '}
-                    {one.label}
-                  </option>
-                ))}
-              </Select>
-              {selected && (
-                <p>
-                  승격 후 연봉{' '}
-                  <Money value={selected.promotionWage} code={club.country} year={w.year} /> · 계약
-                  종료 {w.year + 3}년
-                </p>
-              )}
-              {!selected && (
-                <p className={s.note}>아카데미가 비어 있어요. 다음 유소년 입단을 기다려 주세요.</p>
-              )}
-            </div>
-            <button
-              type="button"
-              disabled={!selected}
-              onClick={() => selected && inspect({ type: 'academy', player: selected.player.id })}
-            >
-              승격·방출 조건 검토
-            </button>
-          </li>
-        )}
       </ul>
+      {model.academy && (
+        <AcademyPanel
+          w={w}
+          client={scoped}
+          onReview={(player) => inspect({ type: 'academy', player })}
+        />
+      )}
       {error && (
         <p role="alert" className={s.note}>
           {error}

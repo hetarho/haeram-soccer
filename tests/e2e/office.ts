@@ -24,7 +24,7 @@ async function dismissCelebration(page: Page) {
 }
 
 /**
- * Enters the owner office through home's entrance (→WEB-11/39): it has no menu entry, and the
+ * Enters the owner office through home's entrance (→WEB-11/39); the
  * shell hides the HUD, calendar, controls and menus while it is open. Dismiss an observation
  * dialog before using the entrance; dismissing never resolves its work. A no-op inside the office.
  */

@@ -1,7 +1,7 @@
 import { openPersonnel } from './personnel-navigation';
 import { openClubRecords, openLeague } from './competition-navigation';
 import { openOfficeLibrary } from './office';
-import { marketRows, marketInfo, closeMarketPanel } from './market';
+import { marketRows, marketFilters, marketInfo, closeMarketPanel } from './market';
 import { finishSeason, advanceOneRound } from './season-progression';
 import { openCurrentClubSeason, openSeasonReview } from './record-navigation';
 import { chooseOption } from './select';
@@ -53,6 +53,16 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await peopleTab('이적시장').click();
   await expect(peopleTab('이적시장')).toHaveAttribute('aria-selected', 'true');
   await expect(page).toHaveURL(/\/first-team\?view=market$/);
+  const marketFilter = await marketFilters(page);
+  await chooseOption(
+    marketFilter.getByRole('combobox', { name: '영입 후보 정렬', exact: true }),
+    'fee',
+  );
+  await chooseOption(
+    marketFilter.getByRole('combobox', { name: '영입 정렬 방향', exact: true }),
+    'asc',
+  );
+  await closeMarketPanel(page, '영입 필터');
   await marketRows(page)
     .filter({ hasText: '자유계약' })
     .first()
