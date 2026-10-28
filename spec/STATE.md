@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T19:25Z | - |
+| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T19:39Z | - |
 
 ## inbox
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
@@ -414,9 +414,10 @@
 | club-browser-fix | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-10-28T19:38:08.190Z | [history](work/club-browser-fix.json) |
 
 ## next
-- cp29: finish approved/queued browser corrections in club-browser-fix, merge the completed units, then rerun the complete final gate and publish only after it passes.
+- cp29: all place/market corrections integrated; scoped training/market proofs pass. Complete the frozen final gate, publish verified main and wait for CI.
 
 ## log
+- 261029 cp29 integrate all T562–T568; training three viewports and market compact/running-clock three actual browser probes pass; freeze the complete final candidate.
 - 261029 cp29 audit331 Chromium cases(296pass35fail); scoped T563 proof4pass2fail, corrective units T562–T568 remain under review/implementation.
 - 261028 T566 integrated
 - 261028 T568 integrated
@@ -436,4 +437,3 @@
 - 261029 create-task T562 (cp29): reproduced facility and route-transition browser drift; implement in an isolated worker while the coordinator completes the frozen browser run.
 - 261029 fix host.world-market fixture: use the protocol’s legal stale revision -1 instead of invalid -100; preserve bounded reads, source identity, settlement and idempotency assertions.
 - 261029 cp29 all requested tasks integrated at c3aad1f4; final synchronized batch begins before one main publication.
-- 261028 T556 integrated
