@@ -1,9 +1,9 @@
 # WEB Browser game delivery
-> r165 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r166 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
-- WEB-2 [o] Play a fictional club founded in 1950, five seasons before the 1955 European Cup, in its country's amateur league below the professional pyramid (→WORLD-5); choose country, name, club identity and home/away/third shirts (→KIT-1/2/3), seed, difficulty level (→WEB-3) and the club's direction (→WEB-15). ← clubs were founded at all times; starting close to the continental era keeps the road to Europe within reach
+- WEB-2 [o] Play a fictional club founded in 1950, five seasons before the 1955 European Cup, in its country's amateur league below the professional pyramid (→WORLD-5); choose country, name, club identity, home/away/third kits and the goalkeeper kit (→KIT-1/2/3/8), seed, difficulty level (→WEB-3) and the club's direction (→WEB-15). ← clubs were founded at all times; starting close to the continental era keeps the road to Europe within reach
 - WEB-3 [o] Four difficulty levels set only the start: 쉬움 2×, 보통 1×, 어려움 0.5× and 최상 0.25× the founding annual operating budget in cash, and a starting XI at the league average plus 0, −2, −4 or −6 (→CLUB-1). Every rule, coefficient and chance is the same at every level (→LEAGUE-13), and a shared seed makes the same world. ← the start decides how hard a career is; the dice never change
 - WEB-4 [o] Home, match observation, Season, History, first-team, academy, coaching and owner-office workflows are playable views, with progress and actionable errors.
 - WEB-5 [o] Time progression has automatic and manual modes, with automatic selected for a new game. The owner can switch modes, subject to →WEB-76.
@@ -250,11 +250,11 @@
 
 - WEB-49 [o] Every club's crest and representative colours follow its applied identity (→KIT-1/2/11), including the owner's chosen template or component composition.
   - Show that crest wherever the club is named: HUD, home fixture, event cards, standings, round results, fixture notebook, team sheets, game slots and the match scoreboard.
-  - Pitch shirts use the fixture's selected home/away/third designs and automatic goalkeeper colours (→KIT-6/8), including their patterns; a crest-derived single colour is not the shirt design.
-  - Show selected-kit swatches beside team labels in the match view. Charts keep readable, distinctly labelled series; colour alone is never the only link from a series or a player marker to its team.
+  - Pitch figures wear the fixture's selected home/away/third kits with their patterns, shorts and socks, and its goalkeeper kits or fallback colours (→KIT-6/8, →MATCH-36); a crest-derived single colour is not the kit design.
+  - Show selected-kit swatches beside team labels in the match view. Charts keep readable, distinctly labelled series; colour alone is never the only link from a series or a player figure to its team.
   - Appearance in historical playback follows →KIT-12; a new crest edit must not silently contradict the chosen historical policy.
 - WEB-50 [o] The match theatre stacks one row with the back-home control, the scoreboard with crests (short names on phones); minute/latest action with speed chips (1x–16x); the pitch, which keeps a 1.9:1 width-to-height ratio on every screen; the latest event; live charts; and two actions.
-  - Outfield players visibly wear the selected shirt colours and pattern at the actual observation scale, with readable numbers and team outlines; a patterned legend beside solid-colour players does not satisfy →WEB-49.
+  - Players are drawn as figures wearing their selected kits at the actual observation scale (→MATCH-36), with readable number tags and team colours; a patterned legend beside solid-colour players does not satisfy →WEB-49.
   - the scoreboard shows red cards and added time (45+n, 90+n); the latest event reads as spatial commentary (→MATCH-24) and names substitutions and injuries.
   - charts switch between rolling 10-minute possession share, cumulative xG with goal marks and cumulative shots; they reveal data only up to the presented minute.
   - actions: preparation and the primary action, which reads "결과 보기" while the match plays and "홈으로" after it ends. The completed-match action never advances to another fixture.
@@ -444,16 +444,16 @@
 
 - WEB-86 [o] One club-design editor is available before founding and under 구단주 사무실 › 구단 디자인 afterwards.
   - Show exactly three colour controls labelled 홈, 어웨이 and 세컨 (→KIT-1/4/10). Ready-made crest previews use home/away colours. A 랜덤 button selects crest components; 직접 꾸미기 exposes the selected shape, background pattern and emblem (→KIT-2).
-  - Home, away and third have separate shirt previews and pattern choices; their colours follow the three named controls and linked second colours (→KIT-1/4/10). Do not add shorts/socks or goalkeeper customisation (→KIT-3/8).
+  - Home, away and third have separate kit previews and pattern choices; shirt colours follow the three named controls and linked second colours (→KIT-1/4/10), and each kit has its own shorts and socks colour controls (→KIT-3). A 골키퍼 tab edits the goalkeeper kit's pattern, shirt colours, shorts, socks and gloves (→KIT-8).
   - Changes are drafts until explicit use at founding or 적용 in a career. 취소 restores the design present on editor entry; a failed apply retains the draft and the last applied identity with an actionable error.
   - Ordinary detours retain the editor draft within that game session under →WEB-74. Another slot or a new game never inherits it. Read-only ownership explains unavailable apply without hiding the design.
   - Colour controls have names and values, visible keyboard focus and an accessible selected state; the crest and shirt previews update while choosing, before the owner commits. Keep the phone scroll, target-size and contrast rules (→WEB-17/38/63).
-- WEB-87 [o] The design editor previews both a large crest/shirt sample and its actual appearance at match-observation scale on grass.
-  - Switch the own preview between home/away/third; include an opposing side and automatic goalkeeper colours so the selected pairing can be assessed.
+- WEB-87 [o] The design editor previews a large crest, a large player figure wearing the selected kit, and the figures' actual appearance at match-observation scale on grass (→MATCH-36).
+  - Switch the own preview between home/away/third and the goalkeeper kit; include an opposing side and both goalkeepers so the selected pairing can be assessed.
   - Offer light and dark opponent examples, clearly identified as previews. They do not create a real fixture, progress the calendar or imply a simulated score.
-  - Pattern placement and colours agree between the sample, the pitch preview and match observation. Coarse stripes/checks, player numbers and team outlines remain readable on supported phone sizes.
+  - Pattern placement and colours agree between the sample, the pitch preview and match observation. Patterns are legible in the large sample and at desktop match scale; on supported phone sizes number tags, team colours and facing remain readable (→KIT constraints).
 - WEB-88 [o] Match preparation names the forthcoming fixture and its automatically selected shirts, with an optional home/away/third selector for the own side (→KIT-6).
-  - Preview both teams and goalkeeper colours before committing a fixture-level choice; clash warnings and confirmation rules follow →KIT-7.
+  - Preview both teams' kits and goalkeepers before committing a fixture-level choice, stating when a fallback colour replaces our designed goalkeeper kit for this fixture (→KIT-8); clash warnings and confirmation rules follow →KIT-7.
   - A selected design is not silently repainted into another palette. If the forthcoming fixture changes before commit, refresh its context rather than applying the old choice to a different match.
   - A historical or already settled match offers no kit-changing action. Skipping preparation keeps automatic selection and the existing watch/play-through paths.
 
@@ -547,6 +547,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r166 261028 WEB-2✎ shirts→kits and goalkeeper kit; WEB-49✎ shirts, automatic goalkeeper colours→figures in kits, goalkeeper kit or fallback; WEB-50✎ readable shirt patterns→figures with number tags and team colours; WEB-86✎ no shorts/socks/goalkeeper editing→shorts/socks per kit, 골키퍼 tab; WEB-87✎ shirt sample, phone patterns→figure sample, phones keep tags/colours/facing; WEB-88✎ goalkeeper colours→kits, goalkeepers, fallback notice
 - r165 261028 WEB-10✎ compact controls→explicit inset cards, quiet content-width review actions and grouped competition controls; WEB-11✎ one large owner illustration→three compact dimmed entrances, owner opens office and manager/training show preparation notices; WEB-72✎ native 3:1 home stadium→bounded cover-cropped dimmed background with bright inset labels
 - r164 261028 WEB-10✎ league/cup/records/squad/training→Season/History/home/first-team/youth/staff; WEB-11✎ thumbnail and area copy→full illustration and entrance action; WEB-14/39/60/71/77✎ operating-policy destination→work desks with scoped shared editors; WEB-40/47/54✎ separate current/archive competition destinations→Season current League/Cup and History club/previous league/previous cup; WEB-43/70✎ function-first people/training groups→first-team/youth/coaching; WEB-42/45/79✎ central-only responsibility page→overview modal and shared inline direct/automatic controls; WEB-100+ home approval desk round trips
 - r163 261028 WEB-18✎ a read first shows the computed days at once→is sent once they have been shown at the pace (the calendar never skips a day)

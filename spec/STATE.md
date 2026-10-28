@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T03:04Z | 2026-10-28T03:15Z | T539 |
+| pl1 | Seonghyunui-MacBookAir | pair | 2026-10-28T06:12Z | 2026-10-28T06:40Z | - |
 
 ## inbox
 - 261028 decided EURO-11 EURO-13 EURO-14: modern access fidelity → association quota bands, recorded five-year ranking and EPS, direct admission instead of new qualifiers, next-season activation (alt: keep uniform demo quotas | retcon active draws); keep the single domestic cup and explicitly label unmodelled EFL/domestic playoffs and eight-association ranking scope.
@@ -347,17 +348,17 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 165 | 165 | - | 0 |
+| WEB | 166 | 165 | WEB-2✎ WEB-49✎ WEB-50✎ WEB-86✎ WEB-87✎ WEB-88✎ | 0 |
 | WORLD | 6 | 6 | - | 0 |
-| KIT | 3 | 3 | - | 0 |
+| KIT | 4 | 3 | KIT-3✎ KIT-4✎ KIT-7✎ KIT-8✎ KIT-11✎ KIT-12✎ KIT-15✎ | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 35 | 35 | - | 0 |
+| MATCH | 36 | 35 | MATCH-36+ MATCH-37+ | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 18 | 18 | - | 0 |
-| SAVE | 55 | 55 | - | 0 |
+| SAVE | 56 | 55 | SAVE-20✎ SAVE-21✎ | 0 |
 | PLAYER | 10 | 10 | - | 0 |
 
 ## review
@@ -392,12 +393,16 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
+- create-task KIT MATCH WEB SAVE: top-down player figures (MATCH-36/37), shorts/socks and goalkeeper kit editing (pl1).
 - implement-task T538 and T539: revision 5 carrier judgement and tolerant target bands (f5j2).
 - UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
 - 261028 T541 done: one object shape for grid players, state and intentions, formation facts and slots read once; grid 0.73× (paired), own match days 0.866× with the same 60-day world hash; aggregate cuts showed no difference and were reverted.
 - 261028 T540 done: paired same-machine harness `scripts/perf/ab.mjs`; same-tree reads aggregate 0.999 (0.990–1.007), grid 0.9992 (0.9886–1.0104), no difference.
+- 261028 warning (pl1): doing T538/T539 now sit below MATCH r36 and SAVE r56; those deltas (MATCH-36/37 player figures, SAVE-20/21 kits) are presentation and identity only and change none of their decisions.
+- 261028 update-ssot done (pl1): KIT r4, MATCH r36, WEB r166, SAVE r56 — player figures in kits, shorts/socks and goalkeeper kit editing; create-task next.
+- 261028 update-ssot KIT MATCH WEB SAVE start (pl1): top-down player figures in observation, shorts/socks and goalkeeper kit editing.
 - 261028 T537 published at main 0add0e71; CI #594 Success (37m 3s), including Chromium 311 and Firefox/WebKit. CLI false timeout diagnosed by direct run summary; report 261028-e7q4.
 - 261028 T537 done: association quotas, continental titleholders, recorded coefficients/EPS and qualification causes; existing 2034 draw preserved. Unit/integration/contract/build passed; Chromium 310 plus one unchanged isolated retry passed.
 - 261028 update-ssot EURO start and r4 done: modern access, holders, EPS and forward-only save compatibility; create-task EURO next.
@@ -413,8 +418,3 @@
 - 261028 fix personnel-deep-links: canonical personnel entries serve the SPA with no-cache HTML; missing assets remain 404; HTTP checks, type/lint/format/build passed; preview regression extended for the final batch.
 - 261028 fix approval-return: cancellation/home actions stay disabled while a command is queued or in flight; 26 focused cases and type/lint/format/build passed.
 - 261028 T536 planning shared for strict session claim; WEB r165.
-- 261028 T538 start (f5j2): revision 5 carrier judgement, explore 2h.
-- 261028 create-task MATCH r34: T538 opens revision 5 for the carrier's space, safe recycling and room near the box.
-- 261028 update-ssot MATCH start and r34 done: MATCH-16 space ahead, contested passes only forward, no far back pass with room near the box.
-- 261028 create-task ARCH r25: T540 paired speed harness, T541 result-identical engine cuts (explore 3h). Warning: T538 (doing, f5j2) cites ARCH-31 at ARCH@24; its throughput read is now a reported same-machine ratio (ARCH-34), not the 1 ms / 15 s budget.
-- 261028 update-ssot ARCH r25: ARCH-31✎ no absolute throughput budget, ARCH-34+ same-machine paired speed-up call (owner: success = faster on the machine measured, beyond noise).
