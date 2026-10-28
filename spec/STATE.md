@@ -352,7 +352,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 33 | 33 | - | 0 |
+| MATCH | 34 | 34 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -375,6 +375,7 @@
 |---|---|---|---|---|
 | T536 | Compact facility entrances and app-wide spacing hierarchy | WEB ARCH | - | doing@261028.u7m4 |
 | T537 | European qualification by association, domestic results and titles | EURO ARCH | - | doing@261028.e7q4 |
+| T538 | Match-model revision 5: carriers take open ground, recycle only safely, never far back with room near the box | MATCH SAVE ARCH | - | doing@261028.f5j2 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -393,12 +394,16 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
+- implement-task T538: revision 5 carrier judgement (f5j2).
 - implement-task T536: compact facility visits and shared UI spacing.
 - implement-task T537: correct association access, continental titleholders, EPS and qualification causes.
 - Gameplay hierarchy T530-T535 shipped on main 8af246fa; the full batch, cold-cache unit repair, 21-case browser regression and [all-browser CI](https://github.com/hetarho/haeram-soccer/actions/runs/40585549122) passed. Requested scope is complete; no implementation task remains.
 - n3w8 closed (report 261027-n3w8): automatic play T516–T525 on main (group gate on 2573791c); T522 read on the built game: 0 stalls at x1/x2/x5/x10, x10 10 days a second, no main-thread long task, helpers on (M1 Max, headless Chromium) — a CPU-throttled phone-class read is the open question. Inbox: confirm the WEB-18 read decisions (T524 → T525) and the WEB-69 framed-tabs suggestion.
 
 ## log
+- 261028 T538 start (f5j2): revision 5 carrier judgement, explore 2h.
+- 261028 create-task MATCH r34: T538 opens revision 5 for the carrier's space, safe recycling and room near the box.
+- 261028 update-ssot MATCH start and r34 done: MATCH-16 space ahead, contested passes only forward, no far back pass with room near the box.
 - 261028 T536 planning shared for strict session claim; WEB r165.
 - 261028 create-task EURO r4: T537 covers allocation, recorded coefficients, compatibility and qualification explanation.
 - 261028 update-ssot EURO start and r4 done: modern access, holders, EPS and forward-only save compatibility; create-task EURO next.
@@ -416,6 +421,3 @@
 - 261028 T533 done: host finalized the verified child implementation and task commit.
 - 261028 T532 done: host finalized the verified child implementation and task commit.
 - 261028 reconcile shared planning: local T530/T531 stay archived and complete; g8u6 continues T532/T533 under strict remote claims.
-- 261028 sync origin/main: preserve automatic-play r162/r163 and serialize the gameplay redesign as WEB r164; T530/T531 remain complete.
-- 261028 T531 done: host finalized the verified child implementation and task commit.
-- 261028 T530 done: 141 affected unit cases, type/lint/format/build passed; host finalized the commit after restricted child Git writes.
