@@ -15,8 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | pl1 | Seonghyunui-MacBookAir | pair | 2026-10-28T06:12Z | 2026-10-28T06:40Z | - |
-| f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | T542 |
-
+| f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z 
 ## inbox
 - 261028 decided EURO-11 EURO-13 EURO-14: modern access fidelity → association quota bands, recorded five-year ranking and EPS, direct admission instead of new qualifiers, next-season activation (alt: keep uniform demo quotas | retcon active draws); keep the single domestic cup and explicitly label unmodelled EFL/domestic playoffs and eight-association ranking scope.
 - 261028 decided T531 WEB-100 WEB-74: how to keep request identity through submission and browser history → world-named request addresses and session snapshots, with a scoped client forwarding the existing forms/commands (alt: consume a one-shot request only | copy each form into the office); history can revisit resolved work safely, late replies cannot redirect another request/game, and business rules stay authoritative.
@@ -392,11 +391,13 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- implement-task T542: revision 6 clear chances, beaten men, free men, misplaced passes, spread support (f5j2).
+- next MATCH planning (f5j2 suggestion): a defence goal-side near its box so clear chances arise as often as real football's, then read a clear chance from the men ahead only (T542 limits).
 - create-task KIT MATCH WEB SAVE: top-down player figures (MATCH-36/37), shorts/socks and goalkeeper kit editing (pl1).
 - UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
+- 261028 T542 done and pushed at the owner's request after the unit stage: revision 6; 600-match goals 3.71 above the tolerance, follow-up in next.
+- 261028 update-ssot MATCH r38 (f5j2): MATCH-32 goal-side defenders move across onto the ball–goal line by 위치선정 with the ball central within 50 m.
 - 261028 T542 start (f5j2): revision 6, explore 3h.
 - 261028 update-ssot MATCH r37 + create-task T542 (f5j2): MATCH-16 clear chances, beaten man, free man ahead, calm clearance; MATCH-17 spread support; MATCH-31 misplaced pass kept in play. MATCH-36/37 stay pending (pl1).
 - 261028 f5j2 end: T538/T539 pushed to main at the owner's request without the rerun batch (first batch: 3 integration failures, fixed or load timeouts passing alone; e2e not run locally).
@@ -415,5 +416,3 @@
 - 261028 T537 done: association quotas, continental titleholders, recorded coefficients/EPS and qualification causes; existing 2034 draw preserved. Unit/integration/contract/build passed; Chromium 310 plus one unchanged isolated retry passed.
 - 261028 update-ssot EURO start and r4 done: modern access, holders, EPS and forward-only save compatibility; create-task EURO next.
 - 261028 gameplay hierarchy shipped: WEB r164, T530-T535 and verified test repairs; main 8af246fa passed all nine CI jobs; report 261028-g8u4.
-- 261028 fix live-observation-order: cover both match-eve-before-selection and interleaved browsing, dismiss/reopen pending observation for the remaining read-only visit, and scope date assertions to the active calendar/theatre. All date, score, scorer and retained-node assertions remain.
-- 261028 fix coach-hiring-unit-setup: use the known criteria-change-85 seed and assert its candidate condition, eliminating 86 cold world generations; keep all hiring/contract assertions and the 30 s timeout.
