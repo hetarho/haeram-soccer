@@ -378,8 +378,7 @@
 |---|---|---|---|---|
 | T538 | Match-model revision 5: carriers take open ground, recycle only safely, never far back with room near the box | MATCH SAVE ARCH | - | doing@261028.f5j2 |
 | T539 | Hold the football targets within 25% of the real-football mean | MATCH ARCH | - | doing@261028.f5j2 |
-| T542 | Kits with shorts, socks and a designed goalkeeper kit, judged on the figure torso | KIT SAVE MATCH ARCH | - | todo |
-| T543 | Figure poses from recorded playback facts | MATCH WEB ARCH | - | todo |
+| T542 | Kits with shorts, socks and a designed goalkeeper kit, judged on the figure torso | KIT SAVE MATCH ARCH | - | doing@261028.pl1 |
 | T544 | Paint top-down player figures in their kits | MATCH KIT WEB ARCH | T542 T543 | todo |
 | T545 | Match observation draws posed player figures | MATCH WEB KIT ARCH | T544 | todo |
 | T546 | Kit editor with shorts, socks and goalkeeper kit; figure previews | KIT WEB SAVE MATCH ARCH | T544 | todo |
@@ -405,6 +404,8 @@
 - UI T536 is published at b1886d69; its bounded CI observation remained unconfirmed (run 40622906430). Manager/training room activities need separate product planning.
 
 ## log
+- 261028 T543 done (dev3, 407a5e9d): figure poses and action windows; PL re-ran its 16 unit tests and typecheck; merged into feat/player-figures-kits.
+- 261028 T542 (dev1) and T543 (dev3) start in worktrees task/T542 and task/T543 (pl1).
 - 261028 create-task done (pl1): T542–T546 from KIT r4 MATCH r36 WEB r166 SAVE r56; foundation T542 ‖ T543 → T544, lanes match-figures T545 and kit-editor T546.
 - 261028 create-task KIT MATCH WEB SAVE start (pl1): player figures and full kits on branch feat/player-figures-kits.
 - 261028 T541 done: one object shape for grid players, state and intentions, formation facts and slots read once; grid 0.73× (paired), own match days 0.866× with the same 60-day world hash; aggregate cuts showed no difference and were reverted.
@@ -423,5 +424,3 @@
 - 261028 T535 done: settings feedback survives dialog handoff without a copied toast; request helper waits for home return; remaining cup journeys follow Season.
 - 261028 T534 done: repaired integrated UI layering, history retention and canonical browser journeys; task checks/build pass, coordinator browser gate pending.
 - 261028 T534 start: coordinator repairs initial Chromium integration failures; no implementation code was pushed.
-- 261028 fix navigation-tools: screenshot capture and the unchanged 30-click first-play sample use the six gameplay destinations; syntax and type/lint/format checks passed; no new benchmark claim.
-- 261028 fix personnel-deep-links: canonical personnel entries serve the SPA with no-cache HTML; missing assets remain 404; HTTP checks, type/lint/format/build passed; preview regression extended for the final batch.
