@@ -392,7 +392,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T565 | Keep place journey fixtures and named returns valid | WEB ARCH | T563 | todo |
 | T566 | Keep world-market reads usable during automatic progression | WEB ARCH | - | todo |
 | T567 | Align remaining place, keyboard and owner-helper journeys | WEB ARCH | - | todo |
 | T568 | Keep the primary training action fully visible on entry | WEB ARCH | T563 | todo |
@@ -415,12 +414,13 @@
 | v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
 | club-places | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-28T18:33:15.546Z | [history](work/club-places.json) |
 | club-places-ui | 1 | 7 | 2 | 5 | 0 | 0 | 0 | 2026-10-28T16:52:26.857Z | [history](work/club-places-ui.json) |
-| club-browser-fix | 2 | 7 | 3 | 4 | 2 | 1 | 0 | 2026-10-28T19:24:50.949Z | [history](work/club-browser-fix.json) |
+| club-browser-fix | 2 | 7 | 4 | 3 | 2 | 0 | 0 | 2026-10-28T19:26:33.108Z | [history](work/club-browser-fix.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261028 T565 integrated
 - 261029 cp29 synchronize published corrective task IDs and retain authoritative integrated archives.
 - 261028 T564 integrated
 - 261029 create-task T568 (cp29): scoped browser proof confirms remaining360px training action clipping after the approved global layout correction.
