@@ -17,6 +17,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | e7q4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T01:49Z | 2026-10-28T01:54Z | T537 |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T03:04Z | 2026-10-28T03:05Z | T538 |
+| T539 | Hold the football targets within 25% of the real-football mean | MATCH ARCH | - | doing@261028.f5j2 |
 
 ## inbox
 - 261028 decided WEB-11 WEB-72 T536: facility scope and image treatment → three compact background-art entrances with manager/training preparation notices, plus a larger cover-cropped stadium (alt: implement unplanned room activities | keep one large owner entrance); detailed room activities await their own planning.
@@ -352,7 +353,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
-| MATCH | 34 | 34 | - | 0 |
+| MATCH | 35 | 35 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 38 | 38 | - | 0 |
@@ -394,10 +395,13 @@
 
 ## next
 - implement-task T538: revision 5 carrier judgement (f5j2).
+- implement-task T539: tolerant target bands (f5j2).
 - implement-task T537: correct association access, continental titleholders, EPS and qualification causes.
 - UI scope T536 is complete; await its main CI result. Manager/training room activities need separate product planning.
 
 ## log
+- 261028 T539 start (f5j2): tolerant target bands.
+- 261028 update-ssot MATCH r35 + create-task T539: MATCH-23/MATCH-30 rows held within 25% of the real-football mean.
 - 261028 T538 start (f5j2): revision 5 carrier judgement, explore 2h.
 - 261028 create-task MATCH r34: T538 opens revision 5 for the carrier's space, safe recycling and room near the box.
 - 261028 update-ssot MATCH start and r34 done: MATCH-16 space ahead, contested passes only forward, no far back pass with room near the box.
@@ -416,5 +420,3 @@
 - 261028 fix personnel-deep-links: canonical personnel entries serve the SPA with no-cache HTML; missing assets remain 404; HTTP checks, type/lint/format/build passed; preview regression extended for the final batch.
 - 261028 fix approval-return: cancellation/home actions stay disabled while a command is queued or in flight; 26 focused cases and type/lint/format/build passed.
 - 261028 T533 done: host finalized the verified child implementation and task commit.
-- 261028 T532 done: host finalized the verified child implementation and task commit.
-- 261028 reconcile shared planning: local T530/T531 stay archived and complete; g8u6 continues T532/T533 under strict remote claims.
