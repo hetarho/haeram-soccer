@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T19:10Z | - |
+| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T19:25Z | - |
 
 ## inbox
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
@@ -392,11 +392,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T562 | Align facility and competition browser journeys with the six places | WEB ARCH | - | todo |
-| T564 | Find exact player identities through paged market journeys | WEB ARCH | - | todo |
-| T565 | Keep place journey fixtures and named returns valid | WEB ARCH | T563 | todo |
 | T566 | Keep world-market reads usable during automatic progression | WEB ARCH | - | todo |
-| T567 | Align remaining place, keyboard and owner-helper journeys | WEB ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -416,13 +412,20 @@
 | v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
 | club-places | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-28T18:33:15.546Z | [history](work/club-places.json) |
 | club-places-ui | 1 | 7 | 2 | 5 | 0 | 0 | 0 | 2026-10-28T16:52:26.857Z | [history](work/club-places-ui.json) |
-| club-browser-fix | 2 | 5 | 1 | 4 | 2 | 0 | 0 | 2026-10-28T19:13:33.622Z | [history](work/club-browser-fix.json) |
+| club-browser-fix | 2 | 7 | 6 | 1 | 0 | 1 | 0 | 2026-10-28T19:35:06.331Z | [history](work/club-browser-fix.json) |
 
 ## next
 - cp29: finish approved/queued browser corrections in club-browser-fix, merge the completed units, then rerun the complete final gate and publish only after it passes.
 
 ## log
 - 261029 cp29 audit331 Chromium cases(296pass35fail); scoped T563 proof4pass2fail, corrective units T562–T568 remain under review/implementation.
+- 261028 T568 integrated
+- 261028 T567 integrated
+- 261028 T565 integrated
+- 261029 cp29 synchronize published corrective task IDs and retain authoritative integrated archives.
+- 261028 T564 integrated
+- 261029 create-task T568 (cp29): scoped browser proof confirms remaining360px training action clipping after the approved global layout correction.
+- 261028 T562 integrated
 - 261029 cp29 reconcile published plan metadata with approved T563 archive; remove only the obsolete active duplicate descriptor, retaining completed source and result.
 - 261029 create-task T567 (cp29): remaining actual browser-contract drift in skins, primary/local keyboard history, resolved-office export and editable policy ownership.
 - 261028 T563 integrated

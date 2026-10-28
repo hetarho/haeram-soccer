@@ -118,9 +118,28 @@ describe('live place composition', () => {
       expect(html).toContain(`place-activities-${view}`);
       if (view === 'training') {
         expect(html.match(/수석코치에게 훈련 제안·강행/g)).toHaveLength(1);
+        // Composition order only; physical viewport/target/focus checks belong to the browser gate.
+        const focus = html.indexOf('id="training-focus"');
+        const action = html.indexOf('수석코치에게 훈련 제안·강행');
+        const advice = html.indexOf('data-testid="training-advice"');
+        const coach = html.indexOf('담당 수석코치');
+        const reference = html.indexOf('훈련 효과·자동 판단 기준');
         const activities = html.indexOf('place-activities-training');
+        expect(focus).toBeGreaterThan(html.indexOf('</figure>'));
         expect(html.indexOf('data-testid="training-focus"')).toBeLessThan(activities);
-        expect(html.indexOf('수석코치에게 훈련 제안·강행')).toBeLessThan(activities);
+        const panel = html.slice(focus, html.indexOf('</section>', focus));
+        expect(panel.match(/<button\b[^>]*>/g)?.[0]).toContain('type="button"');
+        expect(panel.indexOf('수석코치에게 훈련 제안·강행')).toBeLessThan(
+          panel.indexOf('</button>'),
+        );
+        expect(action).toBeLessThan(advice);
+        expect(advice).toBeLessThan(coach);
+        expect(coach).toBeLessThan(reference);
+        expect(reference).toBeLessThan(activities);
+        expect(panel).toContain('다음 라운드부터 4라운드 · 강행 시 사임 위험');
+        expect(panel).toContain('Synthetic Assistant · 보기');
+        expect(panel).toContain('지금 균형 · 코치 판단');
+        expect(panel).not.toContain('<details open');
         expect(activities).toBeLessThan(html.indexOf('data-testid="adaptation-list"'));
         expect(html).toContain('휴식일 부여 요청 검토');
         expect(html).toContain('분위기 −2');

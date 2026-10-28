@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
-import { createWorld } from '../../packages/engine/src/index';
+import { createWorld, makePlayer } from '../../packages/engine/src/index';
 import { careOffer, effectText } from '../../packages/engine/src/care';
+import { retainPerson, openEmployment } from '../../packages/engine/src/person-careers';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { exportedCareer } from './career-fixtures';
 import { openPersonnel } from './personnel-navigation';
@@ -27,6 +28,19 @@ for (const viewport of [
     world.settings!.observations = { matchEve: false, windowOpen: false };
     world.manager.trust = 50;
     world.morale = 60;
+    const prospect = makePlayer(
+      'ENG',
+      world.seed,
+      `${world.playerClub}:academy:${world.year}:0`,
+      world.year,
+      40,
+      'CM',
+      17,
+    );
+    prospect.potential = 74;
+    world.academy = { players: [prospect] };
+    retainPerson(world, prospect, world.playerClub, true);
+    openEmployment(world, prospect.id, 'player', world.playerClub);
     await importResponsibilityCareer(page, world);
     await openPersonnel(page, 'manager');
     const activities = page.getByTestId('place-activities-manager');
@@ -92,7 +106,6 @@ for (const viewport of [
     await expect(academy.getByRole('region', { name: '유소년 아카데미', exact: true })).toHaveCount(
       1,
     );
-    const prospect = world.academy!.players[0];
     await academy
       .getByRole('button', { name: `${prospect.name} 승격·방출 검토`, exact: true })
       .click();

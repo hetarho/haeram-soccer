@@ -243,6 +243,21 @@ test('a new game goes into another slot, both careers survive switching and back
   await expect(page).toHaveURL(/\/first-team\?view=players$/);
   await expect(page.getByRole('tablist', { name: '감독 사무실', exact: true })).toBeVisible();
   await page.goBack();
+  await expect(page).toHaveURL(/\/first-team\?view=manager$/);
+  await expect(page.getByRole('tab', { name: '감독', exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await page.goForward();
+  await expect(page).toHaveURL(/\/first-team\?view=players$/);
+  await expect(page.getByRole('tab', { name: '선수 목록', exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
+  await page.goBack();
+  await expect(page).toHaveURL(/\/first-team\?view=manager$/);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/journal$/);
   await expect(page.getByTestId('club-hub')).toBeVisible();
   // Whichever tab a game was left on, a game entered from the slot screen opens on home.
   await openPersonnel(page, 'training');

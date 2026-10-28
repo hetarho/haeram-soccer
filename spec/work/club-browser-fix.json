@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-28T19:13:33.622Z",
-  "sourceCommit": "bc4211c949e4ed6d4bd40603242b7b3c2e7c9600",
+  "snapshotAt": "2026-10-28T19:35:06.331Z",
+  "sourceCommit": "1d2cf0a65093c9456d6de1959c820aeb11fdccde",
   "group": {
     "id": "club-browser-fix",
     "branch": "work/club-browser-fix",
@@ -15,6 +15,32 @@
     "push": null,
     "review": "all",
     "runner": {
+      "id": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.160.1"
+        },
+        "reviewer": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.160.1"
+        }
+      },
+      "workers": [
+        {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.160.1"
+        }
+      ],
+      "startedAt": "2026-10-28T19:20:41.871Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    },
+    "lastRun": {
       "id": "b919f9a3-8d8b-4bf1-a347-14177cb200e0",
       "adapter": "builtin",
       "providers": {
@@ -37,49 +63,51 @@
         }
       ],
       "startedAt": "2026-10-28T18:59:23.836Z",
+      "stoppedAt": "2026-10-28T19:16:59.883Z",
+      "dispatched": 6,
+      "outcome": "dispatch-limit",
+      "failures": [
+        {
+          "attempt": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+          "role": "worker",
+          "error": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism"
+        },
+        {
+          "attempt": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+          "role": "worker",
+          "error": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism"
+        },
+        {
+          "attempt": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+          "role": "worker",
+          "error": "상위 브랜치의 태스크/STATE를 먼저 정리하고 커밋하세요."
+        },
+        {
+          "attempt": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+          "role": "worker",
+          "error": "상위 브랜치의 태스크/STATE를 먼저 정리하고 커밋하세요."
+        }
+      ],
       "autopilot": true,
       "decisionWaitMs": 900000
     }
   },
   "summary": {
-    "total": 5,
-    "completed": 1,
-    "remaining": 4,
-    "running": 2,
-    "review": 0,
+    "total": 7,
+    "completed": 6,
+    "remaining": 1,
+    "running": 0,
+    "review": 1,
     "blocked": 0,
-    "unassigned": 2
+    "unassigned": 0
   },
   "tasks": [
-    {
-      "id": "T562",
-      "title": "Align facility and competition browser journeys with the six places",
-      "dep": [],
-      "lane": "browser-places",
-      "status": "doing"
-    },
-    {
-      "id": "T564",
-      "title": "Find exact player identities through paged market journeys",
-      "dep": [],
-      "lane": "market-browser-identity",
-      "status": "doing"
-    },
-    {
-      "id": "T565",
-      "title": "Keep place journey fixtures and named returns valid",
-      "dep": [
-        "T563"
-      ],
-      "lane": "place-journey-fixtures",
-      "status": "todo"
-    },
     {
       "id": "T566",
       "title": "Keep world-market reads usable during automatic progression",
       "dep": [],
       "lane": "market-progress-reads",
-      "status": "todo"
+      "status": "ready"
     }
   ],
   "attempts": [
@@ -95,23 +123,42 @@
       "contributors": [
         "b919f9a3-8d8b-4bf1-a347-14177cb200e0/worker-1"
       ],
-      "status": "doing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-10-28T18:59:24.316Z",
       "startCommit": "64c629e9ab98034ee3fca5bab75bf730c147d04d",
-      "submittedBase": "d252a8c9521d499a4b5e27ed6f725e73cbb19bae",
-      "submissionId": "e4592925-af3b-44c5-9c2a-a495bc49e76c",
-      "submittedAt": "2026-10-28T19:07:08.024Z",
+      "verifiedCommit": "cf1f17d9882c54d960cef39d36e876c2601649b6",
+      "submittedBase": "770cbb40b71dbdb2ebd420b4703484b34afe86e5",
+      "submissionId": "e56b40c5-7725-4773-9455-32c400909f4d",
+      "submittedAt": "2026-10-28T19:18:53.710Z",
+      "integratedCommit": "cba46754727353965b1c61affe63816f5a2e41b3",
+      "integratedAt": "2026-10-28T19:23:09.936Z",
       "risk": null,
       "dispatch": {
-        "id": "c470535a-dee6-47e2-bac2-6fa0c4bff492",
-        "runner": "b919f9a3-8d8b-4bf1-a347-14177cb200e0",
-        "role": "worker",
+        "id": "c3f95b99-7752-45ed-8eb7-540c10578b12",
+        "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+        "role": "reviewer",
         "slot": 1,
         "provider": "codex",
         "model": null,
-        "status": "running",
-        "startedAt": "2026-10-28T19:11:49.561Z"
+        "status": "finished",
+        "startedAt": "2026-10-28T19:20:46.407Z",
+        "finishedAt": "2026-10-28T19:22:19.391Z",
+        "error": null,
+        "summary": "T562 aligns with acceptance and SSOT, addresses the prior match-return finding, and preserves existing assertions. Worker verification evidence is consistent; final browser and integration gates remain with the coordinator."
+      },
+      "review": {
+        "id": "d38f0b3a-3bb1-41be-a9e7-b70ad6a61de4",
+        "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T562 aligns with acceptance and SSOT, addresses the prior match-return finding, and preserves existing assertions. Worker verification evidence is consistent; final browser and integration gates remain with the coordinator.",
+        "findings": [],
+        "commit": "cf1f17d9882c54d960cef39d36e876c2601649b6",
+        "baseCommit": "770cbb40b71dbdb2ebd420b4703484b34afe86e5",
+        "submissionId": "e56b40c5-7725-4773-9455-32c400909f4d",
+        "createdAt": "2026-10-28T19:20:45.119Z",
+        "finishedAt": "2026-10-28T19:22:19.363Z"
       },
       "reviewHistory": [
         {
@@ -139,13 +186,13 @@
       "steps": [
         {
           "taskId": "T562",
-          "commit": "f8a07d2135a50ae303c59e517db0bcd5ee5f0f34",
-          "at": "2026-10-28T19:07:07.996Z",
+          "commit": "cf1f17d9882c54d960cef39d36e876c2601649b6",
+          "at": "2026-10-28T19:18:53.683Z",
           "verification": [
             {
               "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
-              "startedAt": "2026-10-28T19:06:15.942Z",
-              "finishedAt": "2026-10-28T19:07:07.558Z"
+              "startedAt": "2026-10-28T19:18:20.448Z",
+              "finishedAt": "2026-10-28T19:18:53.288Z"
             }
           ]
         }
@@ -153,8 +200,15 @@
       "verification": [
         {
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
-          "startedAt": "2026-10-28T19:06:15.942Z",
-          "finishedAt": "2026-10-28T19:07:07.558Z"
+          "startedAt": "2026-10-28T19:18:20.448Z",
+          "finishedAt": "2026-10-28T19:18:53.288Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-28T19:22:35.478Z",
+          "finishedAt": "2026-10-28T19:23:09.640Z"
         }
       ]
     },
@@ -178,6 +232,8 @@
       "submittedBase": "843836e7887c3ab73e64dbbd99f509a971252e0c",
       "submissionId": "0c5e1d6f-8b9a-4d8d-b9e1-50cf6f9ef42b",
       "submittedAt": "2026-10-28T19:11:49.348Z",
+      "integratedCommit": "75934630e87eccc3143b8494f0fa8091fb3bd014",
+      "integratedAt": "2026-10-28T19:14:08.807Z",
       "risk": null,
       "dispatch": {
         "id": "d77f084a-6211-419b-987c-50e5a4d8e451",
@@ -225,6 +281,13 @@
           "startedAt": "2026-10-28T19:11:06.458Z",
           "finishedAt": "2026-10-28T19:11:48.943Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-28T19:13:34.017Z",
+          "finishedAt": "2026-10-28T19:14:08.370Z"
+        }
       ]
     },
     {
@@ -239,19 +302,376 @@
       "contributors": [
         "b919f9a3-8d8b-4bf1-a347-14177cb200e0/worker-2"
       ],
-      "status": "doing",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-10-28T19:11:50.069Z",
       "startCommit": "843836e7887c3ab73e64dbbd99f509a971252e0c",
+      "verifiedCommit": "0d7c0bce85fd30a87aa472061d1ace209c667835",
+      "submittedBase": "770cbb40b71dbdb2ebd420b4703484b34afe86e5",
+      "submissionId": "f21399fc-52d8-42e6-a8cd-881d5ab0f22b",
+      "submittedAt": "2026-10-28T19:20:11.283Z",
+      "integratedCommit": "2b3586b756052a506ffe7e589f18d96b465c6a93",
+      "integratedAt": "2026-10-28T19:25:26.944Z",
+      "risk": null,
       "dispatch": {
-        "id": "a41cbd90-8756-4d77-94de-2c7b348630ac",
-        "runner": "b919f9a3-8d8b-4bf1-a347-14177cb200e0",
+        "id": "14bd0eff-9604-453b-b593-3d637349557a",
+        "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "codex",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-28T19:23:11.281Z",
+        "finishedAt": "2026-10-28T19:24:48.995Z",
+        "error": null,
+        "summary": "T564 고정 커밋을 baseCommit·완료 조건·SSOT와 대조한 결과 수정이 필요한 결함은 발견하지 못했습니다. 워커 검증 기록을 확인했으며 최종 통합·브라우저 게이트는 조정자 호스트에 맡깁니다."
+      },
+      "review": {
+        "id": "01e06915-3bac-4d0a-9591-88803d5f9efb",
+        "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T564 고정 커밋을 baseCommit·완료 조건·SSOT와 대조한 결과 수정이 필요한 결함은 발견하지 못했습니다. 워커 검증 기록을 확인했으며 최종 통합·브라우저 게이트는 조정자 호스트에 맡깁니다.",
+        "findings": [],
+        "commit": "0d7c0bce85fd30a87aa472061d1ace209c667835",
+        "baseCommit": "cba46754727353965b1c61affe63816f5a2e41b3",
+        "submissionId": "f21399fc-52d8-42e6-a8cd-881d5ab0f22b",
+        "createdAt": "2026-10-28T19:23:10.035Z",
+        "finishedAt": "2026-10-28T19:24:48.961Z"
+      },
+      "steps": [
+        {
+          "taskId": "T564",
+          "commit": "0d7c0bce85fd30a87aa472061d1ace209c667835",
+          "at": "2026-10-28T19:20:11.257Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "startedAt": "2026-10-28T19:19:36.649Z",
+              "finishedAt": "2026-10-28T19:20:10.836Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "startedAt": "2026-10-28T19:19:36.649Z",
+          "finishedAt": "2026-10-28T19:20:10.836Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-28T19:24:51.269Z",
+          "finishedAt": "2026-10-28T19:25:26.702Z"
+        }
+      ]
+    },
+    {
+      "id": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "group": "club-browser-fix",
+      "taskId": "T565",
+      "tasks": [
+        "T565"
+      ],
+      "lane": "place-journey-fixtures",
+      "owner": "b919f9a3-8d8b-4bf1-a347-14177cb200e0/worker-1",
+      "contributors": [
+        "b919f9a3-8d8b-4bf1-a347-14177cb200e0/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-28T19:14:10.731Z",
+      "startCommit": "75934630e87eccc3143b8494f0fa8091fb3bd014",
+      "verifiedCommit": "56dd33936a10b0dcffcfedef89e7be7213652e4b",
+      "submittedBase": "770cbb40b71dbdb2ebd420b4703484b34afe86e5",
+      "submissionId": "94072e93-a1f0-4cde-b185-810f4b16e998",
+      "submittedAt": "2026-10-28T19:20:12.961Z",
+      "integratedCommit": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
+      "integratedAt": "2026-10-28T19:27:07.779Z",
+      "risk": null,
+      "dispatch": {
+        "id": "339efd4d-caff-43cc-a968-22afbc653e02",
+        "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "codex",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-28T19:25:28.333Z",
+        "finishedAt": "2026-10-28T19:26:31.392Z",
+        "error": null,
+        "summary": "T565의 fixture와 복귀 라벨 수정이 acceptance·SSOT에 부합하며 기존 취소·불변성·접근성 검증을 보존합니다. 워커의 단위 테스트·빌드 근거를 확인했습니다. 최종 통합·브라우저 검증은 조정자 호스트에서 수행해야 합니다."
+      },
+      "review": {
+        "id": "ba395b58-ffbe-455c-816e-2ea111d4d595",
+        "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T565의 fixture와 복귀 라벨 수정이 acceptance·SSOT에 부합하며 기존 취소·불변성·접근성 검증을 보존합니다. 워커의 단위 테스트·빌드 근거를 확인했습니다. 최종 통합·브라우저 검증은 조정자 호스트에서 수행해야 합니다.",
+        "findings": [],
+        "commit": "56dd33936a10b0dcffcfedef89e7be7213652e4b",
+        "baseCommit": "2b3586b756052a506ffe7e589f18d96b465c6a93",
+        "submissionId": "94072e93-a1f0-4cde-b185-810f4b16e998",
+        "createdAt": "2026-10-28T19:25:27.047Z",
+        "finishedAt": "2026-10-28T19:26:31.363Z"
+      },
+      "steps": [
+        {
+          "taskId": "T565",
+          "commit": "56dd33936a10b0dcffcfedef89e7be7213652e4b",
+          "at": "2026-10-28T19:20:12.936Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "startedAt": "2026-10-28T19:19:38.302Z",
+              "finishedAt": "2026-10-28T19:20:12.558Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "startedAt": "2026-10-28T19:19:38.302Z",
+          "finishedAt": "2026-10-28T19:20:12.558Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-28T19:26:33.220Z",
+          "finishedAt": "2026-10-28T19:27:07.555Z"
+        }
+      ]
+    },
+    {
+      "id": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "group": "club-browser-fix",
+      "taskId": "T566",
+      "tasks": [
+        "T566"
+      ],
+      "lane": "market-progress-reads",
+      "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-2",
+      "contributors": [
+        "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-1",
+        "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-2"
+      ],
+      "status": "ready",
+      "reason": null,
+      "createdAt": "2026-10-28T19:20:42.263Z",
+      "startCommit": "770cbb40b71dbdb2ebd420b4703484b34afe86e5",
+      "verifiedCommit": "db91f970ae04f100f1a4e1b687a836fd752f3fde",
+      "submittedBase": "1d2cf0a65093c9456d6de1959c820aeb11fdccde",
+      "submissionId": "2d4dc5dd-2930-434d-9d3a-47c2365cea5a",
+      "submittedAt": "2026-10-28T19:35:04.467Z",
+      "risk": null,
+      "dispatch": {
+        "id": "7cddcdaf-46c8-4166-9c81-91fb9dcd928c",
+        "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
         "role": "worker",
         "slot": 2,
         "provider": "codex",
         "model": null,
-        "status": "running",
-        "startedAt": "2026-10-28T19:11:51.105Z"
-      }
+        "status": "finished",
+        "startedAt": "2026-10-28T19:30:13.597Z",
+        "finishedAt": "2026-10-28T19:35:04.502Z",
+        "error": null,
+        "summary": "compact 시장의 헤더·검색·선수 행 배치를 줄이고 44px 터치 영역과 출처·상태 정보를 유지했습니다. 단위 테스트 26개와 타입·린트·포맷·빌드가 통과했습니다. 첫 네 행의 실제 화면 노출 재검증은 코디네이터에 인계하고 태스크 결과에 기록했습니다."
+      },
+      "reviewHistory": [
+        {
+          "id": "819a676b-a6db-4e99-bb96-7f012bad6be0",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "조회 병합과 실행 보호의 검증 기록은 확인했지만, compact market의 네 행 노출 acceptance가 충족되지 않았습니다.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "spec/tasks/T566.market-read-during-progression.md:11",
+              "message": "T566 acceptance 4: T563 적용 후 기준 소스 770cbb40에서 실행한 coordinator 기록(club-layout-probe2-e2e.json)은 360×740의 네 번째 시장 행이 viewport 비율 0으로 실패했음을 보여줍니다. 제출물은 시장 마크업·CSS 배치를 변경하지 않아 이 실패를 해결하지 않았습니다. 44px 터치 영역을 유지하는 최소한의 시장 배치 수정을 반영하고, 기존 첫 네 행 노출 assertion의 재검증을 coordinator에 인계하세요."
+            }
+          ],
+          "commit": "a58674d1e9225b932deaeec316c792f508f8cb23",
+          "baseCommit": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
+          "submissionId": "2a7ae530-7829-4ada-b8d5-30820a8bcfce",
+          "createdAt": "2026-10-28T19:28:35.523Z",
+          "finishedAt": "2026-10-28T19:30:13.324Z",
+          "invalidatedAt": "2026-10-28T19:30:13.423Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T566",
+          "commit": "db91f970ae04f100f1a4e1b687a836fd752f3fde",
+          "at": "2026-10-28T19:35:04.444Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "startedAt": "2026-10-28T19:34:30.199Z",
+              "finishedAt": "2026-10-28T19:35:04.089Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "startedAt": "2026-10-28T19:34:30.199Z",
+          "finishedAt": "2026-10-28T19:35:04.089Z"
+        }
+      ]
+    },
+    {
+      "id": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "group": "club-browser-fix",
+      "taskId": "T567",
+      "tasks": [
+        "T567"
+      ],
+      "lane": "remaining-place-journeys",
+      "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-2",
+      "contributors": [
+        "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-2"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-28T19:20:43.837Z",
+      "startCommit": "770cbb40b71dbdb2ebd420b4703484b34afe86e5",
+      "verifiedCommit": "14ec23c9a66b8902fa83dcda351dba704205ee35",
+      "submittedBase": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
+      "submissionId": "69b7cfa2-4bec-460f-a828-0d3e57e2a457",
+      "submittedAt": "2026-10-28T19:28:33.719Z",
+      "integratedCommit": "1d2cf0a65093c9456d6de1959c820aeb11fdccde",
+      "integratedAt": "2026-10-28T19:33:29.069Z",
+      "risk": null,
+      "dispatch": {
+        "id": "10309228-9f39-41bc-83fd-e125d1010872",
+        "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "codex",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-28T19:30:15.366Z",
+        "finishedAt": "2026-10-28T19:32:50.214Z",
+        "error": null,
+        "summary": "14ec23c9의 T567 변경을 baseCommit·acceptance·SSOT와 대조했으며 필수 수정 사항은 발견하지 못했습니다. 작업자 검증 근거를 확인했고, 최종 브라우저·통합 검증은 coordinator에 맡깁니다."
+      },
+      "review": {
+        "id": "d1f016da-585f-402d-9414-8cc056ac4fd3",
+        "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "14ec23c9의 T567 변경을 baseCommit·acceptance·SSOT와 대조했으며 필수 수정 사항은 발견하지 못했습니다. 작업자 검증 근거를 확인했고, 최종 브라우저·통합 검증은 coordinator에 맡깁니다.",
+        "findings": [],
+        "commit": "14ec23c9a66b8902fa83dcda351dba704205ee35",
+        "baseCommit": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
+        "submissionId": "69b7cfa2-4bec-460f-a828-0d3e57e2a457",
+        "createdAt": "2026-10-28T19:30:13.902Z",
+        "finishedAt": "2026-10-28T19:32:50.186Z"
+      },
+      "steps": [
+        {
+          "taskId": "T567",
+          "commit": "14ec23c9a66b8902fa83dcda351dba704205ee35",
+          "at": "2026-10-28T19:28:33.691Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "startedAt": "2026-10-28T19:28:00.737Z",
+              "finishedAt": "2026-10-28T19:28:33.323Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "startedAt": "2026-10-28T19:28:00.737Z",
+          "finishedAt": "2026-10-28T19:28:33.323Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-28T19:32:51.771Z",
+          "finishedAt": "2026-10-28T19:33:28.604Z"
+        }
+      ]
+    },
+    {
+      "id": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "group": "club-browser-fix",
+      "taskId": "T568",
+      "tasks": [
+        "T568"
+      ],
+      "lane": "training-entry-layout",
+      "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-1",
+      "contributors": [
+        "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-10-28T19:28:34.012Z",
+      "startCommit": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
+      "verifiedCommit": "fef599e3acbae19451293f0305b650a80a9a26e6",
+      "submittedBase": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
+      "submissionId": "17d37cfe-3a40-4667-837e-5af4d8c814c5",
+      "submittedAt": "2026-10-28T19:32:49.361Z",
+      "risk": null,
+      "dispatch": {
+        "id": "89a5e2f6-792c-4936-91c0-18004ba75be7",
+        "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "codex",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-10-28T19:33:30.716Z",
+        "finishedAt": "2026-10-28T19:35:05.133Z",
+        "error": null,
+        "summary": "T568의 fef599e3을 baseCommit·acceptance·SSOT·ARCH와 대조했으며 필수 수정 사항을 발견하지 못했습니다. 기존 동작 보존과 워커 검증 근거를 확인했습니다. 실제 뷰포트·포커스 및 최종 통합 검증은 coordinator가 수행해야 합니다."
+      },
+      "review": {
+        "id": "229ec76b-0061-4709-8761-096c3a016ff2",
+        "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T568의 fef599e3을 baseCommit·acceptance·SSOT·ARCH와 대조했으며 필수 수정 사항을 발견하지 못했습니다. 기존 동작 보존과 워커 검증 근거를 확인했습니다. 실제 뷰포트·포커스 및 최종 통합 검증은 coordinator가 수행해야 합니다.",
+        "findings": [],
+        "commit": "fef599e3acbae19451293f0305b650a80a9a26e6",
+        "baseCommit": "1d2cf0a65093c9456d6de1959c820aeb11fdccde",
+        "submissionId": "17d37cfe-3a40-4667-837e-5af4d8c814c5",
+        "createdAt": "2026-10-28T19:33:29.393Z",
+        "finishedAt": "2026-10-28T19:35:05.105Z"
+      },
+      "steps": [
+        {
+          "taskId": "T568",
+          "commit": "fef599e3acbae19451293f0305b650a80a9a26e6",
+          "at": "2026-10-28T19:32:49.339Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+              "startedAt": "2026-10-28T19:32:15.367Z",
+              "finishedAt": "2026-10-28T19:32:48.974Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "startedAt": "2026-10-28T19:32:15.367Z",
+          "finishedAt": "2026-10-28T19:32:48.974Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -1095,6 +1515,2273 @@
       "group": "club-browser-fix",
       "attemptId": "13049aab-87d0-4459-acdb-af3b0b1584a9",
       "taskId": "T563",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1822,
+      "at": "2026-10-28T19:14:08.731Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "13049aab-87d0-4459-acdb-af3b0b1584a9",
+      "taskId": "T563",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-28T19:13:34.017Z",
+            "finishedAt": "2026-10-28T19:14:08.370Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1823,
+      "at": "2026-10-28T19:14:08.807Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "13049aab-87d0-4459-acdb-af3b0b1584a9",
+      "taskId": "T563",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "75934630e87eccc3143b8494f0fa8091fb3bd014",
+        "integratedAt": "2026-10-28T19:14:08.807Z"
+      }
+    },
+    {
+      "sequence": 1824,
+      "at": "2026-10-28T19:14:08.912Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1825,
+      "at": "2026-10-28T19:14:09.543Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1826,
+      "at": "2026-10-28T19:14:09.606Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1827,
+      "at": "2026-10-28T19:14:10.324Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism"
+      }
+    },
+    {
+      "sequence": 1828,
+      "at": "2026-10-28T19:14:10.382Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "c470535a-dee6-47e2-bac2-6fa0c4bff492",
+          "runner": "b919f9a3-8d8b-4bf1-a347-14177cb200e0",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T19:11:49.561Z",
+          "finishedAt": "2026-10-28T19:14:10.382Z",
+          "error": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+          "summary": "review193efb0e의 두 단계 경기 복귀 경로를 수정하고 기존 검증을 유지했습니다. 관련 단위 테스트 31개와 typecheck·lint·format·build·spec lint가 통과했습니다. 브라우저 검증은 조정자에게 이관했습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1829,
+      "at": "2026-10-28T19:14:10.731Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+        "group": "club-browser-fix",
+        "taskId": "T565",
+        "tasks": [
+          "T565"
+        ],
+        "lane": "place-journey-fixtures",
+        "owner": "b919f9a3-8d8b-4bf1-a347-14177cb200e0/worker-1",
+        "contributors": [
+          "b919f9a3-8d8b-4bf1-a347-14177cb200e0/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-28T19:14:10.731Z",
+        "startCommit": "75934630e87eccc3143b8494f0fa8091fb3bd014"
+      }
+    },
+    {
+      "sequence": 1830,
+      "at": "2026-10-28T19:14:11.317Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1831,
+      "at": "2026-10-28T19:14:11.576Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "bc445dfb-dc6e-414c-b58b-38619b7807d9",
+          "runner": "b919f9a3-8d8b-4bf1-a347-14177cb200e0",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T19:14:11.576Z"
+        }
+      }
+    },
+    {
+      "sequence": 1832,
+      "at": "2026-10-28T19:14:11.782Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "bc445dfb-dc6e-414c-b58b-38619b7807d9",
+          "runner": "b919f9a3-8d8b-4bf1-a347-14177cb200e0",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T19:14:11.576Z"
+        }
+      }
+    },
+    {
+      "sequence": 1833,
+      "at": "2026-10-28T19:16:50.310Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1834,
+      "at": "2026-10-28T19:16:50.529Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "상위 브랜치의 태스크/STATE를 먼저 정리하고 커밋하세요."
+      }
+    },
+    {
+      "sequence": 1835,
+      "at": "2026-10-28T19:16:50.590Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "a41cbd90-8756-4d77-94de-2c7b348630ac",
+          "runner": "b919f9a3-8d8b-4bf1-a347-14177cb200e0",
+          "role": "worker",
+          "slot": 2,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T19:11:51.105Z",
+          "finishedAt": "2026-10-28T19:16:50.590Z",
+          "error": "상위 브랜치의 태스크/STATE를 먼저 정리하고 커밋하세요.",
+          "summary": "T564 구현 완료. 정확한 선수 ID를 마지막 페이지까지 탐색하도록 수정하고 회귀 단언을 추가했습니다. 관련 단위 테스트 74개, 타입·린트·포맷·빌드·spec 검사 통과. acceptance/result를 갱신했으며 브라우저 검증은 coordinator에 인계합니다. 커밋·제출은 하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1836,
+      "at": "2026-10-28T19:16:59.428Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1837,
+      "at": "2026-10-28T19:16:59.632Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "상위 브랜치의 태스크/STATE를 먼저 정리하고 커밋하세요."
+      }
+    },
+    {
+      "sequence": 1838,
+      "at": "2026-10-28T19:16:59.691Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "bc445dfb-dc6e-414c-b58b-38619b7807d9",
+          "runner": "b919f9a3-8d8b-4bf1-a347-14177cb200e0",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T19:14:11.576Z",
+          "finishedAt": "2026-10-28T19:16:59.691Z",
+          "error": "상위 브랜치의 태스크/STATE를 먼저 정리하고 커밋하세요.",
+          "summary": "T565의 academy 유망주 fixture와 ‘훈련장’ 복귀 선택자를 수정하고 기존 검증 조건을 유지했습니다. 관련 단위 테스트 44개, typecheck·lint·format·build·spec lint가 통과했습니다. acceptance/result를 갱신했으며 브라우저·통합·전체 검사는 호스트에 이관했습니다. 커밋·제출은 수행하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1839,
+      "at": "2026-10-28T19:16:59.883Z",
+      "type": "group",
+      "group": "club-browser-fix",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "b919f9a3-8d8b-4bf1-a347-14177cb200e0",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T18:59:23.836Z",
+          "stoppedAt": "2026-10-28T19:16:59.883Z",
+          "dispatched": 6,
+          "outcome": "dispatch-limit",
+          "failures": [
+            {
+              "attempt": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+              "role": "worker",
+              "error": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism"
+            },
+            {
+              "attempt": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+              "role": "worker",
+              "error": "검증 실패: pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism"
+            },
+            {
+              "attempt": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+              "role": "worker",
+              "error": "상위 브랜치의 태스크/STATE를 먼저 정리하고 커밋하세요."
+            },
+            {
+              "attempt": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+              "role": "worker",
+              "error": "상위 브랜치의 태스크/STATE를 먼저 정리하고 커밋하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1840,
+      "at": "2026-10-28T19:17:01.743Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1841,
+      "at": "2026-10-28T19:17:02.003Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "상위 브랜치의 태스크/STATE를 먼저 정리하고 커밋하세요."
+      }
+    },
+    {
+      "sequence": 1842,
+      "at": "2026-10-28T19:18:20.119Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1843,
+      "at": "2026-10-28T19:18:53.710Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "submittedBase": "770cbb40b71dbdb2ebd420b4703484b34afe86e5",
+        "submissionId": "e56b40c5-7725-4773-9455-32c400909f4d",
+        "submittedAt": "2026-10-28T19:18:53.710Z",
+        "steps": [
+          {
+            "taskId": "T562",
+            "commit": "cf1f17d9882c54d960cef39d36e876c2601649b6",
+            "at": "2026-10-28T19:18:53.683Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "startedAt": "2026-10-28T19:18:20.448Z",
+                "finishedAt": "2026-10-28T19:18:53.288Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "startedAt": "2026-10-28T19:18:20.448Z",
+            "finishedAt": "2026-10-28T19:18:53.288Z"
+          }
+        ],
+        "verifiedCommit": "cf1f17d9882c54d960cef39d36e876c2601649b6"
+      }
+    },
+    {
+      "sequence": 1844,
+      "at": "2026-10-28T19:19:36.333Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1845,
+      "at": "2026-10-28T19:19:37.957Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1846,
+      "at": "2026-10-28T19:20:11.283Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "0d7c0bce85fd30a87aa472061d1ace209c667835",
+        "submittedBase": "770cbb40b71dbdb2ebd420b4703484b34afe86e5",
+        "submissionId": "f21399fc-52d8-42e6-a8cd-881d5ab0f22b",
+        "submittedAt": "2026-10-28T19:20:11.283Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T564",
+            "commit": "0d7c0bce85fd30a87aa472061d1ace209c667835",
+            "at": "2026-10-28T19:20:11.257Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "startedAt": "2026-10-28T19:19:36.649Z",
+                "finishedAt": "2026-10-28T19:20:10.836Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "startedAt": "2026-10-28T19:19:36.649Z",
+            "finishedAt": "2026-10-28T19:20:10.836Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1847,
+      "at": "2026-10-28T19:20:12.961Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "56dd33936a10b0dcffcfedef89e7be7213652e4b",
+        "submittedBase": "770cbb40b71dbdb2ebd420b4703484b34afe86e5",
+        "submissionId": "94072e93-a1f0-4cde-b185-810f4b16e998",
+        "submittedAt": "2026-10-28T19:20:12.961Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T565",
+            "commit": "56dd33936a10b0dcffcfedef89e7be7213652e4b",
+            "at": "2026-10-28T19:20:12.936Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "startedAt": "2026-10-28T19:19:38.302Z",
+                "finishedAt": "2026-10-28T19:20:12.558Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "startedAt": "2026-10-28T19:19:38.302Z",
+            "finishedAt": "2026-10-28T19:20:12.558Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1848,
+      "at": "2026-10-28T19:20:41.894Z",
+      "type": "group",
+      "group": "club-browser-fix",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T19:20:41.871Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1849,
+      "at": "2026-10-28T19:20:42.263Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+        "group": "club-browser-fix",
+        "taskId": "T566",
+        "tasks": [
+          "T566"
+        ],
+        "lane": "market-progress-reads",
+        "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-1",
+        "contributors": [
+          "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-28T19:20:42.263Z",
+        "startCommit": "770cbb40b71dbdb2ebd420b4703484b34afe86e5"
+      }
+    },
+    {
+      "sequence": 1850,
+      "at": "2026-10-28T19:20:42.857Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1851,
+      "at": "2026-10-28T19:20:43.317Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "188785f8-90a9-4660-8ba3-078aa55e5048",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T19:20:43.317Z"
+        }
+      }
+    },
+    {
+      "sequence": 1852,
+      "at": "2026-10-28T19:20:43.534Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "188785f8-90a9-4660-8ba3-078aa55e5048",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T19:20:43.317Z"
+        }
+      }
+    },
+    {
+      "sequence": 1853,
+      "at": "2026-10-28T19:20:43.837Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+        "group": "club-browser-fix",
+        "taskId": "T567",
+        "tasks": [
+          "T567"
+        ],
+        "lane": "remaining-place-journeys",
+        "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-2",
+        "contributors": [
+          "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-28T19:20:43.837Z",
+        "startCommit": "770cbb40b71dbdb2ebd420b4703484b34afe86e5"
+      }
+    },
+    {
+      "sequence": 1854,
+      "at": "2026-10-28T19:20:44.413Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1855,
+      "at": "2026-10-28T19:20:44.780Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "783ced73-1860-4611-97f0-e0eb74acbebc",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "worker",
+          "slot": 2,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T19:20:44.780Z"
+        }
+      }
+    },
+    {
+      "sequence": 1856,
+      "at": "2026-10-28T19:20:45.004Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "783ced73-1860-4611-97f0-e0eb74acbebc",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "worker",
+          "slot": 2,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T19:20:44.780Z"
+        }
+      }
+    },
+    {
+      "sequence": 1857,
+      "at": "2026-10-28T19:20:45.119Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "d38f0b3a-3bb1-41be-a9e7-b70ad6a61de4",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "reviewing",
+          "commit": "cf1f17d9882c54d960cef39d36e876c2601649b6",
+          "baseCommit": "770cbb40b71dbdb2ebd420b4703484b34afe86e5",
+          "submissionId": "e56b40c5-7725-4773-9455-32c400909f4d",
+          "createdAt": "2026-10-28T19:20:45.119Z"
+        }
+      }
+    },
+    {
+      "sequence": 1858,
+      "at": "2026-10-28T19:20:46.407Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "c3f95b99-7752-45ed-8eb7-540c10578b12",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T19:20:46.407Z"
+        }
+      }
+    },
+    {
+      "sequence": 1859,
+      "at": "2026-10-28T19:20:46.438Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "c3f95b99-7752-45ed-8eb7-540c10578b12",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T19:20:46.407Z"
+        }
+      }
+    },
+    {
+      "sequence": 1860,
+      "at": "2026-10-28T19:22:19.363Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "d38f0b3a-3bb1-41be-a9e7-b70ad6a61de4",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T562 aligns with acceptance and SSOT, addresses the prior match-return finding, and preserves existing assertions. Worker verification evidence is consistent; final browser and integration gates remain with the coordinator.",
+          "findings": [],
+          "commit": "cf1f17d9882c54d960cef39d36e876c2601649b6",
+          "baseCommit": "770cbb40b71dbdb2ebd420b4703484b34afe86e5",
+          "submissionId": "e56b40c5-7725-4773-9455-32c400909f4d",
+          "createdAt": "2026-10-28T19:20:45.119Z",
+          "finishedAt": "2026-10-28T19:22:19.363Z"
+        }
+      }
+    },
+    {
+      "sequence": 1861,
+      "at": "2026-10-28T19:22:19.391Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "c3f95b99-7752-45ed-8eb7-540c10578b12",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T19:20:46.407Z",
+          "finishedAt": "2026-10-28T19:22:19.391Z",
+          "error": null,
+          "summary": "T562 aligns with acceptance and SSOT, addresses the prior match-return finding, and preserves existing assertions. Worker verification evidence is consistent; final browser and integration gates remain with the coordinator."
+        }
+      }
+    },
+    {
+      "sequence": 1862,
+      "at": "2026-10-28T19:22:19.473Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1863,
+      "at": "2026-10-28T19:23:09.839Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-28T19:22:35.478Z",
+            "finishedAt": "2026-10-28T19:23:09.640Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1864,
+      "at": "2026-10-28T19:23:09.936Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "8eec463d-0fce-40bc-a290-19e0b97911f6",
+      "taskId": "T562",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "cba46754727353965b1c61affe63816f5a2e41b3",
+        "integratedAt": "2026-10-28T19:23:09.936Z"
+      }
+    },
+    {
+      "sequence": 1865,
+      "at": "2026-10-28T19:23:10.035Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "01e06915-3bac-4d0a-9591-88803d5f9efb",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "reviewing",
+          "commit": "0d7c0bce85fd30a87aa472061d1ace209c667835",
+          "baseCommit": "cba46754727353965b1c61affe63816f5a2e41b3",
+          "submissionId": "f21399fc-52d8-42e6-a8cd-881d5ab0f22b",
+          "createdAt": "2026-10-28T19:23:10.035Z"
+        }
+      }
+    },
+    {
+      "sequence": 1866,
+      "at": "2026-10-28T19:23:11.281Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "14bd0eff-9604-453b-b593-3d637349557a",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T19:23:11.281Z"
+        }
+      }
+    },
+    {
+      "sequence": 1867,
+      "at": "2026-10-28T19:23:11.314Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "14bd0eff-9604-453b-b593-3d637349557a",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T19:23:11.281Z"
+        }
+      }
+    },
+    {
+      "sequence": 1868,
+      "at": "2026-10-28T19:23:57.685Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1869,
+      "at": "2026-10-28T19:23:58.123Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1870,
+      "at": "2026-10-28T19:24:48.961Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "01e06915-3bac-4d0a-9591-88803d5f9efb",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T564 고정 커밋을 baseCommit·완료 조건·SSOT와 대조한 결과 수정이 필요한 결함은 발견하지 못했습니다. 워커 검증 기록을 확인했으며 최종 통합·브라우저 게이트는 조정자 호스트에 맡깁니다.",
+          "findings": [],
+          "commit": "0d7c0bce85fd30a87aa472061d1ace209c667835",
+          "baseCommit": "cba46754727353965b1c61affe63816f5a2e41b3",
+          "submissionId": "f21399fc-52d8-42e6-a8cd-881d5ab0f22b",
+          "createdAt": "2026-10-28T19:23:10.035Z",
+          "finishedAt": "2026-10-28T19:24:48.961Z"
+        }
+      }
+    },
+    {
+      "sequence": 1871,
+      "at": "2026-10-28T19:24:48.995Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "14bd0eff-9604-453b-b593-3d637349557a",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T19:23:11.281Z",
+          "finishedAt": "2026-10-28T19:24:48.995Z",
+          "error": null,
+          "summary": "T564 고정 커밋을 baseCommit·완료 조건·SSOT와 대조한 결과 수정이 필요한 결함은 발견하지 못했습니다. 워커 검증 기록을 확인했으며 최종 통합·브라우저 게이트는 조정자 호스트에 맡깁니다."
+        }
+      }
+    },
+    {
+      "sequence": 1872,
+      "at": "2026-10-28T19:24:49.085Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1873,
+      "at": "2026-10-28T19:25:26.876Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-28T19:24:51.269Z",
+            "finishedAt": "2026-10-28T19:25:26.702Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1874,
+      "at": "2026-10-28T19:25:26.944Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "c7d6a299-1790-4b01-9196-92fd3cc22696",
+      "taskId": "T564",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "2b3586b756052a506ffe7e589f18d96b465c6a93",
+        "integratedAt": "2026-10-28T19:25:26.944Z"
+      }
+    },
+    {
+      "sequence": 1875,
+      "at": "2026-10-28T19:25:27.047Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "ba395b58-ffbe-455c-816e-2ea111d4d595",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "reviewing",
+          "commit": "56dd33936a10b0dcffcfedef89e7be7213652e4b",
+          "baseCommit": "2b3586b756052a506ffe7e589f18d96b465c6a93",
+          "submissionId": "94072e93-a1f0-4cde-b185-810f4b16e998",
+          "createdAt": "2026-10-28T19:25:27.047Z"
+        }
+      }
+    },
+    {
+      "sequence": 1876,
+      "at": "2026-10-28T19:25:28.333Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "339efd4d-caff-43cc-a968-22afbc653e02",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T19:25:28.333Z"
+        }
+      }
+    },
+    {
+      "sequence": 1877,
+      "at": "2026-10-28T19:25:28.365Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "339efd4d-caff-43cc-a968-22afbc653e02",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T19:25:28.333Z"
+        }
+      }
+    },
+    {
+      "sequence": 1878,
+      "at": "2026-10-28T19:26:31.363Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "ba395b58-ffbe-455c-816e-2ea111d4d595",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T565의 fixture와 복귀 라벨 수정이 acceptance·SSOT에 부합하며 기존 취소·불변성·접근성 검증을 보존합니다. 워커의 단위 테스트·빌드 근거를 확인했습니다. 최종 통합·브라우저 검증은 조정자 호스트에서 수행해야 합니다.",
+          "findings": [],
+          "commit": "56dd33936a10b0dcffcfedef89e7be7213652e4b",
+          "baseCommit": "2b3586b756052a506ffe7e589f18d96b465c6a93",
+          "submissionId": "94072e93-a1f0-4cde-b185-810f4b16e998",
+          "createdAt": "2026-10-28T19:25:27.047Z",
+          "finishedAt": "2026-10-28T19:26:31.363Z"
+        }
+      }
+    },
+    {
+      "sequence": 1879,
+      "at": "2026-10-28T19:26:31.392Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "339efd4d-caff-43cc-a968-22afbc653e02",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T19:25:28.333Z",
+          "finishedAt": "2026-10-28T19:26:31.392Z",
+          "error": null,
+          "summary": "T565의 fixture와 복귀 라벨 수정이 acceptance·SSOT에 부합하며 기존 취소·불변성·접근성 검증을 보존합니다. 워커의 단위 테스트·빌드 근거를 확인했습니다. 최종 통합·브라우저 검증은 조정자 호스트에서 수행해야 합니다."
+        }
+      }
+    },
+    {
+      "sequence": 1880,
+      "at": "2026-10-28T19:26:31.474Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1881,
+      "at": "2026-10-28T19:27:07.716Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-28T19:26:33.220Z",
+            "finishedAt": "2026-10-28T19:27:07.555Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1882,
+      "at": "2026-10-28T19:27:07.779Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "6303908e-22f3-4c0e-b9e5-d35fa41f5fd2",
+      "taskId": "T565",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
+        "integratedAt": "2026-10-28T19:27:07.779Z"
+      }
+    },
+    {
+      "sequence": 1883,
+      "at": "2026-10-28T19:27:23.271Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1884,
+      "at": "2026-10-28T19:27:24.608Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1885,
+      "at": "2026-10-28T19:27:24.675Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1886,
+      "at": "2026-10-28T19:27:59.047Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "a58674d1e9225b932deaeec316c792f508f8cb23",
+        "submittedBase": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
+        "submissionId": "2a7ae530-7829-4ada-b8d5-30820a8bcfce",
+        "submittedAt": "2026-10-28T19:27:59.047Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T566",
+            "commit": "a58674d1e9225b932deaeec316c792f508f8cb23",
+            "at": "2026-10-28T19:27:59.022Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "startedAt": "2026-10-28T19:27:25.013Z",
+                "finishedAt": "2026-10-28T19:27:58.654Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "startedAt": "2026-10-28T19:27:25.013Z",
+            "finishedAt": "2026-10-28T19:27:58.654Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1887,
+      "at": "2026-10-28T19:27:59.083Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "188785f8-90a9-4660-8ba3-078aa55e5048",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T19:20:43.317Z",
+          "finishedAt": "2026-10-28T19:27:59.083Z",
+          "error": null,
+          "summary": "T566 구현 완료. 진행 중 시장 조회를 병합·유지하고, 계약·입찰은 정지 후 현재 조건을 재검증합니다. 영향 테스트 85개와 타입·린트·포맷·빌드가 통과했습니다. 브라우저·T563 통합 배치 검증은 호스트에 남겼으며 태스크 결과에 기록했습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1888,
+      "at": "2026-10-28T19:27:59.178Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1889,
+      "at": "2026-10-28T19:28:00.372Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1890,
+      "at": "2026-10-28T19:28:00.438Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1891,
+      "at": "2026-10-28T19:28:33.719Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "14ec23c9a66b8902fa83dcda351dba704205ee35",
+        "submittedBase": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
+        "submissionId": "69b7cfa2-4bec-460f-a828-0d3e57e2a457",
+        "submittedAt": "2026-10-28T19:28:33.719Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T567",
+            "commit": "14ec23c9a66b8902fa83dcda351dba704205ee35",
+            "at": "2026-10-28T19:28:33.691Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "startedAt": "2026-10-28T19:28:00.737Z",
+                "finishedAt": "2026-10-28T19:28:33.323Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "startedAt": "2026-10-28T19:28:00.737Z",
+            "finishedAt": "2026-10-28T19:28:33.323Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1892,
+      "at": "2026-10-28T19:28:33.756Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "783ced73-1860-4611-97f0-e0eb74acbebc",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "worker",
+          "slot": 2,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T19:20:44.780Z",
+          "finishedAt": "2026-10-28T19:28:33.756Z",
+          "error": null,
+          "summary": "T567의 지정 테스트·헬퍼 6개와 acceptance/result를 수정했습니다. 관련 단위 테스트 35개, 격리된 헬퍼 검사 8개, 타입·린트·포맷·빌드·스펙 검사가 통과했습니다. 브라우저·통합·전체 검증은 실행하지 않았으며 호스트 인계 내용을 기록했습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1893,
+      "at": "2026-10-28T19:28:34.012Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+        "group": "club-browser-fix",
+        "taskId": "T568",
+        "tasks": [
+          "T568"
+        ],
+        "lane": "training-entry-layout",
+        "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-1",
+        "contributors": [
+          "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-10-28T19:28:34.012Z",
+        "startCommit": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452"
+      }
+    },
+    {
+      "sequence": 1894,
+      "at": "2026-10-28T19:28:34.545Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1895,
+      "at": "2026-10-28T19:28:34.997Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "14ff3a9f-f6c0-48c8-a065-7f28c75c1ed7",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T19:28:34.997Z"
+        }
+      }
+    },
+    {
+      "sequence": 1896,
+      "at": "2026-10-28T19:28:35.200Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "14ff3a9f-f6c0-48c8-a065-7f28c75c1ed7",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T19:28:34.997Z"
+        }
+      }
+    },
+    {
+      "sequence": 1897,
+      "at": "2026-10-28T19:28:35.523Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "819a676b-a6db-4e99-bb96-7f012bad6be0",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "reviewing",
+          "commit": "a58674d1e9225b932deaeec316c792f508f8cb23",
+          "baseCommit": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
+          "submissionId": "2a7ae530-7829-4ada-b8d5-30820a8bcfce",
+          "createdAt": "2026-10-28T19:28:35.523Z"
+        }
+      }
+    },
+    {
+      "sequence": 1898,
+      "at": "2026-10-28T19:28:36.624Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "145fb0e0-e7ae-4afd-bb23-6ff57fb2345e",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T19:28:36.624Z"
+        }
+      }
+    },
+    {
+      "sequence": 1899,
+      "at": "2026-10-28T19:28:36.654Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "145fb0e0-e7ae-4afd-bb23-6ff57fb2345e",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T19:28:36.624Z"
+        }
+      }
+    },
+    {
+      "sequence": 1900,
+      "at": "2026-10-28T19:30:13.324Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "조회 병합과 실행 보호의 검증 기록은 확인했지만, compact market의 네 행 노출 acceptance가 충족되지 않았습니다.",
+        "review": {
+          "id": "819a676b-a6db-4e99-bb96-7f012bad6be0",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "조회 병합과 실행 보호의 검증 기록은 확인했지만, compact market의 네 행 노출 acceptance가 충족되지 않았습니다.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "spec/tasks/T566.market-read-during-progression.md:11",
+              "message": "T566 acceptance 4: T563 적용 후 기준 소스 770cbb40에서 실행한 coordinator 기록(club-layout-probe2-e2e.json)은 360×740의 네 번째 시장 행이 viewport 비율 0으로 실패했음을 보여줍니다. 제출물은 시장 마크업·CSS 배치를 변경하지 않아 이 실패를 해결하지 않았습니다. 44px 터치 영역을 유지하는 최소한의 시장 배치 수정을 반영하고, 기존 첫 네 행 노출 assertion의 재검증을 coordinator에 인계하세요."
+            }
+          ],
+          "commit": "a58674d1e9225b932deaeec316c792f508f8cb23",
+          "baseCommit": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
+          "submissionId": "2a7ae530-7829-4ada-b8d5-30820a8bcfce",
+          "createdAt": "2026-10-28T19:28:35.523Z",
+          "finishedAt": "2026-10-28T19:30:13.324Z"
+        }
+      }
+    },
+    {
+      "sequence": 1901,
+      "at": "2026-10-28T19:30:13.353Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "changes_requested",
+      "status": "changes_requested",
+      "changes": {
+        "dispatch": {
+          "id": "145fb0e0-e7ae-4afd-bb23-6ff57fb2345e",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T19:28:36.624Z",
+          "finishedAt": "2026-10-28T19:30:13.353Z",
+          "error": null,
+          "summary": "조회 병합과 실행 보호의 검증 기록은 확인했지만, compact market의 네 행 노출 acceptance가 충족되지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1902,
+      "at": "2026-10-28T19:30:13.423Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-2",
+        "contributors": [
+          "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-1",
+          "bb52231b-8d30-43a5-b75b-1e89687a271b/worker-2"
+        ],
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "819a676b-a6db-4e99-bb96-7f012bad6be0",
+            "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "조회 병합과 실행 보호의 검증 기록은 확인했지만, compact market의 네 행 노출 acceptance가 충족되지 않았습니다.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "spec/tasks/T566.market-read-during-progression.md:11",
+                "message": "T566 acceptance 4: T563 적용 후 기준 소스 770cbb40에서 실행한 coordinator 기록(club-layout-probe2-e2e.json)은 360×740의 네 번째 시장 행이 viewport 비율 0으로 실패했음을 보여줍니다. 제출물은 시장 마크업·CSS 배치를 변경하지 않아 이 실패를 해결하지 않았습니다. 44px 터치 영역을 유지하는 최소한의 시장 배치 수정을 반영하고, 기존 첫 네 행 노출 assertion의 재검증을 coordinator에 인계하세요."
+              }
+            ],
+            "commit": "a58674d1e9225b932deaeec316c792f508f8cb23",
+            "baseCommit": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
+            "submissionId": "2a7ae530-7829-4ada-b8d5-30820a8bcfce",
+            "createdAt": "2026-10-28T19:28:35.523Z",
+            "finishedAt": "2026-10-28T19:30:13.324Z",
+            "invalidatedAt": "2026-10-28T19:30:13.423Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1903,
+      "at": "2026-10-28T19:30:13.597Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "7cddcdaf-46c8-4166-9c81-91fb9dcd928c",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "worker",
+          "slot": 2,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T19:30:13.597Z"
+        }
+      }
+    },
+    {
+      "sequence": 1904,
+      "at": "2026-10-28T19:30:13.813Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "7cddcdaf-46c8-4166-9c81-91fb9dcd928c",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "worker",
+          "slot": 2,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T19:30:13.597Z"
+        }
+      }
+    },
+    {
+      "sequence": 1905,
+      "at": "2026-10-28T19:30:13.902Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "d1f016da-585f-402d-9414-8cc056ac4fd3",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "reviewing",
+          "commit": "14ec23c9a66b8902fa83dcda351dba704205ee35",
+          "baseCommit": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
+          "submissionId": "69b7cfa2-4bec-460f-a828-0d3e57e2a457",
+          "createdAt": "2026-10-28T19:30:13.902Z"
+        }
+      }
+    },
+    {
+      "sequence": 1906,
+      "at": "2026-10-28T19:30:15.366Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "10309228-9f39-41bc-83fd-e125d1010872",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T19:30:15.366Z"
+        }
+      }
+    },
+    {
+      "sequence": 1907,
+      "at": "2026-10-28T19:30:15.399Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "10309228-9f39-41bc-83fd-e125d1010872",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T19:30:15.366Z"
+        }
+      }
+    },
+    {
+      "sequence": 1908,
+      "at": "2026-10-28T19:32:13.641Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1909,
+      "at": "2026-10-28T19:32:14.987Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1910,
+      "at": "2026-10-28T19:32:15.051Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1911,
+      "at": "2026-10-28T19:32:49.361Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "fef599e3acbae19451293f0305b650a80a9a26e6",
+        "submittedBase": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
+        "submissionId": "17d37cfe-3a40-4667-837e-5af4d8c814c5",
+        "submittedAt": "2026-10-28T19:32:49.361Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T568",
+            "commit": "fef599e3acbae19451293f0305b650a80a9a26e6",
+            "at": "2026-10-28T19:32:49.339Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "startedAt": "2026-10-28T19:32:15.367Z",
+                "finishedAt": "2026-10-28T19:32:48.974Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "startedAt": "2026-10-28T19:32:15.367Z",
+            "finishedAt": "2026-10-28T19:32:48.974Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1912,
+      "at": "2026-10-28T19:32:49.396Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "14ff3a9f-f6c0-48c8-a065-7f28c75c1ed7",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T19:28:34.997Z",
+          "finishedAt": "2026-10-28T19:32:49.396Z",
+          "error": null,
+          "summary": "T568: 기존 훈련 버튼을 현재 훈련 상태 바로 아래로 이동하고 회귀 테스트와 acceptance/result를 갱신했습니다. 영향 단위 테스트 23개와 타입·린트·포맷·빌드·spec 검사가 통과했습니다. 검사는 Node 26.8.1에서 실행했으며, 브라우저 검증은 기존 엄격한 조건 그대로 호스트에 인계했습니다. 커밋·제출·runtime 변경은 하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1913,
+      "at": "2026-10-28T19:32:50.186Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "d1f016da-585f-402d-9414-8cc056ac4fd3",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "14ec23c9의 T567 변경을 baseCommit·acceptance·SSOT와 대조했으며 필수 수정 사항은 발견하지 못했습니다. 작업자 검증 근거를 확인했고, 최종 브라우저·통합 검증은 coordinator에 맡깁니다.",
+          "findings": [],
+          "commit": "14ec23c9a66b8902fa83dcda351dba704205ee35",
+          "baseCommit": "1e1a1b1316a6d5fd8eb5137f9a947c7665ddb452",
+          "submissionId": "69b7cfa2-4bec-460f-a828-0d3e57e2a457",
+          "createdAt": "2026-10-28T19:30:13.902Z",
+          "finishedAt": "2026-10-28T19:32:50.186Z"
+        }
+      }
+    },
+    {
+      "sequence": 1914,
+      "at": "2026-10-28T19:32:50.214Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "10309228-9f39-41bc-83fd-e125d1010872",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T19:30:15.366Z",
+          "finishedAt": "2026-10-28T19:32:50.214Z",
+          "error": null,
+          "summary": "14ec23c9의 T567 변경을 baseCommit·acceptance·SSOT와 대조했으며 필수 수정 사항은 발견하지 못했습니다. 작업자 검증 근거를 확인했고, 최종 브라우저·통합 검증은 coordinator에 맡깁니다."
+        }
+      }
+    },
+    {
+      "sequence": 1915,
+      "at": "2026-10-28T19:32:50.296Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1916,
+      "at": "2026-10-28T19:33:28.987Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-28T19:32:51.771Z",
+            "finishedAt": "2026-10-28T19:33:28.604Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1917,
+      "at": "2026-10-28T19:33:29.069Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "ca616488-ec79-4f80-9ee1-01a2b2f16aa5",
+      "taskId": "T567",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "1d2cf0a65093c9456d6de1959c820aeb11fdccde",
+        "integratedAt": "2026-10-28T19:33:29.069Z"
+      }
+    },
+    {
+      "sequence": 1918,
+      "at": "2026-10-28T19:33:29.393Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "229ec76b-0061-4709-8761-096c3a016ff2",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "reviewing",
+          "commit": "fef599e3acbae19451293f0305b650a80a9a26e6",
+          "baseCommit": "1d2cf0a65093c9456d6de1959c820aeb11fdccde",
+          "submissionId": "17d37cfe-3a40-4667-837e-5af4d8c814c5",
+          "createdAt": "2026-10-28T19:33:29.393Z"
+        }
+      }
+    },
+    {
+      "sequence": 1919,
+      "at": "2026-10-28T19:33:30.716Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "89a5e2f6-792c-4936-91c0-18004ba75be7",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-10-28T19:33:30.716Z"
+        }
+      }
+    },
+    {
+      "sequence": 1920,
+      "at": "2026-10-28T19:33:30.753Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "89a5e2f6-792c-4936-91c0-18004ba75be7",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-10-28T19:33:30.716Z"
+        }
+      }
+    },
+    {
+      "sequence": 1921,
+      "at": "2026-10-28T19:34:29.222Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1922,
+      "at": "2026-10-28T19:34:29.842Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1923,
+      "at": "2026-10-28T19:34:29.906Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1924,
+      "at": "2026-10-28T19:35:04.467Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "1d2cf0a65093c9456d6de1959c820aeb11fdccde",
+        "submissionId": "2d4dc5dd-2930-434d-9d3a-47c2365cea5a",
+        "submittedAt": "2026-10-28T19:35:04.467Z",
+        "steps": [
+          {
+            "taskId": "T566",
+            "commit": "db91f970ae04f100f1a4e1b687a836fd752f3fde",
+            "at": "2026-10-28T19:35:04.444Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+                "startedAt": "2026-10-28T19:34:30.199Z",
+                "finishedAt": "2026-10-28T19:35:04.089Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
+            "startedAt": "2026-10-28T19:34:30.199Z",
+            "finishedAt": "2026-10-28T19:35:04.089Z"
+          }
+        ],
+        "verifiedCommit": "db91f970ae04f100f1a4e1b687a836fd752f3fde"
+      }
+    },
+    {
+      "sequence": 1925,
+      "at": "2026-10-28T19:35:04.502Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "af77177e-a81f-4ca4-a803-7546f6b913cf",
+      "taskId": "T566",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "7cddcdaf-46c8-4166-9c81-91fb9dcd928c",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "worker",
+          "slot": 2,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T19:30:13.597Z",
+          "finishedAt": "2026-10-28T19:35:04.502Z",
+          "error": null,
+          "summary": "compact 시장의 헤더·검색·선수 행 배치를 줄이고 44px 터치 영역과 출처·상태 정보를 유지했습니다. 단위 테스트 26개와 타입·린트·포맷·빌드가 통과했습니다. 첫 네 행의 실제 화면 노출 재검증은 코디네이터에 인계하고 태스크 결과에 기록했습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1926,
+      "at": "2026-10-28T19:35:05.105Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "229ec76b-0061-4709-8761-096c3a016ff2",
+          "owner": "bb52231b-8d30-43a5-b75b-1e89687a271b/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T568의 fef599e3을 baseCommit·acceptance·SSOT·ARCH와 대조했으며 필수 수정 사항을 발견하지 못했습니다. 기존 동작 보존과 워커 검증 근거를 확인했습니다. 실제 뷰포트·포커스 및 최종 통합 검증은 coordinator가 수행해야 합니다.",
+          "findings": [],
+          "commit": "fef599e3acbae19451293f0305b650a80a9a26e6",
+          "baseCommit": "1d2cf0a65093c9456d6de1959c820aeb11fdccde",
+          "submissionId": "17d37cfe-3a40-4667-837e-5af4d8c814c5",
+          "createdAt": "2026-10-28T19:33:29.393Z",
+          "finishedAt": "2026-10-28T19:35:05.105Z"
+        }
+      }
+    },
+    {
+      "sequence": 1927,
+      "at": "2026-10-28T19:35:05.133Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "89a5e2f6-792c-4936-91c0-18004ba75be7",
+          "runner": "bb52231b-8d30-43a5-b75b-1e89687a271b",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-10-28T19:33:30.716Z",
+          "finishedAt": "2026-10-28T19:35:05.133Z",
+          "error": null,
+          "summary": "T568의 fef599e3을 baseCommit·acceptance·SSOT·ARCH와 대조했으며 필수 수정 사항을 발견하지 못했습니다. 기존 동작 보존과 워커 검증 근거를 확인했습니다. 실제 뷰포트·포커스 및 최종 통합 검증은 coordinator가 수행해야 합니다."
+        }
+      }
+    },
+    {
+      "sequence": 1928,
+      "at": "2026-10-28T19:35:05.215Z",
+      "type": "attempt",
+      "group": "club-browser-fix",
+      "attemptId": "5574fc87-f7dc-490b-8add-e0b03bf2ca0a",
+      "taskId": "T568",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

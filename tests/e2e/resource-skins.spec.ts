@@ -39,7 +39,36 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
     await continueSlot(page);
     await expect(page.getByTestId('club-hub')).toBeVisible();
     const visits = page.locator('[data-home-part="entrances"]');
-    await expect(visits.getByRole('button')).toHaveCount(3);
+    const destinations = [
+      ['구단주 사무실', 'manager'],
+      ['감독 사무실', 'manager'],
+      ['코칭스태프실', 'staff'],
+      ['훈련장', 'training'],
+      ['유소년 훈련장', 'academy'],
+    ] as const;
+    const entrances = visits.getByRole('button');
+    await expect(entrances).toHaveCount(destinations.length);
+    await expect(entrances).toHaveText(destinations.map(([name]) => `${name} 입장`));
+    for (const [index, [name, kind]] of destinations.entries()) {
+      const entrance = entrances.nth(index);
+      await expect(entrance).toHaveAccessibleName(`${name} 입장`);
+      await entrance.scrollIntoViewIfNeeded();
+      const art = entrance.locator('[data-facility-art]');
+      await expect(art).toHaveAttribute('data-facility-art', kind);
+      await expect(art.locator('img')).toHaveAttribute('src', /^\/art\//);
+      expect(await art.locator('img').getAttribute('alt')).toContain(theme.label);
+      await expect
+        .poll(() => art.locator('img').evaluate((node: HTMLImageElement) => node.naturalWidth))
+        .toBeGreaterThan(0);
+      expect(await art.locator('img').evaluate((node) => getComputedStyle(node).objectFit)).toBe(
+        'cover',
+      );
+      expect(await art.evaluate((node) => getComputedStyle(node, '::after').backgroundColor)).toBe(
+        'rgba(5, 12, 10, 0.58)',
+      );
+      const bounds = await entrance.boundingBox();
+      expect(bounds!.height).toBeGreaterThanOrEqual(44);
+    }
     const visitBounds = await visits.boundingBox();
     const sceneBounds = await page.locator('[data-home-part="scene"]').boundingBox();
     expect(visitBounds!.height).toBeLessThan(sceneBounds!.height);

@@ -13,6 +13,7 @@ import {
 import { detectMediations, resolveMediation } from '../../packages/engine/src/mediation';
 import { judgePromises } from '../../packages/engine/src/promises';
 import { worldMarketPage } from '../../packages/engine/src/world-market';
+import { DEFAULT_MARKET_QUERY } from '../../apps/web/src/ui/worldMarket';
 import { lineOf } from '../../packages/engine/src/player';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { horizontalOverflow } from './layout';
@@ -311,6 +312,7 @@ for (const arrival of ['none', 'loan', 'free'] as const)
     for (const record of w.mediations!.filter((m) => m.status === 'pending'))
       operate(w, { type: 'resolve-mediation', id: record.id, support: 'director' });
     await market(page, w);
+    let free: ReturnType<typeof transferOffers>[number] | undefined;
     if (loan) {
       await page.getByRole('button', { name: /^이적 협상 ·/ }).click();
       const dialog = page.getByRole('dialog', { name: '이적 협상', exact: true });
@@ -321,15 +323,34 @@ for (const arrival of ['none', 'loan', 'free'] as const)
       ).toBeVisible();
       await closeMarketPanel(page, '이적 협상');
     } else if (arrival === 'free') {
-      const offer = transferOffers(w).find(
+      free = transferOffers(w).find(
         (o) =>
           o.available &&
           lineOf(o.player.position) === promise.target.line &&
           o.player.id !== promise.target.pick &&
           o.freeAgent,
       )!;
-      expect(offer).toBeDefined();
-      const card = await marketCandidate(page, offer.player.id, offer.player.name);
+      expect(free).toBeDefined();
+      const matches = worldMarketPage(w, {
+        world: w.id,
+        ...DEFAULT_MARKET_QUERY,
+        name: free.player.name,
+      });
+      // The intended free agent is behind a full page of other players with this same name.
+      expect(matches.total).toBeGreaterThan(matches.pageSize);
+      expect(matches.items.map((offer) => offer.player.id)).not.toContain(free.player.id);
+      await expect(
+        marketCandidate(page, `${free.player.id}:absent`, free.player.name),
+      ).rejects.toThrow(`Market player ${free.player.id}:absent (${free.player.name}) absent:`);
+      await expect(
+        page
+          .getByRole('navigation', { name: '영입 목록 페이지', exact: true })
+          .getByRole('button', { name: '다음 페이지', exact: true }),
+      ).toBeDisabled();
+      await expect(page.getByRole('dialog', { name: '영입 후보 상세', exact: true })).toHaveCount(
+        0,
+      );
+      const card = await marketCandidate(page, free.player.id, free.player.name);
       await card
         .getByRole('button', {
           name: '자유계약 영입',
@@ -339,6 +360,13 @@ for (const arrival of ['none', 'loan', 'free'] as const)
       await closeMarketPanel(page, '영입 후보 상세');
     }
     const before = await exportedCareer(page);
+    if (free) {
+      expect(before.players.find((player) => player.id === free.player.id)).toMatchObject({
+        status: 'active',
+        wage: free.player.wage,
+      });
+      expect(before.cash).toBe(w.cash);
+    }
     if (loan) {
       expect(before.bids!.find((bid) => bid.id === loan.id)).toMatchObject({
         status: 'completed',
