@@ -9,9 +9,10 @@ export interface MatchModelRelease {
 /**
  * The internal release switch, on since T286 measured the combined model's throughput, capacity
  * and continuity gates passing (→ARCH-31, SAVE-23; its accuracy is reported beside it, →MATCH-28):
- * a new career is tracked from its founding and a supported rules-4.0.0 career activates at its
- * next writer load. Tests and measurements of the pre-feature path pass a disabled release
- * explicitly, and no player control or timing ever selects it.
+ * a new career is tracked from its founding and a supported career (0.7.0 or its rules-4.0.0 label,
+ * →SAVE-10) activates at its next writer load. Its revision ships inside a game version. Tests and
+ * measurements of the pre-feature path pass a disabled release explicitly, and no player control
+ * or timing ever selects it.
  */
 export const MATCH_MODEL_RELEASE: MatchModelRelease = {
   revision: MATCH_MODEL_REVISION,

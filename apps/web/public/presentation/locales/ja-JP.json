@@ -31,6 +31,7 @@
     "shell.division": "{division}部",
     "shell.readonly": "読み取り専用",
     "shell.readonlyNotice": "別のタブでプレイ中です。このタブは読み取り専用です。",
+    "shell.beta": "ベータ版 {version} · 正式リリースまでにゲームが変わることがあります",
     "shell.guide": "クラブ育成ガイド",
     "shell.responsibilities": "オーナー室",
     "shell.news": "通知・ニュース",

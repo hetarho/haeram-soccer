@@ -1,6 +1,16 @@
 import type { World } from './types';
 
-export const CURRENT_ENGINE_VERSION = '4.0.0';
+/**
+ * The game's one version (→SAVE-10): every package's `version`, the rules a world plays and what the
+ * screens print. 0.7.0 is the beta's first numbered version and continues the rules-4.0.0 line
+ * unchanged; a match-model revision ships inside a version (→SAVE-23).
+ */
+export const CURRENT_ENGINE_VERSION = '0.7.0';
+/**
+ * The rules-4.0.0 label of the line 0.7.0 continues: such a world is read like a 0.7.0 one and only
+ * its label is rewritten on writer activation (`upgradeWorldRules`, →SAVE-10).
+ */
+export const CONTINUED_ENGINE_VERSION = '4.0.0';
 /**
  * 1.1.0 added club policy; 1.2.0 staff, academy, transfer windows and the inbox; 1.3.0 closes
  * the season after its final round, opens the summer window there, normalizes league match
@@ -67,9 +77,16 @@ export const CURRENT_ENGINE_VERSION = '4.0.0';
  * probabilistic path), gives players 16 attributes, adds cards and suspensions, in-match
  * substitutions and injuries, extra time and shoot-outs and post-match material; it starts new
  * careers, and a recognized earlier career is cleared once on writer activation (→SAVE-18, SAVE-19).
+ * 0.7.0 numbers the game itself and plays the 4.0.0 rules unchanged (→SAVE-10).
  */
-/** Only rules 4.0.0: an earlier career is never converted (→SAVE-16, SAVE-19). */
-export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [CURRENT_ENGINE_VERSION];
+/**
+ * The current version and the 4.0.0 label it continues, never an open-ended older range: an earlier
+ * career is never converted (→SAVE-16, SAVE-19).
+ */
+export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
+  CURRENT_ENGINE_VERSION,
+  CONTINUED_ENGINE_VERSION,
+];
 /** A world pins its catalog ID and the fingerprint recorded with it (→ARCH-10). */
 export type CatalogPin = Pick<World, 'catalog' | 'catalogHash'>;
 /**
@@ -133,21 +150,17 @@ export class SaveCompatibilityError extends Error {
     this.name = 'SaveCompatibilityError';
   }
 }
-/** Whether rules `engine` came before the current ones: an earlier-rules career (→SAVE-16). */
-export function isEarlierEngine(engine: string) {
-  const parts = (version: string) => version.split('.').map((part) => Number(part));
-  const [found, current] = [parts(engine), parts(CURRENT_ENGINE_VERSION)];
-  for (let i = 0; i < 3; i++) {
-    const a = found[i] ?? 0,
-      b = current[i] ?? 0;
-    if (!Number.isFinite(a) || !Number.isFinite(b)) return false;
-    if (a !== b) return a < b;
-  }
-  return false;
-}
+/**
+ * Whether `engine` is a released earlier rules version: an earlier-rules career (→SAVE-16). The game
+ * version restarted its numbering at 0.7.0, so only the released list says what came before; any
+ * other unsupported version is from a newer game (→SAVE-11).
+ */
+export const isEarlierEngine = (engine: string) => LEGACY_ENGINE_VERSIONS.includes(engine);
 /** What an earlier-rules save says when it is asked to open (→SAVE-16). */
 export const earlierRulesMessage = (engine: string) =>
-  `이 저장은 규칙 ${engine} 커리어입니다 — 규칙 ${CURRENT_ENGINE_VERSION} 커리어만 열 수 있습니다. 새 커리어를 시작하세요`;
+  `이 저장은 규칙 ${engine} 커리어입니다 — 게임 버전 ${CURRENT_ENGINE_VERSION} 커리어만 열 수 있습니다. 새 커리어를 시작하세요`;
+/** What a save of a version neither supported nor earlier says: it is from a newer game (→SAVE-11). */
+export const NEWER_GAME_MESSAGE = `지원하지 않는 저장 엔진 버전입니다 — 게임 버전 ${CURRENT_ENGINE_VERSION}보다 새로운 게임의 저장일 수 있습니다. 원본 파일을 보관하세요.`;
 /**
  * The rules version an envelope names in its header, read without decoding its payload; none for a
  * container this version cannot read, whose header is not evidence of earlier rules.
@@ -170,8 +183,9 @@ export function isSaveCompatibilityError(error: unknown): error is SaveCompatibi
 }
 
 /**
- * Only rule metadata, the catalog pin and the revision change; absent optional fields and all prior
- * facts survive.
+ * The writer-activation rules step every load, import and the worker share (→SAVE-3, SAVE-10): only
+ * rule metadata — a rules-4.0.0 label becomes the current version — the catalog pin and the
+ * revision change; absent optional fields and all prior facts survive.
  */
 export function upgradeWorldRules(w: World, pin: CatalogPin): World {
   if (w.engine === CURRENT_ENGINE_VERSION && w.catalog === pin.catalog) return w;

@@ -88,7 +88,34 @@ test('recognized legacy gameplay resets on writer activation and new careers rel
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();
   await page.reload();
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  expect(JSON.parse(await exportRaw(page)).engine).toBe('4.0.0');
+  expect(JSON.parse(await exportRaw(page)).engine).toBe('0.7.0');
+});
+
+test('a rules-4.0.0 save opens as game version 0.7.0, read-only tabs leaving it as stored', async ({
+  page,
+  context,
+}) => {
+  // The rules line 0.7.0 continues: only its version label is rewritten (→SAVE-10).
+  const { world } = await current();
+  const stored = await encode({ ...world, engine: '4.0.0' });
+  const holder = await context.newPage();
+  await holder.goto('/');
+  await expect(holder.getByRole('button', { name: '클럽 창단' })).toBeVisible();
+  await seed(page, stored);
+  await page.goto('/');
+  // A read-only tab shows the career and never writes the upgrade.
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBe(stored);
+  await holder.close();
+  // Taking over as the writer activates it as 0.7.0 and commits it to IndexedDB, whose first
+  // commit moves the career out of localStorage (→SAVE-3).
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a')))
+    .toBeNull();
+  expect(JSON.parse(await exportRaw(page))).toMatchObject({ engine: '0.7.0', worldId: world.id });
+  await page.reload();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  expect(JSON.parse(await exportRaw(page)).engine).toBe('0.7.0');
 });
 
 test('earlier rules import refused', async ({ page }) => {
@@ -102,7 +129,7 @@ test('earlier rules import refused', async ({ page }) => {
     buffer: Buffer.from(earlier),
   });
   await expect(page.getByRole('alert')).toContainText(
-    '이 저장은 규칙 1.22.0 커리어입니다 — 규칙 4.0.0 커리어만 열 수 있습니다. 새 커리어를 시작하세요',
+    '이 저장은 규칙 1.22.0 커리어입니다 — 게임 버전 0.7.0 커리어만 열 수 있습니다. 새 커리어를 시작하세요',
   );
   // Nothing changed: no career opened and nothing was stored.
   await expect(page.getByTestId('club-hub')).toHaveCount(0);

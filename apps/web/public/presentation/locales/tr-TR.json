@@ -31,6 +31,7 @@
     "shell.division": "{division}. lig",
     "shell.readonly": "Salt okunur",
     "shell.readonlyNotice": "Başka bir sekmede oynanıyor. Bu sekme salt okunurdur.",
+    "shell.beta": "Beta sürümü {version} · oyun tam sürümden önce değişebilir",
     "shell.guide": "Kulüp geliştirme rehberi",
     "shell.responsibilities": "Kulüp sahibinin ofisi",
     "shell.news": "Bildirimler ve haberler",

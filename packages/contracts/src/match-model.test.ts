@@ -28,7 +28,7 @@ const state: MatchModelState = {
   trackedFrom: { year: 1962, day: 41, round: 6 },
   coverage: 'activation',
 };
-/** An older own record as rules 4.0.0 stores it: no model, line split or incidents. */
+/** An older own record as the rules-4.0.0 line stores it: no model, line split or incidents. */
 const oldRecord = { id: 'f:1', year: 1961, round: 3, score: { home: 1, away: 0 } };
 
 describe('match-model metadata (→SAVE-23)', () => {
@@ -36,9 +36,12 @@ describe('match-model metadata (→SAVE-23)', () => {
     const career = { engine: CURRENT_ENGINE_VERSION, ownMatches: [oldRecord] };
     expect(() => assertMatchModelFormat(career)).not.toThrow();
     expect(activeMatchModel(career as Pick<World, 'matchModel'>)).toBeUndefined();
-    // A supported rules-4.0.0 career, with or without the model, is never resettable legacy data.
-    expect(LEGACY_ENGINE_VERSIONS).not.toContain(CURRENT_ENGINE_VERSION);
-    expect(isEarlierEngine(CURRENT_ENGINE_VERSION)).toBe(false);
+    // A supported career, 0.7.0 or its rules-4.0.0 label, with or without the model, is never
+    // resettable legacy data.
+    for (const supported of [CURRENT_ENGINE_VERSION, '4.0.0']) {
+      expect(LEGACY_ENGINE_VERSIONS).not.toContain(supported);
+      expect(isEarlierEngine(supported)).toBe(false);
+    }
     const activated = {
       ...career,
       matchModel: state,
@@ -79,9 +82,11 @@ describe('match-model metadata (→SAVE-23)', () => {
     expect(isCheckpointSchema(FULL_MODEL_CHECKPOINT_SCHEMA)).toBe(true);
     expect(isCheckpointSchema(MANAGER_HISTORY_CHECKPOINT_SCHEMA)).toBe(true);
     expect(isCheckpointSchema(MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1)).toBe(false);
-    expect(envelopeEngine(`{"schema":${FULL_MODEL_CHECKPOINT_SCHEMA},"engine":"4.0.0"}`)).toBe(
-      '4.0.0',
-    );
+    expect(
+      envelopeEngine(
+        `{"schema":${FULL_MODEL_CHECKPOINT_SCHEMA},"engine":"${CURRENT_ENGINE_VERSION}"}`,
+      ),
+    ).toBe(CURRENT_ENGINE_VERSION);
     expect(
       envelopeEngine(`{"schema":${MANAGER_HISTORY_CHECKPOINT_SCHEMA + 1},"engine":"3.0.0"}`),
     ).toBe(undefined);

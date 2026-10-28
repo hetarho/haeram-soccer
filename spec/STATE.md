@@ -384,8 +384,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T548 | Version 0.7 football: a chased forward shoots, nearby defenders block or deflect it | MATCH SAVE ARCH | - | todo |
-| T549 | One game version 0.7.0 for the app and the engine rules; 4.0.0 saves load as 0.7.0 | SAVE ARCH | - | todo |
-| T550 | BETA mark on every screen and v0.7 BETA on the start and save-slot screens | WEB SAVE ARCH | T549 | todo |
 | T552 | Paged whole-world recruitment workbench | WEB CLUB ARCH | T558 | todo |
 | T553 | Consequential owner choices and shared place activity panels | WEB CLUB ARCH | T557 | todo |
 | T554 | Six-place navigation and competition clubhouse | WEB ECON ARCH | - | todo |
@@ -409,11 +407,15 @@
 | h7t3 | 4 | 6 | 0 | 6 | 0 | 1 | 2 | 2026-10-27T08:21:16.497Z | [history](work/h7t3.json) |
 | auto-play | 4 | 7 | 4 | 3 | 0 | 1 | 0 | 2026-10-27T11:34:29.863Z | [history](work/auto-play.json) |
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
+| v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
 
 ## next
-- club-places: implement T557/T558 engine foundations while live T550 owns UI, then T552 market UI and T553 choices in parallel with the T554→T555 places-office lane; T556 connects all results. Existing T548–T550 remain with their current sessions.
+- club-places: finish T557/T558 foundations, then T552/T553 and T554→T555 UI lanes; T556 connects all results. T549/T550 are integrated from their owning group; T548 remains with its existing session.
 
 ## log
+- 261029 cp29 merge the owner-reviewed v07-beta integration so completed T549/T550 no longer block independent UI work; preserve current SSOT and T552–T558 scope.
+- 261028 T550 integrated
+- 261028 T549 integrated
 - 261029 cp29 extend unclaimed T553 to update the existing rest-day morale summary assertion identified by T557; keep full-world integration execution at the coordinator gate.
 - 261029 cp29 redivide unclaimed T552/T553 into engine foundations T558/T557 and UI consumers so live T550 UI ownership does not stop independent engine work; no policy change.
 - 261029 cp29 narrow unclaimed T552 runtime touches to protocol/host/client plus dedicated query tests; unrelated T548 owns host/protocol legacy tests.
@@ -431,6 +433,3 @@
 - 261028 T544 done (dev3, 1f605f49): figure painter and number tags; PL re-ran 40 unit tests and typecheck; merged.
 - 261028 T544 start (dev3) in worktree task/T544 (pl1).
 - 261028 T547 done (dev1, 158a5b64): kit wear v2, torso selection, keeper fallback; PL re-ran typecheck, 57 unit and 23 contract tests; merged.
-- 261028 T543 done (dev3, 407a5e9d): figure poses and action windows; PL re-ran its 16 unit tests and typecheck; merged into feat/player-figures-kits.
-- 261028 T547 (dev1) and T543 (dev3) start in worktrees task/T542 (renumbered T547 at merge) and task/T543 (pl1).
-- 261028 create-task done (pl1): T543–T547 from KIT r4 MATCH r36 WEB r166 SAVE r56; foundation T547 ‖ T543 → T544, lanes match-figures T545 and kit-editor T546.

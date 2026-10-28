@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { GameEntry } from '../adapters/games';
+import { BetaMark } from './BetaMark';
 import { earlierRules, summarize, type GameSlots } from '../runtime/slots';
 import { gameStore, useGameState } from '../runtime/store';
 import { CrestMark } from './ClubCrest';
@@ -108,7 +109,10 @@ export function GameSlotScreen({
   return (
     <section className={s.screen} data-testid="game-slots" aria-label={t('slots.title')}>
       <header className={s.head}>
-        <span>HAERAM FOOTBALL</span>
+        <div className={s.brand}>
+          <span>HAERAM FOOTBALL</span>
+          <BetaMark version />
+        </div>
         <h2>{t('slots.title')}</h2>
         <PresentationSettingsTrigger />
         <p>{t('slots.description')}</p>

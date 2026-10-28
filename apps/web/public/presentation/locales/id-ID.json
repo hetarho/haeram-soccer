@@ -31,6 +31,7 @@
     "shell.division": "Divisi {division}",
     "shell.readonly": "Hanya baca",
     "shell.readonlyNotice": "Gim sedang dimainkan di tab lain. Tab ini hanya untuk membaca.",
+    "shell.beta": "Versi beta {version} · gim dapat berubah sebelum rilis penuh",
     "shell.guide": "Panduan mengembangkan klub",
     "shell.responsibilities": "Kantor pemilik",
     "shell.news": "Notifikasi dan berita",
