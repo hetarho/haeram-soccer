@@ -1,21 +1,18 @@
 import type { Page } from './state';
 
-/**
- * The sidebar's destinations (→WEB-10). The match view has no menu entry: it opens only from a
- * watch action (→WEB-40). The owner office is entered from home, never from a menu (→WEB-39).
- */
+/** Shared place order; competition details and records belong to the clubhouse (→WEB-10). */
 export const TABS: [Page, string, string, Page[]][] = [
-  ['league', 'navigation.short.season', 'navigation.season', ['league', 'europe']],
   [
-    'history',
-    'navigation.short.history',
-    'navigation.history',
-    ['history', 'leagueHistory', 'cupHistory'],
+    'dashboard',
+    'navigation.dashboard',
+    'navigation.dashboard',
+    ['dashboard', 'league', 'europe', 'history', 'leagueHistory', 'cupHistory', 'match'],
   ],
-  ['dashboard', 'navigation.short.dashboard', 'navigation.dashboard', ['dashboard']],
-  ['firstTeam', 'navigation.short.firstTeam', 'navigation.firstTeam', ['firstTeam']],
-  ['academy', 'navigation.short.academy', 'navigation.academy', ['academy']],
-  ['staff', 'navigation.short.staff', 'navigation.staff', ['staff']],
+  ['business', 'navigation.business', 'navigation.business', ['business']],
+  ['firstTeam', 'navigation.firstTeam', 'navigation.firstTeam', ['firstTeam']],
+  ['staff', 'navigation.staff', 'navigation.staff', ['staff']],
+  ['training', 'navigation.training', 'navigation.training', ['training']],
+  ['academy', 'navigation.academy', 'navigation.academy', ['academy']],
 ];
 /** Desktop and phone entries share their hierarchy and order. */
 export const NAV: [Page, string][] = TABS.map(([page, , label]) => [page, label]);

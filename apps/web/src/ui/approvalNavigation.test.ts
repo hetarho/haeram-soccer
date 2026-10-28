@@ -35,6 +35,19 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllGlobals());
 describe('world-scoped approval navigation', () => {
+  it('preserves explicit office work tabs through canonical reload addresses', () => {
+    expect(routeOf('/direction', '?view=players&work=sales')).toEqual({
+      page: 'business',
+      view: 'players',
+    });
+    expect(routeOf('/business', '?view=players&work=recruitment')).toMatchObject({
+      address: '/direction?view=players&work=recruitment',
+    });
+    expect(routeOf('/direction', '?view=staff&work=coaches')).toEqual({
+      page: 'business',
+      view: 'staff',
+    });
+  });
   it('keeps the request identity in canonical history and leaves the work unresolved', () => {
     openApprovalRequest('world', first);
     expect(location.pathname).toBe('/direction');

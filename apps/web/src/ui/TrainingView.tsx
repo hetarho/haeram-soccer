@@ -1,3 +1,4 @@
+import { areaOf } from './areas';
 import { developmentDestination } from './personnelNavigation';
 import { useTaskState } from './taskMemory';
 import { useEffect } from 'react';
@@ -392,7 +393,7 @@ function openDriver(home: DevelopmentHome, label: string) {
     return;
   }
   if (home === 'business/strategy') {
-    openDirection(label === '선수단 투자' ? 'squad' : 'youth');
+    openDirection(label === '선수단 투자' ? areaOf('support').key : 'youth');
     return;
   }
   openHome(developmentDestination(home));

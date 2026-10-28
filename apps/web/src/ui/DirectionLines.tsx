@@ -1,7 +1,8 @@
 import type { DirectionKey, World } from '../../../../packages/contracts/src/types';
 import { buildOf, cardOf } from '../../../../packages/engine/src/build';
 import { DIRECTION_INFO, directionOption } from '../../../../packages/engine/src/direction';
-import { areaOf } from './areas';
+import { areaOf, DIRECTION_AREAS, type AreaKey } from './areas';
+import { areaBase, areaSummary } from './board';
 import { openDirection } from './state';
 import s from './DirectionLines.module.css';
 
@@ -38,5 +39,31 @@ export function DirectionLines({
         );
       })}
     </div>
+  );
+}
+
+/** Each work view links to its authoritative area sheet, retaining independent drafts. */
+export function AreaCriteria({ w, areas }: { w: World; areas: readonly AreaKey[] }) {
+  if (!areas.length) return null;
+  return (
+    <section className={s.lines} aria-label="적용 중인 업무 기준">
+      {areas.map((key) => {
+        const area = DIRECTION_AREAS.find((area) => area.key === key)!;
+        return (
+          <button
+            type="button"
+            className={s.line}
+            data-ui="link"
+            key={key}
+            onClick={() => openDirection(key)}
+          >
+            <span>
+              {area.label} · {areaSummary(w, area)} {areaBase(w, area)}
+            </span>
+            <small>기준 편집</small>
+          </button>
+        );
+      })}
+    </section>
   );
 }

@@ -43,7 +43,8 @@ import { competitionLabel, number, percent, seasonName } from './format';
 import { Money } from './Money';
 import { ProgressControls, ProgressOverview } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
-import { ClubHub } from './ClubHub';
+// The clubhouse loads when a game is ready, outside the founding/slot entry.
+const ClubHub = lazy(() => import('./ClubHub').then((module) => ({ default: module.ClubHub })));
 import { ClubFounding } from './ClubFounding';
 const PlayGuide = lazy(() =>
   import('./PlayGuide').then((module) => ({ default: module.PlayGuide })),
@@ -154,6 +155,7 @@ function NavIcon({ page }: { page: Page }) {
     cupHistory: 'history',
     firstTeam: 'people',
     academy: 'training',
+    training: 'training',
     staff: 'people',
     business: 'trend',
     history: 'history',
@@ -463,7 +465,18 @@ const ConnectedFounding = memo(function ConnectedFounding({
 const ConnectedDashboard = memo(function ConnectedDashboard({ client }: { client: GameClient }) {
   const state = useContentState();
   const w = state.view!.world;
-  return <ClubHub w={w} client={client} journal={<ClubJournal state={state} />} />;
+  const { t } = useLocale();
+  return (
+    <Suspense
+      fallback={
+        <div className={s.loading} role="status">
+          {t('shell.loadingView')}
+        </div>
+      }
+    >
+      <ClubHub w={w} client={client} journal={<ClubJournal state={state} />} />
+    </Suspense>
+  );
 });
 const ConnectedEurope = memo(function ConnectedEurope({ client }: { client: GameClient }) {
   const state = useContentState();
@@ -880,6 +893,12 @@ export function App() {
     [moreOpen, setMoreOpen] = useState(false),
     [guideOpen, setGuideOpen] = useState(false);
   const { page, replacePage } = useNavigation();
+  const mobileNavigation = useRef<HTMLElement>(null);
+  useEffect(() => {
+    mobileNavigation.current
+      ?.querySelector('[aria-current="page"]')
+      ?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [page, screen]);
   // One responsibility dialog for the clock, local task links and the main menu.
   const showNews = useNewsSheet((state) => state.show);
   const showGlossary = useGlossary((state) => state.show);
@@ -1234,9 +1253,9 @@ export function App() {
                     <div hidden={contentPage !== 'europe' && contentPage !== 'cupHistory'}>
                       <ConnectedEurope client={client} />
                     </div>
-                    {(['firstTeam', 'academy', 'staff', 'business', 'history'] as Page[]).includes(
-                      contentPage,
-                    ) && (
+                    {(
+                      ['firstTeam', 'academy', 'staff', 'training', 'business', 'history'] as Page[]
+                    ).includes(contentPage) && (
                       <ConnectedRich page={contentPage} client={client} controller={controller} />
                     )}
                   </div>
@@ -1254,7 +1273,11 @@ export function App() {
       </main>
       {playing && <AccessibleSaveStatus />}
       {!office && (
-        <nav className={s.mobileNav} aria-label={t('shell.mobileNavigation')}>
+        <nav
+          ref={mobileNavigation}
+          className={s.mobileNav}
+          aria-label={t('shell.mobileNavigation')}
+        >
           {TABS.map(([id, label, full, owns]) => (
             <button
               data-ui="navigation"

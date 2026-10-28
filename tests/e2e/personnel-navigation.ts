@@ -9,7 +9,13 @@ export async function openPersonnel(
 ) {
   await dismissMatchReport(page);
   const hub =
-    view === 'academy' ? '유소년' : view === 'manager' || view === 'coaches' ? '코치진' : '1군';
+    view === 'academy'
+      ? '유소년 훈련장'
+      : view === 'training'
+        ? '훈련장'
+        : view === 'coaches'
+          ? '코칭스태프실'
+          : '감독 사무실';
   const mobile = (page.viewportSize()?.width ?? 1280) <= 760;
   await page
     .getByRole('navigation', { name: mobile ? '모바일 게임 메뉴' : '게임 메뉴', exact: true })
@@ -17,7 +23,7 @@ export async function openPersonnel(
     .click();
   // Click local tabs only after the incoming view stops moving; Firefox otherwise scrolls it.
   await settle(page);
-  if (view === 'academy') return;
+  if (view === 'academy' || view === 'training') return;
   const label = {
     players: '선수 목록',
     market: '이적시장',

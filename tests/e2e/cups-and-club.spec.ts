@@ -181,10 +181,10 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     expect(await horizontalOverflow(page)).toBe(0);
 
     // A club named inside another sheet opens on top of it; Escape closes only the top one.
-    await nav.getByRole('button', { name: '클럽 홈', exact: true }).click();
+    await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
     await page
       .getByTestId('club-hub')
-      .getByRole('button', { name: '시즌 상세', exact: true })
+      .getByRole('button', { name: '클럽 소식·시즌 브리핑', exact: true })
       .click();
     const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
     const club = journal
@@ -208,15 +208,15 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await found(page, 'market-segment-journey');
     const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
     await openPersonnel(page, 'players');
-    const tabs = page.getByRole('tablist', { name: '1군' });
-    await expect(tabs.getByRole('tab')).toHaveText(['선수 목록', '이적시장', '훈련']);
+    const tabs = page.getByRole('tablist', { name: '감독 사무실' });
+    await expect(tabs.getByRole('tab')).toHaveText(['감독', '선수 목록', '이적시장']);
     await tabs.getByRole('tab', { name: '이적시장', exact: true }).click();
     await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
     await expect(tabs.getByRole('tab', { name: '이적시장' })).toHaveAttribute(
       'aria-selected',
       'true',
     );
-    await expect(nav.getByRole('button', { name: '1군', exact: true })).toHaveAttribute(
+    await expect(nav.getByRole('button', { name: '감독 사무실', exact: true })).toHaveAttribute(
       'aria-current',
       'page',
     );

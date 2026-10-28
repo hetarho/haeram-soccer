@@ -117,7 +117,7 @@ for (const themeId of ['standard', 'pixel']) {
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
       await leaveOffice(page);
-      await navigate(page, '클럽 홈');
+      await navigate(page, '클럽하우스');
       await expectHomeBounds(page);
       const fixture = page.getByRole('region', { name: '다음 경기', exact: true });
       const card = await surface(fixture);

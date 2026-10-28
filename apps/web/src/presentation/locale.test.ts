@@ -100,10 +100,17 @@ describe('locale messages', () => {
   it('names the final six-entry hierarchy and personnel subviews', () => {
     const { t } = createLoadedLocale(koreanRegistry, korean);
     expect(
-      ['season', 'history', 'dashboard', 'firstTeam', 'academy', 'staff'].map((key) =>
+      ['dashboard', 'business', 'firstTeam', 'staff', 'training', 'academy'].map((key) =>
         t(`navigation.${key}`),
       ),
-    ).toEqual(['시즌', '역사', '클럽 홈', '1군', '유소년', '코치진']);
+    ).toEqual([
+      '클럽하우스',
+      '구단주 사무실',
+      '감독 사무실',
+      '코칭스태프실',
+      '훈련장',
+      '유소년 훈련장',
+    ]);
     expect(
       ['players', 'market', 'training', 'manager', 'coaches'].map((key) => t(`personnel.${key}`)),
     ).toEqual(['선수 목록', '이적시장', '훈련', '감독', '스태프']);
@@ -126,7 +133,7 @@ describe('locale messages', () => {
         'business',
       ].map((key) => t(`navigation.${key}`)),
     ).toEqual([
-      '클럽 홈',
+      '클럽하우스',
       '시즌',
       '리그',
       '컵 대회',
@@ -135,14 +142,14 @@ describe('locale messages', () => {
       '이전 리그 기록',
       '이전 컵대회 기록',
       '선수단·스태프',
-      '훈련·육성',
-      '구단 운영',
+      '훈련장',
+      '구단주 사무실',
     ]);
     expect(
       ['league', 'europe', 'history', 'dashboard', 'people', 'training', 'business'].map((key) =>
         t(`navigation.short.${key}`),
       ),
-    ).toEqual(['리그', '컵', '역사', '홈', '선수단', '훈련', '구단']);
+    ).toEqual(['리그', '컵', '역사', '클럽하우스', '선수단', '훈련장', '구단주 사무실']);
     expect(t('shell.menu')).toBe('설정');
     expect(t('shell.readonlyNotice')).toBe('다른 탭이 플레이 중입니다. 이 탭은 읽기 전용입니다.');
     expect(t('shell.loadingView')).toBe('화면을 여는 중…');
