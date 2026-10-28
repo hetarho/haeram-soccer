@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T19:10Z | - |
+| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T19:25Z | - |
 
 ## inbox
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
@@ -421,6 +421,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261029 cp29 synchronize published corrective task IDs and retain authoritative integrated archives.
 - 261028 T564 integrated
 - 261029 create-task T568 (cp29): scoped browser proof confirms remaining360px training action clipping after the approved global layout correction.
 - 261028 T562 integrated
@@ -432,11 +433,3 @@
 - 261029 create-task T564 (cp29): duplicate-name global results span pages; preserve stable player identity and all mediation/recruitment assertions through real page controls.
 - 261029 create-task T563 (cp29): restore measured mobile target and standings viewport regressions without reducing existing accessibility or row-count checks.
 - 261029 create-task T562 (cp29): reproduced facility and route-transition browser drift; implement in an isolated worker while the coordinator completes the frozen browser run.
-- 261029 fix host.world-market fixture: use the protocol’s legal stale revision -1 instead of invalid -100; preserve bounded reads, source identity, settlement and idempotency assertions.
-- 261029 cp29 all requested tasks integrated at c3aad1f4; final synchronized batch begins before one main publication.
-- 261028 T556 integrated
-- 261029 doc-review CLUB-26 tidied (rev unchanged): replace the stale duplicated area label with the authoritative ECON-25 reference; contract conditions, exceptions, figures, negations, obligations and references are preserved.
-- 261029 doc-review CLUB-26 start.
-- 261029 cp29 T552 reviewed/corrected/integrated; T556 now owns the final place composition and shared browser journeys, including the authoritative paid-loan bid lifecycle.
-- 261028 T552 integrated
-- 261029 cp29 synchronize main 59446b09, including completed T548/T561 and MATCH r41, before final workflow convergence.
