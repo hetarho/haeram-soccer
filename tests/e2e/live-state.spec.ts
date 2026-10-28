@@ -73,7 +73,16 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
   } finally {
     await page.removeLocatorHandler(eveDialog);
   }
-  await expect(mini.getByRole('button', { name: '자동 진행 정지' })).toBeVisible();
+  // An observation reached during the detour has legitimately stopped the calendar on its eve.
+  // A navigation-induced stop on any earlier day still fails this check.
+  await expect
+    .poll(
+      async () =>
+        (await mini.getByRole('button', { name: '자동 진행 정지' }).isVisible()) ||
+        ((await date.innerText()) === '1950년 8월 7일' &&
+          (dismissedEve || (await eveDialog.isVisible()))),
+    )
+    .toBe(true);
   await expect(rankTab).toHaveAttribute('aria-selected', 'true');
   const playersTab = page.getByRole('tab', { name: '선수 기록', exact: true });
   // Cover both event orders without racing an observed report's background lock.
