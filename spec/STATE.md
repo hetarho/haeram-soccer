@@ -13,7 +13,6 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| u7m4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T00:48Z | 2026-10-28T02:45Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | e7q4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T01:49Z | 2026-10-28T01:54Z | T537 |
 
@@ -391,11 +390,11 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
-- UI scope T536 is complete; await its main CI result. Manager/training room activities need separate product planning.
+- UI scope T536 is complete and published at b1886d69. Main CI remains unconfirmed after one bounded 60-minute observation; follow run 40622906430. Manager/training room activities need separate product planning.
 - implement-task T537: correct association access, continental titleholders, EPS and qualification causes.
 
 ## log
-- 261028 T536 done: compact facilities, inset cards and quiet navigation; final local batch passed, including 311 Chromium journeys.
+- 261028 T536 done: compact facilities, inset cards and quiet navigation; final local batch passed, including 311 Chromium journeys. Main b1886d69 published; CI observation timed out while the run remained in progress.
 - 261028 T536 planning shared for strict session claim; WEB r165.
 - 261028 create-task EURO r4: T537 covers allocation, recorded coefficients, compatibility and qualification explanation.
 - 261028 update-ssot EURO start and r4 done: modern access, holders, EPS and forward-only save compatibility; create-task EURO next.
