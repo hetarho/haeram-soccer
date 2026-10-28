@@ -114,7 +114,11 @@ describe('settling a played match into the world (→MATCH-21, PLAYER-12, CLUB-2
     const f = ownFixtures(w)[0];
     const side = sideOf(w, f);
     const probe = simulateMatch(w, f, false, true);
-    const hurt = probe.squads[side][2];
+    // An outfield starter with nothing recorded after the injury, so the record stays consistent
+    // whatever the football revision plays (T548's revision 7 booked the third man at 76′).
+    const hurt = probe.squads[side]
+      .slice(1, 11)
+      .find((p) => !probe.record.incidents!.some((x) => x.player === p.id && x.minute > 50))!;
     recordMatch(w, played(w, f, { minute: 50, side, kind: 'injury', player: hurt.id }), true);
     const injury = player(w, hurt.id).injury!;
     expect(injury).toBeDefined();
