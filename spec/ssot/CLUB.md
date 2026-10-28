@@ -121,7 +121,7 @@
   - the owner offers the floor or more with a term, or declines; the talk shows demand, floor, the contract's clauses (→CLUB-29), yearly cost and runway before the choice (→WEB-68).
   - delegated (→STAFF-13): the 단장 (→STAFF-20) offers the floor for 2 seasons past this one (1 from age 32), never ending before the running contract, when 재계약 기조 keeps the player at that floor and 재정 기조 allows the raise (→ECON-33): cash after it keeps the runway, the wage bill after it stays at or below the ceiling of the club's revenue over the last 12 months, and the season's cash projection with it still ends the season keeping the runway; otherwise he declines and says why (→CLUB-27). ← the cash checks alone let a promoted club's staff agree raises its income could not carry
   - revenue over the last 12 months: this season's turnover so far (competition, matchday and commercial income; player trading and owner capital excluded, →ECON-30) plus last season's for the league rounds not yet played; a club without a completed season counts its season so far at its pace over a whole season.
-  - 재계약 기조, a row of the 선수단·계약 area (→ECON-25), says whom the staff keep and how far they go:
+  - 재계약 기조, whose area is defined in →ECON-25, says whom the staff keep and how far they go:
     | option | keeps | floor at most |
     |---|---|---|
     | 표준 (default) | everyone | 110% of his market wage |
