@@ -268,6 +268,10 @@ test("the fatigue remedy opens the assistant's training sheet with 회복 ready,
   const state = page.getByRole('region', { name: '팀 상태' });
   await state.getByRole('button', { name: /^피로 .* 대처 방법 보기$/ }).click();
   const sheet = page.getByRole('dialog', { name: '피로 관리' });
+  const rest = sheet.getByRole('listitem').filter({ hasText: '휴식일 부여 요청' });
+  await expect(rest).toContainText('분위기 −2');
+  await expect(rest).toContainText('전원 피로 −6');
+  await expect(rest).toContainText('즉시 반영 · 재요청 4라운드 후');
   await sheet
     .getByRole('listitem')
     .filter({ hasText: '수석코치에게 회복 훈련 제안' })

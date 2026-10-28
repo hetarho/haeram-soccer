@@ -1,0 +1,66 @@
+.panel {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.facts,
+.choices,
+.chances {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+.facts,
+.panel small,
+.note {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+.choices > li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.choices > li > div {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+.panel p {
+  margin: 4px 0;
+  overflow-wrap: anywhere;
+}
+.panel small {
+  display: block;
+}
+.panel button,
+.actions button {
+  min-height: 44px;
+}
+.panel .note {
+  color: var(--warm);
+}
+.chances {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.records {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}

@@ -5,6 +5,7 @@ import type {
   Command,
   PolicyKey,
   PolicyLevel,
+  TrainingCoach,
   TrainingFocus,
   World,
 } from '../../../../packages/contracts/src/types';
@@ -12,15 +13,21 @@ import { lineupPreset, lineupSummary } from '../../../../packages/engine/src/str
 import { activePlayers, clubOf, isInjured } from '../../../../packages/engine/src/player-state';
 import { rating, startingSquad } from '../../../../packages/engine/src/world';
 import { quote } from '../../../../packages/engine/src/quotes';
-import { activeTrainingFocus } from '../../../../packages/engine/src/training';
-import { suggestionChance } from '../../../../packages/engine/src/coach-training';
+import { activeTrainingFocus, trainingFocusInfo } from '../../../../packages/engine/src/training';
+import {
+  forceRisk,
+  suggestionChance,
+  suggestionWait,
+  trainingCall,
+} from '../../../../packages/engine/src/coach-training';
 import { ORDER_ROUNDS } from '../../../../packages/engine/src/orders';
 import { MORALE_LABEL, moraleOf, moraleState } from '../../../../packages/engine/src/morale';
 import { INVESTMENT_ROWS, POLICY_INFO, policyOf } from '../../../../packages/engine/src/policy';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import { operatingCosts } from '../../../../packages/engine/src/finance';
 import { careOffer, effectText, outcomeText } from '../../../../packages/engine/src/care';
-import { academySummary } from '../../../../packages/engine/src/academy';
+import { academySummary, YOUTH_FOCUS_INFO } from '../../../../packages/engine/src/academy';
+import { staffMember, STAFF_INFO } from '../../../../packages/engine/src/staff-info';
 import { buildEffects } from '../../../../packages/engine/src/build';
 import { compactMoney } from './format';
 import { nextTicketLevel } from './ticketLevels';
@@ -56,6 +63,8 @@ export interface Remedy extends StateAction {
   chances?: { chance: number; text: string }[];
   /** Why it cannot be chosen now (cooldown, cash, already applied). */
   unavailable?: string;
+  /** Authoritative request facts also consumed by working-place panels. */
+  care?: ReturnType<typeof careOffer>;
 }
 export interface TeamStateItem {
   key: StateKey;
@@ -94,20 +103,23 @@ function toward(name: string) {
   return `${name}${last === 0 || last === 8 ? '로' : '으로'}`;
 }
 
-function request(w: World, kind: CareKind): Remedy {
+export function careRequest(w: World, kind: CareKind): Remedy {
   const offer = careOffer(w, kind),
     club = clubOf(w);
   // A choice states its cost and effect as one sentence, in the app's notation (→WEB-67).
   const format = (value: string) => compactMoney(value, club.country, w.year);
   const single = offer.outcomes.length === 1;
-  const effect =
-    kind === 'friendly'
-      ? `수입 +${format(offer.income)} · 전원 피로 +${offer.outcomes[0].fatigue}`
-      : kind === 'win-bonus'
-        ? `${offer.summary} · 이길 때마다 ${format(offer.perWin)} · 분위기 +2`
-        : single
-          ? `${offer.summary} · ${effectText(offer.outcomes[0])}`
-          : offer.summary;
+  const effect = [
+    offer.summary,
+    single ? effectText(offer.outcomes[0]) : '',
+    BigInt(offer.income) > 0n ? `수입 +${format(offer.income)}` : '',
+    kind === 'win-bonus'
+      ? `이길 때마다 ${format(offer.perWin)} 지급 의무 · 자금이 부족해도 지급 · 승리 후 분위기 +2`
+      : '',
+    `즉시 반영 · 재요청 ${offer.cooldown}라운드 후`,
+  ]
+    .filter(Boolean)
+    .join(' · ');
   return {
     id: kind,
     label: offer.label,
@@ -129,6 +141,44 @@ function request(w: World, kind: CareKind): Remedy {
           : '무료',
     unavailable: offer.reason,
     command: { type: 'care', kind },
+    care: offer,
+  };
+}
+
+/** Shared coach preview; the existing training sheet owns suggestion/order submission. */
+export function placeTraining(w: World, coach: TrainingCoach) {
+  const call = trainingCall(w, coach);
+  const member = staffMember(w, coach);
+  return {
+    coach,
+    member: member?.name ?? '공석',
+    role: STAFF_INFO[coach].label,
+    call,
+    focus:
+      coach === 'youth'
+        ? YOUTH_FOCUS_INFO[call.focus as keyof typeof YOUTH_FOCUS_INFO].label
+        : trainingFocusInfo[call.focus as TrainingFocus].label,
+    wait: suggestionWait(w, coach),
+    risk: forceRisk(w, coach),
+    duration: ORDER_ROUNDS,
+    // Focus comparisons use the academy's actual age-group multipliers.
+    youthFocuses: YOUTH_FOCUS_INFO,
+    unavailable: member ? undefined : `${STAFF_INFO[coach].label} 자리가 비어 있어요`,
+  };
+}
+
+/** The same prospect/readiness/registration preview as the authoritative academy workflow. */
+export function placeAcademy(w: World) {
+  const summary = academySummary(w);
+  return {
+    ...summary,
+    players: summary.players.map((prospect) => ({
+      ...prospect,
+      promotionUnavailable:
+        prospect.age < summary.promotionAge
+          ? `첫 프로 계약은 ${summary.promotionAge}세부터 맺을 수 있어요.`
+          : registrationRoom(w, { ...prospect.player, graduate: true, joined: w.year }),
+    })),
   };
 }
 
@@ -205,9 +255,9 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           unavailable: restFatigue >= current ? '이미 가장 덜 지친 선발' : undefined,
           command: { type: 'lineup', ids: rest },
         },
-        request(w, 'rest-day'),
-        request(w, 'recovery'),
-        request(w, 'camp'),
+        careRequest(w, 'rest-day'),
+        careRequest(w, 'recovery'),
+        careRequest(w, 'camp'),
         {
           id: 'prepare',
           label: '전술·선발 직접 고르기',
@@ -218,16 +268,16 @@ export function remedies(w: World, key: StateKey): Remedy[] {
     }
     case 'morale':
       return [
-        request(w, 'meeting'),
-        request(w, 'bonding'),
-        request(w, 'win-bonus'),
-        request(w, 'owner-visit'),
-        request(w, 'camp'),
-        request(w, 'rest-day'),
+        careRequest(w, 'meeting'),
+        careRequest(w, 'bonding'),
+        careRequest(w, 'win-bonus'),
+        careRequest(w, 'owner-visit'),
+        careRequest(w, 'camp'),
+        careRequest(w, 'rest-day'),
       ];
     case 'manager':
       return [
-        request(w, 'backing'),
+        careRequest(w, 'backing'),
         {
           id: 'office',
           label: '감독과 전술 이야기하기',
@@ -296,7 +346,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
           page: 'business',
           board: ticket ? { ticket: ticket.price } : undefined,
         },
-        request(w, 'friendly'),
+        careRequest(w, 'friendly'),
         {
           id: 'owner-capital',
           label: '구단주 추가 출자',
