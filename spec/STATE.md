@@ -414,6 +414,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261029 cp29 move unclaimed T552 shared browser edits to T556 while preserving every required journey; keep independent UI file ownership disjoint.
 - 261029 cp29 merge approved club-places-ui lane T554/T555; synchronize completed tasks before further allocation, keeping any superseded draft isolated.
 - 261028 T555 integrated
 - 261028 T554 integrated
@@ -433,4 +434,3 @@
 - 261028 create-task (f5j2): T548 MATCH r39, T549 SAVE r57, T550 WEB r167.
 - 261028 update-ssot (f5j2): MATCH r39 chased forward's clear chance and closing blocks; SAVE r57 one game version 0.7.0 (beta), 4.0.0 saves load as 0.7.0; WEB r167 WEB-101 BETA mark.
 - 261028 feat/player-figures-kits merge verified against main f5672a67 and feature 3a13057e: typecheck, lint, format:check, unit (175 files / 1,435 passed), contract (3 files / 47 passed), catalog/presentation validation and production build passed; the 12 pure kit-selection cases also passed (2 world-integration cases excluded). Full integration and browser suites omitted under the owner's requested unit/static scope.
-- 261028 merge review: renumber the incoming kit-wear task from T542 to T547 and update its references, preserving main's independent T542 revision-6 task; reconcile completed MATCH/KIT/WEB/SAVE status and retain both histories. Owner requests unit tests and static checks for this merge; browser and integration suites are outside this local verification scope.
