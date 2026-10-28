@@ -165,7 +165,7 @@ export interface FigureDrawOptions<S extends FigureCanvas = HTMLCanvasElement> {
   /** Device pixels per CSS pixel the target context is scaled by. */
   dpr: number;
   look: PlayerLook;
-  /** The theme's marker outline and its width in CSS px (WEB-91), around the whole silhouette. */
+  /** Outline colour and width in CSS px around the silhouette; width 0 leaves it unpainted. */
   outline: string;
   outlineWidth: number;
   /**
@@ -611,17 +611,18 @@ export function createFigurePainter(
       ctx.save();
       paintShadow(ctx, pose, x, y, width, turn);
       enter();
-      paintSilhouette(
-        ctx,
-        parts,
-        look.style,
-        outline,
-        grow,
-        depth,
-        top,
-        gloves !== undefined,
-        detail,
-      );
+      if (grow > 0)
+        paintSilhouette(
+          ctx,
+          parts,
+          look.style,
+          outline,
+          grow,
+          depth,
+          top,
+          gloves !== undefined,
+          detail,
+        );
       paintLegs(ctx, parts, kit, look, detail, edge);
       paintShorts(ctx, parts, pose.twist, kit.shorts, detail, edge);
       if (socket && !highBall) {

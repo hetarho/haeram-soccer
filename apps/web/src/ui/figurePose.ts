@@ -104,8 +104,8 @@ export interface FigurePoseOptions {
 export const FIGURE_POSE_CONFIG = {
   /** How long the hips trail the upper body: the caller samples `velocityBefore` this much earlier. */
   hipLag: 0.16,
-  /** Metres travelled in one gait cycle of two steps, so the feet keep pace with the ground. */
-  strideMetres: 2.8,
+  /** Metres per visual gait cycle, stretched to keep limbs readable in accelerated playback. */
+  strideMetres: 22.4,
   /** Speed (m/s) at which stride, arm swing and lean are full. */
   topSpeed: 8,
   /** Below `still` m/s he turns to the ball; from `moving` he faces his run. */
@@ -113,8 +113,8 @@ export const FIGURE_POSE_CONFIG = {
   /** The furthest the hips turn from the upper body. */
   maxTwist: 0.7,
   /** Full stride (foot reach fore and aft), arm swing as a share of it, and full forward lean. */
-  stride: 0.86,
-  armSwing: 0.6,
+  stride: 0.48,
+  armSwing: 0.5,
   lean: 0.15,
   /** Where the limbs join the body, the head, and the limbs' lengths seen from above. */
   body: {

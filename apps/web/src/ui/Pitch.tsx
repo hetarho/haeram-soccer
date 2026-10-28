@@ -385,7 +385,7 @@ export function Pitch({
             dpr,
             look: playerLook(''),
             outline: skin.markerOutline,
-            outlineWidth: skin.markerWidth,
+            outlineWidth: 0,
           });
     };
     warm();
@@ -579,7 +579,7 @@ export function Pitch({
               dpr: skin.pixelSize ? 1 / skin.pixelSize : dpr,
               look: looks.get(input.id) ?? playerLook(input.id),
               outline: skin.markerOutline,
-              outlineWidth: skin.markerWidth,
+              outlineWidth: 0,
               ball: i === holder ? () => paintBall(ctx, ballX, ballY, ball, skin) : undefined,
             });
           };
