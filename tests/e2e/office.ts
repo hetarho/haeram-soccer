@@ -8,13 +8,33 @@ export const LOBBY = '구단주 사무실';
 const OFFICE_PATH = /^\/(direction|business)(\/|$)/;
 
 /**
- * Whether the office is open. The address decides: right after a reload the office bar is not
- * drawn yet, and right after leaving the previous view may still show for a moment.
+ * Read the active route and its rendered office context together. A request can return home
+ * between separate locator reads; a departing office heading must never become a return target.
+ * A reload on an office route still waits for its real heading to mount.
  */
+async function officeContext(page: Page) {
+  const current: { value?: { area: string; libraryOpen: boolean } | null } = {};
+  await expect
+    .poll(async () => {
+      current.value = await officeTitle(page).evaluateAll((headings, officePath) => {
+        if (!new RegExp(officePath).test(location.pathname)) return null;
+        const area = headings[0]?.textContent?.trim();
+        if (!area) return undefined;
+        return {
+          area,
+          libraryOpen:
+            document.querySelector('[data-testid="office-library"]')?.hasAttribute('open') ?? false,
+        };
+      }, OFFICE_PATH.source);
+      return current.value !== undefined;
+    })
+    .toBe(true);
+  return current.value ?? null;
+}
+
+/** Whether the active route and its office landmark identify an open office. */
 export async function inOffice(page: Page) {
-  if (!OFFICE_PATH.test(new URL(page.url()).pathname)) return false;
-  await expect(officeBar(page)).toBeVisible();
-  return true;
+  return (await officeContext(page)) !== null;
 }
 
 /** An achievement banner (→WEB-52) clears itself; a tap closes it at once. */
@@ -141,14 +161,13 @@ export async function outsideOffice(page: Page) {
  * notices of the area (a failed apply) do not survive the visit.
  */
 export async function aroundOffice<T>(page: Page, action: () => Promise<T>) {
-  if (!(await inOffice(page))) return action();
-  const area = (await officeTitle(page).innerText()).trim();
-  const library = page.getByTestId('office-library');
-  const libraryOpen = (await library.count()) ? await library.getAttribute('open') : null;
+  const context = await officeContext(page);
+  if (!context) return action();
+  const { area, libraryOpen } = context;
   await leaveOffice(page);
   const result = await action();
   if (area === LOBBY) await enterOffice(page);
-  else if (area === '재정·투자' && libraryOpen !== null) await openOfficeLibrary(page);
+  else if (area === '재정·투자' && libraryOpen) await openOfficeLibrary(page);
   else await openOfficeArea(page, area);
   return result;
 }

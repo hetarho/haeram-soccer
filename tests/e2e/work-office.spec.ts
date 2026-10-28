@@ -3,7 +3,14 @@ import { createWorld } from '../../packages/engine/src/index';
 import { RESPONSIBILITY_KEYS } from '../../packages/engine/src/responsibilities';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { exportedCareer } from './career-fixtures';
-import { enterOffice, leaveOffice, officeBar, openOfficeArea } from './office';
+import {
+  enterOffice,
+  leaveOffice,
+  officeBar,
+  officeTitle,
+  openOfficeArea,
+  openOfficeLibrary,
+} from './office';
 import { horizontalOverflow } from './layout';
 
 for (const width of [360, 390, 1280]) {
@@ -103,9 +110,17 @@ for (const width of [360, 390, 1280]) {
       await expect(page.getByTestId(`facility-${part}`)).toBeVisible();
     await page.getByRole('button', { name: /^재정 ·/ }).click();
     const financial = page.getByRole('dialog', { name: '재정 업무 기준', exact: true });
-    await expect(financial).toContainText('재계약 기조');
-    await expect(financial).toContainText('선수단 투자');
-    await expect(financial).not.toContainText('라커룸 문화');
+    await expect(
+      financial.getByRole('radiogroup', { name: '재계약 기조', exact: true }),
+    ).toBeVisible();
+    await expect(
+      financial.getByRole('radiogroup', { name: '선수단 투자', exact: true }),
+    ).toBeVisible();
+    // Read-only synergy conditions may mention culture; its editable row belongs to the manager.
+    await expect(financial.locator('[data-row="culture"]')).toHaveCount(0);
+    await expect(
+      financial.getByRole('radiogroup', { name: '라커룸 문화', exact: true }),
+    ).toHaveCount(0);
     await page.keyboard.press('Escape');
     for (const name of ['재정', '유소년', '지역', '글로벌'])
       await expect(page.getByRole('button', { name: new RegExp('^' + name + ' ·') })).toBeVisible();
@@ -114,6 +129,25 @@ for (const width of [360, 390, 1280]) {
     await openOfficeArea(page, '선수 계약');
     await page.goBack();
     await expect(lobby).toBeVisible();
+    // Reading an export during real office work restores the open library and unapplied draft.
+    await openOfficeLibrary(page);
+    const board = page.getByTestId('strategy-board');
+    const finance = board.getByRole('region', { name: '재정', exact: true });
+    const financeHeader = finance.locator(':scope > button[aria-expanded]');
+    if ((await financeHeader.getAttribute('aria-expanded')) === 'false')
+      await financeHeader.click();
+    await finance.getByRole('radio', { name: '선수단 투자 후한 지원', exact: true }).click();
+    const draft = page.getByTestId('strategy-draft');
+    await expect(draft).toContainText('선수단 투자 표준 → 후한 지원');
+    const saved = await exportedCareer(page);
+    expect(saved.settings).toEqual(before);
+    expect(saved.policy?.support ?? 3).toBe(w.policy?.support ?? 3);
+    await expect(page).toHaveURL(/\/direction\?view=investment$/);
+    await expect(officeTitle(page)).toHaveText('재정·투자');
+    await expect(page.getByTestId('office-library')).toHaveAttribute('open', '');
+    await expect(draft).toContainText('선수단 투자 표준 → 후한 지원');
+    await draft.getByRole('button', { name: '되돌리기', exact: true }).click();
+    await expect(draft).toHaveCount(0);
     await leaveOffice(page);
     expect((await exportedCareer(page)).settings).toEqual(before);
   });

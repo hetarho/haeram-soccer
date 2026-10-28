@@ -27,7 +27,7 @@ const tab = (page: Page, name: string) =>
   page
     .getByRole('tablist', { name: name === '스태프' ? '코칭스태프실' : '감독 사무실' })
     .getByRole('tab', { name: name === '선수' ? '선수 목록' : name, exact: true });
-/** 사람 from the tab bar or the sidebar; it opens on 선수. */
+/** The manager place from primary navigation, then its explicit players tab. */
 const openPeople = (page: Page) => openPersonnel(page, 'players');
 
 /** The free agents' list inside the manager market. */
@@ -91,15 +91,45 @@ test.describe('사람 at 360x740', () => {
     await openPersonnel(page, 'manager');
     await expect(page).toHaveURL(/\/first-team\?view=manager(?:&market=1)?$/);
     // The manager's office keeps what 육성 means one labelled disclosure away (→WEB-10/43); the
-    // coaches wait in their tab.
+    // coaches work in the separate coaching-staff place.
     const youth = page.getByText('27세 미만 선수 성장').first();
     await expect(youth).toBeHidden();
     await page.getByText('감독 능력·성향', { exact: true }).click();
     await expect(youth).toBeVisible();
     await expect(page.getByRole('region', { name: '스태프', exact: true })).toHaveCount(0);
     expect(await horizontalOverflow(page)).toBe(0);
-    // Arrow keys move along the tab bar like the operations tabs.
+    // Keyboard movement stays within this place's local tabs, including wrapping and Home/End.
     await tab(page, '감독').focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(tab(page, '선수')).toBeFocused();
+    await expect(tab(page, '선수')).toHaveAttribute('aria-selected', 'true');
+    await expect(page).toHaveURL(/\/first-team\?view=players$/);
+    await page.keyboard.press('End');
+    await expect(tab(page, '이적시장')).toBeFocused();
+    await expect(tab(page, '이적시장')).toHaveAttribute('aria-selected', 'true');
+    await expect(page).toHaveURL(/\/first-team\?view=market$/);
+    await page.keyboard.press('ArrowRight');
+    await expect(tab(page, '감독')).toBeFocused();
+    await expect(tab(page, '감독')).toHaveAttribute('aria-selected', 'true');
+    await expect(page).toHaveURL(/\/first-team\?view=manager$/);
+    await page.keyboard.press('ArrowLeft');
+    await expect(tab(page, '이적시장')).toBeFocused();
+    await expect(tab(page, '이적시장')).toHaveAttribute('aria-selected', 'true');
+    await expect(page).toHaveURL(/\/first-team\?view=market$/);
+    await page.keyboard.press('Home');
+    await expect(tab(page, '감독')).toBeFocused();
+    await expect(tab(page, '감독')).toHaveAttribute('aria-selected', 'true');
+    await expect(page).toHaveURL(/\/first-team\?view=manager$/);
+    await expect(page.getByRole('tablist', { name: '코칭스태프실', exact: true })).toHaveCount(0);
+    const coachingPlace = page
+      .getByRole('navigation', { name: '모바일 게임 메뉴', exact: true })
+      .getByRole('button', { name: '코칭스태프실', exact: true });
+    await coachingPlace.focus();
+    await page.keyboard.press('Enter');
+    await expect(tab(page, '스태프')).toHaveAttribute('aria-selected', 'true');
+    await expect(page).toHaveURL(/\/staff\?view=coaches$/);
+    await expect(page.getByRole('region', { name: '스태프', exact: true })).toBeVisible();
+    await tab(page, '스태프').focus();
     await page.keyboard.press('ArrowRight');
     await expect(tab(page, '스태프')).toBeFocused();
     await expect(tab(page, '스태프')).toHaveAttribute('aria-selected', 'true');
