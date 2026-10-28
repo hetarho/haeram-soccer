@@ -1,6 +1,6 @@
 /** The live state of a grid match: where everyone stands and what each player's skills are worth now (→MATCH-11). */
 import { ATTRIBUTES, type Attribute } from '../../../contracts/src/player';
-import type { Player } from '../../../contracts/src/types';
+import type { Player, Tactic } from '../../../contracts/src/types';
 import { FORMATIONS, levelFactor, lineOf } from '../player';
 import { HOST_MATH, PORTABLE_MATH, type MatchMath } from '../portable-math';
 import { fatigueLoad, slotOvr, unhappyPenalty } from '../player-state';
@@ -44,6 +44,9 @@ export interface GridPlayer {
 
 export interface GridState {
   setup: GridSetup;
+  /** Each side's formation slots and their spots, read once from its tactic (`setup.tactics`). */
+  formation: [(typeof FORMATIONS)[Tactic]['slots'], (typeof FORMATIONS)[Tactic]['slots']];
+  spots: [readonly Point[], readonly Point[]];
   players: [GridPlayer[], GridPlayer[]];
   ball: [number, number];
   owner?: [0 | 1, number];
@@ -126,8 +129,7 @@ export function regMinute(s: GridState): number {
 export const onPitch = (gp: GridPlayer) => gp.onPitch && !gp.sentOff;
 export const other = (side: 0 | 1) => (1 - side) as 0 | 1;
 /** The formation slot of a player on the pitch. */
-export const slotOf = (s: GridState, gp: GridPlayer) =>
-  FORMATIONS[s.setup.tactics[gp.side]].slots[gp.slot]!;
+export const slotOf = (s: GridState, gp: GridPlayer) => s.formation[gp.side][gp.slot]!;
 
 const HANDS: readonly Attribute[] = ['reflexes', 'handling'];
 
@@ -209,6 +211,14 @@ export function createState(setup: GridSetup): GridState {
         onAt: 0,
         onMin: 0,
         base: new Float64Array(ATTRIBUTES.length),
+        // The fields a match sets later, present from the start: one object shape for every player,
+        // so the reads of his fields stay monomorphic (JSON and `canonical` leave undefined out).
+        vel: undefined,
+        run: undefined,
+        intention: undefined,
+        ended: undefined,
+        offAt: undefined,
+        offMin: undefined,
       };
       fillBase(setup, gp, gp.slot);
       return gp;
@@ -252,6 +262,8 @@ export function createState(setup: GridSetup): GridState {
   ) as [number, number];
   return {
     setup,
+    formation: [FORMATIONS[setup.tactics[0]].slots, FORMATIONS[setup.tactics[1]].slots],
+    spots: [SPOTS[setup.tactics[0]], SPOTS[setup.tactics[1]]],
     players,
     level: matchLevel,
     scale: candidate ? C.candidate.skillScale : C.skillScale,
@@ -268,9 +280,17 @@ export function createState(setup: GridSetup): GridState {
     lineups: 0,
     math: setup.model === undefined ? HOST_MATH : PORTABLE_MATH,
     // Revision 2's movement needs its per-match tendencies (T432).
-    ...(setup.tendencies && setup.model && matchModelNumber(setup.model) >= 2
-      ? { freedom: { plans: [] } }
-      : {}),
+    freedom:
+      setup.tendencies && setup.model && matchModelNumber(setup.model) >= 2
+        ? { plans: [] }
+        : undefined,
+    // The fields a match sets later, present from the start: one object shape for the state, so
+    // the reads of its fields stay monomorphic.
+    lastRegain: undefined,
+    lastLoss: undefined,
+    setPieceAt: undefined,
+    lastPass: undefined,
+    received: undefined,
   };
 }
 

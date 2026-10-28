@@ -321,6 +321,15 @@ interface CandidateDigests {
  * a45d7c8cb4c77f08 and positions 1975 c0d0476ad7a8ae16, 6cca4859d84475d4, 1995 e65c183acd9804d3,
  * 7c6fa52fd295e59b, 2024 482f9597e9f50715, a0fed57e39fcef7a. Revisions 1–3's and the
  * pre-feature facts did not move.
+ * T541's one object shape for every intention (all fields in one order) moved the positions
+ * only, by the key order of the intentions the trace holds; the same trace and frames with their
+ * keys sorted keep their digests, and no fact moved. Before it, positions 1975 3027c05259d2646b,
+ * 5ff631fdd68c210e, 1995 54d2da5ba8a53970, 876491fde6062150, 2024 90d5b37b1bc714fd,
+ * 6a8baa3681c8f7ec; revisions 1–3's positions moved the same way, before it revision 1
+ * 9b1d1e4afec99290, c90e40263ab74f4a, f538dd78ce911d58, b50fddc754adbfa7, 419426637e81823d,
+ * 922abdcf670b682e, revision 2 9422a01ee585338c, 6c62a0170468fb44, 4157fe10bef7e72a,
+ * 46f860a8d7e120df, c289738186db96f1, 02199a0d1cbbd758, revision 3 44f653394e8e0ebb,
+ * 661e258a3624763f, d8a8072fb4089b4f, f3e35ac622f94edf, 76b4318919a285f9, eb3a424e772bd1fa.
  * T538's match-model revision 5 (the carrier takes open ground, recycles only safely, never plays
  * it far back with room near the box and plays down the wing; 600 matches in result) moved every
  * value and the knockout ties (rescanned above); before it, the values now revision 4's
@@ -333,7 +342,7 @@ const CANDIDATE: Record<Year, CandidateDigests> = {
       extraTime: '157a608e4c0d386b',
       shootout: '4b2b91cdda330183',
     },
-    positions: { observed: '95526f39202aeb7b', shootout: 'b2daeb01263d91c2' },
+    positions: { observed: 'e39d98b368141362', shootout: '7967c5d6035ec169' },
   },
   1995: {
     facts: {
@@ -341,7 +350,7 @@ const CANDIDATE: Record<Year, CandidateDigests> = {
       extraTime: 'b88a80ac24efe660',
       shootout: '06a2c079863c26ee',
     },
-    positions: { observed: 'bf22ed675ab5591b', shootout: '2b742b31be140d33' },
+    positions: { observed: '782759b9346aa90a', shootout: '3484dd02c9de2c1c' },
   },
   2024: {
     facts: {
@@ -349,13 +358,13 @@ const CANDIDATE: Record<Year, CandidateDigests> = {
       extraTime: '9589dc069dfe996e',
       shootout: '252166ebede7efee',
     },
-    positions: { observed: 'fed90c5defd16193', shootout: '776f952e7766d8c5' },
+    positions: { observed: '927f4d152c8ea939', shootout: '11ca6e224af987ce' },
   },
 };
 
 /**
- * Revision 4's knockout ties and digests (T538): T482's values, the football revision 4 plays
- * before revision 5. Their facts never move again (→SAVE-23); a presentation-only change
+ * Revision 4's knockout ties and digests (T538): T482's facts with T541's positions, the football
+ * revision 4 plays before revision 5. Their facts never move again (→SAVE-23); a presentation-only change
  * re-records their positions.
  */
 const REVISION_4_CASES = {
@@ -370,7 +379,7 @@ const REVISION_4: Record<Year, CandidateDigests> = {
       extraTime: '9123874a456d7917',
       shootout: 'c036d50bc978b2c4',
     },
-    positions: { observed: '3027c05259d2646b', shootout: '5ff631fdd68c210e' },
+    positions: { observed: 'b28fe938e12833f0', shootout: 'aa89273dd9ca390b' },
   },
   1995: {
     facts: {
@@ -378,7 +387,7 @@ const REVISION_4: Record<Year, CandidateDigests> = {
       extraTime: 'b3260a6423ff14ed',
       shootout: 'de436ce27ba0ad83',
     },
-    positions: { observed: '54d2da5ba8a53970', shootout: '876491fde6062150' },
+    positions: { observed: '8664d10d9934599f', shootout: 'aae043fdf68570b6' },
   },
   2024: {
     facts: {
@@ -386,7 +395,7 @@ const REVISION_4: Record<Year, CandidateDigests> = {
       extraTime: '2792f74cd4b0c753',
       shootout: '42be4633359152e7',
     },
-    positions: { observed: '90d5b37b1bc714fd', shootout: '6a8baa3681c8f7ec' },
+    positions: { observed: '0c9b482e7c77a6fe', shootout: 'a8991d6383faf80b' },
   },
 };
 
@@ -407,7 +416,7 @@ const REVISION_3: Record<Year, CandidateDigests> = {
       extraTime: '086a1810c411e442',
       shootout: 'b1ed4b997d8479e7',
     },
-    positions: { observed: '44f653394e8e0ebb', shootout: '661e258a3624763f' },
+    positions: { observed: '120524806f37c7e8', shootout: 'f5aac51a8915b7a6' },
   },
   1995: {
     facts: {
@@ -415,7 +424,7 @@ const REVISION_3: Record<Year, CandidateDigests> = {
       extraTime: '696fbe7ef4736ce9',
       shootout: '0f3bc5b875ddb3c7',
     },
-    positions: { observed: 'd8a8072fb4089b4f', shootout: 'f3e35ac622f94edf' },
+    positions: { observed: '4a9619d12297577c', shootout: '68c6b9a21c766cb0' },
   },
   2024: {
     facts: {
@@ -423,7 +432,7 @@ const REVISION_3: Record<Year, CandidateDigests> = {
       extraTime: '22a1209ed63b73c5',
       shootout: '324328c61352294c',
     },
-    positions: { observed: '76b4318919a285f9', shootout: 'eb3a424e772bd1fa' },
+    positions: { observed: 'e5a9ea9ab8a76c2f', shootout: '08ac5fe20a57c569' },
   },
 };
 
@@ -444,7 +453,7 @@ const REVISION_2: Record<Year, CandidateDigests> = {
       extraTime: '96ff5a32e01d4bf8',
       shootout: '7521661b980cdeff',
     },
-    positions: { observed: '9422a01ee585338c', shootout: '6c62a0170468fb44' },
+    positions: { observed: '1efa78ca0207e30c', shootout: 'e1a3ee7e0e66c998' },
   },
   1995: {
     facts: {
@@ -452,7 +461,7 @@ const REVISION_2: Record<Year, CandidateDigests> = {
       extraTime: '9127b370c79b51e2',
       shootout: '2245959519f7889b',
     },
-    positions: { observed: '4157fe10bef7e72a', shootout: '46f860a8d7e120df' },
+    positions: { observed: '7334880372388967', shootout: 'f81841f663ff75ac' },
   },
   2024: {
     facts: {
@@ -460,7 +469,7 @@ const REVISION_2: Record<Year, CandidateDigests> = {
       extraTime: '30e249776a77fcb4',
       shootout: '64b50a8346f097fd',
     },
-    positions: { observed: 'c289738186db96f1', shootout: '02199a0d1cbbd758' },
+    positions: { observed: '581c0cc9978143bf', shootout: '5d463b96222a6328' },
   },
 };
 
@@ -482,7 +491,7 @@ const REVISION_1: Record<Year, CandidateDigests> = {
       extraTime: 'a74abb8cfd489a58',
       shootout: 'cb404e2c025fb3f4',
     },
-    positions: { observed: '9b1d1e4afec99290', shootout: 'c90e40263ab74f4a' },
+    positions: { observed: '1df5ff92bacc5a24', shootout: 'd1731fb51fdef0c0' },
   },
   1995: {
     facts: {
@@ -490,7 +499,7 @@ const REVISION_1: Record<Year, CandidateDigests> = {
       extraTime: 'dad4ff2e8fdfcf1a',
       shootout: 'd84decf0069941c7',
     },
-    positions: { observed: 'f538dd78ce911d58', shootout: 'b50fddc754adbfa7' },
+    positions: { observed: 'cac36dfc7e17b7b9', shootout: '58e79b9ad461176c' },
   },
   2024: {
     facts: {
@@ -498,7 +507,7 @@ const REVISION_1: Record<Year, CandidateDigests> = {
       extraTime: '7a6282dbe15f7b44',
       shootout: 'e9132add2a2297e4',
     },
-    positions: { observed: '419426637e81823d', shootout: '922abdcf670b682e' },
+    positions: { observed: '114edcda180b1939', shootout: 'be13fb3a982cd7ba' },
   },
 };
 

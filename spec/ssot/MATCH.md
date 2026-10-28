@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r35 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r36 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -287,6 +287,27 @@
   - the chance's xG reads those bodies as part of its situation (→MATCH-11), so goals minus xG still measures finishing.
   - a block, a parry or a save the keeper cannot hold falls where the shot and the save send it; the players of both sides contest that second ball by who reaches it first (→MATCH-31), and an attacker who wins it near goal may shoot again at once.
   - the carrier weighs a blocked view when he chooses to shoot, more surely with better 판단력 (→MATCH-16); a blocked shot still counts as a shot (→MATCH-3).
+- MATCH-36 [o] Observed playback draws every player as a top-down human figure wearing his side's selected kit (→KIT-3/8, →WEB-49). ← a moving disc reads as a counter, not a footballer; seeing where a player faces and how he strikes the ball is why the match is watched
+  - seen from directly above: a hair-covered head centred on shoulders wider than they are deep, arms at the sides, shorts, and legs with socks and boots that stride out in front and behind. The shirt pattern and trim show on the shoulders and back; goalkeepers wear their kit with gloves.
+  - scale: the torso is as wide as the current player-marker diameter at each screen width (`markerRadius`, `apps/web/src/ui/pitchPainting.ts`); limbs, the ball and the number tag may extend beyond it. Detail reduces with size: at phone widths team colours, facing and large actions stay readable and pattern regions may merge.
+  - every figure keeps a readable player-number tag that does not rotate with the body and avoids covering other figures, the ball and the carrier cue (→WEB-95).
+  - a player's skin tone and hair stay the same for him in every match, chosen reproducibly from his identity; they carry no gameplay meaning and are not edited.
+  - match observation, retained replay and kit previews (→WEB-87/88) use the same figure; tactical and analytical pitch diagrams keep their markers.
+- MATCH-37 [o] A figure's pose comes only from recorded match facts at the presented instant (→MATCH-12). ← a body acting out something the engine did not settle would misreport the match
+  - facing: a moving player faces the way he moves; a standing or slow player turns towards the ball. Turns are smooth, the upper body leading.
+  - running: legs stride and arms swing opposite to them; stride, arm swing and lean grow with his recorded speed. A standing player holds a ready stance.
+  - a carried ball is drawn at the carrier's feet, nudged ahead of him within his stride; it never leaves his reach between recorded touches.
+  | recorded action | pose at its recorded instant |
+  |---|---|
+  | pass, cross, clearance | planted foot beside the ball, kicking-leg swing, opposite arm out |
+  | shot | a larger swing with the body turning through it |
+  | tackle | a standing reach, or a slide when the recorded positions need more than standing reach |
+  | throw-in | both hands holding the ball above the head, feet planted, then the throw |
+  | header | a jump when the ball arrives high |
+  | goalkeeper | ready stance; catch or dive by the recorded save and ball path |
+  - a pose never shows an action, contact, foul or outcome the engine did not record, and never moves a player or the ball off its recorded path.
+  - the same instant always shows the same pose: speed changes, seeking, replay and tab visibility never change it, and posing uses no new randomness. Poses never alter settled facts (→MATCH-7).
+  - reduced motion keeps positions and facing, holds a still stance instead of stride cycles and shows each action as one key pose (→WEB-46).
 
 ## flow
 - Play: squads and tactics → kickoff → carrier's cell and tags → decision → duel → event (pass | loss | out | foul | offside | shot) → restart or play on → half-time → full time (→ extra time and shootout in a cup tie) → recorded facts → visible feedback.
@@ -296,6 +317,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r36 261028 MATCH-36+ players as top-down human figures in their kits at marker scale, number tags, stable appearance, diagrams keep markers; MATCH-37+ poses only from recorded facts, same instant same pose, reduced-motion stance
 - r35 261028 MATCH-23✎ each row held inside its real-football range→within 25% of the range's mean either side (never narrower; at-most rows 25% above the cap), scorer rows too. MATCH-30✎ counters held inside their bands→the same ±25% tolerance
 - r34 261028 MATCH-16✎ + the carrier takes open ground ahead on the carry; + a contested pass (receiver marked or lane cut out) only forward, backward/sideways passes only to a free receiver on a clear lane, else he keeps the ball; + around the box with room he shoots, carries on or holds for support instead of playing it far back; + wide play: with the flank open a wide carrier goes down the line and crosses from near the byline, crossing early or cutting in mostly with the line closed; a free wide teammate with room is an option
 - r33 261027 MATCH-12✎ set-piece preparation→dead-ball beat for every stoppage, no straight-line glide. MATCH-16✎ + shot choice from the chance bent by position (FW ≥ MF ≥ DF), role, traits, tactic, own school; no line suppression. MATCH-18✎ named taker for every free kick→only in shooting/crossing range; + corners 2–3 back / 1–2 up, late score, keeper
