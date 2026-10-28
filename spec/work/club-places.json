@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-10-28T18:06:13.309Z",
-  "sourceCommit": "e010e23a05a2f23fd247fb14523717b4157b9897",
+  "snapshotAt": "2026-10-28T18:06:48.455Z",
+  "sourceCommit": "d8f467b63444873063ff93574ce0e9e2a51a6765",
   "group": {
     "id": "club-places",
     "branch": "work/club-places",
@@ -13,7 +13,7 @@
       "maxPending": 8
     },
     "review": "all",
-    "runner": {
+    "lastRun": {
       "id": "96f28371-1638-466a-8bdf-7c21ffce80bd",
       "adapter": "builtin",
       "providers": {
@@ -36,34 +36,8 @@
         }
       ],
       "startedAt": "2026-10-28T17:56:52.243Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "4a1d5e06-e761-466e-83d5-d2c7a7d70cd8",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.160.1"
-        },
-        "reviewer": {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.160.1"
-        }
-      },
-      "workers": [
-        {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.160.1"
-        }
-      ],
-      "startedAt": "2026-10-28T17:44:21.928Z",
-      "stoppedAt": "2026-10-28T17:55:48.442Z",
-      "dispatched": 1,
+      "stoppedAt": "2026-10-28T18:06:47.704Z",
+      "dispatched": 3,
       "outcome": "dispatch-limit",
       "failures": [],
       "autopilot": true,
@@ -471,6 +445,8 @@
       "submittedBase": "8e3166fc7e9f23e3b14c1a68e949713c5fe978b2",
       "submissionId": "d6bc481f-117c-4c68-be3c-236a741d745a",
       "submittedAt": "2026-10-28T18:03:58.529Z",
+      "integratedCommit": "d8f467b63444873063ff93574ce0e9e2a51a6765",
+      "integratedAt": "2026-10-28T18:06:47.562Z",
       "risk": null,
       "dispatch": {
         "id": "9c389d5a-7f01-4ddd-b067-1b24e02beb2a",
@@ -545,6 +521,13 @@
           "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism",
           "startedAt": "2026-10-28T18:03:21.973Z",
           "finishedAt": "2026-10-28T18:03:58.098Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-10-28T18:06:13.527Z",
+          "finishedAt": "2026-10-28T18:06:47.274Z"
         }
       ]
     }
@@ -3966,6 +3949,81 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1744,
+      "at": "2026-10-28T18:06:47.494Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --offline --frozen-lockfile && pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-10-28T18:06:13.527Z",
+            "finishedAt": "2026-10-28T18:06:47.274Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1745,
+      "at": "2026-10-28T18:06:47.562Z",
+      "type": "attempt",
+      "group": "club-places",
+      "attemptId": "6af1f076-d519-44f7-be38-44b068a0385e",
+      "taskId": "T552",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "d8f467b63444873063ff93574ce0e9e2a51a6765",
+        "integratedAt": "2026-10-28T18:06:47.562Z"
+      }
+    },
+    {
+      "sequence": 1746,
+      "at": "2026-10-28T18:06:47.704Z",
+      "type": "group",
+      "group": "club-places",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "96f28371-1638-466a-8bdf-7c21ffce80bd",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.160.1"
+            }
+          ],
+          "startedAt": "2026-10-28T17:56:52.243Z",
+          "stoppedAt": "2026-10-28T18:06:47.704Z",
+          "dispatched": 3,
+          "outcome": "dispatch-limit",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
