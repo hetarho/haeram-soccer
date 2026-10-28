@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T21:32Z | - |
+| cp29 | ihaelam-ui-MacBookPro | autopilot | 2026-10-28T15:17Z | 2026-10-28T22:31Z | - |
 
 ## inbox
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
@@ -415,9 +415,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- cp29: publish verified comparison-readiness follow-up7444daee and confirm its complete CI; independently follow the first run’s remaining Firefox result for any additional evidence.
+- cp29: follow-up source7b31fe1b is published and localmain is synchronized; confirm CI40773522439, then close the report/session. First matrix’s only failure was the verified comparison-readiness test race.
 
 ## log
+- 261029 cp29 follow-up CI40773522439 on7b31:8/9jobs succeeded,onlyFirefoxrunning; checkpoint metadata without changing validated code.
 - 261029 fix recruitment browser readiness: await both asynchronously loaded comparison articles before retaining the unchanged exact two-player identity assertion; initial CI Chromium330pass1premature-read failure.
 - 261029 cp29 all five corrected record/replay/loan/live-stat browser scopes pass; preserve exact financial/continuity checks and freeze the complete fourth final gate.
 - 261029 fix live-state browser expectation: recognize the real first match-eve automatic pause during a navigation detour; require a running transport or the exact dated observation, retaining all continuity/statistics checks.
@@ -437,4 +438,3 @@
 - 261029 create-task T567 (cp29): remaining actual browser-contract drift in skins, primary/local keyboard history, resolved-office export and editable policy ownership.
 - 261028 T563 integrated
 - 261029 create-task T566 (cp29): coalesce real world-market reads during automatic revisions while preserving stopped-state authoritative guards; sequence unclaimed browser consumers after their source fixes.
-- 261029 create-task T565 (cp29): explicit academy prospect fixture and current training return label; preserve all effect/cancel/full-visibility assertions.
