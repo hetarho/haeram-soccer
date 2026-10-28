@@ -13,10 +13,12 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
+| u7m4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T00:48Z | 2026-10-28T00:48Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | e7q4 | hq-dev1-pve2-vm2 | autopilot | 2026-10-28T01:49Z | 2026-10-28T01:54Z | T537 |
 
 ## inbox
+- 261028 decided WEB-11 WEB-72 T536: facility scope and image treatment → three compact background-art entrances with manager/training preparation notices, plus a larger cover-cropped stadium (alt: implement unplanned room activities | keep one large owner entrance); detailed room activities await their own planning.
 - 261028 decided EURO-11 EURO-13 EURO-14: modern access fidelity → association quota bands, recorded five-year ranking and EPS, direct admission instead of new qualifiers, next-season activation (alt: keep uniform demo quotas | retcon active draws); keep the single domestic cup and explicitly label unmodelled EFL/domestic playoffs and eight-association ranking scope.
 - 261028 decided T531 WEB-100 WEB-74: how to keep request identity through submission and browser history → world-named request addresses and session snapshots, with a scoped client forwarding the existing forms/commands (alt: consume a one-shot request only | copy each form into the office); history can revisit resolved work safely, late replies cannot redirect another request/game, and business rules stay authoritative.
 - 261028 decided WEB-39 WEB-79: work grouping → player contracts (incl. youth), staff contracts (incl. manager), investment (finance/local/global/facilities), sponsors and identity; keep all seven saved responsibility keys (alt: merge stored responsibilities or retain an operating-policy gate). Shared inline controls and eligible direct actions use existing commands.
@@ -346,7 +348,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 24 | 24 | - | 2 |
-| WEB | 164 | 164 | - | 0 |
+| WEB | 165 | 165 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 3 | 3 | - | 0 |
 | CLUB | 42 | 42 | - | 0 |
@@ -371,6 +373,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T536 | Compact facility entrances and app-wide spacing hierarchy | WEB ARCH | - | todo |
 | T537 | European qualification by association, domestic results and titles | EURO ARCH | - | doing@261028.e7q4 |
 
 ## work
@@ -390,11 +393,13 @@
 | auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
 
 ## next
+- implement-task T536: compact facility visits and shared UI spacing.
 - implement-task T537: correct association access, continental titleholders, EPS and qualification causes.
 - Gameplay hierarchy T530-T535 shipped on main 8af246fa; the full batch, cold-cache unit repair, 21-case browser regression and [all-browser CI](https://github.com/hetarho/haeram-soccer/actions/runs/40585549122) passed. Requested scope is complete; no implementation task remains.
 - n3w8 closed (report 261027-n3w8): automatic play T516–T525 on main (group gate on 2573791c); T522 read on the built game: 0 stalls at x1/x2/x5/x10, x10 10 days a second, no main-thread long task, helpers on (M1 Max, headless Chromium) — a CPU-throttled phone-class read is the open question. Inbox: confirm the WEB-18 read decisions (T524 → T525) and the WEB-69 framed-tabs suggestion.
 
 ## log
+- 261028 T536 planning shared for strict session claim; WEB r165.
 - 261028 create-task EURO r4: T537 covers allocation, recorded coefficients, compatibility and qualification explanation.
 - 261028 update-ssot EURO start and r4 done: modern access, holders, EPS and forward-only save compatibility; create-task EURO next.
 - 261028 gameplay hierarchy shipped: WEB r164, T530-T535 and verified test repairs; main 8af246fa passed all nine CI jobs; report 261028-g8u4.
@@ -414,6 +419,3 @@
 - 261028 sync origin/main: preserve automatic-play r162/r163 and serialize the gameplay redesign as WEB r164; T530/T531 remain complete.
 - 261028 T531 done: host finalized the verified child implementation and task commit.
 - 261028 T530 done: 141 affected unit cases, type/lint/format/build passed; host finalized the commit after restricted child Git writes.
-- 261028 create-task WEB r162: T530–T533 serial UI chain; existing performance tasks remain outside this requested slice.
-- 261028 update-ssot WEB r162 done: work desks, shared inline approval, request round trips and audience-based navigation.
-- 261028 update-ssot WEB start: business desks, approval round trips, season/history and personnel navigation.
