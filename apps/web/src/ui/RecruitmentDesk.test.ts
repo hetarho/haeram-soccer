@@ -1,112 +1,286 @@
-import { createElement } from 'react';
+import { createElement, isValidElement, type ReactElement, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createWorld, transferOffers } from '../../../../packages/engine/src/index';
-import { lineOf } from '../../../../packages/engine/src/player';
-import { recruitmentPreview } from '../../../../packages/engine/src/recruitment';
+import type { WorldMarketOffer, WorldMarketPage } from '../../../../packages/contracts/src/types';
+import { worldMarketFixture } from '../../../../packages/engine/src/world-market.testkit';
 import type { ClientState, GameClient } from '../runtime/client';
 import { initialClientState } from '../runtime/store';
 import { RecruitmentDesk } from './RecruitmentDesk';
+import { DEFAULT_MARKET_QUERY, type MarketDetail } from './worldMarket';
 
-const { choices } = vi.hoisted(() => ({ choices: {} as Record<string, unknown> }));
+const { choices, reads } = vi.hoisted(() => ({
+  choices: {} as Record<string, unknown>,
+  reads: {
+    page: undefined as WorldMarketPage | undefined,
+    detail: undefined as MarketDetail | undefined,
+    error: undefined as string | undefined,
+    blocked: false,
+    query: vi.fn(),
+    inspect: vi.fn(),
+  },
+}));
+vi.mock('./worldMarket', async (original) => ({
+  ...(await original<typeof import('./worldMarket')>()),
+  useMarketPage: (...args: unknown[]) => {
+    reads.query(...args);
+    return { value: reads.page, error: reads.error, retry: vi.fn() };
+  },
+  useMarketDetail: (...args: unknown[]) => {
+    reads.inspect(...args);
+    return { value: args[3] ? reads.detail : undefined, retry: vi.fn() };
+  },
+}));
 vi.mock('./taskMemory', () => ({
   useTaskState: (_world: string, key: string, initial: unknown) => [
     choices[key] ?? initial,
-    vi.fn(),
+    (value: unknown) => {
+      choices[key] = typeof value === 'function' ? value(choices[key] ?? initial) : value;
+    },
   ],
 }));
 vi.mock('../runtime/store', async (original) => ({
   ...(await original<typeof import('../runtime/store')>()),
-  useGameState: (selector: (state: ClientState) => unknown) => selector(initialClientState),
+  useGameState: (selector: (state: ClientState) => unknown) =>
+    reads.blocked
+      ? true
+      : selector({ ...initialClientState, busy: false, processing: false, readonly: false }),
+}));
+vi.mock('./Dialog', () => ({
+  Dialog: ({ children, actions }: { children: ReactNode; actions: ReactNode }) =>
+    createElement('div', {}, children, actions),
 }));
 
-const w = createWorld({
-  country: 'ENG',
-  name: 'Market Town',
-  color: '#224433',
-  seed: 'compact-market',
-  level: 'easy',
+// Three represented clubs and a prepared XI; no world initialization, progression or worker.
+const w = worldMarketFixture();
+const offer: WorldMarketOffer = {
+  player: { ...w.players[0], id: 'external', name: 'External Player', wage: '200' },
+  target: { world: w.id, kind: 'club', clubId: 'foreign', playerId: 'external' },
+  source: { club: 'foreign', name: 'Foreign Club', country: 'ESP', tier: 0, group: 0 },
+  fee: '1000',
+  loanFee: '100',
+  freeAgent: false,
+  available: true,
+  recommended: false,
+  own: false,
+  foreign: true,
+};
+const preview = {
+  slot: { index: 0, position: 'GK', role: 'shotStopper', arrival: 32, settled: 40 },
+  beforeStrength: 40,
+  afterStrength: 41,
+  strengthDelta: 1,
+  beforeFit: 50,
+  afterFit: 51,
+  fitDelta: 1,
+  manual: false,
+  willStart: true,
+  fee: offer.fee,
+  wage: '200',
+  annualAfter: '1000',
+  cashAfter: '999999998999',
+  runwayRounds: 999,
+  affordable: true,
+  eligible: true,
+  reason: '자동 선발 후보',
+} as MarketDetail['buy'];
+const detail = (): MarketDetail => ({
+  world: w.id,
+  revision: w.revision,
+  offer,
+  buy: { ...preview },
+  loan: { ...preview, fee: offer.loanFee },
+  bid: { asking: offer.fee, chance: 0.5, label: '보통', counterPossible: true },
 });
-const offers = transferOffers(w);
-function render(transfers = offers) {
-  const state = { view: { world: w, transfers } } as ClientState;
-  return renderToStaticMarkup(createElement(RecruitmentDesk, { state, client: {} as GameClient }));
+let tree: ReactElement;
+const client = {
+  state: { view: { world: w }, error: undefined },
+  command: vi.fn(async () => ({ ok: true })),
+} as unknown as GameClient;
+const state = { view: { world: w, transfers: [] } } as unknown as ClientState;
+function Capture() {
+  tree = RecruitmentDesk({ state, client });
+  return tree;
 }
+const render = () => renderToStaticMarkup(createElement(Capture));
+function elements(node: ReactNode): ReactElement<Record<string, unknown>>[] {
+  if (Array.isArray(node)) return node.flatMap((child) => elements(child));
+  if (!isValidElement<Record<string, unknown>>(node)) return [];
+  return [
+    node,
+    ...elements((node.props.children as ReactNode) ?? null),
+    ...elements((node.props.actions as ReactNode) ?? null),
+  ];
+}
+const control = (label: string) =>
+  elements(tree).find((node) => node.props['aria-label'] === label)!;
+const submit = () =>
+  elements(tree).find(
+    (node) =>
+      node.type === 'button' &&
+      Array.isArray(node.props.children) &&
+      node.props.children.includes(' 제안 보내기'),
+  )!;
 const ids = (markup: string) =>
   [...markup.matchAll(/data-candidate-id="([^"]+)"/g)].map((match) => match[1]);
 
 beforeEach(() => {
   for (const key of Object.keys(choices)) delete choices[key];
+  reads.page = {
+    world: w.id,
+    revision: w.revision,
+    page: 0,
+    pageSize: 50,
+    total: 101,
+    items: [offer],
+  };
+  reads.detail = undefined;
+  reads.error = undefined;
+  reads.blocked = false;
+  w.bids = undefined;
+  vi.clearAllMocks();
+  client.state.view = state.view;
 });
 
-describe('compact transfer market', () => {
-  it('renders every candidate in a semantic table with controls instead of expanded panels', () => {
+describe('paged whole-world recruitment desk', () => {
+  it('renders only worker page rows, total/page state, source and non-recommended inspection', () => {
     const markup = render();
-    expect(markup).toContain('<table');
-    expect(markup).toContain('aria-label="영입 후보 목록"');
-    expect(ids(markup).sort()).toEqual(offers.map((offer) => offer.player.id).sort());
-    for (const offer of offers)
-      expect(markup).toContain(`aria-label="${offer.player.name} 상세 보기"`);
+    expect(ids(markup)).toEqual(['external']);
+    expect(markup).toContain('총 101명');
+    expect(markup).toContain('1 / 3 페이지');
+    expect(markup).toContain('Foreign Club');
+    expect(markup).toContain('스페인 1부');
+    expect(markup).toContain('aria-label="External Player 상세 보기"');
     expect(markup).toContain('aria-label="영입 필터"');
-    expect(markup).toContain('aria-label="영입 정보 · 필요한 영입과 감독 요청"');
     expect(markup).toContain('aria-label="이적 협상 · 0건 진행 중"');
     expect(markup).not.toContain('<article');
-    expect(markup).not.toContain('지금 필요한 영입</h3>');
-    expect(markup).not.toContain('영입 기조 ·');
-    expect(markup).not.toContain('영입 포지션 선택');
-    const extended = [
-      ...offers,
-      ...offers.map((offer) => ({
-        ...offer,
-        player: { ...offer.player, id: `${offer.player.id}:extra` },
-      })),
-    ];
-    expect(ids(render(extended)).sort()).toEqual(extended.map((offer) => offer.player.id).sort());
+    expect(reads.query.mock.lastCall?.[3]).toEqual(DEFAULT_MARKET_QUERY);
+    expect(reads.inspect.mock.calls.every((args) => args[3] === undefined)).toBe(true);
   });
-
-  it('preserves role filtering and potential sorting without dropping matching candidates', () => {
-    choices['market-role'] = 'GK';
-    choices['market-order'] = 'potential';
-    const expected = offers
-      .filter((offer) => lineOf(offer.player.position) === 'GK')
-      .sort(
-        (a, b) => b.player.potential - a.player.potential || a.player.id.localeCompare(b.player.id),
-      );
-    expect(ids(render())).toEqual(expected.map((offer) => offer.player.id));
+  it('passes filters/sorts to the worker and resets pages on search', () => {
+    choices['world-market-query'] = {
+      ...DEFAULT_MARKET_QUERY,
+      page: 2,
+      line: 'DF',
+      recommendedOnly: true,
+      fit: 'improves',
+      team: 'foreign',
+      league: { country: 'ESP', tier: 0, group: 0 },
+      sort: 'wage',
+      direction: 'asc',
+    };
+    render();
+    expect(reads.query.mock.lastCall?.[3]).toEqual(choices['world-market-query']);
+    const input = elements(tree).find((node) => node.type === 'input')!;
+    (input.props.onChange as (event: unknown) => void)({ target: { value: 'Ada' } });
+    expect(choices['world-market-query']).toMatchObject({
+      page: 0,
+      name: 'Ada',
+      sort: 'wage',
+      direction: 'asc',
+    });
+    choices['market-panel'] = 'filters';
+    render();
+    expect(
+      elements(control('영입 후보 정렬').props.children as ReactNode).map(
+        (item) => item.props.value,
+      ),
+    ).toEqual(['name', 'age', 'ovr', 'potential', 'fee', 'wage']);
+    expect(control('영입 리그')).toBeDefined();
+    expect(control('영입 구단')).toBeDefined();
+    expect(elements(control('영입 포지션').props.children as ReactNode)).toHaveLength(15);
   });
-
-  it('preserves exact fee order and the existing positive-impact filter', () => {
-    choices['market-order'] = 'fee';
-    choices['market-boost'] = true;
-    const expected = offers
-      .filter((offer) => {
-        const preview = recruitmentPreview(w, offer);
-        return preview.strengthDelta > 0 || preview.fitDelta > 0;
-      })
-      .sort((a, b) =>
-        BigInt(a.fee) < BigInt(b.fee)
-          ? -1
-          : BigInt(a.fee) > BigInt(b.fee)
-            ? 1
-            : a.player.id.localeCompare(b.player.id),
-      );
-    expect(ids(render())).toEqual(expected.map((offer) => offer.player.id));
-  });
-
-  it('keeps comparison selections available when the selected rows are filtered out', () => {
-    choices['market-role'] = 'FW';
-    choices['market-comparison'] = offers.slice(0, 2).map((offer) => offer.player.id);
+  it('uses server-clamped pages and retains comparison targets across pages', () => {
+    choices['world-market-query'] = { ...DEFAULT_MARKET_QUERY, page: 8 };
+    choices['world-market-comparison'] = [offer.target, { ...offer.target, playerId: 'off-page' }];
+    reads.page = { ...reads.page!, page: 1, total: 51, items: [] };
     const markup = render();
-    expect(markup).toMatch(/<button[^>]*aria-label="선택한 2명 비교"[^>]*>/);
-    expect(markup.match(/<button[^>]*aria-label="선택한 2명 비교"[^>]*>/)?.[0]).not.toContain(
-      'disabled',
+    expect(markup).toContain('2 / 2 페이지');
+    expect(markup).toContain('aria-label="선택한 2명 비교"');
+    const previous = elements(tree).find((node) => node.props.children === '이전 페이지')!;
+    (previous.props.onClick as () => void)();
+    expect(choices['world-market-query']).toMatchObject({ page: 0 });
+    expect(choices['world-market-comparison']).toHaveLength(2);
+  });
+  it('distinguishes loading, retryable failures and empty filters with a clear action', () => {
+    reads.page = undefined;
+    expect(render()).toContain('세계 선수 목록을 불러오고 있어요.');
+    reads.error = 'retry query';
+    expect(render()).toContain('목록 다시 조회');
+    reads.page = { world: w.id, revision: w.revision, page: 0, pageSize: 50, total: 0, items: [] };
+    reads.error = undefined;
+    choices['world-market-query'] = { ...DEFAULT_MARKET_QUERY, name: 'No such player' };
+    expect(render()).toContain('이 조건에 맞는 선수가 없어요.');
+    const clear = elements(tree).find((node) => node.props.children === '필터 지우기')!;
+    (clear.props.onClick as () => void)();
+    expect(choices['world-market-query']).toEqual(DEFAULT_MARKET_QUERY);
+  });
+  it('approaches a non-scout target with authoritative terms and no row index', async () => {
+    choices['world-market-bidding'] = { target: offer.target, asking: offer.fee };
+    reads.detail = detail();
+    const markup = render();
+    expect(markup).toContain('반복 연봉');
+    expect(markup).toContain('계약 / 임대 반환');
+    expect(markup).toContain('합류 32 → 적응 후 40');
+    expect(markup).toContain('직접 발굴');
+    expect(submit().props.disabled).toBe(false);
+    await (submit().props.onClick as () => Promise<void>)();
+    expect(client.command).toHaveBeenCalledWith(
+      { type: 'bid', target: offer.target, fee: '1000' },
+      { background: true },
     );
   });
-
-  it('shows an actionable empty state and no candidate controls for an empty list', () => {
-    const markup = render([]);
-    expect(ids(markup)).toEqual([]);
-    expect(markup).toContain('이 조건에 맞는 후보가 없어요. 필터를 바꿔보세요.');
-    expect(markup).toContain('aria-label="영입 필터"');
+  it('selects a player by identity and signs a selected free agent through the existing command', () => {
+    render();
+    (control('External Player 상세 보기').props.onClick as () => void)();
+    expect(choices['world-market-viewing']).toEqual(offer.target);
+    reads.detail = detail();
+    reads.detail.offer = {
+      ...offer,
+      freeAgent: true,
+      fee: '0',
+      source: undefined,
+      target: { world: w.id, kind: 'offer', playerId: offer.player.id },
+    };
+    render();
+    const card = elements(tree).find((node) => node.props.candidate)!;
+    (card.props.onRecruit as (loan: boolean) => void)(false);
+    expect(client.command).toHaveBeenCalledWith(
+      { type: 'recruit', target: reads.detail.offer.target, loan: false },
+      { background: true },
+    );
   });
+  it('keeps inspection enabled during automatic play and rejects a late command from another game', async () => {
+    reads.blocked = true;
+    render();
+    expect(control('External Player 상세 보기').props.disabled).toBeUndefined();
+    reads.blocked = false;
+    choices['world-market-bidding'] = { target: offer.target, asking: offer.fee };
+    reads.detail = detail();
+    render();
+    client.state.view = { ...state.view!, world: { ...state.view!.world, id: 'another-world' } };
+    await (submit().props.onClick as () => Promise<void>)();
+    expect(client.command).not.toHaveBeenCalled();
+  });
+  it.each(['own', 'locked', 'stale', 'pending'] as const)(
+    'guards %s approaches while preserving inspection',
+    async (guard) => {
+      choices['world-market-bidding'] = { target: offer.target, asking: offer.fee };
+      reads.detail = detail();
+      if (guard === 'own') {
+        reads.detail.offer = { ...offer, own: true, available: false };
+        reads.detail.buy.eligible = false;
+      }
+      if (guard === 'locked') reads.blocked = true;
+      if (guard === 'stale') reads.detail.revision--;
+      if (guard === 'pending')
+        w.bids = [
+          { direction: 'out', playerId: offer.player.id, status: 'pending' },
+        ] as typeof w.bids;
+      const markup = render();
+      expect(submit().props.disabled).toBe(true);
+      expect(markup).toContain('External Player');
+      await (submit().props.onClick as () => Promise<void>)();
+      expect(client.command).not.toHaveBeenCalled();
+    },
+  );
 });
