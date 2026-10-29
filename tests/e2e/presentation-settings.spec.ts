@@ -218,7 +218,7 @@ for (const width of [390, 1380])
       await chooseOption(page.getByTestId('presentation-theme'), theme);
       await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
       await closeSettings(page);
-      const assetPath = `/art/${theme}/${theme === 'matchday-print' ? 'home' : 'ui'}/`;
+      const assetPath = `/art/${theme}/`;
       const homeSkin = await page.getByTestId('club-hub').evaluate((hub) => {
         const fixture = hub.querySelector('[data-home-part="fixture"]')!;
         const style = getComputedStyle(fixture);

@@ -124,8 +124,9 @@ for (const themeId of ['standard', 'pixel']) {
       expect(card.padding).toBeGreaterThanOrEqual(width <= 760 ? 4 : 6);
       expect(card.radius).toBe(card.cardRadius);
       expect(card.background).not.toBe('rgba(0, 0, 0, 0)');
-      expect(card.material).toContain(`/art/${themeId}/ui/`);
-      expect(card.frame).toContain(`/art/${themeId}/ui/`);
+      // Component resources can live in versioned families within the selected pack.
+      expect(card.material).toContain(`/art/${themeId}/`);
+      expect(card.frame).toContain(`/art/${themeId}/`);
       expect(card.overflow).toBeLessThanOrEqual(0);
       await expect(
         fixture.getByRole('button', { name: '전술·선발 준비', exact: true }),

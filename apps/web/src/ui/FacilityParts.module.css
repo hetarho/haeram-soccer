@@ -2,7 +2,7 @@
 .part {
   display: grid;
   gap: var(--row-padding);
-  padding: var(--panel-padding);
+  padding: max(12px, var(--panel-padding));
   margin-bottom: var(--panel-padding);
   min-width: 0;
   border-bottom: 1px solid var(--line);
