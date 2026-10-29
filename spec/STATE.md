@@ -392,7 +392,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T574 | Lab runs in a worker pool | LAB ARCH MATCH | T572 | todo |
 | T575 | Lab page: sides, values, runs and comparison | LAB ARCH | T573 T574 | todo |
 
 ## work
@@ -418,9 +417,11 @@
 
 ## next
 - T569–T571 pushed fa1a018b; read its CI.
-- implement-task T574 (then T575).
+- implement-task T575.
 
 ## log
+- 261029 T574 done: lab worker pool, trimmed samples, run summary with equal-sides note; 136 affected unit tests pass; scripts/_scan.ts (stray T572 scratch) dropped.
+- 261029 T574 start
 - 261029 update-ssot LAB r3: LAB-2 a pressing lab side carries the press load (`PRESS_LOAD_FATIGUE`) like a club nobody owns; implemented in lab/sides.ts with its test, no new task.
 - 261029 T573 done: tunable catalog script and freshness test (865 leaves).
 - 261029 T573 start

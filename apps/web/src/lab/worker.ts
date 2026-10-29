@@ -7,6 +7,7 @@ import type { LabReply, LabRequest } from './protocol';
 import {
   generateLabSide,
   labSideFromOvrs,
+  labStarterAverage,
   playSlice,
   probeLabReads,
   setLabPlayerOvr,
@@ -54,7 +55,7 @@ self.onmessage = (event: MessageEvent<LabRequest>) => {
         post({
           type: 'side',
           requestId: m.requestId,
-          side: setLabPlayerOvr(m.lab, m.side, m.index, m.ovr),
+          side: setLabPlayerOvr(m.side, m.sideIndex, m.index, m.ovr),
         });
         return;
       case 'summarize': {
@@ -64,7 +65,10 @@ self.onmessage = (event: MessageEvent<LabRequest>) => {
         post({
           type: 'summary',
           runId: m.runId,
-          summary: summarizeRun(m.samples, (id) => names.get(id) ?? id),
+          summary: summarizeRun(m.samples, {
+            names: (id) => names.get(id) ?? id,
+            averages: [labStarterAverage(m.sides[0]), labStarterAverage(m.sides[1])],
+          }),
         });
         return;
       }
@@ -73,6 +77,7 @@ self.onmessage = (event: MessageEvent<LabRequest>) => {
     post({
       type: 'failed',
       runId: 'runId' in m ? m.runId : -1,
+      ...('requestId' in m && { requestId: m.requestId }),
       message: error instanceof Error ? error.message : String(error),
     });
   }

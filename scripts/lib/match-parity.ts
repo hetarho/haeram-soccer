@@ -5,7 +5,8 @@
  * units, the intended target bands, the exact record invariants, the comparison settings, the corpus
  * conditions and seed partitions and the performance budgets, plus the report builders that read
  * them. Later tasks import these names instead of copying thresholds or corpus sizes. Measurement
- * tooling only: nothing under apps/ or packages/ imports this file.
+ * tooling only: the match lab's worker code (apps/web/src/lab/summary.ts, →LAB-5) is its one importer
+ * under apps/ or packages/; game UI and the game worker never import it.
  */
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from '../../packages/contracts/src/detail';
 import type { Incident, MatchRecord, Tactic } from '../../packages/contracts/src/types';

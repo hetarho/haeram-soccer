@@ -3,24 +3,13 @@
  * each side's team stats a match, every value with its 95% interval.
  */
 import { TD } from '../../../../packages/contracts/src/detail';
+import { M } from '../../../../packages/engine/src/grid/record';
 import {
   buildTargetReport,
   TARGET_BANDS,
   type TargetStatus,
 } from '../../../../scripts/lib/match-parity';
 import type { LabSample } from './protocol';
-
-/** The record's per-side metric slots (packages/engine/src/grid/record.ts `M`). */
-const M = {
-  goals: 0,
-  passes: 2,
-  completed: 3,
-  shots: 4,
-  onTarget: 5,
-  tackles: 6,
-  interceptions: 7,
-  possession: 11,
-} as const;
 
 export interface Estimate {
   value: number;
@@ -59,6 +48,10 @@ export interface MatchDetail {
 
 export interface RunSummary {
   matches: number;
+  /** Each side's starter average, when known. */
+  averages?: [number, number];
+  /** The averages differ by more than `UNEQUAL_SIDES`: MATCH-23's bands assume equal top-tier sides. */
+  unequalSides: boolean;
   outcome: {
     leftWins: number;
     draws: number;
@@ -119,6 +112,7 @@ const SIDE_ROWS: {
     id: 'possession',
     label: '점유율',
     unit: 'percent',
+    // The record holds possession as minutes of 90.
     read: (s, d) => ratio(s.sample.record.metrics[d]![M.possession]!, 90),
   },
   {
@@ -157,11 +151,19 @@ function detail(s: LabSample, side: 0 | 1, key: number) {
 /** The fixture side (0 home, 1 away) a lab side played on. */
 const fixtureSide = (s: LabSample, lab: 0 | 1): 0 | 1 => (s.leftHome ? lab : 1 - lab) as 0 | 1;
 
-/** The run's report; `names` resolves a player id to his name for the 1-match detail. */
-export function summarizeRun(
-  samples: readonly LabSample[],
-  names: (id: string) => string = (id) => id,
-): RunSummary {
+/** Starter averages further apart than this get the equal-sides note (→LAB-5). */
+export const UNEQUAL_SIDES = 2;
+
+export interface RunContext {
+  /** A player id → his name, for the 1-match detail's cards. */
+  names?: (id: string) => string;
+  /** Left's and right's starter averages. */
+  averages?: [number, number];
+}
+
+/** The run's report over its samples, in match order whatever order they arrive in. */
+export function summarizeRun(samples: readonly LabSample[], context: RunContext = {}): RunSummary {
+  const names = context.names ?? ((id: string) => id);
   const ordered = [...samples].sort((a, b) => a.index - b.index);
   const goals = (s: LabSample, lab: 0 | 1) => {
     const score = s.sample.record.score;
@@ -180,12 +182,16 @@ export function summarizeRun(
   const report = buildTargetReport(ordered.map((s) => s.sample));
   const targets = report.map((row) => {
     const band = TARGET_BANDS.find((b) => b.id === row.id)!;
+    // A single match's ratio rows have no spread: their interval is the value, as for side means.
     const est =
       row.value === undefined
         ? undefined
         : {
             value: row.value,
-            interval: row.interval ?? ([row.value, row.value] as [number, number]),
+            interval:
+              row.interval && row.interval.every(Number.isFinite)
+                ? row.interval
+                : ([row.value, row.value] as [number, number]),
           };
     return {
       id: row.id,
@@ -205,8 +211,11 @@ export function summarizeRun(
     left: estimate(ordered.map((s) => row.read(s, fixtureSide(s, 0)))),
     right: estimate(ordered.map((s) => row.read(s, fixtureSide(s, 1)))),
   }));
+  const { averages } = context;
   const summary: RunSummary = {
     matches: ordered.length,
+    ...(averages && { averages }),
+    unequalSides: !!averages && Math.abs(averages[0] - averages[1]) > UNEQUAL_SIDES,
     outcome: {
       leftWins,
       draws,

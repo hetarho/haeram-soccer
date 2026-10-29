@@ -17,6 +17,7 @@ import {
 import {
   generateLabSide,
   labSideFromOvrs,
+  labStarterAverage,
   setLabPlayerOvr,
   type LabSide,
 } from '../../../../packages/engine/src/lab/sides';
@@ -26,23 +27,36 @@ let world: LabWorld | undefined;
 /** The worker's lab world, built on first use. */
 export const labWorld = () => (world ??= createLabWorld());
 
-/** Match `index` of a run as a sample (the trace stays behind). */
+/**
+ * Match `index` of a run as a sample (the trace stays behind). Unless `full` (a 1-match run, whose
+ * summary lists the match itself), the record crosses the channel without its per-player rows,
+ * highlights and own-match material, which the run's tables never read.
+ */
 export function playLabSample(
   lab: LabWorld,
   sides: readonly [LabSide, LabSide],
   runSeed: string,
   index: number,
+  full = true,
 ): LabSample {
-  const result = playLabMatch(lab, sides, runSeed, index);
+  const { record, diagnostics } = playLabMatch(lab, sides, runSeed, index);
+  const kept = { ...record };
+  delete kept.material;
+  delete kept.appearance;
+  if (!full) {
+    kept.players = [];
+    kept.highlights = [];
+    delete kept.lineCounts;
+  }
   return {
     index,
     leftHome: leftAtHome(index),
     sample: {
-      record: result.record,
-      diagnostics: result.diagnostics,
+      record: kept,
+      diagnostics,
       incidentsTracked: true,
       condition: 'lab',
-      fixture: result.record.id,
+      fixture: record.id,
     },
   };
 }
@@ -67,8 +81,10 @@ export function playSlice(
     const outcome = applyOverrides(overrides);
     if (outcome.rejected.length) return { ok: false, rejected: outcome.rejected };
     const samples: LabSample[] = [];
+    // A 1-match run keeps the match's details (a longer run's 1-match first slice carries them unread).
+    const full = from === 0 && count === 1;
     for (let i = 0; i < count; i++) {
-      samples.push(playLabSample(lab, sides, runSeed, from + i));
+      samples.push(playLabSample(lab, sides, runSeed, from + i, full));
       progress(i + 1);
     }
     return { ok: true, samples };
@@ -92,4 +108,4 @@ export function probeLabReads(): string[] {
   ].sort();
 }
 
-export { generateLabSide, labSideFromOvrs, setLabPlayerOvr };
+export { generateLabSide, labSideFromOvrs, labStarterAverage, setLabPlayerOvr };

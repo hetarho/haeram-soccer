@@ -14,7 +14,11 @@ export type { LabSide, LabSideIndex };
 /** Engine value path → the number a run plays instead of the code's. */
 export type Overrides = Readonly<Record<string, number>>;
 
-/** One played match of a run; side 0/1 inside `sample` are home/away as the fixture had them. */
+/**
+ * One played match of a run; side 0/1 inside `sample` are home/away as the fixture had them, and
+ * `leftHome` maps them back so the summary's side 0 is always left. Shot points stay in their own
+ * frame, so the sample is not flipped. Beyond a 1-match run it is trimmed to what the summary reads.
+ */
 export interface LabSample {
   index: number;
   leftHome: boolean;
@@ -51,8 +55,9 @@ export type LabRequest =
   | {
       type: 'setOvr';
       requestId: number;
-      side: LabSideIndex;
-      lab: LabSide;
+      side: LabSide;
+      /** Which side it is (its players' ids follow it). */
+      sideIndex: LabSideIndex;
       index: number;
       ovr: number;
     }
@@ -61,7 +66,15 @@ export type LabRequest =
 export type LabReply =
   | { type: 'progress'; runId: number; done: number }
   | { type: 'samples'; runId: number; from: number; results: LabSample[] }
-  | { type: 'failed'; runId: number; message: string; rejected?: RejectedOverride[] }
+  | {
+      type: 'failed';
+      /** -1 for a request outside a run. */
+      runId: number;
+      /** The `generate`/`setOvr` request that failed. */
+      requestId?: number;
+      message: string;
+      rejected?: RejectedOverride[];
+    }
   | { type: 'reads'; paths: string[] }
   | { type: 'side'; requestId: number; side: LabSide }
   | { type: 'summary'; runId: number; summary: RunSummary };
