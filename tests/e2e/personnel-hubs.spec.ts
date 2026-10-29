@@ -101,7 +101,7 @@ for (const viewport of [
       'true',
     );
     await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
-    await page.getByRole('button', { name: '구단주 사무실 입장', exact: true }).click();
+    await nav.getByRole('button', { name: '구단주 사무실', exact: true }).click();
     await page.getByRole('button', { name: '선수 계약', exact: true }).click();
     await expect(page.getByTestId('player-office-overview')).toBeVisible();
     await page.getByRole('tab', { name: '영입', exact: true }).click();

@@ -7,6 +7,9 @@ const STYLE_DEFAULTS = {
   'feedback-shadow-filter': 'none',
   'feedback-edge-shadow': 'none',
   'control-fill': 'var(--surface-2)',
+  'secondary-fill': 'var(--surface-2)',
+  'secondary-material': 'var(--image-quiet-material, none)',
+  'secondary-frame': 'var(--image-panel-frame)',
   'control-weight': '700',
   'nav-surface': 'var(--surface-deep)',
   'nav-edge': 'var(--line)',
@@ -25,6 +28,8 @@ export function resolveThemeTokens(
 ): Readonly<Record<string, string>> {
   return Object.freeze({
     ...STYLE_DEFAULTS,
+    'secondary-text': tokens.palette.text,
+    'secondary-muted': tokens.palette['text-muted'],
     ...tokens.palette,
     ...tokens.surfaces,
     ...tokens.shape,

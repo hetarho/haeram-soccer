@@ -650,7 +650,7 @@ test('unseen routed locale and theme change actual resources while game facts, d
   await colour.fill('#00A6A6');
   await expect(design.getByRole('status')).toContainText('적용 전 초안');
   const address = page.url();
-  // Settings live outside the focused office (→WEB-39); the unapplied design waits there.
+  // The unapplied design remains available across a settings detour (→WEB-39).
   await leaveOffice(page);
   await openSettings(page, 'locale');
   await chooseOption(page.getByTestId('presentation-locale'), fixture.locale.id);

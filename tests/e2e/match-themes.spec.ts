@@ -80,6 +80,9 @@ for (const width of [360, 1380])
       grounds.add(ground);
       previousGround = ground;
       const theatre = page.getByTestId('pitch-theatre');
+      const tactics = theatre.locator('[data-ui="match-tactics"]');
+      await expect(tactics).toBeVisible();
+      await expect(tactics).toHaveText(/.+ vs .+/);
       for (const element of [
         theatre,
         page.getByTestId('match-feedback'),
@@ -104,6 +107,7 @@ for (const width of [360, 1380])
         page.getByTestId('match-score').locator('b').filter({ visible: true }).first(),
         page.getByRole('button', { name: '경기 상세', exact: true }),
         page.getByTestId('match-readiness'),
+        tactics,
       ]) {
         expect((await text.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);
       }

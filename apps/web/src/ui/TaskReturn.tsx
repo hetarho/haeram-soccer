@@ -1,11 +1,11 @@
 import { returnToTask, useNavigation } from './state';
-import { taskAddress, useTaskMemory } from './taskMemory';
+import { isTaskDestination, taskAddress, useTaskMemory } from './taskMemory';
 import s from './App.module.css';
 
 export function TaskReturn() {
   const page = useNavigation((state) => state.page);
   const task = useTaskMemory((state) => state.returning);
-  if (!task || task.target !== page || task.address === taskAddress()) return null;
+  if (!task || !isTaskDestination(task.target, page) || task.address === taskAddress()) return null;
   return (
     <div className={s.taskReturn}>
       <button type="button" onClick={returnToTask}>

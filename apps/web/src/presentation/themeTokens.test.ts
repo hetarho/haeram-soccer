@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import pixel from '../../public/presentation/themes/pixel.json';
+import standard from '../../public/presentation/themes/standard.json';
+import print from '../../public/presentation/themes/matchday-print.json';
+import sticker from '../../public/presentation/themes/sticker-club.json';
 import { resolveThemeTokens } from './themeTokens';
+import { contrast } from '../../../../packages/engine/src/identity-legacy';
 
 describe('shared semantic theme tokens', () => {
   it('preserves legacy optional roles for registered-default fallback', () => {
@@ -22,6 +26,34 @@ describe('shared semantic theme tokens', () => {
     expect(resolved['scene-radius']).toBe('13px');
     expect(resolved['custom-chart-fill']).toBe('var(--surface)');
   });
+
+  it('gives imported older packs neutral secondary roles without another theme leaking in', () => {
+    const tokens = structuredClone(pixel.tokens);
+    for (const key of Object.keys(tokens.ui)) {
+      if (key.startsWith('secondary-')) delete (tokens.ui as Record<string, string>)[key];
+    }
+    const resolved = resolveThemeTokens(tokens);
+    expect(resolved['secondary-fill']).toBe('var(--surface-2)');
+    expect(resolved['secondary-text']).toBe(tokens.palette.text);
+    expect(resolved['secondary-muted']).toBe(tokens.palette['text-muted']);
+  });
+
+  it.each([standard, pixel, print, sticker])(
+    '$id supplies secondary surfaces distinct from the emphasized controller',
+    (pack) => {
+      const resolved = resolveThemeTokens(pack.tokens);
+      expect(resolved['secondary-fill']).not.toBe(
+        pack.tokens.ui['image-dark-fill' as keyof typeof pack.tokens.ui] ??
+          pack.tokens.ui['image-ink-color'],
+      );
+      expect(
+        contrast(pack.tokens.ui['image-ink-color'], resolved['secondary-fill']),
+      ).toBeGreaterThanOrEqual(4.5);
+      expect(
+        contrast(pack.tokens.ui['image-muted'], resolved['secondary-fill']),
+      ).toBeGreaterThanOrEqual(4.5);
+    },
+  );
 
   it('keeps font alias resolution and immutable per-pack results independent', () => {
     const tokens = structuredClone(pixel.tokens);

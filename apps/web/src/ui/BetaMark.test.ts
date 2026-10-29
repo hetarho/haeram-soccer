@@ -53,16 +53,15 @@ describe('the shared BETA mark (→WEB-101)', () => {
     expect(render(true)).toContain('aria-hidden="true">v0.7 BETA</span>');
   });
 
-  it('sits beside the place name in the owner office bar, outside its heading', () => {
+  it('leaves BETA to the shared HUD instead of duplicating it in local desk navigation', () => {
     const bar = markup(
       createElement(OfficeBar, {
         back: { label: '나가기', onClick: () => {} },
         title: '구단주 사무실',
       }),
     );
-    const [heading, after] = bar.split('</h2>');
-    expect(heading).toContain('<span>구단주 사무실</span>');
-    expect(heading).not.toContain('BETA');
-    expect(after).toContain('data-testid="beta-mark" aria-hidden="true">BETA</span>');
+    expect(bar).toContain('<span>구단주 사무실</span>');
+    expect(bar).not.toContain('BETA');
+    expect(bar).not.toContain('data-testid="hud-cash"');
   });
 });

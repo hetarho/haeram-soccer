@@ -89,7 +89,7 @@ async function load(page: Page, world: World) {
 }
 
 async function expectArt(page: Page, kind: FacilityKind, era: FacilityEra, stage: number) {
-  // Home stays mounted while hidden, and its office entrance shows the manager's room too.
+  // Home stays mounted while hidden; inspect only the current place's facility art.
   const img = page.locator(`[data-facility-art="${kind}"] img`).filter({ visible: true });
   const source = defaultTheme.facility({ era, kind, stage }).src;
   await expect(img).toBeVisible();

@@ -286,7 +286,7 @@ test('navigation detours and passing days keep the draft beside the policy draft
   view = await designView(page);
   await expectDraft(view);
   // Ordinary days advance the revision under an unchanged design: the draft stands and is not
-  // stale. The clock runs outside the office, which stops it while open (→WEB-98).
+  // stale. Explicitly stop the clock before returning to apply the retained draft.
   await leaveOffice(page);
   const date = page.getByTestId('game-date');
   const today = await date.innerText();

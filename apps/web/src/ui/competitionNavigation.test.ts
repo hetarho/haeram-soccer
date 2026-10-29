@@ -101,6 +101,32 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllGlobals());
 describe('competition session continuity', () => {
+  it.each(['league', 'europe'] as const)(
+    'keeps the home return through a sibling switch and nested detour from %s',
+    (entry) => {
+      history.replaceState(null, '', '/journal#clubhouse');
+      vi.stubGlobal('document', { querySelector: () => ({ scrollTop: 320 }) });
+      if (entry === 'league') openLeagueSeason(1952, 1952);
+      else openCupSeason(1952, 'cup', 1952);
+      const original = useTaskMemory.getState().returning;
+      const sibling = entry === 'league' ? 'europe' : 'league';
+      useNavigation.getState().setPage(sibling);
+      history.replaceState(null, '', `${location.pathname}${location.search}&country=GER`);
+      const competitionAddress = location.href;
+      beginTaskDetour('training');
+      useNavigation.getState().setPage('training');
+      expect(useTaskMemory.getState().parents).toEqual([original]);
+      returnToTask();
+      expect(location.href).toBe(competitionAddress);
+      expect(useNavigation.getState().page).toBe(sibling);
+      expect(useTaskMemory.getState().returning).toEqual(original);
+      returnToTask();
+      expect(location.pathname + location.hash).toBe('/journal#clubhouse');
+      expect(useNavigation.getState().page).toBe('dashboard');
+      expect(useTaskMemory.getState().scrolls['/journal#clubhouse']).toBe(320);
+      expect(useTaskMemory.getState().returning).toBeUndefined();
+    },
+  );
   it('resumes the league notebook without issuing a fresh own-season request', () => {
     useLeagueSeason.getState().take();
     useNavigation.getState().setPage('league');

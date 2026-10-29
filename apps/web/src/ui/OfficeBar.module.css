@@ -1,67 +1,29 @@
-/* The office bar stays at the top of the office as the HUD does elsewhere (→WEB-39). */
+/* Local back/title navigation stays inside the shared scrolling content. */
 .bar {
-  position: sticky;
-  top: 0;
-  z-index: 30;
-  display: grid;
-  /* The way back and the cash keep their whole controls; the place name gives way first. */
-  grid-template-columns: minmax(max-content, 1fr) minmax(0, max-content) minmax(max-content, 1fr);
+  display: flex;
   align-items: center;
-  gap: 8px;
-  min-height: 52px;
-  margin: -4px calc(var(--gutter) * -1) 12px;
-  padding: calc(4px + env(safe-area-inset-top)) var(--gutter) 4px;
-  background: var(--surface-grain, none) var(--hud);
-  border-bottom: 1px solid var(--line);
+  gap: 12px;
+  min-width: 0;
+  margin-bottom: 12px;
 }
 .back {
-  justify-self: start;
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   gap: 4px;
   min-height: 44px;
   padding: 0 8px 0 2px;
   font-family: var(--display);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   white-space: nowrap;
 }
-/* The place name and its BETA mark, centred together. */
-.centre {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-width: 0;
-}
 .title {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin: 0;
   min-width: 0;
-  overflow: hidden;
+  margin: 0;
   font-family: var(--display);
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
-  line-height: 1.2;
-  text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.title > span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.crest {
-  flex: none;
-}
-.cash {
-  justify-self: end;
-  display: flex;
-}
-@media (max-width: 760px) {
-  .title {
-    font-size: 16px;
-  }
+  line-height: 1.4;
+  overflow-wrap: anywhere;
 }

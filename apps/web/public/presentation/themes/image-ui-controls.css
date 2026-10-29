@@ -728,15 +728,20 @@ html[data-theme] {
   }
 
   [data-ui='dialog-header'] {
-    --text: var(--image-on-dark);
-    --text-muted: var(--image-on-dark);
-    --text-faint: var(--image-canvas);
+    --text: var(--secondary-text);
+    --text-muted: var(--secondary-muted);
+    --text-faint: var(--secondary-muted);
+    --image-focus: var(--secondary-text);
+    --focus: var(--secondary-text);
     flex-shrink: 0;
     border: 0;
+    border-bottom: 3px solid transparent;
+    border-image: var(--secondary-frame)
+      var(--image-art-frame-ticket-slice, var(--image-frame-slice, 54)) / 0 0 3px 0 stretch;
     padding: 10px 16px;
-    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
+    background: var(--secondary-fill) var(--secondary-material) repeat padding-box;
     background-size: var(--image-material-size, 256px);
-    color: var(--image-on-dark);
+    color: var(--secondary-text);
   }
 
   [data-ui='dialog-header'] h2 {
@@ -751,7 +756,7 @@ html[data-theme] {
     border-image: none;
     background: none;
     box-shadow: none;
-    color: var(--image-on-dark);
+    color: var(--secondary-text);
   }
 
   [data-ui='game-shell'] > main > header > button:has([data-pixel-icon]) {

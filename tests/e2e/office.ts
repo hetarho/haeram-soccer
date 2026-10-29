@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 
-/** The owner office's only chrome: its way back, its name and the cash (→WEB-39). */
+/** Local desk navigation within the shared management shell (→WEB-39). */
 export const officeBar = (page: Page) => page.locator('[data-ui="office-bar"]');
 /** The office or area name the bar shows: 구단주 사무실 in the lobby, else the area. */
 export const officeTitle = (page: Page) => officeBar(page).getByRole('heading');
@@ -44,9 +44,8 @@ async function dismissCelebration(page: Page) {
 }
 
 /**
- * Enters the owner office through home's entrance (→WEB-11/39); the
- * shell hides the HUD, calendar, controls and menus while it is open. Dismiss an observation
- * dialog before using the entrance; dismissing never resolves its work. A no-op inside the office.
+ * Enters the owner office through primary navigation (→WEB-10/39). Dismiss an observation
+ * dialog before navigating; dismissing never resolves its work. A no-op inside the office.
  */
 export async function enterOffice(page: Page, options: { timeout?: number } = {}) {
   if (await inOffice(page)) {
@@ -75,7 +74,11 @@ export async function enterOffice(page: Page, options: { timeout?: number } = {}
   const outcome = page.getByTestId('action-outcome');
   if (await outcome.isVisible())
     await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
-  const entrance = hub.getByRole('button', { name: '구단주 사무실 입장', exact: true });
+  const entrance = page
+    .getByRole('navigation')
+    .getByRole('button', { name: '구단주 사무실', exact: true })
+    .filter({ visible: true })
+    .first();
   await entrance.evaluate((element) => element.scrollIntoView({ block: 'start' }));
   for (let attempt = 0; ; attempt++) {
     try {
@@ -113,7 +116,7 @@ export async function openOfficeArea(page: Page, area: string, options: { timeou
     await enterOffice(page, options);
     await officeLobby(page);
     await page
-      .getByTestId('office-lobby')
+      .locator('[data-ui="season-transport"]')
       .getByRole('button', { name: area, exact: true })
       .click(options);
     await expect(overview).toBeVisible();

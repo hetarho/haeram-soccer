@@ -163,7 +163,12 @@
       "image-meter-mid": "var(--image-primary-material)",
       "image-meter-high": "var(--image-primary-material)",
       "image-meter-track": "var(--image-canvas-material)",
-      "image-position-material": "var(--image-canvas-material)"
+      "image-position-material": "var(--image-canvas-material)",
+      "secondary-fill": "#26302b",
+      "secondary-material": "var(--image-quiet-material)",
+      "secondary-frame": "var(--image-panel-frame)",
+      "secondary-text": "var(--image-ink-color)",
+      "secondary-muted": "var(--image-muted)"
     }
   },
   "fonts": [

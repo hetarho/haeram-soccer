@@ -366,7 +366,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 168 | 168 | - | 0 |
+| WEB | 169 | 169 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
 | CLUB | 43 | 43 | - | 0 |
@@ -414,9 +414,16 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- No remaining work for cp29; requested places/owner work/market changes and final CI are complete.
+- No pending implementation for su29/mt29/cb29; T569–T571 are complete in the working tree, with browser specs reserved for the batch gate.
 
 ## log
+- 261029 T571 done: keep home return across competition tabs and preserve nested-detour origins; 346 affected unit tests, typecheck, lint, tracked formatting and build pass.
+- 261029 T571 start: retain named return and nested context across league/cup sibling tabs under WEB-40/74.
+- 261029 T570 done: remove mobile-only match tactic hiding; 319 affected unit tests, typecheck, lint, tracked formatting and build pass; theme browser assertions updated.
+- 261029 T570 start: restore mobile match tactic comparison hidden by its CSS breakpoint; WEB policy unchanged.
+- 261029 T569 done: remove clubhouse entrances, share owner-office shell and ordinary clock rules, inline office overview and secondary sheet headers; 319 affected unit tests and task checks pass.
+- 261029 T569 start; create-task consumed WEB r169.
+- 261029 update-ssot WEB start: remove duplicate place entrances, share owner-office shell and add secondary sheet surfaces.
 - 261029 cp29 complete T552–T558,T562–T568: six places,owner work tabs and whole-world market; complete local gate and all9CI jobs passed on7b31.
 - 261029 cp29 follow-up CI40773522439 on7b31:8/9jobs succeeded,onlyFirefoxrunning; checkpoint metadata without changing validated code.
 - 261029 fix recruitment browser readiness: await both asynchronously loaded comparison articles before retaining the unchanged exact two-player identity assertion; initial CI Chromium330pass1premature-read failure.
@@ -430,10 +437,3 @@
 - 261028 T568 integrated
 - 261028 T567 integrated
 - 261028 T565 integrated
-- 261029 cp29 synchronize published corrective task IDs and retain authoritative integrated archives.
-- 261028 T564 integrated
-- 261029 create-task T568 (cp29): scoped browser proof confirms remaining360px training action clipping after the approved global layout correction.
-- 261028 T562 integrated
-- 261029 cp29 reconcile published plan metadata with approved T563 archive; remove only the obsolete active duplicate descriptor, retaining completed source and result.
-- 261029 create-task T567 (cp29): remaining actual browser-contract drift in skins, primary/local keyboard history, resolved-office export and editable policy ownership.
-- 261028 T563 integrated

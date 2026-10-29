@@ -159,7 +159,7 @@ for (const authority of ['direct', 'delegated'] as const) {
         .getByRole('group', { name: '경기 전날 보고', exact: true })
         .getByRole('button', { name: '보고받기', exact: true }),
     ).toHaveAttribute('aria-pressed', 'true');
-    // The office hides the calendar; back outside, no day has passed.
+    // Opening and leaving the office advances no manual day.
     await leaveOffice(page);
     await expect(page.getByTestId('game-date')).toHaveText(date);
   });

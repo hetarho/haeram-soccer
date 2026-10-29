@@ -8,17 +8,9 @@ import { competitionLabel, number } from './format';
 import { cashState, teamStates, type StateKey } from './teamState';
 import { RemedySheet } from './RemedySheet';
 import type { GameClient } from '../runtime/client';
-import {
-  openOfficeLobby,
-  openPrimary,
-  openLeagueSeason,
-  openCupSeason,
-  beginTaskDetour,
-  useNavigation,
-} from './state';
+import { openLeagueSeason, openCupSeason, beginTaskDetour, useNavigation } from './state';
 import { currentCupBriefings } from './competitionNavigation';
 import { divisionName } from './league';
-import { useLocale } from '../presentation/react';
 import { ClubLink } from './ClubLink';
 import { StrategyPanel } from './LazyStrategyPanel';
 import { Dialog } from './Dialog';
@@ -168,43 +160,6 @@ function ClubScene({ w }: { w: World }) {
         구장 {w.stadium + 1}단계
       </span>
     </figure>
-  );
-}
-
-/** Place entrances open the same real workflows as the shared navigation. */
-export function OfficeEntrance({ w }: { w: World }) {
-  const { t } = useLocale();
-  return (
-    <section className={s.entrances} aria-label="구단 시설 방문" data-home-part="entrances">
-      {(
-        [
-          ['business', 'manager'],
-          ['firstTeam', 'manager'],
-          ['staff', 'staff'],
-          ['training', 'training'],
-          ['academy', 'academy'],
-        ] as const
-      ).map(([page, kind]) => (
-        <button
-          key={page}
-          type="button"
-          className={s.office}
-          data-home-part="office"
-          aria-label={`${t(`navigation.${page}`)} 입장`}
-          onClick={() => (page === 'business' ? openOfficeLobby() : openPrimary(page))}
-        >
-          <span className={s.officeBackdrop} aria-hidden="true">
-            <FacilityArt kind={kind} world={w} className={s.officeArt} />
-          </span>
-          <span className={s.officeEnter}>
-            <b>{t(`navigation.${page}`)}</b>{' '}
-            <span>
-              입장 <PixelIcon name="chevronRight" size={12} />
-            </span>
-          </span>
-        </button>
-      ))}
-    </section>
   );
 }
 
@@ -360,7 +315,6 @@ export function ClubHub({
       <div className={s.stage} data-home-part="stage">
         <ClubScene w={w} />
       </div>
-      <OfficeEntrance w={w} />
       <TeamState w={w} client={client} onPrepare={() => setPreparing(true)} />
       <NextMatchCard w={w} onPrepare={() => setPreparing(true)} />
 

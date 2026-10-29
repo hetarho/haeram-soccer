@@ -5,7 +5,7 @@ import type { World } from '../../../../packages/contracts/src/types';
 import type { ClientState, GameClient } from '../runtime/client';
 import type { View } from '../runtime/protocol';
 import { gameStore, initialClientState } from '../runtime/store';
-import { NextMatchCard, OfficeEntrance, SeasonCard, TeamState, CupBriefing } from './ClubHub';
+import { NextMatchCard, SeasonCard, TeamState, CupBriefing } from './ClubHub';
 import korean from '../../public/presentation/locales/ko-KR.json';
 import { cashState, teamStates, type TeamStateItem } from './teamState';
 
@@ -153,27 +153,6 @@ describe('home season card', () => {
     expect(markup).not.toContain('data-testid="game-round"');
     expect(markup).not.toContain('data-testid="game-round-total"');
     expect(markup).toContain('라운드');
-  });
-});
-
-describe('facility entrances', () => {
-  it('offers five real named place entrances with decorative background art (→WEB-11/39)', () => {
-    const markup = renderToStaticMarkup(createElement(OfficeEntrance, { w: world() }));
-    expect(markup).toContain('aria-label="구단 시설 방문"');
-    for (const label of [
-      '구단주 사무실 입장',
-      '감독 사무실 입장',
-      '코칭스태프실 입장',
-      '훈련장 입장',
-      '유소년 훈련장 입장',
-    ])
-      expect(markup).toContain(`aria-label="${label}"`);
-    expect(markup.match(/<button/g)).toHaveLength(5);
-    expect(markup).not.toContain('aria-haspopup="dialog"');
-    expect(markup).not.toContain('준비 중');
-    expect(markup.match(/aria-hidden="true"/g)?.length).toBeGreaterThanOrEqual(3);
-    expect(markup).toContain('data-facility-art="training"');
-    expect(markup).not.toContain('운영 방침');
   });
 });
 

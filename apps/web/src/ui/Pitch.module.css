@@ -499,9 +499,6 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .stage .tactics {
-    display: none;
-  }
   .possession {
     padding: 1px 3px;
   }

@@ -53,8 +53,7 @@ html[data-theme] {
   :is(
     [data-ui='game-shell'] > [data-ui='sidebar'],
     [data-ui='game-shell'] > nav,
-    [data-ui='season-transport'],
-    [data-ui='dialog-header']
+    [data-ui='season-transport']
   ) {
     --image-focus: var(--image-on-dark);
     --focus: var(--image-on-dark);
@@ -408,21 +407,6 @@ html[data-theme] {
 
   [data-office-area] small {
     color: var(--image-muted);
-  }
-
-  /* Facility visits stay smaller than the stadium and keep live labels over dimmed art. */
-  [data-home-part='office'] {
-    min-height: 64px;
-    padding: 10px 8px;
-    border: 1px solid var(--image-on-dark-muted);
-    border-image: none;
-    border-radius: var(--image-panel-radius, var(--image-radius, 0px));
-    background: var(--image-dark-fill, var(--image-ink-color));
-    color: #fff;
-  }
-
-  [data-home-part='office'] > span:last-child {
-    color: #fff;
   }
 
   [data-home-part='fixture'] > div:first-child > small {

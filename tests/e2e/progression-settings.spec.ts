@@ -437,7 +437,7 @@ for (const width of [390, 1280]) {
     w.settings!.mode = 'manual';
     w.settings!.observations = { matchEve: true, windowOpen: true };
     await importResponsibilityCareer(page, w);
-    // The office hides the calendar, so its date is read before entering (→WEB-39).
+    // Reading the overview retains the current calendar date (→WEB-39).
     const date = await page.getByTestId('game-date').innerText();
     const office = await openOffice(page);
     const bulk = office.getByRole('group', { name: '전체 보고·위임 설정', exact: true });
@@ -565,7 +565,7 @@ for (const width of [390, 1280]) {
     const toast = page.getByTestId('action-outcome');
     await expect(toast).toHaveText('설정을 적용했어요');
     await expect(toast).toBeVisible();
-    // The office has no bottom controls: the toast sits at the bottom of the screen (→WEB-36/39).
+    // The settings toast remains within the viewport above shared navigation (→WEB-36/39).
     const box = (await toast.boundingBox())!;
     expect(box.y + box.height).toBeLessThanOrEqual(page.viewportSize()!.height);
     await expect(toast).toHaveCount(0, { timeout: 6000 });

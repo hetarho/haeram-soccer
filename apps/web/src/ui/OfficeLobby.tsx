@@ -3,10 +3,10 @@ import type { World } from '../../../../packages/contracts/src/types';
 import type { SponsorSlotView } from '../../../../packages/engine/src/sponsors';
 import type { PixelIconName } from './PixelIcon';
 import { ClubCrest } from './ClubCrest';
-import { FacilityArt } from './FacilityArt';
+import { FacilityOverview } from './FacilityOverview';
 import { officeFacts } from './officeSummary';
 import { PixelIcon } from './PixelIcon';
-import { BUSINESS_TABS, openOwnerOffice, openApprovalRequest, type BusinessView } from './state';
+import { BUSINESS_TABS, openApprovalRequest, type BusinessView } from './state';
 import o from './OfficeLobby.module.css';
 
 const ICONS: Record<Exclude<BusinessView, 'identity'>, PixelIconName> = {
@@ -25,11 +25,13 @@ export function OfficeLobby({
   sponsors,
   pending = [],
   onOpen,
+  onOverview,
 }: {
   w: World;
   sponsors: readonly SponsorSlotView[];
   pending?: readonly StopReason[];
   onOpen: (view: BusinessView) => void;
+  onOverview: () => void;
 }) {
   const facts = officeFacts(w, sponsors, pending);
   return (
@@ -46,8 +48,10 @@ export function OfficeLobby({
           <p>현재 결재 대기 업무가 없어요.</p>
         )}
       </section>
-      <FacilityArt kind="manager" world={w} className={o.room} eager />
-      <button type="button" data-ui="primary" onClick={openOwnerOffice}>
+      <FacilityOverview w={w} kind="manager" title="구단주 사무실">
+        결재 대기 {pending.length}건 · 선수·스태프 계약, 재정과 후원 관리
+      </FacilityOverview>
+      <button type="button" data-ui="primary" onClick={onOverview}>
         결재라인 모아보기
       </button>
       <ul className={o.areas} aria-label="사무실 업무">

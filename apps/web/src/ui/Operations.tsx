@@ -15,12 +15,10 @@ import {
   approvalId,
   approvalWorld,
   returnApprovalHome,
-  type BusinessView,
   type OfficeView,
 } from './state';
 import { OfficeBar } from './OfficeBar';
 import { OfficeLobby } from './OfficeLobby';
-import { Dialog } from './Dialog';
 import { AreaCriteria } from './DirectionLines';
 import { DESK_AREAS, DESK_RESPONSIBILITIES } from './officeDesks';
 
@@ -83,7 +81,7 @@ export function OperationsView({
     const top = useTaskMemory.getState().scrolls[LOBBY_SCROLL] ?? 0;
     requestAnimationFrame(() => scroller()?.scrollTo({ top }));
   }, [view]);
-  const openArea = (next: BusinessView) => {
+  const openArea = (next: OfficeView) => {
     useTaskMemory.setState((memory) => ({
       scrolls: { ...memory.scrolls, [LOBBY_SCROLL]: scroller()?.scrollTop ?? 0 },
     }));
@@ -107,33 +105,34 @@ export function OperationsView({
     requestAnimationFrame(() => scroller()?.scrollTo({ top: 0 }));
   };
   const area = BUSINESS_TABS.find(([id]) => id === view);
+  if (view === 'office')
+    return (
+      <>
+        <OfficeBar back={{ label: '사무실', onClick: toLobby }} title="결재라인 모아보기" />
+        <section aria-label="결재라인 모아보기">
+          <Suspense fallback={<p role="status">결재라인을 여는 중…</p>}>
+            <OwnerOffice key={w.id} client={client} controller={controller} />
+          </Suspense>
+        </section>
+      </>
+    );
   if (!area)
     return (
       <>
-        <OfficeBar
-          back={{ label: '나가기', onClick: leaveOffice }}
-          title="구단주 사무실"
-          client={client}
-        />
+        <OfficeBar back={{ label: '나가기', onClick: leaveOffice }} title="구단주 사무실" />
         <OfficeLobby
           w={w}
           sponsors={state.view!.sponsors}
           pending={stoppingEvents(w).filter((item) => !!eventDesk(item))}
           onOpen={openArea}
+          onOverview={() => openArea('office')}
         />
-        {view === 'office' && (
-          <Dialog label="결재라인 모아보기" wide centered onClose={toLobby}>
-            <Suspense fallback={<p role="status">결재라인을 여는 중…</p>}>
-              <OwnerOffice key={w.id} client={client} controller={controller} />
-            </Suspense>
-          </Dialog>
-        )}
       </>
     );
   const [id, label] = area;
   return (
     <>
-      <OfficeBar back={{ label: '사무실', onClick: toLobby }} title={label} client={client} />
+      <OfficeBar back={{ label: '사무실', onClick: toLobby }} title={label} />
       {/* The bar names the area; its own panels carry their regions. */}
       <div data-office-view={id}>
         {requestId ? (

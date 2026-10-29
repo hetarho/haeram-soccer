@@ -14,7 +14,7 @@ import {
   SEASON_PAGES,
 } from './competitionNavigation';
 import { OFFICE_DESKS, resolveOffice, type WorkDesk } from './officeDesks';
-import { rememberTask, taskAddress, useTaskMemory } from './taskMemory';
+import { isTaskDestination, rememberTask, taskAddress, useTaskMemory } from './taskMemory';
 import { create } from 'zustand';
 import { eventDesk, type ApprovalRequest } from './eventRouting';
 import type { StopReason } from '../../../../packages/engine/src/stopping';
@@ -203,7 +203,7 @@ export const useCoachRequest = oneShot<{
   focus?: TrainingFocus | YouthFocus;
   player?: string;
 }>();
-/** Home's entrance to the owner office (→WEB-11/39). */
+/** The primary navigation's entry to the owner office (→WEB-10/39). */
 export function openOfficeLobby() {
   openBusiness('lobby');
 }
@@ -579,7 +579,12 @@ export function beginTaskDetour(target: Page, address?: string) {
   )
     return;
   const prior = useTaskMemory.getState();
-  if (prior.returning?.target === target && prior.returning.address === taskAddress()) return;
+  if (
+    prior.returning &&
+    isTaskDestination(prior.returning.target, target) &&
+    prior.returning.address === taskAddress()
+  )
+    return;
   rememberTask(page);
   const view = new URLSearchParams(location.search).get('view');
   const label =
@@ -599,7 +604,10 @@ export function beginTaskDetour(target: Page, address?: string) {
                   ? '컵 대회'
                   : '클럽 홈';
   useTaskMemory.setState({
-    parents: prior.returning?.target === page ? [...prior.parents, prior.returning] : [],
+    parents:
+      prior.returning && isTaskDestination(prior.returning.target, page)
+        ? [...prior.parents, prior.returning]
+        : [],
     returning: { page, address: taskAddress(), label, target },
   });
 }

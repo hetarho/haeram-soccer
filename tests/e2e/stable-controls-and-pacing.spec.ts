@@ -68,20 +68,23 @@ test('surveys every management destination during uninterrupted calendar play', 
   for (const action of await training.getByRole('button', { name: /제안 ·|강행 ·/ }).all())
     await expect(action).toBeDisabled();
   await training.getByRole('button', { name: '창 닫기', exact: true }).click();
-  // The owner office is the one place that stops the clock: its work is management change, which
-  // a running calendar locks, and it hides the stop control (→WEB-97/98).
+  // The owner office shares the running-calendar lock and keeps stop available (→WEB-39/97).
   await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
   await continues();
   await openOfficeArea(page, '결재라인 모아보기');
   const office = page.getByTestId('owner-office');
-  await expect(office.getByRole('button', { name: '전체 직접', exact: true })).toBeEnabled();
+  await expect(office.getByRole('button', { name: '전체 직접', exact: true })).toBeDisabled();
+  await page.keyboard.press('Escape');
+  await continues();
   await openOfficeArea(page, '투자');
   await page.getByText('운영을 이어갈 추가 출자', { exact: true }).click();
-  await expect(page.getByRole('button', { name: '추가 출자', exact: true })).toBeEnabled();
+  await expect(page.getByRole('button', { name: '추가 출자', exact: true })).toBeDisabled();
+  await continues();
   await openOfficeArea(page, '구단 디자인');
   await page.getByLabel('홈 색 코드', { exact: true }).fill('#ABCDEF');
-  await expect(page.getByRole('button', { name: '적용', exact: true })).toBeEnabled();
-  // Leaving restarts the clock the office stopped.
+  await expect(page.getByRole('button', { name: '적용', exact: true })).toBeDisabled();
+  await continues();
+  // Leaving is also ordinary navigation; the clock continues.
   await leaveOffice(page);
   await continues();
   await stop.click();

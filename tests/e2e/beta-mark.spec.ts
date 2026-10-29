@@ -52,7 +52,7 @@ async function expectTargets(controls: Locator[]) {
 
 /**
  * Opens the slot screen over a prepared game and checks its mark, then the play HUD's and the
- * owner office bar's, which stands in for the HUD while the office is open (→WEB-39).
+ * shared HUD's while the owner office is open (→WEB-39).
  */
 async function slotsThenPlay(page: Page, theme?: string) {
   const seeded = world();
@@ -84,13 +84,19 @@ async function slotsThenPlay(page: Page, theme?: string) {
   expect((await page.getByTestId('hud-cash').boundingBox())!.width).toBeGreaterThanOrEqual(44);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
-  // The office hides the HUD; its bar carries the mark beside the place name, outside the heading.
+  // The office keeps the shared HUD and does not duplicate BETA or cash in local navigation.
   await enterOffice(page);
   const bar = officeBar(page);
   await expect(officeTitle(page)).toHaveText(LOBBY);
-  await expectMark(officeTitle(page), bar.getByTestId('beta-mark'), 'BETA');
+  await expectMark(
+    hud.getByText(clubName(), { exact: true }),
+    hud.getByTestId('beta-mark'),
+    'BETA',
+  );
+  await expect(bar.getByTestId('beta-mark')).toHaveCount(0);
+  await expect(bar.getByTestId('hud-cash')).toHaveCount(0);
   await expectTargets([bar.getByRole('button', { name: '나가기', exact: true })]);
-  expect((await bar.getByTestId('hud-cash').boundingBox())!.width).toBeGreaterThanOrEqual(44);
+  expect((await hud.getByTestId('hud-cash').boundingBox())!.width).toBeGreaterThanOrEqual(44);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 }
 
@@ -123,7 +129,7 @@ for (const viewport of VIEWPORTS) {
 }
 
 for (const theme of readPresentationBaselines().themeRegistry.entries) {
-  test(`${theme.id}: the BETA mark reads on the save slots, the play HUD and the office bar`, async ({
+  test(`${theme.id}: the BETA mark reads on save slots and the shared HUD including the office`, async ({
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });

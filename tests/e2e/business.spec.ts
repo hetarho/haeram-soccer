@@ -127,7 +127,7 @@ for (const viewport of [
     await expect(page.getByTestId('facility-training')).toContainText('0/5단계');
     await expect(page.getByTestId('facility-academy')).toContainText('0/5단계');
     const review = page.getByRole('button', { name: '경기장 공사 검토', exact: true });
-    // Scrolling must bring the CTA fully on screen; the office has no tab bar (→WEB-39).
+    // Scrolling must bring the CTA fully above the shared bottom navigation (→WEB-39).
     await review.evaluate((element) => element.scrollIntoView({ block: 'center' }));
     await settle(page);
     const reviewBounds = await review.boundingBox();

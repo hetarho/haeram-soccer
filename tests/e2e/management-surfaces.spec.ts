@@ -87,8 +87,8 @@ for (const themeId of ['standard', 'pixel']) {
       .click();
     await openOfficeArea(page, '결재라인 모아보기');
     const office = page.getByTestId('owner-office');
-    // The focused office has neither the bottom controls nor a mode control of its own (→WEB-39/96).
-    await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
+    // The office keeps shared bottom controls without duplicating mode controls in the overview.
+    await expect(page.locator('[data-ui="season-transport"]')).toBeVisible();
     await expect(office.getByRole('group', { name: '진행 모드', exact: true })).toHaveCount(0);
 
     for (const width of [360, 390, 760, 1380]) {

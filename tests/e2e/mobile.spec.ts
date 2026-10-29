@@ -36,7 +36,7 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   expect(moreBounds!.y).toBeGreaterThanOrEqual(0);
   await expect(more).toBeEnabled();
   // Pages scroll inside the view scroller; open a long page and scroll it before the modal.
-  // The office hides the menu, so a long tabbed page stands in for it (→WEB-39).
+  // Use a long tabbed page to exercise the shared scrolling shell.
   await openPersonnel(page, 'training');
   const scroller = page.getByTestId('view-scroller');
   await expect(page.getByTestId('training-focus')).toBeVisible();

@@ -1188,7 +1188,9 @@
   gap: 16px;
   padding: 16px 20px;
   border-bottom: 1px solid var(--popover-edge);
-  background: var(--surface-grain, none) var(--surface);
+  background: var(--secondary-material, none) var(--secondary-fill);
+  color: var(--secondary-text);
+  --focus: var(--secondary-text);
 }
 .modalHead h2 {
   margin: 0;
@@ -2238,20 +2240,12 @@
 .startLayout .footer {
   margin-top: auto;
 }
-/* The owner office takes the whole screen: no sidebar, HUD or tab bar (→WEB-39). */
-.officeLayout {
-  grid-template-columns: minmax(0, 1fr);
-}
-.officeLayout .scroller {
-  padding-bottom: calc(16px + env(safe-area-inset-bottom));
-}
 @media (max-width: 760px) {
   .main {
     height: calc(100dvh - var(--mobile-nav-clearance));
     padding: 0 var(--gutter);
   }
-  .startLayout .main,
-  .officeLayout .main {
+  .startLayout .main {
     height: 100dvh;
   }
   /* Breathing room before the fixed mobile navigation. */

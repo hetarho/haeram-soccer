@@ -227,7 +227,7 @@ for (const viewport of [
   { width: 390, height: 844 },
   { width: 1280, height: 800 },
 ]) {
-  test(`keeps draft review compact in the focused office at ${viewport.width}x${viewport.height}`, async ({
+  test(`keeps draft review compact in the shared office shell at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
@@ -237,8 +237,8 @@ for (const viewport of [
     const launcher = page.getByTestId('communications-button');
     await expect(launcher).toBeVisible();
     await openOfficeLibrary(page);
-    // The focused office keeps only its bar: no notifications launcher or tab bar (→WEB-39).
-    await expect(launcher).toHaveCount(0);
+    // The office retains the shared HUD and navigation (→WEB-39).
+    await expect(launcher).toBeVisible();
     const board = page.getByTestId('strategy-board');
     await board.getByText('구단 전체 방침 불러오기·저장', { exact: true }).click();
     const preset = board.getByRole('button', { name: /유스 순혈주의/ });

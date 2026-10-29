@@ -2,12 +2,24 @@ import { useCallback, useState, type SetStateAction } from 'react';
 import { create } from 'zustand';
 import type { Page } from './state';
 import type { ApprovalRequest } from './eventRouting';
+import { HISTORY_PAGES, SEASON_PAGES } from './competitionNavigation';
 
 export interface TaskReturn {
   page: Page;
   address: string;
   label: string;
   target: Page;
+}
+/** A competition visit stays the same detour while its sibling tabs change. */
+export function isTaskDestination(target: Page, page: Page) {
+  return (
+    target === page ||
+    [SEASON_PAGES, HISTORY_PAGES].some(
+      (pages) =>
+        pages.some((candidate) => candidate === target) &&
+        pages.some((candidate) => candidate === page),
+    )
+  );
 }
 /** Transient work belongs to one career, never to an engine save or another game slot. */
 export const useTaskMemory = create<{

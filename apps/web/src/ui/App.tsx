@@ -966,13 +966,6 @@ export function App() {
     if (playing && worldId && !progressionBlocked) controller?.resumeAway();
   }, [playing, worldId, controller, progressionBlocked]);
   useTabTitle(controller);
-  // Entering the owner office stops a running clock; leaving restores it (→WEB-98).
-  const inOffice = playing && page === 'business';
-  useEffect(() => {
-    if (!inOffice || !controller) return;
-    controller.enterOffice();
-    return () => controller.leaveOffice();
-  }, [inOffice, controller]);
   // A game in play that fails to load opens its recovery and export path, not the slots (→WEB-8).
   const loadFailed = useGameState((state) => !state.busy && !!state.error && !state.view);
   const launched = useRef(false);
@@ -1114,52 +1107,45 @@ export function App() {
     } else await client?.importFile(raw);
   };
   const menuDisabled = !playing;
-  // The owner office is a focused place: no HUD, calendar, controls or menus (→WEB-39).
-  const office = playing && page === 'business';
   return (
     <div
       data-ui="game-shell"
       data-playing={playing}
       data-page={page}
-      data-office={office || undefined}
-      className={`${s.layout} ${playing ? s.playLayout : ''} ${playing && (page === 'dashboard' || page === 'match') ? s.coreLayout : ''} ${!playing ? s.startLayout : ''} ${playing && page !== 'match' ? s.newsLayout : ''} ${office ? s.officeLayout : ''}`}
+      className={`${s.layout} ${playing ? s.playLayout : ''} ${playing && (page === 'dashboard' || page === 'match') ? s.coreLayout : ''} ${!playing ? s.startLayout : ''} ${playing && page !== 'match' ? s.newsLayout : ''}`}
     >
-      {!office && (
-        <aside className={s.sidebar} data-ui="sidebar">
-          <div className={s.brand}>
-            <i className={s.brandSignal} aria-hidden="true" />
-            <h1>HAERAM</h1>
-            <span>FOOTBALL MANAGER</span>
-            <small>A CLUB. A CENTURY.</small>
-          </div>
-          <nav className={s.nav} aria-label={t('shell.navigation')}>
-            {NAV.map(([id, label]) => (
-              <button
-                data-ui="navigation"
-                key={id}
-                disabled={menuDisabled}
-                aria-current={
-                  TABS.find(([tab]) => tab === id)?.[3].includes(page) ? 'page' : undefined
-                }
-                className={
-                  TABS.find(([tab]) => tab === id)?.[3].includes(page) ? s.active : undefined
-                }
-                onClick={() => openPrimary(id)}
-              >
-                <NavIcon page={id} />
-                {t(label)}
-              </button>
-            ))}
-          </nav>
-          {client && !playing && (
-            <SaveActions client={client} compact onDownload={download} onImport={importFile} />
-          )}
-        </aside>
-      )}
-      <main className={s.main}>
-        {screen === 'game' && !office && (
-          <GameHud onMenu={openMenu} playing={playing} client={client} />
+      <aside className={s.sidebar} data-ui="sidebar">
+        <div className={s.brand}>
+          <i className={s.brandSignal} aria-hidden="true" />
+          <h1>HAERAM</h1>
+          <span>FOOTBALL MANAGER</span>
+          <small>A CLUB. A CENTURY.</small>
+        </div>
+        <nav className={s.nav} aria-label={t('shell.navigation')}>
+          {NAV.map(([id, label]) => (
+            <button
+              data-ui="navigation"
+              key={id}
+              disabled={menuDisabled}
+              aria-current={
+                TABS.find(([tab]) => tab === id)?.[3].includes(page) ? 'page' : undefined
+              }
+              className={
+                TABS.find(([tab]) => tab === id)?.[3].includes(page) ? s.active : undefined
+              }
+              onClick={() => openPrimary(id)}
+            >
+              <NavIcon page={id} />
+              {t(label)}
+            </button>
+          ))}
+        </nav>
+        {client && !playing && (
+          <SaveActions client={client} compact onDownload={download} onImport={importFile} />
         )}
+      </aside>
+      <main className={s.main}>
+        {screen === 'game' && <GameHud onMenu={openMenu} playing={playing} client={client} />}
         {!client && localError && (
           <FeedbackOverlay>
             <div className={s.error} role="alert">
@@ -1176,7 +1162,7 @@ export function App() {
           />
         )}
         {/* Season controls belong to management views; observation has its own speeds. */}
-        {client && controller && playing && !w.bankrupt && page !== 'match' && !office && (
+        {client && controller && playing && !w.bankrupt && page !== 'match' && (
           <ProgressOverview compact={page !== 'dashboard'} />
         )}
         <div ref={scroller} className={s.scroller} data-testid="view-scroller">
@@ -1231,7 +1217,7 @@ export function App() {
                   </div>
                 )}
                 <div className={s.views} inert={changingView} aria-busy={changingView}>
-                  {!office && <TaskReturn />}
+                  <TaskReturn />
                   <div className={s.coreContent} hidden={contentPage !== 'dashboard'}>
                     <ConnectedDashboard client={client} />
                   </div>
@@ -1267,33 +1253,27 @@ export function App() {
           )}
           {client && screen === 'game' && (!w || replacing) && <StartTools onImport={importFile} />}
         </div>
-        {client && controller && playing && !w.bankrupt && page !== 'match' && !office && (
+        {client && controller && playing && !w.bankrupt && page !== 'match' && (
           <ProgressControls client={client} controller={controller} />
         )}
       </main>
       {playing && <AccessibleSaveStatus />}
-      {!office && (
-        <nav
-          ref={mobileNavigation}
-          className={s.mobileNav}
-          aria-label={t('shell.mobileNavigation')}
-        >
-          {TABS.map(([id, label, full, owns]) => (
-            <button
-              data-ui="navigation"
-              key={id}
-              aria-label={t(full)}
-              aria-current={owns.includes(page) ? 'page' : undefined}
-              className={id === 'dashboard' ? s.homeTab : undefined}
-              disabled={menuDisabled}
-              onClick={() => openPrimary(id)}
-            >
-              <NavIcon page={id} />
-              <span>{t(label)}</span>
-            </button>
-          ))}
-        </nav>
-      )}
+      <nav ref={mobileNavigation} className={s.mobileNav} aria-label={t('shell.mobileNavigation')}>
+        {TABS.map(([id, label, full, owns]) => (
+          <button
+            data-ui="navigation"
+            key={id}
+            aria-label={t(full)}
+            aria-current={owns.includes(page) ? 'page' : undefined}
+            className={id === 'dashboard' ? s.homeTab : undefined}
+            disabled={menuDisabled}
+            onClick={() => openPrimary(id)}
+          >
+            <NavIcon page={id} />
+            <span>{t(label)}</span>
+          </button>
+        ))}
+      </nav>
       {client && playing && <ActionOutcome />}
       {/* The match theatre keeps its own controls clear; news waits until the owner returns. */}
       {client && playing && <CommunicationsCenter key={w.id} client={client} />}

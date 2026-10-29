@@ -50,11 +50,19 @@ describe('office lobby facts', () => {
       },
     ] as StopReason[];
     const html = renderToStaticMarkup(
-      createElement(OfficeLobby, { w, sponsors: slots, pending, onOpen: vi.fn() }),
+      createElement(OfficeLobby, {
+        w,
+        sponsors: slots,
+        pending,
+        onOpen: vi.fn(),
+        onOverview: vi.fn(),
+      }),
     );
     expect(html).toContain('결재 대기 1건');
     expect(html).toContain('Manager renewal · 검토하기');
     expect(html).toContain('재정·투자');
+    expect(html).toContain('data-testid="facility-overview"');
+    expect(html).not.toContain('role="dialog"');
     expect(officeFacts(w, slots, pending).staff).toContain('결재 대기 1건');
   });
   it('keeps ongoing construction visible alongside finance', () => {
