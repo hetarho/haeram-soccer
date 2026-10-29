@@ -754,9 +754,10 @@ html[data-theme] {
     border: 3px solid transparent;
     border-image: var(--image-dark-frame)
       var(--image-art-frame-dark-slice, var(--image-frame-slice, 46)) / 10px stretch;
-    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
-      padding-box;
-    background-size: var(--image-material-size, 256px);
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-transport-material)
+      repeat padding-box;
+    background-size: var(--transport-material-size);
+    background-blend-mode: var(--transport-material-blend);
     color: var(--image-on-dark);
   }
 

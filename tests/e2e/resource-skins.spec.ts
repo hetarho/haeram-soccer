@@ -62,12 +62,19 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
     await imageSkin(profile.locator('[data-ui="attribute-meter"]').first());
     const sheetHeader = await dialog.locator('[data-ui="dialog-header"]').evaluate((node) => {
       const css = getComputedStyle(node);
-      return { fill: css.backgroundColor, text: css.color };
+      return { fill: css.backgroundColor, material: css.backgroundImage };
     });
-    const transportFill = await page
-      .locator('[data-ui="season-transport"]')
-      .evaluate((node) => getComputedStyle(node).backgroundColor);
-    expect(sheetHeader.fill).not.toBe(transportFill);
+    const transport = await page.locator('[data-ui="season-transport"]').evaluate((node) => {
+      const css = getComputedStyle(node);
+      return { fill: css.backgroundColor, material: css.backgroundImage };
+    });
+    const calendarMaterial = await page
+      .locator('[data-ui="calendar-header"]')
+      .evaluate((node) => getComputedStyle(node).backgroundImage);
+    expect(sheetHeader.fill).not.toBe(transport.fill);
+    expect(transport.material).toContain('/controller-weave-v1.webp');
+    expect(transport.material).not.toBe(sheetHeader.material);
+    expect(transport.material).not.toBe(calendarMaterial);
     expect(
       (await dialog.locator('[data-ui="dialog-header"] h2').evaluate(textContrast)).ratio,
     ).toBeGreaterThanOrEqual(4.5);

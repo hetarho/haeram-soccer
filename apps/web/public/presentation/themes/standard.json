@@ -181,7 +181,10 @@
       "secondary-material": "var(--image-quiet-material)",
       "secondary-frame": "var(--image-panel-frame)",
       "secondary-text": "var(--image-ink-color)",
-      "secondary-muted": "var(--image-muted)"
+      "secondary-muted": "var(--image-muted)",
+      "image-transport-material": "var(--image-art-controller-weave)",
+      "transport-material-size": "256px",
+      "transport-material-blend": "soft-light"
     }
   },
   "fonts": [
@@ -447,6 +450,12 @@
         "width": 24,
         "height": 24,
         "mode": "image"
+      },
+      "image-art-controller-weave": {
+        "resource": "../../art/shared/ui/controller-weave-v1.webp",
+        "width": 256,
+        "height": 256,
+        "mode": "tile"
       }
     }
   },

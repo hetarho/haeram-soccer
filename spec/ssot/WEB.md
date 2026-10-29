@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r169 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r170 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -451,7 +451,7 @@
   - Language and theme settings are accessible before founding, on game slots and in the HUD menu. Both controls derive their choices from their registry even when each has one option. Preferences apply to the browser across games, survive reload when storage is available, and remain usable in read-only game tabs without taking save ownership.
   - A preference change preserves game facts, navigation, pending drafts, progression and playback position. An unavailable preference uses its registered default, and failed resource loading preserves a usable selection with retry (→ARCH-32).
 - WEB-91 [o] A theme replaces the interface concept through a shared data contract for typography, palette, component surfaces/shape, icons, image treatment and background image sets; it does not require a theme-specific screen implementation (→ARCH-32).
-  - Secondary backgrounds are reusable theme roles with their own fill, material, frame, text and muted-text colours. Dialog and bottom-sheet headers use the secondary treatment; the progression controller keeps its emphasized dark treatment. Text, close controls and keyboard focus retain local contrast in every theme.
+  - Secondary backgrounds are reusable theme roles with their own fill, material, frame, text and muted-text colours. Dialog and bottom-sheet headers use the secondary treatment; the progression controller uses a dedicated bitmap texture resource, separate from sheet headers and league/round/table headers, with the theme's emphasized dark palette. A colour-only variation or an alias to an existing shared material does not satisfy this distinction. Text, close controls and keyboard focus retain local contrast in every theme.
   - The registry offers `matchday-print` (기본 · 매치데이 인쇄) as its default, with `standard` (스타디움 그린), `pixel` (픽셀아트) and `sticker-club` (스티커 풋볼클럽) as alternatives. The pixel pack retains its bitmap faces, stepped icons and charcoal/grass palette, with crisp stepped image frames, flat pixel materials and sprite-like controls. Existing valid browser preferences remain selected; availability and fallback always follow the registry.
   - The standard theme uses Pretendard for body text, headings, controls and numbers, with a deep stadium-green foundation and a clear pale-green action accent. Its complete icon family uses smooth, non-pixel artwork distinct from the pixel pack, including trophy states. Background and surface tones stay visibly green, with primary and supporting text meeting →WEB-38 contrast requirements.
   - All six standard facility illustration roles use richly painted Western sports-comic artwork: expressive brush inking, layered gouache colour, tactile material detail, convincing perspective and warm natural light. Match that treatment across every era and completed stage; simplified geometric/vector scenery and pixel art are not the standard illustration style. Preserve accessible HTML facts and the existing image-slot layout.
@@ -535,6 +535,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r170 261029 WEB-91✎ controller shared dark treatment→dedicated bitmap texture distinct from sheets and round/table headers
 - r169 261029 WEB-10/18/39✎ focused owner chrome→shared management shell; WEB-11✎ place entrances→primary navigation only; WEB-79✎ office overview modal→inline page, controller modal retained; WEB-91✎ shared dark headers→secondary sheet treatment; WEB-97✎ office exception→ordinary navigation; WEB-98- automatic office clock stop/resume removed
 - r168 261029 WEB-10✎ mixed menu→six places; WEB-11✎ season card→competition links; WEB-39✎ combined desk→scoped work tabs; WEB-43✎ shortlist→paged world market; WEB-70✎ training tabs→places; WEB-79✎ office launcher→+controller; WEB-100✎ 투자→재정·투자; WEB-102+ place choices
 - r167 261028 WEB-101+ a BETA mark at the top of every screen until 1.0, start and save-slot screens show `v0.7 BETA`

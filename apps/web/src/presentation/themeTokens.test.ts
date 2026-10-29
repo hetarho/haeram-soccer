@@ -38,6 +38,20 @@ describe('shared semantic theme tokens', () => {
     expect(resolved['secondary-muted']).toBe(tokens.palette['text-muted']);
   });
 
+  it('keeps an older imported pack on its own material without applying the new weave blend', () => {
+    const tokens = structuredClone(pixel.tokens);
+    for (const key of [
+      'image-transport-material',
+      'transport-material-size',
+      'transport-material-blend',
+    ]) {
+      delete (tokens.ui as Record<string, string>)[key];
+    }
+    const resolved = resolveThemeTokens(tokens);
+    expect(resolved['image-transport-material']).toBe('var(--image-dark-material)');
+    expect(resolved['transport-material-blend']).toBe('normal');
+  });
+
   it.each([standard, pixel, print, sticker])(
     '$id supplies secondary surfaces distinct from the emphasized controller',
     (pack) => {

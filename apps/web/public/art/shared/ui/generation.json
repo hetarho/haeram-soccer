@@ -1,0 +1,25 @@
+{
+  "method": "Built-in image_gen; ffmpeg resizing and WebP encoding",
+  "date": "2026-10-29",
+  "sources": "apps/web/design/controller-material/sources",
+  "prompts": "apps/web/design/controller-material/prompts.json",
+  "geometry": "A repeating neutral matte herringbone material, soft-light blended into each theme's existing dark controller fill.",
+  "assets": [
+    {
+      "file": "controller-weave-v1.webp",
+      "source": "controller-weave-v1.png",
+      "bytes": 23522,
+      "sha256": "0cc446268044869d386c4cabd0a45f526d1e02e7b734127514b6e9661584fa0c",
+      "width": 256,
+      "height": 256,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 3663406,
+        "inputSha256": "e1a03612bd5b899280f84d15320c5c3beb304e692453632a97971c7c2ddabc9b",
+        "width": 256,
+        "height": 256,
+        "quality": 85
+      }
+    }
+  ]
+}
