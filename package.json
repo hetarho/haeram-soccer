@@ -24,6 +24,7 @@
     "art:optimize": "node scripts/optimize-presentation-art.mjs --write",
     "test:e2e": "PREVIEW_BUILD=1 playwright test",
     "benchmark": "tsx scripts/benchmark.ts",
+    "lab:tunables": "tsx scripts/lab-tunables.ts",
     "verify": "node scripts/verify.mjs",
     "benchmark:browser": "node scripts/first-play.mjs",
     "test:integration": "vitest run --project integration",

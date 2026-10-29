@@ -392,7 +392,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T573 | Generated catalog of tunable grid numbers | LAB ARCH | T572 | todo |
 | T574 | Lab runs in a worker pool | LAB ARCH MATCH | T572 | todo |
 | T575 | Lab page: sides, values, runs and comparison | LAB ARCH | T573 T574 | todo |
 
@@ -419,9 +418,11 @@
 
 ## next
 - T569–T571 pushed fa1a018b; read its CI.
-- implement-task T573 (then T574, T575).
+- implement-task T574 (then T575).
 
 ## log
+- 261029 T573 done: tunable catalog script and freshness test (865 leaves).
+- 261029 T573 start
 - 261029 T572 done: lab sides, lab setup option and grid tunables; 749 affected unit tests pass.
 - 261029 update-ssot LAB r2: LAB-2 player OVR range 20–92 (generator bounds); no task change (T572 implements it).
 - 261029 T572 start
