@@ -14,6 +14,8 @@ import { LANE_CONFIG } from './lanes';
 import { actionTiming, flightSeconds, reachSeconds } from './movement';
 import { BAND_EDGES, cellOf, clamp, LANE_EDGES, toEngine, type Point } from './pitch';
 import {
+  blockedBehind,
+  blockRebound,
   chanceXg,
   closingBlockers,
   keeperNarrowing,
@@ -341,6 +343,72 @@ describe('the bodies in front of goal (→MATCH-35, T445)', () => {
     // Beyond his body nothing changes: a man further out meets it where he did.
     const out = { 8: [100.5, 30] as Point };
     expect(parry(MATCH_MODEL_REVISION, from, out).ball).toEqual(parry(REVISION_9, from, out).ball);
+  });
+
+  it('a block the byline cuts short of clearing its blocker goes behind on revision 10 (T607)', () => {
+    // T607's t445-rebound-35: a shot struck on the goal line, closed down from 0.2 m behind. Its
+    // rebound runs back toward the shooter, over the line, so the pitch keeps it 0.5 m inside it.
+    const from: Point = [105 - 1e-6, 34];
+    const blocker: Point = [104.8, 33.97];
+    const clear = BOX_CONFIG.shot.revision10.clear;
+    const scene = (model: MatchModelRevision) => {
+      const s = shotLab(from, { 4: blocker }, model);
+      expect(closingBlockers(s, 0, from, shotBlockers(s, 0, from)).map((b) => b.gp.idx)).toEqual([
+        4,
+      ]);
+      return s;
+    };
+    const land = blockRebound(from, blocker, () => 0.5);
+    expect(land[0]).toBeGreaterThan(105);
+    // Its bounded path, were it left loose: shorter than `clear`, so nobody can meet it on the way
+    // and it rests where the pitch stops it, within the blocker's reach, for whoever gets there.
+    const tenth = scene(MATCH_MODEL_REVISION);
+    const rest = secondBall(tenth, 0, tenth.players[0][9]!, tenth.players[1][4]!, land, 0);
+    expect(rest.via).toEqual(blocker);
+    expect(rest.at).toEqual([104.5, clamp(land[1], 0.5, 67.5)]);
+    expect(Math.hypot(rest.at[0] - blocker[0], rest.at[1] - blocker[1])).toBeLessThan(clear);
+    // Revision 10 sends it behind instead, so it is never won on top of him (→MATCH-35 r44);
+    // revision 9 keeps its football.
+    expect(blockedBehind(tenth, 0, tenth.players[1][4]!, land)).toBe(true);
+    const ninth = scene(REVISION_9);
+    expect(blockedBehind(ninth, 0, ninth.players[1][4]!, land)).toBe(false);
+    const shots = (s: GridState) => {
+      const tags = computeTags(s, 0, 9);
+      const r = random('goal-line-block');
+      return Array.from({ length: 4000 }, () => resolveShot(s, 0, 9, tags, shotContext(s), r))
+        .filter((o) => o.result === 'block')
+        .map((o) => ({ then: o.then, at: o.at }));
+    };
+    // Draw for draw the same blocks: a loose one on revision 10 is won clear of him; a rebound its
+    // draw sends no further than the byline's reach of him goes behind.
+    const [before, after] = [shots(ninth), shots(tenth)];
+    expect(after).toHaveLength(before.length);
+    let wentBehind = 0;
+    after.forEach((o, i) => {
+      if (o.then === 'loose') {
+        expect(before[i]!.then).toBe('loose');
+        expect(Math.hypot(o.at![0] - blocker[0], o.at![1] - blocker[1])).toBeGreaterThanOrEqual(
+          clear - 1e-9,
+        );
+      } else if (before[i]!.then === 'loose') {
+        expect(o).toEqual({ then: 'corner', at: undefined });
+        wentBehind++;
+      }
+    });
+    expect(wentBehind).toBeGreaterThan(20);
+    // A rebound kept on the pitch, or one the byline stops clear of its blocker, stays loose.
+    const path = scene(MATCH_MODEL_REVISION);
+    path.players[1][4]!.pos = [96, 34];
+    expect(blockedBehind(path, 0, path.players[1][4]!, [100, 34])).toBe(false);
+    const behind: Point = [99, 34];
+    const far = shotLab([101, 34], { 4: behind });
+    const over = blockRebound([101, 34], behind, () => 0.5);
+    expect(over[0]).toBeGreaterThan(105);
+    expect(blockedBehind(far, 0, far.players[1][4]!, over)).toBe(false);
+    const loose = secondBall(far, 0, far.players[0][9]!, far.players[1][4]!, over, 0);
+    expect(Math.hypot(loose.at[0] - behind[0], loose.at[1] - behind[1])).toBeGreaterThanOrEqual(
+      clear - 1e-9,
+    );
   });
 
   it('a first-time shot is struck at once on revision 10, its second ball waiting for its winner (T596)', () => {

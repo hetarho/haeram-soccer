@@ -1131,14 +1131,21 @@ describe('protecting the box goal-side (→MATCH-34, T443)', () => {
    * third: strikers 9 and 10 by the box, the box-to-box midfielder 6 and the deep-lying playmaker
    * 7 behind them. Possession's 4-3-3 (side 1) stands in its shape: 1 LB, 2 and 3 CB, 4 RB,
    * 5 the anchor, 6 and 7 CM.
+   *
+   * Revision 10 pairs goal-side marks by where the defenders stand (T599), so side 1 first takes
+   * its shape around the ball with the runners still away, then every man moves at once against
+   * them: nobody is paired from his parked spot on his goal line, or from a teammate placed before
+   * him.
    */
   function boxDefence() {
     const s = scene(['counter', 'possession'], 8, [88, 62]);
+    for (const gp of s.players[1]) gp.pos = shapePlace(s, 1, gp.idx);
     put(s, 0, 9, [92, 38]);
     put(s, 0, 10, [90, 28]);
     put(s, 0, 6, [82, 36]);
     put(s, 0, 7, [76, 30]);
-    for (const gp of s.players[1]) gp.pos = shapePlace(s, 1, gp.idx);
+    const places = s.players[1].map((gp) => shapePlace(s, 1, gp.idx));
+    s.players[1].forEach((gp, i) => (gp.pos = places[i]!));
     return s;
   }
   /** `side`'s frame x of `p`: metres from its own goal line. */

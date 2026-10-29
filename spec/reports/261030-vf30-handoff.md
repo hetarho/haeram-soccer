@@ -1,0 +1,26 @@
+# REPORT 261030-vf30-handoff
+> mode:autopilot | host:ihaelam-ui-MacBookPro | from:2026-10-29T23:08:00Z | to:2026-10-29T23:10:35.129316+00:00 | push:wip/vf30
+
+## done
+- Original requested source is on main through e572e14e: revision10 CI/shot/second-ball repairs, goal-side defending, kick-time pass selection, goal-scene replay, event-stop/report lifecycle repair.
+- Local full candidate20d57486 passed1774unit/1264integration(+4existing skips)/48contracts/334Chromium; full two100-season capacity profiles and75-season era probe passed. Raw evidence is preserved at artifacts/benchmarks/vf30-attempt03-20d57486 (overallVerified=false because later CI failed).
+
+## decided
+- Owner requests a remotely resumable commit/push of all unfinished work by2026-10-30 09:30KST (00:30UTC). Reserve09:20-09:30 for the final checkpoint/handoff. Continue scoped repair now; no unverified code push to main.
+- T609 is the next task: Chromium training, WebKit kit continuity/choice sizing and flaky mobile finish; preserve assertions and timeouts. See the task and artifacts/benchmarks/vf30-attempt03-20d57486/t609-notes.md.
+
+## parked
+- Unrelated legacy ideation, worktree cleanup and full football recalibration remain outside scope. Match bands are24/37; detailed grid CPU+5.12%, date progression no difference beyond noise. Minute-only archive records have goal-time navigation, without invented motion.
+
+## checks
+- CI40961086172 failed: https://github.com/hetarho/haeram-soccer/actions/runs/40961086172. All backend jobs, Firefox and WebKit2 pass; Chromium333pass/1fail; WebKit1 175pass/2fail/2flaky/2existing skips.
+- Capacity source20d57486: storage computation3479b4e532c452f24fb450ef1c6d03f63bae27fa1d26085933264b435c112492, Node24.22.1/pnpm10.34.6/TypeScript5.9.3/tsx4.23.15, M1Max. Accuracy computation12faf2219e91ea51560b8e2fe08477c3f77f1e71a02a8314f8694afdb598497f. Keep provenance and immutable reports; UI-only changes do not require repeating simulation-only measurements when closure/toolchain match.
+
+## next
+- Fetch origin/wip/vf30 and switch to a fresh continuation branch from it. Do not force-update an existing checkout with user edits.
+- Use Node24.22.1 and pinned pnpm10.34.6; install frozen dependencies. CLI is haeram-spec-creator0.7.7 (npx haeram-spec-creator@0.7.7). Invoke start-vibe with the already chosen autopilot mode; do not revisit routine decisions.
+- First read STATE and T609. If todo/doing, finish exactly that task in a fresh unit. Its unit runs affected units/type/lint/format/build only. If already done, read its result and the newest handoff entry before doing anything.
+- Coordinator guard: build; Chromium training.spec.ts filtered360x740; WebKit club-identity-continuity, management-surfaces and mobile-match-presentation filtered360x740 /standard or pixel management /normal view at360. Then full verify:batch and art:check on frozen source; reuse only genuinely identical computation evidence with original provenance.
+- Push validated source to main with its verified SHA, then one vibe ci wait for the actual code push. A pending CI at handoff needs its result, not a new code repair unless a real failed case is reported.
+- Do not restart a no-code vibe loop and assume it will gate unpublished history: coordinator check/push explicitly when resuming only verification. Do not run the two-hour benchmark merely because UI/test files changed. Preserve old reports and all existing assertions.
+- Latest live execution status will be appended before09:30KST; local session relinquishes writing before remote continuation.

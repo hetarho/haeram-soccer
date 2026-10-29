@@ -171,6 +171,11 @@ Inspect what is actually drawn. A checked image can be registered correctly yet 
 by a more specific unchecked selector. Likewise, a `none` frame alias can silently discard the
 resource. Check state changes and the resulting resource URL, not just the file inventory.
 
+A control that becomes unavailable only briefly while it may hold keyboard focus, such as the
+goal-scene replay shortcut and its picker's goals during a goal's hold, uses `aria-disabled`
+with a guarded handler rather than native `disabled`, which would drop focus out of a dialog.
+Give it the theme's disabled filter variables so it reads as unavailable without fading copy.
+
 ## Portable resource handoff
 
 The [theme contract](../src/presentation/contracts.ts) is the schema, and the

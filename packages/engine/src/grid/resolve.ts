@@ -481,10 +481,7 @@ export function secondBall(
   kickAt: number,
 ): Required<Pick<ShotOutcome, 'via' | 'at' | 'winner'>> {
   const start: [number, number] = [via.pos[0], via.pos[1]];
-  const end = toEngine(side, [
-    clamp(land[0], 0.5, PITCH.length - 0.5),
-    clamp(land[1], 0.5, PITCH.width - 0.5),
-  ]);
+  const end = toEngine(side, keptOnPitch(land));
   const off = kickAt + flightSeconds(shooter.pos, start, 'shot');
   const leave = (gp: GridPlayer) => gp === via;
   const clear = modelAtLeast(s.setup, 10) ? BOX_CONFIG.shot.revision10.clear : undefined;
@@ -509,6 +506,25 @@ export function secondBall(
     }
   const winner = best?.gp ?? via;
   return { via: start, at: end, winner: [winner.side, winner.idx] };
+}
+
+/** Where a second ball sent to `land` comes to rest (the attack frame): half a metre inside the lines. */
+const keptOnPitch = (land: Point): [number, number] => [
+  clamp(land[0], 0.5, PITCH.length - 0.5),
+  clamp(land[1], 0.5, PITCH.width - 0.5),
+];
+
+/**
+ * Whether a blocked shot sent to `land` (`side`'s attack frame) has gone behind instead of running
+ * loose (revision 10, T607, →MATCH-35): the byline cuts its route short of
+ * `BOX_CONFIG.shot.revision10.clear` m from `by`, the man who blocked it, so it could only come to
+ * rest within his reach (`secondBall`). It goes out for a corner, as a block always may.
+ */
+export function blockedBehind(s: GridState, side: 0 | 1, by: GridPlayer, land: Point): boolean {
+  if (!modelAtLeast(s.setup, 10) || land[0] <= PITCH.length - 0.5) return false;
+  const at = attackFrame(side, by.pos);
+  const rest = keptOnPitch(land);
+  return s.math.hypot(rest[0] - at[0], rest[1] - at[1]) < BOX_CONFIG.shot.revision10.clear;
 }
 
 /**
@@ -900,6 +916,7 @@ export function resolveShot(
       const block = { ...shot, result: 'block', then, by: gp.idx } as const;
       if (then === 'corner') return block;
       const land = blockRebound(from, attackFrame(side, gp.pos), r);
+      if (blockedBehind(s, side, gp, land)) return { ...block, then: 'corner' };
       return { ...block, ...secondBall(s, side, me, gp, land, kickAt) };
     }
     const u = r();

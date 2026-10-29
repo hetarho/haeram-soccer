@@ -70,11 +70,20 @@ export interface GoalReplay {
 }
 
 /**
+ * Whether a clip may begin from the original viewing at `state`: never while it holds a goal's
+ * feedback (→WEB-94). That hold runs its full length in the original viewing first, so a clip never
+ * cuts it short, and a return never lands past it to finish the presentation in its place.
+ */
+export function replayEntryOpen(state: GoalFeedbackState) {
+  return !state.cue;
+}
+
+/**
  * Opens a clip of `pick`, or nothing when its footage was not retained (a minute-only record keeps
- * its moment navigation instead). The clip starts `leadSeconds` before the goal, never before its
- * period's kick-off or the goal before it, so it shows one build-up and no other celebration. The
- * origin keeps the original clock without a cue in progress: that celebration already showed, and
- * returning never plays it again.
+ * its moment navigation instead) or while the original viewing holds a goal (`replayEntryOpen`).
+ * The clip starts `leadSeconds` before the goal, never before its period's kick-off or the goal
+ * before it, so it shows one build-up and no other celebration. The origin keeps the original clock
+ * as it was, between holds, so returning neither celebrates again nor skips a celebration.
  */
 export function startGoalReplay(
   goals: readonly GoalInstant[],
@@ -83,7 +92,7 @@ export function startGoalReplay(
   origin: ReplayOrigin,
   config: { leadSeconds: number } = GOAL_REPLAY_CONFIG,
 ): GoalReplay | undefined {
-  if (!pick.footage) return undefined;
+  if (!pick.footage || !replayEntryOpen(origin.clock)) return undefined;
   const { goal } = pick;
   const period = frames[pick.frame]?.period;
   let kickOff = pick.frame;
@@ -92,8 +101,7 @@ export function startGoalReplay(
     goal.seconds,
     Math.max(0, goal.seconds - config.leadSeconds, kickOff * 60, goals[goal.id - 1]?.seconds ?? 0),
   );
-  const { seconds, next } = origin.clock;
-  return { goal: goal.id, from, origin: { ...origin, clock: { seconds, next } } };
+  return { goal: goal.id, from, origin: { ...origin, clock: { ...origin.clock } } };
 }
 
 /** The clip's clock on entry: nothing held, its goal the next one to reach. */

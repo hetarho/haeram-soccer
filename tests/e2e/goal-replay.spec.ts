@@ -1,5 +1,5 @@
 import { watchNext } from './watch';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { advanceToNextMatch, createWorld } from '../../packages/engine/src/index';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { horizontalOverflow } from './layout';
@@ -50,6 +50,32 @@ async function countCues(page: Page) {
     Object.assign(window, { goalCues: cues });
   });
   return () => page.evaluate(() => (window as unknown as { goalCues: string[] }).goalCues.length);
+}
+
+/**
+ * Records every presented running second the frame loop writes on the pitch from now on, in order,
+ * so a journey reads the exact instant a clip left and the first one it returned to rather than
+ * two samples with the original clock running between them.
+ */
+async function presentedTrail(canvas: Locator) {
+  await canvas.evaluate((element) => {
+    const trail = [element.getAttribute('data-seconds') ?? ''];
+    // Each write's value is the next write's old value, the last one's the attribute itself.
+    new MutationObserver((records) => {
+      records.forEach((_, i) =>
+        trail.push(records[i + 1]?.oldValue ?? element.getAttribute('data-seconds') ?? ''),
+      );
+    }).observe(element, {
+      attributes: true,
+      attributeFilter: ['data-seconds'],
+      attributeOldValue: true,
+    });
+    Object.assign(window, { presentedTrail: trail });
+  });
+  return () =>
+    canvas
+      .page()
+      .evaluate(() => (window as unknown as { presentedTrail: string[] }).presentedTrail);
 }
 
 test('a seen goal replays its build-up and returns to the original viewing', async ({ page }) => {
@@ -183,17 +209,32 @@ test('a seen goal replays its build-up and returns to the original viewing', asy
   expect(await cues()).toBe(2);
 
   // From running play the clip returns to its entry instant, with no catch-up of the clip's time.
+  // The original clock rightly runs on while the picker opens and again once the clip has
+  // returned, a dead-ball beat's rush and still beat faster than running play (→WEB-32), so the
+  // entry and the return are read from the presented instants themselves, not two samples apart.
   await speed(4).click();
   await expect.poll(seconds).toBeGreaterThan(Number(original));
   await open.click();
-  const before = await seconds();
+  const trail = await presentedTrail(canvas);
   await options.first().click();
   await expect(cue).toBeVisible({ timeout: clipMs });
   await expect(state).toHaveCount(0, { timeout: GOAL_FEEDBACK_CONFIG.holdMs + 3000 });
-  const resumed = await seconds();
-  expect(resumed).toBeGreaterThanOrEqual(before);
-  // The clip's four real seconds would be 80 match seconds at 4x.
-  expect(resumed - before).toBeLessThan(20);
+  const shown = await trail();
+  // The clip opens by going back to its build-up: the instant before is the original's entry.
+  const opened = shown.findIndex((value, i) => i > 0 && Number(value) < Number(shown[i - 1]));
+  expect(opened).toBeGreaterThan(0);
+  const entry = shown[opened - 1]!;
+  expect(Number(entry)).toBeGreaterThan(Number(original));
+  expect(Number(shown[opened])).toBeGreaterThanOrEqual(opening.from - 0.01);
+  // It plays up to its goal and holds there, never past it, until it returns.
+  const held = goals[0]!.seconds.toFixed(2);
+  const back = shown.findIndex((value, i) => i > opened && Number(value) > Number(held));
+  expect(back).toBeGreaterThan(opened);
+  expect(shown.slice(opened, back)).toContain(held);
+  // The first instant back is exactly the entry: none of the clip's time is caught up.
+  expect(shown[back]).toBe(entry);
+  // Then the original runs on from there at its own speed.
+  await expect.poll(seconds).toBeGreaterThan(Number(entry));
   await expect(speed(4)).toHaveAttribute('aria-checked', 'true');
   expect(await cues()).toBe(3);
   // Presentation only: no save, result or date changes.

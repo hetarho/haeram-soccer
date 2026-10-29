@@ -67,6 +67,7 @@ import {
   goalsSeen,
   replayClock,
   replayEnded,
+  replayEntryOpen,
   replayFor,
   replayGoals,
   replayGoalsReached,
@@ -338,6 +339,9 @@ export function Pitch({
     () => (p ? replayGoals(goals, p.frames, summary ? goals.length : seen) : []),
     [p, goals, summary, seen],
   );
+  // While the original viewing holds a goal, its shortcut and the picker's goals keep their place
+  // and focus but are unavailable until the hold ends (→WEB-94/105).
+  const replayHeld = !replay && cue !== undefined;
   const noteSeen = useCallback((state: GoalFeedbackState) => {
     const reached = goalsSeen(state);
     if (reached <= seenShown.current) return;
@@ -797,9 +801,8 @@ export function Pitch({
   };
   // A picked goal plays its clip; one whose footage was not retained keeps the moment navigation.
   const replayGoal = (pick: ReplayGoal) => {
-    setPicking(false);
     if (!p) return;
-    const clip = startGoalReplay(goals, p.frames, pick, {
+    const origin = {
       matchId: p.record.id,
       clock: clock.current,
       sampleIndex,
@@ -807,7 +810,11 @@ export function Pitch({
       speed,
       finished,
       ...replaying.current?.origin,
-    });
+    };
+    // A goal held now finishes first, even when the picker opened before it; the picker stays.
+    if (!replayEntryOpen(origin.clock)) return;
+    setPicking(false);
+    const clip = startGoalReplay(goals, p.frames, pick, origin);
     if (!clip) {
       seek(sampleAt(p.frames, samples, p.frames[pick.frame]?.label ?? 'kickoff'));
       setPaused(true);
@@ -1069,7 +1076,10 @@ export function Pitch({
               className={`${t.replayControl} ${summary ? t.besideToggle : ''}`}
               data-testid="goal-replay-open"
               aria-haspopup="dialog"
-              onClick={() => setPicking(true)}
+              aria-disabled={replayHeld || undefined}
+              onClick={() => {
+                if (!replayHeld) setPicking(true);
+              }}
             >
               <PixelIcon name="replay" size={16} />
               {tr('match.replay.action')}
@@ -1304,6 +1314,7 @@ export function Pitch({
                     data-testid="goal-replay-option"
                     data-goal={goal.id}
                     data-footage={pick.footage}
+                    aria-disabled={replayHeld || undefined}
                     onClick={() => replayGoal(pick)}
                   >
                     <b>

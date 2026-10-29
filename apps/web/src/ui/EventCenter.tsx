@@ -84,7 +84,12 @@ export const EventCenter = memo(function EventCenter({
   compact?: boolean;
 }) {
   const w = useGameState((state) => state.view?.world);
-  const running = useProgression(controller, (state) => state.running);
+  // An owner's stop lands once every day it computed ahead has been shown, and management stays
+  // locked until then (→WEB-18/97). Until it has, the shown date is not the one it stops on, so no
+  // event is presented: not even the report of a match already played through, whose match day is
+  // still to be shown.
+  const stopping = useGameState((state) => !!state.clockRunning);
+  const running = useProgression(controller, (state) => state.running) || stopping;
   const [opened, setOpened] = useState<string>();
   const eventRequest = useProgression(controller, (state) => state.eventRequest);
   const previousRequest = useRef(eventRequest);
