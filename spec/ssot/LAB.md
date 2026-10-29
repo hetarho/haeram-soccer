@@ -1,5 +1,5 @@
 # LAB Match lab
-> r2 | Let the owner tune the detailed match engine's numbers against generated sides and see what each change does to the football.
+> r3 | Let the owner tune the detailed match engine's numbers against generated sides and see what each change does to the football.
 
 ## decisions
 - LAB-1 [o] The match lab is an owner's tool outside the game. ← tuning needs quick what-if runs without a career, a save or a script
@@ -12,7 +12,7 @@
   - each player's OVR can then be set on its own (20–92, the range the game's player generator lands on exactly); the side's shown average follows the players. Regenerating a side with a new average or spread replaces individual settings, after confirmation.
   - a player keeps his generated name, attributes and traits as the game would create them at that OVR, position and role; only OVR is edited, not single attributes.
   - every generation takes a seed shown with the side; the same seed and inputs give the same players.
-  - both sides start fresh: no fatigue, no injury, full adaptation, neutral manager and no club style or synergy bend.
+  - both sides start as a club nobody owns would: no injury, full adaptation, no manager, morale or 조직력 term and no club style or synergy bend; fatigue 0, except that a pressing side carries the press load such a club carries (→MATCH-23's measurements play the same).
 - LAB-3 [o] The tunable numbers are every numeric value of the detailed engine's configuration objects (the grid engine's `*_CONFIG` exports) as the latest release revision reads them.
   - grouped by configuration object, each value shows its code path, its code comment where one exists, its default and the current value; changed values are marked.
   - a search filters values by path or comment; a value resets alone, a group resets, everything resets.
@@ -47,3 +47,4 @@
 ## chg
 - r1 261029 initial
 - r2 261029 LAB-2✎ a player's own OVR 1–99 → 20–92
+- r3 261029 LAB-2✎ fresh sides with no fatigue → a pressing side carries a club nobody owns' press load

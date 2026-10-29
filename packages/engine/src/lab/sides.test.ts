@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { overall } from '../player-state';
+import { PRESS_LOAD_FATIGUE } from '../world';
 import { FORMATIONS } from '../player';
 import { eraRules } from '../grid/rules';
 import { buildGridSetup } from '../grid/setup';
@@ -40,6 +41,15 @@ describe('lab sides', () => {
       slots.forEach((slot, i) => expect(side.players[i]!.position).toBe(slot.position));
       expect(labPlaces(tactic).filter((p) => p.position === 'GK').length).toBeGreaterThanOrEqual(2);
     }
+  });
+
+  it('a pressing side carries the press load', () => {
+    expect(
+      generateLabSide({ ...input, tactic: 'press' }).players.every(
+        (p) => p.fatigue === PRESS_LOAD_FATIGUE,
+      ),
+    ).toBe(true);
+    expect(generateLabSide(input).players.every((p) => p.fatigue === 0)).toBe(true);
   });
 
   it('mean equals average', () => {

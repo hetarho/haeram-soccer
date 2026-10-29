@@ -8,7 +8,7 @@ import type { RoleId } from '../../../contracts/src/player';
 import { clamp, integer, random } from '../primitives';
 import { FORMATIONS, lineOf } from '../player';
 import { eraRules } from '../grid/rules';
-import { makePlayer, squadPlaces } from '../world';
+import { makePlayer, PRESS_LOAD_FATIGUE, squadPlaces } from '../world';
 
 export const LAB_CONFIG = {
   /** The season whose rules a lab match plays (→MATCH-20's named substitutes, cards). */
@@ -70,6 +70,9 @@ function labPlayer(input: LabSideInput, index: number, ovr: number): Player {
     place.role,
   );
   p.adaptation = 1;
+  // A pressing side carries the load a club nobody owns carries for it (`npcSquad`), so the lab's
+  // press costs what it costs in the world's matches.
+  p.fatigue = input.tactic === 'press' ? PRESS_LOAD_FATIGUE : 0;
   return p;
 }
 

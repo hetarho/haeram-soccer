@@ -367,7 +367,7 @@
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
 | WEB | 169 | 169 | - | 0 |
-| LAB | 2 | 2 | - | 1 |
+| LAB | 3 | 3 | - | 1 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
 | CLUB | 43 | 43 | - | 0 |
@@ -421,6 +421,7 @@
 - implement-task T574 (then T575).
 
 ## log
+- 261029 update-ssot LAB r3: LAB-2 a pressing lab side carries the press load (`PRESS_LOAD_FATIGUE`) like a club nobody owns; implemented in lab/sides.ts with its test, no new task.
 - 261029 T573 done: tunable catalog script and freshness test (865 leaves).
 - 261029 T573 start
 - 261029 T572 done: lab sides, lab setup option and grid tunables; 749 affected unit tests pass.
