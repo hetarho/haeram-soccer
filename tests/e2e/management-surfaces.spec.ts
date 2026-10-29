@@ -108,11 +108,13 @@ for (const themeId of ['standard', 'pixel']) {
           };
         }),
       );
-      expect(Math.abs(choices[0].width - choices[1].width)).toBeLessThanOrEqual(1);
+      const measured = `${width}px: ${JSON.stringify(choices)}`;
+      expect(Math.abs(choices[0].width - choices[1].width), measured).toBeLessThanOrEqual(1);
       expect(
         choices.every(
           (choice) => choice.height >= 44 && choice.padding >= 8 && choice.overflow <= 0,
         ),
+        measured,
       ).toBe(true);
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 

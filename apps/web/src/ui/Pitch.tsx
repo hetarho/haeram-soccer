@@ -82,6 +82,7 @@ import {
   beatAt,
   beatCaptions,
   deadBallBeats,
+  frameElapsedMs,
   locate,
   presentationSamples,
   runningLength,
@@ -505,7 +506,7 @@ export function Pitch({
     const tagStyle = numberTagStyle(skin, pitchFont);
     const carrierTagStyle = { ...tagStyle, plate: carrierMark, ink: inkOn(carrierMark) };
     const draw = (time: number) => {
-      const elapsed = last.current ? Math.min(60, time - last.current) : 0;
+      const elapsed = frameElapsedMs(time, last.current);
       last.current = time;
       const end = Math.max(0, samples.length - 1);
       if (p) {

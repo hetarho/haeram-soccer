@@ -12,6 +12,18 @@ export const WATCH_DEFAULT_SPEED = 2;
 /** Real ms one match minute of running playback lasts at 1x (→WEB-32, MATCH-12). */
 export const WATCH_MINUTE_MS = 12000;
 /**
+ * The most real ms one drawn frame advances the presentation. Slow but continuous frames keep the
+ * wall-clock mapping (→WEB-32): WebKit on CI draws some pitch frames past 100 ms, and a 60 ms
+ * bound left a 16x match 12–15% behind its own clock (CI 40961086172). A longer stall is not
+ * caught up on the next frame.
+ */
+export const FRAME_STEP_LIMIT_MS = 250;
+
+/** Real ms a frame drawn at `time` advances after the one drawn at `last` (0: the first frame). */
+export function frameElapsedMs(time: number, last: number) {
+  return last ? Math.min(FRAME_STEP_LIMIT_MS, Math.max(0, time - last)) : 0;
+}
+/**
  * The dead-ball beat (→WEB-32, MATCH-12), the only place its numbers live, reviewed by the owner in
  * play: real ms at 1x, divided by the speed. The rush — the ball fetched and the players to their
  * places — runs at least `rushFactor` times the running rate and lasts at most `rushMaxMs`; then

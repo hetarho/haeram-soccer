@@ -185,22 +185,23 @@ for (const { seed: worldSeed, ...viewport } of [
     // Starting it again from the buttons-only clock continues the same run.
     await mini.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
     await expect(date).not.toHaveText(paused);
-    // The match-eve stop keeps it short of round 1.
+    // The run comes to rest by itself, at the latest on the first match eve, so it stays short of
+    // round 1 and a clock left running cannot resume after the reload (→WEB-64). Observe that stop
+    // landing first: on the eve it opens the eve's report, which would otherwise cover the
+    // navigation below whenever the stop lands between two clicks.
+    await expect(mini.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
+    const atEve = (await date.innerText()) === `1950년 8월 ${daysUntilNextMatch(reference)}일`;
+    if (atEve) {
+      await expect(matchReport(page)).toBeVisible();
+      await dismissMatchReport(page);
+      await expect(matchReport(page)).toHaveCount(0);
+    }
     await openPersonnel(page, 'players');
     await expect(roster.first()).toBeVisible();
     for (const player of await roster.all()) await expect(player).toContainText('성장 +0.00');
-    // A clock left running resumes after a reload (→WEB-64); stop the run so the reload starts
-    // stopped. A start landing just after the eve stopped it is ignored by the clock itself, and a
-    // run that reaches the eve first stops itself and opens the eve's report over the controls,
-    // so a stop the report covers only confirms that report.
-    const toggle = mini.getByRole('button', { name: /^자동 진행 (정지|시작)$/ });
-    if ((await toggle.getAttribute('aria-label')) === '자동 진행 정지')
-      await toggle.click({ timeout: 5_000 }).catch(() => expect(matchReport(page)).toBeVisible());
-    await expect(mini.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-    // The stop shows the days computed ahead first, so the run may rest on the first match eve,
-    // whose report reopens after the reload and waits there for the match below.
-    const atEve = (await date.innerText()) === `1950년 8월 ${daysUntilNextMatch(reference)}일`;
+    // A run resting on the first match eve reopens its report after the reload and waits there
+    // for the match below.
     await page.reload();
     if (atEve) {
       await expect(matchReport(page)).toBeVisible();

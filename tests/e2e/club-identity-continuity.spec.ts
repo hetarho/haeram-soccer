@@ -193,9 +193,23 @@ test.describe(() => {
       expect(worn.crest).toEqual(design.crest);
       expect(worn.shirt).toEqual(design.kits[worn.role]);
       expect(frozen).toEqual(appearanceForFixture(played, record));
-      // At the whistle the pitch wears that kit, not one of the club's kits this fixture left out.
+      // The live pitch wears that kit, not one of the club's kits this fixture left out. The
+      // whistle's still frame turns and strides the figures over one another: on WebKit's
+      // rasterisation two fit their hoops and the others agree on 83–88% of their pixels, below
+      // the 90% a fit needs (CI 40961086172). So the same recorded playback is read from its
+      // kick-off through the theatre's own moment control, frame by frame as the records-room
+      // replay below is, and then returns to its result.
       const unworn = design.kits[KIT_ROLES.find((role) => role !== worn.role)!];
+      await page.getByRole('button', { name: '경기 상세', exact: true }).click();
+      await page.getByText('주요 장면 탐색', { exact: true }).click();
+      await page.getByRole('button', { name: '킥오프 · 1분', exact: true }).click();
+      await page.getByRole('radio', { name: '2×', exact: true }).click();
+      await page.getByRole('button', { name: '경기 상세', exact: true }).click();
+      await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toHaveCount(0);
       await expectWorn(visiblePitch(page), worn, unworn);
+      await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('결과 보기');
+      await page.getByTestId('match-next-action').click();
+      await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
 
       // Edit the linked palette; the already recorded appearance remains frozen (→KIT-9/12).
       const actions = [
