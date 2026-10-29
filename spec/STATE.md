@@ -18,6 +18,7 @@
 | vf30 | ihaelam-ui-MacBookPro | autopilot | 2026-10-29T17:16Z | 2026-10-29T17:16Z | - |
 
 ## inbox
+- 261030 decided WEB-94 WEB-105 T606: coordinator source review found final-goal hold entry can consume original completion; apply one focused lifecycle repair under the approved replay contract before publication.
 - 261030 decided WEB-50 WEB-105 WEB-17 T601: where the replay shortcut and goal choice live without breaking the theatre's phone bounds → a 44 px button overlaying the pitch's lower-left corner (beside the archived play button), opening a picker dialog; during a clip the same corner holds 다시보기 · 돌아가기 and the meta line reads 다시보기 · (alt: a new row under the latest event, which pushes the 360x740 primary action down | the list inside 경기 상세 only, which a live owner would not find); the live clock keeps running while the picker is open, since live observation has no pause control (alt: pause while picking).
 - 261030 decided WEB-105 WEB-23 T601: what a goal without retained footage does when picked, and where a clip starts → a minute-only goal seeks to its minute and pauses through the existing moment navigation, with the picker saying the footage is unavailable (alt: a disabled entry only); a clip's 15 s build-up never starts before its period's kick-off or the previous goal, so it shows one build-up and no other celebration (alt: always 15 s, crossing half-time or replaying the earlier goal's cue).
 - 261030 decided MATCH-16 MATCH-17 MATCH-31 T600: how to keep the carrier from passing to a receiver closed down during his carry → read the decided pass again at the kick only when its receiver, free as chosen, is now within 2.5 m of an opponent from 75 m on, the closed man scoring `revision10.kick.closed` 1.5 less: on the same 50 grid-bands matches tight at the kick 48.1 → 30.4%, central losses 29.7 → 24.2%, completion 81.27 → 82.62%, goals 3.56 → 3.24, rows 24 → 24 (alt: weigh each receiver at the decision by who can reach him by the kick or reception, which flagged nearly every near-box receiver, moved the kick's share only to 45–50% and took passes out of the box | `closed` 0/1/2.5/5, rows 23/24/23/24 with goals 3.50/3.52/3.50/3.96 outside); settings differ within noise (goals ±0.4) except the predictor's global suppression.
@@ -413,6 +414,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T606 | Goal replay lifecycle boundaries | WEB ARCH | T601 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -436,10 +438,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- T596–T601 are done: run the final combined coordinator gate (unit, integration, contract, catalogs, build, Chromium including the new tests/e2e/goal-replay.spec.ts and the extended mobile-match-presentation goal-cue journey) on revision 10's recorded digests, knockout ties, `candidate-et-7` and `goal-feedback-2`, then the explicitly requested main code push and one CI wait; a failure becomes a fix task first.
-- Preserve the merged page/theme work and leave unrelated legacy ideation untouched.
+- implement-task T606: protect the original final-goal hold and completed-archive clip controls, then the coordinator final gate.
 
 ## log
+- 261030 create-task T606: focused T601 lifecycle/control verification repair from coordinator review; no policy change.
 - 261030 T601 done: 골 장면 다시보기 — pitch-corner shortcut and goal picker (live: goals shown through their cue; archive: all), clips from 15 s before the goal (not before its period's kick-off or the previous goal) at 1x through the existing hold, then an exact return to the original instant, play state and speed without a re-cue or completion; minute-only goals keep the seek-and-pause and say footage is unavailable; `ui/goalReplay.ts` with 9 unit cases, 12 locale packs, shared overlay material; typecheck, lint, format:check, affected units (70), presentation/architecture units and build pass; tests/e2e/goal-replay.spec.ts and the extended mobile goal-cue journey left to the final Chromium gate.
 - 261030 T600 done: revision 10 reads a decided pass again at the kick when its receiver, free as chosen, has been closed within 2.5 m during the carry near the box (`rereadPass`, the closed man 1.5 less); same 50 grid-bands matches T599 → final: central ≤18 m passes tight at the kick 48.1 → 30.4%, lost to the opponent 29.7 → 24.2%, completion 81.27 → 82.62%, goals 3.56 → 3.24, held rows 24 → 24; the decision-time reach predictor did not separate receivers and was removed; revision-10 digests, ties 8/29 2/12 19/14, `candidate-et-7` and `goal-feedback-2` recorded; typecheck, lint, format:check, 806 affected unit tests and build pass; integration/browser confirmation left to the final gate.
 - 261030 T599 done: revision 10 marks each attacker near the box goal-side (one free marker a man within 12 m, back line holding its line, nobody marked within 8 m of the ball, a runner in behind marked along his run); same 50 grid-bands matches, revision 10 before → final: shots 21.81 → 20.29, possessions ending in a shot 22.77 → 21.56%, unopposed chances 10.66 → 9.62 a team, goals 4.20 → 3.56 (revision 9 3.42), held rows 24 → 24, crowd 2.84 → 2.95%; grid CPU ×1.056 [1.050, 1.063] slower on this host; typecheck, lint, format:check, 1013 affected unit tests and build pass; the n150 scratch reads are out-of-scope reference only; revision-10 digests and integration checks are left to T600 and the final gate.
@@ -459,4 +461,3 @@
 - 261030 create-task WEB r187 → T603 shared pages/transport, T604 rating scale, T605 theme resources; pg30 begins T603, publication includes the preceding T602 fix.
 - 261030 update-ssot WEB start: owner requests shared page fixes, combined mode/approval controls, bronze-to-ruby ratings and theme-specific cartoon/grass/clay/pixel artwork; commit and push the complete reviewed batch.
 - 261030 T602 done: fixed workbench styling separated from game themes at document bootstrap; 18 units, type/lint/format, production build/boundary and spec checks pass. Browser verification deferred; no commit/push requested.
-- 261030 T597/T598/T601 freshness: WEB r186 changes only WEB-103 workbench styling, outside their cited policies; advance bases without changing their scope.
