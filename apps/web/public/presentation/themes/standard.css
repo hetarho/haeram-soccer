@@ -1,11 +1,15 @@
 html[data-theme='standard'] {
+  /* Painted objects keep their full gouache colour in shared navigation slots. */
+  [data-ui='game-shell'] > [data-ui='sidebar'] nav button::before,
+  [data-ui='game-shell'] > main > header :is([data-pixel-icon='menu'], [data-pixel-icon='bell']),
+  [data-ui='progress-mode'] [data-pixel-icon='switch'],
+  [data-ui='game-shell'] > nav [data-pixel-icon] {
+    mask: none;
+    background: var(--image-icon) center / contain no-repeat;
+  }
   /* Artwork-specific exceptions; shared geometry and skins live in the application. */
 
   [data-ui='game-shell'] > [data-ui='sidebar'] > div:last-child {
     color: var(--image-on-dark-muted);
-  }
-
-  [data-ui='game-shell'] > [data-ui='sidebar'] nav button[aria-current='page']::before {
-    background: var(--image-on-primary);
   }
 }

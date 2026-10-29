@@ -7,13 +7,16 @@ import { resolveThemeTokens } from './themeTokens';
 import { contrast } from '../../../../packages/engine/src/identity-legacy';
 
 describe('shared semantic theme tokens', () => {
-  it.each(['iron', 'bronze', 'silver', 'gold', 'elite'])(
-    'keeps matchday-print %s rating numbers readable against their surface',
+  it.each(['bronze', 'silver', 'gold', 'platinum', 'ruby'])(
+    'keeps %s rating numbers readable against their surface in every pack',
     (tier) => {
-      const tokens = resolveThemeTokens(print.tokens);
-      expect(
-        contrast(tokens[`rating-${tier}-text`], tokens[`rating-${tier}-fill`]),
-      ).toBeGreaterThanOrEqual(4.5);
+      for (const pack of [standard, pixel, print, sticker]) {
+        const tokens = resolveThemeTokens(pack.tokens);
+        expect(
+          contrast(tokens[`rating-${tier}-text`], tokens[`rating-${tier}-fill`]),
+          `${pack.id} ${tier}`,
+        ).toBeGreaterThanOrEqual(4.5);
+      }
     },
   );
 

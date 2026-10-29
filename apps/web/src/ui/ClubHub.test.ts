@@ -193,7 +193,7 @@ describe('home season card', () => {
     expect(cups).toContain('<b>2<small>개</small></b>');
     expect(markup.match(/<button/g)).toHaveLength(2);
     expect(markup).not.toContain('European Cup 현재 대회 보기');
-    expect(render(true)).toContain('진행 중 없음');
+    expect(render(true)).not.toContain('진행 중 없음');
   });
 });
 
@@ -290,7 +290,7 @@ describe('current competition briefing markup', () => {
     const close = vi.fn();
     const overview = CupBriefing({ w, onOpen: close });
     const entries = overview.props.children;
-    entries[1].props.onClick();
+    entries[1].props.actions.props.onClick();
     expect(close).toHaveBeenCalledOnce();
     expect(openCupSeason).toHaveBeenCalledWith(w.year, 'ucl', w.year);
     expect(close.mock.invocationCallOrder[0]).toBeLessThan(
@@ -314,6 +314,7 @@ describe('current competition briefing markup', () => {
     expect(markup).toContain('aria-label="잉글랜드 컵 현재 대회 보기"');
     expect(markup).toContain('aria-label="Champions League 현재 대회 보기"');
     expect(markup).toContain('대진 정보 없음');
+    expect(markup.match(/data-ui="card"/g)).toHaveLength(2);
     expect(markup.match(/미참가/g)).toHaveLength(1);
   });
 });

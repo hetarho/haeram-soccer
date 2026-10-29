@@ -1,18 +1,32 @@
-/* Workbench chrome stays quiet; the iframe renders the application's unmodified theme styles. */
-.ds-workbench {
+/* Only preview documents load game skins; workbench controls use this fixed palette. */
+html[data-design-system='workbench'] {
   --ds-bg: #111513;
   --ds-panel: #191e1b;
   --ds-line: #333d36;
   --ds-text: #edf2ed;
   --ds-muted: #abb8ad;
   --ds-accent: #c1ebac;
+  color-scheme: dark;
+  background: var(--ds-bg);
+}
+html[data-design-system='workbench'] body {
+  margin: 0;
+  color: var(--ds-text);
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.ds-entry {
+  padding: 24px;
+}
+.ds-workbench {
   display: grid;
   grid-template: 76px minmax(0, 1fr) / 264px minmax(0, 1fr);
   height: 100dvh;
   overflow: hidden;
   color: var(--ds-text);
   background: var(--ds-bg);
-  font-family: Pretendard, sans-serif;
+  font-family: system-ui, sans-serif;
   font-size: 14px;
 }
 .ds-workbench * {
@@ -314,9 +328,6 @@
   color: var(--ds-muted);
   line-height: 1.6;
 }
-.ds-error {
-  color: #f1a59a;
-}
 .ds-story-document {
   height: 100dvh;
   overflow: auto;
@@ -553,14 +564,10 @@
   }
 }
 
-body:has(.ds-workbench),
 body:has(.ds-story-document) {
   margin: 0;
 }
-#root .ds-workbench button::before,
-#root .ds-workbench button::after {
-  display: none;
-}
-#root .ds-workbench input::placeholder {
+.ds-workbench input::placeholder {
   color: var(--ds-muted);
+  opacity: 1;
 }

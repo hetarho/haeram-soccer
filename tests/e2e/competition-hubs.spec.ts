@@ -13,7 +13,7 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
   const returnHome = page.getByRole('button', { name: '돌아가기 · 클럽 홈', exact: true });
   const seasonTabs = page.getByRole('tablist', { name: '시즌', exact: true });
   await page.getByRole('button', { name: '현재 컵 대회 모아보기', exact: true }).click();
-  const cups = page.getByRole('dialog', { name: '현재 컵 대회 모아보기', exact: true });
+  const cups = page.getByRole('dialog', { name: '컵대회', exact: true });
   await cups.getByRole('button', { name: '잉글랜드 컵 현재 대회 보기', exact: true }).click();
   await expect(cups).toBeHidden();
   await expect(page).toHaveURL(/season\?competition=cup.*cup=cup/);

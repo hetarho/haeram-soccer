@@ -4,16 +4,16 @@ import { clubOvr, cohesionLine, ovrTier } from './OvrBadge';
 
 describe('overall presentation tiers', () => {
   it.each([
-    [0, 'iron'],
-    [49, 'iron'],
-    [50, 'bronze'],
-    [64, 'bronze'],
-    [65, 'silver'],
-    [74, 'silver'],
-    [75, 'gold'],
-    [84, 'gold'],
-    [85, 'elite'],
-    [99, 'elite'],
+    [0, 'bronze'],
+    [49, 'bronze'],
+    [50, 'silver'],
+    [64, 'silver'],
+    [65, 'gold'],
+    [74, 'gold'],
+    [75, 'platinum'],
+    [84, 'platinum'],
+    [85, 'ruby'],
+    [99, 'ruby'],
   ] as const)('maps %i to %s at each tier boundary', (value, tier) => {
     expect(ovrTier(value)).toBe(tier);
   });

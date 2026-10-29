@@ -615,6 +615,7 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 14px;
+  padding: 14px;
 }
 .teamHead > div {
   flex: 1;
@@ -636,7 +637,7 @@
 .teamFacts div {
   padding: 8px 10px;
   border-radius: var(--card-radius);
-  background: var(--surface-grain, none) var(--surface-deep);
+  text-align: center;
 }
 .teamFacts dt {
   font-size: 12px;
@@ -665,13 +666,27 @@
   gap: 8px;
   padding: 6px 8px;
   border-radius: var(--card-radius);
-  background: var(--surface-grain, none) var(--surface-deep);
   font-size: 13px;
+}
+.teamList li > b {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  min-height: 28px;
+  text-align: center;
+  border-radius: var(--badge-radius);
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+.teamList li > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .teamList em {
   font-style: normal;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+  text-align: right;
+  min-width: 40px;
 }
 .teamNote {
   color: var(--text-muted);

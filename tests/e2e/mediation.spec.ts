@@ -16,7 +16,7 @@ import { worldMarketPage } from '../../packages/engine/src/world-market';
 import { DEFAULT_MARKET_QUERY } from '../../apps/web/src/ui/worldMarket';
 import { lineOf } from '../../packages/engine/src/player';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { horizontalOverflow } from './layout';
+import { horizontalOverflow, settle } from './layout';
 function fixture() {
   const w = createWorld({
     country: 'ENG',
@@ -68,6 +68,7 @@ test('direct-financial-conflict-review', async ({ page }) => {
   await expect(
     review.locator('footer').getByRole('button', { name: '이번 중재 결정 확정', exact: true }),
   ).toBeInViewport();
+  await settle(page);
   const choices = await review.getByRole('radio').evaluateAll((inputs) =>
     inputs.map((input) => {
       const rect = input.getBoundingClientRect();

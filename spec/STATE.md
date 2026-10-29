@@ -382,7 +382,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 185 | 185 | - | 0 |
+| WEB | 187 | 187 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
@@ -412,6 +412,7 @@
 | T600 | Receiver safety at the time of reception | MATCH SAVE ARCH | T599 | todo |
 | T601 | Recorded goal-scene replay | WEB MATCH SAVE ARCH | T600 | todo |
 
+
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
@@ -434,30 +435,28 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T599; vf30 scope: T596 opened revision 10, T597 and T598 aligned the management and kit-evidence journeys for CI40866255294, then T599/T600 measured engine follow-ups extending revision 10. Do not route unrelated legacy ideation or theme review during this run.
-- Once T600 completes revision 10, re-record its values before the final batch (T596 limits): grid-throughput `CANDIDATE` digests and knockout `CASES`, full-model-throughput `BEFORE`, playback.test's extra-time fixture and the mobile goal-cue seed.
-- implement-task T596; vf30 scope: CI40866255294 repairs, T599/T600 engine follow-ups, then T601 goal-scene replay. Leave unrelated legacy ideation and theme review untouched.
-- Complete T596–T601 plus resulting CI fixes before the combined coordinator gate, then commit/push the verified complete source to configured main as explicitly requested.
-- Engine explorations retain their fixed candidate corpus and compatibility rules; goal replay reads retained presentation facts and restores the original watch state without simulation or save changes.
+- implement-task T599: resume the preserved WIP within the original17:57:16Z exit; use exactly50-match accuracy reads and identify the excluded150-match scratch data.
+- Then T600 finalizes receiver safety and revision10 digests/knockout/extra-time/goal-cue fixtures; T601 adds goal-scene replay on the latest WEB r187 design.
+- Complete the scoped work and final combined coordinator checks before the explicitly requested main code push and CI wait; preserve the merged page/theme work and leave unrelated legacy ideation untouched.
 
 ## log
+- 261030 vf30 merge current page/theme publication930b4ac5: preserve its code/resources and WEB r187; retain archived T597/T598 completion instead of their obsolete active freshness-only copies.
 - 261030 vf30 recover T599: retain source and all raw measurements; remaining exploration uses exactly50 matches and the original90-minute deadline.
 - 261030 T598 done: the kit evidence of CI40866255294 reads figures at MATCH-36's 85% torso through shared tests/fixtures/figure-evidence.ts (fit unchanged, sized from markerRadius × torsoWidth × DPR; colours within the painter's shading bound); continuity's phone journeys read at DPR 2 with worn/wrong-pattern/base/keeper/not-worn checks; no renderer defect, no production change; typecheck, lint, format:check, 4 affected unit tests and build pass; both club-identity specs left to the final Chromium gate.
 - 261030 T597 done: the ten management/calendar/navigation journeys of CI40866255294 follow the current UI with shared clubhouse helpers (icon-found tab, clubhouse date for League/Cup, which omit the information row), dated NEXT MATCH reports, the compact return/cup selector and the league picker's values; no UI defect, no production change; typecheck, lint, format:check, affected units (none) and build pass; browser specs left to the final Chromium gate.
 - 261030 T596 done: match-model revision 10 — every shot struck as its action starts, its second ball landing at its own speed and waiting for its winner, and won at least 1.2 m clear of the blocker or keeper; the stale T444/T445 resolve scenes expect the keeper's narrowing once; revisions 1–9 replay draw for draw; typecheck, lint, format:check, 913 affected unit tests, build and the four targeted CI cases pass; revision-10 digests and seeds re-recorded after T600.
 - 261030 update-ssot MATCH r44 + create-task: T596 diagnosed (2 stale revision-9 scenes, 2 second-ball defects) and rescoped to open revision 10; T599/T600 extend it.
 - 261030 vf30 start: owner-authorized autopilot; synchronized origin/main469d24c2, captured CI40866255294 failures and created scoped T596–T600.
+- 261030 page/theme publication: owner-requested changes verified on pinned Node 24.22.1; 1747 unit, 48 contract, all fast/resource checks and four-theme desktop/phone review pass. Focused Chromium rerun 9/9 includes menu default/hover contrast and modal touch-size stability.
+- 261030 full gate on 68c05352: integration 1258 pass / 4 fail / 4 skip (existing T596); Chromium 318 pass / 15 fail, with three repaired by 7ded8ba8 and the remaining 12 in existing T597/T598. Engine/contracts source is unchanged. Publish the requested page/theme scope with these known regressions disclosed.
+- 261030 fix page-review: pair menu metadata and hover with each tertiary action foreground; wait for existing finite modal animation before touch-size measurements. Pinned type/lint/format checks pass; scoped browser rerun follows.
+- 261030 T605 done: 71 portable refresh resources, 32 cartoon icons, clay/yellow surfaces and native pixel controller; 61 focused units and pinned fast/resource checks pass. Final visual and publication gate follows.
+- 261030 T604 done: bronze-to-ruby ratings across all four packs, 32 rating/theme units plus resource/fast checks; T605 begins.
+- 261030 T603 done: shared page/cards/tabs/team sheets and combined mode/approval controls; 33 units and fast checks pass. T604 begins.
+- 261030 create-task WEB r187 → T603 shared pages/transport, T604 rating scale, T605 theme resources; pg30 begins T603, publication includes the preceding T602 fix.
+- 261030 update-ssot WEB start: owner requests shared page fixes, combined mode/approval controls, bronze-to-ruby ratings and theme-specific cartoon/grass/clay/pixel artwork; commit and push the complete reviewed batch.
+- 261030 T602 done: fixed workbench styling separated from game themes at document bootstrap; 18 units, type/lint/format, production build/boundary and spec checks pass. Browser verification deferred; no commit/push requested.
+- 261030 T597/T598/T601 freshness: WEB r186 changes only WEB-103 workbench styling, outside their cited policies; advance bases without changing their scope.
+- 261030 create-task WEB r186 → T602; ds30 implementing the directly requested workbench isolation fix without changing the vf30 engine/replay queue.
+- 261030 update-ssot WEB start: isolate development-workbench navigation and controls from preview themes; direct owner-assigned fix in the main checkout, independent of the completed module-1026 runtime binding.
 - 261030 refresh untouched T597/T598 bases to WEB r185; goal replay remains T601, and the T600 exit roadmap includes the added owner request.
-- 261030 create-task T601: WEB r185 goal-scene replay; depends on T600, with exact live/archive return and no unseen live-goal disclosure.
-- 261030 update-ssot WEB r185 start/done: owner adds goal-scene replay; planning leaves the active engine implementation untouched.
-- 261029 T595 done: 60 alternative-theme assets, source/prompts and shared rendering refinements; 1738 units, fast/resource/build checks, 306 preview combinations and eight targeted Chromium journeys pass. Broader integration/browser failures remain in reports/261029-thar.md; owner requested completion push.
-- 261029 T595 start: complete missing portable controls, hierarchy, materials, ratings and analysis resources for all three alternative themes; owner requests completion/deadline push.
-- 261029 T594 done: compact opaque League/Cup navigation, one home cup slot and secondary-filled applied choices; 242 affected unit tests, typecheck, lint, scoped format and build pass. Owner requests unit-only testing and main push; integration/browser/CI waits omitted.
-- 261029 create-task WEB r184: T594 compact competition header, home cup overview and filled applied choices.
-- 261029 update-ssot WEB start: compact current competition navigation, one home cup slot and filled applied delegation choices; owner authorizes unit-only validation and main push.
-- 261029 publication verified: combined match-view/model and Matchday Print code at 5568cc2d passes all 1732 unit tests on pinned Node 24.22.1; owner requests unit-only validation and immediate main push. Full integration/browser stages were cancelled, not counted as passed.
-- 261029 publication decision (owner): run unit tests only and push the combined main snapshot; stop the full batch run. Use the pinned Node 24.22.1 toolchain.
-- 261029 publication integration: merge remote match-view/model changes with Matchday Print; combine WEB at r183, keep T579/T580 done, renumber the colliding design-system T582 as T593.
-- 261029 T583–T593 design-system batch verified for commit: 184 files including retained artwork/provenance; 1718 affected units, workbench boundary checks, type/lint, 115-file scoped format, resource checks and build pass.
-- 261029 T592 done: three visibly textured material planes, reusable Card and notebook consumer; source/prompts and review criterion retained after restoring reduced-size grain. 33 units, type/lint/format, art/presentation checks, build and representative desktop/mobile inspection pass.
-- 261029 WEB r182 and T592 start: three resource-backed surface levels, border-light fixture notebook and a shared Card with app/workbench examples.

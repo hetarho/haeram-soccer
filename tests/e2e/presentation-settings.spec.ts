@@ -160,7 +160,7 @@ for (const { id: theme } of baseline.themeRegistry.entries)
       await page.getByRole('button', { name: '설정', exact: true }).click();
       const menu = page.getByTestId('app-menu');
       await settle(page);
-      const rows = menu.locator('[data-ui="menu-row"]');
+      const rows = menu.locator('[data-menu-row]');
       const spacing = await rows.evaluateAll((items) => {
         const first = items[0].getBoundingClientRect(),
           second = items[1].getBoundingClientRect();
@@ -175,6 +175,10 @@ for (const { id: theme } of baseline.themeRegistry.entries)
       expect(spacing.gap).toBeGreaterThanOrEqual(8 - 1 / 64);
       expect(spacing.inset).toBeGreaterThanOrEqual(8);
       expect(spacing.height).toBeGreaterThanOrEqual(44);
+      await expect
+        .poll(async () => (await rows.first().locator('small').evaluate(textContrast)).ratio)
+        .toBeGreaterThanOrEqual(4.5);
+      await rows.first().hover();
       await expect
         .poll(async () => (await rows.first().locator('small').evaluate(textContrast)).ratio)
         .toBeGreaterThanOrEqual(4.5);

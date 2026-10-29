@@ -38,4 +38,15 @@ describe('isolated UI atlas silhouettes', () => {
     plate(sheet, 23, 23, 36, 36);
     expect(() => isolatedAtlasBounds(sheet, 2, 1)).toThrow('Multiple silhouettes');
   });
+
+  it('can explicitly retain disconnected pieces of one icon without cutting their silhouette', () => {
+    const sheet = atlas();
+    plate(sheet, 5, 5, 18, 18);
+    plate(sheet, 23, 23, 36, 36);
+    plate(sheet, 55, 9, 74, 31);
+    expect(isolatedAtlasBounds(sheet, 2, 1, 160, { mergeParts: true })).toEqual([
+      { x: 3, y: 3, width: 35, height: 35 },
+      { x: 53, y: 7, width: 23, height: 26 },
+    ]);
+  });
 });
