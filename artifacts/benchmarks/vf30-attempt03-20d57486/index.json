@@ -1,0 +1,69 @@
+{
+  "recordedAt": "2026-10-29T23:09:04.285031+00:00",
+  "source": "20d57486e909ac58d58d32ce9bc79978b7e41455",
+  "codePush": "a65e89d36e743381a1f66511e5cb7bdbc58b2924",
+  "overallVerified": false,
+  "remainingTask": "T609",
+  "ci": "https://github.com/hetarho/haeram-soccer/actions/runs/40961086172",
+  "localBatchPassed": true,
+  "capacityPassed": true,
+  "performance": "grid CPU+5.12%; own/other days no difference beyond noise",
+  "accuracy": {
+    "command": "pnpm exec tsx scripts/grid-bands.ts --matches 50 --candidate",
+    "matches": 50,
+    "rowsInBand": 24,
+    "rows": 37,
+    "computationFingerprint": "12faf2219e91ea51560b8e2fe08477c3f77f1e71a02a8314f8694afdb598497f",
+    "reuse": "T607 computation fingerprint rechecked unchanged on20d57486; no150-match scratch reads used"
+  },
+  "files": {
+    "ci-chromium-results.json": {
+      "bytes": 2362213,
+      "sha256": "4f4f377bdc6981cc0799ca8e99fe59b957eab49126675152c2607b3413ca6214"
+    },
+    "ci-webkit-1-results.json": {
+      "bytes": 3633445,
+      "sha256": "97d5554adf77a990d7334381502a6d9bfbbdbd0f9d0185f08496abb2b60cda36"
+    },
+    "ci.json": {
+      "bytes": 2766,
+      "sha256": "bb0fbbb354d6795221026dfc177c096a6bb279e8c22ada1866093ea7c340a87b"
+    },
+    "contract-results.json": {
+      "bytes": 18638,
+      "sha256": "a826ee073fcfedd166e26dae97090eee255d472470517f8262743a02b3b4f08f"
+    },
+    "day-perf.json": {
+      "bytes": 65358,
+      "sha256": "a5f889787a6891b576da59259dee65ec371258e96d6b38735747d4627fcfd9fe"
+    },
+    "e2e-results.json": {
+      "bytes": 2396067,
+      "sha256": "30fba687deea8a93461baef3077ca2f316c6c1de9d4834f54e9db70625e3640b"
+    },
+    "grid-bands-50.txt": {
+      "bytes": 2638,
+      "sha256": "a58a00cefe5e5ed3bfc6fcef3b2b2813aa5bc30ba26555f6f66cdad18f17a115"
+    },
+    "grid-perf.json": {
+      "bytes": 18602,
+      "sha256": "60599c42588cebed58f8236defff40f24708118ba8f9d3f205c6b3b843e5204c"
+    },
+    "integration-results.json": {
+      "bytes": 472998,
+      "sha256": "93f4f29e702e533ea1356be269553111b0e2a9db950154b34e28c1fe69e29177"
+    },
+    "storage.json": {
+      "bytes": 39788,
+      "sha256": "22f209508bd1425e13b70c02f3568bd1eac17ccea8cee124b01ab8b792d5e4dd"
+    },
+    "unit-results.json": {
+      "bytes": 646502,
+      "sha256": "ed99370eab9eacdcc02bc3c4a87630413d57959b1eeef054c218cd7a1647c0f1"
+    },
+    "verification.json": {
+      "bytes": 3103,
+      "sha256": "b340574d4a4c431b79ed3f9db5d695b93cd747abedba96e52bf229b21ed07ff1"
+    }
+  }
+}

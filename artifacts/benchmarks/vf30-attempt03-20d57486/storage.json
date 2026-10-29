@@ -1,0 +1,1332 @@
+{
+  "phase": "T232 rules 4.0.0 (grid own matches, discipline, post-match material, season heat) on the T010 workloads: money/personnel/commercial operations and all continental summaries; T255 adds the deterministic club-identity workload and a pending next-fixture shirt to the active-management profile; T308 adds own-manager tracking from the founding (container 4), a same-day appointment, replacement and reappointment four times in the active-management century and a settled round after the century in the baseline too; T286 founds both centuries with the released full match model (complete records and NPC aggregates from the first day) and adds a supported pre-release career activated mid-season by the worker host writer load",
+  "task": "T286",
+  "feature": "The released continuous-match and complete aggregate-result model (MATCH_MODEL_RELEASE, SAVE-23, HIST-17) on the century profiles, beside own-manager tenures (HIST-18/19, SAVE-24) and club identities (KIT)",
+  "matchModelRelease": {
+    "revision": "continuous-aggregate-10",
+    "enabled": true
+  },
+  "activation": {
+    "released": true,
+    "founding": {
+      "country": "ENG",
+      "name": "Century Activation",
+      "color": "#284e35",
+      "seed": "release-activation",
+      "level": "easy"
+    },
+    "preReleaseSeasons": 10,
+    "activatedSeasons": 2,
+    "writerLoadMs": 625,
+    "legacyRevision": 3391,
+    "activated": {
+      "model": {
+        "revision": "continuous-aggregate-10",
+        "coverage": "activation",
+        "activated": {
+          "year": 1960,
+          "day": 161,
+          "revision": 3392
+        },
+        "trackedFrom": {
+          "year": 1960,
+          "day": 162,
+          "round": 24
+        }
+      },
+      "npcSeason": {
+        "year": 1960,
+        "model": "continuous-aggregate-10",
+        "trackedFrom": {
+          "year": 1960,
+          "day": 162,
+          "round": 24
+        },
+        "competitions": 0,
+        "clubRows": 0,
+        "playerRows": 0
+      },
+      "ownMatches": 441,
+      "fullRecords": 0,
+      "preFeatureRecords": 441,
+      "incompleteFullRecords": 0
+    },
+    "later": {
+      "model": {
+        "revision": "continuous-aggregate-10",
+        "coverage": "activation",
+        "activated": {
+          "year": 1960,
+          "day": 161,
+          "revision": 3392
+        },
+        "trackedFrom": {
+          "year": 1960,
+          "day": 162,
+          "round": 24
+        }
+      },
+      "npcSeason": {
+        "year": 1963,
+        "model": "continuous-aggregate-10",
+        "trackedFrom": {
+          "year": 1963,
+          "day": 1,
+          "round": 1
+        },
+        "competitions": 34,
+        "clubRows": 1103,
+        "playerRows": 14330
+      },
+      "ownMatches": 575,
+      "fullRecords": 134,
+      "preFeatureRecords": 441,
+      "incompleteFullRecords": 0
+    },
+    "resumedSeasonReplay": true
+  },
+  "synthetic": true,
+  "date": "2026-10-29T21:48:53.187Z",
+  "node": "v24.22.1",
+  "toolchain": {
+    "pnpm": "10.34.6",
+    "typescript": "5.9.3",
+    "tsx": "4.23.15"
+  },
+  "host": {
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M1 Max",
+    "logicalCpus": 10
+  },
+  "gitHead": "20d57486e909ac58d58d32ce9bc79978b7e41455",
+  "gitDirty": false,
+  "currentHeadVerified": true,
+  "verifiedSource": "committed HEAD",
+  "sourceFingerprint": {
+    "algorithm": "sha256",
+    "sha256": "ec8e1c18733acd871dd1bf476b11ab57ba652e07b31253abd2582f4314817c04",
+    "files": 2009
+  },
+  "computationFingerprint": {
+    "algorithm": "sha256",
+    "sha256": "3479b4e532c452f24fb450ef1c6d03f63bae27fa1d26085933264b435c112492",
+    "files": 203,
+    "entry": "scripts/benchmark.ts",
+    "scope": "runtime dependency closure and declared inputs"
+  },
+  "run": {
+    "mode": "one process",
+    "phases": [
+      {
+        "phase": "retained",
+        "date": "2026-10-29T20:05:41.915Z",
+        "elapsedMs": 57522,
+        "provenance": {
+          "gitHead": "20d57486e909ac58d58d32ce9bc79978b7e41455",
+          "sourceFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "ec8e1c18733acd871dd1bf476b11ab57ba652e07b31253abd2582f4314817c04",
+            "files": 2009
+          },
+          "computationFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "3479b4e532c452f24fb450ef1c6d03f63bae27fa1d26085933264b435c112492",
+            "files": 203,
+            "entry": "scripts/benchmark.ts",
+            "scope": "runtime dependency closure and declared inputs"
+          },
+          "execution": {
+            "node": "v24.22.1",
+            "platform": "darwin",
+            "arch": "arm64",
+            "cpu": "Apple M1 Max",
+            "logicalCpus": 10
+          }
+        }
+      },
+      {
+        "phase": "activation",
+        "date": "2026-10-29T20:07:03.118Z",
+        "elapsedMs": 81194,
+        "provenance": {
+          "gitHead": "20d57486e909ac58d58d32ce9bc79978b7e41455",
+          "sourceFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "ec8e1c18733acd871dd1bf476b11ab57ba652e07b31253abd2582f4314817c04",
+            "files": 2009
+          },
+          "computationFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "3479b4e532c452f24fb450ef1c6d03f63bae27fa1d26085933264b435c112492",
+            "files": 203,
+            "entry": "scripts/benchmark.ts",
+            "scope": "runtime dependency closure and declared inputs"
+          },
+          "execution": {
+            "node": "v24.22.1",
+            "platform": "darwin",
+            "arch": "arm64",
+            "cpu": "Apple M1 Max",
+            "logicalCpus": 10
+          }
+        }
+      },
+      {
+        "phase": "baseline-1",
+        "date": "2026-10-29T20:18:58.824Z",
+        "elapsedMs": 715691,
+        "provenance": {
+          "gitHead": "20d57486e909ac58d58d32ce9bc79978b7e41455",
+          "sourceFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "ec8e1c18733acd871dd1bf476b11ab57ba652e07b31253abd2582f4314817c04",
+            "files": 2009
+          },
+          "computationFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "3479b4e532c452f24fb450ef1c6d03f63bae27fa1d26085933264b435c112492",
+            "files": 203,
+            "entry": "scripts/benchmark.ts",
+            "scope": "runtime dependency closure and declared inputs"
+          },
+          "execution": {
+            "node": "v24.22.1",
+            "platform": "darwin",
+            "arch": "arm64",
+            "cpu": "Apple M1 Max",
+            "logicalCpus": 10
+          }
+        }
+      },
+      {
+        "phase": "baseline-2",
+        "date": "2026-10-29T20:33:14.989Z",
+        "elapsedMs": 856148,
+        "provenance": {
+          "gitHead": "20d57486e909ac58d58d32ce9bc79978b7e41455",
+          "sourceFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "ec8e1c18733acd871dd1bf476b11ab57ba652e07b31253abd2582f4314817c04",
+            "files": 2009
+          },
+          "computationFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "3479b4e532c452f24fb450ef1c6d03f63bae27fa1d26085933264b435c112492",
+            "files": 203,
+            "entry": "scripts/benchmark.ts",
+            "scope": "runtime dependency closure and declared inputs"
+          },
+          "execution": {
+            "node": "v24.22.1",
+            "platform": "darwin",
+            "arch": "arm64",
+            "cpu": "Apple M1 Max",
+            "logicalCpus": 10
+          }
+        }
+      },
+      {
+        "phase": "baseline-checkpoints",
+        "date": "2026-10-29T20:48:01.698Z",
+        "elapsedMs": 886702,
+        "provenance": {
+          "gitHead": "20d57486e909ac58d58d32ce9bc79978b7e41455",
+          "sourceFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "ec8e1c18733acd871dd1bf476b11ab57ba652e07b31253abd2582f4314817c04",
+            "files": 2009
+          },
+          "computationFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "3479b4e532c452f24fb450ef1c6d03f63bae27fa1d26085933264b435c112492",
+            "files": 203,
+            "entry": "scripts/benchmark.ts",
+            "scope": "runtime dependency closure and declared inputs"
+          },
+          "execution": {
+            "node": "v24.22.1",
+            "platform": "darwin",
+            "arch": "arm64",
+            "cpu": "Apple M1 Max",
+            "logicalCpus": 10
+          }
+        }
+      },
+      {
+        "phase": "active-management-1",
+        "date": "2026-10-29T21:00:40.236Z",
+        "elapsedMs": 758522,
+        "provenance": {
+          "gitHead": "20d57486e909ac58d58d32ce9bc79978b7e41455",
+          "sourceFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "ec8e1c18733acd871dd1bf476b11ab57ba652e07b31253abd2582f4314817c04",
+            "files": 2009
+          },
+          "computationFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "3479b4e532c452f24fb450ef1c6d03f63bae27fa1d26085933264b435c112492",
+            "files": 203,
+            "entry": "scripts/benchmark.ts",
+            "scope": "runtime dependency closure and declared inputs"
+          },
+          "execution": {
+            "node": "v24.22.1",
+            "platform": "darwin",
+            "arch": "arm64",
+            "cpu": "Apple M1 Max",
+            "logicalCpus": 10
+          }
+        }
+      },
+      {
+        "phase": "active-management-2",
+        "date": "2026-10-29T21:15:41.465Z",
+        "elapsedMs": 901221,
+        "provenance": {
+          "gitHead": "20d57486e909ac58d58d32ce9bc79978b7e41455",
+          "sourceFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "ec8e1c18733acd871dd1bf476b11ab57ba652e07b31253abd2582f4314817c04",
+            "files": 2009
+          },
+          "computationFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "3479b4e532c452f24fb450ef1c6d03f63bae27fa1d26085933264b435c112492",
+            "files": 203,
+            "entry": "scripts/benchmark.ts",
+            "scope": "runtime dependency closure and declared inputs"
+          },
+          "execution": {
+            "node": "v24.22.1",
+            "platform": "darwin",
+            "arch": "arm64",
+            "cpu": "Apple M1 Max",
+            "logicalCpus": 10
+          }
+        }
+      },
+      {
+        "phase": "active-management-checkpoints",
+        "date": "2026-10-29T21:32:43.106Z",
+        "elapsedMs": 1021624,
+        "provenance": {
+          "gitHead": "20d57486e909ac58d58d32ce9bc79978b7e41455",
+          "sourceFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "ec8e1c18733acd871dd1bf476b11ab57ba652e07b31253abd2582f4314817c04",
+            "files": 2009
+          },
+          "computationFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "3479b4e532c452f24fb450ef1c6d03f63bae27fa1d26085933264b435c112492",
+            "files": 203,
+            "entry": "scripts/benchmark.ts",
+            "scope": "runtime dependency closure and declared inputs"
+          },
+          "execution": {
+            "node": "v24.22.1",
+            "platform": "darwin",
+            "arch": "arm64",
+            "cpu": "Apple M1 Max",
+            "logicalCpus": 10
+          }
+        }
+      },
+      {
+        "phase": "era-1",
+        "date": "2026-10-29T21:40:26.219Z",
+        "elapsedMs": 463097,
+        "provenance": {
+          "gitHead": "20d57486e909ac58d58d32ce9bc79978b7e41455",
+          "sourceFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "ec8e1c18733acd871dd1bf476b11ab57ba652e07b31253abd2582f4314817c04",
+            "files": 2009
+          },
+          "computationFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "3479b4e532c452f24fb450ef1c6d03f63bae27fa1d26085933264b435c112492",
+            "files": 203,
+            "entry": "scripts/benchmark.ts",
+            "scope": "runtime dependency closure and declared inputs"
+          },
+          "execution": {
+            "node": "v24.22.1",
+            "platform": "darwin",
+            "arch": "arm64",
+            "cpu": "Apple M1 Max",
+            "logicalCpus": 10
+          }
+        }
+      },
+      {
+        "phase": "era-2",
+        "date": "2026-10-29T21:48:52.818Z",
+        "elapsedMs": 506593,
+        "provenance": {
+          "gitHead": "20d57486e909ac58d58d32ce9bc79978b7e41455",
+          "sourceFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "ec8e1c18733acd871dd1bf476b11ab57ba652e07b31253abd2582f4314817c04",
+            "files": 2009
+          },
+          "computationFingerprint": {
+            "algorithm": "sha256",
+            "sha256": "3479b4e532c452f24fb450ef1c6d03f63bae27fa1d26085933264b435c112492",
+            "files": 203,
+            "entry": "scripts/benchmark.ts",
+            "scope": "runtime dependency closure and declared inputs"
+          },
+          "execution": {
+            "node": "v24.22.1",
+            "platform": "darwin",
+            "arch": "arm64",
+            "cpu": "Apple M1 Max",
+            "logicalCpus": 10
+          }
+        }
+      }
+    ]
+  },
+  "engine": "0.7.0",
+  "catalog": "2026-demo-3",
+  "catalogHash": "5c4dc847344070fba54562572233a41a00ca2adac9c132f6a93845876b06da4f",
+  "checkpointLimit": 3145728,
+  "totalLimit": 3670016,
+  "measurements": [
+    {
+      "label": "marked synthetic retained career and cross-season promise",
+      "seasons": 3,
+      "year": 1953,
+      "round": 21,
+      "ownedMatches": 150,
+      "players": 29,
+      "events": 568,
+      "seed": "retained-workload",
+      "canonicalBytes": 7920573,
+      "canonicalUtf16Bytes": 15772120,
+      "retainedPeople": 3127,
+      "employmentSpells": 3363,
+      "mentorSpells": 237,
+      "coachingProfiles": 235,
+      "managerProfiles": 2,
+      "playingCoachProposals": 1,
+      "mediations": 3,
+      "promises": 1,
+      "pendingPromises": 1,
+      "trainingFocus": "balanced",
+      "trainingAt": "1953:21",
+      "trainingFocusEvents": 0,
+      "managerTenures": 2,
+      "managerOutcomes": 6,
+      "container": 4,
+      "compressedPayloadBytes": 644753,
+      "checkpointBytes": 737526,
+      "totalBytes": 738038,
+      "heapBytes": 509906160,
+      "encodingMs": 286,
+      "decodingMs": 472,
+      "passed": true
+    },
+    {
+      "label": "retained workload after actual season close",
+      "seasons": 4,
+      "year": 1954,
+      "round": 0,
+      "ownedMatches": 175,
+      "players": 29,
+      "events": 659,
+      "seed": "retained-workload",
+      "canonicalBytes": 4088587,
+      "canonicalUtf16Bytes": 8101922,
+      "retainedPeople": 3286,
+      "employmentSpells": 3595,
+      "mentorSpells": 310,
+      "coachingProfiles": 331,
+      "managerProfiles": 3,
+      "playingCoachProposals": 1,
+      "mediations": 3,
+      "promises": 1,
+      "pendingPromises": 1,
+      "trainingFocus": "balanced",
+      "trainingAt": "1953:46",
+      "trainingFocusEvents": 0,
+      "managerTenures": 2,
+      "managerOutcomes": 7,
+      "container": 4,
+      "compressedPayloadBytes": 202092,
+      "checkpointBytes": 231628,
+      "totalBytes": 232140,
+      "heapBytes": 521243464,
+      "encodingMs": 116,
+      "decodingMs": 161,
+      "passed": true
+    },
+    {
+      "label": "activation pre-release career mid-season",
+      "seasons": 10,
+      "year": 1960,
+      "round": 23,
+      "ownedMatches": 441,
+      "players": 112,
+      "events": 1586,
+      "seed": "release-activation",
+      "canonicalBytes": 7486224,
+      "canonicalUtf16Bytes": 14829466,
+      "retainedPeople": 4310,
+      "employmentSpells": 6475,
+      "mentorSpells": 2159,
+      "coachingProfiles": 803,
+      "managerProfiles": 297,
+      "playingCoachProposals": 0,
+      "mediations": 5,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "balanced",
+      "trainingAt": "1960:23",
+      "trainingFocusEvents": 0,
+      "managerTenures": 2,
+      "managerOutcomes": 13,
+      "container": 4,
+      "compressedPayloadBytes": 447432,
+      "checkpointBytes": 512014,
+      "totalBytes": 512526,
+      "heapBytes": 309388672,
+      "encodingMs": 230,
+      "decodingMs": 320,
+      "passed": true
+    },
+    {
+      "label": "activation writer load mid-season",
+      "seasons": 10,
+      "year": 1960,
+      "round": 23,
+      "ownedMatches": 441,
+      "players": 112,
+      "events": 1586,
+      "seed": "release-activation",
+      "canonicalBytes": 7486528,
+      "canonicalUtf16Bytes": 14830074,
+      "retainedPeople": 4310,
+      "employmentSpells": 6475,
+      "mentorSpells": 2159,
+      "coachingProfiles": 803,
+      "managerProfiles": 297,
+      "playingCoachProposals": 0,
+      "mediations": 5,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "balanced",
+      "trainingAt": "1960:23",
+      "trainingFocusEvents": 0,
+      "managerTenures": 2,
+      "managerOutcomes": 13,
+      "container": 4,
+      "compressedPayloadBytes": 447692,
+      "checkpointBytes": 512310,
+      "totalBytes": 512822,
+      "heapBytes": 438900360,
+      "encodingMs": 224,
+      "decodingMs": 328,
+      "passed": true
+    },
+    {
+      "label": "activation 2 seasons later round 23",
+      "seasons": 13,
+      "year": 1963,
+      "round": 23,
+      "ownedMatches": 575,
+      "players": 139,
+      "events": 2065,
+      "seed": "release-activation",
+      "canonicalBytes": 12577347,
+      "canonicalUtf16Bytes": 24979282,
+      "retainedPeople": 4860,
+      "employmentSpells": 8392,
+      "mentorSpells": 3675,
+      "coachingProfiles": 1069,
+      "managerProfiles": 467,
+      "playingCoachProposals": 0,
+      "mediations": 5,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "hard",
+      "trainingAt": "1963:23",
+      "trainingFocusEvents": 0,
+      "managerTenures": 2,
+      "managerOutcomes": 16,
+      "container": 4,
+      "compressedPayloadBytes": 915517,
+      "checkpointBytes": 1046968,
+      "totalBytes": 1047480,
+      "heapBytes": 885540992,
+      "encodingMs": 421,
+      "decodingMs": 672,
+      "passed": true
+    },
+    {
+      "label": "baseline founding",
+      "seasons": 0,
+      "year": 1950,
+      "round": 0,
+      "ownedMatches": 0,
+      "players": 20,
+      "events": 1,
+      "seed": "release-century-baseline",
+      "canonicalBytes": 2508976,
+      "canonicalUtf16Bytes": 5017638,
+      "retainedPeople": 2114,
+      "employmentSpells": 2114,
+      "mentorSpells": 0,
+      "coachingProfiles": 0,
+      "managerProfiles": 0,
+      "playingCoachProposals": 0,
+      "mediations": 0,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "balanced",
+      "trainingFocusEvents": 0,
+      "managerTenures": 1,
+      "managerOutcomes": 0,
+      "container": 4,
+      "compressedPayloadBytes": 77905,
+      "checkpointBytes": 89698,
+      "totalBytes": 90210,
+      "heapBytes": 156069504,
+      "encodingMs": 46,
+      "decodingMs": 87,
+      "passed": true
+    },
+    {
+      "label": "baseline mid-career active round",
+      "seasons": 50,
+      "year": 2000,
+      "round": 23,
+      "ownedMatches": 2224,
+      "players": 513,
+      "events": 7919,
+      "seed": "release-century-baseline",
+      "canonicalBytes": 41920416,
+      "canonicalUtf16Bytes": 83227948,
+      "retainedPeople": 11469,
+      "employmentSpells": 59053,
+      "mentorSpells": 50914,
+      "coachingProfiles": 4145,
+      "managerProfiles": 2384,
+      "playingCoachProposals": 0,
+      "mediations": 7,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "hard",
+      "trainingAt": "2000:23",
+      "trainingFocusEvents": 0,
+      "managerTenures": 2,
+      "managerOutcomes": 61,
+      "container": 4,
+      "compressedPayloadBytes": 1618449,
+      "checkpointBytes": 1631900,
+      "totalBytes": 1632412,
+      "heapBytes": 896378960,
+      "encodingMs": 123446,
+      "decodingMs": 2362,
+      "passed": true
+    },
+    {
+      "label": "baseline century",
+      "seasons": 100,
+      "year": 2050,
+      "round": 0,
+      "ownedMatches": 4522,
+      "players": 1037,
+      "events": 16017,
+      "seed": "release-century-baseline",
+      "canonicalBytes": 92911531,
+      "canonicalUtf16Bytes": 184625412,
+      "retainedPeople": 20604,
+      "employmentSpells": 171008,
+      "mentorSpells": 158219,
+      "coachingProfiles": 8570,
+      "managerProfiles": 4595,
+      "playingCoachProposals": 0,
+      "mediations": 7,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "hard",
+      "trainingAt": "2049:46",
+      "trainingFocusEvents": 0,
+      "managerTenures": 2,
+      "managerOutcomes": 120,
+      "container": 4,
+      "compressedPayloadBytes": 2328691,
+      "checkpointBytes": 2347804,
+      "totalBytes": 2348316,
+      "heapBytes": 1987732544,
+      "encodingMs": 317407,
+      "decodingMs": 4630,
+      "passed": true
+    },
+    {
+      "label": "baseline century round 23",
+      "seasons": 100,
+      "year": 2050,
+      "round": 23,
+      "ownedMatches": 4547,
+      "players": 1037,
+      "events": 16095,
+      "seed": "release-century-baseline",
+      "canonicalBytes": 99275185,
+      "canonicalUtf16Bytes": 197347456,
+      "retainedPeople": 20604,
+      "employmentSpells": 172530,
+      "mentorSpells": 159801,
+      "coachingProfiles": 8570,
+      "managerProfiles": 4610,
+      "playingCoachProposals": 0,
+      "mediations": 7,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "hard",
+      "trainingAt": "2050:23",
+      "trainingFocusEvents": 0,
+      "managerTenures": 2,
+      "managerOutcomes": 120,
+      "container": 4,
+      "compressedPayloadBytes": 2877203,
+      "checkpointBytes": 2900636,
+      "totalBytes": 2901148,
+      "heapBytes": 2564861512,
+      "encodingMs": 360543,
+      "decodingMs": 5024,
+      "passed": true
+    },
+    {
+      "label": "active-management founding",
+      "seasons": 0,
+      "year": 1950,
+      "round": 0,
+      "ownedMatches": 0,
+      "players": 20,
+      "events": 1,
+      "seed": "release-century-active-management",
+      "canonicalBytes": 2509625,
+      "canonicalUtf16Bytes": 5018936,
+      "retainedPeople": 2115,
+      "employmentSpells": 2115,
+      "mentorSpells": 0,
+      "coachingProfiles": 0,
+      "managerProfiles": 0,
+      "playingCoachProposals": 0,
+      "mediations": 0,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "balanced",
+      "trainingFocusEvents": 0,
+      "managerTenures": 1,
+      "managerOutcomes": 0,
+      "container": 4,
+      "compressedPayloadBytes": 77676,
+      "checkpointBytes": 89438,
+      "totalBytes": 89950,
+      "heapBytes": 2353424960,
+      "encodingMs": 52,
+      "decodingMs": 68,
+      "passed": true
+    },
+    {
+      "label": "active-management mid-career active round",
+      "seasons": 50,
+      "year": 2000,
+      "round": 23,
+      "ownedMatches": 2304,
+      "players": 500,
+      "events": 8188,
+      "seed": "release-century-active-management",
+      "canonicalBytes": 42575123,
+      "canonicalUtf16Bytes": 84434934,
+      "retainedPeople": 11595,
+      "employmentSpells": 59780,
+      "mentorSpells": 51519,
+      "coachingProfiles": 4253,
+      "managerProfiles": 2372,
+      "playingCoachProposals": 0,
+      "mediations": 8,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "balanced",
+      "trainingAt": "2000:23",
+      "trainingFocusEvents": 101,
+      "managerTenures": 17,
+      "managerOutcomes": 59,
+      "container": 4,
+      "compressedPayloadBytes": 1655246,
+      "checkpointBytes": 1669022,
+      "totalBytes": 1669534,
+      "heapBytes": 897562472,
+      "encodingMs": 211114,
+      "decodingMs": 2596,
+      "passed": true
+    },
+    {
+      "label": "active-management century",
+      "seasons": 100,
+      "year": 2050,
+      "round": 0,
+      "ownedMatches": 4645,
+      "players": 1008,
+      "events": 16636,
+      "seed": "release-century-active-management",
+      "canonicalBytes": 94439212,
+      "canonicalUtf16Bytes": 187468402,
+      "retainedPeople": 20427,
+      "employmentSpells": 173217,
+      "mentorSpells": 160842,
+      "coachingProfiles": 8513,
+      "managerProfiles": 4611,
+      "playingCoachProposals": 0,
+      "mediations": 8,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "balanced",
+      "trainingAt": "2049:46",
+      "trainingFocusEvents": 200,
+      "managerTenures": 34,
+      "managerOutcomes": 117,
+      "container": 4,
+      "compressedPayloadBytes": 2395494,
+      "checkpointBytes": 2415134,
+      "totalBytes": 2415646,
+      "heapBytes": 1642149304,
+      "encodingMs": 350759,
+      "decodingMs": 4561,
+      "passed": true
+    },
+    {
+      "label": "active-management century active round 23",
+      "seasons": 100,
+      "year": 2050,
+      "round": 23,
+      "ownedMatches": 4670,
+      "players": 1008,
+      "events": 16713,
+      "seed": "release-century-active-management",
+      "canonicalBytes": 100865790,
+      "canonicalUtf16Bytes": 200314588,
+      "retainedPeople": 20427,
+      "employmentSpells": 174902,
+      "mentorSpells": 162563,
+      "coachingProfiles": 8513,
+      "managerProfiles": 4624,
+      "playingCoachProposals": 0,
+      "mediations": 8,
+      "promises": 0,
+      "pendingPromises": 0,
+      "trainingFocus": "hard",
+      "trainingAt": "2050:23",
+      "trainingFocusEvents": 202,
+      "managerTenures": 34,
+      "managerOutcomes": 117,
+      "container": 4,
+      "compressedPayloadBytes": 2940233,
+      "checkpointBytes": 2964126,
+      "totalBytes": 2964638,
+      "heapBytes": 2445926936,
+      "encodingMs": 376643,
+      "decodingMs": 5395,
+      "passed": true
+    }
+  ],
+  "worstCheckpoint": {
+    "label": "active-management century active round 23",
+    "checkpointBytes": 2964126,
+    "streams": [
+      {
+        "stream": "matchDetail.players",
+        "bytes": 1314064,
+        "brotliBytes": 455879
+      },
+      {
+        "stream": "model.season",
+        "bytes": 973710,
+        "brotliBytes": 438060
+      },
+      {
+        "stream": "statBits.data",
+        "bytes": 887126,
+        "brotliBytes": 296990
+      },
+      {
+        "stream": "careers.jobs",
+        "bytes": 4611283,
+        "brotliBytes": 206873
+      },
+      {
+        "stream": "standings",
+        "bytes": 445698,
+        "brotliBytes": 175607
+      },
+      {
+        "stream": "matchIncidents.rows",
+        "bytes": 329699,
+        "brotliBytes": 168786
+      },
+      {
+        "stream": "matchDetail.teams",
+        "bytes": 277338,
+        "brotliBytes": 164525
+      },
+      {
+        "stream": "careers.people",
+        "bytes": 2748910,
+        "brotliBytes": 156804
+      },
+      {
+        "stream": "world.players",
+        "bytes": 840428,
+        "brotliBytes": 92481
+      },
+      {
+        "stream": "dict",
+        "bytes": 715277,
+        "brotliBytes": 88704
+      },
+      {
+        "stream": "careers.mentors",
+        "bytes": 1383056,
+        "brotliBytes": 71219
+      },
+      {
+        "stream": "seasonHeat.rows",
+        "bytes": 153143,
+        "brotliBytes": 60765
+      },
+      {
+        "stream": "eventStats",
+        "bytes": 233750,
+        "brotliBytes": 49880
+      },
+      {
+        "stream": "eventDetails",
+        "bytes": 114254,
+        "brotliBytes": 44923
+      },
+      {
+        "stream": "bracketTies",
+        "bytes": 99458,
+        "brotliBytes": 39493
+      }
+    ]
+  },
+  "workloads": [
+    {
+      "variant": "baseline",
+      "seed": "release-century-baseline",
+      "completedSeasons": 100,
+      "careerDomesticRoundSettlements": 4623,
+      "completeSeasonTrainingSelections": 0,
+      "identityEdits": 0,
+      "centuryActiveCheckpointTrainingSelections": 0,
+      "trainingCycle": "balanced; century checkpoint adds 23 rounds",
+      "ownerManagerHires": 0,
+      "sameDayReappointments": 0,
+      "elapsedMs": 2458541,
+      "completedSeasonsPerSecond": 0.04,
+      "simulationMs": 1550638,
+      "simulationSecondsPerSeason": 15.506,
+      "ownedMatches": 4547,
+      "ownedMatchesPerSecond": 1.85,
+      "allRetainedFactsPreserved": true,
+      "managerHistory": {
+        "century": {
+          "coverage": "founding",
+          "trackedFrom": {
+            "year": 1950,
+            "day": 0,
+            "revision": 0
+          },
+          "serial": 2,
+          "tenures": 2,
+          "interimTenures": 1,
+          "zeroMatchTenures": 0,
+          "repeatedManagers": 0,
+          "sameDayAppointments": 0,
+          "departures": {
+            "expired": 1
+          },
+          "outcomes": {
+            "league-finish": 100,
+            "promotion": 20
+          },
+          "attributedMatches": 4522,
+          "unattributedMatches": 0,
+          "packedSection": {
+            "canonicalBytes": 4032,
+            "brotliBytes": 461
+          },
+          "read": {
+            "pages": 1,
+            "pageSize": 20,
+            "rows": 2,
+            "tenureRows": 2,
+            "legacyRows": 0,
+            "recordedMatches": 4522,
+            "honours": 35,
+            "firstPageMs": 13,
+            "allPagesMs": 13,
+            "largestReplyBytes": 19868
+          },
+          "roundTrip": true
+        },
+        "round23": {
+          "coverage": "founding",
+          "trackedFrom": {
+            "year": 1950,
+            "day": 0,
+            "revision": 0
+          },
+          "serial": 2,
+          "tenures": 2,
+          "interimTenures": 1,
+          "zeroMatchTenures": 0,
+          "repeatedManagers": 0,
+          "sameDayAppointments": 0,
+          "departures": {
+            "expired": 1
+          },
+          "outcomes": {
+            "league-finish": 100,
+            "promotion": 20
+          },
+          "attributedMatches": 4547,
+          "unattributedMatches": 0,
+          "packedSection": {
+            "canonicalBytes": 4032,
+            "brotliBytes": 463
+          },
+          "read": {
+            "pages": 1,
+            "pageSize": 20,
+            "rows": 2,
+            "tenureRows": 2,
+            "legacyRows": 0,
+            "recordedMatches": 4547,
+            "honours": 35,
+            "firstPageMs": 7,
+            "allPagesMs": 7,
+            "largestReplyBytes": 20012
+          },
+          "roundTrip": true
+        }
+      },
+      "matchModel": {
+        "century": {
+          "model": {
+            "revision": "continuous-aggregate-10",
+            "coverage": "founding",
+            "activated": {
+              "year": 1950,
+              "day": 0,
+              "revision": 0
+            },
+            "trackedFrom": {
+              "year": 1950,
+              "day": 1,
+              "round": 1
+            }
+          },
+          "npcSeason": {
+            "year": 2050,
+            "model": "continuous-aggregate-10",
+            "trackedFrom": {
+              "year": 2050,
+              "day": 1,
+              "round": 1
+            },
+            "competitions": 0,
+            "clubRows": 0,
+            "playerRows": 0
+          },
+          "ownMatches": 4522,
+          "fullRecords": 4522,
+          "preFeatureRecords": 0,
+          "incompleteFullRecords": 0
+        },
+        "round23": {
+          "model": {
+            "revision": "continuous-aggregate-10",
+            "coverage": "founding",
+            "activated": {
+              "year": 1950,
+              "day": 0,
+              "revision": 0
+            },
+            "trackedFrom": {
+              "year": 1950,
+              "day": 1,
+              "round": 1
+            }
+          },
+          "npcSeason": {
+            "year": 2050,
+            "model": "continuous-aggregate-10",
+            "trackedFrom": {
+              "year": 2050,
+              "day": 1,
+              "round": 1
+            },
+            "competitions": 34,
+            "clubRows": 1131,
+            "playerRows": 19389
+          },
+          "ownMatches": 4547,
+          "fullRecords": 4547,
+          "preFeatureRecords": 0,
+          "incompleteFullRecords": 0
+        }
+      }
+    },
+    {
+      "variant": "active-management",
+      "seed": "release-century-active-management",
+      "completedSeasons": 100,
+      "careerDomesticRoundSettlements": 4623,
+      "completeSeasonTrainingSelections": 200,
+      "identityEdits": 101,
+      "centuryActiveCheckpointTrainingSelections": 2,
+      "trainingCycle": "23 youth rounds then 23 recovery rounds each season; century checkpoint adds 12 youth and 11 recovery rounds",
+      "ownerManagerHires": 9,
+      "sameDayReappointments": 4,
+      "elapsedMs": 2681367,
+      "completedSeasonsPerSecond": 0.04,
+      "simulationMs": 1631930,
+      "simulationSecondsPerSeason": 16.319,
+      "ownedMatches": 4670,
+      "ownedMatchesPerSecond": 1.74,
+      "allRetainedFactsPreserved": true,
+      "managerHistory": {
+        "century": {
+          "coverage": "founding",
+          "trackedFrom": {
+            "year": 1950,
+            "day": 0,
+            "revision": 0
+          },
+          "serial": 34,
+          "tenures": 34,
+          "interimTenures": 12,
+          "zeroMatchTenures": 10,
+          "repeatedManagers": 4,
+          "sameDayAppointments": 10,
+          "departures": {
+            "expired": 12,
+            "replaced": 21
+          },
+          "outcomes": {
+            "league-finish": 100,
+            "promotion": 17
+          },
+          "attributedMatches": 4645,
+          "unattributedMatches": 0,
+          "packedSection": {
+            "canonicalBytes": 5850,
+            "brotliBytes": 898
+          },
+          "read": {
+            "pages": 2,
+            "pageSize": 20,
+            "rows": 34,
+            "tenureRows": 34,
+            "legacyRows": 0,
+            "recordedMatches": 4645,
+            "honours": 29,
+            "firstPageMs": 9,
+            "allPagesMs": 14,
+            "largestReplyBytes": 36576
+          },
+          "roundTrip": true
+        },
+        "round23": {
+          "coverage": "founding",
+          "trackedFrom": {
+            "year": 1950,
+            "day": 0,
+            "revision": 0
+          },
+          "serial": 34,
+          "tenures": 34,
+          "interimTenures": 12,
+          "zeroMatchTenures": 10,
+          "repeatedManagers": 4,
+          "sameDayAppointments": 10,
+          "departures": {
+            "expired": 12,
+            "replaced": 21
+          },
+          "outcomes": {
+            "league-finish": 100,
+            "promotion": 17
+          },
+          "attributedMatches": 4670,
+          "unattributedMatches": 0,
+          "packedSection": {
+            "canonicalBytes": 5850,
+            "brotliBytes": 906
+          },
+          "read": {
+            "pages": 2,
+            "pageSize": 20,
+            "rows": 34,
+            "tenureRows": 34,
+            "legacyRows": 0,
+            "recordedMatches": 4670,
+            "honours": 29,
+            "firstPageMs": 231,
+            "allPagesMs": 238,
+            "largestReplyBytes": 36722
+          },
+          "roundTrip": true
+        }
+      },
+      "matchModel": {
+        "century": {
+          "model": {
+            "revision": "continuous-aggregate-10",
+            "coverage": "founding",
+            "activated": {
+              "year": 1950,
+              "day": 0,
+              "revision": 0
+            },
+            "trackedFrom": {
+              "year": 1950,
+              "day": 1,
+              "round": 1
+            }
+          },
+          "npcSeason": {
+            "year": 2050,
+            "model": "continuous-aggregate-10",
+            "trackedFrom": {
+              "year": 2050,
+              "day": 1,
+              "round": 1
+            },
+            "competitions": 0,
+            "clubRows": 0,
+            "playerRows": 0
+          },
+          "ownMatches": 4645,
+          "fullRecords": 4645,
+          "preFeatureRecords": 0,
+          "incompleteFullRecords": 0
+        },
+        "round23": {
+          "model": {
+            "revision": "continuous-aggregate-10",
+            "coverage": "founding",
+            "activated": {
+              "year": 1950,
+              "day": 0,
+              "revision": 0
+            },
+            "trackedFrom": {
+              "year": 1950,
+              "day": 1,
+              "round": 1
+            }
+          },
+          "npcSeason": {
+            "year": 2050,
+            "model": "continuous-aggregate-10",
+            "trackedFrom": {
+              "year": 2050,
+              "day": 1,
+              "round": 1
+            },
+            "competitions": 34,
+            "clubRows": 1131,
+            "playerRows": 19402
+          },
+          "ownMatches": 4670,
+          "fullRecords": 4670,
+          "preFeatureRecords": 0,
+          "incompleteFullRecords": 0
+        }
+      }
+    }
+  ],
+  "centuryCheckpointSha256": "aab402a40a7370927bf4923b05b035e7f61f9bebaeebaa8cb9f0e2f81c85e1a7",
+  "eraProbe": {
+    "seasons": 75,
+    "year": 2025,
+    "passed": true
+  },
+  "identityWorkload": {
+    "profile": "active-management",
+    "seed": "release-century-active-management",
+    "edits": 101,
+    "firstSeason": 0,
+    "lastSeason": 100,
+    "paletteColours": 24,
+    "paletteSize": 24,
+    "shirtPatterns": [
+      "plain",
+      "stripes",
+      "hoops",
+      "halves",
+      "band",
+      "sash",
+      "checks",
+      "chevron"
+    ],
+    "crestCompositions": 6,
+    "crestCompositionCount": 6,
+    "representativeColourCounts": {
+      "1": 34,
+      "2": 34,
+      "3": 33
+    },
+    "designsSha256": "05019fc04218a252afe3067ab8377764b0aedb56eeef1ecfa6d399b5a88ce7f1",
+    "appearanceChecks": 102,
+    "appearancesCompared": 235489,
+    "recordsWearingAppliedDesign": 4670,
+    "kitChoices": [
+      {
+        "fixtureId": "2050:ENG:3:0:23:3",
+        "role": "home",
+        "automatic": "away",
+        "kind": "league",
+        "year": 2050,
+        "round": 23,
+        "ownSide": 0,
+        "shirt": {
+          "pattern": "band",
+          "primary": "#f5e663",
+          "secondary": "#1f4fd1"
+        }
+      }
+    ],
+    "checkpointAppearances": {
+      "records": 4670,
+      "recorded": 4670,
+      "absent": 0,
+      "distinct": 2707
+    },
+    "checkpointLabel": "active-management century active round 23",
+    "pendingChoiceDecoded": true,
+    "resumedSettlementConsumed": {
+      "uninterrupted": true,
+      "restored": true
+    }
+  },
+  "elapsedMs": 6248314,
+  "heapBytes": 551182416,
+  "peakObservedHeapBytes": 2564861512,
+  "losslessRoundtrip": true,
+  "resumedSeasonReplay": true,
+  "managerHistoryRoundTrip": true,
+  "completeModelFromFounding": true,
+  "passed": true,
+  "scope": "Two representative 100-season workloads, with real youth/recovery round training in the active profile, a settled round-23 checkpoint after the century in both profiles, an own design applied through the club-identity command at each active season start (101 edits) and a pending match-kit choice in the active round-23 checkpoint that both resumed careers wear and use up, recorded appearances compared before and after every such command, eight-country archive/capacity checks and a separate 1950–2025 era probe. Both careers track their own managers from the founding; the active one also hires a free manager every tenth season and four times a century appoints, replaces and reappoints on one day, beside the interims contract ends leave. At the century and the round after it, every tenure, outcome source, date and record link round-trips the checkpoint exactly, and the records room's paged manager-history read covers every tenure and attributed match. Every checkpoint must round-trip the complete canonical world without loss; save limits and history retention remain unchanged. Throughput includes codec/replay checks; peak heap is sampled at checkpoints. No claim that all seeds/actions fit indefinitely. Direct engine harness records but does not stop at UI warnings."
+}

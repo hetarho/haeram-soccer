@@ -17,6 +17,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261030 decided T609 ARCH-30 ARCH-33: CI40961086172 has one Chromium training failure and two hard/two flaky WebKit cases; repair UI/journey evidence without relaxed assertions, then focused coordinator guards and full batch. Owner sets09:30KST remote continuation cutoff; commit/push unfinished work and exact resume instructions to wip/vf30 before then. Reuse simulation-only capacity/performance evidence only with matching computation/toolchain identities.
 - 261030 decided WEB-105 WEB-32 ARCH-21 T608: goal-replay.spec.ts:196's resumed−before 47.96 is not catch-up: `before` 72.13 sat in the 1′ goal's kick-off still beat (68.0 → 114.4 running s in 200 ms at 4x), so the original legitimately ran about 46 s before the option's actionability wait ended and about 1.4 s after the return, and the return was exact → production unchanged; the journey reads every presented `data-seconds` write from before the option click and asserts the first instant back equals the entry instant exactly, then that the original runs on at 4x (alt: widen the bound to about 60, which a real catch-up of up to 80 would still pass | sample `before` later, which still spans the return poll | pause the original first, leaving running return unproven).
 - 261030 decided WEB-18 WEB-42 WEB-46 WEB-97 T608: both live-state failures are one product defect: an owner's stop right after 결과만 보고 계속 drains the in-flight match day with `running` false and the world still on the eve, and EventCenter re-presented the resolved 8/7 report, which detached once the match day showed → EventCenter presents no event while the clock lock (`clockRunning`: running, or a stop still showing its computed days) holds, so a report appears only on the date a stop lands; the journey awaits the old dialog's full dismissal, tells a genuine next eve by its other date, observes the stop landing when the mode button unlocks and asserts the played-through report never returns (alt: retry around the transient dialog in the test, codifying the flash | hide only the played-through fixture's report, exposing the controller's private `passedMatch` | let the stop cancel the admitted match day, which the worker cannot do mid-day and would leave a played-through choice pending).
 - 261030 decided T608 ARCH-30 WEB-105 WEB-18: backend1773/1264/48 passed but Chromium331/334 with three failures → fix actual clip-return evidence and report-dismissal/owner-stop races, then a coordinator-owned targeted guard before the full final batch; preserve timeouts and assertions.
@@ -420,7 +421,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T609 | Fix CI failure | ARCH | - | todo |
+| T609 | Repair remaining Chromium and WebKit verification failures | ARCH WEB KIT MATCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -447,6 +448,7 @@
 - implement-task T609
 
 ## log
+- 261030 T609 refine: CI40961086172 backend/Firefox/WebKit2 pass, Chromium training+WebKit1 fail; scoped repair preserves all thresholds/timeouts. Owner requests unfinished work remotely resumable by09:30KST.
 - 261030 T608 done: goal replay's 47.96 was legitimate original playback (a kick-off still beat before selection, the return poll after) with an exact return; the journey now asserts the first restored instant equals the entry instant from every presented `data-seconds` write. Live state's two failures were EventCenter re-presenting the played-through 8/7 report while an owner's stop drained its match day; events now wait for the clock lock to release (new EventCenter unit case), and the journey observes the full dismissal, the stop's landing and a genuine next eve separately. Typecheck, lint, format, affected units (4 files, 35 tests) and build pass; the three Chromium cases are left to the coordinator.
 - 261030 create-task T608: Chromium331passed/3failed; all backend checks passed, no main code push; attempt-02 raw/traces retained.
 - 261030 T607 done: the four dccefdb2 integration failures. A goal-line block whose byline-clamped rebound rested 0.80 m from its blocker now goes behind for a corner on revision 10 (`blockedBehind`; unit scene in box.test.ts; only 1975's league facts/observed positions re-recorded; 50 grid-bands 24/37, goals 3.24, fingerprint 12faf221). Coordination's box scene now takes its shape before the runners arrive (stale sequential placement under T599's pairing). News checks every unbeaten milestone against HIST-11's per-match cap, with a hand-made crowded pair. Typecheck, lint, format, affected units (85 files, 808 tests) and build pass; the four cases and the modified integration files are left to the final gate.

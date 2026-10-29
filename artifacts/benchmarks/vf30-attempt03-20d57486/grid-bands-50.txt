@@ -1,0 +1,43 @@
+grid bands: 50 matches, year 2024, seeds grid-bands-1..4, model continuous-aggregate-10
+measure                         band            value    ok
+passes attempted (team)         356–594          391.51  pass
+pass completion %               60–100            82.56  pass
+pass forward %                  26.3–43.8         41.84  pass
+pass lateral %                  37.5–62.5         41.69  pass
+pass back %                     11.3–18.8         16.47  pass
+possessions (team)              71.3–119          81.95  pass
+median passes per possession    2–4                4.00  pass
+possessions ending in a shot %  9.38–15.6         22.49  FAIL
+shots (team)                    9.38–15.6         20.32  FAIL
+on target %                     25.1–41.9         24.26  FAIL
+xG per shot                     0.0788–0.131       0.08  pass
+shots from goal area %          5.63–9.38         18.01  FAIL
+shots from rest of box %        39.8–66.3         64.57  pass
+shots from outside %            27.8–46.3         17.42  FAIL
+mean shot distance m            12.4–20.6         11.68  FAIL
+shots from 30 m+ %              0–12.5             1.03  pass
+shots from own half %           0–0.625            0.00  pass
+crosses (team)                  12.4–20.6         17.41  pass
+cross completion %              18.8–31.3         18.67  FAIL
+take-ons (team)                 12.8–21.3         16.05  pass
+take-on success %               37.5–62.5         58.26  pass
+tackles + interceptions (team)  19.5–32.5         25.98  pass
+throw-ins (team)                15–25              8.69  FAIL
+corners (team)                  3.75–6.25          5.35  pass
+goal kicks (team)               6–10              10.69  FAIL
+fouls (team)                    8.63–14.4          9.64  pass
+offsides (team)                 1.35–2.25          1.10  FAIL
+yellow cards (match)            2.85–4.75          3.02  pass
+red cards (match)               0.08–0.15          0.04  FAIL
+goals (match)                   2.06–3.44          3.24  pass
+set-piece goals (no pens) %     18–30             19.75  pass
+penalty goals %                 5.63–9.38          6.17  pass
+headed goals %                  12.8–21.3         19.14  pass
+goals by FW %                   41.3–68.8         74.07  FAIL
+goals by MF %                   24–40             14.81  FAIL
+goals by DF %                   8–15              11.11  pass
+ball in play (min)              42–70             61.30  pass
+added time per match 11.16 min
+unopposed chances 10.44 a team (51.4% of shots), scored 8.8%
+passed 24/37
+176.2 ms a match
