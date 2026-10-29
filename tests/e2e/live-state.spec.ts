@@ -124,21 +124,32 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
   await eve.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
-  // The played-through eve leaves once the run starts its match day. League shows no round
-  // (→WEB-18); the clubhouse's season card counts the match at the end.
+  // The played-through report leaves as the run starts its match day: the whole dialog, not only
+  // its date. League shows no round (→WEB-18); the clubhouse's season card counts the match at the
+  // end.
   await expect(eveOn('1950년 8월 7일')).toHaveCount(0);
+  await expect(eveDialog).toHaveCount(0);
   // On a slow browser the run reaches the next match eve before this stop lands (CI WebKit
-  // 40245403294): the eve has stopped the clock itself and its backdrop takes the click.
+  // 40245403294): that eve, another day's report, has stopped the clock itself and its backdrop
+  // takes the click.
+  const nextEve = eveDialog.filter({
+    hasNot: page.getByRole('heading', { name: '1950년 8월 7일 · 경기 준비 보고', exact: true }),
+  });
   const stop = mini.getByRole('button', { name: '자동 진행 정지' });
-  while (!(await eveDialog.isVisible()))
+  while (!(await nextEve.isVisible()))
     try {
       await stop.click({ timeout: 1000 });
       break;
     } catch {
       // Covered by the next eve's backdrop, or not yet actionable: look again.
     }
-  if (await eveDialog.isVisible())
-    await eveDialog.getByRole('button', { name: '창 닫기', exact: true }).click();
+  // Either stop lands once every day it computed ahead is shown, the match day included, and
+  // management unlocks then (→WEB-97). The played-through report never comes back meanwhile.
+  await expect(mini.getByRole('button', { name: '진행 방식 변경', exact: true })).toBeEnabled();
+  await expect(eveOn('1950년 8월 7일')).toHaveCount(0);
+  if (await nextEve.isVisible())
+    await nextEve.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await expect(eveDialog).toHaveCount(0);
   await expect(page.getByRole('tab', { name: '선수 기록', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',

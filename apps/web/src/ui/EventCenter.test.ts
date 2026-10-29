@@ -122,6 +122,18 @@ describe('unfinished observation access', () => {
     expect(renderEvents()).toContain('NEXT MATCH · 보고 확인');
   });
 
+  it('presents no report until an owner stop has shown the days it computed ahead', () => {
+    // A stop after 결과만 보고 계속: the clock no longer runs, but the played-through match day is
+    // still to be shown, so the shown date is still that match's eve.
+    reports.eve = true;
+    reports.events = [{ id: 'tomorrow', kind: 'match' } as InboxItem];
+    gameStore.setState({ clockRunning: true });
+    expect(renderEvents()).toBe('');
+    // Once the stop has landed on its date, an eve still shown there is reported as usual.
+    gameStore.setState({ clockRunning: false });
+    expect(renderEvents()).toContain('NEXT MATCH · 보고 확인');
+  });
+
   it('preserves business-event access and excludes the manual match from its count', () => {
     gameStore.getState().view!.world.settings!.mode = 'manual';
     reports.eve = true;
