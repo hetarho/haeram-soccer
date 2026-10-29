@@ -78,10 +78,13 @@ export const SHAPE_CONFIG = {
      * onto the carrier: he stops at least `gap` m short of the ball, within `keeperOut.most`. Out
      * of possession an outfielder leans goal-side of the nearest attacker within `markRadius` m of
      * his place (`SHAPE_CONFIG.markRadius` before), so fewer forwards are left alone in front of
-     * goal (→MATCH-16: goals held by how often such chances arise). T579's screens (150 matches,
-     * goals a match): share 0.4 4.12, 0.5 3.85, 0.6 3.92; `markRadius` 14 3.47, 18 3.45.
+     * goal (→MATCH-16: goals held by how often such chances arise). T579's screens before the
+     * keeper narrowed the shot (`SHOT_CONFIG.revision9`; 150 matches, goals a match): share 0.4
+     * 4.12, 0.5 3.85, 0.6 3.92; `markRadius` 14 3.47, 18 3.45. With it (grid-bands 50 / core 80,
+     * goals a match): gap 4 3.22 / 3.60, gap 3 3.32 / 3.38, share 0.4 4.02 / 3.63, share 0.6
+     * 4.12 / –, `markRadius` 18 3.36 / 3.95.
      */
-    revision9: { keeperOut: { share: 0.5, gap: 4 }, markRadius: 14 },
+    revision9: { keeperOut: { share: 0.5, gap: 3 }, markRadius: 14 },
     tactic: {
       possession: {
         advance: 7,

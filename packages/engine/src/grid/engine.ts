@@ -1063,7 +1063,6 @@ export function playGrid(setup: GridSetup): GridResult {
         // (→MATCH-12 r27). A first-time finish takes no carry and no wind-up: it is struck at once,
         // as a second ball's shot is (T445).
         const firstTime = finish !== undefined || (again && d.action === 'shot');
-        (globalThis as any).__probe?.(s, owner, tags, d, firstTime); // PROBE-T579
         const jitter = candidate && !firstTime ? 0.85 + 0.3 * r() : 0;
         const carry = candidate && !firstTime ? inStride(owner[0], owner[1], d, jitter) : undefined;
         const carried = carry?.seconds ?? 0;
@@ -1075,7 +1074,6 @@ export function playGrid(setup: GridSetup): GridResult {
         // Where everyone heads before the kick: off the ball they keep on until they read it.
         const before = candidate ? heading(s) : undefined;
         const played = play(owner[0], owner[1], d, jitter, carry, finish);
-        (globalThis as any).__probeOut?.(s, owner, d, played.outcome, carried, from); // PROBE-T579
         // What is left of the action's time after the carry.
         const least = candidate ? secondsOf(played.key) * jitter - carried : 0;
         // Everyone reacts to the action as it is played — a pass, a carry, a turnover — before anyone moves.

@@ -91,7 +91,8 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * revision 2's movement, for T466's revision 3, for T479's revision 4, for T480's corner numbers
  * for T481's shot choice, for T482's recalibration, for T538's revision 5, for T542's revision
  * 6, for T548's revision 7, for T561's revision 8 and for T579's revision 9, the first tie of
- * each kind; T561's were 3/34, 15/8 and 28/4 (revision 8's, `REVISION_8_CASES`), T548's were
+ * each kind (T579's: 6/28, 9/19 and 5/7); T561's were 3/34, 15/8 and 28/4 (revision 8's,
+ * `REVISION_8_CASES`), T548's were
  * 11/30, 18/7 and 14/13 (revision 7's, `REVISION_7_CASES`), T542's were 7/20, 5/3 and 12/7
  * (revision 6's, `REVISION_6_CASES`), T538's were 3/2, 6/1 and 23/0 (revision 5's, `REVISION_5_CASES`),
  * T482's were 6/31, 5/29 and 7/11 (revision 4's, `REVISION_4_CASES`), T481's were
@@ -108,9 +109,9 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * and 5/15, T446's 0/1, 0/3 and 2/0, T447's 4/2, 2/5 and 16/0 — revision 1's, `REVISION_1_CASES`).
  */
 const CASES = {
-  1975: { extraTime: 3, shootout: 34 },
-  1995: { extraTime: 15, shootout: 8 },
-  2024: { extraTime: 28, shootout: 4 },
+  1975: { extraTime: 6, shootout: 28 },
+  1995: { extraTime: 9, shootout: 19 },
+  2024: { extraTime: 5, shootout: 7 },
 } as const;
 type Year = keyof typeof CASES;
 
@@ -352,34 +353,34 @@ interface CandidateDigests {
  * (`REVISION_7`). Revisions 1–7's and the pre-feature facts did not move.
  * T579's match-model revision 9 (the carrier shields only from outfielders, a shot is struck soon
  * after he chooses it, nobody within 5 m is a clear chance and the keeper comes about half way,
- * narrowing the angle; 600 matches in result) moved every value and the knockout ties (rescanned
- * above); before it, the values now revision 8's (`REVISION_8`). Revisions 1–8's and the
- * pre-feature facts did not move.
+ * narrowing the angle; 50-match reads in result) moved every value and the knockout ties
+ * (rescanned above); before it, the values now revision 8's (`REVISION_8`). Revisions 1–8's and
+ * the pre-feature facts did not move.
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: 'TODO',
-      extraTime: 'TODO',
-      shootout: 'TODO',
+      league: '02d7292d6c390679',
+      extraTime: 'a6703b119b4e7ce1',
+      shootout: '424dba2e8331c174',
     },
-    positions: { observed: 'TODO', shootout: 'TODO' },
+    positions: { observed: '9a206d559a7abc31', shootout: '5fc0d23c262ad348' },
   },
   1995: {
     facts: {
-      league: 'TODO',
-      extraTime: 'TODO',
-      shootout: 'TODO',
+      league: 'ef4dd3e0c40a6e01',
+      extraTime: '6798ed3cb9ee31a1',
+      shootout: 'c62b21d9b1f7dcf6',
     },
-    positions: { observed: 'TODO', shootout: 'TODO' },
+    positions: { observed: '04005588300e48e8', shootout: 'f500b465988fe5d6' },
   },
   2024: {
     facts: {
-      league: 'TODO',
-      extraTime: 'TODO',
-      shootout: 'TODO',
+      league: 'eb4b4cd01473ad0b',
+      extraTime: '5dcc8f0c63c2d3fa',
+      shootout: '0c30ef3efb9df989',
     },
-    positions: { observed: 'TODO', shootout: 'TODO' },
+    positions: { observed: '2f9905dec60f8230', shootout: '4834d086aebcce67' },
   },
 };
 

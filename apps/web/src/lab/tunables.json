@@ -1466,6 +1466,12 @@
           "value": 0.42,
           "comment": "Candidate model only (T278, →MATCH-23): a header's chance quality, in place of `header`.",
           "loadTime": false
+        },
+        {
+          "path": "SHOT_CONFIG.revision9.narrow.reach",
+          "value": 1.5,
+          "comment": "Revision 9 (T579, →MATCH-35 r42, MATCH-11): the keeper narrows the angle. From the shot, he covers the goal mouth within `reach` m either side of him; a shot's chance scales by the share of the mouth he leaves open against the share a keeper on his goal line's middle leaves (`keeperNarrowing`), so a keeper off his line toward the ball takes chances away and one caught out of position gives them.",
+          "loadTime": false
         }
       ]
     },
@@ -3866,13 +3872,19 @@
         {
           "path": "SHAPE_CONFIG.candidate.revision9.keeperOut.share",
           "value": 0.5,
-          "comment": "Revision 9 (T579, →MATCH-35 r42): the keeper comes about half of the way (`share`) and never onto the carrier: he stops at least `gap` m short of the ball, within `keeperOut.most`.",
+          "comment": "Revision 9 (T579, →MATCH-35 r42): the keeper comes about half of the way (`share`) and never onto the carrier: he stops at least `gap` m short of the ball, within `keeperOut.most`. Out of possession an outfielder leans goal-side of the nearest attacker within `markRadius` m of his place (`SHAPE_CONFIG.markRadius` before), so fewer forwards are left alone in front of goal (→MATCH-16: goals held by how often such chances arise). T579's screens before the keeper narrowed the shot (`SHOT_CONFIG.revision9`; 150 matches, goals a match): share 0.4 4.12, 0.5 3.85, 0.6 3.92; `markRadius` 14 3.47, 18 3.45. With it (grid-bands 50 / core 80, goals a match): gap 4 3.22 / 3.60, gap 3 3.32 / 3.38, share 0.4 4.02 / 3.63, share 0.6 4.12 / –, `markRadius` 18 3.36 / 3.95.",
           "loadTime": false
         },
         {
           "path": "SHAPE_CONFIG.candidate.revision9.keeperOut.gap",
-          "value": 4,
-          "comment": "Revision 9 (T579, →MATCH-35 r42): the keeper comes about half of the way (`share`) and never onto the carrier: he stops at least `gap` m short of the ball, within `keeperOut.most`.",
+          "value": 3,
+          "comment": "Revision 9 (T579, →MATCH-35 r42): the keeper comes about half of the way (`share`) and never onto the carrier: he stops at least `gap` m short of the ball, within `keeperOut.most`. Out of possession an outfielder leans goal-side of the nearest attacker within `markRadius` m of his place (`SHAPE_CONFIG.markRadius` before), so fewer forwards are left alone in front of goal (→MATCH-16: goals held by how often such chances arise). T579's screens before the keeper narrowed the shot (`SHOT_CONFIG.revision9`; 150 matches, goals a match): share 0.4 4.12, 0.5 3.85, 0.6 3.92; `markRadius` 14 3.47, 18 3.45. With it (grid-bands 50 / core 80, goals a match): gap 4 3.22 / 3.60, gap 3 3.32 / 3.38, share 0.4 4.02 / 3.63, share 0.6 4.12 / –, `markRadius` 18 3.36 / 3.95.",
+          "loadTime": false
+        },
+        {
+          "path": "SHAPE_CONFIG.candidate.revision9.markRadius",
+          "value": 14,
+          "comment": "Revision 9 (T579, →MATCH-35 r42): the keeper comes about half of the way (`share`) and never onto the carrier: he stops at least `gap` m short of the ball, within `keeperOut.most`. Out of possession an outfielder leans goal-side of the nearest attacker within `markRadius` m of his place (`SHAPE_CONFIG.markRadius` before), so fewer forwards are left alone in front of goal (→MATCH-16: goals held by how often such chances arise). T579's screens before the keeper narrowed the shot (`SHOT_CONFIG.revision9`; 150 matches, goals a match): share 0.4 4.12, 0.5 3.85, 0.6 3.92; `markRadius` 14 3.47, 18 3.45. With it (grid-bands 50 / core 80, goals a match): gap 4 3.22 / 3.60, gap 3 3.32 / 3.38, share 0.4 4.02 / 3.63, share 0.6 4.12 / –, `markRadius` 18 3.36 / 3.95.",
           "loadTime": false
         },
         {

@@ -15,8 +15,11 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| r9k5 | hq-dev1-pve2-vm2 | autopilot | 2026-10-29T05:01Z | 2026-10-29T05:01Z | - |
 
 ## inbox
+- 261029 decided MATCH-35 MATCH-11 T579: a forward alone now shoots at once and the keeper's position alone left goals at 4.88 a match (grid-bands 50) → the keeper narrows the shot: its chance scales by the share of the goal mouth he leaves open, against a keeper on his line's middle (`SHOT_CONFIG.revision9.narrow.reach` 1.5 m, resolve.ts beyond the task's touches), with the keeper half way and 3 m short of the ball: 3.32 goals and 25/37 at 50 (revision 8 3.82 and 23/37 on the same fixtures) (alt: reach 1.0, 3.68 | gap 4, 3.22 on bands but 3.60 on core 80 | markRadius 18, 3.36 / 3.95).
+- 261029 suggest MATCH-16 MATCH-23 T579: revision 9 takes 20.7 shots a team (revision 8 about 16) with possessions ending in a shot 22.9%, and on target and xG per shot sit at their floors as the keeper's narrowing lowers each chance — next lever how often a forward is left alone near the box (a defence goal-side near its box), not the shot in such a chance.
 - 261029 decided WEB-50 T582: `inkOn`'s #121212/white pair reaches only about 4.3:1 on mid-grey shirts → keep `inkOn` and switch to pure black where it falls under 4.5:1, which always reaches it there; halves drawn from the score plate's centre, so the split stays under the score although the back control sits on the home side (alt: plain `inkOn` with mid-tones under 4.5 | a 50% split off the score's centre).
 - 261029 decided MATCH-12 MATCH-16 MATCH-31 MATCH-35 T579 T580: owner's report (forward alone in front of goal stands, turns away; passes near the box go to defenders) → match-model revision 9 in two explore tasks, shot side first so the pass probe reads it in place (alt: one task | shot side only).
 - 261029 decided LAB-9 WEB-32 T578: which pause the lab's match view offers, since live observation has no pause button and the archived replay mode drops the speeds and charts → render Pitch in its live mode, whose pause is the game's (a timeline seek holds the instant, a speed resumes it), with the speeds, charts and details as the game shows a live match (alt: archived-replay mode with its play/pause button but no speeds or charts | a lab pause button, which would fork the view).
@@ -395,7 +398,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T579 | Revision 9: a forward through on goal faces the keeper and shoots at once | MATCH | - | todo |
 | T580 | Revision 9: a pass near the box is lost only where an opponent really gets to it | MATCH | T579 | todo |
 
 ## work
@@ -420,9 +422,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T579 (resume dbc65d11 on work/r9), then T580: 50-match reads, unit tests only, push each (owner 261029); then the full suite once on main.
+- implement-task T580 (revision 9's pass side, on T579's source): 50-match reads, unit tests only, push each (owner 261029); then the full suite once on main.
 
 ## log
+- 261029 T579 done: match-model revision 9 — the keeper is never a presser, a shot's wind-up heads at goal and lasts 0.4 s with nobody within 5 m, nobody within 5 m is a clear chance, the keeper comes half way and stops 3 m short, narrowing the shot; 50-match read 3.32 goals, 25/37 (revision 8 3.82, 23/37 there); revisions 1–8 replay draw for draw; typecheck, lint, format:check, affected unit tests and build pass.
 - 261029 decided T579 T580 (owner): read candidates at 50 matches instead of 600, check only typecheck/lint/format and affected unit tests, push each task to main; run the whole suite once after every task is on main.
 - 261029 T582 done: figures drawn at 85% of the marker, no carrier outline or enlarged plate, scoreboard halves in the worn shirts (scoreboardHalves.ts), a panelled rolling football (pixel version on the grid), lab 관전 records the fixture's appearance; typecheck, lint, format:check, 198 affected unit tests and build pass; e2e specs and the eye check left to the batch run.
 - 261029 update-ssot WEB r172 + MATCH r43 + create-task T582 (owner, match view): figures 85% of the marker, carrier never grows, scoreboard halves in kit colours, a football ball; lab watched matches wear their kits. Planned in worktree work/view while r9k4 runs T579–T580 in the main checkout.
@@ -442,12 +445,3 @@
 - 261029 T574 done: lab worker pool, trimmed samples, run summary with equal-sides note; 136 affected unit tests pass; scripts/_scan.ts (stray T572 scratch) dropped.
 - 261029 T574 start
 - 261029 update-ssot WEB r170 and T576 start: controller must use a newly generated bitmap texture distinct from sheet and round/table backgrounds.
-- 261029 update-ssot LAB r3: LAB-2 a pressing lab side carries the press load (`PRESS_LOAD_FATIGUE`) like a club nobody owns; implemented in lab/sides.ts with its test, no new task.
-- 261029 T573 done: tunable catalog script and freshness test (865 leaves).
-- 261029 T573 start
-- 261029 T572 done: lab sides, lab setup option and grid tunables; 749 affected unit tests pass.
-- 261029 update-ssot LAB r2: LAB-2 player OVR range 20–92 (generator bounds); no task change (T572 implements it).
-- 261029 T572 start
-- 261029 create-task LAB r1 → T572–T575 (engine hooks, tunable catalog, worker runner, lab page).
-- 261029 create-ssot LAB r1: match lab — generated left/right sides, every grid `*_CONFIG` number editable, N-match runs against MATCH-23 with baseline comparison.
-- 261029 create-ssot LAB start
