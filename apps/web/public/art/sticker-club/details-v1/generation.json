@@ -390,8 +390,8 @@
       "mode": "image",
       "optimization": {
         "policy": "compact-ui-and-responsive-scenes-v1",
-        "inputBytes": 15608,
-        "inputSha256": "b844e15c198c68e32247600fe2d9b60caa04f14a334f071362151d0b821b31f7",
+        "inputBytes": 15603,
+        "inputSha256": "6ba6c4c0c5e0aa24be4d95ed06099e13b20cc9ed177614ebe089822fdb9477bc",
         "width": 64,
         "height": 2,
         "quality": 85
@@ -408,8 +408,8 @@
       "mode": "image",
       "optimization": {
         "policy": "compact-ui-and-responsive-scenes-v1",
-        "inputBytes": 15608,
-        "inputSha256": "b844e15c198c68e32247600fe2d9b60caa04f14a334f071362151d0b821b31f7",
+        "inputBytes": 15603,
+        "inputSha256": "6ba6c4c0c5e0aa24be4d95ed06099e13b20cc9ed177614ebe089822fdb9477bc",
         "width": 20,
         "height": 128,
         "quality": 85

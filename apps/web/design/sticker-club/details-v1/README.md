@@ -38,6 +38,10 @@ body contrast is at least 9:1. Quiet rules and heading materials establish hiera
 repeated outline cards. Analysis shares the sheet; the main series and formation marker use
 burnt orange while heat maps retain their semantic scale.
 
+Small accent text uses darker burnt orange `#9b3617`: the action/series colour `#b84620`
+does not reach 4.5:1 on the recessed canvas. The darker text exceeds 5:1 on that encoded plane;
+the graph line, marker and filled primary action retain their existing colour.
+
 Review covers 1380px desktop and 390/360px phones: controls/states, open dropdown, tabs/tables,
 three-plane cards, all tiers, charts/formations, league, fixtures and home. No overflow or missing
 resource was observed. Disposable captures live under `.tmp/theme-detail-review/`. These are

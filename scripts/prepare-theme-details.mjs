@@ -111,8 +111,8 @@ function detailTokens(id, config) {
   const v = (role) => `var(--${role})`;
   const tokens = {
     accent: config.primary,
-    'accent-text': id === 'sticker-club' ? config.primary : v('image-accent'),
-    'image-accent': config.primary,
+    'accent-text': v('image-accent'),
+    'image-accent': id === 'sticker-club' ? '#9b3617' : config.primary,
     'image-canvas': config.canvas,
     'image-quiet': config.sheet,
     'image-detail': config.detail,
