@@ -5,6 +5,8 @@ import {
   clearChance,
   decide,
   DECISION_CONFIG,
+  receiverTight,
+  rereadPass,
   throughPoint,
   type Decision,
 } from './decide';
@@ -1083,7 +1085,17 @@ export function playGrid(setup: GridSetup): GridResult {
         // as a second ball's shot is (T445).
         const firstTime = finish !== undefined || (again && d.action === 'shot');
         const jitter = candidate && !firstTime ? 0.85 + 0.3 * r() : 0;
+        // Revision 10 (T600): whether the decided pass's receiver is free as it is chosen; one
+        // closed down during the carry makes him read his passes again at the kick (`rereadPass`).
+        const free =
+          candidate &&
+          modelAtLeast(s.setup, 10) &&
+          d.action === 'pass' &&
+          d.target !== undefined &&
+          !receiverTight(s, owner[0], d.target);
         const carry = candidate && !firstTime ? inStride(owner[0], owner[1], d, jitter) : undefined;
+        if (carry && free)
+          d = rereadPass(s, owner[0], owner[1], d, free, computeTags(s, owner[0], owner[1]), r);
         const carried = carry?.seconds ?? 0;
         if (carry) from = [...s.players[owner[0]][owner[1]]!.pos] as [number, number];
         // A shot after his carry (T445): an observed match records every slot at its kick, as a

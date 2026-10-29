@@ -18,6 +18,7 @@
 | vf30 | ihaelam-ui-MacBookPro | autopilot | 2026-10-29T17:16Z | 2026-10-29T17:16Z | - |
 
 ## inbox
+- 261030 decided MATCH-16 MATCH-17 MATCH-31 T600: how to keep the carrier from passing to a receiver closed down during his carry → read the decided pass again at the kick only when its receiver, free as chosen, is now within 2.5 m of an opponent from 75 m on, the closed man scoring `revision10.kick.closed` 1.5 less: on the same 50 grid-bands matches tight at the kick 48.1 → 30.4%, central losses 29.7 → 24.2%, completion 81.27 → 82.62%, goals 3.56 → 3.24, rows 24 → 24 (alt: weigh each receiver at the decision by who can reach him by the kick or reception, which flagged nearly every near-box receiver, moved the kick's share only to 45–50% and took passes out of the box | `closed` 0/1/2.5/5, rows 23/24/23/24 with goals 3.50/3.52/3.50/3.96 outside); settings differ within noise (goals ±0.4) except the predictor's global suppression.
 - 261030 decided MATCH-17 MATCH-23 MATCH-34 T599: which source to keep at the exit → goal-side marks near40/zone30/pick12/blend0.8/line0/room8 with runner.lead6: on the same 50 grid-bands matches revision 10 before → this, shots a team 21.8 → 20.3, possessions ending in a shot 22.8 → 21.6%, unopposed chances 10.7 → 9.6, goals 4.20 → 3.56 (revision 9 3.42), held rows 24 → 24, crowd at decisions 2.84 → 2.95% (alt: `room` 0 with near55/zone35/pick14, shots 18.5 and 25 rows but crowd 3.20%, renewing the crowd MATCH-17 forbids | `line` −3, 22 rows | `runner.lead` 0, 21 rows); held rows swing ±2 on boundary rows at 50 matches, so the screens differ within noise except the crowd; the n150 scratch files are out-of-scope reference only.
 - 261030 decided T599: exploratory unit exceeded its fixed50-match bound in several150-match scratch reads → coordinator interrupts and preserves the WIP, excludes non50 reads from selection/final evidence, and resumes with the original17:57:16Z exit (alt: silently accept the larger reads | restart the90-minute clock); no target or test gate is relaxed.
 - 261030 decided MATCH-36 KIT-3 KIT-8 ARCH-21 T598: how the kit evidence follows the 85% figures (no renderer defect; both specs read a torso the pitch no longer paints) → one shared pure module, tests/fixtures/figure-evidence.ts, sizes the torso from `markerRadius` × `torsoWidth` × the Canvas's DPR and keeps the fit's thresholds; continuity's phone journeys read at DPR 2 like observation, with worn-pattern, wrong-pattern, base-colour, keeper and not-worn-design checks; colour minima count within the painter's shading bound, 60 (alt: keep DPR 1 exact-pixel counts with a lower minimum, where hoops show only socks | rescale the old in-page template alone | keep tolerance 40, leaving a 360 px #00ffcc keeper's torso at 56 against 52).
@@ -410,7 +411,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T600 | Receiver safety at the time of reception | MATCH SAVE ARCH | T599 | todo |
 | T601 | Recorded goal-scene replay | WEB MATCH SAVE ARCH | T600 | todo |
 
 ## work
@@ -435,10 +435,11 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T600 against T599's final revision-10 source (goal-side marks near40/zone30/pick12/blend0.8/line0/room8, runner.lead6); every exploratory read stays exactly 50 matches. T600 then finalizes receiver safety and revision10 digests/knockout/extra-time/goal-cue fixtures; T601 adds goal-scene replay on the latest WEB r187 design.
+- implement-task T601 (goal-scene replay on the latest WEB r187 design) on T600's final revision-10 source; revision 10's digests, knockout ties, extra-time fixture (`candidate-et-7`) and goal-cue seed (`goal-feedback-2`) are recorded for it and confirmed only by the final combined gate.
 - Complete the scoped work and final combined coordinator checks before the explicitly requested main code push and CI wait; preserve the merged page/theme work and leave unrelated legacy ideation untouched.
 
 ## log
+- 261030 T600 done: revision 10 reads a decided pass again at the kick when its receiver, free as chosen, has been closed within 2.5 m during the carry near the box (`rereadPass`, the closed man 1.5 less); same 50 grid-bands matches T599 → final: central ≤18 m passes tight at the kick 48.1 → 30.4%, lost to the opponent 29.7 → 24.2%, completion 81.27 → 82.62%, goals 3.56 → 3.24, held rows 24 → 24; the decision-time reach predictor did not separate receivers and was removed; revision-10 digests, ties 8/29 2/12 19/14, `candidate-et-7` and `goal-feedback-2` recorded; typecheck, lint, format:check, 806 affected unit tests and build pass; integration/browser confirmation left to the final gate.
 - 261030 T599 done: revision 10 marks each attacker near the box goal-side (one free marker a man within 12 m, back line holding its line, nobody marked within 8 m of the ball, a runner in behind marked along his run); same 50 grid-bands matches, revision 10 before → final: shots 21.81 → 20.29, possessions ending in a shot 22.77 → 21.56%, unopposed chances 10.66 → 9.62 a team, goals 4.20 → 3.56 (revision 9 3.42), held rows 24 → 24, crowd 2.84 → 2.95%; grid CPU ×1.056 [1.050, 1.063] slower on this host; typecheck, lint, format:check, 1013 affected unit tests and build pass; the n150 scratch reads are out-of-scope reference only; revision-10 digests and integration checks are left to T600 and the final gate.
 - 261030 vf30 merge current page/theme publication930b4ac5: preserve its code/resources and WEB r187; retain archived T597/T598 completion instead of their obsolete active freshness-only copies.
 - 261030 vf30 recover T599: retain source and all raw measurements; remaining exploration uses exactly50 matches and the original90-minute deadline.
@@ -458,4 +459,3 @@
 - 261030 T602 done: fixed workbench styling separated from game themes at document bootstrap; 18 units, type/lint/format, production build/boundary and spec checks pass. Browser verification deferred; no commit/push requested.
 - 261030 T597/T598/T601 freshness: WEB r186 changes only WEB-103 workbench styling, outside their cited policies; advance bases without changing their scope.
 - 261030 create-task WEB r186 → T602; ds30 implementing the directly requested workbench isolation fix without changing the vf30 engine/replay queue.
-- 261030 update-ssot WEB start: isolate development-workbench navigation and controls from preview themes; direct owner-assigned fix in the main checkout, independent of the completed module-1026 runtime binding.

@@ -657,6 +657,7 @@
     "DECISION_CONFIG.candidate.revision9.tight.score": "리비전 9에서 바짝 마크된 수신자의 패스 점수에서 빼는 값입니다. 판단력이 좋을수록(온도가 낮을수록) 그 수신자를 더 확실히 피합니다. 올리면 박스 안 혼전으로 넣는 패스가 줄어듭니다.",
     "DECISION_CONFIG.candidate.revision9.tight.room": "리비전 9에서 공 가진 선수 주변 이 거리(m) 안에 상대가 없어야 '공간이 있다'고 봅니다. 그때 박스 안 수신자가 모두 바짝 마크돼 있으면 패스를 줄입니다.",
     "DECISION_CONFIG.candidate.revision9.tight.pass": "리비전 9에서 공간이 있는 선수의 박스 안 수신자가 모두 바짝 마크돼 있을 때 패스 가중치에 곱하는 배수입니다. 내리면 그 대신 슈팅하거나 몰고 갑니다.",
+    "DECISION_CONFIG.candidate.revision10.kick.closed": "리비전 10부터: 패스를 고를 때는 비어 있던 수신자가 공을 몰고 가는 사이 상대에게 바짝 붙잡히면, 공 가진 선수는 차기 직전에 패스 대상을 다시 고릅니다. 그때 붙잡힌 그 수신자의 패스 점수에서 이 값을 더 뺍니다(바짝 마크된 수신자 감점과 별도). 올리면 막힌 선수 대신 다른 동료에게 더 자주 패스합니다.",
     "DECISION_CONFIG.candidate.longShotScale": "골문에서 longShot.from보다 멀어질 때 슈팅 가중치가 약 1/2.7로 줄어드는 거리 간격입니다(m). 올리면 먼 거리 중거리 슈팅이 늘어납니다.",
     "DECISION_CONFIG.candidate.through.lead": "스루패스를 받을 선수의 진행 방향으로 얼마나 앞에 찔러 주는지입니다(m). 올리면 공이 더 앞 공간으로 갑니다.",
     "DECISION_CONFIG.candidate.through.depth": "스루패스가 떨어질 수 있는 가장 깊은 위치입니다(공격 방향 자기 골라인에서 m). 올리면 골문 더 가까이까지 찔러 줍니다.",

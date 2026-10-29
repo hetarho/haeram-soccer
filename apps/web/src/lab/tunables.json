@@ -3273,6 +3273,12 @@
           "loadTime": false
         },
         {
+          "path": "DECISION_CONFIG.candidate.revision10.kick.closed",
+          "value": 1.5,
+          "comment": "Revision 10 (T600, →MATCH-16 r44, MATCH-17, MATCH-31): at the kick (`rereadPass`) a receiver free as the carrier chose him (nobody within `revision9.tight.mark` m, from `tight.from` m up the pitch) whom an opponent has closed down that tight during the carry is a changed circumstance: the carrier reads his passes again, the closed man scoring `kick.closed` less on top of revision 9's tight term. T600's explore (the same 50 grid-bands matches): central passes within 18 m of goal tight at the kick 48.1 → 30.4%, lost to the opponent 29.7 → 24.2%, completion 81.3 → 82.6%, goals 3.56 → 3.24 a match. Weighing at the decision who could close each receiver by the kick or the reception moved the kick's share only 48 → 45–50% and took passes out of the box instead.",
+          "loadTime": false
+        },
+        {
           "path": "DECISION_CONFIG.candidate.longShotScale",
           "value": 3.5,
           "comment": "Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+. T370: 4 → 3.5, so fewer box shots do not push the shot places outside and from 30 m+.",

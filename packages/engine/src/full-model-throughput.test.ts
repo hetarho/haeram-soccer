@@ -142,14 +142,13 @@ const facts = (w: World) => ({
  * both, label and football; d1399a4a21838e96 and 467422b4a9e71b20 before. T579's match-model
  * revision 9 changed both, label and football; 6e84c90f4999c036 and 4413c78f084792fc before.
  * T580's pass side of revision 9 changed the candidate rounds' football only (the aggregate path
- * plays no grid pass); 7e65349668e35e13 before. T596's match-model revision 10 changes the
- * aggregate records' label and the candidate rounds' label and football; 593d6d509d01b4b2 and
- * 5f44410b73d9e99e before. Its values are recorded once T599 and T600 have completed the
- * unreleased revision (T596's limits).
+ * plays no grid pass); 7e65349668e35e13 before. T596's match-model revision 10, with T599's
+ * goal-side marks and T600's pass read again at the kick, changed the aggregate records' label and
+ * the candidate rounds' label and football; 593d6d509d01b4b2 and 5f44410b73d9e99e before.
  */
 const BEFORE = {
-  aggregateRecords: 'TODO',
-  candidateRounds: 'TODO',
+  aggregateRecords: '2c29fb75f9446f68',
+  candidateRounds: 'b9827562f0e62916',
 };
 
 describe('complete-result throughput (T285)', () => {
