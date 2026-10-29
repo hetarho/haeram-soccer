@@ -98,7 +98,7 @@ export function playerLook(id: string): PlayerLook {
   };
 }
 
-/** The detail step for a torso `2 · radius` CSS px wide at `dpr` device px per CSS px. */
+/** The detail step for a marker `2 · radius` CSS px wide at `dpr` device px per CSS px. */
 export function figureDetail(radius: number, dpr: number): FigureDetail {
   const pixels = 2 * radius * dpr;
   return pixels >= FIGURE_LOD.full ? 'full' : pixels >= FIGURE_LOD.medium ? 'medium' : 'flat';
@@ -160,8 +160,13 @@ export interface FigureDrawOptions<S extends FigureCanvas = HTMLCanvasElement> {
   /** The figure's centre, CSS px. */
   x: number;
   y: number;
-  /** Half the torso's width, CSS px: callers on the pitch pass `markerRadius(width)` (MATCH-36). */
+  /**
+   * The player marker's radius, CSS px: callers on the pitch pass `markerRadius(width)`. The torso
+   * is `torsoScale` of its diameter (MATCH-36).
+   */
   radius: number;
+  /** The torso's share of the marker diameter; `FIGURE_SCALE.torso` unless given. */
+  torsoScale?: number;
   /** Device pixels per CSS pixel the target context is scaled by. */
   dpr: number;
   look: PlayerLook;
@@ -229,6 +234,12 @@ const PAINT = {
   oversample: 2,
 } as const;
 
+/**
+ * How large a figure is drawn against its player marker (MATCH-36): the torso is this share of the
+ * marker diameter `2 · radius`; tags, rings and diagrams keep the marker itself.
+ */
+export const FIGURE_SCALE = Object.freeze({ torso: 0.85 });
+
 const COLOURS = {
   shadow: '#0000003d',
   boot: '#17191b',
@@ -259,14 +270,14 @@ const along = (a: Point, b: Point, t: number): [number, number] => [
 
 /**
  * Where a pose point is drawn, CSS px: the frame `draw` paints in, centred at (x, y), a torso width
- * `2 · radius` px and larger with a jump. A held ball's socket goes through this.
+ * `torsoWidth(options)` px and larger with a jump. A held ball's socket goes through this.
  */
 export function figurePoint(
   pose: FigurePose,
   point: readonly [number, number],
-  options: Pick<FigureDrawOptions, 'x' | 'y' | 'radius'>,
+  options: Pick<FigureDrawOptions, 'x' | 'y' | 'radius' | 'torsoScale'>,
 ): [number, number] {
-  const scale = 2 * options.radius * (1 + pose.jump * PAINT.jumpScale);
+  const scale = torsoWidth(options) * (1 + pose.jump * PAINT.jumpScale);
   const c = Math.cos(pose.facing),
     s = Math.sin(pose.facing);
   return [
@@ -274,6 +285,10 @@ export function figurePoint(
     options.y + (point[1] * s + point[0] * c) * scale,
   ];
 }
+
+/** The drawn torso's width, CSS px: its share of the marker diameter. */
+export const torsoWidth = (options: Pick<FigureDrawOptions, 'radius' | 'torsoScale'>) =>
+  2 * options.radius * (options.torsoScale ?? FIGURE_SCALE.torso);
 
 /** The torso's rounded rectangle at (left, top), `w` across and `d` deep, `FIGURE_TORSO`'s corners. */
 function torsoPath(c: FigurePaintContext, left: number, top: number, w: number, d: number) {
@@ -584,7 +599,7 @@ export function createFigurePainter(
     draw(ctx, pose, kit, options) {
       const { x, y, radius, dpr, look, outline } = options;
       const detail = figureDetail(radius, dpr);
-      const width = 2 * radius;
+      const width = torsoWidth(options);
       const scale = width * (1 + pose.jump * PAINT.jumpScale);
       const turn = pose.facing + Math.PI / 2;
       const shirt = kit.shirt;

@@ -200,16 +200,19 @@ describe('number tags (→MATCH-36, WEB-95)', () => {
     expect(tags.map((t) => t.x)).toEqual(players.map((p) => p.x));
   });
 
-  it('enlarges only the carrier’s plate at phone scale and keeps top-edge numbers visible', () => {
+  it('carrier tag same size', () => {
+    // The carrier's plate is only coloured (WEB-95): a tag is sized from its marker radius alone,
+    // and a stray enlargement from an older caller changes nothing.
     const player = { ...figure('a', 200.25, 120.5, 10), radius: 6 };
     const regular = placeNumberTags([player])[0]!;
-    const enlarged = placeNumberTags([{ ...player, scale: 1.3 }])[0]!;
-    expect(regular.x).toBe(player.x);
-    expect(enlarged.x).toBe(player.x);
-    expect(enlarged.size).toBeCloseTo(regular.size * 1.3);
-    expect(enlarged.width).toBeGreaterThan(regular.width);
-    expect(enlarged.height).toBeGreaterThan(regular.height);
-    expect(boxOf(enlarged)[3]).toBe(boxOf(regular)[3]);
+    const carrier = placeNumberTags([{ ...player, scale: 1.3 } as NumberTagInput])[0]!;
+    expect(carrier).toEqual(regular);
+    const crowd = placeNumberTags([player, { ...player, id: 'b', x: 260.5 }]);
+    expect(crowd[1]!.size).toBe(crowd[0]!.size);
+    expect(crowd[1]!.height).toBe(crowd[0]!.height);
+  });
+
+  it('keeps top-edge numbers visible', () => {
     const corner = placeNumberTags([figure('c', 30.25, 5)])[0]!;
     expect(corner.x).toBe(30.25);
     expect(boxOf(corner)[1]).toBe(0);

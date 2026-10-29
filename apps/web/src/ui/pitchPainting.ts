@@ -154,39 +154,103 @@ export function createGroundPainter(
   };
 }
 
-/** A theme's ball without an outer outline, with the same centre and bounds in every treatment. */
+/** The ground ball's radius on a pitch `width` CSS px wide; height enlarges it in the view. */
+export const ballRadius = (width: number) => Math.max(3.2, width * 0.0065);
+
+/**
+ * The classic panels in ball radii: a central pentagon and five around it, each pentagon's centre
+ * distance and corner radius. The outer ones are cut by the ball's edge.
+ */
+const BALL_PANELS = { centre: 0.36, ring: 0.95, outer: 0.34 } as const;
+
+/** The pixel ball's outline in ball radii: a stepped octagon. */
+const PIXEL_BALL = [
+  [-0.5, -1],
+  [0.5, -1],
+  [0.5, -0.5],
+  [1, -0.5],
+  [1, 0.5],
+  [0.5, 0.5],
+  [0.5, 1],
+  [-0.5, 1],
+  [-0.5, 0.5],
+  [-1, 0.5],
+  [-1, -0.5],
+  [-0.5, -0.5],
+] as const;
+
+/** Every panel's centre and corner radius around (x, y), turned by `spin`. */
+function ballPanels(x: number, y: number, radius: number, spin: number) {
+  const panels = [{ x, y, r: BALL_PANELS.centre * radius, turn: spin }];
+  for (let i = 0; i < 5; i++) {
+    const a = spin + (i * 2 * Math.PI) / 5 + Math.PI / 5;
+    panels.push({
+      x: x + Math.cos(a) * BALL_PANELS.ring * radius,
+      y: y + Math.sin(a) * BALL_PANELS.ring * radius,
+      r: BALL_PANELS.outer * radius,
+      // The outer pentagons point at the centre one, as on a real ball.
+      turn: a + Math.PI,
+    });
+  }
+  return panels;
+}
+
+/**
+ * A theme's football (MATCH-36): the leather in `skin.ball`, dark classic panels in
+ * `skin.ballSeam` turned by `spin` radians as it travels, and a thin `skin.ballEdge` rim. The pixel
+ * theme draws the same ball on its pixel grid. Centre and bounds are the same in every treatment.
+ */
 export function paintPitchBall(
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
   radius: number,
   skin: PitchSkin,
+  spin = 0,
 ) {
+  const outline = () => {
+    ctx.beginPath();
+    if (skin.pixelSize) {
+      for (const [index, [px, py]] of PIXEL_BALL.entries()) {
+        if (index) ctx.lineTo(x + px * radius, y + py * radius);
+        else ctx.moveTo(x + px * radius, y + py * radius);
+      }
+      ctx.closePath();
+    } else ctx.arc(x, y, radius, 0, Math.PI * 2);
+  };
   ctx.save();
-  ctx.beginPath();
-  if (skin.pixelSize) {
-    for (const [index, [px, py]] of [
-      [-0.5, -1],
-      [0.5, -1],
-      [0.5, -0.5],
-      [1, -0.5],
-      [1, 0.5],
-      [0.5, 0.5],
-      [0.5, 1],
-      [-0.5, 1],
-      [-0.5, 0.5],
-      [-1, 0.5],
-      [-1, -0.5],
-      [-0.5, -0.5],
-    ].entries()) {
-      if (index) ctx.lineTo(x + px! * radius, y + py! * radius);
-      else ctx.moveTo(x + px! * radius, y + py! * radius);
-    }
-    ctx.closePath();
-  } else ctx.arc(x, y, radius, 0, Math.PI * 2);
+  outline();
   ctx.fillStyle = skin.ball;
   ctx.fill();
+  ctx.save();
+  ctx.clip();
   ctx.fillStyle = skin.ballSeam;
-  ctx.fillRect(x - radius * 0.2, y - radius * 0.2, radius * 0.4, radius * 0.4);
+  if (skin.pixelSize) {
+    // One grid cell a panel, the centre one two cells across, snapped to the theme's pixels.
+    const cell = skin.pixelSize;
+    const snap = (v: number) => Math.round(v / cell) * cell;
+    for (const [i, panel] of ballPanels(x, y, radius, spin).entries()) {
+      const size = i ? cell : cell * 2;
+      ctx.fillRect(snap(panel.x - size / 2), snap(panel.y - size / 2), size, size);
+    }
+  } else
+    for (const panel of ballPanels(x, y, radius, spin)) {
+      ctx.beginPath();
+      for (let k = 0; k < 5; k++) {
+        const a = panel.turn + (k * 2 * Math.PI) / 5;
+        const px = panel.x + Math.cos(a) * panel.r,
+          py = panel.y + Math.sin(a) * panel.r;
+        if (k) ctx.lineTo(px, py);
+        else ctx.moveTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+  ctx.restore();
+  // The rim, so the ball reads on every ground; the same path as the leather.
+  outline();
+  ctx.strokeStyle = skin.ballEdge;
+  ctx.lineWidth = skin.pixelSize ? Math.min(1, skin.pixelSize / 2) : Math.max(0.6, radius * 0.14);
+  ctx.stroke();
   ctx.restore();
 }

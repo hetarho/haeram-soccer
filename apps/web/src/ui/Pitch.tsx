@@ -42,9 +42,16 @@ import { gaitDistances, poseAt, type FigurePose } from './figurePose';
 import { reducedMotion } from './motion';
 import { drawNumberTag, numberTagStyle, placeNumberTags } from './numberTags';
 import { figureInputs } from './pitchFigures';
-import { createGroundPainter, markerRadius, paintPitchBall, type PitchSkin } from './pitchPainting';
+import {
+  ballRadius,
+  createGroundPainter,
+  markerRadius,
+  paintPitchBall,
+  type PitchSkin,
+} from './pitchPainting';
 import { usePitchSkin } from './usePitchSkin';
 import { keepersBySample, matchLook, UNRECORDED_KIT } from './matchAppearance';
+import { scoreboardHalves } from './scoreboardHalves';
 import { incidentFrame, sampleAt, sentOff } from './moments';
 import {
   advanceGoalFeedback,
@@ -108,21 +115,27 @@ const WARM_POSE: FigurePose = poseAt(
   { reducedMotion: true },
 );
 const NO_KEEPERS: readonly [undefined, undefined] = [undefined, undefined];
-/** One treatment for the recorded carrier: outline, ground ring and enlarged number plate. */
-const CARRIER_MARK = { tagScale: 1.3, outlineWidth: 1.5, ringScale: 1.45, ringGap: 3 } as const;
+/**
+ * The recorded carrier's cue (WEB-95): a ring on the grass under him and a coloured number plate.
+ * His figure and plate keep everyone's size.
+ */
+const CARRIER_MARK = { ringScale: 1.45, ringGap: 3 } as const;
+/** How far the ball's panels turn per pitch unit it travels, radians. */
+const BALL_SPIN_PER_UNIT = 0.35;
 
 /**
  * How the ball is drawn `height` above the pitch (ball track units) on a pitch `width` px wide and
  * `fh` px deep: a lofted ball rises over its shadow, looks closer and its shadow fades.
  */
-function ballLook(height: number, width: number, fh: number) {
+function ballLook(height: number, width: number, fh: number, spin: number) {
   const air = Math.min(1, Math.max(0, height) / BALL_PEAK);
-  const size = Math.max(3.2, width * 0.0065);
+  const size = ballRadius(width);
   return {
     air,
     radius: size * (1 + air * 0.35),
     shadow: size * (1 - air * 0.3),
     lift: (Math.max(0, height) * fh) / 100,
+    spin,
   };
 }
 
@@ -138,7 +151,19 @@ function paintBall(
   ctx.beginPath();
   ctx.ellipse(x + 1.5, y + 2, ball.shadow, ball.shadow * 0.6, 0, 0, Math.PI * 2);
   ctx.fill();
-  paintPitchBall(ctx, x, y - ball.lift, ball.radius, skin);
+  paintPitchBall(ctx, x, y - ball.lift, ball.radius, skin, ball.spin);
+}
+
+/** The ground distance the ball has travelled by each track point, pitch units. */
+function trackTravel(track: readonly (readonly [number, number, number])[]): number[] {
+  const travel: number[] = [];
+  let sum = 0;
+  track.forEach((point, i) => {
+    const before = track[i - 1];
+    if (before) sum += Math.hypot(point[0] - before[0], point[1] - before[1]);
+    travel.push(sum);
+  });
+  return travel;
 }
 
 const phaseLabels = {
@@ -226,6 +251,8 @@ export function Pitch({
   // Every sample and recorded ball position at its match time, so a pass flies at its real speed.
   const timed = useMemo(() => presentationSamples(p?.frames ?? []), [p]);
   const { samples, track } = timed;
+  // How far the ball has rolled by each track point, so its panels turn with its travel.
+  const travel = useMemo(() => trackTravel(track), [track]);
   const length = runningLength(p?.frames.length ?? 0);
   // Every stoppage's rush and still beat, drawn at their own rates (→WEB-32).
   const preparations = useMemo(() => deadBallBeats(p?.frames ?? []), [p]);
@@ -260,6 +287,8 @@ export function Pitch({
   // What both sides wore, from the record's own snapshot only (KIT-12): resolved once per record,
   // so editing a club's design while watching never repaints this match.
   const look = useMemo(() => (p ? matchLook(p.record) : undefined), [p]);
+  // The scoreboard's halves in the shirts the sides wore (→WEB-50).
+  const halves = useMemo(() => (look ? scoreboardHalves(look) : undefined), [look]);
   // Who is in goal in each sample, found by player over the whole matchday roster.
   const keepers = useMemo(() => keepersBySample(samples, p?.squads ?? [[], []]), [samples, p]);
   // One painter, and so one torso-sprite cache, per mounted pitch: rAF only blits cached shirts.
@@ -487,6 +516,7 @@ export function Pitch({
           let bx = current.ball[0] * (1 - mix) + next.ball[0] * mix;
           let by = current.ball[1] * (1 - mix) + next.ball[1] * mix;
           let bh = 0;
+          let rolled = 0;
           if (track.length) {
             const g = locate(timed.trackTimes, now, timed.trackBreak);
             const a = track[Math.floor(g)]!,
@@ -495,7 +525,9 @@ export function Pitch({
             bx = a[0] * (1 - f) + b[0] * f;
             by = a[1] * (1 - f) + b[1] * f;
             bh = a[2] * (1 - f) + b[2] * f;
+            rolled = travel[Math.floor(g)]! * (1 - f) + travel[Math.ceil(g)]! * f;
           }
+          const still = reducedMotion();
           // Every player on the pitch in this sample, posed from what the record says at this
           // instant (→MATCH-37); an archived match without motion stands its sides in a fixed
           // shape.
@@ -512,7 +544,7 @@ export function Pitch({
             numbers,
           });
           const poseOptions = {
-            reducedMotion: reducedMotion(),
+            reducedMotion: still,
             unit: [fw / 100, fh / 100] as const,
           };
           const poses = figures.map(({ input }) =>
@@ -541,7 +573,8 @@ export function Pitch({
             ballY += (sy - ballY) * held.hold;
             ballHeight += (held.height - ballHeight) * held.hold;
           }
-          const ball = ballLook(ballHeight, width, fh);
+          // Reduced motion keeps the panels still (→WEB-46).
+          const ball = ballLook(ballHeight, width, fh, still ? 0 : rolled * BALL_SPIN_PER_UNIT);
           // On the grass under the figures: the inspected player's chosen move and ring, and the
           // recorded carrier's ring (→WEB-95), so neither hides a number or the ball.
           for (const figure of figures) {
@@ -593,7 +626,8 @@ export function Pitch({
               dpr: skin.pixelSize ? 1 / skin.pixelSize : dpr,
               look: looks.get(input.id) ?? playerLook(input.id),
               outline: carrierMark,
-              outlineWidth: input.carrier ? CARRIER_MARK.outlineWidth : 0,
+              // No figure is outlined, the carrier included: an outline grows his body (→WEB-95).
+              outlineWidth: 0,
               ball: i === holder ? () => paintBall(ctx, ballX, ballY, ball, skin) : undefined,
             });
           };
@@ -601,7 +635,7 @@ export function Pitch({
           if (carrierIndex >= 0 && carrierIndex !== holder) paint(carrierIndex);
           if (holder >= 0) paint(holder);
           else paintBall(ctx, ballX, ballY, ball, skin);
-          // Numbers stay at twelve o'clock; the carrier's coloured plate replaces the pointer.
+          // Numbers stay at twelve o'clock, every plate one size; the carrier's plate is coloured.
           const tags = placeNumberTags(
             figures.map(({ input, number, x: fx, y: fy }) => ({
               id: input.id,
@@ -609,7 +643,6 @@ export function Pitch({
               x: fx,
               y: fy,
               radius,
-              scale: input.carrier ? CARRIER_MARK.tagScale : 1,
             })),
           );
           for (let i = 0; i < tags.length; i++)
@@ -634,6 +667,7 @@ export function Pitch({
     preparations,
     goals,
     track,
+    travel,
     numbers,
     windows,
     distances,
@@ -722,10 +756,20 @@ export function Pitch({
       }
     >
       <div
-        className={`${s.scoreboard} ${t.scoreboard}`}
+        className={`${s.scoreboard} ${t.scoreboard}${halves ? ` ${t.kitHalves}` : ''}`}
         data-testid="match-score"
         data-possession={possession.state}
         data-possession-side={possession.side}
+        style={
+          halves
+            ? ({
+                '--home-kit': halves[0].background,
+                '--home-ink': halves[0].ink,
+                '--away-kit': halves[1].background,
+                '--away-ink': halves[1].ink,
+              } as CSSProperties)
+            : undefined
+        }
       >
         {lead}
         <span className={t.team} data-ui="match-team" data-side="home">

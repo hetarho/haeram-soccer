@@ -44,6 +44,9 @@ test('the lab watches a match in the game’s match view and replays it with edi
   const score = page.getByTestId('match-score');
   await expect(score).toContainText('좌측 팀');
   await expect(score).toContainText('우측 팀');
+  // The lab's match wears the hosts' selected kits, as the game's own matches do (→LAB-9).
+  await expect(theatre.getByTestId('match-kit-unrecorded')).toHaveCount(0);
+  await expect(page.getByText('유니폼 미기록')).toHaveCount(0);
 
   // Pausing works as in the game's live view: a seek holds the instant, a speed resumes it.
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
