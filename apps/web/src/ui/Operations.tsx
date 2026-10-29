@@ -9,7 +9,6 @@ import { BusinessWorkbench } from './BusinessWorkbench';
 import { FinanceOutlook } from './FinanceOutlook';
 import {
   BUSINESS_TABS,
-  leaveOffice,
   officeAddress,
   officeView,
   approvalId,
@@ -119,7 +118,7 @@ export function OperationsView({
   if (!area)
     return (
       <>
-        <OfficeBar back={{ label: '나가기', onClick: leaveOffice }} title="구단주 사무실" />
+        <OfficeBar title="구단주 사무실" />
         <OfficeLobby
           w={w}
           sponsors={state.view!.sponsors}

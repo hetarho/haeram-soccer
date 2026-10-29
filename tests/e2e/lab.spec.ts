@@ -97,7 +97,7 @@ test('the lab generates sides, edits values and compares runs against a baseline
   await expect(first).toHaveValue('90');
   await expect(left.getByText(/^선발 평균 OVR/)).not.toContainText('OVR 70.0');
 
-  await setValue(page, 'SHOT_CONFIG.saveShare', '0.5');
+  await setValue(page, 'SHOT_CONFIG.saveShare', '0.9');
   await expect(page.getByRole('region', { name: '엔진 수치' })).toContainText('변경 1개');
 
   await simulate(page, '1');

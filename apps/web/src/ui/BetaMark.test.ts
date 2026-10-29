@@ -56,12 +56,20 @@ describe('the shared BETA mark (→WEB-101)', () => {
   it('leaves BETA to the shared HUD instead of duplicating it in local desk navigation', () => {
     const bar = markup(
       createElement(OfficeBar, {
-        back: { label: '나가기', onClick: () => {} },
         title: '구단주 사무실',
       }),
     );
     expect(bar).toContain('<span>구단주 사무실</span>');
     expect(bar).not.toContain('BETA');
     expect(bar).not.toContain('data-testid="hud-cash"');
+    expect(bar).not.toContain('<button');
+    const desk = markup(
+      createElement(OfficeBar, {
+        back: { label: '사무실', onClick: () => {} },
+        title: '선수 계약',
+      }),
+    );
+    expect(desk).toContain('<button');
+    expect(desk).toContain('사무실');
   });
 });

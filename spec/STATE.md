@@ -368,7 +368,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 170 | 170 | - | 0 |
+| WEB | 171 | 171 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
@@ -419,12 +419,14 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T579, then T580 (match-model revision 9); batch gate and push main after T580.
-- batch gate on the integrated candidate (tests/e2e/lab.spec.ts with T578's 관전 journey included), then push main.
+- implement-task T579, then T580 (match-model revision 9).
 
 ## log
+- 261029 T581 done: remove dedicated office exit and give controller a light palette distinct from dark navigation; 138 unit tests and static checks pass; owner requests unit-only validation and push.
+- 261029 update-ssot WEB r171 and T581 start: remove dedicated office exit, distinguish controller by light colours; owner authorizes unit tests only and push.
 - 261029 create-task MATCH r42: T579 (revision 9 shot side: keeper not a presser, short straight wind-up, 5 m clear chance, keeper half way), T580 (pass failure where reached, tight receivers near the box).
 - 261029 update-ssot MATCH r42: carrier never backs off the keeper, shot struck soon after choosing it, clear chance also with nobody within 5 m, tight receivers near the box weighed by keeping it, pass failure read where it happens, keeper about half way out.
+- 261029 publication verification: protected pending lab generation inputs and shared normal feedback dismissal before office navigation (deb74fc1); lab comparison edits a nondefault value (1b950bb3). Prior publication checks passed on the unchanged remote source.
 - 261029 update-ssot LAB r5 + fix: Korean descriptions for all 25 groups and 865 values (apps/web/src/lab/tunables.ko.json, written from the consuming code, marking page-only and pre-revision-8 values), shown above the code comment and searched; tunables.test.ts fails on a missing or stale description.
 - 261029 fix lab watch layout: the match view's App styles pin html/body with no scroll — the lab page scrolls again (scoped by `:has(.page)`), the watch view is capped to fit one screen and scrolls into view on a new playback; checked at 1920×1080.
 - 261029 T578 done: /lab 관전 plays match 0 of its seed in the lab worker and shows it in the game's unchanged Pitch inside the shared presentation; 다시 보기/새 경기; typecheck, lint, tracked formatting, 43 affected unit tests and build pass; lab.spec.ts left to the batch run.
@@ -440,6 +442,3 @@
 - 261029 T573 start
 - 261029 T572 done: lab sides, lab setup option and grid tunables; 749 affected unit tests pass.
 - 261029 update-ssot LAB r2: LAB-2 player OVR range 20–92 (generator bounds); no task change (T572 implements it).
-- 261029 T572 start
-- 261029 create-task LAB r1 → T572–T575 (engine hooks, tunable catalog, worker runner, lab page).
-- 261029 create-ssot LAB r1: match lab — generated left/right sides, every grid `*_CONFIG` number editable, N-match runs against MATCH-23 with baseline comparison.

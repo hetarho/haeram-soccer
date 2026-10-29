@@ -1,6 +1,9 @@
 import type { GameSettings, ResponsibilityKey } from '../../packages/contracts/src/types';
 import { expect, type Locator, type Page } from '@playwright/test';
 import { inOffice, LOBBY, officeLobby, officeTitle, openOfficeArea, outsideOffice } from './office';
+import { dismissFeedback as dismissSettingsToast } from './feedback';
+
+export { dismissSettingsToast };
 const LABELS: Record<ResponsibilityKey, string> = {
   manager: '감독 인사',
   staff: '스태프 인사',
@@ -29,15 +32,6 @@ export async function openOffice(page: Page) {
   await openOfficeArea(page, '결재라인 모아보기', { timeout: 5000 });
   await expect(page.getByRole('dialog', { name: '결재라인 모아보기', exact: true })).toBeVisible();
   return page.getByTestId('owner-office');
-}
-export async function dismissSettingsToast(page: Page) {
-  const toast = page.getByTestId('action-outcome');
-  if (!(await toast.isVisible())) return;
-  // Home's open event group can sit over the toast; it then clears itself after a few seconds.
-  await toast
-    .getByRole('button', { name: /^(확인|알림 닫기)$/ })
-    .click({ timeout: 3000 })
-    .catch(() => expect(toast).toHaveCount(0, { timeout: 10000 }));
 }
 async function confirmAuthority(page: Page, label: string, value: 'direct' | 'delegated') {
   const choice = page

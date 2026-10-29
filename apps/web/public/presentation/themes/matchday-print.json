@@ -191,7 +191,10 @@
       "secondary-muted": "var(--image-muted)",
       "image-transport-material": "var(--image-art-controller-weave)",
       "transport-material-size": "256px",
-      "transport-material-blend": "soft-light"
+      "transport-material-blend": "soft-light",
+      "transport-fill": "#e7d2a5",
+      "transport-text": "#24231e",
+      "transport-muted": "#514733"
     }
   },
   "fonts": [

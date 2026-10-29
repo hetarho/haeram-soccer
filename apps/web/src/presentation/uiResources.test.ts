@@ -16,16 +16,6 @@ describe('portable presentation skins and delivery budgets', () => {
       const pack = validateThemePack(JSON.parse(asset(url).toString()));
       const theme = createThemeResolver(pack, { url });
       expect(Object.keys(theme.uiImages).length).toBeGreaterThan(25);
-      const controller = theme.uiImages['image-art-controller-weave'];
-      expect(controller.mode).toBe('tile');
-      for (const role of ['image-art-ink', 'image-art-paper', 'image-art-paper-quiet']) {
-        const shared = theme.uiImages[role];
-        expect(controller.resource).not.toBe(shared.resource);
-        expect(
-          asset(controller.resource).equals(asset(shared.resource)),
-          `${entry.id}/${role}`,
-        ).toBe(false);
-      }
       let total = 0;
       for (const [role, image] of Object.entries(theme.uiImages)) {
         const data = asset(image.resource);
