@@ -392,7 +392,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T575 | Lab page: sides, values, runs and comparison | LAB ARCH | T573 T574 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -417,9 +416,10 @@
 
 ## next
 - T569–T571 pushed fa1a018b; read its CI.
-- implement-task T575.
+- batch gate runs tests/e2e/lab.spec.ts (T575) with the next code push.
 
 ## log
+- 261029 T575 done: /lab entry (sides, values, runs, kept runs and baseline comparison) on T574's pool; state.ts with 5 unit tests, typecheck, lint, scoped format, 1672 affected unit tests and build pass; lab.spec.ts left to the batch run.
 - 261029 T574 done: lab worker pool, trimmed samples, run summary with equal-sides note; 136 affected unit tests pass; scripts/_scan.ts (stray T572 scratch) dropped.
 - 261029 T574 start
 - 261029 update-ssot LAB r3: LAB-2 a pressing lab side carries the press load (`PRESS_LOAD_FATIGUE`) like a club nobody owns; implemented in lab/sides.ts with its test, no new task.

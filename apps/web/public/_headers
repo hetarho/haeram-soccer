@@ -47,3 +47,7 @@
   Cache-Control: no-cache
 /staff
   Cache-Control: no-cache
+/lab
+  Cache-Control: no-cache
+/lab.html
+  Cache-Control: no-cache
