@@ -245,6 +245,14 @@ export const SHOT_CONFIG = {
   maxXg: 0.8,
   /** Candidate model only (T278, →MATCH-23): a header's chance quality, in place of `header`. */
   candidate: { header: 0.42 },
+  /**
+   * Revision 9 (T579, →MATCH-35 r42, MATCH-11): the keeper narrows the angle. From the shot, he
+   * covers the goal mouth within `reach` m either side of him; a shot's chance scales by the share
+   * of the mouth he leaves open against the share a keeper on his goal line's middle leaves
+   * (`keeperNarrowing`), so a keeper off his line toward the ball takes chances away and one caught
+   * out of position gives them.
+   */
+  revision9: { narrow: { reach: 1.5 } },
 } as const;
 
 const sigmoid = (z: number, math: MatchMath) => 1 / (1 + math.exp(-z));
@@ -733,6 +741,40 @@ export function resolveAerial(
 }
 
 /**
+ * How the keeper narrows a shot from `from` (`side`'s attack frame) on revision 9 (T579,
+ * `SHOT_CONFIG.revision9.narrow`): the share of the goal mouth, as the shooter sees it, outside
+ * `reach` m either side of the keeper, over that share with the keeper on his goal line's middle;
+ * 1 before revision 9, with no keeper on the pitch, or from on or behind the goal line.
+ */
+export function keeperNarrowing(
+  s: GridState,
+  side: 0 | 1,
+  from: Point,
+  keeper: GridPlayer,
+): number {
+  if (!modelAtLeast(s.setup, 9) || !onPitch(keeper) || keeper.slot !== 0) return 1;
+  const { atan2, hypot } = s.math;
+  const depth = PITCH.length - from[0];
+  if (depth <= 0) return 1;
+  const reach = SHOT_CONFIG.revision9.narrow.reach;
+  const lo = atan2(PITCH.width / 2 - BOX_CONFIG.post - from[1], depth),
+    hi = atan2(PITCH.width / 2 + BOX_CONFIG.post - from[1], depth);
+  /** The share of the mouth [lo, hi] open past a keeper at `k`. */
+  const open = (k: Point) => {
+    const dx = k[0] - from[0],
+      dy = k[1] - from[1];
+    const d = hypot(dx, dy);
+    if (d <= reach) return 0;
+    const at = atan2(dy, dx),
+      half = atan2(reach, d);
+    const covered = Math.max(0, Math.min(hi, at + half) - Math.max(lo, at - half));
+    return 1 - covered / (hi - lo);
+  };
+  const line = open([PITCH.length, PITCH.width / 2]);
+  return line > 0 ? open(attackFrame(side, keeper.pos)) / line : 1;
+}
+
+/**
  * A shot by `(side, idx)` from where he stands: open play, a header, a cut-back chance or a direct
  * free kick, struck `kickAt` seconds from now (its second ball's timing).
  *
@@ -756,21 +798,22 @@ export function resolveShot(
   const { kickAt = 0, ...kind } = opts;
   const me = s.players[side][idx]!;
   const from = attackFrame(side, me.pos);
-  const xg = chanceXg(
-    from,
-    {
-      ...kind,
-      pressure: tags.pressure,
-      candidate: onCandidate(s),
-    },
-    s.math,
-  );
+  const keeper =
+    s.players[other(side)].find((gp) => gp.slot === 0 && onPitch(gp)) ?? s.players[other(side)][0]!;
+  const xg =
+    chanceXg(
+      from,
+      {
+        ...kind,
+        pressure: tags.pressure,
+        candidate: onCandidate(s),
+      },
+      s.math,
+    ) * (opts.freeKick ? 1 : keeperNarrowing(s, side, from, keeper));
   const hard = tags.pressure >= 1 || xg >= 0.3;
   const main = opts.header ? skill(s, side, idx, 'heading') : skill(s, side, idx, 'finishing');
   const shooting =
     (hard ? 0.65 : 0.8) * main + (hard ? 0.35 : 0.2) * skill(s, side, idx, 'composure');
-  const keeper =
-    s.players[other(side)].find((gp) => gp.slot === 0 && onPitch(gp)) ?? s.players[other(side)][0]!;
   const goal = goalChance(xg, shooting, skill(s, other(side), keeper.idx, 'reflexes'), s.math);
   const onTarget = targetChance(goal, shooting);
   if (onCandidate(s)) {

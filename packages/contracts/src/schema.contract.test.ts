@@ -514,7 +514,7 @@ describe('match-model metadata on load (→SAVE-23)', () => {
 
   it('refuses future model metadata as a compatibility failure, malformed data as invalid', () => {
     const w = world();
-    const future = 'continuous-aggregate-9';
+    const future = 'continuous-aggregate-10';
     for (const input of [
       { ...structuredClone(w), matchModel: { ...matchModel, revision: future } },
       { ...structuredClone(w), npcSeason: { ...npcSeason, model: future } },

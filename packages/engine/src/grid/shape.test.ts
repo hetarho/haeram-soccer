@@ -12,6 +12,7 @@ import { random } from '../primitives';
 import { defendSetPiece, restartTaken, takeBall, updateIntentions } from './intentions';
 import { advance } from './movement';
 import { attackFrame, inBox, PITCH, toEngine, type Point } from './pitch';
+import { keeperNarrowing } from './resolve';
 import {
   lineX,
   moveAll,
@@ -732,6 +733,53 @@ describe('revision 7 keeper off his line (T548, →MATCH-35)', () => {
       keeper(seventh, [90, 34], false),
     ])
       expect(PITCH.length - held[0]).toBeLessThan(5);
+  });
+
+  it('revision 9: the keeper comes about half way, never onto the carrier', () => {
+    const ninth = MATCH_MODEL_REVISIONS[8];
+    const R9 = SHAPE_CONFIG.candidate.revision9.keeperOut;
+    // 15 m out, straight in front: `share` of the way, where revision 8 came `keeperOut.share`.
+    expect(PITCH.length - keeper(MATCH_MODEL_REVISIONS[7], [90, 34])[0]).toBeCloseTo(
+      15 * K.share,
+      9,
+    );
+    const centre = keeper(ninth, [90, 34]);
+    expect(PITCH.length - centre[0]).toBeCloseTo(15 * R9.share, 9);
+    expect(centre[1]).toBeCloseTo(34, 9);
+    // Close in he stops `gap` m short of the ball, never onto it; within `gap` he stays on his line.
+    const close = keeper(ninth, [99, 34]);
+    expect(close[0] - 99).toBeCloseTo(R9.gap, 9);
+    for (const at of [
+      [98, 30],
+      [96, 22],
+      [90, 40],
+    ] as Point[]) {
+      const t = keeper(ninth, at);
+      expect(Math.hypot(at[0] - t[0], at[1] - t[1])).toBeGreaterThanOrEqual(R9.gap - 1e-9);
+      expect(Math.hypot(PITCH.length - t[0], t[1] - 34)).toBeLessThanOrEqual(K.most + 1e-9);
+    }
+    expect(PITCH.length - keeper(ninth, [102.5, 34])[0]).toBeCloseTo(0, 9);
+  });
+
+  it('revision 9: a keeper off his line toward the shot narrows it, one out of position opens it', () => {
+    const ninth = MATCH_MODEL_REVISIONS[8];
+    const kit = gridKit(['balanced', 'balanced'], undefined, DISABLED_RELEASE);
+    const s = kit.state;
+    const gk = s.players[1].find((gp) => gp.slot === 0)!;
+    const from: Point = [90, 34];
+    const at = (p: Point, model: MatchModelRevision = ninth) => {
+      s.setup = { ...s.setup, model };
+      gk.pos = toEngine(0, p);
+      return keeperNarrowing(s, 0, from, gk);
+    };
+    // On his line's middle the chance is the line's; half way out it falls; off to one side it rises.
+    expect(at([105, 34])).toBeCloseTo(1, 9);
+    const half = at([97.5, 34]);
+    expect(half).toBeLessThan(0.8);
+    expect(half).toBeGreaterThan(0);
+    expect(at([104, 30])).toBeGreaterThan(1);
+    // Revisions 1–8 read no narrowing.
+    expect(at([97.5, 34], MATCH_MODEL_REVISIONS[7])).toBe(1);
   });
 });
 

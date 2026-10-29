@@ -90,7 +90,8 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * for T447's box zone depths, for T432's freedom on revision 2, for T433's tendencies in
  * revision 2's movement, for T466's revision 3, for T479's revision 4, for T480's corner numbers
  * for T481's shot choice, for T482's recalibration, for T538's revision 5, for T542's revision
- * 6, for T548's revision 7 and for T561's revision 8, the first tie of each kind; T548's were
+ * 6, for T548's revision 7, for T561's revision 8 and for T579's revision 9, the first tie of
+ * each kind; T561's were 3/34, 15/8 and 28/4 (revision 8's, `REVISION_8_CASES`), T548's were
  * 11/30, 18/7 and 14/13 (revision 7's, `REVISION_7_CASES`), T542's were 7/20, 5/3 and 12/7
  * (revision 6's, `REVISION_6_CASES`), T538's were 3/2, 6/1 and 23/0 (revision 5's, `REVISION_5_CASES`),
  * T482's were 6/31, 5/29 and 7/11 (revision 4's, `REVISION_4_CASES`), T481's were
@@ -349,8 +350,50 @@ interface CandidateDigests {
  * ball his teammates spread and keep room around the carrier; 600 matches in result) moved every
  * value and the knockout ties (rescanned above); before it, the values now revision 7's
  * (`REVISION_7`). Revisions 1–7's and the pre-feature facts did not move.
+ * T579's match-model revision 9 (the carrier shields only from outfielders, a shot is struck soon
+ * after he chooses it, nobody within 5 m is a clear chance and the keeper comes about half way,
+ * narrowing the angle; 600 matches in result) moved every value and the knockout ties (rescanned
+ * above); before it, the values now revision 8's (`REVISION_8`). Revisions 1–8's and the
+ * pre-feature facts did not move.
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
+  1975: {
+    facts: {
+      league: 'TODO',
+      extraTime: 'TODO',
+      shootout: 'TODO',
+    },
+    positions: { observed: 'TODO', shootout: 'TODO' },
+  },
+  1995: {
+    facts: {
+      league: 'TODO',
+      extraTime: 'TODO',
+      shootout: 'TODO',
+    },
+    positions: { observed: 'TODO', shootout: 'TODO' },
+  },
+  2024: {
+    facts: {
+      league: 'TODO',
+      extraTime: 'TODO',
+      shootout: 'TODO',
+    },
+    positions: { observed: 'TODO', shootout: 'TODO' },
+  },
+};
+
+/**
+ * Revision 8's knockout ties and digests (T579): T561's values, the football revision 8 plays
+ * before revision 9. Their facts never move again (→SAVE-23); a presentation-only change
+ * re-records their positions.
+ */
+const REVISION_8_CASES = {
+  1975: { extraTime: 3, shootout: 34 },
+  1995: { extraTime: 15, shootout: 8 },
+  2024: { extraTime: 28, shootout: 4 },
+} as const satisfies Record<Year, { extraTime: number; shootout: number }>;
+const REVISION_8: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
       league: '5237e7f0a7c4bca2',
@@ -674,10 +717,10 @@ describe('detailed engine throughput (T325)', () => {
         positions: { observed: positionsOf(watched), shootout: positionsOf(pens) },
       };
       expect(got, `${year} candidate digests on ${HOST}`).toEqual(CANDIDATE[year]);
-      // Revisions 1–7 play as they did before later revisions moved (→SAVE-23): their matches
+      // Revisions 1–8 play as they did before later revisions moved (→SAVE-23): their matches
       // replay under them.
       const earlier = (
-        revision: 0 | 1 | 2 | 3 | 4 | 5 | 6,
+        revision: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7,
         cases: { extraTime: number; shootout: number },
       ) => {
         const on = (id: string, opts: Parameters<typeof play>[2] = {}) =>
@@ -713,6 +756,9 @@ describe('detailed engine throughput (T325)', () => {
       );
       expect(earlier(6, REVISION_7_CASES[year]), `${year} revision-7 digests`).toEqual(
         REVISION_7[year],
+      );
+      expect(earlier(7, REVISION_8_CASES[year]), `${year} revision-8 digests`).toEqual(
+        REVISION_8[year],
       );
       const recorded = PRE_FEATURE[HOST]?.[year];
       if (recorded === undefined)

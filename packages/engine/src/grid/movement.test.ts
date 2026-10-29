@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
+import {
+  MATCH_MODEL_REVISION,
+  MATCH_MODEL_REVISIONS,
+  type MatchModelRevision,
+} from '../../../contracts/src/match-model';
 import { random } from '../primitives';
 import { createWorld } from '../index';
 import { playGrid } from './engine';
@@ -23,7 +27,9 @@ import {
   presserOf,
   reachSeconds,
   readAt,
+  shotWindUp,
   stepToward,
+  strideHeading,
   strideSpeed,
   type MotionKnot,
   type Mover,
@@ -34,7 +40,7 @@ import { playRestart, RESTART_CONFIG, type Restart } from './restarts';
 import { shotContext } from './resolve';
 import { buildGridSetup } from './setup';
 import { SHAPE_CONFIG, setPieceTargets, speedOf, targetOf, type SetPieceScene } from './shape';
-import { createState, onPitch, skill, type GridPlayer, type GridState } from './state';
+import { createState, onPitch, skill, slotOf, type GridPlayer, type GridState } from './state';
 import { Tracer, type TraceEntry } from './trace';
 import { gridKit } from './testkit';
 
@@ -687,5 +693,95 @@ describe('grid movement', () => {
     expect(kept).toBeGreaterThan(0);
     expect(followed).toBeGreaterThan(100);
     expect(ended).toBeGreaterThan(0);
+  });
+});
+
+describe('revision 9 forward through on goal (T579, →MATCH-12 r42)', () => {
+  const [, , , , , , , eighth, ninth] = MATCH_MODEL_REVISIONS;
+  const R9 = IN_STRIDE_CONFIG.revision9;
+  const lab = gridKit();
+  /** Everyone far apart, side 0's striker on the ball at `at` facing side 1's keeper. */
+  const scene = (model: MatchModelRevision, at: [number, number]) => {
+    const s = lab.state;
+    s.setup = { ...s.setup, model };
+    s.players.forEach((side, sd) =>
+      side.forEach((gp, i) => {
+        gp.pos = sd === 0 ? [10 + i * 3, 5] : [40 + i * 3, 63];
+        gp.vel = undefined;
+        gp.sentOff = false;
+        gp.intention = undefined;
+      }),
+    );
+    const me = s.players[0][9]!;
+    me.pos = [...at];
+    s.ball = [...at];
+    s.owner = [0, 9];
+    s.possession = 0;
+    const keeper = s.players[1].find((gp) => slotOf(s, gp).position === 'GK')!;
+    const foe = s.players[1].find((gp) => slotOf(s, gp).position !== 'GK')!;
+    return { s, me, keeper, foe };
+  };
+  const goal: [number, number] = [105, 34];
+
+  it('revision 9: the carrier never shields away from the keeper', () => {
+    for (const model of [eighth!, ninth!]) {
+      const { s, me, keeper } = scene(model, [96, 34]);
+      keeper.pos = [98, 34];
+      // Revision 8 shields from the keeper coming out; revision 9 does not.
+      expect(presserOf(s, me)).toBe(model === eighth ? keeper : undefined);
+      me.vel = undefined;
+      carryInStride(s, me, goal, 1);
+      if (model === eighth) expect(me.pos[0]).toBeLessThan(96);
+      else expect(me.pos[0]).toBeGreaterThan(96);
+      // An outfielder within the pressure radius, nearer than the keeper, still makes him shield it.
+      const again = scene(model, [96, 34]);
+      again.keeper.pos = [98, 34];
+      again.foe.pos = [96.5, 35.2];
+      expect(presserOf(again.s, again.me)).toBe(again.foe);
+    }
+  });
+
+  it("revision 9: a shot's wind-up heads at goal and is short with nobody close", () => {
+    // Straight at the goal centre, whoever presses him and however he is running.
+    const { s, me, foe } = scene(ninth!, [92, 24]);
+    foe.pos = [93, 23];
+    me.vel = [0, -3];
+    const [dx, dy] = strideHeading(s, me, goal, true);
+    const n = Math.hypot(goal[0] - 92, goal[1] - 24);
+    expect(dx).toBeCloseTo((goal[0] - 92) / n, 9);
+    expect(dy).toBeCloseTo((goal[1] - 24) / n, 9);
+    // With an outfielder within `near` m his wind-up keeps the action's time; without, `windUp`.
+    expect(shotWindUp(s, me, 1.4)).toBe(1.4);
+    foe.pos = [92 + R9.near + 0.5, 24];
+    expect(shotWindUp(s, me, 1.4)).toBe(R9.windUp);
+    expect(shotWindUp(s, me, 0.2)).toBe(0.2);
+    // The keeper close to him does not count; revision 8 never shortens it.
+    const keeperOnly = scene(ninth!, [96, 34]);
+    keeperOnly.keeper.pos = [98, 34];
+    expect(shotWindUp(keeperOnly.s, keeperOnly.me, 1.4)).toBe(R9.windUp);
+    const old = scene(eighth!, [96, 34]);
+    expect(shotWindUp(old.s, old.me, 1.4)).toBe(1.4);
+    // In play (six observed revision-9 matches): a shot's carry takes him no further from goal.
+    let carried = 0,
+      nearer = 0,
+      short = 0,
+      change = 0;
+    for (const { trace } of watched)
+      for (const e of trace!) {
+        if (e.action !== 'shot') continue;
+        const k = e.knots ?? [];
+        if (k[0]?.kind !== 'carry' || k[1]?.kind !== 'carry') continue;
+        const from = attackFrame(e.side, k[0].ball),
+          to = attackFrame(e.side, k[1].ball);
+        const d = Math.hypot(105 - to[0], 34 - to[1]) - Math.hypot(105 - from[0], 34 - from[1]);
+        carried++;
+        change += d;
+        if (d <= 0.05) nearer++;
+        if (k[1].at - k[0].at <= R9.windUp + 1e-9) short++;
+      }
+    expect(carried).toBeGreaterThan(50);
+    expect(change / carried).toBeLessThan(0);
+    expect(nearer / carried).toBeGreaterThan(0.9);
+    expect(short).toBeGreaterThan(0);
   });
 });

@@ -16,6 +16,7 @@ import {
   chooseCarry,
   chooseDelivery,
   choosePass,
+  clearChance,
   decide,
   DECISION_CONFIG,
   keeperDistribution,
@@ -62,6 +63,12 @@ const place = (s: ReturnType<typeof scene>['s'], idx: number, p: Point) =>
  * the scene no clear chance (T542), in front of him it closes his open ground (T538).
  */
 const guard = (s: ReturnType<typeof scene>['s'], p: Point) => (s.players[1][3]!.pos = [...p]);
+/**
+ * An opponent (side 1's slot 4) 4.8 m behind the carrier at `at`: outside the pressure tag's
+ * radius, inside revision 9's 5 m, so with `guard` ahead the scene stays no clear chance (T579).
+ */
+const trail = (s: ReturnType<typeof scene>['s'], at: Point) =>
+  (s.players[1][4]!.pos = [at[0] - 4.8, at[1]]);
 function setSkills(
   s: ReturnType<typeof scene>['s'],
   idx: number,
@@ -289,8 +296,9 @@ describe('grid decisions', () => {
         ] as Point[]
       ).forEach((p, i) => place(sc.s, 1 + i, p));
       sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
-      // A defender in his path to goal, so it is no clear chance (T542).
+      // A defender in his path to goal and one trailing him, so it is no clear chance (T542, T579).
       guard(sc.s, [high[0] + 12, high[1]]);
+      trail(sc.s, high);
       return {
         passes: passOptions(sc.s, 0, CM, sc.tags()).filter((o) => o.target <= 4),
         mix: actionMix(sc.s, 0, CM, sc.tags()),
@@ -507,8 +515,10 @@ describe('grid decisions', () => {
       const at = centre(band, 2);
       const sc = scene(ST, at);
       if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
-      // The last defender between him and goal: alone he would have a clear chance (T542).
+      // The last defender between him and goal and one trailing him: alone he would have a clear
+      // chance (T542, T579).
       guard(sc.s, [Math.min(at[0] + 6.5, 104), at[1]]);
+      trail(sc.s, at);
       const mix = (inBehind: boolean) => actionMix(sc.s, 0, ST, { ...sc.tags(), inBehind });
       const [on, off] = [mix(true), mix(false)];
       return {
@@ -641,8 +651,9 @@ describe('grid decisions', () => {
     const ratio = (lead: number, candidate: boolean) => {
       const sc = scene(ST, at);
       if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
-      // A defender in his path, so it is no clear chance (T542).
+      // A defender in his path and one trailing him, so it is no clear chance (T542, T579).
       guard(sc.s, [at[0] + 6.5, at[1]]);
+      trail(sc.s, at);
       const mix = actionMix(sc.s, 0, ST, { ...sc.tags(), lead, minute: 20 });
       return mix.shot / mix.pass;
     };
@@ -1402,5 +1413,28 @@ describe('revision 7 clear chance (T548, →MATCH-16)', () => {
       const off = Math.abs(Math.atan2(end[1] - 34, end[0] - 75)) / (Math.PI / 180);
       expect(off).toBeLessThanOrEqual(30 + 1e-9);
     }
+  });
+
+  it('revision 9: nobody within 5 m is a clear chance', () => {
+    const [eighth, ninth] = MATCH_MODEL_REVISIONS.slice(7);
+    const alone = DECISION_CONFIG.candidate.revision9.clear.alone;
+    expect(alone).toBe(5);
+    const shot = (model: MatchModelRevision, man: Point) => {
+      const sc = on([92, 34], model, man);
+      return actionMix(sc.s, 0, ST, sc.tags()).shot;
+    };
+    // A man in the corridor 6 m ahead: revision 8 gives the chance up, revision 9 takes it.
+    const ahead: Point = [92 + alone + 1, 34];
+    expect(clearChance(on([92, 34], eighth!, ahead).s, 0, [92, 34])).toBe(false);
+    expect(clearChance(on([92, 34], ninth!, ahead).s, 0, [92, 34])).toBe(true);
+    expect(shot(eighth!, ahead)).toBeLessThan(K.shot);
+    expect(shot(ninth!, ahead)).toBeCloseTo(K.shot, 9);
+    // Within 5 m ahead of him it is no clear chance on either.
+    const close: Point = [92 + alone - 1, 34];
+    expect(clearChance(on([92, 34], ninth!, close).s, 0, [92, 34])).toBe(false);
+    expect(shot(ninth!, close)).toBeLessThan(K.shot);
+    // Its lanes and depth are revision 6's: out wide, or short of `from`, it is none.
+    expect(clearChance(on([92, 6], ninth!, [99, 20]).s, 0, [92, 6])).toBe(false);
+    expect(clearChance(on([60, 34], ninth!, [67, 34]).s, 0, [60, 34])).toBe(false);
   });
 });

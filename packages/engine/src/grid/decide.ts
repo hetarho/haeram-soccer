@@ -239,6 +239,14 @@ export const DECISION_CONFIG = {
       clear: { corridor: 14 },
     },
     /**
+     * Revision 9 (T579, →MATCH-16 r42): a carrier in `revision6.clear`'s lanes and depth with no
+     * outfield opponent within `clear.alone` m of him has a clear chance, whoever stands ahead of him
+     * further off; the shot share floor and the carry further out hold as revision 6/7's.
+     */
+    revision9: {
+      clear: { alone: 5 },
+    },
+    /**
      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
      * `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+.
      * T370: 4 → 3.5, so fewer box shots do not push the shot places outside and from 30 m+.
@@ -689,12 +697,13 @@ function onWing(s: GridState, side: 0 | 1, c: Point): boolean {
  * Whether the attack-frame point `c` is a clear chance for `side` (T542): a central lane at least
  * `revision6.clear.from` m up the pitch with no outfield opponent within `clear.corridor` m of its
  * line to the goal centre, nor on revision 6 within `clear.near` m of it. On revision 7 (T548) a
- * man behind or beside him, however near, does not take it away. Pressure is the caller's to read
- * (`takesClearChance`).
+ * man behind or beside him, however near, does not take it away. On revision 9 (T579) nobody within
+ * `revision9.clear.alone` m of him is one too. Pressure is the caller's to read (`takesClearChance`).
  */
 export function clearChance(s: GridState, side: 0 | 1, c: Point): boolean {
   const K = DECISION_CONFIG.candidate.revision6.clear;
   const r7 = modelAtLeast(s.setup, 7);
+  const alone = modelAtLeast(s.setup, 9) ? DECISION_CONFIG.candidate.revision9.clear.alone : 0;
   const corridor = r7 ? DECISION_CONFIG.candidate.revision7.clear.corridor : K.corridor;
   const lane = cellLane(cellOf(c));
   if (c[0] < K.from || lane < 1 || lane > 3) return false;
@@ -702,16 +711,19 @@ export function clearChance(s: GridState, side: 0 | 1, c: Point): boolean {
   const vx = PITCH.length - c[0],
     vy = PITCH.width / 2 - c[1];
   const length = hypot(vx, vy);
+  let ahead = false,
+    near = false;
   for (const opp of s.players[other(side)]) {
     if (!onPitch(opp) || slotOf(s, opp).position === 'GK') continue;
     const o = attackFrame(side, opp.pos);
     const dx = o[0] - c[0],
       dy = o[1] - c[1];
     if (!r7 && hypot(dx, dy) < K.near) return false;
+    if (alone > 0 && hypot(dx, dy) < alone) near = true;
     const t = (dx * vx + dy * vy) / (length * length);
-    if (t > 0 && t < 1 && Math.abs(dx * vy - dy * vx) / length < corridor) return false;
+    if (t > 0 && t < 1 && Math.abs(dx * vy - dy * vx) / length < corridor) ahead = true;
   }
-  return true;
+  return !ahead || (alone > 0 && !near);
 }
 
 /**

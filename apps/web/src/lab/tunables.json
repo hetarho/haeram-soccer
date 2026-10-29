@@ -747,6 +747,18 @@
           "value": 1,
           "comment": "The share of his stride pace a player keeps in the carry before a shot (T437): he sets himself to strike it, so it takes him less far toward goal than a carry before a pass. Neutral at 1. T437 screened it (calibration round 74, core 600 matches; 0.5: goals 3.09 → 2.78 a match, xG per shot 0.100 → 0.092) and kept 1: once fewer carries and take-ons ran into the goal area (`DECISION_CONFIG.candidate.goalAreaCarry`), the carry before a shot needed no slowing.",
           "loadTime": false
+        },
+        {
+          "path": "IN_STRIDE_CONFIG.revision9.near",
+          "value": 5,
+          "comment": "Revision 9 (T579, →MATCH-12 r42): only an outfielder makes him shield it, never the keeper coming out (`presserOf`); before a shot he sets himself straight at the goal centre, and with no outfield opponent within `near` m of him his carry before it lasts at most `windUp` match seconds (a stride or two), the rest of the action's time running after the kick.",
+          "loadTime": false
+        },
+        {
+          "path": "IN_STRIDE_CONFIG.revision9.windUp",
+          "value": 0.4,
+          "comment": "Revision 9 (T579, →MATCH-12 r42): only an outfielder makes him shield it, never the keeper coming out (`presserOf`); before a shot he sets himself straight at the goal centre, and with no outfield opponent within `near` m of him his carry before it lasts at most `windUp` match seconds (a stride or two), the rest of the action's time running after the kick.",
+          "loadTime": false
         }
       ]
     },
@@ -3189,6 +3201,12 @@
           "loadTime": false
         },
         {
+          "path": "DECISION_CONFIG.candidate.revision9.clear.alone",
+          "value": 5,
+          "comment": "Revision 9 (T579, →MATCH-16 r42): a carrier in `revision6.clear`'s lanes and depth with no outfield opponent within `clear.alone` m of him has a clear chance, whoever stands ahead of him further off; the shot share floor and the carry further out hold as revision 6/7's.",
+          "loadTime": false
+        },
+        {
           "path": "DECISION_CONFIG.candidate.longShotScale",
           "value": 3.5,
           "comment": "Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+. T370: 4 → 3.5, so fewer box shots do not push the shot places outside and from 30 m+.",
@@ -3843,6 +3861,18 @@
           "path": "SHAPE_CONFIG.candidate.keeperOut.most",
           "value": 12,
           "comment": "Revision 7 (T548, `keeperOut`): how far the keeper comes out to a carrier in his box.",
+          "loadTime": false
+        },
+        {
+          "path": "SHAPE_CONFIG.candidate.revision9.keeperOut.share",
+          "value": 0.5,
+          "comment": "Revision 9 (T579, →MATCH-35 r42): the keeper comes about half of the way (`share`) and never onto the carrier: he stops at least `gap` m short of the ball, within `keeperOut.most`.",
+          "loadTime": false
+        },
+        {
+          "path": "SHAPE_CONFIG.candidate.revision9.keeperOut.gap",
+          "value": 4,
+          "comment": "Revision 9 (T579, →MATCH-35 r42): the keeper comes about half of the way (`share`) and never onto the carrier: he stops at least `gap` m short of the ball, within `keeperOut.most`.",
           "loadTime": false
         },
         {

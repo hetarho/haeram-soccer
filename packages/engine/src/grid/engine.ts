@@ -32,7 +32,7 @@ import {
 } from './restarts';
 import { crossArrival, Tally, type GridDiagnostics } from './record';
 import { deliveryPoint, type DeliveryAim, type DeliveryKind } from './box';
-import { isLevel } from './rules';
+import { isLevel, modelAtLeast } from './rules';
 import type { GridSetup } from './setup';
 import { playShootout } from './shootout';
 import { moveAll, speedOf, startRuns, targetOf, type ShapeCache } from './shape';
@@ -71,6 +71,7 @@ import {
   prepareOnClock,
   readAt,
   reachSeconds,
+  shotWindUp,
   type BallSpeed,
   type MotionKnot,
   type Move,
@@ -600,11 +601,24 @@ export function playGrid(setup: GridSetup): GridResult {
     const aim = aimOf(side, idx, d);
     if (!aim) return undefined;
     const step = GRID_MOVEMENT_CONFIG.step;
-    const seconds = Math.floor((secondsOf(aim.key) * jitter - aim.flight) / step + 1e-9) * step;
+    let seconds = Math.floor((secondsOf(aim.key) * jitter - aim.flight) / step + 1e-9) * step;
+    // Revision 9 (T579, →MATCH-12 r42): a shot is struck soon after he chooses it — he sets
+    // himself straight at goal, in a stride or two with nobody close to him.
+    const windUp = modelAtLeast(s.setup, 9) && d.action === 'shot';
+    if (windUp) seconds = shotWindUp(s, gp, seconds);
     if (seconds <= 0) return undefined;
     const carry: Carry = { at: [gp.pos[0], gp.pos[1]], start: s.elapsed, seconds };
     const pace = d.action === 'shot' ? IN_STRIDE_CONFIG.shot : 1;
-    carryInStride(s, gp, aim.to, seconds, aim.cell, readsOf(side, d, aim.to, seconds), pace);
+    carryInStride(
+      s,
+      gp,
+      aim.to,
+      seconds,
+      aim.cell,
+      readsOf(side, d, aim.to, seconds),
+      pace,
+      windUp,
+    );
     s.t += seconds;
     s.elapsed += seconds;
     tally.carryEvent(side, idx, attackFrame(side, carry.at), attackFrame(side, gp.pos));
@@ -1049,6 +1063,7 @@ export function playGrid(setup: GridSetup): GridResult {
         // (→MATCH-12 r27). A first-time finish takes no carry and no wind-up: it is struck at once,
         // as a second ball's shot is (T445).
         const firstTime = finish !== undefined || (again && d.action === 'shot');
+        (globalThis as any).__probe?.(s, owner, tags, d, firstTime); // PROBE-T579
         const jitter = candidate && !firstTime ? 0.85 + 0.3 * r() : 0;
         const carry = candidate && !firstTime ? inStride(owner[0], owner[1], d, jitter) : undefined;
         const carried = carry?.seconds ?? 0;
@@ -1060,6 +1075,7 @@ export function playGrid(setup: GridSetup): GridResult {
         // Where everyone heads before the kick: off the ball they keep on until they read it.
         const before = candidate ? heading(s) : undefined;
         const played = play(owner[0], owner[1], d, jitter, carry, finish);
+        (globalThis as any).__probeOut?.(s, owner, d, played.outcome, carried, from); // PROBE-T579
         // What is left of the action's time after the carry.
         const least = candidate ? secondsOf(played.key) * jitter - carried : 0;
         // Everyone reacts to the action as it is played — a pass, a carry, a turnover — before anyone moves.
