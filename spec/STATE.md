@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| lw29 | hq-dev1-pve2-vm2 | autopilot | 2026-10-29T02:04Z | 2026-10-29T02:04Z | - |
 
 ## inbox
 - 261029 decided LAB-9 WEB-32 T578: which pause the lab's match view offers, since live observation has no pause button and the archived replay mode drops the speeds and charts → render Pitch in its live mode, whose pause is the game's (a timeline seek holds the instant, a speed resumes it), with the speeds, charts and details as the game shows a live match (alt: archived-replay mode with its play/pause button but no speeds or charts | a lab pause button, which would fork the view).
