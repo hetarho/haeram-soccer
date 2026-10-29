@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| thar | hq-dev1-pve2-vm2 | autopilot | 2026-10-29T09:39Z | 2026-10-29T09:39Z | T595 |
 
 ## inbox
 - 261029 decided WEB-91 WEB-104 T595: complete other themes under the shared guide → fill Stadium Green, Pixel and Sticker Club's missing component resources in their existing art families (alt: new theme concepts | palette-only variants); owner authorizes origin/main push when complete or the current checkpoint by 21:30 KST today.
@@ -402,7 +401,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T595 | Complete alternative theme resources | WEB ARCH | - | doing@261029.thar |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -426,9 +424,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- Complete T595 alternative-theme artwork and publish origin/main by 21:30 KST; report: reports/261029-thar.md. Match-model follow-up stays in inbox suggest T580.
+- Review the completed alternative-theme artwork in the workbench and reports/261029-thar.md. Broader verification failures and match-model follow-up are recorded separately from the resource delivery.
 
 ## log
+- 261029 T595 done: 60 alternative-theme assets, source/prompts and shared rendering refinements; 1738 units, fast/resource/build checks, 306 preview combinations and eight targeted Chromium journeys pass. Broader integration/browser failures remain in reports/261029-thar.md; owner requested completion push.
 - 261029 T595 start: complete missing portable controls, hierarchy, materials, ratings and analysis resources for all three alternative themes; owner requests completion/deadline push.
 - 261029 T594 done: compact opaque League/Cup navigation, one home cup slot and secondary-filled applied choices; 242 affected unit tests, typecheck, lint, scoped format and build pass. Owner requests unit-only testing and main push; integration/browser/CI waits omitted.
 - 261029 create-task WEB r184: T594 compact competition header, home cup overview and filled applied choices.
@@ -448,4 +447,3 @@
 - 261029 T586 done: aligned 28x24 inline rating chips; type/lint, 22 units, scoped format, build and actual desktop/mobile sizing verified. T587 implementation starts.
 - 261029 WEB r178 and T587 preparation: owner requests five visible overall-rating levels with designed background/frame artwork; finish T586 sizing/alignment first.
 - 261029 WEB r177 and T586 start: shrink inline attribute ratings and align labels/values without changing profile cards.
-- 261029 T585 done: four image hierarchy resources (6240 bytes), compact Panel/Attributes spacing and quiet table/tab treatments; type/lint, 53 units, art/presentation checks, format, build and actual desktop/mobile rendering pass.
