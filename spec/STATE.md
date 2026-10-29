@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| lb29 | hq-dev1-pve2-vm2 | autopilot | 2026-10-29T01:21Z | 2026-10-29T01:21Z | - |
 
 ## inbox
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
@@ -366,7 +367,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 169 | 169 | - | 0 |
+| WEB | 170 | 170 | - | 0 |
 | LAB | 3 | 3 | - | 1 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
@@ -420,8 +421,10 @@
 
 ## log
 - 261029 T575 done: /lab entry (sides, values, runs, kept runs and baseline comparison) on T574's pool; state.ts with 5 unit tests, typecheck, lint, scoped format, 1672 affected unit tests and build pass; lab.spec.ts left to the batch run.
+- 261029 T576 done: generated a dedicated controller weave bitmap and connected all four themes; 121 unit tests, typecheck, lint, scoped format, resource/art checks and build pass; built image hash and material bindings verified.
 - 261029 T574 done: lab worker pool, trimmed samples, run summary with equal-sides note; 136 affected unit tests pass; scripts/_scan.ts (stray T572 scratch) dropped.
 - 261029 T574 start
+- 261029 update-ssot WEB r170 and T576 start: controller must use a newly generated bitmap texture distinct from sheet and round/table backgrounds.
 - 261029 update-ssot LAB r3: LAB-2 a pressing lab side carries the press load (`PRESS_LOAD_FATIGUE`) like a club nobody owns; implemented in lab/sides.ts with its test, no new task.
 - 261029 T573 done: tunable catalog script and freshness test (865 leaves).
 - 261029 T573 start
@@ -438,16 +441,3 @@
 - 261029 T569 done: remove clubhouse entrances, share owner-office shell and ordinary clock rules, inline office overview and secondary sheet headers; 319 affected unit tests and task checks pass.
 - 261029 T569 start; create-task consumed WEB r169.
 - 261029 update-ssot WEB start: remove duplicate place entrances, share owner-office shell and add secondary sheet surfaces.
-- 261029 cp29 complete T552–T558,T562–T568: six places,owner work tabs and whole-world market; complete local gate and all9CI jobs passed on7b31.
-- 261029 cp29 follow-up CI40773522439 on7b31:8/9jobs succeeded,onlyFirefoxrunning; checkpoint metadata without changing validated code.
-- 261029 fix recruitment browser readiness: await both asynchronously loaded comparison articles before retaining the unchanged exact two-player identity assertion; initial CI Chromium330pass1premature-read failure.
-- 261029 cp29 all five corrected record/replay/loan/live-stat browser scopes pass; preserve exact financial/continuity checks and freeze the complete fourth final gate.
-- 261029 fix live-state browser expectation: recognize the real first match-eve automatic pause during a navigation detour; require a running transport or the exact dated observation, retaining all continuity/statistics checks.
-- 261029 fix recruitment cost fixture: hold unrelated staff appointments for direct approval so the unchanged exact loan wage/cash/save assertions isolate the transfer; reproduced staff wage delta338322 separately.
-- 261029 cp29 integrate all T562–T568; training three viewports and market compact/running-clock three actual browser probes pass; freeze the complete final candidate.
-- 261029 cp29 audit331 Chromium cases(296pass35fail); scoped T563 proof4pass2fail, corrective units T562–T568 remain under review/implementation.
-- 261029 fix browser navigation: accept remembered root clubhouse aliases and dismiss/reopen early match-eve observations through real controls; preserve history, calendar and rendered-data assertions.
-- 261028 T566 integrated
-- 261028 T568 integrated
-- 261028 T567 integrated
-- 261028 T565 integrated
