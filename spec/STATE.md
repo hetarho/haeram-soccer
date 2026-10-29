@@ -439,6 +439,3 @@
 - 261029 create-task LAB r1 → T572–T575 (engine hooks, tunable catalog, worker runner, lab page).
 - 261029 create-ssot LAB r1: match lab — generated left/right sides, every grid `*_CONFIG` number editable, N-match runs against MATCH-23 with baseline comparison.
 - 261029 create-ssot LAB start
-- 261029 T571 done: keep home return across competition tabs and preserve nested-detour origins; 346 affected unit tests, typecheck, lint, tracked formatting and build pass.
-- 261029 T571 start: retain named return and nested context across league/cup sibling tabs under WEB-40/74.
-- 261029 T570 done: remove mobile-only match tactic hiding; 319 affected unit tests, typecheck, lint, tracked formatting and build pass; theme browser assertions updated.
