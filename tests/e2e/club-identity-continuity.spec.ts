@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
 import {
@@ -6,7 +6,12 @@ import {
   reduceIdentityDraft,
 } from '../../apps/web/src/ui/clubIdentityDraft';
 import { canonical } from '../../packages/contracts/src/index';
-import { KIT_ROLES } from '../../packages/contracts/src/identity';
+import {
+  KIT_ROLES,
+  type AppearanceSide,
+  type ShirtDesign,
+  type ShirtPattern,
+} from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
 import { MANAGER_HISTORY_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
 import { identityOf, nextOwnFixture } from '../../packages/engine/src/index';
@@ -23,6 +28,7 @@ import {
   manifestOf,
   preIdentityCareer,
 } from '../fixtures/club-identity';
+import { colourArea, torsoShare, wornFigures } from '../fixtures/figure-evidence';
 import {
   applyButton,
   applyDesign,
@@ -56,12 +62,13 @@ import {
   openRecordedMatch,
   ownClub,
   PHONE_VIEWPORTS,
-  PITCH_CANVAS,
+  pitchImage,
   refuseNextApply,
   retrySave,
   SAVE_DATA_UPDATED,
   savedWorld,
   seedCheckpoints,
+  visiblePitch,
   watchIdentityCommands,
   watchToWhistle,
 } from './club-identity-helpers';
@@ -80,142 +87,183 @@ import { officeBar } from './office';
 const PRESET = '프렌치 방패 · 왕관';
 /** An unapplied representative colour that no applied design uses. */
 const DRAFT_COLOUR = '#00A6A6';
+/** A pattern unlike `pattern`, for the wrong-pattern control. */
+const otherPattern = (pattern: ShirtPattern): ShirtPattern =>
+  pattern === 'stripes' ? 'hoops' : 'stripes';
+/** `seen` against a minimum, readable in a failed poll. */
+const atLeast = (seen: number, least: number) =>
+  seen >= least ? 'enough' : `${seen} below ${Math.ceil(least)}`;
+
 /**
- * Base-colour pixels that prove the live pitch paints the worn kit. At phone width each outfield
- * figure's torso is 12 × 4.8 px (→MATCH-36); its pattern, trim bands, the head, the shaded back and
- * the highlight leave its unshaded front, and the socks wear the base colour too (→KIT-3). Since
- * the softer gait and twelve o'clock number plates (261028) the players standing at the final
- * whistle show 18–28 exact base pixels in all (Chromium and Firefox, 360 and 390 px), and a colour
- * nobody wears shows none.
+ * The pitch `canvas` wears side `worn` of a recorded appearance, read from one frame at a time
+ * at the size the pitch paints its figures (→MATCH-36, `tests/fixtures/figure-evidence.ts`):
+ * - at least three figures fit its shirt in its own pattern, and none its colours in another;
+ * - its base colour, on every outfield shirt and sock (→KIT-3), covers more than one figure's
+ *   torso share of it, while ten figures wear it;
+ * - its keeper's colour covers at least half a torso (→KIT-8);
+ * - `today`, a design it was not played in, fits no figure.
  */
-const WORN_PIXELS = 10;
-
-for (const viewport of PHONE_VIEWPORTS)
-  test(`founded, worn, edited and moved by file, designs and the earlier kit stay exact at ${viewport.width}x${viewport.height}`, async ({
-    page,
-    browser,
-  }, testInfo) => {
-    test.slow();
-    const size = `${viewport.width}x${viewport.height}`;
-    await page.setViewportSize(viewport);
-    await page.goto('/');
-    const design = linkedIdentityColours({
-      ...FOUNDED_DESIGN,
-      kits: {
-        ...FOUNDED_DESIGN.kits,
-        away: { ...FOUNDED_DESIGN.kits.away, trim: FOUNDED_DESIGN.kits.home.primary },
-        third: { ...FOUNDED_DESIGN.kits.third, trim: FOUNDED_DESIGN.kits.home.primary },
+async function expectWorn(canvas: Locator, worn: AppearanceSide, today: ShirtDesign) {
+  const keeper: ShirtDesign = worn.keeper?.shirt ?? { pattern: 'plain', primary: worn.goalkeeper };
+  await expect
+    .poll(
+      async () => {
+        const image = await pitchImage(canvas);
+        return {
+          figures: atLeast(wornFigures(image, worn.shirt), 3),
+          otherPattern:
+            worn.shirt.secondary === undefined
+              ? 0
+              : wornFigures(image, { ...worn.shirt, pattern: otherPattern(worn.shirt.pattern) }),
+          base: atLeast(
+            colourArea(image, worn.shirt.primary),
+            torsoShare(image, worn.shirt, worn.shirt.primary),
+          ),
+          keeper: atLeast(
+            colourArea(image, keeper.primary),
+            torsoShare(image, keeper, keeper.primary) / 2,
+          ),
+          today: wornFigures(image, today),
+        };
       },
-    });
-    // A home/away crest and three patterned shirts, chosen in the editor (→KIT-2/4/5).
-    await foundHere(
+      // One read fits every candidate against eight patterns, about 3 s.
+      { timeout: 30_000 },
+    )
+    .toEqual({ figures: 'enough', otherPattern: 0, base: 'enough', keeper: 'enough', today: 0 });
+}
+
+// Phones draw the pitch at device pixel ratio 2: a torso 85% of the 12 px marker (→MATCH-36) is
+// 20.4 device pixels across, enough to read a shirt's pattern.
+test.describe(() => {
+  test.use({ deviceScaleFactor: 2 });
+  for (const viewport of PHONE_VIEWPORTS)
+    test(`founded, worn, edited and moved by file, designs and the earlier kit stay exact at ${viewport.width}x${viewport.height}`, async ({
       page,
-      'Continuity Kit FC',
-      `identity-continuity-${viewport.width}`,
-      async (editor) => {
-        const pitch = editor.getByRole('img', { name: '경기장 유니폼 미리보기' });
-        await designInEditor(editor, design, PRESET);
-        // The previews follow the draft before 사용 (→WEB-87): colours are linked and
-        // the pitch preview paints the shirt being edited, the third, chosen last.
-        await expect(colourCode(editor, '무늬색 색 코드')).toHaveCount(0);
-        await expect.poll(() => canvasPixels(pitch, design.kits.third.primary)).toBeGreaterThan(20);
-        await keepScreenshot(
-          testInfo,
-          `founding crest preview ${size}`,
-          editor.getByRole('img', { name: /^엠블럼 미리보기/ }),
-        );
-        await keepScreenshot(testInfo, `founding pitch preview ${size}`, pitch);
-      },
-    );
-    const founded = ownClub(await exportWorld(page));
-    expect(founded.identity).toEqual(design);
-    expect(founded.color).toBe(design.colours[0]);
+      browser,
+    }, testInfo) => {
+      test.slow();
+      const size = `${viewport.width}x${viewport.height}`;
+      await page.setViewportSize(viewport);
+      await page.goto('/');
+      const design = linkedIdentityColours({
+        ...FOUNDED_DESIGN,
+        kits: {
+          ...FOUNDED_DESIGN.kits,
+          away: { ...FOUNDED_DESIGN.kits.away, trim: FOUNDED_DESIGN.kits.home.primary },
+          third: { ...FOUNDED_DESIGN.kits.third, trim: FOUNDED_DESIGN.kits.home.primary },
+        },
+      });
+      // A home/away crest and three patterned shirts, chosen in the editor (→KIT-2/4/5).
+      await foundHere(
+        page,
+        'Continuity Kit FC',
+        `identity-continuity-${viewport.width}`,
+        async (editor) => {
+          const pitch = editor.getByRole('img', { name: '경기장 유니폼 미리보기' });
+          await designInEditor(editor, design, PRESET);
+          // The previews follow the draft before 사용 (→WEB-87): colours are linked and
+          // the pitch preview paints the shirt being edited, the third, chosen last.
+          await expect(colourCode(editor, '무늬색 색 코드')).toHaveCount(0);
+          await expect
+            .poll(() => canvasPixels(pitch, design.kits.third.primary))
+            .toBeGreaterThan(20);
+          await keepScreenshot(
+            testInfo,
+            `founding crest preview ${size}`,
+            editor.getByRole('img', { name: /^엠블럼 미리보기/ }),
+          );
+          await keepScreenshot(testInfo, `founding pitch preview ${size}`, pitch);
+        },
+      );
+      const founded = ownClub(await exportWorld(page));
+      expect(founded.identity).toEqual(design);
+      expect(founded.color).toBe(design.colours[0]);
 
-    // One match settled in that design; nothing owner-held stops the days before it.
-    await configureResponsibilities(page, { responsibilities: ALL_DELEGATED });
-    await watchToWhistle(page);
-    await keepScreenshot(testInfo, `observed match ${size}`, page.getByTestId('pitch-theatre'));
-    await expect.poll(async () => (await savedWorld(page)).ownMatches.length).toBeGreaterThan(0);
-    const played = await savedWorld(page);
-    const record = played.ownMatches.at(-1)!;
-    const side = record.home === played.playerClub ? 0 : 1;
-    const frozen = record.appearance!;
-    const worn = frozen.sides[side];
-    expect(worn.club).toBe(played.playerClub);
-    expect(worn.crest).toEqual(design.crest);
-    expect(worn.shirt).toEqual(design.kits[worn.role]);
-    expect(frozen).toEqual(appearanceForFixture(played, record));
-    await expect
-      .poll(() => canvasPixels(page.locator(PITCH_CANVAS).last(), worn.shirt.primary))
-      .toBeGreaterThan(WORN_PIXELS);
+      // One match settled in that design; nothing owner-held stops the days before it.
+      await configureResponsibilities(page, { responsibilities: ALL_DELEGATED });
+      await watchToWhistle(page);
+      await keepScreenshot(testInfo, `observed match ${size}`, page.getByTestId('pitch-theatre'));
+      await expect.poll(async () => (await savedWorld(page)).ownMatches.length).toBeGreaterThan(0);
+      const played = await savedWorld(page);
+      const record = played.ownMatches.at(-1)!;
+      const side = record.home === played.playerClub ? 0 : 1;
+      const frozen = record.appearance!;
+      const worn = frozen.sides[side];
+      expect(worn.club).toBe(played.playerClub);
+      expect(worn.crest).toEqual(design.crest);
+      expect(worn.shirt).toEqual(design.kits[worn.role]);
+      expect(frozen).toEqual(appearanceForFixture(played, record));
+      // At the whistle the pitch wears that kit, not one of the club's kits this fixture left out.
+      const unworn = design.kits[KIT_ROLES.find((role) => role !== worn.role)!];
+      await expectWorn(visiblePitch(page), worn, unworn);
 
-    // Edit the linked palette; the already recorded appearance remains frozen (→KIT-9/12).
-    const actions = [
-      { type: 'kit-colour', role: 'home', colour: EDITED_SHIRT_COLOUR },
-      { type: 'kit-colour', role: 'away', colour: '#1B2A49' },
-      ...(worn.role === 'third'
-        ? [{ type: 'kit-colour', role: 'third', colour: EDITED_SHIRT_COLOUR } as const]
-        : []),
-    ] as const;
-    const edited = actions.reduce(reduceIdentityDraft, design);
-    const view = await openDesign(page);
-    for (const action of actions)
-      await colourCode(view, `${KIT_LABEL[action.role]} 색 코드`).fill(action.colour);
-    await keepScreenshot(
-      testInfo,
-      `edited crest preview ${size}`,
-      view.getByRole('img', { name: /^엠블럼 미리보기/ }),
-    );
-    await applyDesign(page, view);
-    await expect(crestFill(hud(page), edited.crest.primary)).not.toHaveCount(0);
-
-    const raw = await exportRaw(page);
-    const exported = (await decode(raw)).world;
-    expect(ownClub(exported).identity).toEqual(edited);
-    expect(ownClub(exported).color).toBe(edited.colours[0]);
-    const kept = exported.ownMatches.find((match) => match.id === record.id)!;
-    expect(kept.appearance).toEqual(frozen);
-    // Today's design would dress that fixture differently; the record keeps what was worn (→KIT-12).
-    expect(appearanceForFixture(exported, kept).sides[side]).not.toEqual(worn);
-
-    // The file alone carries both into another browser profile (→SAVE-20/22).
-    const elsewhere = await browser.newContext({ viewport });
-    try {
-      const other = await elsewhere.newPage();
-      await other.goto(new URL('/', page.url()).href);
-      await expect(other.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
-      await other
-        .locator('input[type=file]')
-        .last()
-        .setInputFiles({
-          name: 'continuity.haeram-save.json',
-          mimeType: 'application/json',
-          buffer: Buffer.from(raw),
-        });
-      await expect(other.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
-      expect(canonical(await exportWorld(other))).toBe(canonical(exported));
-      await expect(crestFill(hud(other), edited.crest.primary)).not.toHaveCount(0);
-      // Its replay shows the recorded crest and shirt, not today's design.
-      const replay = await openRecordedMatch(other);
-      await expect(replay.getByTestId('match-kit-unrecorded')).toHaveCount(0);
-      const score = replay.getByTestId('match-score');
-      await expect(crestFill(score, design.crest.primary)).not.toHaveCount(0);
-      for (const today of [edited.crest.primary, edited.crest.secondary!])
-        await expect(crestFill(score, today)).toHaveCount(0);
-      const canvas = replay.locator(PITCH_CANVAS);
-      await expect
-        .poll(() => canvasPixels(canvas, worn.shirt.primary))
-        .toBeGreaterThan(WORN_PIXELS);
-      expect(await canvasPixels(canvas, EDITED_SHIRT_COLOUR)).toBe(0);
+      // Edit the linked palette; the already recorded appearance remains frozen (→KIT-9/12).
+      const actions = [
+        { type: 'kit-colour', role: 'home', colour: EDITED_SHIRT_COLOUR },
+        { type: 'kit-colour', role: 'away', colour: '#1B2A49' },
+        ...(worn.role === 'third'
+          ? [{ type: 'kit-colour', role: 'third', colour: EDITED_SHIRT_COLOUR } as const]
+          : []),
+      ] as const;
+      const edited = actions.reduce(reduceIdentityDraft, design);
+      const view = await openDesign(page);
+      for (const action of actions)
+        await colourCode(view, `${KIT_LABEL[action.role]} 색 코드`).fill(action.colour);
       await keepScreenshot(
         testInfo,
-        `recorded match after import ${size}`,
-        replay.getByTestId('pitch-theatre'),
+        `edited crest preview ${size}`,
+        view.getByRole('img', { name: /^엠블럼 미리보기/ }),
       );
-    } finally {
-      await elsewhere.close();
-    }
-  });
+      await applyDesign(page, view);
+      await expect(crestFill(hud(page), edited.crest.primary)).not.toHaveCount(0);
+
+      const raw = await exportRaw(page);
+      const exported = (await decode(raw)).world;
+      expect(ownClub(exported).identity).toEqual(edited);
+      expect(ownClub(exported).color).toBe(edited.colours[0]);
+      const kept = exported.ownMatches.find((match) => match.id === record.id)!;
+      expect(kept.appearance).toEqual(frozen);
+      // Today's design would dress that fixture differently; the record keeps what was worn (→KIT-12).
+      const todaySide = appearanceForFixture(exported, kept).sides[side];
+      expect(todaySide).not.toEqual(worn);
+
+      // The file alone carries both into another browser profile (→SAVE-20/22).
+      const elsewhere = await browser.newContext({ viewport, deviceScaleFactor: 2 });
+      try {
+        const other = await elsewhere.newPage();
+        await other.goto(new URL('/', page.url()).href);
+        await expect(other.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
+        await other
+          .locator('input[type=file]')
+          .last()
+          .setInputFiles({
+            name: 'continuity.haeram-save.json',
+            mimeType: 'application/json',
+            buffer: Buffer.from(raw),
+          });
+        await expect(other.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
+        expect(canonical(await exportWorld(other))).toBe(canonical(exported));
+        await expect(crestFill(hud(other), edited.crest.primary)).not.toHaveCount(0);
+        // Its replay shows the recorded crest and shirt, not today's design.
+        const replay = await openRecordedMatch(other);
+        await expect(replay.getByTestId('match-kit-unrecorded')).toHaveCount(0);
+        const score = replay.getByTestId('match-score');
+        await expect(crestFill(score, design.crest.primary)).not.toHaveCount(0);
+        for (const today of [edited.crest.primary, edited.crest.secondary!])
+          await expect(crestFill(score, today)).toHaveCount(0);
+        const canvas = visiblePitch(replay);
+        await expectWorn(canvas, worn, todaySide.shirt);
+        expect(await canvasPixels(canvas, EDITED_SHIRT_COLOUR)).toBe(0);
+        await keepScreenshot(
+          testInfo,
+          `recorded match after import ${size}`,
+          replay.getByTestId('pitch-theatre'),
+        );
+      } finally {
+        await elsewhere.close();
+      }
+    });
+});
 
 test('a shirt chosen for the next fixture survives reload and slot parking; another game gets neither it nor the design draft', async ({
   page,
