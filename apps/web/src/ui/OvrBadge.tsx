@@ -19,14 +19,14 @@ export function cohesionLine(club: Club) {
 /** Presentation-only rarity tiers shared by rating cards and table chips (WEB-91). */
 export function ovrTier(value: number) {
   return value >= 85
-    ? 'elite'
+    ? 'ruby'
     : value >= 75
-      ? 'gold'
+      ? 'platinum'
       : value >= 65
-        ? 'silver'
+        ? 'gold'
         : value >= 50
-          ? 'bronze'
-          : 'iron';
+          ? 'silver'
+          : 'bronze';
 }
 
 /**

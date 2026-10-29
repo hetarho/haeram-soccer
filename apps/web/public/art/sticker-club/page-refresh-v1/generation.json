@@ -1,0 +1,78 @@
+{
+  "method": "Built-in image_gen originals through the shared deterministic crop/WebP pipeline",
+  "date": "2026-10-30",
+  "sources": "apps/web/design/page-refresh-v1/sources",
+  "prompts": "apps/web/design/page-refresh-v1/prompts.json",
+  "sourceHashes": {
+    "sticker-components.png": "1fcb2b3f80c66106838336e33a367bc46cdc4200df737e52a1755077a596ae70",
+    "sticker-ruby.png": "f247b023c6a6cd3126f69fb27e0588dff8bf4e241819c54839df17ab1babede4"
+  },
+  "geometry": "Filled nine-slice frames with fixed source-pixel caps; independent material tiles and live text.",
+  "assets": [
+    {
+      "file": "frame-rating-bronze.webp",
+      "source": "sticker-components.png",
+      "crop": { "x": 40, "y": 923, "width": 272, "height": 267 },
+      "filter": "",
+      "bytes": 6698,
+      "sha256": "da45d056f9772ecd3a08b777beb819808649598a035cc4457b0c27520cd601fb",
+      "width": 192,
+      "height": 188,
+      "role": "image-art-rating-bronze",
+      "mode": "nine-slice",
+      "slice": 36
+    },
+    {
+      "file": "frame-rating-silver.webp",
+      "source": "sticker-components.png",
+      "crop": { "x": 343, "y": 923, "width": 270, "height": 267 },
+      "filter": "",
+      "bytes": 6354,
+      "sha256": "32a2c6859de33581a5e20f8b6356608a9b7f0d52e4f41f6f12b1e4ae3ce18d49",
+      "width": 192,
+      "height": 190,
+      "role": "image-art-rating-silver",
+      "mode": "nine-slice",
+      "slice": 36
+    },
+    {
+      "file": "frame-rating-gold.webp",
+      "source": "sticker-components.png",
+      "crop": { "x": 642, "y": 923, "width": 271, "height": 267 },
+      "filter": "",
+      "bytes": 6842,
+      "sha256": "417bb6ebdf2a4f36ae8ef452ccbba5b14a4616d89e20f23063e46c8dc7f10f47",
+      "width": 192,
+      "height": 189,
+      "role": "image-art-rating-gold",
+      "mode": "nine-slice",
+      "slice": 36
+    },
+    {
+      "file": "frame-rating-platinum.webp",
+      "source": "sticker-components.png",
+      "crop": { "x": 943, "y": 923, "width": 271, "height": 267 },
+      "filter": "",
+      "bytes": 6278,
+      "sha256": "0f363bc8cbea243deb2b0b1ca9a80f39ef94e8a6022971658ab7b827d4e868e4",
+      "width": 192,
+      "height": 189,
+      "role": "image-art-rating-platinum",
+      "mode": "nine-slice",
+      "slice": 36
+    },
+    {
+      "file": "frame-rating-ruby.webp",
+      "source": "sticker-ruby.png",
+      "crop": { "x": 100, "y": 119, "width": 1053, "height": 1016 },
+      "filter": "",
+      "bytes": 6552,
+      "sha256": "2d7b32edd64719196a087a268dea42bf5391b1ccdf3983b46a399cc40aab07eb",
+      "width": 192,
+      "height": 185,
+      "role": "image-art-rating-ruby",
+      "mode": "nine-slice",
+      "slice": 36
+    }
+  ]
+}

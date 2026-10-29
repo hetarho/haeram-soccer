@@ -293,26 +293,26 @@
       "card-sheet-title-size": "17px",
       "card-body-size": "13px",
       "section-rule-height": "2px",
-      "rating-iron-frame": "var(--image-art-rating-iron)",
-      "rating-iron-slice": "var(--image-art-rating-iron-slice)",
-      "rating-iron-fill": "#8fa5b3",
-      "rating-iron-text": "#112b3b",
       "rating-bronze-frame": "var(--image-art-rating-bronze)",
       "rating-bronze-slice": "var(--image-art-rating-bronze-slice)",
-      "rating-bronze-fill": "#d7924d",
-      "rating-bronze-text": "#382211",
+      "rating-bronze-fill": "#bc7952",
+      "rating-bronze-text": "#29180d",
       "rating-silver-frame": "var(--image-art-rating-silver)",
       "rating-silver-slice": "var(--image-art-rating-silver-slice)",
-      "rating-silver-fill": "#dbe8e8",
-      "rating-silver-text": "#243a45",
+      "rating-silver-fill": "#dce3e8",
+      "rating-silver-text": "#20333e",
       "rating-gold-frame": "var(--image-art-rating-gold)",
       "rating-gold-slice": "var(--image-art-rating-gold-slice)",
-      "rating-gold-fill": "#f1d58a",
-      "rating-gold-text": "#493211",
-      "rating-elite-frame": "var(--image-art-rating-elite)",
-      "rating-elite-slice": "var(--image-art-rating-elite-slice)",
-      "rating-elite-fill": "#b985e0",
-      "rating-elite-text": "#2e123f",
+      "rating-gold-fill": "#edc448",
+      "rating-gold-text": "#3d2a0b",
+      "rating-platinum-frame": "var(--image-art-rating-platinum)",
+      "rating-platinum-slice": "var(--image-art-rating-platinum-slice)",
+      "rating-platinum-fill": "#b9edf2",
+      "rating-platinum-text": "#15373c",
+      "rating-ruby-frame": "var(--image-art-rating-ruby)",
+      "rating-ruby-slice": "var(--image-art-rating-ruby-slice)",
+      "rating-ruby-fill": "#c83255",
+      "rating-ruby-text": "#ffffff",
       "preview-padding": "16px",
       "preview-section-gap": "16px",
       "preview-label-gap": "6px",
@@ -611,40 +611,40 @@
         "mode": "nine-slice",
         "slice": 16
       },
-      "image-art-rating-iron": {
-        "resource": "../../art/pixel/details-v1/frame-rating-iron.png",
-        "width": 128,
-        "height": 128,
-        "mode": "nine-slice",
-        "slice": 16
-      },
       "image-art-rating-bronze": {
-        "resource": "../../art/pixel/details-v1/frame-rating-bronze.png",
-        "width": 128,
-        "height": 128,
+        "resource": "../../art/pixel/page-refresh-v1/frame-rating-bronze.png",
+        "width": 64,
+        "height": 64,
         "mode": "nine-slice",
-        "slice": 16
+        "slice": 12
       },
       "image-art-rating-silver": {
-        "resource": "../../art/pixel/details-v1/frame-rating-silver.png",
-        "width": 128,
-        "height": 128,
+        "resource": "../../art/pixel/page-refresh-v1/frame-rating-silver.png",
+        "width": 64,
+        "height": 64,
         "mode": "nine-slice",
-        "slice": 16
+        "slice": 12
       },
       "image-art-rating-gold": {
-        "resource": "../../art/pixel/details-v1/frame-rating-gold.png",
-        "width": 128,
-        "height": 128,
+        "resource": "../../art/pixel/page-refresh-v1/frame-rating-gold.png",
+        "width": 64,
+        "height": 64,
         "mode": "nine-slice",
-        "slice": 16
+        "slice": 12
       },
-      "image-art-rating-elite": {
-        "resource": "../../art/pixel/details-v1/frame-rating-elite.png",
-        "width": 128,
-        "height": 128,
+      "image-art-rating-platinum": {
+        "resource": "../../art/pixel/page-refresh-v1/frame-rating-platinum.png",
+        "width": 64,
+        "height": 64,
         "mode": "nine-slice",
-        "slice": 16
+        "slice": 12
+      },
+      "image-art-rating-ruby": {
+        "resource": "../../art/pixel/page-refresh-v1/frame-rating-ruby.png",
+        "width": 64,
+        "height": 64,
+        "mode": "nine-slice",
+        "slice": 12
       },
       "image-art-control-checkbox-off": {
         "resource": "../../art/pixel/details-v1/icon-checkbox-off.png",

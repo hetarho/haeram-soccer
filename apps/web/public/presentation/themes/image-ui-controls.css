@@ -933,13 +933,6 @@ html[data-theme] {
     border-bottom: var(--table-rule-border-width, 1px) solid var(--image-table-line);
   }
 
-  [data-tier='iron'] {
-    --rating-image: var(--rating-iron-frame, var(--image-button-frame));
-    --rating-slice: var(--rating-iron-slice, var(--image-art-frame-button-slice, 22));
-    --rating-background: var(--rating-iron-fill, var(--image-quiet));
-    --rating-text: var(--rating-iron-text, var(--ovr-bronze, var(--warm)));
-  }
-
   [data-tier='bronze'] {
     --rating-image: var(--rating-bronze-frame, var(--image-button-frame));
     --rating-slice: var(--rating-bronze-slice, var(--image-art-frame-button-slice, 22));
@@ -951,21 +944,28 @@ html[data-theme] {
     --rating-image: var(--rating-silver-frame, var(--image-button-frame));
     --rating-slice: var(--rating-silver-slice, var(--image-art-frame-button-slice, 22));
     --rating-background: var(--rating-silver-fill, var(--image-quiet));
-    --rating-text: var(--rating-silver-text, var(--ovr-silver, var(--text-muted)));
+    --rating-text: var(--rating-silver-text, var(--ovr-bronze, var(--warm)));
   }
 
   [data-tier='gold'] {
     --rating-image: var(--rating-gold-frame, var(--image-button-frame));
     --rating-slice: var(--rating-gold-slice, var(--image-art-frame-button-slice, 22));
     --rating-background: var(--rating-gold-fill, var(--image-quiet));
-    --rating-text: var(--rating-gold-text, var(--gold));
+    --rating-text: var(--rating-gold-text, var(--ovr-silver, var(--text-muted)));
   }
 
-  [data-tier='elite'] {
-    --rating-image: var(--rating-elite-frame, var(--image-button-frame));
-    --rating-slice: var(--rating-elite-slice, var(--image-art-frame-button-slice, 22));
-    --rating-background: var(--rating-elite-fill, var(--image-quiet));
-    --rating-text: var(--rating-elite-text, var(--gold));
+  [data-tier='platinum'] {
+    --rating-image: var(--rating-platinum-frame, var(--image-button-frame));
+    --rating-slice: var(--rating-platinum-slice, var(--image-art-frame-button-slice, 22));
+    --rating-background: var(--rating-platinum-fill, var(--image-quiet));
+    --rating-text: var(--rating-platinum-text, var(--gold));
+  }
+
+  [data-tier='ruby'] {
+    --rating-image: var(--rating-ruby-frame, var(--image-button-frame));
+    --rating-slice: var(--rating-ruby-slice, var(--image-art-frame-button-slice, 22));
+    --rating-background: var(--rating-ruby-fill, var(--image-quiet));
+    --rating-text: var(--rating-ruby-text, var(--gold));
   }
 
   [data-tier] {

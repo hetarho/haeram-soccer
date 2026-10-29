@@ -1,0 +1,48 @@
+{
+  "tool": "built-in image_gen",
+  "date": "2026-10-30",
+  "assets": [
+    {
+      "key": "stadium-icons",
+      "transparent_background": true,
+      "prompt": "Use case: illustration-story. Production asset: a transparent 4 by 4 atlas of SIXTEEN separate tiny European football-club cartoon illustrations for a football management game named Stadium Green. These must be charming richly hand drawn European sports-comic illustrations, opaque gouache color, clean dark evergreen ink outline, warm cream highlights, slight three-quarter volume, restrained vintage football annual illustration aesthetic. NOT Lucide, NOT thin line web UI glyphs, NOT flat generic app icons. Each pictogram has an independent complete silhouette, generous transparent margins within its own equal square cell. Consistent optical size and strong recognition at 28 pixels. Exact row-major subjects: row 1 a little football clubhouse, a league standings board, a golden cup trophy, a history scrapbook with clock; row 2 two football players, training cones and football, a club office building, a leather football boot; row 3 a cheering scarf-carrying crowd, a coach in tracksuit, a green football shirt, a brass notification bell; row 4 three stacked ticket strips suggesting menu, two curved transfer arrows, a filled playful play triangle, a bright warm heart. Deep green, grass greens, golden ochre, cream, touches of coral. No words, numbers, letters, labels, grid lines, surrounding squares, contact shadows beyond each silhouette, watermark. Actual alpha transparent background everywhere between objects. All sixteen cells fully separated, no objects crossing cell edges.",
+      "source": "sources/stadium-icons.png"
+    },
+    {
+      "key": "sticker-components",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Production UI asset atlas, NOT a mockup: a 4 by 4 grid of sixteen separate blank handmade clay sticker component plates, isolated on a truly transparent background. Smooth matte polymer clay, adorable softly rounded inflated edges and soft cream sticker rim, dark forest-green thin contour, subtle molded relief, very gentle soft shadow, clean untextured faces. No rough paper, grain, scratches, hatching, burlap or grunge. Every cell is same size with large transparent gutters and complete silhouette. All frames should be square with straight stretchable centers and fixed rounded corners for nine-slice rendering; no chamfered/cut lower corners, no zigzags. Exact row-major content: row1 sunny buttery yellow primary square plate, pale sage secondary square plate, warm ivory tertiary square plate, pale ivory recessed input square plate. Row2 forest green dark square plate, ivory selected square plate with yellow inner rim, pale warm grey disabled square plate, rounded ivory popup square plate. Row3 empty cream rounded checkbox, same checkbox with dark green clay check mark, a round golden-yellow formation disc with cream rim, a short thin smooth green horizontal clay divider. Row4 five-tier-rating preview irrelevant: instead four smooth blank square mini plates in copper bronze, pale cool silver, warm yellow gold, icy cyan platinum. Important all faces blank no text no lettering no baked labels, no numbers, no symbols except checkmark in cell row3 col2. Consistent top-down orthographic view, no perspective. Frames must have uninterrupted solid edge geometry, with no overlapping seams.",
+      "source": "sources/sticker-components.png"
+    },
+    {
+      "key": "sticker-materials",
+      "transparent_background": false,
+      "prompt": "Use case: stylized-concept. Production material atlas for a cute handmade clay-sticker football game's page backgrounds. Four equal edge-to-edge squares arranged as a precise 2 by 2 grid, with no gaps, divider lines, borders or outside scene. Each quadrant is a seamless smooth matte polymer clay material with gentle broad molded surface variation and extremely subtle tactile softness. Clean and cute, not distressed, not paper, no fibers, no scratches, no specks, no grain noise, no diagonal bands, no hatching, no repeating chevrons. Top-left warm pale oat cream around #eee5ce for page canvas. Top-right light cream around #f7f1df for main sheets. Bottom-left nearly white vanilla around #fffbef for detail cards. Bottom-right sunny butter yellow around #f4cf59 for primary action/controller material. Uniform flat lighting, no gradient across full quadrant, no vignette, no shadows, no text, objects, icons, watermark. Tiles occupy their exact entire quadrants. Clearly different brightness levels between cream materials, yellow vibrant but gentle.",
+      "source": "sources/sticker-materials.png"
+    },
+    {
+      "key": "stadium-grass",
+      "transparent_background": false,
+      "prompt": "Use case: stylized-concept. One square seamless flat top-down material tile of lush European football pitch grass for a sports-comic football management game controller background. Painted gouache cartoon turf with individual grouped blade shapes and soft irregular clusters in varied mid and dark green tones, deep forest-green base around #184c32 with brighter grass green #3e7542 and occasional fresh sage blades. Restrained contrast to support white live HTML labels laid over it. Visibly organic short grass texture, charming hand painted sports annual illustration. Absolutely NO diagonal stripes, no herringbone, no chevrons, no cloth weave, no ruled mow bands, no football markings, no stadium, no objects, no words, no numbers. Uniform even light, opposite edges seamlessly tile, no border and no surrounding scene. Texture remains clearly grass at 256 pixels.",
+      "source": "sources/stadium-grass.png"
+    },
+    {
+      "key": "rating-frames",
+      "transparent_background": true,
+      "prompt": "Use case: stylized-concept. Production game UI artwork atlas, transparent background, six equal cells in a 3 column by 2 row grid, wide transparent gutters. Five small blank square engraved rating-ticket frames with fully filled colored centers, matching a refined printed European football annual aesthetic, crisp layered ink edge and subtle pressed-paper texture; sixth bottom-right cell completely empty transparent. Row1: copper BRONZE #bc7952 with dark brown frame; pale cool SILVER #dce3e8 with slate frame; rich saturated GOLD #edc448 with amber frame. Row2: luminous icy cyan PLATINUM #b9edf2 with teal engraved frame; unmistakable vivid RUBY #c83255 with dark crimson frame, tiny restrained gold corner flourishes; empty cell. No labels, words, numbers, diamonds, badges or other icons. Each frame a simple square with straight stretchable edges, designed for nine-slice UI at tiny 24 px sizes: corners contained within outer 12 percent, smooth continuous center face, high visual tier color separation. Strong readable bronze vs silver vs gold vs pale cyan vs red. Orthographic top down, no perspective, no extruded big drop shadow; complete outline and transparent exterior within each cell.",
+      "source": "sources/rating-frames.png"
+    },
+    {
+      "key": "stadium-details",
+      "reference": "stadium-icons",
+      "prompt": "Create a NEW transparent 4 by 4 atlas of sixteen supplementary icons matching the European painted football comic art in the reference, same rich gouache color, evergreen ink outlines, cream highlights and golden accents. Replace ALL subjects with the following exact row-major set, every icon independent with fully transparent generous gutters, complete silhouettes centered in their equal cell. Row 1: a friendly watching eye, folded football newspaper, classic leather football, two chunky pause bars. Row 2: curved replay arrow, two crossed clay-like ink strokes forming close X, downward cream chevron, right-pointing cream chevron. Row 3: left-pointing cream chevron, green check mark, brass funnel filter, gold five-point star. Row 4: ornate silver lidded cup, tall European silver football cup, golden medal with ribbon, hand-painted green rising trend arrow. Small recognizable icons suitable at 20 to 32 pixels, charming illustration objects rather than Lucide paths. No words, letters, numbers, labels, tile backgrounds, square cells, watermark or global scene. Actual alpha transparent background everywhere outside the sixteen individual objects. Use reference ONLY for style, create these new subjects.",
+      "source": "sources/stadium-details.png"
+    },
+    {
+      "key": "sticker-ruby",
+      "reference": "sticker-components",
+      "prompt": "Create one NEW blank square ruby-red rating plate matching the smooth handmade clay-sticker square plates in the reference. One single square plate centered on fully transparent background, same softly rounded fixed corners, complete thin deep forest outline and thick cream outer sticker rim, smooth matte polymer clay relief, no grain or paper scratches. The center must be vivid warm ruby red #c83255 and clearly different from copper bronze or yellow gold. Orthographic top-down, stretchable straight center edges for nine-slice UI, blank uninterrupted red center, no numbers, labels, icons, letters, gems or designs. Plate fills roughly 80 percent of image and its entire silhouette fits with generous transparent margin. Style reference ONLY, replace all reference subjects with this one ruby plate.",
+      "source": "sources/sticker-ruby.png"
+    }
+  ]
+}
