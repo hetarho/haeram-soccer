@@ -18,6 +18,8 @@ import s from './ClubHub.module.css';
 import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';
 import { FacilityArt } from './FacilityArt';
 import { CashAlarm } from './CashAlarm';
+import { Card } from './Card';
+import { PixelIcon } from './PixelIcon';
 
 export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => void }) {
   const next = nextOwnFixture(w);
@@ -166,20 +168,27 @@ export function CupBriefing({ w, onOpen }: { w: World; onOpen?: () => void }) {
   return (
     <section className={s.competitions} aria-label="현재 컵 대회">
       {currentCupBriefings(w).map((cup) => (
-        <button
+        <Card
           key={cup.key}
-          data-ui="link"
-          aria-label={`${cup.name} 현재 대회 보기`}
-          onClick={() => {
-            onOpen?.();
-            openCupSeason(w.year, cup.key, w.year);
-          }}
+          title={cup.name}
+          meta={<PixelIcon name="cup" size={28} />}
+          actions={
+            <button
+              data-ui="secondary"
+              aria-label={`${cup.name} 현재 대회 보기`}
+              onClick={() => {
+                onOpen?.();
+                openCupSeason(w.year, cup.key, w.year);
+              }}
+            >
+              대회 보기 ↗
+            </button>
+          }
         >
-          <b>{cup.name}</b>
-          <span>{cup.status}</span>
-          {cup.detail && <small>{cup.detail}</small>}
-          {cup.winner && <small>{cup.winner}</small>}
-        </button>
+          <strong>{cup.status}</strong>
+          {cup.detail && <p>{cup.detail}</p>}
+          {cup.winner && <p>{cup.winner}</p>}
+        </Card>
       ))}
     </section>
   );
@@ -276,12 +285,11 @@ export function SeasonCard({
             setCupsOpen(true);
           }}
         >
-          <span>컵 대회</span>
+          <span>컵대회</span>
           <b>
             {cupCount}
             <small>개</small>
           </b>
-          <small>{cupCount ? '진행 중 · 전체 보기' : '진행 중 없음'}</small>
         </button>
       </div>
       <div className={s.seasonMeter} data-home-part="season-meter">
@@ -291,7 +299,7 @@ export function SeasonCard({
         <progress aria-label="시즌 진행률" value={progress} max={100} />
       </div>
       {cupsOpen && active && (
-        <Dialog label="현재 컵 대회 모아보기" centered wide onClose={() => setCupsOpen(false)}>
+        <Dialog label="컵대회" centered wide onClose={() => setCupsOpen(false)}>
           <CupBriefing w={w} onOpen={() => setCupsOpen(false)} />
         </Dialog>
       )}

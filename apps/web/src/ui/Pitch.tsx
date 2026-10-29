@@ -3,6 +3,7 @@ import { PixelIcon } from './PixelIcon';
 import {
   lazy,
   Suspense,
+  useCallback,
   useEffect,
   useId,
   useLayoutEffect,
@@ -61,6 +62,19 @@ import {
   seekGoalFeedback,
   type GoalFeedbackState,
 } from './goalFeedback';
+import {
+  GOAL_REPLAY_CONFIG,
+  goalsSeen,
+  replayClock,
+  replayEnded,
+  replayFor,
+  replayGoals,
+  replayGoalsReached,
+  startGoalReplay,
+  type GoalReplay,
+  type ReplayGoal,
+} from './goalReplay';
+import { Dialog } from './Dialog';
 import { useLocale } from '../presentation/react';
 import { possessionKey, resolvePossessionCue, type PossessionCue } from './possessionCue';
 import {
@@ -248,6 +262,17 @@ export function Pitch({
   const [details, setDetails] = useState(false);
   const [reviewedId, setReviewedId] = useState<string>();
   const [selection, setSelection] = useState('0:8');
+  // A goal-scene clip under way (→WEB-105): its own presentation over a snapshot of the original
+  // viewing. The ref is what the frame loop reads, so a return takes effect on the next frame.
+  const [replayState, setReplay] = useState<GoalReplay>();
+  const replaying = useRef<GoalReplay | undefined>(undefined);
+  const [picking, setPicking] = useState(false);
+  // The goals a live presentation has shown through their cue, kept when a seek goes back.
+  const [seen, setSeen] = useState(0);
+  const seenShown = useRef(0);
+  const replayReturn = useRef<HTMLButtonElement>(null);
+  const replayOpen = useRef<HTMLButtonElement>(null);
+  const refocusReplay = useRef(false);
   // Every sample and recorded ball position at its match time, so a pass flies at its real speed.
   const timed = useMemo(() => presentationSamples(p?.frames ?? []), [p]);
   const { samples, track } = timed;
@@ -298,13 +323,46 @@ export function Pitch({
   const sample = samples[Math.min(visibleIndex, samples.length - 1)];
   const frame: MatchFrame | undefined = p?.frames[sample?.frame ?? 0];
   const onRecord = sampleMatchId === p?.record.id;
-  // The final recorded goal finishes its cue before the match does.
-  const finished =
-    !!p &&
-    onRecord &&
-    sampleIndex >= samples.length - 1 &&
-    cue === undefined &&
-    shownGoals >= goals.length;
+  const replay = replayFor(replayState, p?.record.id);
+  // The final recorded goal finishes its cue before the match does. A clip keeps the original
+  // viewing's state, so it never finishes, restarts or marks the match watched (→WEB-105).
+  const finished = replay
+    ? replay.origin.finished
+    : !!p &&
+      onRecord &&
+      sampleIndex >= samples.length - 1 &&
+      cue === undefined &&
+      shownGoals >= goals.length;
+  // An archive offers every recorded goal; a live presentation those it has shown.
+  const offered = useMemo(
+    () => (p ? replayGoals(goals, p.frames, summary ? goals.length : seen) : []),
+    [p, goals, summary, seen],
+  );
+  const noteSeen = useCallback((state: GoalFeedbackState) => {
+    const reached = goalsSeen(state);
+    if (reached <= seenShown.current) return;
+    seenShown.current = reached;
+    setSeen(reached);
+  }, []);
+  // Back to the original viewing as it was on entry: its instant, play state and speed, without
+  // another cue for a goal it already celebrated (→WEB-105).
+  const endReplay = useCallback(() => {
+    const clip = replaying.current;
+    if (!clip) return;
+    replaying.current = undefined;
+    const { clock: back, sampleIndex: index, paused: wasPaused, speed: wasSpeed } = clip.origin;
+    clock.current = back;
+    // A fresh elapsed-time reading, so the return never catches up the clip's time.
+    last.current = 0;
+    lastUi.current = 0;
+    refocusReplay.current = document.activeElement === replayReturn.current;
+    setReplay(undefined);
+    setCue(undefined);
+    setShownGoals(goalsShown(back));
+    setSampleIndex(index);
+    setSpeed(wasSpeed);
+    setPaused(wasPaused);
+  }, []);
   const heldGoal = onRecord && cue !== undefined ? goals[cue] : undefined;
   const presentedScore = onRecord ? goals[shownGoals - 1] : undefined;
   const home = world.clubs.find((c) => c.id === p?.record.home);
@@ -376,6 +434,12 @@ export function Pitch({
     setShownGoals(0);
     possessionShown.current = '';
     setPossession({ state: 'unknown' });
+    // A new playback discards any clip of the one before it.
+    replaying.current = undefined;
+    setReplay(undefined);
+    setPicking(false);
+    seenShown.current = 0;
+    setSeen(0);
     setSampleMatchId(p?.record.id);
     setSelection('0:8');
     setDetails(false);
@@ -441,13 +505,21 @@ export function Pitch({
       last.current = time;
       const end = Math.max(0, samples.length - 1);
       if (p) {
-        clock.current = advanceGoalFeedback(clock.current, goals, {
-          elapsedMs: elapsed,
-          speed,
-          length,
-          running: !paused && !document.hidden,
-          preparations,
-        });
+        // A clip reaches no goal after its own and returns once that goal's hold ends (→WEB-105).
+        const clip = replaying.current;
+        clock.current = advanceGoalFeedback(
+          clock.current,
+          clip ? replayGoalsReached(goals, clip) : goals,
+          {
+            elapsedMs: elapsed,
+            speed,
+            length,
+            running: !paused && !document.hidden,
+            preparations,
+          },
+        );
+        if (clip && replayEnded(clock.current, clip)) endReplay();
+        else if (!clip) noteSeen(clock.current);
         // Only a new cue or goal re-renders; a held goal keeps one cue however often this runs.
         setCue(clock.current.cue?.goal);
         setBeat(beatAt(preparations, clock.current.seconds));
@@ -681,12 +753,29 @@ export function Pitch({
     skin,
     inspect,
     selectedId,
+    endReplay,
+    noteSeen,
   ]);
+
+  useEffect(() => {
+    // Keyboard focus follows the clip's controls: onto its return, then back to the shortcut.
+    if (replay) replayReturn.current?.focus({ preventScroll: true });
+    else if (refocusReplay.current) replayOpen.current?.focus({ preventScroll: true });
+    refocusReplay.current = false;
+  }, [replay]);
 
   const seek = (index: number) => {
     const target = Math.max(0, Math.min(samples.length - 1, index));
+    // An explicit seek leaves a clip for the original viewing at its new place and speed.
+    const clip = replaying.current;
+    if (clip) {
+      replaying.current = undefined;
+      setReplay(undefined);
+      setSpeed(clip.origin.speed);
+    }
     // A seek ends any cue and passes the goals up to its place without celebrating them.
     clock.current = seekGoalFeedback(goals, samples[Math.floor(target)]?.time ?? 0);
+    noteSeen(clock.current);
     setCue(undefined);
     setShownGoals(goalsShown(clock.current));
     setSampleIndex(Math.floor(target));
@@ -698,8 +787,43 @@ export function Pitch({
   };
   const toggle = () => {
     if (!p) return;
+    // A clip pauses and resumes itself; it never restarts the original playback.
+    if (replay) {
+      setPaused(!paused);
+      return;
+    }
     if (finished) seek(0);
     setPaused(finished ? false : !paused);
+  };
+  // A picked goal plays its clip; one whose footage was not retained keeps the moment navigation.
+  const replayGoal = (pick: ReplayGoal) => {
+    setPicking(false);
+    if (!p) return;
+    const clip = startGoalReplay(goals, p.frames, pick, {
+      matchId: p.record.id,
+      clock: clock.current,
+      sampleIndex,
+      paused,
+      speed,
+      finished,
+      ...replaying.current?.origin,
+    });
+    if (!clip) {
+      seek(sampleAt(p.frames, samples, p.frames[pick.frame]?.label ?? 'kickoff'));
+      setPaused(true);
+      return;
+    }
+    replaying.current = clip;
+    clock.current = replayClock(clip);
+    last.current = 0;
+    lastUi.current = 0;
+    setReplay(clip);
+    setCue(undefined);
+    setShownGoals(goalsShown(clock.current));
+    const entry = locate(timed.times, clip.from, timed.sampleBreak);
+    setSampleIndex(Math.min(samples.length - 1, Math.floor(entry + 1e-6)));
+    setSpeed(GOAL_REPLAY_CONFIG.speed);
+    setPaused(false);
   };
   // The scoring side's value during a goal hold is boxed and bold as well as coloured (→WEB-94).
   const scoreValue = (side: 0 | 1, value: number) => (
@@ -728,7 +852,9 @@ export function Pitch({
       </i>
     </i>
   );
-  const playLabel = finished ? '다시 보기' : paused ? '재생' : '일시정지';
+  // A clip of a finished archive plays and pauses; it does not offer the restart.
+  const ended = finished && !replay;
+  const playLabel = ended ? '다시 보기' : paused ? '재생' : '일시정지';
   // One red mark per player sent off up to the presented minute (→WEB-50).
   const redMarks = (side: 0 | 1) =>
     reds[side] > 0 && (
@@ -822,10 +948,11 @@ export function Pitch({
       <div className={`${s.pitchMeta} ${t.pitchMeta}`} data-ui="match-meta">
         <span className={`${s.live} ${t.liveText}`}>
           {frame
-            ? `${frame.label}′ · ${frame.action}${finished ? ' · 경기 종료' : ''}`
+            ? `${replay ? `${tr('match.replay.state')} · ` : ''}${frame.label}′ · ${frame.action}${finished && !replay ? ' · 경기 종료' : ''}`
             : 'MATCH DAY'}
         </span>
-        {p && !summary ? (
+        {/* A clip offers the ordinary speeds in archived replay too (→WEB-105). */}
+        {p && (!summary || replay) ? (
           <div className={t.speeds} role="radiogroup" aria-label="관전 속도">
             {WATCH_SPEEDS.map((value) => (
               <button
@@ -915,13 +1042,39 @@ export function Pitch({
         {summary && (
           <button
             data-ui="icon"
-            className={`${t.playToggle} ${paused || finished ? t.playIdle : ''}`}
+            className={`${t.playToggle} ${paused || ended ? t.playIdle : ''}`}
             aria-label={playLabel}
             disabled={!p}
             onClick={toggle}
           >
-            <PixelIcon name={finished ? 'replay' : paused ? 'play' : 'pause'} size={24} />
+            <PixelIcon name={ended ? 'replay' : paused ? 'play' : 'pause'} size={24} />
           </button>
+        )}
+        {/* Goal-scene replay (→WEB-105): the shortcut, or the clip's label and return. */}
+        {replay ? (
+          <div
+            className={`${t.replayControl} ${t.replayState} ${summary ? t.besideToggle : ''}`}
+            data-ui="match-replay"
+            data-testid="goal-replay-state"
+          >
+            <b>{tr('match.replay.state')}</b>
+            <button ref={replayReturn} onClick={endReplay}>
+              {tr('match.replay.return')}
+            </button>
+          </div>
+        ) : (
+          offered.length > 0 && (
+            <button
+              ref={replayOpen}
+              className={`${t.replayControl} ${summary ? t.besideToggle : ''}`}
+              data-testid="goal-replay-open"
+              aria-haspopup="dialog"
+              onClick={() => setPicking(true)}
+            >
+              <PixelIcon name="replay" size={16} />
+              {tr('match.replay.action')}
+            </button>
+          )
         )}
         {p && !summary && (
           <span className={t.tactics} data-ui="match-tactics">
@@ -1139,6 +1292,42 @@ export function Pitch({
           </>
         )}
       </div>
+      {picking && p && (
+        <Dialog label={tr('match.replay.action')} picker onClose={() => setPicking(false)}>
+          <ol className={t.replayGoals} data-testid="goal-replay-list">
+            {offered.map((pick) => {
+              const { goal } = pick;
+              const team = (goal.side === 0 ? home : away)?.name ?? '';
+              return (
+                <li key={goal.id}>
+                  <button
+                    data-testid="goal-replay-option"
+                    data-goal={goal.id}
+                    data-footage={pick.footage}
+                    onClick={() => replayGoal(pick)}
+                  >
+                    <b>
+                      {goal.id + 1}. {p.frames[pick.frame]?.label}′ · {goal.home} : {goal.away}
+                    </b>
+                    <span>
+                      {goal.scorer
+                        ? tr('match.goal.scorer', { team, player: goal.scorer })
+                        : tr('match.goal.side', { team })}
+                      {!pick.footage && ` · ${tr('match.replay.seek')}`}
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+          {offered.some((pick) => !pick.footage) && (
+            <p className={s.muted} data-testid="goal-replay-unavailable">
+              {tr('match.replay.unavailable')}
+            </p>
+          )}
+          <p className={s.muted}>{tr('match.replay.note')}</p>
+        </Dialog>
+      )}
     </div>
   );
 }

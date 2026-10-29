@@ -1,0 +1,77 @@
+{
+  "method": "Built-in image_gen originals through the shared deterministic crop/WebP pipeline",
+  "date": "2026-10-30",
+  "sources": "apps/web/design/page-refresh-v1/sources",
+  "prompts": "apps/web/design/page-refresh-v1/prompts.json",
+  "sourceHashes": {
+    "rating-frames.png": "b71a6991316acb5cb11988c0cab7403328da2038d9495073ecb830931feeee79"
+  },
+  "geometry": "Filled nine-slice frames with fixed source-pixel caps; independent material tiles and live text.",
+  "assets": [
+    {
+      "file": "frame-rating-bronze.webp",
+      "source": "rating-frames.png",
+      "crop": { "x": 53, "y": 49, "width": 419, "height": 413 },
+      "filter": "",
+      "bytes": 7410,
+      "sha256": "99a180a45f68c0da9e2bc48d6db49e2c1976f1a56f4754799d1a311401ea0198",
+      "width": 192,
+      "height": 189,
+      "role": "image-art-rating-bronze",
+      "mode": "nine-slice",
+      "slice": 22
+    },
+    {
+      "file": "frame-rating-silver.webp",
+      "source": "rating-frames.png",
+      "crop": { "x": 559, "y": 49, "width": 418, "height": 413 },
+      "filter": "",
+      "bytes": 6192,
+      "sha256": "6857c734f4f348a7d5c94b07f042182255ea9e557a2de6094d020160cbd675f4",
+      "width": 192,
+      "height": 190,
+      "role": "image-art-rating-silver",
+      "mode": "nine-slice",
+      "slice": 22
+    },
+    {
+      "file": "frame-rating-gold.webp",
+      "source": "rating-frames.png",
+      "crop": { "x": 1065, "y": 49, "width": 418, "height": 413 },
+      "filter": "",
+      "bytes": 6356,
+      "sha256": "b699116a7a4916f5940fe80f4acfba0a2581b910d58e88296fb43af038d67464",
+      "width": 192,
+      "height": 190,
+      "role": "image-art-rating-gold",
+      "mode": "nine-slice",
+      "slice": 22
+    },
+    {
+      "file": "frame-rating-platinum.webp",
+      "source": "rating-frames.png",
+      "crop": { "x": 53, "y": 549, "width": 419, "height": 413 },
+      "filter": "",
+      "bytes": 5698,
+      "sha256": "1a40217a933d248bd9c4ad948520f479a3520a306e18cf00c9a558e288543ccf",
+      "width": 192,
+      "height": 189,
+      "role": "image-art-rating-platinum",
+      "mode": "nine-slice",
+      "slice": 22
+    },
+    {
+      "file": "frame-rating-ruby.webp",
+      "source": "rating-frames.png",
+      "crop": { "x": 557, "y": 549, "width": 422, "height": 412 },
+      "filter": "",
+      "bytes": 5620,
+      "sha256": "277bd35f47ef6e36ee9682c5dac1dc984073622557f086534f50cfcd21290c13",
+      "width": 192,
+      "height": 187,
+      "role": "image-art-rating-ruby",
+      "mode": "nine-slice",
+      "slice": 22
+    }
+  ]
+}

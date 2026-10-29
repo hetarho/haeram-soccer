@@ -612,6 +612,8 @@ button.resources:active:not(:disabled) {
   grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
   min-width: 0;
   border-bottom: 1px solid var(--line);
+  overflow: hidden;
+  border-radius: var(--card-radius);
 }
 .seasonSummary > .resources {
   width: auto;
@@ -807,22 +809,22 @@ button.resources:active:not(:disabled) {
 .competitions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
-  gap: 8px;
+  gap: 16px;
   min-width: 0;
 }
 .competitions button {
-  display: grid;
-  justify-items: start;
-  gap: 4px;
   min-height: 44px;
-  padding: 8px 12px;
-  text-align: start;
-  white-space: normal;
-  overflow-wrap: anywhere;
+  width: 100%;
 }
-.competitions small {
+.competitions p {
+  margin: 4px 0 0;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.competitions strong {
+  color: var(--accent-text);
+  font-size: 15px;
 }
 .clubLinks {
   grid-area: links;

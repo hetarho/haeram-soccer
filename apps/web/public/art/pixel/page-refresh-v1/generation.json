@@ -1,0 +1,75 @@
+{
+  "method": "Native integer-grid SVG through the shared lossless PNG pipeline",
+  "date": "2026-10-30",
+  "sources": "apps/web/design/page-refresh-v1/sources",
+  "prompts": "apps/web/design/page-refresh-v1/prompts.json",
+  "sourceHashes": {},
+  "geometry": "Filled nine-slice frames with fixed source-pixel caps; independent material tiles and live text.",
+  "assets": [
+    {
+      "file": "frame-rating-bronze.png",
+      "source": "scripts/prepare-page-refresh.mjs#pixel-rating",
+      "bytes": 374,
+      "sha256": "448ba61b66e5c75a5e75ee54e9ec40d7dafe71c59c70b1fb0edaf8930492dd63",
+      "width": 64,
+      "height": 64,
+      "role": "image-art-rating-bronze",
+      "mode": "nine-slice",
+      "slice": 12
+    },
+    {
+      "file": "frame-rating-silver.png",
+      "source": "scripts/prepare-page-refresh.mjs#pixel-rating",
+      "bytes": 374,
+      "sha256": "84fe31fb27005c4807e345b82f4923787855705320ebefb0548a4a3981d6d847",
+      "width": 64,
+      "height": 64,
+      "role": "image-art-rating-silver",
+      "mode": "nine-slice",
+      "slice": 12
+    },
+    {
+      "file": "frame-rating-gold.png",
+      "source": "scripts/prepare-page-refresh.mjs#pixel-rating",
+      "bytes": 379,
+      "sha256": "c41a2187baf41e22644dd4c77cca9051372564e18f67f42a61ef0d26881e242a",
+      "width": 64,
+      "height": 64,
+      "role": "image-art-rating-gold",
+      "mode": "nine-slice",
+      "slice": 12
+    },
+    {
+      "file": "frame-rating-platinum.png",
+      "source": "scripts/prepare-page-refresh.mjs#pixel-rating",
+      "bytes": 376,
+      "sha256": "4406a2528ef7118e13a9c673b314f400d4570e99ff37fdb75c604e8f6becaa71",
+      "width": 64,
+      "height": 64,
+      "role": "image-art-rating-platinum",
+      "mode": "nine-slice",
+      "slice": 12
+    },
+    {
+      "file": "frame-rating-ruby.png",
+      "source": "scripts/prepare-page-refresh.mjs#pixel-rating",
+      "bytes": 375,
+      "sha256": "465312d7c66183167e513249e143e0a461c252b543057cfd76e7494edf45cbd4",
+      "width": 64,
+      "height": 64,
+      "role": "image-art-rating-ruby",
+      "mode": "nine-slice",
+      "slice": 12
+    },
+    {
+      "file": "controller-pixels.png",
+      "source": "scripts/prepare-page-refresh.mjs#pixel-controller",
+      "bytes": 278,
+      "sha256": "2e9619a500dadc4b912b7ab899136222b131bd797f4275014b157cd8d07e25c1",
+      "width": 32,
+      "height": 32,
+      "role": "image-art-controller-pixels",
+      "mode": "tile"
+    }
+  ]
+}

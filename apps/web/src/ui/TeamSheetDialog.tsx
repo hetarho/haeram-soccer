@@ -69,20 +69,20 @@ function AllTimeMeetings({ w, id, client }: { w: World; id: string; client: Game
             · 득실 {record.gf}:{record.ga}
           </p>
           <dl className={s.teamFacts}>
-            <div>
+            <div data-surface="detail">
               <dt>리그</dt>
               <dd>{record.league}경기</dd>
             </div>
-            <div>
+            <div data-surface="detail">
               <dt>컵</dt>
               <dd>{record.cup}경기</dd>
             </div>
-            <div>
+            <div data-surface="detail">
               <dt>대륙 대회</dt>
               <dd>{record.europe}경기</dd>
             </div>
             {record.playoff > 0 && (
-              <div>
+              <div data-surface="detail">
                 <dt>승격 플레이오프</dt>
                 <dd>{record.playoff}경기</dd>
               </div>
@@ -107,7 +107,7 @@ function AllTimeMeetings({ w, id, client }: { w: World; id: string; client: Game
                 </dd>
               </div>
             ))}
-            <div>
+            <div data-surface="detail">
               <dt>첫 맞대결</dt>
               <dd>{record.first ? seasonName(record.first) : '—'}</dd>
             </div>
@@ -117,7 +117,7 @@ function AllTimeMeetings({ w, id, client }: { w: World; id: string; client: Game
             {record.recent.map((m) => {
               const mark = markOf(m.own, m.other);
               return (
-                <li key={m.id}>
+                <li key={m.id} data-surface="detail">
                   <b className={mark === '승' ? s.win : mark === '패' ? s.loss : s.draw}>{mark}</b>
                   <span>
                     {meetingLine(m)}
@@ -176,7 +176,7 @@ export function TeamSheet({
       .slice(-5);
   return (
     <Dialog label={club.name} onClose={onClose}>
-      <div className={s.teamHead}>
+      <div className={s.teamHead} data-surface="sheet">
         <ClubCrest w={w} id={id} size={44} />
         <div>
           <h2>{club.name}</h2>
@@ -190,27 +190,27 @@ export function TeamSheet({
         <OvrBadge value={clubOvr(w, club)} role="OVR" large />
       </div>
       <dl className={s.teamFacts}>
-        <div>
+        <div data-surface="detail">
           <dt>리그 순위</dt>
           <dd>{table ? (table.played ? `${rank}위 · ${table.points}점` : '개막 전') : '—'}</dd>
         </div>
-        <div>
+        <div data-surface="detail">
           <dt>전적</dt>
           <dd>{table ? `${table.won}승 ${table.drawn}무 ${table.lost}패` : '—'}</dd>
         </div>
-        <div>
+        <div data-surface="detail">
           <dt>클럽 Elo</dt>
           <dd>{Math.round(eloOf(club))}</dd>
         </div>
-        <div>
+        <div data-surface="detail">
           <dt>명성</dt>
           <dd>{Math.round(club.reputation)}</dd>
         </div>
-        <div>
+        <div data-surface="detail">
           <dt>서포터</dt>
           <dd>{number(club.fans)}명</dd>
         </div>
-        <div>
+        <div data-surface="detail">
           <dt>득실</dt>
           <dd>{table ? `${table.gf}:${table.ga}` : '—'}</dd>
         </div>
@@ -223,7 +223,7 @@ export function TeamSheet({
           {recent.map((f) => {
             const r = resultOf(f, id);
             return (
-              <li key={f.id}>
+              <li key={f.id} data-surface="detail">
                 <b className={r.mark === '승' ? s.win : r.mark === '패' ? s.loss : s.draw}>
                   {r.mark}
                 </b>

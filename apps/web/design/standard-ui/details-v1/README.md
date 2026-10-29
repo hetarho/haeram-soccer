@@ -1,5 +1,7 @@
 # Stadium Green component details
 
+Current page-refresh resources supersede the rating family and shared icons/controller described below; see [active recipe](../../page-refresh-v1/README.md). This section retains the earlier detail-family provenance.
+
 Implemented working artwork for T595, 2026-10-29. Read the [shared guide](../../DESIGN-SYSTEM.md),
 [resource contract](../../RESOURCE-SKINS.md) and [original family](../README.md).
 This extends the matte green controls and natural green materials, preserving Lucide geometry,

@@ -380,7 +380,8 @@ for (const themeId of ['standard', 'pixel']) {
       label: await modeLabel.boundingBox(),
     });
     const beforeMode = await modeGeometry();
-    expect(beforeMode.label!.x).toBeGreaterThanOrEqual(
+    expect(beforeMode.label!.x).toBeGreaterThan(beforeMode.button!.x);
+    expect(beforeMode.label!.x + beforeMode.label!.width).toBeLessThanOrEqual(
       beforeMode.button!.x + beforeMode.button!.width,
     );
     await expect(shortcut).toHaveAttribute('data-ui', 'primary');

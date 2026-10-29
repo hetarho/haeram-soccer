@@ -379,11 +379,11 @@ function Badges({ runtime }: { runtime: Runtime }) {
       <Section title="행 안의 오버롤 · 5단계">
         <Attributes
           rows={[
-            ['아이언 · 50 미만', <OvrBadge key="iron" value={42} />],
-            ['브론즈 · 50–64', <OvrBadge key="bronze" value={58} />],
-            ['실버 · 65–74', <OvrBadge key="silver" value={70} />],
-            ['골드 · 75–84', <OvrBadge key="gold" value={80} />],
-            ['엘리트 · 85+', <OvrBadge key="elite" value={90} />],
+            ['브론즈 · 50 미만', <OvrBadge key="bronze" value={42} />],
+            ['실버 · 50–64', <OvrBadge key="silver" value={58} />],
+            ['골드 · 65–74', <OvrBadge key="gold" value={70} />],
+            ['플래티넘 · 75–84', <OvrBadge key="platinum" value={80} />],
+            ['루비 · 85+', <OvrBadge key="ruby" value={90} />],
           ]}
         />
       </Section>

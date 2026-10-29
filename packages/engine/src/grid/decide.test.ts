@@ -22,10 +22,14 @@ import {
   keeperDistribution,
   passOptions,
   passProbabilities,
+  receiverTight,
+  rereadPass,
   temperature,
   throughPoint,
   type Action,
+  type Decision,
 } from './decide';
+import { carryInStride } from './movement';
 import { BAND_EDGES, LANE_EDGES, type Point } from './pitch';
 import { chanceXg } from './resolve';
 import { enterSlot, slotOf } from './state';
@@ -1501,5 +1505,117 @@ describe('revision 9 tight receivers (T580, →MATCH-16)', () => {
     expect(ratio(ninth!, loose)).toBeCloseTo(ratio(eighth!, loose), 9);
     const close: Point = [80 + T.room - 1, 12];
     expect(ratio(ninth!, tight, close)).toBeCloseTo(ratio(eighth!, tight, close), 9);
+  });
+});
+
+describe('revision 10 receivers closed down by the kick (T600, →MATCH-16, MATCH-17)', () => {
+  const [ninth, tenth] = MATCH_MODEL_REVISIONS.slice(8) as MatchModelRevision[];
+  const K = DECISION_CONFIG.candidate.revision10.kick;
+  const B = 10;
+  /**
+   * Revision 9's scene at the kick: a wide carrier at [80, 10], the striker he chose at [95, 16]
+   * and slot 10 in the box at [96, 24] with nobody near him; side 1's slot 3 at `man`.
+   */
+  const on = (model: MatchModelRevision, man: Point) => {
+    const sc = scene(CM, [80, 10]);
+    sc.s.setup = { ...sc.s.setup, model };
+    place(sc.s, ST, [95, 16]);
+    place(sc.s, B, [96, 24]);
+    guard(sc.s, man);
+    return sc;
+  };
+  const chosen: Decision = { action: 'pass', target: ST, kind: 'short', lineBreaking: false };
+  /** A draw that must not be made. */
+  const never = () => {
+    throw new Error('no draw expected');
+  };
+  // 2 m off the striker: a man who got to him during the carry; 6 m off, one who did not.
+  const closer: Point = [95, 18];
+  const short: Point = [95, 22];
+
+  it('revision 10: a receiver closed down during the carry scores less than an equally free one', () => {
+    const sc = on(tenth!, closer);
+    expect(receiverTight(sc.s, 0, ST)).toBe(true);
+    expect(receiverTight(sc.s, 0, B)).toBe(false);
+    const options = (closed?: number) =>
+      passOptions(sc.s, 0, CM, sc.tags(), {
+        judge: true,
+        ...(closed === undefined ? {} : { closed }),
+      });
+    const before = options(),
+      after = options(ST);
+    for (const o of after) {
+      const was = before.find((b) => b.target === o.target)!;
+      // Only the closed man loses `kick.closed`, beside revision 9's tight term he already has.
+      expect(o.score).toBeCloseTo(was.score - (o.target === ST ? K.closed : 0), 9);
+      expect(o.prior).toBe(was.prior);
+    }
+    const share = (o: ReturnType<typeof options>) => {
+      const p = passProbabilities(o, temperature(sc.s, 0, CM, sc.tags()), sc.s.math);
+      return p[o.findIndex((x) => x.target === ST)]! / p[o.findIndex((x) => x.target === B)]!;
+    };
+    expect(share(after)).toBeCloseTo(
+      share(before) * Math.exp(-K.closed / temperature(sc.s, 0, CM, sc.tags())),
+      9,
+    );
+  });
+
+  it('revision 10: only a free receiver closed down by the kick makes him read his passes again', () => {
+    // Closed down: he reads them again with one draw, among the options his judgement allows, and
+    // turns to the free man more often than he keeps the closed one.
+    const sc = on(tenth!, closer);
+    const allowed = new Set(
+      passOptions(sc.s, 0, CM, sc.tags(), { judge: true }).map((o) => o.target),
+    );
+    const r = random('t600-closed-down');
+    const counts = new Map<number | undefined, number>();
+    for (let i = 0; i < 400; i++) {
+      let draws = 0;
+      const d = rereadPass(sc.s, 0, CM, chosen, true, sc.tags(), () => (draws++, r()));
+      expect(draws).toBe(1);
+      expect(d.action).toBe('pass');
+      expect(allowed.has(d.target!)).toBe(true);
+      counts.set(d.target, (counts.get(d.target) ?? 0) + 1);
+    }
+    expect(counts.get(B) ?? 0).toBeGreaterThan(counts.get(ST) ?? 0);
+    // No football reason, no new choice and no draw: the man did not get to him, the receiver was
+    // already tight as he chose him, revision 9, or short of `tight.from`.
+    expect(rereadPass(on(tenth!, short).s, 0, CM, chosen, true, sc.tags(), never)).toBe(chosen);
+    expect(rereadPass(sc.s, 0, CM, chosen, false, sc.tags(), never)).toBe(chosen);
+    expect(rereadPass(on(ninth!, closer).s, 0, CM, chosen, true, sc.tags(), never)).toBe(chosen);
+    const deep = on(tenth!, [70, 16]);
+    place(deep.s, ST, [70, 14]);
+    expect(receiverTight(deep.s, 0, ST)).toBe(false);
+    expect(rereadPass(deep.s, 0, CM, chosen, true, deep.tags(), never)).toBe(chosen);
+    // A shot or a carry is never read again.
+    const shot: Decision = { action: 'shot' };
+    expect(rereadPass(sc.s, 0, CM, shot, true, sc.tags(), never)).toBe(shot);
+  });
+
+  it('revision 10: only a defender who can get to him during the carry closes him down', () => {
+    // The carrier takes it 1.6 s in stride (`carryInStride`) while side 1's slot 3, reading the
+    // pass from its start, runs at the striker within the movement rules; the striker holds.
+    const carried = (man: Point) => {
+      const sc = on(tenth!, man);
+      const striker = sc.s.players[0][ST]!;
+      const spot: [number, number] = [striker.pos[0], striker.pos[1]];
+      const reads = new Map([
+        [sc.s.players[1][3]!, { to: spot, at: 0 }],
+        [striker, { to: spot, at: 0 }],
+      ]);
+      expect(receiverTight(sc.s, 0, ST)).toBe(false);
+      carryInStride(sc.s, sc.me, spot, 1.6, undefined, reads);
+      return sc;
+    };
+    // 6 m off him he gets there in time: the carrier reads his passes again, with one draw.
+    const reached = carried(short);
+    expect(receiverTight(reached.s, 0, ST)).toBe(true);
+    let draws = 0;
+    rereadPass(reached.s, 0, CM, chosen, true, reached.tags(), () => (draws++, 0.5));
+    expect(draws).toBe(1);
+    // 24 m off he cannot: the pass stands as chosen, with no draw.
+    const unreached = carried([95, 40]);
+    expect(receiverTight(unreached.s, 0, ST)).toBe(false);
+    expect(rereadPass(unreached.s, 0, CM, chosen, true, unreached.tags(), never)).toBe(chosen);
   });
 });

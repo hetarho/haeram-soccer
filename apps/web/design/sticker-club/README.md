@@ -1,5 +1,7 @@
 # Sticker Football Club UI sources
 
+The active page refresh uses smooth matte clay surfaces, continuous rounded rims and sunny yellow primary actions/controller material. See [current sources and regeneration](../page-refresh-v1/README.md). Earlier paper/grain and orange artwork below is retained provenance, superseded for active shared surfaces and controls.
+
 The approved concept is `../home-themes/captures/sticker.png`. Source atlases in `sources/`
 and exact prompts in `prompts.json` supply the shared image-built UI; live game text stays HTML.
 

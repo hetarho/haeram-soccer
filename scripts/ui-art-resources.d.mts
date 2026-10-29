@@ -47,4 +47,5 @@ export function isolatedAtlasBounds(
   cols: number,
   rows: number,
   threshold?: number,
+  options?: { mergeParts?: boolean },
 ): Crop[];

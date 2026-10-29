@@ -204,7 +204,13 @@ export async function createUiArtPipeline({ sources, output }) {
 }
 
 /** Find complete sticker silhouettes even when a generated atlas strays across grid gutters. */
-export function isolatedAtlasBounds(sheet, cols, rows, threshold = 160) {
+export function isolatedAtlasBounds(
+  sheet,
+  cols,
+  rows,
+  threshold = 160,
+  { mergeParts = false } = {},
+) {
   const { width, height, pixels } = sheet;
   const visited = new Uint8Array(width * height);
   const queue = new Int32Array(width * height);
@@ -243,15 +249,16 @@ export function isolatedAtlasBounds(sheet, cols, rows, threshold = 160) {
     const col = Math.min(cols - 1, Math.floor(((x0 + x1) / 2 / width) * cols));
     const row = Math.min(rows - 1, Math.floor(((y0 + y1) / 2 / height) * rows));
     const key = row * cols + col;
-    if (cells.has(key))
+    const previous = cells.get(key);
+    if (previous && !mergeParts)
       throw new Error(`Multiple silhouettes in atlas cell ${sheet.file}/${col}/${row}`);
-    const x = Math.max(0, x0 - 2),
-      y = Math.max(0, y0 - 2);
+    const x = Math.min(Math.max(0, x0 - 2), previous?.x ?? width),
+      y = Math.min(Math.max(0, y0 - 2), previous?.y ?? height);
     cells.set(key, {
       x,
       y,
-      width: Math.min(width, x1 + 3) - x,
-      height: Math.min(height, y1 + 3) - y,
+      width: Math.max(Math.min(width, x1 + 3), previous ? previous.x + previous.width : 0) - x,
+      height: Math.max(Math.min(height, y1 + 3), previous ? previous.y + previous.height : 0) - y,
     });
   }
   return Array.from({ length: cols * rows }, (_, index) => {

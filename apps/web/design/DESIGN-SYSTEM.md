@@ -9,6 +9,24 @@ Product decisions remain authoritative in [WEB-91, WEB-103 and WEB-104](../../..
 [resource-skin contract](RESOURCE-SKINS.md) explains media metadata, native adaptation and budgets;
 this guide does not redefine those contracts.
 
+## Workbench and preview styling
+
+The workbench's navigation, search, theme selector and inspection controls have a fixed appearance,
+independent of the theme under review. Its document loads the validated theme registry only;
+game styles, fonts and artwork are installed by the shared presentation bootstrap inside preview
+documents, including independent preview windows. Preserve this document boundary instead of
+adding selector overrides to fight game skins in the surrounding workbench.
+
+Keep home summary slots concise enough to survive a phone width: the cup slot shows the live
+count, while the overview uses actual Card components for competition status and entry actions.
+Adjacent slots share one continuous material plane and have square internal joins. Team sheets
+reuse sheet/detail materials for identity, facts and results; outcome marks occupy centred fixed
+columns and scores align at the trailing edge. Metric navigation uses the shared keyboard TabList.
+Menu actions use the same tertiary resources as other supporting actions. The transport combines
+its mode label and change action in one MODE button beside approval settings.
+Menu labels, supporting copy and trailing icons inherit the action's local foreground roles;
+the page's muted ink may not contrast with a filled tertiary skin.
+
 ## Resources carry the design
 
 Author the visible surfaces, frames, texture and state marks as reusable image resources. A
@@ -261,3 +279,9 @@ When a resource disappears, inspect both the semantic role and computed styles: 
 background shorthand can override a lower-specificity shared rule. Review native controls,
 selected states, popovers and lazy sections, not only the default screenshot. Layout-only
 wrappers, live graph facts and text links do not each need a decorative card.
+
+The [current page-refresh family](page-refresh-v1/README.md) records the bronze-to-ruby scale,
+European cartoon icon atlas, smooth yellow clay stickers and theme-specific controllers.
+Preserve grass, clay and native pixel materials instead of sharing an unrelated cloth texture.
+Full-colour illustrated icons render their colours rather than a monochrome mask. Material
+changes must cover the main page planes and controls together, with matching text contrast.

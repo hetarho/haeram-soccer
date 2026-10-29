@@ -255,6 +255,18 @@ export const DECISION_CONFIG = {
       tight: { from: 75, mark: 2.5, score: 0.6, room: 5, pass: 0.5 },
     },
     /**
+     * Revision 10 (T600, →MATCH-16 r44, MATCH-17, MATCH-31): at the kick (`rereadPass`) a
+     * receiver free as the carrier chose him (nobody within `revision9.tight.mark` m, from
+     * `tight.from` m up the pitch) whom an opponent has closed down that tight during the carry
+     * is a changed circumstance: the carrier reads his passes again, the closed man scoring
+     * `kick.closed` less on top of revision 9's tight term. T600's explore (the same 50
+     * grid-bands matches): central passes within 18 m of goal tight at the kick 48.1 → 30.4%,
+     * lost to the opponent 29.7 → 24.2%, completion 81.3 → 82.6%, goals 3.56 → 3.24 a match.
+     * Weighing at the decision who could close each receiver by the kick or the reception moved
+     * the kick's share only 48 → 45–50% and took passes out of the box instead.
+     */
+    revision10: { kick: { closed: 1.5 } },
+    /**
      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
      * `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+.
      * T370: 4 → 3.5, so fewer box shots do not push the shot places outside and from 30 m+.
@@ -772,6 +784,51 @@ function boxMarked(s: GridState, side: 0 | 1, idx: number, c: Point): boolean {
   return any;
 }
 
+/**
+ * Whether `side`'s `target` stands from `revision9.tight.from` m up the pitch with an opponent
+ * within `tight.mark` m of him (revision 10, T600): the receiver `passOptions` weighs as tight.
+ */
+export function receiverTight(s: GridState, side: 0 | 1, target: number): boolean {
+  const T = DECISION_CONFIG.candidate.revision9.tight;
+  const gp = s.players[side][target]!;
+  if (attackFrame(side, gp.pos)[0] < T.from) return false;
+  const { hypot } = s.math;
+  return s.players[other(side)].some(
+    (o) => onPitch(o) && hypot(o.pos[0] - gp.pos[0], o.pos[1] - gp.pos[1]) < T.mark,
+  );
+}
+
+/**
+ * Revision 10 (T600, →MATCH-16 r44, MATCH-17): carrier `idx`'s decided pass `d`, read again at
+ * the kick for one football reason only — its receiver, free when he chose it (`free`), has been
+ * closed down tight during his carry (`receiverTight`). He then plays the pass his options offer
+ * now (`choosePass` on `tags`, the closed man scoring `revision10.kick.closed` less besides being
+ * tight), or the one he chose when none is left. Any other decision, and every one before
+ * revision 10, stands as it is, drawing nothing.
+ */
+export function rereadPass(
+  s: GridState,
+  side: 0 | 1,
+  idx: number,
+  d: Decision,
+  free: boolean,
+  tags: Tags,
+  r: () => number,
+): Decision {
+  if (
+    !free ||
+    !modelAtLeast(s.setup, 10) ||
+    d.action !== 'pass' ||
+    d.target === undefined ||
+    !receiverTight(s, side, d.target)
+  )
+    return d;
+  const pass = choosePass(s, side, idx, tags, r, { closed: d.target });
+  return pass
+    ? { action: 'pass', target: pass.target, kind: pass.kind, lineBreaking: pass.lineBreaking }
+    : d;
+}
+
 /** Whether carrier `idx` of `side` has just beaten his man (revision 6, T542). */
 const beaten = (s: GridState, side: 0 | 1, idx: number) =>
   modelAtLeast(s.setup, 6) && s.beat?.[0] === side && s.beat[1] === idx;
@@ -807,6 +864,8 @@ export function passOptions(
     filter?: (gp: GridPlayer) => boolean;
     /** The carrier's own choice on revision 5 (T538): no unsafe recycling, no far back pass with room. */
     judge?: boolean;
+    /** A receiver closed down during the carry (revision 10, T600, `rereadPass`). */
+    closed?: number;
   } = {},
 ): PassOption[] {
   const P = DECISION_CONFIG.pass;
@@ -949,7 +1008,9 @@ export function passOptions(
       through +
       wing +
       free -
-      tight +
+      tight -
+      // The receiver closed down during the carry (revision 10, T600).
+      (gp.idx === opts.closed ? DECISION_CONFIG.candidate.revision10.kick.closed : 0) +
       (combo === 'show'
         ? DECISION_CONFIG.combination.show
         : combo === 'release'
@@ -1053,7 +1114,7 @@ export function choosePass(
   idx: number,
   tags: Tags,
   r: () => number,
-  opts: { crossOnly?: boolean; backBias?: number } = {},
+  opts: { crossOnly?: boolean; backBias?: number; closed?: number } = {},
 ): { target: number; kind: NonNullable<Decision['kind']>; lineBreaking: boolean } | undefined {
   const options = passOptions(s, side, idx, tags, { ...opts, judge: true });
   if (!options.length) return undefined;

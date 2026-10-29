@@ -172,11 +172,11 @@ function goalWorld() {
     country: 'ENG',
     name: 'Goal Feedback',
     color: '#224466',
-    // On match-model revision 9 with T580's pass side goal-feedback-28's first match opens 4′
-    // home, then 10′, 13′, 17′ and 24′ home, 80′ away and 89′ home (3′ home, then 12′ away and
-    // 21′, 43′ and 51′ home before T580; goal-feedback-15 on revision 8, T561; goal-feedback-14 on
+    // On match-model revision 10 (T596, T599, T600) goal-feedback-2's first match opens 1′ home,
+    // then 65′ and 67′ home, 72′ away, 88′ home and 90′ away (goal-feedback-28 on revision 9 with
+    // T580's pass side, opening 4′ home; goal-feedback-15 on revision 8, T561; goal-feedback-14 on
     // revision 7, T548; goal-feedback-8 on revision 6, T542; T579).
-    seed: 'goal-feedback-28',
+    seed: 'goal-feedback-2',
     level: 'easy',
   });
   world.settings!.responsibilities.sales = 'delegated';
@@ -297,6 +297,19 @@ for (const viewport of [
     expect(cueBox.y + cueBox.height).toBeLessThanOrEqual(canvasBox.y + canvasBox.height);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
     await expect(cue).toHaveCount(0, { timeout: 3000 });
+    // The presented goal can be replayed from a pitch corner clear of the tactics (→WEB-105).
+    const replay = page.getByTestId('goal-replay-open');
+    await expect(replay).toBeVisible();
+    const replayBox = (await replay.boundingBox())!;
+    const tacticsBox = (await page
+      .getByTestId('match-theatre')
+      .locator('[data-ui="match-tactics"]')
+      .boundingBox())!;
+    expect(replayBox.height).toBeGreaterThanOrEqual(44);
+    expect(replayBox.x).toBeGreaterThanOrEqual(canvasBox.x);
+    expect(replayBox.x + replayBox.width).toBeLessThanOrEqual(tacticsBox.x);
+    expect(replayBox.y + replayBox.height).toBeLessThanOrEqual(canvasBox.y + canvasBox.height);
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
     // The presented minute opened on the goal's and stayed put while the cue showed.
     expect(await cues.minutes()).toEqual({ held: [`${openingGoal!.minute}′`], moved: [] });
     await expect(score).toHaveText('1 : 0');

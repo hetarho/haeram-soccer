@@ -1,5 +1,7 @@
 # Stadium Green UI sources
 
+The active page refresh replaces shared Lucide glyphs with 32 full-colour European football-comic illustrations and uses organic grass in the light progression controller. See [current sources and regeneration](../page-refresh-v1/README.md); the baseline recipe below is retained and must be followed by the refresh recipe.
+
 The refreshed interface retains the deep green hierarchy, Pretendard, official Lucide geometry
 and painted sports-comic facility scenes. Six quiet matte frame plates and a supporting terrace
 vignette add an image-built skin without cream sticker rims, print distress or raised cards.
