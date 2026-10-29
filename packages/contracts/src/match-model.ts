@@ -46,6 +46,10 @@ import {
  * only from outfielders, sets himself toward goal in a stride or two, nobody within 5 m is a clear
  * chance and the keeper comes about half way, never onto him (T579, →MATCH-12, MATCH-16,
  * MATCH-35); careers on revisions 1–8 take it the same way.
+ * Revision 10 strikes every shot as its action starts, a first-time one too, so what it leaves
+ * loose runs on at its own speed rather than waiting for its winner, and has that second ball won
+ * clear of the man who blocked or parried it, never on his own spot (T596, →MATCH-12, MATCH-35);
+ * careers on revisions 1–9 take it the same way.
  */
 export const MATCH_MODEL_REVISIONS = [
   'continuous-aggregate-1',
@@ -57,10 +61,11 @@ export const MATCH_MODEL_REVISIONS = [
   'continuous-aggregate-7',
   'continuous-aggregate-8',
   'continuous-aggregate-9',
+  'continuous-aggregate-10',
 ] as const;
 export type MatchModelRevision = (typeof MATCH_MODEL_REVISIONS)[number];
 /** The revision new careers and upgraded ones play. */
-export const MATCH_MODEL_REVISION: MatchModelRevision = 'continuous-aggregate-9';
+export const MATCH_MODEL_REVISION: MatchModelRevision = 'continuous-aggregate-10';
 export const isMatchModelRevision = (value: unknown): value is MatchModelRevision =>
   (MATCH_MODEL_REVISIONS as readonly unknown[]).includes(value);
 /** A revision's number: 1 for the first. */

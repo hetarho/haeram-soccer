@@ -15,8 +15,10 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| vf30 | ihaelam-ui-MacBookPro | autopilot | 2026-10-29T15:27Z | 2026-10-29T15:27Z | - |
 
 ## inbox
+- 261030 decided MATCH-12 MATCH-35 SAVE-23 T596: how revision 10 strikes shots and clears second balls → every shot, not only a first-time one, is kicked at its action's start (its resolution reads the same kick) and lands its flight later, the ball resting until the action ends; nobody reaches a second ball's first 1.2 m (`BOX_CONFIG.shot.revision10.clear`, `LANE_CONFIG.reach`), scanned from the man who met it, so any meeting beyond keeps revision 9's exact point; revision 10's digests, ties and seeds are re-recorded once after T600, since T599/T600 change it again (alt: first-time shots only, leaving wind-up shots resolved before they are kicked | clear 1.5–2.2 m past the keeper's narrowing reach, which also moves meetings no body blocks | re-record now and again after T600).
 - 261030 decided MATCH-12 MATCH-35 SAVE-23 T596 T599 T600: two of CI40866255294's four cases are stale revision-9 scenes (a keeper parked at [102, 66] opens the mouth ×1.72/×1.89 under narrowing; T445's decision scene is a clear chance under the 5 m rule), but the other two are real second-ball defects revision 9 exposed (a first-time shot kicked up to 0.83 s late for its rebound's winner, leaving the blocker drawn 1.44–1.51 m from the ball; a parry won on the keeper's own spot, then a rebound shot with no flight and no match time), which cannot be repaired on revisions 1–9 draw for draw → MATCH r44 makes both rules explicit and T596 opens the prospective revision 10 that repairs them, with T599 and T600 extending that unreleased revision so the run publishes one (alt: repair revision 9 in place, breaking settled replay | pin the observed fixtures to revision 8, which no revision-9 counterpart supports | a separate fix task after T600, which leaves T599/T600 measuring the defective model).
 - 261030 decided ARCH-30 T596 T597 T598 T599 T600: owner delegates CI repair and engine follow-ups → sequential fixes, then timeboxed goal-side defence and reception-safety improvements, final combined verification and configured main push (alt: unrelated legacy ideation | test-threshold weakening); preserve every existing assertion’s purpose and all historical football revisions.
 - 261029 decided WEB-91 WEB-104 T595: complete other themes under the shared guide → fill Stadium Green, Pixel and Sticker Club's missing component resources in their existing art families (alt: new theme concepts | palette-only variants); owner authorizes origin/main push when complete or the current checkpoint by 21:30 KST today.
@@ -403,7 +405,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T596 | Revision-9 integration regression repair | MATCH SAVE ARCH | - | todo |
 | T597 | Current management browser contracts | WEB ARCH | T596 | todo |
 | T598 | Current figure kit evidence | KIT MATCH WEB SAVE ARCH | T597 | todo |
 | T599 | Goal-side defence and chance volume | MATCH SAVE ARCH | T598 | todo |
@@ -431,11 +432,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T596; vf30 scope: repair CI40866255294, then T599/T600 measured engine follow-ups. Do not route unrelated legacy ideation or theme review during this run.
+- implement-task T597; vf30 scope: T596 opened revision 10 for CI40866255294, then T599/T600 measured engine follow-ups extending it. Do not route unrelated legacy ideation or theme review during this run.
+- Once T600 completes revision 10, re-record its values before the final batch (T596 limits): grid-throughput `CANDIDATE` digests and knockout `CASES`, full-model-throughput `BEFORE`, playback.test's extra-time fixture and the mobile goal-cue seed.
 - Complete T596–T600 sequentially, then the coordinator runs the final batch and publishes once to configured main; any resulting CI correction stays in this scope.
 - Engine explorations use 50-match candidate reads, unchanged football targets and safe-boundary model activation; keep historical results and revision replay intact.
 
 ## log
+- 261030 T596 done: match-model revision 10 — every shot struck as its action starts, its second ball landing at its own speed and waiting for its winner, and won at least 1.2 m clear of the blocker or keeper; the stale T444/T445 resolve scenes expect the keeper's narrowing once; revisions 1–9 replay draw for draw; typecheck, lint, format:check, 913 affected unit tests, build and the four targeted CI cases pass; revision-10 digests and seeds re-recorded after T600.
 - 261030 update-ssot MATCH r44 + create-task: T596 diagnosed (2 stale revision-9 scenes, 2 second-ball defects) and rescoped to open revision 10; T599/T600 extend it.
 - 261030 vf30 start: owner-authorized autopilot; synchronized origin/main469d24c2, captured CI40866255294 failures and created scoped T596–T600.
 - 261029 T595 done: 60 alternative-theme assets, source/prompts and shared rendering refinements; 1738 units, fast/resource/build checks, 306 preview combinations and eight targeted Chromium journeys pass. Broader integration/browser failures remain in reports/261029-thar.md; owner requested completion push.
@@ -455,4 +458,3 @@
 - 261029 WEB r180 and T589 start alongside T588: resource-backed shadow separates fixed columns only after horizontal scrolling.
 - 261029 WEB r179 and T588 start: brighten actual iron/bronze/elite artwork to distinguish compact ratings at button-like brightness.
 - 261029 T587 done: five rating skin resources (39046 bytes), aligned compact chips and readable table values; 41 units, type/lint/format, art/presentation validation, build and actual UI inspection pass.
-- 261029 T586 done: aligned 28x24 inline rating chips; type/lint, 22 units, scoped format, build and actual desktop/mobile sizing verified. T587 implementation starts.

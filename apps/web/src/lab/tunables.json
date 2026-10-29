@@ -232,6 +232,12 @@
           "value": 1.5,
           "comment": "The bodies in front of goal (T445, →MATCH-35; `shotBlockers`, `resolveShot`). Every outfield opponent within `lane` m of the triangle from the ball to the two posts, ahead of the ball, may block the shot: `block` × his nearness (1 at the shooter, falling linearly to `far` at the goal line, along the line to the goal's middle) × (1 + (위치선정 − 55) × `SHOT_CONFIG.block.skill`). A block that stays in play falls `rebound.block` m back toward the shooter from the blocker; a save the keeper parries loose falls `rebound.save` m out from him, `rebound.wide` m sideways a metre out toward the shot's side of the goal (one draw each).",
           "loadTime": false
+        },
+        {
+          "path": "BOX_CONFIG.shot.revision10.clear",
+          "value": 1.2,
+          "comment": "Revision 10 (T596, →MATCH-35 r44; `secondBall`): a block or parry left in play is won clear of the man who met the shot, beyond his body: nobody reaches its first `clear` m from him, `LANE_CONFIG.reach`, the reach within which he would play it himself. Before it an attacker within reach of him met it on his own spot and shot again from on top of him.",
+          "loadTime": false
         }
       ]
     },

@@ -1,28 +1,39 @@
 import { describe, expect, it } from 'vitest';
-import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
+import {
+  MATCH_MODEL_REVISION,
+  MATCH_MODEL_REVISIONS,
+  type MatchModelRevision,
+} from '../../../contracts/src/match-model';
 import { ATTRIBUTES, type Attribute } from '../../../contracts/src/player';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { CELL_BASELINES } from './baselines';
 import { random } from '../primitives';
 import { BOX_CONFIG, boxScene, boxSide, boxZones, deliveries, type Delivery } from './box';
 import { setIntention } from './intentions';
+import { LANE_CONFIG } from './lanes';
+import { actionTiming, flightSeconds, reachSeconds } from './movement';
 import { BAND_EDGES, cellOf, clamp, LANE_EDGES, toEngine, type Point } from './pitch';
 import {
   chanceXg,
   closingBlockers,
   keeperNarrowing,
   resolveShot,
+  saveRebound,
+  secondBall,
   SHOT_CONFIG,
   shotBlockers,
   shotContext,
   unblocked,
 } from './resolve';
+import { speedOf } from './shape';
 import { createState, skill, type GridState } from './state';
 import { computeTags } from './tags';
 import { gridKit } from './testkit';
 
 // Side 0 plays possession (4-3-3), side 1 balanced (3-5-2), both parked at their own ends.
 const kit = gridKit(['possession', 'balanced'], 'box-lab', DISABLED_RELEASE);
+/** Revision 9: a shot's second ball before revision 10 struck it at once and won it clear (T596). */
+const REVISION_9 = MATCH_MODEL_REVISIONS[8]!;
 
 /** A candidate state with `side`'s right winger on the ball at `at` (`side`'s attack frame). */
 function lab(at: Point, side: 0 | 1 = 0, model = true): GridState {
@@ -202,12 +213,16 @@ describe('the delivery into the zones (→MATCH-33, T444)', () => {
 
 describe('the bodies in front of goal (→MATCH-35, T445)', () => {
   /**
-   * A candidate state, every skill 60 with no day shift: side 0's striker on the ball at `at`,
-   * side 1's keeper on his line, everyone else parked in a far corner, then side 1's `bodies`
+   * A candidate state on `model`, every skill 60 with no day shift: side 0's striker on the ball at
+   * `at`, side 1's keeper on his line, everyone else parked in a far corner, then side 1's `bodies`
    * (roster index → engine point; side 0 attacks toward x = 105).
    */
-  function shotLab(at: Point, bodies: Record<number, Point> = {}): GridState {
-    const s = createState({ ...kit.setup, model: MATCH_MODEL_REVISION });
+  function shotLab(
+    at: Point,
+    bodies: Record<number, Point> = {},
+    model: MatchModelRevision = MATCH_MODEL_REVISION,
+  ): GridState {
+    const s = createState({ ...kit.setup, model });
     s.setup.shift = [0, 0];
     for (const roster of s.players)
       for (const gp of roster) {
@@ -296,5 +311,75 @@ describe('the bodies in front of goal (→MATCH-35, T445)', () => {
     // 1.26 m off the edge (1.22 m square to it) he is in its path.
     const edge = shotLab(from, { 4: [100, 37.7] });
     expect(shotBlockers(edge, 0, from).map((b) => b.gp.idx)).toEqual([4]);
+  });
+
+  /** The keeper's parry of a shot struck at once from `from`, on `model`, with side 0's `mates`. */
+  const parry = (model: MatchModelRevision, from: Point, mates: Record<number, Point> = {}) => {
+    const s = shotLab(from, {}, model);
+    for (const [idx, p] of Object.entries(mates)) s.players[0][Number(idx)]!.pos = [p[0], p[1]];
+    const keeper = s.players[1][0]!;
+    const land = saveRebound(from, keeper.pos, () => 0.5);
+    return { s, keeper, ball: secondBall(s, 0, s.players[0][9]!, keeper, land, 0) };
+  };
+
+  it('a parry is won clear of the keeper on revision 10, not on his spot (T596)', () => {
+    // An attacker 1.08 m from the keeper, within reach of the ball as it leaves him.
+    const from: Point = [92, 30];
+    const mates = { 8: [103.6, 33.4] as Point };
+    const ninth = parry(REVISION_9, from, mates);
+    const tenth = parry(MATCH_MODEL_REVISION, from, mates);
+    const keeperAt = ninth.keeper.pos;
+    // Revision 9 keeps its meeting point: he plays it on the keeper's own spot.
+    expect(ninth.ball).toEqual({ via: keeperAt, at: keeperAt, winner: [0, 8] });
+    // Revision 10: the same man meets it where it has left the keeper's body (→MATCH-35 r44).
+    const clear = BOX_CONFIG.shot.revision10.clear;
+    expect(tenth.ball.via).toEqual(keeperAt);
+    expect(tenth.ball.winner).toEqual([0, 8]);
+    const off = Math.hypot(tenth.ball.at[0] - keeperAt[0], tenth.ball.at[1] - keeperAt[1]);
+    expect(off).toBeGreaterThanOrEqual(clear - 1e-9);
+    expect(off).toBeLessThan(clear + LANE_CONFIG.step);
+    // Beyond his body nothing changes: a man further out meets it where he did.
+    const out = { 8: [100.5, 30] as Point };
+    expect(parry(MATCH_MODEL_REVISION, from, out).ball).toEqual(parry(REVISION_9, from, out).ball);
+  });
+
+  it('a first-time shot is struck at once on revision 10, its second ball waiting for its winner (T596)', () => {
+    // Nobody near the parry's path: the shooter himself runs to where it stops, needing longer
+    // than the shot and the parry take to get there (T596's t445-rebound-31).
+    const from: Point = [92, 30];
+    const timing = (model: MatchModelRevision) => {
+      const { s, keeper, ball } = parry(model, from);
+      expect(ball.winner).toEqual([0, 9]);
+      const shooter = s.players[0][9]!;
+      const flight =
+        flightSeconds(from, keeper.pos, 'shot') + flightSeconds(keeper.pos, ball.at, 'pass');
+      const reach = reachSeconds(shooter, ball.at, speedOf(s, shooter));
+      expect(reach).toBeGreaterThan(flight + 0.5);
+      // A first-time shot has no carry and no time of its own beyond its route (`least` 0).
+      return { flight, reach, ...actionTiming(s.setup, 100, 0, flight, reach, false, true) };
+    };
+    const ninth = timing(REVISION_9);
+    const tenth = timing(MATCH_MODEL_REVISION);
+    // Both last until he gets there.
+    expect(ninth.dt).toBe(ninth.reach);
+    expect(tenth.dt).toBe(tenth.reach);
+    // Revision 9 keeps its wind-up: the shot waits so the ball lands as he arrives.
+    expect(ninth.windUp).toBeCloseTo(ninth.reach - ninth.flight, 12);
+    expect(ninth.kick).toBeGreaterThan(100);
+    expect(ninth.lands).toBe(100 + ninth.dt);
+    // Revision 10 strikes it as the action starts; the ball lands its flight later and waits.
+    expect(tenth).toMatchObject({ windUp: 0, kick: 100, lands: 100 + tenth.flight });
+    expect(tenth.lands).toBeLessThan(100 + tenth.dt);
+    // Any other action keeps its timing on revision 10: a pass lands as its receiver arrives.
+    const tenthPass = actionTiming(
+      { ...kit.setup, model: MATCH_MODEL_REVISION },
+      100,
+      0,
+      tenth.flight,
+      tenth.reach,
+      false,
+      false,
+    );
+    expect(tenthPass).toMatchObject({ windUp: ninth.windUp, kick: ninth.kick, lands: ninth.lands });
   });
 });

@@ -468,7 +468,9 @@ export function unblocked(blockers: readonly ShotBlocker[]): number {
  * side `reachOnPath` finds first on that path wins it where it meets him (the same point: more
  * time in hand first, then the defending side); with nobody reaching it the one who runs to its
  * resting place soonest (`reachSeconds`, equal times by player ID) wins it there. `via` himself
- * plays no part: he stands where he met the shot until it is won (`playGrid`'s motion).
+ * plays no part: he stands where he met the shot until it is won (`playGrid`'s motion). On revision
+ * 10 (T596, →MATCH-35 r44) it is met clear of him: nobody reaches its first
+ * `BOX_CONFIG.shot.revision10.clear` m, so it is never won on his own spot.
  */
 export function secondBall(
   s: GridState,
@@ -485,10 +487,11 @@ export function secondBall(
   ]);
   const off = kickAt + flightSeconds(shooter.pos, start, 'shot');
   const leave = (gp: GridPlayer) => gp === via;
+  const clear = modelAtLeast(s.setup, 10) ? BOX_CONFIG.shot.revision10.clear : undefined;
   // `reachOnPath` reads the opponents of the side it is given: the defenders' first, then the
   // attackers', who take it only by meeting it earlier or, at the same point, with more in hand.
-  const defence = reachOnPath(s, side, start, end, off, leave).first;
-  const attack = reachOnPath(s, other(side), start, end, off, leave).first;
+  const defence = reachOnPath(s, side, start, end, off, leave, undefined, clear).first;
+  const attack = reachOnPath(s, other(side), start, end, off, leave, undefined, clear).first;
   const first =
     attack &&
     (!defence ||

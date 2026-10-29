@@ -65,6 +65,7 @@
     "BOX_CONFIG.shot.rebound.save.1": "골키퍼가 쳐낸 공이 키퍼에게서 앞으로 떨어지는 거리의 최댓값(m)입니다.",
     "BOX_CONFIG.shot.rebound.wide.0": "골키퍼가 쳐낸 공이 옆으로 벌어지는 정도의 최솟값(앞으로 1 m당 옆으로 가는 m)입니다. 슈팅이 온 쪽으로 벌어집니다.",
     "BOX_CONFIG.shot.rebound.wide.1": "골키퍼가 쳐낸 공이 옆으로 벌어지는 정도의 최댓값(앞으로 1 m당 옆으로 가는 m)입니다.",
+    "BOX_CONFIG.shot.revision10.clear": "리비전 10부터: 막히거나 쳐낸 세컨드 볼은 막은 선수·골키퍼에게서 이 거리(m)를 벗어난 곳에서만 따낼 수 있습니다. 그 선수의 몸 바로 위에서 공을 따내 다시 슈팅하지 않게 합니다. 올리면 세컨드 볼을 더 멀리서 잡습니다.",
     "COORDINATION_CONFIG.pressers.possession": "점유 전술 팀이 수비할 때, 압박 거리 안에서 공 가진 선수에게 동시에 달려드는 인원 수(명)입니다. 올리면 여러 명이 함께 압박합니다.",
     "COORDINATION_CONFIG.pressers.press": "압박 전술 팀이 수비할 때, 압박 거리 안에서 공 가진 선수에게 동시에 달려드는 인원 수(명)입니다. 2명이면 공을 너무 쉽게 뺏어 1명으로 맞춰 둔 값입니다.",
     "COORDINATION_CONFIG.pressers.counter": "역습 전술 팀이 수비할 때, 압박 거리 안에서 공 가진 선수에게 동시에 달려드는 인원 수(명)입니다.",

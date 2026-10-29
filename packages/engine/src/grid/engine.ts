@@ -61,6 +61,7 @@ import { applyChanges, coverGoal, drawInjury, leave, planChanges, sideFreshness 
 import { shotEnd, Tracer, type TraceEntry } from './trace';
 import { stampAt } from './clock';
 import {
+  actionTiming,
   advance,
   benchPoint,
   carryInStride,
@@ -467,7 +468,9 @@ export function playGrid(setup: GridSetup): GridResult {
    * With `before` (where everyone was heading before the action) the others keep going there until
    * the kick and only then react to the ball (→MATCH-17). After an in-stride `carry` that brought
    * him to `from`, already on the clock, he kicks it at once, so he never waits on the ball: its
-   * flight lasts until the action ends, and the carry's knots lead the action's.
+   * flight lasts until the action ends, and the carry's knots lead the action's. On revision 10
+   * (T596, →MATCH-12 r44) a shot is struck at once and flies at its own speed; the ball it leaves
+   * loose waits where it stops for its winner (`actionTiming`).
    */
   function motionOf(
     actor: Ref,
@@ -482,9 +485,9 @@ export function playGrid(setup: GridSetup): GridResult {
     const gp = s.players[actor[0]][actor[1]]!;
     // A carry action of his own: he runs with the ball to where it ends.
     const own = o !== 'offside' && o.kind === 'complete' && o.receiver === actor[1];
+    const shot = o !== 'offside' && o.kind === 'shot';
     const legs: { to: [number, number]; speed: BallSpeed }[] = [];
     if (!own) {
-      const shot = o !== 'offside' && o.kind === 'shot';
       const shooter = shot ? (o.shooter ?? actor[1]) : actor[1];
       // A header or a cut-back's finish: the delivery reaches the shooter, who strikes it.
       if (shooter !== actor[1]) {
@@ -510,9 +513,16 @@ export function playGrid(setup: GridSetup): GridResult {
     const owner = pending || !s.owner ? undefined : s.players[s.owner[0]][s.owner[1]]!;
     const ball: [number, number] = [s.ball[0], s.ball[1]];
     const reach = owner ? reachSeconds(owner, ball, speedOf(s, owner)) : 0;
-    const dt = Math.max(least, flight, reach);
-    // When he kicks it, into the action.
-    const windUp = carry ? 0 : dt - flight;
+    // When he kicks it, into the action, and when it lands: on revision 10 a shot at once (T596).
+    const { dt, windUp, kick, lands } = actionTiming(
+      s.setup,
+      start,
+      least,
+      flight,
+      reach,
+      carry !== undefined,
+      shot,
+    );
     const plan: Move[] = [];
     if (owner) plan.push({ gp: owner, to: ball });
     if (owner !== gp) plan.push({ gp, holdUntil: windUp });
@@ -524,7 +534,7 @@ export function playGrid(setup: GridSetup): GridResult {
       });
     // A second ball (T445): the blocker or keeper stands where he meets the shot, as `secondBall`
     // read him, until it is won; he plays no part in it (→MATCH-12).
-    if (o !== 'offside' && o.kind === 'shot' && o.via && o.by !== undefined)
+    if (shot && o.via && o.by !== undefined)
       plan.push({ gp: s.players[other(actor[0])][o.by]!, holdUntil: dt });
     const knots: MotionKnot[] = [];
     if (carry)
@@ -538,12 +548,11 @@ export function playGrid(setup: GridSetup): GridResult {
         { kind: 'arrive', at: start + reach, ball },
       );
     else if (flight > 0) {
-      const kick = carry ? start : start + dt - flight;
       knots.push({ kind: 'kick', at: kick, ball: [from[0], from[1]] });
       legs.forEach((leg, i) =>
         knots.push({
           kind: i < legs.length - 1 ? 'touch' : owner ? 'receive' : 'arrive',
-          at: i < legs.length - 1 ? kick + times[i]! : start + dt,
+          at: i < legs.length - 1 ? kick + times[i]! : lands,
           ball: leg.to,
         }),
       );
@@ -860,10 +869,11 @@ export function playGrid(setup: GridSetup): GridResult {
       }
       case 'shot': {
         // On the candidate model its second ball is read from the kick: at once after a carry or
-        // first time, else after the wind-up its flight leaves of the action (T445).
+        // first time, else after the wind-up its flight leaves of the action (T445); on revision 10
+        // every shot is struck at once (T596, `actionTiming`).
         const at = s.players[side][idx]!.pos;
         const kickAt =
-          candidate && !carry && jitter > 0
+          candidate && !carry && jitter > 0 && !modelAtLeast(s.setup, 10)
             ? Math.max(
                 0,
                 secondsOf('shot') * jitter -

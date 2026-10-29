@@ -468,6 +468,8 @@ describe('grid engine', () => {
     // first plays it where it meets him, never the keeper who parried it.
     const from: Point = [92, 28];
     const land = saveRebound(from, keeperAt, () => 0.5);
+    // On revision 10 nobody reaches its first metres, clear of the keeper's body (T596).
+    const clear = BOX_CONFIG.shot.revision10.clear;
     const lab = (attacker: Point, defender: Point) => {
       const setup = buildGridSetup(w, fixture('t445-parry'), {
         observe: false,
@@ -499,7 +501,7 @@ describe('grid engine', () => {
       const off = flightSeconds(from, keeperAt, 'shot');
       const leave = (gp: typeof keeper) => gp === keeper;
       const [byDefence, byAttack] = [0, 1].map(
-        (side) => reachOnPath(s, side as 0 | 1, keeperAt, end, off, leave).first,
+        (side) => reachOnPath(s, side as 0 | 1, keeperAt, end, off, leave, undefined, clear).first,
       );
       return { ball, byDefence, byAttack, end };
     };
@@ -540,6 +542,11 @@ describe('grid engine', () => {
       expect(touch.at - off.at).toBeCloseTo(flightSeconds(off.ball, touch.ball, 'shot'), 6);
       const gap = Math.hypot(drawn[0] - touch.ball[0], drawn[1] - touch.ball[1]);
       expect(gap, `${e.action} ${e.result} at ${touch.at}`).toBeLessThanOrEqual(LANE_CONFIG.reach);
+      // Revision 10 (T596): it is won clear of him, never on his own spot.
+      const won = Math.hypot(e.to![0] - touch.ball[0], e.to![1] - touch.ball[1]);
+      expect(won, `${e.action} ${e.result} won at ${touch.at}`).toBeGreaterThanOrEqual(
+        clear - 1e-9,
+      );
     }
     // Every parry flies on from the keeper to the man who meets it, out from the keeper within
     // `save` m, and that man plays the next ball from there.
@@ -575,6 +582,9 @@ describe('grid engine', () => {
       // draw (T446: t445-rebound-23, a miss from [0, 42.16]; left to T410 in T446's limits).
       if (!next.knots!.length && (next.from![0] === 0 || next.from![0] === 105)) continue;
       expect(next.knots![0]).toMatchObject({ kind: 'kick', ball: next.from });
+      // Struck as he chooses it, never held back while its own second ball's winner runs there
+      // (revision 10, T596).
+      expect(next.knots![0]!.at).toBe(e.elapsed);
       expect(Math.hypot(next.from![0] - e.to![0], next.from![1] - e.to![1])).toBeLessThan(0.5);
     }
     expect(won).toBeGreaterThan(4);

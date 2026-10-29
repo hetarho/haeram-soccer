@@ -15,6 +15,7 @@ import {
   chanceXg,
   closingBlockers,
   DUEL_CONFIG,
+  keeperNarrowing,
   SHOT_CONFIG,
   resolveCross,
   resolveDelivery,
@@ -30,7 +31,7 @@ import {
   type Outcome,
 } from './resolve';
 import { BOX_CONFIG, deliveryPoint, type DeliveryAim } from './box';
-import { actionMix, DECISION_CONFIG, temperature } from './decide';
+import { actionMix, clearChance, DECISION_CONFIG, temperature } from './decide';
 import { playGrid } from './engine';
 import { LANE_CONFIG, reachOnPath } from './lanes';
 import { validateFullMatchRecord } from '../match-model';
@@ -671,8 +672,13 @@ describe('grid open-play resolution', () => {
     // Struck from the zone once he has met it there: a cut-back's chance, never a header.
     sc.s.players[0][10]!.pos = [zone[0], zone[1]];
     const ctx = shotContext(sc.s);
-    const xg = chanceXg([zone[0], zone[1]], { cutBack: true, pressure: 0, candidate: true });
-    expect(xg).toBeGreaterThan(chanceXg([zone[0], zone[1]], { candidate: true }));
+    const chance = chanceXg([zone[0], zone[1]], { cutBack: true, pressure: 0, candidate: true });
+    expect(chance).toBeGreaterThan(chanceXg([zone[0], zone[1]], { candidate: true }));
+    // Narrowed by the keeper's position since revision 9 (T579): parked far from his goal, out of
+    // pressing range of the zone, he leaves more of the mouth open than one on his line.
+    const narrowing = keeperNarrowing(sc.s, 0, [zone[0], zone[1]], sc.s.players[1][0]!);
+    expect(narrowing).toBeGreaterThan(1);
+    const xg = chance * narrowing;
     const finish = met[0]!.finish!;
     for (let i = 0; i < 500; i++) {
       const o = resolveFinish(sc.s, 0, 10, finish, computeTags(sc.s, 0, 10), ctx, r);
@@ -843,6 +849,12 @@ describe('grid open-play resolution', () => {
 
   it('xG falls with bodies between the ball and the goal (T445)', () => {
     const at: Point = [92, 34];
+    /** The scene with the keeper in his goal half a metre off his line, as `box.test`'s. */
+    const inGoal = (bodies: Point[]) => {
+      const sc = shotScene(at, bodies);
+      sc.s.players[1][0]!.pos = [104.5, 34];
+      return sc;
+    };
     // More than the pressure radius from him, so only the bodies change.
     const lines: Point[][] = [
       [],
@@ -859,23 +871,26 @@ describe('grid open-play resolution', () => {
     ];
     let last = Infinity;
     for (const bodies of lines) {
-      const sc = shotScene(at, bodies);
+      const sc = inGoal(bodies);
       const ctx = shotContext(sc.s);
       const tags = sc.tags();
       const o = resolveShot(sc.s, 0, 9, tags, ctx, random('bodies'));
       const chance = chanceXg(at, { pressure: tags.pressure, candidate: true }, sc.s.math);
+      // Narrowed once by the keeper off his line since revision 9 (T579).
+      const narrowing = keeperNarrowing(sc.s, 0, at, sc.s.players[1][0]!);
+      expect(narrowing).toBeLessThan(1);
       const open = unblocked(shotBlockers(sc.s, 0, at));
       if (bodies.length) expect(open).toBeLessThan(1);
       else expect(open).toBe(1);
       // The chance's xG times the share nobody blocks, recorded for the level's average players.
-      expect(o.xg).toBeCloseTo(chance * open, 12);
+      expect(o.xg).toBeCloseTo(chance * narrowing * open, 12);
       expect(o.recordedXg).toBeCloseTo(Math.min(SHOT_CONFIG.maxXg, o.xg * ctx.levelFactor), 12);
       expect(o.xg).toBeLessThan(last);
       last = o.xg;
     }
     // Recorded xG stays the goal probability for the average finisher and keeper: the keeper's
     // part reads the chance without the bodies, so they count once.
-    const sc = shotScene(at, lines[2]!);
+    const sc = inGoal(lines[2]!);
     const ctx = shotContext(sc.s);
     const tags = sc.tags();
     const r = random('bodies-goals');
@@ -896,10 +911,16 @@ describe('grid open-play resolution', () => {
       const plain = shotScene(at, []);
       set(plain.s, 0, 9, 'decisions', decisions);
       // A defender ahead of him and wide: in the corridor to goal, so no clear chance (alone he
-      // would take it whatever the bodies, T542), out of the shot's path, its closing reach and
-      // pressing range. On revision 7 a man behind him no longer takes the chance away (T548).
-      plain.s.players[1][10]!.pos = [at[0] + 5, at[1] + 8];
+      // would take it whatever the bodies, T542), out of the shot's path and pressing range. On
+      // revision 7 a man behind him no longer takes the chance away (T548); on revision 9 nobody
+      // within 5 m is a clear chance too (T579), so he stands 4.74 m off, beyond the pressure
+      // radius, 2.13 m square to the triangle to the posts. The decision reads only the path's
+      // bodies, not the men closing the shot (`actionMix`).
+      plain.s.players[1][10]!.pos = [at[0] + 3.5, at[1] + 3.2];
+      expect(clearChance(plain.s, 0, at)).toBe(false);
+      expect(shotBlockers(plain.s, 0, at)).toEqual([]);
       const tagsOf = plain.tags();
+      expect(tagsOf.pressure).toBe(0);
       const before = actionMix(plain.s, 0, 9, tagsOf);
       lines[2]!.forEach((p, i) => (plain.s.players[1][2 + i]!.pos = [p[0], p[1]]));
       const after = actionMix(plain.s, 0, 9, tagsOf);

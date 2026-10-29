@@ -210,6 +210,41 @@ export function flightSeconds(
   return hypot(to[0] - from[0], to[1] - from[1]) / v;
 }
 
+/** When an action's ball goes (`actionTiming`): match seconds but `dt` and `windUp`, which are its length. */
+export interface ActionTiming {
+  /** How long the action lasts. */
+  dt: number;
+  /** How long the actor keeps the ball before he kicks it. */
+  windUp: number;
+  /** When he kicks it. */
+  kick: number;
+  /** When it ends its flight. */
+  lands: number;
+}
+
+/**
+ * When the ball of an action starting at `start` goes (→MATCH-12): the action lasts at least
+ * `least` and until its `flight` and its new owner's run of `reach` are done. He kicks it after
+ * the wind-up its flight leaves of the action, so it lands as the action ends; after an in-stride
+ * `carried` carry he kicks it at once. On revision 10 (T596, →MATCH-12 r44) a `shot` is struck as
+ * its action starts, a first-time one too, and lands its flight later: what it leaves loose waits
+ * where it stops for a winner who needs longer, never held back for him.
+ */
+export function actionTiming(
+  setup: GridState['setup'],
+  start: number,
+  least: number,
+  flight: number,
+  reach: number,
+  carried: boolean,
+  shot: boolean,
+): ActionTiming {
+  const dt = Math.max(least, flight, reach);
+  if (shot && modelAtLeast(setup, 10)) return { dt, windUp: 0, kick: start, lands: start + flight };
+  if (carried) return { dt, windUp: 0, kick: start, lands: start + dt };
+  return { dt, windUp: dt - flight, kick: start + dt - flight, lands: start + dt };
+}
+
 /**
  * A player sent to `to`, or to his shape target when absent; `holdUntil` keeps him where he stands
  * for that many seconds first (the player on the ball until he plays it). `before` sends him on to

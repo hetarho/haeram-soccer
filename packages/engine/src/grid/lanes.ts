@@ -194,7 +194,8 @@ function runSeconds(d: number, u0: number, vmax: number): number {
  * picks out (T444: a lofted ball's zone men, left to the aerial duel) are not read. A lofted ball
  * (`loft`, T446) is reachable only within its first `loft.foot` m and its last `loft.drop` m, the
  * whole path when they meet; a man's seconds to spare are read within the stretch he reaches, and
- * the first reaching it past `loft.foot` is its `drop`. Without `loft` the whole path is.
+ * the first reaching it past `loft.foot` is its `drop`. Without `loft` the whole path is. With
+ * `clear` (a second ball, T596) nobody reaches its first `clear` m, still measured from `from`.
  */
 export function reachOnPath(
   s: GridState,
@@ -204,6 +205,7 @@ export function reachOnPath(
   kickAt: number,
   leave?: (gp: GridPlayer) => boolean,
   loft?: Loft,
+  clear?: number,
 ): PathReach {
   const L = LANE_CONFIG;
   const m = aim(from, to);
@@ -216,7 +218,10 @@ export function reachOnPath(
   for (const gp of s.players[other(side)]) {
     if (!onPitch(gp) || leave?.(gp) || !runAt(s, side, gp, kickAt)) continue;
     // Within reach of a point he is within stretch of it too, so his reach starts no earlier.
-    const wide = reachFrom(m.lo, L.stretch, gap);
+    let wide = reachFrom(m.lo, L.stretch, gap);
+    // Reached within `clear` only: his first reach beyond it, else none.
+    if (clear !== undefined && wide < clear)
+      wide = clear <= m.hi ? reachFrom(clear, L.stretch, gap) : NaN;
     if (Number.isNaN(wide)) continue;
     const wideSpare = m.spare;
     const close = reachFrom(wide, L.reach, gap);

@@ -91,8 +91,11 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * revision 2's movement, for T466's revision 3, for T479's revision 4, for T480's corner numbers
  * for T481's shot choice, for T482's recalibration, for T538's revision 5, for T542's revision
  * 6, for T548's revision 7, for T561's revision 8, for T579's revision 9 and for T580's pass side
- * of it, the first tie of each kind (T580's: 2/47, 3/5 and 17/1); T579's were 6/28, 9/19 and
- * 5/7, T561's were 3/34, 15/8 and 28/4 (revision 8's,
+ * of it, the first tie of each kind. T596's revision 10 (every shot struck at once, its second
+ * ball won clear of the man who met it) rescans them when revision 10's digests are recorded
+ * (T596's limits: re-recorded once T599 and T600 complete the unreleased revision); until then
+ * they are T580's, 2/47, 3/5 and 17/1 (revision 9's, `REVISION_9_CASES`). T579's were 6/28, 9/19
+ * and 5/7, T561's were 3/34, 15/8 and 28/4 (revision 8's,
  * `REVISION_8_CASES`), T548's were
  * 11/30, 18/7 and 14/13 (revision 7's, `REVISION_7_CASES`), T542's were 7/20, 5/3 and 12/7
  * (revision 6's, `REVISION_6_CASES`), T538's were 3/2, 6/1 and 23/0 (revision 5's, `REVISION_5_CASES`),
@@ -365,8 +368,50 @@ interface CandidateDigests {
  * 0c30ef3efb9df989; positions 1975 9a206d559a7abc31, 5fc0d23c262ad348, 1995 04005588300e48e8,
  * f500b465988fe5d6, 2024 2f9905dec60f8230, 4834d086aebcce67. Revisions 1–8's and the pre-feature
  * facts did not move.
+ * T596's match-model revision 10 (every shot struck as its action starts, its second ball running
+ * on at its own speed and won clear of the man who blocked or parried it) moves every value; before
+ * it, the values now revision 9's (`REVISION_9`). Its values are recorded once T599 and T600 have
+ * completed the unreleased revision (T596's limits), with the knockout ties above. Revisions 1–9's
+ * and the pre-feature facts do not move.
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
+  1975: {
+    facts: {
+      league: 'TODO',
+      extraTime: 'TODO',
+      shootout: 'TODO',
+    },
+    positions: { observed: 'TODO', shootout: 'TODO' },
+  },
+  1995: {
+    facts: {
+      league: 'TODO',
+      extraTime: 'TODO',
+      shootout: 'TODO',
+    },
+    positions: { observed: 'TODO', shootout: 'TODO' },
+  },
+  2024: {
+    facts: {
+      league: 'TODO',
+      extraTime: 'TODO',
+      shootout: 'TODO',
+    },
+    positions: { observed: 'TODO', shootout: 'TODO' },
+  },
+};
+
+/**
+ * Revision 9's knockout ties and digests (T596): T580's values, the football revision 9 plays
+ * before revision 10. Their facts never move again (→SAVE-23); a presentation-only change
+ * re-records their positions.
+ */
+const REVISION_9_CASES = {
+  1975: { extraTime: 2, shootout: 47 },
+  1995: { extraTime: 3, shootout: 5 },
+  2024: { extraTime: 17, shootout: 1 },
+} as const satisfies Record<Year, { extraTime: number; shootout: number }>;
+const REVISION_9: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
       league: 'a5047cf8a78bdcf9',
@@ -727,10 +772,10 @@ describe('detailed engine throughput (T325)', () => {
         positions: { observed: positionsOf(watched), shootout: positionsOf(pens) },
       };
       expect(got, `${year} candidate digests on ${HOST}`).toEqual(CANDIDATE[year]);
-      // Revisions 1–8 play as they did before later revisions moved (→SAVE-23): their matches
+      // Revisions 1–9 play as they did before later revisions moved (→SAVE-23): their matches
       // replay under them.
       const earlier = (
-        revision: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7,
+        revision: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8,
         cases: { extraTime: number; shootout: number },
       ) => {
         const on = (id: string, opts: Parameters<typeof play>[2] = {}) =>
@@ -769,6 +814,9 @@ describe('detailed engine throughput (T325)', () => {
       );
       expect(earlier(7, REVISION_8_CASES[year]), `${year} revision-8 digests`).toEqual(
         REVISION_8[year],
+      );
+      expect(earlier(8, REVISION_9_CASES[year]), `${year} revision-9 digests`).toEqual(
+        REVISION_9[year],
       );
       const recorded = PRE_FEATURE[HOST]?.[year];
       if (recorded === undefined)

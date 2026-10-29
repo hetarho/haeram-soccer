@@ -178,6 +178,13 @@ export const BOX_CONFIG = {
       save: [5, 10] as readonly [number, number],
       wide: [0.5, 1.5] as readonly [number, number],
     },
+    /**
+     * Revision 10 (T596, →MATCH-35 r44; `secondBall`): a block or parry left in play is won clear
+     * of the man who met the shot, beyond his body: nobody reaches its first `clear` m from him,
+     * `LANE_CONFIG.reach`, the reach within which he would play it himself. Before it an attacker
+     * within reach of him met it on his own spot and shot again from on top of him.
+     */
+    revision10: { clear: 1.2 },
   },
 } as const;
 
