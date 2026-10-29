@@ -17,6 +17,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261030 decided T607 ARCH-30: final integration on dccefdb2 failed four cases after1772units passed → repair coordination scene geometry, bounded second-ball truth and news milestones in one focused unit; keep all target bands/assertions and defer full integration/browser rerun to the coordinator.
 - 261030 decided WEB-94 WEB-105 T606: how clip entry stays unavailable through the original viewing's goal hold → the shortcut and the picker's goals stay in place with `aria-disabled` (focus kept, theme disabled filter) and every entry is refused against the frame loop's clock until the full hold has run (alt: native `disabled`, which drops focus out of an open picker | hide the shortcut or close the picker during the hold | let the clip carry and restore the remaining hold, which shortens the original's celebration).
 - 261030 decided WEB-94 WEB-105 T606: coordinator source review found final-goal hold entry can consume original completion; apply one focused lifecycle repair under the approved replay contract before publication.
 - 261030 decided WEB-50 WEB-105 WEB-17 T601: where the replay shortcut and goal choice live without breaking the theatre's phone bounds → a 44 px button overlaying the pitch's lower-left corner (beside the archived play button), opening a picker dialog; during a clip the same corner holds 다시보기 · 돌아가기 and the meta line reads 다시보기 · (alt: a new row under the latest event, which pushes the 360x740 primary action down | the list inside 경기 상세 only, which a live owner would not find); the live clock keeps running while the picker is open, since live observation has no pause control (alt: pause while picking).
@@ -414,6 +415,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T607 | Repair final revision-10 integration cases | MATCH WEB SAVE ARCH | T606 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -437,9 +439,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- coordinator final gate on the integrated vf30 candidate (batch with tests/e2e/goal-replay.spec.ts on Chromium), then the configured main push and one CI read.
+- implement-task T607: repair the four full-integration failures; preserve legacy hashes and substantive assertions, then complete the coordinator final gate and main publication.
 
 ## log
+- 261030 create-task T607: full integration145files/1259tests passed,4cases failed; no main code push, raw attempt-01 retained.
 - 261030 T606 done: no goal clip begins while the original viewing holds a goal (`replayEntryOpen` gates `startGoalReplay` and the picker at the moment of choice, a picker opened before the hold included); the hold runs its full length and a return keeps the original clock, so a final-sample hold can no longer finish the live match for a clip; shortcut and picker goals stay focusable with `aria-disabled` through the hold; archived clip play/pause display rechecked (T601's fix kept); format, typecheck, lint, affected units (42) and build pass; goal-replay browser journey left to the final Chromium gate.
 - 261030 create-task T606: focused T601 lifecycle/control verification repair from coordinator review; no policy change.
 - 261030 T601 done: 골 장면 다시보기 — pitch-corner shortcut and goal picker (live: goals shown through their cue; archive: all), clips from 15 s before the goal (not before its period's kick-off or the previous goal) at 1x through the existing hold, then an exact return to the original instant, play state and speed without a re-cue or completion; minute-only goals keep the seek-and-pause and say footage is unavailable; `ui/goalReplay.ts` with 9 unit cases, 12 locale packs, shared overlay material; typecheck, lint, format:check, affected units (70), presentation/architecture units and build pass; tests/e2e/goal-replay.spec.ts and the extended mobile goal-cue journey left to the final Chromium gate.
@@ -459,4 +462,4 @@
 - 261030 T604 done: bronze-to-ruby ratings across all four packs, 32 rating/theme units plus resource/fast checks; T605 begins.
 - 261030 T603 done: shared page/cards/tabs/team sheets and combined mode/approval controls; 33 units and fast checks pass. T604 begins.
 - 261030 create-task WEB r187 → T603 shared pages/transport, T604 rating scale, T605 theme resources; pg30 begins T603, publication includes the preceding T602 fix.
-- 261030 update-ssot WEB start: owner requests shared page fixes, combined mode/approval controls, bronze-to-ruby ratings and theme-specific cartoon/grass/clay/pixel artwork; commit and push the complete reviewed batch.
+
