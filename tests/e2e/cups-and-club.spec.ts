@@ -3,6 +3,7 @@ import { openClubRecords, openCups, openLeague } from './competition-navigation'
 import { finishSeason } from './season-progression';
 import { test, expect } from '@playwright/test';
 import { chooseLevel, closeOutcome, setResponsibility } from './events';
+import { chooseOption } from './select';
 import { horizontalOverflow } from './layout';
 
 async function found(page: import('@playwright/test').Page, seed: string) {
@@ -22,16 +23,16 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
   test('shows the drawn domestic cup with our tie and the road to Europe', async ({ page }) => {
     await found(page, 'cups-journey');
     await openCups(page);
-    await expect(page.getByRole('tab', { name: '잉글랜드 컵', exact: true })).toHaveAttribute(
-      'aria-selected',
-      'true',
+    await expect(page.getByRole('combobox', { name: '컵 대회', exact: true })).toHaveAttribute(
+      'data-value',
+      'cup',
     );
     const cup = page.getByRole('region', { name: '잉글랜드 컵' });
     // A new amateur club enters the cup in its first round, drawn before the season starts.
     await expect(cup.getByRole('heading', { name: '1라운드' })).toBeVisible();
     await expect(cup.getByText('우리 팀')).toBeVisible();
     await expect(cup).toContainText('다음');
-    await page.getByRole('tab', { name: 'European Cup', exact: true }).click();
+    await chooseOption(page.getByRole('combobox', { name: '컵 대회', exact: true }), 'ucl');
     await expect(page.getByText('1955/56 시즌에 창설돼요.', { exact: true })).toBeVisible();
     await openCups(page, true);
     await page.getByRole('tab', { name: '잉글랜드 컵', exact: true }).click();

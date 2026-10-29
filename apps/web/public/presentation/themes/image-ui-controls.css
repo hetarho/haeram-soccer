@@ -209,7 +209,8 @@ html[data-theme] {
     --action-edge: var(--button-tertiary-edge, var(--image-button-edge, transparent));
   }
 
-  button:is([data-ui='secondary'], [data-ui='tertiary']) {
+  button:is([data-ui='secondary'], [data-ui='tertiary']),
+  [data-ui='choices'] > button:is([data-ui='secondary'], [data-ui='tertiary']) {
     --text: var(--action-text);
     --text-muted: var(--action-text);
     --accent-text: var(--action-text);
@@ -850,8 +851,14 @@ html[data-theme] {
     box-shadow: none;
   }
 
-  [data-ui='choices'] > button[aria-pressed='true'],
-  button[aria-pressed='true']:not([data-ui='primary'], [data-ui='formation-player']),
+  [data-ui='choices']
+    > button[aria-pressed='true']:not([data-ui='secondary'], [data-ui='tertiary']),
+  button[aria-pressed='true']:not(
+      [data-ui='primary'],
+      [data-ui='secondary'],
+      [data-ui='tertiary'],
+      [data-ui='formation-player']
+    ),
   [role='radio'][aria-checked='true'] {
     --text: var(--image-ink-color);
     --text-muted: var(--image-muted);

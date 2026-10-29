@@ -98,6 +98,7 @@ export function currentCupBriefings(w: World) {
     return {
       key: cup.key,
       name: cup.name,
+      active: (cup.key !== 'cup' || !!domestic) && !cup.winner,
       status,
       detail,
       winner: cup.winner ? `대회 우승 · ${clubName(cup.winner)}` : '',

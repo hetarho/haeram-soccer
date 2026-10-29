@@ -165,10 +165,33 @@ describe('owner office page', () => {
       onSelect: select,
     });
     const choices = row.props.children[1].props.children;
+    expect(choices[1].props['data-ui']).toBe('secondary');
+    expect(choices[0].props['data-ui']).toBeUndefined();
     choices[1].props.onClick();
     expect(select).not.toHaveBeenCalled();
     choices[0].props.onClick();
     expect(select).toHaveBeenCalledExactlyOnceWith(false);
+  });
+
+  it('fills only applied office choices, leaving a mixed bulk choice unselected', () => {
+    for (const delegated of [false, true]) {
+      const row = OfficeRow({
+        label: '계약',
+        detail: '',
+        delegated,
+        blocked: false,
+        onSelect: vi.fn(),
+      });
+      const buttons = row.props.children[1].props.children;
+      expect(buttons[Number(!delegated)].props['data-ui']).toBeUndefined();
+      expect(buttons[Number(delegated)].props['aria-pressed']).toBe(true);
+    }
+    const w = gameStore.getState().view!.world;
+    w.settings = officeSettings(w, officeBulkChange(w, 'direct')!);
+    expect(render()).toMatch(/data-ui="secondary" aria-pressed="true"[^>]*>전체 직접/);
+    w.settings!.responsibilities.recruitment = 'delegated';
+    const markup = render();
+    expect(markup).not.toMatch(/data-ui="secondary" aria-pressed="true"[^>]*>전체 (직접|자동)/);
   });
   it('disables every mutation in readonly state', () => {
     gameStore.setState({ readonly: true });

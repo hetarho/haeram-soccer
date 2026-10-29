@@ -1173,9 +1173,13 @@ export function App() {
           />
         )}
         {/* Season controls belong to management views; observation has its own speeds. */}
-        {client && controller && playing && !w.bankrupt && page !== 'match' && (
-          <ProgressOverview compact={page !== 'dashboard'} />
-        )}
+        {client &&
+          controller &&
+          playing &&
+          !w.bankrupt &&
+          page !== 'match' &&
+          page !== 'league' &&
+          page !== 'europe' && <ProgressOverview compact={page !== 'dashboard'} />}
         <div ref={scroller} className={s.scroller} data-testid="view-scroller">
           {client && controller && playing && !w.bankrupt && page !== 'match' && (
             <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
@@ -1228,11 +1232,13 @@ export function App() {
                   </div>
                 )}
                 <div className={s.views} inert={changingView} aria-busy={changingView}>
-                  <TaskReturn />
+                  {contentPage !== 'league' && contentPage !== 'europe' && <TaskReturn />}
                   <div className={s.coreContent} hidden={contentPage !== 'dashboard'}>
                     <ConnectedDashboard client={client} />
                   </div>
-                  {contentPage !== 'league' && <CompetitionTabs page={contentPage} />}
+                  {contentPage !== 'league' && contentPage !== 'europe' && (
+                    <CompetitionTabs page={contentPage} />
+                  )}
                   <div
                     id="competition-hub-panel"
                     className={s.views}

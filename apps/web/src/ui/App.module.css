@@ -3267,6 +3267,14 @@
   font-size: var(--label-size);
   color: var(--text-muted);
 }
+.taskReturnInline {
+  flex: none;
+}
+.taskReturnInline > button {
+  min-height: var(--control-min-height);
+  padding-inline: 4px;
+  white-space: nowrap;
+}
 
 .responsibilities {
   width: 100%;
@@ -3325,8 +3333,8 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--control-gap) var(--row-padding);
-  margin: 4px 0;
+  gap: 4px;
+  margin: 0;
   font-size: var(--label-size);
 }
 .competitionScope > b {
@@ -3381,10 +3389,22 @@
   margin: 0;
 }
 .competitionScope .leaguePicker {
-  flex: 1 1 180px;
+  flex: 1 1 150px;
   flex-wrap: nowrap;
   gap: 4px;
   margin: 0;
+}
+.competitionFilters {
+  display: flex;
+  flex: 1 1 150px;
+  gap: 4px;
+  min-width: 0;
+}
+.competitionFilters > :global([data-select-trigger]) {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-inline: 6px;
+  font-size: 12px;
 }
 .competitionScope .leaguePicker > label {
   flex: 1 1 60px;

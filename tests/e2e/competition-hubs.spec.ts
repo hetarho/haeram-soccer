@@ -10,9 +10,12 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
   await page.getByRole('button', { name: '클럽 창단 →', exact: true }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   const clubhouseAddress = page.url();
-  const returnHome = page.getByRole('button', { name: '← 돌아가기 · 클럽 홈', exact: true });
+  const returnHome = page.getByRole('button', { name: '돌아가기 · 클럽 홈', exact: true });
   const seasonTabs = page.getByRole('tablist', { name: '시즌', exact: true });
-  await page.getByRole('button', { name: '잉글랜드 컵 현재 대회 보기', exact: true }).click();
+  await page.getByRole('button', { name: '현재 컵 대회 모아보기', exact: true }).click();
+  const cups = page.getByRole('dialog', { name: '현재 컵 대회 모아보기', exact: true });
+  await cups.getByRole('button', { name: '잉글랜드 컵 현재 대회 보기', exact: true }).click();
+  await expect(cups).toBeHidden();
   await expect(page).toHaveURL(/season\?competition=cup.*cup=cup/);
   await expect(page.getByRole('region', { name: '잉글랜드 컵', exact: true })).toBeVisible();
   await expect(returnHome).toBeVisible();
@@ -34,6 +37,10 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
   await expect(page).toHaveURL(clubhouseAddress);
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await openLeague(page);
+  await expect(page.getByTestId('mini-clock')).toHaveCount(0);
+  await expect(page.locator('[data-ui="toolbar"]').filter({ visible: true })).toContainText(
+    '돌아가기',
+  );
   await seasonTabs.getByRole('tab', { name: '컵 대회', exact: true }).click();
   await expect(returnHome).toBeVisible();
   await returnHome.click();

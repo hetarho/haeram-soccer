@@ -61,6 +61,7 @@ export function OfficeRow({
         {([false, true] as const).map((value) => (
           <button
             key={String(value)}
+            data-ui={delegated === value ? 'secondary' : undefined}
             aria-pressed={delegated === value}
             disabled={blocked}
             onClick={() => {
@@ -166,6 +167,11 @@ export function OwnerOffice({
           {(['direct', 'delegated'] as const).map((value) => (
             <button
               key={value}
+              data-ui={
+                (value === 'delegated' ? delegatedCount === totalCount : delegatedCount === 0)
+                  ? 'secondary'
+                  : undefined
+              }
               aria-pressed={
                 value === 'delegated' ? delegatedCount === totalCount : delegatedCount === 0
               }

@@ -3,6 +3,18 @@ import { TabList } from './PageTabs';
 import { useLocale } from '../presentation/react';
 import { useNavigation, type Page } from './state';
 import { HISTORY_PAGES, SEASON_PAGES } from './competitionNavigation';
+import type { ReactNode } from 'react';
+import { TaskReturn } from './TaskReturn';
+
+export function CompetitionHeader({ page, children }: { page: Page; children: ReactNode }) {
+  return (
+    <div className={s.competitionScope} aria-label="대회 탐색">
+      <TaskReturn compact />
+      <CompetitionTabs page={page} />
+      {children}
+    </div>
+  );
+}
 
 export function CompetitionTabs({ page }: { page: Page }) {
   const { t } = useLocale();

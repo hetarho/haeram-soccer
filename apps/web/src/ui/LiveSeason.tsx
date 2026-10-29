@@ -61,7 +61,7 @@ import {
   type LeagueChoice,
 } from './league';
 import { LeaguePicker, leagueName, useLeagueFixtures } from './LeaguePicker';
-import { CompetitionTabs } from './CompetitionTabs';
+import { CompetitionHeader } from './CompetitionTabs';
 import {
   selectLeagueWorld,
   selectMatchWorld,
@@ -382,13 +382,12 @@ const LeagueScope = memo(function LeagueScope({
 }) {
   const w = useGameState(selectLeagueWorld)!;
   return (
-    <div className={s.competitionScope} aria-label="선택한 리그와 시즌">
-      <CompetitionTabs page="league" />
+    <CompetitionHeader page="league">
       <b className={s.srOnly}>
         {leagueName(league ?? ownLeague(w))} · {seasonName(w.year)}
       </b>
       <LeaguePicker league={league} onLeague={onLeague} />
-    </div>
+    </CompetitionHeader>
   );
 });
 const ResultsPane = memo(function ResultsPane({
@@ -693,10 +692,9 @@ export const LiveSeason = memo(function LiveSeason({
       {archive && reviewYear === undefined && (
         <p className={s.muted}>아직 마감된 리그 시즌이 없어요.</p>
       )}
-      {page === 'league' && !reviewing && <LeagueScope league={league} onLeague={setLeague} />}
-      {/* Only the tabs stay pinned: a taller pinned band would hide what scrolls up under it. */}
       {page === 'league' && !reviewing && (
         <div className={t.navigation} data-ui="toolbar">
+          <LeagueScope league={league} onLeague={setLeague} />
           <div className={`${s.seasonTabs} ${t.tabs}`} role="tablist" aria-label="리그 보기">
             {visibleTabs.map(([id, label], i) => (
               <button

@@ -21,7 +21,8 @@ import type { GameClient } from '../runtime/client';
 import { Bracket, Club } from './Bracket';
 import { number, seasonName } from './format';
 import { orderIds } from './league';
-import { replaceQuery, TabList, TabPanel, useAddressTab } from './PageTabs';
+import { replaceQuery, TabList, useAddressTab } from './PageTabs';
+import { CompetitionHeader } from './CompetitionTabs';
 import s from './App.module.css';
 import c from './CupsView.module.css';
 
@@ -371,25 +372,54 @@ export function CupsView({
   const lineage = LINEAGES.find((entry) => entry.key === active);
   return (
     <>
-      <TabList
-        tabs={tabs}
-        value={active}
-        onChange={setTab}
-        label="컵 대회"
-        idPrefix="cup-competition"
-        className={`${s.seasonTabs} ${c.tabs}`}
-      />
-      <TabPanel idPrefix="cup-competition" value={active}>
-        <div className={s.recordControls}>
-          <b>
-            {tabs.find(([id]) => id === active)?.[1]} ·{' '}
-            {period === 'current' ? seasonName(w.year) : '지난 시즌·역사'}
-          </b>
+      {period === 'current' ? (
+        <div className={c.navigation} data-ui="toolbar">
+          <CompetitionHeader page="europe">
+            <div className={s.competitionFilters}>
+              <Select aria-label="컵 대회" value={active} onValueChange={setTab}>
+                {tabs.map(([id, name]) => (
+                  <option key={id} value={id}>
+                    {name}
+                  </option>
+                ))}
+              </Select>
+              {active === 'cup' && (
+                <Select aria-label="국내 컵 국가" value={countryCode} onValueChange={setCountry}>
+                  {countries.map(([code, name]) => (
+                    <option key={code} value={code}>
+                      {name}
+                    </option>
+                  ))}
+                </Select>
+              )}
+            </div>
+          </CompetitionHeader>
         </div>
+      ) : (
+        <TabList
+          tabs={tabs}
+          value={active}
+          onChange={setTab}
+          label="컵 대회"
+          idPrefix="cup-competition"
+          className={`${s.seasonTabs} ${c.tabs}`}
+        />
+      )}
+      <div
+        id="cup-competition-panel"
+        role={period === 'current' ? 'region' : 'tabpanel'}
+        aria-label={period === 'current' ? '현재 컵 대회 상세' : undefined}
+        aria-labelledby={period === 'history' ? `cup-competition-tab-${active}` : undefined}
+      >
+        {period === 'history' && (
+          <div className={s.recordControls}>
+            <b>{tabs.find(([id]) => id === active)?.[1]} · 지난 시즌·역사</b>
+          </div>
+        )}
         {period === 'current' && (
           <p className={s.muted}>최근 5시즌 구단 계수 · {number(coefficient)}점</p>
         )}
-        {active === 'cup' && (
+        {period === 'history' && active === 'cup' && (
           <Select aria-label="국내 컵 국가" value={countryCode} onValueChange={setCountry}>
             {countries.map(([code, name]) => (
               <option key={code} value={code}>
@@ -430,7 +460,7 @@ export function CupsView({
             />
           </Suspense>
         )}
-      </TabPanel>
+      </div>
       <p className={s.muted}>
         국가별 참가권, 시드와 추첨은 데모에 맞게 단순화했습니다. 클럽대항전은 9–1월 리그·조별 단계,
         2월부터(조별 단계가 없던 시대는 9월부터) 홈앤드어웨이 토너먼트, 5월 단판 결승으로 치릅니다.

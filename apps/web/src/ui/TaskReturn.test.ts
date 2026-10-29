@@ -4,11 +4,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Page } from './state';
 import type { TaskReturn as ReturnContext } from './taskMemory';
 import { TaskReturn } from './TaskReturn';
+import { returnToTask } from './state';
+import { CompetitionHeader, CompetitionTabs } from './CompetitionTabs';
+import korean from '../../public/presentation/locales/ko-KR.json';
 
 const context = vi.hoisted(() => ({
   page: 'league' as Page,
   address: '/season?competition=league',
   returning: undefined as ReturnContext | undefined,
+  setPage: vi.fn(),
+}));
+vi.mock('../presentation/react', () => ({
+  useLocale: () => ({
+    t: (key: string) => korean.messages[key as keyof typeof korean.messages] ?? key,
+  }),
 }));
 vi.mock('./state', () => ({
   useNavigation: (selector: (state: { page: Page }) => unknown) => selector(context),
@@ -22,6 +31,7 @@ vi.mock('./taskMemory', async (original) => ({
 
 const render = () => renderToStaticMarkup(createElement(TaskReturn));
 beforeEach(() => {
+  vi.clearAllMocks();
   context.page = 'league';
   context.address = '/season?competition=league';
   context.returning = {
@@ -33,6 +43,39 @@ beforeEach(() => {
 });
 
 describe('named competition return', () => {
+  it('keeps the named return accessible in a compact inline header without a hint row', () => {
+    const markup = renderToStaticMarkup(createElement(TaskReturn, { compact: true }));
+    expect(markup).toContain('aria-label="돌아가기 · 클럽 홈"');
+    expect(markup).toContain('>← 돌아가기</button>');
+    expect(markup).not.toContain('<small>');
+    TaskReturn({ compact: true })!.props.children[0].props.onClick();
+    expect(returnToTask).toHaveBeenCalledOnce();
+  });
+
+  it('provides a compact home return when entering a competition without a detour', () => {
+    context.returning = undefined;
+    const markup = renderToStaticMarkup(createElement(TaskReturn, { compact: true }));
+    expect(markup).toContain('aria-label="돌아가기 · 클럽 홈"');
+    TaskReturn({ compact: true })!.props.children[0].props.onClick();
+    expect(context.setPage).toHaveBeenCalledExactlyOnceWith('dashboard');
+    expect(returnToTask).not.toHaveBeenCalled();
+  });
+
+  it('groups return, League/Cup navigation and filters in the same compact header', () => {
+    const markup = renderToStaticMarkup(
+      createElement(CompetitionHeader, {
+        page: 'league',
+        children: createElement('select', { 'aria-label': '국가' }),
+      }),
+    );
+    expect(markup).toContain('aria-label="대회 탐색"');
+    expect(markup).toContain('aria-label="돌아가기 · 클럽 홈"');
+    expect(markup).toContain('role="tablist" aria-label="시즌"');
+    expect(markup).toContain('aria-label="국가"');
+    CompetitionTabs({ page: 'league' })!.props.onChange('europe');
+    expect(context.setPage).toHaveBeenCalledExactlyOnceWith('europe');
+    expect(context.returning?.label).toBe('클럽 홈');
+  });
   it.each([
     ['league', 'europe'],
     ['europe', 'league'],

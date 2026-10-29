@@ -1,3 +1,9 @@
+.navigation {
+  position: sticky;
+  top: 0;
+  z-index: 6;
+  background: var(--surface-grain, none) var(--bg);
+}
 .tabs {
   flex-wrap: nowrap;
   overflow-x: auto;

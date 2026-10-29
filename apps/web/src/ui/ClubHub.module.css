@@ -1,7 +1,7 @@
 .hub {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: 'header' 'competitions' 'links' 'stage' 'state' 'fixture';
+  grid-template-areas: 'header' 'links' 'stage' 'state' 'fixture';
   align-content: start;
   gap: 16px;
   width: 100%;
@@ -596,7 +596,7 @@ button.resources:active:not(:disabled) {
   grid-area: stage;
   min-width: 0;
 }
-/* The season card: round, rank and record over the season-progress rule (→WEB-11). */
+/* The season card: round, rank, record and cups over the season-progress rule (→WEB-11). */
 .seasonCard {
   grid-area: header;
   position: relative;
@@ -607,22 +607,50 @@ button.resources:active:not(:disabled) {
   border-radius: var(--card-radius);
   background: var(--surface-grain, none) var(--surface-deep);
 }
-.seasonCard > .resources {
-  width: auto;
-  gap: 0;
+.seasonSummary {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+  min-width: 0;
   border-bottom: 1px solid var(--line);
 }
-.seasonCard > .resources > div {
+.seasonSummary > .resources {
+  width: auto;
+  min-width: 0;
+  gap: 0;
+}
+.seasonSummary > .resources > div {
   padding: 7px 14px;
 }
-.seasonCard > .resources > div:last-of-type {
-  padding-right: 28px;
-  border-right: 0;
+.cupSummary {
+  display: grid;
+  align-content: center;
+  gap: 1px;
+  min-width: 0;
+  padding: 7px 14px;
+  text-align: start;
+  border: 0;
+  border-left: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--surface-grain, none) var(--surface-deep);
 }
-.seasonCard > .resources .more {
-  top: 50%;
-  right: 6px;
-  transform: translateY(-50%);
+.cupSummary > span,
+.cupSummary > small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: 12px;
+}
+.cupSummary > b {
+  font-family: var(--score);
+  font-size: 32px;
+  line-height: 1.15;
+}
+.cupSummary > b > small {
+  margin-left: 3px;
+  font-family: var(--display);
+  font-size: 12px;
 }
 .seasonCard > .seasonMeter {
   padding: 8px 14px 10px;
@@ -650,10 +678,12 @@ button.resources:active:not(:disabled) {
   grid-column: 1 / -1;
 }
 @media (max-width: 760px) {
-  .seasonCard > .resources > div {
-    padding: 6px 10px;
+  .seasonSummary > .resources > div,
+  .cupSummary {
+    padding: 6px;
   }
-  .seasonCard > .resources b {
+  .seasonSummary > .resources b,
+  .cupSummary > b {
     font-size: 20px;
   }
   .fixtureInfo h3 {
@@ -775,7 +805,6 @@ button.resources:active:not(:disabled) {
 }
 
 .competitions {
-  grid-area: competitions;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   gap: 8px;

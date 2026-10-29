@@ -217,7 +217,14 @@ describe('clubhouse cup facts', () => {
 
   it('does not invent entry or results before a domestic draw', () => {
     expect(currentCupBriefings(world())).toEqual([
-      { key: 'cup', name: '잉글랜드 컵', status: '대진 정보 없음', detail: '', winner: '' },
+      {
+        key: 'cup',
+        name: '잉글랜드 컵',
+        active: false,
+        status: '대진 정보 없음',
+        detail: '',
+        winner: '',
+      },
     ]);
   });
   it('labels a retained field without our club as not entered', () => {
@@ -226,6 +233,7 @@ describe('clubhouse cup facts', () => {
     c.clubs = ['rival'];
     w.cups = [c];
     expect(currentCupBriefings(w)[0].status).toBe('미참가');
+    expect(currentCupBriefings(w)[0].active).toBe(true);
   });
   it('reports the next retained tie with its actual opponent and home orientation', () => {
     const w = world();
@@ -247,6 +255,7 @@ describe('clubhouse cup facts', () => {
     c.fixtures[0].score = { home: winner === 'own' ? 2 : 0, away: 1 };
     expect(currentCupBriefings(w)[0]).toMatchObject({
       status: winner === 'own' ? '우승' : '결승 탈락',
+      active: false,
       winner: `대회 우승 · ${winner === 'own' ? 'Own FC' : 'Rival FC'}`,
       detail: expect.stringContaining('최근 Own FC'),
     });

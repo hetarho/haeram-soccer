@@ -551,8 +551,8 @@ html[data-theme] {
     letter-spacing: 0;
   }
 
-  [data-home-part='season-stats'] {
-    margin: 6px 6px 0;
+  :is([data-home-part='season-stats'], [data-home-part='cup-summary']) {
+    margin: 0;
     gap: 0;
     border: 0;
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
@@ -568,21 +568,24 @@ html[data-theme] {
     background: none;
   }
 
-  [data-home-part='season-stats'] > div:last-of-type {
-    padding-right: 30px;
+  [data-home-part='cup-summary'] {
+    padding: 14px 10px;
+    background:
+      var(--image-art-rule-light-vertical) left center / 2px calc(100% - 20px) no-repeat,
+      var(--image-dark-material) repeat var(--image-dark-fill, var(--image-ink-color));
   }
 
   [data-home-part='season-stats'] > div + div {
     background: var(--image-art-rule-light-vertical) left center / 2px calc(100% - 20px) no-repeat;
   }
 
-  [data-home-part='season-stats'] span,
-  [data-home-part='season-stats'] small {
+  :is([data-home-part='season-stats'], [data-home-part='cup-summary']) span,
+  :is([data-home-part='season-stats'], [data-home-part='cup-summary']) small {
     color: var(--image-on-dark);
     font-size: 13px;
   }
 
-  [data-home-part='season-stats'] b,
+  :is([data-home-part='season-stats'], [data-home-part='cup-summary']) b,
   [data-home-part='season-stats'] b > span {
     font-size: 28px;
     font-weight: 800;
@@ -590,7 +593,7 @@ html[data-theme] {
     line-height: 1.1;
   }
 
-  [data-home-part='season-stats'] b > small {
+  :is([data-home-part='season-stats'], [data-home-part='cup-summary']) b > small {
     margin-left: 3px;
     font-size: 15px;
     font-weight: 500;
@@ -1032,23 +1035,26 @@ html[data-theme] {
       bottom: 12px;
       right: 12px;
     }
-    [data-home-part='season-stats'] {
-      margin: 6px 6px 0;
+    :is([data-home-part='season-stats'], [data-home-part='cup-summary']) {
+      margin: 0;
+    }
+    [data-home-part='cup-summary'] {
+      padding: 14px 6px;
     }
     [data-home-part='season-stats'] > div {
-      padding: 6px 10px;
+      padding: 6px;
       gap: 2px;
     }
-    [data-home-part='season-stats'] span {
+    :is([data-home-part='season-stats'], [data-home-part='cup-summary']) span {
       font-size: var(--image-caption-size, 10px);
       white-space: nowrap;
     }
-    [data-home-part='season-stats'] b,
+    :is([data-home-part='season-stats'], [data-home-part='cup-summary']) b,
     [data-home-part='season-stats'] b > span {
       font-size: 24px;
       letter-spacing: -0.7px;
     }
-    [data-home-part='season-stats'] b > small {
+    :is([data-home-part='season-stats'], [data-home-part='cup-summary']) b > small {
       font-size: var(--image-caption-size, 10px);
       margin-left: 1px;
     }

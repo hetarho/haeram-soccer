@@ -47,6 +47,10 @@ Keep semantic status colours separate from action priority: a destructive action
 result and a selected option have different meanings. Also distinguish button roles from the
 existing `secondary-fill` surface tokens used by headers and the progression controller.
 
+When an applied choice uses an explicit secondary or tertiary role, preserve that role's filled
+artwork and contrasting text through the pressed state. Generic selection-frame rules must not
+replace it with an outline. Keep unapplied choices quiet and retain `aria-pressed` for access.
+
 Rating tiers are a separate ordered value scale. Their background and frame can change together
 to identify rarity, while the live number stays readable. Do not reuse that colourful scale as
 the definition of button priority. The current Matchday Print treatment and regeneration recipe
@@ -92,6 +96,10 @@ When a table scrolls under pinned columns, keep the pinned surface opaque and sh
 depth/edge resource at its trailing boundary after scrolling starts. Hide that cue at the origin
 or when the pinned layout is inactive, and keep it pointer-transparent. Legends and footer
 controls belong outside the horizontal scroller so they remain readable while data moves.
+
+Related pinned controls share one opaque material plane and one sticky position. Put a compact
+return, competition filters and view tabs inside that plane; separate sticky rows with fixed
+offsets or margins can expose scrolling table rows between them when content wraps.
 
 ### Neutral material planes
 

@@ -4,14 +4,13 @@
 }
 /* League tabs stay reachable while long tables below them scroll. */
 .navigation {
-  margin-bottom: 4px;
+  margin-bottom: 0;
   position: sticky;
-  top: var(--task-offset, -2px);
+  top: 0;
   z-index: 6;
   padding: 0;
-  /* Near-opaque like the HUD: a backdrop blur or mask over the fixed page background re-rasters
-     the whole band on every league visit, about 20 times the cost of any other tab. */
-  background: var(--surface-grain, none) var(--hud);
+  /* One opaque surface owns the return, scope and tabs while the table scrolls beneath it. */
+  background: var(--surface-grain, none) var(--bg);
   box-shadow: none;
 }
 .tabs {
@@ -159,12 +158,6 @@
   background: var(--surface-grain, none) var(--accent-fill);
 }
 @media (max-width: 760px) {
-  .navigation {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    margin-bottom: 5px;
-  }
   .seasonPicker {
     margin-bottom: 4px;
   }

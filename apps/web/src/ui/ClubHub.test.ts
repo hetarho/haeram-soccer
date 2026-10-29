@@ -8,6 +8,12 @@ import { gameStore, initialClientState } from '../runtime/store';
 import { NextMatchCard, SeasonCard, TeamState, CupBriefing } from './ClubHub';
 import korean from '../../public/presentation/locales/ko-KR.json';
 import { cashState, teamStates, type TeamStateItem } from './teamState';
+import { openCupSeason } from './state';
+
+vi.mock('./state', async (original) => ({
+  ...(await original<typeof import('./state')>()),
+  openCupSeason: vi.fn(),
+}));
 
 vi.mock('../presentation/react', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../presentation/react')>()),
@@ -43,7 +49,7 @@ const world = () =>
     playerClub: 'own',
     tactic: 'balanced',
     clubs: [
-      { id: 'own', name: 'Our Club', color: '#225588' },
+      { id: 'own', name: 'Our Club', country: 'ENG', color: '#225588' },
       { id: 'opponent', name: 'A Very Long Opponent Athletic Club', color: '#aa5533' },
     ],
     fixtures: [{ id: 'next', year: 1950, round: 1, kind: 'league', home: 'own', away: 'opponent' }],
@@ -154,6 +160,41 @@ describe('home season card', () => {
     expect(markup).not.toContain('data-testid="game-round-total"');
     expect(markup).toContain('라운드');
   });
+
+  it('reserves one separate cup slot and counts retained unfinished competitions only', () => {
+    const w = lower();
+    w.cups = [
+      {
+        country: 'ENG',
+        name: 'Domestic Cup',
+        clubs: ['own'],
+        fixtures: [],
+        rounds: [],
+      },
+    ] as unknown as World['cups'];
+    w.europe = [
+      { key: 'ucl', name: 'European Cup', clubs: [], fixtures: [], rounds: [] },
+      {
+        key: 'uel',
+        name: 'Completed Cup',
+        clubs: ['own'],
+        fixtures: [],
+        rounds: [],
+        winner: 'own',
+      },
+    ] as unknown as World['europe'];
+    const markup = renderToStaticMarkup(
+      createElement(SeasonCard, { w, active: true, onOpen: vi.fn() }),
+    );
+    const cups = markup.match(
+      /<button[^>]*aria-label="현재 컵 대회 모아보기"[^>]*>.*?<\/button>/,
+    )?.[0];
+    expect(cups).toContain('aria-haspopup="dialog"');
+    expect(cups).toContain('<b>2<small>개</small></b>');
+    expect(markup.match(/<button/g)).toHaveLength(2);
+    expect(markup).not.toContain('European Cup 현재 대회 보기');
+    expect(render(true)).toContain('진행 중 없음');
+  });
 });
 
 describe('home condition warnings', () => {
@@ -241,6 +282,21 @@ describe('home condition warnings', () => {
 });
 
 describe('current competition briefing markup', () => {
+  it('closes the originating overview before opening the exact cup and season', () => {
+    const w = world();
+    w.europe = [
+      { key: 'ucl', name: 'European Cup', clubs: [], fixtures: [], rounds: [] },
+    ] as unknown as World['europe'];
+    const close = vi.fn();
+    const overview = CupBriefing({ w, onOpen: close });
+    const entries = overview.props.children;
+    entries[1].props.onClick();
+    expect(close).toHaveBeenCalledOnce();
+    expect(openCupSeason).toHaveBeenCalledWith(w.year, 'ucl', w.year);
+    expect(close.mock.invocationCallOrder[0]).toBeLessThan(
+      vi.mocked(openCupSeason).mock.invocationCallOrder[0],
+    );
+  });
   it('names each precise competition and its actual participation state', () => {
     const w = world();
     w.clubs[0].country = 'ENG';

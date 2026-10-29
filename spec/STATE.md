@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| u6c4 | hq-dev1-pve2-vm2 | pair | 2026-10-29T08:53Z | 2026-10-29T08:53Z | - |
+| u6c4 | hq-dev1-pve2-vm2 | pair | 2026-10-29T08:53Z | 2026-10-29T08:53Z | T594 |
 
 ## inbox
 - 261029 decided MATCH-31 T580: the acceptance read the receiver rule only where nobody reaches the pass's path, but near the box almost every path is reached (central ≤18 m passes: 2,372 of 2,572 on grid-bands 50) and 39% of the losses there came with nobody within 3 m of the receiver → every failed pass not cut out or deflected is read at its receiver, a reached path keeping its interception / deflection share (MATCH-31 r42's wording): such losses at a free receiver go to none, lost with nobody within 3 m 6.8% → 3.2% of those passes (alt: the no-reach branch only, as the impl note read — 6.3%, unchanged).
@@ -401,7 +401,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T594 | Compact competition header and home cups | WEB ARCH | - | todo |
+| T594 | Compact competition header and home cups | WEB ARCH | - | doing@261029.u6c4 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -449,5 +449,3 @@
 - 261029 T585 done: four image hierarchy resources (6240 bytes), compact Panel/Attributes spacing and quiet table/tab treatments; type/lint, 53 units, art/presentation checks, format, build and actual desktop/mobile rendering pass.
 - 261029 WEB r176 and T585 start: resource-backed tab/panel/table hierarchy, compact spacing and shared design guidance.
 - 261029 WEB r175 documentation only (no code task): shared design guide, print source notes and web AGENTS/README discovery; 37 local links, scoped formatting and diff checks pass; palette proposal remains unapplied.
-- 261029 update-ssot WEB and shared design-system documentation start: preserve reusable decisions and distinguish working artwork from proposals.
-- 261029 T584 done: seven generated portable control skins (21,912 bytes), native stretch metadata, source/prompt/provenance and actual UI wiring; type/lint, 49 units, art checks, format, build and manual rendering verified.

@@ -3,6 +3,7 @@ import { openCups, openLeague } from './competition-navigation';
 import { watchNext } from './watch';
 import { advanceOneRound } from './season-progression';
 import { delegateSales } from './events';
+import { chooseOption } from './select';
 import { expect, test } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
 test('serves a real static application entry', async ({ page }) => {
@@ -45,7 +46,7 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await expect(page.getByText('유효 슈팅', { exact: true })).toBeVisible();
   await openCups(page);
-  await page.getByRole('tab', { name: 'European Cup', exact: true }).click();
+  await chooseOption(page.getByRole('combobox', { name: '컵 대회', exact: true }), 'ucl');
   await expect(page.getByText('1955/56 시즌에 창설돼요.', { exact: true })).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   const mobileMenu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });

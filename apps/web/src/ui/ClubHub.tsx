@@ -17,7 +17,6 @@ import { Dialog } from './Dialog';
 import s from './ClubHub.module.css';
 import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';
 import { FacilityArt } from './FacilityArt';
-import { PixelIcon } from './PixelIcon';
 import { CashAlarm } from './CashAlarm';
 
 export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => void }) {
@@ -163,7 +162,7 @@ function ClubScene({ w }: { w: World }) {
   );
 }
 
-export function CupBriefing({ w }: { w: World }) {
+export function CupBriefing({ w, onOpen }: { w: World; onOpen?: () => void }) {
   return (
     <section className={s.competitions} aria-label="현재 컵 대회">
       {currentCupBriefings(w).map((cup) => (
@@ -171,7 +170,10 @@ export function CupBriefing({ w }: { w: World }) {
           key={cup.key}
           data-ui="link"
           aria-label={`${cup.name} 현재 대회 보기`}
-          onClick={() => openCupSeason(w.year, cup.key, w.year)}
+          onClick={() => {
+            onOpen?.();
+            openCupSeason(w.year, cup.key, w.year);
+          }}
         >
           <b>{cup.name}</b>
           <span>{cup.status}</span>
@@ -186,7 +188,7 @@ export function CupBriefing({ w }: { w: World }) {
 /**
  * Where this season stands (→WEB-11): our division's round, our rank and the record change only
  * when a round is played, so they read together above the season-progress rule. Only the card
- * on screen carries the round's test ids; the information row shows the round everywhere else.
+ * on screen carries the round's test ids. Cups occupy one slot and open their current overview.
  */
 export function SeasonCard({
   w,
@@ -197,74 +199,102 @@ export function SeasonCard({
   active: boolean;
   onOpen: () => void;
 }) {
+  const [cupsOpen, setCupsOpen] = useState(false);
+  useEffect(() => {
+    if (!active) setCupsOpen(false);
+  }, [active]);
   const club = clubOf(w);
   const table = w.tables[w.playerClub];
   const ids = orderIds(ownLeagueIds(w), w.tables),
     played = !!table?.played,
     rank = ids.indexOf(w.playerClub) + 1;
   const round = ownDivisionRound(w);
+  const cupCount = currentCupBriefings(w).filter((cup) => cup.active).length;
   const progress = Math.min(
     100,
     Math.max(0, Math.round((currentDay(w) / Math.max(1, seasonLength(w))) * 100)),
   );
   return (
     <section className={s.seasonCard} data-home-part="season-card" aria-label="이번 시즌">
-      <button
-        className={s.resources}
-        data-home-part="season-stats"
-        aria-label="현재 리그 보기"
-        aria-describedby="hub-stats-hint"
-        onClick={(event) => {
-          event.currentTarget.focus();
-          onOpen();
-        }}
-      >
-        <span id="hub-stats-hint" className={s.srOnly}>
-          현재 우리 리그의 순위표를 열어요
-        </span>
-        <div aria-label={`우리 리그 ${round.total}라운드 중 ${round.played}라운드`}>
-          <span>라운드</span>
+      <div className={s.seasonSummary}>
+        <button
+          className={s.resources}
+          data-home-part="season-stats"
+          aria-label="현재 리그 보기"
+          aria-describedby="hub-stats-hint"
+          onClick={(event) => {
+            event.currentTarget.focus();
+            onOpen();
+          }}
+        >
+          <span id="hub-stats-hint" className={s.srOnly}>
+            현재 우리 리그의 순위표를 열어요
+          </span>
+          <div aria-label={`우리 리그 ${round.total}라운드 중 ${round.played}라운드`}>
+            <span>라운드</span>
+            <b>
+              <span
+                key={round.played}
+                className={s.bump}
+                data-testid={active ? 'game-round' : undefined}
+              >
+                {round.played}
+              </span>
+              <small data-testid={active ? 'game-round-total' : undefined}>/ {round.total}</small>
+            </b>
+            <small>{round.total - round.played}라운드 남음</small>
+          </div>
+          <div>
+            <span>리그 순위</span>
+            <b data-testid="hub-rank">
+              <span key={played ? rank : '-'} className={s.bump}>
+                {played ? rank : '—'}
+              </span>
+              <small>/{ids.length}위</small>
+            </b>
+            <small>
+              {w.lower ? '아마추어 리그' : divisionName(club.country, club.tier, club.group)}
+            </small>
+          </div>
+          <div>
+            <span>시즌 전적</span>
+            <b data-testid="hub-record">
+              <span key={table ? table.played : 0} className={s.bump}>
+                {table ? `${table.won}-${table.drawn}-${table.lost}` : '0-0-0'}
+              </span>
+            </b>
+            <small>승점 {table?.points ?? 0}</small>
+          </div>
+        </button>
+        <button
+          className={s.cupSummary}
+          data-home-part="cup-summary"
+          aria-label="현재 컵 대회 모아보기"
+          aria-haspopup="dialog"
+          onClick={(event) => {
+            event.currentTarget.focus();
+            setCupsOpen(true);
+          }}
+        >
+          <span>컵 대회</span>
           <b>
-            <span
-              key={round.played}
-              className={s.bump}
-              data-testid={active ? 'game-round' : undefined}
-            >
-              {round.played}
-            </span>
-            <small data-testid={active ? 'game-round-total' : undefined}>/ {round.total}</small>
+            {cupCount}
+            <small>개</small>
           </b>
-          <small>{round.total - round.played}라운드 남음</small>
-        </div>
-        <div>
-          <span>리그 순위</span>
-          <b data-testid="hub-rank">
-            <span key={played ? rank : '-'} className={s.bump}>
-              {played ? rank : '—'}
-            </span>
-            <small>/{ids.length}위</small>
-          </b>
-          <small>
-            {w.lower ? '아마추어 리그' : divisionName(club.country, club.tier, club.group)}
-          </small>
-        </div>
-        <div>
-          <span>시즌 전적</span>
-          <b data-testid="hub-record">
-            <span key={table ? table.played : 0} className={s.bump}>
-              {table ? `${table.won}-${table.drawn}-${table.lost}` : '0-0-0'}
-            </span>
-          </b>
-          <small>승점 {table?.points ?? 0}</small>
-        </div>
-        <PixelIcon name="chevronRight" size={14} className={s.more} />
-      </button>
+          <small>{cupCount ? '진행 중 · 전체 보기' : '진행 중 없음'}</small>
+        </button>
+      </div>
       <div className={s.seasonMeter} data-home-part="season-meter">
         <span>
           시즌 진행률 <b>{progress}%</b>
         </span>
         <progress aria-label="시즌 진행률" value={progress} max={100} />
       </div>
+      {cupsOpen && active && (
+        <Dialog label="현재 컵 대회 모아보기" centered wide onClose={() => setCupsOpen(false)}>
+          <CupBriefing w={w} onOpen={() => setCupsOpen(false)} />
+        </Dialog>
+      )}
     </section>
   );
 }
@@ -296,7 +326,6 @@ export function ClubHub({
       aria-label="클럽 키우기"
     >
       <SeasonCard w={w} active={!away} onOpen={() => openLeagueSeason(w.year, w.year)} />
-      <CupBriefing w={w} />
       <div className={s.clubLinks}>
         <button
           data-ui="link"
