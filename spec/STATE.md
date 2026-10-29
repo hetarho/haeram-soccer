@@ -419,6 +419,7 @@
 - batch gate on the integrated candidate (tests/e2e/lab.spec.ts with T578's 관전 journey included), then push main.
 
 ## log
+- 261029 fix lab watch layout: the match view's App styles pin html/body with no scroll — the lab page scrolls again (scoped by `:has(.page)`), the watch view is capped to fit one screen and scrolls into view on a new playback; checked at 1920×1080.
 - 261029 T578 done: /lab 관전 plays match 0 of its seed in the lab worker and shows it in the game's unchanged Pitch inside the shared presentation; 다시 보기/새 경기; typecheck, lint, tracked formatting, 43 affected unit tests and build pass; lab.spec.ts left to the batch run.
 - 261029 update-ssot LAB r4 + create-task T578: 관전 in the game's own match view is the lab's main use (LAB-9 resolved); N-match runs stay second (LAB-10).
 - 261029 revert ECON r40/T577: the lb29 loop took the parked F6 runway finding after the lab tasks; the owner says it is unrelated to the lab request, so F6 stays parked (uncommitted T577 work saved outside the repo, not applied).

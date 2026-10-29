@@ -2,6 +2,19 @@
  * The lab's own panels in the game's theme tokens (the page body comes from the game's App styles).
  * Control and heading rules stop at the match view, which keeps the game's look untouched (→LAB-9).
  */
+/*
+ * The game's App styles (pulled in with the match view) pin html and body to the viewport with no
+ * scroll, since the game scrolls inside its own frame; the lab page scrolls as a document again.
+ * Scoped by `:has(.page)` so it only ever applies while the lab page is mounted.
+ */
+:global(html):has(.page),
+:global(html):has(.page) :global(body) {
+  height: auto;
+  min-height: 100%;
+  overflow: auto;
+  overscroll-behavior: auto;
+}
+
 .page {
   box-sizing: border-box;
   max-width: 1600px;
@@ -87,8 +100,17 @@
   gap: 12px;
 }
 
+/*
+ * The match view keeps its own proportions (the pitch is about 1.9 times as wide as it is tall);
+ * capping its width keeps the scoreboard, speed row and whole pitch inside one screen (about 160px
+ * of scoreboard and speed row above the pitch, plus a small margin).
+ */
 .watchView {
   min-width: 0;
+  width: 100%;
+  max-width: max(560px, calc((100dvh - 190px) * 1.9));
+  margin-inline: auto;
+  scroll-margin-top: 8px;
 }
 
 .columns {

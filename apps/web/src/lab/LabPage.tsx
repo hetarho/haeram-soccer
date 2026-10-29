@@ -678,6 +678,11 @@ export function LabPage() {
   }>();
   const [watching, setWatching] = useState<string>();
   const watchKey = useRef(0);
+  const watchView = useRef<HTMLDivElement>(null);
+  // A new playback brings the whole match view into the screen.
+  useEffect(() => {
+    if (watched) watchView.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }, [watched?.key]);
   const pool = useRef<LabPool | undefined>(undefined);
   const initial = useRef(state);
 
@@ -933,7 +938,7 @@ export function LabPage() {
           </span>
         </div>
         {watched && (
-          <div className={styles.watchView}>
+          <div className={styles.watchView} ref={watchView}>
             <Pitch
               key={watched.key}
               playback={watched.playback}
