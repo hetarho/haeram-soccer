@@ -439,6 +439,7 @@
 - Engine explorations retain their fixed candidate corpus and compatibility rules; goal replay reads retained presentation facts and restores the original watch state without simulation or save changes.
 
 ## log
+- 261030 refresh untouched T597/T598 bases to WEB r185; goal replay remains T601, and the T600 exit roadmap includes the added owner request.
 - 261030 create-task T601: WEB r185 goal-scene replay; depends on T600, with exact live/archive return and no unseen live-goal disclosure.
 - 261030 update-ssot WEB r185 start/done: owner adds goal-scene replay; planning leaves the active engine implementation untouched.
 - 261030 update-ssot MATCH r44 + create-task: T596 diagnosed (2 stale revision-9 scenes, 2 second-ball defects) and rescoped to open revision 10; T599/T600 extend it.
@@ -458,4 +459,3 @@
 - 261029 WEB r181, T590 start and T591 planned: improve analysis/formation visuals and primary emphasis; audit every shared UI consumer and apply missing roles.
 - 261029 T588/T589 done: brighter actual rating resources and a scroll-dependent pinned-column shadow with stationary table legend; 41 units, type/lint/format, art/presentation checks, build and actual desktop/mobile inspection pass.
 - 261029 WEB r180 and T589 start alongside T588: resource-backed shadow separates fixed columns only after horizontal scrolling.
-- 261029 WEB r179 and T588 start: brighten actual iron/bronze/elite artwork to distinguish compact ratings at button-like brightness.
