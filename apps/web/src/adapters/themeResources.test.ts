@@ -19,9 +19,14 @@ function theme(id = 'pixel') {
 }
 
 function skinImages(resolver: ReturnType<typeof theme>) {
-  return Object.values(resolver.uiImages)
-    .filter((image) => image.preload !== false)
-    .map((image) => image.resource);
+  // Multiple semantic roles can intentionally share one material and one staged request.
+  return [
+    ...new Set(
+      Object.values(resolver.uiImages)
+        .filter((image) => image.preload !== false)
+        .map((image) => image.resource),
+    ),
+  ];
 }
 
 function memoryPorts() {
