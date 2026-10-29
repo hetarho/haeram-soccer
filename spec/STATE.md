@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| lb29 | hq-dev1-pve2-vm2 | autopilot | 2026-10-29T01:21Z | 2026-10-29T01:21Z | - |
 
 ## inbox
 - 261029 decided ECON-35 ECON-33 ECON-20 T577 review/outside-t216-t255-261019: which runway arithmetic the six copies (floored per-round cost × N in signings, contracts and staff; ⌊cash × 46 / annual⌋ in recruitment, investment and sale bars; next-round charge in the cash warning) share → the exact one, cash × 46 ≥ N × yearly fixed costs, with ⌊C × 46 / A⌋ rounds and C − ⌈N × A / 46⌉ above the runway, from one engine read leaf (alt: floored per-round cost × N everywhere | keep the cash warning on the next round's charge); both forms agree but at the limit, the exact one is the only one where "runway below N" and "does not cover N" never disagree, and the warning then matches the HUD alarm.
