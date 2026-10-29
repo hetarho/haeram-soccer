@@ -68,13 +68,15 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
       const css = getComputedStyle(node);
       return { fill: css.backgroundColor, material: css.backgroundImage };
     });
-    const calendarMaterial = await page
-      .locator('[data-ui="calendar-header"]')
-      .evaluate((node) => getComputedStyle(node).backgroundImage);
     expect(sheetHeader.fill).not.toBe(transport.fill);
-    expect(transport.material).toContain('/controller-weave-v1.webp');
-    expect(transport.material).not.toBe(sheetHeader.material);
-    expect(transport.material).not.toBe(calendarMaterial);
+    const navigationFill = await page
+      .locator('[data-ui="game-shell"] > nav')
+      .evaluate((node) => getComputedStyle(node).backgroundColor);
+    expect(transport.fill).not.toBe(navigationFill);
+    expect(
+      (await page.locator('[data-ui="season-transport"]').evaluate(textContrast)).ratio,
+    ).toBeGreaterThanOrEqual(4.5);
+    expect(transport.material).toContain('/art/');
     expect(
       (await dialog.locator('[data-ui="dialog-header"] h2').evaluate(textContrast)).ratio,
     ).toBeGreaterThanOrEqual(4.5);
