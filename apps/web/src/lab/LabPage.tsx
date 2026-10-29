@@ -10,6 +10,7 @@ import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import type { MatchPlayback, Tactic, World } from '../../../../packages/contracts/src/types';
 import { Pitch } from '../ui/Pitch';
 import catalogJson from './tunables.json';
+import koJson from './tunables.ko.json';
 import { LabPool, type LabRun } from './pool';
 import type { LabSide, LabSideIndex } from './protocol';
 import type { Estimate, RunSummary, SideRow, TargetRow } from './summary';
@@ -37,6 +38,8 @@ import {
 import styles from './LabPage.module.css';
 
 const catalog = catalogJson as Catalog;
+/** Each group's and value's Korean description, written from the code that reads it (→LAB-3). */
+const KO = koJson as { groups: Record<string, string>; leaves: Record<string, string> };
 const LEAVES = catalog.groups.flatMap((g) => g.leaves);
 const SIDE_NAMES = ['좌측 팀', '우측 팀'] as const;
 /**
@@ -224,7 +227,10 @@ function ValuesPanel(props: {
   const changed = Object.keys(overrides).length;
   const visible = (leaf: CatalogLeaf) =>
     (!reads || showUnread || reads.has(leaf.path) || leaf.path in overrides) &&
-    (!q || leaf.path.toLowerCase().includes(q) || leaf.comment.toLowerCase().includes(q));
+    (!q ||
+      leaf.path.toLowerCase().includes(q) ||
+      (KO.leaves[leaf.path] ?? '').toLowerCase().includes(q) ||
+      leaf.comment.toLowerCase().includes(q));
   const unread = reads ? LEAVES.filter((l) => !reads.has(l.path)).length : 0;
   const reset = (paths: string[]) => {
     const next = { ...overrides };
@@ -305,6 +311,9 @@ function ValuesPanel(props: {
                   <span className={styles.muted}>
                     {leaves.length}개{groupChanged.length ? ` · 변경 ${groupChanged.length}` : ''}
                   </span>
+                  {KO.groups[group.name] && (
+                    <span className={styles.groupDescription}>{KO.groups[group.name]}</span>
+                  )}
                   {PAGE_READ_GROUPS.has(group.name) && (
                     <span
                       className={styles.badge}
@@ -333,6 +342,9 @@ function ValuesPanel(props: {
                           <code>{leaf.path}</code>
                           {isChanged && <span className={styles.badge}>변경</span>}
                         </div>
+                        {KO.leaves[leaf.path] && (
+                          <p className={styles.description}>{KO.leaves[leaf.path]}</p>
+                        )}
                         {leaf.comment && (
                           <p className={styles.comment} title={leaf.comment}>
                             {leaf.comment}

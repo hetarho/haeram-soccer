@@ -1,5 +1,5 @@
 # LAB Match lab
-> r4 | Let the owner watch generated sides play in the game's own match view, change the detailed engine's numbers and see by eye — and by the numbers — what each change does to the football.
+> r5 | Let the owner watch generated sides play in the game's own match view, change the detailed engine's numbers and see by eye — and by the numbers — what each change does to the football.
 
 ## decisions
 - LAB-1 [o] The match lab is an owner's tool outside the game. ← tuning needs quick what-if runs without a career, a save or a script
@@ -14,7 +14,8 @@
   - every generation takes a seed shown with the side; the same seed and inputs give the same players.
   - both sides start as a club nobody owns would: no injury, full adaptation, no manager, morale or 조직력 term and no club style or synergy bend; fatigue 0, except that a pressing side carries the press load such a club carries (→MATCH-23's measurements play the same).
 - LAB-3 [o] The tunable numbers are every numeric value of the detailed engine's configuration objects (the grid engine's `*_CONFIG` exports) as the latest release revision reads them.
-  - grouped by configuration object, each value shows its code path, its code comment where one exists, its default and the current value; changed values are marked.
+  - grouped by configuration object, each value shows its code path, a Korean description of what it controls — its unit, and what raising or lowering it does in play — written from the code that reads it, its default and the current value; changed values are marked. The code comment stays available beside it. Every value and every group has a description; a value added to the engine without one fails the lab's tests.
+  - the search also matches the Korean descriptions.
   - a search filters values by path or comment; a value resets alone, a group resets, everything resets.
   - only finite numbers are editable; non-numeric settings are not shown.
   - the changed values export as JSON (path → value) for copying and import from the same JSON; an unknown path or non-number is reported and skipped. Adopting a value into the game is an ordinary planning/task change, never a lab action.
@@ -56,3 +57,4 @@
 - r2 261029 LAB-2✎ a player's own OVR 1–99 → 20–92
 - r3 261029 LAB-2✎ fresh sides with no fatigue → a pressing side carries a club nobody owns' press load
 - r4 261029 LAB-9✎ [?] playback → [o] 관전 in the game's own match view as the main use; LAB-8✎ drops "shows no match playback"; LAB-10+ N-match runs as the second use
+- r5 261029 LAB-3✎ code comment where one exists → a Korean description for every value and group, searchable

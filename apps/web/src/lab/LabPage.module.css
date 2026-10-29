@@ -248,6 +248,7 @@
 .groupToggle {
   flex: 1;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 8px;
   text-align: left;
@@ -281,6 +282,21 @@
   gap: 8px;
 }
 
+.description {
+  margin: 2px 0;
+  font-size: 0.92em;
+  line-height: 1.45;
+}
+
+.groupDescription {
+  flex-basis: 100%;
+  color: var(--text-muted);
+  font-size: 0.85em;
+  text-align: start;
+  font-weight: normal;
+}
+
+/* The code's own (English) comment, secondary to the Korean description. */
 .comment {
   margin: 2px 0 4px;
   color: var(--text-muted);
