@@ -13,7 +13,8 @@ import {
   labStarterAverage,
   setLabPlayerOvr,
 } from './sides';
-import { createLabWorld, labFixture, leftAtHome } from './match';
+import { createWorld } from '../founding';
+import { createLabWorld, labFixture, leftAtHome, playLabMatch, watchLabMatch } from './match';
 
 const input = {
   side: 0 as const,
@@ -110,5 +111,32 @@ describe('lab setup', () => {
     expect(setup.multiplier.map((m, side) => m(setup.rosters[side]![0]!))).toEqual([1, 1]);
     expect(setup.tendencies?.[1]).toHaveLength(right.players.length);
     expect(labFixture(lab, 'setup', 1).home).toBe(f.away);
+  });
+
+  it('hosts are named left and right', () => {
+    expect(lab.hosts.map((c) => c.name)).toEqual(['좌측 팀', '우측 팀']);
+    // Names only: the clubs keep their ids and kits, so nothing a match plays changes.
+    const plain = createWorld({
+      country: 'ENG',
+      name: 'Match Lab',
+      color: '#2a5d8f',
+      seed: 'lab-world',
+      level: 'normal',
+    });
+    const before = plain.clubs.filter((c) => lab.hosts.some((h) => h.id === c.id));
+    expect(before.map((c) => c.id)).toEqual(lab.hosts.map((c) => c.id));
+    before.forEach((c, i) => expect({ ...lab.hosts[i]!, name: c.name, short: c.short }).toEqual(c));
+  });
+
+  it('watched match equals the unobserved one', { timeout: 120_000 }, () => {
+    const sides = [
+      generateLabSide({ ...input, tactic: 'balanced', average: 72, spread: 4 }),
+      generateLabSide({ ...input, side: 1, tactic: 'counter', average: 72, spread: 4 }),
+    ] as const;
+    const watched = watchLabMatch(lab, sides, 'watch');
+    expect(watched.record).toEqual(playLabMatch(lab, sides, 'watch', 0).record);
+    expect(watched.record.home).toBe(lab.hosts[0].id);
+    expect(watched.frames.length).toBeGreaterThan(90);
+    expect(watched.squads).toEqual([sides[0].players, sides[1].players]);
   });
 });

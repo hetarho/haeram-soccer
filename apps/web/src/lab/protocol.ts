@@ -4,7 +4,7 @@
  */
 import type { MatchSample } from '../../../../scripts/lib/match-parity';
 import type { LabSide, LabSideIndex } from '../../../../packages/engine/src/lab/sides';
-import type { Tactic } from '../../../../packages/contracts/src/types';
+import type { MatchPlayback, Tactic, World } from '../../../../packages/contracts/src/types';
 import type { RunSummary } from './summary';
 
 export type { RunSummary };
@@ -61,7 +61,17 @@ export type LabRequest =
       index: number;
       ovr: number;
     }
-  | { type: 'summarize'; runId: number; samples: LabSample[]; sides: [LabSide, LabSide] };
+  | { type: 'summarize'; runId: number; samples: LabSample[]; sides: [LabSide, LabSide] }
+  /** 관전 (→LAB-9): match 0 of `seed` with its frames, under `overrides`. */
+  | {
+      type: 'watch';
+      requestId: number;
+      seed: string;
+      sides: [LabSide, LabSide];
+      overrides: Overrides;
+    }
+  /** The lab world the match view reads clubs and managers from. */
+  | { type: 'world'; requestId: number };
 
 export type LabReply =
   | { type: 'progress'; runId: number; done: number }
@@ -70,11 +80,13 @@ export type LabReply =
       type: 'failed';
       /** -1 for a request outside a run. */
       runId: number;
-      /** The `generate`/`setOvr` request that failed. */
+      /** The `generate`/`setOvr`/`watch`/`world` request that failed. */
       requestId?: number;
       message: string;
       rejected?: RejectedOverride[];
     }
   | { type: 'reads'; paths: string[] }
   | { type: 'side'; requestId: number; side: LabSide }
-  | { type: 'summary'; runId: number; summary: RunSummary };
+  | { type: 'summary'; runId: number; summary: RunSummary }
+  | { type: 'playback'; requestId: number; playback: MatchPlayback }
+  | { type: 'world'; requestId: number; world: World };

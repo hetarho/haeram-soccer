@@ -1,6 +1,6 @@
 /**
- * The lab worker's engine side (→LAB-4): one lab world per worker, overrides applied for a slice of
- * a run and restored after it, each match a sample the summary reads. Only lab workers and tests
+ * The lab worker's engine side (→LAB-4, LAB-9): one lab world per worker, overrides applied for a
+ * slice of a run or a watched match and restored after it, each run match a sample the summary reads. Only lab workers and tests
  * import this — it reaches grid execution.
  */
 import {
@@ -12,8 +12,10 @@ import {
   createLabWorld,
   leftAtHome,
   playLabMatch,
+  watchLabMatch,
   type LabWorld,
 } from '../../../../packages/engine/src/lab/match';
+import type { MatchPlayback } from '../../../../packages/contracts/src/types';
 import {
   generateLabSide,
   labSideFromOvrs,
@@ -88,6 +90,28 @@ export function playSlice(
       progress(i + 1);
     }
     return { ok: true, samples };
+  } finally {
+    restoreDefaults();
+  }
+}
+
+export type WatchOutcome =
+  { ok: true; playback: MatchPlayback } | { ok: false; rejected: RejectedOverride[] };
+
+/**
+ * 관전 (→LAB-9): match 0 of `seed` and its frames under `overrides`; the code's values are back
+ * when it returns, also after a failure. A rejected override plays nothing.
+ */
+export function playWatch(
+  sides: readonly [LabSide, LabSide],
+  seed: string,
+  overrides: Overrides,
+): WatchOutcome {
+  const lab = labWorld();
+  try {
+    const outcome = applyOverrides(overrides);
+    if (outcome.rejected.length) return { ok: false, rejected: outcome.rejected };
+    return { ok: true, playback: watchLabMatch(lab, sides, seed) };
   } finally {
     restoreDefaults();
   }

@@ -48,6 +48,8 @@ export interface LabState {
   sides: [SideSettings, SideSettings];
   overrides: Record<string, number>;
   run: { count: number; runSeed: string };
+  /** 관전's seed (→LAB-9): 다시 보기 keeps it, 새 경기 draws another. */
+  watch: { seed: string };
   kept: KeptRun[];
   baseline?: string;
 }
@@ -64,6 +66,7 @@ export function defaultLabState(seed: () => string = newSeed): LabState {
     sides: [side(), side()],
     overrides: {},
     run: { count: DEFAULT_RUN_COUNT, runSeed: seed() },
+    watch: { seed: seed() },
     kept: [],
   };
 }
@@ -126,6 +129,7 @@ export function parseLabState(text: string | null, fallback: LabState = defaultL
   if (!isRecord(raw) || raw.version !== VERSION) return fallback;
   const sides = Array.isArray(raw.sides) ? raw.sides : [];
   const run = isRecord(raw.run) ? raw.run : {};
+  const watch = isRecord(raw.watch) ? raw.watch : {};
   const kept = Array.isArray(raw.kept)
     ? raw.kept
         .map(readKept)
@@ -142,6 +146,9 @@ export function parseLabState(text: string | null, fallback: LabState = defaultL
     run: {
       count: RUN_COUNTS.includes(run.count as 1) ? (run.count as number) : fallback.run.count,
       runSeed: typeof run.runSeed === 'string' && run.runSeed ? run.runSeed : fallback.run.runSeed,
+    },
+    watch: {
+      seed: typeof watch.seed === 'string' && watch.seed ? watch.seed : fallback.watch.seed,
     },
     kept,
     ...(baseline && { baseline }),

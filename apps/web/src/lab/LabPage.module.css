@@ -1,15 +1,7 @@
-:global(body) {
-  margin: 0;
-  background: #121516;
-  color: #e7eaeb;
-  font:
-    14px/1.45 system-ui,
-    -apple-system,
-    'Segoe UI',
-    'Noto Sans KR',
-    sans-serif;
-}
-
+/*
+ * The lab's own panels in the game's theme tokens (the page body comes from the game's App styles).
+ * Control and heading rules stop at the match view, which keeps the game's look untouched (→LAB-9).
+ */
 .page {
   box-sizing: border-box;
   max-width: 1600px;
@@ -19,15 +11,7 @@
   gap: 16px;
 }
 
-.page *,
-.page *::before,
-.page *::after {
-  box-sizing: inherit;
-}
-
-.page h1,
-.page h2,
-.page h3 {
+.page :where(h1, h2, h3):not(.watchView *) {
   margin: 0;
 }
 
@@ -35,36 +19,33 @@
   font-size: 1.4rem;
 }
 
-.page h2 {
+.page h2:not(.watchView *) {
   font-size: 1.1rem;
 }
 
-.page h3 {
+.page h3:not(.watchView *) {
   font-size: 1rem;
 }
 
-.page button,
-.page input,
-.page select,
-.page textarea {
+.page :where(button, input, select, textarea):not(.watchView *) {
   font: inherit;
   color: inherit;
-  background: #1d2224;
-  border: 1px solid #3a4245;
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
   border-radius: 4px;
   padding: 4px 8px;
 }
 
-.page button {
+.page button:not(.watchView *) {
   cursor: pointer;
 }
 
-.page button:disabled {
+.page button:disabled:not(.watchView *) {
   cursor: default;
   opacity: 0.45;
 }
 
-.page code {
+.page code:not(.watchView *) {
   font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
   font-size: 0.85em;
   overflow-wrap: anywhere;
@@ -83,7 +64,7 @@
 }
 
 .muted {
-  color: #9aa4a8;
+  color: var(--text-muted);
   font-size: 0.9em;
 }
 
@@ -91,12 +72,23 @@
   margin: 0;
   padding: 8px 12px;
   border-radius: 4px;
-  background: #4a2020;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  background: var(--surface);
 }
 
 .note {
   margin: 0;
-  color: #f0c674;
+  color: var(--gold);
+}
+
+.watch {
+  display: grid;
+  gap: 12px;
+}
+
+.watchView {
+  min-width: 0;
 }
 
 .columns {
@@ -111,9 +103,10 @@
   display: grid;
   gap: 12px;
   padding: 12px;
-  border: 1px solid #2c3336;
+  border: 1px solid var(--line);
   border-radius: 6px;
-  background: #171b1c;
+  background: var(--surface);
+  color: var(--text);
 }
 
 .panelHead {
@@ -148,7 +141,7 @@
   display: grid;
   gap: 2px;
   font-size: 0.85em;
-  color: #9aa4a8;
+  color: var(--text-muted);
 }
 
 .number {
@@ -161,8 +154,9 @@
 }
 
 .primary {
-  background: #2f6f4f !important;
-  border-color: #3f8f66 !important;
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--on-accent) !important;
 }
 
 .average {
@@ -181,7 +175,7 @@
 .table th,
 .table td {
   padding: 3px 6px;
-  border-bottom: 1px solid #262c2e;
+  border-bottom: 1px solid var(--line);
   text-align: left;
   vertical-align: top;
 }
@@ -197,7 +191,7 @@
 }
 
 .benchStart td {
-  border-top: 2px solid #3a4245;
+  border-top: 2px solid var(--line-strong);
 }
 
 .search {
@@ -219,7 +213,7 @@
 }
 
 .group {
-  border-bottom: 1px solid #262c2e;
+  border-bottom: 1px solid var(--line);
 }
 
 .groupHead {
@@ -250,11 +244,11 @@
 .leaf {
   padding: 6px 8px;
   border-left: 3px solid transparent;
-  background: #1a1f20;
+  background: var(--surface-2);
 }
 
 .changed {
-  border-left-color: #f0c674;
+  border-left-color: var(--gold);
 }
 
 .leafHead,
@@ -267,7 +261,7 @@
 
 .comment {
   margin: 2px 0 4px;
-  color: #9aa4a8;
+  color: var(--text-muted);
   font-size: 0.85em;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -280,8 +274,8 @@
   margin-left: 6px;
   padding: 0 6px;
   border-radius: 8px;
-  background: #5a4a1a;
-  color: #f0c674;
+  border: 1px solid var(--gold);
+  color: var(--gold);
   font-size: 0.8em;
 }
 
@@ -335,16 +329,16 @@
 }
 
 .fail {
-  color: #ef8a80;
+  color: var(--danger);
 }
 
 .marked {
-  color: #f0c674;
+  color: var(--gold);
   font-weight: 600;
 }
 
 .shown td {
-  background: #1f2628;
+  background: var(--surface-2);
 }
 
 .actions {

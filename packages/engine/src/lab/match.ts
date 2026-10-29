@@ -2,11 +2,12 @@
  * A match lab fixture (→LAB-4): two lab sides played by the detailed engine's latest release
  * revision, the left side at home in even matches, each match seeded from the run seed and its index.
  */
-import type { Club, Fixture, World } from '../../../contracts/src/types';
+import type { Club, Fixture, MatchPlayback, World } from '../../../contracts/src/types';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { createWorld } from '../founding';
 import { playGrid, type GridResult } from '../grid/engine';
-import { buildGridSetup } from '../grid/setup';
+import { buildFrames } from '../grid/playback';
+import { buildGridSetup, type GridSetup } from '../grid/setup';
 import { LAB_CONFIG, type LabSide } from './sides';
 
 export interface LabWorld {
@@ -14,6 +15,12 @@ export interface LabWorld {
   /** Two top-tier clubs nobody owns that host the lab sides; their own squads never play. */
   hosts: [Club, Club];
 }
+
+/** How the scoreboard names the hosts (→LAB-9); their ids and kits stay the clubs' own. */
+export const LAB_HOST_NAMES = [
+  { name: '좌측 팀', short: '좌측' },
+  { name: '우측 팀', short: '우측' },
+] as const;
 
 /** The one world a lab worker builds once and plays every lab match in. */
 export function createLabWorld(): LabWorld {
@@ -27,7 +34,9 @@ export function createLabWorld(): LabWorld {
   const [a, b] = w.clubs.filter(
     (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
   );
-  return { w, hosts: [a!, b!] };
+  const hosts: [Club, Club] = [a!, b!];
+  hosts.forEach((club, side) => Object.assign(club, LAB_HOST_NAMES[side]));
+  return { w, hosts };
 }
 
 /** Whether the left side is at home in match `index` (0-based). */
@@ -47,6 +56,23 @@ export function labFixture(lab: LabWorld, runSeed: string, index: number): Fixtu
   };
 }
 
+/** Match `index`'s setup, the sides placed home and away as its fixture has them. */
+export function labSetup(
+  lab: LabWorld,
+  sides: readonly [LabSide, LabSide],
+  runSeed: string,
+  index: number,
+  observe: boolean,
+): GridSetup {
+  const [home, away] = leftAtHome(index) ? [sides[0], sides[1]] : [sides[1], sides[0]];
+  return buildGridSetup(lab.w, labFixture(lab, runSeed, index), {
+    observe,
+    recordPlayers: true,
+    model: MATCH_MODEL_REVISION,
+    lab: { rosters: [home.players, away.players], tactics: [home.tactic, away.tactic] },
+  });
+}
+
 /** Plays match `index`; the result's sides are home and away as the fixture has them. */
 export function playLabMatch(
   lab: LabWorld,
@@ -55,13 +81,23 @@ export function playLabMatch(
   index: number,
   observe = false,
 ): GridResult {
-  const [home, away] = leftAtHome(index) ? [sides[0], sides[1]] : [sides[1], sides[0]];
-  return playGrid(
-    buildGridSetup(lab.w, labFixture(lab, runSeed, index), {
-      observe,
-      recordPlayers: true,
-      model: MATCH_MODEL_REVISION,
-      lab: { rosters: [home.players, away.players], tactics: [home.tactic, away.tactic] },
-    }),
-  );
+  return playGrid(labSetup(lab, sides, runSeed, index, observe));
+}
+
+/**
+ * 관전 (→LAB-9): match 0 of `seed`, the left side at home, with its frames and matchday squads as
+ * the game's match view reads them; observing it changes nothing it records (→MATCH-7).
+ */
+export function watchLabMatch(
+  lab: LabWorld,
+  sides: readonly [LabSide, LabSide],
+  seed: string,
+): MatchPlayback {
+  const setup = labSetup(lab, sides, seed, 0, true);
+  const result = playGrid(setup);
+  return {
+    record: result.record,
+    frames: buildFrames(result, setup, lab.w.seed),
+    squads: setup.rosters,
+  };
 }

@@ -14,7 +14,7 @@ import type {
   RejectedOverride,
   RunSummary,
 } from './protocol';
-import type { Tactic } from '../../../../packages/contracts/src/types';
+import type { MatchPlayback, Tactic, World } from '../../../../packages/contracts/src/types';
 
 export const LAB_POOL_CONFIG = {
   /** Workers a run spreads over at most; one core stays with the page. */
@@ -84,6 +84,13 @@ interface ActiveRun {
   finish: (outcome: LabRunOutcome) => void;
 }
 
+export type LabWatchOutcome =
+  | { status: 'done'; playback: MatchPlayback }
+  /** A newer watch was asked for before this one came back. */
+  | { status: 'superseded' }
+  | { status: 'rejected'; rejected: RejectedOverride[] }
+  | { status: 'failed'; message: string };
+
 interface Waiter<T> {
   resolve: (value: T) => void;
   reject: (error: Error) => void;
@@ -96,6 +103,9 @@ export class LabPool {
   private run?: ActiveRun;
   private sideWaiters = new Map<number, Waiter<LabSide>>();
   private probeWaiters: Waiter<string[]>[] = [];
+  private watching?: { requestId: number; finish: (outcome: LabWatchOutcome) => void };
+  private worldWaiters = new Map<number, Waiter<World>>();
+  private labWorld?: Promise<World>;
 
   constructor(
     private readonly create: () => LabWorkerPort = createLabWorker,
@@ -185,6 +195,37 @@ export class LabPool {
     });
   }
 
+  /**
+   * 관전 (→LAB-9): match 0 of `seed` with its frames, played on the first worker with its own copies
+   * of the sides and values; an older watch still pending resolves superseded.
+   */
+  watch(seed: string, sides: [LabSide, LabSide], overrides: Overrides): Promise<LabWatchOutcome> {
+    this.watching?.finish({ status: 'superseded' });
+    const requestId = this.nextId++;
+    return new Promise((resolve) => {
+      const finish = (outcome: LabWatchOutcome) => {
+        if (this.watching?.requestId !== requestId) return;
+        this.watching = undefined;
+        resolve(outcome);
+      };
+      this.watching = { requestId, finish };
+      this.worker(0).postMessage({ type: 'watch', requestId, seed, sides, overrides });
+    });
+  }
+
+  /** The lab world the match view reads, fetched once (a failed fetch is asked again next time). */
+  world(): Promise<World> {
+    this.labWorld ??= new Promise<World>((resolve, reject) => {
+      const requestId = this.nextId++;
+      this.worldWaiters.set(requestId, { resolve, reject });
+      this.worker(0).postMessage({ type: 'world', requestId });
+    }).catch((error: unknown) => {
+      this.labWorld = undefined;
+      throw error;
+    });
+    return this.labWorld;
+  }
+
   /** Stops everything: a running run resolves cancelled, pending requests fail. */
   dispose() {
     this.run?.finish({ status: 'cancelled' });
@@ -220,8 +261,27 @@ export class LabPool {
       case 'reads':
         this.probeWaiters.shift()?.resolve(r.paths);
         return;
+      case 'playback':
+        if (this.watching?.requestId === r.requestId)
+          this.watching.finish({ status: 'done', playback: r.playback });
+        return;
+      case 'world': {
+        const waiter = this.worldWaiters.get(r.requestId);
+        this.worldWaiters.delete(r.requestId);
+        waiter?.resolve(r.world);
+        return;
+      }
       case 'failed':
-        if (r.requestId !== undefined) {
+        if (r.requestId !== undefined && this.watching?.requestId === r.requestId)
+          this.watching.finish(
+            r.rejected?.length
+              ? { status: 'rejected', rejected: r.rejected }
+              : { status: 'failed', message: r.message },
+          );
+        else if (r.requestId !== undefined && this.worldWaiters.has(r.requestId)) {
+          this.worldWaiters.get(r.requestId)!.reject(new Error(r.message));
+          this.worldWaiters.delete(r.requestId);
+        } else if (r.requestId !== undefined) {
           const waiter = this.sideWaiters.get(r.requestId);
           this.sideWaiters.delete(r.requestId);
           waiter?.reject(new Error(r.message));
@@ -290,5 +350,8 @@ export class LabPool {
     for (const waiter of this.sideWaiters.values()) waiter.reject(error);
     this.sideWaiters.clear();
     for (const waiter of this.probeWaiters.splice(0)) waiter.reject(error);
+    for (const waiter of this.worldWaiters.values()) waiter.reject(error);
+    this.worldWaiters.clear();
+    this.watching?.finish({ status: 'failed', message: error.message });
   }
 }

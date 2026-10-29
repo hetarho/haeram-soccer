@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { probeReads, tunableDefault } from '../../../../packages/engine/src/grid/tunables';
+import {
+  probeReads,
+  tunableDefault,
+  tunableLeaves,
+} from '../../../../packages/engine/src/grid/tunables';
 import { generateLabSide } from '../../../../packages/engine/src/lab/sides';
-import { labWorld, playLabSample, playSlice } from './runner';
+import { labWorld, playLabSample, playSlice, playWatch } from './runner';
 import { summarizeRun } from './summary';
 import type { LabSample } from './protocol';
 
@@ -63,6 +67,42 @@ describe('lab runner', () => {
     expect(changed.ok && digest(changed.samples)).not.toBe(before);
     const restored = playSlice(sides, 'r', {}, 0, 1);
     expect(restored.ok && digest(restored.samples)).toBe(before);
+  });
+
+  it('watch applies overrides and restores', { timeout: 120_000 }, () => {
+    const watched = (overrides: Record<string, number>) => {
+      const outcome = playWatch(sides, 'r', overrides);
+      if (!outcome.ok) throw new Error('rejected');
+      return JSON.stringify([outcome.playback.record.score, outcome.playback.record.metrics]);
+    };
+    // The watched match is the run's match 0 under the same values.
+    const [first] = oneSlice();
+    expect(watched({})).toBe(
+      JSON.stringify([first!.sample.record.score, first!.sample.record.metrics]),
+    );
+    const lever = [...probeReads(() => void playLabSample(labWorld(), sides, 'r', 0, false))].find(
+      (p) => p.startsWith('DECISION_CONFIG.') || p.startsWith('SHOT_CONFIG.'),
+    )!;
+    const base = tunableDefault(lever)!;
+    expect(watched({ [lever]: base * 3 + 1 })).not.toBe(watched({}));
+    const atCode = () => tunableLeaves().every((l) => l.value === tunableDefault(l.path));
+    expect(atCode()).toBe(true);
+    // A rejected override plays nothing and leaves the code's values in place.
+    expect(playWatch(sides, 'r', { [lever]: base + 1, 'NOPE_CONFIG.x': 1 })).toEqual({
+      ok: false,
+      rejected: [{ path: 'NOPE_CONFIG.x', reason: 'unknown' }],
+    });
+    expect(atCode()).toBe(true);
+  });
+
+  it('same seed and values give the same playback', { timeout: 120_000 }, () => {
+    const a = playWatch(sides, 'same', {}),
+      b = playWatch(sides, 'same', {});
+    if (!a.ok || !b.ok) throw new Error('rejected');
+    expect(b.playback).toEqual(a.playback);
+    expect(a.playback.record.id).toBe('lab:same:0');
+    expect(a.playback.record.home).toBe(labWorld().hosts[0].id);
+    expect(a.playback.frames.length).toBeGreaterThan(90);
   });
 
   it('rejects unknown overrides before any match', () => {

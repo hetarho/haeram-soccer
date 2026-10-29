@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { LabReply, LabRequest, LabSample, LabSide, RunSummary } from './protocol';
+import type { MatchPlayback, World } from '../../../../packages/contracts/src/types';
 import { LabPool, labSlices, labWorkerCount, type LabWorkerPort } from './pool';
 
 /** An in-process stand-in for worker.ts: match `i` is a sample carrying only its index. */
@@ -37,6 +38,24 @@ class FakeWorker implements LabWorkerPort {
         summary: { matches: m.samples.length, order: m.samples.map((s) => s.index) } as never,
       });
     else if (m.type === 'probe') this.outbox.push({ type: 'reads', paths: ['A.b'] });
+    else if (m.type === 'watch')
+      this.outbox.push(
+        this.reject && this.reject in m.overrides
+          ? {
+              type: 'failed',
+              runId: -1,
+              requestId: m.requestId,
+              message: 'rejected',
+              rejected: [{ path: this.reject, reason: 'unknown' }],
+            }
+          : {
+              type: 'playback',
+              requestId: m.requestId,
+              playback: { record: { id: `lab:${m.seed}:0` } } as MatchPlayback,
+            },
+      );
+    else if (m.type === 'world')
+      this.outbox.push({ type: 'world', requestId: m.requestId, world: { seed: 'lab' } as World });
   }
   terminate() {
     this.terminated = true;
@@ -133,13 +152,50 @@ describe('lab pool', () => {
     expect(workers.some((w) => w.terminated)).toBe(false);
   });
 
+  it('a newer watch supersedes a pending one', async () => {
+    const { p, workers, flush } = pool(4);
+    const first = p.watch('a', sides, {});
+    const second = p.watch('b', sides, {});
+    flush();
+    expect(await first).toEqual({ status: 'superseded' });
+    expect(await second).toMatchObject({ status: 'done', playback: { record: { id: 'lab:b:0' } } });
+    // Both went to the first worker, which plays them in turn; no run worker was made.
+    expect(workers).toHaveLength(1);
+    expect(workers[0]!.received.map((m) => m.type)).toEqual(['watch', 'watch']);
+  });
+
+  it('a watch fails like a run on rejected values', async () => {
+    const { p, flush } = pool(2, 'NOPE.x');
+    const watched = p.watch('a', sides, { 'NOPE.x': 1 });
+    flush();
+    expect(await watched).toEqual({
+      status: 'rejected',
+      rejected: [{ path: 'NOPE.x', reason: 'unknown' }],
+    });
+  });
+
+  it('the world is fetched once and cached', async () => {
+    const { p, workers, flush } = pool(4);
+    const first = p.world();
+    const again = p.world();
+    flush();
+    expect(await first).toEqual({ seed: 'lab' });
+    expect(await again).toBe(await first);
+    expect(await p.world()).toBe(await first);
+    expect(workers[0]!.received.filter((m) => m.type === 'world')).toHaveLength(1);
+  });
+
   it('a crashed worker fails the run and pending requests', async () => {
     const { p, workers } = pool(3);
     const run = p.start(input(10));
     const reads = p.probe();
+    const watched = p.watch('a', sides, {});
+    const world = p.world();
     workers[1]!.onerror!(new Event('error'));
     expect(await run.result).toMatchObject({ status: 'failed' });
     await expect(reads).rejects.toThrow();
+    expect(await watched).toMatchObject({ status: 'failed' });
+    await expect(world).rejects.toThrow();
     expect(workers.every((w) => w.terminated)).toBe(true);
   });
 });

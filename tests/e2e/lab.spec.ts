@@ -19,6 +19,60 @@ async function setValue(page: Page, path: string, value: string) {
   await field.press('Enter');
 }
 
+test('the lab watches a match in the game’s match view and replays it with edited values', async ({
+  page,
+}) => {
+  test.setTimeout(300_000);
+  await page.goto('/lab');
+  await expect(page.getByRole('heading', { name: '경기 실험실', exact: true })).toBeVisible();
+  for (const name of ['좌측 팀', '우측 팀']) {
+    const side = page.getByRole('region', { name, exact: true });
+    await side.getByRole('button', { name: '생성', exact: true }).click();
+    await expect(side.getByRole('row')).toHaveCount(1 + 20);
+  }
+
+  const watchBar = page.getByRole('region', { name: '관전', exact: true });
+  const seed = watchBar.getByLabel('관전 시드', { exact: true });
+  await seed.fill('e2e-watch');
+  // The progress line names the seed being played.
+  const preparing = watchBar.getByText(/ 경기를 치르는 중…$/);
+  await watchBar.getByRole('button', { name: '관전', exact: true }).click();
+  await expect(preparing).toHaveText('e2e-watch 경기를 치르는 중…');
+  const theatre = page.getByTestId('pitch-theatre');
+  await expect(theatre).toBeVisible({ timeout: 120_000 });
+  await expect(theatre.getByLabel('22명의 선수와 공으로 표현하는 경기')).toBeVisible();
+  const score = page.getByTestId('match-score');
+  await expect(score).toContainText('좌측 팀');
+  await expect(score).toContainText('우측 팀');
+
+  // Pausing works as in the game's live view: a seek holds the instant, a speed resumes it.
+  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
+  const timeline = page.getByRole('slider', { name: '경기 시간', exact: true });
+  await expect.poll(async () => Number(await timeline.inputValue())).toBeGreaterThan(0);
+  await timeline.press('Home');
+  const sought = await timeline.inputValue();
+  await page.waitForTimeout(350);
+  await expect(timeline).toHaveValue(sought);
+  await page.getByRole('radio', { name: '16×', exact: true }).click();
+  await expect
+    .poll(async () => Number(await timeline.inputValue()))
+    .toBeGreaterThan(Number(sought));
+
+  // 다시 보기 plays the same seed again with the edited value: a new playback from the start.
+  await setValue(page, 'SHOT_CONFIG.saveShare', '0.9');
+  await page.getByRole('button', { name: '다시 보기', exact: true }).click();
+  await expect(preparing).toHaveText('e2e-watch 경기를 치르는 중…');
+  await expect(preparing).toBeHidden({ timeout: 120_000 });
+  await expect(seed).toHaveValue('e2e-watch');
+  await expect(page.getByRole('slider', { name: '경기 시간', exact: true })).toBeHidden();
+
+  // 새 경기 draws a new seed.
+  await page.getByRole('button', { name: '새 경기', exact: true }).click();
+  await expect(seed).not.toHaveValue('e2e-watch');
+  await expect(preparing).toBeHidden({ timeout: 120_000 });
+  await expect(theatre).toBeVisible();
+});
+
 test('the lab generates sides, edits values and compares runs against a baseline', async ({
   page,
 }) => {

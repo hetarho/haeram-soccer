@@ -91,6 +91,22 @@ describe('lab state', () => {
     expect(saveLabState(pinned, undefined)).toBe(false);
   });
 
+  it('watch seed persists', () => {
+    const store = memory();
+    const state = { ...defaultLabState(seed), watch: { seed: 'match-7' } };
+    expect(saveLabState(state, store)).toBe(true);
+    expect(loadLabState(store).watch).toEqual({ seed: 'match-7' });
+    // A state stored before 관전 existed, or with an empty seed, draws a fresh one.
+    const older = JSON.parse(store.data.get(LAB_STORAGE_KEY)!) as Record<string, unknown>;
+    delete older.watch;
+    store.data.set(LAB_STORAGE_KEY, JSON.stringify(older));
+    const loaded = loadLabState(store);
+    expect(loaded.watch.seed).toMatch(/\S/);
+    expect(loaded.run).toEqual(state.run);
+    store.data.set(LAB_STORAGE_KEY, JSON.stringify({ ...older, watch: { seed: '' } }));
+    expect(loadLabState(store).watch.seed).not.toBe('');
+  });
+
   it('kept runs cap at 10', () => {
     let state = defaultLabState(seed);
     for (let i = 0; i < KEPT_RUNS + 2; i++) state = keepRun(state, run(`r${i}`));

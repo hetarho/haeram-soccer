@@ -15,8 +15,10 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| lw29 | hq-dev1-pve2-vm2 | autopilot | 2026-10-29T02:04Z | 2026-10-29T02:04Z | - |
 
 ## inbox
+- 261029 decided LAB-9 WEB-32 T578: which pause the lab's match view offers, since live observation has no pause button and the archived replay mode drops the speeds and charts → render Pitch in its live mode, whose pause is the game's (a timeline seek holds the instant, a speed resumes it), with the speeds, charts and details as the game shows a live match (alt: archived-replay mode with its play/pause button but no speeds or charts | a lab pause button, which would fork the view).
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
 - 261029 decided MATCH-17 T561: spacing only for the side with the ball; spreading the side without it too opened its box (goals 3.53, 23/37 at 600) (alt: both sides).
 - 261029 suggest MATCH-23 T561: shots from outside the box 25.4% and goal-area shots 20.7% on revision 8 — a carrier with room around the box shoots earlier from the edge.
@@ -392,7 +394,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T578 | Watch a lab match in the game's own match view | LAB ARCH WEB | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -416,9 +417,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T578 (lab 관전 in the game's match view), then the batch gate and push main.
+- batch gate on the integrated candidate (tests/e2e/lab.spec.ts with T578's 관전 journey included), then push main.
 
 ## log
+- 261029 T578 done: /lab 관전 plays match 0 of its seed in the lab worker and shows it in the game's unchanged Pitch inside the shared presentation; 다시 보기/새 경기; typecheck, lint, tracked formatting, 43 affected unit tests and build pass; lab.spec.ts left to the batch run.
 - 261029 update-ssot LAB r4 + create-task T578: 관전 in the game's own match view is the lab's main use (LAB-9 resolved); N-match runs stay second (LAB-10).
 - 261029 revert ECON r40/T577: the lb29 loop took the parked F6 runway finding after the lab tasks; the owner says it is unrelated to the lab request, so F6 stays parked (uncommitted T577 work saved outside the repo, not applied).
 - 261029 T575 done: /lab entry (sides, values, runs, kept runs and baseline comparison) on T574's pool; state.ts with 5 unit tests, typecheck, lint, scoped format, 1672 affected unit tests and build pass; lab.spec.ts left to the batch run.
@@ -438,7 +440,3 @@
 - 261029 T571 done: keep home return across competition tabs and preserve nested-detour origins; 346 affected unit tests, typecheck, lint, tracked formatting and build pass.
 - 261029 T571 start: retain named return and nested context across league/cup sibling tabs under WEB-40/74.
 - 261029 T570 done: remove mobile-only match tactic hiding; 319 affected unit tests, typecheck, lint, tracked formatting and build pass; theme browser assertions updated.
-- 261029 T570 start: restore mobile match tactic comparison hidden by its CSS breakpoint; WEB policy unchanged.
-- 261029 T569 done: remove clubhouse entrances, share owner-office shell and ordinary clock rules, inline office overview and secondary sheet headers; 319 affected unit tests and task checks pass.
-- 261029 T569 start; create-task consumed WEB r169.
-- 261029 update-ssot WEB start: remove duplicate place entrances, share owner-office shell and add secondary sheet surfaces.

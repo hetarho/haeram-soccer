@@ -1,12 +1,14 @@
 /**
- * The match lab (→LAB-1…7): two generated sides, the engine's tunable numbers, runs in the lab's
- * workers and each run against a pinned baseline. Imports the catalog, protocol types and its own
- * state only; engine code runs in the workers (ARCH-4, the lab's constraints).
+ * The match lab (→LAB-1…10): two generated sides, the engine's tunable numbers, one match watched in
+ * the game's own match view (→LAB-9), runs in the lab's workers and each run against a pinned
+ * baseline. Imports the catalog, protocol types, its own state and the game's match view; the lab's
+ * matches play in the workers (ARCH-4, the lab's constraints).
  */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { Catalog, CatalogLeaf } from '../../../../scripts/lab-tunables';
 import { tacticLabel } from '../../../../packages/engine/src/tactics';
-import type { Tactic } from '../../../../packages/contracts/src/types';
+import type { MatchPlayback, Tactic, World } from '../../../../packages/contracts/src/types';
+import { Pitch } from '../ui/Pitch';
 import catalogJson from './tunables.json';
 import { LabPool, type LabRun } from './pool';
 import type { LabSide, LabSideIndex } from './protocol';
@@ -37,6 +39,11 @@ import styles from './LabPage.module.css';
 const catalog = catalogJson as Catalog;
 const LEAVES = catalog.groups.flatMap((g) => g.leaves);
 const SIDE_NAMES = ['좌측 팀', '우측 팀'] as const;
+/**
+ * Groups the page's own match view reads (Pitch and its figure code import MATCH_MOTION_CONFIG):
+ * an override reaches the worker's match and frames, but the view draws with the code's values.
+ */
+const PAGE_READ_GROUPS: ReadonlySet<string> = new Set(['MATCH_MOTION_CONFIG']);
 const SKIP_REASON = {
   unknown: '없는 경로',
   'not-a-number': '숫자가 아님',
@@ -298,6 +305,14 @@ function ValuesPanel(props: {
                   <span className={styles.muted}>
                     {leaves.length}개{groupChanged.length ? ` · 변경 ${groupChanged.length}` : ''}
                   </span>
+                  {PAGE_READ_GROUPS.has(group.name) && (
+                    <span
+                      className={styles.badge}
+                      title="경기와 프레임 계산에는 쓰이지만, 관전 화면이 직접 읽는 값은 코드 값 그대로입니다."
+                    >
+                      관전 화면에는 적용 안 됨
+                    </span>
+                  )}
                 </button>
                 <button
                   type="button"
@@ -654,6 +669,15 @@ export function LabPage() {
   const [running, setRunning] = useState<{ run: LabRun; done: number; total: number }>();
   const [shown, setShown] = useState<string | undefined>(() => state.kept[0]?.id);
   const [message, setMessage] = useState<string>();
+  /** 관전: the playing match (keyed so 다시 보기 of the same seed starts over) and the one asked for. */
+  const [watched, setWatched] = useState<{
+    key: number;
+    seed: string;
+    playback: MatchPlayback;
+    world: World;
+  }>();
+  const [watching, setWatching] = useState<string>();
+  const watchKey = useRef(0);
   const pool = useRef<LabPool | undefined>(undefined);
   const initial = useRef(state);
 
@@ -779,6 +803,41 @@ export function LabPage() {
     });
   };
 
+  /**
+   * Plays match 0 of `seed` with the sides and values as they are now; the playback under way keeps
+   * playing until the new one is ready, and a later edit never reaches either.
+   */
+  const watch = (seed: string) => {
+    const p = pool.current;
+    const [left, right] = sides;
+    if (!p || !left || !right || !seed) return;
+    setMessage(undefined);
+    setState((s) => ({ ...s, watch: { seed } }));
+    const key = ++watchKey.current;
+    setWatching(seed);
+    const failed = (text: string) => {
+      if (watchKey.current !== key) return;
+      setWatching(undefined);
+      setMessage(text);
+    };
+    Promise.all([p.world(), p.watch(seed, [left, right], { ...state.overrides })]).then(
+      ([world, outcome]) => {
+        if (pool.current !== p || watchKey.current !== key || outcome.status === 'superseded')
+          return;
+        if (outcome.status === 'done') {
+          setWatching(undefined);
+          setWatched({ key, seed, playback: outcome.playback, world });
+        } else if (outcome.status === 'rejected')
+          failed(
+            `적용할 수 없는 수치가 있습니다: ${outcome.rejected.map((r) => `${r.path} (${SKIP_REASON[r.reason]})`).join(', ')}`,
+          );
+        else failed(`관전 경기를 치르지 못했습니다: ${outcome.message}`);
+      },
+      (error: Error) =>
+        pool.current === p && failed(`관전 경기를 치르지 못했습니다: ${error.message}`),
+    );
+  };
+
   const loadRun = (k: KeptRun) => {
     setState((s) => ({
       ...s,
@@ -844,6 +903,55 @@ export function LabPage() {
           {message}
         </p>
       )}
+      <section className={styles.watch} aria-label="관전">
+        <div className={cx(styles.panel, styles.runBar)}>
+          <button
+            type="button"
+            className={styles.primary}
+            onClick={() => watch(state.watch.seed)}
+            disabled={!ready}
+          >
+            관전
+          </button>
+          <label>
+            관전 시드
+            <input
+              className={styles.seed}
+              aria-label="관전 시드"
+              value={state.watch.seed}
+              onChange={(e) => setState((s) => ({ ...s, watch: { seed: e.target.value } }))}
+            />
+          </label>
+          {watching !== undefined && (
+            <>
+              <progress aria-label="관전 경기 준비" className={styles.progress} />
+              <span role="status">{watching} 경기를 치르는 중…</span>
+            </>
+          )}
+          <span className={styles.muted}>
+            지금의 두 팀과 수치로 한 경기를 치러 게임의 경기 화면 그대로 보여 줍니다.
+          </span>
+        </div>
+        {watched && (
+          <div className={styles.watchView}>
+            <Pitch
+              key={watched.key}
+              playback={watched.playback}
+              world={watched.world}
+              actions={() => (
+                <div className={styles.actions}>
+                  <button type="button" onClick={() => watch(watched.seed)} disabled={!ready}>
+                    다시 보기
+                  </button>
+                  <button type="button" onClick={() => watch(newSeed())} disabled={!ready}>
+                    새 경기
+                  </button>
+                </div>
+              )}
+            />
+          </div>
+        )}
+      </section>
       <div className={styles.columns}>
         <section className={styles.panel} aria-labelledby="lab-sides">
           <div className={styles.panelHead}>

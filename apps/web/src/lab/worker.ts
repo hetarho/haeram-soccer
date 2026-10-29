@@ -1,14 +1,16 @@
 /// <reference lib="webworker" />
 /**
  * A match lab worker (→LAB-4): plays its slice of a run in its own lab world, and generates sides,
- * probes reads and summarizes runs for the page. Overrides live only here, for one slice at a time.
+ * probes reads, summarizes runs and plays watched matches (→LAB-9) for the page. Overrides live only here, for one slice at a time.
  */
 import type { LabReply, LabRequest } from './protocol';
 import {
   generateLabSide,
   labSideFromOvrs,
   labStarterAverage,
+  labWorld,
   playSlice,
+  playWatch,
   probeLabReads,
   setLabPlayerOvr,
 } from './runner';
@@ -57,6 +59,23 @@ self.onmessage = (event: MessageEvent<LabRequest>) => {
           requestId: m.requestId,
           side: setLabPlayerOvr(m.side, m.sideIndex, m.index, m.ovr),
         });
+        return;
+      case 'watch': {
+        const outcome = playWatch(m.sides, m.seed, m.overrides);
+        if (outcome.ok)
+          post({ type: 'playback', requestId: m.requestId, playback: outcome.playback });
+        else
+          post({
+            type: 'failed',
+            runId: -1,
+            requestId: m.requestId,
+            message: '적용할 수 없는 수치가 있습니다',
+            rejected: outcome.rejected,
+          });
+        return;
+      }
+      case 'world':
+        post({ type: 'world', requestId: m.requestId, world: labWorld().w });
         return;
       case 'summarize': {
         const names = new Map(
