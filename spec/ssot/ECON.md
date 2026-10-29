@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r39 | Define the browser-demo rules for historical club economy.
+> r40 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -198,8 +198,13 @@
   - 지역 기반 S: home gate demand +S/10 % (→ECON-9); the 지역 후원 slot's offers ×(1 + S/200) (→ECON-8); with the 성골 유스 card, intake potential +S/25 and one more prospect from 50 (→CLUB-16).
   - 글로벌 인지도 S: the following reputation commands ×(1 + S/100) (→ECON-23); every other sponsor slot's offers ×(1 + S/250); with the 해외 유스 스카우트 card, intake potential +S/33.
   - both are shown in their areas' headers on the 방향 board (→WEB-60).
+- ECON-35 [o] A runway has one arithmetic, used by every check and display of one — delegated spends and their fee share (→ECON-33), sale bars (→CLUB-18, →CLUB-24), the cash warning (→ECON-20), the HUD and team-state cash readings and the signing and facility previews — with yearly fixed costs A (operating costs, a new wage in place of the old) and SEASON_ROUNDS = 46: ← two roundings let one spend pass one check and fail another at the limit
+  - cash C covers N rounds exactly when C × 46 ≥ N × A; the per-round cost is never rounded first.
+  - the runway in rounds is ⌊C × 46 / A⌋, 0 when C ≤ 0 or A ≤ 0, at most 999; it is below N exactly when C does not cover N rounds.
+  - the cash above an N-round runway is C − ⌈N × A / 46⌉, never below 0.
 
 ## chg
+- r40 261029 ECON-35+ one runway arithmetic (C × 46 ≥ N × A) for every check and display; staff checks' floored per-round cost × N→exact, cash warning's next-round charge→yearly fixed costs
 - r39 261029 ECON-25✎ 선수단·계약 with culture/support/renewal→선수단 culture only; support/renewal→재정; underlying policy keys/defaults/effects unchanged
 - r38 261016 ECON-25✎ recruitment rows 영입 기조 only→+director/manager support (균형 default), signings only→signings and mediation; economic coefficients and measurements unchanged
 - r37 261015 ECON-32✎ stadium 250/400/600/4,000/8,000/70,000/245,000/965,000→×2.5 from 600 (600…366,000), training ground 500/5,000/40,000/300,000/1,150,000→×4 from 1,500 (1,500…384,000), academy 400/4,000/32,000/240,000/980,000→0.8× the training ground, the whole 4,045,150→1,530,450; ECON-29✎ ladder 98.4→40.4 seasons, +the 16-career measurement on the new costs

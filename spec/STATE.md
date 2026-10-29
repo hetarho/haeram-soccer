@@ -18,6 +18,8 @@
 | lb29 | hq-dev1-pve2-vm2 | autopilot | 2026-10-29T01:21Z | 2026-10-29T01:21Z | - |
 
 ## inbox
+- 261029 decided ECON-35 ECON-33 ECON-20 T577 review/outside-t216-t255-261019: which runway arithmetic the six copies (floored per-round cost × N in signings, contracts and staff; ⌊cash × 46 / annual⌋ in recruitment, investment and sale bars; next-round charge in the cash warning) share → the exact one, cash × 46 ≥ N × yearly fixed costs, with ⌊C × 46 / A⌋ rounds and C − ⌈N × A / 46⌉ above the runway, from one engine read leaf (alt: floored per-round cost × N everywhere | keep the cash warning on the next round's charge); both forms agree but at the limit, the exact one is the only one where "runway below N" and "does not cover N" never disagree, and the warning then matches the HUD alarm.
+- 261029 parked T576: its code, WEB r170 (spec/ssot/WEB.md) and tasks/done/T576 file sit uncommitted in the shared checkout while the committed STATE logs it done and WEB 170; its impl notes say "No commit or push", so autopilot leaves them; the owner commits them (or reverts the STATE lines) before T577's batch push.
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
 - 261029 decided MATCH-17 T561: spacing only for the side with the ball; spreading the side without it too opened its box (goals 3.53, 23/37 at 600) (alt: both sides).
 - 261029 suggest MATCH-23 T561: shots from outside the box 25.4% and goal-area shots 20.7% on revision 8 — a carrier with room around the box shoots earlier from the edge.
@@ -227,7 +229,6 @@
 - 261020 decided T231 SAVE-3: manifest shape for the single active copy → keep `{ slot: 0, worldId, generation, parentGeneration }`, where slot 0 is `slot:a` (alt: `{ generation, key: 'slot:a' }` as the task wrote it, which drops the lineage check the load relies on and the shape older tabs and the e2e seeds read) — it names the committed generation and key as SAVE-3 asks and two-slot layouts keep loading
 - 261020 decided T231 SAVE-4: the 32 MiB inflate limit failed inside the pinned brotli decoder, whose patch capped output at 16 MiB → raise the patch's cap to 32 MiB (alt: keep brotli payloads at 16 MiB while gzip allows 32) — SAVE-4 sets one decompressed limit; T218's century already inflates to 16.1 MB
 - 261019 decided review/outside-t216-t255-261019: which findings of the side review to adopt while T216–T255 run → adopt the P1 and P2 findings whose fix stays outside every T216–T255 touch and the grid, contracts, adapters and runtime modules and changes no SSOT rule, contract, save format or migration: F1–F5 and F7–F14; F6 and every P3 stay [?] (alt: P1 only, leaving the duplicated rules to drift during the rebuild | P3 dead-code and formatting cleanups too, which adds visible text changes and no protection) — the P2s are drift risks the rebuild will lean on, and each fix is file-disjoint from the open tasks
-- 261019 parked review/outside-t216-t255-261019: F6 — the ECON-33 runway check exists six times with two formulas (floored per-round cost × runway in signings, contracts and staff; cash × SEASON_ROUNDS / annual in recruitment and investment); unifying moves outcomes at the limit, so the owner picks the intended arithmetic (update-ssot ECON-33) before a task
 - 261019 suggest T258: after main's settings-sheet fix the entry measures 254,413 of ARCH-28's 256,000 B gzip (1,587 B headroom at b4c85ee); run T258 before T225–T255 add entry UI, or the CI benchmark turns red again
 - 261019 decided T215: 9 of 10 set-piece crosses found nobody in the box (cross completion 6%, defenders 1% of goals) → a set-piece scene for corners and free kicks crossed into the box: the five best headers go up and one waits at the edge, the defenders mark them goal-side and hold the six-yard line with one left upfield, and the men who went up hold 8 s for the second ball (MATCH-18 "delivered into the box for aerial duels and second balls") (alt: raise cross success alone, which leaves set-piece, headed and defender goals red | update-ssot a set-piece rule first)
 - 261019 decided T215: back lines never entered their own box (each tactic's line floor of 18–30 m), so box shots were unmarked (0.156 xG a shot) → the line drops to 4 m goal-side of a ball played behind it, never deeper than 6 m (alt: lower every tactic's line floor | keep the floor and cut box xG with a stronger pressure factor)
@@ -375,7 +376,7 @@
 | MATCH | 41 | 41 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
-| ECON | 39 | 39 | - | 0 |
+| ECON | 40 | 40 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 18 | 18 | - | 0 |
 | SAVE | 57 | 57 | - | 0 |
@@ -393,6 +394,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T577 | One runway arithmetic | ECON | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -418,8 +420,10 @@
 ## next
 - T569–T571 pushed fa1a018b; read its CI.
 - batch gate runs tests/e2e/lab.spec.ts (T575) with the next code push.
+- T577 (ECON-35 one runway arithmetic) is runnable; T576's uncommitted files wait for the owner (inbox parked).
 
 ## log
+- 261029 update-ssot ECON r40 + create-task T577: ECON-35 one exact runway arithmetic for every check and display (review/outside-t216-t255-261019 F6 adopted).
 - 261029 T575 done: /lab entry (sides, values, runs, kept runs and baseline comparison) on T574's pool; state.ts with 5 unit tests, typecheck, lint, scoped format, 1672 affected unit tests and build pass; lab.spec.ts left to the batch run.
 - 261029 T576 done: generated a dedicated controller weave bitmap and connected all four themes; 121 unit tests, typecheck, lint, scoped format, resource/art checks and build pass; built image hash and material bindings verified.
 - 261029 T574 done: lab worker pool, trimmed samples, run summary with equal-sides note; 136 affected unit tests pass; scripts/_scan.ts (stray T572 scratch) dropped.
@@ -439,5 +443,3 @@
 - 261029 T570 done: remove mobile-only match tactic hiding; 319 affected unit tests, typecheck, lint, tracked formatting and build pass; theme browser assertions updated.
 - 261029 T570 start: restore mobile match tactic comparison hidden by its CSS breakpoint; WEB policy unchanged.
 - 261029 T569 done: remove clubhouse entrances, share owner-office shell and ordinary clock rules, inline office overview and secondary sheet headers; 319 affected unit tests and task checks pass.
-- 261029 T569 start; create-task consumed WEB r169.
-- 261029 update-ssot WEB start: remove duplicate place entrances, share owner-office shell and add secondary sheet surfaces.
