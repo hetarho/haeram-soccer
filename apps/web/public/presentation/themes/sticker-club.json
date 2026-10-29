@@ -8,11 +8,11 @@
       "text": "#17382b",
       "text-muted": "#405d47",
       "text-faint": "#4c614c",
-      "accent": "#226a46",
+      "accent": "#f4cf59",
       "accent-fill": "#b84620",
       "accent-edge": "#79331d",
-      "accent-text": "#245d3d",
-      "on-accent": "#fffae9",
+      "accent-text": "#715100",
+      "on-accent": "#17382b",
       "positive": "#28643c",
       "gold": "#785518",
       "gold-fill": "#226a46",
@@ -127,7 +127,7 @@
       "pitch-pixel-size": "0",
       "pitch-texture-opacity": "0.1",
       "pitch-texture-size": "256",
-      "pitch-texture": "var(--image-canvas-material)",
+      "pitch-texture": "var(--image-art-paper-quiet)",
       "pitch-chart-ground": "var(--image-dark-fill, var(--image-ink-color))",
       "image-canvas-material": "var(--image-art-paper)",
       "image-quiet-material": "var(--image-art-paper-quiet)",
@@ -137,22 +137,22 @@
       "image-primary-frame": "var(--image-art-frame-stamp)",
       "image-dark-frame": "var(--image-art-frame-dark)",
       "image-tile-frame": "var(--image-art-frame-tile)",
-      "image-button-frame": "var(--image-art-frame-button)",
+      "image-button-frame": "var(--image-art-control-tertiary)",
       "image-selected-frame": "var(--image-art-frame-selected)",
-      "image-canvas": "#eddfbb",
-      "image-quiet": "#f7f0dc",
+      "image-canvas": "#eee5ce",
+      "image-quiet": "#f7f1df",
       "image-ink-color": "#17382b",
       "image-muted": "#405d47",
       "image-faint": "#4c614c",
-      "image-accent": "#9b3617",
+      "image-accent": "#715100",
       "image-focus": "#246084",
       "image-on-dark": "#fff9e5",
       "image-on-dark-muted": "#f5efd9",
-      "image-primary": "#b84620",
-      "image-on-primary": "#fffae9",
+      "image-primary": "#f4cf59",
+      "image-on-primary": "#17382b",
       "image-sidebar-hover": "#fff3da14",
       "image-heart": "#e24b2c",
-      "image-on-primary-muted": "#f5efd9",
+      "image-on-primary-muted": "#344d35",
       "image-ovr-bronze": "#875221",
       "image-ovr-silver": "#52665a",
       "image-table-line": "#35584133",
@@ -163,13 +163,13 @@
       "image-dark-fill": "#174b35",
       "image-radius": "12px",
       "image-control-radius": "5px",
-      "image-control-shadow": "0 1px 0 #17382b",
+      "image-control-shadow": "none",
       "page-grain": "none",
       "surface-grain": "none",
       "text": "var(--image-ink-color)",
       "text-muted": "var(--image-muted)",
       "text-faint": "var(--image-faint)",
-      "accent-text": "var(--image-accent)",
+      "accent-text": "#715100",
       "focus": "var(--image-focus)",
       "focus-width": "var(--image-focus-width)",
       "focus-offset": "var(--image-focus-offset)",
@@ -199,13 +199,13 @@
       "secondary-frame": "var(--image-panel-frame)",
       "secondary-text": "var(--image-ink-color)",
       "secondary-muted": "var(--image-muted)",
-      "image-transport-material": "var(--image-art-controller-weave)",
+      "image-transport-material": "var(--image-art-vermilion)",
       "transport-material-size": "256px",
-      "transport-material-blend": "soft-light",
-      "transport-fill": "#e6efc7",
+      "transport-material-blend": "normal",
+      "transport-fill": "#f4cf59",
       "transport-text": "#17382b",
-      "transport-muted": "#405d47",
-      "image-detail": "#fffbed",
+      "transport-muted": "#40543a",
+      "image-detail": "#fffbef",
       "image-detail-material": "var(--image-art-paper-detail)",
       "image-detail-frame": "none",
       "image-inset-frame": "none",
@@ -293,7 +293,7 @@
       "table-header-fill": "#e4edcf",
       "table-header-text": "#17382b",
       "table-header-material-size": "256px",
-      "image-table-header-material": "var(--image-art-table-heading)",
+      "image-table-header-material": "var(--image-art-paper-quiet)",
       "table-rule-border-width": "0px",
       "image-table-row-rule": "var(--image-art-content-rule)",
       "table-alt-fill": "#f7f0dc",
@@ -350,7 +350,7 @@
       "preview-example-gap": "8px",
       "preview-label-divider-image": "none",
       "preview-label-color": "var(--image-muted)",
-      "chart-primary": "#b84620"
+      "chart-primary": "#926300"
     }
   },
   "fonts": [
@@ -413,46 +413,46 @@
     },
     "ui": {
       "image-art-frame-button": {
-        "resource": "../../art/sticker-club/ui/frame-button.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/frame-tertiary.webp",
         "width": 192,
-        "height": 130,
+        "height": 185,
         "mode": "nine-slice",
-        "slice": 22
+        "slice": 36
       },
       "image-art-frame-dark": {
-        "resource": "../../art/sticker-club/ui/frame-dark.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/frame-dark.webp",
         "width": 192,
-        "height": 132,
+        "height": 185,
         "mode": "nine-slice",
-        "slice": 22
+        "slice": 36
       },
       "image-art-frame-selected": {
-        "resource": "../../art/sticker-club/ui/frame-selected.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/frame-selected.webp",
         "width": 192,
-        "height": 132,
+        "height": 186,
         "mode": "nine-slice",
-        "slice": 22
+        "slice": 36
       },
       "image-art-frame-stamp": {
-        "resource": "../../art/sticker-club/ui/frame-primary.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/frame-primary.webp",
         "width": 192,
-        "height": 129,
+        "height": 184,
         "mode": "nine-slice",
-        "slice": 22
+        "slice": 36
       },
       "image-art-frame-ticket": {
-        "resource": "../../art/sticker-club/ui/frame-panel.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/frame-tertiary.webp",
         "width": 192,
-        "height": 133,
+        "height": 185,
         "mode": "nine-slice",
-        "slice": 22
+        "slice": 36
       },
       "image-art-frame-tile": {
-        "resource": "../../art/sticker-club/ui/frame-tile.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/frame-tertiary.webp",
         "width": 192,
-        "height": 133,
+        "height": 185,
         "mode": "nine-slice",
-        "slice": 22
+        "slice": 36
       },
       "image-art-icon-bell": {
         "resource": "../../art/sticker-club/ui/icon-bell.webp",
@@ -551,7 +551,7 @@
         "mode": "image"
       },
       "image-art-ink": {
-        "resource": "../../art/sticker-club/ui/forest.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/dark.webp",
         "width": 256,
         "height": 256,
         "mode": "tile"
@@ -563,13 +563,13 @@
         "mode": "image"
       },
       "image-art-paper": {
-        "resource": "../../art/sticker-club/details-v1/canvas.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/canvas.webp",
         "width": 256,
         "height": 256,
         "mode": "tile"
       },
       "image-art-paper-quiet": {
-        "resource": "../../art/sticker-club/details-v1/quiet.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/quiet.webp",
         "width": 256,
         "height": 256,
         "mode": "tile"
@@ -600,7 +600,7 @@
         "preload": false
       },
       "image-art-vermilion": {
-        "resource": "../../art/sticker-club/ui/orange.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/primary.webp",
         "width": 256,
         "height": 256,
         "mode": "tile"
@@ -624,56 +624,56 @@
         "mode": "tile"
       },
       "image-art-control-secondary": {
-        "resource": "../../art/sticker-club/details-v1/frame-secondary.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/frame-secondary.webp",
         "width": 192,
-        "height": 127,
+        "height": 185,
         "mode": "nine-slice",
-        "slice": 22
+        "slice": 36
       },
       "image-art-control-tertiary": {
-        "resource": "../../art/sticker-club/details-v1/frame-tertiary.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/frame-tertiary.webp",
         "width": 192,
-        "height": 128,
+        "height": 185,
         "mode": "nine-slice",
-        "slice": 22
+        "slice": 36
       },
       "image-art-control-input": {
-        "resource": "../../art/sticker-club/details-v1/frame-input.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/frame-input.webp",
         "width": 192,
-        "height": 128,
+        "height": 186,
         "mode": "nine-slice",
-        "slice": 22
+        "slice": 36
       },
       "image-art-control-disabled": {
-        "resource": "../../art/sticker-club/details-v1/frame-disabled.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/frame-disabled.webp",
         "width": 192,
-        "height": 126,
+        "height": 185,
         "mode": "nine-slice",
-        "slice": 22
+        "slice": 36
       },
       "image-art-control-dropdown": {
-        "resource": "../../art/sticker-club/details-v1/frame-dropdown.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/frame-popup.webp",
         "width": 192,
-        "height": 101,
+        "height": 182,
         "mode": "nine-slice",
-        "slice": 22
+        "slice": 36
       },
       "image-art-control-checkbox-off": {
-        "resource": "../../art/sticker-club/details-v1/icon-checkbox-off.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/icon-checkbox-off.webp",
         "width": 64,
-        "height": 64,
+        "height": 63,
         "mode": "image"
       },
       "image-art-control-checkbox-on": {
-        "resource": "../../art/sticker-club/details-v1/icon-checkbox-on.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/icon-checkbox-on.webp",
         "width": 64,
-        "height": 64,
+        "height": 63,
         "mode": "image"
       },
       "image-art-tab-active": {
-        "resource": "../../art/sticker-club/details-v1/rule-tab-active.webp",
-        "width": 294,
-        "height": 78,
+        "resource": "../../art/sticker-club/page-refresh-v1/rule-tab-active.webp",
+        "width": 276,
+        "height": 45,
         "mode": "image"
       },
       "image-art-rating-bronze": {
@@ -712,19 +712,19 @@
         "slice": 36
       },
       "image-art-formation-marker": {
-        "resource": "../../art/sticker-club/details-v1/icon-formation-marker.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/icon-formation-marker.webp",
         "width": 64,
         "height": 64,
         "mode": "image"
       },
       "image-art-paper-detail": {
-        "resource": "../../art/sticker-club/details-v1/ivory.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/ivory.webp",
         "width": 256,
         "height": 256,
         "mode": "tile"
       },
       "image-art-table-heading": {
-        "resource": "../../art/sticker-club/details-v1/table-heading.webp",
+        "resource": "../../art/sticker-club/page-refresh-v1/quiet.webp",
         "width": 256,
         "height": 256,
         "mode": "tile"

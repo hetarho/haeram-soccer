@@ -564,7 +564,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
-- r187 261030 WEB-11✎ truncated cup helper/plain overview→count-only slot and themed 컵대회 cards; WEB-18/96✎ separate mode text/change action→combined MODE button with adjacent approval settings; WEB-55/91✎ iron/bronze/silver/gold/elite→bronze/silver/gold/platinum/ruby; WEB-58/69✎ plain team sheets/button-like metrics→themed cards and navigation tabs; WEB-91✎ Lucide/rough sticker/shared weave→European cartoon icons, grass/clay/pixel controllers and yellow clay stickers
+- r187 261030 WEB-11✎ cup helper/plain list→count/cards; WEB-18/96✎ separate mode→MODE+approval buttons; WEB-55/91✎ iron/bronze/silver/gold/elite→bronze/silver/gold/platinum/ruby; WEB-58/69✎ plain sheet/metric buttons→cards/tabs; WEB-91✎ Lucide/grain/weave→cartoon icons, yellow clay and grass/clay/pixel transport
 - r186 261030 WEB-103✎ themed workbench document→independent readable workbench controls with game themes confined to component previews
 - r185 261030 WEB-105+ optional recorded goal clips with exact viewing-state return and no unseen live-goal disclosure; WEB-32✎ no replay control→ordinary controls unchanged with goal-clip exception; WEB-50+ reachable goal-replay shortcut
 - r184 261029 WEB-11✎ separate cup summaries→one equal season-card cup slot opening the current-cup overview; WEB-18✎ all management information rows→omitted in current League/Cup; WEB-40✎ separate return/competition controls→compact opaque pinned header; WEB-79✎ applied outline→secondary/tertiary filled applied choice

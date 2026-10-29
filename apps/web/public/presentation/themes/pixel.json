@@ -169,9 +169,9 @@
       "secondary-frame": "var(--image-panel-frame)",
       "secondary-text": "var(--image-ink-color)",
       "secondary-muted": "var(--image-muted)",
-      "image-transport-material": "var(--image-art-controller-weave)",
-      "transport-material-size": "128px",
-      "transport-material-blend": "soft-light",
+      "image-transport-material": "var(--image-art-controller-pixels)",
+      "transport-material-size": "64px",
+      "transport-material-blend": "normal",
       "transport-fill": "#c1cbb2",
       "transport-text": "#17221b",
       "transport-muted": "#354434",
@@ -696,6 +696,12 @@
       },
       "image-art-analysis-paper": {
         "resource": "../../art/pixel/details-v1/quiet.png",
+        "width": 32,
+        "height": 32,
+        "mode": "tile"
+      },
+      "image-art-controller-pixels": {
+        "resource": "../../art/pixel/page-refresh-v1/controller-pixels.png",
         "width": 32,
         "height": 32,
         "mode": "tile"

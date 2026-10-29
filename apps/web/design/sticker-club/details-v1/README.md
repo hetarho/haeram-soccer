@@ -1,5 +1,7 @@
 # Sticker Football Club component details
 
+Current page-refresh resources supersede the rough paper materials, orange primary, control plates and rating family described below; see [active clay/yellow recipe](../../page-refresh-v1/README.md). Earlier generation/review notes remain historical provenance.
+
 Implemented working artwork for T595, 2026-10-29. Read the [shared guide](../../DESIGN-SYSTEM.md),
 [resource contract](../../RESOURCE-SKINS.md) and [original family](../README.md).
 New controls retain cream die-cut rims, forest contours, flat faces and restrained graphic

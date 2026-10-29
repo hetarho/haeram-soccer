@@ -60,6 +60,16 @@
       "role": "image-art-rating-ruby",
       "mode": "nine-slice",
       "slice": 12
+    },
+    {
+      "file": "controller-pixels.png",
+      "source": "scripts/prepare-page-refresh.mjs#pixel-controller",
+      "bytes": 278,
+      "sha256": "2e9619a500dadc4b912b7ab899136222b131bd797f4275014b157cd8d07e25c1",
+      "width": 32,
+      "height": 32,
+      "role": "image-art-controller-pixels",
+      "mode": "tile"
     }
   ]
 }

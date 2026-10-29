@@ -1,5 +1,7 @@
 # Pixel UI sources
 
+The active page refresh adds a native integer-grid controller tile and bronze/silver/gold/platinum/ruby rating frames. See [current sources and regeneration](../page-refresh-v1/README.md). Run that recipe after the baseline recipes below to retain the current registered resources.
+
 `source.mjs` is the editable native source for the refreshed night-broadcast interface. It uses
 flat charcoal/grass materials, stepped fixed corners and the existing semantic pixel glyph paths.
 The small boot, manager, shirt, supporters and heart glyphs extend that same integer grid.

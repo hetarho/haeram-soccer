@@ -412,7 +412,6 @@
 | T600 | Receiver safety at the time of reception | MATCH SAVE ARCH | T599 | todo |
 | T601 | Recorded goal-scene replay | WEB MATCH SAVE ARCH | T600 | todo |
 
-| T605 | Theme illustration and material refresh | WEB ARCH | T604 | doing@261030.pg30 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -441,6 +440,7 @@
 - Engine explorations retain their fixed candidate corpus and compatibility rules; goal replay reads retained presentation facts and restores the original watch state without simulation or save changes.
 
 ## log
+- 261030 T605 done: 71 portable refresh resources, 32 cartoon icons, clay/yellow surfaces and native pixel controller; 61 focused units and pinned fast/resource checks pass. Final visual and publication gate follows.
 - 261030 T604 done: bronze-to-ruby ratings across all four packs, 32 rating/theme units plus resource/fast checks; T605 begins.
 - 261030 T603 done: shared page/cards/tabs/team sheets and combined mode/approval controls; 33 units and fast checks pass. T604 begins.
 - 261030 create-task WEB r187 → T603 shared pages/transport, T604 rating scale, T605 theme resources; pg30 begins T603, publication includes the preceding T602 fix.
@@ -460,4 +460,3 @@
 - 261029 create-task WEB r184: T594 compact competition header, home cup overview and filled applied choices.
 - 261029 update-ssot WEB start: compact current competition navigation, one home cup slot and filled applied delegation choices; owner authorizes unit-only validation and main push.
 - 261029 publication verified: combined match-view/model and Matchday Print code at 5568cc2d passes all 1732 unit tests on pinned Node 24.22.1; owner requests unit-only validation and immediate main push. Full integration/browser stages were cancelled, not counted as passed.
-- 261029 publication decision (owner): run unit tests only and push the combined main snapshot; stop the full batch run. Use the pinned Node 24.22.1 toolchain.

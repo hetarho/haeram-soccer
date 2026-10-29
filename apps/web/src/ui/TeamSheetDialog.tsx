@@ -69,15 +69,15 @@ function AllTimeMeetings({ w, id, client }: { w: World; id: string; client: Game
             · 득실 {record.gf}:{record.ga}
           </p>
           <dl className={s.teamFacts}>
-            <div>
+            <div data-surface="detail">
               <dt>리그</dt>
               <dd>{record.league}경기</dd>
             </div>
-            <div>
+            <div data-surface="detail">
               <dt>컵</dt>
               <dd>{record.cup}경기</dd>
             </div>
-            <div>
+            <div data-surface="detail">
               <dt>대륙 대회</dt>
               <dd>{record.europe}경기</dd>
             </div>
@@ -107,7 +107,7 @@ function AllTimeMeetings({ w, id, client }: { w: World; id: string; client: Game
                 </dd>
               </div>
             ))}
-            <div>
+            <div data-surface="detail">
               <dt>첫 맞대결</dt>
               <dd>{record.first ? seasonName(record.first) : '—'}</dd>
             </div>

@@ -277,3 +277,9 @@ When a resource disappears, inspect both the semantic role and computed styles: 
 background shorthand can override a lower-specificity shared rule. Review native controls,
 selected states, popovers and lazy sections, not only the default screenshot. Layout-only
 wrappers, live graph facts and text links do not each need a decorative card.
+
+The [current page-refresh family](page-refresh-v1/README.md) records the bronze-to-ruby scale,
+European cartoon icon atlas, smooth yellow clay stickers and theme-specific controllers.
+Preserve grass, clay and native pixel materials instead of sharing an unrelated cloth texture.
+Full-colour illustrated icons render their colours rather than a monochrome mask. Material
+changes must cover the main page planes and controls together, with matching text contrast.

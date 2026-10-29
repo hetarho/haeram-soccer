@@ -10,10 +10,27 @@ const render = (resource: IconResource) =>
   renderToStaticMarkup(
     createElement(SemanticIcon, { resource, semanticRole: 'chevronDown', size: 16 }),
   );
+const vector = {
+  type: 'svg',
+  viewBox: '0 0 24 24',
+  shapeRendering: 'geometricPrecision',
+  layers: [
+    {
+      d: 'm6 9 6 6 6-6',
+      fill: 'none',
+      stroke: 'currentColor',
+      strokeWidth: 2,
+      strokeLinecap: 'round',
+      strokeLinejoin: 'round',
+    },
+  ],
+} satisfies IconResource;
 
 describe('semantic SVG resources', () => {
   it('preserves the connected Lucide chevron and its round stroke through validation and rendering', () => {
-    const { icons } = validateThemePack(standardData);
+    const candidate = validateThemePack(standardData);
+    candidate.icons.chevronDown.default = vector;
+    const { icons } = validateThemePack(candidate);
     const chevron = icons.chevronDown.default;
     expect(chevron.type).toBe('svg');
     if (chevron.type !== 'svg') throw new Error('Expected a vector chevron');
@@ -26,6 +43,17 @@ describe('semantic SVG resources', () => {
     expect(markup).toContain('stroke-linecap="round"');
     expect(markup).toContain('stroke-linejoin="round"');
     expect(markup).toContain('aria-hidden="true"');
+  });
+
+  it('renders the painted Stadium Green icon as a decorative full-colour image', () => {
+    const { icons } = validateThemePack(standardData);
+    expect(icons.chevronDown.default.type).toBe('image');
+    const html = render(icons.chevronDown.default);
+    expect(html).toContain('<img');
+    expect(html).toContain('page-refresh-v1/icon-chevronDown.webp');
+    expect(html).toContain('width="16" height="16"');
+    expect(html).toContain('alt=""');
+    expect(html).toContain('aria-hidden="true"');
   });
 
   it('keeps filled pixel resources independent of the standard stroke style', () => {
@@ -43,8 +71,10 @@ describe('semantic SVG resources', () => {
       { strokeLinecap: 'triangle' },
       { strokeLinejoin: 'triangle' },
     ]) {
-      const candidate = structuredClone(standardData);
-      Object.assign(candidate.icons.chevronDown.default.layers[0], stroke);
+      const candidate = validateThemePack(standardData);
+      const invalid = structuredClone(vector);
+      Object.assign(invalid.layers[0], stroke);
+      candidate.icons.chevronDown.default = invalid;
       expect(() => validateThemePack(candidate)).toThrow();
     }
   });

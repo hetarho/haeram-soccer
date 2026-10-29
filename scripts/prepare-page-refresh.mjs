@@ -108,10 +108,12 @@ for (const id of ['matchday-print', 'standard', 'sticker-club', 'pixel']) {
       });
     }
     if (!ratingsOnly && id === 'standard') {
+      const iconRole = (name) =>
+        `image-art-icon-${name.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`;
       const icons = pipeline.decode('stadium-icons.png');
-      const bounds = isolatedAtlasBounds(icons, 4, 4, 160);
+      const bounds = isolatedAtlasBounds(icons, 4, 4, 160, { mergeParts: true });
       for (const [index, name] of UI_PICTOGRAMS.entries())
-        await crop(icons, index, 4, 4, `icon-${name}`, `image-art-icon-${name}`, 'image', bounds);
+        await crop(icons, index, 4, 4, `icon-${name}`, iconRole(name), 'image', bounds);
       const additional = [
         'eye',
         'news',
@@ -131,21 +133,12 @@ for (const id of ['matchday-print', 'standard', 'sticker-club', 'pixel']) {
         'trend',
       ];
       const details = pipeline.decode('stadium-details.png');
-      const detailBounds = isolatedAtlasBounds(details, 4, 4, 160);
+      const detailBounds = isolatedAtlasBounds(details, 4, 4, 160, { mergeParts: true });
       for (const [index, name] of additional.entries())
-        await crop(
-          details,
-          index,
-          4,
-          4,
-          `icon-${name}`,
-          `image-art-icon-${name}`,
-          'image',
-          detailBounds,
-        );
+        await crop(details, index, 4, 4, `icon-${name}`, iconRole(name), 'image', detailBounds);
       const roles = { table: 'league', more: 'menu', promotion: 'trend', relegation: 'switch' };
       for (const name of Object.keys(pack.icons).filter((role) => !role.startsWith('trophy.'))) {
-        const resource = pack.images.ui[`image-art-icon-${roles[name] ?? name}`];
+        const resource = pack.images.ui[iconRole(roles[name] ?? name)];
         if (resource)
           pack.icons[name] = {
             default: {
