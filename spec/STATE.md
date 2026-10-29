@@ -423,10 +423,11 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- Publish the combined match-view/model and Matchday Print changes after the ARCH-30 batch gate.
 - Continue owner-led Matchday Print review; apps/web/design/UI-COVERAGE.md records current coverage. Match-model follow-up stays in inbox suggest T580.
 
 ## log
+- 261029 publication verified: combined match-view/model and Matchday Print code at 5568cc2d passes all 1732 unit tests on pinned Node 24.22.1; owner requests unit-only validation and immediate main push. Full integration/browser stages were cancelled, not counted as passed.
+- 261029 publication decision (owner): run unit tests only and push the combined main snapshot; stop the full batch run. Use the pinned Node 24.22.1 toolchain.
 - 261029 publication integration: merge remote match-view/model changes with Matchday Print; combine WEB at r183, keep T579/T580 done, renumber the colliding design-system T582 as T593.
 - 261029 T583–T593 design-system batch verified for commit: 184 files including retained artwork/provenance; 1718 affected units, workbench boundary checks, type/lint, 115-file scoped format, resource checks and build pass.
 - 261029 T592 done: three visibly textured material planes, reusable Card and notebook consumer; source/prompts and review criterion retained after restoring reduced-size grain. 33 units, type/lint/format, art/presentation checks, build and representative desktop/mobile inspection pass.
@@ -445,5 +446,3 @@
 - 261029 WEB r175 documentation only (no code task): shared design guide, print source notes and web AGENTS/README discovery; 37 local links, scoped formatting and diff checks pass; palette proposal remains unapplied.
 - 261029 update-ssot WEB and shared design-system documentation start: preserve reusable decisions and distinguish working artwork from proposals.
 - 261029 T584 done: seven generated portable control skins (21,912 bytes), native stretch metadata, source/prompt/provenance and actual UI wiring; type/lint, 49 units, art checks, format, build and manual rendering verified.
-- 261029 WEB r174 and T584 start: replace CSS-only control treatment with generated, reusable bitmap skins.
-- 261029 T583 done: matchday-print button colours and bordered form controls; type/lint, 49 focused units, scoped formatting, build and served theme tokens verified.
