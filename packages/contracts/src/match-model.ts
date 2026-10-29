@@ -42,6 +42,10 @@ import {
  * Revision 8 keeps the side's shape around the ball: a showing teammate offers at a passing
  * distance and the rest hold width and depth (T561, →MATCH-17); careers on revisions 1–7 take it
  * the same way.
+ * Revision 9 has a forward through on goal face the keeper and shoot at once: he shields the ball
+ * only from outfielders, sets himself toward goal in a stride or two, nobody within 5 m is a clear
+ * chance and the keeper comes about half way, never onto him (T579, →MATCH-12, MATCH-16,
+ * MATCH-35); careers on revisions 1–8 take it the same way.
  */
 export const MATCH_MODEL_REVISIONS = [
   'continuous-aggregate-1',
@@ -52,10 +56,11 @@ export const MATCH_MODEL_REVISIONS = [
   'continuous-aggregate-6',
   'continuous-aggregate-7',
   'continuous-aggregate-8',
+  'continuous-aggregate-9',
 ] as const;
 export type MatchModelRevision = (typeof MATCH_MODEL_REVISIONS)[number];
 /** The revision new careers and upgraded ones play. */
-export const MATCH_MODEL_REVISION: MatchModelRevision = 'continuous-aggregate-8';
+export const MATCH_MODEL_REVISION: MatchModelRevision = 'continuous-aggregate-9';
 export const isMatchModelRevision = (value: unknown): value is MatchModelRevision =>
   (MATCH_MODEL_REVISIONS as readonly unknown[]).includes(value);
 /** A revision's number: 1 for the first. */

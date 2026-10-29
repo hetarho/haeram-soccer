@@ -73,6 +73,18 @@ export const SHAPE_CONFIG = {
     screen: { from: 55, reach: 34, pull: 1 },
     /** Revision 7 (T548, `keeperOut`): how far the keeper comes out to a carrier in his box. */
     keeperOut: { share: 0.8, most: 12 },
+    /**
+     * Revision 9 (T579, →MATCH-35 r42): the keeper comes about half of the way (`share`) and never
+     * onto the carrier: he stops at least `gap` m short of the ball, within `keeperOut.most`. Out
+     * of possession an outfielder leans goal-side of the nearest attacker within `markRadius` m of
+     * his place (`SHAPE_CONFIG.markRadius` before), so fewer forwards are left alone in front of
+     * goal (→MATCH-16: goals held by how often such chances arise). T579's screens before the
+     * keeper narrowed the shot (`SHOT_CONFIG.revision9`; 150 matches, goals a match): share 0.4
+     * 4.12, 0.5 3.85, 0.6 3.92; `markRadius` 14 3.47, 18 3.45. With it (grid-bands 50 / core 80,
+     * goals a match): gap 4 3.22 / 3.60, gap 3 3.32 / 3.38, share 0.4 4.02 / 3.63, share 0.6
+     * 4.12 / –, `markRadius` 18 3.36 / 3.95.
+     */
+    revision9: { keeperOut: { share: 0.5, gap: 3 }, markRadius: 14 },
     tactic: {
       possession: {
         advance: 7,
@@ -545,8 +557,11 @@ export function shapePlace(
   // On the candidate model only a press intention presses; this is the pre-feature presser.
   if (s.setup.model === undefined && (cache.pressers[side] ??= pressers(s, side)).includes(idx))
     return pressPoint(s, gp, [bx, by], false);
-  // Another outfielder leans toward the goal-side point of the nearest attacker around his spot.
-  let best: number = SHAPE_CONFIG.markRadius;
+  // Another outfielder leans toward the goal-side point of the nearest attacker around his spot,
+  // further around it on revision 9 (T579).
+  let best: number = modelAtLeast(s.setup, 9)
+    ? SHAPE_CONFIG.candidate.revision9.markRadius
+    : SHAPE_CONFIG.markRadius;
   // `attackFrame` inlined, so the scan allocates nothing.
   let found = false,
     nx = 0,
@@ -727,8 +742,9 @@ export function speedOf(s: GridState, gp: GridPlayer): number {
 /**
  * Revision 7 (T548, `SHAPE_CONFIG.candidate.keeperOut`): with an opponent carrying the ball in
  * his box, the keeper comes off his line toward it along the line from his goal's middle, `share`
- * of the way and at most `most` m out, narrowing the angle; `undefined` otherwise. `bx`, `by`: the
- * ball in his side's attack frame (his goal at x 0).
+ * of the way and at most `most` m out, narrowing the angle; `undefined` otherwise. On revision 9
+ * (T579, `revision9.keeperOut`) about half of the way and never closer than `gap` m to the ball.
+ * `bx`, `by`: the ball in his side's attack frame (his goal at x 0).
  */
 function keeperOut(s: GridState, side: 0 | 1, bx: number, by: number): Point | undefined {
   if (!modelAtLeast(s.setup, 7) || s.possession === side || !s.owner) return undefined;
@@ -736,7 +752,10 @@ function keeperOut(s: GridState, side: 0 | 1, bx: number, by: number): Point | u
   if (!inBox(attackFrame(other(side), s.ball))) return undefined;
   const d = s.math.hypot(bx, by - CENTRE);
   if (d <= 0) return undefined;
-  const reach = Math.min(K.most, d * K.share);
+  const R9 = SHAPE_CONFIG.candidate.revision9.keeperOut;
+  const reach = modelAtLeast(s.setup, 9)
+    ? Math.max(0, Math.min(K.most, d * R9.share, d - R9.gap))
+    : Math.min(K.most, d * K.share);
   return [(bx / d) * reach, CENTRE + ((by - CENTRE) / d) * reach];
 }
 

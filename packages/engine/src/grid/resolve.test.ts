@@ -43,6 +43,9 @@ import { computeTags } from './tags';
 import { gridKit } from './testkit';
 import { skill, strengthScaled, type GridState } from './state';
 
+/** Revision 8: the failed-pass split before revision 9 reads where its receiver takes it (T580). */
+const REVISION_8 = MATCH_MODEL_REVISIONS[7]!;
+
 /**
  * Every player at 60 with no day shift or drain, parked far away; side 0 carrier `slot` at `at`,
  * on the pre-feature path (candidate cases set the setup's model).
@@ -120,7 +123,7 @@ describe('grid open-play resolution', () => {
       [[60, 1], [60, 0], 'touch'],
     ] as [Point, Point, string][]) {
       const sc = scene(7, at);
-      sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      sc.s.setup = { ...sc.s.setup, model: REVISION_8 };
       sc.s.players[0][8]!.pos = [...at];
       const r = random('t437-no-length');
       const tags = sc.tags();
@@ -143,7 +146,7 @@ describe('grid open-play resolution', () => {
       F.malus = malus;
       try {
         const sc = scene(7, from);
-        if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+        if (candidate) sc.s.setup = { ...sc.s.setup, model: REVISION_8 };
         sc.s.players[0][8]!.pos = [...to];
         const r = random('t411-final-third');
         const tags = sc.tags();
@@ -242,9 +245,10 @@ describe('grid open-play resolution', () => {
     const I = DUEL_CONFIG.candidate.intercept;
     const P = DUEL_CONFIG.pass.lost;
     // The completion draw fails, then `u` splits the lost pass; a defender stands in the lane.
+    // Revision 8's split of the rest; revision 9 reads them at the receiver (T580).
     const lost = (u: number, x: number, tactic: Tactic, candidate: boolean) => {
       const sc = scene(7, [x, 34], ['balanced', tactic]);
-      if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      if (candidate) sc.s.setup = { ...sc.s.setup, model: REVISION_8 };
       sc.s.players[0][8]!.pos = [x + 10, 34];
       sc.s.players[1][3]!.pos = [x + 5, 34];
       const draws = [0.9999, u, 0.5, 0.5, 0.5, 0.5];
@@ -267,10 +271,13 @@ describe('grid open-play resolution', () => {
     }
   });
 
-  /** A failing candidate pass from [60, 34] to [75, 34], drawn `n` times; `foe` stands where given. */
+  /**
+   * A failing revision-8 pass from [60, 34] to [75, 34], drawn `n` times; `foe` stands where given
+   * (revision 9's split at the receiver has its own cases, T580).
+   */
   const failing = (n: number, seed: string, foe?: Point) => {
     const sc = scene(7, [60, 34], ['balanced', 'press']);
-    sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+    sc.s.setup = { ...sc.s.setup, model: REVISION_8 };
     sc.s.players[0][8]!.pos = [75, 34];
     if (foe) sc.s.players[1][3]!.pos = [...foe];
     set(sc.s, 0, 7, 'passing', 0);
@@ -435,9 +442,11 @@ describe('grid open-play resolution', () => {
 
   it("a keeper's distribution plays against the first opponent who reaches its path, as any pass (T441, →MATCH-11 r29)", () => {
     // A 30 m ball out of the box; the only defender near it stands `off` m off its line midway.
+    // Revision 8: on revision 9 a failed ball nobody cuts out is mostly kept by a free receiver
+    // (T580), which narrows the difference the reader makes.
     const rate = (passer: number, off: number, positioning: number) => {
       const sc = scene(passer, [10, 34]);
-      sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
+      sc.s.setup = { ...sc.s.setup, model: REVISION_8 };
       sc.s.players[0][8]!.pos = [40, 34];
       sc.s.players[1][3]!.pos = [25, 34 + off];
       set(sc.s, 1, 3, 'positioning', positioning);
@@ -995,6 +1004,89 @@ describe('revision 6 misplaced passes (T542, →MATCH-31)', () => {
     expect(outs(fifth, [62, 34])).toBeGreaterThan(0);
     expect(outs(sixth, [62, 34])).toBe(0);
     expect(outs(sixth, [58, 66])).toBeGreaterThan(0);
+  });
+});
+
+describe('revision 9 failed passes (T580, →MATCH-31)', () => {
+  const R = DUEL_CONFIG.candidate.revision9.receiver;
+  const press = DUEL_CONFIG.candidate.intercept.share.press;
+  /**
+   * A pass from [60, 34] to the receiver at [75, 34] against a pressing side, `foes` (side 1's
+   * slots 3 on) placed; `draws` start with the completion draw.
+   */
+  const pass = (model: MatchModelRevision, foes: Point[], draws: number[]) => {
+    const sc = scene(7, [60, 34], ['balanced', 'press']);
+    sc.s.setup = { ...sc.s.setup, model };
+    sc.s.players[0][8]!.pos = [75, 34];
+    foes.forEach((p, i) => (sc.s.players[1][3 + i]!.pos = [p[0], p[1]]));
+    const queue = [...draws];
+    return resolvePass(sc.s, 0, 7, 8, sc.tags(), 'short', false, () => queue.shift() ?? 0.5);
+  };
+  const ninth = MATCH_MODEL_REVISIONS[8]!;
+  const lostAt = (o: Outcome) => (o.kind === 'loose' || o.kind === 'foul' ? o.at : undefined);
+
+  it('revision 9: a failed pass with nobody near its receiver is a miscontrol or kept, never a 50/50', () => {
+    // Nobody reaches its path: the failed draws below `miscontrol` run `overrun` m past him, the
+    // rest he keeps; revision 8 lost them to a 50/50 at his feet.
+    for (const u of [0, R.miscontrol - 1e-6, R.miscontrol, 0.5, 0.95]) {
+      const o = pass(ninth, [], [0.9999, u]);
+      if (u < R.miscontrol) expect(lostAt(o)).toEqual([75 + R.overrun, 34]);
+      else expect(o).toEqual({ kind: 'complete', to: [75, 34], receiver: 8 });
+    }
+    expect(lostAt(pass(REVISION_8, [], [0.9999, 0.5]))).toEqual([75, 34]);
+    // A man in the lane who reaches it but does not cut it out (the draw past the press's share):
+    // what is left reads the receiver the same way, scaled to the draws past that share.
+    const inLane: Point[] = [[65, 34]];
+    expect(pass(ninth, inLane, [0.9999, press - 1e-6])).toMatchObject({
+      kind: 'intercepted',
+      by: 3,
+    });
+    const slip = press + R.miscontrol * (1 - press);
+    expect(lostAt(pass(ninth, inLane, [0.9999, slip - 1e-6]))).toEqual([75 + R.overrun, 34]);
+    expect(pass(ninth, inLane, [0.9999, slip + 1e-6]).kind).toBe('complete');
+    expect(lostAt(pass(REVISION_8, inLane, [0.9999, slip + 1e-6]))).toEqual([75, 34]);
+    // A miscontrol beside the touchline runs out over it.
+    const sc = scene(7, [60, 60], ['balanced', 'press']);
+    sc.s.setup = { ...sc.s.setup, model: ninth };
+    sc.s.players[0][8]!.pos = [62, 66.5];
+    const draws = [0.9999, 0];
+    expect(
+      resolvePass(sc.s, 0, 7, 8, sc.tags(), 'short', false, () => draws.shift() ?? 0.5),
+    ).toMatchObject({ kind: 'out', over: 'touch', lastTouch: 0 });
+    // Drawn: the failed passes are mostly kept, and every one lost runs on past him.
+    const scene9 = scene(7, [60, 34], ['balanced', 'press']);
+    scene9.s.setup = { ...scene9.s.setup, model: ninth };
+    scene9.s.players[0][8]!.pos = [75, 34];
+    set(scene9.s, 0, 7, 'passing', 0);
+    const r = random('t580-free');
+    const tags = scene9.tags();
+    const outcomes = Array.from({ length: 6000 }, () =>
+      resolvePass(scene9.s, 0, 7, 8, tags, 'short', false, r),
+    );
+    const lost = outcomes.filter((o) => o.kind !== 'complete');
+    expect(lost.length).toBeGreaterThan(100);
+    for (const o of lost) expect(lostAt(o)).toEqual([75 + R.overrun, 34]);
+  });
+
+  it("revision 9: a marked receiver's failed pass is a 50/50 at him", () => {
+    // A man 2 m from him, within `near`: every failed draw he does not cut out on the way is a
+    // 50/50 at the receiver, which revision 8 split with misplaced balls running past him.
+    const marker: Point[] = [[75, 36]];
+    expect(R.near).toBeGreaterThan(2);
+    for (const u of [0, R.miscontrol - 1e-6, 0.5, 0.95]) {
+      const o = pass(ninth, marker, [0.9999, u]);
+      if (o.kind === 'intercepted' || (lostAt(o) && lostAt(o)![0] < 75)) continue;
+      expect(lostAt(o)).toEqual([75, 34]);
+    }
+    expect(lostAt(pass(ninth, marker, [0.9999, 0.95]))).toEqual([75, 34]);
+    expect(lostAt(pass(REVISION_8, marker, [0.9999, 0.95]))![0]).toBeGreaterThan(75);
+    // His man wins some of those 50/50s and he keeps others; the receiver weighs less there.
+    const winners = new Set<number>();
+    for (let k = 0; k < 40; k++) {
+      const o = pass(ninth, marker, [0.9999, 0.95, k / 40, 0.99]);
+      if (o.kind === 'loose') winners.add(o.winner[0]);
+    }
+    expect([...winners].sort()).toEqual([0, 1]);
   });
 });
 

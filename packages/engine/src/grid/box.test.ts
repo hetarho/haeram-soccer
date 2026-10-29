@@ -10,6 +10,7 @@ import { BAND_EDGES, cellOf, clamp, LANE_EDGES, toEngine, type Point } from './p
 import {
   chanceXg,
   closingBlockers,
+  keeperNarrowing,
   resolveShot,
   SHOT_CONFIG,
   shotBlockers,
@@ -283,10 +284,15 @@ describe('the bodies in front of goal (→MATCH-35, T445)', () => {
     expect(shotBlockers(chased, 0, from)).toEqual([]);
     expect(closingBlockers(chased, 0, from, []).map((b) => b.gp.idx)).toEqual([5]);
     expect(shoot(s, 5000, 'open').block).toBe(0);
-    // With nobody in its path the shot's xG is the chance's.
+    // With nobody in its path the shot's xG is the chance's, narrowed on revision 9 by the keeper
+    // half a metre off his line (T579).
     const tags = computeTags(s, 0, 9);
     const o = resolveShot(s, 0, 9, tags, shotContext(s), random('open-xg'));
-    expect(o.xg).toBe(chanceXg(from, { pressure: tags.pressure, candidate: true }, s.math));
+    const narrowed = keeperNarrowing(s, 0, from, s.players[1][0]!);
+    expect(narrowed).toBeLessThan(1);
+    expect(o.xg).toBe(
+      chanceXg(from, { pressure: tags.pressure, candidate: true }, s.math) * narrowed,
+    );
     // 1.26 m off the edge (1.22 m square to it) he is in its path.
     const edge = shotLab(from, { 4: [100, 37.7] });
     expect(shotBlockers(edge, 0, from).map((b) => b.gp.idx)).toEqual([4]);

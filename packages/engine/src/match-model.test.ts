@@ -142,9 +142,9 @@ describe('the full match record (→MATCH-13, MATCH-27)', () => {
       return validateFullMatchRecord(r);
     };
     expect(missing((r) => delete (r as MatchRecord).model)).toEqual(['model revision missing']);
-    expect(missing((r) => ((r as MatchRecord).model = 'continuous-aggregate-9' as never))).toEqual([
-      'unknown model revision continuous-aggregate-9',
-    ]);
+    expect(missing((r) => ((r as MatchRecord).model = 'continuous-aggregate-10' as never))).toEqual(
+      ['unknown model revision continuous-aggregate-10'],
+    );
     expect(missing((r) => delete (r as MatchRecord).incidents)).toEqual(['incident list missing']);
     expect(missing((r) => delete (r as MatchRecord).xg)).toEqual(['team xG missing']);
     expect(missing((r) => delete (r as MatchRecord).added)).toEqual(['added time missing']);
@@ -409,13 +409,15 @@ describe('match-model revision 3 (→MATCH-2, SAVE-23, T466)', () => {
     seed: 'match-model-3',
     level: 'normal' as const,
   };
-  const [first, second, third, fourth, fifth, sixth, seventh, eighth] = MATCH_MODEL_REVISIONS;
+  const [first, second, third, fourth, fifth, sixth, seventh, eighth, ninth] =
+    MATCH_MODEL_REVISIONS;
   const REVISION_2: MatchModelRelease = { revision: second, enabled: true };
   const REVISION_3: MatchModelRelease = { revision: third, enabled: true };
   const REVISION_4: MatchModelRelease = { revision: fourth, enabled: true };
   const REVISION_5: MatchModelRelease = { revision: fifth, enabled: true };
   const REVISION_6: MatchModelRelease = { revision: sixth, enabled: true };
   const REVISION_7: MatchModelRelease = { revision: seventh, enabled: true };
+  const REVISION_8: MatchModelRelease = { revision: eighth, enabled: true };
   const w = createWorld(founding);
   const ability = (club: string) => clubManager(w, findClub(w, club)).ability;
   const nobodys = w.fixtures.filter(
@@ -590,8 +592,7 @@ describe('match-model revision 3 (→MATCH-2, SAVE-23, T466)', () => {
     expect(settled.length).toBeGreaterThan(0);
     expect(settled.every((m) => m.model === seventh)).toBe(true);
     const before = structuredClone(career);
-    expect(ENABLED_RELEASE.revision).toBe(eighth);
-    expect(activateMatchModel(career, ENABLED_RELEASE)).toBe(true);
+    expect(activateMatchModel(career, REVISION_8)).toBe(true);
     expect(career.matchModel).toEqual({ ...before.matchModel!, revision: eighth });
     expect(career.npcSeason).toEqual({ ...before.npcSeason!, model: eighth });
     expect(activateMatchModel(career, REVISION_7)).toBe(false);
@@ -601,5 +602,24 @@ describe('match-model revision 3 (→MATCH-2, SAVE-23, T466)', () => {
     const added = career.ownMatches.slice(settled.length);
     expect(added.length).toBeGreaterThan(0);
     expect(added.every((m) => m.model === eighth)).toBe(true);
+  });
+
+  it('a revision-8 world moves to revision 9 at the safe boundary (T579)', () => {
+    const career = structuredClone(simulatedWorld(founding, { rounds: 2 }, REVISION_8));
+    const settled = structuredClone(career.ownMatches);
+    expect(settled.length).toBeGreaterThan(0);
+    expect(settled.every((m) => m.model === eighth)).toBe(true);
+    const before = structuredClone(career);
+    expect(ENABLED_RELEASE.revision).toBe(ninth);
+    expect(activateMatchModel(career, ENABLED_RELEASE)).toBe(true);
+    expect(career.matchModel).toEqual({ ...before.matchModel!, revision: ninth });
+    expect(career.npcSeason).toEqual({ ...before.npcSeason!, model: ninth });
+    expect(activateMatchModel(career, REVISION_8)).toBe(false);
+    for (let n = 0; n < 2; n++) advanceRound(career, undefined, false);
+    // Settled records keep revision 8; only the fixtures played since take revision 9.
+    expect(canonical(career.ownMatches.slice(0, settled.length))).toBe(canonical(settled));
+    const added = career.ownMatches.slice(settled.length);
+    expect(added.length).toBeGreaterThan(0);
+    expect(added.every((m) => m.model === ninth)).toBe(true);
   });
 });

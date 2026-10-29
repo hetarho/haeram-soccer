@@ -16,6 +16,7 @@ import {
   chooseCarry,
   chooseDelivery,
   choosePass,
+  clearChance,
   decide,
   DECISION_CONFIG,
   keeperDistribution,
@@ -62,6 +63,12 @@ const place = (s: ReturnType<typeof scene>['s'], idx: number, p: Point) =>
  * the scene no clear chance (T542), in front of him it closes his open ground (T538).
  */
 const guard = (s: ReturnType<typeof scene>['s'], p: Point) => (s.players[1][3]!.pos = [...p]);
+/**
+ * An opponent (side 1's slot 4) 4.8 m behind the carrier at `at`: outside the pressure tag's
+ * radius, inside revision 9's 5 m, so with `guard` ahead the scene stays no clear chance (T579).
+ */
+const trail = (s: ReturnType<typeof scene>['s'], at: Point) =>
+  (s.players[1][4]!.pos = [at[0] - 4.8, at[1]]);
 function setSkills(
   s: ReturnType<typeof scene>['s'],
   idx: number,
@@ -289,8 +296,9 @@ describe('grid decisions', () => {
         ] as Point[]
       ).forEach((p, i) => place(sc.s, 1 + i, p));
       sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
-      // A defender in his path to goal, so it is no clear chance (T542).
+      // A defender in his path to goal and one trailing him, so it is no clear chance (T542, T579).
       guard(sc.s, [high[0] + 12, high[1]]);
+      trail(sc.s, high);
       return {
         passes: passOptions(sc.s, 0, CM, sc.tags()).filter((o) => o.target <= 4),
         mix: actionMix(sc.s, 0, CM, sc.tags()),
@@ -507,8 +515,10 @@ describe('grid decisions', () => {
       const at = centre(band, 2);
       const sc = scene(ST, at);
       if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
-      // The last defender between him and goal: alone he would have a clear chance (T542).
+      // The last defender between him and goal and one trailing him: alone he would have a clear
+      // chance (T542, T579).
       guard(sc.s, [Math.min(at[0] + 6.5, 104), at[1]]);
+      trail(sc.s, at);
       const mix = (inBehind: boolean) => actionMix(sc.s, 0, ST, { ...sc.tags(), inBehind });
       const [on, off] = [mix(true), mix(false)];
       return {
@@ -641,8 +651,9 @@ describe('grid decisions', () => {
     const ratio = (lead: number, candidate: boolean) => {
       const sc = scene(ST, at);
       if (candidate) sc.s.setup = { ...sc.s.setup, model: MATCH_MODEL_REVISION };
-      // A defender in his path, so it is no clear chance (T542).
+      // A defender in his path and one trailing him, so it is no clear chance (T542, T579).
       guard(sc.s, [at[0] + 6.5, at[1]]);
+      trail(sc.s, at);
       const mix = actionMix(sc.s, 0, ST, { ...sc.tags(), lead, minute: 20 });
       return mix.shot / mix.pass;
     };
@@ -1402,5 +1413,93 @@ describe('revision 7 clear chance (T548, →MATCH-16)', () => {
       const off = Math.abs(Math.atan2(end[1] - 34, end[0] - 75)) / (Math.PI / 180);
       expect(off).toBeLessThanOrEqual(30 + 1e-9);
     }
+  });
+
+  it('revision 9: nobody within 5 m is a clear chance', () => {
+    const [eighth, ninth] = MATCH_MODEL_REVISIONS.slice(7);
+    const alone = DECISION_CONFIG.candidate.revision9.clear.alone;
+    expect(alone).toBe(5);
+    const shot = (model: MatchModelRevision, man: Point) => {
+      const sc = on([92, 34], model, man);
+      return actionMix(sc.s, 0, ST, sc.tags()).shot;
+    };
+    // A man in the corridor 6 m ahead: revision 8 gives the chance up, revision 9 takes it.
+    const ahead: Point = [92 + alone + 1, 34];
+    expect(clearChance(on([92, 34], eighth!, ahead).s, 0, [92, 34])).toBe(false);
+    expect(clearChance(on([92, 34], ninth!, ahead).s, 0, [92, 34])).toBe(true);
+    expect(shot(eighth!, ahead)).toBeLessThan(K.shot);
+    expect(shot(ninth!, ahead)).toBeCloseTo(K.shot, 9);
+    // Within 5 m ahead of him it is no clear chance on either.
+    const close: Point = [92 + alone - 1, 34];
+    expect(clearChance(on([92, 34], ninth!, close).s, 0, [92, 34])).toBe(false);
+    expect(shot(ninth!, close)).toBeLessThan(K.shot);
+    // Its lanes and depth are revision 6's: out wide, or short of `from`, it is none.
+    expect(clearChance(on([92, 6], ninth!, [99, 20]).s, 0, [92, 6])).toBe(false);
+    expect(clearChance(on([60, 34], ninth!, [67, 34]).s, 0, [60, 34])).toBe(false);
+  });
+});
+
+describe('revision 9 tight receivers (T580, →MATCH-16)', () => {
+  const [eighth, ninth] = MATCH_MODEL_REVISIONS.slice(7) as MatchModelRevision[];
+  const T = DECISION_CONFIG.candidate.revision9.tight;
+  const B = 10;
+  /**
+   * A wide carrier at [80, 10] (no clear chance out there), the striker forward of him in the box
+   * at [95, 16], side 1's slot 3 at `man`; `free` puts slot 10 in the box at [96, 24] too.
+   */
+  const on = (model: MatchModelRevision, man: Point, decisions = 60, free = false) => {
+    const sc = scene(CM, [80, 10]);
+    sc.s.setup = { ...sc.s.setup, model };
+    setSkills(sc.s, CM, { decisions });
+    place(sc.s, ST, [95, 16]);
+    if (free) place(sc.s, B, [96, 24]);
+    guard(sc.s, man);
+    return sc;
+  };
+  const options = (sc: ReturnType<typeof on>) =>
+    passOptions(sc.s, 0, CM, sc.tags(), { judge: true });
+  const scoreOf = (sc: ReturnType<typeof on>, target = ST) =>
+    options(sc).find((o) => o.target === target)!.score;
+
+  it('revision 9: near the box a tightly marked receiver scores less', () => {
+    // A man 2 m from him: revision 9 scores him `tight.score` below revision 8.
+    const tight: Point = [95, 18];
+    expect(scoreOf(on(ninth!, tight))).toBeCloseTo(scoreOf(on(eighth!, tight)) - T.score, 9);
+    // 6 m off him he is no tight target.
+    const loose: Point = [95, 22];
+    expect(scoreOf(on(ninth!, loose))).toBeCloseTo(scoreOf(on(eighth!, loose)), 9);
+    // Short of `tight.from` a marked receiver scores as on revision 8.
+    const short = (model: MatchModelRevision) => {
+      const sc = on(model, [70, 16]);
+      sc.me.pos = [55, 10];
+      place(sc.s, ST, [70, 14]);
+      return scoreOf(sc);
+    };
+    expect(short(ninth!)).toBeCloseTo(short(eighth!), 9);
+    // Against a free man beside him, the tight one is chosen less often by `e^(−score / τ)`: surer
+    // with 판단력, whose temperature is lower.
+    const odds = (model: MatchModelRevision, decisions: number) => {
+      const sc = on(model, tight, decisions, true);
+      const o = options(sc);
+      const p = passProbabilities(o, temperature(sc.s, 0, CM, sc.tags()), sc.s.math);
+      return p[o.findIndex((x) => x.target === ST)]! / p[o.findIndex((x) => x.target === B)]!;
+    };
+    const sharp = odds(ninth!, 90) / odds(eighth!, 90);
+    const plain = odds(ninth!, 40) / odds(eighth!, 40);
+    expect(sharp).toBeLessThan(plain);
+    expect(plain).toBeLessThan(1);
+    // With room himself and only that tight man in the box, he passes `tight.pass` times as often
+    // against the rest of his mix.
+    const ratio = (model: MatchModelRevision, man: Point, closer?: Point) => {
+      const sc = on(model, man);
+      if (closer) sc.s.players[1][4]!.pos = [...closer];
+      const mix = actionMix(sc.s, 0, CM, sc.tags());
+      return mix.pass / mix.carry;
+    };
+    expect(ratio(ninth!, tight)).toBeCloseTo(ratio(eighth!, tight) * T.pass, 9);
+    // A free receiver there, or a man within `room` of the carrier, leaves it as it was.
+    expect(ratio(ninth!, loose)).toBeCloseTo(ratio(eighth!, loose), 9);
+    const close: Point = [80 + T.room - 1, 12];
+    expect(ratio(ninth!, tight, close)).toBeCloseTo(ratio(eighth!, tight, close), 9);
   });
 });

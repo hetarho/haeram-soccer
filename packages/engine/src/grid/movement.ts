@@ -20,8 +20,9 @@ import {
   toEngine,
 } from './pitch';
 import type { Restart, RestartPreparer } from './restarts';
+import { modelAtLeast } from './rules';
 import { intentionTarget, SHAPE_CONFIG, speedOf, targetOf, type ShapeCache } from './shape';
-import { kickOffPoint, onPitch, skill, type GridPlayer, type GridState } from './state';
+import { kickOffPoint, onPitch, skill, slotOf, type GridPlayer, type GridState } from './state';
 
 /**
  * Player motion. Top speed is `speedOf` (pace and fatigue); these bound how it changes. Initial
@@ -82,6 +83,13 @@ export const IN_STRIDE_CONFIG = {
    * (`DECISION_CONFIG.candidate.goalAreaCarry`), the carry before a shot needed no slowing.
    */
   shot: 1,
+  /**
+   * Revision 9 (T579, →MATCH-12 r42): only an outfielder makes him shield it, never the keeper
+   * coming out (`presserOf`); before a shot he sets himself straight at the goal centre, and with
+   * no outfield opponent within `near` m of him his carry before it lasts at most `windUp` match
+   * seconds (a stride or two), the rest of the action's time running after the kick.
+   */
+  revision9: { near: 5, windUp: 0.4 },
 } as const;
 
 /** The middle of the 1–99 attribute scale: the pace `IN_STRIDE_CONFIG.speed` is a stride of. */
@@ -283,16 +291,38 @@ export function strideSpeed(s: GridState, gp: GridPlayer): number {
   return (IN_STRIDE_CONFIG.speed * speedOf(s, gp)) / (base + (pace * AVERAGE_PACE) / 99);
 }
 
-/** The nearest opponent within `IN_STRIDE_CONFIG.pressureRadius` of him, who makes him shield it. */
+/**
+ * The nearest opponent within `IN_STRIDE_CONFIG.pressureRadius` of him, who makes him shield it; on
+ * revision 9 (T579) never the keeper.
+ */
 export function presserOf(s: GridState, gp: GridPlayer): GridPlayer | undefined {
+  const r9 = modelAtLeast(s.setup, 9);
   let near: GridPlayer | undefined,
     best: number = IN_STRIDE_CONFIG.pressureRadius;
   for (const o of s.players[gp.side === 0 ? 1 : 0]) {
-    if (!onPitch(o)) continue;
+    if (!onPitch(o) || (r9 && slotOf(s, o).position === 'GK')) continue;
     const d = s.math.hypot(o.pos[0] - gp.pos[0], o.pos[1] - gp.pos[1]);
     if (d <= best) [near, best] = [o, d];
   }
   return near;
+}
+
+/**
+ * How long `gp`'s carry before a shot lasts, given the `seconds` its action leaves (→MATCH-12 r42,
+ * T579): on revision 9 at most `IN_STRIDE_CONFIG.revision9.windUp` with no outfield opponent within
+ * `revision9.near` m of him, else `seconds`.
+ */
+export function shotWindUp(s: GridState, gp: GridPlayer, seconds: number): number {
+  if (!modelAtLeast(s.setup, 9)) return seconds;
+  const { near, windUp } = IN_STRIDE_CONFIG.revision9;
+  for (const o of s.players[gp.side === 0 ? 1 : 0])
+    if (
+      onPitch(o) &&
+      slotOf(s, o).position !== 'GK' &&
+      s.math.hypot(o.pos[0] - gp.pos[0], o.pos[1] - gp.pos[1]) < near
+    )
+      return seconds;
+  return Math.min(seconds, windUp);
 }
 
 /**
@@ -306,7 +336,9 @@ export function presserOf(s: GridState, gp: GridPlayer): GridPlayer | undefined 
  * the men they mark; the rest are read once, as `advance` reads them. A defender in `reads` turns,
  * from its `at` seconds on, to `to`: where the decided pass takes him once he reads it (T324's
  * early read, the carry being the kick's wind-up). `pace` scales his stride pace (a shot's
- * `IN_STRIDE_CONFIG.shot`). Moves everyone and the ball with him; the caller runs the clock.
+ * `IN_STRIDE_CONFIG.shot`). `straight` (a shot on revision 9, T579) takes him straight at `aim`,
+ * neither blended with his run nor away from a presser. Moves everyone and the ball with him; the
+ * caller runs the clock.
  */
 export function carryInStride(
   s: GridState,
@@ -316,14 +348,19 @@ export function carryInStride(
   cell?: number,
   reads?: ReadonlyMap<GridPlayer, { to: readonly [number, number]; at: number }>,
   pace = 1,
+  straight = false,
 ): void {
   const C = GRID_MOVEMENT_CONFIG;
   const vmax = strideSpeed(s, gp) * pace;
   const speed = s.math.hypot(gp.vel?.[0] ?? 0, gp.vel?.[1] ?? 0);
-  const [dx, dy] = strideHeading(s, gp, aim);
-  // A point past where his stride takes him, by its braking distance.
+  const [dx, dy] = strideHeading(s, gp, aim, straight);
+  // A point past where his stride takes him, by its braking distance; straight at `aim`, no
+  // further than it.
   const top = Math.max(vmax, speed);
-  const reach = top * seconds + (top * top) / (2 * C.braking);
+  const run = top * seconds + (top * top) / (2 * C.braking);
+  const reach = straight
+    ? Math.min(run, s.math.hypot(aim[0] - gp.pos[0], aim[1] - gp.pos[1]))
+    : run;
   const bounds = cell === undefined ? undefined : cellBounds(cell);
   /** Puts `p` back inside the cell on each axis it left; the attack frame mirrors each axis alone. */
   const keep = (p: [number, number], stop?: [number, number]) => {
@@ -386,24 +423,26 @@ export function carryInStride(
 /**
  * Which way the player on the ball takes it in stride (a unit vector): straight away from the
  * opponent close to him (`presserOf`), else his heading blended evenly with the direction to `aim`
- * — toward it when he stands or runs straight away from it.
+ * — toward it when he stands or runs straight away from it. `straight`: the direction to `aim`.
  */
-function strideHeading(
+export function strideHeading(
   s: GridState,
   gp: GridPlayer,
   aim: readonly [number, number],
+  straight = false,
 ): [number, number] {
   const { hypot } = s.math;
   const unit = (x: number, y: number): [number, number] => {
     const n = hypot(x, y);
     return n > 1e-9 ? [x / n, y / n] : [0, 0];
   };
+  const to = unit(aim[0] - gp.pos[0], aim[1] - gp.pos[1]);
+  if (straight) return to;
   const presser = presserOf(s, gp);
   if (presser) {
     const away = unit(gp.pos[0] - presser.pos[0], gp.pos[1] - presser.pos[1]);
     if (away[0] !== 0 || away[1] !== 0) return away;
   }
-  const to = unit(aim[0] - gp.pos[0], aim[1] - gp.pos[1]);
   const run = unit(gp.vel?.[0] ?? 0, gp.vel?.[1] ?? 0);
   const blended = unit(to[0] + run[0], to[1] + run[1]);
   return blended[0] !== 0 || blended[1] !== 0 ? blended : to;

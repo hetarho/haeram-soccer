@@ -172,9 +172,11 @@ function goalWorld() {
     country: 'ENG',
     name: 'Goal Feedback',
     color: '#224466',
-    // On match-model revision 8 goal-feedback-15's first match opens 2′ home, then 49′ and 77′ home
-    // (goal-feedback-14 on revision 7, T548; goal-feedback-8 on revision 6, T542; T561).
-    seed: 'goal-feedback-15',
+    // On match-model revision 9 with T580's pass side goal-feedback-28's first match opens 4′
+    // home, then 10′, 13′, 17′ and 24′ home, 80′ away and 89′ home (3′ home, then 12′ away and
+    // 21′, 43′ and 51′ home before T580; goal-feedback-15 on revision 8, T561; goal-feedback-14 on
+    // revision 7, T548; goal-feedback-8 on revision 6, T542; T579).
+    seed: 'goal-feedback-28',
     level: 'easy',
   });
   world.settings!.responsibilities.sales = 'delegated';

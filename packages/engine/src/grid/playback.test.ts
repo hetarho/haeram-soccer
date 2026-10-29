@@ -405,9 +405,10 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
 
   it("ends each period's last action inside its final minute, so it is drawn", () => {
     let periods = 0;
-    // Revision 8 (T561): this fixture is level after 90 minutes, so the timing assertions below
-    // cover both extra-time periods too (candidate-et-1 on revision 7, candidate-et-4 on 6).
-    const extraTimeId = 'candidate-et-5';
+    // Revision 9 with T580's pass side: this fixture is level after 90 minutes, so the timing
+    // assertions below cover both extra-time periods too (candidate-et-5 on revision 9 before T580
+    // and on 8, candidate-et-1 on revision 7, candidate-et-4 on 6).
+    const extraTimeId = 'candidate-et-10';
     for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', extraTimeId]) {
       const extraTime = id === extraTimeId;
       const { result, frames } =

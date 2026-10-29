@@ -32,7 +32,7 @@ import {
 } from './restarts';
 import { crossArrival, Tally, type GridDiagnostics } from './record';
 import { deliveryPoint, type DeliveryAim, type DeliveryKind } from './box';
-import { isLevel } from './rules';
+import { isLevel, modelAtLeast } from './rules';
 import type { GridSetup } from './setup';
 import { playShootout } from './shootout';
 import { moveAll, speedOf, startRuns, targetOf, type ShapeCache } from './shape';
@@ -71,6 +71,7 @@ import {
   prepareOnClock,
   readAt,
   reachSeconds,
+  shotWindUp,
   type BallSpeed,
   type MotionKnot,
   type Move,
@@ -600,11 +601,24 @@ export function playGrid(setup: GridSetup): GridResult {
     const aim = aimOf(side, idx, d);
     if (!aim) return undefined;
     const step = GRID_MOVEMENT_CONFIG.step;
-    const seconds = Math.floor((secondsOf(aim.key) * jitter - aim.flight) / step + 1e-9) * step;
+    let seconds = Math.floor((secondsOf(aim.key) * jitter - aim.flight) / step + 1e-9) * step;
+    // Revision 9 (T579, →MATCH-12 r42): a shot is struck soon after he chooses it — he sets
+    // himself straight at goal, in a stride or two with nobody close to him.
+    const windUp = modelAtLeast(s.setup, 9) && d.action === 'shot';
+    if (windUp) seconds = shotWindUp(s, gp, seconds);
     if (seconds <= 0) return undefined;
     const carry: Carry = { at: [gp.pos[0], gp.pos[1]], start: s.elapsed, seconds };
     const pace = d.action === 'shot' ? IN_STRIDE_CONFIG.shot : 1;
-    carryInStride(s, gp, aim.to, seconds, aim.cell, readsOf(side, d, aim.to, seconds), pace);
+    carryInStride(
+      s,
+      gp,
+      aim.to,
+      seconds,
+      aim.cell,
+      readsOf(side, d, aim.to, seconds),
+      pace,
+      windUp,
+    );
     s.t += seconds;
     s.elapsed += seconds;
     tally.carryEvent(side, idx, attackFrame(side, carry.at), attackFrame(side, gp.pos));

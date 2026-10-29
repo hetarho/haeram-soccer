@@ -17,6 +17,12 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261029 decided MATCH-31 T580: the acceptance read the receiver rule only where nobody reaches the pass's path, but near the box almost every path is reached (central ≤18 m passes: 2,372 of 2,572 on grid-bands 50) and 39% of the losses there came with nobody within 3 m of the receiver → every failed pass not cut out or deflected is read at its receiver, a reached path keeping its interception / deflection share (MATCH-31 r42's wording): such losses at a free receiver go to none, lost with nobody within 3 m 6.8% → 3.2% of those passes (alt: the no-reach branch only, as the impl note read — 6.3%, unchanged).
+- 261029 decided MATCH-23 T580: with free receivers keeping failed passes completion rose 78.0 → 85.6% (goals 3.76) → completion offset `DUEL_CONFIG.candidate.revision9.base` −0.10: 81.4%, goals 3.42, 25/37 on grid-bands 50 (alt: −0.05 83.5% 2.96 21/37 | −0.08 82.2% 3.86 23/37 | −0.12 80.3% 3.68 24/37 | −0.07 with `receiver.near` 4 81.6% 3.48 21/37); 50-match goals swing about ±0.3, so these differ within noise.
+- 261029 suggest MATCH-16 MATCH-31 T580: the carrier picks his target before his in-stride carry — 9.8% of central ≤18 m targets are tight (an opponent within 2.5 m) at the decision but 47% by the kick, as markers close on them meanwhile, and 71% of the losses there are 50/50s against that man; `tight.mark` 4 at the decision moved the kick's share only 42.3 → 41.4% → next lever: weigh a receiver by the defender who reaches him by the reception (MATCH-16's "how likely he is to keep it there"), or re-read the target at the kick (MATCH-16: options reroll only for a football reason).
+- 261029 decided MATCH-35 MATCH-11 T579: a forward alone now shoots at once and the keeper's position alone left goals at 4.88 a match (grid-bands 50) → the keeper narrows the shot: its chance scales by the share of the goal mouth he leaves open, against a keeper on his line's middle (`SHOT_CONFIG.revision9.narrow.reach` 1.5 m, resolve.ts beyond the task's touches), with the keeper half way and 3 m short of the ball: 3.32 goals and 25/37 at 50 (revision 8 3.82 and 23/37 on the same fixtures) (alt: reach 1.0, 3.68 | gap 4, 3.22 on bands but 3.60 on core 80 | markRadius 18, 3.36 / 3.95).
+- 261029 suggest MATCH-16 MATCH-23 T579: revision 9 takes 20.7 shots a team (revision 8 about 16) with possessions ending in a shot 22.9%, and on target and xG per shot sit at their floors as the keeper's narrowing lowers each chance — next lever how often a forward is left alone near the box (a defence goal-side near its box), not the shot in such a chance.
+- 261029 decided WEB-50 T582: `inkOn`'s #121212/white pair reaches only about 4.3:1 on mid-grey shirts → keep `inkOn` and switch to pure black where it falls under 4.5:1, which always reaches it there; halves drawn from the score plate's centre, so the split stays under the score although the back control sits on the home side (alt: plain `inkOn` with mid-tones under 4.5 | a 50% split off the score's centre).
 - 261029 decided MATCH-12 MATCH-16 MATCH-31 MATCH-35 T579 T580: owner's report (forward alone in front of goal stands, turns away; passes near the box go to defenders) → match-model revision 9 in two explore tasks, shot side first so the pass probe reads it in place (alt: one task | shot side only).
 - 261029 decided LAB-9 WEB-32 T578: which pause the lab's match view offers, since live observation has no pause button and the archived replay mode drops the speeds and charts → render Pitch in its live mode, whose pause is the game's (a timeline seek holds the instant, a speed resumes it), with the speeds, charts and details as the game shows a live match (alt: archived-replay mode with its play/pause button but no speeds or charts | a lab pause button, which would fork the view).
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
@@ -368,12 +374,12 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 182 | 182 | - | 0 |
+| WEB | 183 | 183 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
 | CLUB | 43 | 43 | - | 0 |
-| MATCH | 42 | 42 | - | 0 |
+| MATCH | 43 | 43 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 39 | 39 | - | 0 |
@@ -394,8 +400,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T579 | Revision 9: a forward through on goal faces the keeper and shoots at once | MATCH | - | todo |
-| T580 | Revision 9: a pass near the box is lost only where an opponent really gets to it | MATCH | T579 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -419,11 +423,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- Continue owner-led Matchday Print design review; source/preview coverage is recorded in apps/web/design/UI-COVERAGE.md.
-- Remaining match-model work: implement-task T579, then T580 (revision 9).
+- Publish the combined match-view/model and Matchday Print changes after the ARCH-30 batch gate.
+- Continue owner-led Matchday Print review; apps/web/design/UI-COVERAGE.md records current coverage. Match-model follow-up stays in inbox suggest T580.
 
 ## log
-- 261029 T582–T592 design-system batch verified for commit: 184 files including retained artwork/provenance; 1718 affected units, workbench boundary checks, type/lint, 115-file scoped format, resource checks and build pass.
+- 261029 publication integration: merge remote match-view/model changes with Matchday Print; combine WEB at r183, keep T579/T580 done, renumber the colliding design-system T582 as T593.
+- 261029 T583–T593 design-system batch verified for commit: 184 files including retained artwork/provenance; 1718 affected units, workbench boundary checks, type/lint, 115-file scoped format, resource checks and build pass.
 - 261029 T592 done: three visibly textured material planes, reusable Card and notebook consumer; source/prompts and review criterion retained after restoring reduced-size grain. 33 units, type/lint/format, art/presentation checks, build and representative desktop/mobile inspection pass.
 - 261029 WEB r182 and T592 start: three resource-backed surface levels, border-light fixture notebook and a shared Card with app/workbench examples.
 - 261029 T590/T591 done: primary-coloured charts, round/non-overlapping analytical formations and shared-resource coverage across 119 UI modules / 50 app previews; 54 units, type/lint/format, resource checks and build pass. Workbench administration chrome excluded per owner.
@@ -442,4 +447,3 @@
 - 261029 T584 done: seven generated portable control skins (21,912 bytes), native stretch metadata, source/prompt/provenance and actual UI wiring; type/lint, 49 units, art checks, format, build and manual rendering verified.
 - 261029 WEB r174 and T584 start: replace CSS-only control treatment with generated, reusable bitmap skins.
 - 261029 T583 done: matchday-print button colours and bordered form controls; type/lint, 49 focused units, scoped formatting, build and served theme tokens verified.
-- 261029 update-ssot WEB r173, create-task T583 and implementation start: matchday-print button colours and clearly bordered form controls.

@@ -747,6 +747,18 @@
           "value": 1,
           "comment": "The share of his stride pace a player keeps in the carry before a shot (T437): he sets himself to strike it, so it takes him less far toward goal than a carry before a pass. Neutral at 1. T437 screened it (calibration round 74, core 600 matches; 0.5: goals 3.09 → 2.78 a match, xG per shot 0.100 → 0.092) and kept 1: once fewer carries and take-ons ran into the goal area (`DECISION_CONFIG.candidate.goalAreaCarry`), the carry before a shot needed no slowing.",
           "loadTime": false
+        },
+        {
+          "path": "IN_STRIDE_CONFIG.revision9.near",
+          "value": 5,
+          "comment": "Revision 9 (T579, →MATCH-12 r42): only an outfielder makes him shield it, never the keeper coming out (`presserOf`); before a shot he sets himself straight at the goal centre, and with no outfield opponent within `near` m of him his carry before it lasts at most `windUp` match seconds (a stride or two), the rest of the action's time running after the kick.",
+          "loadTime": false
+        },
+        {
+          "path": "IN_STRIDE_CONFIG.revision9.windUp",
+          "value": 0.4,
+          "comment": "Revision 9 (T579, →MATCH-12 r42): only an outfielder makes him shield it, never the keeper coming out (`presserOf`); before a shot he sets himself straight at the goal centre, and with no outfield opponent within `near` m of him his carry before it lasts at most `windUp` match seconds (a stride or two), the rest of the action's time running after the kick.",
+          "loadTime": false
         }
       ]
     },
@@ -1390,6 +1402,30 @@
           "value": 99,
           "comment": "The deepest a won take-on ends (T437, →MATCH-11, the attack frame's metres), though always a metre past the man he beat: a defender beaten in the box leaves the attacker a strike from where he went past him, not a run into the six-yard box. Neutral at 104.5 (`takeOn.past`'s own bound). T437 keeps 99, short of the goal area's band (99.5 m, where the shot's in-stride carry would stay), with `DECISION_CONFIG.candidate.goalAreaCarry`.",
           "loadTime": false
+        },
+        {
+          "path": "DUEL_CONFIG.candidate.revision9.base",
+          "value": -0.1,
+          "comment": "Revision 9 (T580, →MATCH-31 r42): a failed pass is lost where it really is. Not cut out or deflected where an opponent reaches its path, it is lost at its receiver only against an opponent within `receiver.near` m of where he takes it (a 50/50 there, his weight `pass.receiverLoose`); with nobody that near he keeps it but for a miscontrol, `miscontrol` of those failed draws, which runs `overrun` m past him along the pass and loose (out only over a line). `base` is added to `pass.base` on revision 9, the lever that holds MATCH-23's pass completion once those balls are kept. T580's screens (grid-bands 50; completion %, goals a match, rows inside): `base` 0 85.6 3.76 22, −0.05 83.5 2.96 21, −0.08 82.2 3.86 23, −0.10 81.4 3.42 25, −0.12 80.3 3.68 24; −0.07 with `near` 4 81.6 3.48 21; `miscontrol` 0.4 at 0 84.1 3.78 22; this rule only where nobody reaches the path, at 0, 80.6 3.72 26 (revision 9 before, 78.0 3.32 25).",
+          "loadTime": false
+        },
+        {
+          "path": "DUEL_CONFIG.candidate.revision9.receiver.near",
+          "value": 3,
+          "comment": "Revision 9 (T580, →MATCH-31 r42): a failed pass is lost where it really is. Not cut out or deflected where an opponent reaches its path, it is lost at its receiver only against an opponent within `receiver.near` m of where he takes it (a 50/50 there, his weight `pass.receiverLoose`); with nobody that near he keeps it but for a miscontrol, `miscontrol` of those failed draws, which runs `overrun` m past him along the pass and loose (out only over a line). `base` is added to `pass.base` on revision 9, the lever that holds MATCH-23's pass completion once those balls are kept. T580's screens (grid-bands 50; completion %, goals a match, rows inside): `base` 0 85.6 3.76 22, −0.05 83.5 2.96 21, −0.08 82.2 3.86 23, −0.10 81.4 3.42 25, −0.12 80.3 3.68 24; −0.07 with `near` 4 81.6 3.48 21; `miscontrol` 0.4 at 0 84.1 3.78 22; this rule only where nobody reaches the path, at 0, 80.6 3.72 26 (revision 9 before, 78.0 3.32 25).",
+          "loadTime": false
+        },
+        {
+          "path": "DUEL_CONFIG.candidate.revision9.receiver.miscontrol",
+          "value": 0.25,
+          "comment": "Revision 9 (T580, →MATCH-31 r42): a failed pass is lost where it really is. Not cut out or deflected where an opponent reaches its path, it is lost at its receiver only against an opponent within `receiver.near` m of where he takes it (a 50/50 there, his weight `pass.receiverLoose`); with nobody that near he keeps it but for a miscontrol, `miscontrol` of those failed draws, which runs `overrun` m past him along the pass and loose (out only over a line). `base` is added to `pass.base` on revision 9, the lever that holds MATCH-23's pass completion once those balls are kept. T580's screens (grid-bands 50; completion %, goals a match, rows inside): `base` 0 85.6 3.76 22, −0.05 83.5 2.96 21, −0.08 82.2 3.86 23, −0.10 81.4 3.42 25, −0.12 80.3 3.68 24; −0.07 with `near` 4 81.6 3.48 21; `miscontrol` 0.4 at 0 84.1 3.78 22; this rule only where nobody reaches the path, at 0, 80.6 3.72 26 (revision 9 before, 78.0 3.32 25).",
+          "loadTime": false
+        },
+        {
+          "path": "DUEL_CONFIG.candidate.revision9.receiver.overrun",
+          "value": 3,
+          "comment": "Revision 9 (T580, →MATCH-31 r42): a failed pass is lost where it really is. Not cut out or deflected where an opponent reaches its path, it is lost at its receiver only against an opponent within `receiver.near` m of where he takes it (a 50/50 there, his weight `pass.receiverLoose`); with nobody that near he keeps it but for a miscontrol, `miscontrol` of those failed draws, which runs `overrun` m past him along the pass and loose (out only over a line). `base` is added to `pass.base` on revision 9, the lever that holds MATCH-23's pass completion once those balls are kept. T580's screens (grid-bands 50; completion %, goals a match, rows inside): `base` 0 85.6 3.76 22, −0.05 83.5 2.96 21, −0.08 82.2 3.86 23, −0.10 81.4 3.42 25, −0.12 80.3 3.68 24; −0.07 with `near` 4 81.6 3.48 21; `miscontrol` 0.4 at 0 84.1 3.78 22; this rule only where nobody reaches the path, at 0, 80.6 3.72 26 (revision 9 before, 78.0 3.32 25).",
+          "loadTime": false
         }
       ]
     },
@@ -1453,6 +1489,12 @@
           "path": "SHOT_CONFIG.candidate.header",
           "value": 0.42,
           "comment": "Candidate model only (T278, →MATCH-23): a header's chance quality, in place of `header`.",
+          "loadTime": false
+        },
+        {
+          "path": "SHOT_CONFIG.revision9.narrow.reach",
+          "value": 1.5,
+          "comment": "Revision 9 (T579, →MATCH-35 r42, MATCH-11): the keeper narrows the angle. From the shot, he covers the goal mouth within `reach` m either side of him; a shot's chance scales by the share of the mouth he leaves open against the share a keeper on his goal line's middle leaves (`keeperNarrowing`), so a keeper off his line toward the ball takes chances away and one caught out of position gives them.",
           "loadTime": false
         }
       ]
@@ -3189,6 +3231,42 @@
           "loadTime": false
         },
         {
+          "path": "DECISION_CONFIG.candidate.revision9.clear.alone",
+          "value": 5,
+          "comment": "Revision 9 (T579, →MATCH-16 r42): a carrier in `revision6.clear`'s lanes and depth with no outfield opponent within `clear.alone` m of him has a clear chance, whoever stands ahead of him further off; the shot share floor and the carry further out hold as revision 6/7's.",
+          "loadTime": false
+        },
+        {
+          "path": "DECISION_CONFIG.candidate.revision9.tight.from",
+          "value": 75,
+          "comment": "T580 (→MATCH-16 r42): in and around the opponents' box (`tight.from` m up the pitch on) a receiver with an opponent within `mark` m of him scores `score` less as a pass target, so the carrier's temperature makes the choice surer with 판단력. A carrier there with no opponent within `room` m of him, whose forward and lateral receivers in the box are all that tight, passes `pass` times as often and shoots or carries by the rest of his mix.",
+          "loadTime": false
+        },
+        {
+          "path": "DECISION_CONFIG.candidate.revision9.tight.mark",
+          "value": 2.5,
+          "comment": "T580 (→MATCH-16 r42): in and around the opponents' box (`tight.from` m up the pitch on) a receiver with an opponent within `mark` m of him scores `score` less as a pass target, so the carrier's temperature makes the choice surer with 판단력. A carrier there with no opponent within `room` m of him, whose forward and lateral receivers in the box are all that tight, passes `pass` times as often and shoots or carries by the rest of his mix.",
+          "loadTime": false
+        },
+        {
+          "path": "DECISION_CONFIG.candidate.revision9.tight.score",
+          "value": 0.6,
+          "comment": "T580 (→MATCH-16 r42): in and around the opponents' box (`tight.from` m up the pitch on) a receiver with an opponent within `mark` m of him scores `score` less as a pass target, so the carrier's temperature makes the choice surer with 판단력. A carrier there with no opponent within `room` m of him, whose forward and lateral receivers in the box are all that tight, passes `pass` times as often and shoots or carries by the rest of his mix.",
+          "loadTime": false
+        },
+        {
+          "path": "DECISION_CONFIG.candidate.revision9.tight.room",
+          "value": 5,
+          "comment": "T580 (→MATCH-16 r42): in and around the opponents' box (`tight.from` m up the pitch on) a receiver with an opponent within `mark` m of him scores `score` less as a pass target, so the carrier's temperature makes the choice surer with 판단력. A carrier there with no opponent within `room` m of him, whose forward and lateral receivers in the box are all that tight, passes `pass` times as often and shoots or carries by the rest of his mix.",
+          "loadTime": false
+        },
+        {
+          "path": "DECISION_CONFIG.candidate.revision9.tight.pass",
+          "value": 0.5,
+          "comment": "T580 (→MATCH-16 r42): in and around the opponents' box (`tight.from` m up the pitch on) a receiver with an opponent within `mark` m of him scores `score` less as a pass target, so the carrier's temperature makes the choice surer with 판단력. A carrier there with no opponent within `room` m of him, whose forward and lateral receivers in the box are all that tight, passes `pass` times as often and shoots or carries by the rest of his mix.",
+          "loadTime": false
+        },
+        {
           "path": "DECISION_CONFIG.candidate.longShotScale",
           "value": 3.5,
           "comment": "Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+. T370: 4 → 3.5, so fewer box shots do not push the shot places outside and from 30 m+.",
@@ -3843,6 +3921,24 @@
           "path": "SHAPE_CONFIG.candidate.keeperOut.most",
           "value": 12,
           "comment": "Revision 7 (T548, `keeperOut`): how far the keeper comes out to a carrier in his box.",
+          "loadTime": false
+        },
+        {
+          "path": "SHAPE_CONFIG.candidate.revision9.keeperOut.share",
+          "value": 0.5,
+          "comment": "Revision 9 (T579, →MATCH-35 r42): the keeper comes about half of the way (`share`) and never onto the carrier: he stops at least `gap` m short of the ball, within `keeperOut.most`. Out of possession an outfielder leans goal-side of the nearest attacker within `markRadius` m of his place (`SHAPE_CONFIG.markRadius` before), so fewer forwards are left alone in front of goal (→MATCH-16: goals held by how often such chances arise). T579's screens before the keeper narrowed the shot (`SHOT_CONFIG.revision9`; 150 matches, goals a match): share 0.4 4.12, 0.5 3.85, 0.6 3.92; `markRadius` 14 3.47, 18 3.45. With it (grid-bands 50 / core 80, goals a match): gap 4 3.22 / 3.60, gap 3 3.32 / 3.38, share 0.4 4.02 / 3.63, share 0.6 4.12 / –, `markRadius` 18 3.36 / 3.95.",
+          "loadTime": false
+        },
+        {
+          "path": "SHAPE_CONFIG.candidate.revision9.keeperOut.gap",
+          "value": 3,
+          "comment": "Revision 9 (T579, →MATCH-35 r42): the keeper comes about half of the way (`share`) and never onto the carrier: he stops at least `gap` m short of the ball, within `keeperOut.most`. Out of possession an outfielder leans goal-side of the nearest attacker within `markRadius` m of his place (`SHAPE_CONFIG.markRadius` before), so fewer forwards are left alone in front of goal (→MATCH-16: goals held by how often such chances arise). T579's screens before the keeper narrowed the shot (`SHOT_CONFIG.revision9`; 150 matches, goals a match): share 0.4 4.12, 0.5 3.85, 0.6 3.92; `markRadius` 14 3.47, 18 3.45. With it (grid-bands 50 / core 80, goals a match): gap 4 3.22 / 3.60, gap 3 3.32 / 3.38, share 0.4 4.02 / 3.63, share 0.6 4.12 / –, `markRadius` 18 3.36 / 3.95.",
+          "loadTime": false
+        },
+        {
+          "path": "SHAPE_CONFIG.candidate.revision9.markRadius",
+          "value": 14,
+          "comment": "Revision 9 (T579, →MATCH-35 r42): the keeper comes about half of the way (`share`) and never onto the carrier: he stops at least `gap` m short of the ball, within `keeperOut.most`. Out of possession an outfielder leans goal-side of the nearest attacker within `markRadius` m of his place (`SHAPE_CONFIG.markRadius` before), so fewer forwards are left alone in front of goal (→MATCH-16: goals held by how often such chances arise). T579's screens before the keeper narrowed the shot (`SHOT_CONFIG.revision9`; 150 matches, goals a match): share 0.4 4.12, 0.5 3.85, 0.6 3.92; `markRadius` 14 3.47, 18 3.45. With it (grid-bands 50 / core 80, goals a match): gap 4 3.22 / 3.60, gap 3 3.32 / 3.38, share 0.4 4.02 / 3.63, share 0.6 4.12 / –, `markRadius` 18 3.36 / 3.95.",
           "loadTime": false
         },
         {
