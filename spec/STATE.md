@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| r9k5 | hq-dev1-pve2-vm2 | autopilot | 2026-10-29T05:01Z | 2026-10-29T05:01Z | - |
 
 ## inbox
 - 261029 decided MATCH-35 MATCH-11 T579: a forward alone now shoots at once and the keeper's position alone left goals at 4.88 a match (grid-bands 50) → the keeper narrows the shot: its chance scales by the share of the goal mouth he leaves open, against a keeper on his line's middle (`SHOT_CONFIG.revision9.narrow.reach` 1.5 m, resolve.ts beyond the task's touches), with the keeper half way and 3 m short of the ball: 3.32 goals and 25/37 at 50 (revision 8 3.82 and 23/37 on the same fixtures) (alt: reach 1.0, 3.68 | gap 4, 3.22 on bands but 3.60 on core 80 | markRadius 18, 3.36 / 3.95).
