@@ -21,3 +21,6 @@ are unchanged. Image materials never filter the live HTML labels or game-driven 
 
 Store review captures/profiles in ignored `.tmp/` and remove them after recording verification.
 Follow the [shared theme contract](../../../../spec/ssot/ARCH.md).
+
+The [component-detail extension](details-v1/README.md) records current controls, neutral material
+planes, ratings, table/tab hierarchy and analysis resources, with its separate regeneration recipe.

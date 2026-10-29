@@ -15,8 +15,10 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| thar | hq-dev1-pve2-vm2 | autopilot | 2026-10-29T09:39Z | 2026-10-29T09:39Z | T595 |
 
 ## inbox
+- 261029 decided WEB-91 WEB-104 T595: complete other themes under the shared guide → fill Stadium Green, Pixel and Sticker Club's missing component resources in their existing art families (alt: new theme concepts | palette-only variants); owner authorizes origin/main push when complete or the current checkpoint by 21:30 KST today.
 - 261029 decided MATCH-31 T580: the acceptance read the receiver rule only where nobody reaches the pass's path, but near the box almost every path is reached (central ≤18 m passes: 2,372 of 2,572 on grid-bands 50) and 39% of the losses there came with nobody within 3 m of the receiver → every failed pass not cut out or deflected is read at its receiver, a reached path keeping its interception / deflection share (MATCH-31 r42's wording): such losses at a free receiver go to none, lost with nobody within 3 m 6.8% → 3.2% of those passes (alt: the no-reach branch only, as the impl note read — 6.3%, unchanged).
 - 261029 decided MATCH-23 T580: with free receivers keeping failed passes completion rose 78.0 → 85.6% (goals 3.76) → completion offset `DUEL_CONFIG.candidate.revision9.base` −0.10: 81.4%, goals 3.42, 25/37 on grid-bands 50 (alt: −0.05 83.5% 2.96 21/37 | −0.08 82.2% 3.86 23/37 | −0.12 80.3% 3.68 24/37 | −0.07 with `receiver.near` 4 81.6% 3.48 21/37); 50-match goals swing about ±0.3, so these differ within noise.
 - 261029 suggest MATCH-16 MATCH-31 T580: the carrier picks his target before his in-stride carry — 9.8% of central ≤18 m targets are tight (an opponent within 2.5 m) at the decision but 47% by the kick, as markers close on them meanwhile, and 71% of the losses there are 50/50s against that man; `tight.mark` 4 at the decision moved the kick's share only 42.3 → 41.4% → next lever: weigh a receiver by the defender who reaches him by the reception (MATCH-16's "how likely he is to keep it there"), or re-read the target at the kick (MATCH-16: options reroll only for a football reason).
@@ -400,6 +402,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T595 | Complete alternative theme resources | WEB ARCH | - | doing@261029.thar |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -423,9 +426,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- Continue owner-led Matchday Print review; apps/web/design/UI-COVERAGE.md records current coverage. Match-model follow-up stays in inbox suggest T580.
+- Complete T595 alternative-theme artwork and publish origin/main by 21:30 KST; report: reports/261029-thar.md. Match-model follow-up stays in inbox suggest T580.
 
 ## log
+- 261029 T595 start: complete missing portable controls, hierarchy, materials, ratings and analysis resources for all three alternative themes; owner requests completion/deadline push.
 - 261029 T594 done: compact opaque League/Cup navigation, one home cup slot and secondary-filled applied choices; 242 affected unit tests, typecheck, lint, scoped format and build pass. Owner requests unit-only testing and main push; integration/browser/CI waits omitted.
 - 261029 create-task WEB r184: T594 compact competition header, home cup overview and filled applied choices.
 - 261029 update-ssot WEB start: compact current competition navigation, one home cup slot and filled applied delegation choices; owner authorizes unit-only validation and main push.
@@ -445,4 +449,3 @@
 - 261029 WEB r178 and T587 preparation: owner requests five visible overall-rating levels with designed background/frame artwork; finish T586 sizing/alignment first.
 - 261029 WEB r177 and T586 start: shrink inline attribute ratings and align labels/values without changing profile cards.
 - 261029 T585 done: four image hierarchy resources (6240 bytes), compact Panel/Attributes spacing and quiet table/tab treatments; type/lint, 53 units, art/presentation checks, format, build and actual desktop/mobile rendering pass.
-- 261029 WEB r176 and T585 start: resource-backed tab/panel/table hierarchy, compact spacing and shared design guidance.

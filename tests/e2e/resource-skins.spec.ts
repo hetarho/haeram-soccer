@@ -14,10 +14,15 @@ async function imageSkin(element: Locator) {
   await expect(element).toBeVisible();
   const skin = await element.evaluate((node) => {
     const css = getComputedStyle(node);
-    return { material: css.backgroundImage, frame: css.borderImageSource };
+    return {
+      material: css.backgroundImage,
+      frame: css.borderImageSource,
+      slice: css.borderImageSlice,
+    };
   });
-  expect(skin.material).toContain('/art/');
   expect(skin.frame).toContain('/art/');
+  // A full-surface skin draws its authored centre through border-image's fill keyword.
+  expect(skin.material.includes('/art/') || skin.slice.split(/\s+/).includes('fill')).toBe(true);
 }
 
 for (const theme of readPresentationBaselines().themeRegistry.entries) {

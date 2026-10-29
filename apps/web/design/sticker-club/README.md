@@ -17,3 +17,6 @@ The resource contract is documented in
 [Presentation pack contracts](../../../../apps/web/src/presentation/contracts.ts). Keep disposable review captures and
 isolated browser profiles in ignored `.tmp/`, following the
 [shared theme contract](../../../../spec/ssot/ARCH.md).
+
+The [component-detail extension](details-v1/README.md) records current controls, material planes,
+rating tiers, table/tab hierarchy and analysis resources, with its separate regeneration recipe.

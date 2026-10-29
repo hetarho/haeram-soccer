@@ -1,0 +1,221 @@
+{
+  "method": "Native integer-grid SVG detail sources; shared lossless PNG encoding",
+  "date": "2026-10-29",
+  "sources": "apps/web/design/pixel-ui",
+  "sourceHashes": {
+    "source.mjs": "fc4cd9dc5d7a7ae3242d2e368e97af4987e2ab5d8f373126eb84122a8c8aceef"
+  },
+  "geometry": "128px stepped frames with 16px caps; 32px material and glyph grid. No interpolation.",
+  "assets": [
+    {
+      "file": "frame-secondary.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#frame-secondary",
+      "bytes": 1060,
+      "sha256": "c079744e18e6cbda5d982a3edc40593157116317c124e9379cb6ebc755badbc0",
+      "width": 128,
+      "height": 128,
+      "role": "image-art-control-secondary",
+      "mode": "nine-slice",
+      "slice": 16
+    },
+    {
+      "file": "frame-tertiary.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#frame-tertiary",
+      "bytes": 1055,
+      "sha256": "9ce72411b0a46282cacf6be622bb87a87c7b24bb8d2a5b49c64cfe465f601864",
+      "width": 128,
+      "height": 128,
+      "role": "image-art-control-tertiary",
+      "mode": "nine-slice",
+      "slice": 16
+    },
+    {
+      "file": "frame-input.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#frame-input",
+      "bytes": 1063,
+      "sha256": "50e87bb79ca8b3b549eb8effba65a0464ad8a2b21963f42786e104dd941763b0",
+      "width": 128,
+      "height": 128,
+      "role": "image-art-control-input",
+      "mode": "nine-slice",
+      "slice": 16
+    },
+    {
+      "file": "frame-dropdown.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#frame-dropdown",
+      "bytes": 1063,
+      "sha256": "50e87bb79ca8b3b549eb8effba65a0464ad8a2b21963f42786e104dd941763b0",
+      "width": 128,
+      "height": 128,
+      "role": "image-art-control-dropdown",
+      "mode": "nine-slice",
+      "slice": 16
+    },
+    {
+      "file": "frame-disabled.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#frame-disabled",
+      "bytes": 1055,
+      "sha256": "04ea61e9cb2736d4e0450a61a06cae29a4aa0f31ebbb9f7d9a0e8df2cc4321c2",
+      "width": 128,
+      "height": 128,
+      "role": "image-art-control-disabled",
+      "mode": "nine-slice",
+      "slice": 16
+    },
+    {
+      "file": "frame-rating-iron.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#frame-rating-iron",
+      "bytes": 1059,
+      "sha256": "b22c75b3358b9857229ab98b66d0bbaf741d7af119ec11c4c66a250a8669d386",
+      "width": 128,
+      "height": 128,
+      "role": "image-art-rating-iron",
+      "mode": "nine-slice",
+      "slice": 16
+    },
+    {
+      "file": "frame-rating-bronze.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#frame-rating-bronze",
+      "bytes": 1059,
+      "sha256": "e0314bc1d1e2147499a72fe2ebdf8e7c03f9c3fd1ff2351ec537a1a2a2238966",
+      "width": 128,
+      "height": 128,
+      "role": "image-art-rating-bronze",
+      "mode": "nine-slice",
+      "slice": 16
+    },
+    {
+      "file": "frame-rating-silver.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#frame-rating-silver",
+      "bytes": 1056,
+      "sha256": "ccfb845b5b65b65539608424e2942cf05929493695ae6cf02e76edd1ef5dc833",
+      "width": 128,
+      "height": 128,
+      "role": "image-art-rating-silver",
+      "mode": "nine-slice",
+      "slice": 16
+    },
+    {
+      "file": "frame-rating-gold.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#frame-rating-gold",
+      "bytes": 1060,
+      "sha256": "f455d2bd3d60d297d0ab8fc86e97a984ac3970327c2acaa0a657bb59c584d425",
+      "width": 128,
+      "height": 128,
+      "role": "image-art-rating-gold",
+      "mode": "nine-slice",
+      "slice": 16
+    },
+    {
+      "file": "frame-rating-elite.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#frame-rating-elite",
+      "bytes": 1061,
+      "sha256": "73684a6869fd92db8209ee733200c92c7800c554756acbf4c48a40b2d1379ab4",
+      "width": 128,
+      "height": 128,
+      "role": "image-art-rating-elite",
+      "mode": "nine-slice",
+      "slice": 16
+    },
+    {
+      "file": "icon-checkbox-off.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-checkbox-off",
+      "bytes": 181,
+      "sha256": "007dca4198f76f86c1748070528f2954f1ad24ba6ff37cc3f9c8f9854466ab54",
+      "width": 32,
+      "height": 32,
+      "role": "image-art-control-checkbox-off",
+      "mode": "image"
+    },
+    {
+      "file": "icon-checkbox-on.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-checkbox-on",
+      "bytes": 283,
+      "sha256": "922aedecd9655464d2b6e9f74127db319a9a888c436ac617a45a7aecf68bf80b",
+      "width": 32,
+      "height": 32,
+      "role": "image-art-control-checkbox-on",
+      "mode": "image"
+    },
+    {
+      "file": "canvas.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#canvas",
+      "bytes": 248,
+      "sha256": "5c8782a0266854bed2ee708d99a2f1c15687d1e9bb74f48185f34c9bebf946b0",
+      "width": 32,
+      "height": 32,
+      "role": "image-art-paper",
+      "mode": "tile"
+    },
+    {
+      "file": "quiet.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#quiet",
+      "bytes": 250,
+      "sha256": "089437b7d0d7b1bfc79e285d7596acca7a3f8e953c8598b1bd2b4bdcf722e92c",
+      "width": 32,
+      "height": 32,
+      "role": "image-art-paper-quiet",
+      "mode": "tile"
+    },
+    {
+      "file": "ivory.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#ivory",
+      "bytes": 251,
+      "sha256": "52de588cc631f6d774cdaf605fcb196469afb2810305c42f5054a72b41936d1c",
+      "width": 32,
+      "height": 32,
+      "role": "image-art-paper-detail",
+      "mode": "tile"
+    },
+    {
+      "file": "table-heading.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#table-heading",
+      "bytes": 240,
+      "sha256": "0f0dd34689ba9b651aae46c3cf875ab2023ce126e27df961173fe41c95e23054",
+      "width": 32,
+      "height": 32,
+      "role": "image-art-table-heading",
+      "mode": "tile"
+    },
+    {
+      "file": "rule-content.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#rule-content",
+      "bytes": 105,
+      "sha256": "6b9c52dd2ed5c58372f8b96dd2c5df3f1550d2eeec836fd665764c6be141e315",
+      "width": 64,
+      "height": 2,
+      "role": "image-art-content-rule",
+      "mode": "image"
+    },
+    {
+      "file": "rule-tab-active.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#rule-tab-active",
+      "bytes": 113,
+      "sha256": "07bf259c6ee1a470fe29f6dea527145db241b3893204b1c7fad236080b0b6586",
+      "width": 64,
+      "height": 4,
+      "role": "image-art-tab-active",
+      "mode": "image"
+    },
+    {
+      "file": "icon-formation-marker.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#icon-formation-marker",
+      "bytes": 287,
+      "sha256": "356561416796c57751a4fbda359f0af519774380d05992bf3cfbc00f0e9c6841",
+      "width": 32,
+      "height": 32,
+      "role": "image-art-formation-marker",
+      "mode": "image"
+    },
+    {
+      "file": "sticky-column-shadow.png",
+      "source": "apps/web/design/pixel-ui/source.mjs#sticky-column-shadow",
+      "bytes": 150,
+      "sha256": "eaa6d784804d630c03ea7ea388b19967c88ce4d9134fd3b2f1c0b9c1f6d7cc19",
+      "width": 16,
+      "height": 32,
+      "role": "image-art-table-sticky-shadow",
+      "mode": "image"
+    }
+  ]
+}

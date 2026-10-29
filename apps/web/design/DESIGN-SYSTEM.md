@@ -213,6 +213,14 @@ Current examples: [Matchday Print source family](home-print/README.md),
 [Sticker Football Club](sticker-club/README.md). The print control iteration includes a pending
 button-hierarchy review; its current green and blue-grey fills are not a prescription for new themes.
 
+The alternative-theme detail inventories are in [Stadium Green](standard-ui/details-v1/README.md),
+[Pixel](pixel-ui/README.md#component-details-t595) and
+[Sticker Football Club](sticker-club/details-v1/README.md). They cover supporting controls,
+three material planes, rating skins and analysis resources in each existing art family. Keep
+readable local foregrounds when carrying guidance between light and dark themes, including
+the preview's supporting labels. Validate resource-backed centres as well as background images:
+a nine-slice `fill` can supply the entire designed surface without a separate material layer.
+
 ## Charts and pitches
 
 Use a theme's primary colour for the main data series, latest or selected datum and player
