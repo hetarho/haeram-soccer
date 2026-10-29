@@ -367,6 +367,7 @@
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
 | WEB | 169 | 169 | - | 0 |
+| LAB | 1 | 0 | all | 1 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
 | CLUB | 43 | 43 | - | 0 |
@@ -414,9 +415,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- No pending implementation for su29/mt29/cb29; T569–T571 are complete in the working tree, with browser specs reserved for the batch gate.
+- T569–T571 pushed fa1a018b; read its CI.
+- create-task LAB (match lab, r1).
 
 ## log
+- 261029 create-ssot LAB r1: match lab — generated left/right sides, every grid `*_CONFIG` number editable, N-match runs against MATCH-23 with baseline comparison.
+- 261029 create-ssot LAB start
 - 261029 T571 done: keep home return across competition tabs and preserve nested-detour origins; 346 affected unit tests, typecheck, lint, tracked formatting and build pass.
 - 261029 T571 start: retain named return and nested context across league/cup sibling tabs under WEB-40/74.
 - 261029 T570 done: remove mobile-only match tactic hiding; 319 affected unit tests, typecheck, lint, tracked formatting and build pass; theme browser assertions updated.
