@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| vf30 | ihaelam-ui-MacBookPro | autopilot | 2026-10-29T17:16Z | 2026-10-29T17:16Z | - |
 
 ## inbox
 - 261030 decided WEB-94 WEB-105 T606: how clip entry stays unavailable through the original viewing's goal hold → the shortcut and the picker's goals stay in place with `aria-disabled` (focus kept, theme disabled filter) and every entry is refused against the frame loop's clock until the full hold has run (alt: native `disabled`, which drops focus out of an open picker | hide the shortcut or close the picker during the hold | let the clip carry and restore the remaining hold, which shortens the original's celebration).
