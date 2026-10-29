@@ -419,12 +419,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T579, then T580 (match-model revision 9); batch gate and push main after T580.
-- batch gate on the integrated candidate (tests/e2e/lab.spec.ts with T578's 관전 journey included), then push main.
+- implement-task T579 (resume the WIP commit on work/r9), then T580 (match-model revision 9); batch gate and push main after T580.
 
 ## log
 - 261029 create-task MATCH r42: T579 (revision 9 shot side: keeper not a presser, short straight wind-up, 5 m clear chance, keeper half way), T580 (pass failure where reached, tight receivers near the box).
 - 261029 update-ssot MATCH r42: carrier never backs off the keeper, shot struck soon after choosing it, clear chance also with nobody within 5 m, tight receivers near the box weighed by keeping it, pass failure read where it happens, keeper about half way out.
+- 261029 publication verification: protected pending lab generation inputs and shared the normal feedback dismissal before office navigation (deb74fc1); the lab comparison edits a nondefault value (1b950bb3). Typecheck, lint, formatting, 37 affected unit tests, build and all 333 Chromium journeys pass; all four themes load the controller's distinct texture. Unchanged engine and persistence coverage reuses the successful lw29 batch checks.
 - 261029 update-ssot LAB r5 + fix: Korean descriptions for all 25 groups and 865 values (apps/web/src/lab/tunables.ko.json, written from the consuming code, marking page-only and pre-revision-8 values), shown above the code comment and searched; tunables.test.ts fails on a missing or stale description.
 - 261029 fix lab watch layout: the match view's App styles pin html/body with no scroll — the lab page scrolls again (scoped by `:has(.page)`), the watch view is capped to fit one screen and scrolls into view on a new playback; checked at 1920×1080.
 - 261029 T578 done: /lab 관전 plays match 0 of its seed in the lab worker and shows it in the game's unchanged Pitch inside the shared presentation; 다시 보기/새 경기; typecheck, lint, tracked formatting, 43 affected unit tests and build pass; lab.spec.ts left to the batch run.
@@ -443,3 +443,4 @@
 - 261029 T572 start
 - 261029 create-task LAB r1 → T572–T575 (engine hooks, tunable catalog, worker runner, lab page).
 - 261029 create-ssot LAB r1: match lab — generated left/right sides, every grid `*_CONFIG` number editable, N-match runs against MATCH-23 with baseline comparison.
+- 261029 create-ssot LAB start

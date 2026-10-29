@@ -118,6 +118,8 @@ function SidePanel(props: {
   const { index, settings, side, busy, onSettings, onGenerate, onOvr } = props;
   const name = SIDE_NAMES[index];
   const ovrs = side?.ovrs ?? [];
+  // A pending worker reply restores its settings snapshot along with the generated squad.
+  const settingsLocked = busy || !side;
   return (
     <section className={styles.side} aria-label={name}>
       <h3>{name}</h3>
@@ -127,6 +129,7 @@ function SidePanel(props: {
           <select
             aria-label={`${name} 전술`}
             value={settings.tactic}
+            disabled={settingsLocked}
             onChange={(e) => onSettings({ tactic: e.target.value as Tactic })}
           >
             {LAB_TACTICS.map((t) => (
@@ -141,6 +144,7 @@ function SidePanel(props: {
           <NumberField
             label={`${name} 평균 OVR`}
             value={settings.average}
+            disabled={settingsLocked}
             min={LAB_RANGES.average[0]}
             max={LAB_RANGES.average[1]}
             onCommit={(v) => onSettings({ average: Math.round(v) })}
@@ -151,6 +155,7 @@ function SidePanel(props: {
           <NumberField
             label={`${name} 편차`}
             value={settings.spread}
+            disabled={settingsLocked}
             min={LAB_RANGES.spread[0]}
             max={LAB_RANGES.spread[1]}
             onCommit={(v) => onSettings({ spread: Math.round(v) })}
@@ -162,10 +167,15 @@ function SidePanel(props: {
             className={styles.seed}
             aria-label={`${name} 시드`}
             value={settings.seed}
+            disabled={settingsLocked}
             onChange={(e) => onSettings({ seed: e.target.value })}
           />
         </label>
-        <button type="button" onClick={() => onSettings({ seed: newSeed() })}>
+        <button
+          type="button"
+          onClick={() => onSettings({ seed: newSeed() })}
+          disabled={settingsLocked}
+        >
           새로 뽑기
         </button>
         <button type="button" className={styles.primary} onClick={onGenerate} disabled={busy}>
@@ -197,6 +207,7 @@ function SidePanel(props: {
                   <NumberField
                     label={`${name} ${i + 1}번 OVR`}
                     value={side.ovrs[i]!}
+                    disabled={busy}
                     min={LAB_RANGES.ovr[0]}
                     max={LAB_RANGES.ovr[1]}
                     onCommit={(v) => onOvr(i, Math.round(v))}
