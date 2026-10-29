@@ -245,6 +245,10 @@ quiet group; `data-surface="inset"` is a secondary inset; neither adds padding. 
 Do not apply a padded panel role to every list item, pitch marker or inner wrapper. Components
 own spacing once, while the shared skin owns materials, edges and states.
 
+When a component needs a larger panel inset, its local `--surface-panel-padding` supplies that
+same element's padding to the shared panel skin. The facility-parts component uses this to keep
+its minimum content clearance without another wrapper or a selector-specific padding override.
+
 When a resource disappears, inspect both the semantic role and computed styles: a module's
 background shorthand can override a lower-specificity shared rule. Review native controls,
 selected states, popovers and lazy sections, not only the default screenshot. Layout-only

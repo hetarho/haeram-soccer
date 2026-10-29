@@ -1,8 +1,9 @@
 /* One facility part: its heading, ladder or levels, demand, work in progress and next work. */
 .part {
+  --surface-panel-padding: max(12px, var(--panel-padding));
   display: grid;
   gap: var(--row-padding);
-  padding: max(12px, var(--panel-padding));
+  padding: var(--surface-panel-padding);
   margin-bottom: var(--panel-padding);
   min-width: 0;
   border-bottom: 1px solid var(--line);

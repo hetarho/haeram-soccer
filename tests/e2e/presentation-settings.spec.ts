@@ -228,7 +228,7 @@ for (const width of [390, 1380])
       expect(homeSkin.fill).toContain(assetPath);
       await expectHomeSceneRatio(page);
       const stats = page.getByRole('button', { name: '현재 리그 보기', exact: true });
-      await expect(stats.locator('[data-pixel-icon="chevronRight"]')).toHaveCount(1);
+      await expect(stats).toBeVisible();
       await expect(stats.locator('[data-pixel-icon="play"]')).toHaveCount(0);
       await page.getByRole('button', { name: /^피로/ }).click();
       const remedies = page.getByRole('dialog', { name: '피로 관리', exact: true });

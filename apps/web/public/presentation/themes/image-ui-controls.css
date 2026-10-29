@@ -592,7 +592,7 @@ html[data-theme] {
 
   [data-surface='panel'],
   [data-ui='game-shell'] [data-surface='panel'] {
-    padding: var(--panel-padding);
+    padding: var(--surface-panel-padding, var(--panel-padding));
     border: 1px solid transparent;
     border-image: var(--image-content-frame, var(--image-tile-frame))
       var(--image-content-frame-slice, var(--image-art-frame-tile-slice, 54))
