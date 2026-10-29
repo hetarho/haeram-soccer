@@ -420,6 +420,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T609 | Fix CI failure | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -443,7 +444,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- coordinator guard on the committed vf30 candidate: the three T608 Chromium cases (goal-replay "a seen goal replays…", live-state interleaved and eve-first), then the complete final batch, capacity/performance, the configured main push and one CI read.
+- implement-task T609
 
 ## log
 - 261030 T608 done: goal replay's 47.96 was legitimate original playback (a kick-off still beat before selection, the return poll after) with an exact return; the journey now asserts the first restored instant equals the entry instant from every presented `data-seconds` write. Live state's two failures were EventCenter re-presenting the played-through 8/7 report while an owner's stop drained its match day; events now wait for the clock lock to release (new EventCenter unit case), and the journey observes the full dismissal, the stop's landing and a genuine next eve separately. Typecheck, lint, format, affected units (4 files, 35 tests) and build pass; the three Chromium cases are left to the coordinator.
