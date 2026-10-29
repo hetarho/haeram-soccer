@@ -16,7 +16,7 @@ import {
   seasonDayLabel,
   trainingInjuries,
 } from './index';
-import type { NewsItem } from './news';
+import { NEWS_PER_MATCH, type NewsItem } from './news';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
@@ -58,12 +58,24 @@ describe('club news', () => {
     expect(first, 'the current-model fixture must include a win').toBeDefined();
     const item = news.find((n) => n.id === `${w.year}:${first.m.id}:first-win`)!;
     expect(item).toMatchObject({ celebrate: true, weight: 'major', tag: '기록' });
-    let run = 0;
+    // The club's first season, so no record stands to be broken: every milestone length of the
+    // unbeaten run is a candidate, and it stays unless its match already keeps its four ranked
+    // extras (→HIST-11; the rule itself on hand-made matches below).
+    expect(w.ownMatches.every((m) => m.year === w.year)).toBe(true);
+    let run = 0,
+      milestones = 0,
+      shown = 0;
     for (const row of results(w)) {
       run = row.result === 'L' ? 0 : run + 1;
-      if (run === 5)
-        expect(news.some((n) => n.id === `${w.year}:${row.m.id}:unbeaten-5`)).toBe(true);
+      if (![5, 10, 15, 20, 25, 30].includes(run)) continue;
+      milestones++;
+      const items = news.filter((n) => n.id.startsWith(`${w.year}:${row.m.id}:`));
+      const extras = items.filter((n) => !n.id.endsWith(':result'));
+      if (items.some((n) => n.id === `${w.year}:${row.m.id}:unbeaten-${run}`)) shown++;
+      else expect(extras.length, `unbeaten-${run} at ${row.m.id}`).toBe(NEWS_PER_MATCH);
     }
+    expect(milestones).toBeGreaterThan(0);
+    expect(shown).toBeGreaterThan(0);
   });
 
   it('never celebrates routine business such as a transfer window opening', () => {
@@ -173,6 +185,35 @@ describe('club news builders on hand-made matches', () => {
       title: `${name}, 파죽의 5연승`,
     });
     expect(at(5, 'unbeaten-5')?.title).toBe(`${name}, 최근 5경기 무패 행진`);
+  });
+
+  it('keeps a minor run milestone unless four weightier items fill its match', () => {
+    const { w } = setup('news-crowded');
+    const keeper = w.players.find((p) => p.position === 'GK')!;
+    const draws = (saves: boolean) => {
+      w.ownMatches = [1, 2, 3, 4, 5].map((round) => ownMatch(w, round, 0, 0));
+      if (saves) w.ownMatches[4]!.players = [playerLine(keeper, { 9: 5, 10: 90 })];
+      return clubNews(w)
+        .filter((n) => n.id.startsWith(`${w.year}:hand:5:`))
+        .sort((a, b) => a.order - b.order);
+    };
+    const kinds = (news: NewsItem[]) => news.map((n) => n.id.slice(`${w.year}:hand:5:`.length));
+    // Five goalless draws: three notable runs at the fifth, then the minor unbeaten one.
+    const quiet = draws(false);
+    expect(kinds(quiet)).toEqual(
+      expect.arrayContaining(['winless-5', 'clean-5', 'opening-unbeaten', 'unbeaten-5']),
+    );
+    expect(quiet.filter((n) => !n.id.endsWith(':result'))).toHaveLength(NEWS_PER_MATCH);
+    // A keeper's five saves is a fourth notable item: the minor milestone gives way to it.
+    const crowded = draws(true);
+    expect(kinds(crowded)).toEqual([
+      'result',
+      'winless-5',
+      'clean-5',
+      'opening-unbeaten',
+      `keeper:${keeper.id}`,
+    ]);
+    expect(crowded.every((n) => n.weight !== 'minor' || n.id.endsWith(':result'))).toBe(true);
   });
 
   it('counts away runs apart from home ones', () => {

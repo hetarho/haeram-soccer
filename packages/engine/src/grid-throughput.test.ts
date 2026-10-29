@@ -373,15 +373,19 @@ interface CandidateDigests {
  * down (50-match reads in their results), moved every value and the knockout ties (rescanned
  * above); before it, the values now revision 9's (`REVISION_9`). Revisions 1–9's and the
  * pre-feature facts did not move.
+ * T607's goal-line block (a block whose rebound the byline cuts short of the clear distance from
+ * its blocker goes behind for a corner, `blockedBehind`) moved 1975's league facts and observed
+ * positions only (b2b7a37952528417 and 2635f8f98dcbcb1b before); the knockout ties, every other
+ * value, revisions 1–9's and the pre-feature facts did not move.
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: 'b2b7a37952528417',
+      league: '08d14e3ce15a4c97',
       extraTime: '097e8b50dcce04c0',
       shootout: '3568dfc2d0e37975',
     },
-    positions: { observed: '2635f8f98dcbcb1b', shootout: 'c8cca332fc10761f' },
+    positions: { observed: '734915f27ce1c464', shootout: 'c8cca332fc10761f' },
   },
   1995: {
     facts: {
