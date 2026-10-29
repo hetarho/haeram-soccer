@@ -15,9 +15,10 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| vf30 | ihaelam-ui-MacBookPro | autopilot | 2026-10-29T15:01Z | 2026-10-29T15:01Z | - |
+| vf30 | ihaelam-ui-MacBookPro | autopilot | 2026-10-29T15:01Z | 2026-10-29T15:07Z | - |
 
 ## inbox
+- 261030 decided MATCH-12 MATCH-35 SAVE-23 T596 T599 T600: two of CI40866255294's four cases are stale revision-9 scenes (a keeper parked at [102, 66] opens the mouth ×1.72/×1.89 under narrowing; T445's decision scene is a clear chance under the 5 m rule), but the other two are real second-ball defects revision 9 exposed (a first-time shot kicked up to 0.83 s late for its rebound's winner, leaving the blocker drawn 1.44–1.51 m from the ball; a parry won on the keeper's own spot, then a rebound shot with no flight and no match time), which cannot be repaired on revisions 1–9 draw for draw → MATCH r44 makes both rules explicit and T596 opens the prospective revision 10 that repairs them, with T599 and T600 extending that unreleased revision so the run publishes one (alt: repair revision 9 in place, breaking settled replay | pin the observed fixtures to revision 8, which no revision-9 counterpart supports | a separate fix task after T600, which leaves T599/T600 measuring the defective model).
 - 261030 decided ARCH-30 T596 T597 T598 T599 T600: owner delegates CI repair and engine follow-ups → sequential fixes, then timeboxed goal-side defence and reception-safety improvements, final combined verification and configured main push (alt: unrelated legacy ideation | test-threshold weakening); preserve every existing assertion’s purpose and all historical football revisions.
 - 261029 decided WEB-91 WEB-104 T595: complete other themes under the shared guide → fill Stadium Green, Pixel and Sticker Club's missing component resources in their existing art families (alt: new theme concepts | palette-only variants); owner authorizes origin/main push when complete or the current checkpoint by 21:30 KST today.
 - 261029 decided MATCH-31 T580: the acceptance read the receiver rule only where nobody reaches the pass's path, but near the box almost every path is reached (central ≤18 m passes: 2,372 of 2,572 on grid-bands 50) and 39% of the losses there came with nobody within 3 m of the receiver → every failed pass not cut out or deflected is read at its receiver, a reached path keeping its interception / deflection share (MATCH-31 r42's wording): such losses at a free receiver go to none, lost with nobody within 3 m 6.8% → 3.2% of those passes (alt: the no-reach branch only, as the impl note read — 6.3%, unchanged).
@@ -382,7 +383,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
 | CLUB | 43 | 43 | - | 0 |
-| MATCH | 43 | 43 | - | 0 |
+| MATCH | 44 | 44 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 39 | 39 | - | 0 |
@@ -403,7 +404,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T596 | Revision-9 integration regression repair | MATCH ARCH | - | todo |
+| T596 | Revision-9 integration regression repair | MATCH SAVE ARCH | - | todo |
 | T597 | Current management browser contracts | WEB ARCH | T596 | todo |
 | T598 | Current figure kit evidence | KIT MATCH WEB SAVE ARCH | T597 | todo |
 | T599 | Goal-side defence and chance volume | MATCH SAVE ARCH | T598 | todo |
@@ -436,6 +437,7 @@
 - Engine explorations use 50-match candidate reads, unchanged football targets and safe-boundary model activation; keep historical results and revision replay intact.
 
 ## log
+- 261030 update-ssot MATCH r44 + create-task: T596 diagnosed (2 stale revision-9 scenes, 2 second-ball defects) and rescoped to open revision 10; T599/T600 extend it.
 - 261030 vf30 start: owner-authorized autopilot; synchronized origin/main469d24c2, captured CI40866255294 failures and created scoped T596–T600.
 - 261029 T595 done: 60 alternative-theme assets, source/prompts and shared rendering refinements; 1738 units, fast/resource/build checks, 306 preview combinations and eight targeted Chromium journeys pass. Broader integration/browser failures remain in reports/261029-thar.md; owner requested completion push.
 - 261029 T595 start: complete missing portable controls, hierarchy, materials, ratings and analysis resources for all three alternative themes; owner requests completion/deadline push.
@@ -455,4 +457,3 @@
 - 261029 WEB r179 and T588 start: brighten actual iron/bronze/elite artwork to distinguish compact ratings at button-like brightness.
 - 261029 T587 done: five rating skin resources (39046 bytes), aligned compact chips and readable table values; 41 units, type/lint/format, art/presentation validation, build and actual UI inspection pass.
 - 261029 T586 done: aligned 28x24 inline rating chips; type/lint, 22 units, scoped format, build and actual desktop/mobile sizing verified. T587 implementation starts.
-- 261029 WEB r178 and T587 preparation: owner requests five visible overall-rating levels with designed background/frame artwork; finish T586 sizing/alignment first.
