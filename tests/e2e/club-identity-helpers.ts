@@ -11,6 +11,7 @@ import {
   type GoalkeeperKit,
 } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
+import type { CanvasImage } from '../fixtures/figure-evidence';
 import { continueSlot } from './slots';
 import { watchNext } from './watch';
 import { configureResponsibilities } from './events';
@@ -481,6 +482,25 @@ export const canvasPixels = (canvas: Locator, hex: string, tolerance = 30) =>
     },
     { hex, tolerance },
   );
+/** The visible match pitch Canvas in `scope`: the theatre's, or a replay's in its dialog. */
+export const visiblePitch = (scope: Page | Locator) =>
+  scope.locator(PITCH_CANVAS).filter({ visible: true }).last();
+/**
+ * One frame of the pitch Canvas `canvas`: its device pixels and laid-out width, read at once so
+ * every check on it sees the same instant. The figure evidence in `tests/fixtures/figure-evidence`
+ * reads it in Node at the size the pitch paints its figures.
+ */
+export async function pitchImage(canvas: Locator): Promise<CanvasImage> {
+  const { bytes, ...frame } = await canvas.evaluate((element) => {
+    const c = element as HTMLCanvasElement;
+    const data = c.getContext('2d')!.getImageData(0, 0, c.width, c.height).data;
+    let binary = '';
+    for (let i = 0; i < data.length; i += 0x8000)
+      binary += String.fromCharCode(...data.subarray(i, i + 0x8000));
+    return { width: c.width, height: c.height, cssWidth: c.clientWidth, bytes: btoa(binary) };
+  });
+  return { ...frame, data: Buffer.from(bytes, 'base64') };
+}
 /** Keeps a screenshot of `target` with the test's report: the preview or pitch actually shown. */
 export async function keepScreenshot(testInfo: TestInfo, name: string, target: Locator) {
   await testInfo.attach(name, { body: await target.screenshot(), contentType: 'image/png' });
