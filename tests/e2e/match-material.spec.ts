@@ -1,4 +1,4 @@
-import { openLeague } from './competition-navigation';
+import { clubhouseDate, openLeague } from './competition-navigation';
 import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { chooseOption } from './select';
@@ -70,5 +70,5 @@ test('opens an own match material from its report and from the fixture notebook'
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
   // Reading the material changes nothing in the world.
-  await expect(page.getByTestId('game-date')).toHaveText(date);
+  await expect(await clubhouseDate(page)).toHaveText(date);
 });

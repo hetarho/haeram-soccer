@@ -4,6 +4,37 @@ import { settle } from './layout';
 // Imported careers can retain the root address as their remembered dashboard route.
 const isClubhouseRoute = (url: URL) => url.pathname === '/journal' || url.pathname === '/';
 
+/**
+ * The shared primary navigation's clubhouse entry (→WEB-10), on the sidebar or the phone tab bar.
+ * It is found by its icon, since a locale pack renames it.
+ */
+export const clubhouseTab = (page: Page) =>
+  page
+    .getByRole('navigation')
+    .getByRole('button')
+    .filter({ has: page.locator('[data-pixel-icon="home"]') })
+    .filter({ visible: true })
+    .first();
+
+/** Back to the clubhouse through the primary navigation, once its briefing is shown. */
+export async function openClubhouse(page: Page) {
+  await clubhouseTab(page).click();
+  await expect(page).toHaveURL(isClubhouseRoute);
+  const home = page.getByTestId('club-hub');
+  await expect(home).toBeVisible();
+  await settle(page);
+  return home;
+}
+
+/**
+ * The calendar date the information row shows. Current League and Cup omit that row (→WEB-18),
+ * so a journey reads the date at the clubhouse, which shows it beside our league.
+ */
+export async function clubhouseDate(page: Page) {
+  await openClubhouse(page);
+  return page.getByTestId('game-date');
+}
+
 /** Enter through the clubhouse, then its local lens, using the journey's real UI steps. */
 async function openLens(
   page: Page,
@@ -15,15 +46,7 @@ async function openLens(
   const tabs = page.getByRole('tablist', { name: hub, exact: true });
   // Navigation updates the address before deferred content replaces the outgoing tabs.
   if (new URL(page.url()).pathname !== pathname) {
-    const mobile = (page.viewportSize()?.width ?? 1280) <= 760;
-    await page
-      .getByRole('navigation', { name: mobile ? '모바일 게임 메뉴' : '게임 메뉴', exact: true })
-      .getByRole('button', { name: '클럽하우스', exact: true })
-      .click();
-    await expect(page).toHaveURL(isClubhouseRoute);
-    const home = page.getByTestId('club-hub');
-    await expect(home).toBeVisible();
-    await settle(page);
+    const home = await openClubhouse(page);
     if (hub === '역사')
       await home.getByRole('button', { name: '클럽 기록실', exact: true }).click();
     else if (entry === 'resume') {

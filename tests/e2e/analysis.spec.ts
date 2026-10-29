@@ -1,5 +1,5 @@
 import { openPersonnel } from './personnel-navigation';
-import { openClubRecords, openLeague } from './competition-navigation';
+import { clubhouseDate, openClubRecords, openLeague } from './competition-navigation';
 import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { finishSeason } from './season-progression';
@@ -197,6 +197,7 @@ test('filters the own-club fixture notebook and reads a settled full-season reco
   await delegateSales(page);
   await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
+  const date = await (await clubhouseDate(page)).innerText();
   await openLeague(page);
   await expect(page.getByRole('region', { name: '우리 팀 일정 노트', exact: true })).toHaveCount(0);
   await page.getByRole('tab', { name: '순위표', exact: true }).click();
@@ -222,13 +223,13 @@ test('filters the own-club fixture notebook and reads a settled full-season reco
     'completed',
   );
   await expect(cards).toHaveCount(1);
-  const date = await page.getByTestId('game-date').innerText();
   await notebook.getByRole('button', { name: '이 경기 분석 보기' }).click();
   const sheet = page.getByRole('dialog', { name: '일정 경기 분석' });
   await expect(sheet.getByRole('region', { name: '경기 분석 리포트' })).toBeVisible();
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await expect(page.getByTestId('game-date')).toHaveText(date);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+  // Reading the notebook and its analysis advanced no day.
+  await expect(await clubhouseDate(page)).toHaveText(date);
 });
 
 test('compares distinct own players with a shared scope and returns focus without progression', async ({

@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+import { clubhouseTab } from './competition-navigation';
 import { dismissFeedback } from './feedback';
 
 /** Local desk navigation within the shared management shell (→WEB-39). */
@@ -60,14 +61,8 @@ export async function enterOffice(page: Page, options: { timeout?: number } = {}
   const covering = page.getByRole('dialog').filter({ has: page.getByTestId('event-group') });
   if (await covering.isVisible())
     await covering.getByRole('button', { name: '창 닫기', exact: true }).click();
-  // The selected tab decides, not what is drawn: a deferred view can still show home. The tab is
-  // found by its icon, since a locale pack renames it.
-  const home = page
-    .getByRole('navigation')
-    .getByRole('button')
-    .filter({ has: page.locator('[data-pixel-icon="home"]') })
-    .first();
-  if (new URL(page.url()).pathname !== '/journal') await home.click(options);
+  // The selected tab decides, not what is drawn: a deferred view can still show home.
+  if (new URL(page.url()).pathname !== '/journal') await clubhouseTab(page).click(options);
   const hub = page.getByTestId('club-hub');
   await expect(hub).toBeVisible();
   if (await covering.isVisible())
@@ -153,13 +148,7 @@ export async function leaveOffice(page: Page) {
     .filter({ visible: true })
     .first();
   if (await contextualReturn.isVisible()) await contextualReturn.click();
-  else
-    await page
-      .getByRole('navigation')
-      .getByRole('button', { name: '클럽하우스', exact: true })
-      .filter({ visible: true })
-      .first()
-      .click();
+  else await clubhouseTab(page).click();
   await expect(officeBar(page)).toHaveCount(0);
 }
 

@@ -86,7 +86,9 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   ).toHaveCount(9);
   await expect(page).toHaveURL(/league=GER\.0\.0/);
   await page.getByRole('tab', { name: '순위표', exact: true }).click();
-  await expect(page.getByLabel('선택한 리그와 시즌')).toContainText('독일 1부');
+  // The compact competition header keeps the chosen league visible in its selectors (→WEB-40/65).
+  await expect(picker.getByRole('combobox', { name: '국가', exact: true })).toHaveText('독일');
+  await expect(picker.getByRole('combobox', { name: '디비전', exact: true })).toHaveText('1부');
   await page.getByRole('tab', { name: '순위표', exact: true }).click();
   await expect(page.getByRole('table', { name: '리그 순위표' })).not.toContainText('우리 팀');
   await page.getByRole('button', { name: '우리 리그로', exact: true }).click();
