@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| vw29 | hq-dev1-pve2-vm2 | autopilot | 2026-10-29T03:03Z | 2026-10-29T03:03Z | - |
 
 ## inbox
 - 261029 decided WEB-50 T581: `inkOn`'s #121212/white pair reaches only about 4.3:1 on mid-grey shirts → keep `inkOn` and switch to pure black where it falls under 4.5:1, which always reaches it there; halves drawn from the score plate's centre, so the split stays under the score although the back control sits on the home side (alt: plain `inkOn` with mid-tones under 4.5 | a 50% split off the score's centre).
