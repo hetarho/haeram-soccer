@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r42 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r43 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -303,9 +303,10 @@
   - with an opponent carrying the ball in his box, the keeper comes off his line toward him along the line from the middle of his goal, narrowing the angle, about half of the way and only so far out — never onto the carrier; closer, the chance is under his pressure. ← a keeper rooted on his line left a forward through on goal a goal far more often than real football; the chance he narrows, not the forward's hesitation, holds it (→MATCH-16)
 - MATCH-36 [o] Observed playback draws every player as a top-down human figure wearing his side's selected kit (→KIT-3/8, →WEB-49). ← a moving disc reads as a counter, not a footballer; seeing where a player faces and how he strikes the ball is why the match is watched
   - seen from directly above: a hair-covered head centred on shoulders wider than they are deep, arms at the sides, shorts, and legs with socks and boots that stride out in front and behind. The shirt pattern and trim show on the shoulders and back; goalkeepers wear their kit with gloves.
-  - scale: the torso is as wide as the current player-marker diameter at each screen width (`markerRadius`, `apps/web/src/ui/pitchPainting.ts`); limbs, the ball and the number tag may extend beyond it. Detail reduces with size: at phone widths team colours, facing and large actions stay readable and pattern regions may merge.
+  - scale: the torso is 85% of the player-marker diameter at each screen width (`markerRadius`, `apps/web/src/ui/pitchPainting.ts`); limbs, the ball and the number tag may extend beyond it. ← at the full diameter figures read too big for the pitch Detail reduces with size: at phone widths team colours, facing and large actions stay readable and pattern regions may merge.
   - every figure keeps a readable player-number tag that does not rotate with the body and avoids covering other figures, the ball and the carrier cue (→WEB-95).
   - a player's skin tone and hair stay the same for him in every match, chosen reproducibly from his identity; they carry no gameplay meaning and are not edited.
+  - the ball is drawn as a football, not a plain disc: a white ball with dark panels in the classic pattern that roll with its travel, a thin dark edge so it reads on every ground, and a soft shadow on the grass that separates from it as it rises; the pixel theme draws the same ball in its pixel style. It stays smaller than a figure's torso on the ground and grows only with its recorded height.
   - match observation, retained replay and kit previews (→WEB-87/88) use the same figure; tactical and analytical pitch diagrams keep their markers.
 - MATCH-37 [o] A figure's pose comes only from recorded match facts at the presented instant (→MATCH-12). ← a body acting out something the engine did not settle would misreport the match
   - facing: a moving player faces the way he moves; a standing or slow player turns towards the ball. Turns are smooth, the upper body leading.
@@ -331,6 +332,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r43 261029 MATCH-36✎ torso the marker diameter→85% of it; + the ball drawn as a football (white with dark panels rolling with travel, dark edge, shadow separating with height, pixel theme in its pixel style)
 - r42 261029 MATCH-12✎ shields away from the nearest opponent→from an outfielder only, never turning his back on the keeper; + a shot is struck soon after he chooses it, never run sideways or away first. MATCH-16✎ clear chance: no outfield opponent ahead→or none within 5 m at all; + near the box a receiver with a defender tight on him weighed by how likely he keeps it. MATCH-31✎ + a pass fails where it is reached or at its receiver against the man on him, not by a separate draw. MATCH-35✎ keeper comes out most of the way→about half, never onto the carrier
 - r41 261029 MATCH-17✎ none→nobody piles onto the ball: a showing teammate offers at a passing distance, the rest hold width and depth, markers stay goal-side; crowds of seven within 10 m are rare in open play
 - r40 261029 MATCH-35✎ none→with an opponent carrying the ball in his box the keeper comes off his line toward him, narrowing the angle

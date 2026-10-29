@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r170 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r171 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -233,10 +233,11 @@
 - WEB-49 [o] Every club's crest and representative colours follow its applied identity (→KIT-1/2/11), including the owner's chosen template or component composition.
   - Show that crest wherever the club is named: HUD, home fixture, event cards, standings, round results, fixture notebook, team sheets, game slots and the match scoreboard.
   - Pitch figures wear the fixture's selected home/away/third kits with their patterns, shorts and socks, and its goalkeeper kits or fallback colours (→KIT-6/8, →MATCH-36); a crest-derived single colour is not the kit design.
-  - Show selected-kit swatches beside team labels in the match view. Charts keep readable, distinctly labelled series; colour alone is never the only link from a series or a player figure to its team.
+  - Show the selected kits' colours with the team labels in the match view (the scoreboard halves, →WEB-50). Charts keep readable, distinctly labelled series; colour alone is never the only link from a series or a player figure to its team.
   - Appearance in historical playback follows →KIT-12; a new crest edit must not silently contradict the chosen historical policy.
 - WEB-50 [o] The match theatre stacks one row with the back-home control, the scoreboard with crests (short names on phones); minute/latest action with speed chips (1x–16x); the pitch, which keeps a 1.9:1 width-to-height ratio on every screen; the latest event; live charts; and two actions.
   - Players are drawn as figures wearing their selected kits at the actual observation scale (→MATCH-36), with readable number tags and team colours; a patterned legend beside solid-colour players does not satisfy →WEB-49.
+  - the scoreboard is split into a left and a right half behind the two sides, each filled with that side's selected shirt base colour for the match (→WEB-49, →KIT-12) and its text in ink chosen for contrast on it (`inkOn`); the score sits centred across the split. The halves keep the scoreboard's height and the possession slots (→WEB-95). ← which side wears which kit must be readable at a glance from the scoreboard
   - the scoreboard shows red cards and added time (45+n, 90+n); the latest event reads as spatial commentary (→MATCH-24) and names substitutions and injuries.
   - charts switch between rolling 10-minute possession share, cumulative xG with goal marks and cumulative shots; they reveal data only up to the presented minute.
   - actions: preparation and the primary action, which reads "결과 보기" while the match plays and "홈으로" after it ends. The completed-match action never advances to another fixture.
@@ -499,7 +500,7 @@
 
 - WEB-95 [o] Normal match observation identifies the side currently controlling the ball next to the scoreboard and marks the recorded ball carrier on the pitch, without opening player inspection or match details.
   - Each team reserves a stable horizontal slot beside its name for the possession cue, mirrored around the score on every screen. Showing, clearing or transferring the cue never adds a row or changes the scoreboard's height or the pitch's position; phone team identity stays readable within the available width.
-  - The team cue combines a readable 볼 소유 label with team emphasis; the carrier has a distinct outline or marker that does not obscure his number or the ball. Team colours alone do not convey possession (→WEB-49/50).
+  - The team cue combines a readable 볼 소유 label with team emphasis; the carrier has a distinct marker — a ring on the grass under him and a coloured number plate — that does not obscure his number or the ball. His figure and number plate are drawn at exactly the size of every other player's: the cue never outlines, enlarges or scales his body or tag. ← a carrier who grows reads as a different, bigger player Team colours alone do not convey possession (→WEB-49/50).
   - Read ownership at the currently presented instant from recorded player/side facts. A pass or shot in flight can retain a team cue only when the recorded action establishes that side; it has no carrier marker. A loose/contested ball, restart preparation or missing historical information uses the appropriate neutral state instead of guessing from proximity, the next receiver or the minute's leading action.
   - Turnovers, seeks, goal holds and playback replacement update or clear both cues together with the presented clock (→WEB-23/32/94). Both themes, phone widths and reduced motion retain the same readable information; this feedback never changes football or saved facts.
 
@@ -535,6 +536,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r171 261029 WEB-50+ scoreboard halves in each side's selected shirt colour; WEB-49✎ kit swatches beside labels→the scoreboard halves; WEB-95✎ carrier outline or marker→ring and coloured plate only, never an outlined, larger figure or tag
 - r170 261029 WEB-91✎ controller shared dark treatment→dedicated bitmap texture distinct from sheets and round/table headers
 - r169 261029 WEB-10/18/39✎ focused owner chrome→shared management shell; WEB-11✎ place entrances→primary navigation only; WEB-79✎ office overview modal→inline page, controller modal retained; WEB-91✎ shared dark headers→secondary sheet treatment; WEB-97✎ office exception→ordinary navigation; WEB-98- automatic office clock stop/resume removed
 - r168 261029 WEB-10✎ mixed menu→six places; WEB-11✎ season card→competition links; WEB-39✎ combined desk→scoped work tabs; WEB-43✎ shortlist→paged world market; WEB-70✎ training tabs→places; WEB-79✎ office launcher→+controller; WEB-100✎ 투자→재정·투자; WEB-102+ place choices

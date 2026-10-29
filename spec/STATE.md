@@ -368,12 +368,12 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 170 | 170 | - | 0 |
+| WEB | 171 | 171 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
 | CLUB | 43 | 43 | - | 0 |
-| MATCH | 42 | 42 | - | 0 |
+| MATCH | 43 | 43 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 39 | 39 | - | 0 |
@@ -394,6 +394,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T581 | Smaller figures, a carrier who never grows, kit-coloured scoreboard halves and a football | MATCH WEB LAB ARCH | - | todo |
 | T579 | Revision 9: a forward through on goal faces the keeper and shoots at once | MATCH | - | todo |
 | T580 | Revision 9: a pass near the box is lost only where an opponent really gets to it | MATCH | T579 | todo |
 
@@ -423,6 +424,7 @@
 - batch gate on the integrated candidate (tests/e2e/lab.spec.ts with T578's 관전 journey included), then push main.
 
 ## log
+- 261029 update-ssot WEB r171 + MATCH r43 + create-task T581 (owner, match view): figures 85% of the marker, carrier never grows, scoreboard halves in kit colours, a football ball; lab watched matches wear their kits. Planned in worktree work/view while r9k4 runs T579–T580 in the main checkout.
 - 261029 create-task MATCH r42: T579 (revision 9 shot side: keeper not a presser, short straight wind-up, 5 m clear chance, keeper half way), T580 (pass failure where reached, tight receivers near the box).
 - 261029 update-ssot MATCH r42: carrier never backs off the keeper, shot struck soon after choosing it, clear chance also with nobody within 5 m, tight receivers near the box weighed by keeping it, pass failure read where it happens, keeper about half way out.
 - 261029 update-ssot LAB r5 + fix: Korean descriptions for all 25 groups and 865 values (apps/web/src/lab/tunables.ko.json, written from the consuming code, marking page-only and pre-revision-8 values), shown above the code comment and searched; tunables.test.ts fails on a missing or stale description.
