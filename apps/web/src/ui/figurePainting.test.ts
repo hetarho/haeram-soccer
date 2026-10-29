@@ -14,6 +14,7 @@ import {
 import type { FigureActionWindow } from './figureActions';
 import {
   FIGURE_LOD,
+  FIGURE_SCALE,
   FIGURE_SPRITE_LIMIT,
   HAIR_COLOURS,
   HAIR_STYLES,
@@ -336,12 +337,74 @@ describe('createFigurePainter layers (→MATCH-36)', () => {
     for (const point of [RUNNING.head, RUNNING.arms[1].end, RUNNING.legs[0].end]) {
       const painted = apply(frame, [point[0], -point[1]]);
       const placed = figurePoint(RUNNING, point, BASE);
-      const offset = figureOffset(RUNNING.facing, point, BASE.radius * 2);
+      const offset = figureOffset(RUNNING.facing, point, BASE.radius * 2 * FIGURE_SCALE.torso);
       expect(placed[0]).toBeCloseTo(painted[0]!, 9);
       expect(placed[1]).toBeCloseTo(painted[1]!, 9);
       expect(placed[0]).toBeCloseTo(BASE.x + offset[0], 9);
       expect(placed[1]).toBeCloseTo(BASE.y + offset[1], 9);
     }
+  });
+
+  it('torso is 85% of the marker diameter', () => {
+    expect(FIGURE_SCALE.torso).toBe(0.85);
+    const body = (options: FigureDrawOptions<FakeCanvas>) => {
+      const ctx = new RecordingContext();
+      createFigurePainter(fakeFactory().factory).draw(ctx, RUNNING, KIT, options);
+      const torso = ctx.calls.find((c) => c.op === 'drawImage')!.state.matrix;
+      // Every painted point's farthest reach from the figure's centre, CSS px.
+      const reach = Math.max(
+        ...ctx.calls
+          .filter((c) => ['moveTo', 'lineTo', 'ellipse'].includes(c.op))
+          .map((c) => {
+            const [px, py] = apply(c.state.matrix, [c.args[0] as number, c.args[1] as number]);
+            return Math.hypot(px! - options.x, py! - options.y);
+          }),
+      );
+      return { torso: Math.hypot(torso[0], torso[1]), reach };
+    };
+    for (const radius of [6, 9, 12.1]) {
+      const full = body({ ...BASE, radius, outlineWidth: 0, torsoScale: 1 });
+      const drawn = body({ ...BASE, radius, outlineWidth: 0 });
+      // The torso blit is one torso width across: 85% of the marker's diameter.
+      expect(full.torso).toBeCloseTo(2 * radius, 9);
+      expect(drawn.torso).toBeCloseTo(2 * radius * 0.85, 9);
+      expect(drawn.reach / full.reach).toBeCloseTo(0.85, 9);
+      // A held ball's socket shrinks with the body it is drawn at.
+      const socket = figurePoint(RUNNING, RUNNING.legs[0].end, { ...BASE, radius });
+      const wide = figurePoint(RUNNING, RUNNING.legs[0].end, { ...BASE, radius, torsoScale: 1 });
+      expect(Math.hypot(socket[0] - BASE.x, socket[1] - BASE.y)).toBeCloseTo(
+        Math.hypot(wide[0] - BASE.x, wide[1] - BASE.y) * 0.85,
+        9,
+      );
+    }
+  });
+
+  it('carrier body bounds equal a non-carrier’s in the same pose', () => {
+    // The pitch draws every figure without an outline (WEB-95): the carrier, holding the ball,
+    // paints exactly the body a team-mate does in his pose.
+    const drawn = (ball?: () => void) => {
+      const ctx = new RecordingContext();
+      createFigurePainter(fakeFactory().factory).draw(ctx, CARRYING, KIT, {
+        ...BASE,
+        outlineWidth: 0,
+        ball,
+      });
+      // What is painted and where; holding the ball only re-enters the body frame around it.
+      return ctx.calls
+        .filter((c) => !['save', 'restore', 'translate', 'rotate', 'scale'].includes(c.op))
+        .map(({ op, args, state }) => ({ op, args: String(args), m: state.matrix }));
+    };
+    expect(drawn(() => {})).toEqual(drawn());
+    // An outline would grow his silhouette past everyone's.
+    const outlined = new RecordingContext();
+    createFigurePainter(fakeFactory().factory).draw(outlined, CARRYING, KIT, BASE);
+    expect(outlined.calls.some(stroked(BASE.outline))).toBe(true);
+    const plain = new RecordingContext();
+    createFigurePainter(fakeFactory().factory).draw(plain, CARRYING, KIT, {
+      ...BASE,
+      outlineWidth: 0,
+    });
+    expect(plain.calls.some(stroked(BASE.outline))).toBe(false);
   });
 
   it('draws only: the pose, the kit and the look are never changed', () => {

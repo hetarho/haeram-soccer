@@ -8,6 +8,7 @@ import { createWorld } from '../founding';
 import { playGrid, type GridResult } from '../grid/engine';
 import { buildFrames } from '../grid/playback';
 import { buildGridSetup, type GridSetup } from '../grid/setup';
+import { appearanceForFixture } from '../match-appearance';
 import { LAB_CONFIG, type LabSide } from './sides';
 
 export interface LabWorld {
@@ -86,7 +87,8 @@ export function playLabMatch(
 
 /**
  * 관전 (→LAB-9): match 0 of `seed`, the left side at home, with its frames and matchday squads as
- * the game's match view reads them; observing it changes nothing it records (→MATCH-7).
+ * the game's match view reads them, wearing the host identities' selected kits as the game's own
+ * matches do (KIT-6/12); observing it changes no football it records (→MATCH-7).
  */
 export function watchLabMatch(
   lab: LabWorld,
@@ -96,7 +98,7 @@ export function watchLabMatch(
   const setup = labSetup(lab, sides, seed, 0, true);
   const result = playGrid(setup);
   return {
-    record: result.record,
+    record: { ...result.record, appearance: appearanceForFixture(lab.w, labFixture(lab, seed, 0)) },
     frames: buildFrames(result, setup, lab.w.seed),
     squads: setup.rosters,
   };

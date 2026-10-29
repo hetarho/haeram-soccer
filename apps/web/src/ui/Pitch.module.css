@@ -23,6 +23,48 @@
   font-weight: 700;
   letter-spacing: 1px;
 }
+/*
+ * Each side's half in the shirt it wore (→WEB-50): drawn out from the score's centre to each edge,
+ * under the names, crests and cues; the score keeps its own plate over the split.
+ */
+.kitHalves {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.kitHalves > strong {
+  position: relative;
+}
+.kitHalves > strong::before,
+.kitHalves > strong::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: -100px;
+  bottom: -100px;
+}
+.kitHalves > strong::before {
+  right: 50%;
+  left: -100vw;
+  background: var(--home-kit);
+}
+.kitHalves > strong::after {
+  left: 50%;
+  right: -100vw;
+  background: var(--away-kit);
+}
+/* The names sit on their half's own colour too, so their ink is read against the shirt. */
+.kitHalves > [data-side='home'] {
+  color: var(--home-ink);
+  background-color: var(--home-kit);
+}
+.kitHalves > [data-side='away'] {
+  color: var(--away-ink);
+  background-color: var(--away-kit);
+}
+.kitHalves .possession {
+  color: inherit;
+}
 /* Home value, colon and away value in one line of text, read as `1 : 0`. */
 .score,
 .score i {

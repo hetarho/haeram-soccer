@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { canonical } from '../../packages/contracts/src/index';
-import { createWorld } from '../../packages/engine/src/index';
+import { createWorld, nextOwnFixture } from '../../packages/engine/src/index';
+import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { savedWorld } from './club-identity-helpers';
 import { textContrast } from './contrast';
@@ -8,6 +9,12 @@ import { expectStablePossessionLayout, horizontalOverflow } from './layout';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { chooseOption } from './select';
 import { watchNext } from './watch';
+
+/** A `#rrggbb` colour as the browser computes it. */
+const rgb = (hex: string) => {
+  const n = parseInt(hex.slice(1, 7), 16);
+  return `rgb(${n >> 16}, ${(n >> 8) & 255}, ${n & 255})`;
+};
 
 async function themePicker(page: Page, theme: string) {
   await page.getByRole('button', { name: '설정', exact: true }).click();
@@ -40,6 +47,11 @@ for (const width of [360, 1380])
     });
     world.settings!.mode = 'manual';
     world.settings!.responsibilities.sales = 'delegated';
+    // The shirts the watched fixture's sides wear: the scoreboard's halves follow them (→WEB-50).
+    const worn = appearanceForFixture(world, nextOwnFixture(world)!).sides.map((side) =>
+      rgb(side.shirt.primary),
+    );
+    expect(worn[0]).not.toBe(worn[1]);
     await importResponsibilityCareer(page, world);
     await watchNext(page, { manual: true });
 
@@ -92,6 +104,22 @@ for (const width of [360, 1380])
           '/art/',
         );
       }
+      // Each scoreboard half wears its side's shirt in every theme: the colour behind the names and
+      // the strip from the score's centre out to each edge.
+      const halves = await page.getByTestId('match-score').evaluate((board) => {
+        const score = board.querySelector(':scope > strong')!;
+        const behind = (side: string) =>
+          getComputedStyle(board.querySelector(`:scope > [data-side="${side}"]`)!).backgroundColor;
+        return {
+          names: [behind('home'), behind('away')],
+          strips: [
+            getComputedStyle(score, '::before').backgroundColor,
+            getComputedStyle(score, '::after').backgroundColor,
+          ],
+        };
+      });
+      expect(halves.names).toEqual(worn);
+      expect(halves.strips).toEqual(worn);
       const back = page.getByTestId('match-score').getByRole('button', { name: '홈', exact: true });
       const bounds = (await back.boundingBox())!;
       // Firefox can report a 44px target as 43.999992 at a fractional layout position.

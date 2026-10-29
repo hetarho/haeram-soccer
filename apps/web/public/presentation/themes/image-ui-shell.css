@@ -50,11 +50,7 @@ html[data-theme] {
     outline-offset: var(--image-focus-offset, 2px);
   }
 
-  :is(
-    [data-ui='game-shell'] > [data-ui='sidebar'],
-    [data-ui='game-shell'] > nav,
-    [data-ui='season-transport']
-  ) {
+  :is([data-ui='game-shell'] > [data-ui='sidebar'], [data-ui='game-shell'] > nav) {
     --image-focus: var(--image-on-dark);
     --focus: var(--image-on-dark);
   }
@@ -744,9 +740,11 @@ html[data-theme] {
   }
 
   [data-ui='season-transport'] {
-    --text: var(--image-on-dark);
-    --text-muted: var(--image-on-dark-muted);
-    --text-faint: var(--image-on-dark-muted);
+    --text: var(--transport-text);
+    --text-muted: var(--transport-muted);
+    --text-faint: var(--transport-muted);
+    --image-focus: var(--transport-text);
+    --focus: var(--transport-text);
     min-height: 50px;
     margin: 0 0 4px;
     padding: max(10px, var(--control-gap)) 8px;
@@ -754,37 +752,36 @@ html[data-theme] {
     border: 3px solid transparent;
     border-image: var(--image-dark-frame)
       var(--image-art-frame-dark-slice, var(--image-frame-slice, 46)) / 10px stretch;
-    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-transport-material)
-      repeat padding-box;
+    background: var(--transport-fill) var(--image-transport-material) repeat padding-box;
     background-size: var(--transport-material-size);
     background-blend-mode: var(--transport-material-blend);
-    color: var(--image-on-dark);
+    color: var(--transport-text);
   }
 
   [data-ui='season-transport'] small,
   [data-ui='season-transport'] [data-select-trigger] {
-    color: var(--image-on-dark);
+    color: var(--transport-text);
     font-size: 12px;
   }
 
   [data-ui='season-transport'] [data-select-trigger][role='combobox'],
   [data-ui='season-transport']
     [data-select-trigger][role='combobox']:is(:hover, [data-state='open']) {
-    --text: var(--image-on-dark);
-    --text-muted: var(--image-on-dark-muted);
-    --text-faint: var(--image-on-dark-muted);
-    color: var(--image-on-dark);
+    --text: var(--transport-text);
+    --text-muted: var(--transport-muted);
+    --text-faint: var(--transport-muted);
+    color: var(--transport-text);
     height: 44px;
     min-height: 44px;
     min-width: 78px;
     padding-inline: 6px;
     padding-block: 1px;
     gap: 4px;
-    border: 1px solid var(--image-on-dark-muted);
+    border: 1px solid var(--transport-muted);
     border-image: none;
-    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat
-      padding-box;
-    background-size: var(--image-material-size, 256px);
+    background: var(--transport-fill) var(--image-transport-material) repeat padding-box;
+    background-size: var(--transport-material-size);
+    background-blend-mode: var(--transport-material-blend);
   }
 
   [data-ui='season-transport'] > i {
@@ -795,6 +792,8 @@ html[data-theme] {
 
   [data-ui='season-transport']
     button:is([aria-label='자동 진행 시작'], [aria-label='자동 진행 정지']) {
+    --text: var(--image-on-primary);
+    color: var(--image-on-primary);
     width: 44px;
     height: 44px;
     min-height: 44px;

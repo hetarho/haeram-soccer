@@ -17,6 +17,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261029 decided WEB-50 T582: `inkOn`'s #121212/white pair reaches only about 4.3:1 on mid-grey shirts → keep `inkOn` and switch to pure black where it falls under 4.5:1, which always reaches it there; halves drawn from the score plate's centre, so the split stays under the score although the back control sits on the home side (alt: plain `inkOn` with mid-tones under 4.5 | a 50% split off the score's centre).
 - 261029 decided MATCH-12 MATCH-16 MATCH-31 MATCH-35 T579 T580: owner's report (forward alone in front of goal stands, turns away; passes near the box go to defenders) → match-model revision 9 in two explore tasks, shot side first so the pass probe reads it in place (alt: one task | shot side only).
 - 261029 decided LAB-9 WEB-32 T578: which pause the lab's match view offers, since live observation has no pause button and the archived replay mode drops the speeds and charts → render Pitch in its live mode, whose pause is the game's (a timeline seek holds the instant, a speed resumes it), with the speeds, charts and details as the game shows a live match (alt: archived-replay mode with its play/pause button but no speeds or charts | a lab pause button, which would fork the view).
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
@@ -368,12 +369,12 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 170 | 170 | - | 0 |
+| WEB | 172 | 172 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
 | CLUB | 43 | 43 | - | 0 |
-| MATCH | 42 | 42 | - | 0 |
+| MATCH | 43 | 43 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 39 | 39 | - | 0 |
@@ -419,12 +420,18 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T579 (resume the WIP commit on work/r9), then T580 (match-model revision 9); batch gate and push main after T580.
+- implement-task T579 (resume dbc65d11 on work/r9), then T580: 50-match reads, unit tests only, push each (owner 261029); then the full suite once on main.
 
 ## log
+- 261029 decided T579 T580 (owner): read candidates at 50 matches instead of 600, check only typecheck/lint/format and affected unit tests, push each task to main; run the whole suite once after every task is on main.
+- 261029 T582 done: figures drawn at 85% of the marker, no carrier outline or enlarged plate, scoreboard halves in the worn shirts (scoreboardHalves.ts), a panelled rolling football (pixel version on the grid), lab 관전 records the fixture's appearance; typecheck, lint, format:check, 198 affected unit tests and build pass; e2e specs and the eye check left to the batch run.
+- 261029 update-ssot WEB r172 + MATCH r43 + create-task T582 (owner, match view): figures 85% of the marker, carrier never grows, scoreboard halves in kit colours, a football ball; lab watched matches wear their kits. Planned in worktree work/view while r9k4 runs T579–T580 in the main checkout.
+- 261029 T581 done: remove dedicated office exit and give controller a light palette distinct from dark navigation; 138 unit tests and static checks pass; owner requests unit-only validation and push.
+- 261029 update-ssot WEB r171 and T581 start: remove dedicated office exit, distinguish controller by light colours; owner authorizes unit tests only and push.
 - 261029 create-task MATCH r42: T579 (revision 9 shot side: keeper not a presser, short straight wind-up, 5 m clear chance, keeper half way), T580 (pass failure where reached, tight receivers near the box).
 - 261029 update-ssot MATCH r42: carrier never backs off the keeper, shot struck soon after choosing it, clear chance also with nobody within 5 m, tight receivers near the box weighed by keeping it, pass failure read where it happens, keeper about half way out.
 - 261029 publication verification: protected pending lab generation inputs and shared the normal feedback dismissal before office navigation (deb74fc1); the lab comparison edits a nondefault value (1b950bb3). Typecheck, lint, formatting, 37 affected unit tests, build and all 333 Chromium journeys pass; all four themes load the controller's distinct texture. Unchanged engine and persistence coverage reuses the successful lw29 batch checks.
+- 261029 publication verification: protected pending lab generation inputs and shared normal feedback dismissal before office navigation (deb74fc1); lab comparison edits a nondefault value (1b950bb3). Prior publication checks passed on the unchanged remote source.
 - 261029 update-ssot LAB r5 + fix: Korean descriptions for all 25 groups and 865 values (apps/web/src/lab/tunables.ko.json, written from the consuming code, marking page-only and pre-revision-8 values), shown above the code comment and searched; tunables.test.ts fails on a missing or stale description.
 - 261029 fix lab watch layout: the match view's App styles pin html/body with no scroll — the lab page scrolls again (scoped by `:has(.page)`), the watch view is capped to fit one screen and scrolls into view on a new playback; checked at 1920×1080.
 - 261029 T578 done: /lab 관전 plays match 0 of its seed in the lab worker and shows it in the game's unchanged Pitch inside the shared presentation; 다시 보기/새 경기; typecheck, lint, tracked formatting, 43 affected unit tests and build pass; lab.spec.ts left to the batch run.

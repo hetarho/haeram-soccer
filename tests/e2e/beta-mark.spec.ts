@@ -95,7 +95,14 @@ async function slotsThenPlay(page: Page, theme?: string) {
   );
   await expect(bar.getByTestId('beta-mark')).toHaveCount(0);
   await expect(bar.getByTestId('hud-cash')).toHaveCount(0);
-  await expectTargets([bar.getByRole('button', { name: '나가기', exact: true })]);
+  await expect(bar.getByRole('button', { name: '나가기', exact: true })).toHaveCount(0);
+  await expectTargets([
+    page
+      .getByRole('navigation')
+      .getByRole('button', { name: '클럽하우스', exact: true })
+      .filter({ visible: true })
+      .first(),
+  ]);
   expect((await hud.getByTestId('hud-cash').boundingBox())!.width).toBeGreaterThanOrEqual(44);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 }

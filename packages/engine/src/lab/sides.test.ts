@@ -14,6 +14,7 @@ import {
   setLabPlayerOvr,
 } from './sides';
 import { createWorld } from '../founding';
+import { appearanceForFixture } from '../match-appearance';
 import { createLabWorld, labFixture, leftAtHome, playLabMatch, watchLabMatch } from './match';
 
 const input = {
@@ -128,15 +129,31 @@ describe('lab setup', () => {
     before.forEach((c, i) => expect({ ...lab.hosts[i]!, name: c.name, short: c.short }).toEqual(c));
   });
 
+  const watchSides = [
+    generateLabSide({ ...input, tactic: 'balanced', average: 72, spread: 4 }),
+    generateLabSide({ ...input, side: 1, tactic: 'counter', average: 72, spread: 4 }),
+  ] as const;
+  // One watched match shared by the cases below: playing it takes seconds.
+  let watchedOnce: ReturnType<typeof watchLabMatch> | undefined;
+  const watched = () => (watchedOnce ??= watchLabMatch(lab, watchSides, 'watch'));
+
   it('watched match equals the unobserved one', { timeout: 120_000 }, () => {
-    const sides = [
-      generateLabSide({ ...input, tactic: 'balanced', average: 72, spread: 4 }),
-      generateLabSide({ ...input, side: 1, tactic: 'counter', average: 72, spread: 4 }),
-    ] as const;
-    const watched = watchLabMatch(lab, sides, 'watch');
-    expect(watched.record).toEqual(playLabMatch(lab, sides, 'watch', 0).record);
-    expect(watched.record.home).toBe(lab.hosts[0].id);
-    expect(watched.frames.length).toBeGreaterThan(90);
-    expect(watched.squads).toEqual([sides[0].players, sides[1].players]);
+    const { appearance, ...football } = watched().record;
+    expect(appearance).toBeDefined();
+    expect(football).toEqual(playLabMatch(lab, watchSides, 'watch', 0).record);
+    expect(watched().record.home).toBe(lab.hosts[0].id);
+    expect(watched().frames.length).toBeGreaterThan(90);
+    expect(watched().squads).toEqual([watchSides[0].players, watchSides[1].players]);
+  });
+
+  it('watched match wears the fixture’s kits', { timeout: 120_000 }, () => {
+    // The host identities' selected kits, as the game's own matches record them (→LAB-9, KIT-12),
+    // so the view shows no 유니폼 미기록 tag.
+    const { record } = watched();
+    expect(record.appearance).toEqual(appearanceForFixture(lab.w, labFixture(lab, 'watch', 0)));
+    expect(record.appearance!.sides.map((side) => side.club)).toEqual([record.home, record.away]);
+    expect(record.appearance!.sides[0].shirt.primary).not.toBe(
+      record.appearance!.sides[1].shirt.primary,
+    );
   });
 });

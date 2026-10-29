@@ -1,7 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
+import { FIGURE_SCALE } from './figurePainting';
 import {
+  ballRadius,
   createGroundPainter,
   DEFAULT_PITCH_SKIN,
+  markerRadius,
   paintPitchBall,
   paintPitchGround,
   resolvePitchSkin,
@@ -132,5 +135,68 @@ describe('presentation-only pitch materials', () => {
     expect(Math.min(...points.map(([, y]) => y!))).toBe(53.75);
     expect(Math.max(...points.map(([, y]) => y!))).toBe(61.75);
     expect(pixel.depth()).toBe(0);
+  });
+});
+
+describe('the football (→MATCH-36)', () => {
+  const panelPoints = (spin: number) => {
+    const { ctx, calls } = recordingContext();
+    paintPitchBall(ctx, 50, 40, 8, DEFAULT_PITCH_SKIN, spin);
+    return calls
+      .filter((c) => c.op === 'moveTo' && c.state.fillStyle === DEFAULT_PITCH_SKIN.ballSeam)
+      .map((c) => c.args);
+  };
+
+  it('ball draws panels and an edge', () => {
+    const { ctx, calls, depth } = recordingContext();
+    paintPitchBall(ctx, 50, 40, 8, DEFAULT_PITCH_SKIN, 0.7);
+    const leather = calls.findIndex(
+      (c) => c.op === 'fill' && c.state.fillStyle === DEFAULT_PITCH_SKIN.ball,
+    );
+    const clip = calls.findIndex((c) => c.op === 'clip');
+    const panels = calls.filter(
+      (c) => c.op === 'fill' && c.state.fillStyle === DEFAULT_PITCH_SKIN.ballSeam,
+    );
+    const edge = calls.findIndex(
+      (c) => c.op === 'stroke' && c.state.strokeStyle === DEFAULT_PITCH_SKIN.ballEdge,
+    );
+    // White leather, then a central pentagon and five around it cut by the ball, then the rim.
+    expect(leather).toBeGreaterThanOrEqual(0);
+    expect(clip).toBeGreaterThan(leather);
+    expect(panels).toHaveLength(6);
+    expect(calls.indexOf(panels[0]!)).toBeGreaterThan(clip);
+    expect(edge).toBeGreaterThan(calls.indexOf(panels.at(-1)!));
+    // The rim strokes the ball's own circle, thin against its size.
+    expect(calls.findLast((c, i) => c.op === 'arc' && i < edge)!.args.slice(0, 3)).toEqual([
+      50, 40, 8,
+    ]);
+    expect(calls[edge]!.state.lineWidth).toBeLessThan(8 * 0.2);
+    expect(depth()).toBe(0);
+    // The panels roll with the ball's travel; the same travel draws the same ball.
+    expect(panelPoints(0.7)).toEqual(panelPoints(0.7));
+    expect(panelPoints(1.4)).not.toEqual(panelPoints(0.7));
+  });
+
+  it('pixel ball stays pixel', () => {
+    const skin = { ...DEFAULT_PITCH_SKIN, pixelSize: 2 };
+    const { ctx, calls, depth } = recordingContext();
+    paintPitchBall(ctx, 41.25, 57.75, 6, skin, 0.7);
+    expect(calls.some((c) => c.op === 'arc')).toBe(false);
+    const cells = calls.filter((c) => c.op === 'fillRect' && c.state.fillStyle === skin.ballSeam);
+    expect(cells).toHaveLength(6);
+    // Every panel is whole grid cells on the theme's pixel grid.
+    for (const { args } of cells)
+      for (const value of args as number[]) expect(Math.abs(value % 2)).toBe(0);
+    expect(calls.some((c) => c.op === 'stroke' && c.state.strokeStyle === skin.ballEdge)).toBe(
+      true,
+    );
+    expect(depth()).toBe(0);
+  });
+
+  it('ground ball smaller than a torso', () => {
+    for (const width of [240, 320, 360, 390, 560, 760, 1100, 1440, 1920, 2560])
+      expect(ballRadius(width), String(width)).toBeLessThan(
+        FIGURE_SCALE.torso * markerRadius(width),
+      );
   });
 });

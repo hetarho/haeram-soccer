@@ -69,6 +69,23 @@ describe('shared semantic theme tokens', () => {
     },
   );
 
+  it.each([standard, pixel, print, sticker])(
+    '$id distinguishes the light controller from dark navigation with readable local text',
+    (pack) => {
+      const tokens = resolveThemeTokens(pack.tokens);
+      const navigation =
+        (pack.tokens.ui as Record<string, string>)['image-dark-fill'] ??
+        pack.tokens.ui['image-ink-color'];
+      expect(contrast(tokens['transport-fill'], navigation)).toBeGreaterThanOrEqual(3);
+      expect(contrast(tokens['transport-text'], tokens['transport-fill'])).toBeGreaterThanOrEqual(
+        4.5,
+      );
+      expect(contrast(tokens['transport-muted'], tokens['transport-fill'])).toBeGreaterThanOrEqual(
+        4.5,
+      );
+    },
+  );
+
   it('keeps font alias resolution and immutable per-pack results independent', () => {
     const tokens = structuredClone(pixel.tokens);
     const original = structuredClone(tokens);

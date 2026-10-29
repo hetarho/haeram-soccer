@@ -143,12 +143,23 @@ export async function openOfficeLibrary(page: Page) {
   await expect(page.getByTestId('strategy-board')).toBeVisible();
 }
 
-/** Leaves the office by its 나가기 (through the lobby), back where it was entered from. */
+/** Leaves through a contextual return or the shared primary navigation. */
 export async function leaveOffice(page: Page) {
   await closeOfficeOverview(page);
   if (!(await inOffice(page))) return;
   await officeLobby(page);
-  await officeBar(page).getByRole('button', { name: '나가기', exact: true }).click();
+  const contextualReturn = page
+    .getByRole('button', { name: /^← 돌아가기 ·/ })
+    .filter({ visible: true })
+    .first();
+  if (await contextualReturn.isVisible()) await contextualReturn.click();
+  else
+    await page
+      .getByRole('navigation')
+      .getByRole('button', { name: '클럽하우스', exact: true })
+      .filter({ visible: true })
+      .first()
+      .click();
   await expect(officeBar(page)).toHaveCount(0);
 }
 
