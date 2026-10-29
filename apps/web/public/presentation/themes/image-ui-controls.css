@@ -422,7 +422,8 @@ html[data-theme] {
     padding: 12px 14px;
     gap: 12px;
     line-height: 1.5;
-    color: var(--image-ink-color);
+    --text-faint: var(--action-text, var(--image-muted));
+    color: var(--action-text, var(--image-ink-color));
   }
 
   [data-menu-row] > span {
@@ -430,12 +431,13 @@ html[data-theme] {
   }
 
   [data-menu-row] small {
-    color: var(--image-muted);
+    color: var(--text-muted);
     line-height: 1.5;
   }
 
   [data-menu-row]:hover:not(:disabled) {
-    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background: var(--action-fill, var(--image-quiet))
+      var(--button-supporting-material, var(--image-quiet-material)) repeat padding-box;
     background-size: var(--image-material-size, 384px);
   }
 

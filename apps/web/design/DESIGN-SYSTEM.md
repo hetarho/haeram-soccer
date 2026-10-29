@@ -24,6 +24,8 @@ reuse sheet/detail materials for identity, facts and results; outcome marks occu
 columns and scores align at the trailing edge. Metric navigation uses the shared keyboard TabList.
 Menu actions use the same tertiary resources as other supporting actions. The transport combines
 its mode label and change action in one MODE button beside approval settings.
+Menu labels, supporting copy and trailing icons inherit the action's local foreground roles;
+the page's muted ink may not contrast with a filled tertiary skin.
 
 ## Resources carry the design
 

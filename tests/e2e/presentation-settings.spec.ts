@@ -178,6 +178,10 @@ for (const { id: theme } of baseline.themeRegistry.entries)
       await expect
         .poll(async () => (await rows.first().locator('small').evaluate(textContrast)).ratio)
         .toBeGreaterThanOrEqual(4.5);
+      await rows.first().hover();
+      await expect
+        .poll(async () => (await rows.first().locator('small').evaluate(textContrast)).ratio)
+        .toBeGreaterThanOrEqual(4.5);
       await rows.filter({ hasText: '테마 변경' }).click();
       const choice = page.getByTestId('presentation-theme');
       await expect(choice).toBeVisible();
