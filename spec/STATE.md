@@ -398,7 +398,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T580 | Revision 9: a pass near the box is lost only where an opponent really gets to it | MATCH | T579 | todo |
+| T580 | Revision 9: a pass near the box is lost only where an opponent really gets to it | MATCH | T579 | doing@261029.r9k6 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
