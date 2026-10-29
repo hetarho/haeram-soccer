@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| vf30 | ihaelam-ui-MacBookPro | autopilot | 2026-10-29T15:27Z | 2026-10-29T15:27Z | - |
 
 ## inbox
 - 261030 decided MATCH-36 KIT-3 KIT-8 ARCH-21 T598: how the kit evidence follows the 85% figures (no renderer defect; both specs read a torso the pitch no longer paints) → one shared pure module, tests/fixtures/figure-evidence.ts, sizes the torso from `markerRadius` × `torsoWidth` × the Canvas's DPR and keeps the fit's thresholds; continuity's phone journeys read at DPR 2 like observation, with worn-pattern, wrong-pattern, base-colour, keeper and not-worn-design checks; colour minima count within the painter's shading bound, 60 (alt: keep DPR 1 exact-pixel counts with a lower minimum, where hoops show only socks | rescale the old in-page template alone | keep tolerance 40, leaving a 360 px #00ffcc keeper's torso at 56 against 52).
