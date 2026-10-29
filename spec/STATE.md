@@ -367,7 +367,7 @@
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
 | WEB | 170 | 170 | - | 0 |
-| LAB | 3 | 3 | - | 1 |
+| LAB | 4 | 4 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
 | CLUB | 43 | 43 | - | 0 |
@@ -392,6 +392,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T578 | Watch a lab match in the game's own match view | LAB ARCH WEB | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -415,10 +416,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- T569–T571 pushed fa1a018b; read its CI.
-- batch gate runs tests/e2e/lab.spec.ts (T575) with the next code push.
+- implement-task T578 (lab 관전 in the game's match view), then the batch gate and push main.
 
 ## log
+- 261029 update-ssot LAB r4 + create-task T578: 관전 in the game's own match view is the lab's main use (LAB-9 resolved); N-match runs stay second (LAB-10).
 - 261029 revert ECON r40/T577: the lb29 loop took the parked F6 runway finding after the lab tasks; the owner says it is unrelated to the lab request, so F6 stays parked (uncommitted T577 work saved outside the repo, not applied).
 - 261029 T575 done: /lab entry (sides, values, runs, kept runs and baseline comparison) on T574's pool; state.ts with 5 unit tests, typecheck, lint, scoped format, 1672 affected unit tests and build pass; lab.spec.ts left to the batch run.
 - 261029 T576 done: generated a dedicated controller weave bitmap and connected all four themes; 121 unit tests, typecheck, lint, scoped format, resource/art checks and build pass; built image hash and material bindings verified.

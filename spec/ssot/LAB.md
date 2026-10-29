@@ -1,5 +1,5 @@
 # LAB Match lab
-> r3 | Let the owner tune the detailed match engine's numbers against generated sides and see what each change does to the football.
+> r4 | Let the owner watch generated sides play in the game's own match view, change the detailed engine's numbers and see by eye — and by the numbers — what each change does to the football.
 
 ## decisions
 - LAB-1 [o] The match lab is an owner's tool outside the game. ← tuning needs quick what-if runs without a career, a save or a script
@@ -34,11 +34,18 @@
   - the result table shows the baseline's value and the difference beside the current run, marking a difference beyond both runs' intervals.
   - a kept run's settings can be loaded back into the editors.
 - LAB-7 [o] The lab's sides, values and kept runs persist in this browser between visits and can be cleared; they are never shared across devices or exported with game saves.
-- LAB-8 [o] The lab does not tune the aggregate path (→MATCH-22), economy, progression or any other system; it does not edit single attributes, managers, traits or club context; and it shows no match playback.
-- LAB-9 [?] Whether a 1-match run should open the match view to watch its playback (crowding and movement checks need sight, not just numbers).
+- LAB-8 [o] The lab does not tune the aggregate path (→MATCH-22), economy, progression or any other system; it does not edit single attributes, managers, traits or club context.
+- LAB-9 [o] 관전 is the lab's main use: one match between the current sides with the current values, watched in the game's own match observation component — the same pitch, figures, ball, speeds, pause, events, scoreboard and match details the game shows (→WEB-32, →MATCH-12/37) — so what looks awkward in the lab looks the same in the game. ← the purpose is to spot play that feels unnatural by eye; a look-alike view would hide or invent faults
+  - the lab never forks, restyles or simplifies that component; a change to the game's match view shows in the lab without lab work. It is drawn in the theme the game uses in this browser.
+  - the watched match is match 0 of its 관전 seed: 좌측 팀 at home on the left of the scoreboard, the latest release revision, era rules of LAB-4.
+  - 다시 보기 plays the same seed again with the values as they are now, so a value change shows on the same match; 새 경기 draws a new seed. A playback under way never changes with later edits.
+  - the sides and values panels stay usable while watching; the playback starts once its match is played (in the lab worker, with visible progress).
+  - the scoreboard names the sides 좌측 팀 and 우측 팀; kits are two plainly different defaults.
+- LAB-10 [o] The N-match 시뮬레이션 (LAB-4–6) stays as the lab's second use, for checking a change against →MATCH-23 after it looks right.
 
 ## flow
-- tune: /lab → 좌측·우측 팀 생성(평균 OVR·편차·전술) → 선수별 OVR 조정 → 수치 검색·수정 → 시뮬레이션(N경기) → 결과표(기준 실행 대비 차이) → 다음 수치 수정 | 변경값 JSON 복사
+- watch: /lab → 좌측·우측 팀 생성(평균 OVR·편차·전술) → 관전 → 어색한 장면 발견 → 수치 검색·수정 → 다시 보기(같은 경기) → 비교 → 다음 수치 | 새 경기
+- tune: /lab → 수치 수정 → 시뮬레이션(N경기) → 결과표(기준 실행 대비 차이) → 변경값 JSON 복사
 
 ## constraints
 - The lab never adds to the game's initial download (→ARCH-28): it loads as its own entry, and the engine runs in a lab-only worker.
@@ -48,3 +55,4 @@
 - r1 261029 initial
 - r2 261029 LAB-2✎ a player's own OVR 1–99 → 20–92
 - r3 261029 LAB-2✎ fresh sides with no fatigue → a pressing side carries a club nobody owns' press load
+- r4 261029 LAB-9✎ [?] playback → [o] 관전 in the game's own match view as the main use; LAB-8✎ drops "shows no match playback"; LAB-10+ N-match runs as the second use
