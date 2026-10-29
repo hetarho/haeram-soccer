@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+import { dismissFeedback } from './feedback';
 
 /** Local desk navigation within the shared management shell (→WEB-39). */
 export const officeBar = (page: Page) => page.locator('[data-ui="office-bar"]');
@@ -71,9 +72,7 @@ export async function enterOffice(page: Page, options: { timeout?: number } = {}
   await expect(hub).toBeVisible();
   if (await covering.isVisible())
     await covering.getByRole('button', { name: '창 닫기', exact: true }).click();
-  const outcome = page.getByTestId('action-outcome');
-  if (await outcome.isVisible())
-    await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
+  await dismissFeedback(page);
   const entrance = page
     .getByRole('navigation')
     .getByRole('button', { name: '구단주 사무실', exact: true })
@@ -102,6 +101,7 @@ export async function closeOfficeOverview(page: Page) {
 /** Back to the lobby from an area by ← 사무실; a no-op in the lobby. */
 export async function officeLobby(page: Page) {
   await closeOfficeOverview(page);
+  await dismissFeedback(page);
   if ((await officeTitle(page).innerText()).trim() !== LOBBY)
     await officeBar(page).getByRole('button', { name: '사무실', exact: true }).click();
   await expect(officeTitle(page)).toHaveText(LOBBY);
