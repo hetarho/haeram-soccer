@@ -85,6 +85,31 @@ export const SHAPE_CONFIG = {
      * 4.12 / –, `markRadius` 18 3.36 / 3.95.
      */
     revision9: { keeperOut: { share: 0.5, gap: 3 }, markRadius: 14 },
+    /**
+     * Revision 10 (T599, →MATCH-17/32/34): with the ball within `goalSide.near` m of his goal (his
+     * frame's depth), every attacker within `zone` m of its middle has one marker: the free
+     * outfielder in his shape nearest him within `pick` m, nearest pairs first (`goalSideMarks`).
+     * The carrier counts; a man a teammate already presses or marks does not, nor one within
+     * `room` m of the ball, whose marker would join the crowd around it. A back-line defender
+     * takes only a man no more than `line` m in front of his line's depth, so the back line holds
+     * and a man between the lines is the midfield's. The marker's place moves `blend` of the way
+     * to `SHAPE_CONFIG.markGoalSide` m goal-side of his man, toward the goal's middle, and he is
+     * not drawn onto the shooting line (`screen`); nobody else leans onto a marked man, so no
+     * attacker draws two. A runner in behind is marked `runner.lead` m along his run
+     * (`runnerMarkPoint`; 0 keeps revision 9's mark). T599's reads, grid-bands' 50 (150)
+     * matches, revision 10 before → this: shots a team 21.8 (21.0) → 20.3 (20.3), possessions
+     * ending in a shot 22.8% (21.9%) → 21.6% (21.6%), unopposed chances 10.7 (10.1) → 9.6
+     * (10.0) a team, goals 4.20 (3.97) → 3.56 (3.57), held rows 24 (26) → 24 (26), seven or more
+     * outfielders within 10 m of the ball at a decision 2.84% (2.81%) → 2.95% (2.74%). Screens
+     * (50; 150): any back-line man marking (`line` 99) shots 21.2, goals 3.46 (20.4, 3.58);
+     * `room` 0 shots 20.1, goals 3.66, crowd 3.19% (19.8, 3.67, 2.97%); `room` 5 shots 21.1;
+     * `line` −3 shots 19.8, goals 3.52; `near` 55 / `zone` 35 / `pick` 14 with `room` 0 shots
+     * 18.5 (19.1) but 24 held rows at 150; `blend` 0.6 shots 20.0, goals 3.86.
+     */
+    revision10: {
+      goalSide: { near: 40, zone: 30, pick: 12, blend: 0.8, line: 0, room: 8 },
+      runner: { lead: 6 },
+    },
     tactic: {
       possession: {
         advance: 7,
@@ -375,6 +400,85 @@ export interface ShapeCache {
   outfield?: [GridPlayer[]?, GridPlayer[]?];
   /** Each side's defence against a box scene (`defendingBox`, candidate model, T443): the ball's side, or 0. */
   box?: [number?, number?];
+  /** Each side's goal-side marks near its box (`goalSideMarks`, revision 10), or null when off. */
+  goalSide?: [(GoalSideMarks | null)?, (GoalSideMarks | null)?];
+}
+
+/** Revision 10's goal-side marks of a defending side (T599): its marker → his man, and the men marked. */
+export interface GoalSideMarks {
+  /** By the defending side's roster index: the opponent's roster index he marks, or −1. */
+  man: Int8Array;
+  /** By the opponent's roster index: 1 when one of them marks him. */
+  taken: Uint8Array;
+}
+
+/**
+ * Revision 10 (T599, `SHAPE_CONFIG.candidate.revision10.goalSide`): out of possession, with the
+ * ball within `near` m of `side`'s goal, each attacker within `zone` m of the goal's middle — the
+ * carrier too, but not a man a teammate already presses or marks — is paired with the free
+ * outfielder (no intention) nearest him within `pick` m, nearest pairs first and equal gaps by
+ * player ID, so one marker a man and one man a marker; null when the rule is off (before revision
+ * 10, with the ball, or the ball further out). Read once per cache.
+ */
+export function goalSideMarks(
+  s: GridState,
+  side: 0 | 1,
+  cache: ShapeCache = { offside: [], pressers: [], defence: [] },
+): GoalSideMarks | null {
+  const held = (cache.goalSide ??= [])[side];
+  if (held !== undefined) return held;
+  const G = SHAPE_CONFIG.candidate.revision10.goalSide;
+  const foe = other(side);
+  const bx = side === 0 ? s.ball[0] : PITCH.length - s.ball[0];
+  if (!modelAtLeast(s.setup, 10) || s.possession === side || bx > G.near)
+    return (cache.goalSide[side] = null);
+  const tracked = new Uint8Array(s.players[foe].length);
+  for (const gp of s.players[side]) {
+    const i = gp.intention;
+    if (onPitch(gp) && i && (i.kind === 'press' || i.kind === 'mark') && i.opponent !== undefined)
+      tracked[i.opponent] = 1;
+  }
+  // Squared distances: the same nearest-first order, without a square root per pair.
+  const men = s.players[foe].filter((opp) => {
+    if (!onPitch(opp) || opp.slot === 0 || tracked[opp.idx]) return false;
+    const carrier = s.owner !== undefined && s.owner[0] === foe && s.owner[1] === opp.idx;
+    const bx = opp.pos[0] - s.ball[0],
+      by = opp.pos[1] - s.ball[1];
+    if (!carrier && bx * bx + by * by < G.room * G.room) return false;
+    const ox = side === 0 ? opp.pos[0] : PITCH.length - opp.pos[0];
+    const oy = side === 0 ? opp.pos[1] - CENTRE : CENTRE - opp.pos[1];
+    return ox * ox + oy * oy <= G.zone * G.zone;
+  });
+  const marks: GoalSideMarks = {
+    man: new Int8Array(s.players[side].length).fill(-1),
+    taken: new Uint8Array(s.players[foe].length),
+  };
+  if (!men.length) return (cache.goalSide[side] = marks);
+  const pairs: { gp: GridPlayer; opp: GridPlayer; d: number }[] = [];
+  const front = (cache.defence[side] ??= lineX(s, side, 'DF')) + G.line;
+  for (const gp of s.players[side]) {
+    if (!onPitch(gp) || gp.slot === 0 || gp.intention) continue;
+    const back = lineOfSlot(s, gp) === 'DF';
+    for (const opp of men) {
+      if (back && (side === 0 ? opp.pos[0] : PITCH.length - opp.pos[0]) > front) continue;
+      const dx = gp.pos[0] - opp.pos[0],
+        dy = gp.pos[1] - opp.pos[1];
+      const d = dx * dx + dy * dy;
+      if (d <= G.pick * G.pick) pairs.push({ gp, opp, d });
+    }
+  }
+  pairs.sort(
+    (a, b) =>
+      a.d - b.d ||
+      (a.opp.player.id < b.opp.player.id ? -1 : a.opp.player.id > b.opp.player.id ? 1 : 0) ||
+      (a.gp.player.id < b.gp.player.id ? -1 : a.gp.player.id > b.gp.player.id ? 1 : 0),
+  );
+  for (const { gp, opp } of pairs) {
+    if (marks.man[gp.idx]! >= 0 || marks.taken[opp.idx]) continue;
+    marks.man[gp.idx] = opp.idx;
+    marks.taken[opp.idx] = 1;
+  }
+  return (cache.goalSide[side] = marks);
 }
 
 /** A player's target in the engine frame. */
@@ -395,6 +499,8 @@ export function targetOf(
   const loose: [number, number] = k
     ? [place[0] + (gp.pos[0] - place[0]) * k, place[1] + (gp.pos[1] - place[1]) * k]
     : place;
+  // A goal-side marker (revision 10) keeps to his man, not to the shooting line (→MATCH-32).
+  if ((goalSideMarks(s, side, cache)?.man[idx] ?? -1) >= 0) return loose;
   return screen(s, gp, spread(s, gp, loose));
 }
 
@@ -557,36 +663,51 @@ export function shapePlace(
   // On the candidate model only a press intention presses; this is the pre-feature presser.
   if (s.setup.model === undefined && (cache.pressers[side] ??= pressers(s, side)).includes(idx))
     return pressPoint(s, gp, [bx, by], false);
-  // Another outfielder leans toward the goal-side point of the nearest attacker around his spot,
-  // further around it on revision 9 (T579).
-  let best: number = modelAtLeast(s.setup, 9)
-    ? SHAPE_CONFIG.candidate.revision9.markRadius
-    : SHAPE_CONFIG.markRadius;
-  // `attackFrame` inlined, so the scan allocates nothing.
-  let found = false,
-    nx = 0,
-    ny = 0;
   const foe = other(side);
-  const foes = ((cache.outfield ??= [])[foe] ??= s.players[foe].filter(
-    (opp) => onPitch(opp) && lineOfSlot(s, opp) !== 'GK',
-  ));
   const { hypot } = s.math;
-  for (const opp of foes) {
+  // Revision 10 (T599): near his box he marks the man his side pairs him with, goal-side.
+  const marks = goalSideMarks(s, side, cache);
+  const man = marks ? marks.man[idx]! : -1;
+  if (marks && man >= 0) {
+    const opp = s.players[foe][man]!;
     const ox = side === 0 ? opp.pos[0] : PITCH.length - opp.pos[0];
     const oy = side === 0 ? opp.pos[1] : PITCH.width - opp.pos[1];
-    // The distance is at least either offset, so a man further off on one axis cannot be nearer.
-    if (Math.abs(ox - x) > best || Math.abs(oy - y) > best) continue;
-    const d = hypot(ox - x, oy - y);
-    if (d <= best) {
-      found = true;
-      nx = ox;
-      ny = oy;
-      best = d;
+    const d = hypot(ox, oy - CENTRE);
+    const step = d > 0 ? Math.min(SHAPE_CONFIG.markGoalSide, d) / d : 0;
+    const blend = SHAPE_CONFIG.candidate.revision10.goalSide.blend;
+    x += (ox - ox * step - x) * blend;
+    y += (oy + (CENTRE - oy) * step - y) * blend;
+  } else {
+    // Another outfielder leans toward the goal-side point of the nearest attacker around his spot,
+    // further around it on revision 9 (T579), never onto a man a teammate marks (revision 10).
+    let best: number = modelAtLeast(s.setup, 9)
+      ? SHAPE_CONFIG.candidate.revision9.markRadius
+      : SHAPE_CONFIG.markRadius;
+    // `attackFrame` inlined, so the scan allocates nothing.
+    let found = false,
+      nx = 0,
+      ny = 0;
+    const foes = ((cache.outfield ??= [])[foe] ??= s.players[foe].filter(
+      (opp) => onPitch(opp) && lineOfSlot(s, opp) !== 'GK',
+    ));
+    for (const opp of foes) {
+      if (marks?.taken[opp.idx]) continue;
+      const ox = side === 0 ? opp.pos[0] : PITCH.length - opp.pos[0];
+      const oy = side === 0 ? opp.pos[1] : PITCH.width - opp.pos[1];
+      // The distance is at least either offset, so a man further off on one axis cannot be nearer.
+      if (Math.abs(ox - x) > best || Math.abs(oy - y) > best) continue;
+      const d = hypot(ox - x, oy - y);
+      if (d <= best) {
+        found = true;
+        nx = ox;
+        ny = oy;
+        best = d;
+      }
     }
-  }
-  if (found) {
-    x += (nx - SHAPE_CONFIG.markGoalSide - x) * SHAPE_CONFIG.markBlend;
-    y += (ny - y) * SHAPE_CONFIG.markBlend;
+    if (found) {
+      x += (nx - SHAPE_CONFIG.markGoalSide - x) * SHAPE_CONFIG.markBlend;
+      y += (ny - y) * SHAPE_CONFIG.markBlend;
+    }
   }
   // Against a box scene the back line drops toward its goal and narrows (candidate model, T443).
   if (
@@ -668,13 +789,38 @@ export function intentionTarget(s: GridState, gp: GridPlayer): [number, number] 
   }
   // A runner on a box-scene run is marked between him and his zone (T443).
   if (foe && onPitch(foe) && i.kind === 'mark')
-    return boxMarkPoint(side, foe) ?? goalSideOf(side, foe);
+    return boxMarkPoint(side, foe) ?? runnerMarkPoint(s, side, foe) ?? goalSideOf(side, foe);
   if (i.kind === 'cover' && i.box) return boxGuardTarget(s, gp, i.box.zone, i.box.ball);
   // A zone or a teammate covered keeps to the shooting line in front of goal (revision 6, T542).
   if (i.kind === 'cover' && i.zone) return screen(s, gp, guardPoint(s, gp, i.zone));
   if (mate && onPitch(mate) && i.kind === 'cover')
     return screen(s, gp, coverPoint(side, mate, s.math));
   return [i.target[0], i.target[1]];
+}
+
+/**
+ * Revision 10 (T599, `SHAPE_CONFIG.candidate.revision10.runner`, →MATCH-17): a runner in behind is
+ * marked goal-side along his run — `lead` m ahead of him toward its target, no further than it,
+ * then `markGoalSide` m toward the goal's middle — so his marker goes with him into the space he
+ * attacks instead of trailing where he was. Undefined before revision 10 and for any other man.
+ */
+function runnerMarkPoint(s: GridState, side: 0 | 1, foe: GridPlayer): [number, number] | undefined {
+  const run = foe.intention;
+  const { lead } = SHAPE_CONFIG.candidate.revision10.runner;
+  if (!modelAtLeast(s.setup, 10) || lead <= 0 || run?.kind !== 'run' || run.run !== 'behind')
+    return undefined;
+  const { hypot } = s.math;
+  const o = attackFrame(side, foe.pos);
+  const t = attackFrame(side, run.target);
+  const dx = t[0] - o[0],
+    dy = t[1] - o[1];
+  const d = hypot(dx, dy);
+  const k = d > 0 ? Math.min(lead, d) / d : 0;
+  const px = o[0] + dx * k,
+    py = o[1] + dy * k;
+  const g = hypot(px, py - CENTRE);
+  const step = g > 0 ? Math.min(SHAPE_CONFIG.markGoalSide, g) / g : 0;
+  return toEngine(side, [px - px * step, py + (CENTRE - py) * step]);
 }
 
 /** `markGoalSide` m goal-side of opponent `foe` for `side` (engine frame). */

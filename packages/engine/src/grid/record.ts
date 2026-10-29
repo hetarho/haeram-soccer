@@ -169,6 +169,11 @@ export interface ShotDiagnostic {
   goal: boolean;
   /** The shooter's line at his slot. */
   line: string;
+  /**
+   * Revision 10 on (T599): an unopposed chance, a shot in open play from a clear chance
+   * (`clearChance`: no outfield opponent ahead of him, or none within 5 m); absent before.
+   */
+  clear?: boolean;
 }
 
 /** Measurements for calibration that the record does not carry (→MATCH-23). */

@@ -9,7 +9,8 @@ import { measurementIdentity } from './lib/measurement-identity';
  *
  *   pnpm exec tsx scripts/grid-bands.ts             600 matches, pre-feature model
  *   pnpm exec tsx scripts/grid-bands.ts --quick     150 matches
- *   options: --matches N, --year Y (default 2024), --candidate (MATCH_MODEL_REVISION, explicitly)
+ *   options: --matches N, --year Y (default 2024), --candidate (MATCH_MODEL_REVISION, explicitly),
+ *     --revision R (the candidate's revision R, e.g. the previous one beside the current)
  *
  * Calibration report: the candidate model (requested explicitly, whatever the release switch says)
  * across CORPUS_CONFIG's core, tactic-pairing, gap, tier, era and knockout conditions, through the
@@ -98,9 +99,11 @@ const text = (name: string, fallback: string) => {
 };
 const matches = option('matches', args.includes('--quick') ? 150 : 600);
 const year = option('year', 2024);
-const bandModel: MatchModelRevision | undefined = args.includes('--candidate')
-  ? MATCH_MODEL_REVISION
-  : undefined;
+const bandModel: MatchModelRevision | undefined = args.includes('--revision')
+  ? (`continuous-aggregate-${option('revision', 0)}` as MatchModelRevision)
+  : args.includes('--candidate')
+    ? MATCH_MODEL_REVISION
+    : undefined;
 const TACTICS: Tactic[] = ['possession', 'press', 'counter', 'balanced'];
 const COUNTRIES = ['ENG', 'ESP', 'GER', 'ITA'];
 
@@ -958,6 +961,15 @@ if (args.includes('--worker')) {
     );
   }
   console.log(`added time per match ${added.toFixed(2)} min`);
+  // Unopposed chances (T599): shots from a clear chance, recorded from revision 10 on.
+  const shots = results.flatMap((r) => r.diagnostics.shots);
+  const recorded = shots.filter((sh) => sh.clear !== undefined);
+  if (recorded.length) {
+    const clear = recorded.filter((sh) => sh.clear);
+    console.log(
+      `unopposed chances ${(clear.length / (2 * matches)).toFixed(2)} a team (${((100 * clear.length) / recorded.length).toFixed(1)}% of shots), scored ${((100 * clear.filter((sh) => sh.goal).length) / Math.max(1, clear.length)).toFixed(1)}%`,
+    );
+  } else console.log('unopposed chances not recorded before revision 10');
   console.log(`passed ${rows.filter(inside).length}/${rows.length}`);
   console.log(`${((performance.now() - started) / matches).toFixed(1)} ms a match`);
 }

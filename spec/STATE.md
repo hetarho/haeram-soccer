@@ -17,6 +17,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261030 decided T599: exploratory unit exceeded its fixed50-match bound in several150-match scratch reads → coordinator interrupts and preserves the WIP, excludes non50 reads from selection/final evidence, and resumes with the original17:57:16Z exit (alt: silently accept the larger reads | restart the90-minute clock); no target or test gate is relaxed.
 - 261030 decided MATCH-36 KIT-3 KIT-8 ARCH-21 T598: how the kit evidence follows the 85% figures (no renderer defect; both specs read a torso the pitch no longer paints) → one shared pure module, tests/fixtures/figure-evidence.ts, sizes the torso from `markerRadius` × `torsoWidth` × the Canvas's DPR and keeps the fit's thresholds; continuity's phone journeys read at DPR 2 like observation, with worn-pattern, wrong-pattern, base-colour, keeper and not-worn-design checks; colour minima count within the painter's shading bound, 60 (alt: keep DPR 1 exact-pixel counts with a lower minimum, where hoops show only socks | rescale the old in-page template alone | keep tolerance 40, leaving a 360 px #00ffcc keeper's torso at 56 against 52).
 - 261030 decided WEB-18 WEB-40 T597: where journeys read the date and round that Current League and Cup no longer show → at the clubhouse through the primary navigation (shared `clubhouseDate`), or from the NEXT MATCH report's dated heading and reopen access while an eve is open; live-state keeps its owner stop after a play-through, waiting for the 8/7 eve to leave, and checks round 1 at the clubhouse at the end (alt: read the hidden tab title or a hidden node | restore the information row on League/Cup against WEB-18 | let the next eve replace the stop, dropping the stop step and adding a multi-day wait).
 - 261030 decided MATCH-12 MATCH-35 SAVE-23 T596: how revision 10 strikes shots and clears second balls → every shot, not only a first-time one, is kicked at its action's start (its resolution reads the same kick) and lands its flight later, the ball resting until the action ends; nobody reaches a second ball's first 1.2 m (`BOX_CONFIG.shot.revision10.clear`, `LANE_CONFIG.reach`), scanned from the man who met it, so any meeting beyond keeps revision 9's exact point; revision 10's digests, ties and seeds are re-recorded once after T600, since T599/T600 change it again (alt: first-time shots only, leaving wind-up shots resolved before they are kicked | clear 1.5–2.2 m past the keeper's narrowing reach, which also moves meetings no body blocks | re-record now and again after T600).
@@ -407,7 +408,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T599 | Goal-side defence and chance volume | MATCH SAVE ARCH | T598 | todo |
+| T599 | Goal-side defence and chance volume | MATCH SAVE ARCH | T598 | doing@261030.vf30 |
 | T600 | Receiver safety at the time of reception | MATCH SAVE ARCH | T599 | todo |
 | T601 | Recorded goal-scene replay | WEB MATCH SAVE ARCH | T600 | todo |
 
@@ -440,6 +441,7 @@
 - Engine explorations retain their fixed candidate corpus and compatibility rules; goal replay reads retained presentation facts and restores the original watch state without simulation or save changes.
 
 ## log
+- 261030 vf30 recover T599: retain source and all raw measurements; remaining exploration uses exactly50 matches and the original90-minute deadline.
 - 261030 T598 done: the kit evidence of CI40866255294 reads figures at MATCH-36's 85% torso through shared tests/fixtures/figure-evidence.ts (fit unchanged, sized from markerRadius × torsoWidth × DPR; colours within the painter's shading bound); continuity's phone journeys read at DPR 2 with worn/wrong-pattern/base/keeper/not-worn checks; no renderer defect, no production change; typecheck, lint, format:check, 4 affected unit tests and build pass; both club-identity specs left to the final Chromium gate.
 - 261030 T597 done: the ten management/calendar/navigation journeys of CI40866255294 follow the current UI with shared clubhouse helpers (icon-found tab, clubhouse date for League/Cup, which omit the information row), dated NEXT MATCH reports, the compact return/cup selector and the league picker's values; no UI defect, no production change; typecheck, lint, format:check, affected units (none) and build pass; browser specs left to the final Chromium gate.
 - 261030 T596 done: match-model revision 10 — every shot struck as its action starts, its second ball landing at its own speed and waiting for its winner, and won at least 1.2 m clear of the blocker or keeper; the stale T444/T445 resolve scenes expect the keeper's narrowing once; revisions 1–9 replay draw for draw; typecheck, lint, format:check, 913 affected unit tests, build and the four targeted CI cases pass; revision-10 digests and seeds re-recorded after T600.
@@ -459,4 +461,3 @@
 - 261029 T583–T593 design-system batch verified for commit: 184 files including retained artwork/provenance; 1718 affected units, workbench boundary checks, type/lint, 115-file scoped format, resource checks and build pass.
 - 261029 T592 done: three visibly textured material planes, reusable Card and notebook consumer; source/prompts and review criterion retained after restoring reduced-size grain. 33 units, type/lint/format, art/presentation checks, build and representative desktop/mobile inspection pass.
 - 261029 WEB r182 and T592 start: three resource-backed surface levels, border-light fixture notebook and a shared Card with app/workbench examples.
-- 261029 T590/T591 done: primary-coloured charts, round/non-overlapping analytical formations and shared-resource coverage across 119 UI modules / 50 app previews; 54 units, type/lint/format, resource checks and build pass. Workbench administration chrome excluded per owner.

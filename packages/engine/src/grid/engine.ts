@@ -1,6 +1,13 @@
 /** `playGrid`: a whole match, touch by touch (→MATCH-1, MATCH-3, MATCH-7, MATCH-11). */
 import type { MatchRecord, Score } from '../../../contracts/src/types';
-import { choosePass, decide, DECISION_CONFIG, throughPoint, type Decision } from './decide';
+import {
+  choosePass,
+  clearChance,
+  decide,
+  DECISION_CONFIG,
+  throughPoint,
+  type Decision,
+} from './decide';
 import { computeTags, type Tags } from './tags';
 import { cardForFoul, dissentAt } from './discipline';
 import {
@@ -247,6 +254,8 @@ export function playGrid(setup: GridSetup): GridResult {
       penalty,
       goal: o.result === 'goal',
       line: lineOf(slotOf(s, gp).position),
+      // An unopposed chance (revision 10, T599): only read from the revision that records it.
+      ...(modelAtLeast(s.setup, 10) ? { clear: !penalty && clearChance(s, side, [x, y]) } : {}),
     });
     tally.material?.shot(side, shooter, o.result, tally.diagnostics.shots.at(-1)!);
     const passer =

@@ -14,6 +14,7 @@ import { advance } from './movement';
 import { attackFrame, inBox, PITCH, toEngine, type Point } from './pitch';
 import { keeperNarrowing } from './resolve';
 import {
+  goalSideMarks,
   lineX,
   moveAll,
   offsideLine,
@@ -828,5 +829,171 @@ describe('revision 8 shape around the ball (T561, →MATCH-17)', () => {
     };
     expect(apart(seventh)).toBeCloseTo(0.5, 9);
     expect(apart(eighth)).toBeCloseTo(0.5, 9);
+  });
+});
+
+describe('revision 10 goal-side defence near the box (T599, →MATCH-17/32/34)', () => {
+  const ninth = MATCH_MODEL_REVISIONS[8]!;
+  const tenth = MATCH_MODEL_REVISIONS[9]!;
+  const G = SHAPE_CONFIG.candidate.revision10.goalSide;
+  const GOAL: Point = [0, PITCH.width / 2];
+  // Side 1 attacks side 0's goal (engine x = 0): its carrier (10) 36 m out, a forward (9) onside in
+  // front of the back line (its floor 4 m goal-side of the ball); side 0's centre-backs 2 and 3
+  // near the forward, everyone else far off.
+  const CARRIER = 10,
+    FORWARD = 9,
+    NEAR = 2,
+    NEXT = 3;
+  const scene = (model: MatchModelRevision) => {
+    const kit = gridKit(['balanced', 'balanced'], undefined, DISABLED_RELEASE);
+    const s = kit.state;
+    s.setup = { ...s.setup, model };
+    for (const side of [0, 1] as const)
+      s.players[side].forEach((gp, k) => {
+        gp.intention = undefined;
+        gp.run = undefined;
+        gp.pos = side === 0 ? [62, 4 + 5 * k] : [80, 4 + 5 * k];
+      });
+    s.players[0][0]!.pos = [3, 34];
+    s.players[1][0]!.pos = [102, 34];
+    s.players[1][CARRIER]!.pos = [36, 34];
+    s.players[1][FORWARD]!.pos = [27, 26];
+    s.players[0][NEAR]!.pos = [30, 29];
+    s.players[0][NEXT]!.pos = [32, 22];
+    s.possession = 1;
+    s.owner = [1, CARRIER];
+    s.ball = [36, 34];
+    return s;
+  };
+  const forward = (s: GridState) => s.players[1][FORWARD]!.pos;
+
+  it('revision 10: one marker a man, goal-side of the forward near the box; revision 9 keeps its lean', () => {
+    const s9 = scene(ninth);
+    const s10 = scene(tenth);
+    expect(goalSideMarks(s9, 0)).toBeNull();
+    // Out of reach of the rule: with the ball, or with the ball further out than `near`.
+    expect(goalSideMarks(s10, 1)).toBeNull();
+    const far = scene(tenth);
+    far.ball = [G.near + 1, 34];
+    expect(goalSideMarks(far, 0)).toBeNull();
+    const marks = goalSideMarks(s10, 0)!;
+    expect(marks.man[NEAR]).toBe(FORWARD);
+    expect(marks.taken[FORWARD]).toBe(1);
+    // The next man does not take the same forward, and nobody else is paired with him.
+    expect(marks.man[NEXT]).toBe(-1);
+    expect([...marks.man].filter((m) => m === FORWARD)).toHaveLength(1);
+    const t9 = targetOf(s9, 0, NEAR);
+    const t10 = targetOf(s10, 0, NEAR);
+    // His target is goal-side of the forward and nearer him than revision 9's lean.
+    expect(gap(t10, GOAL)).toBeLessThan(gap(forward(s10), GOAL));
+    expect(gap(t10, forward(s10))).toBeLessThan(gap(t9, forward(s9)));
+    // No second man is drawn onto him: the next centre-back's target stays further off.
+    expect(gap(targetOf(s10, 0, NEXT), forward(s10))).toBeGreaterThan(gap(t10, forward(s10)));
+  });
+
+  it('revision 10: the back line holds its line against a man between the lines; a midfielder takes him', () => {
+    const s = scene(tenth);
+    const lineOfIdx = (gp: GridPlayer) => lineOf(s.formation[0][gp.slot]!.position);
+    const backs = s.players[0].filter((gp) => onPitch(gp) && gp.slot > 0 && lineOfIdx(gp) === 'DF');
+    // The back line 20 m out, one of it nearest the forward, who stands 7 m in front of it.
+    backs.forEach((gp, k) => (gp.pos = [20, 26 + 9 * k]));
+    const mid = s.players[0].find((gp) => onPitch(gp) && gp.slot > 0 && lineOfIdx(gp) === 'MF')!;
+    mid.pos = [35, 30];
+    s.players[1][FORWARD]!.pos = [27, 26];
+    // The carrier out wide, beyond the zone the rule reads.
+    s.players[1][CARRIER]!.pos = [38, 50];
+    s.ball = [38, 50];
+    const marks = goalSideMarks(s, 0)!;
+    expect(gap(backs[0]!.pos, forward(s))).toBeLessThan(gap(mid.pos, forward(s)));
+    for (const gp of backs) expect(marks.man[gp.idx]).toBe(-1);
+    expect(marks.man[mid.idx]).toBe(FORWARD);
+  });
+
+  it('revision 10: a man beside the ball draws no goal-side marker into its crowd', () => {
+    const s = scene(tenth);
+    s.players[1][FORWARD]!.pos = [33, 30];
+    s.players[0][NEAR]!.pos = [30, 29];
+    expect(gap(forward(s), s.ball)).toBeLessThan(G.room);
+    expect(goalSideMarks(s, 0)!.taken[FORWARD]).toBe(0);
+  });
+
+  it('revision 10: a man already pressed or marked keeps his one defender', () => {
+    const s = scene(tenth);
+    s.players[0][NEXT]!.intention = {
+      kind: 'mark',
+      priority: 'tactical',
+      target: [...forward(s)] as [number, number],
+      opponent: FORWARD,
+      since: 0,
+      until: 99,
+    };
+    const marks = goalSideMarks(s, 0)!;
+    expect(marks.taken[FORWARD]).toBe(0);
+    expect(marks.man[NEAR]).not.toBe(FORWARD);
+  });
+
+  it('revision 10: the defence moves continuously, no faster than each man can, and does not crowd the ball', () => {
+    const s = scene(tenth);
+    const before = s.players.map((roster) => roster.map((gp) => [...gp.pos]));
+    const speeds = s.players.map((roster) => roster.map((gp) => speedOf(s, gp)));
+    const goalSide = targetOf(s, 0, NEAR);
+    advance(s, 1);
+    for (const side of [0, 1] as const)
+      s.players[side].forEach((gp, k) => {
+        if (!onPitch(gp)) return;
+        expect(gap(gp.pos, before[side]![k]!)).toBeLessThanOrEqual(speeds[side]![k]! + 1e-9);
+      });
+    // The marker heads for his goal-side place within that second, not by a jump.
+    const marker = s.players[0][NEAR]!.pos;
+    expect(gap(marker, goalSide)).toBeLessThan(gap(before[0]![NEAR]!, goalSide));
+    // Targets near the ball: no more than revision 9's, and never seven outfielders within 10 m.
+    const crowd = (model: MatchModelRevision) => {
+      const t = scene(model);
+      let n = 0;
+      for (const side of [0, 1] as const)
+        for (const gp of t.players[side]) {
+          if (!onPitch(gp) || gp.slot === 0) continue;
+          const at = side === 1 ? gp.pos : targetOf(t, 0, gp.idx);
+          if (gap(at, t.ball) < 10) n++;
+        }
+      return n;
+    };
+    expect(crowd(tenth)).toBeLessThanOrEqual(crowd(ninth));
+    expect(crowd(tenth)).toBeLessThan(7);
+  });
+
+  it('revision 10: a runner in behind is marked goal-side along his run; revision 9 marks where he is', () => {
+    const run = (model: MatchModelRevision) => {
+      const s = scene(model);
+      const runner = s.players[1][FORWARD]!;
+      runner.pos = [25, 30];
+      runner.intention = {
+        kind: 'run',
+        run: 'behind',
+        priority: 'tactical',
+        target: [8, 30],
+        since: 0,
+        until: 99,
+      };
+      const marker = s.players[0][NEAR]!;
+      marker.intention = {
+        kind: 'mark',
+        priority: 'tactical',
+        target: [25, 30],
+        opponent: FORWARD,
+        since: 0,
+        until: 99,
+      };
+      return { s, target: targetOf(s, 0, NEAR) };
+    };
+    const r9 = run(ninth);
+    expect(r9.target[0]).toBeCloseTo(25 - SHAPE_CONFIG.markGoalSide, 9);
+    expect(r9.target[1]).toBeCloseTo(30, 9);
+    const r10 = run(tenth);
+    const lead = SHAPE_CONFIG.candidate.revision10.runner.lead;
+    // Along his run toward [8, 30], then goal-side toward the goal's middle.
+    expect(gap(r10.target, [8, 30])).toBeLessThan(gap(r9.target, [8, 30]));
+    expect(gap(r10.target, [25 - lead, 30])).toBeCloseTo(SHAPE_CONFIG.markGoalSide, 6);
+    expect(gap(r10.target, GOAL)).toBeLessThan(gap([25 - lead, 30], GOAL));
   });
 });

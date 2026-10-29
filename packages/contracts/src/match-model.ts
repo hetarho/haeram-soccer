@@ -49,6 +49,9 @@ import {
  * Revision 10 strikes every shot as its action starts, a first-time one too, so what it leaves
  * loose runs on at its own speed rather than waiting for its winner, and has that second ball won
  * clear of the man who blocked or parried it, never on his own spot (T596, →MATCH-12, MATCH-35);
+ * near its box a side out of possession marks each attacker in front of goal goal-side, one
+ * marker a man, its back line holding while midfielders take the men between the lines, and a
+ * runner in behind along his run (T599, →MATCH-17, MATCH-32, MATCH-34);
  * careers on revisions 1–9 take it the same way.
  */
 export const MATCH_MODEL_REVISIONS = [
