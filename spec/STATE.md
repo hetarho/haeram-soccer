@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| vf30 | ihaelam-ui-MacBookPro | autopilot | 2026-10-29T23:13Z | 2026-10-29T23:13Z | - |
 
 ## inbox
 - 261030 decided WEB-32 WEB-94 MATCH-12 T609: the WebKit 360 goal cue ran 16x at about 87 match s per real s in both attempts, 12–15% behind its own presentation clock, and was still in the 90′ goal hold when its 61.6 s budget ended, because Pitch advanced at most 60 ms a frame while WebKit on CI draws some frames past 100 ms → a product defect against WEB-32's wall-clock mapping: a frame advances its real time up to `FRAME_STEP_LIMIT_MS` 250 and a longer stall is not caught up; pause/visibility still restart the loop at 0 (alt: raise the journey budget, which the task forbids | seek to the end | keep 60 ms and play slower than specified on slow devices).
