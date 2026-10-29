@@ -11,6 +11,8 @@ import {
   beatCaptions,
   DEAD_BALL_CONFIG,
   deadBallBeats,
+  FRAME_STEP_LIMIT_MS,
+  frameElapsedMs,
   locate,
   presentationAdvance,
   presentationMs,
@@ -72,6 +74,28 @@ describe('presentation clock (→WEB-32)', () => {
     expect(presentationAdvance(length - 1, 100, 16, length)).toBe(length);
     expect(presentationAdvance(0, -5, 1, length)).toBe(0);
     expect(presentationAdvance(30, -5, 1, length)).toBe(30);
+  });
+
+  it('slow frames keep the wall clock and a stall is not caught up', () => {
+    // The first frame of a run advances nothing; a 16 ms or a 120 ms frame advances its real time.
+    expect(frameElapsedMs(1000, 0)).toBe(0);
+    expect(frameElapsedMs(1016, 1000)).toBe(16);
+    expect(frameElapsedMs(1120, 1000)).toBe(120);
+    // Ten 120 ms frames at 16x play the same match time as 1.2 real seconds (CI 40961086172).
+    const length = runningLength(95);
+    let seconds = 0;
+    for (let frame = 1; frame <= 10; frame++)
+      seconds = presentationAdvance(
+        seconds,
+        frameElapsedMs(frame * 120, (frame - 1) * 120 || 1),
+        16,
+        length,
+      );
+    expect(seconds).toBeCloseTo(presentationAdvance(0, 1199, 16, length), 9);
+    // A stalled main thread moves the clock at most one bounded step; time never runs backwards.
+    expect(FRAME_STEP_LIMIT_MS).toBe(250);
+    expect(frameElapsedMs(5000, 1000)).toBe(FRAME_STEP_LIMIT_MS);
+    expect(frameElapsedMs(900, 1000)).toBe(0);
   });
 
   it('matches open at 2x', () => {

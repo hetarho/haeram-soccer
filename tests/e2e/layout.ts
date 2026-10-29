@@ -22,6 +22,18 @@ export async function settle(page: Page) {
       { timeout: 2000 },
     )
     .catch(() => undefined);
+  // WebKit keeps a finished animation's last frame in layout until the next rendering update: a
+  // dialog's entrance read 43.994 px for 44 px choices at 1380 px (CI 40961086172). Two frames
+  // let the settled style apply; the bound keeps a page without frames from waiting forever.
+  await page
+    .evaluate(
+      () =>
+        new Promise<void>((resolve) => {
+          setTimeout(resolve, 1000);
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+        }),
+    )
+    .catch(() => undefined);
 }
 
 /**
