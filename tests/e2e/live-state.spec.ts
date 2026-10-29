@@ -1,4 +1,4 @@
-import { openLeague, resumeLeague, returnToMatch } from './competition-navigation';
+import { openClubhouse, openLeague, resumeLeague, returnToMatch } from './competition-navigation';
 import { watchNext } from './watch';
 import { test, expect, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -74,13 +74,18 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
     await page.removeLocatorHandler(eveDialog);
   }
   // An observation reached during the detour has legitimately stopped the calendar on its eve.
-  // A navigation-induced stop on any earlier day still fails this check.
+  // League omits the information row (→WEB-18); the report and its reopen access name their date
+  // instead. A navigation-induced stop on any earlier day still fails this check.
+  const eveOn = (day: string) =>
+    eveDialog.getByRole('heading', { name: `${day} · 경기 준비 보고`, exact: true });
+  const reopenOn = (day: string) =>
+    page.getByRole('button', { name: `경기 준비 보고 · ${day} · 열기`, exact: true });
   await expect
     .poll(
       async () =>
         (await mini.getByRole('button', { name: '자동 진행 정지' }).isVisible()) ||
-        ((await date.innerText()) === '1950년 8월 7일' &&
-          (dismissedEve || (await eveDialog.isVisible()))),
+        (await eveOn('1950년 8월 7일').isVisible()) ||
+        (dismissedEve && (await reopenOn('1950년 8월 7일').isVisible())),
     )
     .toBe(true);
   await expect(rankTab).toHaveAttribute('aria-selected', 'true');
@@ -107,20 +112,21 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
     }
   if (dismissedEve && observation === 'interleaved') await page.getByTestId('event-pill').click();
   await expect(eveDialog).toBeVisible();
-  await expect(date).toHaveText('1950년 8월 7일');
+  await expect(eveOn('1950년 8월 7일')).toBeVisible();
   if ((await playersTab.getAttribute('aria-selected')) !== 'true') {
     await eveDialog.getByRole('button', { name: '창 닫기', exact: true }).click();
     await playersTab.click();
     await scorerTrend.click();
     // Browsing a dismissed observation leaves its work and the calendar unchanged.
-    await expect(date).toHaveText('1950년 8월 7일');
-    await page.getByTestId('event-pill').click();
-    await expect(eveDialog).toBeVisible();
+    await reopenOn('1950년 8월 7일').click();
+    await expect(eveOn('1950년 8월 7일')).toBeVisible();
   }
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
   await eve.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
-  await expect(page.getByTestId('game-round')).toHaveText('1');
+  // The played-through eve leaves once the run starts its match day. League shows no round
+  // (→WEB-18); the clubhouse's season card counts the match at the end.
+  await expect(eveOn('1950년 8월 7일')).toHaveCount(0);
   // On a slow browser the run reaches the next match eve before this stop lands (CI WebKit
   // 40245403294): the eve has stopped the clock itself and its backdrop takes the click.
   const stop = mini.getByRole('button', { name: '자동 진행 정지' });
@@ -159,6 +165,9 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
   expect(probe).toEqual({ samePanel: true, sameCanvas: true, flashes: 0 });
   await rankTab.click();
   await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
+  // The clubhouse's season card counts the match played through; the stop held before the second.
+  await openClubhouse(page);
+  await expect(page.getByTestId('game-round')).toHaveText('1');
 }
 
 for (const observation of ['interleaved', 'eve-first'] as const)

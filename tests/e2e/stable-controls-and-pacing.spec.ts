@@ -1,5 +1,5 @@
 import { openPersonnel } from './personnel-navigation';
-import { openLeague, openCups, openClubRecords } from './competition-navigation';
+import { openClubhouse, openLeague, openCups, openClubRecords } from './competition-navigation';
 import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { expect, test } from '@playwright/test';
@@ -39,7 +39,6 @@ test('surveys every management destination during uninterrupted calendar play', 
   world.settings!.observations = { matchEve: false, windowOpen: false };
   world.cash = '999999999999';
   await importResponsibilityCareer(page, world);
-  const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   const date = page.getByTestId('game-date');
   const stop = page.getByRole('button', { name: '자동 진행 정지', exact: true });
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
@@ -48,10 +47,16 @@ test('surveys every management destination during uninterrupted calendar play', 
     const before = await date.innerText();
     await expect(date).not.toHaveText(before);
   };
-  for (const open of [openLeague, openCups, openClubRecords]) {
+  // Current League and Cup omit the information row (→WEB-18): the stop stays offered there, and
+  // the clubhouse's date still moves after the visit, since a stopped clock would stay stopped.
+  for (const open of [openLeague, openCups]) {
     await open(page);
+    await expect(stop).toBeEnabled();
+    await openClubhouse(page);
     await continues();
   }
+  await openClubRecords(page);
+  await continues();
   for (const view of ['players', 'market', 'manager', 'coaches', 'training', 'academy'] as const) {
     await openPersonnel(page, view);
     await continues();
@@ -69,7 +74,7 @@ test('surveys every management destination during uninterrupted calendar play', 
     await expect(action).toBeDisabled();
   await training.getByRole('button', { name: '창 닫기', exact: true }).click();
   // The owner office shares the running-calendar lock and keeps stop available (→WEB-39/97).
-  await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
+  await openClubhouse(page);
   await continues();
   await openOfficeArea(page, '결재라인 모아보기');
   const office = page.getByTestId('owner-office');

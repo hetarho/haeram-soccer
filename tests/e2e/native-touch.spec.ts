@@ -1,5 +1,5 @@
 import { openPersonnel } from './personnel-navigation';
-import { openLeague } from './competition-navigation';
+import { clubhouseDate, openLeague } from './competition-navigation';
 import { marketFilters, marketRows, closeMarketPanel } from './market';
 import { watchNext } from './watch';
 import { chooseOption, selectOptions } from './select';
@@ -203,6 +203,7 @@ for (const viewport of [
     await expect(page.getByRole('table', { name: '리그 순위표' }).getByRole('row')).not.toHaveCount(
       1,
     );
-    await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 1일');
+    // Exploring the market and other leagues advanced no day.
+    await expect(await clubhouseDate(page)).toHaveText('1950년 8월 1일');
   });
 }

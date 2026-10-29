@@ -279,7 +279,12 @@ test('opens club seasons in records and retains the detail scope through league 
     'aria-selected',
     'true',
   );
-  await page.getByRole('button', { name: '← 돌아가기 · 클럽 시즌 기록', exact: true }).click();
+  // The current season's league and cup carry the named return in their compact header (→WEB-40).
+  const returnToSeason = page.getByRole('button', {
+    name: '돌아가기 · 클럽 시즌 기록',
+    exact: true,
+  });
+  await returnToSeason.click();
   await expect(page.getByRole('combobox', { name: '기록 대회 범위', exact: true })).toHaveAttribute(
     'data-value',
     'cup',
@@ -290,12 +295,12 @@ test('opens club seasons in records and retains the detail scope through league 
       .getByRole('button', { name: '경기', exact: true }),
   ).toHaveAttribute('aria-pressed', 'true');
   await page.getByRole('button', { name: '이 시즌 컵 대회 기록', exact: true }).click();
-  await expect(
-    page
-      .getByRole('tablist', { name: '컵 대회', exact: true })
-      .getByRole('tab', { name: '잉글랜드 컵', exact: true }),
-  ).toHaveAttribute('aria-selected', 'true');
-  await page.getByRole('button', { name: '← 돌아가기 · 클럽 시즌 기록', exact: true }).click();
+  await expect(page.getByRole('combobox', { name: '컵 대회', exact: true })).toHaveAttribute(
+    'data-value',
+    'cup',
+  );
+  await expect(page.getByRole('region', { name: '잉글랜드 컵', exact: true })).toBeVisible();
+  await returnToSeason.click();
   await expect(page).toHaveURL(/season=1950.*part=matches.*competition=cup/);
   await page.getByRole('button', { name: '← 시즌별 기록', exact: true }).click();
   await expect(list).toBeVisible();
