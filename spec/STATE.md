@@ -367,7 +367,7 @@
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
 | WEB | 169 | 169 | - | 0 |
-| LAB | 1 | 0 | all | 1 |
+| LAB | 1 | 1 | - | 1 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
 | CLUB | 43 | 43 | - | 0 |
@@ -392,6 +392,10 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T572 | Lab sides and tunable grid numbers in the engine | LAB ARCH MATCH | - | todo |
+| T573 | Generated catalog of tunable grid numbers | LAB ARCH | T572 | todo |
+| T574 | Lab runs in a worker pool | LAB ARCH MATCH | T572 | todo |
+| T575 | Lab page: sides, values, runs and comparison | LAB ARCH | T573 T574 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -416,9 +420,10 @@
 
 ## next
 - T569–T571 pushed fa1a018b; read its CI.
-- create-task LAB (match lab, r1).
+- implement-task T572 (then T573, T574, T575).
 
 ## log
+- 261029 create-task LAB r1 → T572–T575 (engine hooks, tunable catalog, worker runner, lab page).
 - 261029 create-ssot LAB r1: match lab — generated left/right sides, every grid `*_CONFIG` number editable, N-match runs against MATCH-23 with baseline comparison.
 - 261029 create-ssot LAB start
 - 261029 T571 done: keep home return across competition tabs and preserve nested-detour origins; 346 affected unit tests, typecheck, lint, tracked formatting and build pass.

@@ -25,8 +25,9 @@
   - changing values or sides during a run does not affect that run.
 - LAB-5 [o] A finished run reports what the football did.
   - outcome: left wins, draws and right wins, and each side's goals a match.
-  - the →MATCH-23 table: each row's real band, the run's value for a team a match (both sides averaged), the left and right values, and pass/fail by →MATCH-23's tolerance. With sides of different averages the table notes that the bands assume equal top-tier sides.
-  - each run value shows its 95% interval over the run's matches, so a change can be told from noise.
+  - the →MATCH-23 table: each row's real band, the run's value for a team a match (both sides averaged) and pass/fail by →MATCH-23's tolerance. With sides of different averages the table notes that the bands assume equal top-tier sides.
+  - a side table gives left and right a match: goals, shots, on target, xG, possession, passes and completion, crosses, take-ons, tackles + interceptions, corners, fouls, offsides, yellow and red cards.
+  - each run value in both tables shows its 95% interval over the run's matches, so a change can be told from noise.
   - a 1-match run also lists the score, scorers with minutes, cards and the team stats of that match.
 - LAB-6 [o] Runs are compared, not just read. ← changing one number at a time only works when the before and after sit side by side
   - the last 10 finished runs are kept with their sides, values (as the changed-value JSON) and run seed; any one can be pinned as the baseline.
