@@ -17,6 +17,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261030 decided T608 ARCH-30 WEB-105 WEB-18: backend1773/1264/48 passed but Chromium331/334 with three failures → fix actual clip-return evidence and report-dismissal/owner-stop races, then a coordinator-owned targeted guard before the full final batch; preserve timeouts and assertions.
 - 261030 decided MATCH-35 MATCH-12 SAVE-23 T607: dccefdb2's second ball won 0.80 m from its blocker (t445-rebound-35: a shot struck on the goal line, closed down from 0.2 m behind, its 4–9 m rebound sent over the byline and kept 0.5 m inside it, shorter than `clear` 1.2 m, so nobody could meet it on the way and the keeper took it at rest; the shooter 0.2 m off could as well have won it and shot again on top of the blocker) is a revision-10 defect, not a test precondition → a block whose rebound the byline cuts short of `clear` from its blocker goes behind for a corner (`blockedBehind`, revision 10 only, the existing corner-block path): only 1975's league facts and observed positions moved, ties, every other digest, `candidate-et-7` and `goal-feedback-2` unchanged; 50 grid-bands matches 24/37, goals 3.24, shots 20.32, corners 5.35 (T600 24/37, 3.24, 20.20) (alt: lower the test's minimum for pitch-bounded routes, codifying a win within the blocker's reach | slide the rest point along the line to `clear`, an invented route | send every rebound over the byline behind, which moves far more blocks than the defect).
 - 261030 decided MATCH-34 HIST-11 T607: the other three failures were stale test preconditions, production unchanged → coordination's box scene placed side 1 one by one from its goal line, so revision 10's goal-side pairing (T599) marked CM 6 from his parked spot 12 m from a striker and made him, not the anchor, nearest the edge; the block now takes its shape before the runners arrive and then moves at once. News' world fixture reached unbeaten 5 in a match whose four extra slots an earlier early goal and three notable items fill, so HIST-11's cap drops the minor milestone; every milestone length is now checked against that cap and a hand-made pair proves it (alt: pin the scene to revision 9 | pick another seed | rank run milestones above other minor items, a news rule change).
 - 261030 decided T607 ARCH-30: final integration on dccefdb2 failed four cases after1772units passed → repair coordination scene geometry, bounded second-ball truth and news milestones in one focused unit; keep all target bands/assertions and defer full integration/browser rerun to the coordinator.
@@ -417,6 +418,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T608 | Goal return and eve dismissal races | WEB SAVE ARCH | T607 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -440,9 +442,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- coordinator final gate on the integrated vf30 candidate (batch with T607's four cases, grid-throughput's re-recorded 1975 digests and tests/e2e/goal-replay.spec.ts on Chromium), then the configured main push and one CI read.
+- implement-task T608: repair the three Chromium failures; coordinator first runs the three targeted browser cases on its committed candidate, then the complete final gate and main publication.
 
 ## log
+- 261030 create-task T608: Chromium331passed/3failed; all backend checks passed, no main code push; attempt-02 raw/traces retained.
 - 261030 T607 done: the four dccefdb2 integration failures. A goal-line block whose byline-clamped rebound rested 0.80 m from its blocker now goes behind for a corner on revision 10 (`blockedBehind`; unit scene in box.test.ts; only 1975's league facts/observed positions re-recorded; 50 grid-bands 24/37, goals 3.24, fingerprint 12faf221). Coordination's box scene now takes its shape before the runners arrive (stale sequential placement under T599's pairing). News checks every unbeaten milestone against HIST-11's per-match cap, with a hand-made crowded pair. Typecheck, lint, format, affected units (85 files, 808 tests) and build pass; the four cases and the modified integration files are left to the final gate.
 - 261030 create-task T607: full integration145files/1259tests passed,4cases failed; no main code push, raw attempt-01 retained.
 - 261030 T606 done: no goal clip begins while the original viewing holds a goal (`replayEntryOpen` gates `startGoalReplay` and the picker at the moment of choice, a picker opened before the hold included); the hold runs its full length and a return keeps the original clock, so a final-sample hold can no longer finish the live match for a clip; shortcut and picker goals stay focusable with `aria-disabled` through the hold; archived clip play/pause display rechecked (T601's fix kept); format, typecheck, lint, affected units (42) and build pass; goal-replay browser journey left to the final Chromium gate.
@@ -462,5 +465,4 @@
 - 261030 fix page-review: pair menu metadata and hover with each tertiary action foreground; wait for existing finite modal animation before touch-size measurements. Pinned type/lint/format checks pass; scoped browser rerun follows.
 - 261030 T605 done: 71 portable refresh resources, 32 cartoon icons, clay/yellow surfaces and native pixel controller; 61 focused units and pinned fast/resource checks pass. Final visual and publication gate follows.
 - 261030 T604 done: bronze-to-ruby ratings across all four packs, 32 rating/theme units plus resource/fast checks; T605 begins.
-- 261030 T603 done: shared page/cards/tabs/team sheets and combined mode/approval controls; 33 units and fast checks pass. T604 begins.
-- 261030 create-task WEB r187 → T603 shared pages/transport, T604 rating scale, T605 theme resources; pg30 begins T603, publication includes the preceding T602 fix.
+
