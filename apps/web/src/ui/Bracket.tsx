@@ -50,7 +50,7 @@ function Tie({ w, tie, legs }: { w: World; tie: KnockoutRound['ties'][number]; l
       : `${home}–${away}`
     : legs.map((f) => day(w, f)).join(' · ');
   return (
-    <li className={own ? c.ownTie : undefined}>
+    <li data-surface="inset" className={own ? c.ownTie : undefined}>
       <Club w={w} id={tie.home} strong={tie.winner === tie.home} />
       <em>
         {score}
@@ -74,13 +74,13 @@ function TreeTie({
 }: Omit<BracketProps, 'rounds'> & { round?: KnockoutRound; index?: number; slot: Slot }) {
   if (!slot || !round || index === undefined)
     return (
-      <li className={c.treeEmpty}>
+      <li data-surface="inset" className={c.treeEmpty}>
         {slot && 'bye' in slot ? <Club w={w} id={slot.bye} /> : '추첨 전'}
       </li>
     );
   if ('bye' in slot)
     return (
-      <li className={c.treeTie}>
+      <li data-surface="inset" className={c.treeTie}>
         <Club w={w} id={slot.bye} strong />
         <small>부전승</small>
       </li>
@@ -91,7 +91,7 @@ function TreeTie({
     [home, away] = tieAggregate(tie, legs),
     own = tie.home === w.playerClub || tie.away === w.playerClub;
   return (
-    <li className={`${c.treeTie} ${own ? c.ownTie : ''}`}>
+    <li data-surface="inset" className={`${c.treeTie} ${own ? c.ownTie : ''}`}>
       <span>
         <Club w={w} id={tie.home} strong={tie.winner === tie.home} />
         <em>{played ? home : ''}</em>

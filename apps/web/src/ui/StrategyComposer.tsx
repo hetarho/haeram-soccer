@@ -157,7 +157,7 @@ export function StrategyComposer({
         {DIRECTION_AREAS.map((area) => {
           const slot = area.card;
           return (
-            <fieldset key={area.key} className={s.domain} data-area={area.key}>
+            <fieldset data-surface="sheet" key={area.key} className={s.domain} data-area={area.key}>
               <legend className={s.domainHead}>
                 <span data-surface="tile" className={s.domainIcon} aria-hidden="true">
                   {area.icon}

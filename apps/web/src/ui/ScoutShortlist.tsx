@@ -35,7 +35,7 @@ export function ScoutShortlist({
     nextYear = next.year === w.year;
   const cash = (value: string) => <Money value={value} code={club.country} year={w.year} plain />;
   return (
-    <section className={s.shortlist} aria-label="스카우트 명단">
+    <section data-surface="sheet" className={s.shortlist} aria-label="스카우트 명단">
       <header>
         <h3>스카우트 명단</h3>
         <small>
@@ -107,14 +107,14 @@ export function RecruitmentNeeds({
     scout = staffMember(w, 'scout'),
     pickName = (id?: string) => offers.find((offer) => offer.player.id === id)?.player.name;
   return (
-    <section className={s.shortlist} aria-label="감독 영입 요청">
+    <section data-surface="sheet" className={s.shortlist} aria-label="감독 영입 요청">
       <header>
         <h3>지금 필요한 영입</h3>
         <button type="button" onClick={() => openStaff('scout')}>
           수석 스카우트 {scout?.name ?? '공석'} · 보기
         </button>
       </header>
-      <div className={s.requests} aria-label="감독 요청" role="group">
+      <div data-surface="sheet" className={s.requests} aria-label="감독 요청" role="group">
         <b>감독 요청</b>
         {requests.length ? (
           <ul>

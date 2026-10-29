@@ -16,9 +16,17 @@ export function clubOvr(w: World, club: Club) {
 export function cohesionLine(club: Club) {
   return `조직력 ${(club.cohesion ?? 0.8).toFixed(2)} · ×${Number(cohesionMultiplier(club).toFixed(3))}`;
 }
-/** Card tiers football games use for an overall rating: bronze below 65, silver to 74, gold 75+. */
+/** Presentation-only rarity tiers shared by rating cards and table chips (WEB-91). */
 export function ovrTier(value: number) {
-  return value >= 75 ? 'gold' : value >= 65 ? 'silver' : 'bronze';
+  return value >= 85
+    ? 'elite'
+    : value >= 75
+      ? 'gold'
+      : value >= 65
+        ? 'silver'
+        : value >= 50
+          ? 'bronze'
+          : 'iron';
 }
 
 /**

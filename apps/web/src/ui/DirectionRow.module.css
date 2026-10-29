@@ -64,7 +64,7 @@
   border-color: var(--accent);
   background: var(--surface-grain, none) var(--surface-2);
 }
-/* A drafted option reads gold and dashed until the board's 적용 sends it. */
+/* Baseline draft styling; resource themes supply their shared pending-choice artwork. */
 .options .drafted,
 .options .drafted[aria-checked='true'] {
   color: var(--gold);

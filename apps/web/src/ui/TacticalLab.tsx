@@ -4,7 +4,6 @@ import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import { FormationPitch } from './FormationPitch';
 import { compareTactics, signedPoint } from './tacticComparison';
 import s from './Analysis.module.css';
-import pitch from './FormationPitch.module.css';
 
 const MODIFIERS = [
   ['possession', '점유 보정'],
@@ -29,7 +28,7 @@ export function TacticalLab({
   onSelect: (tactic: Tactic) => void;
 }) {
   return (
-    <details className={s.disclosure}>
+    <details data-ui="disclosure" className={s.disclosure}>
       <summary>전술 실험실 · 네 가지 비교</summary>
       <section className={s.content} aria-label="전술 실험실">
         <p className={s.note}>
@@ -52,14 +51,9 @@ export function TacticalLab({
                 compact
                 tactic={row.tactic}
                 label={`${tacticLabel[row.tactic]} ${FORMATIONS[row.tactic].name} 배치`}
-                slot={(index) => {
-                  const player = players[index];
-                  return (
-                    <span className={pitch.name}>
-                      {player ? player.name.split(' ').at(-1) : '—'}
-                    </span>
-                  );
-                }}
+                slotLabel={(index) => players[index]?.name.split(' ').at(-1) ?? '—'}
+                slotTitle={(index) => players[index]?.name ?? '빈 자리'}
+                slot={(index) => players[index]?.name ?? '—'}
               />
               <dl className={s.facts}>
                 <div>

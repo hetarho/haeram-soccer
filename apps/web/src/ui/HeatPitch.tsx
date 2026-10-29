@@ -34,11 +34,17 @@ function Markings() {
     <g className={s.lines}>
       <rect {...FIELD} />
       <line x1={px(PITCH.length / 2)} y1={FIELD.y} x2={px(PITCH.length / 2)} y2={py(PITCH.width)} />
-      <ellipse
+      <circle
         cx={px(PITCH.length / 2)}
         cy={py(PITCH.width / 2)}
-        rx={FIELD.width * 0.09}
-        ry={FIELD.height * 0.15}
+        r={Math.min(FIELD.width * 0.09, FIELD.height * 0.15)}
+      />
+      <circle
+        cx={px(PITCH.length / 2)}
+        cy={py(PITCH.width / 2)}
+        r="0.7"
+        fill="currentColor"
+        stroke="none"
       />
       {end(0, BAND_EDGES[2], box)}
       {end(0, BAND_EDGES[1], six)}
@@ -93,6 +99,7 @@ export function MaterialPitch({
         aria-label={label}
         onClick={tap}
         data-testid="material-pitch"
+        data-ui="analysis-pitch"
       >
         <rect className={s.grass} width={VIEW.width} height={VIEW.height} />
         {Array.from({ length: 10 }, (_, i) => (

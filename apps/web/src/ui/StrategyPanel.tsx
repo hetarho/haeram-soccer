@@ -113,7 +113,7 @@ function MatchdaySquad({ w, xi }: { w: World; xi: Player[] }) {
     ];
   });
   return (
-    <section className={s.matchday} aria-label="감독이 정한 경기 명단">
+    <section data-surface="sheet" className={s.matchday} aria-label="감독이 정한 경기 명단">
       <h4>감독이 정한 경기 명단</h4>
       <p className={s.hint}>{eraRuleLine(era)}</p>
       <dl>
@@ -503,7 +503,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
                   : '성향과 신뢰에 따른 예상입니다. 실제 답변은 다를 수 있어요.'}
               </p>
               {w.manager.pending && (
-                <div className={s.pending}>
+                <div data-surface="sheet" className={s.pending}>
                   <p>
                     {tacticLabel[w.manager.pending]} 조건부 수락 · 훈련 지원금{' '}
                     <Money value={supportCost} code={clubOf(w).country} year={w.year} />
@@ -557,6 +557,13 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
               <FormationPitch
                 tactic={w.tactic}
                 label={`${FORMATIONS[w.tactic].name} 선발 배치`}
+                slotLabel={(index) =>
+                  byId
+                    .get(draft[index] ?? '')
+                    ?.name.split(' ')
+                    .at(-1) ?? '—'
+                }
+                slotTitle={(index) => byId.get(draft[index] ?? '')?.name ?? '빈 자리'}
                 slot={(index) => {
                   const place = slots[index]!,
                     player = byId.get(draft[index] ?? '');
@@ -564,6 +571,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
                   return (
                     <div
                       className={s.slotCard}
+                      data-surface="inset"
                       data-testid={`formation-slot-${index}`}
                       data-level={level ?? 0}
                     >
@@ -591,7 +599,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
               <p className={s.hint}>
                 자리마다 실효 능력과 피로를 비교해요. 직접 정한 선발은 변경할 때까지 유지합니다.
               </p>
-              <details className={s.slots}>
+              <details data-ui="disclosure" className={s.slots}>
                 <summary>선수별 교체</summary>
                 <div className={s.lineup}>
                   {slots.map((place, slot) => (

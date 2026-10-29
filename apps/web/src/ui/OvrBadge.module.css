@@ -6,9 +6,9 @@
   display: inline-grid;
   justify-items: center;
   align-content: center;
-  min-width: 44px;
-  min-height: 46px;
-  padding: 4px 6px 3px;
+  min-width: var(--rating-chip-min-width, 44px);
+  min-height: var(--rating-chip-min-height, 46px);
+  padding: var(--rating-chip-padding, 4px 6px 3px);
   border-radius: var(--badge-radius);
   border: 1px solid color-mix(in srgb, var(--tone) 55%, transparent);
   background: var(--surface-grain, none) var(--surface-2);
@@ -25,15 +25,15 @@
 }
 .ovr.ovr b {
   font-family: var(--score);
-  color: var(--tone);
-  font-size: 20px;
+  color: var(--rating-text, var(--tone));
+  font-size: var(--rating-chip-value-size, 20px);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.5px;
 }
 .ovr.ovr small {
   margin-top: 3px;
-  color: var(--text-muted);
+  color: var(--rating-text, var(--text-muted));
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.4px;
@@ -55,7 +55,7 @@
 .large.large b {
   font-size: 24px;
 }
-/* The ceiling beside the rating: same card tiers, outlined instead of filled. */
+/* The ceiling beside the rating uses the same tiers and keeps its explicit POT label. */
 .pair {
   flex: none;
   display: inline-flex;

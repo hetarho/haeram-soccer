@@ -182,7 +182,11 @@ function TenureCard({
               empty={row.finishesLine}
               onOpen={openSeason}
             />
-            {row.unresolved && <p className={m.coverage}>{row.unresolved}</p>}
+            {row.unresolved && (
+              <p data-surface="inset" className={m.coverage}>
+                {row.unresolved}
+              </p>
+            )}
             <p className={m.note}>
               {row.record.scope}
               {row.record.note && ` · ${row.record.note}`}

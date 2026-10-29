@@ -11,7 +11,7 @@ export function OpponentDossier({ w }: { w: World }) {
   const scout = scoutOpponent(w);
   if (!scout) return <p className={s.note}>다음 상대는 새 시즌 일정이 나오면 확인할 수 있어요.</p>;
   return (
-    <details className={s.disclosure}>
+    <details data-ui="disclosure" className={s.disclosure}>
       <summary>상대 스카우팅 노트</summary>
       <section className={s.content} aria-label="상대 스카우팅">
         <h3>

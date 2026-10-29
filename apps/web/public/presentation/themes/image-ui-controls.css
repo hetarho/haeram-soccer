@@ -140,7 +140,7 @@ html[data-theme] {
   --ovr-bronze: var(--image-ovr-bronze);
   --ovr-silver: var(--image-ovr-silver);
 
-  :where(
+  :is(
     button:not(
       [data-ui='link'],
       [data-ui='icon'],
@@ -148,12 +148,16 @@ html[data-theme] {
       [role='tab'],
       [data-ui='badge'],
       [data-home-part],
-      [data-select-trigger]
+      [data-select-trigger],
+      [data-ui='formation-player'],
+      [data-money],
+      [data-testid='hud-cash']
     )
   ) {
-    border: 1px solid transparent;
-    border-image: var(--image-button-frame)
-      var(--image-art-frame-button-slice, var(--image-frame-slice, 22)) / 4px stretch;
+    border: 1px solid var(--image-button-edge, transparent);
+    border-image: var(--image-control-frame, var(--image-button-frame))
+      var(--image-art-frame-button-slice, var(--image-frame-slice, 22))
+      var(--image-control-fill-mode,) / 4px stretch;
     border-radius: var(--image-control-radius, var(--image-radius, 0px));
     background-image: var(--image-quiet-material);
     background-color: var(--image-quiet);
@@ -171,8 +175,10 @@ html[data-theme] {
     --gold: var(--image-on-primary);
     color: var(--image-on-primary);
     border-width: 1px;
-    border-image: var(--image-primary-frame)
-      var(--image-art-frame-stamp-slice, var(--image-frame-slice, 54)) / 6px stretch;
+    border-color: var(--image-primary-control-edge, transparent);
+    border-image: var(--image-primary-control-frame, var(--image-primary-frame))
+      var(--image-art-frame-stamp-slice, var(--image-frame-slice, 54))
+      var(--image-control-fill-mode,) / 6px stretch;
     background-image: var(--image-primary-material);
     background-color: var(--image-primary);
     background-size: var(--image-material-size, 256px);
@@ -182,8 +188,48 @@ html[data-theme] {
   button[data-ui='primary'] {
     background-image: var(--image-primary-material) !important;
     color: var(--image-on-primary);
-    border-image: var(--image-primary-frame)
-      var(--image-art-frame-stamp-slice, var(--image-frame-slice, 54)) / 6px stretch;
+    border-image: var(--image-primary-control-frame, var(--image-primary-frame))
+      var(--image-art-frame-stamp-slice, var(--image-frame-slice, 54))
+      var(--image-control-fill-mode,) / 6px stretch;
+  }
+
+  button[data-ui='secondary'] {
+    --action-skin: var(--button-secondary-frame, var(--image-button-frame));
+    --action-slice: var(--button-secondary-frame-slice, var(--image-art-frame-button-slice, 22));
+    --action-fill: var(--button-secondary-fill, var(--image-quiet));
+    --action-text: var(--button-secondary-text, var(--image-ink-color));
+    --action-edge: var(--button-secondary-edge, var(--image-button-edge, transparent));
+  }
+
+  button[data-ui='tertiary'] {
+    --action-skin: var(--button-tertiary-frame, var(--image-button-frame));
+    --action-slice: var(--button-tertiary-frame-slice, var(--image-art-frame-button-slice, 22));
+    --action-fill: var(--button-tertiary-fill, var(--image-quiet));
+    --action-text: var(--button-tertiary-text, var(--image-ink-color));
+    --action-edge: var(--button-tertiary-edge, var(--image-button-edge, transparent));
+  }
+
+  button:is([data-ui='secondary'], [data-ui='tertiary']) {
+    --text: var(--action-text);
+    --text-muted: var(--action-text);
+    --accent-text: var(--action-text);
+    color: var(--action-text);
+    border-color: var(--action-edge);
+    border-image: var(--action-skin) var(--action-slice) var(--image-control-fill-mode,) /
+      var(--supporting-button-frame-width, 4px) stretch;
+    background: var(--action-fill) var(--button-supporting-material, var(--image-quiet-material))
+      repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+  }
+
+  button:is([data-ui='primary'], [data-ui='secondary'], [data-ui='tertiary']):hover:not(:disabled) {
+    box-shadow: var(--button-hover-shadow, var(--image-control-shadow, none));
+  }
+
+  button:is([data-ui='primary'], [data-ui='secondary'], [data-ui='tertiary']):active:not(
+      :disabled
+    ) {
+    box-shadow: var(--button-pressed-shadow, none);
   }
 
   [data-ui='link'] {
@@ -206,28 +252,70 @@ html[data-theme] {
 
   [data-select-trigger][role='combobox'],
   [data-select-trigger][role='combobox']:is(:hover, [data-state='open']),
-  :where(
+  :is(
     input:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file']),
     textarea,
     select
   ) {
-    border: 1px solid transparent;
-    border-image: var(--image-button-frame)
-      var(--image-art-frame-button-slice, var(--image-frame-slice, 22)) / 4px stretch;
+    border: 1px solid var(--image-field-edge, transparent);
+    border-image: var(--field-skin, var(--image-field-frame, var(--image-button-frame)))
+      var(--field-slice, var(--image-field-frame-slice, var(--image-art-frame-button-slice, 22)))
+      var(--image-control-fill-mode,) / var(--image-field-frame-width, 4px) stretch;
     border-radius: var(--image-control-radius, var(--image-radius, 0px));
-    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background: var(--image-field-fill, var(--image-quiet))
+      var(--image-field-material, var(--image-quiet-material)) repeat padding-box;
     background-size: var(--image-material-size, 384px);
     color: var(--image-ink-color);
     box-shadow: var(--image-control-shadow, none);
   }
 
   [data-select-trigger][role='combobox'] {
+    --field-skin: var(--image-select-frame, var(--image-field-frame, var(--image-button-frame)));
+    --field-slice: var(--image-select-frame-slice, var(--image-art-frame-button-slice, 22));
     --text: var(--image-ink-color);
     --text-muted: var(--image-muted);
     --text-faint: var(--image-faint);
     padding: 1px 8px;
     gap: 4px;
     line-height: 1.2;
+  }
+
+  :is(
+    input:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file']),
+    textarea,
+    select
+  ) {
+    min-height: var(--input-min-height, auto);
+    padding: var(--input-padding, 10px);
+    font: inherit;
+  }
+
+  textarea {
+    max-width: 100%;
+    resize: vertical;
+  }
+
+  :is(
+      input:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file']),
+      textarea,
+      select
+    ):hover:not(:disabled),
+  [data-select-trigger][role='combobox']:not([data-ui='text-select']):hover:not(:disabled) {
+    border-color: var(--image-field-hover-edge, var(--image-field-edge, transparent));
+  }
+
+  :is(
+    input:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file']),
+    textarea,
+    select
+  ):focus-visible,
+  [data-select-trigger][role='combobox']:not([data-ui='text-select']):is(
+      :focus-visible,
+      [data-state='open']
+    ) {
+    border-color: var(--image-field-focus-edge, var(--image-field-edge, transparent));
+    outline: var(--focus-width) solid var(--focus);
+    outline-offset: var(--focus-offset);
   }
 
   [data-ui='text-select'][data-select-trigger][role='combobox'] {
@@ -264,11 +352,45 @@ html[data-theme] {
     button:disabled,
     [data-select-trigger]:disabled,
     [role='option'][data-disabled],
-    fieldset:disabled
+    fieldset:disabled,
+    input:disabled,
+    textarea:disabled,
+    select:disabled
   ) {
-    opacity: 1;
-    filter: grayscale(1);
+    opacity: var(--image-disabled-opacity, 1);
+    filter: var(--image-disabled-filter, grayscale(1));
     cursor: not-allowed;
+  }
+
+  button[data-ui='primary']:disabled {
+    border-image-source: var(--image-disabled-frame, var(--image-primary-frame));
+    background-image: var(--image-disabled-material, var(--image-primary-material)) !important;
+    color: var(--image-disabled-text, var(--image-on-primary)) !important;
+  }
+
+  button:is([data-ui='secondary'], [data-ui='tertiary']):disabled {
+    border-image-source: var(--image-disabled-frame, var(--action-skin));
+    background-image: var(--image-disabled-material, var(--image-quiet-material));
+    color: var(--image-disabled-text, var(--action-text));
+  }
+
+  button:not([data-ui]):disabled {
+    border-image-source: var(--image-disabled-frame, var(--image-button-frame));
+    background-image: var(--image-disabled-material, var(--image-quiet-material));
+    color: var(--image-disabled-text, var(--image-ink-color));
+  }
+
+  :is(
+    input:not([type='checkbox'], [type='radio'], [type='range'], [type='color'], [type='file']),
+    textarea,
+    select,
+    [data-select-trigger]
+  ):disabled {
+    border-image-source: var(
+      --image-disabled-frame,
+      var(--field-skin, var(--image-field-frame, var(--image-button-frame)))
+    );
+    color: var(--image-disabled-text, var(--image-ink-color));
   }
 
   :is(button[data-ui='link'] > span, button[data-money], button[data-ui='term']:not(:disabled)) {
@@ -322,6 +444,42 @@ html[data-theme] {
     accent-color: var(--image-primary);
   }
 
+  input[type='range'] {
+    appearance: none;
+    min-height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+  input[type='range']::-webkit-slider-runnable-track {
+    height: 6px;
+    background: var(--image-canvas) var(--image-meter-track) repeat;
+    background-size: var(--image-material-size, 256px);
+  }
+  input[type='range']::-moz-range-track {
+    height: 6px;
+    background: var(--image-canvas) var(--image-meter-track) repeat;
+    background-size: var(--image-material-size, 256px);
+  }
+  input[type='range']::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    margin-top: -7px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--formation-marker, var(--image-primary-material)) center / cover no-repeat;
+    background-color: var(--formation-marker-fallback, var(--image-primary));
+  }
+  input[type='range']::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--formation-marker, var(--image-primary-material)) center / cover no-repeat;
+    background-color: var(--formation-marker-fallback, var(--image-primary));
+  }
+
   /* A choice card's input covers its label invisibly; the label carries the skin. */
   input:is([type='checkbox'], [type='radio']):not([data-ui='choice-cards'] input) {
     appearance: none;
@@ -330,52 +488,153 @@ html[data-theme] {
     flex: 0 0 20px;
     width: 20px;
     height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    max-height: 20px;
+    aspect-ratio: 1;
     margin: 0;
-    padding: 2px;
-    border: 1px solid transparent;
-    border-image: var(--image-button-frame)
+    padding: var(--checkbox-padding, 2px);
+    border: var(--checkbox-border-width, 1px) solid transparent;
+    border-image: var(--checkbox-frame, var(--image-button-frame))
       var(--image-art-frame-button-slice, var(--image-frame-slice, 22)) / 3px stretch;
-    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background: var(--checkbox-fill, var(--image-quiet))
+      var(--checkbox-off-art, var(--image-quiet-material)) center / var(--checkbox-art-size, auto)
+      var(--checkbox-art-repeat, repeat) padding-box;
     border-radius: var(--image-control-radius, var(--image-radius, 0px));
     vertical-align: middle;
     cursor: pointer;
   }
 
-  input:is([type='checkbox'], [type='radio']):checked {
-    border-image-source: var(--image-selected-frame);
+  input:is([type='checkbox'], [type='radio']):checked:not([data-ui='choice-cards'] input) {
+    border-image-source: var(--checkbox-frame, var(--image-selected-frame));
     border-image-slice: var(--image-art-frame-selected-slice, var(--image-frame-slice, 22));
-    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
+    background: var(--checkbox-fill, var(--image-primary))
+      var(--checkbox-on-art, var(--image-primary-material)) center / var(--checkbox-art-size, auto)
+      var(--checkbox-art-repeat, repeat) padding-box;
   }
 
   input:is([type='checkbox'], [type='radio']):checked::after {
-    content: '';
+    content: var(--checkbox-mark-content, '');
     width: 14px;
     height: 14px;
     background: var(--image-art-check) center / contain no-repeat;
   }
 
-  [data-surface='panel'],
-  [data-ui='game-shell'] [data-surface='panel'] {
-    padding: var(--panel-padding);
+  label:has(> input:is([type='checkbox'], [type='radio'])) {
+    min-height: var(--choice-label-min-height, auto);
+  }
+
+  [data-surface='canvas'] {
+    background: var(--image-canvas) var(--image-canvas-material) repeat;
+    background-size: var(--image-material-size, 256px);
+  }
+
+  /* Skin-only groups keep the view's spacing; never add another padded wrapper. */
+  [data-surface='sheet'],
+  [data-ui='sheet-list'] > section,
+  [data-ui='disclosure'] {
     border: 1px solid transparent;
-    border-image: var(--image-tile-frame)
-      var(--image-art-frame-tile-slice, var(--image-frame-slice, 54)) / 4px stretch;
+    border-image: var(--image-content-frame, var(--image-tile-frame))
+      var(--image-content-frame-slice, var(--image-art-frame-tile-slice, 54))
+      var(--image-content-fill-mode,) / var(--image-content-frame-width, 4px) stretch;
     border-radius: var(--image-panel-radius, var(--image-radius, 0px));
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 256px);
     box-shadow: none;
   }
 
-  [data-surface='panel'] > header {
+  [data-surface='inset'],
+  [data-ui='inset-list'] > :is(li, div) {
+    border: 1px solid transparent;
+    border-image: var(--image-inset-frame, var(--image-field-frame, var(--image-button-frame)))
+      var(--image-field-frame-slice, var(--image-art-frame-button-slice, 22))
+      var(--image-control-fill-mode,) / var(--image-field-frame-width, 4px) stretch;
+    border-radius: var(--image-control-radius, var(--image-radius, 0px));
+    background: var(--image-detail, var(--image-canvas))
+      var(--image-detail-material, var(--image-canvas-material)) repeat padding-box;
+    background-size: var(--image-material-size, 256px);
+    box-shadow: none;
+  }
+
+  [data-ui='disclosure'][open] > summary,
+  [data-surface='sheet'] > header {
     border-bottom-color: transparent;
-    background-image: var(--image-art-rule-dark);
+    background-image: var(
+      --image-disclosure-rule,
+      var(--image-section-rule, var(--image-art-rule-dark))
+    );
     background-position: center bottom;
-    background-size: 100% 2px;
+    background-size: 100% var(--section-rule-height, 2px);
+    background-repeat: no-repeat;
+  }
+
+  progress {
+    appearance: none;
+    border: 0;
+    border-radius: 0;
+    color: var(--image-primary);
+    background: var(--image-canvas) var(--image-meter-track) repeat;
+    background-size: var(--image-material-size, 256px);
+  }
+  progress::-webkit-progress-bar {
+    background: var(--image-canvas) var(--image-meter-track) repeat;
+    background-size: var(--image-material-size, 256px);
+  }
+  progress::-webkit-progress-value {
+    background: var(--image-primary) var(--image-primary-material) repeat;
+    background-size: var(--image-material-size, 256px);
+  }
+  progress::-moz-progress-bar {
+    background: var(--image-primary) var(--image-primary-material) repeat;
+    background-size: var(--image-material-size, 256px);
+  }
+
+  [data-surface='panel'],
+  [data-ui='game-shell'] [data-surface='panel'] {
+    padding: var(--panel-padding);
+    border: 1px solid transparent;
+    border-image: var(--image-content-frame, var(--image-tile-frame))
+      var(--image-content-frame-slice, var(--image-art-frame-tile-slice, 54))
+      var(--image-content-fill-mode,) / var(--image-content-frame-width, 4px) stretch;
+    border-radius: var(--image-panel-radius, var(--image-radius, 0px));
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 256px);
+    box-shadow: none;
+  }
+
+  [data-surface='detail'] {
+    border: 1px solid transparent;
+    border-image: var(--image-detail-frame, var(--image-content-frame, var(--image-tile-frame)))
+      var(--image-content-frame-slice, var(--image-art-frame-tile-slice, 54)) /
+      var(--image-content-frame-width, 4px) stretch;
+    border-radius: var(--image-panel-radius, var(--image-radius, 0px));
+    background: var(--image-detail, var(--image-quiet))
+      var(--image-detail-material, var(--image-quiet-material)) repeat padding-box;
+    background-size: var(--image-material-size, 256px);
+    box-shadow: none;
+  }
+
+  [data-ui='card'] > header {
+    border: 0;
+    background: none;
+  }
+
+  [data-ui='content-panel'],
+  [data-ui='game-shell'] [data-ui='content-panel'] {
+    padding: var(--content-panel-padding, var(--panel-padding));
+  }
+
+  [data-surface='panel'] > header,
+  [data-ui='panel-header'] {
+    border-bottom-color: transparent;
+    background-image: var(--image-section-rule, var(--image-art-rule-dark));
+    background-position: center bottom;
+    background-size: 100% var(--section-rule-height, 2px);
     background-repeat: no-repeat;
   }
 
   [data-ui='game-shell'] article[data-surface='panel']:has(button) {
-    border-image-width: 6px;
+    border-image-width: var(--image-content-hover-frame-width, 6px);
   }
 
   [data-ui='game-shell'] article[data-surface='panel']:has(button):is(:hover, :focus-within) {
@@ -544,9 +803,9 @@ html[data-theme] {
   [role='tablist'] {
     gap: 2px;
     padding: 0;
-    border-bottom: 1px solid var(--line);
+    border-bottom: var(--tab-baseline-border-width, 1px) solid var(--line);
     border-radius: 0;
-    background: none;
+    background: var(--image-tab-baseline, none) left bottom / 100% 1px no-repeat;
   }
 
   [role='tab'] {
@@ -558,11 +817,14 @@ html[data-theme] {
     border-radius: 0;
     background: none;
     color: var(--image-tab-text, var(--text-muted));
+    font-size: var(--tab-font-size, inherit);
+    font-weight: var(--tab-weight, var(--control-weight));
     box-shadow: none;
   }
 
   [role='tab'][aria-selected='true'] {
     color: var(--image-tab-active, var(--accent-text));
+    font-weight: var(--tab-selected-weight, var(--control-weight));
     border: 0 !important;
     border-image: none !important;
     background: none !important;
@@ -589,7 +851,7 @@ html[data-theme] {
   }
 
   [data-ui='choices'] > button[aria-pressed='true'],
-  button[aria-pressed='true']:not([data-ui='primary']),
+  button[aria-pressed='true']:not([data-ui='primary'], [data-ui='formation-player']),
   [role='radio'][aria-checked='true'] {
     --text: var(--image-ink-color);
     --text-muted: var(--image-muted);
@@ -603,18 +865,26 @@ html[data-theme] {
     font-weight: 700;
   }
 
+  button[role='radio'][data-drafted='true'] {
+    border-image-source: var(--image-primary-frame) !important;
+    border-image-slice: var(--image-art-frame-stamp-slice, var(--image-frame-slice, 22)) !important;
+    background: var(--image-primary) var(--image-primary-material) repeat padding-box;
+    background-size: var(--image-material-size, 256px);
+    color: var(--image-on-primary);
+  }
+
   [role='tab']::after {
     content: '';
     position: absolute;
     inset: auto 8px 0;
     display: block;
-    height: 2px;
+    height: var(--tab-active-height, 2px);
     background: none;
     pointer-events: none;
   }
 
   [role='tab'][aria-selected='true']::after {
-    background: currentColor;
+    background: var(--image-tab-active-rule, currentColor) center / 100% 100% no-repeat;
   }
 
   [data-ui='choices'] > button::after {
@@ -626,36 +896,81 @@ html[data-theme] {
     background-size: var(--image-material-size, 384px);
   }
 
+  table tbody tr {
+    height: var(--table-row-height, auto);
+  }
+
   thead {
-    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
-    background-size: var(--image-material-size, 256px);
-    --text: var(--image-on-dark);
-    --text-muted: var(--image-on-dark);
-    --text-faint: var(--image-canvas);
-    --accent-text: var(--image-on-dark);
-    color: var(--image-on-dark);
+    background: var(--table-header-fill, var(--image-dark-fill, var(--image-ink-color)))
+      var(--image-table-header-material, var(--image-dark-material)) repeat;
+    background-size: var(--table-header-material-size, var(--image-material-size, 256px));
+    --text: var(--table-header-text, var(--image-on-dark));
+    --text-muted: var(--table-header-text, var(--image-on-dark));
+    --text-faint: var(--table-header-text, var(--image-canvas));
+    --accent-text: var(--table-header-text, var(--image-on-dark));
+    color: var(--text);
   }
 
   table thead :is(th, td),
   table[aria-label] thead :is(th, td) {
-    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
-    background-size: var(--image-material-size, 256px);
-    color: var(--image-on-dark);
+    background: var(--table-header-fill, var(--image-dark-fill, var(--image-ink-color)))
+      var(--image-table-header-material, var(--image-dark-material)) repeat;
+    background-size: var(--table-header-material-size, var(--image-material-size, 256px));
+    color: var(--table-header-text, var(--image-on-dark));
+    font-size: var(--table-heading-size, var(--label-size));
     border-bottom-color: transparent;
     font-weight: 700;
   }
 
   td {
-    border-bottom: 1px solid var(--image-table-line);
+    border-bottom: var(--table-rule-border-width, 1px) solid var(--image-table-line);
+  }
+
+  [data-tier='iron'] {
+    --rating-image: var(--rating-iron-frame, var(--image-button-frame));
+    --rating-slice: var(--rating-iron-slice, var(--image-art-frame-button-slice, 22));
+    --rating-background: var(--rating-iron-fill, var(--image-quiet));
+    --rating-text: var(--rating-iron-text, var(--ovr-bronze, var(--warm)));
+  }
+
+  [data-tier='bronze'] {
+    --rating-image: var(--rating-bronze-frame, var(--image-button-frame));
+    --rating-slice: var(--rating-bronze-slice, var(--image-art-frame-button-slice, 22));
+    --rating-background: var(--rating-bronze-fill, var(--image-quiet));
+    --rating-text: var(--rating-bronze-text, var(--ovr-bronze, var(--warm)));
+  }
+
+  [data-tier='silver'] {
+    --rating-image: var(--rating-silver-frame, var(--image-button-frame));
+    --rating-slice: var(--rating-silver-slice, var(--image-art-frame-button-slice, 22));
+    --rating-background: var(--rating-silver-fill, var(--image-quiet));
+    --rating-text: var(--rating-silver-text, var(--ovr-silver, var(--text-muted)));
+  }
+
+  [data-tier='gold'] {
+    --rating-image: var(--rating-gold-frame, var(--image-button-frame));
+    --rating-slice: var(--rating-gold-slice, var(--image-art-frame-button-slice, 22));
+    --rating-background: var(--rating-gold-fill, var(--image-quiet));
+    --rating-text: var(--rating-gold-text, var(--gold));
+  }
+
+  [data-tier='elite'] {
+    --rating-image: var(--rating-elite-frame, var(--image-button-frame));
+    --rating-slice: var(--rating-elite-slice, var(--image-art-frame-button-slice, 22));
+    --rating-background: var(--rating-elite-fill, var(--image-quiet));
+    --rating-text: var(--rating-elite-text, var(--gold));
   }
 
   [data-tier] {
-    border: 4px solid transparent;
-    border-image: var(--image-button-frame)
-      var(--image-art-frame-button-slice, var(--image-frame-slice, 54)) / 5px stretch;
+    border: var(--rating-chip-border-width, 4px) solid transparent;
+    border-image: var(--rating-image, var(--image-button-frame))
+      var(--rating-slice, var(--image-art-frame-button-slice, 22)) var(--rating-fill-mode,) /
+      var(--rating-chip-frame-width, 5px) stretch;
     border-radius: var(--image-radius, 0px);
-    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background: var(--rating-background, var(--image-quiet))
+      var(--rating-material, var(--image-quiet-material)) repeat padding-box;
     background-size: var(--image-material-size, 384px);
+    color: var(--rating-text, var(--text));
   }
 
   tbody tr:nth-child(even) {
@@ -665,18 +980,40 @@ html[data-theme] {
   /* Pinned cells paint their own opaque paper, including while the table scrolls. */
   table tbody :is(th, td),
   table[aria-label] tbody :is(th, td) {
-    background: var(--image-quiet) var(--image-quiet-material) repeat;
-    background-size: var(--image-material-size, 384px);
+    border-bottom-width: var(--table-rule-border-width, 1px);
+    background:
+      var(--image-table-row-rule, none) left bottom / 100% 1px no-repeat,
+      var(--image-quiet) var(--image-quiet-material) repeat;
+    background-size:
+      100% 1px,
+      var(--image-material-size, 384px);
+    font-size: var(--table-body-size, inherit);
+    line-height: var(--table-line-height, inherit);
   }
 
   table tbody tr:nth-child(even) > :is(th, td) {
-    background-color: var(--image-selected-row);
+    background-color: var(--table-alt-fill, var(--image-selected-row));
     background-blend-mode: multiply;
   }
 
   table tbody tr[data-own='true'] > :is(th, td) {
-    background: var(--image-canvas) var(--image-canvas-material) repeat;
-    background-size: var(--image-material-size, 512px);
+    background:
+      var(--image-table-row-rule, none) left bottom / 100% 1px no-repeat,
+      var(--table-own-fill, var(--image-canvas))
+        var(--image-table-own-material, var(--image-canvas-material)) repeat;
+    background-size:
+      100% 1px,
+      var(--image-material-size, 512px);
+  }
+
+  table :is([data-tier], [data-ui='badge']) {
+    border-width: var(--table-badge-border-width, 4px);
+    border-image-width: var(--table-badge-frame-width, 6px);
+    font-size: var(--table-badge-font-size, inherit);
+  }
+
+  table [data-tier] {
+    border-image-width: var(--table-badge-frame-width, 5px);
   }
 
   [data-ui='badge'],
@@ -788,9 +1125,10 @@ html[data-theme] {
     --text-muted: var(--image-muted);
     --text-faint: var(--image-faint);
     --accent-text: var(--image-accent);
-    border: 8px solid transparent;
-    border-image: var(--image-tile-frame)
-      var(--image-art-frame-tile-slice, var(--image-frame-slice, 54)) / 10px stretch;
+    border: var(--listbox-border-width, 8px) solid var(--image-field-edge, transparent);
+    border-image: var(--image-select-frame, var(--image-tile-frame))
+      var(--image-select-frame-slice, var(--image-art-frame-tile-slice, 54))
+      var(--image-control-fill-mode,) / 10px stretch;
     border-radius: var(--image-radius, 0px);
     padding: 6px;
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;

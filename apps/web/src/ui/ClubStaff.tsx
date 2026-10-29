@@ -251,7 +251,7 @@ export function CoachingPlan({ w }: { w: World }) {
     auto = coachDelegated(w, 'assistant');
   const expiring = (w.staff || []).filter((member) => isExpiring(w, member));
   return (
-    <section className={s.plan} aria-label="스태프 선임·계약">
+    <section data-surface="sheet" className={s.plan} aria-label="스태프 선임·계약">
       <header>
         <h3>스태프 선임·계약</h3>
         <span data-testid="coaching-mode">
@@ -265,7 +265,7 @@ export function CoachingPlan({ w }: { w: World }) {
         auto="스태프가 코치 기조로 모든 부서를 채워요. 공석과 무급 자리는 코치 기조에 맞는 첫 후보로 바로 채우고, 맞는 후보가 없으면 무급 코치가 지켜요. 계약 중인 코치는 계약이 끝날 때 코치 기조로 재계약하거나 교체해요."
         owner="코치 선임·재계약·교체를 직접 해요. 재계약 시즌은 4월 1일이에요."
       />
-      <details className={management.reference}>
+      <details data-ui="disclosure" className={management.reference}>
         <summary>스태프 선임 기준</summary>
         <DirectionLines w={w} rows={['coaches', 'finance']} />
       </details>
@@ -471,7 +471,7 @@ export function CoachingStaff({
                 </button>
               </div>
               {/* Whom 코치 기조 would hire here while the level hands hiring to the staff (→STAFF-15). */}
-              <details className={`${s.department} ${management.reference}`}>
+              <details data-ui="disclosure" className={`${s.department} ${management.reference}`}>
                 <summary>담당 업무·추천 후보</summary>
                 <p className={s.note}>{STAFF_INFO[id].duty}</p>
                 <CoachPreview w={w} role={id} title="코치 기조로 뽑는다면" />
@@ -650,7 +650,7 @@ export function CoachingStaff({
 /** 감독 선임 (→STAFF-18): who appoints, the rows the staff follow and whom they would appoint. */
 export function ManagerPost({ w }: { w: World; client?: GameClient }) {
   return (
-    <section className={s.decision} aria-label="감독 선임 위임">
+    <section data-surface="sheet" className={s.decision} aria-label="감독 선임 위임">
       <header>
         <h3>감독 선임</h3>
       </header>
@@ -661,7 +661,7 @@ export function ManagerPost({ w }: { w: World; client?: GameClient }) {
         auto="감독이 떠나면 단장이 선호 학파와 감독 기조에 맞는 감독을 바로 뽑고, 4월 1일 계약이 끝나는 감독은 감독 기조로 재계약하거나 교체해요. 알림·결정에 보고해요."
         owner="구단주가 감독을 뽑고 재계약해요."
       />
-      <details className={management.reference}>
+      <details data-ui="disclosure" className={management.reference}>
         <summary>감독 선임 기준·추천 후보</summary>
         <DirectionLines w={w} rows={['school', 'manager', 'finance']} />
         <ManagerPreview w={w} title="지금 방향이면" />
@@ -742,7 +742,7 @@ function CoachPreview({ w, role, title }: { w: World; role: StaffRole; title: st
 export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
   const stance = financeStance(w);
   return (
-    <section className={s.decision} aria-label="계약 협상 위임">
+    <section data-surface="sheet" className={s.decision} aria-label="계약 협상 위임">
       <header>
         <h3>계약 협상</h3>
       </header>
@@ -778,7 +778,7 @@ export function OfferAnswers({ w }: { w: World }) {
     signing = financeStance(w).signing,
     hold = w.build?.market === 'hold';
   return (
-    <section className={s.decision} aria-label="이적 제안 위임">
+    <section data-surface="sheet" className={s.decision} aria-label="이적 제안 위임">
       <header>
         <h3>제안 응답</h3>
       </header>

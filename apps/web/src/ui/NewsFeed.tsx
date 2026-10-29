@@ -90,7 +90,7 @@ export function NewsQuietToggle() {
   const quiet = useNewsQuiet((state) => state.quiet);
   const setQuiet = useNewsQuiet((state) => state.setQuiet);
   return (
-    <label className={s.quiet}>
+    <label data-surface="inset" className={s.quiet}>
       <input type="checkbox" checked={quiet} onChange={(event) => setQuiet(event.target.checked)} />
       <span>
         <b>뉴스 표시 안 함</b>

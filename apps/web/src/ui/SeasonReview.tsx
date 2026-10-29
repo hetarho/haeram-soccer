@@ -41,7 +41,7 @@ function PointsChart({ stats }: { stats: SeasonStats }) {
     );
   };
   return (
-    <figure className={s.chart}>
+    <figure data-surface="sheet" className={s.chart}>
       <figcaption>
         <span>
           <i className={s.keyPoints} aria-hidden="true" />
@@ -128,7 +128,7 @@ function Leaders({
   players: Set<string>;
 }) {
   return (
-    <div className={s.leader}>
+    <div data-surface="sheet" className={s.leader}>
       <span>{title}</span>
       {leaders.length ? (
         <ol>
@@ -210,7 +210,7 @@ export function SeasonReview({
   const xgReady = !!stats?.xgMatches;
   return (
     <div className={s.review} data-testid="season-review">
-      <section className={s.hero}>
+      <section data-surface="sheet" className={s.hero}>
         <ClubCrest w={w} id={club.id} size={40} />
         <div className={s.heroText}>
           <small className={s.kicker}>{seasonName(season.year)} · FINAL WHISTLE</small>
@@ -228,7 +228,7 @@ export function SeasonReview({
         </div>
       </section>
 
-      <ul className={s.kpis}>
+      <ul data-ui="inset-list" className={s.kpis}>
         <li>
           <span>승점</span>
           <b>{season.points}</b>
@@ -280,7 +280,7 @@ export function SeasonReview({
       ) : (
         <>
           <PointsChart stats={stats} />
-          <div className={s.groups}>
+          <div data-ui="sheet-list" className={s.groups}>
             <section aria-label="공격">
               <h3>공격</h3>
               <dl>
@@ -430,7 +430,7 @@ export function SeasonReview({
               </dl>
             </section>
           </div>
-          <ul className={s.records}>
+          <ul data-ui="inset-list" className={s.records}>
             <li>
               <span>최다 연속 무패</span>
               <b>{stats.longestUnbeaten}경기</b>
@@ -502,7 +502,7 @@ export function SeasonReview({
       )}
 
       {!!season.runs?.length && (
-        <section className={s.next} aria-label="컵 대회 성적">
+        <section data-surface="sheet" className={s.next} aria-label="컵 대회 성적">
           <h3>컵 대회</h3>
           <ul>
             {season.runs.map((run) => (
@@ -520,7 +520,7 @@ export function SeasonReview({
         </section>
       )}
 
-      <section className={s.money} aria-label="시즌 재정">
+      <section data-ui="inset-list" className={s.money} aria-label="시즌 재정">
         <div>
           <span>수입</span>
           <b>{format(season.income)}</b>

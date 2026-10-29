@@ -1,0 +1,51 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-gap, 8px);
+  min-width: 0;
+  padding: var(--card-padding, var(--panel-padding, 12px));
+  color: var(--text);
+}
+.heading {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.meta {
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.card .title {
+  margin: 0;
+  color: var(--text);
+  font-size: var(--card-title-size, 15px);
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.content {
+  font-size: var(--card-body-size, 13px);
+  min-width: 0;
+  line-height: 1.5;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--control-gap, 8px);
+  margin-top: auto;
+}
+
+.card[data-surface='sheet'] > .heading > .title {
+  font-size: var(--card-sheet-title-size, 17px);
+}
+
+.content > :first-child {
+  margin-top: 0;
+}
+.content > :last-child {
+  margin-bottom: 0;
+}

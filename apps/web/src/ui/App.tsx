@@ -180,14 +180,20 @@ export function Panel({
   footer?: ReactNode;
 }) {
   return (
-    <section data-surface="panel" className={s.panel}>
-      <div className={s.panelHead}>
-        <h3>{title}</h3>
-        {note && <span>{note}</span>}
+    <section data-surface="panel" data-ui="content-panel" className={s.panel}>
+      <div data-ui="panel-header" className={s.panelHead}>
+        <div className={s.panelHeading}>
+          <h3>{title}</h3>
+          {note && <span>{note}</span>}
+        </div>
         {action}
       </div>
       {children}
-      {footer && <div className={s.panelFoot}>{footer}</div>}
+      {footer && (
+        <div data-ui="panel-footer" className={s.panelFoot}>
+          {footer}
+        </div>
+      )}
     </section>
   );
 }
@@ -251,7 +257,7 @@ function ClubJournal({ state }: { state: ClientState }) {
             ],
           ] as [string, ReactNode, ReactNode][]
         ).map(([label, value, note]) => (
-          <div className={s.stat} key={label}>
+          <div data-surface="sheet" className={s.stat} key={label}>
             <div className={s.label}>{label}</div>
             <strong>{value}</strong>
             <small>{note}</small>
@@ -318,21 +324,21 @@ function ClubJournal({ state }: { state: ClientState }) {
           </Panel>
           <Panel title="숫자로 보는 이번 시즌" note="ON THE PITCH">
             <div className={s.panelBody}>
-              <div className={s.attribute}>
+              <div data-ui="attribute" className={s.attribute}>
                 <span>득점 / 실점</span>
                 <b>
                   {t.gf} / {t.ga}
                 </b>
               </div>
-              <div className={s.attribute}>
+              <div data-ui="attribute" className={s.attribute}>
                 <span>클럽 평판</span>
                 <b>{number(c.reputation)} / 100</b>
               </div>
-              <div className={s.attribute}>
+              <div data-ui="attribute" className={s.attribute}>
                 <span>감독과의 신뢰</span>
                 <b>{number(w.manager.trust)} / 100</b>
               </div>
-              <div className={s.attribute}>
+              <div data-ui="attribute" className={s.attribute}>
                 <span>연간 손익</span>
                 <b>
                   <Money
@@ -629,7 +635,12 @@ function GameOver({
   );
   const peak = Math.max(own.fans, ...w.history.map((season) => season.fans));
   return (
-    <section className={s.gameOver} data-testid="game-over" aria-label="게임 오버">
+    <section
+      data-surface="sheet"
+      className={s.gameOver}
+      data-testid="game-over"
+      aria-label="게임 오버"
+    >
       <small>GAME OVER</small>
       <h2>{own.name} 파산</h2>
       <p>
@@ -691,7 +702,7 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
       {(error || critical) && (
         <FeedbackOverlay urgent>
           {error && (
-            <div className={s.error} role="alert">
+            <div data-surface="inset" className={s.error} role="alert">
               {error}
               <button onClick={() => location.reload()}>{t('save.reload')}</button>
               {state.error && !playing && (
@@ -702,7 +713,7 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
             </div>
           )}
           {critical === MANAGER_GONE ? (
-            <div className={s.critical} role="status">
+            <div data-surface="inset" className={s.critical} role="status">
               감독이 떠났어요. 임시 감독이 팀을 맡고 있어요.
               <div className={s.criticalActions}>
                 <button
@@ -723,7 +734,7 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
             </div>
           ) : (
             critical && (
-              <div className={s.critical} role="status">
+              <div data-surface="inset" className={s.critical} role="status">
                 {critical}
                 <button disabled={blocked} onClick={() => void client.acknowledge()}>
                   알림 확인 후 계속
@@ -736,7 +747,7 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
       {/* Routine notices remain in the inbox; debt retains its existing status band. */}
       {playing && !home && <CashAlarm />}
       {state.busy && (
-        <div className={s.foregroundProgress}>
+        <div data-surface="inset" className={s.foregroundProgress}>
           <div
             className={s.progress}
             role="progressbar"
@@ -1148,7 +1159,7 @@ export function App() {
         {screen === 'game' && <GameHud onMenu={openMenu} playing={playing} client={client} />}
         {!client && localError && (
           <FeedbackOverlay>
-            <div className={s.error} role="alert">
+            <div data-surface="inset" className={s.error} role="alert">
               {localError}
             </div>
           </FeedbackOverlay>
@@ -1212,7 +1223,7 @@ export function App() {
             ) : (
               <>
                 {changingView && (
-                  <div className={s.viewPending} role="status">
+                  <div data-surface="inset" className={s.viewPending} role="status">
                     {t('shell.loadingView')}
                   </div>
                 )}

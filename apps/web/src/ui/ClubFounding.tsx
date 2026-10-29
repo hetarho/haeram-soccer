@@ -174,7 +174,7 @@ export function ClubFounding({
             ))}
           </div>
         </fieldset>
-        <details className={s.advanced}>
+        <details data-ui="disclosure" className={s.advanced}>
           <summary>고급 설정</summary>
           <div>
             <label>

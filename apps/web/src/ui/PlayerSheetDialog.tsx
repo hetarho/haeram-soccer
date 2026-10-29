@@ -99,7 +99,7 @@ export function PlayerSheet({
       <PlayerProfile w={w} player={player} own={active} />
       <PersonCareerLink id={player.id} name={player.name} client={client} />
       {active && <PlayingCoachReview w={w} player={player} client={client} />}
-      <section className={a.clubCareer} aria-label="우리 클럽 통산">
+      <section data-surface="sheet" className={a.clubCareer} aria-label="우리 클럽 통산">
         <h3>우리 클럽 통산</h3>
         <p className={a.careerLine}>
           출전 {appearanceText(tally, 'career')} · {career[0]}골 · {career[1]}도움
@@ -122,7 +122,7 @@ export function PlayerSheet({
         </p>
       </section>
       {active && (
-        <div className={s.segments} role="group" aria-label="선수 기록 범위">
+        <div data-ui="choices" className={s.segments} role="group" aria-label="선수 기록 범위">
           {(
             [
               ['season', '이번 시즌'],
@@ -175,7 +175,12 @@ function Discipline({ w, player, tally }: { w: World; player: Player; tally?: Pl
     `경고 ${ofScope(tally?.yellow, scope)} · 퇴장 ${ofScope(tally?.red, scope)}`;
   const bans = active ? bansOf(w, player.id) : [];
   return (
-    <section className={a.clubCareer} aria-label="징계" data-testid="player-discipline">
+    <section
+      data-surface="sheet"
+      className={a.clubCareer}
+      aria-label="징계"
+      data-testid="player-discipline"
+    >
       <h3>징계</h3>
       <p className={a.careerLine}>
         {active && `이번 시즌 ${cards('season')} · `}통산 {cards('career')}
@@ -213,7 +218,12 @@ function SeasonHeat({ w, player, tally }: { w: World; player: Player; tally?: Pl
   const [year, setYear] = useState(seasons[0]?.year);
   const shown = seasons.find((season) => season.year === year) ?? seasons[0];
   return (
-    <section className={a.clubCareer} aria-label="시즌 히트맵" data-testid="player-heat">
+    <section
+      data-surface="sheet"
+      className={a.clubCareer}
+      aria-label="시즌 히트맵"
+      data-testid="player-heat"
+    >
       <h3>시즌 히트맵</h3>
       {shown ? (
         <>

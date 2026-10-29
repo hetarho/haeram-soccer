@@ -64,6 +64,14 @@ describe('presentation-only pitch materials', () => {
     expect(draws[2]).toEqual(draws[0]);
   });
 
+  it.each([320, 760, 1200])('draws a round centre circle at width %i', (width) => {
+    const { ctx, calls } = recordingContext();
+    paintPitchGround(ctx, width, width / 1.9, DEFAULT_PITCH_SKIN);
+    const circle = calls.find((call) => call.op === 'ellipse')!;
+    expect(circle.args[2]).toBeGreaterThan(0);
+    expect(circle.args[2]).toBe(circle.args[3]);
+  });
+
   it('repaints one bounded ground surface only on size, density or skin changes', () => {
     const ground = recordingContext();
     const canvas = {

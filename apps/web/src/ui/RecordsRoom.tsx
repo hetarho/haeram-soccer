@@ -612,7 +612,7 @@ function SeasonRecords({
                   ['당시 손익', f((BigInt(h.income) - BigInt(h.expense)).toString())],
                 ] as [string, ReactNode][]
               ).map(([label, value]) => (
-                <div className={s.stat} key={label}>
+                <div data-surface="inset" className={s.stat} key={label}>
                   <div className={s.label}>{label}</div>
                   <strong>{value}</strong>
                 </div>
@@ -621,7 +621,7 @@ function SeasonRecords({
           )}
           {archive ? <SeasonAnalysis w={w} records={matches} year={year} scope={scope} /> : pending}
           {h && archive && (
-            <details className={s.seasonDeepDive}>
+            <details data-ui="disclosure" className={s.seasonDeepDive}>
               <summary>리그 심층 분석·구단 재정 결산</summary>
               <p className={a.note}>
                 리그 경기의 xG·기대 승점·선수 기록과 구단의 시즌 결산이에요. 위 대회 범위별 분석과

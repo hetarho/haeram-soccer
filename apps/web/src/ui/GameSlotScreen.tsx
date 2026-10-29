@@ -118,22 +118,22 @@ export function GameSlotScreen({
         <p>{t('slots.description')}</p>
       </header>
       {readonly && (
-        <p className={s.note} role="status">
+        <p data-surface="inset" className={s.note} role="status">
           {t('slots.readonly')}
         </p>
       )}
       {!slots.canPark && (
-        <p className={s.note} role="status">
+        <p data-surface="inset" className={s.note} role="status">
           {t('slots.storageUnavailable')}
         </p>
       )}
       {(error || clientError) && (
-        <p className={s.error} role="alert">
+        <p data-surface="inset" className={s.error} role="alert">
           {error || clientError}
         </p>
       )}
       {working && (
-        <p className={s.note} role="status">
+        <p data-surface="inset" className={s.note} role="status">
           {t(working)}
         </p>
       )}
@@ -268,7 +268,7 @@ export function GameSlotScreen({
                 >
                   {t(loading && index.active === slot ? 'slots.loading' : 'slots.continue')}
                 </button>
-                <details className={s.more}>
+                <details data-ui="disclosure" className={s.more}>
                   <summary>{t('slots.manage')}</summary>
                   <div className={s.moreActions}>
                     <button disabled={busy} onClick={() => void exportSlot(slot)}>

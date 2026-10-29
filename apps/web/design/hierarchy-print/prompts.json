@@ -1,0 +1,26 @@
+{
+  "method": "Built-in image_gen edits",
+  "date": "2026-10-29",
+  "assets": [
+    {
+      "id": "panel-sheet",
+      "ref": "frame-tile.webp",
+      "prompt": "Edit the reference into a QUIET CONTENT PANEL SHEET. Remove the thick black border and ticket ornament. Wide rectangular ivory paper sheet, about 3:2, with ONE crisp fine charcoal printed rule at its upper edge and very faint warm grey side/bottom paper edges. No double outline, no cut ticket corners, no heavy surrounding box. Delicate warm ivory surface, almost untextured. All edge detail within the outer six percent for nine-slice stretching. The purpose is a quiet section surface beneath a strong live title, visibly less emphatic than an action button. Production game UI artwork, flat front view, Matchday Print 1950s football programme letterpress family. Warm ivory newsprint, charcoal ink and restrained vermilion only. Extremely fine restrained paper fibre, generous quiet blank interior for live Korean text. No lettering, numbers, icons, mockup, page layout, surrounding props, shadows or perspective. One isolated asset per image, transparent exterior, actual graphic opaque. It must reduce cleanly to compact UI size."
+    },
+    {
+      "id": "table-header",
+      "ref": "paper-quiet.webp",
+      "prompt": "Edit this paper into ONE WIDE LIGHT TABLE HEADER BAND. Ratio about 4:1. Muted pale oat/ivory fill, slightly denser than the body paper but still light, flat charcoal text will be rendered later. One fine charcoal rule across the bottom only. Top/left/right have no dark frame or vignette, so repeated adjacent sections join seamlessly. No stripes, grids, labels or sample table. Nearly smooth printable paper. Production game UI artwork, flat front view, Matchday Print 1950s football programme letterpress family. Warm ivory newsprint, charcoal ink and restrained vermilion only. Extremely fine restrained paper fibre, generous quiet blank interior for live Korean text. No lettering, numbers, icons, mockup, page layout, surrounding props, shadows or perspective. One isolated asset per image, transparent exterior, actual graphic opaque. It must reduce cleanly to compact UI size."
+    },
+    {
+      "id": "rule-quiet",
+      "ref": "rule-dark.webp",
+      "prompt": "Edit the reference into ONE very thin horizontal supporting DIVIDER RULE, warm grey-charcoal ink, gentle letterpress grain, restrained optical weight and uniform thickness. A single straight line across most of an extremely wide transparent canvas, about 50:1 visible-art ratio, no surrounding panel or rectangle, no multiple strokes, no decorations. Lower visual emphasis than a selected tab underline. Production game UI artwork, flat front view, Matchday Print 1950s football programme letterpress family. Warm ivory newsprint, charcoal ink and restrained vermilion only. Extremely fine restrained paper fibre, generous quiet blank interior for live Korean text. No lettering, numbers, icons, mockup, page layout, surrounding props, shadows or perspective. One isolated asset per image, transparent exterior, actual graphic opaque. It must reduce cleanly to compact UI size."
+    },
+    {
+      "id": "tab-active",
+      "ref": "rule-dark.webp",
+      "prompt": "Edit the reference into ONE short horizontal ACTIVE TAB UNDERLINE printed in solid vermilion ink #a63724. A confident restrained stamped straight stroke with subtle ink grain and slightly organic ends. Visible artwork about 35:1 width-to-height ratio, transparent around it. A single stroke only; no box, tab shape, lettering, gradient, border or extra marks. More emphatic than a hairline divider, still clean at three displayed pixels tall. Production game UI artwork, flat front view, Matchday Print 1950s football programme letterpress family. Warm ivory newsprint, charcoal ink and restrained vermilion only. Extremely fine restrained paper fibre, generous quiet blank interior for live Korean text. No lettering, numbers, icons, mockup, page layout, surrounding props, shadows or perspective. One isolated asset per image, transparent exterior, actual graphic opaque. It must reduce cleanly to compact UI size."
+    }
+  ]
+}

@@ -114,7 +114,7 @@ export function MediationReview({
       }
     >
       <div className={s.mediation}>
-        <dl className={s.summary} aria-label="중재 대상">
+        <dl data-surface="sheet" className={s.summary} aria-label="중재 대상">
           <div>
             <dt>보강 대상</dt>
             <dd>{requestLabel(record.target)}</dd>
@@ -170,6 +170,7 @@ export function MediationReview({
             </fieldset>
             <p className={s.hint}>이번 건에만 적용되며 평소 지원 방침은 바뀌지 않아요.</p>
             <div
+              data-surface="sheet"
               className={s.preview}
               ref={previewElement}
               aria-label="이번 중재 결과 미리보기"

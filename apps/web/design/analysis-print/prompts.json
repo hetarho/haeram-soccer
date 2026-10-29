@@ -1,0 +1,8 @@
+{
+  "date": "2026-10-29",
+  "method": "built-in image_gen",
+  "prompts": {
+    "analysis-paper": "Create a seamless tileable warm ivory uncoated sports matchday programme paper texture, viewed straight down, flat, evenly lit. Intended as a very quiet UI chart and football tactics board background, so extremely subtle fine fibres and tiny printed-paper grain only. Overall colour pale warm ivory #f2ead9 with minute tonal variation. Restrained sophisticated editorial football game design. No lettering, no text, no symbols, no graphics, no pitch markings, no borders, no vignettes, no objects, no shadows, no folds, no grunge marks. Full square canvas opaque paper, suitable for repeating at small size.",
+    "formation-marker": "A single small circular football tactics player disc UI image resource, exactly circular, centred in a square transparent canvas. Primary deep warm vermilion #a63724, round filled red face with subtle authentic ink-on-paper texture. A fine pale warm ivory inner ring near the edge, narrow darker red outer contour and very restrained edge highlight create a beautifully printed professional sports programme token. Flat top-down view, no perspective, no cast shadow outside the circle. The circle fills 90 percent of canvas, transparent outside the disc including corners. No letters, numbers, text, symbols or emblems, leave the entire centre clear for a live player position label. Elegant, compact and legible at 36px. One disc only."
+  }
+}

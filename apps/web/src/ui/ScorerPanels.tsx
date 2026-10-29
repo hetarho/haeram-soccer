@@ -199,7 +199,7 @@ export const ScorerHistory = memo(function ScorerHistory({ w }: Props) {
             {seasonName(w.year)} · 라운드별 {metric === 'goals' ? '누적 득점' : '득점 순위'}
           </p>
         </div>
-        <div className={s.metric} role="group" aria-label="득점왕 추이 지표">
+        <div data-surface="sheet" className={s.metric} role="group" aria-label="득점왕 추이 지표">
           <button aria-pressed={metric === 'goals'} onClick={() => setMetric('goals')}>
             누적 득점
           </button>
@@ -345,7 +345,7 @@ export const ScorerHistory = memo(function ScorerHistory({ w }: Props) {
               위로 올라갈수록 높은 순위입니다. 무득점 선수는 득점 순위가 없습니다.
             </p>
           )}
-          <details className={s.details}>
+          <details data-ui="disclosure" className={s.details}>
             <summary>라운드별 득점과 순위 보기</summary>
             <div className={s.tableWrap}>
               <table aria-label="라운드별 선수 득점 기록">

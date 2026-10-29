@@ -237,6 +237,7 @@ function Popover({
   }, [anchor]);
   return (
     <div
+      data-surface="sheet"
       ref={panel}
       id={id}
       className={s.popover}

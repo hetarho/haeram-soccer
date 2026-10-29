@@ -1,4 +1,5 @@
 import { Select } from './Select';
+import { Card } from './Card';
 import { ClubLink } from './ClubLink';
 import { Suspense, useEffect, useState } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
@@ -60,7 +61,13 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
   const detail = loaded?.id === selected?.id ? loaded : undefined;
   return (
     <>
-      <details className={s.disclosure} onToggle={(event) => setOpen(event.currentTarget.open)}>
+      <details
+        data-ui="disclosure"
+        data-surface="sheet"
+        data-component="fixture-notebook"
+        className={s.disclosure}
+        onToggle={(event) => setOpen(event.currentTarget.open)}
+      >
         <summary>우리 팀 일정 노트</summary>
         {open && (
           <section className={s.content} aria-label="우리 팀 일정 노트">
@@ -124,19 +131,22 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
                   opponent = w.clubs.find((c) => c.id === (ownHome ? f.away : f.home)),
                   result = resultFor(f, w.playerClub);
                 return (
-                  <article data-surface="panel" key={f.id} data-testid="fixture-card">
-                    <p className={s.note}>
-                      {fixtureDate(w, f)} · {competitionLabel(w, f)} · {ownHome ? '홈' : '원정'}
-                      {f.id === next?.id && ' · 다음 경기'}
-                    </p>
-                    <h4>{opponent ? <ClubLink w={w} id={opponent.id} /> : '상대 미정'}</h4>
-                    {result ? (
+                  <Card
+                    key={f.id}
+                    data-testid="fixture-card"
+                    data-next={f.id === next?.id || undefined}
+                    meta={
                       <>
-                        <b>
-                          우리 {result.result} {result.own}–{result.other}
-                        </b>
-                        <p className={s.note}>정규 90분 결과</p>
-                        <div className={s.controls}>
+                        {fixtureDate(w, f)} · {competitionLabel(w, f)} · {ownHome ? '홈' : '원정'}
+                        {f.id === next?.id && (
+                          <strong className={s.nextFixture}> · 다음 경기</strong>
+                        )}
+                      </>
+                    }
+                    title={opponent ? <ClubLink w={w} id={opponent.id} /> : '상대 미정'}
+                    actions={
+                      result ? (
+                        <>
                           <button
                             onClick={() => {
                               setLoaded(undefined);
@@ -153,12 +163,21 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
                           >
                             경기 자료
                           </button>
-                        </div>
+                        </>
+                      ) : undefined
+                    }
+                  >
+                    {result ? (
+                      <>
+                        <b>
+                          우리 {result.result} {result.own}–{result.other}
+                        </b>
+                        <p className={s.fixtureNote}>정규 90분 결과</p>
                       </>
                     ) : (
-                      <b>킥오프를 기다립니다</b>
+                      <span className={s.fixtureNote}>킥오프를 기다립니다</span>
                     )}
-                  </article>
+                  </Card>
                 );
               })}
             </div>

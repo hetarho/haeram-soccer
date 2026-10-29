@@ -401,13 +401,13 @@
   color: var(--text);
 }
 
-/* A formation slot on the pitch: position and role, the player, his level, 실효 OVR, adaptation. */
+/* Full facts for the selected circular formation marker. */
 .slotCard {
   box-sizing: border-box;
   display: grid;
   gap: 1px;
   width: 100%;
-  padding: 2px 3px;
+  padding: 8px 10px;
   border-radius: var(--card-radius);
   border: 1px solid var(--line-strong);
   background: var(--surface-grain, none) color-mix(in srgb, var(--surface) 88%, transparent);

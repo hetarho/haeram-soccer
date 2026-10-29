@@ -3,6 +3,15 @@
 These are the retained source assets for the shared Matchday Print interface, including the home,
 navigation, controls, tables and overlays.
 
+Read the [shared design-system guide](../DESIGN-SYSTEM.md) before extending this family.
+The [control source notes](../controls-print/README.md) describe the current component assets
+and the pending button-hierarchy review.
+The [content hierarchy notes](../hierarchy-print/README.md) cover tab marks, quiet panel surfaces,
+table materials and compact spacing.
+The [analysis notes](../analysis-print/README.md) cover chart paper and circular player markers;
+the [surface notes](../surfaces-print/README.md) define the three neutral material planes and Card;
+the [coverage inventory](../UI-COVERAGE.md) records their application across actual app views.
+
 - `sources/frames.png`: six frames with fixed corners for nine-slice scaling.
 - `sources/icons.png`: sixteen stamped navigation and state pictograms.
 - `sources/materials.png`: independently tiled paper, quiet paper, charcoal and vermilion.

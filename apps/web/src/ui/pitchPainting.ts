@@ -98,7 +98,8 @@ export function paintPitchGround(
   ctx.lineTo(x(50), y(100));
   ctx.stroke();
   ctx.beginPath();
-  ctx.ellipse(x(50), y(50), fw * 0.09, fh * 0.15, 0, 0, Math.PI * 2);
+  const centreRadius = Math.min(fw * 0.09, fh * 0.15);
+  ctx.ellipse(x(50), y(50), centreRadius, centreRadius, 0, 0, Math.PI * 2);
   ctx.stroke();
   for (const side of [0, 1]) {
     ctx.strokeRect(x(side === 0 ? 0 : 82), y(22), fw * 0.18, fh * 0.56);

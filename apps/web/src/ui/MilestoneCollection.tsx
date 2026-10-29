@@ -39,7 +39,7 @@ export function MilestoneCollection({
         </strong>
       </div>
       {milestones.next && (
-        <div className={s.next}>
+        <div data-surface="inset" className={s.next}>
           <span>지금 이어갈 도전</span>
           <b>{milestones.next.title}</b>
           <small>{milestones.next.action}</small>

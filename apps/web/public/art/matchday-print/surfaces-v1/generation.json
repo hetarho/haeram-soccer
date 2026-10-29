@@ -1,0 +1,87 @@
+{
+  "method": "Three built-in image_gen texture revisions plus same-size WebP encoding of retained neutral grain; shared createUiArtPipeline",
+  "date": "2026-10-29",
+  "sources": "apps/web/design/surfaces-print/sources",
+  "prompts": "apps/web/design/surfaces-print/prompts.json",
+  "legacyGrain": "apps/web/public/art/standard/grain.png (retained native 160px, alpha preserved)",
+  "revisionPrompts": "apps/web/design/surfaces-print/grain-prompts-v2.json",
+  "geometry": "Three independent opaque repeating materials: canvas, content sheet and detail. No labels or frames are baked in.",
+  "assets": [
+    {
+      "file": "canvas-grain-v2.webp",
+      "source": "canvas-grain-v2.png",
+      "filter": "",
+      "bytes": 7220,
+      "sha256": "09ac41ddb3205ef2445397dfcae2e4bb3e80d28fd8411544f94efdb07b228a99",
+      "width": 256,
+      "height": 256,
+      "role": "image-art-paper",
+      "mode": "tile",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 3204313,
+        "inputSha256": "e6a53c748200c20ed5af1a628c88e78ce02e437c37e18f011089daafddde7dd2",
+        "width": 256,
+        "height": 256,
+        "quality": 85
+      }
+    },
+    {
+      "file": "quiet-grain-v2.webp",
+      "source": "sheet-grain-v2.png",
+      "filter": "",
+      "bytes": 4478,
+      "sha256": "46d512214bd50f5c725cfcd6b390cbc71d71540a090b4fd4c3c7f9ad13f3969a",
+      "width": 256,
+      "height": 256,
+      "role": "image-art-paper-quiet",
+      "mode": "tile",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2852311,
+        "inputSha256": "ec789b52daf06aa2920e06dfec3194a2a5d16eed26656ce209d5687e2c083e66",
+        "width": 256,
+        "height": 256,
+        "quality": 85
+      }
+    },
+    {
+      "file": "ivory-grain-v2.webp",
+      "source": "detail-grain-v2.png",
+      "filter": "",
+      "bytes": 3414,
+      "sha256": "a8d2b382665ac9f3b624a99d34339aaa237cea51ccc8421a32cb3e29b4940e09",
+      "width": 256,
+      "height": 256,
+      "role": "image-art-paper-detail",
+      "mode": "tile",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2433419,
+        "inputSha256": "3fe693f816fef3efa6ebc05d5f38da97721b8608945badb1d5025352c4fc2631",
+        "width": 256,
+        "height": 256,
+        "quality": 85
+      }
+    },
+    {
+      "file": "grain-neutral.webp",
+      "source": "legacy-grain.png",
+      "filter": "",
+      "bytes": 22094,
+      "sha256": "e8078f11cdbb98ab0406b78fe5a1c03c4166fbee63555f11d0e0d4e524ec1fb9",
+      "width": 160,
+      "height": 160,
+      "role": "surface-grain",
+      "mode": "tile",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 24557,
+        "inputSha256": "7a2361b73c7b5db72ff835f0cc1e4ee5423386eae8471f437b7663cb6decaac1",
+        "width": 160,
+        "height": 160,
+        "quality": 85
+      }
+    }
+  ]
+}

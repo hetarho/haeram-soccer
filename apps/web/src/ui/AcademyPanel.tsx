@@ -271,7 +271,7 @@ export function AcademyPanel({
                 {director ? `${director.name} · 능력 ${Math.round(director.ability)}` : '공석'}
               </span>
             </header>
-            <div className={s.delegate}>
+            <div data-surface="sheet" className={s.delegate}>
               <DecisionOwner
                 w={w}
                 decision="academy"
@@ -324,7 +324,9 @@ function YouthTraining({ w }: { w: World }) {
           지금 {call.focus} · {call.by}
         </span>
       </header>
-      <p className={s.advice}>{call.reason}</p>
+      <p data-surface="inset" className={s.advice}>
+        {call.reason}
+      </p>
       <button
         data-ui="link"
         type="button"
@@ -342,7 +344,7 @@ function YouthTraining({ w }: { w: World }) {
       <p className={s.timing}>
         다음 라운드 정산부터 반영해요. 입단 예정일과 유입 방침은 아카데미 운영에서 확인하세요.
       </p>
-      <details className={s.reference}>
+      <details data-ui="disclosure" className={s.reference}>
         <summary>유소년 훈련 효과·판단 기준</summary>
         <ul className={s.focuses} aria-label="유소년 훈련 방향별 효과">
           {(Object.keys(YOUTH_FOCUS_INFO) as (keyof typeof YOUTH_FOCUS_INFO)[]).map((id) => {

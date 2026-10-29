@@ -153,7 +153,7 @@ function CupJourney({
     <ol className={ch.route}>
       {rows.map((row) =>
         row.kind === 'phase' ? (
-          <li key={row.label} className={ch.routeCard}>
+          <li data-surface="sheet" key={row.label} className={ch.routeCard}>
             <header>
               <b>{row.label}</b>
               <span className={`${ch.chip} ${RESULT_TONE[row.result] ?? ''}`}>{row.result}</span>
@@ -163,6 +163,7 @@ function CupJourney({
           </li>
         ) : (
           <li
+            data-surface="sheet"
             key={row.legs[0].match.id}
             className={`${ch.routeCard} ${row.result === '우승' ? ch.routeTitle : ''}`}
           >
@@ -463,7 +464,7 @@ export function CupHistory({
                 )}
               </p>
               {season && (
-                <p className={c.status}>
+                <p data-surface="inset" className={c.status}>
                   {ownCompetition ? runLine(season, key) : '우리 클럽은 나서지 않았어요'}
                 </p>
               )}

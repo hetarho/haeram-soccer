@@ -110,7 +110,7 @@ export const FinancialBreakdown = memo(
             </div>
           </div>
         </div>
-        <div className={s.forecast}>
+        <div data-surface="sheet" className={s.forecast}>
           <div>
             <h4>현재 조건의 리그 홈 경기</h4>
             <p>
@@ -153,7 +153,7 @@ export const FinancialBreakdown = memo(
           </div>
         )}
         {BigInt(w.cash) < 0n && (
-          <p className={s.warning}>
+          <p data-surface="inset" className={s.warning}>
             자금 부족이 계속되고 있습니다. 자동으로 자금이 보충되지 않습니다. 급여와 투자 규모를
             줄이고, 매각이나 명시적인 추가 출자를 결정하세요.
           </p>

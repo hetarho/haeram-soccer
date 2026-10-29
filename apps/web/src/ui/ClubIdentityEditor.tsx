@@ -232,7 +232,7 @@ export function ClubIdentityEditor({
   return (
     <div className={s.editor}>
       {readonly && (
-        <p className={s.readonly} role="note">
+        <p data-surface="inset" className={s.readonly} role="note">
           읽기 전용 탭이에요. 디자인은 볼 수 있지만 바꿀 수는 없어요.
         </p>
       )}

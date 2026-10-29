@@ -54,7 +54,7 @@ export function PlayGuide({ goals, onClose }: { goals: ClubGoal[]; onClose: () =
           </div>
         </li>
       </ol>
-      <p className={s.note}>
+      <p data-surface="inset" className={s.note}>
         성장 목표는 실제 기록에서 쌓여요. 전술에는 상대와 선수에 따른 약점이 있고, 승리는 보장되지
         않아요.
       </p>

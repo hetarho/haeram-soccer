@@ -111,12 +111,12 @@
   font-weight: 700;
   letter-spacing: 0.3px;
   text-align: right;
-  padding: 10px 12px;
+  padding: var(--table-heading-padding, 10px 12px);
   border-bottom: 1px solid var(--table-line, var(--line));
   font-family: var(--display);
 }
 :global(td) {
-  padding: 10px 12px;
+  padding: var(--table-cell-padding, 10px 12px);
   border-bottom: 1px solid var(--table-line, var(--line));
   text-align: right;
 }
@@ -339,8 +339,19 @@
   justify-content: space-between;
   gap: 8px;
   align-items: center;
-  padding: var(--row-padding) var(--panel-padding);
-  border-bottom: 1px solid var(--line);
+  padding: var(--panel-heading-padding, var(--row-padding) var(--panel-padding));
+  border-bottom: var(--content-divider-width, 1px) solid var(--line);
+}
+.panelHeading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  min-width: 0;
+}
+.panelHeading h3 {
+  font-size: var(--panel-heading-size, var(--subheading-size));
+  line-height: var(--panel-heading-line-height, inherit);
 }
 .panelHead span {
   font-size: var(--label-size);
@@ -349,13 +360,15 @@
   line-height: 1.6;
 }
 .panelBody {
-  padding: var(--panel-padding);
+  padding: var(--panel-body-padding, var(--panel-padding));
 }
 .panelFoot {
-  padding: var(--row-padding) var(--panel-padding);
+  padding: var(--panel-footer-padding, var(--row-padding) var(--panel-padding));
   font-size: var(--label-size);
-  background: var(--surface-grain, none) var(--surface-2);
-  border-top: 1px solid var(--line);
+  background:
+    var(--content-divider-image, none) left top / 100% 1px no-repeat,
+    var(--surface-grain, none) var(--panel-footer-fill, var(--surface-2));
+  border-top: var(--content-divider-width, 1px) solid var(--line);
   color: var(--text-muted);
   font-family: var(--display);
 }
@@ -453,11 +466,35 @@
 }
 .chart {
   margin: 12px 0 0;
+  background: var(--analysis-paper, var(--surface-grain, none)) repeat;
+  background-size: var(--analysis-paper-size, 256px);
+}
+.chartHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px 0;
+  font-size: var(--label-size);
+  color: var(--text-muted);
+}
+.chartHeading > div {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.chartHeading strong {
+  color: var(--accent-text);
+  font-size: 24px;
+  line-height: 1.1;
+}
+.chartHeading small {
+  font-size: 12px;
 }
 .chart svg {
   display: block;
   width: 100%;
-  max-height: 200px;
+  height: 175px;
 }
 .chart text {
   font-size: var(--label-size);
@@ -769,18 +806,40 @@
 }
 .attributes {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  font-size: var(--label-size);
-  margin: 18px 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--attribute-gap, 10px);
+  font-size: var(--attribute-size, var(--label-size));
+  margin: var(--attribute-margin, 18px 0);
   font-family: var(--display);
 }
 .attribute {
+  --rating-chip-min-width: var(--attribute-rating-min-width, 44px);
+  --rating-chip-min-height: var(--attribute-rating-min-height, 46px);
+  --rating-chip-padding: var(--attribute-rating-padding, 4px 6px 3px);
+  --rating-chip-value-size: var(--attribute-rating-value-size, 20px);
+  --rating-chip-border-width: var(--attribute-rating-border-width, 4px);
+  --rating-chip-frame-width: var(--attribute-rating-frame-width, 5px);
   display: flex;
+  align-items: var(--attribute-align-items, normal);
   justify-content: space-between;
+  min-width: 0;
+  min-height: var(--attribute-min-height, auto);
   gap: 14px;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 6px;
+  border-bottom: var(--content-divider-width, 1px) solid var(--line);
+  background: var(--content-divider-image, none) left bottom / 100% 1px no-repeat;
+  padding-block: var(--attribute-padding-block, 0 6px);
+}
+.attribute > span {
+  color: var(--attribute-label-color, inherit);
+  line-height: var(--attribute-line-height, inherit);
+  min-width: 0;
+}
+.attribute > b {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: var(--attribute-line-height, auto);
+  line-height: var(--attribute-line-height, inherit);
 }
 
 .modalBackdrop {
@@ -930,7 +989,7 @@
     margin-top: 20px;
   }
   .panel {
-    margin-bottom: 20px;
+    margin-bottom: var(--panel-mobile-margin-bottom, 20px);
   }
 
   .competitionGrid,
@@ -956,10 +1015,10 @@
     font-family: var(--display);
   }
   .panelHead {
-    padding: 16px;
+    padding: var(--panel-heading-padding, 16px);
   }
   .panelBody {
-    padding: 16px;
+    padding: var(--panel-body-padding, 16px);
   }
   .heroActions > button {
     flex: 1;
@@ -1310,7 +1369,7 @@
     margin-bottom: 8px;
   }
   .panelHead {
-    align-items: flex-start;
+    align-items: var(--panel-heading-align, flex-start);
     flex-wrap: wrap;
   }
   .filters > label {
@@ -1356,6 +1415,24 @@
     white-space: nowrap;
     background: var(--surface-grain, none) var(--sticky-row-color);
     box-shadow: none;
+  }
+  :global([data-ui='standings-scroll'] table[aria-label='리그 순위표'] tr > :nth-child(2))::after {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    left: 100%;
+    width: var(--table-sticky-shadow-width, 10px);
+    background: var(--image-table-sticky-shadow, none) left top / 100% 100% no-repeat;
+    opacity: 0;
+    pointer-events: none;
+  }
+  :global(
+    [data-ui='standings-scroll'][data-scrolled='true']
+      table[aria-label='리그 순위표']
+      tr
+      > :nth-child(2)
+  )::after {
+    opacity: 1;
   }
   .footer {
     display: grid;
@@ -2687,7 +2764,7 @@
 }
 /* The operations and staff tab bars scroll sideways on narrow phones instead of squeezing labels. */
 .operationsTabs {
-  margin-bottom: 14px;
+  margin-bottom: var(--page-tabs-margin-bottom, 14px);
   overflow-x: auto;
   scrollbar-width: none;
 }

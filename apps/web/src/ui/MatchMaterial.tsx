@@ -40,7 +40,7 @@ export function MatchMaterial({ record, w }: { record: MatchRecord; w: World }) 
     const top = topToucher(record, w);
     return (
       <section className={s.material} aria-label="경기 자료">
-        <p className={s.missing} role="status">
+        <p data-surface="inset" className={s.missing} role="status">
           이 경기의 지도는 보관하지 않아요 — 선수의 시즌 히트맵을 확인하세요
         </p>
         {top && (

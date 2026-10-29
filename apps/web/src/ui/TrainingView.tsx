@@ -204,7 +204,7 @@ function TrainingFocusPanel({
           {w.staff?.find((person) => person.role === 'assistant')?.name ?? '공석'} · 보기
         </button>
       </p>
-      <details className={s.reference}>
+      <details data-ui="disclosure" className={s.reference}>
         <summary>훈련 효과·자동 판단 기준</summary>
         <ul className={s.focuses} aria-label="훈련 방향별 효과">
           {FOCUSES.map(([id, label]) => {
@@ -232,7 +232,7 @@ function TrainingFocusPanel({
           {focus.recoveryBonus !== 0 &&
             ` 피로 회복에는 선수단 투자와 피지컬 코치의 ${focus.recoveryBonus > 0 ? '+' : ''}${focus.recoveryBonus}이 들어 있어요.`}
         </p>
-        <div className={s.delegate}>
+        <div data-surface="sheet" className={s.delegate}>
           <p>수석코치는 라운드마다 이 기준으로 골라요.</p>
           <ul className={s.rule}>
             <li>
@@ -353,7 +353,7 @@ function PlayerTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => v
             : '이 조건에 맞는 선수가 없어요.'}
         </p>
       )}
-      <details className={s.reference}>
+      <details data-ui="disclosure" className={s.reference}>
         <summary>개별 훈련·적응·성장 설명</summary>
         <p className={s.note}>
           제안은 선수마다 2라운드에 한 번이고, 강행은 수석코치의 사임 위험을 올려요. 받아들인 변경은
@@ -437,7 +437,7 @@ function DevelopmentDrivers({ outlook: { factors, skills } }: { outlook: Outlook
         <b>{times(total(true))}</b>
         <small>21세 이하 · 22–26세 {times(total(false))}</small>
       </p>
-      <details className={s.reference}>
+      <details data-ui="disclosure" className={s.reference}>
         <summary>성장 요인·투자·스태프 자세히</summary>
         <p className={s.note}>
           27세 미만 선수는 라운드마다 잠재력까지 남은 차이에 이 배수를 모두 곱한 만큼 자라요.

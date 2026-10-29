@@ -74,9 +74,15 @@ export function RemedySheet({
         </span>
       </header>
       {current.advice ? (
-        <p className={s.remedyAdvice}>{current.advice.text}</p>
+        <p data-surface="inset" className={s.remedyAdvice}>
+          {current.advice.text}
+        </p>
       ) : (
-        current.detail && <p className={s.remedyDetail}>{current.detail}</p>
+        current.detail && (
+          <p data-surface="inset" className={s.remedyDetail}>
+            {current.detail}
+          </p>
+        )
       )}
       <ul className={s.remedies}>
         {remedies(w, key).map((remedy) => (

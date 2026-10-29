@@ -1,0 +1,6 @@
+{
+  "method": "Built-in image_gen ink weight edit",
+  "asset": "rule-quiet-v2",
+  "reference": "sources/rule-quiet.png",
+  "prompt": "Edit ONLY the horizontal divider's ink colour and weight in the reference. The desired asset is a SINGLE VERY FAINT warm-grey printed hairline in exact colour approximately #b7aa90, against a genuinely TRANSPARENT background. Remove the black edges and any bright inner stripe: one uniformly faint neutral hairline, no dark outline. Keep straight horizontal geometry and faint restrained grain. This is low-emphasis table row separation on ivory newsprint, so it must be much lighter than body text and dramatically lighter than the selected vermilion underline. No panel, no backdrop, no lettering, no shadow, no glow, no second line. Preserve alpha transparency everywhere outside the one hairline."
+}

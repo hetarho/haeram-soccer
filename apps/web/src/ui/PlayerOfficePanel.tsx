@@ -81,7 +81,7 @@ export function PlayerOverview({
           </li>
         ))}
       </ul>
-      <details>
+      <details data-ui="disclosure">
         <summary>만료 선수·계약 협상 현황</summary>
         <p>
           이번 시즌 계약 만료: {facts.expiring.map((player) => player.name).join(', ') || '없음'}

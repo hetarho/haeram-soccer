@@ -32,6 +32,7 @@ export function DecisionOwner({
   return (
     <div
       className={s.owner}
+      data-surface={plain ? undefined : 'inset'}
       data-auto={on || undefined}
       data-plain={plain || undefined}
       data-testid={`decision-owner-${decision}`}

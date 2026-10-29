@@ -1,0 +1,41 @@
+{
+  "method": "Built-in image_gen edits of existing matchday-print control artwork",
+  "date": "2026-10-29",
+  "assets": [
+    {
+      "id": "button-secondary",
+      "ref": "frame-stamp.webp",
+      "prompt": "Edit the referenced blank red ticket into a sibling SECONDARY BUTTON: deep forest-green ink #2c603c throughout the quiet subtly grained centre, warm cream double-rule border, small clipped ticket corners. A designed printed green ticket, no plain CSS-looking rectangle. Matchday Print football game, 1950s printed match ticket, restrained tactile letterpress and fine ink grain. Match the reference's clipped ticket corners and hairline double rule; flat front view, no perspective, no external drop shadow, no text, no lettering, no numbers, no icons except the specifically requested check. Interior must remain quiet enough for real live text. One isolated production bitmap, not a UI mockup or asset sheet. Keep a small genuinely transparent exterior; artwork itself opaque. Put ALL edge detail near the outer 6 percent so fixed corners and narrow edges can be nine-sliced. Wide rectangular art ratio 3:1 unless square is explicitly requested."
+    },
+    {
+      "id": "button-tertiary",
+      "ref": "frame-stamp.webp",
+      "prompt": "Edit the referenced blank red ticket into a sibling TERTIARY BUTTON: muted deep blue-grey ink #315e75 throughout the quiet subtly grained centre, warm cream double-rule border, small clipped ticket corners. A designed printed blue-grey ticket, no plain CSS-looking rectangle. Matchday Print football game, 1950s printed match ticket, restrained tactile letterpress and fine ink grain. Match the reference's clipped ticket corners and hairline double rule; flat front view, no perspective, no external drop shadow, no text, no lettering, no numbers, no icons except the specifically requested check. Interior must remain quiet enough for real live text. One isolated production bitmap, not a UI mockup or asset sheet. Keep a small genuinely transparent exterior; artwork itself opaque. Put ALL edge detail near the outer 6 percent so fixed corners and narrow edges can be nine-sliced. Wide rectangular art ratio 3:1 unless square is explicitly requested."
+    },
+    {
+      "id": "field-input",
+      "ref": "frame-button.webp",
+      "prompt": "Redesign the reference into an editable TEXT INPUT FIELD skin. Warm ivory newsprint centre #fff9ed, quiet delicate paper fibre, crisp charcoal pressed inner rule, subtle darker lower-edge printing and very small clipped corners. It should read as an inset blank form entry on a vintage match programme, distinct from an action button, with ample open middle for typed text. Matchday Print football game, 1950s printed match ticket, restrained tactile letterpress and fine ink grain. Match the reference's clipped ticket corners and hairline double rule; flat front view, no perspective, no external drop shadow, no text, no lettering, no numbers, no icons except the specifically requested check. Interior must remain quiet enough for real live text. One isolated production bitmap, not a UI mockup or asset sheet. Keep a small genuinely transparent exterior; artwork itself opaque. Put ALL edge detail near the outer 6 percent so fixed corners and narrow edges can be nine-sliced. Wide rectangular art ratio 3:1 unless square is explicitly requested."
+    },
+    {
+      "id": "field-dropdown",
+      "ref": "frame-button.webp",
+      "prompt": "Redesign the reference into a DROPDOWN SELECT FIELD skin. Blank warm ivory centre #fff9ed with delicate paper fibre; slightly heavier charcoal letterpress outer keyline, thin warm brown inner rule and tiny clipped ticket corners. Quiet blank middle for a live selected value; no chevron or arrow, that will be a separate icon resource. Match the text input family but a little more framed and decisive. Matchday Print football game, 1950s printed match ticket, restrained tactile letterpress and fine ink grain. Match the reference's clipped ticket corners and hairline double rule; flat front view, no perspective, no external drop shadow, no text, no lettering, no numbers, no icons except the specifically requested check. Interior must remain quiet enough for real live text. One isolated production bitmap, not a UI mockup or asset sheet. Keep a small genuinely transparent exterior; artwork itself opaque. Put ALL edge detail near the outer 6 percent so fixed corners and narrow edges can be nine-sliced. Wide rectangular art ratio 3:1 unless square is explicitly requested."
+    },
+    {
+      "id": "checkbox-off",
+      "ref": "frame-button.webp",
+      "prompt": "Redesign the reference into ONE SQUARE UNCHECKED CHECKBOX asset, exact square proportions. A warm ivory paper square with a strong charcoal double printed outline, tiny clipped corners and a restrained subtly grained cream interior; centre completely empty. Clean optical weight at only twenty CSS pixels. No other boxes, no tick, no text. Matchday Print football game, 1950s printed match ticket, restrained tactile letterpress and fine ink grain. Match the reference's clipped ticket corners and hairline double rule; flat front view, no perspective, no external drop shadow, no text, no lettering, no numbers, no icons except the specifically requested check. Interior must remain quiet enough for real live text. One isolated production bitmap, not a UI mockup or asset sheet. Keep a small genuinely transparent exterior; artwork itself opaque. Put ALL edge detail near the outer 6 percent so fixed corners and narrow edges can be nine-sliced. Wide rectangular art ratio 3:1 unless square is explicitly requested. Square format overrides the wide rectangular ratio."
+    },
+    {
+      "id": "checkbox-on",
+      "ref": "frame-stamp.webp",
+      "prompt": "Redesign the reference into ONE SQUARE CHECKED CHECKBOX asset, exact square proportions. A vermilion red printed square #a63724 with strong charcoal thin outer rule and tiny clipped corners. A single large bold warm ivory CHECK MARK, shaped like a simple diagonal handwritten tick, clean and unmistakable, centred with ample margin, integrated into the original bitmap. Restrained printed grain. Match the unchecked checkbox family. No text, no other boxes. Matchday Print football game, 1950s printed match ticket, restrained tactile letterpress and fine ink grain. Match the reference's clipped ticket corners and hairline double rule; flat front view, no perspective, no external drop shadow, no text, no lettering, no numbers, no icons except the specifically requested check. Interior must remain quiet enough for real live text. One isolated production bitmap, not a UI mockup or asset sheet. Keep a small genuinely transparent exterior; artwork itself opaque. Put ALL edge detail near the outer 6 percent so fixed corners and narrow edges can be nine-sliced. Wide rectangular art ratio 3:1 unless square is explicitly requested. Square format overrides the wide rectangular ratio."
+    },
+    {
+      "id": "control-disabled",
+      "ref": "frame-button.webp",
+      "prompt": "Redesign the reference into an INACTIVE DISABLED CONTROL skin. Desaturated warm grey-beige paper #ded5c2, quiet subtle fibre and a muted warm grey double printed rule, tiny clipped corners. Clearly inactive but still a fully designed printed ticket, with completely blank centre for a live text label. No text and no symbols. Matchday Print football game, 1950s printed match ticket, restrained tactile letterpress and fine ink grain. Match the reference's clipped ticket corners and hairline double rule; flat front view, no perspective, no external drop shadow, no text, no lettering, no numbers, no icons except the specifically requested check. Interior must remain quiet enough for real live text. One isolated production bitmap, not a UI mockup or asset sheet. Keep a small genuinely transparent exterior; artwork itself opaque. Put ALL edge detail near the outer 6 percent so fixed corners and narrow edges can be nine-sliced. Wide rectangular art ratio 3:1 unless square is explicitly requested."
+    }
+  ]
+}

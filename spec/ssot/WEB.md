@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r171 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r182 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -458,6 +458,14 @@
   - Themes establish a complete visual language across facility illustrations, semantic icons, component surfaces, edges and interaction feedback. Preserve the shared home information, navigation, arrangement and responsive bounds. New smooth themes retain Pretendard unless their concept requires a different face; a palette-only study does not define a complete theme.
   - Matchday-print and sticker-club use Pretendard in every text role and provide their own complete facility image sets and semantic icon families, including trophy states.
   - Matchday-print uses warm newsprint, charcoal and vermilion, carved woodcut/halftone facility illustrations, solid stamped pictograms and printed-ticket controls. Keep distress in artwork and restrained background texture; text, numbers and status meanings stay clear.
+  - Matchday-print provides primary vermilion, secondary green and tertiary blue-grey button artwork. Button skins, editable field insets, dropdown frames and square checkbox states are portable image resources with native dimensions and stretch insets; their surface, edge and mark designs live in the artwork. Shared CSS assembles resources, sizes live controls and preserves accessible focus and interaction; CSS fills and drawn borders do not substitute for missing artwork.
+  - Matchday-print separates page tabs, section titles, supporting metadata and table headings by emphasis. Use a restrained printed active-tab mark, quiet sheet edges, lighter table headers and subtle row rules. Avoid repeated equally strong boxes and accumulated container/body padding; compact content spacing preserves the existing accessible control targets. Resource-backed treatments and density roles remain reusable across views.
+  - Matchday-print uses three resource-backed neutral surface levels: a subdued canvas, a lighter content sheet and the brightest detail/card surface. Luminance and material distinguish nested groups before borders; fixture notebooks use content sheets and detail cards without repeated outline boxes. Reusable cards are shared UI components with live content and documented surface roles.
+  - Ratings inside compact attribute rows follow the row typography and alignment rather than the larger profile-card treatment. Labels and ordinary values share the same primary line; a rating chip must not determine the row height or consume the available label space.
+  - Display overall-rating tiers consistently as iron below 50, bronze at 50–64, silver at 65–74, gold at 75–84 and elite at 85 or above. Matchday-print combines five distinct filled resource skins and game-item-like frames with contrasting live numbers; tier treatment is visual and does not change football ratings or outcomes.
+  - Matchday-print rating surfaces keep button-like visible brightness at compact size: iron uses medium-light steel, bronze bright copper and elite vivid light violet rather than dark slate, brown or plum. Silver and gold retain their light treatments. Distinguish tiers through visible surface colour as well as the frame, with dark live numbers where the brighter background requires them.
+  - Matchday-print’s horizontally scrolled league tables distinguish pinned columns from moving data with a restrained edge and depth resource at the pinned region’s trailing boundary. Show the cue while content has moved underneath, hide it at the starting position and preserve opaque pinned surfaces and all table interactions.
+  - Charts and analytical/formation pitches use restrained paper texture and the primary vermilion for the main series, selected data and circular player markers. Centre circles remain visually round, pitch proportions do not squash under height caps, and formation labels avoid overlap. Keep graph facts, heat-map semantics and detailed player information accessible. Shared UI treatments extend to every view through reusable roles rather than screen-specific redraws.
   - Every registered theme, including standard and pixel, carries its image-built visual language across founding, slots, home, match observation, league/cups, people, training, operations, records, settings, notices and dialogs/sheets. Image frames, button/tab skins, rules, icons and tiled materials form the controls and surfaces; fixed corners and stretchable/repeatable regions accommodate content and responsive dimensions. CSS positions and assembles these resources; labels, editable text, numbers, tables and game-driven diagrams remain semantic, live content.
   - Reuse semantic surface and control treatments across views. Shell decoration belongs only to the shell; sheets, events, dropdowns and floating feedback retain their own geometry, scrolling, focus and reachable actions. Image failures must not remove readable facts or usable controls.
   - Utility sheets, remedy choices and presentation selectors use the same themed materials and edge hierarchy as the rest of the game. Dark containers provide readable local text, tab and selection colours; disabled choices retain readable explanations rather than fading their copy. Preserve compact density and touch targets.
@@ -526,6 +534,15 @@
   - Reuse authoritative commands, outcomes, cooldowns and protections. State gain, disadvantage (money, fatigue, morale, trust, development opportunity or possible backfire), effect timing and the deciding person before commit. Free guaranteed improvements without an offset are not offered (→!CLUB-20). Do not imply a navigation link alone is an event or fabricate a result.
   - Reading a place or cancelling a choice never changes the world. Results derive from engine facts and remain visible in the place/report; unavailable choices explain the actual guard. Automatic calendar play and busy/read-only/stale-world protections remain →!WEB-97.
 
+- WEB-103 [o] `pnpm dev` serves a design-system workbench at `/design-system`, reachable on the development server's fixed LAN port 19500.
+  - Derive theme choices from the presentation registry. Preview the real shared UI and screen-specific components with sample game data, searchable names/source paths and adjustable viewport width; component edits use Vite's normal hot reload.
+  - Sample actions and data are isolated from saved games and automatic progression. The workbench and its sample-data endpoint are development-only, absent from production bundles; production visits to its path show an unavailable page.
+
+- WEB-104 [o] Design-system knowledge is maintained alongside visual iterations so another theme can reuse it (→!WEB-91 →!WEB-103).
+  - `apps/web/design/DESIGN-SYSTEM.md` is the shared guide; theme source READMEs retain their artwork identity, component coverage, resource roles, regeneration recipe and open design questions.
+  - Keep approved decisions, implemented working treatments and proposed alternatives distinct. An unconfirmed recommendation or a current screenshot does not establish a shared requirement.
+  - Approved product decisions remain in SSOT; guides explain and link to them. Resource metadata and executable encoding limits retain their existing sources of truth (→!ARCH-32). Update reusable guidance and the relevant theme notes with the design change, rather than leaving knowledge only in chat or completed tasks.
+
 ## flow
 
 - Progression: automatic paced days or explicit manual next-event → shared responsibility/observation trigger → direct decision or delegated report → resume only as the selected mode permits.
@@ -535,6 +552,17 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r182 261029 WEB-91✎ nearly identical paper surfaces and border-only groups→three distinct material/luminance levels and reusable notebook/detail cards
+- r181 261029 WEB-91✎ rough graphs, oval circles and overlapping formation cards→primary-coloured analysis surfaces, round geometry and compact player markers; shared-role application audited across views
+- r180 261029 WEB-91✎ unmarked fixed/moving table boundary→scroll-dependent resource-backed edge shadow
+- r179 261029 WEB-91✎ dark iron/bronze/elite rating surfaces→brighter steel/copper/violet artwork with contrasting dark numbers
+- r178 261029 WEB-91✎ three subtle OVR tier colours→five rating ranges with combined background/frame resources and contrasting numbers
+- r177 261029 WEB-91✎ profile-sized ratings and uneven attribute baselines→compact resource-backed rating chips aligned with row values
+- r176 261029 WEB-91✎ equal-weight tab/panel/table rules and accumulated padding→resource-based hierarchy and compact content spacing
+- r175 261029 WEB-104+ shared design-system guide and theme source notes maintained with iterations; approved rules, working artwork and proposals remain distinct
+- r174 261029 WEB-91✎ CSS-coloured supporting buttons and solid field borders→generated portable image skins for every matchday-print control
+- r173 261029 WEB-91✎ matchday-print primary-only actions and image-framed fields→three button colours, solid field/dropdown borders and square checkboxes
+- r172 261029 WEB-103+ development-only themed component workbench, isolated sample data and LAN access on port 19500
 - r171 261029 WEB-39✎ dedicated lobby exit→shared navigation and contextual return only; WEB-91✎ dedicated dark controller texture→light secondary palette distinct from dark navigation, texture may be shared
 - r170 261029 WEB-91✎ controller shared dark treatment→dedicated bitmap texture distinct from sheets and round/table headers
 - r169 261029 WEB-10/18/39✎ focused owner chrome→shared management shell; WEB-11✎ place entrances→primary navigation only; WEB-79✎ office overview modal→inline page, controller modal retained; WEB-91✎ shared dark headers→secondary sheet treatment; WEB-97✎ office exception→ordinary navigation; WEB-98- automatic office clock stop/resume removed

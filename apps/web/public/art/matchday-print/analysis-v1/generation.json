@@ -1,0 +1,48 @@
+{
+  "method": "Two individual built-in image_gen calls; shared createUiArtPipeline crop and WebP encoding",
+  "date": "2026-10-29",
+  "sources": "apps/web/design/analysis-print/sources",
+  "prompts": "apps/web/design/analysis-print/prompts.json",
+  "geometry": "Quiet tiled paper and a transparent circular marker. Pitch lines, labels and graph facts remain live.",
+  "assets": [
+    {
+      "file": "paper-quiet.webp",
+      "source": "analysis-paper.png",
+      "filter": "",
+      "bytes": 1310,
+      "sha256": "c7009b55a3cc1f495fc1e3d83c3f916209b7cedb7860a37b72f070498e92b7e5",
+      "width": 256,
+      "height": 256,
+      "role": "image-art-analysis-paper",
+      "mode": "tile",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2560132,
+        "inputSha256": "d3b093253498e61b8216b8d4b197b3e155963626a49a5c2ac6fbcdfba557d712",
+        "width": 256,
+        "height": 256,
+        "quality": 85
+      }
+    },
+    {
+      "file": "icon-formation-marker.webp",
+      "source": "formation-marker.png",
+      "crop": { "x": 16, "y": 21, "width": 1221, "height": 1215 },
+      "filter": "",
+      "bytes": 2374,
+      "sha256": "46d69e640cc755b7d659038579ebb732db6f0bddfd9d090e5b60533daa02ad9a",
+      "width": 64,
+      "height": 64,
+      "role": "image-art-formation-marker",
+      "mode": "image",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2403424,
+        "inputSha256": "424a1717e0bea6abe20b73fb69db91a74ebb6c07bf8be1c80efc20225e2eeab1",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      }
+    }
+  ]
+}

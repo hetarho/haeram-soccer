@@ -39,7 +39,7 @@ export function SeasonAnalysis({
     )} ${result.own}–${result.other} ${result.result}`;
   };
   return (
-    <div className={s.disclosure}>
+    <div data-surface="sheet" className={s.disclosure}>
       <section className={s.content} aria-label="선택 시즌 분석">
         <h3>
           {seasonName(year)} · {scope}

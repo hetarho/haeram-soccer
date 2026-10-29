@@ -1,0 +1,115 @@
+{
+  "method": "Five individual built-in image_gen edits; shared createUiArtPipeline crop and WebP encoding",
+  "date": "2026-10-29",
+  "sources": "apps/web/design/rating-print/sources",
+  "prompts": "apps/web/design/rating-print/prompts.json",
+  "revisionPrompts": "apps/web/design/rating-print/brightness-prompts.json",
+  "geometry": "Five filled rarity skins; fixed 22px source caps, independently stretched edges and centre. Live numbers are rendered separately.",
+  "assets": [
+    {
+      "file": "frame-iron-bright.webp",
+      "source": "iron-bright.png",
+      "crop": { "x": 0, "y": 0, "width": 1536, "height": 1021 },
+      "filter": "",
+      "bytes": 8586,
+      "sha256": "bb00fec58615271830741e6c5d1e43901e3d4559f7d7a5c66da517965cc4d481",
+      "width": 192,
+      "height": 128,
+      "role": "image-art-rating-iron",
+      "mode": "nine-slice",
+      "slice": 22,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 3162355,
+        "inputSha256": "26c1d05c23169fcb38e877f1bf647a1f3defbc35c3ac5f20420c8e385a695267",
+        "width": 192,
+        "height": 128,
+        "quality": 85
+      }
+    },
+    {
+      "file": "frame-bronze-bright.webp",
+      "source": "bronze-bright.png",
+      "crop": { "x": 14, "y": 18, "width": 1509, "height": 969 },
+      "filter": "",
+      "bytes": 9676,
+      "sha256": "73cc9447d73c16520cce1fd0545264a986cd46388eeef85ec3d8152a872a44c9",
+      "width": 192,
+      "height": 123,
+      "role": "image-art-rating-bronze",
+      "mode": "nine-slice",
+      "slice": 22,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2909006,
+        "inputSha256": "d809d2bd1c700de62353abc1e7be10f5336e0eba2417effb91acf865a27bf38a",
+        "width": 192,
+        "height": 123,
+        "quality": 85
+      }
+    },
+    {
+      "file": "frame-silver.webp",
+      "source": "silver.png",
+      "crop": { "x": 6, "y": 6, "width": 1522, "height": 1000 },
+      "filter": "",
+      "bytes": 8208,
+      "sha256": "39cad188ee128b62f98a05957cb0f0fb50fa3114538d78d0c7fc7480b1453718",
+      "width": 192,
+      "height": 126,
+      "role": "image-art-rating-silver",
+      "mode": "nine-slice",
+      "slice": 22,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2743815,
+        "inputSha256": "4f767736ffbf582e21c24d6bbb5090c440e96861a804953ec622fc5e10ee26df",
+        "width": 192,
+        "height": 126,
+        "quality": 85
+      }
+    },
+    {
+      "file": "frame-gold.webp",
+      "source": "gold.png",
+      "crop": { "x": 3, "y": 2, "width": 1530, "height": 1000 },
+      "filter": "",
+      "bytes": 8230,
+      "sha256": "f1225646c8df325e2f1df905bce4f246976b135b31ec11bef19853d59316b019",
+      "width": 192,
+      "height": 125,
+      "role": "image-art-rating-gold",
+      "mode": "nine-slice",
+      "slice": 22,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2979778,
+        "inputSha256": "0a17eebc89dd33f0088c583e0467e0059aed701ec77084894b97f80b59650049",
+        "width": 192,
+        "height": 125,
+        "quality": 85
+      }
+    },
+    {
+      "file": "frame-elite-bright.webp",
+      "source": "elite-bright.png",
+      "crop": { "x": 1, "y": 9, "width": 1534, "height": 980 },
+      "filter": "",
+      "bytes": 8046,
+      "sha256": "701ef3d553c6804e2612dffe3111efa5c38eef44adcfa2ae94181d312a84c05f",
+      "width": 192,
+      "height": 123,
+      "role": "image-art-rating-elite",
+      "mode": "nine-slice",
+      "slice": 22,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2739164,
+        "inputSha256": "78c1876dd2f079a60b464f566555f92a679ee3c942745012a535a1c0b5b29eb8",
+        "width": 192,
+        "height": 123,
+        "quality": 85
+      }
+    }
+  ]
+}

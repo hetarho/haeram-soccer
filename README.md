@@ -40,6 +40,12 @@ captures, disposable logs, browser profiles and caches belong in ignored `.tmp/`
 Editable artwork and deployed resources remain under
 `apps/web/design/` and `apps/web/public/`.
 
+The development [design-system workbench](http://localhost:19500/design-system) previews real
+components across registered themes. The
+[shared design-system guide](apps/web/design/DESIGN-SYSTEM.md) retains reusable design lessons,
+resource-authoring guidance and links to each theme's source notes, including the
+[current Matchday Print control review](apps/web/design/controls-print/README.md).
+
 Verification commands and their task, batch and CI scopes follow ARCH-22/23/30:
 
 ```sh

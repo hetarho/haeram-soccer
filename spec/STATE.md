@@ -368,7 +368,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 171 | 171 | - | 0 |
+| WEB | 182 | 182 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
@@ -419,26 +419,27 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T579, then T580 (match-model revision 9).
+- Continue owner-led Matchday Print design review; source/preview coverage is recorded in apps/web/design/UI-COVERAGE.md.
+- Remaining match-model work: implement-task T579, then T580 (revision 9).
 
 ## log
-- 261029 T581 done: remove dedicated office exit and give controller a light palette distinct from dark navigation; 138 unit tests and static checks pass; owner requests unit-only validation and push.
-- 261029 update-ssot WEB r171 and T581 start: remove dedicated office exit, distinguish controller by light colours; owner authorizes unit tests only and push.
-- 261029 create-task MATCH r42: T579 (revision 9 shot side: keeper not a presser, short straight wind-up, 5 m clear chance, keeper half way), T580 (pass failure where reached, tight receivers near the box).
-- 261029 update-ssot MATCH r42: carrier never backs off the keeper, shot struck soon after choosing it, clear chance also with nobody within 5 m, tight receivers near the box weighed by keeping it, pass failure read where it happens, keeper about half way out.
-- 261029 publication verification: protected pending lab generation inputs and shared normal feedback dismissal before office navigation (deb74fc1); lab comparison edits a nondefault value (1b950bb3). Prior publication checks passed on the unchanged remote source.
-- 261029 update-ssot LAB r5 + fix: Korean descriptions for all 25 groups and 865 values (apps/web/src/lab/tunables.ko.json, written from the consuming code, marking page-only and pre-revision-8 values), shown above the code comment and searched; tunables.test.ts fails on a missing or stale description.
-- 261029 fix lab watch layout: the match view's App styles pin html/body with no scroll — the lab page scrolls again (scoped by `:has(.page)`), the watch view is capped to fit one screen and scrolls into view on a new playback; checked at 1920×1080.
-- 261029 T578 done: /lab 관전 plays match 0 of its seed in the lab worker and shows it in the game's unchanged Pitch inside the shared presentation; 다시 보기/새 경기; typecheck, lint, tracked formatting, 43 affected unit tests and build pass; lab.spec.ts left to the batch run.
-- 261029 update-ssot LAB r4 + create-task T578: 관전 in the game's own match view is the lab's main use (LAB-9 resolved); N-match runs stay second (LAB-10).
-- 261029 revert ECON r40/T577: the lb29 loop took the parked F6 runway finding after the lab tasks; the owner says it is unrelated to the lab request, so F6 stays parked (uncommitted T577 work saved outside the repo, not applied).
-- 261029 T575 done: /lab entry (sides, values, runs, kept runs and baseline comparison) on T574's pool; state.ts with 5 unit tests, typecheck, lint, scoped format, 1672 affected unit tests and build pass; lab.spec.ts left to the batch run.
-- 261029 T576 done: generated a dedicated controller weave bitmap and connected all four themes; 121 unit tests, typecheck, lint, scoped format, resource/art checks and build pass; built image hash and material bindings verified.
-- 261029 T574 done: lab worker pool, trimmed samples, run summary with equal-sides note; 136 affected unit tests pass; scripts/_scan.ts (stray T572 scratch) dropped.
-- 261029 T574 start
-- 261029 update-ssot WEB r170 and T576 start: controller must use a newly generated bitmap texture distinct from sheet and round/table backgrounds.
-- 261029 update-ssot LAB r3: LAB-2 a pressing lab side carries the press load (`PRESS_LOAD_FATIGUE`) like a club nobody owns; implemented in lab/sides.ts with its test, no new task.
-- 261029 T573 done: tunable catalog script and freshness test (865 leaves).
-- 261029 T573 start
-- 261029 T572 done: lab sides, lab setup option and grid tunables; 749 affected unit tests pass.
-- 261029 update-ssot LAB r2: LAB-2 player OVR range 20–92 (generator bounds); no task change (T572 implements it).
+- 261029 T582–T592 design-system batch verified for commit: 184 files including retained artwork/provenance; 1718 affected units, workbench boundary checks, type/lint, 115-file scoped format, resource checks and build pass.
+- 261029 T592 done: three visibly textured material planes, reusable Card and notebook consumer; source/prompts and review criterion retained after restoring reduced-size grain. 33 units, type/lint/format, art/presentation checks, build and representative desktop/mobile inspection pass.
+- 261029 WEB r182 and T592 start: three resource-backed surface levels, border-light fixture notebook and a shared Card with app/workbench examples.
+- 261029 T590/T591 done: primary-coloured charts, round/non-overlapping analytical formations and shared-resource coverage across 119 UI modules / 50 app previews; 54 units, type/lint/format, resource checks and build pass. Workbench administration chrome excluded per owner.
+- 261029 WEB r181, T590 start and T591 planned: improve analysis/formation visuals and primary emphasis; audit every shared UI consumer and apply missing roles.
+- 261029 T588/T589 done: brighter actual rating resources and a scroll-dependent pinned-column shadow with stationary table legend; 41 units, type/lint/format, art/presentation checks, build and actual desktop/mobile inspection pass.
+- 261029 WEB r180 and T589 start alongside T588: resource-backed shadow separates fixed columns only after horizontal scrolling.
+- 261029 WEB r179 and T588 start: brighten actual iron/bronze/elite artwork to distinguish compact ratings at button-like brightness.
+- 261029 T587 done: five rating skin resources (39046 bytes), aligned compact chips and readable table values; 41 units, type/lint/format, art/presentation validation, build and actual UI inspection pass.
+- 261029 T586 done: aligned 28x24 inline rating chips; type/lint, 22 units, scoped format, build and actual desktop/mobile sizing verified. T587 implementation starts.
+- 261029 WEB r178 and T587 preparation: owner requests five visible overall-rating levels with designed background/frame artwork; finish T586 sizing/alignment first.
+- 261029 WEB r177 and T586 start: shrink inline attribute ratings and align labels/values without changing profile cards.
+- 261029 T585 done: four image hierarchy resources (6240 bytes), compact Panel/Attributes spacing and quiet table/tab treatments; type/lint, 53 units, art/presentation checks, format, build and actual desktop/mobile rendering pass.
+- 261029 WEB r176 and T585 start: resource-backed tab/panel/table hierarchy, compact spacing and shared design guidance.
+- 261029 WEB r175 documentation only (no code task): shared design guide, print source notes and web AGENTS/README discovery; 37 local links, scoped formatting and diff checks pass; palette proposal remains unapplied.
+- 261029 update-ssot WEB and shared design-system documentation start: preserve reusable decisions and distinguish working artwork from proposals.
+- 261029 T584 done: seven generated portable control skins (21,912 bytes), native stretch metadata, source/prompt/provenance and actual UI wiring; type/lint, 49 units, art checks, format, build and manual rendering verified.
+- 261029 WEB r174 and T584 start: replace CSS-only control treatment with generated, reusable bitmap skins.
+- 261029 T583 done: matchday-print button colours and bordered form controls; type/lint, 49 focused units, scoped formatting, build and served theme tokens verified.
+- 261029 update-ssot WEB r173, create-task T583 and implementation start: matchday-print button colours and clearly bordered form controls.

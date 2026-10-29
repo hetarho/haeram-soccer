@@ -1,0 +1,6 @@
+{
+  "method": "Built-in image_gen background extraction edit",
+  "asset": "panel-sheet-v2",
+  "reference": "sources/panel-sheet.png",
+  "prompt": "Precise background-extraction edit of the supplied panel artwork. KEEP the ivory paper rectangle, its quiet subtle paper grain and the single fine charcoal rule across the upper edge. REMOVE ALL grey/brown smoky surround, ALL cast shadow, ALL glow and ALL backdrop: every pixel outside the actual rectangular sheet must have alpha=0, genuinely transparent. Preserve a tiny 2-pixel transparent exterior only. No dark border on left/right/bottom, no vignette, no perspective, no lettering, no new details. Flat production UI nine-slice panel skin, not a photograph or mockup. The result must be an isolated pale ivory rectangle whose only strong edge is the hairline along the top."
+}

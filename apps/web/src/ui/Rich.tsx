@@ -379,7 +379,11 @@ function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => 
             </div>
             {/* No manager renews himself (→STAFF-14): unrenewed, he leaves at the close. */}
             {managerRenewal(w) && (
-              <div className={`${s.renewal} ${s.leaving}`} data-testid="manager-renewal">
+              <div
+                data-surface="inset"
+                className={`${s.renewal} ${s.leaving}`}
+                data-testid="manager-renewal"
+              >
                 <ManagerRenewal w={w} client={client} disabled={disabled} />
               </div>
             )}
@@ -391,7 +395,7 @@ function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => 
               {/* Like a coach's 교체, the market opens as a list over the office (→WEB-40). */}
               <button onClick={onReplace}>{m.interim ? '감독 선임' : '교체'}</button>
             </div>
-            <details className={management.reference}>
+            <details data-ui="disclosure" className={management.reference}>
               <summary>감독 능력·성향</summary>
               <Attributes
                 rows={[
@@ -459,7 +463,7 @@ function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => 
               감독에게 제안하기
             </button>
             {m.pending && (
-              <div className={s.critical} style={{ marginTop: 20 }}>
+              <div data-surface="inset" className={s.critical} style={{ marginTop: 20 }}>
                 조건 대기: {tacticLabel[m.pending]}
                 <p>
                   훈련 지원 <Money value={support} code={c.country} year={w.year} /> 필요
@@ -473,12 +477,12 @@ function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => 
               </div>
             )}
             {response && (
-              <blockquote className={s.notice} style={{ margin: '20px 0 0' }}>
+              <blockquote data-surface="inset" className={s.notice} style={{ margin: '20px 0 0' }}>
                 <b>{response.title}</b>
                 <p>{response.detail}</p>
               </blockquote>
             )}
-            <details className={management.reference}>
+            <details data-ui="disclosure" className={management.reference}>
               <summary>대화 판단 기준</summary>
               <p className={s.muted}>
                 요청 결과는 성향·신뢰·말투·이전 갈등을 따릅니다. 동일 요청은 신뢰를 반복해서 높이지
@@ -1104,6 +1108,7 @@ function Roster({ state, client, work }: Props & { work?: 'contracts' | 'sales' 
           </div>
         )}
         <details
+          data-ui="disclosure"
           className={s.rosterDetails}
           onToggle={(event) => setFullTable(event.currentTarget.open)}
         >

@@ -1,6 +1,23 @@
 import { describe, expect, it } from 'vitest';
 import { createWorld } from '../../../../packages/engine/src/index';
-import { clubOvr, cohesionLine } from './OvrBadge';
+import { clubOvr, cohesionLine, ovrTier } from './OvrBadge';
+
+describe('overall presentation tiers', () => {
+  it.each([
+    [0, 'iron'],
+    [49, 'iron'],
+    [50, 'bronze'],
+    [64, 'bronze'],
+    [65, 'silver'],
+    [74, 'silver'],
+    [75, 'gold'],
+    [84, 'gold'],
+    [85, 'elite'],
+    [99, 'elite'],
+  ] as const)('maps %i to %s at each tier boundary', (value, tier) => {
+    expect(ovrTier(value)).toBe(tier);
+  });
+});
 
 describe("a rival's XI at its 조직력 (→LEAGUE-12, WEB-58)", () => {
   it('rates a rival by its strength at its 조직력 and names it', () => {

@@ -34,7 +34,7 @@ export function AnalysisExport({
     }
   };
   return (
-    <details className={s.disclosure}>
+    <details data-ui="disclosure" className={s.disclosure}>
       <summary>분석 데이터 내보내기</summary>
       <section className={s.content} aria-label="분석 데이터 내보내기">
         <div className={s.controls}>

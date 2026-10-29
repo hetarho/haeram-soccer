@@ -370,3 +370,15 @@
 .split td:last-child {
   font-weight: 700;
 }
+
+/* Notebook record cards own their rhythm; surrounding disclosure owns its inset. */
+.fixtureNote {
+  margin: 2px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.nextFixture {
+  color: var(--accent-text);
+  font-weight: 700;
+}

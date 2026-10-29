@@ -190,7 +190,7 @@ export function OperationsView({
                     legacy={legacy}
                   />
                 )}
-                <details data-testid="office-library">
+                <details data-ui="disclosure" data-testid="office-library">
                   <summary>구단 전체 방향·저장 설정</summary>
                   <Suspense fallback={<p role="status">방향을 여는 중…</p>}>
                     <StrategyBoard w={w} client={client} />

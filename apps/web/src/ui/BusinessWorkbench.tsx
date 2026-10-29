@@ -448,7 +448,7 @@ function MoneyWorkbench({
         </div>
       )}
       {message && (
-        <p className={s.message} role="status">
+        <p data-surface="inset" className={s.message} role="status">
           {message}
         </p>
       )}

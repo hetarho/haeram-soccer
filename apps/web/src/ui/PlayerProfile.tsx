@@ -90,7 +90,11 @@ export function PlayerProfile({
           {own && (
             <span data-testid="profile-adaptation">
               적응도 {player.adaptation.toFixed(2)} · {multiplierLabel(multiplier)}
-              {unsettled && <em className={s.flag}>적응 실패</em>}
+              {unsettled && (
+                <em data-ui="label" className={s.flag}>
+                  적응 실패
+                </em>
+              )}
             </span>
           )}
         </div>

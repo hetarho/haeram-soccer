@@ -72,7 +72,7 @@ function FinalTable({
     group = league?.group ?? season.group,
     { zones, lower } = finalZones(code, tier, rows.length);
   return (
-    <section className={r.table} aria-label="최종 순위표">
+    <section data-surface="sheet" className={r.table} aria-label="최종 순위표">
       <h3>최종 순위표</h3>
       <p className={r.tableMeta}>
         {seasonName(season.year)} · {league && `${country(code).name} `}
@@ -271,7 +271,7 @@ function SeasonRanks({
               </span>
             </figcaption>
           </figure>
-          <details className={l.details}>
+          <details data-ui="disclosure" className={l.details}>
             <summary>라운드별 순위 보기</summary>
             <div className={l.tableWrap}>
               <table aria-label="라운드별 순위 기록">

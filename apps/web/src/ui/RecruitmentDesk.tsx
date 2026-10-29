@@ -303,7 +303,7 @@ function CandidateCard({
           </button>
         </div>
       )}
-      <details className={s.details}>
+      <details data-ui="disclosure" className={s.details}>
         <summary>능력 자세히</summary>
         <PlayerProfile w={w} player={player} own={offer.own} compact />
       </details>
@@ -530,7 +530,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         </div>
       </header>
       {message?.world === w.id && (
-        <p className={s.message} role="status">
+        <p data-surface="inset" className={s.message} role="status">
           {message.text}
         </p>
       )}
@@ -544,7 +544,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         />
       </label>
       {market.error && (
-        <p role="alert" className={s.warning}>
+        <p data-surface="inset" role="alert" className={s.warning}>
           {market.error} <button onClick={market.retry}>목록 다시 조회</button>
         </p>
       )}
@@ -818,10 +818,15 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       {panel === 'negotiations' && (
         <Dialog label="이적 협상" onClose={() => setPanel(undefined)}>
           {board.length > 0 && (
-            <section className={s.negotiations} aria-label="진행 중인 협상">
+            <section data-surface="sheet" className={s.negotiations} aria-label="진행 중인 협상">
               <h3>이적 협상</h3>
               {shownBids.map(({ bid, player, club: other, actionable, dueLabel }) => (
-                <div key={bid.id} className={s.negotiation} data-status={bid.status}>
+                <div
+                  data-surface="sheet"
+                  key={bid.id}
+                  className={s.negotiation}
+                  data-status={bid.status}
+                >
                   <span>
                     <b>
                       {bidKind(bid)} · {player?.name || '선수'}
@@ -912,7 +917,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             </span>
             <small>업무 기준에서 바꿔요</small>
           </button>
-          <div className={s.summary}>
+          <div data-surface="sheet" className={s.summary}>
             <span>
               선수단 정원 <b>{registered.value}</b>
               <small>{registered.detail}</small>
@@ -922,7 +927,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             </span>
           </div>
           {registered.full && (
-            <p className={s.warning}>
+            <p data-surface="inset" className={s.warning}>
               선수단 정원 {registered.value} · 자리가 가득 찼어요. 선수를 정리한 뒤 영입하세요.
             </p>
           )}
@@ -1024,7 +1029,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           }
         >
           {message?.world === w.id && (
-            <p className={s.message} role="status">
+            <p data-surface="inset" className={s.message} role="status">
               {message.text}
             </p>
           )}
@@ -1064,7 +1069,11 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
               <dd>{format((BigInt(w.cash) - BigInt(fee)).toString())}</dd>
             </div>
           </dl>
-          {BigInt(fee) > BigInt(w.cash) && <p className={s.warning}>자금이 부족해요.</p>}
+          {BigInt(fee) > BigInt(w.cash) && (
+            <p data-surface="inset" className={s.warning}>
+              자금이 부족해요.
+            </p>
+          )}
         </Dialog>
       )}
       {viewing && (
@@ -1078,7 +1087,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           }
         >
           {message?.world === w.id && (
-            <p className={s.message} role="status">
+            <p data-surface="inset" className={s.message} role="status">
               {message.text}
             </p>
           )}

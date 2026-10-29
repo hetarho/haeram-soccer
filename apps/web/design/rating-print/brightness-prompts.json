@@ -1,0 +1,25 @@
+{
+  "method": "Built-in image_gen brightness edits",
+  "date": "2026-10-29",
+  "reference": "apps/web/public/art/matchday-print/home/frame-stamp.webp",
+  "assets": [
+    {
+      "id": "iron",
+      "fill": "#8fa5b3",
+      "text": "#173343",
+      "prompt": "Image 1 is the edit target: a rating badge. Image 2 is ONLY a brightness benchmark: the existing primary action button. KEEP image 1's same frame geometry, engraved game-item edge, corner decoration and blank number area. CHANGE the pigment and surface brightness in the artwork itself. The centre must be clearly bright and colourful at a tiny 28×24 pixel display, comparable to or lighter than the benchmark button. No dark centre, dark gradient, dark vignette, new lettering, numerals, symbols, labels, glow or external shadow. Fine restrained printed texture. Preserve a flat front view and transparent exterior. Do not make a mockup or an asset sheet. IRON REVISION: replace the nearly black slate centre with a BRIGHT MEDIUM-LIGHT STEEL BLUE-GREY surface, target #8fa5b3. Keep polished silver/steel frame highlights with a crisp darker engraved keyline. A dark navy live number will be added later. The whole inner field must be visibly light, no charcoal patches. Clearly blue-grey steel rather than dark grey."
+    },
+    {
+      "id": "bronze",
+      "fill": "#d7924d",
+      "text": "#422715",
+      "prompt": "Image 1 is the edit target: a rating badge. Image 2 is ONLY a brightness benchmark: the existing primary action button. KEEP image 1's same frame geometry, engraved game-item edge, corner decoration and blank number area. CHANGE the pigment and surface brightness in the artwork itself. The centre must be clearly bright and colourful at a tiny 28×24 pixel display, comparable to or lighter than the benchmark button. No dark centre, dark gradient, dark vignette, new lettering, numerals, symbols, labels, glow or external shadow. Fine restrained printed texture. Preserve a flat front view and transparent exterior. Do not make a mockup or an asset sheet. BRONZE REVISION: replace the dark brown centre with a BRIGHT WARM COPPER-ORANGE surface, target #d7924d. Keep the polished copper/bronze frame with pale highlights and a crisp darker copper keyline. A dark brown live number will be added later. The inner field must be uniformly bright copper, not chocolate or burgundy. It should have the visible pigment energy of the reference button."
+    },
+    {
+      "id": "elite",
+      "fill": "#b985e0",
+      "text": "#35184c",
+      "prompt": "Image 1 is the edit target: a rating badge. Image 2 is ONLY a brightness benchmark: the existing primary action button. KEEP image 1's same frame geometry, engraved game-item edge, corner decoration and blank number area. CHANGE the pigment and surface brightness in the artwork itself. The centre must be clearly bright and colourful at a tiny 28×24 pixel display, comparable to or lighter than the benchmark button. No dark centre, dark gradient, dark vignette, new lettering, numerals, symbols, labels, glow or external shadow. Fine restrained printed texture. Preserve a flat front view and transparent exterior. Do not make a mockup or an asset sheet. ELITE REVISION: replace the near-black plum centre with a BRIGHT VIVID LIGHT AMETHYST/LAVENDER PURPLE surface, target #b985e0. Keep the purple engraved frame and gold corner accents, using clear highlights and a darker violet keyline. A dark plum live number will be added later. The entire inner field must be bright saturated purple, never a dark purple panel. Distinguish it immediately from steel-blue-grey iron at tiny size."
+    }
+  ]
+}

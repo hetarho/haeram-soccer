@@ -81,6 +81,7 @@ export function Standings({
   fixtures?: Fixture[];
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const continental = w.europe.find((t) => t.standings === w.tables);
   const sorted = orderIds(ids, w.tables),
     rules = continental ? undefined : leagueRules(w, ids),
@@ -95,89 +96,96 @@ export function Standings({
   const visibleLimit = limit || (expanded ? sorted.length : 8);
   const shown = sorted.filter((id, i) => i < visibleLimit || id === w.playerClub).length;
   return (
-    <div className={s.tableWrap}>
-      <table className={s.standings} aria-label="리그 순위표">
-        <thead>
-          <tr>
-            <th scope="col">순위</th>
-            <th scope="col">클럽</th>
-            <th scope="col" title="상대 클럽은 조직력을 반영한 선발 전력">
-              OVR
-            </th>
-            <th scope="col">승점</th>
-            <th scope="col">경기</th>
-            <th scope="col">승</th>
-            <th scope="col">무</th>
-            <th scope="col">패</th>
-            <th scope="col">득</th>
-            <th scope="col">실</th>
-            <th scope="col">득실</th>
-            <th scope="col" className={s.optional}>
-              변동
-            </th>
-            <th scope="col" className={s.optional}>
-              최근 5경기
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {sorted.map((id, i) => {
-            if (i >= visibleLimit && id !== w.playerClub) return null;
-            const club = w.clubs.find((c) => c.id === id),
-              t = w.tables[id];
-            if (!club || !t) return null;
-            // No zone before the club has played.
-            const zone = t.played > 0 ? places?.zones[i] : undefined;
-            return (
-              <tr
-                key={id}
-                data-own={id === w.playerClub || undefined}
-                className={`${id === w.playerClub ? s.own : ''} ${zone ? s[zone] : ''}`}
-              >
-                <td>
-                  {t.played ? i + 1 : '—'}
-                  {i >= visibleLimit && <small aria-label="중간 순위 생략"> …</small>}
-                </td>
-                <th scope="row" className={s.club}>
-                  <ClubLink w={w} id={id}>
-                    {id === w.playerClub && (
-                      <span data-ui="badge" className={s.myClub}>
-                        우리 팀
-                      </span>
-                    )}
-                  </ClubLink>
-                </th>
-                <td>
-                  <span
-                    className={s.teamOvr}
-                    data-tier={ovrTier(clubOvr(w, club))}
-                    title={id === w.playerClub ? undefined : cohesionLine(club)}
-                  >
-                    {clubOvr(w, club)}
-                  </span>
-                </td>
-                <td className={s.points}>{t.points}</td>
-                <td>{t.played}</td>
-                <td>{t.won}</td>
-                <td>{t.drawn}</td>
-                <td>{t.lost}</td>
-                <td>{t.gf}</td>
-                <td>{t.ga}</td>
-                <td>
-                  {t.gf - t.ga > 0 ? '+' : ''}
-                  {t.gf - t.ga}
-                </td>
-                <td className={s.optional}>
-                  <Movement change={rankChange(timeline, id)} />
-                </td>
-                <td className={s.optional}>
-                  <Form results={formFor(fixtures, id)} />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+    <div className={s.standingsBlock}>
+      <div
+        className={s.tableWrap}
+        data-ui="standings-scroll"
+        data-scrolled={scrolled || undefined}
+        onScroll={(event) => setScrolled(Math.abs(event.currentTarget.scrollLeft) > 1)}
+      >
+        <table className={s.standings} aria-label="리그 순위표">
+          <thead>
+            <tr>
+              <th scope="col">순위</th>
+              <th scope="col">클럽</th>
+              <th scope="col" title="상대 클럽은 조직력을 반영한 선발 전력">
+                OVR
+              </th>
+              <th scope="col">승점</th>
+              <th scope="col">경기</th>
+              <th scope="col">승</th>
+              <th scope="col">무</th>
+              <th scope="col">패</th>
+              <th scope="col">득</th>
+              <th scope="col">실</th>
+              <th scope="col">득실</th>
+              <th scope="col" className={s.optional}>
+                변동
+              </th>
+              <th scope="col" className={s.optional}>
+                최근 5경기
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {sorted.map((id, i) => {
+              if (i >= visibleLimit && id !== w.playerClub) return null;
+              const club = w.clubs.find((c) => c.id === id),
+                t = w.tables[id];
+              if (!club || !t) return null;
+              // No zone before the club has played.
+              const zone = t.played > 0 ? places?.zones[i] : undefined;
+              return (
+                <tr
+                  key={id}
+                  data-own={id === w.playerClub || undefined}
+                  className={`${id === w.playerClub ? s.own : ''} ${zone ? s[zone] : ''}`}
+                >
+                  <td>
+                    {t.played ? i + 1 : '—'}
+                    {i >= visibleLimit && <small aria-label="중간 순위 생략"> …</small>}
+                  </td>
+                  <th scope="row" className={s.club}>
+                    <ClubLink w={w} id={id}>
+                      {id === w.playerClub && (
+                        <span data-ui="badge" className={s.myClub}>
+                          우리 팀
+                        </span>
+                      )}
+                    </ClubLink>
+                  </th>
+                  <td>
+                    <span
+                      className={s.teamOvr}
+                      data-tier={ovrTier(clubOvr(w, club))}
+                      title={id === w.playerClub ? undefined : cohesionLine(club)}
+                    >
+                      {clubOvr(w, club)}
+                    </span>
+                  </td>
+                  <td className={s.points}>{t.points}</td>
+                  <td>{t.played}</td>
+                  <td>{t.won}</td>
+                  <td>{t.drawn}</td>
+                  <td>{t.lost}</td>
+                  <td>{t.gf}</td>
+                  <td>{t.ga}</td>
+                  <td>
+                    {t.gf - t.ga > 0 ? '+' : ''}
+                    {t.gf - t.ga}
+                  </td>
+                  <td className={s.optional}>
+                    <Movement change={rankChange(timeline, id)} />
+                  </td>
+                  <td className={s.optional}>
+                    <Form results={formFor(fixtures, id)} />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
       {!limit && (
         <div className={s.coverage}>
           <span>
@@ -269,7 +277,7 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
         {onOpenLeague && <button onClick={onOpenLeague}>순위 경쟁 보기 →</button>}
       </div>
       {lastMatch && (
-        <p className={s.lastResult}>
+        <p data-surface="inset" className={s.lastResult}>
           <b>
             {lastRound}라운드 · {ownGoals}–{opponentGoals}{' '}
             {matchPoints === RESULT_POINTS.win
@@ -365,7 +373,7 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
         </div>
       </div>
       {next && rival ? (
-        <div className={s.rival}>
+        <div data-surface="inset" className={s.rival}>
           <div>
             <span>
               {kindLabel[next.kind]} · 다음 상대 · {next.home === w.playerClub ? '홈' : '원정'}
@@ -620,7 +628,7 @@ export function RankHistoryGraph({
               )}
             </figcaption>
           </figure>
-          <details className={s.details}>
+          <details data-ui="disclosure" className={s.details}>
             <summary>라운드별 순위와 승점 보기</summary>
             <div className={s.tableWrap}>
               <table aria-label="라운드별 순위 기록">

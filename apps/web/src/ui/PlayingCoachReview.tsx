@@ -5,6 +5,7 @@ import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { STAFF_INFO } from '../../../../packages/engine/src/staff-info';
 import { DecisionOwner } from './DecisionOwner';
 import { Money } from './Money';
+import { Select } from './Select';
 import s from './PlayerProfile.module.css';
 
 /** One proposal and one answer cover both contracts; the engine owns every quote and eligibility. */
@@ -28,7 +29,7 @@ export function PlayingCoachReview({
     <Money value={value} code={w.clubs.find((c) => c.id === w.playerClub)!.country} year={w.year} />
   );
   return (
-    <section className={s.career} aria-label="지도자 진로">
+    <section data-surface="sheet" className={s.career} aria-label="지도자 진로">
       <h3>지도자 진로</h3>
       {disabled && (
         <p role="status">
@@ -74,35 +75,37 @@ export function PlayingCoachReview({
             <>
               <label>
                 선수 생활 연장 기간{' '}
-                <select
+                <Select
+                  aria-label="선수 생활 연장 기간"
                   value={
                     assessment.playingCoachYears.includes(years)
                       ? years
                       : assessment.playingCoachYears[0]
                   }
                   disabled={disabled}
-                  onChange={(e) => setYears(Number(e.target.value) as 1 | 2)}
+                  onValueChange={(value) => setYears(Number(value) as 1 | 2)}
                 >
                   {assessment.playingCoachYears.map((year) => (
                     <option key={year} value={year}>
                       {year}년
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               <label>
                 코치 계약 기간{' '}
-                <select
+                <Select
+                  aria-label="코치 계약 기간"
                   value={term}
                   disabled={disabled}
-                  onChange={(e) => setTerm(Number(e.target.value) as ContractTerm)}
+                  onValueChange={(value) => setTerm(Number(value) as ContractTerm)}
                 >
                   {([1, 2, 3, 4, 5] as const).map((value) => (
                     <option key={value} value={value}>
                       {value}시즌
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               <button
                 disabled={disabled}

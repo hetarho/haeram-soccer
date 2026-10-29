@@ -1,4 +1,5 @@
 import {
+  useId,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -66,8 +67,8 @@ function bandShapes(band: ChartBand, x: (i: number) => number, y: (v: number) =>
 }
 
 /**
- * One series over seasons: a thin line on recessive guides, optional bands behind it, the highest
- * and lowest values on the axis and the latest value labelled at its point. Drawn in CSS pixels at
+ * One series over seasons: a primary line on quiet guides, optional context bands, axis bounds
+ * and a latest-value heading. Drawn in CSS pixels at
  * the figure's width so its labels stay legible on a phone. Every season reads in a bubble
  * (→WEB-54): a pointer anywhere on the plot picks the nearest season, the keyboard steps through
  * them, and tapping the same season again, Escape or leaving the chart closes it.
@@ -87,6 +88,7 @@ function Plot({
   detail,
   bands,
 }: ChartProps) {
+  const areaId = useId();
   const figure = useRef<HTMLElement>(null);
   const bubble = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(640);
@@ -182,22 +184,32 @@ function Plot({
     event.preventDefault();
     setSelection({ index, open: true, pinned: true });
   };
-  const latest = { x: geometry.xs[last], y: geometry.ys[last] },
-    // A lone first season sits at the left edge, where an end-anchored label would be cut off.
-    early = latest.x < LEFT + 60;
+  const latest = { x: geometry.xs[last], y: geometry.ys[last] };
   return (
-    <figure ref={figure} className={s.chart}>
+    <figure ref={figure} className={s.chart} data-ui="chart">
+      <header className={s.chartHeading}>
+        <span>{label}</span>
+        <div>
+          <strong>{format(values[last])}</strong>
+          <small>{labels[last]}</small>
+        </div>
+      </header>
       <div className={s.chartPlot}>
         <svg
           viewBox={`0 0 ${width} ${HEIGHT}`}
           role="img"
           aria-label={`${label}: ${labels.map((l, i) => `${l} ${format(values[i])}`).join(', ')}`}
         >
+          <defs>
+            <linearGradient id={areaId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="var(--accent)" stopOpacity="0.015" />
+            </linearGradient>
+          </defs>
           <path
             d={`M${LEFT} ${TOP}H${right} M${LEFT} ${(TOP + BOTTOM) / 2}H${right} M${LEFT} ${BOTTOM}H${right}`}
             stroke="currentColor"
-            strokeOpacity="0.18"
-            strokeDasharray="3 5"
+            strokeOpacity="0.12"
             fill="none"
           />
           {geometry.bands.map((band) =>
@@ -208,6 +220,12 @@ function Plot({
                 className={band.tone === 'strong' ? s.chartBandStrong : s.chartBand}
               />
             )),
+          )}
+          {!inverse && values.length > 1 && (
+            <polygon
+              points={`${LEFT},${BOTTOM} ${geometry.line} ${right},${BOTTOM}`}
+              fill={`url(#${areaId})`}
+            />
           )}
           {open && (
             <line
@@ -222,10 +240,15 @@ function Plot({
             points={geometry.line}
             fill="none"
             style={{ stroke: 'var(--accent)' }}
-            strokeWidth="2"
+            strokeWidth="2.75"
             strokeLinejoin="round"
             strokeLinecap="round"
           />
+          {values.length <= 20 &&
+            geometry.xs.map((x, i) => (
+              <circle key={i} cx={x} cy={geometry.ys[i]} r="2.5" fill="var(--accent)" />
+            ))}
+          <circle cx={latest.x} cy={latest.y} r="8" fill="var(--accent)" fillOpacity="0.14" />
           <circle
             cx={latest.x}
             cy={latest.y}
@@ -241,13 +264,6 @@ function Plot({
               r="6"
             />
           )}
-          <text
-            x={early ? latest.x + 8 : latest.x}
-            y={Math.max(14, latest.y - 10)}
-            textAnchor={early ? 'start' : 'end'}
-          >
-            {format(values[last])}
-          </text>
           <text x={LEFT} y="165">
             {labels[0]}
           </text>
@@ -318,7 +334,13 @@ function Plot({
           onKeyDown={keyboard}
         />
         {open && (
-          <div ref={bubble} className={s.chartBubble} data-testid="chart-bubble" aria-hidden="true">
+          <div
+            ref={bubble}
+            className={s.chartBubble}
+            data-surface="inset"
+            data-testid="chart-bubble"
+            aria-hidden="true"
+          >
             {text}
           </div>
         )}

@@ -8,33 +8,34 @@
   min-width: 0;
 }
 .pitch {
-  background-image: var(--pitch-texture, none);
+  background-image: var(--analysis-paper, var(--pitch-texture, none));
   display: block;
   width: 100%;
   aspect-ratio: 1.9;
-  outline: 1px solid var(--line);
+  outline: 1px solid var(--analysis-pitch-edge, var(--line));
   outline-offset: -1px;
   cursor: pointer;
   touch-action: manipulation;
   user-select: none;
 }
 .grass {
-  fill: var(--pitch-ground, #253b31);
+  fill: var(--analysis-pitch-ground, var(--pitch-ground, #253b31));
 }
 .stripe {
-  fill: var(--pitch-stripe, #2b4538);
+  fill: var(--analysis-pitch-stripe, var(--pitch-stripe, #2b4538));
 }
 .stripeAlt {
-  fill: var(--pitch-stripe-alt, #304b3d);
+  fill: var(--analysis-pitch-stripe-alt, var(--pitch-stripe-alt, #304b3d));
 }
 .lines {
   fill: none;
-  stroke: var(--pitch-line, #d7dcc598);
+  stroke: var(--analysis-pitch-line, var(--pitch-line, #d7dcc598));
+  color: var(--analysis-pitch-line, var(--pitch-line));
   stroke-width: 0.45;
 }
 .arrow {
   fill: none;
-  stroke: var(--pitch-line, #d7dcc5c0);
+  stroke: var(--analysis-pitch-line, var(--pitch-line, #d7dcc5c0));
   stroke-width: 0.6;
 }
 .heat {
@@ -43,7 +44,7 @@
 }
 .picked {
   fill: none;
-  stroke: var(--focus);
+  stroke: var(--accent);
   stroke-width: 0.6;
   stroke-dasharray: 1.4 0.8;
 }
@@ -52,8 +53,8 @@
   fill-opacity: 0.08;
 }
 .ownShot {
-  stroke: var(--text);
-  fill: var(--text);
+  stroke: var(--accent);
+  fill: var(--accent);
 }
 .otherShot {
   stroke: var(--cool);

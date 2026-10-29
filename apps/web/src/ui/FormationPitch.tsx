@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import type { Position } from '../../../../packages/contracts/src/player';
 import type { Tactic } from '../../../../packages/contracts/src/types';
 import { MATCH_MOTION_CONFIG } from '../../../../packages/engine/src/grid/playback';
@@ -23,45 +23,86 @@ export const POSITION_SPOT: Record<Position, readonly [number, number]> = {
   ST: [50, 13],
 };
 
-/**
- * A formation drawn on a vertical pitch (→CLUB-10, STAFF-22): each of its 11 slots where its
- * position stands, holding what `slot` renders for it. `compact` draws a shorter pitch for a card,
- * such as one of the tactic laboratory's four (→WEB-21).
- */
+/** A proportional field with small player discs; full slot facts sit below the field. */
 export function FormationPitch({
   tactic,
   label,
   slot,
+  slotLabel,
+  slotTitle,
   compact,
 }: {
   tactic: Tactic;
   label: string;
   slot: (index: number) => ReactNode;
+  slotLabel?: (index: number) => string;
+  slotTitle?: (index: number) => string;
   compact?: boolean;
 }) {
+  const [selected, setSelected] = useState(0);
+  const detailId = useId();
   const spots = MATCH_MOTION_CONFIG.formations[tactic];
   return (
-    <div className={compact ? `${s.pitch} ${s.compact}` : s.pitch} role="group" aria-label={label}>
-      <span className={s.half} aria-hidden="true" />
-      <span className={s.box} aria-hidden="true" />
-      {FORMATIONS[tactic].slots.map((place, index) => {
-        // The motion spots run along the pitch from our goal; drawn upright, they climb.
-        const [along, across] = spots[index] ?? [50, 50];
-        return (
-          <div
-            data-surface="panel"
-            key={index}
-            className={s.slot}
-            data-line={place.position === 'GK' ? 'GK' : undefined}
-            style={{
-              left: `${Math.min(90, Math.max(10, 50 + (across - 50) * 1.12))}%`,
-              top: `${93 - (along - 5) * 1.22}%`,
-            }}
-          >
-            {slot(index)}
-          </div>
-        );
-      })}
+    <div className={s.formation} role="group" aria-label={label}>
+      <div className={compact ? `${s.pitch} ${s.compact}` : s.pitch} data-ui="formation-pitch">
+        <svg className={s.markings} viewBox="0 0 68 105" aria-hidden="true">
+          <rect x="3" y="3" width="62" height="99" />
+          <path d="M3 52.5H65 M13.84 3V19.5H54.16V3 M13.84 102V85.5H54.16V102 M24.84 3V8.5H43.16V3 M24.84 102V96.5H43.16V102" />
+          <circle cx="34" cy="52.5" r="9.15" />
+          <circle cx="34" cy="52.5" r="0.6" className={s.spot} />
+          <circle cx="34" cy="14" r="0.6" className={s.spot} />
+          <circle cx="34" cy="91" r="0.6" className={s.spot} />
+        </svg>
+        {FORMATIONS[tactic].slots.map((place, index) => {
+          const [along, across] = spots[index] ?? [50, 50];
+          const style = {
+            left: `${Math.min(88, Math.max(12, 50 + (across - 50) * 1.22))}%`,
+            top: `${88 - (along - 5) * 1.08}%`,
+          };
+          const marker = (
+            <>
+              <span className={s.disc} aria-hidden="true">
+                {place.position}
+              </span>
+              <span className={s.name}>{slotLabel ? slotLabel(index) : slot(index)}</span>
+            </>
+          );
+          return compact ? (
+            <div
+              key={index}
+              className={s.slot}
+              style={style}
+              title={`${place.position} · ${slotTitle?.(index) ?? slotLabel?.(index) ?? ''}`}
+            >
+              {marker}
+            </div>
+          ) : (
+            <button
+              key={index}
+              className={s.slot}
+              style={style}
+              type="button"
+              data-ui="formation-player"
+              aria-label={`선발 ${index + 1} · ${place.position} · ${slotTitle?.(index) ?? slotLabel?.(index) ?? ''}`}
+              aria-pressed={selected === index}
+              aria-controls={`${detailId}-${index}`}
+              onClick={() => setSelected(index)}
+            >
+              {marker}
+            </button>
+          );
+        })}
+      </div>
+      {!compact && (
+        <div className={s.details} data-ui="formation-details" aria-live="polite">
+          {FORMATIONS[tactic].slots.map((_, index) => (
+            <div id={`${detailId}-${index}`} key={index} hidden={selected !== index}>
+              {slot(index)}
+            </div>
+          ))}
+          <small>선수 표식을 누르면 자리별 상세 정보가 보여요.</small>
+        </div>
+      )}
     </div>
   );
 }

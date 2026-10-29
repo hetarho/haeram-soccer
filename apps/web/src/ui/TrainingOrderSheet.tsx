@@ -116,7 +116,11 @@ export function TrainingOrderSheet({
   const blocked = acting || sending || !member;
   return (
     <Dialog label={title} onClose={onClose}>
-      <p className={s.now} data-testid={player ? 'training-call-player' : `training-call-${coach}`}>
+      <p
+        data-surface="inset"
+        className={s.now}
+        data-testid={player ? 'training-call-player' : `training-call-${coach}`}
+      >
         <span>
           <b>지금 {call.focus}</b> · {call.by}
         </span>

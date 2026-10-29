@@ -206,7 +206,7 @@ export function PlayerComparison({
           {(left[ownScope][10] < 180 || right[ownScope][10] < 180) && (
             <p className={s.note}>표본 주의 · 한 선수 이상의 출전 기록이 180분 미만이에요.</p>
           )}
-          <details className={s.disclosure}>
+          <details data-ui="disclosure" className={s.disclosure}>
             <summary>분모·원시 기록 펼치기</summary>
             <PlayerPerformance player={left} scope={ownScope} />
             <PlayerPerformance player={right} scope={ownScope} />
@@ -335,7 +335,7 @@ function LeagueComparison({
           {(left.minutes < 180 || right.minutes < 180) && (
             <p className={s.note}>표본 주의 · 한 선수 이상의 출전 기록이 180분 미만이에요.</p>
           )}
-          <details className={s.disclosure}>
+          <details data-ui="disclosure" className={s.disclosure}>
             <summary>분모·원시 기록 펼치기</summary>
             {[left, right].map((row) => (
               <div key={row.id}>

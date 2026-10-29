@@ -979,7 +979,7 @@ export function Pitch({
           </button>
         )}
         {inspect && selectedPlayer && (
-          <div className={s.playerInspector}>
+          <div data-surface="sheet" className={s.playerInspector}>
             <label>
               살펴볼 선수
               <Select

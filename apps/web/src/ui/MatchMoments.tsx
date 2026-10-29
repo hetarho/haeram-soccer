@@ -36,7 +36,7 @@ export function MatchMoments({
     }),
   ].sort((a, b) => a.at - b.at);
   return (
-    <details className={s.disclosure}>
+    <details data-ui="disclosure" className={s.disclosure}>
       <summary>주요 장면 탐색</summary>
       <section className={s.content} aria-label="주요 장면 탐색">
         <div className={s.controls}>

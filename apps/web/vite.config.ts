@@ -1,6 +1,7 @@
 import { defineConfig, type Connect, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
+import { designSystem } from './src/design-system/server.ts';
 
 const page = (name: string) => fileURLToPath(new URL(name, import.meta.url));
 
@@ -18,7 +19,7 @@ const labAddress = (): Plugin => ({
 
 export default defineConfig({
   root: page('.'),
-  plugins: [react(), labAddress()],
+  plugins: [react(), labAddress(), designSystem()],
   build: {
     outDir: 'dist',
     emptyOutDir: true,

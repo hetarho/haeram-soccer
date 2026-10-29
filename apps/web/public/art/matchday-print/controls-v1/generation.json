@@ -1,0 +1,154 @@
+{
+  "method": "Built-in image_gen edits; shared createUiArtPipeline alpha bounds and WebP encoding",
+  "date": "2026-10-29",
+  "sources": "apps/web/design/controls-print/sources",
+  "prompts": "apps/web/design/controls-print/prompts.json",
+  "geometry": "Opaque surface artwork with transparent exterior; fixed 22px source caps and stretched centre/edges. Checkbox states are complete square images.",
+  "assets": [
+    {
+      "file": "frame-secondary.webp",
+      "source": "button-secondary.png",
+      "crop": { "x": 12, "y": 13, "width": 2148, "height": 697 },
+      "filter": "",
+      "bytes": 4220,
+      "sha256": "ba7927f474a9db7d66dd43e677a22392bae0b6898ca409f86def54fcf8b444b5",
+      "width": 192,
+      "height": 62,
+      "role": "image-art-control-secondary",
+      "mode": "nine-slice",
+      "slice": 22,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 3172061,
+        "inputSha256": "0933fe02be62329217b4ec06bcc53fae6e9936129f786bac58821acb15839aa4",
+        "width": 192,
+        "height": 62,
+        "quality": 85
+      }
+    },
+    {
+      "file": "frame-tertiary.webp",
+      "source": "button-tertiary.png",
+      "crop": { "x": 13, "y": 48, "width": 2146, "height": 627 },
+      "filter": "",
+      "bytes": 4498,
+      "sha256": "13d89a376922756c3ad0bae5098b145b8a8ac4474cb8788a83db2028e49f426f",
+      "width": 192,
+      "height": 56,
+      "role": "image-art-control-tertiary",
+      "mode": "nine-slice",
+      "slice": 22,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 3048989,
+        "inputSha256": "6f3c9735254f480003d783172dad4c03f8418bbd3c0bbeb58ffe4e8f2a1797ca",
+        "width": 192,
+        "height": 56,
+        "quality": 85
+      }
+    },
+    {
+      "file": "frame-input.webp",
+      "source": "field-input.png",
+      "crop": { "x": 34, "y": 78, "width": 2104, "height": 568 },
+      "filter": "",
+      "bytes": 3356,
+      "sha256": "7d2a7831c81b630e67162785c9ead7299085f62111e8e1d45625f3fb12022f0a",
+      "width": 192,
+      "height": 52,
+      "role": "image-art-control-input",
+      "mode": "nine-slice",
+      "slice": 22,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2148671,
+        "inputSha256": "69a08e78ce6111ab8918b148cc9637d6418bcda7275de58070e8d97f2170e220",
+        "width": 192,
+        "height": 52,
+        "quality": 85
+      }
+    },
+    {
+      "file": "frame-dropdown.webp",
+      "source": "field-dropdown.png",
+      "crop": { "x": 40, "y": 86, "width": 2092, "height": 542 },
+      "filter": "",
+      "bytes": 3270,
+      "sha256": "f2e276e91836ef1b48a30ed583e884d2d34f3b405bf0cf317356c4bfc5eb0880",
+      "width": 192,
+      "height": 50,
+      "role": "image-art-control-dropdown",
+      "mode": "nine-slice",
+      "slice": 22,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 1853566,
+        "inputSha256": "514d7966f6ceadd073df5925339acd4ab260a5a2f02c8437db70d45edab59bde",
+        "width": 192,
+        "height": 50,
+        "quality": 85
+      }
+    },
+    {
+      "file": "icon-checkbox-off.webp",
+      "source": "checkbox-off.png",
+      "crop": { "x": 77, "y": 83, "width": 1099, "height": 1088 },
+      "filter": "scale=128:128:flags=lanczos",
+      "bytes": 1918,
+      "sha256": "92d387656d86c674e1c9e8a04f800e6801b590944f11eaaf6951e473c9a33b87",
+      "width": 64,
+      "height": 64,
+      "role": "image-art-control-checkbox-off",
+      "mode": "image",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2152478,
+        "inputSha256": "3f046c2e51475477fcdcdd63f6d12a7c77200e5a2091a278d25b0789008afaaa",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      }
+    },
+    {
+      "file": "icon-checkbox-on.webp",
+      "source": "checkbox-on.png",
+      "crop": { "x": 22, "y": 46, "width": 1211, "height": 1172 },
+      "filter": "scale=128:128:flags=lanczos",
+      "bytes": 2758,
+      "sha256": "05bc1ca73171540ec46c0981115488656af4e2c0ef224539dd2f05333dde5403",
+      "width": 64,
+      "height": 64,
+      "role": "image-art-control-checkbox-on",
+      "mode": "image",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 3170680,
+        "inputSha256": "b163ff70a40953aa82fe479a34064220ce80e3442b06517b448fd99cd2d1752e",
+        "width": 64,
+        "height": 64,
+        "quality": 85
+      }
+    },
+    {
+      "file": "frame-disabled.webp",
+      "source": "control-disabled.png",
+      "crop": { "x": 14, "y": 30, "width": 2145, "height": 664 },
+      "filter": "",
+      "bytes": 1892,
+      "sha256": "fad4dba6dfeb8765c30db7070fce41b09810a3e68255d57e3b3e5a5c75633e48",
+      "width": 192,
+      "height": 59,
+      "role": "image-art-control-disabled",
+      "mode": "nine-slice",
+      "slice": 22,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2670756,
+        "inputSha256": "c2336d12925e83cc8c2cf233f283c29e098dec56cc0f07148da62b90b9f0581b",
+        "width": 192,
+        "height": 59,
+        "quality": 85
+      }
+    }
+  ]
+}

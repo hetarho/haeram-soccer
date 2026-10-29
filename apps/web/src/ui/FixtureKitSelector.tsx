@@ -112,7 +112,12 @@ export function FixtureKitView({
       ? ownSeasonFixtures(w).find((f) => f.id === w.kitChoice!.fixtureId)
       : undefined;
   return (
-    <details className={s.disclosure} data-testid="fixture-kit" data-fixture-id={fixture.id}>
+    <details
+      data-ui="disclosure"
+      className={s.disclosure}
+      data-testid="fixture-kit"
+      data-fixture-id={fixture.id}
+    >
       <summary data-testid="fixture-kit-summary">
         다음 경기 유니폼 · 우리 {KIT_ROLE_LABELS[stored ?? automatic]} ·{' '}
         {stored ? '직접 고름' : '자동'}
@@ -121,7 +126,11 @@ export function FixtureKitView({
         <p className={s.context} data-testid="fixture-kit-context">
           {fixtureKitContext(w, fixture)}
         </p>
-        {notice && <p className={s.notice}>{notice}</p>}
+        {notice && (
+          <p data-surface="inset" className={s.notice}>
+            {notice}
+          </p>
+        )}
         <div className={s.pair} role="group" aria-label="미리보기 속 두 팀 유니폼과 골키퍼">
           {preview.sides.map((side, i) => (
             <div key={side.club} className={s.side}>
@@ -149,7 +158,12 @@ export function FixtureKitView({
           ))}
         </div>
         {look.sides[own].keeperFallback && (
-          <p className={s.notice} role="status" data-testid="fixture-kit-keeper-fallback">
+          <p
+            data-surface="inset"
+            className={s.notice}
+            role="status"
+            data-testid="fixture-kit-keeper-fallback"
+          >
             우리 골키퍼 유니폼이 이번 경기의 다른 유니폼과 비슷해요. 이번 경기만 자동 색{' '}
             {look.sides[own].keeperKit.shirt.primary}으로 대체해요. 저장한 골키퍼 디자인은
             그대로예요.

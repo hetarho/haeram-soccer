@@ -1,0 +1,90 @@
+{
+  "method": "Built-in image_gen edits; shared createUiArtPipeline crop and WebP encoding",
+  "date": "2026-10-29",
+  "sources": "apps/web/design/hierarchy-print/sources",
+  "prompts": "apps/web/design/hierarchy-print/prompts.json",
+  "geometry": "Quiet sheet with fixed source caps and filled centre; header band and thin rule resources stretch independently.",
+  "assets": [
+    {
+      "file": "frame-panel.webp",
+      "source": "panel-sheet-v2.png",
+      "crop": { "x": 36, "y": 196, "width": 1464, "height": 686 },
+      "filter": "",
+      "bytes": 1318,
+      "sha256": "0a8f7da418eb98d900f8c68ad76e8c434e97eed76193a44a73eebbc106700ecb",
+      "width": 192,
+      "height": 90,
+      "role": "image-art-content-sheet",
+      "mode": "nine-slice",
+      "slice": 22,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 1619432,
+        "inputSha256": "89dd4cd66a7be64a91f072ff83961d5974d8f64f4f26c1face897304b7e1c090",
+        "width": 192,
+        "height": 90,
+        "quality": 85
+      }
+    },
+    {
+      "file": "frame-table-head.webp",
+      "source": "table-header.png",
+      "crop": { "x": 13, "y": 203, "width": 2147, "height": 317 },
+      "filter": "",
+      "bytes": 1314,
+      "sha256": "8935a98a3176e3e9f8d446da40baad887fb1806a0e6aeed2ba56d1016cc6b7fb",
+      "width": 192,
+      "height": 28,
+      "role": "image-art-table-heading",
+      "mode": "image",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 1079163,
+        "inputSha256": "bf886d797acb06954f196358308b7f14d986c2e613d93335acfde8470d94807e",
+        "width": 192,
+        "height": 28,
+        "quality": 85
+      }
+    },
+    {
+      "file": "rule-content.webp",
+      "source": "rule-quiet-v2.png",
+      "crop": { "x": 19, "y": 356, "width": 2135, "height": 8 },
+      "filter": "scale=384:4:flags=lanczos",
+      "bytes": 2442,
+      "sha256": "945b9501047fd7099e5f107481a84b3adb8e9eff7bc3bc69b227d97458b5079e",
+      "width": 384,
+      "height": 4,
+      "role": "image-art-content-rule",
+      "mode": "image",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 108846,
+        "inputSha256": "42bd8a553f25fb98501ca3c9d71e6efc899a722d927064d514081b68d825b1ba",
+        "width": 384,
+        "height": 4,
+        "quality": 85
+      }
+    },
+    {
+      "file": "rule-tab-active.webp",
+      "source": "tab-active.png",
+      "crop": { "x": 126, "y": 350, "width": 1918, "height": 23 },
+      "filter": "scale=192:6:flags=lanczos",
+      "bytes": 1166,
+      "sha256": "00676880c5291bfea99f7268fce4dfcf07acb96b4ff34a833c76f8016dbaf35b",
+      "width": 192,
+      "height": 6,
+      "role": "image-art-tab-active",
+      "mode": "image",
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 118308,
+        "inputSha256": "6a3da0c0b1ac67db832f0705f397d53bec616ac46dede1adaf7f40092616862d",
+        "width": 192,
+        "height": 6,
+        "quality": 85
+      }
+    }
+  ]
+}

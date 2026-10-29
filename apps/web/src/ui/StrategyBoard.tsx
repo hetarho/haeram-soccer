@@ -286,7 +286,7 @@ export function StrategyBoard({
       {!department && (
         <>
           <header className={s.head}>
-            <details>
+            <details data-ui="disclosure">
               <summary>방향 바꾸는 방법</summary>
               <p>
                 줄마다 하나씩 골라요. 카드 줄은 구단이 어떻게 할지, 투자 줄은 얼마나 쓸지예요. 누른
@@ -487,7 +487,7 @@ export function StrategyBoard({
       </section>
 
       {!department && (
-        <details className={s.library}>
+        <details data-ui="disclosure" className={s.library}>
           <summary>구단 전체 방침 불러오기·저장</summary>
           <p>여러 부문의 방침과 투자 금액을 함께 준비해요. 변경 내역을 확인하고 적용하세요.</p>
           <section className={s.group} aria-label="추천 방향">
@@ -638,7 +638,7 @@ export function StrategyBoard({
           </small>
         </h3>
         <ul>{ordered.slice(0, 3).map(synergyCard)}</ul>
-        <details className={s.more}>
+        <details data-ui="disclosure" className={s.more}>
           <summary>나머지 시너지 {ordered.length - 3}개 조건 보기</summary>
           <ul>{ordered.slice(3).map(synergyCard)}</ul>
         </details>
@@ -661,7 +661,12 @@ export function StrategyBoard({
       </section>
 
       {changed && (
-        <aside className={s.draft} aria-label="적용 대기" data-testid="strategy-draft">
+        <aside
+          data-surface="sheet"
+          className={s.draft}
+          aria-label="적용 대기"
+          data-testid="strategy-draft"
+        >
           <div className={s.draftHead}>
             <span>적용하면</span>
             <b>{draftName}</b>

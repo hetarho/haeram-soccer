@@ -1,5 +1,9 @@
 # Shared resource skins
 
+Start with the [shared design-system guide](DESIGN-SYSTEM.md) for reusable design principles,
+button hierarchy, component review coverage and the distinction between working art and
+approved decisions. This document owns the resource handoff and preparation details.
+
 The registered theme JSON files in `public/presentation/themes/` own visual data.
 `src/presentation/contracts.ts` validates it and `theme.ts` resolves local resource URLs.
 `image-ui-shell.css` and `image-ui-controls.css` assemble the same semantic roles for every theme.

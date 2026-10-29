@@ -7,6 +7,16 @@ import { resolveThemeTokens } from './themeTokens';
 import { contrast } from '../../../../packages/engine/src/identity-legacy';
 
 describe('shared semantic theme tokens', () => {
+  it.each(['iron', 'bronze', 'silver', 'gold', 'elite'])(
+    'keeps matchday-print %s rating numbers readable against their surface',
+    (tier) => {
+      const tokens = resolveThemeTokens(print.tokens);
+      expect(
+        contrast(tokens[`rating-${tier}-text`], tokens[`rating-${tier}-fill`]),
+      ).toBeGreaterThanOrEqual(4.5);
+    },
+  );
+
   it('preserves legacy optional roles for registered-default fallback', () => {
     const tokens = structuredClone(pixel.tokens);
     delete (tokens.shape as Record<string, string>)['control-radius'];
@@ -26,6 +36,25 @@ describe('shared semantic theme tokens', () => {
     expect(resolved['scene-radius']).toBe('13px');
     expect(resolved['custom-chart-fill']).toBe('var(--surface)');
   });
+
+  it.each(['image-canvas', 'image-quiet', 'image-detail'] as const)(
+    'keeps text readable on the print %s material fallback',
+    (role) => {
+      const fill = print.tokens.ui[role];
+      for (const color of [
+        print.tokens.palette.text,
+        print.tokens.palette['text-muted'],
+        print.tokens.palette['text-faint'],
+        print.tokens.palette['accent-text'],
+        print.tokens.palette.positive,
+        print.tokens.palette.warm,
+        print.tokens.palette.cool,
+        print.tokens.palette.danger,
+      ]) {
+        expect(contrast(color, fill), `${color} on ${role}`).toBeGreaterThanOrEqual(4.5);
+      }
+    },
+  );
 
   it('gives imported older packs neutral secondary roles without another theme leaking in', () => {
     const tokens = structuredClone(pixel.tokens);

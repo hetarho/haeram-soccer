@@ -49,6 +49,7 @@ export function DirectionRow({
             aria-checked={index === inForce}
             aria-label={`${label} ${name}`}
             className={index === drafted ? s.drafted : undefined}
+            data-drafted={index === drafted || undefined}
             disabled={disabled}
             onClick={() => onPick(index)}
           >
@@ -57,7 +58,12 @@ export function DirectionRow({
         ))}
       </div>
       {detail && (
-        <div className={`${s.detail} ${drafted !== undefined ? s.previewing : ''}`}>{detail}</div>
+        <div
+          data-surface="inset"
+          className={`${s.detail} ${drafted !== undefined ? s.previewing : ''}`}
+        >
+          {detail}
+        </div>
       )}
     </div>
   );

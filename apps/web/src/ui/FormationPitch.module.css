@@ -1,15 +1,109 @@
-/* A vertical pitch: stripes of grass, the halfway line and our penalty box. */
+.formation {
+  min-width: 0;
+}
+/* 68×105 coordinates and the same CSS ratio keep the centre circle round. */
 .pitch {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4.2;
-  max-height: 560px;
-  margin: 0 auto 12px;
-  border: 1px solid var(--line-strong);
+  max-width: 320px;
+  aspect-ratio: 68 / 105;
+  margin: 8px auto;
+  border: 1px solid var(--analysis-pitch-edge, var(--line));
   border-radius: var(--radius);
-  background: var(--surface-grain, none) var(--surface-2);
-  overflow: hidden;
+  background: var(--analysis-paper, var(--surface-grain, none))
+    var(--analysis-pitch-ground, var(--surface-2)) repeat;
+  background-size: var(--analysis-paper-size, 256px);
 }
+.markings {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: var(--analysis-pitch-line, var(--line));
+  stroke-width: 0.3;
+  pointer-events: none;
+}
+.spot {
+  fill: var(--analysis-pitch-line, var(--line));
+  stroke: none;
+}
+.slot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  min-width: 44px;
+  min-height: 50px;
+  padding: 0;
+  border: 0;
+  border-image: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  gap: 1px;
+  text-align: center;
+  color: var(--text);
+  font-family: var(--display);
+  line-height: 1.1;
+}
+.disc {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--formation-marker, none) center / contain no-repeat;
+  background-color: var(--formation-marker-fallback, var(--accent-fill));
+  color: var(--on-accent);
+  font-size: 11px;
+  font-weight: 700;
+}
+.slot[aria-pressed='true'] .disc {
+  transform: scale(1.12);
+}
+.slot[aria-pressed='true'] .name {
+  color: var(--accent-text);
+  font-weight: 800;
+}
+.name {
+  display: block;
+  max-width: 100%;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.compact {
+  max-width: 240px;
+}
+.compact .slot {
+  width: 48px;
+  min-height: 46px;
+}
+.compact .disc {
+  width: 30px;
+  height: 30px;
+  font-size: 10px;
+}
+.details {
+  margin: 4px auto 12px;
+  max-width: 400px;
+}
+.details > small {
+  display: block;
+  margin-top: 6px;
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 12px;
+}
+/* PositionMap retains the portable mini-pitch role and its own geometry. */
 .half {
   position: absolute;
   left: 0;
@@ -25,40 +119,6 @@
   height: 14%;
   border: 1px solid var(--line);
   border-bottom: 0;
-}
-.slot {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  width: 19%;
-  max-width: 104px;
-  box-sizing: border-box;
-  display: grid;
-  justify-items: center;
-  text-align: center;
-}
-/* A card's pitch: shorter, its slots a name tag each. */
-.compact {
-  aspect-ratio: 3 / 3.6;
-  max-height: 320px;
-  margin: 10px 0;
-}
-.compact .slot {
-  width: 23%;
-}
-.name {
-  box-sizing: border-box;
-  max-width: 100%;
-  padding: 2px 3px;
-  border-radius: var(--badge-radius);
-  border: 1px solid var(--line-strong);
-  background: var(--surface-grain, none) color-mix(in srgb, var(--surface) 88%, transparent);
-  color: var(--text);
-  font-size: 12px;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-family: var(--display);
 }
 .mini {
   max-width: 150px;
