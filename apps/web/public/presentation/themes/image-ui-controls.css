@@ -417,7 +417,7 @@ html[data-theme] {
     color: var(--image-muted);
   }
 
-  [data-ui='menu-row'] {
+  [data-menu-row] {
     min-height: 68px;
     padding: 12px 14px;
     gap: 12px;
@@ -425,16 +425,16 @@ html[data-theme] {
     color: var(--image-ink-color);
   }
 
-  [data-ui='menu-row'] > span {
+  [data-menu-row] > span {
     padding: 0;
   }
 
-  [data-ui='menu-row'] small {
+  [data-menu-row] small {
     color: var(--image-muted);
     line-height: 1.5;
   }
 
-  [data-ui='menu-row']:hover:not(:disabled) {
+  [data-menu-row]:hover:not(:disabled) {
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 384px);
   }

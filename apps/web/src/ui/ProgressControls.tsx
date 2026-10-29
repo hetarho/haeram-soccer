@@ -162,26 +162,19 @@ export const ProgressControls = memo(function ProgressControls({
     <section className={p.controls} data-ui="season-transport" aria-label="시즌 진행">
       <div className={p.modeGroup}>
         <ProgressModeSwitch client={client} controller={controller} />
-        <span
-          className={p.modeStatus}
-          data-testid="progression-mode"
-          aria-label={`현재 진행 방식: ${manual ? '수동' : '자동'}`}
-          aria-live="polite"
+        <button
+          className={p.approvals}
+          data-ui="secondary"
+          aria-label="결재라인 모아보기"
+          aria-haspopup="dialog"
+          onClick={(event) => {
+            event.currentTarget.focus();
+            openOwnerOffice();
+          }}
         >
-          {manual ? 'MANUAL' : 'AUTO'}
-        </span>
+          결재 설정
+        </button>
       </div>
-      <button
-        className={p.approvals}
-        data-ui="link"
-        aria-haspopup="dialog"
-        onClick={(event) => {
-          event.currentTarget.focus();
-          openOwnerOffice();
-        }}
-      >
-        결재라인 모아보기
-      </button>
       {noticed && (
         <button
           className={p.resultNotice}

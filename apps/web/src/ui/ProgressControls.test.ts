@@ -58,20 +58,16 @@ describe('unified bottom progression controls', () => {
   } as unknown as ProgressionController;
 
   it.each(['manual', 'automatic'] as const)(
-    'separates %s mode text from the change action and keeps the correct controls',
+    'combines %s mode text with its change action and keeps the correct controls',
     (mode) => {
       gameStore.getState().view!.world.settings!.mode = mode;
       const markup = renderToStaticMarkup(createElement(ProgressControls, { client, controller }));
       const switcher = markup.match(
         /<button[^>]*data-ui="primary"[^>]*data-progress-mode[^>]*>(.*?)<\/button>/,
       )?.[1];
-      expect(switcher).toBe('진행 방식 변경');
-      expect(markup.indexOf('data-progress-mode')).toBeLessThan(
-        markup.indexOf('data-testid="progression-mode"'),
-      );
-      expect(markup).toMatch(
-        new RegExp(`data-testid="progression-mode"[^>]*>${mode === 'manual' ? 'MANUAL' : 'AUTO'}<`),
-      );
+      expect(switcher).toContain('MODE:');
+      expect(switcher).toContain(`>${mode === 'manual' ? 'MANUAL' : 'AUTO'}</span>`);
+      expect(switcher).toContain('data-testid="progression-mode"');
       expect(markup).toContain('data-ui="season-transport"');
       expect(markup).not.toContain('수동 진행 · 다음 이벤트를 선택하세요');
       expect(markup).not.toContain('재생하면 날짜가 흐릅니다');
@@ -82,7 +78,7 @@ describe('unified bottom progression controls', () => {
   );
 
   it.each(['manual', 'automatic'] as const)(
-    'ends the %s mode group with its mode text: no match-day slot or animation',
+    'keeps %s mode and approval controls together without a match-day animation',
     (mode) => {
       gameStore.getState().view!.world.settings!.mode = mode;
       const running = {
@@ -92,7 +88,7 @@ describe('unified bottom progression controls', () => {
         createElement(ProgressControls, { client, controller: running }),
       );
       expect(markup).not.toContain('match-moment');
-      expect(markup).toMatch(/data-testid="progression-mode"[^>]*>(AUTO|MANUAL)<\/span><\/div>/);
+      expect(markup).toMatch(/data-testid="progression-mode"[^>]*>(AUTO|MANUAL)<\/span><\/button>/);
     },
   );
 
@@ -149,7 +145,7 @@ describe('controller approval overview', () => {
         createElement(ProgressControls, { client: {} as GameClient, controller }),
       );
       expect(markup).toMatch(
-        /<button(?![^>]*disabled)[^>]*aria-haspopup="dialog"[^>]*>결재라인 모아보기<\/button>/,
+        /<button(?![^>]*disabled)[^>]*aria-haspopup="dialog"[^>]*>결재 설정<\/button>/,
       );
       expect(markup).toMatch(/<button[^>]*data-progress-mode[^>]*disabled=""/);
       if (mode === 'automatic') {

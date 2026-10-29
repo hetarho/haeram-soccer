@@ -379,7 +379,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 186 | 186 | - | 0 |
+| WEB | 187 | 187 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
@@ -412,6 +412,9 @@
 | T600 | Receiver safety at the time of reception | MATCH SAVE ARCH | T599 | todo |
 | T601 | Recorded goal-scene replay | WEB MATCH SAVE ARCH | T600 | todo |
 
+| T604 | Bronze to ruby rating scale | WEB ARCH | T603 | doing@261030.pg30 |
+| T605 | Theme illustration and material refresh | WEB ARCH | T604 | todo |
+
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
@@ -439,6 +442,9 @@
 - Engine explorations retain their fixed candidate corpus and compatibility rules; goal replay reads retained presentation facts and restores the original watch state without simulation or save changes.
 
 ## log
+- 261030 T603 done: shared page/cards/tabs/team sheets and combined mode/approval controls; 33 units and fast checks pass. T604 begins.
+- 261030 create-task WEB r187 → T603 shared pages/transport, T604 rating scale, T605 theme resources; pg30 begins T603, publication includes the preceding T602 fix.
+- 261030 update-ssot WEB start: owner requests shared page fixes, combined mode/approval controls, bronze-to-ruby ratings and theme-specific cartoon/grass/clay/pixel artwork; commit and push the complete reviewed batch.
 - 261030 T602 done: fixed workbench styling separated from game themes at document bootstrap; 18 units, type/lint/format, production build/boundary and spec checks pass. Browser verification deferred; no commit/push requested.
 - 261030 T597/T598/T601 freshness: WEB r186 changes only WEB-103 workbench styling, outside their cited policies; advance bases without changing their scope.
 - 261030 create-task WEB r186 → T602; ds30 implementing the directly requested workbench isolation fix without changing the vf30 engine/replay queue.
@@ -456,6 +462,3 @@
 - 261029 publication verified: combined match-view/model and Matchday Print code at 5568cc2d passes all 1732 unit tests on pinned Node 24.22.1; owner requests unit-only validation and immediate main push. Full integration/browser stages were cancelled, not counted as passed.
 - 261029 publication decision (owner): run unit tests only and push the combined main snapshot; stop the full batch run. Use the pinned Node 24.22.1 toolchain.
 - 261029 publication integration: merge remote match-view/model changes with Matchday Print; combine WEB at r183, keep T579/T580 done, renumber the colliding design-system T582 as T593.
-- 261029 T583–T593 design-system batch verified for commit: 184 files including retained artwork/provenance; 1718 affected units, workbench boundary checks, type/lint, 115-file scoped format, resource checks and build pass.
-- 261029 T592 done: three visibly textured material planes, reusable Card and notebook consumer; source/prompts and review criterion retained after restoring reduced-size grain. 33 units, type/lint/format, art/presentation checks, build and representative desktop/mobile inspection pass.
-- 261029 WEB r182 and T592 start: three resource-backed surface levels, border-light fixture notebook and a shared Card with app/workbench examples.

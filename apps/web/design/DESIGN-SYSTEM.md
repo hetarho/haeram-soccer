@@ -17,6 +17,14 @@ game styles, fonts and artwork are installed by the shared presentation bootstra
 documents, including independent preview windows. Preserve this document boundary instead of
 adding selector overrides to fight game skins in the surrounding workbench.
 
+Keep home summary slots concise enough to survive a phone width: the cup slot shows the live
+count, while the overview uses actual Card components for competition status and entry actions.
+Adjacent slots share one continuous material plane and have square internal joins. Team sheets
+reuse sheet/detail materials for identity, facts and results; outcome marks occupy centred fixed
+columns and scores align at the trailing edge. Metric navigation uses the shared keyboard TabList.
+Menu actions use the same tertiary resources as other supporting actions. The transport combines
+its mode label and change action in one MODE button beside approval settings.
+
 ## Resources carry the design
 
 Author the visible surfaces, frames, texture and state marks as reusable image resources. A

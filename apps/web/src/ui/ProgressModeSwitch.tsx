@@ -63,12 +63,16 @@ export function ProgressModeSwitch({
         className={s.modeSwitch}
         data-ui="primary"
         data-progress-mode
+        aria-label="진행 방식 변경"
         aria-haspopup={progressionPreferences.skipExplanation() ? undefined : 'dialog'}
         disabled={applying || modeSwitchBlocked(state)}
         title={state.clockRunning ? '진행을 정지한 뒤 변경할 수 있어요.' : undefined}
         onClick={choose}
       >
-        진행 방식 변경
+        <span>MODE:</span>
+        <span className={s.modeStatus} data-testid="progression-mode" aria-live="polite">
+          {mode === 'manual' ? 'MANUAL' : 'AUTO'}
+        </span>
       </button>
       {request && (
         <Dialog

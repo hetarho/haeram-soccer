@@ -555,6 +555,9 @@ html[data-theme] {
     margin: 0;
     gap: 0;
     border: 0;
+    border-image: none;
+    border-radius: 0;
+    box-shadow: none;
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
     color: var(--image-on-dark);
     padding: 8px 4px;
