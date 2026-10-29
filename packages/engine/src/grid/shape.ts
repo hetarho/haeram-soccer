@@ -96,15 +96,15 @@ export const SHAPE_CONFIG = {
      * to `SHAPE_CONFIG.markGoalSide` m goal-side of his man, toward the goal's middle, and he is
      * not drawn onto the shooting line (`screen`); nobody else leans onto a marked man, so no
      * attacker draws two. A runner in behind is marked `runner.lead` m along his run
-     * (`runnerMarkPoint`; 0 keeps revision 9's mark). T599's reads, grid-bands' 50 (150)
-     * matches, revision 10 before → this: shots a team 21.8 (21.0) → 20.3 (20.3), possessions
-     * ending in a shot 22.8% (21.9%) → 21.6% (21.6%), unopposed chances 10.7 (10.1) → 9.6
-     * (10.0) a team, goals 4.20 (3.97) → 3.56 (3.57), held rows 24 (26) → 24 (26), seven or more
-     * outfielders within 10 m of the ball at a decision 2.84% (2.81%) → 2.95% (2.74%). Screens
-     * (50; 150): any back-line man marking (`line` 99) shots 21.2, goals 3.46 (20.4, 3.58);
-     * `room` 0 shots 20.1, goals 3.66, crowd 3.19% (19.8, 3.67, 2.97%); `room` 5 shots 21.1;
-     * `line` −3 shots 19.8, goals 3.52; `near` 55 / `zone` 35 / `pick` 14 with `room` 0 shots
-     * 18.5 (19.1) but 24 held rows at 150; `blend` 0.6 shots 20.0, goals 3.86.
+     * (`runnerMarkPoint`; 0 keeps revision 9's mark). T599's reads, grid-bands' 50 matches,
+     * revision 10 before → this: shots a team 21.8 → 20.3, possessions ending in a shot 22.8% →
+     * 21.6%, unopposed chances 10.7 → 9.6 a team, goals 4.20 → 3.56, held rows 24 → 24, seven or
+     * more outfielders within 10 m of the ball at a decision 2.84% → 2.95%. Screens (50): any
+     * back-line man marking (`line` 99) shots 21.2, goals 3.46; `room` 0 shots 20.1, goals 3.66,
+     * crowd 3.19%; `room` 5 shots 21.1, goals 3.88; `room` 10 shots 20.1, goals 3.76, 23 rows;
+     * `line` −3 shots 20.3, goals 3.50, 22 rows; `near` 55 / `zone` 35 / `pick` 14 shots 20.3,
+     * goals 3.70, and with `room` 0 shots 18.5, goals 3.50 but crowd 3.20%; `runner.lead` 0
+     * shots 19.9, goals 3.50, 21 rows. Held rows swing ±2 between screens on boundary rows.
      */
     revision10: {
       goalSide: { near: 40, zone: 30, pick: 12, blend: 0.8, line: 0, room: 8 },
