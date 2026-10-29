@@ -355,6 +355,7 @@
 - 261027 decided T518 ARCH-31: round-jobs.test.ts tier → integration (it advances days, which tests/config/test-tiers keeps out of unit), acceptance command updated (alt: keep it unit and shrink it below advanceDays)
 - 261028 decided WEB-11 WEB-72 T536: facility scope and image treatment → three compact background-art entrances with manager/training preparation notices, plus a larger cover-cropped stadium (alt: implement unplanned room activities | keep one large owner entrance); detailed room activities await their own planning.
 - 261028 decided ARCH-31 ARCH-34: whether release throughput stays a gate once the owner rules out targets in seconds ("작업한 기기에서 노이즈 이상으로 빨라지면 성공") → throughput is compared with the previous release on one machine and reported, capacity stays the only release gate, and a speed-up is judged by ARCH-34's paired same-machine call (alt: gate on not being slower than the previous release beyond the noise, which would block every model revision that adds football | keep the 1 ms / 15 s reference-machine budgets)
+- 261030 decided WEB-105 WEB-32 WEB-50: owner requests goal-scene replay and final commit/push → optional clips of already seen live goals and retained archive goals, original viewing state restored, short normal-speed build-up with reusable controls and no extra save data (alt: automatic replay after every goal | replay by simulating again); implement after the scoped engine follow-ups and publish the complete batch.
 
 ## ideation
 | id | st |
@@ -379,7 +380,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 184 | 184 | - | 0 |
+| WEB | 185 | 185 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
@@ -409,6 +410,7 @@
 | T598 | Current figure kit evidence | KIT MATCH WEB SAVE ARCH | T597 | todo |
 | T599 | Goal-side defence and chance volume | MATCH SAVE ARCH | T598 | todo |
 | T600 | Receiver safety at the time of reception | MATCH SAVE ARCH | T599 | todo |
+| T601 | Recorded goal-scene replay | WEB MATCH SAVE ARCH | T600 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -434,13 +436,17 @@
 ## next
 - implement-task T597; vf30 scope: T596 opened revision 10 for CI40866255294, then T599/T600 measured engine follow-ups extending it. Do not route unrelated legacy ideation or theme review during this run.
 - Once T600 completes revision 10, re-record its values before the final batch (T596 limits): grid-throughput `CANDIDATE` digests and knockout `CASES`, full-model-throughput `BEFORE`, playback.test's extra-time fixture and the mobile goal-cue seed.
-- Complete T596–T600 sequentially, then the coordinator runs the final batch and publishes once to configured main; any resulting CI correction stays in this scope.
-- Engine explorations use 50-match candidate reads, unchanged football targets and safe-boundary model activation; keep historical results and revision replay intact.
+- implement-task T596; vf30 scope: CI40866255294 repairs, T599/T600 engine follow-ups, then T601 goal-scene replay. Leave unrelated legacy ideation and theme review untouched.
+- Complete T596–T601 plus resulting CI fixes before the combined coordinator gate, then commit/push the verified complete source to configured main as explicitly requested.
+- Engine explorations retain their fixed candidate corpus and compatibility rules; goal replay reads retained presentation facts and restores the original watch state without simulation or save changes.
 
 ## log
 - 261030 T596 done: match-model revision 10 — every shot struck as its action starts, its second ball landing at its own speed and waiting for its winner, and won at least 1.2 m clear of the blocker or keeper; the stale T444/T445 resolve scenes expect the keeper's narrowing once; revisions 1–9 replay draw for draw; typecheck, lint, format:check, 913 affected unit tests, build and the four targeted CI cases pass; revision-10 digests and seeds re-recorded after T600.
 - 261030 update-ssot MATCH r44 + create-task: T596 diagnosed (2 stale revision-9 scenes, 2 second-ball defects) and rescoped to open revision 10; T599/T600 extend it.
 - 261030 vf30 start: owner-authorized autopilot; synchronized origin/main469d24c2, captured CI40866255294 failures and created scoped T596–T600.
+- 261030 refresh untouched T597/T598 bases to WEB r185; goal replay remains T601, and the T600 exit roadmap includes the added owner request.
+- 261030 create-task T601: WEB r185 goal-scene replay; depends on T600, with exact live/archive return and no unseen live-goal disclosure.
+- 261030 update-ssot WEB r185 start/done: owner adds goal-scene replay; planning leaves the active engine implementation untouched.
 - 261029 T595 done: 60 alternative-theme assets, source/prompts and shared rendering refinements; 1738 units, fast/resource/build checks, 306 preview combinations and eight targeted Chromium journeys pass. Broader integration/browser failures remain in reports/261029-thar.md; owner requested completion push.
 - 261029 T595 start: complete missing portable controls, hierarchy, materials, ratings and analysis resources for all three alternative themes; owner requests completion/deadline push.
 - 261029 T594 done: compact opaque League/Cup navigation, one home cup slot and secondary-filled applied choices; 242 affected unit tests, typecheck, lint, scoped format and build pass. Owner requests unit-only testing and main push; integration/browser/CI waits omitted.
@@ -455,6 +461,3 @@
 - 261029 T590/T591 done: primary-coloured charts, round/non-overlapping analytical formations and shared-resource coverage across 119 UI modules / 50 app previews; 54 units, type/lint/format, resource checks and build pass. Workbench administration chrome excluded per owner.
 - 261029 WEB r181, T590 start and T591 planned: improve analysis/formation visuals and primary emphasis; audit every shared UI consumer and apply missing roles.
 - 261029 T588/T589 done: brighter actual rating resources and a scroll-dependent pinned-column shadow with stationary table legend; 41 units, type/lint/format, art/presentation checks, build and actual desktop/mobile inspection pass.
-- 261029 WEB r180 and T589 start alongside T588: resource-backed shadow separates fixed columns only after horizontal scrolling.
-- 261029 WEB r179 and T588 start: brighten actual iron/bronze/elite artwork to distinguish compact ratings at button-like brightness.
-- 261029 T587 done: five rating skin resources (39046 bytes), aligned compact chips and readable table values; 41 units, type/lint/format, art/presentation validation, build and actual UI inspection pass.

@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r184 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r185 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -124,7 +124,7 @@
     | corner, free kick, drop ball | 1.0 s |
     | penalty | 1.5 s |
     | a card, injury or substitution in the stoppage | 2.0 s, with a short caption naming it and the player |
-  - Live observation starts playing without play/pause/replay buttons or a pitch-tap toggle; selecting a speed resumes a detailed seek paused under →WEB-23. Returning from a hidden browser tab resumes unfinished live observation.
+  - Ordinary live observation starts playing without general play/pause/replay buttons or a pitch-tap toggle; selecting a speed resumes a detailed seek paused under →WEB-23. Optional goal-scene replay follows →!WEB-105. Returning from a hidden browser tab resumes unfinished live observation.
   - Archived replay retains its playback controls.
 
 - WEB-33 [o] All single-choice dropdowns use one app-styled trigger and option list matching the club journal palette. Preserve selected values, labels, disabled choices and current filter/command semantics.
@@ -242,7 +242,7 @@
   - the scoreboard shows red cards and added time (45+n, 90+n); the latest event reads as spatial commentary (→MATCH-24) and names substitutions and injuries.
   - charts switch between rolling 10-minute possession share, cumulative xG with goal marks and cumulative shots; they reveal data only up to the presented minute.
   - actions: preparation and the primary action, which reads "결과 보기" while the match plays and "홈으로" after it ends. The completed-match action never advances to another fixture.
-  - details (moments, report, scrubber, player inspector, stats) open from the chart header.
+  - details (moments, report, scrubber, player inspector, stats) open from the chart header. Recorded goal-scene replay has a reachable shortcut under →!WEB-105.
   - New live observation starts only from the next own fixture's match-eve dialog, with exactly one day remaining; other controls never advance the calendar to manufacture a watch entry. Home may resume an unfinished existing playback without starting another fixture. Archived replay remains available in records. Preserve busy/read-only/error/critical protections.
 
 - WEB-51 [o] One notifications/news launcher in the HUD opens one dialog with 알림·결정 and 뉴스 tabs across game views, including matches; the HUD menu opens the same dialog. Home has no headline card and the progression clock has no duplicate launcher.
@@ -545,6 +545,13 @@
   - Keep approved decisions, implemented working treatments and proposed alternatives distinct. An unconfirmed recommendation or a current screenshot does not establish a shared requirement.
   - Approved product decisions remain in SSOT; guides explain and link to them. Resource metadata and executable encoding limits retain their existing sources of truth (→!ARCH-32). Update reusable guidance and the relevant theme notes with the design change, rather than leaving knowledge only in chat or completed tasks.
 
+- WEB-105 [o] A recorded goal can be replayed as a short clip of its build-up and finish in live observation and retained archived playback (→!MATCH-12 →!WEB-23/32/94).
+  - Offer an explicit 골 장면 다시보기 action after a live goal has been presented, with selection among the goals already seen; archived playback offers the recorded goals. Identify each by its retained order, time, side, scorer when available and running score, including separate goals within one minute. Do not reveal an unseen live goal, its scorer or a later score.
+  - Play the retained movement and ball route from shortly before the selected goal through the goal and its feedback hold, clearly labelled 다시보기. The clip starts at normal speed, offers the ordinary speed choices and a return action, and automatically returns when it finishes. It changes presentation only: no simulation, seed draw, settled score/statistic, calendar advance, save mutation or new match.
+  - Capture the original match and viewing instant, play/pause state and speed on entry. Restore them when the clip ends or is left, without a catch-up jump or an extra original goal celebration. A clip does not finish, restart or mark the underlying live match as watched; previously delivered completion callbacks remain delivered exactly once.
+  - Use only retained action detail. A minute-only historical record keeps its existing moment navigation and says that goal-scene footage is unavailable; no invented scoring route, resimulation or extra persisted footage. Shootout kicks are not ordinary goal clips. Replacing the playback or leaving its view discards clip state; hidden documents pause it and reduced motion retains readable static feedback (→!WEB-46).
+  - Controls remain keyboard/touch accessible and readable at phone widths and in every theme, preserving the pitch's shape, ordinary actions and the original playback's kit/score context.
+
 ## flow
 
 - Progression: automatic paced days or explicit manual next-event → shared responsibility/observation trigger → direct decision or delegated report → resume only as the selected mode permits.
@@ -554,6 +561,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r185 261030 WEB-105+ optional recorded goal clips with exact viewing-state return and no unseen live-goal disclosure; WEB-32✎ no replay control→ordinary controls unchanged with goal-clip exception; WEB-50+ reachable goal-replay shortcut
 - r184 261029 WEB-11✎ separate cup summaries→one equal season-card cup slot opening the current-cup overview; WEB-18✎ all management information rows→omitted in current League/Cup; WEB-40✎ separate return/competition controls→compact opaque pinned header; WEB-79✎ applied outline→secondary/tertiary filled applied choice
 - r183 261029 WEB-50+ scoreboard halves in each selected shirt colour; WEB-49✎ kit swatches→scoreboard halves; WEB-95✎ carrier outline/growth→ring and coloured plate only
 - r182 261029 WEB-91✎ nearly identical paper surfaces and border-only groups→three distinct material/luminance levels and reusable notebook/detail cards
