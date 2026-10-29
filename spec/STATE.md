@@ -19,7 +19,7 @@
 
 ## inbox
 - 261029 decided ECON-35 ECON-33 ECON-20 T577 review/outside-t216-t255-261019: which runway arithmetic the six copies (floored per-round cost × N in signings, contracts and staff; ⌊cash × 46 / annual⌋ in recruitment, investment and sale bars; next-round charge in the cash warning) share → the exact one, cash × 46 ≥ N × yearly fixed costs, with ⌊C × 46 / A⌋ rounds and C − ⌈N × A / 46⌉ above the runway, from one engine read leaf (alt: floored per-round cost × N everywhere | keep the cash warning on the next round's charge); both forms agree but at the limit, the exact one is the only one where "runway below N" and "does not cover N" never disagree, and the warning then matches the HUD alarm.
-- 261029 parked T576: its code, WEB r170 (spec/ssot/WEB.md) and tasks/done/T576 file sit uncommitted in the shared checkout while the committed STATE logs it done and WEB 170; its impl notes say "No commit or push", so autopilot leaves them; the owner commits them (or reverts the STATE lines) before T577's batch push.
+- 261029 parked T576: its code, WEB r170 (spec/ssot/WEB.md) and tasks/done/T576 file sit uncommitted in the shared checkout while the committed STATE logs it done and WEB 170; its impl notes say "No commit or push", so autopilot leaves them; `vibe plan-push` refuses the dirty tree, so ECON r40/T577 (080c1842) is committed locally but not on the plan branch. The owner commits T576 (or reverts the STATE lines), then `vibe plan-push` publishes T577 before it is implemented.
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
 - 261029 decided MATCH-17 T561: spacing only for the side with the ball; spreading the side without it too opened its box (goals 3.53, 23/37 at 600) (alt: both sides).
 - 261029 suggest MATCH-23 T561: shots from outside the box 25.4% and goal-area shots 20.7% on revision 8 — a carrier with room around the box shoots earlier from the edge.
@@ -420,7 +420,7 @@
 ## next
 - T569–T571 pushed fa1a018b; read its CI.
 - batch gate runs tests/e2e/lab.spec.ts (T575) with the next code push.
-- T577 (ECON-35 one runway arithmetic) is runnable; T576's uncommitted files wait for the owner (inbox parked).
+- T577 (ECON-35 one runway arithmetic) waits for `vibe plan-push`, refused while T576's files sit uncommitted (inbox parked T576).
 
 ## log
 - 261029 update-ssot ECON r40 + create-task T577: ECON-35 one exact runway arithmetic for every check and display (review/outside-t216-t255-261019 F6 adopted).
