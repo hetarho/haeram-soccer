@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| u6c4 | hq-dev1-pve2-vm2 | pair | 2026-10-29T08:53Z | 2026-10-29T08:53Z | - |
 
 ## inbox
 - 261029 decided MATCH-31 T580: the acceptance read the receiver rule only where nobody reaches the pass's path, but near the box almost every path is reached (central ≤18 m passes: 2,372 of 2,572 on grid-bands 50) and 39% of the losses there came with nobody within 3 m of the receiver → every failed pass not cut out or deflected is read at its receiver, a reached path keeping its interception / deflection share (MATCH-31 r42's wording): such losses at a free receiver go to none, lost with nobody within 3 m 6.8% → 3.2% of those passes (alt: the no-reach branch only, as the impl note read — 6.3%, unchanged).
@@ -374,7 +375,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 183 | 183 | - | 0 |
+| WEB | 184 | 184 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
@@ -400,6 +401,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T594 | Compact competition header and home cups | WEB ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -423,9 +425,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- implement-task T594
 - Continue owner-led Matchday Print review; apps/web/design/UI-COVERAGE.md records current coverage. Match-model follow-up stays in inbox suggest T580.
 
 ## log
+- 261029 create-task WEB r184: T594 compact competition header, home cup overview and filled applied choices.
+- 261029 update-ssot WEB start: compact current competition navigation, one home cup slot and filled applied delegation choices; owner authorizes unit-only validation and main push.
 - 261029 publication verified: combined match-view/model and Matchday Print code at 5568cc2d passes all 1732 unit tests on pinned Node 24.22.1; owner requests unit-only validation and immediate main push. Full integration/browser stages were cancelled, not counted as passed.
 - 261029 publication decision (owner): run unit tests only and push the combined main snapshot; stop the full batch run. Use the pinned Node 24.22.1 toolchain.
 - 261029 publication integration: merge remote match-view/model changes with Matchday Print; combine WEB at r183, keep T579/T580 done, renumber the colliding design-system T582 as T593.
