@@ -420,8 +420,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T579, then T580 (match-model revision 9); batch gate and push main after T580.
-- batch gate on the integrated candidate (tests/e2e/lab.spec.ts with T578's 관전 journey included), then push main.
+- implement-task T581 only (branch work/view). T579–T580 belong to loop r9k4 running in the main checkout: do not take them here.
 
 ## log
 - 261029 update-ssot WEB r171 + MATCH r43 + create-task T581 (owner, match view): figures 85% of the marker, carrier never grows, scoreboard halves in kit colours, a football ball; lab watched matches wear their kits. Planned in worktree work/view while r9k4 runs T579–T580 in the main checkout.
