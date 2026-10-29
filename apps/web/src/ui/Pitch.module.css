@@ -334,6 +334,59 @@
   pointer-events: none;
   font-family: var(--display);
 }
+/* Goal-scene replay (→WEB-105): in the pitch's lower-left corner, clear of the centred GOAL cue
+   and the tactics; beside the archived play button. It overlays the pitch, keeping its 1.9:1 shape. */
+.stage .replayControl {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-family: var(--display);
+  font-size: 12px;
+}
+.stage .besideToggle {
+  left: 60px;
+}
+.replayControl:is(button) {
+  padding: 4px 10px;
+}
+.replayState {
+  padding-left: 10px;
+  border-radius: var(--control-radius);
+  color: var(--text);
+  background: rgba(16, 19, 20, 0.78);
+}
+.replayState button {
+  min-height: 44px;
+  padding: 4px 12px;
+  font-size: 12px;
+}
+.replayGoals {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.replayGoals button {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 12px;
+  text-align: start;
+}
+.replayGoals b {
+  font-variant-numeric: tabular-nums;
+}
+.replayGoals span {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
 .latestEvent {
   display: flex;
   align-items: center;

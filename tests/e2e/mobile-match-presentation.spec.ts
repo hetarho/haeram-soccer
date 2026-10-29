@@ -297,6 +297,19 @@ for (const viewport of [
     expect(cueBox.y + cueBox.height).toBeLessThanOrEqual(canvasBox.y + canvasBox.height);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
     await expect(cue).toHaveCount(0, { timeout: 3000 });
+    // The presented goal can be replayed from a pitch corner clear of the tactics (→WEB-105).
+    const replay = page.getByTestId('goal-replay-open');
+    await expect(replay).toBeVisible();
+    const replayBox = (await replay.boundingBox())!;
+    const tacticsBox = (await page
+      .getByTestId('match-theatre')
+      .locator('[data-ui="match-tactics"]')
+      .boundingBox())!;
+    expect(replayBox.height).toBeGreaterThanOrEqual(44);
+    expect(replayBox.x).toBeGreaterThanOrEqual(canvasBox.x);
+    expect(replayBox.x + replayBox.width).toBeLessThanOrEqual(tacticsBox.x);
+    expect(replayBox.y + replayBox.height).toBeLessThanOrEqual(canvasBox.y + canvasBox.height);
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
     // The presented minute opened on the goal's and stayed put while the cue showed.
     expect(await cues.minutes()).toEqual({ held: [`${openingGoal!.minute}′`], moved: [] });
     await expect(score).toHaveText('1 : 0');

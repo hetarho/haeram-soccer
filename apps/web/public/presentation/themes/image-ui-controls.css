@@ -79,6 +79,7 @@ html[data-theme] {
   }
 
   [data-ui='match-tactics'],
+  [data-ui='match-replay'],
   [data-testid='match-kit-unrecorded'] {
     color: var(--image-on-dark);
     background: var(--pitch-chart-ground) var(--image-dark-material) repeat;
