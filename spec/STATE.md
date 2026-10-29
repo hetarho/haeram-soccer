@@ -440,6 +440,8 @@
 - Engine explorations retain their fixed candidate corpus and compatibility rules; goal replay reads retained presentation facts and restores the original watch state without simulation or save changes.
 
 ## log
+- 261030 page/theme publication: owner-requested changes verified on pinned Node 24.22.1; 1747 unit, 48 contract, all fast/resource checks and four-theme desktop/phone review pass. Focused Chromium rerun 9/9 includes menu default/hover contrast and modal touch-size stability.
+- 261030 full gate on 68c05352: integration 1258 pass / 4 fail / 4 skip (existing T596); Chromium 318 pass / 15 fail, with three repaired by 7ded8ba8 and the remaining 12 in existing T597/T598. Engine/contracts source is unchanged. Publish the requested page/theme scope with these known regressions disclosed.
 - 261030 fix page-review: pair menu metadata and hover with each tertiary action foreground; wait for existing finite modal animation before touch-size measurements. Pinned type/lint/format checks pass; scoped browser rerun follows.
 - 261030 T605 done: 71 portable refresh resources, 32 cartoon icons, clay/yellow surfaces and native pixel controller; 61 focused units and pinned fast/resource checks pass. Final visual and publication gate follows.
 - 261030 T604 done: bronze-to-ruby ratings across all four packs, 32 rating/theme units plus resource/fast checks; T605 begins.
@@ -458,5 +460,3 @@
 - 261029 T595 done: 60 alternative-theme assets, source/prompts and shared rendering refinements; 1738 units, fast/resource/build checks, 306 preview combinations and eight targeted Chromium journeys pass. Broader integration/browser failures remain in reports/261029-thar.md; owner requested completion push.
 - 261029 T595 start: complete missing portable controls, hierarchy, materials, ratings and analysis resources for all three alternative themes; owner requests completion/deadline push.
 - 261029 T594 done: compact opaque League/Cup navigation, one home cup slot and secondary-filled applied choices; 242 affected unit tests, typecheck, lint, scoped format and build pass. Owner requests unit-only testing and main push; integration/browser/CI waits omitted.
-- 261029 create-task WEB r184: T594 compact competition header, home cup overview and filled applied choices.
-- 261029 update-ssot WEB start: compact current competition navigation, one home cup slot and filled applied delegation choices; owner authorizes unit-only validation and main push.

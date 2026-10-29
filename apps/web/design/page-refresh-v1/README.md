@@ -22,3 +22,9 @@ Surfaces draw their authored centre as well as the frame. Rounded outside corner
 the containing plane; adjacent home summary slots have square internal joins. Keep live text,
 keyboard/touch behavior, recorded club identity, game state and the workbench isolation boundary.
 Review captures belong in ignored `.tmp/`; verification follows ARCH-30.
+
+Review evidence: actual home, cup cards, settings and team sheets at 1380px and 390px across
+all four packs; controller bounds, five rating roles and browser errors checked. Focused Chromium
+checks confirm settings/transport text contrast in every theme, including menu hover, and settled
+modal touch geometry. Source/runtime validation and the shared resource budgets pass. Existing
+engine and legacy browser regressions remain tracked separately in T596–T598.
