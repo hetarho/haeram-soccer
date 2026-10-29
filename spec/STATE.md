@@ -379,7 +379,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 185 | 185 | - | 0 |
+| WEB | 186 | 186 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
@@ -439,6 +439,10 @@
 - Engine explorations retain their fixed candidate corpus and compatibility rules; goal replay reads retained presentation facts and restores the original watch state without simulation or save changes.
 
 ## log
+- 261030 T602 done: fixed workbench styling separated from game themes at document bootstrap; 18 units, type/lint/format, production build/boundary and spec checks pass. Browser verification deferred; no commit/push requested.
+- 261030 T597/T598/T601 freshness: WEB r186 changes only WEB-103 workbench styling, outside their cited policies; advance bases without changing their scope.
+- 261030 create-task WEB r186 → T602; ds30 implementing the directly requested workbench isolation fix without changing the vf30 engine/replay queue.
+- 261030 update-ssot WEB start: isolate development-workbench navigation and controls from preview themes; direct owner-assigned fix in the main checkout, independent of the completed module-1026 runtime binding.
 - 261030 refresh untouched T597/T598 bases to WEB r185; goal replay remains T601, and the T600 exit roadmap includes the added owner request.
 - 261030 create-task T601: WEB r185 goal-scene replay; depends on T600, with exact live/archive return and no unseen live-goal disclosure.
 - 261030 update-ssot WEB r185 start/done: owner adds goal-scene replay; planning leaves the active engine implementation untouched.
@@ -455,7 +459,3 @@
 - 261029 T583–T593 design-system batch verified for commit: 184 files including retained artwork/provenance; 1718 affected units, workbench boundary checks, type/lint, 115-file scoped format, resource checks and build pass.
 - 261029 T592 done: three visibly textured material planes, reusable Card and notebook consumer; source/prompts and review criterion retained after restoring reduced-size grain. 33 units, type/lint/format, art/presentation checks, build and representative desktop/mobile inspection pass.
 - 261029 WEB r182 and T592 start: three resource-backed surface levels, border-light fixture notebook and a shared Card with app/workbench examples.
-- 261029 T590/T591 done: primary-coloured charts, round/non-overlapping analytical formations and shared-resource coverage across 119 UI modules / 50 app previews; 54 units, type/lint/format, resource checks and build pass. Workbench administration chrome excluded per owner.
-- 261029 WEB r181, T590 start and T591 planned: improve analysis/formation visuals and primary emphasis; audit every shared UI consumer and apply missing roles.
-- 261029 T588/T589 done: brighter actual rating resources and a scroll-dependent pinned-column shadow with stationary table legend; 41 units, type/lint/format, art/presentation checks, build and actual desktop/mobile inspection pass.
-- 261029 WEB r180 and T589 start alongside T588: resource-backed shadow separates fixed columns only after horizontal scrolling.

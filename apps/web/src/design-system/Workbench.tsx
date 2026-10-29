@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { usePresentation, usePresentationController } from '../presentation/react';
+import type { PackRegistry } from '../presentation/contracts';
+import { resolvePackEntry } from '../presentation/registry';
 import { copyPreviewText } from './session';
 import { componentSource, GROUPS, matchingStories, previewAddress, STORIES } from './catalog';
 
@@ -9,8 +10,9 @@ const WIDTHS = [
   ['768', '태블릿 768'],
   ['1280', '데스크톱 1280'],
 ] as const;
-export default function Workbench() {
+export default function Workbench({ themeRegistry }: { themeRegistry: PackRegistry<'theme'> }) {
   const params = new URLSearchParams(location.search);
+  const [theme, setTheme] = useState(() => resolvePackEntry(themeRegistry, params.get('theme')).id);
   const [selected, setSelected] = useState(params.get('story') ?? STORIES[0].id);
   const [group, setGroup] = useState('');
   const [query, setQuery] = useState('');
@@ -18,9 +20,6 @@ export default function Workbench() {
   const [reload, setReload] = useState(0);
   const [copied, setCopied] = useState(false);
   const frame = useRef<HTMLIFrameElement>(null);
-  const snapshot = usePresentation();
-  const presentation = usePresentationController();
-  const theme = snapshot.theme!.id;
   const current = STORIES.find((item) => item.id === selected) ?? STORIES[0];
   const filtered = matchingStories(query, group);
   const index = STORIES.indexOf(current);
@@ -58,9 +57,9 @@ export default function Workbench() {
             <select
               aria-label="미리보기 테마"
               value={theme}
-              onChange={(event) => void presentation.select({ themeId: event.target.value })}
+              onChange={(event) => setTheme(event.target.value)}
             >
-              {snapshot.themeRegistry!.entries.map((entry) => (
+              {themeRegistry.entries.map((entry) => (
                 <option key={entry.id} value={entry.id}>
                   {entry.label}
                 </option>
@@ -205,12 +204,6 @@ export default function Workbench() {
         <footer className="ds-footnote">
           샘플 데이터 · 저장된 게임과 별도 · 자동 시간 진행 없음 · pnpm dev에서만 제공
         </footer>
-        {!!snapshot.error && (
-          <p role="alert" className="ds-error">
-            테마를 불러오지 못했습니다.{' '}
-            <button onClick={() => void presentation.retry()}>다시 시도</button>
-          </p>
-        )}
       </main>
     </div>
   );

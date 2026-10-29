@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r185 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r186 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -538,6 +538,7 @@
 
 - WEB-103 [o] `pnpm dev` serves a design-system workbench at `/design-system`, reachable on the development server's fixed LAN port 19500.
   - Derive theme choices from the presentation registry. Preview the real shared UI and screen-specific components with sample game data, searchable names/source paths and adjustable viewport width; component edits use Vite's normal hot reload.
+  - Workbench navigation, search, selectors and inspection controls use an independent, consistently readable appearance. Selected game themes apply only inside component previews, including independent preview windows; their styles, fonts and resources do not style the surrounding workbench.
   - Sample actions and data are isolated from saved games and automatic progression. The workbench and its sample-data endpoint are development-only, absent from production bundles; production visits to its path show an unavailable page.
 
 - WEB-104 [o] Design-system knowledge is maintained alongside visual iterations so another theme can reuse it (→!WEB-91 →!WEB-103).
@@ -561,6 +562,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r186 261030 WEB-103✎ themed workbench document→independent readable workbench controls with game themes confined to component previews
 - r185 261030 WEB-105+ optional recorded goal clips with exact viewing-state return and no unseen live-goal disclosure; WEB-32✎ no replay control→ordinary controls unchanged with goal-clip exception; WEB-50+ reachable goal-replay shortcut
 - r184 261029 WEB-11✎ separate cup summaries→one equal season-card cup slot opening the current-cup overview; WEB-18✎ all management information rows→omitted in current League/Cup; WEB-40✎ separate return/competition controls→compact opaque pinned header; WEB-79✎ applied outline→secondary/tertiary filled applied choice
 - r183 261029 WEB-50+ scoreboard halves in each selected shirt colour; WEB-49✎ kit swatches→scoreboard halves; WEB-95✎ carrier outline/growth→ring and coloured plate only

@@ -121,6 +121,12 @@ export default function StoryFrame() {
           테마를 불러오는 중…
         </p>
       )}
+      {!!presentation.error && (
+        <p role="alert" className="ds-toast">
+          테마를 불러오지 못했습니다.
+          <button onClick={() => void controller.retry()}>다시 시도</button>
+        </p>
+      )}
       {message && (
         <p role="status" className="ds-toast">
           {message}

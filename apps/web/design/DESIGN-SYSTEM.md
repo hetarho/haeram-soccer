@@ -9,6 +9,14 @@ Product decisions remain authoritative in [WEB-91, WEB-103 and WEB-104](../../..
 [resource-skin contract](RESOURCE-SKINS.md) explains media metadata, native adaptation and budgets;
 this guide does not redefine those contracts.
 
+## Workbench and preview styling
+
+The workbench's navigation, search, theme selector and inspection controls have a fixed appearance,
+independent of the theme under review. Its document loads the validated theme registry only;
+game styles, fonts and artwork are installed by the shared presentation bootstrap inside preview
+documents, including independent preview windows. Preserve this document boundary instead of
+adding selector overrides to fight game skins in the surrounding workbench.
+
 ## Resources carry the design
 
 Author the visible surfaces, frames, texture and state marks as reusable image resources. A
