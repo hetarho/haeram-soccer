@@ -17,6 +17,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261029 decided MATCH-12 MATCH-16 MATCH-31 MATCH-35 T579 T580: owner's report (forward alone in front of goal stands, turns away; passes near the box go to defenders) → match-model revision 9 in two explore tasks, shot side first so the pass probe reads it in place (alt: one task | shot side only).
 - 261029 decided LAB-9 WEB-32 T578: which pause the lab's match view offers, since live observation has no pause button and the archived replay mode drops the speeds and charts → render Pitch in its live mode, whose pause is the game's (a timeline seek holds the instant, a speed resumes it), with the speeds, charts and details as the game shows a live match (alt: archived-replay mode with its play/pause button but no speeds or charts | a lab pause button, which would fork the view).
 - 261029 decided MATCH-17 MATCH-23 T561: halving the crowds around the ball cost one MATCH-23 row (shots from outside 25.4%, floor 27.8, revision 7 at 27.85) → ship revision 8 with the crowd fix the owner asked for and the row as a follow-up (alt: keep revision 7's spacing | a smaller room, which left 4–5% crowds).
 - 261029 decided MATCH-17 T561: spacing only for the side with the ball; spreading the side without it too opened its box (goals 3.53, 23/37 at 600) (alt: both sides).
@@ -372,7 +373,7 @@
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
 | CLUB | 43 | 43 | - | 0 |
-| MATCH | 41 | 41 | - | 0 |
+| MATCH | 42 | 42 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
 | ECON | 39 | 39 | - | 0 |
@@ -393,6 +394,8 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T579 | Revision 9: a forward through on goal faces the keeper and shoots at once | MATCH | - | todo |
+| T580 | Revision 9: a pass near the box is lost only where an opponent really gets to it | MATCH | T579 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -416,9 +419,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- implement-task T579, then T580 (match-model revision 9); batch gate and push main after T580.
 - batch gate on the integrated candidate (tests/e2e/lab.spec.ts with T578's 관전 journey included), then push main.
 
 ## log
+- 261029 create-task MATCH r42: T579 (revision 9 shot side: keeper not a presser, short straight wind-up, 5 m clear chance, keeper half way), T580 (pass failure where reached, tight receivers near the box).
+- 261029 update-ssot MATCH r42: carrier never backs off the keeper, shot struck soon after choosing it, clear chance also with nobody within 5 m, tight receivers near the box weighed by keeping it, pass failure read where it happens, keeper about half way out.
 - 261029 update-ssot LAB r5 + fix: Korean descriptions for all 25 groups and 865 values (apps/web/src/lab/tunables.ko.json, written from the consuming code, marking page-only and pre-revision-8 values), shown above the code comment and searched; tunables.test.ts fails on a missing or stale description.
 - 261029 fix lab watch layout: the match view's App styles pin html/body with no scroll — the lab page scrolls again (scoped by `:has(.page)`), the watch view is capped to fit one screen and scrolls into view on a new playback; checked at 1920×1080.
 - 261029 T578 done: /lab 관전 plays match 0 of its seed in the lab worker and shows it in the game's unchanged Pitch inside the shared presentation; 다시 보기/새 경기; typecheck, lint, tracked formatting, 43 affected unit tests and build pass; lab.spec.ts left to the batch run.
@@ -437,7 +443,3 @@
 - 261029 T572 start
 - 261029 create-task LAB r1 → T572–T575 (engine hooks, tunable catalog, worker runner, lab page).
 - 261029 create-ssot LAB r1: match lab — generated left/right sides, every grid `*_CONFIG` number editable, N-match runs against MATCH-23 with baseline comparison.
-- 261029 create-ssot LAB start
-- 261029 T571 done: keep home return across competition tabs and preserve nested-detour origins; 346 affected unit tests, typecheck, lint, tracked formatting and build pass.
-- 261029 T571 start: retain named return and nested context across league/cup sibling tabs under WEB-40/74.
-- 261029 T570 done: remove mobile-only match tactic hiding; 319 affected unit tests, typecheck, lint, tracked formatting and build pass; theme browser assertions updated.
