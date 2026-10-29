@@ -18,6 +18,7 @@
 | vf30 | ihaelam-ui-MacBookPro | autopilot | 2026-10-29T15:01Z | 2026-10-29T15:07Z | - |
 
 ## inbox
+- 261030 decided WEB-105 WEB-32 WEB-50: owner requests goal-scene replay and final commit/push → optional clips of already seen live goals and retained archive goals, original viewing state restored, short normal-speed build-up with reusable controls and no extra save data (alt: automatic replay after every goal | replay by simulating again); implement after the scoped engine follow-ups and publish the complete batch.
 - 261030 decided MATCH-12 MATCH-35 SAVE-23 T596 T599 T600: two of CI40866255294's four cases are stale revision-9 scenes (a keeper parked at [102, 66] opens the mouth ×1.72/×1.89 under narrowing; T445's decision scene is a clear chance under the 5 m rule), but the other two are real second-ball defects revision 9 exposed (a first-time shot kicked up to 0.83 s late for its rebound's winner, leaving the blocker drawn 1.44–1.51 m from the ball; a parry won on the keeper's own spot, then a rebound shot with no flight and no match time), which cannot be repaired on revisions 1–9 draw for draw → MATCH r44 makes both rules explicit and T596 opens the prospective revision 10 that repairs them, with T599 and T600 extending that unreleased revision so the run publishes one (alt: repair revision 9 in place, breaking settled replay | pin the observed fixtures to revision 8, which no revision-9 counterpart supports | a separate fix task after T600, which leaves T599/T600 measuring the defective model).
 - 261030 decided ARCH-30 T596 T597 T598 T599 T600: owner delegates CI repair and engine follow-ups → sequential fixes, then timeboxed goal-side defence and reception-safety improvements, final combined verification and configured main push (alt: unrelated legacy ideation | test-threshold weakening); preserve every existing assertion’s purpose and all historical football revisions.
 - 261029 decided WEB-91 WEB-104 T595: complete other themes under the shared guide → fill Stadium Green, Pixel and Sticker Club's missing component resources in their existing art families (alt: new theme concepts | palette-only variants); owner authorizes origin/main push when complete or the current checkpoint by 21:30 KST today.
@@ -378,7 +379,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 184 | 184 | - | 0 |
+| WEB | 185 | 185 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
@@ -409,6 +410,7 @@
 | T598 | Current figure kit evidence | KIT MATCH WEB SAVE ARCH | T597 | todo |
 | T599 | Goal-side defence and chance volume | MATCH SAVE ARCH | T598 | todo |
 | T600 | Receiver safety at the time of reception | MATCH SAVE ARCH | T599 | todo |
+| T601 | Recorded goal-scene replay | WEB MATCH SAVE ARCH | T600 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -432,11 +434,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T596; vf30 scope: repair CI40866255294, then T599/T600 measured engine follow-ups. Do not route unrelated legacy ideation or theme review during this run.
-- Complete T596–T600 sequentially, then the coordinator runs the final batch and publishes once to configured main; any resulting CI correction stays in this scope.
-- Engine explorations use 50-match candidate reads, unchanged football targets and safe-boundary model activation; keep historical results and revision replay intact.
+- implement-task T596; vf30 scope: CI40866255294 repairs, T599/T600 engine follow-ups, then T601 goal-scene replay. Leave unrelated legacy ideation and theme review untouched.
+- Complete T596–T601 plus resulting CI fixes before the combined coordinator gate, then commit/push the verified complete source to configured main as explicitly requested.
+- Engine explorations retain their fixed candidate corpus and compatibility rules; goal replay reads retained presentation facts and restores the original watch state without simulation or save changes.
 
 ## log
+- 261030 create-task T601: WEB r185 goal-scene replay; depends on T600, with exact live/archive return and no unseen live-goal disclosure.
+- 261030 update-ssot WEB r185 start/done: owner adds goal-scene replay; planning leaves the active engine implementation untouched.
 - 261030 update-ssot MATCH r44 + create-task: T596 diagnosed (2 stale revision-9 scenes, 2 second-ball defects) and rescoped to open revision 10; T599/T600 extend it.
 - 261030 vf30 start: owner-authorized autopilot; synchronized origin/main469d24c2, captured CI40866255294 failures and created scoped T596–T600.
 - 261029 T595 done: 60 alternative-theme assets, source/prompts and shared rendering refinements; 1738 units, fast/resource/build checks, 306 preview combinations and eight targeted Chromium journeys pass. Broader integration/browser failures remain in reports/261029-thar.md; owner requested completion push.
@@ -455,5 +459,3 @@
 - 261029 T588/T589 done: brighter actual rating resources and a scroll-dependent pinned-column shadow with stationary table legend; 41 units, type/lint/format, art/presentation checks, build and actual desktop/mobile inspection pass.
 - 261029 WEB r180 and T589 start alongside T588: resource-backed shadow separates fixed columns only after horizontal scrolling.
 - 261029 WEB r179 and T588 start: brighten actual iron/bronze/elite artwork to distinguish compact ratings at button-like brightness.
-- 261029 T587 done: five rating skin resources (39046 bytes), aligned compact chips and readable table values; 41 units, type/lint/format, art/presentation validation, build and actual UI inspection pass.
-- 261029 T586 done: aligned 28x24 inline rating chips; type/lint, 22 units, scoped format, build and actual desktop/mobile sizing verified. T587 implementation starts.
