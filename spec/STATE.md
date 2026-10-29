@@ -15,8 +15,10 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| vf30 | ihaelam-ui-MacBookPro | autopilot | 2026-10-29T15:01Z | 2026-10-29T15:01Z | - |
 
 ## inbox
+- 261030 decided ARCH-30 T596 T597 T598 T599 T600: owner delegates CI repair and engine follow-ups → sequential fixes, then timeboxed goal-side defence and reception-safety improvements, final combined verification and configured main push (alt: unrelated legacy ideation | test-threshold weakening); preserve every existing assertion’s purpose and all historical football revisions.
 - 261029 decided WEB-91 WEB-104 T595: complete other themes under the shared guide → fill Stadium Green, Pixel and Sticker Club's missing component resources in their existing art families (alt: new theme concepts | palette-only variants); owner authorizes origin/main push when complete or the current checkpoint by 21:30 KST today.
 - 261029 decided MATCH-31 T580: the acceptance read the receiver rule only where nobody reaches the pass's path, but near the box almost every path is reached (central ≤18 m passes: 2,372 of 2,572 on grid-bands 50) and 39% of the losses there came with nobody within 3 m of the receiver → every failed pass not cut out or deflected is read at its receiver, a reached path keeping its interception / deflection share (MATCH-31 r42's wording): such losses at a free receiver go to none, lost with nobody within 3 m 6.8% → 3.2% of those passes (alt: the no-reach branch only, as the impl note read — 6.3%, unchanged).
 - 261029 decided MATCH-23 T580: with free receivers keeping failed passes completion rose 78.0 → 85.6% (goals 3.76) → completion offset `DUEL_CONFIG.candidate.revision9.base` −0.10: 81.4%, goals 3.42, 25/37 on grid-bands 50 (alt: −0.05 83.5% 2.96 21/37 | −0.08 82.2% 3.86 23/37 | −0.12 80.3% 3.68 24/37 | −0.07 with `receiver.near` 4 81.6% 3.48 21/37); 50-match goals swing about ±0.3, so these differ within noise.
@@ -401,6 +403,11 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T596 | Revision-9 integration regression repair | MATCH ARCH | - | todo |
+| T597 | Current management browser contracts | WEB ARCH | T596 | todo |
+| T598 | Current figure kit evidence | KIT MATCH WEB SAVE ARCH | T597 | todo |
+| T599 | Goal-side defence and chance volume | MATCH SAVE ARCH | T598 | todo |
+| T600 | Receiver safety at the time of reception | MATCH SAVE ARCH | T599 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -424,9 +431,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- Review the completed alternative-theme artwork in the workbench and reports/261029-thar.md. Broader verification failures and match-model follow-up are recorded separately from the resource delivery.
+- implement-task T596; vf30 scope: repair CI40866255294, then T599/T600 measured engine follow-ups. Do not route unrelated legacy ideation or theme review during this run.
+- Complete T596–T600 sequentially, then the coordinator runs the final batch and publishes once to configured main; any resulting CI correction stays in this scope.
+- Engine explorations use 50-match candidate reads, unchanged football targets and safe-boundary model activation; keep historical results and revision replay intact.
 
 ## log
+- 261030 vf30 start: owner-authorized autopilot; synchronized origin/main469d24c2, captured CI40866255294 failures and created scoped T596–T600.
 - 261029 T595 done: 60 alternative-theme assets, source/prompts and shared rendering refinements; 1738 units, fast/resource/build checks, 306 preview combinations and eight targeted Chromium journeys pass. Broader integration/browser failures remain in reports/261029-thar.md; owner requested completion push.
 - 261029 T595 start: complete missing portable controls, hierarchy, materials, ratings and analysis resources for all three alternative themes; owner requests completion/deadline push.
 - 261029 T594 done: compact opaque League/Cup navigation, one home cup slot and secondary-filled applied choices; 242 affected unit tests, typecheck, lint, scoped format and build pass. Owner requests unit-only testing and main push; integration/browser/CI waits omitted.
@@ -446,4 +456,3 @@
 - 261029 T587 done: five rating skin resources (39046 bytes), aligned compact chips and readable table values; 41 units, type/lint/format, art/presentation validation, build and actual UI inspection pass.
 - 261029 T586 done: aligned 28x24 inline rating chips; type/lint, 22 units, scoped format, build and actual desktop/mobile sizing verified. T587 implementation starts.
 - 261029 WEB r178 and T587 preparation: owner requests five visible overall-rating levels with designed background/frame artwork; finish T586 sizing/alignment first.
-- 261029 WEB r177 and T586 start: shrink inline attribute ratings and align labels/values without changing profile cards.
