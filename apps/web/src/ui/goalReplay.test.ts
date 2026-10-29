@@ -16,6 +16,7 @@ import {
   goalsSeen,
   replayClock,
   replayEnded,
+  replayEntryOpen,
   replayFor,
   replayGoals,
   replayGoalsReached,
@@ -205,19 +206,66 @@ describe('goal-scene replay', () => {
     expect(replayGoals(goals, routeless, 1)[0]!.footage).toBe(false);
   });
 
-  it('keeps the original viewing to restore, without a cue to celebrate again', () => {
-    const held: ReplayOrigin = {
+  it('keeps the original viewing to restore exactly as it was', () => {
+    const back: ReplayOrigin = {
       ...origin,
-      clock: { seconds: 600, next: 4, cue: { goal: 3, remainingMs: 300 } },
+      clock: { seconds: 600, next: 4 },
       paused: true,
       speed: 16,
       finished: true,
     };
-    const clip = startGoalReplay(goals, frames, replayGoals(goals, frames, 4)[0]!, held)!;
-    expect(clip.origin).toEqual({ ...held, clock: { seconds: 600, next: 4 } });
+    const clip = startGoalReplay(goals, frames, replayGoals(goals, frames, 4)[0]!, back)!;
+    expect(clip.origin).toEqual(back);
     expect(replayClock(clip)).toEqual({ seconds: 135, next: 0 });
     // The clip's clock never touches the original one.
-    expect(held.clock).toEqual({ seconds: 600, next: 4, cue: { goal: 3, remainingMs: 300 } });
+    expect(clip.origin.clock).not.toBe(back.clock);
+  });
+
+  it('opens no clip over a goal held at the final sample until its hold has ended', () => {
+    // Three watched minutes: a home goal 20 s into the second, the last on the final whistle.
+    const closing = [
+      frame(0, 0, 0),
+      frame(1, 1, 0, { events: [goalEvent(20, 0)] }),
+      frame(2, 2, 0, { events: [goalEvent(60, 0)] }),
+    ];
+    const end = runningLength(closing.length);
+    const closingGoals = goalInstants(record, closing, [0, 60, 120]);
+    expect(closingGoals.map((goal) => goal.seconds)).toEqual([80, end]);
+    const advance = (state: GoalFeedbackState, elapsedMs: number, running = true) =>
+      advanceGoalFeedback(state, closingGoals, { elapsedMs, speed: 16, length: end, running });
+    // The earlier goal has been seen; the live clock reaches the last at the final sample.
+    const live = advance({ seconds: end - 1, next: 1 }, 16);
+    const hold = { goal: 1, remainingMs: GOAL_FEEDBACK_CONFIG.holdMs };
+    expect(live).toEqual({ seconds: end, next: 2, cue: hold });
+    const [earlier] = replayGoals(closingGoals, closing, goalsSeen(live));
+    expect(earlier!.goal.id).toBe(0);
+    const held: ReplayOrigin = {
+      matchId: 'm1',
+      clock: live,
+      sampleIndex: 2,
+      paused: false,
+      speed: 16,
+      finished: false,
+    };
+    // A clip here would return past the unfinished hold and finish the match in the clip's place.
+    expect(replayEntryOpen(live)).toBe(false);
+    expect(startGoalReplay(closingGoals, closing, earlier!, held)).toBeUndefined();
+    expect(live.cue).toEqual(hold);
+    // A paused or hidden original keeps its hold, and with it the clip unavailable.
+    expect(replayEntryOpen(advance(live, 5000, false))).toBe(false);
+    // The hold runs its full length in the original viewing; then the earlier goal's clip opens.
+    const almost = advance(live, GOAL_FEEDBACK_CONFIG.holdMs - 16);
+    expect(replayEntryOpen(almost)).toBe(false);
+    const over = advance(almost, 16);
+    expect(over).toEqual({ seconds: end, next: 2 });
+    expect(replayEntryOpen(over)).toBe(true);
+    const clip = startGoalReplay(closingGoals, closing, earlier!, {
+      ...held,
+      clock: over,
+      finished: true,
+    })!;
+    expect(clip.goal).toBe(0);
+    expect(clip.origin.clock).toEqual(over);
   });
 
   it('belongs only to the playback it was opened on', () => {

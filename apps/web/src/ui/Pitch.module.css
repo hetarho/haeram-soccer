@@ -353,6 +353,14 @@
 .replayControl:is(button) {
   padding: 4px 10px;
 }
+/* Unavailable through a goal's hold but still focusable, so the theme's disabled filter applies
+   here as the shared stylesheet applies it to `:disabled`. */
+.replayControl[aria-disabled='true'],
+.replayGoals button[aria-disabled='true'] {
+  opacity: var(--image-disabled-opacity, 1);
+  filter: var(--image-disabled-filter, grayscale(1));
+  cursor: not-allowed;
+}
 .replayState {
   padding-left: 10px;
   border-radius: var(--control-radius);
