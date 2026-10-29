@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| vf30 | ihaelam-ui-MacBookPro | autopilot | 2026-10-29T19:23Z | 2026-10-29T19:23Z | - |
 
 ## inbox
 - 261030 decided WEB-105 WEB-32 ARCH-21 T608: goal-replay.spec.ts:196's resumed−before 47.96 is not catch-up: `before` 72.13 sat in the 1′ goal's kick-off still beat (68.0 → 114.4 running s in 200 ms at 4x), so the original legitimately ran about 46 s before the option's actionability wait ended and about 1.4 s after the return, and the return was exact → production unchanged; the journey reads every presented `data-seconds` write from before the option click and asserts the first instant back equals the entry instant exactly, then that the original runs on at 4x (alt: widen the bound to about 60, which a real catch-up of up to 80 would still pass | sample `before` later, which still spans the return poll | pause the original first, leaving running return unproven).
