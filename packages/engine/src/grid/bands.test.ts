@@ -78,7 +78,9 @@ describe('grid engine distributions', () => {
     // T579's revision 9 (a forward alone takes his chance at once, the keeper narrowing it) plays
     // them at 3.8 with 20.6 shots a team; its 50-match read is 3.32 goals and 20.7 shots, more
     // chances taken rather than suppressed (MATCH-16), so the shot ceiling is 22 until how often
-    // such chances arise comes down.
+    // such chances arise comes down. T580's pass side of it (a failed pass lost only where its
+    // receiver takes it, against a man on him) plays them at 3.72 with 20.8 shots and 386 passes a
+    // team; its 50-match read is 3.42 goals and 20.7 shots; the guards stand.
     expect(goals / n).toBeLessThanOrEqual(3.9);
     expect(shots / n / 2).toBeGreaterThanOrEqual(9);
     expect(shots / n / 2).toBeLessThanOrEqual(22);
@@ -149,7 +151,9 @@ describe('grid engine distributions', () => {
     // them at 3.85, fouls 12.6, throw-ins 8.1 and 60.8 min (its 600-match read 3.38 goals, 8.9
     // throw-ins, 61.4 min): 80 fixtures sit near both edges, so the guards keep 4.3 and 7.5.
     // T579's revision 9 plays them at 3.9, fouls 11.7, throw-ins 8.3 and 58.6 min (its 50-match
-    // read 3.32 goals, 8.85 throw-ins); the guards stand.
+    // read 3.32 goals, 8.85 throw-ins); the guards stand. T580's pass side of it plays them at 4.0,
+    // fouls 10.6, throw-ins 9.1 and 59.5 min (its 50-match read 3.42 goals, 9.11 throw-ins); the
+    // guards stand.
     expect(goals / n).toBeLessThanOrEqual(4.3);
     expect(fouls / n / 2).toBeGreaterThanOrEqual(9);
     expect(fouls / n / 2).toBeLessThanOrEqual(14);

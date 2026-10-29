@@ -210,6 +210,20 @@ export const DUEL_CONFIG = {
      * carry would stay), with `DECISION_CONFIG.candidate.goalAreaCarry`.
      */
     takeOnDepth: 99,
+    /**
+     * Revision 9 (T580, →MATCH-31 r42): a failed pass is lost where it really is. Not cut out or
+     * deflected where an opponent reaches its path, it is lost at its receiver only against an
+     * opponent within `receiver.near` m of where he takes it (a 50/50 there, his weight
+     * `pass.receiverLoose`); with nobody that near he keeps it but for a miscontrol, `miscontrol` of
+     * those failed draws, which runs `overrun` m past him along the pass and loose (out only over a
+     * line). `base` is added to `pass.base` on revision 9, the lever that holds MATCH-23's pass
+     * completion once those balls are kept. T580's screens (grid-bands 50; completion %, goals a
+     * match, rows inside): `base` 0 85.6 3.76 22, −0.05 83.5 2.96 21, −0.08 82.2 3.86 23, −0.10
+     * 81.4 3.42 25, −0.12 80.3 3.68 24; −0.07 with `near` 4 81.6 3.48 21; `miscontrol` 0.4 at 0
+     * 84.1 3.78 22; this rule only where nobody reaches the path, at 0, 80.6 3.72 26 (revision 9
+     * before, 78.0 3.32 25).
+     */
+    revision9: { base: -0.1, receiver: { near: 3, miscontrol: 0.25, overrun: 3 } },
   },
 } as const;
 /** Whether the fixture plays the candidate model, whose `candidate` settings apply. */
@@ -634,7 +648,8 @@ function exitPoint(from: Point, to: Point): { at: [number, number]; over: 'touch
  * lane term `LANE_CONFIG.risk` × the reaching opponents' summed weights. A failed pass the split
  * gives to an interception is that opponent's, and only when one reaches it: he wins it at his
  * reach point within `LANE_CONFIG.reach` with `LANE_CONFIG.sure` to spare, else deflects it loose
- * there; with nobody reaching it the ball is lost at its receiver (or out) instead.
+ * there; with nobody reaching it the ball is lost at its receiver (or out) instead. On revision 9
+ * (T580) every failed pass not cut out there is read where its receiver takes it (`atReceiver`).
  */
 export function resolvePass(
   s: GridState,
@@ -671,9 +686,12 @@ export function resolvePass(
   const against = lane ? first?.gp : marker?.gp;
   const markerSkill = against ? skill(s, other(side), against.idx, 'positioning') : 60;
   const base = CELL_BASELINES[tags.cell]!.passCompletion;
+  const r9 =
+    onCandidate(s) && modelAtLeast(s.setup, 9) ? DUEL_CONFIG.candidate.revision9 : undefined;
   const p = clamp(
     base +
       P.base +
+      (r9?.base ?? 0) +
       (passer - 60) * P.passer -
       (markerSkill - 60) * P.marker -
       (lane ? LANE_CONFIG.risk * lane.weight : P.risk * laneRisk(s, side, from, to)) -
@@ -699,6 +717,12 @@ export function resolvePass(
       return cleanReach(first)
         ? { kind: 'intercepted', by: first.gp.idx, at: first.at }
         : looseBall(s, first.at, r, [side, target]);
+    // Revision 9 (T580): not cut out, it is lost only where its receiver takes it, by the draw
+    // left after the cut-out share.
+    if (r9) {
+      const v = first ? (u - intercepted) / (1 - intercepted) : u;
+      return atReceiver(s, side, target, from, to, v, r);
+    }
   } else if (u < intercepted && marker) {
     const at = toEngine(side, [
       from[0] + (to[0] - from[0]) * marker.t,
@@ -718,6 +742,42 @@ export function resolvePass(
     if (end[0] >= 0 && end[0] <= PITCH.length && end[1] >= 0 && end[1] <= PITCH.width)
       return looseBall(s, toEngine(side, end), r);
   }
+  const exit = exitPoint(toEngine(side, from), toEngine(side, end));
+  return { kind: 'out', at: exit.at, lastTouch: side, over: exit.over };
+}
+
+/**
+ * A failed pass from `from` to `to` (`side`'s attack frame) nobody cut out, on revision 9 (T580,
+ * →MATCH-31 r42, `DUEL_CONFIG.candidate.revision9.receiver`): a 50/50 where receiver `target` takes
+ * it when an opponent stands within `near` m of that point; else he keeps it unless `v` (uniform)
+ * falls below `miscontrol`, when it runs `overrun` m on past him, loose there or out over a line.
+ */
+function atReceiver(
+  s: GridState,
+  side: 0 | 1,
+  target: number,
+  from: Point,
+  to: Point,
+  v: number,
+  r: () => number,
+): Outcome {
+  const R = DUEL_CONFIG.candidate.revision9.receiver;
+  const { hypot } = s.math;
+  const at = toEngine(side, to);
+  for (const gp of s.players[other(side)])
+    if (onPitch(gp) && hypot(gp.pos[0] - at[0], gp.pos[1] - at[1]) < R.near)
+      return looseBall(s, at, r, [side, target]);
+  if (v >= R.miscontrol) return { kind: 'complete', to: at, receiver: target };
+  const dist = hypot(to[0] - from[0], to[1] - from[1]);
+  const end: Point =
+    dist > 0
+      ? [
+          to[0] + ((to[0] - from[0]) / dist) * R.overrun,
+          to[1] + ((to[1] - from[1]) / dist) * R.overrun,
+        ]
+      : to;
+  if (end[0] >= 0 && end[0] <= PITCH.length && end[1] >= 0 && end[1] <= PITCH.width)
+    return looseBall(s, toEngine(side, end), r, [side, target]);
   const exit = exitPoint(toEngine(side, from), toEngine(side, end));
   return { kind: 'out', at: exit.at, lastTouch: side, over: exit.over };
 }

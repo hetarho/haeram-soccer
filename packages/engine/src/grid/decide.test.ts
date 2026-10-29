@@ -1438,3 +1438,68 @@ describe('revision 7 clear chance (T548, →MATCH-16)', () => {
     expect(clearChance(on([60, 34], ninth!, [67, 34]).s, 0, [60, 34])).toBe(false);
   });
 });
+
+describe('revision 9 tight receivers (T580, →MATCH-16)', () => {
+  const [eighth, ninth] = MATCH_MODEL_REVISIONS.slice(7) as MatchModelRevision[];
+  const T = DECISION_CONFIG.candidate.revision9.tight;
+  const B = 10;
+  /**
+   * A wide carrier at [80, 10] (no clear chance out there), the striker forward of him in the box
+   * at [95, 16], side 1's slot 3 at `man`; `free` puts slot 10 in the box at [96, 24] too.
+   */
+  const on = (model: MatchModelRevision, man: Point, decisions = 60, free = false) => {
+    const sc = scene(CM, [80, 10]);
+    sc.s.setup = { ...sc.s.setup, model };
+    setSkills(sc.s, CM, { decisions });
+    place(sc.s, ST, [95, 16]);
+    if (free) place(sc.s, B, [96, 24]);
+    guard(sc.s, man);
+    return sc;
+  };
+  const options = (sc: ReturnType<typeof on>) =>
+    passOptions(sc.s, 0, CM, sc.tags(), { judge: true });
+  const scoreOf = (sc: ReturnType<typeof on>, target = ST) =>
+    options(sc).find((o) => o.target === target)!.score;
+
+  it('revision 9: near the box a tightly marked receiver scores less', () => {
+    // A man 2 m from him: revision 9 scores him `tight.score` below revision 8.
+    const tight: Point = [95, 18];
+    expect(scoreOf(on(ninth!, tight))).toBeCloseTo(scoreOf(on(eighth!, tight)) - T.score, 9);
+    // 6 m off him he is no tight target.
+    const loose: Point = [95, 22];
+    expect(scoreOf(on(ninth!, loose))).toBeCloseTo(scoreOf(on(eighth!, loose)), 9);
+    // Short of `tight.from` a marked receiver scores as on revision 8.
+    const short = (model: MatchModelRevision) => {
+      const sc = on(model, [70, 16]);
+      sc.me.pos = [55, 10];
+      place(sc.s, ST, [70, 14]);
+      return scoreOf(sc);
+    };
+    expect(short(ninth!)).toBeCloseTo(short(eighth!), 9);
+    // Against a free man beside him, the tight one is chosen less often by `e^(−score / τ)`: surer
+    // with 판단력, whose temperature is lower.
+    const odds = (model: MatchModelRevision, decisions: number) => {
+      const sc = on(model, tight, decisions, true);
+      const o = options(sc);
+      const p = passProbabilities(o, temperature(sc.s, 0, CM, sc.tags()), sc.s.math);
+      return p[o.findIndex((x) => x.target === ST)]! / p[o.findIndex((x) => x.target === B)]!;
+    };
+    const sharp = odds(ninth!, 90) / odds(eighth!, 90);
+    const plain = odds(ninth!, 40) / odds(eighth!, 40);
+    expect(sharp).toBeLessThan(plain);
+    expect(plain).toBeLessThan(1);
+    // With room himself and only that tight man in the box, he passes `tight.pass` times as often
+    // against the rest of his mix.
+    const ratio = (model: MatchModelRevision, man: Point, closer?: Point) => {
+      const sc = on(model, man);
+      if (closer) sc.s.players[1][4]!.pos = [...closer];
+      const mix = actionMix(sc.s, 0, CM, sc.tags());
+      return mix.pass / mix.carry;
+    };
+    expect(ratio(ninth!, tight)).toBeCloseTo(ratio(eighth!, tight) * T.pass, 9);
+    // A free receiver there, or a man within `room` of the carrier, leaves it as it was.
+    expect(ratio(ninth!, loose)).toBeCloseTo(ratio(eighth!, loose), 9);
+    const close: Point = [80 + T.room - 1, 12];
+    expect(ratio(ninth!, tight, close)).toBeCloseTo(ratio(eighth!, tight, close), 9);
+  });
+});

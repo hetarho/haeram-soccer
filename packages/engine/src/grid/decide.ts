@@ -245,6 +245,14 @@ export const DECISION_CONFIG = {
      */
     revision9: {
       clear: { alone: 5 },
+      /**
+       * T580 (→MATCH-16 r42): in and around the opponents' box (`tight.from` m up the pitch on) a
+       * receiver with an opponent within `mark` m of him scores `score` less as a pass target, so
+       * the carrier's temperature makes the choice surer with 판단력. A carrier there with no
+       * opponent within `room` m of him, whose forward and lateral receivers in the box are all
+       * that tight, passes `pass` times as often and shoots or carries by the rest of his mix.
+       */
+      tight: { from: 75, mark: 2.5, score: 0.6, room: 5, pass: 0.5 },
     },
     /**
      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
@@ -584,6 +592,10 @@ export function actionMix(
   if (r6 && beaten(s, side, idx)) mix.carry *= r6.beat.carry;
   const ownBox = c[0] < BAND_EDGES[2] && tags.lane >= 1 && tags.lane <= 3;
   if (r6 && tags.pressure === 0 && !ownBox) mix.clearance *= r6.calm.clearance;
+  // Revision 9 (T580): with room himself and only tight men in the box, he does not play it in.
+  const tight = C.candidate.revision9.tight;
+  if (candidate && modelAtLeast(s.setup, 9) && c[0] >= tight.from && boxMarked(s, side, idx, c))
+    mix.pass *= tight.pass;
   // His head on shots.
   const decisions = skill(s, side, idx, 'decisions');
   if (cell.xgPerShot !== null && cell.xgPerShot < C.lowXg) mix.shot *= 1 - (decisions - 50) / 200;
@@ -738,6 +750,28 @@ function takesClearChance(s: GridState, side: 0 | 1, c: Point, tags: Pick<Tags, 
   );
 }
 
+/**
+ * Whether carrier `idx` of `side` at `c` (attack frame) has room — no opponent within
+ * `revision9.tight.room` m — while each of his forward and lateral receivers in the box has an
+ * opponent within `tight.mark` m, at least one such receiver there (revision 9, T580).
+ */
+function boxMarked(s: GridState, side: 0 | 1, idx: number, c: Point): boolean {
+  const T = DECISION_CONFIG.candidate.revision9.tight;
+  const { atan2, hypot } = s.math;
+  const opponents = s.players[other(side)].filter(onPitch).map((gp) => attackFrame(side, gp.pos));
+  if (opponents.some((o) => hypot(o[0] - c[0], o[1] - c[1]) < T.room)) return false;
+  let any = false;
+  for (const gp of s.players[side]) {
+    if (gp.idx === idx || !onPitch(gp)) continue;
+    const p = attackFrame(side, gp.pos);
+    // Back passes (135° on, as `passOptions` reads them) are not played into the box.
+    if (!inBox(p) || Math.abs(atan2(p[1] - c[1], p[0] - c[0])) / DEG >= 135) continue;
+    if (!opponents.some((o) => hypot(o[0] - p[0], o[1] - p[1]) < T.mark)) return false;
+    any = true;
+  }
+  return any;
+}
+
 /** Whether carrier `idx` of `side` has just beaten his man (revision 6, T542). */
 const beaten = (s: GridState, side: 0 | 1, idx: number) =>
   modelAtLeast(s.setup, 6) && s.beat?.[0] === side && s.beat[1] === idx;
@@ -827,6 +861,8 @@ export function passOptions(
     opts.judge && modelAtLeast(s.setup, 6) ? DECISION_CONFIG.candidate.revision6 : undefined;
   const clear = r6 !== undefined && takesClearChance(s, side, c, tags);
   const beat = r6 !== undefined && beaten(s, side, idx);
+  const r9 =
+    opts.judge && modelAtLeast(s.setup, 9) ? DECISION_CONFIG.candidate.revision9.tight : undefined;
   const gainWeight = !candidate
     ? 1
     : modelAtLeast(s.setup, 4)
@@ -893,6 +929,8 @@ export function passOptions(
       path.weight < r6.free.lane
         ? r6.free.score
         : 0;
+    // A receiver marked tight around the box (revision 9, T580).
+    const tight = r9 && p[0] >= r9.from && nearest < r9.mark ? r9.score : 0;
     const kind: PassOption['kind'] =
       through > 0
         ? 'through'
@@ -910,7 +948,8 @@ export function passOptions(
       Math.max(0, dist - P.tooFar) / 10 +
       through +
       wing +
-      free +
+      free -
+      tight +
       (combo === 'show'
         ? DECISION_CONFIG.combination.show
         : combo === 'release'

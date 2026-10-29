@@ -141,10 +141,12 @@ const facts = (w: World) => ({
  * football; 8e5fd3764d2248b6 and 10765282591340cc before. T561's match-model revision 8 changed
  * both, label and football; d1399a4a21838e96 and 467422b4a9e71b20 before. T579's match-model
  * revision 9 changed both, label and football; 6e84c90f4999c036 and 4413c78f084792fc before.
+ * T580's pass side of revision 9 changed the candidate rounds' football only (the aggregate path
+ * plays no grid pass); 7e65349668e35e13 before.
  */
 const BEFORE = {
   aggregateRecords: '593d6d509d01b4b2',
-  candidateRounds: '7e65349668e35e13',
+  candidateRounds: '5f44410b73d9e99e',
 };
 
 describe('complete-result throughput (T285)', () => {
