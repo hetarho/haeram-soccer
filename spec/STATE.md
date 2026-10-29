@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| vf30 | ihaelam-ui-MacBookPro | autopilot | 2026-10-29T18:34Z | 2026-10-29T18:34Z | - |
 
 ## inbox
 - 261030 decided MATCH-35 MATCH-12 SAVE-23 T607: dccefdb2's second ball won 0.80 m from its blocker (t445-rebound-35: a shot struck on the goal line, closed down from 0.2 m behind, its 4–9 m rebound sent over the byline and kept 0.5 m inside it, shorter than `clear` 1.2 m, so nobody could meet it on the way and the keeper took it at rest; the shooter 0.2 m off could as well have won it and shot again on top of the blocker) is a revision-10 defect, not a test precondition → a block whose rebound the byline cuts short of `clear` from its blocker goes behind for a corner (`blockedBehind`, revision 10 only, the existing corner-block path): only 1975's league facts and observed positions moved, ties, every other digest, `candidate-et-7` and `goal-feedback-2` unchanged; 50 grid-bands matches 24/37, goals 3.24, shots 20.32, corners 5.35 (T600 24/37, 3.24, 20.20) (alt: lower the test's minimum for pitch-bounded routes, codifying a win within the blocker's reach | slide the rest point along the line to `clear`, an invented route | send every rebound over the byline behind, which moves far more blocks than the defect).
