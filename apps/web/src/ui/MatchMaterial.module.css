@@ -44,7 +44,7 @@
 }
 .picked {
   fill: none;
-  stroke: var(--accent);
+  stroke: var(--chart-primary, var(--accent));
   stroke-width: 0.6;
   stroke-dasharray: 1.4 0.8;
 }
@@ -53,8 +53,8 @@
   fill-opacity: 0.08;
 }
 .ownShot {
-  stroke: var(--accent);
-  fill: var(--accent);
+  stroke: var(--chart-primary, var(--accent));
+  fill: var(--chart-primary, var(--accent));
 }
 .otherShot {
   stroke: var(--cool);

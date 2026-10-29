@@ -424,8 +424,6 @@
   font-size: 12px;
   font-weight: 700;
   line-height: 15px;
-  color: var(--on-accent);
-  background: var(--surface-grain, none) var(--accent);
   font-family: var(--display);
 }
 @media (max-width: 1100px) {

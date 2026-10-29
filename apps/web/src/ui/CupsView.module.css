@@ -167,8 +167,6 @@
   font-weight: 700;
   padding: 1px 6px;
   border-radius: var(--badge-radius);
-  color: var(--on-accent);
-  background: var(--surface-grain, none) var(--accent);
   font-family: var(--display);
 }
 .club > span {

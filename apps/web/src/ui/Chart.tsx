@@ -202,8 +202,16 @@ function Plot({
         >
           <defs>
             <linearGradient id={areaId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.18" />
-              <stop offset="100%" stopColor="var(--accent)" stopOpacity="0.015" />
+              <stop
+                offset="0%"
+                stopColor="var(--chart-primary, var(--accent))"
+                stopOpacity="0.18"
+              />
+              <stop
+                offset="100%"
+                stopColor="var(--chart-primary, var(--accent))"
+                stopOpacity="0.015"
+              />
             </linearGradient>
           </defs>
           <path
@@ -239,21 +247,33 @@ function Plot({
           <polyline
             points={geometry.line}
             fill="none"
-            style={{ stroke: 'var(--accent)' }}
+            style={{ stroke: 'var(--chart-primary, var(--accent))' }}
             strokeWidth="2.75"
             strokeLinejoin="round"
             strokeLinecap="round"
           />
           {values.length <= 20 &&
             geometry.xs.map((x, i) => (
-              <circle key={i} cx={x} cy={geometry.ys[i]} r="2.5" fill="var(--accent)" />
+              <circle
+                key={i}
+                cx={x}
+                cy={geometry.ys[i]}
+                r="2.5"
+                fill="var(--chart-primary, var(--accent))"
+              />
             ))}
-          <circle cx={latest.x} cy={latest.y} r="8" fill="var(--accent)" fillOpacity="0.14" />
+          <circle
+            cx={latest.x}
+            cy={latest.y}
+            r="8"
+            fill="var(--chart-primary, var(--accent))"
+            fillOpacity="0.14"
+          />
           <circle
             cx={latest.x}
             cy={latest.y}
             r="4.5"
-            style={{ fill: 'var(--accent)', stroke: 'var(--surface)' }}
+            style={{ fill: 'var(--chart-primary, var(--accent))', stroke: 'var(--surface)' }}
             strokeWidth="2"
           />
           {open && (

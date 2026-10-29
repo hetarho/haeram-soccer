@@ -343,14 +343,14 @@
       "rating-elite-slice": "var(--image-art-rating-elite-slice)",
       "rating-elite-fill": "#b985e0",
       "rating-elite-text": "#2e123f",
-      "accent": "#b84620",
       "preview-padding": "16px",
       "preview-section-gap": "16px",
       "preview-label-gap": "6px",
       "preview-label-padding": "4px",
       "preview-example-gap": "8px",
       "preview-label-divider-image": "none",
-      "preview-label-color": "var(--image-muted)"
+      "preview-label-color": "var(--image-muted)",
+      "chart-primary": "#b84620"
     }
   },
   "fonts": [

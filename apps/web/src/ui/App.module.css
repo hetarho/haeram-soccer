@@ -2958,7 +2958,7 @@
 }
 .chartLegend .legendLine {
   height: 2px;
-  background: var(--surface-grain, none) var(--accent);
+  background: var(--surface-grain, none) var(--chart-primary, var(--accent));
 }
 .legendFaint {
   background: color-mix(in srgb, var(--text-faint) 35%, transparent);

@@ -720,7 +720,11 @@ export function RoundResults({
           const ours = f.home === w.playerClub || f.away === w.playerClub;
           return (
             <li key={f.id} className={resultClass(f)} data-own={ours || undefined}>
-              {ours && <span className={s.ownBadge}>우리 팀</span>}
+              {ours && (
+                <span data-ui="badge" data-compact className={s.ownBadge}>
+                  우리 팀
+                </span>
+              )}
               <span
                 className={`${s.side} ${s.homeSide} ${f.home === w.playerClub ? s.ourName : ''}`}
               >

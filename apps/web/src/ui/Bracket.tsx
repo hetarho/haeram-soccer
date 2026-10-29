@@ -58,7 +58,11 @@ function Tie({ w, tie, legs }: { w: World; tie: KnockoutRound['ties'][number]; l
         {tie.decided === 'away' && <small> 원정 다득점</small>}
       </em>
       <Club w={w} id={tie.away} strong={tie.winner === tie.away} />
-      {own && <i className={c.ownBadge}>우리 팀</i>}
+      {own && (
+        <i data-ui="badge" data-compact className={c.ownBadge}>
+          우리 팀
+        </i>
+      )}
     </li>
   );
 }

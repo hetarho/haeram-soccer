@@ -249,6 +249,14 @@ When a component needs a larger panel inset, its local `--surface-panel-padding`
 same element's padding to the shared panel skin. The facility-parts component uses this to keep
 its minimum content clearance without another wrapper or a selector-specific padding override.
 
+Compact identity marks can reuse `data-ui="badge" data-compact`. Keep their primary material
+and `image-on-primary` foreground paired through the shared skin; a readable chart-ink accent
+is not necessarily a safe filled surface behind the old `on-accent` text.
+
+`chart-primary` supplies a readable series/analysis ink independently of the existing
+`accent`/`on-accent` fill pair; themes without it retain their normal accent. Changing a plot's
+ink must not recolour legacy filled labels or controls that use that pair.
+
 When a resource disappears, inspect both the semantic role and computed styles: a module's
 background shorthand can override a lower-specificity shared rule. Review native controls,
 selected states, popovers and lazy sections, not only the default screenshot. Layout-only

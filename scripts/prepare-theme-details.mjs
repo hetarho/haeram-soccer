@@ -110,7 +110,7 @@ function detailTokens(id, config) {
   const pixel = id === 'pixel';
   const v = (role) => `var(--${role})`;
   const tokens = {
-    accent: config.primary,
+    'chart-primary': config.primary,
     'accent-text': v('image-accent'),
     'image-accent': id === 'sticker-club' ? '#9b3617' : config.primary,
     'image-canvas': config.canvas,
@@ -355,6 +355,8 @@ for (const [id, config] of Object.entries(themes)) {
     // Analysis shares the sheet material intentionally, with its own semantic role.
     pack.images.ui['image-art-analysis-paper'] = { ...pack.images.ui['image-art-paper-quiet'] };
     Object.assign(pack.tokens.ui, detailTokens(id, config));
+    // Chart ink must not change legacy filled controls' accent/on-accent pair.
+    delete pack.tokens.ui.accent;
     // Content aliases in older packs referenced the original tiles directly.
     pack.tokens.ui['image-canvas-material'] = 'var(--image-art-paper)';
     pack.tokens.ui['image-quiet-material'] = 'var(--image-art-paper-quiet)';
