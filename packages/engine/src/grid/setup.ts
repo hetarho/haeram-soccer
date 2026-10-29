@@ -220,16 +220,30 @@ export function buildGridSetup(
      * model. It draws nothing, so generation, recruitment and finance streams are untouched.
      */
     model?: MatchModelRevision;
+    /**
+     * The match lab only (→LAB-2): these matchday rosters (XI in slot order, then the bench) and
+     * tactics instead of the clubs' own, with neutral context (`LabFixture`); both sides take the
+     * home club's manager for their tendencies.
+     */
+    lab?: { rosters: [Player[], Player[]]; tactics: [Tactic, Tactic] };
   },
 ): GridSetup {
   const model = opts.model ?? activeMatchModel(w);
+  const lab = opts.lab && {
+    xis: ([0, 1] as const).map((side) =>
+      opts.lab!.rosters[side].slice(0, FORMATIONS[opts.lab!.tactics[side]].slots.length),
+    ) as [Player[], Player[]],
+    tactics: opts.lab.tactics,
+  };
   // The candidate's form and gap on the portable table, as `GridState.math` binds it (T358).
-  const prepared = prepareMatch(w, f, model === undefined ? HOST_MATH : PORTABLE_MATH, model);
+  const prepared = prepareMatch(w, f, model === undefined ? HOST_MATH : PORTABLE_MATH, model, lab);
   const { ownSide, style, synergy } = prepared;
   const tactics = opts.tactics ?? prepared.tactics;
   const era = eraRules(f.year);
   // Nobody injured or banned for this fixture sits on the bench (→MATCH-19, →LEAGUE-15).
-  const rosters = fixtureRosters(w, f, prepared, era, model !== undefined);
+  const rosters: [Player[], Player[]] = opts.lab
+    ? [[...opts.lab.rosters[0]], [...opts.lab.rosters[1]]]
+    : fixtureRosters(w, f, prepared, era, model !== undefined);
   const xi = [prepared.squads[0].length, prepared.squads[1].length] as const;
   const bends = [0, 1].map((side) =>
     side === ownSide
@@ -268,7 +282,7 @@ export function buildGridSetup(
     ...(modelAtLeast({ model }, 2) && {
       tendencies: [
         sideTendencies(w, f.home, tactics[0], rosters[0], xi[0]),
-        sideTendencies(w, f.away, tactics[1], rosters[1], xi[1]),
+        sideTendencies(w, opts.lab ? f.home : f.away, tactics[1], rosters[1], xi[1]),
       ] as [PlayerTendencies[], PlayerTendencies[]],
     }),
   };

@@ -1,5 +1,5 @@
 # LAB Match lab
-> r1 | Let the owner tune the detailed match engine's numbers against generated sides and see what each change does to the football.
+> r2 | Let the owner tune the detailed match engine's numbers against generated sides and see what each change does to the football.
 
 ## decisions
 - LAB-1 [o] The match lab is an owner's tool outside the game. ← tuning needs quick what-if runs without a career, a save or a script
@@ -9,7 +9,7 @@
 - LAB-2 [o] Two sides, 좌측 팀 and 우측 팀, are generated players, not world clubs.
   - each side has a tactic of the four (→MATCH-8) with its formation, and a full matchday squad under the modern era's rules (→MATCH-20): starters for every formation slot plus the named substitutes.
   - a side's 평균 OVR (40–90) and 편차 (0–15) generate every player at his slot's position and role, each OVR drawn within the spread around the average and the squad then shifted so the starters' mean equals the average.
-  - each player's OVR can then be set on its own (1–99); the side's shown average follows the players. Regenerating a side with a new average or spread replaces individual settings, after confirmation.
+  - each player's OVR can then be set on its own (20–92, the range the game's player generator lands on exactly); the side's shown average follows the players. Regenerating a side with a new average or spread replaces individual settings, after confirmation.
   - a player keeps his generated name, attributes and traits as the game would create them at that OVR, position and role; only OVR is edited, not single attributes.
   - every generation takes a seed shown with the side; the same seed and inputs give the same players.
   - both sides start fresh: no fatigue, no injury, full adaptation, neutral manager and no club style or synergy bend.
@@ -46,3 +46,4 @@
 
 ## chg
 - r1 261029 initial
+- r2 261029 LAB-2✎ a player's own OVR 1–99 → 20–92

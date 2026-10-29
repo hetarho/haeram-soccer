@@ -30,7 +30,7 @@ import type {
 } from '../../contracts/src/types';
 import { clamp, integer, random, zeroMetrics } from './primitives';
 import type { RoleId } from '../../contracts/src/player';
-import { cohesionMultiplier, ownMultiplier } from './player-state';
+import { cohesionMultiplier, ownMultiplier, slotOvr } from './player-state';
 import { findClub, ratingOf, startingSquad } from './world';
 import { FORMATIONS, isWide, levelFactor as positionLevelFactor, lineOf } from './player';
 import { moraleStrength } from './morale';
@@ -281,21 +281,42 @@ export function npcMatchContext(
  * gap (every skill's shift) are the same on every host (→ARCH-9, T358). `model` is the revision
  * the fixture plays: the world's active model unless a grid setup names another.
  */
+/**
+ * Measurement only (the match lab, →LAB-2): generated XIs in slot order and their tactics, played
+ * by two host clubs nobody owns with no manager, morale or 조직력 term — only home ground.
+ */
+export interface LabFixture {
+  xis: [Player[], Player[]];
+  tactics: [Tactic, Tactic];
+}
+/** A lab XI's rating: its slot OVRs at its own tactic, fresh and fully adapted. */
+const labRating = (xi: readonly Player[], tactic: Tactic) =>
+  Math.round(xi.reduce((s, p, i) => s + slotOvr(p, FORMATIONS[tactic].slots[i]!), 0) / 11);
+
 export function prepareMatch(
   w: World,
   f: Fixture,
   math: MatchMath = HOST_MATH,
   model: MatchModelRevision | undefined = activeMatchModel(w),
+  lab?: LabFixture,
 ): Prepared {
   const home = findClub(w, f.home),
     away = findClub(w, f.away);
   const teams: [Club, Club] = [home, away];
-  const squads: [Player[], Player[]] = [startingSquad(w, home, f), startingSquad(w, away, f)];
-  const tactics: [Tactic, Tactic] = teams.map((c) =>
-    c.id === w.playerClub ? w.tactic : npcTactic(c),
-  ) as [Tactic, Tactic];
+  const squads: [Player[], Player[]] = lab
+    ? [lab.xis[0], lab.xis[1]]
+    : [startingSquad(w, home, f), startingSquad(w, away, f)];
+  const tactics: [Tactic, Tactic] =
+    lab?.tactics ??
+    (teams.map((c) => (c.id === w.playerClub ? w.tactic : npcTactic(c))) as [Tactic, Tactic]);
   // The own club's manager style, build and synergies; clubs nobody owns play their tactic.
-  const ownSide = home.id === w.playerClub ? 0 : away.id === w.playerClub ? 1 : undefined;
+  const ownSide = lab
+    ? undefined
+    : home.id === w.playerClub
+      ? 0
+      : away.id === w.playerClub
+        ? 1
+        : undefined;
   const style = ownSide === undefined ? undefined : managerStyleEffects(w);
   const synergy = ownSide === undefined ? undefined : synergyEffects(w);
   const ownStrength = (side: 0 | 1) =>
@@ -307,15 +328,14 @@ export function prepareMatch(
   // morale at the neutral 60 adding nothing; earlier revisions and the pre-feature model keep a
   // flat 4 (→MATCH-2, T466). Styles stay the own club's (→STAFF-14).
   const sideContext = (side: 0 | 1) =>
-    side === ownSide ? ownStrength(side) : npcMatchContext(w, teams[side], model);
+    lab ? 0 : side === ownSide ? ownStrength(side) : npcMatchContext(w, teams[side], model);
   // What each side brings beyond its XI: home ground, then the manager and morale terms.
   const context = [3 + sideContext(0), sideContext(1)];
   const form = matchForm(w, f, math);
   // The XIs just chosen are the ones `rating` would choose again (T450).
-  const base = [
-    ratingOf(w, home, squads[0]) + context[0],
-    ratingOf(w, away, squads[1]) + context[1],
-  ];
+  const base = lab
+    ? [labRating(squads[0], tactics[0]) + context[0], labRating(squads[1], tactics[1]) + context[1]]
+    : [ratingOf(w, home, squads[0]) + context[0], ratingOf(w, away, squads[1]) + context[1]];
   // The gap beyond what diminishing returns let count is taken off both sides evenly; the day's
   // form comes on top, so a far stronger side's bad day still shows.
   const gap = base[0] - base[1],
@@ -340,7 +360,7 @@ export function prepareMatch(
     shift,
     tactics,
     multiplier: teams.map((club) =>
-      club.id === w.playerClub ? ownMultiplier : () => cohesionMultiplier(club),
+      lab ? () => 1 : club.id === w.playerClub ? ownMultiplier : () => cohesionMultiplier(club),
     ),
     profiles,
     drain,
