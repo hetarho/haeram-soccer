@@ -15,8 +15,10 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| ei31 | ihaelam-ui-MacBookPro | autopilot | 2026-10-30T15:51Z | 2026-10-30T15:51Z | - |
 
 ## inbox
+- 261031 decided ARCH-6 ARCH-9 ARCH-34 T617 T618: owner requests continued optimization attempts through completed implementation → production helper replication first, then guarded packed movement, with safe fallbacks and one combined final gate/main push (alt: stop at research | ship unguarded prototypes). Keep the assigned isolated worktree and all unrelated design changes separate.
 - 261031 decided ARCH-6 ARCH-9 ARCH-34 review/engine-architecture-261030: which experiments merit follow-up → F1 record-level helper replication (own-match wall ×0.9170, CPU ×0.8563 against current helpers, identical daily worlds) and F2 packed Wasm movement (grid CPU ×0.9476, identical records), F1 first; total elapsed-time/day CPU gains remain inconclusive (alt: per-step SIMD, ×1.0220 slower | naive snapshot epochs, live own-day ×1.0783 slower). Research artifacts 2a28f947 are retained on origin/wip/eo30; production source is unchanged.
 - 261030 decided ARCH-34 ARCH-6: owner requests an isolated worktree, multiple engine-optimization attempts and current architectures/algorithms in automatic mode → review engine-architecture-261030 with reversible benchmark prototypes and explicit result-identity checks; no production engine adoption during research (alt: repeat T611/T612 micro-cuts | immediately change worker topology).
 - 261030 decided ARCH-34 MATCH-22: whether autopilot ep32 plans the parallel aggregate workers suggest once T611/T612 left no runnable task → no, the unit ends with no work and the suggest stays for the owner, since ideation/save-storage-and-fast-pace holds step (a) for the owner's read of x10 with the indicator, that ideation is parked, and the 261030 decision scoped "엔진 성능개선 할 수 있는거" to the two result-identical explore tasks (alt: an autopilot planning pass on ARCH worker topology and merge order, which would build a topology the owner has not agreed to | reopen the parked ideation).
@@ -427,11 +429,13 @@
 | development-feedback-261026 | converted@261026 |
 | module-boundaries-261026 | converted@261026 |
 | ui-engine-boundary-261027 | converted@261027 |
-| engine-architecture-261030 | ready@261031 |
+| engine-architecture-261030 | converted@261031 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T617 | Incremental fixture helpers | ARCH | - | todo |
+| T618 | Safe packed movement phase | ARCH | T617 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -455,9 +459,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- create-task review/engine-architecture-261030: plan the measured record-level helper replication and packed Wasm movement candidates; experimental artifacts are on origin/wip/eo30 and in .tmp/engine-opt-261030. Production adoption needs the review's parity/fallback and browser/capacity gates.
+- implement-task T617, then T618; coordinator final verification and configured main push after both candidates are settled.
 
 ## log
+- 261031 create-task review/engine-architecture-261030: owner authorizes production completion; T617 helper replication, T618 guarded packed movement; session ei31.
 - 261031 review-code engine-architecture-261030 ready: nine engine candidates, seventeen worker/transport configurations; F1/F2 accepted for follow-up planning, no production source adoption. Artifact commit 2a28f947 and remote checkpoint 848f8c57 (wip/eo30); project quick checks, 173 units and prototype parity passed; report 261030-eo30.
 - 261030 review-code engine-architecture-261030 start: owner-assigned isolated worktree codex/engine-opt-261030 at 64005ff1, session eo30; research and prototypes only.
 - 261030 engine speed-up final gate: 8dd01ffc full local batch passed (verify:batch 50 min, Chromium 334 passed) and main CI41015066295 succeeded (CI41002035381 on 2fc41d5f failed only format:check, fixed in c05e9194). Combined against 4ab5e4d1 on this host, all sameHash: grid ×0.9112 [0.9074, 0.9164] (345→315 ms a match), aggregate ×0.9168 [0.9060, 0.9296], day own-match days ×0.9052 [0.8883, 0.9310] (790→695 ms), other days ×0.9347 [0.9261, 0.9416].
