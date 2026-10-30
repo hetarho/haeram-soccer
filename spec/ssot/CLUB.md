@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r44 | Define the browser-demo rules for squad and growth.
+> r45 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 20 players (→CLUB-40), a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating sits at its league's average club XI plus its difficulty level's offset (→WEB-3: 쉬움 0, 보통 −2, 어려움 −4, 최상 −6; ±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -264,20 +264,41 @@
 
 - CLUB-45 [o] A suspended player (→MATCH-19) is unavailable for the matches his ban counts: left out of the automatic and saved XI and the bench, like an injured player. A ban is an inbox item and an event; a player one yellow short of a league ban carries a warning on the squad and lineup.
 
-- CLUB-46 [o] A transfer value (→CLUB-25) follows its era's transfer market, not the wage curve alone: it counts ability more steeply than a wage and is carried by the year's transfer premium on top of the football index (→ECON-26), so the market's fees stand where real English football's stood in every era. ← fees grew with football's income until the late 1970s and far faster since (British record £165,000 in 1969, £1.5m in 1979, £15m in 1996, £125m in 2025); on the wage curve and the index alone reference careers valued the top flight's dearest player at about a third of the record in the 1980s and at 0.14–0.24 of it from the late 1990s
-  - each ability point multiplies a value by 1.125 (a wage by 1.105), since the record fee stands 5–15× the average fee in every era while the best players' pay does not.
+- CLUB-46 [o] A transfer value (→CLUB-25) follows its era's transfer market, not the wage curve alone: the year's transfer premium, on top of the football index (→ECON-26), reaches a value in proportion to how far its market points stand above the wage curve's pivot (70), in full from 10 points above it, so the stars' fees stand where real English football's stood in every era while a lower-division player's fee grows with football's income alone. ← fees grew with football's income until the late 1970s and far faster since at the top (British record £165,000 in 1969, £1.5m in 1979, £15m in 1996, £125m in 2025) but hardly in the lower divisions; on the wage curve and the index alone reference careers valued the top flight's dearest player at about a third of the record in the 1980s and at 0.14–0.24 of it from the late 1990s
   - the premium is a multiple by year, geometric between these anchors, flat before the first and after the last; every country uses it, its own football index and currency carrying the rest:
-    | year | 1950 | 1957 | 1967 | 1977 | 1979 | 1993 | 1996 | 2010 | 2025 |
-    |---|---|---|---|---|---|---|---|---|---|
-    | premium | 0.3 | 0.5 | 0.6 | 0.8 | 1.3 | 1.35 | 2.3 | 2.3 | 3.4 |
-  - the steps follow the real market: the maximum wage's 1950s, the first £1m fees of 1979, the 1980s' stagnation, Bosman and pay-television from 1995–96, the broadcasting boom from the 2010s.
+    | year | 1950 | 1957 | 1967 | 1977 | 1979 | 1993 | 1996 | 2008 | 2013 | 2025 |
+    |---|---|---|---|---|---|---|---|---|---|---|
+    | premium | 0.5 | 0.75 | 0.85 | 1.2 | 1.8 | 2 | 3.2 | 3.2 | 3.9 | 5.2 |
+  - the steps follow the real market: the maximum wage's 1950s, the first £1m fees of 1979, the 1980s' stagnation, Bosman and pay-television from 1995–96, the broadcasting boom from 2009.
+  - a better player is always dearer: no premium falls so low that its reach outweighs a point's wage step (at least 0.37 for a 10-point reach).
   - targets (ENG, every top-flight player's value each summer): the dearest at 0.5–1.0× the British record fee standing that year, since sales run up to 160% of value (→CLUB-22); the mean at 0.6–1.4× the Premier League's average fee where one is published (Transfer Price Index, free transfers excluded: £594,000 in 1992/93, £2.4m in 2002/03, £5.6m in 2013/14, £24m in 2025). Sources: the progression of the British transfer fee record; Tomkins Times' Transfer Price Index.
+  - measured 261031 (scripts/calibrate-transfers.ts, ENG reference careers 1950–2029, summers within 2 years of the year; before = the same careers on the wage curve and the index alone, after = 8 careers, 4 of them seeds the anchors were not fitted on; the 4 unseen alone keep 13 of 15 years in band, 1993's mean 1.40 and 2025's dearest 1.01 just outside):
+    | year | dearest / record, before → after | mean / average fee, before → after | after, unseen careers |
+    |---|---|---|---|
+    | 1952 | 1.58 → 0.86 | - | £29k |
+    | 1957 | 0.99 → 0.78 | - | £53k |
+    | 1962 | 0.73 → 0.59 | - | £67k |
+    | 1967 | 0.93 → 0.84 | - | £96k |
+    | 1972 | 0.65 → 0.70 | - | £166k |
+    | 1977 | 0.61 → 0.80 | - | £429k |
+    | 1982 | 0.39 → 0.76 | - | £1.19m |
+    | 1987 | 0.32 → 0.64 | - | £2.12m |
+    | 1993 | 0.35 → 0.81 | 0.71 → 1.34 | £4.89m, mean £832k |
+    | 1997 | 0.21 → 0.74 | - | £11.7m |
+    | 2003 | 0.21 → 0.69 | 0.49 → 1.33 | £20.3m, mean £3.29m |
+    | 2008 | 0.24 → 0.86 | - | £30.3m |
+    | 2013 | 0.14 → 0.56 | 0.43 → 1.28 | £46.7m, mean £7.23m |
+    | 2018 | 0.15 → 0.59 | - | £62.1m |
+    | 2025 | 0.17 → 0.93 | 0.19 → 0.74 | £126.5m, mean £19.0m |
+  - the reference club's own fees, measured beside (the unseen careers): its dearest sale £1.2m in the 1980s, £57m in the 2000s and £130m in the 2020s; sales 7–14% of its turnover from the 1960s (2% in the 2010s–2020s before); 1950s lower-division fees as before (second-tier buys about £800, sales £200).
+  - ECON-29 on ENG ESP FRA GER (default build, reference club, 60 seasons), before → after: operating result before player trading 8.1% → 5.0%, player sales 7.6% → 11.7% of revenue, net result with trading 15.7% → 16.8%, facility ladder 39.2 → 41.3 seasons, none bankrupt; CLUB-25's wages unchanged (80 earns 7.37× 60, the second tier 40%).
 
 ## flow
 
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r45 261031 CLUB-46✎ value per ability point 1.125 everywhere→the wage's 1.105, the premium reaching a value by its points above 70 (in full from 80), lower-division values on the wage curve; premium anchors 0.3 (1950)…3.4 (2025)→0.5 (1950)…5.2 (2025), refit on dumped top-flight squads; measured 261031: 0 of 15 compared years outside the bands on 8 careers (10 before)
 - r44 261031 CLUB-25✎ transfer values follow the same index→+their own slope and the era's transfer premium; CLUB-46+ transfer values by era: value per ability point 1.105→1.125, a premium over the football index from 0.3 (1950) to 3.4 (2025), targets against the British record fee and the Premier League's average fee
 - r43 261029 CLUB-20✎ requests may be unopposed gains→all disclose a real cost/obligation/adverse outcome; backing morale +2→−2, rest-day morale +2→−2; existing paid requests and stochastic chances preserved
 - r42 261019 CLUB-6✎ +the manager names the era's substitutes and the set-piece/penalty takers, never injured or suspended players; CLUB-23✎ own players after the match→every player during it, by minutes; CLUB-45+ suspended players unavailable, bans reported
