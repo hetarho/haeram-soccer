@@ -44,6 +44,9 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
     await page.goto('/');
     await continueSlot(page);
     await expect(page.getByTestId('club-hub')).toBeVisible();
+    const venue = page.locator('[data-home-part="fixture"] [data-ui="home-away-badge"]');
+    await imageSkin(venue);
+    expect((await venue.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);
     await expect(page.locator('[data-home-part="entrances"]')).toHaveCount(0);
     const dim = await page
       .locator('[data-home-part="scene"] [data-facility-art]')

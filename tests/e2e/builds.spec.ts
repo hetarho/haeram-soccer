@@ -38,14 +38,13 @@ test('discloses roster and opponent tactical fit before an actual seeded match',
   await page.getByLabel('세계 생성 시드').fill(founding.seed);
   await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  await page.getByTestId('club-hub').getByRole('button', { name: '전술·선발 준비' }).click();
-  const dialog = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
+  await page.getByTestId('club-hub').getByRole('button', { name: '상세 리포트' }).click();
+  const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
   await expect(dialog).toBeVisible();
-  // The scouting note below names the club again, as the link to its team sheet.
-  await expect(dialog.getByText(opponent.name, { exact: true }).first()).toBeVisible();
-  await expect(
-    dialog.getByText(`상대 성향 ${tacticLabel[opponentTactic]}`, { exact: false }),
-  ).toBeVisible();
+  // The report's right column is the opponent: its name and the shape it plays.
+  const rival = dialog.getByRole('region', { name: '상대 팀', exact: true });
+  await expect(rival.getByText(opponent.name, { exact: true })).toBeVisible();
+  await expect(rival).toContainText(tacticLabel[opponentTactic]);
   const tactics = dialog.getByRole('region', { name: '경기 전술 준비' });
   const disclosures: Record<Tactic, { benefit: string; cost: string }> = {
     balanced: {
@@ -132,9 +131,9 @@ for (const viewport of [
     await page.getByLabel('세계 생성 시드').fill(`preparation-${viewport.width}`);
     await page.getByRole('button', { name: '쉬움' }).click();
     await page.getByRole('button', { name: '클럽 창단' }).click();
-    const opener = page.getByTestId('club-hub').getByRole('button', { name: '전술·선발 준비' });
+    const opener = page.getByTestId('club-hub').getByRole('button', { name: '상세 리포트' });
     await opener.click();
-    const dialog = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
+    const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
     const tacticTab = dialog.getByRole('tab', { name: '전술 선택', exact: true });
     const lineupTab = dialog.getByRole('tab', { name: '선발 선택', exact: true });
     await expect(tacticTab).toHaveAttribute('aria-selected', 'true');
@@ -179,6 +178,9 @@ for (const viewport of [
     await expect(opener).toBeFocused();
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
-    await expect(page.getByTestId('hub-preparation')).toContainText('직접 고른 선발');
+    await opener.click();
+    await expect(dialog.getByRole('region', { name: '감독 보고', exact: true })).toContainText(
+      '정해 주신 11명',
+    );
   });
 }

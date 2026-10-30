@@ -1,0 +1,161 @@
+.briefing {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  font-family: var(--display);
+}
+.note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+/* The manager speaks to the owner first. */
+.memo {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface-2);
+}
+.memo small {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-text);
+}
+.memo p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+/* Us on the left, them on the right, on every width. */
+.sides {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.side {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
+}
+.side h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  font-size: 15px;
+}
+.side h3 span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.side h4 {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.facts {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+}
+.facts div {
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+  font-size: 12px;
+}
+.facts dt {
+  flex: none;
+  width: 52px;
+  color: var(--text-muted);
+}
+.facts dd {
+  min-width: 0;
+  margin: 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.results {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.results li {
+  display: grid;
+  justify-items: center;
+  min-width: 34px;
+  padding: 2px 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--badge-radius);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+.results li b,
+.meetings li b {
+  font-size: 12px;
+}
+[data-result='승'] b {
+  color: var(--positive);
+}
+[data-result='패'] b {
+  color: var(--danger);
+}
+.meetings {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
+}
+.meetings h3 {
+  margin: 0;
+  font-size: 14px;
+}
+.meetings ol {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 4px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.meetings li {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.meetings li small {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+@media (max-width: 760px) {
+  .sides {
+    gap: 6px;
+  }
+  .side {
+    padding: 8px;
+  }
+  .facts div {
+    flex-direction: column;
+    gap: 0;
+  }
+  .facts dt {
+    width: auto;
+  }
+}

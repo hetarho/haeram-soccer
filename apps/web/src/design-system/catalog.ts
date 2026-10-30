@@ -52,6 +52,7 @@ export const STORIES: Story[] = [
     '기본 UI',
     [
       'OvrBadge',
+      'HomeAwayBadge',
       'Money',
       'AnimatedMoney',
       'BetaMark',
@@ -60,7 +61,7 @@ export const STORIES: Story[] = [
       'PersonCareer',
       'Term',
     ],
-    '능력치 등급, 잠재력, 금액 표기, BETA와 상세 정보 링크.',
+    '홈·원정 배지, 능력치 등급, 잠재력, 금액 표기, BETA와 상세 정보 링크.',
   ),
   story(
     'charts',
@@ -143,7 +144,7 @@ export const STORIES: Story[] = [
     'preparation',
     '전술 · 선발 준비',
     '경기 · 선수',
-    ['StrategyPanel', 'FixtureKitSelector', 'TacticalLab', 'OpponentDossier'],
+    ['StrategyPanel', 'FixtureKitSelector', 'TacticalLab', 'MatchBriefing'],
     '다음 상대 분석, 전술 비교, 선발과 경기 유니폼 선택.',
   ),
   story(

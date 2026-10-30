@@ -232,7 +232,7 @@ test('a terminated real worker exposes recovery and retains the last committed c
   await page.reload();
   await expect(page.getByTestId('game-round')).toHaveText('0');
   await expect(
-    page.getByTestId('club-hub').getByRole('button', { name: '전술·선발 준비', exact: true }),
+    page.getByTestId('club-hub').getByRole('button', { name: '상세 리포트', exact: true }),
   ).toBeEnabled();
 });
 test('a new game goes into another slot, both careers survive switching and back navigation works', async ({

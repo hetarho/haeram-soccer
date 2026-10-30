@@ -1,0 +1,51 @@
+{
+  "method": "Two built-in image_gen edits; shared createUiArtPipeline alpha bounds and WebP encoding",
+  "date": "2026-10-30",
+  "sources": "apps/web/design/matchday-print/home-away-badges/sources",
+  "prompts": "apps/web/design/matchday-print/home-away-badges/prompts.json",
+  "geometry": "Opaque blank ticket skins with transparent exterior, fixed source caps and filled centres; localized home/away labels remain live text.",
+  "assets": [
+    {
+      "file": "frame-home.webp",
+      "source": "home.png",
+      "crop": { "x": 14, "y": 129, "width": 1745, "height": 627 },
+      "filter": "",
+      "bytes": 4352,
+      "sha256": "36e87fd6bff82c363fc0ae2ae057a61cfee323235b48d718a1fd79f8c3d4785f",
+      "width": 192,
+      "height": 69,
+      "role": "image-art-match-home-badge",
+      "mode": "nine-slice",
+      "slice": 22,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2664377,
+        "inputSha256": "64900c39dbde3e272b67ce2add247bf835f801993bc0e75a3ac22e546786ba65",
+        "width": 192,
+        "height": 69,
+        "quality": 85
+      }
+    },
+    {
+      "file": "frame-away.webp",
+      "source": "away.png",
+      "crop": { "x": 17, "y": 104, "width": 1740, "height": 671 },
+      "filter": "",
+      "bytes": 4762,
+      "sha256": "e1f86628b8ec190af8af59a5aa9088281faf65e5b82b24b067237ef52afe9100",
+      "width": 192,
+      "height": 74,
+      "role": "image-art-match-away-badge",
+      "mode": "nine-slice",
+      "slice": 22,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2670445,
+        "inputSha256": "1957991aaef83cdeb08b337dca5ab34a8c77af38bb3ec1b5d875dc0c7f9694dd",
+        "width": 192,
+        "height": 74,
+        "quality": 85
+      }
+    }
+  ]
+}

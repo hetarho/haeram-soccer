@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { reducedMotion } from './motion';
 
 /** Counts minor units toward a new amount and flashes the direction of the change. */
@@ -10,7 +10,7 @@ export function AnimatedMoney({
   downClass,
 }: {
   value: string;
-  format: (value: string) => string;
+  format: (value: string) => ReactNode;
   className?: string;
   upClass?: string;
   downClass?: string;

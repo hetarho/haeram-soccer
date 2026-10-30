@@ -132,8 +132,8 @@ for (const viewport of [
     await page.getByRole('button', { name: '클럽 창단' }).click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await delegateSales(page);
-    await page.getByTestId('club-hub').getByRole('button', { name: '전술·선발 준비' }).click();
-    const sheet = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
+    await page.getByTestId('club-hub').getByRole('button', { name: '상세 리포트' }).click();
+    const sheet = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
     const tone = sheet.getByRole('combobox', { name: '전술 요청 방식', exact: true });
     const list = await optionList(tone);
     await tone.press('End');

@@ -27,8 +27,8 @@ export function PlayGuide({ goals, onClose }: { goals: ClubGoal[]; onClose: () =
           <div>
             <h3>다음 경기를 준비해요 {done('preparation') && <span>완료 ✓</span>}</h3>
             <p>
-              홈이나 경기 화면의 전술·선발에서 상대와 우리 선수를 비교해요. 전력 우선과 피로 회복
-              우선 선발은 선택하고 저장하면 끝!
+              홈이나 경기 화면의 상세 리포트에서 감독 보고로 상대와 우리 팀을 비교해요. 전력 우선과
+              피로 회복 우선 선발은 선택하고 저장하면 끝!
             </p>
           </div>
         </li>

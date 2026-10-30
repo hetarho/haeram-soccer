@@ -128,8 +128,15 @@ for (const { id: theme } of baseline.themeRegistry.entries)
       await page.getByRole('button', { name: '자동 모드로 변경', exact: true }).click();
       const date = await page.getByTestId('game-date').innerText();
       const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
+      const dropdownFrame = /\/art\/.+\/frame-dropdown\.(?:webp|png)/;
+      await expect(pace).toHaveCSS('border-image-source', dropdownFrame);
+      await pace.click();
+      await expect(pace).toHaveAttribute('aria-expanded', 'true');
+      await expect(pace).toHaveCSS('outline-style', 'none');
+      await pace.click();
       await chooseOption(pace, 'x10');
       await pace.hover();
+      await expect(pace).toHaveCSS('border-image-source', dropdownFrame);
       await expect
         .poll(async () => (await pace.evaluate(textContrast)).ratio)
         .toBeGreaterThanOrEqual(4.5);
@@ -142,6 +149,9 @@ for (const { id: theme } of baseline.themeRegistry.entries)
       await pace.press('ArrowDown');
       const list = page.getByRole('listbox', { name: '자동 진행 배속', exact: true });
       await expect(list).toBeVisible();
+      await expect(pace).toHaveCSS('outline-style', 'solid');
+      await expect(pace).toHaveCSS('border-image-source', dropdownFrame);
+      await expect(list).toHaveCSS('border-image-source', dropdownFrame);
       const checked = list.getByRole('option', { selected: true });
       for (const item of [checked, checked.locator('small')])
         await expect
@@ -231,7 +241,7 @@ for (const width of [390, 1380])
       expect(homeSkin.frame).toContain(assetPath);
       expect(homeSkin.fill).toContain(assetPath);
       await expectHomeSceneRatio(page);
-      const stats = page.getByRole('button', { name: '현재 리그 보기', exact: true });
+      const stats = page.getByRole('region', { name: '이번 시즌', exact: true });
       await expect(stats).toBeVisible();
       await expect(stats.locator('[data-pixel-icon="play"]')).toHaveCount(0);
       await page.getByRole('button', { name: /^피로/ }).click();

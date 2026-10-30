@@ -1,5 +1,26 @@
 /* Reusable skins for semantic controls and surfaces. Layout stays with each view. */
 html[data-theme] {
+  [data-ui='home-away-badge'] {
+    --match-badge-frame: var(--match-home-badge-frame);
+    --match-badge-slice: var(--match-home-badge-slice);
+    --match-badge-fill: var(--match-home-badge-fill);
+    --match-badge-ink: var(--match-home-badge-text);
+    border: 1px solid transparent;
+    border-image: var(--match-badge-frame) var(--match-badge-slice) fill /
+      var(--match-badge-frame-width, 6px) stretch;
+    border-radius: 0;
+    background: var(--match-badge-fill) content-box;
+    color: var(--match-badge-ink);
+    box-shadow: none;
+  }
+
+  [data-ui='home-away-badge'][data-side='away'] {
+    --match-badge-frame: var(--match-away-badge-frame);
+    --match-badge-slice: var(--match-away-badge-slice);
+    --match-badge-fill: var(--match-away-badge-fill);
+    --match-badge-ink: var(--match-away-badge-text);
+  }
+
   /* Match-specific containers keep their compact layout while taking the same image materials. */
   [data-ui='match-theatre'] {
     border: 1px solid transparent;
@@ -311,10 +332,7 @@ html[data-theme] {
     textarea,
     select
   ):focus-visible,
-  [data-select-trigger][role='combobox']:not([data-ui='text-select']):is(
-      :focus-visible,
-      [data-state='open']
-    ) {
+  [data-select-trigger][role='combobox']:not([data-ui='text-select']):focus-visible {
     border-color: var(--image-field-focus-edge, var(--image-field-edge, transparent));
     outline: var(--focus-width) solid var(--focus);
     outline-offset: var(--focus-offset);
@@ -410,7 +428,7 @@ html[data-theme] {
 
   [data-testid='app-menu'] section {
     display: grid;
-    gap: var(--image-menu-gap, 10px);
+    gap: 0;
   }
 
   [data-testid='app-menu'] h3 {
@@ -419,10 +437,10 @@ html[data-theme] {
   }
 
   [data-menu-row] {
-    min-height: 68px;
-    padding: 12px 14px;
-    gap: 12px;
-    line-height: 1.5;
+    min-height: 44px;
+    padding: 6px 10px;
+    gap: 10px;
+    line-height: 1.4;
     --text-faint: var(--action-text, var(--image-muted));
     color: var(--action-text, var(--image-ink-color));
   }
@@ -1249,6 +1267,18 @@ html[data-theme] {
   [data-testid='facility-overview'] {
     border-image: var(--image-tile-frame)
       var(--image-art-frame-tile-slice, var(--image-frame-slice, 54)) / 10px stretch;
+  }
+
+  /* In the menu the file import is one more plain row. */
+  [data-testid='app-menu'] label:has(input[type='file']) {
+    border: 0;
+    border-image: none;
+    background: none;
+  }
+
+  [data-testid='app-menu'] :is(button, label):hover:not(:disabled) {
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
   }
 
   label:has(input[type='file']) {

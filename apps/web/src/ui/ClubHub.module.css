@@ -1,7 +1,7 @@
 .hub {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: 'header' 'links' 'stage' 'state' 'fixture';
+  grid-template-areas: 'header' 'fixture' 'links' 'stage' 'state';
   align-content: start;
   gap: 16px;
   width: 100%;
@@ -145,38 +145,52 @@
   border-radius: var(--card-radius);
   background: var(--surface-grain, none) var(--surface);
 }
-.fixtureActions {
-  flex: none;
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: var(--control-gap);
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  max-width: 45%;
-}
-.fixtureActions > button {
-  flex: none;
-  min-width: 0;
-}
 .fixtureInfo {
   flex: 1;
   min-width: 0;
 }
-.fixtureInfo small {
-  display: block;
-  overflow-wrap: anywhere;
-  font-size: 12px;
+.fixtureTitle {
+  margin: 0;
+  font-size: 14px;
   line-height: 1.4;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.6px;
   color: var(--accent-text);
   font-family: var(--display);
 }
-.fixtureInfo h3 {
+.fixtureHead {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+}
+.fixtureRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.fixtureTag {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.fixtureRow > .prepare {
+  flex: none;
+  margin-left: auto;
+}
+.fixtureInfo h3 {
+  display: flex;
+  flex: 0 1 auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
   margin: 2px 0;
   font-size: 20px;
   line-height: 1.3;
@@ -208,14 +222,10 @@
   overflow-wrap: anywhere;
   font-family: var(--display);
 }
+/* The report is the card's primary action; the shared skin draws it. */
 .hub .fixture .prepare {
   min-height: 44px;
-  padding: var(--control-padding-block) var(--control-padding-inline);
-  font-size: 12px;
   white-space: nowrap;
-  background: var(--fixture-control-fill, var(--subtle-fill));
-  color: var(--fixture-control-text, var(--text));
-  border-color: var(--fixture-control-edge, transparent);
 }
 @media (max-width: 760px) {
   .hub {
@@ -615,6 +625,17 @@ button.resources:active:not(:disabled) {
   overflow: hidden;
   border-radius: var(--card-radius);
 }
+/* Small "리그" / "컵" titles head the two button groups. */
+.groupTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 8px 14px 0;
+  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-faint);
+}
 .seasonSummary > .resources {
   width: auto;
   min-width: 0;
@@ -654,7 +675,8 @@ button.resources:active:not(:disabled) {
   font-family: var(--display);
   font-size: 12px;
 }
-.seasonCard > .seasonMeter {
+.seasonSummary > .seasonMeter {
+  grid-column: 1 / -1;
   padding: 8px 14px 10px;
 }
 .sceneArt img {
@@ -826,10 +848,11 @@ button.resources:active:not(:disabled) {
   color: var(--accent-text);
   font-size: 15px;
 }
+/* League, cups, records and briefing: four links in one row. */
 .clubLinks {
   grid-area: links;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 .clubLinks button {

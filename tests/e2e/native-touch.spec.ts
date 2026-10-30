@@ -97,10 +97,10 @@ for (const viewport of [
     // (CI WebKit could stall in its own scroll step while the stop's feedback still moved).
     const prepare = page
       .getByTestId('club-hub')
-      .getByRole('button', { name: '전술·선발 준비', exact: true });
+      .getByRole('button', { name: '상세 리포트', exact: true });
     await expectTouchControl(prepare, viewport);
     await prepare.click();
-    const preparation = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
+    const preparation = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
     const tone = preparation.getByRole('combobox', { name: '전술 요청 방식', exact: true });
     await expectTouchControl(tone, viewport);
     await tone.focus();
@@ -141,7 +141,7 @@ for (const viewport of [
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await page
       .getByTestId('club-hub')
-      .getByRole('button', { name: '전술·선발 준비', exact: true })
+      .getByRole('button', { name: '상세 리포트', exact: true })
       .click();
     await preparation.getByRole('tab', { name: '선발 선택', exact: true }).click();
     await preparation.getByText('선수별 교체', { exact: true }).click();
@@ -204,6 +204,6 @@ for (const viewport of [
       1,
     );
     // Exploring the market and other leagues advanced no day.
-    await expect(await clubhouseDate(page)).toHaveText('1950년 8월 1일');
+    await expect(await clubhouseDate(page)).toHaveText('1950.08.01');
   });
 }

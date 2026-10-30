@@ -290,9 +290,9 @@ for (const viewport of [
     await expect(result).toContainText(`${ownGoals}–${otherGoals}`);
     const prepare = page
       .getByTestId('match-theatre')
-      .getByRole('button', { name: '전술·선발 준비', exact: true });
+      .getByRole('button', { name: '상세 리포트', exact: true });
     await prepare.click();
-    const preparation = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
+    const preparation = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
     await expect(preparation).toBeVisible();
     // The settled match on screen offers no shirt choice; only the next fixture does (→WEB-88).
     const upcoming = nextOwnFixture(reference)!;

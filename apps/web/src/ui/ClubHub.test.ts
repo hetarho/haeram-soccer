@@ -9,6 +9,7 @@ import { NextMatchCard, SeasonCard, TeamState, CupBriefing } from './ClubHub';
 import korean from '../../public/presentation/locales/ko-KR.json';
 import { cashState, teamStates, type TeamStateItem } from './teamState';
 import { openCupSeason } from './state';
+import { ownLeagueProgress } from './league';
 
 vi.mock('./state', async (original) => ({
   ...(await original<typeof import('./state')>()),
@@ -73,17 +74,26 @@ beforeEach(() => {
 afterEach(() => gameStore.setState(initialClientState, true));
 
 describe('contextual home match access', () => {
-  it('keeps opponent and preparation without a future observation shortcut', () => {
-    const markup = renderToStaticMarkup(
-      createElement(NextMatchCard, { w: world(), onPrepare: vi.fn() }),
-    );
-    expect(markup).toContain('NEXT MATCH');
-    expect(markup).toContain('A Very Long Opponent Athletic Club');
-    expect(markup).toContain('감독 자동 선발');
-    expect(markup).toContain('전술·선발 준비</button>');
-    expect(markup).not.toContain('data-testid="home-watch"');
-    expect(markup).not.toContain('경기로 돌아가기');
-  });
+  it.each(['home', 'away'] as const)(
+    'keeps the %s venue, opponent and preparation without a future observation shortcut',
+    (venue) => {
+      const w = world();
+      if (venue === 'away') {
+        w.fixtures[0].home = 'opponent';
+        w.fixtures[0].away = 'own';
+      }
+      const markup = renderToStaticMarkup(createElement(NextMatchCard, { w, onPrepare: vi.fn() }));
+      expect(markup).toContain(
+        `data-ui="home-away-badge" data-side="${venue}">${venue === 'home' ? '홈' : '원정'}</span>`,
+      );
+      expect(markup).toContain('NEXT MATCH');
+      expect(markup).toContain('A Very Long Opponent Athletic Club');
+      expect(markup).not.toContain('hub-preparation');
+      expect(markup).toContain('상세 리포트</button>');
+      expect(markup).not.toContain('data-testid="home-watch"');
+      expect(markup).not.toContain('경기로 돌아가기');
+    },
+  );
 
   it('keeps preparation for an empty schedule and preserves critical-state protection', () => {
     const w = world();
@@ -96,7 +106,7 @@ describe('contextual home match access', () => {
       }),
     );
     expect(markup).toContain('다음 시즌을 준비해요');
-    expect(markup).toMatch(/<button[^>]*disabled=""[^>]*>전술·선발 준비<\/button>/);
+    expect(markup).toMatch(/<button[^>]*disabled=""[^>]*>상세 리포트<\/button>/);
   });
 
   it('keeps unfinished observation out of the upcoming-match card', () => {
@@ -105,7 +115,7 @@ describe('contextual home match access', () => {
       createElement(NextMatchCard, { w: world(), onPrepare: vi.fn() }),
     );
     expect(markup).toContain('A Very Long Opponent Athletic Club');
-    expect(markup).toContain('전술·선발 준비');
+    expect(markup).toContain('상세 리포트');
     expect(markup).not.toContain('관전 이어보기');
     expect(markup).not.toContain('home-watch');
   });
@@ -136,22 +146,30 @@ describe('home season card', () => {
     return w;
   };
   const render = (active: boolean) =>
-    renderToStaticMarkup(createElement(SeasonCard, { w: lower(), active, onOpen: vi.fn() }));
+    renderToStaticMarkup(createElement(SeasonCard, { w: lower(), active }));
 
-  it('groups the round, our rank and the record in one button above the progress rule', () => {
+  it('reads the round, our rank and the record above the progress rule without opening anything', () => {
     const markup = render(true);
-    const button = markup.match(/<button[^>]*aria-label="현재 리그 보기"[^>]*>.*?<\/button>/)?.[0];
-    expect(button).toBeDefined();
-    for (const label of ['라운드', '리그 순위', '시즌 전적']) expect(button).toContain(label);
-    expect(button).toContain('data-testid="hub-rank"');
-    expect(button).toContain('1-0-0');
-    expect(button).toContain('승점 3');
-    expect(button).toMatch(/data-testid="game-round"[^>]*>1</);
-    expect(button).toMatch(/data-testid="game-round-total"[^>]*>\/ 2</);
-    // The progress rule stays outside the button, where assistive technology still reads it.
-    expect(button).not.toContain('<progress');
-    expect(markup).toContain('aria-label="시즌 진행률"');
-    expect(markup.indexOf('<progress')).toBeGreaterThan(markup.indexOf('</button>'));
+    // The links below the card open the league and the cups; the card itself only reads.
+    expect(markup).not.toContain('<button');
+    for (const label of ['라운드', '리그 순위']) expect(markup).toContain(label);
+    expect(markup).toContain('data-testid="hub-rank"');
+    expect(markup).toContain('1-0-0');
+    expect(markup).toContain('승점 3');
+    expect(markup).toMatch(/data-testid="game-round"[^>]*>1</);
+    expect(markup).toMatch(/data-testid="game-round-total"[^>]*>\/ 2</);
+    expect(markup).toContain('aria-label="리그 진행률"');
+    expect(markup.indexOf('<progress')).toBeGreaterThan(markup.indexOf('data-testid="hub-record"'));
+  });
+
+  it('fills league progress a day at a time from the first to the last league match day', () => {
+    const progress = (day: number) => {
+      const w = lower();
+      w.calendar = { ...w.calendar, day } as World['calendar'];
+      return ownLeagueProgress(w);
+    };
+    // Rounds 1 and 2 are played on days 7 and 14.
+    expect([6, 7, 9, 14, 20].map(progress)).toEqual([0, 0, 28.6, 100, 100]);
   });
 
   it('leaves the round ids to the information row while home is hidden', () => {
@@ -183,15 +201,10 @@ describe('home season card', () => {
         winner: 'own',
       },
     ] as unknown as World['europe'];
-    const markup = renderToStaticMarkup(
-      createElement(SeasonCard, { w, active: true, onOpen: vi.fn() }),
+    const markup = renderToStaticMarkup(createElement(SeasonCard, { w, active: true }));
+    expect(markup).toMatch(
+      /data-home-part="cup-summary"[^>]*><span>컵대회<\/span><b>2<small>개<\/small><\/b>/,
     );
-    const cups = markup.match(
-      /<button[^>]*aria-label="현재 컵 대회 모아보기"[^>]*>.*?<\/button>/,
-    )?.[0];
-    expect(cups).toContain('aria-haspopup="dialog"');
-    expect(cups).toContain('<b>2<small>개</small></b>');
-    expect(markup.match(/<button/g)).toHaveLength(2);
     expect(markup).not.toContain('European Cup 현재 대회 보기');
     expect(render(true)).not.toContain('진행 중 없음');
   });

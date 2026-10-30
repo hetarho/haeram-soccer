@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createWorld, advanceRound } from '../../../../packages/engine/src/index';
-import { scoutOpponent, resultFor } from './scouting';
+import { matchBriefing, resultFor } from './scouting';
 
 const input = {
   country: 'ENG' as const,
@@ -9,43 +9,36 @@ const input = {
   seed: 'scout',
   level: 'easy' as const,
 };
-describe('opponent scouting', () => {
-  it('shows no invented form before kickoff and never changes the world', () => {
+describe('match briefing', () => {
+  it('shows no invented results before kickoff and never changes the world', () => {
     const w = createWorld(input);
     const before = JSON.stringify(w);
-    expect(scoutOpponent(w)).toMatchObject({ form: [], meetings: [], rank: undefined });
+    expect(matchBriefing(w)).toMatchObject({ ownRecent: [], theirRecent: [], meetings: [] });
     expect(JSON.stringify(w)).toBe(before);
   });
-  it('uses settled own-league scores from the opponent perspective and scopes meetings', () => {
+  it("reads both sides' last ten settled results and our last ten meetings", () => {
     const w = createWorld(input);
-    for (let i = 0; i < 7; i++) advanceRound(w);
-    const scout = scoutOpponent(w)!;
-    expect(scout.form).toHaveLength(5);
-    expect(
-      scout.form.every(
-        (f) =>
-          f.score &&
-          f.year === w.year &&
-          (f.home === scout.opponent.id || f.away === scout.opponent.id),
-      ),
-    ).toBe(true);
+    for (let i = 0; i < 16; i++) advanceRound(w);
+    const brief = matchBriefing(w)!;
+    for (const [club, recent] of [
+      [w.playerClub, brief.ownRecent],
+      [brief.opponent.id, brief.theirRecent],
+    ] as const) {
+      expect(recent.length, club).toBe(10);
+      expect(recent.every((f) => resultFor(f, club))).toBe(true);
+    }
     const meeting = {
-      ...w.ownMatches[0],
-      home: scout.opponent.id,
+      ...w.ownMatches[0]!,
+      home: brief.opponent.id,
       away: w.playerClub,
       score: { home: 1, away: 3 },
     };
-    w.ownMatches = [
-      meeting,
-      ...Array.from({ length: 30 }, (_, i) => ({
-        ...meeting,
-        id: `irrelevant-${i}`,
-        home: 'unrelated',
-      })),
-    ];
-    expect(scoutOpponent(w)!.meetings).toHaveLength(0);
-    w.ownMatches.push(meeting);
-    expect(scoutOpponent(w)!.meetings).toHaveLength(1);
+    w.ownMatches = Array.from({ length: 12 }, (_, i) => ({ ...meeting, id: `meeting-${i}` }));
+    w.ownMatches.push({ ...meeting, id: 'elsewhere', home: 'unrelated' });
+    const meetings = matchBriefing(w)!.meetings;
+    expect(meetings.map((f) => f.id)).toEqual(
+      Array.from({ length: 10 }, (_, i) => `meeting-${i + 2}`),
+    );
     expect(resultFor(meeting, w.playerClub)).toEqual({ own: 3, other: 1, result: '승' });
     expect(resultFor(meeting, 'unrelated')).toBeUndefined();
   });

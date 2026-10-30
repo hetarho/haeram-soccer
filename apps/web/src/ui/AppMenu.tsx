@@ -16,7 +16,7 @@ function MenuRow({
   onClick: () => void;
 }) {
   return (
-    <button className={s.row} data-ui="tertiary" data-menu-row onClick={onClick}>
+    <button className={s.row} data-ui="navigation" data-menu-row onClick={onClick}>
       <span className={s.icon}>
         <PixelIcon name={icon} size={20} />
       </span>
@@ -77,10 +77,8 @@ export function AppMenu({
         </section>
         <section aria-labelledby={`${id}-help`}>
           <h3 id={`${id}-help`}>{t('shell.help')}</h3>
-          <div className={s.help}>
-            <MenuRow icon="news" title={t('shell.guide')} onClick={open(onGuide)} />
-            <MenuRow icon="table" title={t('shell.glossary')} onClick={open(onGlossary)} />
-          </div>
+          <MenuRow icon="news" title={t('shell.guide')} onClick={open(onGuide)} />
+          <MenuRow icon="table" title={t('shell.glossary')} onClick={open(onGlossary)} />
         </section>
         <section className={s.saveTools} aria-labelledby={`${id}-saves`}>
           <h3 id={`${id}-saves`}>{t('shell.savedGames')}</h3>

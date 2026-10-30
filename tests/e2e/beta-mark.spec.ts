@@ -19,6 +19,11 @@ const clubName = () => {
   const w = world();
   return w.clubs.find((club) => club.id === w.playerClub)!.name;
 };
+/** The play HUD names the club beside BETA; phones show its crest alone, BETA beside it. */
+const hudClub = (page: Page, hud: Locator) =>
+  page.viewportSize()!.width <= 760
+    ? hud.locator('[data-ui="hud-club"] > svg')
+    : hud.getByText(clubName(), { exact: true });
 /** The start HUD, before a club is in play (founding, recovery and error screens share it). */
 const startHud = (page: Page) => page.locator('[data-ui="game-shell"] > main > header');
 
@@ -72,11 +77,7 @@ async function slotsThenPlay(page: Page, theme?: string) {
   await continueSlot(page);
   await expect(page.getByTestId('club-hub')).toBeVisible();
   const hud = gameHud(page);
-  await expectMark(
-    hud.getByText(clubName(), { exact: true }),
-    hud.getByTestId('beta-mark'),
-    'BETA',
-  );
+  await expectMark(hudClub(page, hud), hud.getByTestId('beta-mark'), 'BETA');
   await expectTargets([
     hud.getByRole('button', { name: '설정', exact: true }),
     page.getByTestId('communications-button'),
@@ -88,11 +89,7 @@ async function slotsThenPlay(page: Page, theme?: string) {
   await enterOffice(page);
   const bar = officeBar(page);
   await expect(officeTitle(page)).toHaveText(LOBBY);
-  await expectMark(
-    hud.getByText(clubName(), { exact: true }),
-    hud.getByTestId('beta-mark'),
-    'BETA',
-  );
+  await expectMark(hudClub(page, hud), hud.getByTestId('beta-mark'), 'BETA');
   await expect(bar.getByTestId('beta-mark')).toHaveCount(0);
   await expect(bar.getByTestId('hud-cash')).toHaveCount(0);
   await expect(bar.getByRole('button', { name: '나가기', exact: true })).toHaveCount(0);

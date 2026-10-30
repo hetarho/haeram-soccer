@@ -1,13 +1,16 @@
+/* A plain settings menu: titled groups of compact rows, no button frames. */
 .menu {
   display: grid;
-  gap: 28px;
+  gap: 16px;
   min-width: 0;
 }
 .menu section {
+  display: grid;
   min-width: 0;
 }
 .menu h3 {
-  margin: 0 0 10px;
+  margin: 0 0 4px;
+  padding: 0 10px;
   color: var(--text-faint);
   font-size: 12px;
   font-weight: 600;
@@ -15,88 +18,87 @@
 .row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
   min-width: 0;
-  min-height: 52px;
-  padding: 8px 0;
+  min-height: 44px;
+  padding: 6px 10px;
   border: 0;
+  border-radius: var(--control-radius);
   background: transparent;
   box-shadow: none;
   text-align: left;
 }
-.row:hover:not(:disabled) {
+.row:hover:not(:disabled),
+.saveTools button:hover:not(:disabled),
+.saveTools label:hover {
   background: var(--subtle-fill);
   filter: none;
 }
 .icon {
   display: grid;
   place-items: center;
-  flex: 0 0 32px;
-  height: 32px;
+  flex: 0 0 20px;
+  height: 20px;
   color: var(--text-muted);
 }
+/* The current choice reads on the right of its row, as in a settings list. */
 .copy {
+  display: flex;
   flex: 1;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
   min-width: 0;
 }
 .copy b {
-  display: block;
   color: var(--text);
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.5;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
   word-break: keep-all;
 }
 .copy small {
-  display: block;
-  margin-top: 4px;
+  min-width: 0;
+  overflow: hidden;
   color: var(--text-faint);
   font-size: 12px;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .row > svg:last-child {
   flex: none;
   color: var(--text-faint);
 }
-.help {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-.help .row {
-  gap: 6px;
-}
-.help .row > svg:last-child {
-  display: none;
-}
 .saveTools > p {
-  margin: 0 0 12px;
+  margin: 0 0 4px;
+  padding: 0 10px;
   font-size: 12px;
 }
 .saveTools > div {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
   margin: 0;
 }
 .saveTools button,
 .saveTools label {
+  display: flex;
+  align-items: center;
+  width: 100%;
   min-height: 44px;
-  padding: 10px 12px;
+  margin: 0;
+  padding: 6px 10px;
   border: 0;
-  background: var(--subtle-fill);
-  font-size: 13px;
-  font-weight: 500;
-  text-align: center;
-}
-.saveTools label {
-  grid-column: 1 / -1;
-  width: fit-content;
-  padding: 8px 4px;
+  border-image: none;
   border-radius: var(--control-radius);
   background: transparent;
+  box-shadow: none;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
 }
 .saveTools label:focus-within {
   outline: var(--focus-width) solid var(--focus);

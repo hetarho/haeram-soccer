@@ -6,6 +6,7 @@ navigation, controls, tables and overlays.
 Read the [shared design-system guide](../DESIGN-SYSTEM.md) before extending this family.
 The [control source notes](../controls-print/README.md) describe the current component assets
 and the pending button-hierarchy review.
+The [home/away badge notes](../matchday-print/home-away-badges/README.md) cover the home/away ticket resources.
 The [content hierarchy notes](../hierarchy-print/README.md) cover tab marks, quiet panel surfaces,
 table materials and compact spacing.
 The [analysis notes](../analysis-print/README.md) cover chart paper and circular player markers;

@@ -206,8 +206,8 @@ export function remedies(w: World, key: StateKey): Remedy[] {
       return [
         {
           id: 'prepare',
-          label: '전술·선발 준비',
-          effect: '선발 11명과 전술을 직접 골라 다음 경기 전력을 맞춰요',
+          label: '상세 리포트',
+          effect: '감독의 경기 준비 보고를 보고 선발과 전술을 제안해요',
           prepare: true,
         },
         {
@@ -262,7 +262,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
         careRequest(w, 'camp'),
         {
           id: 'prepare',
-          label: '전술·선발 직접 고르기',
+          label: '상세 리포트에서 제안하기',
           effect: '전방 압박은 피로가 더 쌓여요. 선발과 전술을 비교해 보세요',
           prepare: true,
         },

@@ -115,8 +115,8 @@ for (const viewport of [
     }
     await expect(page.getByTestId('hud-cash')).toContainText('운영 자금');
     await expect(page.getByTestId('hud-cash')).toBeVisible();
-    const season = hub.getByRole('button', { name: '현재 리그 보기', exact: true });
-    for (const figure of ['라운드', '리그 순위', '시즌 전적'])
+    const season = hub.getByRole('region', { name: '이번 시즌', exact: true });
+    for (const figure of ['라운드', '리그 순위', '승점 0'])
       await expect(season.getByText(figure, { exact: true })).toBeVisible();
     await expect(page.getByTestId('hub-record')).toHaveText('0-0-0');
     const state = page.getByRole('region', { name: '팀 상태' });

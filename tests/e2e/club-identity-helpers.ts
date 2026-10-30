@@ -406,7 +406,7 @@ export async function applyDesign(page: Page, view: Locator) {
 }
 
 export const hubPreparation = (page: Page) =>
-  page.getByTestId('club-hub').getByRole('button', { name: '전술·선발 준비', exact: true });
+  page.getByTestId('club-hub').getByRole('button', { name: '상세 리포트', exact: true });
 /** Opens preparation and unfolds its shirt selector (→WEB-88). */
 export async function openKit(page: Page, opener?: Locator) {
   // Home's preparation is outside the office, back home from wherever it was entered.
@@ -420,7 +420,7 @@ export async function openKit(page: Page, opener?: Locator) {
         .click();
   }
   await (opener ?? hubPreparation(page)).click();
-  const dialog = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
+  const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
   const kit = dialog.getByTestId('fixture-kit');
   await kit.getByTestId('fixture-kit-summary').click();
   await expect(

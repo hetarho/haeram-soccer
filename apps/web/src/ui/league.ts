@@ -1,6 +1,7 @@
 import type { Club, Fixture, TableRow, World } from '../../../../packages/contracts/src/types';
 import { COUNTRIES, country } from '../../../../packages/catalogs/src/index';
 import { groupKey } from '../../../../packages/engine/src/league-fixtures';
+import { currentDay, fixtureDay } from '../../../../packages/engine/src/calendar';
 import { divisionName } from '../presentation/competitionLabels';
 
 export { divisionName };
@@ -160,6 +161,15 @@ export function divisionRound(rounds: readonly number[], week: number): number {
 export function ownDivisionRound(w: World): { played: number; total: number } {
   const rounds = leagueRounds(leagueFixtures(w, ownLeagueIds(w)));
   return { played: divisionRound(rounds, w.round), total: rounds.length };
+}
+/** Our division's progress in percent to one decimal, a day at a time from its first to its last match day. */
+export function ownLeagueProgress(w: World): number {
+  const days = leagueFixtures(w, ownLeagueIds(w)).map(fixtureDay);
+  if (!days.length) return 0;
+  const first = Math.min(...days),
+    last = Math.max(...days);
+  const share = last > first ? (currentDay(w) - first) / (last - first) : +(currentDay(w) >= last);
+  return Math.min(100, Math.max(0, Math.round(share * 1000) / 10));
 }
 /**
  * Only the snapshots after rounds the league played: a week it sat out repeats the previous

@@ -1,5 +1,4 @@
 import { Select } from './Select';
-import { FacilityArt } from './FacilityArt';
 import { memo, useCallback, useEffect, useId, useRef, useState } from 'react';
 import type { Ban, Player, Tactic, World } from '../../../../packages/contracts/src/types';
 import {
@@ -35,7 +34,7 @@ import { gameActionsBlocked, gameStore, useGameState } from '../runtime/store';
 import { Dialog } from './Dialog';
 import { FixtureKitSelector } from './FixtureKitSelector';
 import { Money } from './Money';
-import { OpponentDossier } from './OpponentDossier';
+import { MatchBriefing } from './MatchBriefing';
 import { TacticalLab } from './TacticalLab';
 import s from './StrategyPanel.module.css';
 
@@ -310,7 +309,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
     <>
       {open && (
         <Dialog
-          label="다음 경기 전술과 선발 준비"
+          label="다음 경기 상세 리포트"
           onClose={close}
           wide
           actions={
@@ -365,21 +364,9 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
               진행 중인 처리를 마치고 현재 선발을 불러오는 중…
             </p>
           )}
-          <figure className={s.preparationScene}>
-            <FacilityArt kind="locker" world={w} className={s.preparationArt} />
-            <figcaption className={s.opponent}>
-              <span>다음 상대</span>
-              <strong>{opponent?.name || '다음 시즌 일정 준비 중'}</strong>
-              {opponent && (
-                <p>
-                  전력 {opponent.strength} ·{' '}
-                  {next?.home === w.playerClub ? '우리 홈 경기' : '원정 경기'} · 상대 성향{' '}
-                  {opponentTactic && tacticLabel[opponentTactic]}
-                </p>
-              )}
-            </figcaption>
-          </figure>
-          <OpponentDossier w={w} />
+          <MatchBriefing w={w} />
+          {/* The owner answers the report: a tactic request to the manager or a chosen XI. */}
+          <h3 className={s.proposalHead}>구단주 제안</h3>
           {/* Its own draft and command, apart from the tactic and lineup below (→WEB-88). */}
           {!preparing && <FixtureKitSelector client={client} blocked={blocked} />}
           {playerId && (

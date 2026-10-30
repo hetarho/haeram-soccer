@@ -12,6 +12,7 @@ import { TermDial } from '../ui/ClubStaff';
 import { PixelIcon } from '../ui/PixelIcon';
 import { TrophyIcon, type TrophyKind } from '../ui/TrophyIcon';
 import { OvrBadge } from '../ui/OvrBadge';
+import { HomeAwayBadge } from '../ui/HomeAwayBadge';
 import { Money } from '../ui/Money';
 import { AnimatedMoney } from '../ui/AnimatedMoney';
 import { BetaMark } from '../ui/BetaMark';
@@ -367,6 +368,12 @@ function Badges({ runtime }: { runtime: Runtime }) {
     player = w.players[0];
   return (
     <>
+      <Section title="HomeAwayBadge · 홈과 원정">
+        <div className="ds-row">
+          <HomeAwayBadge side="home" />
+          <HomeAwayBadge side="away" />
+        </div>
+      </Section>
       <Section title="OvrBadge · 등급과 잠재력">
         <div className="ds-row">
           {[42, 58, 70, 80, 90].map((value) => (
@@ -717,7 +724,7 @@ export default function StoryRenderer({
       case 'home-cards':
         content = (
           <>
-            <SeasonCard w={w} active onOpen={noop} />
+            <SeasonCard w={w} active />
             <NextMatchCard w={w} onPrepare={() => setPreparing(true)} />
             <CupBriefing w={w} />
             <TeamState w={w} client={client} onPrepare={noop} />
@@ -787,7 +794,7 @@ export default function StoryRenderer({
       case 'preparation':
         content = (
           <>
-            {!open && <button onClick={() => setOpen(true)}>전술·선발 준비 열기</button>}
+            {!open && <button onClick={() => setOpen(true)}>상세 리포트 열기</button>}
             {open && <StrategyPanel w={w} client={client} onClose={() => setOpen(false)} />}
           </>
         );

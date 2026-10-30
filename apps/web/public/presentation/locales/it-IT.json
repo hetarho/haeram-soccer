@@ -179,6 +179,8 @@
     "personnel.market": "Mercato",
     "personnel.training": "Allenamento",
     "personnel.manager": "Allenatore",
-    "personnel.coaches": "Staff"
+    "personnel.coaches": "Staff",
+    "fixture.home": "Casa",
+    "fixture.away": "Trasferta"
   }
 }

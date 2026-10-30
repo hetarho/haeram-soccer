@@ -1,0 +1,17 @@
+{
+  "method": "Built-in image_gen edits of the existing Matchday Print ticket",
+  "date": "2026-10-30",
+  "reference": "apps/web/public/art/matchday-print/home/frame-stamp.webp",
+  "assets": [
+    {
+      "id": "home",
+      "source": "sources/home.png",
+      "prompt": "Use case: precise-object-edit. Asset type: a reusable blank HOME venue badge skin for the Next Match card in a 1950s football journal game. Use the supplied red ticket only as the Matchday Print material and linework reference. Redesign it as one small horizontal badge, approximately 2:1 aspect ratio, flat front view. Deep vermilion red ink #9a3528 across an opaque, quietly grained centre, fine warm ivory double printed keyline, very small clipped ticket corners and restrained imperfect letterpress edges. This is a quiet informational badge, not an action button or a shield. Keep all border details inside the outer six percent and the entire middle blank for a live Korean label. No text, letters, numbers, icons, logos, mockup, surrounding panel, scene or external drop shadow. One isolated production asset, centered, occupying most of the canvas with a small truly transparent exterior. Fine grain must remain visible when reduced to 40 by 24 CSS pixels; clean silhouette, not heavily distressed."
+    },
+    {
+      "id": "away",
+      "source": "sources/away.png",
+      "prompt": "Use case: precise-object-edit. Asset type: a reusable blank AWAY venue badge skin for the Next Match card in a 1950s football journal game. Use the supplied red ticket only as the Matchday Print material and linework reference. Redesign it as one small horizontal badge, approximately 2:1 aspect ratio, flat front view. Deep slate blue-grey ink #315565 across an opaque, quietly grained centre, fine warm ivory double printed keyline, very small clipped ticket corners and restrained imperfect letterpress edges. Match the proportions and line weight of a compact printed venue ticket. This is a quiet informational badge, not an action button or a shield. Keep all border details inside the outer six percent and the entire middle blank for a live Korean label. No text, letters, numbers, icons, logos, mockup, surrounding panel, scene or external drop shadow. One isolated production asset, centered, occupying most of the canvas with a small truly transparent exterior. Fine grain must remain visible when reduced to 40 by 24 CSS pixels; clean silhouette, not heavily distressed."
+    }
+  ]
+}

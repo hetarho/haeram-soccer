@@ -56,7 +56,7 @@ async function openLens(
         .getByRole('dialog', { name: '시즌 상세와 클럽 소식', exact: true })
         .getByRole('button', { name: '전체 리그 보기 →', exact: true })
         .click();
-    } else await home.getByRole('button', { name: '현재 리그 보기', exact: true }).click();
+    } else await home.getByRole('button', { name: '리그 보기', exact: true }).click();
   }
   await expect(page).toHaveURL((url) => url.pathname === pathname);
   if (hub === '역사') {

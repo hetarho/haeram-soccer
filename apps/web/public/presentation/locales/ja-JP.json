@@ -173,6 +173,8 @@
     "personnel.market": "移籍市場",
     "personnel.training": "練習",
     "personnel.manager": "監督",
-    "personnel.coaches": "スタッフ"
+    "personnel.coaches": "スタッフ",
+    "fixture.home": "ホーム",
+    "fixture.away": "アウェー"
   }
 }

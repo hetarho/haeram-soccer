@@ -15,7 +15,7 @@ async function found(page: import('@playwright/test').Page) {
   await page.getByLabel('세계 생성 시드').fill('live-tabs-quiet');
   await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 1일');
+  await expect(page.getByTestId('game-date')).toHaveText('1950.08.01');
 }
 
 async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-first') {
@@ -58,7 +58,7 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   // The run has left the founding day. A step that ran late carries the days it owes, so no one
   // day before the match eve is sure to be on screen.
-  await expect(date).not.toHaveText('1950년 8월 1일');
+  await expect(date).not.toHaveText('1950.08.01');
   // Looking at the league keeps the run going; the selected statistics view is kept.
   // The clubhouse detour can meet the observation before its second click. Dismiss it through
   // its real control, then reopen the unchanged work in the event order this case exercises.
@@ -258,7 +258,7 @@ test('watching a match pauses the calendar and retains playback across page swit
   await theatre.getByRole('button', { name: '홈', exact: true }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await expect(page.getByTestId('home-watch')).toHaveCount(0);
-  await expect(page.getByRole('button', { name: '전술·선발 준비', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: '상세 리포트', exact: true })).toBeVisible();
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toBeVisible();
 });
 

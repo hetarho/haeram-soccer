@@ -1,16 +1,16 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../packages/engine/src/player-state';
-import { tacticLabel } from '../../../../packages/engine/src/tactics';
-import { nextOwnFixture, currentDay, seasonLength } from '../../../../packages/engine/src/calendar';
-import { orderIds, ownDivisionRound, ownLeagueIds } from './league';
+import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
+import { orderIds, ownDivisionRound, ownLeague, ownLeagueIds, ownLeagueProgress } from './league';
+import { leagueName } from './LeaguePicker';
 import { competitionLabel, number } from './format';
 import { cashState, teamStates, type StateKey } from './teamState';
 import { RemedySheet } from './RemedySheet';
 import type { GameClient } from '../runtime/client';
+import { useGameState } from '../runtime/store';
 import { openLeagueSeason, openCupSeason, beginTaskDetour, useNavigation } from './state';
 import { currentCupBriefings } from './competitionNavigation';
-import { divisionName } from './league';
 import { ClubLink } from './ClubLink';
 import { StrategyPanel } from './LazyStrategyPanel';
 import { Dialog } from './Dialog';
@@ -20,50 +20,45 @@ import { FacilityArt } from './FacilityArt';
 import { CashAlarm } from './CashAlarm';
 import { Card } from './Card';
 import { PixelIcon } from './PixelIcon';
+import { HomeAwayBadge } from './HomeAwayBadge';
 
 export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => void }) {
   const next = nextOwnFixture(w);
   const opponent = w.clubs.find(
     (c) => c.id === (next?.home === w.playerClub ? next.away : next?.home),
   );
-  const last = w.ownMatches.at(-1);
-  const lastScore = last && [
-    last.home === w.playerClub ? last.score.home : last.score.away,
-    last.home === w.playerClub ? last.score.away : last.score.home,
-  ];
   return (
     <section className={s.fixture} aria-label="다음 경기" data-home-part="fixture">
       <div className={s.fixtureInfo}>
-        <small>
-          NEXT MATCH
-          {next &&
-            ` · ${next.home === w.playerClub ? '홈' : '원정'} · ${competitionLabel(w, next)}`}
-        </small>
-        <h3>
-          {opponent ? (
-            <>
-              vs <ClubLink w={w} id={opponent.id} crest={18} large />
-            </>
-          ) : (
-            <span>다음 시즌을 준비해요</span>
-          )}
-        </h3>
-        <p data-testid="hub-preparation">
-          {tacticLabel[w.tactic]} · {w.lineup ? '직접 고른 선발' : '감독 자동 선발'}
-          {lastScore && ` · 최근 ${lastScore[0]}–${lastScore[1]}`}
-        </p>
-      </div>
-      <div className={s.fixtureActions}>
-        <button
-          className={s.prepare}
-          disabled={!!w.critical}
-          onClick={(event) => {
-            event.currentTarget.focus();
-            onPrepare();
-          }}
-        >
-          전술·선발 준비
-        </button>
+        {/* The competition sits beside the title; opponent, venue and report share one row. */}
+        <div className={s.fixtureHead}>
+          <h2 className={s.fixtureTitle}>NEXT MATCH</h2>
+          {next && <span className={s.fixtureTag}>{competitionLabel(w, next)}</span>}
+        </div>
+        <div className={s.fixtureRow}>
+          <h3>
+            {opponent ? (
+              <>
+                vs <ClubLink w={w} id={opponent.id} crest={18} large />
+              </>
+            ) : (
+              <span>다음 시즌을 준비해요</span>
+            )}
+          </h3>
+          {next && <HomeAwayBadge side={next.home === w.playerClub ? 'home' : 'away'} />}
+          <button
+            className={s.prepare}
+            data-ui="primary"
+            aria-haspopup="dialog"
+            disabled={!!w.critical}
+            onClick={(event) => {
+              event.currentTarget.focus();
+              onPrepare();
+            }}
+          >
+            상세 리포트
+          </button>
+        </div>
       </div>
     </section>
   );
@@ -197,48 +192,28 @@ export function CupBriefing({ w, onOpen }: { w: World; onOpen?: () => void }) {
 /**
  * Where this season stands (→WEB-11): our division's round, our rank and the record change only
  * when a round is played, so they read together above the season-progress rule. Only the card
- * on screen carries the round's test ids. Cups occupy one slot and open their current overview.
+ * on screen carries the round's test ids. The card only reads; the links below open the league
+ * and the cups.
  */
-export function SeasonCard({
-  w,
-  active,
-  onOpen,
-}: {
-  w: World;
-  active: boolean;
-  onOpen: () => void;
-}) {
-  const [cupsOpen, setCupsOpen] = useState(false);
-  useEffect(() => {
-    if (!active) setCupsOpen(false);
-  }, [active]);
-  const club = clubOf(w);
+export function SeasonCard({ w, active }: { w: World; active: boolean }) {
   const table = w.tables[w.playerClub];
   const ids = orderIds(ownLeagueIds(w), w.tables),
     played = !!table?.played,
     rank = ids.indexOf(w.playerClub) + 1;
   const round = ownDivisionRound(w);
   const cupCount = currentCupBriefings(w).filter((cup) => cup.active).length;
-  const progress = Math.min(
-    100,
-    Math.max(0, Math.round((currentDay(w) / Math.max(1, seasonLength(w))) * 100)),
-  );
+  // Home content skips day-only changes; progress reads the shown world so it moves every day.
+  const progress = useGameState((state) => ownLeagueProgress(state.view?.world ?? w));
   return (
     <section className={s.seasonCard} data-home-part="season-card" aria-label="이번 시즌">
       <div className={s.seasonSummary}>
-        <button
-          className={s.resources}
-          data-home-part="season-stats"
-          aria-label="현재 리그 보기"
-          aria-describedby="hub-stats-hint"
-          onClick={(event) => {
-            event.currentTarget.focus();
-            onOpen();
-          }}
-        >
-          <span id="hub-stats-hint" className={s.srOnly}>
-            현재 우리 리그의 순위표를 열어요
-          </span>
+        <span className={s.groupTitle} data-home-part="season-group">
+          {leagueName(ownLeague(w), w.lower)}
+        </span>
+        <span className={s.groupTitle} data-home-part="season-group" aria-hidden="true">
+          컵
+        </span>
+        <div className={s.resources} data-home-part="season-stats">
           <div aria-label={`우리 리그 ${round.total}라운드 중 ${round.played}라운드`}>
             <span>라운드</span>
             <b>
@@ -251,7 +226,6 @@ export function SeasonCard({
               </span>
               <small data-testid={active ? 'game-round-total' : undefined}>/ {round.total}</small>
             </b>
-            <small>{round.total - round.played}라운드 남음</small>
           </div>
           <div>
             <span>리그 순위</span>
@@ -261,48 +235,30 @@ export function SeasonCard({
               </span>
               <small>/{ids.length}위</small>
             </b>
-            <small>
-              {w.lower ? '아마추어 리그' : divisionName(club.country, club.tier, club.group)}
-            </small>
           </div>
           <div>
-            <span>시즌 전적</span>
+            <span>승점 {table?.points ?? 0}</span>
             <b data-testid="hub-record">
               <span key={table ? table.played : 0} className={s.bump}>
                 {table ? `${table.won}-${table.drawn}-${table.lost}` : '0-0-0'}
               </span>
             </b>
-            <small>승점 {table?.points ?? 0}</small>
           </div>
-        </button>
-        <button
-          className={s.cupSummary}
-          data-home-part="cup-summary"
-          aria-label="현재 컵 대회 모아보기"
-          aria-haspopup="dialog"
-          onClick={(event) => {
-            event.currentTarget.focus();
-            setCupsOpen(true);
-          }}
-        >
+        </div>
+        <div className={s.cupSummary} data-home-part="cup-summary">
           <span>컵대회</span>
           <b>
             {cupCount}
             <small>개</small>
           </b>
-        </button>
+        </div>
+        <div className={s.seasonMeter} data-home-part="season-meter">
+          <span>
+            리그 진행률 <b>{progress.toFixed(1)}%</b>
+          </span>
+          <progress aria-label="리그 진행률" value={progress} max={100} />
+        </div>
       </div>
-      <div className={s.seasonMeter} data-home-part="season-meter">
-        <span>
-          시즌 진행률 <b>{progress}%</b>
-        </span>
-        <progress aria-label="시즌 진행률" value={progress} max={100} />
-      </div>
-      {cupsOpen && active && (
-        <Dialog label="컵대회" centered wide onClose={() => setCupsOpen(false)}>
-          <CupBriefing w={w} onOpen={() => setCupsOpen(false)} />
-        </Dialog>
-      )}
     </section>
   );
 }
@@ -320,12 +276,14 @@ export function ClubHub({
   const away = useNavigation((state) => state.page !== 'dashboard');
   const [journalOpen, setJournalOpen] = useState(false);
   const [preparing, setPreparing] = useState(false);
+  const [cupsOpen, setCupsOpen] = useState(false);
   useEffect(() => {
-    if (away && (journalOpen || preparing)) {
+    if (away && (journalOpen || preparing || cupsOpen)) {
       setJournalOpen(false);
       setPreparing(false);
+      setCupsOpen(false);
     }
-  }, [away, journalOpen, preparing]);
+  }, [away, journalOpen, preparing, cupsOpen]);
   return (
     <section
       className={s.hub}
@@ -333,8 +291,15 @@ export function ClubHub({
       data-home-active={!away}
       aria-label="클럽 키우기"
     >
-      <SeasonCard w={w} active={!away} onOpen={() => openLeagueSeason(w.year, w.year)} />
+      <SeasonCard w={w} active={!away} />
+      <NextMatchCard w={w} onPrepare={() => setPreparing(true)} />
       <div className={s.clubLinks}>
+        <button data-ui="link" onClick={() => openLeagueSeason(w.year, w.year)}>
+          리그 보기
+        </button>
+        <button data-ui="link" aria-haspopup="dialog" onClick={() => setCupsOpen(true)}>
+          컵대회 보기
+        </button>
         <button
           data-ui="link"
           onClick={() => {
@@ -353,12 +318,16 @@ export function ClubHub({
         <ClubScene w={w} />
       </div>
       <TeamState w={w} client={client} onPrepare={() => setPreparing(true)} />
-      <NextMatchCard w={w} onPrepare={() => setPreparing(true)} />
 
       {preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />}
       {journalOpen && (
         <Dialog label="시즌 상세와 클럽 소식" onClose={() => setJournalOpen(false)} wide>
           {journal}
+        </Dialog>
+      )}
+      {cupsOpen && (
+        <Dialog label="컵대회" centered wide onClose={() => setCupsOpen(false)}>
+          <CupBriefing w={w} onOpen={() => setCupsOpen(false)} />
         </Dialog>
       )}
     </section>

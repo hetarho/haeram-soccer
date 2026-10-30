@@ -343,7 +343,16 @@
       "card-gap": "8px",
       "card-title-size": "15px",
       "card-sheet-title-size": "17px",
-      "card-body-size": "13px"
+      "card-body-size": "13px",
+      "match-home-badge-frame": "var(--image-art-match-home-badge)",
+      "match-badge-frame-width": "8px",
+      "match-home-badge-slice": "var(--image-art-match-home-badge-slice)",
+      "match-home-badge-fill": "#9a3528",
+      "match-home-badge-text": "#fff4de",
+      "match-away-badge-frame": "var(--image-art-match-away-badge)",
+      "match-away-badge-slice": "var(--image-art-match-away-badge-slice)",
+      "match-away-badge-fill": "#315565",
+      "match-away-badge-text": "#fff4de"
     }
   },
   "fonts": [
@@ -745,6 +754,20 @@
         "width": 256,
         "height": 256,
         "mode": "tile"
+      },
+      "image-art-match-home-badge": {
+        "resource": "../../art/matchday-print/home-away-badges-v1/frame-home.webp",
+        "width": 192,
+        "height": 69,
+        "mode": "nine-slice",
+        "slice": 22
+      },
+      "image-art-match-away-badge": {
+        "resource": "../../art/matchday-print/home-away-badges-v1/frame-away.webp",
+        "width": 192,
+        "height": 74,
+        "mode": "nine-slice",
+        "slice": 22
       }
     }
   },

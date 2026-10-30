@@ -18,7 +18,7 @@ import {
 } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { activeMatchModel } from '../../../../packages/contracts/src/match-model';
-import { nextOwnFixture, seasonDate } from '../../../../packages/engine/src/calendar';
+import { nextOwnFixture, todayStamp } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import { startingSquad } from '../../../../packages/engine/src/world';
 import { tacticLabel } from '../../../../packages/engine/src/tactics';
@@ -207,7 +207,7 @@ const MatchPane = memo(function MatchPane({
       <h2 className={t.srOnly}>매치데이</h2>
       {showDate && (
         <span className={t.srOnly} data-testid="game-date">
-          {seasonDate(w)}
+          {todayStamp(w)}
         </span>
       )}
       <section>
@@ -231,7 +231,7 @@ const MatchPane = memo(function MatchPane({
               <div className={t.coreActions} data-ui="match-actions">
                 <MatchFeedback finished={finished} />
                 <div className={t.nextActions}>
-                  <button onClick={onPrepare}>전술·선발 준비</button>
+                  <button onClick={onPrepare}>상세 리포트</button>
                   <NextMatchAction controls={controls} />
                 </div>
               </div>

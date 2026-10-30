@@ -50,11 +50,11 @@ const recorded = async (page: Page, id: string) =>
   (await savedWorld(page)).ownMatches.find((match) => match.id === id)?.appearance;
 
 const hubPreparation = (page: Page) =>
-  page.getByTestId('club-hub').getByRole('button', { name: '전술·선발 준비', exact: true });
+  page.getByTestId('club-hub').getByRole('button', { name: '상세 리포트', exact: true });
 /** Opens preparation and unfolds its shirt selector once queued work has settled. */
 async function openKit(page: Page, opener: Locator) {
   await opener.click();
-  const dialog = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
+  const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
   const kit = dialog.getByTestId('fixture-kit');
   await kit.getByTestId('fixture-kit-summary').click();
   await expect(
@@ -177,7 +177,7 @@ test('our home league shirt is previewed, committed once, kept through reload an
   const following = nextOwnFixture(settled)!;
   const after = await openKit(
     page,
-    page.getByTestId('match-theatre').getByRole('button', { name: '전술·선발 준비', exact: true }),
+    page.getByTestId('match-theatre').getByRole('button', { name: '상세 리포트', exact: true }),
   );
   await expect(after.kit).toHaveAttribute('data-fixture-id', following.id);
   await expect(after.kit.getByTestId('fixture-kit-summary')).toHaveText(/· 자동$/);

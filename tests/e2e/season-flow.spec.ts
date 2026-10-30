@@ -18,7 +18,7 @@ test('advances real days at each speed, stops and restores the saved calendar', 
     responsibilities: { recruitment: 'delegated', sales: 'delegated' },
   });
   const date = page.getByTestId('game-date');
-  await expect(date).toHaveText('1950년 8월 1일');
+  await expect(date).toHaveText('1950.08.01');
   const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
   const play = () => page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   // The daily pace is chosen and play starts the clock. The owner's stop first shows the days
@@ -27,7 +27,7 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   // covered by the controller's fake-clock tests.
   await chooseOption(pace, 'x1');
   await play();
-  await expect(date).not.toHaveText('1950년 8월 1일');
+  await expect(date).not.toHaveText('1950.08.01');
   await page.getByRole('button', { name: '자동 진행 정지' }).click();
   await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
   const stopped = await date.innerText();
@@ -43,14 +43,14 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   await play();
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
-  await expect(date).toHaveText('1950년 8월 7일');
+  await expect(date).toHaveText('1950.08.07');
   await expect(page.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
   await expect(page.getByTestId('game-round')).toHaveText('0');
   // Playing the match through as a result keeps going until the following match eve.
   await eve.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
   await expect(page.getByTestId('game-round')).toHaveText('1');
   await expect(eve).toContainText('내일 경기');
-  await expect(date).not.toHaveText('1950년 8월 7일');
+  await expect(date).not.toHaveText('1950.08.07');
   await expect(page.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
   await dismissMatchReport(page);
   await openLeague(page);

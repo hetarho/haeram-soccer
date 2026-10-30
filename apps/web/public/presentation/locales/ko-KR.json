@@ -173,6 +173,8 @@
     "personnel.market": "이적시장",
     "personnel.training": "훈련",
     "personnel.manager": "감독",
-    "personnel.coaches": "스태프"
+    "personnel.coaches": "스태프",
+    "fixture.home": "홈",
+    "fixture.away": "원정"
   }
 }

@@ -95,7 +95,7 @@ async function expectArt(page: Page, kind: FacilityKind, era: FacilityEra, stage
   await expect(img).toBeVisible();
   await expect(img).toHaveAttribute('src', source);
   expect(await img.getAttribute('alt')).toMatch(new RegExp(`${defaultThemeLabel}$`));
-  // The overview uses the same current facility resource as preparation and the home scene.
+  // The overview uses the same current facility resource as the home scene.
   await img.scrollIntoViewIfNeeded();
   // A responsive variant reports its natural size at the chosen density (a 110px office
   // thumbnail reads 109×36), so the 3:1 check allows that rounding.
@@ -147,10 +147,9 @@ for (const scenario of [
     expect(taller.height).toBeCloseTo(panorama.height, 2);
     await page.setViewportSize({ width: scenario.width, height: scenario.height });
     await expectHomeBounds(page);
-    await page.getByRole('button', { name: '전술·선발 준비', exact: true }).click();
-    const dialog = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
+    await page.getByRole('button', { name: '상세 리포트', exact: true }).click();
+    const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
     await expect(dialog).toBeVisible();
-    await expectArt(page, 'locker', scenario.era, scenario.stadium);
     await dialog.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
     await expect(dialog).toHaveCount(0);
     await openPersonnel(page, 'players');
@@ -270,7 +269,7 @@ test('updates era, training and academy scenes only on actual completion, retain
   await acknowledgeEvents(page);
   const stop = page.getByRole('button', { name: '자동 진행 정지', exact: true });
   if (await stop.isVisible()) await stop.click();
-  await expect(page.getByTestId('game-date')).toContainText('1970년 1월');
+  await expect(page.getByTestId('game-date')).toContainText('1970.01.');
   await openPersonnel(page, 'academy');
   await expectArt(page, 'academy', 'terraces', 1);
   await expect(page.getByTestId('facility-overview')).toContainText('1단계 유소년 시설');

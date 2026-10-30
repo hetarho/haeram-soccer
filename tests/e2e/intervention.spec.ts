@@ -5,6 +5,7 @@ import { chooseLevel, delegateSales } from './events';
 import { test, expect } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
 import { leaveOffice, openOfficeArea } from './office';
+import { savedWorld } from './club-identity-helpers';
 
 test('changes a real starting XI through the mobile preparation sheet, saves it and shows earned finances', async ({
   page,
@@ -19,9 +20,9 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await delegateSales(page);
   // Before the first match the preparation sheet opens from home's next-match card.
   const hub = page.getByTestId('club-hub');
-  const prepare = hub.getByRole('button', { name: '전술·선발 준비', exact: true });
+  const prepare = hub.getByRole('button', { name: '상세 리포트', exact: true });
   await prepare.click();
-  const dialog = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
+  const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
   await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();
   await dialog.getByText('선수별 교체', { exact: true }).click();
   const keeper = dialog.getByRole('combobox', { name: '선발 1 GK', exact: true });
@@ -46,8 +47,11 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
-  await expect(page.getByTestId('hub-preparation')).toContainText('직접 고른 선발');
   await prepare.click();
+  // The manager's report names who picks the XI.
+  await expect(dialog.getByRole('region', { name: '감독 보고', exact: true })).toContainText(
+    '정해 주신 11명',
+  );
   await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();
   await dialog.getByText('선수별 교체', { exact: true }).click();
   await expect(keeper).toHaveAttribute('data-value', other!);
@@ -68,7 +72,7 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   } else await expect(page.getByText(`${keeperName} (부상)`)).toBeVisible();
   await page
     .getByTestId('match-theatre')
-    .getByRole('button', { name: '전술·선발 준비', exact: true })
+    .getByRole('button', { name: '상세 리포트', exact: true })
     .click();
   await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();
   await dialog.getByRole('button', { name: '감독의 자동 선발로 전환', exact: true }).click();
@@ -79,7 +83,8 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
-  await expect(page.getByTestId('hub-preparation')).toContainText('감독 자동 선발');
+  // The automatic XI survived the reload: no owner-chosen lineup is saved.
+  expect((await savedWorld(page)).lineup).toBeUndefined();
   await openOfficeArea(page, '투자');
   await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
   await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toBeVisible();
@@ -119,7 +124,7 @@ for (const viewport of [
     await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
     const date = page.getByTestId('game-date');
     await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-    await expect(date).toHaveText('1950년 8월 2일');
+    await expect(date).toHaveText('1950.08.02');
     const menuButton = page.getByRole('button', { name: '설정', exact: true });
     await menuButton.click();
     const menu = page.getByRole('dialog', { name: '설정' });
@@ -171,9 +176,9 @@ test('prepares a subsequent match from the theatre while keeping the recorded sc
   const date = await page.getByTestId('game-date').innerText();
   await page
     .getByTestId('match-theatre')
-    .getByRole('button', { name: '전술·선발 준비', exact: true })
+    .getByRole('button', { name: '상세 리포트', exact: true })
     .click();
-  const preparation = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
+  const preparation = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
   await preparation.getByRole('tab', { name: '선발 선택' }).click();
   await preparation.getByRole('button', { name: '피로 회복 우선으로 선택' }).click();
   await preparation.getByRole('button', { name: '이 선발로 다음 경기 준비' }).click();

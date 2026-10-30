@@ -256,7 +256,7 @@ test('with the manager post delegated a resignation is filled at once and the cl
   // This seed's founding manager is proud enough to resign over two strong demands (→STAFF-5).
   await found(page, 'proud-0');
   const date = page.getByTestId('game-date');
-  await expect(date).toHaveText('1950년 8월 1일');
+  await expect(date).toHaveText('1950.08.01');
   // Level 4 hands the manager post to the staff and stops only for money, so nothing else
   // explains a stop.
   await chooseLevel(page, 4);
@@ -280,7 +280,7 @@ test('with the manager post delegated a resignation is filled at once and the cl
     .getByRole('region', { name: '시즌 진행', exact: true })
     .getByRole('button', { name: '자동 진행 시작' })
     .click();
-  await expect(date).not.toHaveText('1950년 8월 1일');
+  await expect(date).not.toHaveText('1950.08.01');
   await expect(page.getByRole('status').filter({ hasText: '감독이 떠났어요' })).toHaveCount(0);
 });
 
@@ -327,7 +327,7 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
     }).toPass({ timeout: 15000 });
   }
   await expect(card).toContainText(renewal);
-  await expect(page.getByTestId('game-date')).toHaveText('1951년 4월 1일');
+  await expect(page.getByTestId('game-date')).toHaveText('1951.04.01');
   await expect(card).toContainText('스태프 재계약');
   await card.getByRole('button', { name: '검토하기', exact: true }).click();
   await expect(page).toHaveURL(/view=staff&request=/);

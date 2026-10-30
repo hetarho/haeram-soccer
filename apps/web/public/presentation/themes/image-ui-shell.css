@@ -291,7 +291,12 @@ html[data-theme] {
   }
 
   [data-testid='hud-cash'] b {
-    font-size: 21px;
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  [data-testid='hud-cash'] [data-ui='currency'] {
+    font-size: 11px;
     font-weight: 800;
   }
 
@@ -322,11 +327,17 @@ html[data-theme] {
     gap: 4px;
   }
 
-  [data-testid='calendar'] small,
-  [data-testid='game-date'] {
+  [data-testid='calendar'] small {
     color: var(--image-ink-color);
     font-size: 14px;
     line-height: 1.4;
+  }
+
+  [data-ui='hud-date'] {
+    color: var(--image-ink-color);
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.2;
   }
 
   [data-ui='calendar-header'] {
@@ -348,10 +359,6 @@ html[data-theme] {
     color: var(--image-accent);
     font-weight: 700;
     white-space: nowrap;
-  }
-
-  [data-ui='calendar-header'] [data-testid='game-date'] {
-    font-weight: 700;
   }
 
   [data-ui='season-overview'] > div:nth-child(2) {
@@ -405,11 +412,15 @@ html[data-theme] {
     color: var(--image-muted);
   }
 
-  [data-home-part='fixture'] > div:first-child > small {
-    font-size: 15px;
+  [data-home-part='fixture'] h2 {
+    font-size: 18px;
     line-height: 1.4;
     font-weight: 800;
     letter-spacing: 0.7px;
+  }
+
+  [data-home-part='fixture'] > div:first-child {
+    flex: 1 1 auto;
   }
 
   [data-home-part='fixture'] h3 {
@@ -428,26 +439,12 @@ html[data-theme] {
     color: var(--image-muted);
   }
 
-  [data-home-part='fixture'] > div:last-child > button {
-    min-height: var(--control-min-height);
-    padding: 4px 10px;
-    border: 1px solid transparent;
-    border-image: var(--image-button-frame)
-      var(--image-art-frame-button-slice, var(--image-frame-slice, 22)) / 3px stretch;
-    border-radius: var(--image-radius, 0px);
-    color: var(--image-ink-color);
-    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
-    background-size: var(--image-material-size, 256px);
-    font-size: 13px;
-    font-weight: 700;
-  }
-
   [data-home-part='season-meter'] {
     gap: 5px;
   }
 
   [data-home-part='season-meter'] > span {
-    font-size: 13px;
+    font-size: 15px;
     line-height: 1.4;
     font-weight: 700;
     color: var(--image-ink-color);
@@ -455,7 +452,7 @@ html[data-theme] {
 
   [data-home-part='season-meter'] b {
     color: var(--image-ink-color);
-    font-size: 15px;
+    font-size: 17px;
   }
 
   [data-home-part='season-meter'] progress {
@@ -487,24 +484,23 @@ html[data-theme] {
     isolation: isolate;
   }
 
+  /* One dark box holds the stats, the cup count and the season progress. */
   [data-home-part='season-card'] {
+    padding: 0;
     border: 0;
-    background: none;
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
   }
 
-  [data-home-part='season-card'] > [data-home-part='season-meter'] {
-    padding: 6px 14px 12px;
+  [data-home-part='season-card'] > :first-child {
+    border-bottom: 0;
   }
 
-  [data-home-part='season-card']::after {
-    content: '';
-    position: absolute;
-    z-index: 3;
-    inset: 0;
-    pointer-events: none;
-    border: 8px solid transparent;
-    border-image: var(--image-tile-frame)
-      var(--image-art-frame-tile-slice, var(--image-frame-slice, 50)) / 11px stretch;
+  [data-home-part='season-card'] [data-home-part='season-meter'] {
+    padding: 0 16px 14px;
+  }
+
+  [data-home-part='season-card'] [data-home-part='season-meter'] :is(span, b) {
+    color: var(--image-on-dark);
   }
 
   [data-home-part='scene'] {
@@ -560,37 +556,86 @@ html[data-theme] {
     box-shadow: none;
     background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
     color: var(--image-on-dark);
-    padding: 8px 4px;
+    padding: 0 14px 4px 6px;
+  }
+
+  /* Centred figures spread evenly; the ::before/::after rules sit midway between them. */
+  [data-home-part='season-stats'] {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
   }
 
   [data-home-part='season-stats'] > div {
+    flex: 0 1 auto;
     align-content: center;
+    justify-items: center;
+    text-align: center;
     padding: 6px 12px;
     gap: 2px;
     border: 0;
     background: none;
   }
 
+  [data-home-part='season-stats'] > div:nth-of-type(2) {
+    order: 2;
+  }
+
+  [data-home-part='season-stats'] > div:nth-of-type(3) {
+    order: 4;
+  }
+
+  [data-home-part='season-stats']::before,
+  [data-home-part='season-stats']::after {
+    content: '';
+    flex: 0 0 2px;
+    align-self: stretch;
+    margin-block: 14px;
+    background: var(--image-art-rule-light-vertical) center / 2px 100% no-repeat;
+    order: 1;
+  }
+
+  [data-home-part='season-stats']::after {
+    order: 3;
+  }
+
+  /* The league/cup rule spans the figures; the league's own rules stay short. */
   [data-home-part='cup-summary'] {
-    padding: 14px 10px;
+    padding: 0 14px 4px 22px;
+    justify-items: center;
+    text-align: center;
     background:
-      var(--image-art-rule-light-vertical) left center / 2px calc(100% - 20px) no-repeat,
+      var(--image-art-rule-light-vertical) left 0 top 6px / 2px calc(100% - 16px) no-repeat,
       var(--image-dark-material) repeat var(--image-dark-fill, var(--image-ink-color));
   }
 
-  [data-home-part='season-stats'] > div + div {
-    background: var(--image-art-rule-light-vertical) left center / 2px calc(100% - 20px) no-repeat;
+  /* Each title centres over its figures (same side padding as the button below it). */
+  [data-home-part='season-group'] {
+    padding: 12px 26px 0 18px;
+    color: var(--image-on-dark-muted);
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-align: center;
+  }
+
+  [data-home-part='season-group'] + [data-home-part='season-group'] {
+    padding-inline: 22px 14px;
   }
 
   :is([data-home-part='season-stats'], [data-home-part='cup-summary']) span,
   :is([data-home-part='season-stats'], [data-home-part='cup-summary']) small {
     color: var(--image-on-dark);
-    font-size: 13px;
+    font-size: 15px;
+  }
+
+  :is([data-home-part='season-stats'] > div, [data-home-part='cup-summary']) > span {
+    font-weight: 400;
   }
 
   :is([data-home-part='season-stats'], [data-home-part='cup-summary']) b,
   [data-home-part='season-stats'] b > span {
-    font-size: 28px;
+    font-size: 34px;
     font-weight: 800;
     letter-spacing: -1px;
     line-height: 1.1;
@@ -598,7 +643,7 @@ html[data-theme] {
 
   :is([data-home-part='season-stats'], [data-home-part='cup-summary']) b > small {
     margin-left: 3px;
-    font-size: 15px;
+    font-size: 17px;
     font-weight: 500;
     letter-spacing: 0;
   }
@@ -764,30 +809,19 @@ html[data-theme] {
     color: var(--transport-text);
   }
 
-  [data-ui='season-transport'] small,
-  [data-ui='season-transport'] [data-select-trigger] {
+  [data-ui='season-transport'] small {
     color: var(--transport-text);
     font-size: 12px;
   }
 
-  [data-ui='season-transport'] [data-select-trigger][role='combobox'],
-  [data-ui='season-transport']
-    [data-select-trigger][role='combobox']:is(:hover, [data-state='open']) {
-    --text: var(--transport-text);
-    --text-muted: var(--transport-muted);
-    --text-faint: var(--transport-muted);
-    color: var(--transport-text);
+  [data-ui='season-transport'] [data-select-trigger][role='combobox'] {
     height: 44px;
     min-height: 44px;
     min-width: 78px;
     padding-inline: 6px;
     padding-block: 1px;
     gap: 4px;
-    border: 1px solid var(--transport-muted);
-    border-image: none;
-    background: var(--transport-fill) var(--image-transport-material) repeat padding-box;
-    background-size: var(--transport-material-size);
-    background-blend-mode: var(--transport-material-blend);
+    font-size: 12px;
   }
 
   [data-ui='season-transport'] > i {
@@ -871,14 +905,6 @@ html[data-theme] {
       flex-wrap: wrap;
       gap: 8px;
     }
-    [data-home-part='fixture'] > div:first-child {
-      flex-basis: 100%;
-    }
-    [data-home-part='fixture'] > div:last-child > button {
-      min-height: 48px;
-      padding: 5px 12px;
-      font-size: 14px;
-    }
   }
 
   @media (max-width: 760px) {
@@ -927,7 +953,10 @@ html[data-theme] {
       display: none;
     }
     [data-testid='hud-cash'] b {
-      font-size: 16px;
+      font-size: 14px;
+    }
+    [data-testid='hud-cash'] [data-ui='currency'] {
+      font-size: 9px;
     }
     [data-testid='view-scroller'] {
       padding-top: 4px;
@@ -950,9 +979,11 @@ html[data-theme] {
       padding-bottom: 2px;
       gap: 8px;
     }
-    [data-testid='calendar'] small,
-    [data-testid='game-date'] {
+    [data-testid='calendar'] small {
       font-size: var(--image-small-size, 11px);
+    }
+    [data-ui='hud-date'] {
+      font-size: 15px;
     }
     [data-ui='season-overview'] > div:nth-child(2) {
       display: flex;
@@ -988,8 +1019,8 @@ html[data-theme] {
       flex: 1 1 auto;
       min-width: 0;
     }
-    [data-home-part='fixture'] > div:first-child > small {
-      font-size: var(--image-small-size, 11px);
+    [data-home-part='fixture'] h2 {
+      font-size: 13px;
       letter-spacing: 0.3px;
     }
     [data-home-part='fixture'] h3 {
@@ -1000,18 +1031,6 @@ html[data-theme] {
     [data-home-part='fixture'] p {
       font-size: var(--image-small-size, 11px);
     }
-    [data-home-part='fixture'] > div:last-child {
-      flex: 0 0 auto;
-      max-width: 112px;
-      gap: 7px;
-    }
-    [data-home-part='fixture'] > div:last-child > button {
-      min-height: 44px;
-      padding: 4px 10px;
-      border-width: 1px;
-      border-image-width: 3px;
-      font-size: 12px;
-    }
     [data-home-part='season-meter'] > span {
       font-size: var(--image-small-size, 11px);
     }
@@ -1019,10 +1038,10 @@ html[data-theme] {
       font-size: 12px;
     }
     [data-home-part='season-meter'] progress {
-      height: 10px;
+      height: 7px;
     }
-    [data-home-part='season-card']::after {
-      border-image-width: 8px;
+    [data-home-part='season-card'] [data-home-part='season-meter'] {
+      padding: 0 12px 12px;
     }
     [data-home-part='scene-caption'] {
       inset: 12px;
@@ -1040,13 +1059,31 @@ html[data-theme] {
     }
     :is([data-home-part='season-stats'], [data-home-part='cup-summary']) {
       margin: 0;
+      padding: 0 10px 2px 6px;
     }
     [data-home-part='cup-summary'] {
-      padding: 14px 6px;
+      padding: 0 10px 2px 16px;
+      background-position:
+        left 0 top 6px,
+        0 0;
+      background-size:
+        2px calc(100% - 14px),
+        auto;
+    }
+    [data-home-part='season-group'] {
+      padding: 10px 16px 0 12px;
+      font-size: 11px;
+    }
+    [data-home-part='season-group'] + [data-home-part='season-group'] {
+      padding-inline: 16px 10px;
     }
     [data-home-part='season-stats'] > div {
       padding: 6px;
       gap: 2px;
+    }
+    [data-home-part='season-stats']::before,
+    [data-home-part='season-stats']::after {
+      margin-block: 12px;
     }
     :is([data-home-part='season-stats'], [data-home-part='cup-summary']) span {
       font-size: var(--image-caption-size, 10px);
@@ -1181,8 +1218,8 @@ html[data-theme] {
     [data-condition] > button > b {
       font-size: 22px;
     }
-    [data-testid='game-date'] {
-      font-size: var(--image-caption-size, 10px);
+    [data-ui='hud-date'] {
+      font-size: 14px;
     }
     [data-ui='season-overview'] {
       gap: 8px;

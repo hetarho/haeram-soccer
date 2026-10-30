@@ -28,7 +28,7 @@ test('mobile clock keeps actions in one row and advances at the dropdown pace', 
     responsibilities: { recruitment: 'delegated', sales: 'delegated' },
   });
   const date = page.getByTestId('game-date');
-  await expect(date).toHaveText('1950년 8월 1일');
+  await expect(date).toHaveText('1950.08.01');
   const controls = page.getByRole('region', { name: '시즌 진행', exact: true });
   const pace = controls.getByRole('combobox', { name: '자동 진행 배속', exact: true });
   const toggle = controls.getByRole('button', { name: '자동 진행 시작', exact: true }),
@@ -68,18 +68,16 @@ test('mobile clock keeps actions in one row and advances at the dropdown pace', 
   // Selecting a pace only sets the pace (→WEB-18): the date stays until play.
   await chooseOption(pace, 'x1');
   await page.waitForTimeout(1500);
-  await expect(date).toHaveText('1950년 8월 1일');
+  await expect(date).toHaveText('1950.08.01');
   // Play starts the clock. The owner's stop first shows the days computed ahead at the pace, at
   // most three at x1, and management stays locked until they are shown (→WEB-18/97).
   await toggle.click();
   await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toBeDisabled();
-  await expect(date).toHaveText('1950년 8월 2일');
+  await expect(date).toHaveText('1950.08.02');
   await stop.click();
   await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toBeEnabled();
   const stopped = await date.innerText();
-  expect(['1950년 8월 2일', '1950년 8월 3일', '1950년 8월 4일', '1950년 8월 5일']).toContain(
-    stopped,
-  );
+  expect(['1950.08.02', '1950.08.03', '1950.08.04', '1950.08.05']).toContain(stopped);
   await page.waitForTimeout(1200);
   await expect(date).toHaveText(stopped);
   // x10 runs on to the eve of our first match, computing nothing past it, and the clock stops
@@ -90,7 +88,7 @@ test('mobile clock keeps actions in one row and advances at the dropdown pace', 
   await toggle.click();
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
-  await expect(date).toHaveText('1950년 8월 7일');
+  await expect(date).toHaveText('1950.08.07');
   await expect(toggle).toBeVisible();
   // The card decides the match only; whether eves stop lives in the intervention dialog (→WEB-71).
   await expect(eve.getByRole('checkbox')).toHaveCount(0);
@@ -204,7 +202,7 @@ test('a hidden tab plays on like an idle game, names the date in its title, and 
   await chooseLevel(page, 4);
   const date = page.getByTestId('game-date');
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-  await expect(date).toHaveText('1950년 8월 2일');
+  await expect(date).toHaveText('1950.08.02');
   // Headless engines keep pages visible; exercise the real browser listener with its hidden input.
   const setHidden = (hidden: boolean) =>
     page.evaluate((hidden) => {

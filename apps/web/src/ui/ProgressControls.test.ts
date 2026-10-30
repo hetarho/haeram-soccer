@@ -121,9 +121,9 @@ describe('unified bottom progression controls', () => {
     ).not.toContain('result-notice');
   });
 
-  it('keeps date and round metadata free of mode controls', () => {
+  it('keeps round metadata free of mode controls, leaving today to the HUD', () => {
     const markup = renderToStaticMarkup(createElement(ProgressOverview, { compact: true }));
-    expect(markup).toContain('data-testid="game-date"');
+    expect(markup).not.toContain('data-testid="game-date"');
     expect(markup).toContain('data-testid="game-round"');
     expect(markup).toContain('data-testid="mini-clock"');
     expect(markup).not.toContain('progress-mode');

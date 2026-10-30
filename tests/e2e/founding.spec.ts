@@ -157,7 +157,7 @@ for (const viewport of [
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await expect(page.getByRole('dialog')).toHaveCount(0);
     await expect(
-      page.getByTestId('club-hub').getByRole('button', { name: '전술·선발 준비', exact: true }),
+      page.getByTestId('club-hub').getByRole('button', { name: '상세 리포트', exact: true }),
     ).toBeEnabled();
     const actual = await exportWorld(page);
     const reference = createWorld(input);

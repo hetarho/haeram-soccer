@@ -188,6 +188,8 @@
     "personnel.market": "الانتقالات",
     "personnel.training": "التدريب",
     "personnel.manager": "المدير الفني",
-    "personnel.coaches": "الطاقم"
+    "personnel.coaches": "الطاقم",
+    "fixture.home": "على أرضه",
+    "fixture.away": "خارج أرضه"
   }
 }

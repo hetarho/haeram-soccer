@@ -6,7 +6,7 @@ import { decode } from '../../apps/web/src/adapters/persistence';
 import { clubMilestones } from '../../packages/engine/src/goals';
 import type { World } from '../../packages/contracts/src/types';
 import { expectHomeBounds, settle } from './layout';
-import { currentDay, seasonLength } from '../../packages/engine/src/calendar';
+import { ownLeagueProgress } from '../../apps/web/src/ui/league';
 
 async function exportWorld(page: Page): Promise<World> {
   await dismissMatchReport(page);
@@ -49,25 +49,27 @@ for (const viewport of [
     await delegateSales(page);
     const nextCard = hub.getByRole('region', { name: '다음 경기', exact: true });
     await expect(nextCard.getByTestId('home-watch')).toHaveCount(0);
-    await expect(nextCard.getByRole('button', { name: '전술·선발 준비' })).toBeVisible();
+    await expect(nextCard.getByRole('button', { name: '상세 리포트' })).toBeVisible();
     await settle(page);
     const cardBox = (await nextCard.boundingBox())!;
     const hubBox = (await hub.boundingBox())!;
     expect(Math.abs(cardBox.width - hubBox.width)).toBeLessThanOrEqual(1);
     expect(Math.abs(cardBox.x - hubBox.x)).toBeLessThanOrEqual(1);
     const titleBox = (await nextCard.locator('h3').boundingBox())!;
-    const prepare = nextCard.getByRole('button', { name: '전술·선발 준비', exact: true });
+    const prepare = nextCard.getByRole('button', { name: '상세 리포트', exact: true });
     const prepareBox = (await prepare.boundingBox())!;
     expect(cardBox.height).toBeLessThanOrEqual(152);
     const progressBox = (await hub
-      .getByRole('progressbar', { name: '시즌 진행률', exact: true })
+      .getByRole('progressbar', { name: '리그 진행률', exact: true })
       .boundingBox())!;
     const conditionsBox = (await hub.getByTestId('team-state').boundingBox())!;
-    expect(progressBox.y + progressBox.height).toBeLessThanOrEqual(conditionsBox.y);
-    expect(conditionsBox.y + conditionsBox.height).toBeLessThanOrEqual(cardBox.y);
+    // NEXT MATCH follows the season card, ahead of the links, scene and team state.
+    expect(progressBox.y + progressBox.height).toBeLessThanOrEqual(cardBox.y);
+    expect(cardBox.y + cardBox.height).toBeLessThanOrEqual(conditionsBox.y);
     expect(
       await nextCard.evaluate(
-        (element) => element.previousElementSibling?.getAttribute('data-testid') === 'team-state',
+        (element) =>
+          element.previousElementSibling?.getAttribute('data-home-part') === 'season-card',
       ),
     ).toBe(true);
     expect(prepareBox.x).toBeGreaterThanOrEqual(titleBox.x + titleBox.width);
@@ -111,9 +113,9 @@ for (const viewport of [
       }),
     ).toHaveCount(0);
     await expect(hub).not.toContainText('시즌 운영실');
-    const progress = hub.getByRole('progressbar', { name: '시즌 진행률', exact: true });
+    const progress = hub.getByRole('progressbar', { name: '리그 진행률', exact: true });
     await expect(progress).toHaveAttribute('value', '0');
-    await expect(hub).toContainText('시즌 진행률 0%');
+    await expect(hub).toContainText('리그 진행률 0.0%');
     await settle(page);
     await page.screenshot({ path: test.info().outputPath(`home-${viewport.width}.png`) });
     const opener = page.getByTestId('communications-button');
@@ -145,9 +147,9 @@ for (const viewport of [
     expect(earned.goals.find((goal) => goal.id === first.id)?.done).toBe(true);
     expect(earned.completed).toBeGreaterThan(initial.completed);
     expect(earned.next?.id).not.toBe(first.id);
-    const percent = Math.round((currentDay(settled) / seasonLength(settled)) * 100);
-    expect(percent).toBeGreaterThan(0);
+    // League progress counts from the first league match day, so the first match may still read 0%.
+    const percent = ownLeagueProgress(settled);
     await expect(progress).toHaveAttribute('value', String(percent));
-    await expect(hub).toContainText(`시즌 진행률 ${percent}%`);
+    await expect(hub).toContainText(`리그 진행률 ${percent.toFixed(1)}%`);
   });
 }

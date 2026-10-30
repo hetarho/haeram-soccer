@@ -179,6 +179,8 @@
     "personnel.market": "Transferências",
     "personnel.training": "Treino",
     "personnel.manager": "Técnico",
-    "personnel.coaches": "Equipe"
+    "personnel.coaches": "Equipe",
+    "fixture.home": "Casa",
+    "fixture.away": "Fora"
   }
 }

@@ -60,6 +60,7 @@ import {
   nextOwnFixture,
   ROUND_INTERVAL_DAYS,
   seasonDayLabel,
+  todayStamp,
 } from '../../../../packages/engine/src/calendar';
 import s from './App.module.css';
 import { Dialog } from './Dialog';
@@ -537,6 +538,12 @@ const GameHud = memo(function GameHud({
       : undefined,
   );
   const crestWorld = useGameState((state) => state.view?.world.clubs && state.view.world);
+  const today = useGameState((state) =>
+    playing && state.view ? todayStamp(state.view.world) : undefined,
+  );
+  const season = useGameState((state) => state.view?.world.year);
+  // The match theatre reads its own date; the HUD carries today's test ids everywhere else.
+  const dated = useNavigation((state) => state.page !== 'match');
   return (
     <header className={s.hud}>
       {playing && (
@@ -552,19 +559,29 @@ const GameHud = memo(function GameHud({
           <PixelIcon name="menu" size={20} />
         </button>
       )}
-      <div className={s.hudClub}>
+      <div className={s.hudClub} data-ui="hud-club">
         {own && crestWorld ? (
           <ClubCrest w={crestWorld} id={own.id} size={26} className={s.hudCrest} />
         ) : (
           <Crest color={own?.color} />
         )}
         <div>
-          <b>{own?.name || 'Haeram Football'}</b>
+          <b className={own ? s.hudClubName : undefined}>{own?.name || 'Haeram Football'}</b>
           {/* Beside the club name in play; beside the game's name with its version elsewhere. */}
           <BetaMark version={!own} />
           {!own && <small data-testid="calendar">1950 · A NEW BEGINNING</small>}
         </div>
       </div>
+      {today && (
+        <span
+          className={s.hudDate}
+          data-ui="hud-date"
+          data-testid={dated ? 'calendar' : undefined}
+          data-season={season}
+        >
+          <span data-testid={dated ? 'game-date' : undefined}>{today}</span>
+        </span>
+      )}
       <ReadonlyBadge />
       {!playing && <PresentationSettingsTrigger />}
       {playing && <HudCash client={client} />}
@@ -841,12 +858,24 @@ function SaveActions({
           {t('save.fileNotice')}
         </>
       )}
-      <button disabled={(!w && !state.error) || state.busy} onClick={() => void onDownload()}>
+      <button
+        data-ui={compact ? undefined : 'navigation'}
+        disabled={(!w && !state.error) || state.busy}
+        onClick={() => void onDownload()}
+      >
         {t(compact ? 'save.exportCompact' : 'save.export')}
       </button>
-      {!compact && w && onSlots && <button onClick={onSlots}>{t('slots.title')}</button>}
+      {!compact && w && onSlots && (
+        <button data-ui="navigation" onClick={onSlots}>
+          {t('slots.title')}
+        </button>
+      )}
       {!compact && w && state.saveFailed && state.savedRevision !== w.revision && (
-        <button disabled={state.busy || state.readonly} onClick={() => void client.retrySave()}>
+        <button
+          data-ui="navigation"
+          disabled={state.busy || state.readonly}
+          onClick={() => void client.retrySave()}
+        >
           {t('save.retry')}
         </button>
       )}
@@ -1179,7 +1208,8 @@ export function App() {
           !w.bankrupt &&
           page !== 'match' &&
           page !== 'league' &&
-          page !== 'europe' && <ProgressOverview compact={page !== 'dashboard'} />}
+          page !== 'europe' &&
+          page !== 'dashboard' && <ProgressOverview compact />}
         <div ref={scroller} className={s.scroller} data-testid="view-scroller">
           {client && controller && playing && !w.bankrupt && page !== 'match' && (
             <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />

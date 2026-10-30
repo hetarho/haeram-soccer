@@ -176,6 +176,8 @@
     "personnel.market": "Transferler",
     "personnel.training": "Antrenman",
     "personnel.manager": "Teknik direktör",
-    "personnel.coaches": "Ekip"
+    "personnel.coaches": "Ekip",
+    "fixture.home": "Ev sahibi",
+    "fixture.away": "Deplasman"
   }
 }

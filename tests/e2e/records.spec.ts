@@ -58,7 +58,7 @@ for (const [label, viewport] of [
       await expect(tenures.first()).toContainText('지휘한 공식전 없음');
       await chooseOption(page.getByRole('combobox', { name: '자동 진행 배속', exact: true }), 'x1');
       await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-      await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 4일', {
+      await expect(page.getByTestId('game-date')).toHaveText('1950.08.04', {
         timeout: 10000,
       });
       await page.getByRole('button', { name: '자동 진행 정지', exact: true }).click();

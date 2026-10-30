@@ -1848,6 +1848,17 @@
   width: 26px;
   height: 31px;
 }
+/* Today sits in the middle of the HUD on every view. */
+.hudDate {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
 /* Read-only ownership: a small chip instead of a banner over the content. */
 .readonlyBadge {
   position: relative;
@@ -1927,11 +1938,17 @@
   font-family: var(--display);
 }
 .hudCash b {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--text);
   font-variant-numeric: var(--numeric-variant);
   white-space: nowrap;
+}
+.hudCash .hudCurrency {
+  display: inline;
+  margin-right: 1px;
+  font-size: 0.6em;
+  font-weight: 800;
 }
 .hudCash {
   min-height: 40px;
@@ -2424,10 +2441,21 @@
 .coreLayout:not(.newsLayout) .scroller {
   padding-bottom: var(--control-gap);
 }
-/* Phones: tight gaps leave the club name room for up to two lines beside the cash. */
+/* Phones: tight gaps; the club shows its crest alone, its name kept for assistive technology. */
 @media (max-width: 760px) {
   .hud {
     gap: 6px;
+  }
+  .hudDate {
+    font-size: 15px;
+  }
+  .hudClubName {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
   .hudClub {
     gap: 7px;

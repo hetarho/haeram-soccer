@@ -34,6 +34,11 @@ function dateLabel(year: number, day: number) {
 export function seasonDate(w: World) {
   return dateLabel(w.year, currentDay(w));
 }
+/** Today as a numeric date, 1951.10.29: the clock's own reading on home, views and matches. */
+export function todayStamp(w: World) {
+  const date = new Date(Date.UTC(w.year, 7, 1) + currentDay(w) * DAY_MS);
+  return date.toISOString().slice(0, 10).replaceAll('-', '.');
+}
 export function fixtureDate(_w: World, f: Fixture) {
   return dateLabel(f.year, fixtureDay(f));
 }

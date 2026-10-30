@@ -171,12 +171,38 @@ Inspect what is actually drawn. A checked image can be registered correctly yet 
 by a more specific unchecked selector. Likewise, a `none` frame alias can silently discard the
 resource. Check state changes and the resulting resource URL, not just the file inventory.
 
+Compact dropdowns inside the transport retain the shared select artwork and local field ink.
+Limit transport overrides to geometry and type sizing: resetting `border-image` or inheriting
+the transport's foreground discards the resource or makes dark-theme field values unreadable.
+
+Dropdown focus rings follow `:focus-visible`. Opening a list with a pointer does not force a
+focus ring; keyboard navigation retains its visible focus cue alongside the existing artwork.
+
 A control that becomes unavailable only briefly while it may hold keyboard focus, such as the
 goal-scene replay shortcut and its picker's goals during a goal's hold, uses `aria-disabled`
 with a guarded handler rather than native `disabled`, which would drop focus out of a dialog.
 Give it the theme's disabled filter variables so it reads as unavailable without fading copy.
 
 ## Portable resource handoff
+
+Keep shared components, locale copy and theme ownership distinct. New theme-only originals
+live in `design/<theme-id>/<resource-group>/`; compact output lives in
+`public/art/<theme-id>/<resource-group>/`. The theme JSON maps those assets to shared semantic
+roles. See the [ownership inventory](README.md) for legacy directories still awaiting migration.
+Reusable UI labels use `useLocale().t(...)`, with keys in every registered locale pack, rather
+than Korean literals in components or copy embedded in a theme image. Existing feature copy
+is still only partially localized under WEB-90; this guidance does not claim it is complete.
+
+Home/away badges are informational resources, separate from action emphasis and result status.
+The shared `HomeAwayBadge` keeps home/away labels live, and `match-{home,away}-badge-{frame,slice,fill,text}`
+selects each theme's full-surface artwork and readable ink. Preview both variants together in
+the `badges` story. Explicit aliases let another family reuse its own compatible skins without
+inheriting the default theme's artwork. The print sources are in [Matchday Print home/away badges](matchday-print/home-away-badges/README.md).
+
+Review fine rules at the badge's actual size: a large source cap drawn only a few CSS pixels
+wide can reduce its keyline below a visible pixel. `match-badge-frame-width` controls the displayed
+art frame independently of its native source caps. Keep fallback fills inside the content
+box when the silhouette has transparent corners.
 
 The [theme contract](../src/presentation/contracts.ts) is the schema, and the
 [theme registry](../public/presentation/themes/index.json) is the available-theme inventory.

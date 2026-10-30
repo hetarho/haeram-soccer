@@ -57,17 +57,15 @@ async function playRound(page: Page) {
 }
 const newsButton = (page: Page) => page.getByTestId('communications-button');
 
-test('keeps the club name and compact cash readable in a 360 px HUD', async ({ page }) => {
+test('keeps the crest, today and compact cash readable in a 360 px HUD', async ({ page }) => {
   await found(page);
-  // The name sits next to the HUD calendar line.
-  const name = gameHud(page).getByText('Haeram Athletic', {
-    exact: true,
-  });
-  expect(
-    await name.evaluate(
-      (el) => el.scrollWidth <= el.clientWidth + 1 && el.scrollHeight <= el.clientHeight + 1,
-    ),
-  ).toBe(true);
+  // Phones show the crest alone; the name stays for assistive technology.
+  await expect(gameHud(page).locator('[data-ui="hud-club"] > svg')).toBeVisible();
+  await expect(gameHud(page).getByText('Haeram Athletic', { exact: true })).toHaveCSS(
+    'position',
+    'absolute',
+  );
+  await expect(gameHud(page).getByTestId('game-date')).toBeVisible();
   // The money notation on every viewport (→WEB-67); label and title keep the exact amount.
   expect(await page.getByTestId('hud-cash').innerText()).toMatch(/^£[\d,]+$/);
   await expect(page.getByTestId('hud-cash')).toHaveAttribute('aria-label', /\d+s \d+d/);

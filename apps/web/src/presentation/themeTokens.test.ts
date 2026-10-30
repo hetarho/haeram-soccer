@@ -7,6 +7,24 @@ import { resolveThemeTokens } from './themeTokens';
 import { contrast } from '../../../../packages/engine/src/identity-legacy';
 
 describe('shared semantic theme tokens', () => {
+  it.each(['home', 'away'] as const)(
+    'keeps %s match badge text readable in every pack',
+    (venue) => {
+      for (const pack of [standard, pixel, print, sticker]) {
+        const tokens = resolveThemeTokens(pack.tokens);
+        const color = (role: string): string => {
+          const value = tokens[role];
+          const alias = /^var\(--([\w-]+)\)$/.exec(value);
+          return alias ? color(alias[1]) : value;
+        };
+        expect(
+          contrast(color(`match-${venue}-badge-text`), color(`match-${venue}-badge-fill`)),
+          `${pack.id} ${venue}`,
+        ).toBeGreaterThanOrEqual(4.5);
+      }
+    },
+  );
+
   it.each(['bronze', 'silver', 'gold', 'platinum', 'ruby'])(
     'keeps %s rating numbers readable against their surface in every pack',
     (tier) => {

@@ -107,10 +107,10 @@ test('keeps browsing available and management edits locked over real automatic t
   await chooseLevel(page, 4);
   const prepare = page
     .getByTestId('club-hub')
-    .getByRole('button', { name: '전술·선발 준비', exact: true });
+    .getByRole('button', { name: '상세 리포트', exact: true });
   await page.evaluate(() => {
     const prep = Array.from(document.querySelectorAll('[data-testid="club-hub"] button')).find(
-      (e) => e.textContent?.trim() === '전술·선발 준비',
+      (e) => e.textContent?.trim() === '상세 리포트',
     )!;
     const probe = { changes: 0, prep };
     (window as typeof window & { controlProbe?: typeof probe }).controlProbe = probe;
@@ -157,7 +157,7 @@ test('keeps browsing available and management edits locked over real automatic t
     ),
   ).toBe(0);
   await prepare.click();
-  const sheet = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
+  const sheet = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
   await expect(sheet).toBeVisible();
   await expect(
     sheet.getByRole('button', { name: '감독에게 전술 요청', exact: true }),

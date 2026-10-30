@@ -320,7 +320,16 @@
       "preview-example-gap": "8px",
       "preview-label-divider-image": "none",
       "preview-label-color": "var(--image-muted)",
-      "chart-primary": "#a1cf9b"
+      "chart-primary": "#a1cf9b",
+      "match-home-badge-frame": "var(--button-secondary-frame)",
+      "match-badge-frame-width": "4px",
+      "match-home-badge-slice": "var(--button-secondary-frame-slice)",
+      "match-home-badge-fill": "var(--button-secondary-fill)",
+      "match-home-badge-text": "var(--button-secondary-text)",
+      "match-away-badge-frame": "var(--button-tertiary-frame)",
+      "match-away-badge-slice": "var(--button-tertiary-frame-slice)",
+      "match-away-badge-fill": "var(--button-tertiary-fill)",
+      "match-away-badge-text": "var(--button-tertiary-text)"
     }
   },
   "fonts": [
@@ -883,7 +892,10 @@
         "viewBox": "0 0 16 16",
         "shapeRendering": "crispEdges",
         "layers": [
-          { "d": "M4 2H6V3H8V4H10V5H12V7H14V9H12V11H10V12H8V13H6V14H4Z", "fill": "currentColor" }
+          {
+            "d": "M4 2H6V3H8V4H10V5H12V7H14V9H12V11H10V12H8V13H6V14H4Z",
+            "fill": "currentColor"
+          }
         ]
       }
     },

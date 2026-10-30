@@ -38,11 +38,15 @@ html[data-theme='sticker-club'] {
     color: #fff9e5;
   }
 
-  [data-home-part='fixture'] > div:first-child > small {
+  [data-home-part='fixture'] h2 {
     color: #ffe393;
   }
 
   [data-home-part='fixture'] p {
+    color: #f5efd9;
+  }
+
+  [data-home-part='fixture'] :is(h2, h3) ~ span {
     color: #f5efd9;
   }
 

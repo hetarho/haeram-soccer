@@ -2,7 +2,7 @@ import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { pendingDecisions } from '../../../../packages/engine/src/stopping';
 import { Select } from './Select';
 import { PixelIcon } from './PixelIcon';
-import { currentDay, seasonDate, seasonLength } from '../../../../packages/engine/src/calendar';
+import { currentDay, seasonLength } from '../../../../packages/engine/src/calendar';
 import { lazy, memo, Suspense, useEffect, useRef, useState } from 'react';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { useUnfinishedPlayback } from '../runtime/matchView';
@@ -33,8 +33,8 @@ const PACES: [Pace, string, string][] = [
 ];
 
 /**
- * Calendar information stays near the HUD while transport stays below the scrolling view. Home
- * reads the round in its season card (→WEB-11), so only other views show it here.
+ * The league and round stay near the HUD (today is in the HUD) while transport stays below the
+ * scrolling view. Home reads them in its season card (→WEB-11), so only other views show it.
  */
 export const ProgressOverview = memo(function ProgressOverview({
   compact = false,
@@ -52,16 +52,10 @@ export const ProgressOverview = memo(function ProgressOverview({
       aria-label="시즌 정보"
       data-testid={compact ? 'mini-clock' : undefined}
     >
-      <header
-        className={p.calendarSummary}
-        data-ui="calendar-header"
-        data-testid="calendar"
-        data-season={w.year}
-      >
+      <header className={p.calendarSummary} data-ui="calendar-header">
         <small>
           {w.lower ? t('shell.amateurLeague') : t('shell.division', { division: club.tier + 1 })}
         </small>
-        <span data-testid="game-date">{seasonDate(w)}</span>
       </header>
       {round && (
         <div

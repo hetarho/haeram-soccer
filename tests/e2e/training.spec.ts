@@ -133,9 +133,9 @@ for (const { seed: worldSeed, ...viewport } of [
     // Start the shared clock on home; it keeps running on other views until the owner stops it.
     const date = page.getByTestId('game-date');
     await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
-    await expect(date).toHaveText('1950년 8월 1일');
+    await expect(date).toHaveText('1950.08.01');
     await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-    await expect(date).toHaveText('1950년 8월 2일');
+    await expect(date).toHaveText('1950.08.02');
     await openTraining();
     const mini = page.getByRole('region', { name: '시즌 진행', exact: true });
     // Still running in 훈련. Stopped now, the days computed ahead (three at x1) are shown at the
@@ -190,7 +190,9 @@ for (const { seed: worldSeed, ...viewport } of [
     // landing first: on the eve it opens the eve's report, which would otherwise cover the
     // navigation below whenever the stop lands between two clicks.
     await expect(mini.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
-    const atEve = (await date.innerText()) === `1950년 8월 ${daysUntilNextMatch(reference)}일`;
+    const atEve =
+      (await date.innerText()) ===
+      `1950.08.${String(daysUntilNextMatch(reference)).padStart(2, '0')}`;
     if (atEve) {
       await expect(matchReport(page)).toBeVisible();
       await dismissMatchReport(page);

@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { createWorld, advanceDays, operate } from '../../packages/engine/src/index';
 import {
   nextOwnFixture,
-  seasonDate,
+  todayStamp,
   currentDay,
   fixtureDay,
 } from '../../packages/engine/src/calendar';
@@ -71,13 +71,13 @@ for (const width of [1280, 390]) {
       ).observe(element, { childList: true, subtree: true, characterData: true });
     });
     await page.getByRole('button', { name: '다음 이벤트', exact: true }).click();
-    await expect(page.getByTestId('game-date')).toHaveText(seasonDate(expected));
+    await expect(page.getByTestId('game-date')).toHaveText(todayStamp(expected));
     dates.push(
       ...(await page.evaluate(
         () => (window as unknown as { observedDates: string[] }).observedDates,
       )),
     );
-    expect(dates.every((date) => date === seasonDate(expected))).toBe(true);
+    expect(dates.every((date) => date === todayStamp(expected))).toBe(true);
     // Exit animations retain inert copies; only the live report owns a pending match eve.
     const group = matchReport(page).getByTestId('event-group');
     await expect(group).toContainText('내일 경기');

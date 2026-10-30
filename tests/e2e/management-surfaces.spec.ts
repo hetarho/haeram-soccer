@@ -130,9 +130,7 @@ for (const themeId of ['standard', 'pixel']) {
       expect(card.material).toContain(`/art/${themeId}/`);
       expect(card.frame).toContain(`/art/${themeId}/`);
       expect(card.overflow).toBeLessThanOrEqual(0);
-      await expect(
-        fixture.getByRole('button', { name: '전술·선발 준비', exact: true }),
-      ).toBeVisible();
+      await expect(fixture.getByRole('button', { name: '상세 리포트', exact: true })).toBeVisible();
       const transport = page.getByRole('region', { name: '시즌 진행', exact: true });
       await expect(transport.getByTestId('progression-mode')).toHaveText('MANUAL');
       await expect(

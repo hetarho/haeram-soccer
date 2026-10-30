@@ -264,7 +264,7 @@ test('compares distinct own players with a shared scope and returns focus withou
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   await sheet.getByRole('button', { name: '비교 마치기', exact: true }).click();
   await expect(opener).toBeFocused();
-  await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 1일');
+  await expect(page.getByTestId('game-date')).toHaveText('1950.08.01');
 });
 
 test('filters player samples and shows scoped per-90 evidence on a mobile profile', async ({
@@ -384,9 +384,8 @@ test('compares tactical rules as previews while the applied tactic and date stay
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  const appliedText = await page.getByTestId('hub-preparation').innerText();
-  await page.getByRole('button', { name: '전술·선발 준비', exact: true }).click();
-  const sheet = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
+  await page.getByRole('button', { name: '상세 리포트', exact: true }).click();
+  const sheet = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
   await sheet.getByText('전술 실험실 · 네 가지 비교', { exact: true }).click();
   const lab = sheet.getByRole('region', { name: '전술 실험실', exact: true });
   await expect(lab.getByRole('article')).toHaveCount(4);
@@ -409,26 +408,31 @@ test('compares tactical rules as previews while the applied tactic and date stay
   await expect(squad.getByRole('definition').nth(1)).not.toHaveText('—');
   await expect(squad.getByRole('definition').last()).toHaveText('없음');
   await sheet.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
-  await expect(page.getByTestId('hub-preparation')).toHaveText(appliedText);
-  await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 1일');
+  await expect(page.getByTestId('game-date')).toHaveText('1950.08.01');
 });
 
-test('opens evidence-based opponent scouting without progressing the world', async ({ page }) => {
+test('opens the manager report on the next match without progressing the world', async ({
+  page,
+}) => {
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  await page.getByRole('button', { name: '전술·선발 준비', exact: true }).click();
-  const sheet = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
-  const toggle = sheet.getByText('상대 스카우팅 노트', { exact: true });
-  await toggle.click();
-  const dossier = sheet.getByRole('region', { name: '상대 스카우팅' });
-  await expect(dossier).toContainText('최근 30경기 안의 맞대결 · 0경기');
-  await expect(dossier).toContainText('아직 완료한 리그 경기가 없어요.');
-  expect((await toggle.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  await page.getByRole('button', { name: '상세 리포트', exact: true }).click();
+  const sheet = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
+  // The manager reports first, then both sides (us left, them right) and our meetings.
+  await expect(sheet.getByRole('region', { name: '감독 보고' })).toContainText('나가겠습니다');
+  for (const side of ['우리 팀', '상대 팀']) {
+    const region = sheet.getByRole('region', { name: side, exact: true });
+    await expect(region).toContainText('학파');
+    await expect(region).toContainText('확인할 수 있는 경기 결과가 없어요.');
+    await expect(region.getByRole('group', { name: / 스쿼드$/ })).toBeVisible();
+  }
+  const meetings = sheet.getByRole('region', { name: '최근 맞대결' });
+  await expect(meetings).toContainText('최근 맞대결 · 0경기');
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   await sheet.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
-  await expect(page.getByTestId('game-date')).toHaveText('1950년 8월 1일');
+  await expect(page.getByTestId('game-date')).toHaveText('1950.08.01');
   await expectHomeBounds(page);
 });

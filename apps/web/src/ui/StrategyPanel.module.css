@@ -23,40 +23,9 @@
   font-size: 12px;
   font-family: var(--display);
 }
-.preparationScene {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  margin: 0;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  background: var(--surface-grain, none) var(--surface-2);
-}
-.preparationArt {
-  display: block;
-  width: 100%;
-  height: 128px;
-}
-.opponent {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 3px;
-  min-width: 0;
-  padding: 10px 14px;
-  overflow-wrap: anywhere;
-}
-.opponent span {
-  color: var(--text-muted);
-  font-size: 12px;
-  margin-right: 10px;
-  font-family: var(--display);
-}
-.opponent strong {
-  font-size: 14px;
-}
-.opponent p {
-  font-size: 12px;
-  margin: 3px 0 0;
+.proposalHead {
+  margin: 4px 0 0;
+  font-size: 15px;
   font-family: var(--display);
 }
 .tabs {
@@ -346,9 +315,6 @@
     width: 100%;
     min-height: 44px;
   }
-  .opponent {
-    padding: 8px 10px;
-  }
   .tabs {
     margin-top: 9px;
   }
@@ -447,16 +413,4 @@
 }
 .slotCard[data-level='0'] {
   border-color: var(--danger);
-}
-
-@media (max-width: 760px) {
-  .preparationScene {
-    grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
-  }
-  .preparationArt {
-    height: 112px;
-  }
-  .opponent {
-    padding: 8px 10px;
-  }
 }

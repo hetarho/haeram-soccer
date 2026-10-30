@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { currency } from '../../../../packages/catalogs/src/index';
 import { useLocale } from '../presentation/react';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
@@ -20,6 +21,22 @@ export function HudCash({ client }: { client?: GameClient }) {
   const own = w.clubs.find((club) => club.id === w.playerClub)!;
   const state = cashState(w);
   const exact = money(w.cash, own.country, w.year);
+  const symbol = currency(own.country, w.year).symbol;
+  // The currency symbol keeps its weight at a much smaller size than the amount.
+  const amount = (value: string) => {
+    const text = compactMoney(value, own.country, w.year),
+      at = text.indexOf(symbol);
+    if (at < 0) return text;
+    return (
+      <>
+        {text.slice(0, at)}
+        <span className={s.hudCurrency} data-ui="currency">
+          {symbol}
+        </span>
+        {text.slice(at + symbol.length)}
+      </>
+    );
+  };
   return (
     <>
       <button
@@ -36,12 +53,7 @@ export function HudCash({ client }: { client?: GameClient }) {
         <span>
           <small>{t('shell.cash')}</small>
           {/* The money notation on every viewport (→WEB-67); the exact amount is the title. */}
-          <AnimatedMoney
-            value={w.cash}
-            format={(value) => compactMoney(value, own.country, w.year)}
-            upClass={s.cashUp}
-            downClass={s.cashDown}
-          />
+          <AnimatedMoney value={w.cash} format={amount} upClass={s.cashUp} downClass={s.cashDown} />
         </span>
       </button>
       {open && client && (

@@ -99,9 +99,9 @@ for (const viewport of [
     await page.getByRole('button', { name: '클럽하우스', exact: true }).first().click();
     await page
       .getByTestId('club-hub')
-      .getByRole('button', { name: '전술·선발 준비', exact: true })
+      .getByRole('button', { name: '상세 리포트', exact: true })
       .click();
-    const preparation = page.getByRole('dialog', { name: '다음 경기 전술과 선발 준비' });
+    const preparation = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
     await preparation.getByRole('tab', { name: '선발 선택', exact: true }).click();
     const pitch = preparation.getByRole('group', { name: /선발 배치$/ });
     await expect(pitch).toBeVisible();

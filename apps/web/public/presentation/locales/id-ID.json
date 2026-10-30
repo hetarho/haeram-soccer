@@ -173,6 +173,8 @@
     "personnel.market": "Transfer",
     "personnel.training": "Latihan",
     "personnel.manager": "Manajer",
-    "personnel.coaches": "Staf"
+    "personnel.coaches": "Staf",
+    "fixture.home": "Kandang",
+    "fixture.away": "Tandang"
   }
 }

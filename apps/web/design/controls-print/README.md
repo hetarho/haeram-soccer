@@ -53,6 +53,10 @@ the shared button, field, select and checkbox aliases. The
 [shared control stylesheet](../../public/presentation/themes/image-ui-controls.css) draws them.
 Review the rendered checked state: the unchecked selector must not override its image.
 
+The transport's compact pace selector also uses `frame-dropdown.webp`, including its filled
+centre, through the same shared aliases. Its wrapper adjusts sizing only; the surrounding
+transport material does not replace the dropdown skin.
+
 ## Sources and regeneration
 
 [prompts.json](prompts.json) records seven individual built-in image_gen edit prompts and the
