@@ -15,9 +15,9 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| eo30 | ihaelam-ui-MacBookPro | autopilot | 2026-10-30T14:51Z | 2026-10-30T14:51Z | - |
 
 ## inbox
+- 261031 decided ARCH-6 ARCH-9 ARCH-34 review/engine-architecture-261030: which experiments merit follow-up → F1 record-level helper replication (own-match wall ×0.9170, CPU ×0.8563 against current helpers, identical daily worlds) and F2 packed Wasm movement (grid CPU ×0.9476, identical records), F1 first; total elapsed-time/day CPU gains remain inconclusive (alt: per-step SIMD, ×1.0220 slower | naive snapshot epochs, live own-day ×1.0783 slower). Research artifacts 2a28f947 are retained on origin/wip/eo30; production source is unchanged.
 - 261030 decided ARCH-34 ARCH-6: owner requests an isolated worktree, multiple engine-optimization attempts and current architectures/algorithms in automatic mode → review engine-architecture-261030 with reversible benchmark prototypes and explicit result-identity checks; no production engine adoption during research (alt: repeat T611/T612 micro-cuts | immediately change worker topology).
 - 261030 decided ARCH-34 MATCH-22: whether autopilot ep32 plans the parallel aggregate workers suggest once T611/T612 left no runnable task → no, the unit ends with no work and the suggest stays for the owner, since ideation/save-storage-and-fast-pace holds step (a) for the owner's read of x10 with the indicator, that ideation is parked, and the 261030 decision scoped "엔진 성능개선 할 수 있는거" to the two result-identical explore tasks (alt: an autopilot planning pass on ARCH worker topology and merge order, which would build a topology the owner has not agreed to | reopen the parked ideation).
 - 261030 decided ARCH-34 T612: when to close the 3 h aggregate timebox → at about 1 h 50 m, after 16 measured cuts (8 kept, combined aggregate ×0.9167), once the last four reads found nothing and the profile's top is RNG and counting loops a result-identical cut cannot reorder; A15 unified only the role objects, which T541's reverted A2 had combined with the tables, since A10 had moved `share` off the tables (alt: spend the remaining hour on sub-1% cuts the noise cannot resolve | skip A15 as a retry).
@@ -427,7 +427,7 @@
 | development-feedback-261026 | converted@261026 |
 | module-boundaries-261026 | converted@261026 |
 | ui-engine-boundary-261027 | converted@261027 |
-| engine-architecture-261030 | open@261030 |
+| engine-architecture-261030 | ready@261031 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -455,9 +455,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- Engine speed-up work (T611, T612) is on main and verified; no remaining task in that scope. The next larger lever is the 261030 suggest on parallel aggregate fixtures, which needs planning first.
+- create-task review/engine-architecture-261030: plan the measured record-level helper replication and packed Wasm movement candidates; experimental artifacts are on origin/wip/eo30 and in .tmp/engine-opt-261030. Production adoption needs the review's parity/fallback and browser/capacity gates.
 
 ## log
+- 261031 review-code engine-architecture-261030 ready: nine engine candidates, seventeen worker/transport configurations; F1/F2 accepted for follow-up planning, no production source adoption. Artifact commit 2a28f947 and remote checkpoint 848f8c57 (wip/eo30); project quick checks, 173 units and prototype parity passed; report 261030-eo30.
 - 261030 review-code engine-architecture-261030 start: owner-assigned isolated worktree codex/engine-opt-261030 at 64005ff1, session eo30; research and prototypes only.
 - 261030 engine speed-up final gate: 8dd01ffc full local batch passed (verify:batch 50 min, Chromium 334 passed) and main CI41015066295 succeeded (CI41002035381 on 2fc41d5f failed only format:check, fixed in c05e9194). Combined against 4ab5e4d1 on this host, all sameHash: grid ×0.9112 [0.9074, 0.9164] (345→315 ms a match), aggregate ×0.9168 [0.9060, 0.9296], day own-match days ×0.9052 [0.8883, 0.9310] (790→695 ms), other days ×0.9347 [0.9261, 0.9416].
 - 261030 T612 done: aggregate cuts kept against their parents (ab.mjs aggregate CPU, sameHash): A2 xT table ×0.9891, A3 traits array ×0.9873, A6 weights by role id ×0.9893 [0.9818, 0.9991], A10 role tables by line index ×0.9684 [0.9614, 0.9781], A12 `isPassKind` by comparison ×0.9854, A13 `moveKindIndex` ×0.9828, A14 keeping/forward kinds by comparison ×0.9895, A15 one role shape ×0.9889 [0.9814, 0.9992]; A1 A4 A5 A7 A8 A9 A11 A16 reverted (intervals include 1). Combined against c05e9194: aggregate ×0.9167 [0.9095, 0.9232]; day sameHash, own match days ×0.9582 [0.9336, 0.9835], other days ×0.9240 [0.9107, 0.9375]. Unit (grid 12 files 169 tests; changed 84 files 806 tests), typecheck, lint, format pass; integration-tier aggregate tests left to the final gate.
