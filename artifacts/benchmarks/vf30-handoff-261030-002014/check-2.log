@@ -1,0 +1,19 @@
+[WebServer] (node:62137) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:62151) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 3 workers
+
+(node:62154) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62152) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62153) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [webkit] › tests/e2e/management-surfaces.spec.ts:57:3 › standard: management cards, transport and choices retain inset content and separate actions (20.5s)
+  ✓  3 [webkit] › tests/e2e/club-identity-continuity.spec.ts:140:5 › founded, worn, edited and moved by file, designs and the earlier kit stay exact at 360x740 (29.7s)
+  ✓  4 [webkit] › tests/e2e/management-surfaces.spec.ts:57:3 › pixel: management cards, transport and choices retain inset content and separate actions (18.9s)
+  ✓  2 [webkit] › tests/e2e/mobile-match-presentation.spec.ts:226:3 › goal cue and ball ownership in the normal view at 360 (1.1m)
+
+  4 passed (1.2m)
