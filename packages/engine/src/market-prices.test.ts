@@ -99,6 +99,47 @@ const vectors = [
   },
 ];
 
+describe('transfer premium (CLUB-46)', () => {
+  const anchors = prices.MARKET_CONFIG.premium;
+
+  it('is each anchor multiple at its year and flat outside the anchors', () => {
+    for (const [year, multiple] of anchors) expect(prices.transferPremium(year)).toBeCloseTo(multiple, 12);
+    expect(prices.transferPremium(1901)).toBe(anchors[0][1]);
+    expect(prices.transferPremium(2100)).toBe(anchors.at(-1)![1]);
+  });
+
+  it('grows geometrically between anchors, never outside their range', () => {
+    for (let i = 1; i < anchors.length; i++) {
+      const [from, low] = anchors[i - 1],
+        [to, high] = anchors[i],
+        mid = (from + to) / 2;
+      expect(prices.transferPremium(mid)).toBeCloseTo(Math.sqrt(low * high), 12);
+      for (let year = from; year <= to; year++) {
+        const p = prices.transferPremium(year);
+        expect(p).toBeGreaterThanOrEqual(Math.min(low, high) - 1e-12);
+        expect(p).toBeLessThanOrEqual(Math.max(low, high) + 1e-12);
+      }
+    }
+  });
+
+  it('carries a value but never a wage', () => {
+    const [early, late] = [anchors[0][0], anchors.at(-1)![0]];
+    const ratio = (year: number) =>
+      prices.marketValueUnits(0, 70, 26, 70, year) / prices.marketWageUnits(0, 70, 26, 70);
+    expect(ratio(late) / ratio(early)).toBeCloseTo(
+      prices.transferPremium(late) / prices.transferPremium(early),
+      12,
+    );
+  });
+
+  it('prices ability more steeply than wages', () => {
+    const value = (ability: number) => prices.marketValueUnits(0, ability, 26, ability, 2000),
+      wage = (ability: number) => prices.marketWageUnits(0, ability, 26, ability);
+    expect(value(80) / value(60)).toBeCloseTo(prices.MARKET_CONFIG.valuePerPoint ** 20, 9);
+    expect(value(80) / value(60)).toBeGreaterThan(wage(80) / wage(60));
+  });
+});
+
 describe('market pricing read leaf', () => {
   it('retains the existing contract exports as the same functions and shared configuration', () => {
     for (const key of Object.keys(prices) as (keyof typeof prices)[])
@@ -134,7 +175,7 @@ describe('market pricing read leaf', () => {
       const before = structuredClone({ world, player });
       expect(prices.divisionShare(division)).toBe(share);
       expect(prices.marketWageUnits(division, ability, age, potential)).toBe(wageUnits);
-      expect(prices.marketValueUnits(division, ability, age, potential)).toBe(valueUnits);
+      expect(prices.marketValueUnits(division, ability, age, potential, year)).toBe(valueUnits);
       expect(prices.marketWageAt(code, year, division, player)).toBe(wage);
       expect(prices.marketValueAt(code, year, division, player)).toBe(value);
       expect(prices.marketWage(world, player)).toBe(wage);

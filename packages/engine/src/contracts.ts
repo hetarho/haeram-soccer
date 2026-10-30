@@ -20,6 +20,7 @@ export {
   divisionShare,
   marketWageUnits,
   marketValueUnits,
+  transferPremium,
   marketWageAt,
   marketValueAt,
   marketWage,

@@ -6,7 +6,8 @@ import { footballQuote } from './quotes';
 /**
  * Market wages and transfer values (→CLUB-25), in 1901 price units that the football index
  * carries to a country and year (→ECON-26), measured against the career targets (→ECON-29) with
- * scripts/calibrate-economy.ts (spec/ssot/ECON.md).
+ * scripts/calibrate-economy.ts (spec/ssot/ECON.md) and against each era's real fees (→CLUB-46)
+ * with scripts/calibrate-transfers.ts.
  */
 export const MARKET_CONFIG = {
   /**
@@ -15,8 +16,31 @@ export const MARKET_CONFIG = {
    */
   wage: 900,
   pivot: 70,
-  /** Each ability point multiplies wage and value, so 80 earns 7.4× 60 (CLUB-25: 6–10×). */
+  /** Each ability point multiplies the wage, so 80 earns 7.4× 60 (CLUB-25: 6–10×). */
   perPoint: 1.105,
+  /**
+   * Each ability point multiplies a transfer value more steeply than a wage: clubs pay the best
+   * players' fees out of all proportion to their pay, as the record fee stands 5–15× the average
+   * fee in every era (→CLUB-46).
+   */
+  valuePerPoint: 1.125,
+  /**
+   * The transfer market's own growth beyond the football index (→CLUB-46), [year, multiple]
+   * anchors, geometric between them and flat outside. Fees grew with football's income until the
+   * late 1970s and far faster since: the British record went from £165,000 in 1969 to £125m in
+   * 2025, the Premier League's average fee from £0.6m in 1992/93 to £24m in 2025.
+   */
+  premium: [
+    [1950, 0.3],
+    [1957, 0.5],
+    [1967, 0.6],
+    [1977, 0.8],
+    [1979, 1.3],
+    [1993, 1.35],
+    [1996, 2.3],
+    [2010, 2.3],
+    [2025, 3.4],
+  ] as [number, number][],
   /**
    * What a division pays for the same player, as a share of the top flight, by tier from the top
    * (the amateur league is the tier below the professional ones); the last entry holds below.
@@ -60,25 +84,45 @@ function marketPoints(ability: number, age: number, potential: number, promise: 
     Math.max(0, age - MARKET_CONFIG.veteran)
   );
 }
-function scaleUnits(points: number, division: number) {
+function scaleUnits(points: number, division: number, perPoint = MARKET_CONFIG.perPoint) {
   const c = MARKET_CONFIG;
-  return c.wage * c.perPoint ** (points - c.pivot) * divisionShare(division);
+  return c.wage * perPoint ** (points - c.pivot) * divisionShare(division);
+}
+
+/** The transfer market's multiple beyond the football index in `year` (→CLUB-46). */
+export function transferPremium(year: number) {
+  const anchors = MARKET_CONFIG.premium;
+  if (year <= anchors[0][0]) return anchors[0][1];
+  for (let i = 1; i < anchors.length; i++) {
+    const [from, low] = anchors[i - 1],
+      [to, high] = anchors[i];
+    if (year <= to) return low * (high / low) ** ((year - from) / (to - from));
+  }
+  return anchors[anchors.length - 1][1];
 }
 
 /** Yearly market wage in 1901 units at football index 1. */
 export function marketWageUnits(division: number, ability: number, age: number, potential: number) {
   return scaleUnits(marketPoints(ability, age, potential, MARKET_CONFIG.promise.wage), division);
 }
-/** Transfer value in 1901 units at football index 1: years of a wage that counts more promise. */
+/**
+ * Transfer value in 1901 units at football index 1: years of a wage that counts more promise,
+ * steeper in ability and carried by `year`'s transfer premium (→CLUB-46).
+ */
 export function marketValueUnits(
   division: number,
   ability: number,
   age: number,
   potential: number,
+  year: number,
 ) {
   const c = MARKET_CONFIG,
     years = clamp(c.years - Math.max(0, age - c.peak), c.minYears, c.years);
-  return years * scaleUnits(marketPoints(ability, age, potential, c.promise.value), division);
+  return (
+    years *
+    transferPremium(year) *
+    scaleUnits(marketPoints(ability, age, potential, c.promise.value), division, c.valuePerPoint)
+  );
 }
 
 /** A player's market wage in `code` and `year` money. */
@@ -94,7 +138,7 @@ export function marketValueAt(code: string, year: number, division: number, p: P
   return footballQuote(
     code,
     year,
-    marketValueUnits(division, overall(p), year - p.born, p.potential),
+    marketValueUnits(division, overall(p), year - p.born, p.potential, year),
   );
 }
 
