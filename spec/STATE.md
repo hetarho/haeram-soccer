@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| ep31 | hq-dev1-pve2-vm2 | autopilot | 2026-10-30T04:24Z | 2026-10-30T04:24Z | - |
 
 ## inbox
 - 261030 decided ARCH-34 T611 T612: which engine speed-ups to run for the owner's "엔진 성능개선 할 수 있는거" → two 3 h result-identical explore tasks, detailed engine first (revisions 6–10 code: spread, shape caches, computeTags, object shapes) then aggregate (validation lookups, xT table, traits array, SideLines fields), each cut kept only on ab.mjs's paired call with equal hashes; 261030 baseline on this host: own-match day ≈1 s CPU, aggregate 50% and grid 39% of a 120-day run (alt: one combined task, which mixes two workloads' reads | aggregate first, though revision 10 alone made the grid ×1.056 slower and its code is newest).
