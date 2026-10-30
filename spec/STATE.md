@@ -452,9 +452,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T611 then T612 (owner-requested engine speed-ups, judged by ARCH-34's paired same-machine call with identical hashes; autopilot ep30 in worktree ../haeram-soccor-engine-perf on work/engine-perf).
+- implement-task T611 then T612 (owner-requested engine speed-ups, judged by ARCH-34's paired same-machine call with identical hashes; autopilot ep31 in worktree ../haeram-soccor-engine-perf on work/engine-perf).
 
 ## log
+- 261030 ep30 stopped after 2 units: each unit started its ab.mjs read in the background and its headless session ended with the read running; G1/G4/G3 measured faster (sameHash), G2/G6/G5 unmeasured; the loop's end push carried them to main at 2fc41d5f (unit suite passing). T611/T612 notes now require foreground reads; resumed as ep31.
 - 261030 create-task T611 T612: owner-requested engine speed-ups, result-identical, paired ab.mjs reads on this host; grid then aggregate.
 - 261030 T610 done: resumed the relinquished vf30 handoff from origin/wip/vf30; CI40976497055 succeeded on 942fa32e (nine jobs, final Firefox completion at 00:47:27Z). Runtime source unchanged; typecheck, lint and project formatting pass. Receipt artifacts/benchmarks/cx30-ci-verification-261030/ci.json; report reports/261030-cx30.md.
 - 261030 vf30 handoff before 09:30KST: source 3e3d3b29230a, local full batch passed, final CI pending at the scheduled wait cutoff; local writer stopped, continue from wip/vf30 via reports/261030-vf31.md. Evidence artifacts/benchmarks/vf30-handoff-261030-002014.
@@ -474,4 +475,3 @@
 - 261030 T598 done: the kit evidence of CI40866255294 reads figures at MATCH-36's 85% torso through shared tests/fixtures/figure-evidence.ts (fit unchanged, sized from markerRadius × torsoWidth × DPR; colours within the painter's shading bound); continuity's phone journeys read at DPR 2 with worn/wrong-pattern/base/keeper/not-worn checks; no renderer defect, no production change; typecheck, lint, format:check, 4 affected unit tests and build pass; both club-identity specs left to the final Chromium gate.
 - 261030 T597 done: the ten management/calendar/navigation journeys of CI40866255294 follow the current UI with shared clubhouse helpers (icon-found tab, clubhouse date for League/Cup, which omit the information row), dated NEXT MATCH reports, the compact return/cup selector and the league picker's values; no UI defect, no production change; typecheck, lint, format:check, affected units (none) and build pass; browser specs left to the final Chromium gate.
 - 261030 T596 done: match-model revision 10 — every shot struck as its action starts, its second ball landing at its own speed and waiting for its winner, and won at least 1.2 m clear of the blocker or keeper; the stale T444/T445 resolve scenes expect the keeper's narrowing once; revisions 1–9 replay draw for draw; typecheck, lint, format:check, 913 affected unit tests, build and the four targeted CI cases pass; revision-10 digests and seeds re-recorded after T600.
-- 261030 update-ssot MATCH r44 + create-task: T596 diagnosed (2 stale revision-9 scenes, 2 second-ball defects) and rescoped to open revision 10; T599/T600 extend it.
