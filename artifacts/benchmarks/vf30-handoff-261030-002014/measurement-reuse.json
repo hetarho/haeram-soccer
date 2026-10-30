@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "currentCommit": "fab817b8b2b97bfb0c68f2b36c31488a277d6705",
+  "reusedMeasuredCommit": "20d57486e909ac58d58d32ce9bc79978b7e41455",
+  "recordedAt": "2026-10-29T23:56:44.527Z",
+  "originalEvidence": "artifacts/benchmarks/vf30-attempt03-20d57486",
+  "computation": {
+    "algorithm": "sha256",
+    "sha256": "3479b4e532c452f24fb450ef1c6d03f63bae27fa1d26085933264b435c112492",
+    "files": 203,
+    "entry": "scripts/benchmark.ts",
+    "scope": "runtime dependency closure and declared inputs"
+  },
+  "accuracy": "12faf2219e91ea51560b8e2fe08477c3f77f1e71a02a8314f8694afdb598497f",
+  "scope": "Capacity, fixed50 football read and grid/day paired CPU evidence only; original M1/Node24 provenance retained. No claim of a new measurement. Full browser/build checks are not reused.",
+  "limitation": "Original CI remains failed until T609 final browser checks and a new code-push CI succeed."
+}

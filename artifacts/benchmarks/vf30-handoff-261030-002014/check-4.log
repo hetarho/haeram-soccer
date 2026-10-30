@@ -1,0 +1,54 @@
+
+> haeram-soccor@0.7.0 art:check /Users/ihaelam/project/haeram-soccer/.tmp/vf30/workspace
+> node scripts/optimize-presentation-art.mjs
+
+{
+  "policy": "compact-ui-and-responsive-scenes-v1",
+  "groups": [
+    {
+      "theme": "matchday-print",
+      "group": "ui",
+      "before": 287799,
+      "after": 287799
+    },
+    {
+      "theme": "matchday-print",
+      "group": "facility",
+      "before": 11897526,
+      "after": 11897526,
+      "small": 2705620
+    },
+    {
+      "theme": "standard",
+      "group": "ui",
+      "before": 293261,
+      "after": 293261
+    },
+    {
+      "theme": "standard",
+      "group": "facility",
+      "before": 8362564,
+      "after": 8362564,
+      "small": 2094154
+    },
+    {
+      "theme": "pixel",
+      "group": "ui",
+      "before": 72229,
+      "after": 72229
+    },
+    {
+      "theme": "sticker-club",
+      "group": "ui",
+      "before": 199528,
+      "after": 199528
+    },
+    {
+      "theme": "sticker-club",
+      "group": "facility",
+      "before": 7167376,
+      "after": 7167376,
+      "small": 1997864
+    }
+  ]
+}

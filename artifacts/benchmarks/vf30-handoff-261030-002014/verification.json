@@ -1,0 +1,104 @@
+{
+  "started": "2026-10-29T23:31:36.451Z",
+  "scope": "batch: Chromium",
+  "source": {
+    "commit": "fab817b8b2b97bfb0c68f2b36c31488a277d6705",
+    "tree": "da33b52732f16cc172f1e6366bfc0a94b245c24a",
+    "dirty": false,
+    "diff": ""
+  },
+  "machine": {
+    "node": "v24.22.1",
+    "platform": "darwin",
+    "arch": "arm64",
+    "cpu": "Apple M1 Max",
+    "logicalCpus": 10,
+    "memoryBytes": 34359738368
+  },
+  "cache": "Existing caches retained; cache warmth and external host load uncontrolled.",
+  "stages": [
+    {
+      "stage": "typecheck",
+      "command": "pnpm run typecheck",
+      "started": "2026-10-29T23:31:36.498Z",
+      "finished": "2026-10-29T23:31:50.843Z",
+      "elapsedMs": 14345,
+      "exitCode": 0
+    },
+    {
+      "stage": "lint",
+      "command": "pnpm run lint",
+      "started": "2026-10-29T23:31:50.845Z",
+      "finished": "2026-10-29T23:31:58.384Z",
+      "elapsedMs": 7539,
+      "exitCode": 0
+    },
+    {
+      "stage": "format:check",
+      "command": "pnpm run format:check",
+      "started": "2026-10-29T23:31:58.385Z",
+      "finished": "2026-10-29T23:32:12.266Z",
+      "elapsedMs": 13882,
+      "exitCode": 0
+    },
+    {
+      "stage": "test:unit",
+      "command": "pnpm run test:unit --reporter=default --reporter=json --outputFile=.tmp/verification/unit-results.json",
+      "started": "2026-10-29T23:32:12.267Z",
+      "finished": "2026-10-29T23:33:06.814Z",
+      "elapsedMs": 54547,
+      "exitCode": 0
+    },
+    {
+      "stage": "test:integration",
+      "command": "pnpm run test:integration --reporter=default --reporter=json --outputFile=.tmp/verification/integration-results.json",
+      "started": "2026-10-29T23:33:06.814Z",
+      "finished": "2026-10-29T23:35:55.176Z",
+      "elapsedMs": 168362,
+      "exitCode": 0
+    },
+    {
+      "stage": "test:contract",
+      "command": "pnpm run test:contract --reporter=default --reporter=json --outputFile=.tmp/verification/contract-results.json",
+      "started": "2026-10-29T23:35:55.177Z",
+      "finished": "2026-10-29T23:36:23.830Z",
+      "elapsedMs": 28653,
+      "exitCode": 0
+    },
+    {
+      "stage": "validate:catalogs",
+      "command": "pnpm run validate:catalogs",
+      "started": "2026-10-29T23:36:23.830Z",
+      "finished": "2026-10-29T23:36:24.249Z",
+      "elapsedMs": 419,
+      "exitCode": 0
+    },
+    {
+      "stage": "validate:presentation",
+      "command": "pnpm run validate:presentation",
+      "started": "2026-10-29T23:36:24.250Z",
+      "finished": "2026-10-29T23:36:24.714Z",
+      "elapsedMs": 464,
+      "exitCode": 0
+    },
+    {
+      "stage": "build",
+      "command": "pnpm run build",
+      "started": "2026-10-29T23:36:24.714Z",
+      "finished": "2026-10-29T23:36:27.249Z",
+      "elapsedMs": 2535,
+      "exitCode": 0
+    },
+    {
+      "stage": "test:e2e",
+      "command": "pnpm run test:e2e --project=chromium",
+      "started": "2026-10-29T23:36:27.250Z",
+      "finished": "2026-10-29T23:56:36.398Z",
+      "elapsedMs": 1209145,
+      "exitCode": 0
+    }
+  ],
+  "finished": "2026-10-29T23:56:36.398Z",
+  "elapsedMs": 1499947,
+  "passed": true
+}

@@ -425,6 +425,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T610 | Complete pending CI verification after handoff | ARCH | T609 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -448,9 +449,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- coordinator guard on the committed vf30 candidate, on WebKit and Chromium: tests/e2e/training.spec.ts (360x740, 390x844), club-identity-continuity.spec.ts phone cases, management-surfaces.spec.ts standard/pixel and mobile-match-presentation.spec.ts goal cue at 360; then the complete final batch, the capacity/performance reuse check, the configured main push and one CI read.
+- Coordinator remote continuation: read reports/261030-vf31.md and actual CI/local gate state before source work or main push.
 
 ## log
+- 261030 vf30 handoff before 09:30KST: source 3e3d3b29230a, local full batch passed, final CI pending at the scheduled wait cutoff; local writer stopped, continue from wip/vf30 via reports/261030-vf31.md. Evidence artifacts/benchmarks/vf30-handoff-261030-002014.
 - 261030 T609 done: CI40961086172's five browser scenarios. Training waits for its restarted run to rest and closes the real first-eve report before roster navigation. Management's 1380 px choices measured the dialog entrance's last frame (uniform ≈0.9999 scale); `settle` also waits two frames and the assertions print measurements. Pitch counted at most 60 ms a frame, leaving WebKit's 16x match 12–15% behind its clock; frames now count their real time up to 250 ms (`frameElapsedMs`, new unit case). Continuity reads the same recorded playback from its kick-off (the whistle's still frame fits 2 of 3 figures on WebKit, reproduced offline from the trace screenshot). Typecheck, lint, format, affected units (19 files, 175 tests) and build pass; the browser cases are left to the coordinator.
 - 261030 T609 refine: CI40961086172 backend/Firefox/WebKit2 pass, Chromium training+WebKit1 fail; scoped repair preserves all thresholds/timeouts. Owner requests unfinished work remotely resumable by09:30KST.
 - 261030 T608 done: goal replay's 47.96 was legitimate original playback (a kick-off still beat before selection, the return poll after) with an exact return; the journey now asserts the first restored instant equals the entry instant from every presented `data-seconds` write. Live state's two failures were EventCenter re-presenting the played-through 8/7 report while an owner's stop drained its match day; events now wait for the clock lock to release (new EventCenter unit case), and the journey observes the full dismissal, the stop's landing and a genuine next eve separately. Typecheck, lint, format, affected units (4 files, 35 tests) and build pass; the three Chromium cases are left to the coordinator.
@@ -470,4 +472,4 @@
 - 261030 update-ssot MATCH r44 + create-task: T596 diagnosed (2 stale revision-9 scenes, 2 second-ball defects) and rescoped to open revision 10; T599/T600 extend it.
 - 261030 vf30 start: owner-authorized autopilot; synchronized origin/main469d24c2, captured CI40866255294 failures and created scoped T596–T600.
 - 261030 page/theme publication: owner-requested changes verified on pinned Node 24.22.1; 1747 unit, 48 contract, all fast/resource checks and four-theme desktop/phone review pass. Focused Chromium rerun 9/9 includes menu default/hover contrast and modal touch-size stability.
-- 261030 full gate on 68c05352: integration 1258 pass / 4 fail / 4 skip (existing T596); Chromium 318 pass / 15 fail, with three repaired by 7ded8ba8 and the remaining 12 in existing T597/T598. Engine/contracts source is unchanged. Publish the requested page/theme scope with these known regressions disclosed.
+

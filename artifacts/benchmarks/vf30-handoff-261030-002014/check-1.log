@@ -1,0 +1,139 @@
+
+> haeram-soccor@0.7.0 build /Users/ihaelam/project/haeram-soccer/.tmp/vf30/workspace
+> vite build --config apps/web/vite.config.ts
+
+vite v8.3.3 building client environment for production...
+transforming...
+
+A PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.
+✓ 609 modules transformed.
+rendering chunks...
+computing gzip size...
+apps/web/dist/lab.html                                        1.79 kB │ gzip:   0.62 kB
+apps/web/dist/index.html                                      2.56 kB │ gzip:   0.90 kB
+apps/web/dist/assets/fixtureHelper-B36X-qzS.js              446.27 kB
+apps/web/dist/assets/worker-BFodBFEU.js                     477.92 kB
+apps/web/dist/assets/codec-B7WxUr9r.js                    1,583.06 kB
+apps/web/dist/assets/worker-CThdBuGf.js                   2,211.75 kB
+apps/web/dist/assets/matchAppearance-DnVFohR1.css             0.11 kB │ gzip:   0.12 kB
+apps/web/dist/assets/FacilityArt-DUtWZk6c.css                 0.30 kB │ gzip:   0.21 kB
+apps/web/dist/assets/KitPitchPreview-C5Eb5EPK.css             0.47 kB │ gzip:   0.28 kB
+apps/web/dist/assets/AwaySummary-QrYJOn2U.css                 0.60 kB │ gzip:   0.31 kB
+apps/web/dist/assets/Money-Cu9qy8do.css                       0.71 kB │ gzip:   0.37 kB
+apps/web/dist/assets/ClubLink-B7h1mIqt.css                    0.86 kB │ gzip:   0.41 kB
+apps/web/dist/assets/Card-jPiVzdcr.css                        0.88 kB │ gzip:   0.39 kB
+apps/web/dist/assets/PlayGuide-CikdNAYY.css                   1.06 kB │ gzip:   0.40 kB
+apps/web/dist/assets/ClubDesignView-CqzrkxwQ.css              1.17 kB │ gzip:   0.50 kB
+apps/web/dist/assets/Glossary-X2kFFB62.css                    1.88 kB │ gzip:   0.66 kB
+apps/web/dist/assets/FormationPitch-CCsdbwTC.css              2.87 kB │ gzip:   1.01 kB
+apps/web/dist/assets/OwnerOfficeView-Ca7edP3D.css             2.91 kB │ gzip:   0.96 kB
+apps/web/dist/assets/GameSlotScreen-MuZmJOSG.css              2.95 kB │ gzip:   0.93 kB
+apps/web/dist/assets/ClubIdentityEditor-DlzImrEA.css          2.97 kB │ gzip:   0.93 kB
+apps/web/dist/assets/HeatPitch-B7fDifXg.css                   3.86 kB │ gzip:   1.27 kB
+apps/web/dist/assets/PlayerProfile-DIRXXr3t.css               4.17 kB │ gzip:   1.21 kB
+apps/web/dist/assets/lab-DI339b7e.css                         5.14 kB │ gzip:   1.60 kB
+apps/web/dist/assets/RecordsRoom-BVkSy7V7.css                 5.17 kB │ gzip:   1.52 kB
+apps/web/dist/assets/CupHistory-a7iok4yN.css                  5.73 kB │ gzip:   1.52 kB
+apps/web/dist/assets/CupsView-DesTVu-V.css                    6.55 kB │ gzip:   1.68 kB
+apps/web/dist/assets/Analysis-BeA7-_Yv.css                    6.78 kB │ gzip:   1.55 kB
+apps/web/dist/assets/StrategyPanel-VNzR4icI.css              10.13 kB │ gzip:   2.01 kB
+apps/web/dist/assets/Pitch-CERqXH_4.css                      10.45 kB │ gzip:   2.63 kB
+apps/web/dist/assets/SeasonReview-ht2mv7rq.css               11.62 kB │ gzip:   2.36 kB
+apps/web/dist/assets/StrategyBoard-B89Lqiaf.css              13.03 kB │ gzip:   2.81 kB
+apps/web/dist/assets/Rich-e51xEkbH.css                       60.90 kB │ gzip:   9.90 kB
+apps/web/dist/assets/main-CK0hl7iL.css                       61.60 kB │ gzip:  11.22 kB
+apps/web/dist/assets/startPresentation-DoeEfhn7.css         138.38 kB │ gzip:  21.70 kB
+apps/web/dist/assets/playerTallies-CKQr8QRk.js                0.04 kB │ gzip:   0.06 kB
+apps/web/dist/assets/fonts-HfAHJ9P8.js                        0.37 kB │ gzip:   0.24 kB
+apps/web/dist/assets/fixtures-19uu0xJZ.js                     0.38 kB │ gzip:   0.27 kB
+apps/web/dist/assets/intervention-D4T7paus.js                 0.38 kB │ gzip:   0.32 kB
+apps/web/dist/assets/ticketLevels-NjOh3Xiw.js                 0.48 kB │ gzip:   0.30 kB
+apps/web/dist/assets/liveState-CAstsF59.js                    0.54 kB │ gzip:   0.30 kB
+apps/web/dist/assets/Money-CzVNZDzH.js                        0.65 kB │ gzip:   0.46 kB
+apps/web/dist/assets/Analysis.module-DGXROz7c.js              0.67 kB │ gzip:   0.32 kB
+apps/web/dist/assets/ClubLink-D8LnH8iP.js                     0.71 kB │ gzip:   0.47 kB
+apps/web/dist/assets/rolldown-runtime-hePW80VL.js             0.71 kB │ gzip:   0.42 kB
+apps/web/dist/assets/Card-TLfpnffF.js                         0.73 kB │ gzip:   0.38 kB
+apps/web/dist/assets/presentationPreferences-09hwPnc5.js      0.74 kB │ gzip:   0.38 kB
+apps/web/dist/assets/metricGlossary-Csip3zeZ.js               0.77 kB │ gzip:   0.47 kB
+apps/web/dist/assets/career-assessment-BRbh0Rv5.js            0.80 kB │ gzip:   0.47 kB
+apps/web/dist/assets/competitionLabels-BSCVP5sY.js            0.88 kB │ gzip:   0.58 kB
+apps/web/dist/assets/scouting-0FhznS7f.js                     0.95 kB │ gzip:   0.57 kB
+apps/web/dist/assets/SeasonReview.module-CZ7ByaqA.js          1.10 kB │ gzip:   0.47 kB
+apps/web/dist/assets/playerAnalysis-BVrzOb9B.js               1.13 kB │ gzip:   0.73 kB
+apps/web/dist/assets/checkpointWriter-DFSaG82g.js             1.28 kB │ gzip:   0.79 kB
+apps/web/dist/assets/registry-BnhPvD61.js                     1.40 kB │ gzip:   0.72 kB
+apps/web/dist/assets/CompetitionTabs-DoLKCtlh.js              1.46 kB │ gzip:   0.82 kB
+apps/web/dist/assets/presentationResources-Cmrrilei.js        1.67 kB │ gzip:   0.88 kB
+apps/web/dist/assets/GlossarySheet-DJR7m2z4.js                1.76 kB │ gzip:   0.84 kB
+apps/web/dist/assets/KitPitchPreview-C-WGEBu7.js              2.07 kB │ gzip:   1.22 kB
+apps/web/dist/assets/FacilityArt-tl6J-V0O.js                  2.10 kB │ gzip:   1.14 kB
+apps/web/dist/assets/store-zUOVHCa4.js                        2.27 kB │ gzip:   1.10 kB
+apps/web/dist/assets/PlayGuide-BTOzUUkb.js                    2.50 kB │ gzip:   1.27 kB
+apps/web/dist/assets/careerRecords-BnA00Dab.js                2.54 kB │ gzip:   1.26 kB
+apps/web/dist/assets/AwaySummary-D8bo1x4_.js                  2.60 kB │ gzip:   1.38 kB
+apps/web/dist/assets/themeResources-pEyqoNzB.js               2.61 kB │ gzip:   1.19 kB
+apps/web/dist/assets/legacyReset-xGR5xSXW.js                  2.92 kB │ gzip:   1.41 kB
+apps/web/dist/assets/officeSummary-1sL9IfH-.js                2.98 kB │ gzip:   1.61 kB
+apps/web/dist/assets/profile-C8XF6osz.js                      3.05 kB │ gzip:   1.48 kB
+apps/web/dist/assets/FormationPitch-B3MSq8C1.js               3.21 kB │ gzip:   1.48 kB
+apps/web/dist/assets/ClubDesignView-DXnJ1n0A.js               3.77 kB │ gzip:   1.78 kB
+apps/web/dist/assets/fullStatsView-DKlOCEen.js                3.94 kB │ gzip:   2.01 kB
+apps/web/dist/assets/usePitchSkin-BeymIxyO.js                 4.26 kB │ gzip:   2.05 kB
+apps/web/dist/assets/Term-BDjOoQm1.js                         4.30 kB │ gzip:   2.21 kB
+apps/web/dist/assets/FixtureNotebook-qIt-ABQ_.js              4.89 kB │ gzip:   2.05 kB
+apps/web/dist/assets/LeagueFullStats-DSBktuBP.js              5.03 kB │ gzip:   1.80 kB
+apps/web/dist/assets/MatchReport-C0-PWMjp.js                  5.38 kB │ gzip:   2.36 kB
+apps/web/dist/assets/PlayerSheetDialog-7YZlmAT-.js            5.49 kB │ gzip:   2.50 kB
+apps/web/dist/assets/persistence-GBelqSsv.js                  5.81 kB │ gzip:   2.65 kB
+apps/web/dist/assets/league-DLc_Fzrl.js                       6.04 kB │ gzip:   2.63 kB
+apps/web/dist/assets/contracts-wfaiykLA.js                    6.22 kB │ gzip:   2.76 kB
+apps/web/dist/assets/MatchMaterial-D0mnzzER.js                6.38 kB │ gzip:   2.53 kB
+apps/web/dist/assets/TeamSheetDialog-Da3lVpCi.js              6.86 kB │ gzip:   2.61 kB
+apps/web/dist/assets/GameSlotScreen-D1EPJSZ6.js               6.94 kB │ gzip:   2.34 kB
+apps/web/dist/assets/ClubHub-D7qYY8vL.js                      7.74 kB │ gzip:   2.96 kB
+apps/web/dist/assets/jsx-runtime-BNakU3Ej.js                  8.24 kB │ gzip:   3.11 kB
+apps/web/dist/assets/controller--TdOh65P.js                   8.58 kB │ gzip:   3.51 kB
+apps/web/dist/assets/OwnerOfficeView-Ua7tT1Y1.js              9.33 kB │ gzip:   3.82 kB
+apps/web/dist/assets/ClubIdentityEditor-DwOo1HI6.js           9.69 kB │ gzip:   3.50 kB
+apps/web/dist/assets/HeatPitch-CNi_Bpxo.js                   10.53 kB │ gzip:   5.01 kB
+apps/web/dist/assets/PastSeason-BKkvYb4F.js                  12.70 kB │ gzip:   4.47 kB
+apps/web/dist/assets/PlayerProfile-BC7FmRNB.js               16.08 kB │ gzip:   5.96 kB
+apps/web/dist/assets/Segments-DQPoxuxn.js                    18.11 kB │ gzip:   6.65 kB
+apps/web/dist/assets/CupsView-fCLQJpJg.js                    18.43 kB │ gzip:   7.22 kB
+apps/web/dist/assets/CupHistory-CSrypJY3.js                  19.75 kB │ gzip:   7.05 kB
+apps/web/dist/assets/schema-Dd3Trp8B.js                      21.23 kB │ gzip:   6.88 kB
+apps/web/dist/assets/Glossary.module-QxkQE6ye.js             22.11 kB │ gzip:   7.92 kB
+apps/web/dist/assets/matchAppearance-DdJomsqB.js             26.20 kB │ gzip:  11.48 kB
+apps/web/dist/assets/StrategyPanel-DPbMJcxv.js               26.50 kB │ gzip:   9.55 kB
+apps/web/dist/assets/StrategyBoard-DThGvt9j.js               27.34 kB │ gzip:   9.72 kB
+apps/web/dist/assets/src-CcY27cAB.js                         33.83 kB │ gzip:  13.30 kB
+apps/web/dist/assets/Pitch-CjxvwXK2.js                       36.34 kB │ gzip:  14.27 kB
+apps/web/dist/assets/RecordsRoom-D06-1ai8.js                 81.57 kB │ gzip:  25.51 kB
+apps/web/dist/assets/decompress-IiLW5Ce9.js                  89.57 kB │ gzip:  59.79 kB
+apps/web/dist/assets/settlement-D2b0L1x6.js                 119.69 kB │ gzip:  46.23 kB
+apps/web/dist/assets/Rich-CaBFtrdJ.js                       171.85 kB │ gzip:  51.58 kB
+apps/web/dist/assets/main-CB2ZyZA9.js                       203.89 kB │ gzip:  67.26 kB
+apps/web/dist/assets/startPresentation-BQOvY42U.js          390.94 kB │ gzip: 123.75 kB
+apps/web/dist/assets/lab-C7Mcdq7F.js                        544.81 kB │ gzip:  79.40 kB
+
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0mapps/web/src/adapters/games.ts is dynamically imported by apps/web/src/runtime/client.ts but also statically imported by apps/web/src/adapters/legacyReset.ts, apps/web/src/adapters/previousStore.ts, apps/web/src/runtime/client.ts, apps/web/src/runtime/slots.ts, apps/web/src/ui/App.tsx, dynamic import will not move module into another chunk.
+
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 2.17s
+[WebServer] (node:61716) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:61730) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:61749) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 [chromium] › tests/e2e/training.spec.ts:92:3 › saves actual training without free growth and keeps home compact at 360x740 (31.1s)
+
+  1 passed (32.5s)
