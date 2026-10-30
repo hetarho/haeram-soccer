@@ -15,9 +15,9 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| tf31 | ihaelam-ui-MacBookPro | autopilot | 2026-10-30T17:08Z | 2026-10-30T17:08Z | T621 |
 
 ## inbox
+- 261031 decided ARCH-30 T621: the batch gate on 1ee725ea passed every stage but Chromium e2e (83 passed, 252 failed) while main has failed its UI journeys since the ds30 design (CI 41031470885, 41033470924; the design session is migrating the specs) → push the engine-only T621 to main: the 14 transfer-related cases (recruitment, records, contract-talks) fail identically on origin/main code without it, and the owner accepted these baseline UI failures for the engine-only publication earlier on 261031 (alt: hold the push until the ds30 spec migration lands and re-gate | run the whole Chromium suite on the baseline too, 1.3 h for the same answer).
 - 261031 decided CLUB-46 T621: r44's steeper value slope (1.125 a point everywhere) with a 1950s premium of 0.3–0.5 halved the 1950s lower-division fees of reference careers (tier-2 buys £1k → £494, sales £428 → £115), already below real lower-league fees of £150–3,500 → CLUB r45: the premium reaches a value by how far its points stand above the pivot (70), in full 10 points above it, no slope change, anchors refit on dumped top-flight squads of four careers (0.5 in 1950 to 5.2 in 2025; 0 of 15 years outside the bands in-sample) (alt: keep the uniform slope, which also passed the top-flight bands | an era-dependent slope, a second curve to keep).
 - 261031 suggest ECON-2 ECON-5: money outside England and the Netherlands sits far below real nominal levels for the whole game, because before 1960 every country follows the UK price path from its 1901 parity (25 lire/francs/pesetas, 20 marks, 4,500 reis per £); implied 1960 rates per £ ITA 25 lire (real 1,747), FRA 0.25 NF (13.8), POR 4.5 esc (80), ESP 25 ptas (168), BEL 25 BEF (140), GER 2 DM (11.7), NED 12 (10.6): a 2025 top-flight regular earns €10k in Italy and €9k in France against £865k in England. Ratios in price units are unaffected (ECON-29 holds); a fix needs each country's pre-1960 path or a 1960 exchange-rate link, a catalog version and a one-time live-amount conversion for existing saves (→ECON-6).
 - 261031 suggest CLUB-25 CLUB-46: before the 1970s the real fee pyramid was flat (a Third Division club set the 1947 British record; lower-league fees £150–3,500 in the 1950s) while a reference club's 1950s lower-division sales average £100–400, since division shares (1/0.4/0.15/0.07/0.03) are the same in every era; era-dependent division shares for values (and wages, ECON-29) would need their own planning pass.
@@ -441,7 +441,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T621 | Transfer values by era | CLUB | - | doing@261031.tf31 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -465,9 +464,11 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- tf31 (transfer values by era) is done and pushed; owner to look at its two suggests (non-English currency levels ECON-2/5, the 1950s lower-division fee pyramid CLUB-25/46). Main's Chromium UI journeys await the ds30 spec migration.
 - Owner authorizes main publication of T617/T618 despite reproduced baseline UI e2e failures; publish unchanged engine source and observe CI. Evidence reports/261031-ei31.md.
 
 ## log
+- 261031 T621 done: transfer values by era (CLUB r45), premium reaching values above the pivot, anchors 0.5 (1950)…5.2 (2025); 8 ENG careers 0 of 15 years outside CLUB-46 bands (10 before); ECON-29 bands unchanged; session tf31.
 - 261031 update-ssot CLUB r44 (CLUB-25✎ CLUB-46+) + create-task T621 transfer values by era; session tf31.
 - 261031 create-task review/engine-architecture-261030: owner authorizes production completion; T617 helper replication, T618 guarded packed movement; session ei31.
 - 261031 review-code engine-architecture-261030 ready: nine engine candidates, seventeen worker/transport configurations; F1/F2 accepted for follow-up planning, no production source adoption. Artifact commit 2a28f947 and remote checkpoint 848f8c57 (wip/eo30); project quick checks, 173 units and prototype parity passed; report 261030-eo30.
@@ -487,4 +488,3 @@
 - 261030 T609 refine: CI40961086172 backend/Firefox/WebKit2 pass, Chromium training+WebKit1 fail; scoped repair preserves all thresholds/timeouts. Owner requests unfinished work remotely resumable by09:30KST.
 - 261030 T608 done: goal replay's 47.96 was legitimate original playback (a kick-off still beat before selection, the return poll after) with an exact return; the journey now asserts the first restored instant equals the entry instant from every presented `data-seconds` write. Live state's two failures were EventCenter re-presenting the played-through 8/7 report while an owner's stop drained its match day; events now wait for the clock lock to release (new EventCenter unit case), and the journey observes the full dismissal, the stop's landing and a genuine next eve separately. Typecheck, lint, format, affected units (4 files, 35 tests) and build pass; the three Chromium cases are left to the coordinator.
 - 261030 create-task T608: Chromium331passed/3failed; all backend checks passed, no main code push; attempt-02 raw/traces retained.
-- 261030 T607 done: the four dccefdb2 integration failures. A goal-line block whose byline-clamped rebound rested 0.80 m from its blocker now goes behind for a corner on revision 10 (`blockedBehind`; unit scene in box.test.ts; only 1975's league facts/observed positions re-recorded; 50 grid-bands 24/37, goals 3.24, fingerprint 12faf221). Coordination's box scene now takes its shape before the runners arrive (stale sequential placement under T599's pairing). News checks every unbeaten milestone against HIST-11's per-match cap, with a hand-made crowded pair. Typecheck, lint, format, affected units (85 files, 808 tests) and build pass; the four cases and the modified integration files are left to the final gate.
