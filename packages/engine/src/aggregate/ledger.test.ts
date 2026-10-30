@@ -2,9 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { TD } from '../../../contracts/src/detail';
 import { M } from '../grid/record';
 import { buildAggregateInput, fullParticipation } from './input';
-import { deriveTeamFacts, inBoxCell, ledgerIssues, teamFactsIssues } from './ledger';
+import { deriveTeamFacts, inBoxCell, isPassKind, ledgerIssues, teamFactsIssues } from './ledger';
 import { aggregateStreams, generateTeamFacts } from './team';
-import type { AggregateLedger, AggregateParticipation, AggregateTeamFacts } from './types';
+import { AGGREGATE_MOVE_KINDS, AGGREGATE_PASS_KINDS } from './types';
+import type {
+  AggregateLedger,
+  AggregateMoveKind,
+  AggregateParticipation,
+  AggregateTeamFacts,
+} from './types';
 
 // Synthetic, explicitly marked test data: two flat XIs and simple finishing curves (→ARCH-21).
 const xi = (side: number) =>
@@ -49,6 +55,13 @@ function refused(ledger: AggregateLedger, issue: RegExp) {
 }
 
 describe('aggregate ledger', () => {
+  it('tells pass kinds exactly as the pass-kind list does (T612)', () => {
+    for (const kind of [...AGGREGATE_MOVE_KINDS, 'header', ''] as AggregateMoveKind[])
+      expect(isPassKind(kind), kind).toBe(
+        (AGGREGATE_PASS_KINDS as readonly string[]).includes(kind),
+      );
+  });
+
   it('derives the facts it checks', () => {
     const f = matchWith(() => true);
     expect(ledgerIssues(f.ledger)).toEqual([]);

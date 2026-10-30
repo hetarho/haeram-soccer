@@ -19,7 +19,6 @@ import { zeroMetrics } from '../primitives';
 import { AGGREGATE_CONFIG } from './config';
 import {
   AGGREGATE_MOVE_KINDS,
-  AGGREGATE_PASS_KINDS,
   type AggregateLedger,
   type AggregateMove,
   type AggregateMoveKind,
@@ -31,15 +30,22 @@ import {
 const CELLS = 40;
 const BIG_CHANCE = 30;
 
+/**
+ * Whether a kind is one of `AGGREGATE_PASS_KINDS`: compared one by one, the same answer as the
+ * list's `includes` for any value, without a call into it on every group (T612).
+ */
 export const isPassKind = (kind: AggregateMoveKind) =>
-  (AGGREGATE_PASS_KINDS as readonly string[]).includes(kind);
+  kind === 'short' ||
+  kind === 'long' ||
+  kind === 'through' ||
+  kind === 'cross' ||
+  kind === 'cutBack';
 export { inBoxCell };
 export const inGoalAreaCell = (cell: number) => cellBand(cell) === 7 && cellLane(cell) === 2;
 /** Every pair of cells' expected-threat gain, in thousandths, worked out once (T612). */
 const XT_GAIN: readonly number[] = Array.from({ length: CELLS * CELLS }, (_, at) =>
   Math.round(
-    Math.max(0, CELL_BASELINES[at % CELLS]!.xT - CELL_BASELINES[Math.floor(at / CELLS)]!.xT) *
-      1000,
+    Math.max(0, CELL_BASELINES[at % CELLS]!.xT - CELL_BASELINES[Math.floor(at / CELLS)]!.xT) * 1000,
   ),
 );
 /** Expected-threat gain of a completed move between two cells, in thousandths. */
