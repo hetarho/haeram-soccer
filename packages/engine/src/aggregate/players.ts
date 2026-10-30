@@ -57,6 +57,8 @@ interface Role {
   /** Its index among the roles built here: weights are cached by it (T612). */
   id: number;
   table: Table;
+  /** `table`'s values by `LINE_INDEX`, read by index instead of by the line's name (T612). */
+  byLine: readonly number[];
   attribute: AggregateAttribute;
   /** Weighs by the grid's offside call on the participant's own attribute (`offsideCall`). */
   call?: true;
@@ -76,7 +78,13 @@ const byBand = (rows: Readonly<Record<Line, readonly number[]>>, band: number): 
 const OFFSIDE_CALL = RESTART_CONFIG.offside.candidate;
 const BANDS = Array.from({ length: LAST_BAND + 1 }, (_, band) => band);
 let roleCount = 0;
-const makeRole = (r: Omit<Role, 'id'>): Role => ({ id: roleCount++, ...r });
+/** A line's index in a role's `byLine`. */
+const LINE_INDEX: Readonly<Record<Line, number>> = { GK: 0, DF: 1, MF: 2, FW: 3 };
+const makeRole = (r: Omit<Role, 'id' | 'byLine'>): Role => ({
+  id: roleCount++,
+  byLine: [r.table.GK, r.table.DF, r.table.MF, r.table.FW],
+  ...r,
+});
 /** Every role, built once: weights are cached by role. */
 const PASS_ROLES = BANDS.map((band) =>
   [false, true].map((long) =>
@@ -183,6 +191,8 @@ class SideLines {
   /** Each line-slot pair's action weight, read once per action (T326): `plan` is fixed here. */
   private readonly actions = new Map<MatchAction, number[]>();
   private readonly slotCount: number;
+  /** Each slot's line as `LINE_INDEX` numbers it (T612). */
+  private readonly slotLines: number[];
   /** Lines present in each minute asked for, in line order (T326): the stints are fixed here. */
   private readonly presence = new Map<number, readonly { line: number; slot: number }[]>();
   /** One split's buffers of the side's line count, reused by every move group (T326). */
@@ -202,6 +212,7 @@ class SideLines {
       detail: Array<number>(PLAYER_DETAIL_SIZE).fill(0),
     }));
     this.slotCount = input.sides[side].slots.length;
+    this.slotLines = input.sides[side].slots.map((s) => LINE_INDEX[s.line]);
     const n = this.rows.length;
     this.attempts = Array<number>(n).fill(0);
     this.completed = Array<number>(n).fill(0);
@@ -255,10 +266,9 @@ class SideLines {
     terms?: number[],
     at = 0,
   ) {
-    const s = this.input.sides[this.side].slots[slot]!;
-    let w = role.table[s.line] * minutes;
+    let w = role.byLine[this.slotLines[slot]!]! * minutes;
     if (!(w > 0)) return 0;
-    if (role.wide && s.wide) w *= role.wide;
+    if (role.wide && this.input.sides[this.side].slots[slot]!.wide) w *= role.wide;
     if (role.action) w *= this.actionWeight(line, slot, role.action);
     let term = terms ? terms[at]! : NaN;
     if (Number.isNaN(term)) {
