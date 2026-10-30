@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| ep32 | hq-dev1-pve2-vm2 | autopilot | 2026-10-30T05:04Z | 2026-10-30T05:04Z | - |
 
 ## inbox
 - 261030 decided ARCH-34 MATCH-22: whether autopilot ep32 plans the parallel aggregate workers suggest once T611/T612 left no runnable task → no, the unit ends with no work and the suggest stays for the owner, since ideation/save-storage-and-fast-pace holds step (a) for the owner's read of x10 with the indicator, that ideation is parked, and the 261030 decision scoped "엔진 성능개선 할 수 있는거" to the two result-identical explore tasks (alt: an autopilot planning pass on ARCH worker topology and merge order, which would build a topology the owner has not agreed to | reopen the parked ideation).
