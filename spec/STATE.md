@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| tf31 | ihaelam-ui-MacBookPro | autopilot | 2026-10-30T17:08Z | 2026-10-30T17:08Z | T621 |
 
 ## inbox
 - 261031 decided ARCH-30 T617 T618: owner explicitly accepts the reproduced pre-existing UI e2e failures and requests main push now → publish the completed, unchanged engine source using the recorded backend/three-browser verification; preserve failed-gate evidence and leave assertions/checks unchanged. This owner-authorized publication exception supersedes the earlier hold.
@@ -385,6 +386,7 @@
 - 261028 decided WEB-11 WEB-72 T536: facility scope and image treatment → three compact background-art entrances with manager/training preparation notices, plus a larger cover-cropped stadium (alt: implement unplanned room activities | keep one large owner entrance); detailed room activities await their own planning.
 - 261028 decided ARCH-31 ARCH-34: whether release throughput stays a gate once the owner rules out targets in seconds ("작업한 기기에서 노이즈 이상으로 빨라지면 성공") → throughput is compared with the previous release on one machine and reported, capacity stays the only release gate, and a speed-up is judged by ARCH-34's paired same-machine call (alt: gate on not being slower than the previous release beyond the noise, which would block every model revision that adds football | keep the 1 ms / 15 s reference-machine budgets)
 - 261030 decided WEB-105 WEB-32 WEB-50: owner requests goal-scene replay and final commit/push → optional clips of already seen live goals and retained archive goals, original viewing state restored, short normal-speed build-up with reusable controls and no extra save data (alt: automatic replay after every goal | replay by simulating again); implement after the scoped engine follow-ups and publish the complete batch.
+- 261031 decided CLUB-25 CLUB-46 T621: how to bring transfer fees to each era's real level when ENG reference careers measured the top flight's dearest player at 0.14–0.39× the British record from 1982 and the mean at 0.19–0.49× the Premier League average fee from 2003, while the club's turnover already sits at real levels (2020s £318m against £315m) → a transfer premium by year on top of the football index plus a steeper value slope (1.125 a point against the wage's 1.105), wages, division shares and indices untouched (alt: raise the value's years of wage from 2, which keeps the 1950s–70s already in band too high | a separate transfer index in the catalog, a catalog version change for one multiple | raise the football index, which moves wages, sponsors and costs the economy is calibrated on).
 
 ## ideation
 | id | st |
@@ -413,7 +415,7 @@
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
-| CLUB | 43 | 43 | - | 0 |
+| CLUB | 44 | 44 | - | 0 |
 | MATCH | 44 | 44 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
@@ -436,6 +438,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T621 | Transfer values by era | CLUB | - | doing@261031.tf31 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -468,6 +471,7 @@
 - 261031 T617 done locally: incremental helper replicas and fallback guards; affected units 91 files/869 tests, quick checks/build pass. Real-worker confirmation equal hashes, total wall ×0.8987 and process CPU ×0.8046; full integration/browser gate remains after T618.
 - 261031 create-task review/engine-architecture-261030: owner authorizes production completion; T617 helper replication, T618 guarded packed movement; session ei31.
 - 261031 review-code engine-architecture-261030 ready: nine engine candidates, seventeen worker/transport configurations; F1/F2 accepted for follow-up planning, no production source adoption. Artifact commit 2a28f947 and remote checkpoint 848f8c57 (wip/eo30); project quick checks, 173 units and prototype parity passed; report 261030-eo30.
+- 261031 update-ssot CLUB r44 (CLUB-25✎ CLUB-46+) + create-task T621 transfer values by era; session tf31.
 - 261030 review-code engine-architecture-261030 start: owner-assigned isolated worktree codex/engine-opt-261030 at 64005ff1, session eo30; research and prototypes only.
 - 261030 engine speed-up final gate: 8dd01ffc full local batch passed (verify:batch 50 min, Chromium 334 passed) and main CI41015066295 succeeded (CI41002035381 on 2fc41d5f failed only format:check, fixed in c05e9194). Combined against 4ab5e4d1 on this host, all sameHash: grid ×0.9112 [0.9074, 0.9164] (345→315 ms a match), aggregate ×0.9168 [0.9060, 0.9296], day own-match days ×0.9052 [0.8883, 0.9310] (790→695 ms), other days ×0.9347 [0.9261, 0.9416].
 - 261030 T612 done: aggregate cuts kept against their parents (ab.mjs aggregate CPU, sameHash): A2 xT table ×0.9891, A3 traits array ×0.9873, A6 weights by role id ×0.9893 [0.9818, 0.9991], A10 role tables by line index ×0.9684 [0.9614, 0.9781], A12 `isPassKind` by comparison ×0.9854, A13 `moveKindIndex` ×0.9828, A14 keeping/forward kinds by comparison ×0.9895, A15 one role shape ×0.9889 [0.9814, 0.9992]; A1 A4 A5 A7 A8 A9 A11 A16 reverted (intervals include 1). Combined against c05e9194: aggregate ×0.9167 [0.9095, 0.9232]; day sameHash, own match days ×0.9582 [0.9336, 0.9835], other days ×0.9240 [0.9107, 0.9375]. Unit (grid 12 files 169 tests; changed 84 files 806 tests), typecheck, lint, format pass; integration-tier aggregate tests left to the final gate.
@@ -481,4 +485,3 @@
 - 261030 T608 done: goal replay's 47.96 was legitimate original playback (a kick-off still beat before selection, the return poll after) with an exact return; the journey now asserts the first restored instant equals the entry instant from every presented `data-seconds` write. Live state's two failures were EventCenter re-presenting the played-through 8/7 report while an owner's stop drained its match day; events now wait for the clock lock to release (new EventCenter unit case), and the journey observes the full dismissal, the stop's landing and a genuine next eve separately. Typecheck, lint, format, affected units (4 files, 35 tests) and build pass; the three Chromium cases are left to the coordinator.
 - 261030 create-task T608: Chromium331passed/3failed; all backend checks passed, no main code push; attempt-02 raw/traces retained.
 - 261030 T607 done: the four dccefdb2 integration failures. A goal-line block whose byline-clamped rebound rested 0.80 m from its blocker now goes behind for a corner on revision 10 (`blockedBehind`; unit scene in box.test.ts; only 1975's league facts/observed positions re-recorded; 50 grid-bands 24/37, goals 3.24, fingerprint 12faf221). Coordination's box scene now takes its shape before the runners arrive (stale sequential placement under T599's pairing). News checks every unbeaten milestone against HIST-11's per-match cap, with a hand-made crowded pair. Typecheck, lint, format, affected units (85 files, 808 tests) and build pass; the four cases and the modified integration files are left to the final gate.
-- 261030 create-task T607: full integration145files/1259tests passed,4cases failed; no main code push, raw attempt-01 retained.
