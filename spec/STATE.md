@@ -17,6 +17,8 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261030 decided ARCH-34 T611 T612: which engine speed-ups to run for the owner's "엔진 성능개선 할 수 있는거" → two 3 h result-identical explore tasks, detailed engine first (revisions 6–10 code: spread, shape caches, computeTags, object shapes) then aggregate (validation lookups, xT table, traits array, SideLines fields), each cut kept only on ab.mjs's paired call with equal hashes; 261030 baseline on this host: own-match day ≈1 s CPU, aggregate 50% and grid 39% of a 120-day run (alt: one combined task, which mixes two workloads' reads | aggregate first, though revision 10 alone made the grid ×1.056 slower and its code is newest).
+- 261030 suggest ARCH-34 MATCH-22: running a day's aggregate fixtures in parallel workers (deferred 261026 in ideation/save-storage-and-fast-pace with worker-topology and result-identity risk) is the next larger lever once result-identical cuts are spent; it needs a planning pass (ARCH worker topology, deterministic merge order) before any task.
 - 261030 decided WEB-32 WEB-94 MATCH-12 T609: the WebKit 360 goal cue ran 16x at about 87 match s per real s in both attempts, 12–15% behind its own presentation clock, and was still in the 90′ goal hold when its 61.6 s budget ended, because Pitch advanced at most 60 ms a frame while WebKit on CI draws some frames past 100 ms → a product defect against WEB-32's wall-clock mapping: a frame advances its real time up to `FRAME_STEP_LIMIT_MS` 250 and a longer stall is not caught up; pause/visibility still restart the loop at 0 (alt: raise the journey budget, which the task forbids | seek to the end | keep 60 ms and play slower than specified on slow devices).
 - 261030 decided KIT-3 KIT-12 MATCH-36 ARCH-21 T609: continuity's live check fit 2 of 3 figures at the whistle on every WebKit retry; the trace's lossless DPR-2 whistle screenshot through the same `wornFigures` reproduces 2 (two fits at 92%/91%, the rest 83–88% against 90% or 34 of 36 points, the still frame turning and striding figures over one another) → read the same recorded playback from its kick-off via 경기 상세 › 주요 장면 탐색 › 킥오프 · 1분 at 2x, frame by frame like the records-room replay that passes on WebKit, then 결과 보기 back to the result; minimum three, tolerance 60, 85% geometry and every control unchanged (alt: lower to two | widen colour/fit tolerances | another seed | `imageSmoothingQuality` high, a rendering change unverifiable here).
 - 261030 decided WEB-17 WEB-46 ARCH-21 T609: management's choices read 43.994/43.999 px tall (87.988 wide) at 1380 px only, one uniform ≈0.9999 scale matching the centred dialog's `scale(0.97)` entrance's last frame while `settle` saw no running animation 11 ms before → layout is 44 px; `settle` also waits two animation frames (bounded 1 s) so a finished animation's last frame is never measured, and the assertions print their measurements (alt: offsetHeight, which rounds | a tolerance under 44 | taller product buttons for a transient).
@@ -425,6 +427,8 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T611 | Result-identical detailed-engine cuts after revisions 6–10 | ARCH MATCH SAVE | - | todo |
+| T612 | Result-identical aggregate-engine cuts | ARCH MATCH SAVE | T611 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -448,9 +452,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- The vf30 verification handoff is complete: CI40976497055 passed all nine jobs on source 942fa32e; no remaining task in that scope. See reports/261030-cx30.md and its CI receipt. Existing calibration residuals and unrelated ideation remain outside this completed handoff.
+- implement-task T611 then T612 (owner-requested engine speed-ups, judged by ARCH-34's paired same-machine call with identical hashes; autopilot ep30 in worktree ../haeram-soccor-engine-perf on work/engine-perf).
 
 ## log
+- 261030 create-task T611 T612: owner-requested engine speed-ups, result-identical, paired ab.mjs reads on this host; grid then aggregate.
 - 261030 T610 done: resumed the relinquished vf30 handoff from origin/wip/vf30; CI40976497055 succeeded on 942fa32e (nine jobs, final Firefox completion at 00:47:27Z). Runtime source unchanged; typecheck, lint and project formatting pass. Receipt artifacts/benchmarks/cx30-ci-verification-261030/ci.json; report reports/261030-cx30.md.
 - 261030 vf30 handoff before 09:30KST: source 3e3d3b29230a, local full batch passed, final CI pending at the scheduled wait cutoff; local writer stopped, continue from wip/vf30 via reports/261030-vf31.md. Evidence artifacts/benchmarks/vf30-handoff-261030-002014.
 - 261030 T609 done: CI40961086172's five browser scenarios. Training waits for its restarted run to rest and closes the real first-eve report before roster navigation. Management's 1380 px choices measured the dialog entrance's last frame (uniform ≈0.9999 scale); `settle` also waits two frames and the assertions print measurements. Pitch counted at most 60 ms a frame, leaving WebKit's 16x match 12–15% behind its clock; frames now count their real time up to 250 ms (`frameElapsedMs`, new unit case). Continuity reads the same recorded playback from its kick-off (the whistle's still frame fits 2 of 3 figures on WebKit, reproduced offline from the trace screenshot). Typecheck, lint, format, affected units (19 files, 175 tests) and build pass; the browser cases are left to the coordinator.
@@ -470,4 +475,3 @@
 - 261030 T597 done: the ten management/calendar/navigation journeys of CI40866255294 follow the current UI with shared clubhouse helpers (icon-found tab, clubhouse date for League/Cup, which omit the information row), dated NEXT MATCH reports, the compact return/cup selector and the league picker's values; no UI defect, no production change; typecheck, lint, format:check, affected units (none) and build pass; browser specs left to the final Chromium gate.
 - 261030 T596 done: match-model revision 10 — every shot struck as its action starts, its second ball landing at its own speed and waiting for its winner, and won at least 1.2 m clear of the blocker or keeper; the stale T444/T445 resolve scenes expect the keeper's narrowing once; revisions 1–9 replay draw for draw; typecheck, lint, format:check, 913 affected unit tests, build and the four targeted CI cases pass; revision-10 digests and seeds re-recorded after T600.
 - 261030 update-ssot MATCH r44 + create-task: T596 diagnosed (2 stale revision-9 scenes, 2 second-ball defects) and rescoped to open revision 10; T599/T600 extend it.
-- 261030 vf30 start: owner-authorized autopilot; synchronized origin/main469d24c2, captured CI40866255294 failures and created scoped T596–T600.
