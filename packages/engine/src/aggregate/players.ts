@@ -54,6 +54,8 @@ const LAST_BAND = 7;
 
 /** What makes a line do an action: his slot's line, a flank bonus, the attribute and the action. */
 interface Role {
+  /** Its index among the roles built here: weights are cached by it (T612). */
+  id: number;
   table: Table;
   attribute: AggregateAttribute;
   /** Weighs by the grid's offside call on the participant's own attribute (`offsideCall`). */
@@ -73,7 +75,8 @@ const byBand = (rows: Readonly<Record<Line, readonly number[]>>, band: number): 
  */
 const OFFSIDE_CALL = RESTART_CONFIG.offside.candidate;
 const BANDS = Array.from({ length: LAST_BAND + 1 }, (_, band) => band);
-const makeRole = (r: Role): Role => r;
+let roleCount = 0;
+const makeRole = (r: Omit<Role, 'id'>): Role => ({ id: roleCount++, ...r });
 /** Every role, built once: weights are cached by role. */
 const PASS_ROLES = BANDS.map((band) =>
   [false, true].map((long) =>
@@ -168,7 +171,12 @@ interface Row {
 /** One side's lines, their exposures and cached weights while the match is attributed. */
 class SideLines {
   readonly rows: Row[];
-  private readonly cache = new Map<string, Map<Role | TakerKey, number[]>>();
+  private readonly cache = new Map<string, Map<TakerKey, number[]>>();
+  /** Per period (regulation, extra), each role's weights by its `id` (T612). */
+  private readonly byRole: (number[] | undefined)[][] = [
+    Array<number[] | undefined>(roleCount).fill(undefined),
+    Array<number[] | undefined>(roleCount).fill(undefined),
+  ];
   private readonly expo = new Map<AggregatePeriod, AggregateExposure[]>();
   /** Per period, by attribute (and `:call` for the offside call's weight). */
   private readonly terms = new Map<AggregatePeriod, Map<string, number[]>>();
@@ -285,8 +293,8 @@ class SideLines {
 
   /** Each line's weight for a role over a period: its minutes there, by slot, role and skill. */
   weights(period: AggregatePeriod, role: Role): number[] {
-    const cache = this.cacheOf(period);
-    let out = cache.get(role);
+    const cache = this.byRole[period === 'regulation' ? 0 : 1]!;
+    let out = cache[role.id];
     if (!out) {
       // Plain doubles: the same sums as a Float64Array, without its costly creation (T326).
       out = Array<number>(this.rows.length).fill(0);
@@ -302,7 +310,7 @@ class SideLines {
       }
       // Nobody of the role's lines played: whoever was on the pitch, by his minutes.
       if (!out.some((w) => w > 0)) for (const e of list) out[e.line]! += e.minutes;
-      cache.set(role, out);
+      cache[role.id] = out;
     }
     return out;
   }
