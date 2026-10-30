@@ -31,14 +31,11 @@ import { pressScale } from './freedom';
 import { attackFrame, PITCH, toEngine } from './pitch';
 import {
   intentionTarget,
-  newShapeCache,
   offsideLine,
   secondBallOver,
-  shapePlace,
   speedOf,
   spread,
   type SetPieceScene,
-  type ShapeCache,
 } from './shape';
 import { onPitch, other, type GridPlayer, type GridState } from './state';
 
@@ -420,16 +417,12 @@ export function inDanger(s: GridState, side: 0 | 1): boolean {
   );
 }
 
-/**
- * Why `gp`'s intention ends now, or undefined while it is still feasible. `cache` is shared by the
- * verdicts of one unchanged state.
- */
+/** Why `gp`'s intention ends now, or undefined while it is still feasible. */
 function verdict(
   s: GridState,
   gp: GridPlayer,
   i: Intention,
   danger: boolean,
-  cache?: ShapeCache,
 ): IntentionReason | undefined {
   const mate = i.teammate === undefined ? undefined : s.players[gp.side][i.teammate];
   const foe = i.opponent === undefined ? undefined : s.players[other(gp.side)][i.opponent];
@@ -481,8 +474,7 @@ function verdict(
       const receiver = i.shadow === undefined ? undefined : s.players[other(gp.side)][i.shadow];
       if (receiver && !onPitch(receiver)) return 'departed';
       if (!foe || !receiver || !isOwner(s, foe)) return 'cleared';
-      return screenable(s, foe, receiver) &&
-        screenPoint(s, gp, foe, receiver, shapePlace(s, gp.side, gp.idx, cache))
+      return screenable(s, foe, receiver) && screenPoint(s, gp, foe, receiver)
         ? undefined
         : 'cleared';
     }
@@ -508,20 +500,17 @@ function verdict(
 export function updateIntentions(s: GridState, inFlight = false, defenceOnly = false): void {
   const def = other(s.possession);
   const danger = !inFlight && inDanger(s, def);
-  const review = (gp: GridPlayer, cache?: ShapeCache) => {
+  const review = (gp: GridPlayer) => {
     const i = gp.intention;
     if (!i || rank(i.priority) <= rank('restart')) return undefined;
-    return onPitch(gp) ? verdict(s, gp, i, gp.side === def && danger, cache) : 'departed';
+    return onPitch(gp) ? verdict(s, gp, i, gp.side === def && danger) : 'departed';
   };
   // Every verdict reads the same state, then they all take effect: no player sees another's first.
   const ended: GridPlayer[] = [];
   const why: IntentionReason[] = [];
-  // One shape cache for the screens' reads of that state, made once a screen needs it.
-  let before: ShapeCache | undefined;
   for (const roster of s.players)
     for (const gp of roster) {
-      const screen = gp.intention?.kind === 'screen';
-      const reason = review(gp, screen ? (before ??= newShapeCache()) : undefined);
+      const reason = review(gp);
       if (reason) {
         ended.push(gp);
         why.push(reason);
@@ -537,8 +526,6 @@ export function updateIntentions(s: GridState, inFlight = false, defenceOnly = f
     }
   // The side whose box scene is on, and its ball's side of goal (T443).
   const scene = boxSide(s, s.possession);
-  // One shape cache for this pass's screens: it moves targets alone, which no cached value reads.
-  let after: ShapeCache | undefined;
   for (const roster of s.players)
     for (const gp of roster) {
       const i = gp.intention;
@@ -546,10 +533,7 @@ export function updateIntentions(s: GridState, inFlight = false, defenceOnly = f
       // A screen keeps to the lane as its carrier and receiver move, once an action (T442).
       else if (i?.kind === 'screen') {
         const foes = s.players[other(gp.side)];
-        const home = shapePlace(s, gp.side, gp.idx, (after ??= newShapeCache()));
-        i.target = inside(
-          screenPoint(s, gp, foes[i.opponent!]!, foes[i.shadow!]!, home) ?? i.target,
-        );
+        i.target = inside(screenPoint(s, gp, foes[i.opponent!]!, foes[i.shadow!]!) ?? i.target);
       }
       // A box runner waits at his load point again while the scene is on (T443): the delivery he
       // attacked is over and the ball is with a carrier out wide again.
