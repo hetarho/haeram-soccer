@@ -61,6 +61,14 @@ interface Role {
   byLine: readonly number[];
   attribute: AggregateAttribute;
   /** Weighs by the grid's offside call on the participant's own attribute (`offsideCall`). */
+  call: true | undefined;
+  action: MatchAction | undefined;
+  wide: number | undefined;
+}
+/** A role as written below; `makeRole` gives every role the same fields in one order (T612). */
+interface RoleSpec {
+  table: Table;
+  attribute: AggregateAttribute;
   call?: true;
   action?: MatchAction;
   wide?: number;
@@ -80,10 +88,14 @@ const BANDS = Array.from({ length: LAST_BAND + 1 }, (_, band) => band);
 let roleCount = 0;
 /** A line's index in a role's `byLine`. */
 const LINE_INDEX: Readonly<Record<Line, number>> = { GK: 0, DF: 1, MF: 2, FW: 3 };
-const makeRole = (r: Omit<Role, 'id' | 'byLine'>): Role => ({
+const makeRole = (r: RoleSpec): Role => ({
   id: roleCount++,
+  table: r.table,
   byLine: [r.table.GK, r.table.DF, r.table.MF, r.table.FW],
-  ...r,
+  attribute: r.attribute,
+  call: r.call,
+  action: r.action,
+  wide: r.wide,
 });
 /** Every role, built once: weights are cached by role. */
 const PASS_ROLES = BANDS.map((band) =>
