@@ -46,8 +46,10 @@ const SEEDS = Number(option('seeds', '4'));
 const FIRST_SEED = Number(option('first-seed', '0'));
 const COUNTRIES = option('countries', 'ENG').split(',') as CountryCode[];
 const LEVELS = option('levels', 'normal').split(',') as DifficultyLevel[];
-// Candidate constants for a run: --value-per-point 1.12, --premium 1950:0.6,1980:1.9,2025:4.3
-if (option('value-per-point', '')) MARKET_CONFIG.valuePerPoint = Number(option('value-per-point', ''));
+/** Keep every top-flight player of every summer in --out, to refit values without replaying. */
+const DUMP = args.includes('--dump-players');
+// Candidate constants for a run: --premium-span 10, --premium 1950:0.6,1980:1.9,2025:4.3
+if (option('premium-span', '')) MARKET_CONFIG.premiumSpan = Number(option('premium-span', ''));
 if (option('premium', ''))
   MARKET_CONFIG.premium = option('premium', '')
     .split(',')
@@ -145,6 +147,8 @@ interface Season {
   turnover: number;
   /** Top-flight market: dearest, mean of the ten dearest, median and mean player, pounds. */
   market: { max: number; top10: number; median: number; mean: number; best: number };
+  /** Every top-flight player this summer as [ability, age, potential] triples, flattened. */
+  players?: number[];
 }
 interface Career {
   code: CountryCode;
@@ -177,25 +181,30 @@ function buyFacilities(w: World) {
     operate(w, { type: 'facility', part: preview.part });
   }
 }
-/** The top flight's transfer values this summer, in pounds. */
-function topFlightMarket(w: World): Season['market'] {
+/** The top flight's transfer values this summer, in pounds, and its players for refits. */
+function topFlightMarket(w: World): Pick<Season, 'market' | 'players'> {
   const code = clubOf(w).country;
   const values: number[] = [],
-    best: number[] = [];
+    best: number[] = [],
+    players: number[] = [];
   for (const club of w.clubs) {
     if (club.country !== code || club.tier !== 0 || club.id.startsWith('euro:')) continue;
     for (const p of squad(w, club)) {
       values.push(pounds(code, w.year, marketValueAt(code, w.year, 0, p)));
       best.push(overall(p));
+      players.push(overall(p), w.year - p.born, p.potential);
     }
   }
   values.sort((a, b) => b - a);
   return {
-    max: values[0] ?? NaN,
-    top10: mean(values.slice(0, 10)),
-    median: median(values),
-    mean: mean(values),
-    best: Math.max(...best),
+    market: {
+      max: values[0] ?? NaN,
+      top10: mean(values.slice(0, 10)),
+      median: median(values),
+      mean: mean(values),
+      best: Math.max(...best),
+    },
+    ...(DUMP ? { players } : {}),
   };
 }
 
@@ -207,7 +216,7 @@ function playCareer(code: CountryCode, seed: string, level: DifficultyLevel): Ca
   for (let n = 0; n < SEASONS && !w.bankrupt; n++) {
     const year = w.year,
       tier = clubOf(w).tier,
-      market = topFlightMarket(w),
+      summer = topFlightMarket(w),
       firstEvent = w.events.length;
     while (w.round < 46 && !w.bankrupt) {
       buyFacilities(w);
@@ -239,7 +248,7 @@ function playCareer(code: CountryCode, seed: string, level: DifficultyLevel): Ca
         age: person ? f.year - person.born : NaN,
       });
     }
-    career.seasons.push({ year, tier, turnover, market });
+    career.seasons.push({ year, tier, turnover, ...summer });
     if (year % 10 === 9) console.error(`${code}/${seed}: ${year} closed, division ${tier}`);
     closeSeason(w);
     w.revision++;
@@ -363,9 +372,7 @@ function report(careers: Career[]) {
   console.log('\nTop-flight seasons: our turnover against the market (decade means)');
   console.log('decade | seasons | turnover | dearest/turnover | median/turnover');
   for (const d of decades) {
-    const s = careers.flatMap((c) =>
-      c.seasons.filter((x) => decade(x.year) === d && x.tier === 0),
-    );
+    const s = careers.flatMap((c) => c.seasons.filter((x) => decade(x.year) === d && x.tier === 0));
     if (!s.length) continue;
     const t = mean(s.map((x) => x.turnover));
     console.log(
@@ -381,7 +388,7 @@ function report(careers: Career[]) {
 }
 
 const input = option('in', '');
-let careers: Career[] = [];
+const careers: Career[] = [];
 if (input) {
   for (const file of input.split(','))
     careers.push(...(JSON.parse(readFileSync(file, 'utf8')) as Career[]));

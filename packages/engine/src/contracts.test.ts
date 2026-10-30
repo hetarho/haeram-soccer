@@ -176,10 +176,13 @@ describe('market values (→CLUB-25)', () => {
   it('values players on the wage scale: by ability, promise, age, division and index', () => {
     const w = world();
     const value = (p: Player, division = 0) => amount(playerValue(w, p, division));
+    const wage = (p: Player) => amount(marketWage(w, p, 0));
     for (const p of activePlayers(w)) expect(playerValue(w, p)).toBe(marketValue(w, p));
-    const ratio = value(rated(w, 80)) / value(rated(w, 60));
-    expect(ratio).toBeGreaterThanOrEqual(6);
-    expect(ratio).toBeLessThanOrEqual(10);
+    // Below the transfer premium's reach a value keeps the wage scale (CLUB-25, CLUB-46).
+    expect(value(rated(w, 65)) / value(rated(w, 55))).toBeCloseTo(
+      wage(rated(w, 65)) / wage(rated(w, 55)),
+      3,
+    );
     expect(value(rated(w, 60, 19, 85))).toBeGreaterThan(value(rated(w, 60, 24, 85)));
     expect(value(rated(w, 60, 31))).toBeLessThan(value(rated(w, 60, 27)));
     expect(value(rated(w, 60, 27), 1)).toBeLessThan(value(rated(w, 60, 27)));
@@ -188,6 +191,12 @@ describe('market values (→CLUB-25)', () => {
       return major(w, playerValue(w, rated(w, 70), 0));
     });
     expect(eras[1]).toBeGreaterThan(eras[0]);
+    // A star stands further above a squad player as the transfer market grows (CLUB-46).
+    const star = (year: number) => {
+      w.year = year;
+      return value(rated(w, 90)) / value(rated(w, 60));
+    };
+    expect(star(2025)).toBeGreaterThan(2 * star(1950));
   });
 
   it('asks the value of the division a candidate’s ability suits, times the fee settings', () => {

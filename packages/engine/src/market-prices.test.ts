@@ -4,7 +4,10 @@ import type { Player, World } from '../../contracts/src/types';
 import * as legacy from './contracts';
 import * as prices from './market-prices';
 
-/** Captured from contracts.ts before extraction; synthetic ratings, no generated world. */
+/**
+ * Captured from contracts.ts before extraction; synthetic ratings, no generated world. Only the GER
+ * 2020 star reaches the transfer premium (CLUB-46): the others stand at or below the pivot.
+ */
 const vectors = [
   {
     code: 'ENG',
@@ -54,9 +57,9 @@ const vectors = [
     potential: 85,
     share: 1,
     wageUnits: 2442.672761947402,
-    valueUnits: 2442.672761947402,
+    valueUnits: 11267.065689690868,
     wage: '44625397',
-    value: '44625397',
+    value: '205838985',
   },
   {
     code: 'ITA',
@@ -103,7 +106,8 @@ describe('transfer premium (CLUB-46)', () => {
   const anchors = prices.MARKET_CONFIG.premium;
 
   it('is each anchor multiple at its year and flat outside the anchors', () => {
-    for (const [year, multiple] of anchors) expect(prices.transferPremium(year)).toBeCloseTo(multiple, 12);
+    for (const [year, multiple] of anchors)
+      expect(prices.transferPremium(year)).toBeCloseTo(multiple, 12);
     expect(prices.transferPremium(1901)).toBe(anchors[0][1]);
     expect(prices.transferPremium(2100)).toBe(anchors.at(-1)![1]);
   });
@@ -122,21 +126,39 @@ describe('transfer premium (CLUB-46)', () => {
     }
   });
 
-  it('carries a value but never a wage', () => {
-    const [early, late] = [anchors[0][0], anchors.at(-1)![0]];
-    const ratio = (year: number) =>
-      prices.marketValueUnits(0, 70, 26, 70, year) / prices.marketWageUnits(0, 70, 26, 70);
-    expect(ratio(late) / ratio(early)).toBeCloseTo(
-      prices.transferPremium(late) / prices.transferPremium(early),
-      12,
-    );
+  // At 30 a player's points are his ability (no youth or age discount) and his value one wage.
+  const { pivot, premiumSpan, minYears, years } = prices.MARKET_CONFIG;
+  const valueOverWage = (ability: number, year: number) =>
+    prices.marketValueUnits(0, ability, 30, ability, year) /
+    prices.marketWageUnits(0, ability, 30, ability);
+
+  it('carries a value by as much of the premium as its points reach, never a wage', () => {
+    for (const [year, multiple] of anchors) {
+      expect(valueOverWage(pivot, year)).toBeCloseTo(minYears, 12);
+      expect(valueOverWage(pivot + premiumSpan / 2, year)).toBeCloseTo(
+        minYears * multiple ** 0.5,
+        12,
+      );
+      expect(valueOverWage(pivot + premiumSpan, year)).toBeCloseTo(minYears * multiple, 12);
+      expect(valueOverWage(pivot + premiumSpan + 15, year)).toBeCloseTo(minYears * multiple, 12);
+    }
   });
 
-  it('prices ability more steeply than wages', () => {
-    const value = (ability: number) => prices.marketValueUnits(0, ability, 26, ability, 2000),
-      wage = (ability: number) => prices.marketWageUnits(0, ability, 26, ability);
-    expect(value(80) / value(60)).toBeCloseTo(prices.MARKET_CONFIG.valuePerPoint ** 20, 9);
-    expect(value(80) / value(60)).toBeGreaterThan(wage(80) / wage(60));
+  it('leaves a lower-division player at his wage-curve value in every era', () => {
+    for (const year of [1950, 1979, 2025])
+      for (const division of [2, 3, 4])
+        expect(prices.marketValueUnits(division, 55, 26, 55, year)).toBeCloseTo(
+          years * prices.marketWageUnits(division, 55, 26, 55),
+          12,
+        );
+  });
+
+  it('keeps a better player dearer in every year', () => {
+    for (let year = 1950; year <= 2030; year += 5)
+      for (let ability = 40; ability < 99; ability++)
+        expect(prices.marketValueUnits(0, ability + 1, 26, ability + 1, year)).toBeGreaterThan(
+          prices.marketValueUnits(0, ability, 26, ability, year),
+        );
   });
 });
 
