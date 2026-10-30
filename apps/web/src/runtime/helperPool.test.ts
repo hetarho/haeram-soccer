@@ -14,6 +14,7 @@ import {
   type HelperPort,
   type HelperReply,
 } from './helperPool';
+import { FIXTURE_HELPER_PROTOCOL } from './fixtureReplica';
 
 /** A helper port that keeps what it was sent and answers only when the test says so. */
 class FakePort implements HelperPort {
@@ -25,7 +26,17 @@ class FakePort implements HelperPort {
   /** Answers the latest share: each job's result names its fixture. */
   answer(change: Partial<HelperReply> = {}) {
     const job = this.sent.at(-1)!;
-    this.onmessage?.({ data: { id: job.id, results: job.jobs.map(result), ...change } });
+    this.onmessage?.({
+      data: {
+        protocol: job.protocol,
+        session: job.session,
+        id: job.id,
+        worldRevision: job.worldRevision,
+        revision: job.id,
+        results: job.jobs.map(result),
+        ...change,
+      },
+    });
   }
 }
 const fixture = (id: string): Fixture =>
@@ -33,7 +44,12 @@ const fixture = (id: string): Fixture =>
 const result = (job: RoundJob): RoundJobResult =>
   ({ record: { id: job.fixture.id }, squads: [[], []] }) as unknown as RoundJobResult;
 const jobs = ['f1', 'f2', 'f3', 'f4', 'f5'].map((id) => ({ fixture: fixture(id), keep: false }));
-const copy = { seed: 'small', year: 1950 } as unknown as FixtureReadCopy;
+const copy = {
+  seed: 'small',
+  year: 1950,
+  playerClub: 'own',
+  clubs: [],
+} as unknown as FixtureReadCopy;
 const ids = (results: readonly RoundJobResult[] | undefined) => results?.map((r) => r.record.id);
 
 afterEach(() => {
@@ -45,6 +61,7 @@ describe('HelperPool', () => {
     const ports = [new FakePort(), new FakePort()];
     const pool = new HelperPool(ports);
     const run = pool.run(copy, jobs);
+    expect(ports[0]!.sent[0]!.protocol).toBe(FIXTURE_HELPER_PROTOCOL);
     expect(ports.map((port) => port.sent[0]!.jobs.map((job) => job.fixture.id))).toEqual([
       ['f1', 'f2'],
       ['f3', 'f4', 'f5'],
@@ -83,7 +100,7 @@ describe('HelperPool', () => {
     const ports = [new FakePort()];
     const pool = new HelperPool(ports);
     const first = pool.run(copy, jobs.slice(0, 2));
-    ports[0]!.onmessage?.({ data: { id: 99, results: [] } });
+    ports[0]!.answer({ id: 99 });
     expect(pool.active).toBe(true);
     ports[0]!.answer({ results: [] });
     expect(await first).toBeUndefined();
@@ -112,6 +129,60 @@ describe('HelperPool', () => {
     const pool = new HelperPool([]);
     expect(pool.active).toBe(false);
     expect(await pool.run(copy, jobs)).toBeUndefined();
+  });
+  it('sends record deltas after acknowledgement and resnapshots a helper that missed a batch', async () => {
+    const ports = [new FakePort(), new FakePort()],
+      pool = new HelperPool(ports);
+    let run = pool.run(copy, jobs);
+    ports.forEach((p) => p.answer());
+    await run;
+    run = pool.run({ ...copy, calendar: { day: 1 } }, jobs.slice(0, 1));
+    expect(ports[0]!.sent.at(-1)!.patch).toBeDefined();
+    expect(ports[0]!.sent.at(-1)!.base).toBe(1);
+    ports[0]!.answer();
+    await run;
+    run = pool.run(copy, jobs);
+    expect(ports[0]!.sent.at(-1)!.patch).toBeDefined();
+    expect(ports[1]!.sent.at(-1)!.copy).toBe(JSON.stringify(copy));
+    expect(ports[1]!.sent.at(-1)!.base).toBe(0);
+    ports.forEach((p) => p.answer());
+    await run;
+  });
+  it('a newly loaded world starts a distinct session and ignores an old session reply', async () => {
+    const port = new FakePort(),
+      pool = new HelperPool([port]);
+    pool.useWorld({} as World);
+    let run = pool.run(copy, jobs);
+    const previous = port.sent.at(-1)!;
+    port.answer();
+    await run;
+    pool.useWorld({} as World);
+    run = pool.run(copy, jobs);
+    expect(port.sent.at(-1)!.copy).toBeDefined();
+    expect(port.sent.at(-1)!.session).not.toBe(previous.session);
+    port.answer({ session: previous.session });
+    expect(pool.active).toBe(true);
+    port.answer();
+    expect(await run).toHaveLength(jobs.length);
+  });
+  it.each(['protocol', 'worldRevision', 'revision'] as const)(
+    'disables on an invalid %s acknowledgement',
+    async (key) => {
+      const port = new FakePort(),
+        pool = new HelperPool([port]);
+      const run = pool.run(copy, jobs);
+      port.answer({ [key]: -1 });
+      expect(await run).toBeUndefined();
+      expect(pool.active).toBe(false);
+    },
+  );
+  it('overlapping requests settle both callers through fallback', async () => {
+    const pool = new HelperPool([new FakePort()]);
+    const first = pool.run(copy, jobs),
+      second = pool.run(copy, jobs);
+    expect(await first).toBeUndefined();
+    expect(await second).toBeUndefined();
+    expect(pool.active).toBe(false);
   });
   it('never throws into the prepared day: a copy or a port that fails ends helper use', async () => {
     const unserializable = new HelperPool([new FakePort()]);

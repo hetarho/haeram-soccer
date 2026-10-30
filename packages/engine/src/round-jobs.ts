@@ -2,26 +2,13 @@ import type { Fixture, MatchPlayback, MatchRecord, Player, World } from '../../c
 import { simulateMatch } from './match';
 import { isScoringFixture } from './scoring';
 import { findClub, squad } from './world';
-
-/**
- * The world keys a fixture without the own club reads (→ARCH-6). Each such fixture draws from its
- * own seeded streams and settles only its two clubs, each playing once a round, so a round's other
- * fixtures can be computed elsewhere from a read-only copy of these keys alone. The NPC squads are
- * not shipped: a copy rebuilds them from `people` through its own per-year squad cache.
- */
-export const FIXTURE_READ_KEYS = [
-  'calendar',
-  'clubs',
-  'discipline',
-  'managerMarket',
-  'matchModel',
-  'people',
-  'playerClub',
-  'seed',
-  'year',
-] as const satisfies readonly (keyof World)[];
-export type FixtureReadKey = (typeof FIXTURE_READ_KEYS)[number];
-export type FixtureReadCopy = Pick<World, FixtureReadKey>;
+import type { FixtureReadCopy } from './fixture-copy';
+export {
+  FIXTURE_READ_KEYS,
+  readCopy,
+  type FixtureReadKey,
+  type FixtureReadCopy,
+} from './fixture-copy';
 
 /** One other-club league fixture of the round, to compute from a read copy. */
 export interface RoundJob {
@@ -56,12 +43,6 @@ export function roundSimulator(w: World) {
 
 export function ownFixture(w: World, f: Fixture) {
   return f.home === w.playerClub || f.away === w.playerClub;
-}
-/** The copy of the world a round's other fixtures read; it shares the world's values. */
-export function readCopy(w: World): FixtureReadCopy {
-  const copy: Partial<Record<FixtureReadKey, unknown>> = {};
-  for (const key of FIXTURE_READ_KEYS) if (key in w) copy[key] = w[key];
-  return copy as FixtureReadCopy;
 }
 /** The fixtures without the own club, in fixture order. */
 export function roundJobs(w: World, fixtures: readonly Fixture[]): RoundJob[] {

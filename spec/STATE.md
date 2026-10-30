@@ -434,7 +434,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T617 | Incremental fixture helpers | ARCH | - | todo |
+| T617 | Incremental fixture helpers | ARCH | - | doing@261031.ei31 |
 | T618 | Safe packed movement phase | ARCH | T617 | todo |
 
 ## work
