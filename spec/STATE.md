@@ -18,6 +18,7 @@
 | ei31 | ihaelam-ui-MacBookPro | autopilot | 2026-10-30T15:51Z | 2026-10-30T15:51Z | - |
 
 ## inbox
+- 261031 decided ARCH-9 ARCH-34 T618: guarded Wasm qualifies locally but deployed CSP restricts compilation → adopt the independently qualifying packed JavaScript phase (final grid CPU ×0.9633, equal records), preserving scalar fallback and security headers; archive Wasm source/bytes/evidence (alt: expand CSP | ship two overlapping numeric backends).
 - 261031 decided ARCH-6 ARCH-9 ARCH-34 T617 T618: owner requests continued optimization attempts through completed implementation → production helper replication first, then guarded packed movement, with safe fallbacks and one combined final gate/main push (alt: stop at research | ship unguarded prototypes). Keep the assigned isolated worktree and all unrelated design changes separate.
 - 261031 decided ARCH-6 ARCH-9 ARCH-34 review/engine-architecture-261030: which experiments merit follow-up → F1 record-level helper replication (own-match wall ×0.9170, CPU ×0.8563 against current helpers, identical daily worlds) and F2 packed Wasm movement (grid CPU ×0.9476, identical records), F1 first; total elapsed-time/day CPU gains remain inconclusive (alt: per-step SIMD, ×1.0220 slower | naive snapshot epochs, live own-day ×1.0783 slower). Research artifacts 2a28f947 are retained on origin/wip/eo30; production source is unchanged.
 - 261030 decided ARCH-34 ARCH-6: owner requests an isolated worktree, multiple engine-optimization attempts and current architectures/algorithms in automatic mode → review engine-architecture-261030 with reversible benchmark prototypes and explicit result-identity checks; no production engine adoption during research (alt: repeat T611/T612 micro-cuts | immediately change worker topology).
@@ -434,7 +435,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T618 | Safe packed movement phase | ARCH | T617 | doing@261031.ei31 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -458,9 +458,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T618; T617 local implementation and paired evidence are complete, combined final gate/main push follows both candidates.
+- Coordinator final verification of T617/T618 combined source, then configured main push and one CI wait; details reports/261031-ei31.md.
 
 ## log
+- 261031 T618 done locally: packed JavaScript movement, scalar fallback and browser fault probe; final grid CPU ×0.9633, equal records. Combined real-worker wall ×0.8744/process CPU ×0.7910, equal worlds; final full-suite/browser/CI gate pending.
 - 261031 T617 done locally: incremental helper replicas and fallback guards; affected units 91 files/869 tests, quick checks/build pass. Real-worker confirmation equal hashes, total wall ×0.8987 and process CPU ×0.8046; full integration/browser gate remains after T618.
 - 261031 create-task review/engine-architecture-261030: owner authorizes production completion; T617 helper replication, T618 guarded packed movement; session ei31.
 - 261031 review-code engine-architecture-261030 ready: nine engine candidates, seventeen worker/transport configurations; F1/F2 accepted for follow-up planning, no production source adoption. Artifact commit 2a28f947 and remote checkpoint 848f8c57 (wip/eo30); project quick checks, 173 units and prototype parity passed; report 261030-eo30.
@@ -480,5 +481,3 @@
 - 261030 create-task T607: full integration145files/1259tests passed,4cases failed; no main code push, raw attempt-01 retained.
 - 261030 T606 done: no goal clip begins while the original viewing holds a goal (`replayEntryOpen` gates `startGoalReplay` and the picker at the moment of choice, a picker opened before the hold included); the hold runs its full length and a return keeps the original clock, so a final-sample hold can no longer finish the live match for a clip; shortcut and picker goals stay focusable with `aria-disabled` through the hold; archived clip play/pause display rechecked (T601's fix kept); format, typecheck, lint, affected units (42) and build pass; goal-replay browser journey left to the final Chromium gate.
 - 261030 create-task T606: focused T601 lifecycle/control verification repair from coordinator review; no policy change.
-- 261030 owner-directed home/HUD redesign (chat, no task): season card as one dark box (real league name, rank/points/record, cups, league progress filling a day at a time to 0.1%), today in the HUD as 1951.10.29 on every view (crest only on phones; smaller cash with a small currency symbol), four home links (리그 보기 · 컵대회 보기 · 클럽 기록실 · 브리핑), NEXT MATCH under the season card with its competition by the title and one row of opponent · venue · 상세 리포트 (primary). The tactic/lineup modal became 다음 경기 상세 리포트: the manager's report, both sides' last ten, OVR, shape and school, our last ten meetings, then the owner's tactic request and XI. App menu is a plain compact list. Typecheck, lint, unit suite (web) and targeted chromium e2e pass; full browser suite not run; WEB SSOT (WEB-11 order, season card, progress rule) not yet updated.
-- 261030 design ds30 home/nav (owner-directed, chat, no task): sidebar 클럽하우스·리그·컵·이적시장·기록, bottom bar league·cups | clubhouse | market·records (market = first-team market view, left the 감독 사무실 tabs); the home holds the rooms (감독 사무실·코칭스태프실·훈련장·유소년 훈련장 tiles) and, under NEXT MATCH, the owner's office as a dimmed art scene with the five team-state tiles small and icon-free; office approvals left the home event center for the office (count on the clubhouse entry and the office caption); league filters country·division·season in one row (a closed season opens its archive), cups keep this-season/past tabs, records lost the league/cup tabs; back/return links removed (TaskReturn, ← 사무실, ← 시즌별 기록); season strip above other pages removed; next-match report and remedy sheet use ticket/dark Card surfaces, report footer [의견 전달 | 확인하고 홈으로]; concurrent result-badge work included. Pushed before tests at the owner's request; WEB SSOT not yet updated.
