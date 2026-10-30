@@ -15,8 +15,10 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| ep32 | hq-dev1-pve2-vm2 | autopilot | 2026-10-30T05:04Z | 2026-10-30T05:04Z | - |
 
 ## inbox
+- 261030 decided ARCH-34 T612: when to close the 3 h aggregate timebox → at about 1 h 50 m, after 16 measured cuts (8 kept, combined aggregate ×0.9167), once the last four reads found nothing and the profile's top is RNG and counting loops a result-identical cut cannot reorder; A15 unified only the role objects, which T541's reverted A2 had combined with the tables, since A10 had moved `share` off the tables (alt: spend the remaining hour on sub-1% cuts the noise cannot resolve | skip A15 as a retry).
 - 261030 decided ARCH-34 T611 T612: which engine speed-ups to run for the owner's "엔진 성능개선 할 수 있는거" → two 3 h result-identical explore tasks, detailed engine first (revisions 6–10 code: spread, shape caches, computeTags, object shapes) then aggregate (validation lookups, xT table, traits array, SideLines fields), each cut kept only on ab.mjs's paired call with equal hashes; 261030 baseline on this host: own-match day ≈1 s CPU, aggregate 50% and grid 39% of a 120-day run (alt: one combined task, which mixes two workloads' reads | aggregate first, though revision 10 alone made the grid ×1.056 slower and its code is newest).
 - 261030 suggest ARCH-34 MATCH-22: running a day's aggregate fixtures in parallel workers (deferred 261026 in ideation/save-storage-and-fast-pace with worker-topology and result-identity risk) is the next larger lever once result-identical cuts are spent; it needs a planning pass (ARCH worker topology, deterministic merge order) before any task.
 - 261030 decided WEB-32 WEB-94 MATCH-12 T609: the WebKit 360 goal cue ran 16x at about 87 match s per real s in both attempts, 12–15% behind its own presentation clock, and was still in the 90′ goal hold when its 61.6 s budget ended, because Pitch advanced at most 60 ms a frame while WebKit on CI draws some frames past 100 ms → a product defect against WEB-32's wall-clock mapping: a frame advances its real time up to `FRAME_STEP_LIMIT_MS` 250 and a longer stall is not caught up; pause/visibility still restart the loop at 0 (alt: raise the journey budget, which the task forbids | seek to the end | keep 60 ms and play slower than specified on slow devices).
@@ -427,7 +429,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T612 | Result-identical aggregate-engine cuts | ARCH MATCH SAVE | T611 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -451,9 +452,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T612 (owner-requested engine speed-ups, judged by ARCH-34's paired same-machine call with identical hashes; autopilot ep31 in worktree ../haeram-soccor-engine-perf on work/engine-perf).
+- coordinator final gate on work/engine-perf (T611 and T612 done: result-identical engine cuts; the integration-tier aggregate and grid tests run there), then main; the next larger lever is the 261030 suggest on parallel aggregate fixtures, which needs planning first.
 
 ## log
+- 261030 T612 done: aggregate cuts kept against their parents (ab.mjs aggregate CPU, sameHash): A2 xT table ×0.9891, A3 traits array ×0.9873, A6 weights by role id ×0.9893 [0.9818, 0.9991], A10 role tables by line index ×0.9684 [0.9614, 0.9781], A12 `isPassKind` by comparison ×0.9854, A13 `moveKindIndex` ×0.9828, A14 keeping/forward kinds by comparison ×0.9895, A15 one role shape ×0.9889 [0.9814, 0.9992]; A1 A4 A5 A7 A8 A9 A11 A16 reverted (intervals include 1). Combined against c05e9194: aggregate ×0.9167 [0.9095, 0.9232]; day sameHash, own match days ×0.9582 [0.9336, 0.9835], other days ×0.9240 [0.9107, 0.9375]. Unit (grid 12 files 169 tests; changed 84 files 806 tests), typecheck, lint, format pass; integration-tier aggregate tests left to the final gate.
 - 261030 T611 done: grid cuts kept against their parents (ab.mjs grid CPU, sameHash): G1 ×0.9734, G4 ×0.9799, G3 ×0.9795, G6 `modelAtLeast` memo ×0.9821 [0.9750, 0.9893], G5 uniform plan/job shapes ×0.9877 [0.9798, 0.9980]; G2 shared screen caches ×1.0005 [0.9944, 1.0084] undone by f3020e09. Day workload against 4ab5e4d1 sameHash, own match days ×0.9583 [0.9418, 0.9750]. Grid/aggregate/perf units (13 files, 173 tests), typecheck, lint, format pass; integration grid files left to the final gate.
 - 261030 ep30 stopped after 2 units: each unit started its ab.mjs read in the background and its headless session ended with the read running; G1/G4/G3 measured faster (sameHash), G2/G6/G5 unmeasured; the loop's end push carried them to main at 2fc41d5f (unit suite passing). T611/T612 notes now require foreground reads; resumed as ep31.
 - 261030 create-task T611 T612: owner-requested engine speed-ups, result-identical, paired ab.mjs reads on this host; grid then aggregate.
@@ -473,4 +475,3 @@
 - 261030 vf30 merge current page/theme publication930b4ac5: preserve its code/resources and WEB r187; retain archived T597/T598 completion instead of their obsolete active freshness-only copies.
 - 261030 vf30 recover T599: retain source and all raw measurements; remaining exploration uses exactly50 matches and the original90-minute deadline.
 - 261030 T598 done: the kit evidence of CI40866255294 reads figures at MATCH-36's 85% torso through shared tests/fixtures/figure-evidence.ts (fit unchanged, sized from markerRadius × torsoWidth × DPR; colours within the painter's shading bound); continuity's phone journeys read at DPR 2 with worn/wrong-pattern/base/keeper/not-worn checks; no renderer defect, no production change; typecheck, lint, format:check, 4 affected unit tests and build pass; both club-identity specs left to the final Chromium gate.
-- 261030 T597 done: the ten management/calendar/navigation journeys of CI40866255294 follow the current UI with shared clubhouse helpers (icon-found tab, clubhouse date for League/Cup, which omit the information row), dated NEXT MATCH reports, the compact return/cup selector and the league picker's values; no UI defect, no production change; typecheck, lint, format:check, affected units (none) and build pass; browser specs left to the final Chromium gate.
