@@ -35,9 +35,15 @@ export const isPassKind = (kind: AggregateMoveKind) =>
   (AGGREGATE_PASS_KINDS as readonly string[]).includes(kind);
 export { inBoxCell };
 export const inGoalAreaCell = (cell: number) => cellBand(cell) === 7 && cellLane(cell) === 2;
+/** Every pair of cells' expected-threat gain, in thousandths, worked out once (T612). */
+const XT_GAIN: readonly number[] = Array.from({ length: CELLS * CELLS }, (_, at) =>
+  Math.round(
+    Math.max(0, CELL_BASELINES[at % CELLS]!.xT - CELL_BASELINES[Math.floor(at / CELLS)]!.xT) *
+      1000,
+  ),
+);
 /** Expected-threat gain of a completed move between two cells, in thousandths. */
-export const xtGain = (from: number, to: number) =>
-  Math.round(Math.max(0, CELL_BASELINES[to]!.xT - CELL_BASELINES[from]!.xT) * 1000);
+export const xtGain = (from: number, to: number) => XT_GAIN[from * CELLS + to]!;
 /** Where the kernel's pull-back flow (the `cutBack` kind) starts: the byline areas off centre. */
 const pullBackFrom = (cell: number) => cellBand(cell) >= 6 && cellLane(cell) !== 2;
 /**
