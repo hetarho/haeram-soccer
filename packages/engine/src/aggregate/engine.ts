@@ -67,7 +67,9 @@ import type {
   AggregateTeamFacts,
 } from './types';
 
-const KEEPING: ReadonlySet<AggregateAttribute> = new Set(['reflexes', 'handling']);
+/** The keeping attributes, told by comparison instead of a set on every skill read (T612). */
+const isKeeping = (attribute: AggregateAttribute) =>
+  attribute === 'reflexes' || attribute === 'handling';
 
 /**
  * Effective skills of every matchday line, substitutes included (→MATCH-11): match.ts `slotSkill`
@@ -115,7 +117,7 @@ export function aggregateSkillAccess(
       if (list) for (const s of list) if (s.from < minute) slot = s.slot;
       const on = Math.max(0, minute - (list?.[0]?.from ?? 0));
       return (
-        slotSkill(p, p.attrs[attribute], own.scaleAt(line, slot), KEEPING.has(attribute)) +
+        slotSkill(p, p.attrs[attribute], own.scaleAt(line, slot), isKeeping(attribute)) +
         prepared.shift[side]! -
         own.drainOf(line) * on
       );

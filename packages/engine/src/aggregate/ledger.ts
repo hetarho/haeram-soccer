@@ -79,7 +79,7 @@ const pullBackFrom = (cell: number) => cellBand(cell) >= 6 && cellLane(cell) !==
  */
 export const looseBalls = (m: AggregateMove) => (isPassKind(m.kind) ? m.recovered : 0);
 /** Kinds that always go forward; a short pass may go any way. */
-const forwardKinds: ReadonlySet<AggregateMoveKind> = new Set(['long', 'through']);
+const isForwardKind = (kind: AggregateMoveKind) => kind === 'long' || kind === 'through';
 
 const sides = [0, 1] as const;
 const other = (side: AggregateSide): AggregateSide => (side === 0 ? 1 : 0);
@@ -227,11 +227,11 @@ function moveIssues(
   // A line-breaking pass (MATCH-13) is a completed pass of any kind played beyond an opponent
   // line, so it ends upfield of where it started; only a pass played forward can be offside.
   const upfield = pass && toBand > fromBand;
-  const ahead = (forwardKinds.has(m.kind) || m.kind === 'short') && toBand > fromBand;
+  const ahead = (isForwardKind(m.kind) || m.kind === 'short') && toBand > fromBand;
   if (m.lineBreaking > m.completed || (m.lineBreaking && !upfield))
     issue(out, who, i, `: ${m.lineBreaking} line-breaking ${m.kind} of ${m.completed}`);
   if (m.offside && !ahead) issue(out, who, i, `: offside ${m.kind} not played forward`);
-  if (forwardKinds.has(m.kind) && toBand <= fromBand) issue(out, who, i, `: ${m.kind} not forward`);
+  if (isForwardKind(m.kind) && toBand <= fromBand) issue(out, who, i, `: ${m.kind} not forward`);
   if (m.kind === 'cross' && !inBoxCell(m.to)) issue(out, who, i, ': cross outside the box');
   // The kernel's pull-back flow (team.ts): from the byline areas into the box, never upfield.
   // MATCH-13's cut-back counter reads the cells instead (`isCutBack`), whatever the kind.
