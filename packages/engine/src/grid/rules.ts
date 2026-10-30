@@ -64,6 +64,16 @@ export function isLevel(decide: DecideRule, home: number, away: number) {
   return !decide.awayGoals || !decide.first || first.home === away;
 }
 
+/** The revision `modelAtLeast` read last and its number: a match reads one revision throughout. */
+let lastModel: MatchModelRevision | undefined;
+let lastNumber = 0;
 /** Whether a match plays `revision` of the candidate model or a later one; T431–T433 gate on 2. */
-export const modelAtLeast = (setup: { model?: MatchModelRevision }, revision: number) =>
-  setup.model !== undefined && matchModelNumber(setup.model) >= revision;
+export function modelAtLeast(setup: { model?: MatchModelRevision }, revision: number): boolean {
+  const model = setup.model;
+  if (model === undefined) return false;
+  if (model !== lastModel) {
+    lastModel = model;
+    lastNumber = matchModelNumber(model);
+  }
+  return lastNumber >= revision;
+}
