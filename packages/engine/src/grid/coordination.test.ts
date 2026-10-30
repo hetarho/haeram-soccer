@@ -31,14 +31,7 @@ import {
 } from './intentions';
 import { SHADOW_CONFIG } from './lanes';
 import { attackFrame, PITCH, type Point } from './pitch';
-import {
-  lineX,
-  newShapeCache,
-  setPieceTargets,
-  SHAPE_CONFIG,
-  shapePlace,
-  targetOf,
-} from './shape';
+import { lineX, newShapeCache, setPieceTargets, SHAPE_CONFIG, shapePlace, targetOf } from './shape';
 import { createState, onPitch, other, slotOf, type GridPlayer, type GridState } from './state';
 import type { GridSetup } from './setup';
 import { gridKit, type Kit } from './testkit';

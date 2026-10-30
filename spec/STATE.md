@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| ep31 | hq-dev1-pve2-vm2 | autopilot | 2026-10-30T04:24Z | 2026-10-30T04:24Z | - |
 
 ## inbox
 - 261030 decided ARCH-34 T611 T612: which engine speed-ups to run for the owner's "엔진 성능개선 할 수 있는거" → two 3 h result-identical explore tasks, detailed engine first (revisions 6–10 code: spread, shape caches, computeTags, object shapes) then aggregate (validation lookups, xT table, traits array, SideLines fields), each cut kept only on ab.mjs's paired call with equal hashes; 261030 baseline on this host: own-match day ≈1 s CPU, aggregate 50% and grid 39% of a 120-day run (alt: one combined task, which mixes two workloads' reads | aggregate first, though revision 10 alone made the grid ×1.056 slower and its code is newest).
@@ -427,7 +428,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T611 | Result-identical detailed-engine cuts after revisions 6–10 | ARCH MATCH SAVE | - | todo |
 | T612 | Result-identical aggregate-engine cuts | ARCH MATCH SAVE | T611 | todo |
 
 ## work
@@ -452,9 +452,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T611 then T612 (owner-requested engine speed-ups, judged by ARCH-34's paired same-machine call with identical hashes; autopilot ep31 in worktree ../haeram-soccor-engine-perf on work/engine-perf).
+- implement-task T612 (owner-requested engine speed-ups, judged by ARCH-34's paired same-machine call with identical hashes; autopilot ep31 in worktree ../haeram-soccor-engine-perf on work/engine-perf).
 
 ## log
+- 261030 T611 done: grid cuts kept against their parents (ab.mjs grid CPU, sameHash): G1 ×0.9734, G4 ×0.9799, G3 ×0.9795, G6 `modelAtLeast` memo ×0.9821 [0.9750, 0.9893], G5 uniform plan/job shapes ×0.9877 [0.9798, 0.9980]; G2 shared screen caches ×1.0005 [0.9944, 1.0084] undone by f3020e09. Day workload against 4ab5e4d1 sameHash, own match days ×0.9583 [0.9418, 0.9750]. Grid/aggregate/perf units (13 files, 173 tests), typecheck, lint, format pass; integration grid files left to the final gate.
 - 261030 ep30 stopped after 2 units: each unit started its ab.mjs read in the background and its headless session ended with the read running; G1/G4/G3 measured faster (sameHash), G2/G6/G5 unmeasured; the loop's end push carried them to main at 2fc41d5f (unit suite passing). T611/T612 notes now require foreground reads; resumed as ep31.
 - 261030 create-task T611 T612: owner-requested engine speed-ups, result-identical, paired ab.mjs reads on this host; grid then aggregate.
 - 261030 T610 done: resumed the relinquished vf30 handoff from origin/wip/vf30; CI40976497055 succeeded on 942fa32e (nine jobs, final Firefox completion at 00:47:27Z). Runtime source unchanged; typecheck, lint and project formatting pass. Receipt artifacts/benchmarks/cx30-ci-verification-261030/ci.json; report reports/261030-cx30.md.
@@ -474,4 +475,3 @@
 - 261030 vf30 recover T599: retain source and all raw measurements; remaining exploration uses exactly50 matches and the original90-minute deadline.
 - 261030 T598 done: the kit evidence of CI40866255294 reads figures at MATCH-36's 85% torso through shared tests/fixtures/figure-evidence.ts (fit unchanged, sized from markerRadius × torsoWidth × DPR; colours within the painter's shading bound); continuity's phone journeys read at DPR 2 with worn/wrong-pattern/base/keeper/not-worn checks; no renderer defect, no production change; typecheck, lint, format:check, 4 affected unit tests and build pass; both club-identity specs left to the final Chromium gate.
 - 261030 T597 done: the ten management/calendar/navigation journeys of CI40866255294 follow the current UI with shared clubhouse helpers (icon-found tab, clubhouse date for League/Cup, which omit the information row), dated NEXT MATCH reports, the compact return/cup selector and the league picker's values; no UI defect, no production change; typecheck, lint, format:check, affected units (none) and build pass; browser specs left to the final Chromium gate.
-- 261030 T596 done: match-model revision 10 — every shot struck as its action starts, its second ball landing at its own speed and waiting for its winner, and won at least 1.2 m clear of the blocker or keeper; the stale T444/T445 resolve scenes expect the keeper's narrowing once; revisions 1–9 replay draw for draw; typecheck, lint, format:check, 913 affected unit tests, build and the four targeted CI cases pass; revision-10 digests and seeds re-recorded after T600.
