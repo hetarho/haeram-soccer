@@ -40,7 +40,15 @@ The shipped [`_headers`](../../../apps/web/public/_headers) has `script-src 'sel
 
 ## Validation and reproduction
 
-Task checks: T617 affected units 91 files/869 tests; T618 affected scope 88 files/822 tests (one exported-tunable registry mismatch repaired by making the execution-only threshold private; 13 focused cases rerun successfully), typecheck/lint/format/build and diff review. Complete season/transfer/reload parity and the browser worker's full observed facts/typed coordinate traces are authored for the coordinator's final gate. The probe uses actual shipped CSP and normal, missing-Wasm, allocation-failure and mid-step-failure modes. Execution receipts and final browser/CI status are recorded in `spec/reports/261031-ei31.md`; authored tests are not presented here as executed.
+Final backend gate on production commit `fa72a098`: typecheck, lint, format, **1,824 unit / 1,267 integration / 48 contract cases**, catalogs, presentation and build all passed. This includes the full-season serial/helper transfer/reload/rollover comparison, ten-season codec checkpoint and existing deterministic match traces.
+
+The movement browser worker passed on Chromium, Firefox and WebKit under actual shipped CSP, comparing complete observed facts and raw typed coordinate traces for normal, missing-Wasm, allocation-failure and mid-step-failure execution. `browser-helper-probe.mjs` additionally runs production fixture helpers on real sibling browser workers through transferred MessagePorts. Each browser completed 43 days, reloaded at day 22, used 4 snapshots and 4 patches with helpers still active, and matched the serial world every day. All three final SHA-256 hashes are `2cad0ff5fb2f52581369068a5bc1dfaa963aae5b153cf2536b9bda6a30232303`.
+
+**Full application gate remains unsuccessful.** Its Chromium stage was interrupted after repeated existing UI journey failures, including tests that expect preparation tabs before clicking the report's `의견 전달`. The original `8b0032ee` was independently archived, rebuilt and run on another local port: the 390×844 `builds.spec.ts` case fails with exactly the same error. Its UI/test bytes equal the candidate's; `verification/baseline-control.json` records source fingerprints and error equality. No old assertion, timeout or UI flow was changed. Full-browser coverage and CI are not claimed, and the configured main code push is held. The completed implementation and evidence remain on the isolated branch / `wip/ei31` checkpoint.
+
+`verification/receipt.json` indexes the executed checks. Compressed raw backend results, cross-browser results, baseline control and full-batch log are retained there. The interrupted batch did not finalize its Playwright JSON; a stale earlier `--list` JSON was discarded. The full log and representative contexts document those failures. Large original traces remain at `.tmp/ei31-verification-attempt01` in this worktree.
+
+Reproduce the additional protocol check with `node artifacts/benchmarks/engine-implementation-261031/browser-helper-probe.mjs --json .tmp/browser-helpers.json`.
 
 ```sh
 node scripts/perf/ab.mjs --base 833d0711 --workload grid --json .tmp/grid.json
