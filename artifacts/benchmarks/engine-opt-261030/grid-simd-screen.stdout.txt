@@ -1,0 +1,1 @@
+{"name":"grid-simd-hypot","workload":"grid","full":false,"hash":true,"cpu":{"ratio":1.022,"lo":1.0114,"hi":1.0295,"call":"slower"},"load1":[4.58642578125,4.458984375,4.421875,4.3076171875,4.3076171875]}

@@ -1,0 +1,1 @@
+{"name":"grid-wasm-phase","workload":"grid","full":false,"hash":true,"cpu":{"ratio":0.9637,"lo":0.9476,"hi":0.9778,"call":"faster"},"load1":[13.82275390625,12.9560546875,12.9560546875,12.23876953125,11.41845703125]}

@@ -1,0 +1,234 @@
+[
+  {
+    "name": "float64-scratch",
+    "randomChecks": 40000,
+    "binomialChecks": 9900,
+    "multinomialChecks": 2800,
+    "hashes": [
+      {
+        "seed": "perf-261027",
+        "aggregate": "0abf497ba7bb9829a49fcae5519c24e3752420319bc3af9215f3bcc54cb9b70d"
+      },
+      {
+        "seed": "architecture-second-seed",
+        "aggregate": "b8b84f4a50773c4df8496f74506cefafae425b78249713f0d9be76c9beaa2c01"
+      },
+      {
+        "seed": "cdf-boundary-seed",
+        "aggregate": "acc71a7f382cf98bfe18b37060a6d92ecfe762e14e3ac2e3e421777eb301444b"
+      },
+      {
+        "seed": "rng-prefetch-boundary",
+        "aggregate": "6b7d2acfd4ed8971b20c8d0e7e8f5a185d94c9203cb6131718d03406336a0faf"
+      }
+    ],
+    "passed": true
+  },
+  {
+    "name": "int32-scratch",
+    "randomChecks": 40000,
+    "binomialChecks": 9900,
+    "multinomialChecks": 2800,
+    "hashes": [
+      {
+        "seed": "perf-261027",
+        "aggregate": "0abf497ba7bb9829a49fcae5519c24e3752420319bc3af9215f3bcc54cb9b70d"
+      },
+      {
+        "seed": "architecture-second-seed",
+        "aggregate": "b8b84f4a50773c4df8496f74506cefafae425b78249713f0d9be76c9beaa2c01"
+      },
+      {
+        "seed": "cdf-boundary-seed",
+        "aggregate": "acc71a7f382cf98bfe18b37060a6d92ecfe762e14e3ac2e3e421777eb301444b"
+      },
+      {
+        "seed": "rng-prefetch-boundary",
+        "aggregate": "6b7d2acfd4ed8971b20c8d0e7e8f5a185d94c9203cb6131718d03406336a0faf"
+      }
+    ],
+    "passed": true
+  },
+  {
+    "name": "cdf-cache",
+    "randomChecks": 40000,
+    "binomialChecks": 9900,
+    "multinomialChecks": 2800,
+    "hashes": [
+      {
+        "seed": "perf-261027",
+        "aggregate": "0abf497ba7bb9829a49fcae5519c24e3752420319bc3af9215f3bcc54cb9b70d"
+      },
+      {
+        "seed": "architecture-second-seed",
+        "aggregate": "b8b84f4a50773c4df8496f74506cefafae425b78249713f0d9be76c9beaa2c01"
+      },
+      {
+        "seed": "cdf-boundary-seed",
+        "aggregate": "acc71a7f382cf98bfe18b37060a6d92ecfe762e14e3ac2e3e421777eb301444b"
+      },
+      {
+        "seed": "rng-prefetch-boundary",
+        "aggregate": "6b7d2acfd4ed8971b20c8d0e7e8f5a185d94c9203cb6131718d03406336a0faf"
+      }
+    ],
+    "passed": true
+  },
+  {
+    "name": "sparse-weights",
+    "randomChecks": 40000,
+    "binomialChecks": 9900,
+    "multinomialChecks": 2800,
+    "hashes": [
+      {
+        "seed": "perf-261027",
+        "aggregate": "0abf497ba7bb9829a49fcae5519c24e3752420319bc3af9215f3bcc54cb9b70d"
+      },
+      {
+        "seed": "architecture-second-seed",
+        "aggregate": "b8b84f4a50773c4df8496f74506cefafae425b78249713f0d9be76c9beaa2c01"
+      },
+      {
+        "seed": "cdf-boundary-seed",
+        "aggregate": "acc71a7f382cf98bfe18b37060a6d92ecfe762e14e3ac2e3e421777eb301444b"
+      },
+      {
+        "seed": "rng-prefetch-boundary",
+        "aggregate": "6b7d2acfd4ed8971b20c8d0e7e8f5a185d94c9203cb6131718d03406336a0faf"
+      }
+    ],
+    "passed": true
+  },
+  {
+    "name": "wasm-scalar-rng",
+    "randomChecks": 40000,
+    "binomialChecks": 9900,
+    "multinomialChecks": 2800,
+    "hashes": [
+      {
+        "seed": "perf-261027",
+        "aggregate": "0abf497ba7bb9829a49fcae5519c24e3752420319bc3af9215f3bcc54cb9b70d"
+      },
+      {
+        "seed": "architecture-second-seed",
+        "aggregate": "b8b84f4a50773c4df8496f74506cefafae425b78249713f0d9be76c9beaa2c01"
+      },
+      {
+        "seed": "cdf-boundary-seed",
+        "aggregate": "acc71a7f382cf98bfe18b37060a6d92ecfe762e14e3ac2e3e421777eb301444b"
+      },
+      {
+        "seed": "rng-prefetch-boundary",
+        "aggregate": "6b7d2acfd4ed8971b20c8d0e7e8f5a185d94c9203cb6131718d03406336a0faf"
+      },
+      {
+        "seed": "perf-261027",
+        "observedPlayback": "da1233823e1b62941197ab58485b8e0a72c9f1d86046f322d65cd00084f4f220"
+      },
+      {
+        "seed": "architecture-second-seed",
+        "observedPlayback": "5ced1c871a743a5537538e673d8130aca8796990b208671d5af89c25f64022c8"
+      }
+    ],
+    "passed": true
+  },
+  {
+    "name": "wasm-buffered-rng",
+    "randomChecks": 40000,
+    "binomialChecks": 9900,
+    "multinomialChecks": 2800,
+    "hashes": [
+      {
+        "seed": "perf-261027",
+        "aggregate": "0abf497ba7bb9829a49fcae5519c24e3752420319bc3af9215f3bcc54cb9b70d"
+      },
+      {
+        "seed": "architecture-second-seed",
+        "aggregate": "b8b84f4a50773c4df8496f74506cefafae425b78249713f0d9be76c9beaa2c01"
+      },
+      {
+        "seed": "cdf-boundary-seed",
+        "aggregate": "acc71a7f382cf98bfe18b37060a6d92ecfe762e14e3ac2e3e421777eb301444b"
+      },
+      {
+        "seed": "rng-prefetch-boundary",
+        "aggregate": "6b7d2acfd4ed8971b20c8d0e7e8f5a185d94c9203cb6131718d03406336a0faf"
+      },
+      {
+        "seed": "perf-261027",
+        "observedPlayback": "da1233823e1b62941197ab58485b8e0a72c9f1d86046f322d65cd00084f4f220"
+      },
+      {
+        "seed": "architecture-second-seed",
+        "observedPlayback": "5ced1c871a743a5537538e673d8130aca8796990b208671d5af89c25f64022c8"
+      }
+    ],
+    "passed": true
+  },
+  {
+    "name": "grid-simd-hypot",
+    "randomChecks": 40000,
+    "binomialChecks": 9900,
+    "multinomialChecks": 2800,
+    "hashes": [
+      {
+        "seed": "perf-261027",
+        "aggregate": "0abf497ba7bb9829a49fcae5519c24e3752420319bc3af9215f3bcc54cb9b70d"
+      },
+      {
+        "seed": "architecture-second-seed",
+        "aggregate": "b8b84f4a50773c4df8496f74506cefafae425b78249713f0d9be76c9beaa2c01"
+      },
+      {
+        "seed": "cdf-boundary-seed",
+        "aggregate": "acc71a7f382cf98bfe18b37060a6d92ecfe762e14e3ac2e3e421777eb301444b"
+      },
+      {
+        "seed": "rng-prefetch-boundary",
+        "aggregate": "6b7d2acfd4ed8971b20c8d0e7e8f5a185d94c9203cb6131718d03406336a0faf"
+      },
+      {
+        "seed": "perf-261027",
+        "observedPlayback": "da1233823e1b62941197ab58485b8e0a72c9f1d86046f322d65cd00084f4f220"
+      },
+      {
+        "seed": "architecture-second-seed",
+        "observedPlayback": "5ced1c871a743a5537538e673d8130aca8796990b208671d5af89c25f64022c8"
+      }
+    ],
+    "passed": true
+  },
+  {
+    "name": "grid-wasm-phase",
+    "randomChecks": 40000,
+    "binomialChecks": 9900,
+    "multinomialChecks": 2800,
+    "hashes": [
+      {
+        "seed": "perf-261027",
+        "aggregate": "0abf497ba7bb9829a49fcae5519c24e3752420319bc3af9215f3bcc54cb9b70d"
+      },
+      {
+        "seed": "architecture-second-seed",
+        "aggregate": "b8b84f4a50773c4df8496f74506cefafae425b78249713f0d9be76c9beaa2c01"
+      },
+      {
+        "seed": "cdf-boundary-seed",
+        "aggregate": "acc71a7f382cf98bfe18b37060a6d92ecfe762e14e3ac2e3e421777eb301444b"
+      },
+      {
+        "seed": "rng-prefetch-boundary",
+        "aggregate": "6b7d2acfd4ed8971b20c8d0e7e8f5a185d94c9203cb6131718d03406336a0faf"
+      },
+      {
+        "seed": "perf-261027",
+        "observedPlayback": "da1233823e1b62941197ab58485b8e0a72c9f1d86046f322d65cd00084f4f220"
+      },
+      {
+        "seed": "architecture-second-seed",
+        "observedPlayback": "5ced1c871a743a5537538e673d8130aca8796990b208671d5af89c25f64022c8"
+      }
+    ],
+    "passed": true
+  }
+]

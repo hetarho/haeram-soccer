@@ -1,0 +1,388 @@
+[
+  {
+    "count": 8,
+    "workers": 2,
+    "mode": "json-full",
+    "pairs": 32,
+    "wall": {
+      "ratio": 2.5306,
+      "lo": 2.4825,
+      "hi": 2.5928,
+      "call": "slower"
+    },
+    "totalCpu": {
+      "ratio": 4.395,
+      "lo": 4.3066,
+      "hi": 4.5283,
+      "call": "slower"
+    },
+    "ms": {
+      "serial": 6.612124999999992,
+      "parallel": 16.934708,
+      "startup": 77.42452100000003,
+      "residentInit": 0
+    },
+    "sameHash": true,
+    "hash": [
+      "ede150dfb559951bd3758a650bd1de97678820e13cbaefe92d81e2a90fcd4775"
+    ],
+    "payloadBytes": 1135608,
+    "shardBytes": [
+      408021,
+      410877
+    ],
+    "rssMax": 369344512,
+    "loadRange": [
+      4.89794921875,
+      4.89794921875
+    ]
+  },
+  {
+    "count": 8,
+    "workers": 2,
+    "mode": "clone-full",
+    "pairs": 32,
+    "wall": {
+      "ratio": 3.6663,
+      "lo": 3.5082,
+      "hi": 3.7687,
+      "call": "slower"
+    },
+    "totalCpu": {
+      "ratio": 4.069,
+      "lo": 3.9909,
+      "hi": 4.1377,
+      "call": "slower"
+    },
+    "ms": {
+      "serial": 6.681687000000011,
+      "parallel": 25.15156250000001,
+      "startup": 78.25725050000001,
+      "residentInit": 0
+    },
+    "sameHash": true,
+    "hash": [
+      "ede150dfb559951bd3758a650bd1de97678820e13cbaefe92d81e2a90fcd4775"
+    ],
+    "payloadBytes": 1135608,
+    "shardBytes": [
+      408021,
+      410877
+    ],
+    "rssMax": 376078336,
+    "loadRange": [
+      4.82568359375,
+      4.89794921875
+    ]
+  },
+  {
+    "count": 8,
+    "workers": 2,
+    "mode": "json-shard",
+    "pairs": 32,
+    "wall": {
+      "ratio": 1.9839,
+      "lo": 1.8791,
+      "hi": 2.0945,
+      "call": "slower"
+    },
+    "totalCpu": {
+      "ratio": 3.2371,
+      "lo": 3.1003,
+      "hi": 3.3798,
+      "call": "slower"
+    },
+    "ms": {
+      "serial": 6.701624500000037,
+      "parallel": 13.657375000000002,
+      "startup": 81.53483400000002,
+      "residentInit": 0
+    },
+    "sameHash": true,
+    "hash": [
+      "ede150dfb559951bd3758a650bd1de97678820e13cbaefe92d81e2a90fcd4775"
+    ],
+    "payloadBytes": 1135608,
+    "shardBytes": [
+      408021,
+      410877
+    ],
+    "rssMax": 333561856,
+    "loadRange": [
+      4.82568359375,
+      4.82568359375
+    ]
+  },
+  {
+    "count": 8,
+    "workers": 2,
+    "mode": "transfer-shard",
+    "pairs": 32,
+    "wall": {
+      "ratio": 1.9342,
+      "lo": 1.7997,
+      "hi": 2.0215,
+      "call": "slower"
+    },
+    "totalCpu": {
+      "ratio": 3.1606,
+      "lo": 3.0228,
+      "hi": 3.2612,
+      "call": "slower"
+    },
+    "ms": {
+      "serial": 6.7745000000000175,
+      "parallel": 13.218083500000006,
+      "startup": 79.96564599999999,
+      "residentInit": 0
+    },
+    "sameHash": true,
+    "hash": [
+      "ede150dfb559951bd3758a650bd1de97678820e13cbaefe92d81e2a90fcd4775"
+    ],
+    "payloadBytes": 1135608,
+    "shardBytes": [
+      408021,
+      410877
+    ],
+    "rssMax": 328597504,
+    "loadRange": [
+      4.82568359375,
+      5.23974609375
+    ]
+  },
+  {
+    "count": 64,
+    "workers": 2,
+    "mode": "json-full",
+    "pairs": 32,
+    "wall": {
+      "ratio": 1.2344,
+      "lo": 1.145,
+      "hi": 1.3469,
+      "call": "slower"
+    },
+    "totalCpu": {
+      "ratio": 2.2366,
+      "lo": 2.1337,
+      "hi": 2.3783,
+      "call": "slower"
+    },
+    "ms": {
+      "serial": 44.742374999999925,
+      "parallel": 55.87702100000013,
+      "startup": 77.99229149999998,
+      "residentInit": 0
+    },
+    "sameHash": true,
+    "hash": [
+      "5d5b15a0861b72138075227b53c59adf049c6e5ae7aaf526d543f36c244847cd"
+    ],
+    "payloadBytes": 1135608,
+    "shardBytes": [
+      477130,
+      482866
+    ],
+    "rssMax": 547209216,
+    "loadRange": [
+      5.23974609375,
+      5.30029296875
+    ]
+  },
+  {
+    "count": 64,
+    "workers": 2,
+    "mode": "json-shard",
+    "pairs": 32,
+    "wall": {
+      "ratio": 1.2187,
+      "lo": 1.1461,
+      "hi": 1.2958,
+      "call": "slower"
+    },
+    "totalCpu": {
+      "ratio": 2.2067,
+      "lo": 2.1369,
+      "hi": 2.2789,
+      "call": "slower"
+    },
+    "ms": {
+      "serial": 45.80402099999992,
+      "parallel": 57.827478999999926,
+      "startup": 78.46427100000001,
+      "residentInit": 0
+    },
+    "sameHash": true,
+    "hash": [
+      "5d5b15a0861b72138075227b53c59adf049c6e5ae7aaf526d543f36c244847cd"
+    ],
+    "payloadBytes": 1135608,
+    "shardBytes": [
+      477130,
+      482866
+    ],
+    "rssMax": 532660224,
+    "loadRange": [
+      4.95556640625,
+      5.30029296875
+    ]
+  },
+  {
+    "count": 64,
+    "workers": 4,
+    "mode": "json-shard",
+    "pairs": 32,
+    "wall": {
+      "ratio": 1.0266,
+      "lo": 1.0175,
+      "hi": 1.0357,
+      "call": "slower"
+    },
+    "totalCpu": {
+      "ratio": 2.9978,
+      "lo": 2.9868,
+      "hi": 3.0068,
+      "call": "slower"
+    },
+    "ms": {
+      "serial": 43.02647950000005,
+      "parallel": 44.89468750000003,
+      "startup": 90.174833,
+      "residentInit": 0
+    },
+    "sameHash": true,
+    "hash": [
+      "5d5b15a0861b72138075227b53c59adf049c6e5ae7aaf526d543f36c244847cd"
+    ],
+    "payloadBytes": 1135608,
+    "shardBytes": [
+      435805,
+      440228,
+      445754,
+      436015
+    ],
+    "rssMax": 707067904,
+    "loadRange": [
+      4.95556640625,
+      5.0390625
+    ]
+  },
+  {
+    "count": 232,
+    "workers": 2,
+    "mode": "json-shard",
+    "pairs": 32,
+    "wall": {
+      "ratio": 1.2379,
+      "lo": 1.2131,
+      "hi": 1.2643,
+      "call": "slower"
+    },
+    "totalCpu": {
+      "ratio": 2.1943,
+      "lo": 2.1762,
+      "hi": 2.2148,
+      "call": "slower"
+    },
+    "ms": {
+      "serial": 143.2320209999998,
+      "parallel": 180.11193749999995,
+      "startup": 81.4928125,
+      "residentInit": 0
+    },
+    "sameHash": true,
+    "hash": [
+      "7a673796d7dfb7d66bcfa19da532c05620fbcd59d9242da27d62bb7c4966695b"
+    ],
+    "payloadBytes": 1135608,
+    "shardBytes": [
+      691912,
+      699304
+    ],
+    "rssMax": 651165696,
+    "loadRange": [
+      4.798828125,
+      5.85546875
+    ]
+  },
+  {
+    "count": 232,
+    "workers": 4,
+    "mode": "json-shard",
+    "pairs": 32,
+    "wall": {
+      "ratio": 0.785,
+      "lo": 0.7516,
+      "hi": 0.8164,
+      "call": "faster"
+    },
+    "totalCpu": {
+      "ratio": 2.5878,
+      "lo": 2.4766,
+      "hi": 2.6848,
+      "call": "slower"
+    },
+    "ms": {
+      "serial": 138.12270849999982,
+      "parallel": 109.7364795000002,
+      "startup": 84.1961665,
+      "residentInit": 0
+    },
+    "sameHash": true,
+    "hash": [
+      "7a673796d7dfb7d66bcfa19da532c05620fbcd59d9242da27d62bb7c4966695b"
+    ],
+    "payloadBytes": 1135608,
+    "shardBytes": [
+      544955,
+      545860,
+      551237,
+      546970
+    ],
+    "rssMax": 949698560,
+    "loadRange": [
+      5.0625,
+      5.70654296875
+    ]
+  },
+  {
+    "count": 232,
+    "workers": 4,
+    "mode": "resident",
+    "pairs": 32,
+    "wall": {
+      "ratio": 0.4705,
+      "lo": 0.4317,
+      "hi": 0.5111,
+      "call": "faster"
+    },
+    "totalCpu": {
+      "ratio": 1.4579,
+      "lo": 1.3819,
+      "hi": 1.5299,
+      "call": "slower"
+    },
+    "ms": {
+      "serial": 140.3284165,
+      "parallel": 65.91464549999978,
+      "startup": 84.213958,
+      "residentInit": 28.483416500000004
+    },
+    "sameHash": true,
+    "hash": [
+      "7a673796d7dfb7d66bcfa19da532c05620fbcd59d9242da27d62bb7c4966695b"
+    ],
+    "payloadBytes": 1135608,
+    "shardBytes": [
+      544955,
+      545860,
+      551237,
+      546970
+    ],
+    "rssMax": 750731264,
+    "loadRange": [
+      5.01611328125,
+      5.29736328125
+    ]
+  }
+]

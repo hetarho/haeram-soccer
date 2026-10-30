@@ -1,0 +1,21 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: wasm-scalar-rng full observed grid digest perf-261027
++ actual - expected
+
++ '4851a4fd1cfd8839420158d0d55c6cad8b5ab4d930e6622895ee3d05a36b28ca'
+- '588009c260bf907449e25158b009a5744d2bdc451ad81fec3b9b8a31e7e6e347'
+
+    at file:///Users/ihaelam/project/haeram-soccer/.tmp/engine-opt-261030/artifacts/benchmarks/engine-opt-261030/verify.mjs:160:14
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: '4851a4fd1cfd8839420158d0d55c6cad8b5ab4d930e6622895ee3d05a36b28ca',
+  expected: '588009c260bf907449e25158b009a5744d2bdc451ad81fec3b9b8a31e7e6e347',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v26.8.1

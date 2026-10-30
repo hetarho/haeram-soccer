@@ -1,0 +1,17 @@
+file:///Users/ihaelam/project/haeram-soccer/.tmp/engine-opt-261030/.tmp/eo30-verify/baseline.mjs:39300
+    if (!Number.isFinite(value2)) throw new Error("Non-finite canonical value");
+                                        ^
+
+Error: Non-finite canonical value
+    at canonical (file:///Users/ihaelam/project/haeram-soccer/.tmp/engine-opt-261030/.tmp/eo30-verify/baseline.mjs:39300:41)
+    at file:///Users/ihaelam/project/haeram-soccer/.tmp/engine-opt-261030/.tmp/eo30-verify/baseline.mjs:39307:128
+    at Array.map (<anonymous>)
+    at canonical (file:///Users/ihaelam/project/haeram-soccer/.tmp/engine-opt-261030/.tmp/eo30-verify/baseline.mjs:39307:87)
+    at file:///Users/ihaelam/project/haeram-soccer/.tmp/engine-opt-261030/.tmp/eo30-verify/baseline.mjs:39307:128
+    at Array.map (<anonymous>)
+    at canonical (file:///Users/ihaelam/project/haeram-soccer/.tmp/engine-opt-261030/.tmp/eo30-verify/baseline.mjs:39307:87)
+    at Array.map (<anonymous>)
+    at canonical (file:///Users/ihaelam/project/haeram-soccer/.tmp/engine-opt-261030/.tmp/eo30-verify/baseline.mjs:39304:48)
+    at file:///Users/ihaelam/project/haeram-soccer/.tmp/engine-opt-261030/.tmp/eo30-verify/baseline.mjs:39307:128
+
+Node.js v26.8.1

@@ -1,0 +1,15 @@
+{
+  "checks": 81920,
+  "passed": true,
+  "includes": [
+    "standing",
+    "signed zero",
+    "arrive",
+    "turn",
+    "brake",
+    "snap",
+    "holdUntil",
+    "fractional steps",
+    "pitch bounds"
+  ]
+}

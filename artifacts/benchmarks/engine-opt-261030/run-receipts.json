@@ -1,0 +1,58 @@
+[
+  {
+    "label": "final-workers",
+    "script": "workers.mjs",
+    "args": [],
+    "from": "2026-10-30T15:06:11.062Z",
+    "to": "2026-10-30T15:07:25.677Z",
+    "status": 0
+  },
+  {
+    "label": "final-workers-slim",
+    "script": "workers.mjs",
+    "args": [
+      "slim"
+    ],
+    "from": "2026-10-30T15:07:25.677Z",
+    "to": "2026-10-30T15:08:15.217Z",
+    "status": 0
+  },
+  {
+    "label": "simd-kernel",
+    "script": "simd.mjs",
+    "args": [],
+    "from": "2026-10-30T15:08:15.217Z",
+    "to": "2026-10-30T15:08:34.843Z",
+    "status": 0
+  },
+  {
+    "label": "grid-simd-screen",
+    "script": "variants.mjs",
+    "args": [
+      "screen",
+      "grid-simd-hypot",
+      "grid"
+    ],
+    "from": "2026-10-30T15:08:34.843Z",
+    "to": "2026-10-30T15:08:49.433Z",
+    "status": 0
+  },
+  {
+    "label": "correctness",
+    "script": "verify.mjs",
+    "args": [],
+    "from": "2026-10-30T15:08:49.434Z",
+    "to": "2026-10-30T15:08:57.184Z",
+    "status": 1
+  },
+  {
+    "label": "versus-current-helpers",
+    "script": "progression.mjs",
+    "args": [
+      "current"
+    ],
+    "from": "2026-10-30T15:08:57.184Z",
+    "to": "2026-10-30T15:14:10.754Z",
+    "status": 0
+  }
+]

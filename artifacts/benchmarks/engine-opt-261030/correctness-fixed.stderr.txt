@@ -1,0 +1,29 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: plain internal output object
++ actual - expected
+
++ TypedArray {}
+- [Object: null prototype] {}
+
+    at internalCanonical (file:///Users/ihaelam/project/haeram-soccer/.tmp/engine-opt-261030/artifacts/benchmarks/engine-opt-261030/verify.mjs:16:10)
+    at file:///Users/ihaelam/project/haeram-soccer/.tmp/engine-opt-261030/artifacts/benchmarks/engine-opt-261030/verify.mjs:17:73
+    at Array.map (<anonymous>)
+    at internalCanonical (file:///Users/ihaelam/project/haeram-soccer/.tmp/engine-opt-261030/artifacts/benchmarks/engine-opt-261030/verify.mjs:17:38)
+    at Array.map (<anonymous>)
+    at internalCanonical (file:///Users/ihaelam/project/haeram-soccer/.tmp/engine-opt-261030/artifacts/benchmarks/engine-opt-261030/verify.mjs:15:40)
+    at file:///Users/ihaelam/project/haeram-soccer/.tmp/engine-opt-261030/artifacts/benchmarks/engine-opt-261030/verify.mjs:17:73
+    at Array.map (<anonymous>)
+    at internalCanonical (file:///Users/ihaelam/project/haeram-soccer/.tmp/engine-opt-261030/artifacts/benchmarks/engine-opt-261030/verify.mjs:17:38)
+    at file:///Users/ihaelam/project/haeram-soccer/.tmp/engine-opt-261030/artifacts/benchmarks/engine-opt-261030/verify.mjs:162:45 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: TypedArray {},
+  expected: [Object: null prototype] {},
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v26.8.1
