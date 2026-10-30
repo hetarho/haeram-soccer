@@ -561,9 +561,13 @@ export function spread(s: GridState, gp: GridPlayer, target: [number, number]): 
   }
   if (sense === 0) return [clamp(x, 0, PITCH.length), clamp(y, 0, PITCH.width)];
   for (const mate of s.players[gp.side]) {
-    if (mate === gp || !onPitch(mate) || lineOfSlot(s, mate) === 'GK') continue;
+    if (mate === gp) continue;
     const dx = x - mate.pos[0],
       dy = y - mate.pos[1];
+    // `hypot` (portable or the host's) is never below the larger magnitude, so a mate a radius off
+    // on either axis is out of reach without it.
+    if (Math.abs(dx) >= radius || Math.abs(dy) >= radius) continue;
+    if (!onPitch(mate) || lineOfSlot(s, mate) === 'GK') continue;
     const d = s.math.hypot(dx, dy);
     if (d >= radius || d < 1e-9) continue;
     const k = (S.push * sense * (radius - d)) / d;
