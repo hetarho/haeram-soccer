@@ -1,5 +1,6 @@
 import { buildSync } from 'esbuild';
 import { fileURLToPath } from 'node:url';
+import { readFileSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 import type { MovementProbeMode } from '../fixtures/movement-worker-probe';
 
@@ -11,6 +12,9 @@ const probe = buildSync({
   write: false,
   logLevel: 'error',
 }).outputFiles[0]!.text;
+const csp = /^\s*Content-Security-Policy:\s*(.+)$/m.exec(
+  readFileSync(new URL('../../apps/web/public/_headers', import.meta.url), 'utf8'),
+)![1]!;
 test('the movement backend preserves observed facts and positions through every fallback', async ({
   page,
 }) => {
@@ -21,18 +25,21 @@ test('the movement backend preserves observed facts and positions through every 
     }),
   );
   await page.route('**/__movement_probe.mjs', (route) =>
-    route.fulfill({ contentType: 'text/javascript', body: probe }),
+    route.fulfill({
+      contentType: 'text/javascript',
+      headers: { 'Content-Security-Policy': csp },
+      body: probe,
+    }),
   );
   await page.goto('/__movement_probe.html');
   const results = [];
-  for (const mode of ['native', 'missing', 'compile-error', 'execution-error'] as const) {
+  for (const mode of ['native', 'missing-wasm', 'allocation-error', 'execution-error'] as const) {
     const result = await page.evaluate(
       (mode: MovementProbeMode) =>
         new Promise<{
           digest?: string;
-          capable: boolean;
-          compilations: number;
-          steps: number;
+          allocations: number;
+          reads: number;
           error?: string;
         }>((resolve, reject) => {
           const worker = new Worker('/__movement_probe.mjs', { type: 'module' });
@@ -50,21 +57,10 @@ test('the movement backend preserves observed facts and positions through every 
     );
     expect(result.error, mode).toBeUndefined();
     expect(result.digest, mode).toMatch(/^[a-f0-9]{64}$/);
-    if (result.capable) {
-      if (mode === 'native') {
-        expect(result.compilations).toBe(1);
-        expect(result.steps).toBeGreaterThan(1);
-      }
-      if (mode === 'missing') expect(result.compilations).toBe(0);
-      if (mode === 'compile-error') {
-        expect(result.compilations).toBe(1);
-        expect(result.steps).toBe(0);
-      }
-      if (mode === 'execution-error') {
-        expect(result.compilations).toBe(1);
-        expect(result.steps).toBe(2);
-      }
-    }
+    expect(result.allocations, mode).toBe(1);
+    if (mode === 'native' || mode === 'missing-wasm') expect(result.reads, mode).toBeGreaterThan(3);
+    if (mode === 'allocation-error') expect(result.reads).toBe(0);
+    if (mode === 'execution-error') expect(result.reads).toBe(3);
     results.push(result);
   }
   expect(new Set(results.map((r) => r.digest)).size).toBe(1);

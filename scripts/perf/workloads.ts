@@ -19,6 +19,7 @@ import { buildGridSetup } from '../../packages/engine/src/grid/setup';
 import { playGrid } from '../../packages/engine/src/grid/engine';
 import { simulateAggregate } from '../../packages/engine/src/aggregate/engine';
 import { canonical } from '../../packages/contracts/src/index';
+import { currentDay } from '../../packages/engine/src/calendar';
 import type { Fixture, World } from '../../packages/contracts/src/types';
 
 const GRID_FIXTURES = 3;
@@ -89,12 +90,23 @@ export function workloadOf(name: string, seed: string): Workload {
     };
   }
   if (name === 'day') {
+    // Keep the campaign running, including business/fixtures. A blocked critical is explicitly
+    // acknowledged as in the host, rather than repeatedly timing a day that did not advance.
+    w.cash = '99999999999';
     return {
       digest: () => hash.update(canonical(w)).digest('hex').slice(0, 16),
       cycle: 0,
       rep() {
-        const own = w.ownMatches.length;
+        if (w.critical) {
+          delete w.critical;
+          w.revision++;
+        }
+        const own = w.ownMatches.length,
+          year = w.year,
+          before = currentDay(w);
         engine.advanceDays(w, 1, undefined, false);
+        if (w.bankrupt || (year === w.year && before === currentDay(w)))
+          throw new Error('Day benchmark did not advance a complete day');
         return w.ownMatches.length > own ? 'own' : 'other';
       },
     };

@@ -2,8 +2,9 @@
 import { createWorld, MATCH_MODEL_RELEASE } from '../../packages/engine/src/index';
 import { buildGridSetup } from '../../packages/engine/src/grid/setup';
 import { playGrid } from '../../packages/engine/src/grid/engine';
+import { MOVEMENT_KERNEL_VALUES } from '../../packages/engine/src/grid/movement-kernel';
 
-export type MovementProbeMode = 'native' | 'missing' | 'compile-error' | 'execution-error';
+export type MovementProbeMode = 'native' | 'missing-wasm' | 'allocation-error' | 'execution-error';
 function valueKey(value: unknown): string {
   if (value === null) return 'null';
   if (typeof value === 'number') return 'number:' + (Object.is(value, -0) ? '-0' : String(value));
@@ -19,6 +20,8 @@ function valueKey(value: unknown): string {
         .map((x) => x.toString(16).padStart(2, '0'))
         .join('')
     );
+  if (typeof value !== 'object' || Object.getPrototypeOf(value) !== Object.prototype)
+    throw new Error('Unsupported movement-probe output: ' + String(value));
   return (
     '{' +
     Object.keys(value as object)
@@ -31,38 +34,34 @@ function valueKey(value: unknown): string {
 self.onmessage = async (event: MessageEvent<{ mode: MovementProbeMode }>) => {
   try {
     const mode = event.data.mode,
-      native = globalThis.WebAssembly;
-    const capable = !!native && new Uint8Array(new Uint16Array([1]).buffer)[0] === 1;
-    let compilations = 0,
-      steps = 0;
-    if (mode === 'missing') Reflect.set(globalThis, 'WebAssembly', undefined);
-    else if (native) {
-      const Module = new Proxy(native.Module, {
+      native = globalThis.Float64Array;
+    let allocations = 0,
+      reads = 0;
+    if (mode === 'missing-wasm') Reflect.set(globalThis, 'WebAssembly', undefined);
+    // Only the private movement slab is intercepted. Other engine arrays keep native behaviour.
+    Reflect.set(
+      globalThis,
+      'Float64Array',
+      new Proxy(native, {
         construct(target, args) {
-          compilations++;
-          if (mode === 'compile-error') throw new Error('probe compile failure');
-          return Reflect.construct(target, args);
-        },
-      });
-      const Instance = new Proxy(native.Instance, {
-        construct(target, args) {
-          const instance = Reflect.construct(target, args) as WebAssembly.Instance;
-          return {
-            exports: {
-              ...instance.exports,
-              step: (...values: number[]) => {
-                steps++;
-                if (mode === 'execution-error' && steps === 2)
+          if (args.length !== 1 || args[0] !== MOVEMENT_KERNEL_VALUES)
+            return Reflect.construct(target, args);
+          allocations++;
+          if (mode === 'allocation-error') throw new Error('probe allocation failure');
+          return new Proxy(Reflect.construct(target, args) as Float64Array, {
+            get(data, key) {
+              if (key === '0') {
+                reads++;
+                // One finite-input read, then the first substep; fail inside the second substep.
+                if (mode === 'execution-error' && reads === 3)
                   throw new Error('probe execution failure');
-                return Reflect.apply(instance.exports.step as CallableFunction, undefined, values);
-              },
+              }
+              return Reflect.get(data, key, data);
             },
-          };
+          });
         },
-      });
-      Reflect.set(native, 'Module', Module);
-      Reflect.set(native, 'Instance', Instance);
-    }
+      }),
+    );
     const w = createWorld(
       {
         country: 'ENG',
@@ -77,7 +76,7 @@ self.onmessage = async (event: MessageEvent<{ mode: MovementProbeMode }>) => {
     const result = playGrid(buildGridSetup(w, fixture, { observe: true, recordPlayers: true }));
     const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(valueKey(result)));
     const digest = [...new Uint8Array(hash)].map((x) => x.toString(16).padStart(2, '0')).join('');
-    self.postMessage({ digest, capable, compilations, steps });
+    self.postMessage({ digest, allocations, reads });
   } catch (error) {
     self.postMessage({ error: String(error) });
   }

@@ -1,0 +1,716 @@
+diff --git a/packages/engine/src/grid/movement.ts b/packages/engine/src/grid/movement.ts
+index 896c4c6f..61943c87 100644
+--- a/packages/engine/src/grid/movement.ts
++++ b/packages/engine/src/grid/movement.ts
+@@ -7,6 +7,7 @@
+  * (→ARCH-9, T358): the same paths on every host.
+  */
+ import { cos, hypot, sin } from '../portable-math';
++import { tryPackedMovement } from './packed-movement';
+ import { anticipationRead } from './freedom';
+ import { defendSetPiece, restartPlaces, restartTaken, TRACKING } from './intentions';
+ import {
+@@ -306,6 +307,7 @@ export function advance(
+         hold: before ? inside(p.before!) : [gp.pos[0], gp.pos[1]],
+       });
+     }
++  if (tryPackedMovement(movers, dt, C, PITCH, FULL_COS, FULL_SIN, onStep)) return;
+   const whole = Math.floor(dt / C.step + 1e-9);
+   const rest = dt - whole * C.step;
+   for (let i = 0; i <= whole; i++) {
+diff --git a/packages/engine/src/grid/packed-movement.ts b/packages/engine/src/grid/packed-movement.ts
+new file mode 100644
+index 00000000..2c182f07
+--- /dev/null
++++ b/packages/engine/src/grid/packed-movement.ts
+@@ -0,0 +1,123 @@
++import { cos, sin } from '../portable-math';
++import type { GRID_MOVEMENT_CONFIG, Mover } from './movement';
++import { MOVEMENT_KERNEL_BYTES, MOVEMENT_KERNEL_STRIDE } from './movement-kernel.generated';
++
++export const PACKED_MOVEMENT_CONFIG = { minimumSteps: 4 } as const;
++export interface PackedMover {
++  gp: Mover;
++  to: readonly [number, number];
++  hold: readonly [number, number];
++  vmax: number;
++  holdUntil: number;
++}
++type Config = typeof GRID_MOVEMENT_CONFIG;
++type Step = (
++  count: number,
++  h: number,
++  t: number,
++  c: number,
++  s: number,
++  acceleration: number,
++  braking: number,
++  arrive: number,
++  length: number,
++  width: number,
++  step: number,
++) => void;
++let kernel: { data: Float64Array; step: Step } | null | undefined;
++let busy = false;
++const LITTLE_ENDIAN = new Uint8Array(new Uint16Array([1]).buffer)[0] === 1;
++
++/** Optional, per-realm acceleration. Compilation failure is cached for this worker's lifetime. */
++function getKernel() {
++  if (kernel === undefined) {
++    const wasm = globalThis.WebAssembly;
++    if (!wasm || !LITTLE_ENDIAN) return (kernel = null);
++    const instance = new wasm.Instance(new wasm.Module(MOVEMENT_KERNEL_BYTES));
++    kernel = {
++      data: new Float64Array((instance.exports.memory as WebAssembly.Memory).buffer),
++      step: instance.exports.step as Step,
++    };
++  }
++  return kernel;
++}
++
++/**
++ * Pack once after every target is fixed, move within a private numeric slab, then commit once.
++ * No callback observes an intermediate step. Until all steps succeed, live positions/velocities
++ * are untouched; a failed kernel can therefore replay the original scalar loop safely.
++ * Layout: x,y,vx,vy,target-x,target-y,hold-x,hold-y,vmax,hold-until (generated stride).
++ */
++export function tryPackedMovement(
++  movers: readonly PackedMover[],
++  dt: number,
++  C: Config,
++  pitch: { length: number; width: number },
++  fullCos: number,
++  fullSin: number,
++  onStep?: (seconds: number) => void,
++): boolean {
++  if (onStep || busy || kernel === null || !Number.isFinite(dt) || !(C.step > 0)) return false;
++  const whole = Math.floor(dt / C.step + 1e-9);
++  if (whole < PACKED_MOVEMENT_CONFIG.minimumSteps || !movers.length) return false;
++  busy = true;
++  try {
++    const compiled = getKernel();
++    if (!compiled || movers.length * MOVEMENT_KERNEL_STRIDE > compiled.data.length) return false;
++    const data = compiled.data;
++    for (let i = 0; i < movers.length; i++) {
++      const m = movers[i]!,
++        p = m.gp.pos,
++        v = m.gp.vel;
++      const at = i * MOVEMENT_KERNEL_STRIDE;
++      data[at] = p[0];
++      data[at + 1] = p[1];
++      data[at + 2] = v?.[0] ?? 0;
++      data[at + 3] = v?.[1] ?? 0;
++      data[at + 4] = m.to[0];
++      data[at + 5] = m.to[1];
++      data[at + 6] = m.hold[0];
++      data[at + 7] = m.hold[1];
++      data[at + 8] = m.vmax;
++      data[at + 9] = m.holdUntil;
++      let magnitude = 0;
++      for (let k = 0; k < MOVEMENT_KERNEL_STRIDE; k++) magnitude += Math.abs(data[at + k]!);
++      if (!Number.isFinite(magnitude)) return false;
++    }
++    const rest = dt - whole * C.step;
++    for (let i = 0; i <= whole; i++) {
++      const h = i < whole ? C.step : rest;
++      if (h <= 1e-9) break;
++      const full = h === C.step,
++        turn = C.turn * (Math.PI / 180) * h;
++      compiled.step(
++        movers.length,
++        h,
++        i * C.step,
++        full ? fullCos : cos(turn),
++        full ? fullSin : sin(turn),
++        C.acceleration,
++        C.braking,
++        C.arrive,
++        pitch.length,
++        pitch.width,
++        C.step,
++      );
++    }
++    for (let i = 0; i < movers.length; i++) {
++      const gp = movers[i]!.gp,
++        at = i * MOVEMENT_KERNEL_STRIDE;
++      gp.pos[0] = data[at]!;
++      gp.pos[1] = data[at + 1]!;
++      const v = (gp.vel ??= [0, 0]);
++      v[0] = data[at + 2]!;
++      v[1] = data[at + 3]!;
++    }
++    return true;
++  } catch {
++    kernel = null;
++    return false;
++  } finally {
++    busy = false;
++  }
++}
+diff --git a/packages/engine/src/grid/packed-movement.test.ts b/packages/engine/src/grid/packed-movement.test.ts
+new file mode 100644
+index 00000000..56e9758d
+--- /dev/null
++++ b/packages/engine/src/grid/packed-movement.test.ts
+@@ -0,0 +1,182 @@
++import { afterEach, describe, expect, it, vi } from 'vitest';
++import { execFileSync } from 'node:child_process';
++import { fileURLToPath } from 'node:url';
++import { GRID_MOVEMENT_CONFIG as C, stepToward } from './movement';
++import { cos, sin } from '../portable-math';
++import { random } from '../primitives';
++import { PITCH } from './pitch';
++import type { PackedMover } from './packed-movement';
++
++const turn = C.turn * (Math.PI / 180) * C.step,
++  fullCos = cos(turn),
++  fullSin = sin(turn);
++function mover(): PackedMover {
++  return {
++    gp: { pos: [10, 10], vel: [0, 0] },
++    to: [40, 30],
++    hold: [10, 10],
++    holdUntil: 0,
++    vmax: 6,
++  };
++}
++function oracle(movers: PackedMover[], dt: number) {
++  const whole = Math.floor(dt / C.step + 1e-9),
++    rest = dt - whole * C.step;
++  for (let i = 0; i <= whole; i++) {
++    const h = i < whole ? C.step : rest;
++    if (h <= 1e-9) break;
++    for (const m of movers)
++      stepToward(m.gp, i * C.step + 1e-9 < m.holdUntil ? m.hold : m.to, m.vmax, h);
++  }
++}
++afterEach(() => {
++  vi.unstubAllGlobals();
++  vi.resetModules();
++});
++describe('optional packed movement', () => {
++  it('keeps generated bytes reproducible', () => {
++    const root = fileURLToPath(new URL('../../../../', import.meta.url));
++    expect(
++      execFileSync(process.execPath, ['scripts/generate-movement-kernel.mjs', '--check'], {
++        cwd: root,
++        encoding: 'utf8',
++      }),
++    ).toContain('1103 bytes: current');
++  });
++  it('matches independent scalar substeps exactly across finite kinematics and hold boundaries', async () => {
++    const { tryPackedMovement } = await import('./packed-movement');
++    const r = random('packed-oracle-vectors');
++    for (let group = 0; group < 128; group++) {
++      const movers = Array.from({ length: 22 }, (_, i): PackedMover => {
++        const pos: [number, number] = [r() * PITCH.length, r() * PITCH.width],
++          vel: [number, number] = [(r() - 0.5) * 15, (r() - 0.5) * 15];
++        const to: [number, number] = [r() * PITCH.length, r() * PITCH.width];
++        if (i % 8 === 0) {
++          to[0] = pos[0];
++          to[1] = pos[1];
++          vel[0] = vel[1] = -0;
++        }
++        if (i % 8 === 1) {
++          to[0] = pos[0];
++          to[1] = pos[1];
++        }
++        if (i % 8 === 2) {
++          to[0] = Math.min(PITCH.length, pos[0] + 0.001);
++          to[1] = pos[1];
++          vel[0] = 0.001;
++          vel[1] = 0;
++        }
++        if (i % 8 === 3) vel[0] = vel[1] = 0;
++        return {
++          gp: { pos, vel },
++          to,
++          hold: [...pos],
++          holdUntil: i % 3 === 0 ? 0.4 : 0,
++          vmax: 1 + r() * 8,
++        };
++      });
++      for (const dt of [4, 4.06, 2.39999999, 1.8001]) {
++        const expected = structuredClone(movers);
++        oracle(expected, dt);
++        expect(tryPackedMovement(movers, dt, C, PITCH, fullCos, fullSin)).toBe(true);
++        expect(movers).toEqual(expected);
++      }
++    }
++  });
++  it('declines observers, short phases, non-finite inputs and capacity overflow without writes', async () => {
++    const { tryPackedMovement } = await import('./packed-movement');
++    const m = mover(),
++      before = structuredClone(m);
++    expect(tryPackedMovement([m], 4, C, PITCH, fullCos, fullSin, () => {})).toBe(false);
++    expect(tryPackedMovement([m], 0.2, C, PITCH, fullCos, fullSin)).toBe(false);
++    expect(m).toEqual(before);
++    m.to = [Infinity, 0];
++    const invalid = structuredClone(m);
++    expect(tryPackedMovement([m], 4, C, PITCH, fullCos, fullSin)).toBe(false);
++    expect(m).toEqual(invalid);
++    expect(
++      tryPackedMovement(Array.from({ length: 820 }, mover), 4, C, PITCH, fullCos, fullSin),
++    ).toBe(false);
++  });
++  it('uses the scalar path when Wasm is unavailable', async () => {
++    vi.stubGlobal('WebAssembly', undefined);
++    const { tryPackedMovement } = await import('./packed-movement');
++    const m = mover(),
++      before = structuredClone(m);
++    expect(tryPackedMovement([m], 4, C, PITCH, fullCos, fullSin)).toBe(false);
++    expect(m).toEqual(before);
++  });
++  it('creates an absent velocity exactly as the scalar path does, including a standing mover', async () => {
++    const { tryPackedMovement } = await import('./packed-movement');
++    const movers = [mover(), mover()];
++    for (const m of movers) delete m.gp.vel;
++    movers[1]!.to = [...movers[1]!.gp.pos];
++    const expected = structuredClone(movers);
++    oracle(expected, 4.06);
++    expect(tryPackedMovement(movers, 4.06, C, PITCH, fullCos, fullSin)).toBe(true);
++    expect(movers).toEqual(expected);
++  });
++  it('caches a compilation failure rather than retrying every phase', async () => {
++    const native = WebAssembly,
++      compile = vi.fn(() => {
++        throw new Error('blocked');
++      });
++    vi.stubGlobal('WebAssembly', {
++      Module: new Proxy(native.Module, { construct: compile }),
++      Instance: native.Instance,
++    });
++    const { tryPackedMovement } = await import('./packed-movement');
++    expect(tryPackedMovement([mover()], 4, C, PITCH, fullCos, fullSin)).toBe(false);
++    expect(tryPackedMovement([mover()], 4, C, PITCH, fullCos, fullSin)).toBe(false);
++    expect(compile).toHaveBeenCalledTimes(1);
++  });
++  it('can replay the scalar loop after a mid-phase failure, with no partial live mutation', async () => {
++    const native = WebAssembly;
++    let calls = 0;
++    const Instance = new Proxy(native.Instance, {
++      construct(target, args) {
++        const instance = Reflect.construct(target, args) as WebAssembly.Instance;
++        return {
++          exports: {
++            ...instance.exports,
++            step: (...values: number[]) => {
++              if (++calls === 2) throw new Error('step failed');
++              Reflect.apply(instance.exports.step as CallableFunction, undefined, values);
++            },
++          },
++        };
++      },
++    });
++    vi.stubGlobal('WebAssembly', { Module: native.Module, Instance });
++    const { tryPackedMovement } = await import('./packed-movement');
++    const m = mover(),
++      before = structuredClone(m),
++      expected = structuredClone(m);
++    expect(tryPackedMovement([m], 4, C, PITCH, fullCos, fullSin)).toBe(false);
++    expect(m).toEqual(before);
++    oracle([m], 4);
++    oracle([expected], 4);
++    expect(m).toEqual(expected);
++    expect(tryPackedMovement([mover()], 4, C, PITCH, fullCos, fullSin)).toBe(false);
++    expect(calls).toBe(2);
++  });
++  it('declines reentrant packing without corrupting the outer scratch phase', async () => {
++    const { tryPackedMovement } = await import('./packed-movement');
++    const m = mover(),
++      expected = structuredClone(m),
++      point = m.gp.pos,
++      inner: boolean[] = [];
++    Object.defineProperty(m.gp, 'pos', {
++      get() {
++        inner.push(tryPackedMovement([mover()], 4, C, PITCH, fullCos, fullSin));
++        return point;
++      },
++    });
++    expect(tryPackedMovement([m], 4, C, PITCH, fullCos, fullSin)).toBe(true);
++    oracle([expected], 4);
++    expect(m.gp.pos).toEqual(expected.gp.pos);
++    expect(inner.length).toBeGreaterThan(0);
++    // Reading after completion can succeed; only reads made during the outer phase must decline.
++    expect(inner.slice(0, -1).every((x) => x === false)).toBe(true);
++  });
++});
+diff --git a/packages/engine/src/grid/movement-kernel.generated.ts b/packages/engine/src/grid/movement-kernel.generated.ts
+new file mode 100644
+index 00000000..478c0214
+--- /dev/null
++++ b/packages/engine/src/grid/movement-kernel.generated.ts
+@@ -0,0 +1,58 @@
++// Generated by scripts/generate-movement-kernel.mjs. Edit the generator, not these bytes.
++export const MOVEMENT_KERNEL_STRIDE = 10;
++export const MOVEMENT_KERNEL_BYTES = new Uint8Array([
++  0, 97, 115, 109, 1, 0, 0, 0, 1, 35, 3, 96, 2, 124, 124, 1, 124, 96, 11, 127,
++  124, 124, 124, 124, 124, 124, 124, 124, 124, 124, 0, 96, 11, 127, 124, 124,
++  124, 124, 124, 124, 124, 124, 124, 124, 0, 3, 4, 3, 0, 1, 2, 5, 3, 1, 0, 1, 7,
++  17, 2, 4, 115, 116, 101, 112, 0, 2, 6, 109, 101, 109, 111, 114, 121, 2, 0, 10,
++  129, 8, 3, 91, 5, 1, 124, 1, 124, 1, 124, 1, 124, 1, 124, 32, 0, 153, 33, 2,
++  32, 1, 153, 33, 3, 32, 2, 32, 3, 100, 4, 124, 32, 2, 5, 32, 3, 11, 33, 4, 32,
++  4, 68, 0, 0, 0, 0, 0, 0, 0, 0, 97, 4, 64, 68, 0, 0, 0, 0, 0, 0, 0, 0, 15, 11,
++  32, 2, 32, 4, 163, 33, 5, 32, 3, 32, 4, 163, 33, 6, 32, 5, 32, 5, 162, 32, 6,
++  32, 6, 162, 160, 159, 32, 4, 162, 11, 231, 6, 22, 1, 124, 1, 124, 1, 124, 1,
++  124, 1, 124, 1, 124, 1, 124, 1, 124, 1, 124, 1, 124, 1, 124, 1, 124, 1, 124,
++  1, 124, 1, 124, 1, 124, 1, 124, 1, 124, 1, 124, 1, 124, 1, 124, 1, 124, 32, 0,
++  43, 3, 0, 33, 11, 32, 0, 43, 3, 8, 33, 12, 32, 0, 43, 3, 16, 33, 13, 32, 0,
++  43, 3, 24, 33, 14, 32, 2, 68, 149, 214, 38, 232, 11, 46, 17, 62, 160, 32, 0,
++  43, 3, 72, 99, 4, 124, 32, 0, 43, 3, 48, 5, 32, 0, 43, 3, 32, 11, 33, 15, 32,
++  2, 68, 149, 214, 38, 232, 11, 46, 17, 62, 160, 32, 0, 43, 3, 72, 99, 4, 124,
++  32, 0, 43, 3, 56, 5, 32, 0, 43, 3, 40, 11, 33, 16, 32, 13, 68, 0, 0, 0, 0, 0,
++  0, 0, 0, 97, 32, 14, 68, 0, 0, 0, 0, 0, 0, 0, 0, 97, 113, 32, 11, 32, 15, 97,
++  32, 12, 32, 16, 97, 113, 113, 4, 64, 15, 11, 32, 15, 32, 11, 161, 33, 17, 32,
++  16, 32, 12, 161, 33, 18, 32, 17, 32, 18, 16, 0, 33, 19, 32, 13, 68, 0, 0, 0,
++  0, 0, 0, 0, 0, 97, 32, 14, 68, 0, 0, 0, 0, 0, 0, 0, 0, 97, 113, 4, 124, 68, 0,
++  0, 0, 0, 0, 0, 0, 0, 5, 32, 13, 32, 14, 16, 0, 11, 33, 20, 32, 19, 32, 7, 101,
++  32, 20, 32, 6, 32, 10, 162, 68, 149, 214, 38, 232, 11, 46, 17, 62, 160, 101,
++  113, 4, 64, 32, 15, 33, 11, 32, 16, 33, 12, 68, 0, 0, 0, 0, 0, 0, 0, 0, 33,
++  13, 68, 0, 0, 0, 0, 0, 0, 0, 0, 33, 14, 32, 0, 32, 11, 57, 3, 0, 32, 0, 32,
++  12, 57, 3, 8, 32, 0, 32, 13, 57, 3, 16, 32, 0, 32, 14, 57, 3, 24, 15, 11, 32,
++  19, 68, 0, 0, 0, 0, 0, 0, 0, 0, 100, 4, 124, 32, 17, 32, 19, 163, 5, 32, 20,
++  68, 0, 0, 0, 0, 0, 0, 0, 0, 100, 4, 124, 32, 13, 32, 20, 163, 5, 68, 0, 0, 0,
++  0, 0, 0, 240, 63, 11, 11, 33, 21, 32, 19, 68, 0, 0, 0, 0, 0, 0, 0, 0, 100, 4,
++  124, 32, 18, 32, 19, 163, 5, 32, 20, 68, 0, 0, 0, 0, 0, 0, 0, 0, 100, 4, 124,
++  32, 14, 32, 20, 163, 5, 68, 0, 0, 0, 0, 0, 0, 0, 0, 11, 11, 33, 22, 32, 21,
++  33, 23, 32, 22, 33, 24, 68, 0, 0, 0, 0, 0, 0, 240, 63, 33, 32, 32, 20, 68,
++  149, 214, 38, 232, 11, 46, 17, 62, 100, 4, 64, 32, 13, 32, 20, 163, 33, 25,
++  32, 14, 32, 20, 163, 33, 26, 32, 25, 32, 21, 162, 32, 26, 32, 22, 162, 160,
++  32, 3, 99, 4, 64, 68, 0, 0, 0, 0, 0, 0, 0, 0, 33, 32, 32, 25, 32, 22, 162, 32,
++  26, 32, 21, 162, 161, 68, 0, 0, 0, 0, 0, 0, 0, 0, 102, 4, 124, 68, 0, 0, 0, 0,
++  0, 0, 240, 63, 5, 68, 0, 0, 0, 0, 0, 0, 240, 191, 11, 32, 4, 162, 33, 27, 32,
++  25, 32, 3, 162, 32, 26, 32, 27, 162, 161, 33, 23, 32, 25, 32, 27, 162, 32, 26,
++  32, 3, 162, 160, 33, 24, 11, 11, 32, 32, 68, 0, 0, 0, 0, 0, 0, 0, 0, 100, 4,
++  124, 68, 0, 0, 0, 0, 0, 0, 240, 63, 5, 68, 0, 0, 0, 0, 0, 0, 0, 0, 32, 23, 32,
++  21, 162, 32, 24, 32, 22, 162, 160, 165, 11, 33, 28, 32, 6, 32, 1, 32, 1, 162,
++  68, 0, 0, 0, 0, 0, 0, 16, 64, 163, 68, 0, 0, 0, 0, 0, 0, 0, 64, 32, 19, 162,
++  32, 6, 163, 160, 159, 32, 1, 68, 0, 0, 0, 0, 0, 0, 0, 64, 163, 161, 162, 33,
++  29, 32, 0, 43, 3, 64, 32, 29, 164, 32, 28, 162, 33, 30, 32, 30, 32, 20, 100,
++  4, 124, 32, 30, 32, 20, 32, 5, 32, 1, 162, 160, 164, 5, 32, 30, 32, 20, 32, 6,
++  32, 1, 162, 161, 165, 11, 33, 31, 32, 23, 32, 31, 162, 33, 13, 32, 24, 32, 31,
++  162, 33, 14, 32, 19, 68, 0, 0, 0, 0, 0, 0, 0, 0, 100, 32, 32, 68, 0, 0, 0, 0,
++  0, 0, 0, 0, 100, 113, 32, 31, 32, 1, 162, 32, 19, 102, 113, 4, 64, 32, 15, 33,
++  11, 32, 16, 33, 12, 5, 68, 0, 0, 0, 0, 0, 0, 0, 0, 32, 8, 32, 11, 32, 13, 32,
++  1, 162, 160, 164, 165, 33, 11, 68, 0, 0, 0, 0, 0, 0, 0, 0, 32, 9, 32, 12, 32,
++  14, 32, 1, 162, 160, 164, 165, 33, 12, 11, 32, 0, 32, 11, 57, 3, 0, 32, 0, 32,
++  12, 57, 3, 8, 32, 0, 32, 13, 57, 3, 16, 32, 0, 32, 14, 57, 3, 24, 11, 58, 1,
++  1, 127, 65, 0, 33, 11, 2, 64, 3, 64, 32, 11, 32, 0, 79, 13, 1, 32, 11, 65,
++  208, 0, 108, 32, 1, 32, 2, 32, 3, 32, 4, 32, 5, 32, 6, 32, 7, 32, 8, 32, 9,
++  32, 10, 16, 1, 32, 11, 65, 1, 106, 33, 11, 12, 0, 11, 11, 11,
++]);
+diff --git a/scripts/generate-movement-kernel.mjs b/scripts/generate-movement-kernel.mjs
+new file mode 100644
+index 00000000..201876f6
+--- /dev/null
++++ b/scripts/generate-movement-kernel.mjs
+@@ -0,0 +1,309 @@
++/** A small assembler for the finite-state movement phase. No relaxed math or external compiler. */
++import { readFileSync, writeFileSync } from 'node:fs';
++import { format } from 'prettier';
++import { dirname, resolve } from 'node:path';
++import { fileURLToPath } from 'node:url';
++const u = (x) => {
++  const a = [];
++  do {
++    let b = x & 127;
++    x >>>= 7;
++    if (x) b |= 128;
++    a.push(b);
++  } while (x);
++  return a;
++};
++const sec = (id, a) => [id, ...u(a.length), ...a],
++  str = (s) => [s.length, ...Buffer.from(s)];
++const f64 = (x) => {
++  const b = Buffer.alloc(8);
++  b.writeDoubleLE(x);
++  return [0x44, ...b];
++};
++const bin = (op, a, b) => [...a, ...b, op],
++  un = (op, a) => [...a, op];
++const add = (a, b) => bin(0xa0, a, b),
++  sub = (a, b) => bin(0xa1, a, b),
++  mul = (a, b) => bin(0xa2, a, b),
++  div = (a, b) => bin(0xa3, a, b);
++const min = (a, b) => bin(0xa4, a, b),
++  max = (a, b) => bin(0xa5, a, b),
++  eq = (a, b) => bin(0x61, a, b),
++  gt = (a, b) => bin(0x64, a, b),
++  ge = (a, b) => bin(0x66, a, b),
++  le = (a, b) => bin(0x65, a, b),
++  lt = (a, b) => bin(0x63, a, b);
++const and = (a, b) => bin(0x71, a, b),
++  sqrt = (a) => un(0x9f, a),
++  abs = (a) => un(0x99, a);
++const iff = (c, a, b = []) => [...c, 0x04, 0x40, ...a, ...(b.length ? [0x05, ...b] : []), 0x0b];
++const choose = (c, a, b) => [...c, 0x04, 0x7c, ...a, 0x05, ...b, 0x0b];
++function fn(params, locals) {
++  const names = [...params, ...locals].map((x) => x[0]);
++  return {
++    get: (n) => [0x20, ...u(names.indexOf(n))],
++    set: (n, v) => [...v, 0x21, ...u(names.indexOf(n))],
++    body: (ops) => [...u(locals.length), ...locals.flatMap(([, t]) => [1, t]), ...ops, 0x0b],
++  };
++}
++const F = 0x7c,
++  I = 0x7f;
++const H = fn(
++  [
++    ['x', F],
++    ['y', F],
++  ],
++  [
++    ['a', F],
++    ['b', F],
++    ['m', F],
++    ['p', F],
++    ['q', F],
++  ],
++);
++const h = H.get;
++const hypot = H.body([
++  ...H.set('a', abs(h('x'))),
++  ...H.set('b', abs(h('y'))),
++  ...H.set('m', choose(gt(h('a'), h('b')), h('a'), h('b'))),
++  ...iff(eq(h('m'), f64(0)), [...f64(0), 0x0f]),
++  ...H.set('p', div(h('a'), h('m'))),
++  ...H.set('q', div(h('b'), h('m'))),
++  ...mul(sqrt(add(mul(h('p'), h('p')), mul(h('q'), h('q')))), h('m')),
++]);
++const params = [
++  ['ptr', I],
++  ...['h', 't', 'c', 's', 'acc', 'brake', 'arrive', 'length', 'width', 'step'].map((n) => [n, F]),
++];
++const M = fn(
++  params,
++  [
++    'x',
++    'y',
++    'vx',
++    'vy',
++    'tx',
++    'ty',
++    'dx',
++    'dy',
++    'dist',
++    'speed',
++    'ux',
++    'uy',
++    'hx',
++    'hy',
++    'cx',
++    'cy',
++    'ss',
++    'facing',
++    'stop',
++    'want',
++    'next',
++    'aligned',
++  ].map((n) => [n, F]),
++);
++const g = M.get,
++  put = M.set,
++  load = (offset) => [...g('ptr'), 0x2b, 3, ...u(offset * 8)],
++  store = (offset, v) => [...g('ptr'), ...v, 0x39, 3, ...u(offset * 8)];
++const hypotCall = (a, b) => [...a, ...b, 0x10, 0];
++const flush = () => [
++  ...store(0, g('x')),
++  ...store(1, g('y')),
++  ...store(2, g('vx')),
++  ...store(3, g('vy')),
++];
++const move = M.body([
++  ...put('x', load(0)),
++  ...put('y', load(1)),
++  ...put('vx', load(2)),
++  ...put('vy', load(3)),
++  ...put('tx', choose(lt(add(g('t'), f64(1e-9)), load(9)), load(6), load(4))),
++  ...put('ty', choose(lt(add(g('t'), f64(1e-9)), load(9)), load(7), load(5))),
++  ...iff(
++    and(
++      and(eq(g('vx'), f64(0)), eq(g('vy'), f64(0))),
++      and(eq(g('x'), g('tx')), eq(g('y'), g('ty'))),
++    ),
++    [0x0f],
++  ),
++  ...put('dx', sub(g('tx'), g('x'))),
++  ...put('dy', sub(g('ty'), g('y'))),
++  ...put('dist', hypotCall(g('dx'), g('dy'))),
++  ...put(
++    'speed',
++    choose(and(eq(g('vx'), f64(0)), eq(g('vy'), f64(0))), f64(0), hypotCall(g('vx'), g('vy'))),
++  ),
++  ...iff(
++    and(le(g('dist'), g('arrive')), le(g('speed'), add(mul(g('brake'), g('step')), f64(1e-9)))),
++    [
++      ...put('x', g('tx')),
++      ...put('y', g('ty')),
++      ...put('vx', f64(0)),
++      ...put('vy', f64(0)),
++      ...flush(),
++      0x0f,
++    ],
++  ),
++  ...put(
++    'ux',
++    choose(
++      gt(g('dist'), f64(0)),
++      div(g('dx'), g('dist')),
++      choose(gt(g('speed'), f64(0)), div(g('vx'), g('speed')), f64(1)),
++    ),
++  ),
++  ...put(
++    'uy',
++    choose(
++      gt(g('dist'), f64(0)),
++      div(g('dy'), g('dist')),
++      choose(gt(g('speed'), f64(0)), div(g('vy'), g('speed')), f64(0)),
++    ),
++  ),
++  ...put('hx', g('ux')),
++  ...put('hy', g('uy')),
++  ...put('aligned', f64(1)),
++  ...iff(gt(g('speed'), f64(1e-9)), [
++    ...put('cx', div(g('vx'), g('speed'))),
++    ...put('cy', div(g('vy'), g('speed'))),
++    ...iff(lt(add(mul(g('cx'), g('ux')), mul(g('cy'), g('uy'))), g('c')), [
++      ...put('aligned', f64(0)),
++      ...put(
++        'ss',
++        mul(
++          choose(ge(sub(mul(g('cx'), g('uy')), mul(g('cy'), g('ux'))), f64(0)), f64(1), f64(-1)),
++          g('s'),
++        ),
++      ),
++      ...put('hx', sub(mul(g('cx'), g('c')), mul(g('cy'), g('ss')))),
++      ...put('hy', add(mul(g('cx'), g('ss')), mul(g('cy'), g('c')))),
++    ]),
++  ]),
++  ...put(
++    'facing',
++    choose(
++      gt(g('aligned'), f64(0)),
++      f64(1),
++      max(f64(0), add(mul(g('hx'), g('ux')), mul(g('hy'), g('uy')))),
++    ),
++  ),
++  ...put(
++    'stop',
++    mul(
++      g('brake'),
++      sub(
++        sqrt(add(div(mul(g('h'), g('h')), f64(4)), div(mul(f64(2), g('dist')), g('brake')))),
++        div(g('h'), f64(2)),
++      ),
++    ),
++  ),
++  ...put('want', mul(min(load(8), g('stop')), g('facing'))),
++  ...put(
++    'next',
++    choose(
++      gt(g('want'), g('speed')),
++      min(g('want'), add(g('speed'), mul(g('acc'), g('h')))),
++      max(g('want'), sub(g('speed'), mul(g('brake'), g('h')))),
++    ),
++  ),
++  ...put('vx', mul(g('hx'), g('next'))),
++  ...put('vy', mul(g('hy'), g('next'))),
++  ...iff(
++    and(
++      and(gt(g('dist'), f64(0)), gt(g('aligned'), f64(0))),
++      ge(mul(g('next'), g('h')), g('dist')),
++    ),
++    [...put('x', g('tx')), ...put('y', g('ty'))],
++    [
++      ...put('x', max(f64(0), min(g('length'), add(g('x'), mul(g('vx'), g('h')))))),
++      ...put('y', max(f64(0), min(g('width'), add(g('y'), mul(g('vy'), g('h')))))),
++    ],
++  ),
++  ...flush(),
++]);
++const S = fn([['count', I], ...params.slice(1)], [['i', I]]),
++  s = S.get;
++const loop = S.body([
++  0x41,
++  0,
++  0x21,
++  11,
++  0x02,
++  0x40,
++  0x03,
++  0x40,
++  ...s('i'),
++  ...s('count'),
++  0x4f,
++  0x0d,
++  1,
++  ...s('i'),
++  0x41,
++  0xd0, // i32.const +80 (10 f64 fields): signed LEB d0 00.
++  0,
++  0x6c,
++  ...params.slice(1).flatMap(([n]) => s(n)),
++  0x10,
++  1,
++  ...s('i'),
++  0x41,
++  1,
++  0x6a,
++  0x21,
++  11,
++  0x0c,
++  0,
++  0x0b,
++  0x0b,
++]);
++const type = (p, r) => [0x60, ...u(p.length), ...p, ...u(r.length), ...r];
++const bytes = new Uint8Array([
++  0,
++  97,
++  115,
++  109,
++  1,
++  0,
++  0,
++  0,
++  ...sec(1, [
++    3,
++    ...type([F, F], [F]),
++    ...type(
++      params.map(([, t]) => t),
++      [],
++    ),
++    ...type([I, ...params.slice(1).map(([, t]) => t)], []),
++  ]),
++  ...sec(3, [3, 0, 1, 2]),
++  ...sec(5, [1, 0, 1]),
++  ...sec(7, [2, ...str('step'), 0, 2, ...str('memory'), 2, 0]),
++  ...sec(10, [
++    3,
++    ...u(hypot.length),
++    ...hypot,
++    ...u(move.length),
++    ...move,
++    ...u(loop.length),
++    ...loop,
++  ]),
++]);
++if (!WebAssembly.validate(bytes)) new WebAssembly.Module(bytes);
++const output = resolve(
++  dirname(fileURLToPath(import.meta.url)),
++  '../packages/engine/src/grid/movement-kernel.generated.ts',
++);
++const source = await format(
++  `// Generated by scripts/generate-movement-kernel.mjs. Edit the generator, not these bytes.
++export const MOVEMENT_KERNEL_STRIDE = 10;
++export const MOVEMENT_KERNEL_BYTES = new Uint8Array(${JSON.stringify([...bytes])});
++`,
++  { parser: 'typescript' },
++);
++if (process.argv.includes('--check')) {
++  if (readFileSync(output, 'utf8') !== source) throw new Error('Movement kernel bytes are stale');
++} else writeFileSync(output, source);
++console.log(
++  `Movement kernel ${bytes.length} bytes: ${process.argv.includes('--check') ? 'current' : 'generated'}`,
++);
