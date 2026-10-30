@@ -2,7 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { TD } from '../../../contracts/src/detail';
 import { M } from '../grid/record';
 import { buildAggregateInput, fullParticipation } from './input';
-import { deriveTeamFacts, inBoxCell, isPassKind, ledgerIssues, teamFactsIssues } from './ledger';
+import {
+  deriveTeamFacts,
+  inBoxCell,
+  isPassKind,
+  ledgerIssues,
+  moveKindIndex,
+  teamFactsIssues,
+} from './ledger';
 import { aggregateStreams, generateTeamFacts } from './team';
 import { AGGREGATE_MOVE_KINDS, AGGREGATE_PASS_KINDS } from './types';
 import type {
@@ -55,11 +62,13 @@ function refused(ledger: AggregateLedger, issue: RegExp) {
 }
 
 describe('aggregate ledger', () => {
-  it('tells pass kinds exactly as the pass-kind list does (T612)', () => {
-    for (const kind of [...AGGREGATE_MOVE_KINDS, 'header', ''] as AggregateMoveKind[])
+  it('tells pass kinds and kind indexes exactly as the kind lists do (T612)', () => {
+    for (const kind of [...AGGREGATE_MOVE_KINDS, 'header', ''] as AggregateMoveKind[]) {
       expect(isPassKind(kind), kind).toBe(
         (AGGREGATE_PASS_KINDS as readonly string[]).includes(kind),
       );
+      expect(moveKindIndex(kind), kind).toBe(AGGREGATE_MOVE_KINDS.indexOf(kind));
+    }
   });
 
   it('derives the facts it checks', () => {

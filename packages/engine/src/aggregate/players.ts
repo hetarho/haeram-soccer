@@ -15,7 +15,7 @@ import { COUNTER_ZONES, isCutBack, M, mirrorBand } from '../grid/record';
 import type { MatchAction } from '../match';
 import { zeroMetrics } from '../primitives';
 import { AGGREGATE_ATTRIBUTION_CONFIG as AC, AGGREGATE_CONFIG } from './config';
-import { inBoxCell, isPassKind, looseBalls, xtGain } from './ledger';
+import { inBoxCell, isPassKind, looseBalls, moveKindIndex, xtGain } from './ledger';
 import {
   binomialDraw,
   exposures,
@@ -461,7 +461,7 @@ const TRAITS: (MoveTraits | undefined)[] = Array<MoveTraits | undefined>(
   AGGREGATE_MOVE_KINDS.length * CELLS * CELLS,
 ).fill(undefined);
 function moveTraits(move: AggregateMove): MoveTraits {
-  const key = (AGGREGATE_MOVE_KINDS.indexOf(move.kind) * CELLS + move.from) * CELLS + move.to;
+  const key = (moveKindIndex(move.kind) * CELLS + move.from) * CELLS + move.to;
   let traits = TRAITS[key];
   if (!traits) TRAITS[key] = traits = traitsOf(move);
   return traits;

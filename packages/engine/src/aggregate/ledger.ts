@@ -18,7 +18,6 @@ import {
 import { zeroMetrics } from '../primitives';
 import { AGGREGATE_CONFIG } from './config';
 import {
-  AGGREGATE_MOVE_KINDS,
   type AggregateLedger,
   type AggregateMove,
   type AggregateMoveKind,
@@ -40,6 +39,26 @@ export const isPassKind = (kind: AggregateMoveKind) =>
   kind === 'through' ||
   kind === 'cross' ||
   kind === 'cutBack';
+/**
+ * A kind's index in `AGGREGATE_MOVE_KINDS`, −1 for none: compared one by one, the same answer as
+ * the list's `indexOf` for any value (T612).
+ */
+export const moveKindIndex = (kind: AggregateMoveKind): number =>
+  kind === 'short'
+    ? 0
+    : kind === 'long'
+      ? 1
+      : kind === 'through'
+        ? 2
+        : kind === 'cross'
+          ? 3
+          : kind === 'cutBack'
+            ? 4
+            : kind === 'carry'
+              ? 5
+              : kind === 'takeOn'
+                ? 6
+                : -1;
 export { inBoxCell };
 export const inGoalAreaCell = (cell: number) => cellBand(cell) === 7 && cellLane(cell) === 2;
 /** Every pair of cells' expected-threat gain, in thousandths, worked out once (T612). */
@@ -165,7 +184,7 @@ function moveIssues(
   m: AggregateMove,
   ledger: AggregateLedger,
 ) {
-  if (!(AGGREGATE_MOVE_KINDS as readonly string[]).includes(m.kind)) issue(out, who, i, ' kind');
+  if (moveKindIndex(m.kind) < 0) issue(out, who, i, ' kind');
   if (!ledger.periods.includes(m.period)) issue(out, who, i, ` in period ${m.period}`);
   if (!(Number.isInteger(m.from) && m.from >= 0 && m.from < CELLS))
     issue(out, who, i, ` cell ${m.from}`);
