@@ -16,8 +16,10 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ei31 | ihaelam-ui-MacBookPro | autopilot | 2026-10-30T15:51Z | 2026-10-30T15:51Z | - |
+| tf31 | ihaelam-ui-MacBookPro | autopilot | 2026-10-30T17:08Z | 2026-10-30T17:08Z | T621 |
 
 ## inbox
+- 261031 decided CLUB-25 CLUB-46 T621: how to bring transfer fees to each era's real level when ENG reference careers measured the top flight's dearest player at 0.14–0.39× the British record from 1982 and the mean at 0.19–0.49× the Premier League average fee from 2003, while the club's turnover already sits at real levels (2020s £318m against £315m) → a transfer premium by year on top of the football index plus a steeper value slope (1.125 a point against the wage's 1.105), wages, division shares and indices untouched (alt: raise the value's years of wage from 2, which keeps the 1950s–70s already in band too high | a separate transfer index in the catalog, a catalog version change for one multiple | raise the football index, which moves wages, sponsors and costs the economy is calibrated on).
 - 261031 decided ARCH-6 ARCH-9 ARCH-34 T617 T618: owner requests continued optimization attempts through completed implementation → production helper replication first, then guarded packed movement, with safe fallbacks and one combined final gate/main push (alt: stop at research | ship unguarded prototypes). Keep the assigned isolated worktree and all unrelated design changes separate.
 - 261031 decided ARCH-6 ARCH-9 ARCH-34 review/engine-architecture-261030: which experiments merit follow-up → F1 record-level helper replication (own-match wall ×0.9170, CPU ×0.8563 against current helpers, identical daily worlds) and F2 packed Wasm movement (grid CPU ×0.9476, identical records), F1 first; total elapsed-time/day CPU gains remain inconclusive (alt: per-step SIMD, ×1.0220 slower | naive snapshot epochs, live own-day ×1.0783 slower). Research artifacts 2a28f947 are retained on origin/wip/eo30; production source is unchanged.
 - 261030 decided ARCH-34 ARCH-6: owner requests an isolated worktree, multiple engine-optimization attempts and current architectures/algorithms in automatic mode → review engine-architecture-261030 with reversible benchmark prototypes and explicit result-identity checks; no production engine adoption during research (alt: repeat T611/T612 micro-cuts | immediately change worker topology).
@@ -411,7 +413,7 @@
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 4 | 4 | - | 0 |
-| CLUB | 43 | 43 | - | 0 |
+| CLUB | 44 | 44 | - | 0 |
 | MATCH | 44 | 44 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
@@ -436,6 +438,7 @@
 |---|---|---|---|---|
 | T617 | Incremental fixture helpers | ARCH | - | todo |
 | T618 | Safe packed movement phase | ARCH | T617 | doing@261031.ei31 |
+| T621 | Transfer values by era | CLUB | - | doing@261031.tf31 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -462,6 +465,7 @@
 - implement-task T617, then T618; coordinator final verification and configured main push after both candidates are settled.
 
 ## log
+- 261031 update-ssot CLUB r44 (CLUB-25✎ CLUB-46+) + create-task T621 transfer values by era; session tf31.
 - 261031 create-task review/engine-architecture-261030: owner authorizes production completion; T617 helper replication, T618 guarded packed movement; session ei31.
 - 261031 review-code engine-architecture-261030 ready: nine engine candidates, seventeen worker/transport configurations; F1/F2 accepted for follow-up planning, no production source adoption. Artifact commit 2a28f947 and remote checkpoint 848f8c57 (wip/eo30); project quick checks, 173 units and prototype parity passed; report 261030-eo30.
 - 261030 review-code engine-architecture-261030 start: owner-assigned isolated worktree codex/engine-opt-261030 at 64005ff1, session eo30; research and prototypes only.
@@ -481,4 +485,3 @@
 - 261030 T606 done: no goal clip begins while the original viewing holds a goal (`replayEntryOpen` gates `startGoalReplay` and the picker at the moment of choice, a picker opened before the hold included); the hold runs its full length and a return keeps the original clock, so a final-sample hold can no longer finish the live match for a clip; shortcut and picker goals stay focusable with `aria-disabled` through the hold; archived clip play/pause display rechecked (T601's fix kept); format, typecheck, lint, affected units (42) and build pass; goal-replay browser journey left to the final Chromium gate.
 - 261030 create-task T606: focused T601 lifecycle/control verification repair from coordinator review; no policy change.
 - 261030 owner-directed home/HUD redesign (chat, no task): season card as one dark box (real league name, rank/points/record, cups, league progress filling a day at a time to 0.1%), today in the HUD as 1951.10.29 on every view (crest only on phones; smaller cash with a small currency symbol), four home links (리그 보기 · 컵대회 보기 · 클럽 기록실 · 브리핑), NEXT MATCH under the season card with its competition by the title and one row of opponent · venue · 상세 리포트 (primary). The tactic/lineup modal became 다음 경기 상세 리포트: the manager's report, both sides' last ten, OVR, shape and school, our last ten meetings, then the owner's tactic request and XI. App menu is a plain compact list. Typecheck, lint, unit suite (web) and targeted chromium e2e pass; full browser suite not run; WEB SSOT (WEB-11 order, season card, progress rule) not yet updated.
-- 261030 design ds30 home/nav (owner-directed, chat, no task): sidebar 클럽하우스·리그·컵·이적시장·기록, bottom bar league·cups | clubhouse | market·records (market = first-team market view, left the 감독 사무실 tabs); the home holds the rooms (감독 사무실·코칭스태프실·훈련장·유소년 훈련장 tiles) and, under NEXT MATCH, the owner's office as a dimmed art scene with the five team-state tiles small and icon-free; office approvals left the home event center for the office (count on the clubhouse entry and the office caption); league filters country·division·season in one row (a closed season opens its archive), cups keep this-season/past tabs, records lost the league/cup tabs; back/return links removed (TaskReturn, ← 사무실, ← 시즌별 기록); season strip above other pages removed; next-match report and remedy sheet use ticket/dark Card surfaces, report footer [의견 전달 | 확인하고 홈으로]; concurrent result-badge work included. Pushed before tests at the owner's request; WEB SSOT not yet updated.

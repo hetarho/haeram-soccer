@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r43 | Define the browser-demo rules for squad and growth.
+> r44 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 20 players (→CLUB-40), a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating sits at its league's average club XI plus its difficulty level's offset (→WEB-3: 쉬움 0, 보통 −2, 어려움 −4, 최상 −6; ±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -115,7 +115,7 @@
 
 - CLUB-25 [o] Every player has a market wage from his OVR (→PLAYER-6), age and potential, his club's division and the football index (→ECON-26); it rises steeply with OVR, so a star earns many times a squad player. ← players are paid what the market says they are worth
   - targets, calibrated with →ECON-29: in a top flight a player rated 80 earns 6–10× one rated 60; a second-tier squad earns 35–50% of a top-flight squad of the same ability. Measured 261013: 7.4× and 40%.
-  - transfer values follow the same index.
+  - transfer values follow the same index, with their own slope and the era's transfer premium (→CLUB-46).
 - CLUB-26 [o] Players negotiate contracts when a transfer window opens (summer as the season starts, winter on 1 January, →CLUB-17): one in the final season of his contract asks to renew, and one with at most three seasons left, this one included, who is paid 25% or more below his market wage asks for an improved contract, at most once a season. He names a demand (market wage × the build's player-wage effects →ECON-22 × his agent's premium →CLUB-30) and accepts any offer at or above his floor, demand × (1 − goodwill). ← a player is paid what he is worth when his contract comes up, as in real football, and how a club treats its players decides what he settles for
   - goodwill: squad investment (→ECON-16) −5/0/+5/+10/+15%; the 라커룸 문화 card: 가족 같은 클럽 +5, 스타 대우 +10 for players rated 70+, 철저한 경쟁 −5; 긴축 재정 −5; (morale − 60)/4 %; within −10 to +30%.
   - the owner offers the floor or more with a term, or declines; the talk shows demand, floor, the contract's clauses (→CLUB-29), yearly cost and runway before the choice (→WEB-68).
@@ -264,11 +264,21 @@
 
 - CLUB-45 [o] A suspended player (→MATCH-19) is unavailable for the matches his ban counts: left out of the automatic and saved XI and the bench, like an injured player. A ban is an inbox item and an event; a player one yellow short of a league ban carries a warning on the squad and lineup.
 
+- CLUB-46 [o] A transfer value (→CLUB-25) follows its era's transfer market, not the wage curve alone: it counts ability more steeply than a wage and is carried by the year's transfer premium on top of the football index (→ECON-26), so the market's fees stand where real English football's stood in every era. ← fees grew with football's income until the late 1970s and far faster since (British record £165,000 in 1969, £1.5m in 1979, £15m in 1996, £125m in 2025); on the wage curve and the index alone reference careers valued the top flight's dearest player at about a third of the record in the 1980s and at 0.14–0.24 of it from the late 1990s
+  - each ability point multiplies a value by 1.125 (a wage by 1.105), since the record fee stands 5–15× the average fee in every era while the best players' pay does not.
+  - the premium is a multiple by year, geometric between these anchors, flat before the first and after the last; every country uses it, its own football index and currency carrying the rest:
+    | year | 1950 | 1957 | 1967 | 1977 | 1979 | 1993 | 1996 | 2010 | 2025 |
+    |---|---|---|---|---|---|---|---|---|---|
+    | premium | 0.3 | 0.5 | 0.6 | 0.8 | 1.3 | 1.35 | 2.3 | 2.3 | 3.4 |
+  - the steps follow the real market: the maximum wage's 1950s, the first £1m fees of 1979, the 1980s' stagnation, Bosman and pay-television from 1995–96, the broadcasting boom from the 2010s.
+  - targets (ENG, every top-flight player's value each summer): the dearest at 0.5–1.0× the British record fee standing that year, since sales run up to 160% of value (→CLUB-22); the mean at 0.6–1.4× the Premier League's average fee where one is published (Transfer Price Index, free transfers excluded: £594,000 in 1992/93, £2.4m in 2002/03, £5.6m in 2013/14, £24m in 2025). Sources: the progression of the British transfer fee record; Tomkins Times' Transfer Price Index.
+
 ## flow
 
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r44 261031 CLUB-25✎ transfer values follow the same index→+their own slope and the era's transfer premium; CLUB-46+ transfer values by era: value per ability point 1.105→1.125, a premium over the football index from 0.3 (1950) to 3.4 (2025), targets against the British record fee and the Premier League's average fee
 - r43 261029 CLUB-20✎ requests may be unopposed gains→all disclose a real cost/obligation/adverse outcome; backing morale +2→−2, rest-day morale +2→−2; existing paid requests and stochastic chances preserved
 - r42 261019 CLUB-6✎ +the manager names the era's substitutes and the set-piece/penalty takers, never injured or suspended players; CLUB-23✎ own players after the match→every player during it, by minutes; CLUB-45+ suspended players unavailable, bans reported
 - r41 261016 CLUB-5✎ maximum squad size 26→the league's registration limit; CLUB-43✎ squad maximum→registration limit; CLUB-44+ real registration rules by country, division and year (ENG 25/25/22 from 2010/2020, ESP 25, ITA 25 and Serie B 18+2, POR 27/30, BEL 25, age exemptions) and a 40-player ceiling where none applied
