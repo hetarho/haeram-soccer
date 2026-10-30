@@ -40,8 +40,7 @@ export function recentClubResults(w: ResultSource, club: string): Fixture[] {
   const retained = w.recentResults?.[club];
   if (retained) return retained;
   const known = new Map<string, Fixture>();
-  for (const f of settledFixtures(w))
-    if (f.home === club || f.away === club) known.set(f.id, f);
+  for (const f of settledFixtures(w)) if (f.home === club || f.away === club) known.set(f.id, f);
   return [...known.values()].sort(byDate).slice(-RECENT_RESULT_LIMIT).map(summary);
 }
 

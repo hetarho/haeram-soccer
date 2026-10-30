@@ -385,7 +385,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
               진행 중인 처리를 마치고 현재 선발을 불러오는 중…
             </p>
           )}
-          <MatchBriefing w={w} />
+          <MatchBriefing w={w} xi={baseline} />
           {/* The owner answers the report: a tactic request to the manager or a chosen XI. */}
           {proposing && (
             <Card

@@ -4,7 +4,6 @@ import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { recentClubResults } from '../../../../packages/engine/src/recent-results';
 import { RECENT_RESULT_LIMIT } from '../../../../packages/contracts/src/recent-results';
 import { npcTactic } from '../../../../packages/engine/src/tactics';
-import { clubManager } from '../../../../packages/engine/src/managerMarket';
 
 export function resultFor(f: Fixture, club: string) {
   if (!f.score || (f.home !== club && f.away !== club)) return undefined;
@@ -29,7 +28,6 @@ export function matchBriefing(w: World) {
     next,
     opponent,
     home: next.home === w.playerClub,
-    manager: clubManager(w, opponent),
     tactic: npcTactic(opponent),
     ownRecent: recentClubResults(w, w.playerClub),
     theirRecent: recentClubResults(w, opponent.id),

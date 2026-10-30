@@ -33,9 +33,7 @@ import {
   leaveManagerSeason,
   rememberManagerSeason,
   returnedToManagers,
-  MANAGER_RECORDS,
   RECORD_TABS,
-  type ManagerRecords as ManagerPlace,
   type RecordTab,
 } from './state';
 import type { ManagerSourceSeason } from '../../../../packages/contracts/src/manager-history-view';
@@ -119,7 +117,6 @@ export function RecordsRoom({ state, client }: Props) {
     savedRecordYear(w),
   );
   const request = useRecordRequest((store) => store.request);
-  const [managers] = useTaskState<ManagerPlace>(w.id, MANAGER_RECORDS, {});
   const openSeason = (picked: number) => {
     if (tab === 'seasons' && year === undefined)
       useTaskMemory.setState((memory) => ({

@@ -100,9 +100,7 @@ export const EventCenter = memo(function EventCenter({
   // Office work waits in the owner's office behind the menu's count; only what has no desk shows here.
   const events =
     w && !running
-      ? stoppingEvents(w).filter(
-          (item) => !eventDesk(item) && (!resume || item.kind !== 'match'),
-        )
+      ? stoppingEvents(w).filter((item) => !eventDesk(item) && (!resume || item.kind !== 'match'))
       : [];
   const key = w ? `${w.id}:${seasonDate(w)}` : '';
   const date = w ? seasonDate(w) : '';

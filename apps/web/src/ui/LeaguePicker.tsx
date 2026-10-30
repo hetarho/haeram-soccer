@@ -10,13 +10,7 @@ import { seasonName } from './format';
 import s from './App.module.css';
 
 /** The season filter beside country and division: this season first, then closed ones. */
-function SeasonSelect({
-  value,
-  onChange,
-}: {
-  value?: number;
-  onChange: (year: number) => void;
-}) {
+function SeasonSelect({ value, onChange }: { value?: number; onChange: (year: number) => void }) {
   const current = useGameState((state) => state.view?.world.year);
   const closed = useGameState((state) => state.view?.world.history.map((h) => h.year).join(','));
   if (current === undefined) return null;

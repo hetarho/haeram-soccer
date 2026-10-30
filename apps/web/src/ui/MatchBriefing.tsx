@@ -1,6 +1,5 @@
-import type { Fixture, World } from '../../../../packages/contracts/src/types';
+import type { Fixture, Player, World } from '../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../packages/engine/src/player-state';
-import { startingSquad } from '../../../../packages/engine/src/world';
 import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import { FORMATIONS } from '../../../../packages/engine/src/player';
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
@@ -43,20 +42,25 @@ function Results({ w, club, fixtures }: { w: World; club: string; fixtures: Fixt
  */
 export function MatchBriefing({
   w,
+  xi,
 }: {
   w: World & Pick<ProjectedWorld, 'nextOpponentLineup'>;
+  /** The manager's XI for the next fixture, chosen by the sheet that hosts the report. */
+  xi: readonly Player[];
 }) {
   const brief = matchBriefing(w);
   if (!brief) return <p className={s.note}>다음 상대는 새 시즌 일정이 나오면 확인할 수 있어요.</p>;
-  const { next, opponent, manager } = brief;
+  const { next, opponent } = brief;
   const own = clubOf(w),
     ourOvr = clubOvr(w, own),
     theirOvr = clubOvr(w, opponent);
-  const xi = startingSquad(w, own, next);
-  const theirXi =
+  // The worker resolves the next opponent's XI and manager; neither is known for another fixture.
+  const scouted =
     w.nextOpponentLineup?.fixture === next.id && w.nextOpponentLineup.club === opponent.id
-      ? w.nextOpponentLineup.players
-      : [];
+      ? w.nextOpponentLineup
+      : undefined;
+  const theirXi = scouted?.players ?? [];
+  const manager = scouted?.manager;
   const gap = ourOvr - theirOvr;
   const sides = [
     {
@@ -77,8 +81,8 @@ export function MatchBriefing({
       club: opponent,
       ovr: theirOvr,
       tactic: brief.tactic,
-      coach: manager.name,
-      school: manager.style ? STYLE_INFO[manager.style].label : '균형',
+      coach: manager?.name ?? '—',
+      school: manager?.style ? STYLE_INFO[manager.style].label : '균형',
       recent: brief.theirRecent,
       slot: (index: number) => theirXi[index]?.name.split(' ').at(-1) ?? '—',
       slotTitle: (index: number) => theirXi[index]?.name ?? '—',

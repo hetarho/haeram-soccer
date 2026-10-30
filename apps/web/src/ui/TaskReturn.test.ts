@@ -61,20 +61,25 @@ describe('named competition return', () => {
     expect(returnToTask).not.toHaveBeenCalled();
   });
 
-  it('groups return, League/Cup navigation and filters in the same compact header', () => {
-    const markup = renderToStaticMarkup(
+  it('keeps the competition header to its filters and tabs, with no return', () => {
+    const league = renderToStaticMarkup(
       createElement(CompetitionHeader, {
         page: 'league',
         children: createElement('select', { 'aria-label': '국가' }),
       }),
     );
-    expect(markup).toContain('aria-label="대회 탐색"');
-    expect(markup).toContain('aria-label="돌아가기 · 클럽 홈"');
-    expect(markup).toContain('role="tablist" aria-label="시즌"');
-    expect(markup).toContain('aria-label="국가"');
-    CompetitionTabs({ page: 'league' })!.props.onChange('europe');
-    expect(context.setPage).toHaveBeenCalledExactlyOnceWith('europe');
-    expect(context.returning?.label).toBe('클럽 홈');
+    expect(league).toContain('aria-label="대회 탐색"');
+    expect(league).toContain('aria-label="국가"');
+    expect(league).not.toContain('돌아가기');
+    // The league picks its season in its filters, so it has no this-season/past tabs.
+    expect(league).not.toContain('role="tablist"');
+    const cups = renderToStaticMarkup(
+      createElement(CompetitionHeader, { page: 'europe', children: null }),
+    );
+    expect(cups).toContain('role="tablist"');
+    expect(cups).not.toContain('돌아가기');
+    CompetitionTabs({ page: 'europe' })!.props.onChange('cupHistory');
+    expect(context.setPage).toHaveBeenCalledExactlyOnceWith('cupHistory');
   });
   it.each([
     ['league', 'europe'],

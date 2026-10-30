@@ -6,6 +6,7 @@ import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { recentClubResults } from '../../../../packages/engine/src/recent-results';
 import { startingSquad } from '../../../../packages/engine/src/world';
 import { staffMarket } from '../../../../packages/engine/src/staff';
+import { clubManager } from '../../../../packages/engine/src/managerMarket';
 import { careerAssessment } from '../../../../packages/engine/src/career-assessment';
 import { nextEventDays } from '../../../../packages/engine/src/next-event';
 import { pendingDecisions, stoppingReasons } from '../../../../packages/engine/src/stopping';
@@ -413,6 +414,7 @@ export class Host {
                 fixture: next.id,
                 club: opponent.id,
                 players: startingSquad(w, opponent, next).map(({ id, name }) => ({ id, name })),
+                manager: (({ name, style }) => ({ name, style }))(clubManager(w, opponent)),
               }
             : undefined,
         // The report gets both clubs' actual form, including a rival outside our league.

@@ -14,6 +14,7 @@ z.config({ jitless: true });
 import type {
   World,
   Player,
+  Manager,
   Fixture,
   MatchPlayback,
   MatchRecord,
@@ -321,11 +322,15 @@ export type Body = Request['body'];
  */
 export type ProjectedWorld = Omit<World, 'people' | 'npcSeason' | 'managerHistory'> & {
   people?: never;
-  /** The next opponent's actual eligible XI, resolved with the worker's person registry. */
+  /**
+   * The next opponent's actual eligible XI and its manager, resolved on the worker: the person
+   * registry names the XI, and the manager market (orchestration, →ARCH-4) names the manager.
+   */
   nextOpponentLineup?: {
     fixture: string;
     club: string;
     players: Pick<Player, 'id' | 'name'>[];
+    manager: Pick<Manager, 'name' | 'style'>;
   };
 };
 export interface View {

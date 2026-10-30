@@ -175,16 +175,20 @@ describe('competition session continuity', () => {
     activateTaskWorld('different-cup-world');
     expect(useCupRequest.getState().request).toBeUndefined();
   });
-  it('resumes group lenses and complete addresses, then clears them on a world change', () => {
+  it('opens each entry on its own page with its complete address, then clears them on a world change', () => {
     useNavigation.getState().setPage('cupHistory');
     history.replaceState(null, '', '/history?section=cup&cup=cup&country=GER&season=1950');
     useNavigation.getState().setPage('dashboard');
+    // Records no longer resume a league or cup section: those sit under their own entries.
     openPrimary('history');
-    expect(location.search).toBe('?section=cup&cup=cup&country=GER&season=1950');
+    expect(useNavigation.getState().page).toBe('history');
+    expect(location.search).toBe('?section=club');
     useNavigation.getState().setPage('europe');
     useNavigation.getState().setPage('dashboard');
     openPrimary('league');
-    expect(useNavigation.getState().page).toBe('europe');
+    expect(useNavigation.getState().page).toBe('league');
+    useNavigation.getState().setPage('cupHistory');
+    expect(location.search).toBe('?section=cup&cup=cup&country=GER&season=1950');
     useTaskMemory.getState().activate('another-world');
     useNavigation.getState().setPage('dashboard');
     openPrimary('history');

@@ -63,13 +63,9 @@ describe('the shared BETA mark (→WEB-101)', () => {
     expect(bar).not.toContain('BETA');
     expect(bar).not.toContain('data-testid="hud-cash"');
     expect(bar).not.toContain('<button');
-    const desk = markup(
-      createElement(OfficeBar, {
-        back: { label: '사무실', onClick: () => {} },
-        title: '선수 계약',
-      }),
-    );
-    expect(desk).toContain('<button');
-    expect(desk).toContain('사무실');
+    // A desk's bar names the desk only: the clubhouse entry leads back, not a link here.
+    const desk = markup(createElement(OfficeBar, { title: '선수 계약' }));
+    expect(desk).toContain('<span>선수 계약</span>');
+    expect(desk).not.toContain('<button');
   });
 });

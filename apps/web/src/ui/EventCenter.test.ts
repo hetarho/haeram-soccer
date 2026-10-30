@@ -147,7 +147,7 @@ describe('unfinished observation access', () => {
   });
 });
 describe('home business requests', () => {
-  it('offers review with request identity and no home submission controls', () => {
+  it("leaves office requests to the owner's office instead of the home", () => {
     reports.events = [
       {
         id: 'decision:sales:bid',
@@ -165,11 +165,8 @@ describe('home business requests', () => {
     } as unknown as ProgressionController;
     const render = () =>
       renderToStaticMarkup(createElement(EventCenter, { client: {} as GameClient, controller }));
-    const markup = render();
-    expect(markup).toContain('data-request-id="decision:sales:bid"');
-    expect(markup).toContain('검토하기');
-    expect(markup).not.toContain('수락하고 매각');
-    expect(markup).not.toContain('>거절<');
+    // A desk's request waits in the office, counted on the clubhouse entry and the office scene.
+    expect(render()).toBe('');
     useNavigation.setState({ page: 'business' });
     expect(render()).toBe('');
     useNavigation.setState({ page: 'dashboard' });

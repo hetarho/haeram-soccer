@@ -5,11 +5,11 @@ The shared `ResultBadge` draws either a compact outcome or an outcome with its s
 the design-system `badges` story displays both forms, including a double-digit score.
 Recent results for both teams and their head-to-head meetings use this same component.
 
-| Outcome | Artwork | Role |
-| ------- | ------- | ---- |
-| Win | Deep green printed ticket with an ivory double keyline | `image-art-result-win-badge` |
-| Draw | Muted ochre printed ticket with an ivory double keyline | `image-art-result-draw-badge` |
-| Loss | Deep vermilion printed ticket with an ivory double keyline | `image-art-result-loss-badge` |
+| Outcome | Artwork                                                    | Role                          |
+| ------- | ---------------------------------------------------------- | ----------------------------- |
+| Win     | Deep green printed ticket with an ivory double keyline     | `image-art-result-win-badge`  |
+| Draw    | Muted ochre printed ticket with an ivory double keyline    | `image-art-result-draw-badge` |
+| Loss    | Deep vermilion printed ticket with an ivory double keyline | `image-art-result-loss-badge` |
 
 These informational skins are separate from venue badges, action emphasis and rating tiers.
 Each has a filled, grained centre and transparent clipped corners. Outcome labels, accessible
