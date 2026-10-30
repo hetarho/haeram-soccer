@@ -1,0 +1,29 @@
+{
+  "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'",
+  "results": [
+    {
+      "browser": "chromium",
+      "days": 43,
+      "snapshots": 4,
+      "patches": 4,
+      "active": true,
+      "hash": "2cad0ff5fb2f52581369068a5bc1dfaa963aae5b153cf2536b9bda6a30232303"
+    },
+    {
+      "browser": "firefox",
+      "days": 43,
+      "snapshots": 4,
+      "patches": 4,
+      "active": true,
+      "hash": "2cad0ff5fb2f52581369068a5bc1dfaa963aae5b153cf2536b9bda6a30232303"
+    },
+    {
+      "browser": "webkit",
+      "days": 43,
+      "snapshots": 4,
+      "patches": 4,
+      "active": true,
+      "hash": "2cad0ff5fb2f52581369068a5bc1dfaa963aae5b153cf2536b9bda6a30232303"
+    }
+  ]
+}

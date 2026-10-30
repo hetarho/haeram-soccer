@@ -1,0 +1,85 @@
+diff --git a/packages/engine/src/aggregate/participation.ts b/packages/engine/src/aggregate/participation.ts
+index 9b359fe9..72147fbc 100644
+--- a/packages/engine/src/aggregate/participation.ts
++++ b/packages/engine/src/aggregate/participation.ts
+@@ -110,6 +110,8 @@ export function multinomialInto(
+   weights: ArrayLike<number>,
+   out: number[],
+ ): number[] {
++  const meta = distributions.get(weights);
++  if (meta) return sparseSplit(r, n, weights, out, meta);
+   let rest = 0,
+     positive = 0,
+     last = -1;
+@@ -896,3 +898,45 @@ export function recordLines(
+     .map((x) => index.get(x.other!)!);
+   return [...starters, ...entered];
+ }
++
++// Registered only after SideLines finishes an immutable role/taker distribution.
++const distributions = new WeakMap<object, { indices: number[]; total: number; alias?: { q: number[]; to: number[] } }>();
++export function registerWeights(weights: number[]) {
++  let total = 0;
++  const indices: number[] = [];
++  for (let i = 0; i < weights.length; i++) if (weights[i]! > 0) { total += weights[i]!; indices.push(i); }
++  distributions.set(weights, { indices, total });
++}
++function sparseSplit(r: Rng, n: number, weights: ArrayLike<number>, out: number[], meta: NonNullable<ReturnType<typeof distributions.get>>) {
++  out.fill(0);
++  const { indices } = meta;
++  let rest = meta.total;
++  if (n <= 0 || !indices.length) return out;
++  if (n <= indices.length) {
++    let table = meta.alias;
++    if (!table) {
++      const size = indices.length, q = indices.map(i => weights[i]! * size / rest), to = indices.map((_, i) => i);
++      const small: number[] = [], large: number[] = [];
++      for (let i = 0; i < size; i++) (q[i]! < 1 ? small : large).push(i);
++      while (small.length && large.length) {
++        const a = small.pop()!, b = large.pop()!;
++        to[a] = b; q[b] = q[b]! + q[a]! - 1;
++        (q[b]! < 1 ? small : large).push(b);
++      }
++      for (const i of [...small, ...large]) q[i] = 1;
++      meta.alias = table = { q, to };
++    }
++    for (let k = 0; k < n; k++) {
++      const u = r() * indices.length, at = Math.floor(u);
++      out[indices[u - at < table.q[at]! ? at : table.to[at]!]!]!++;
++    }
++    return out;
++  }
++  let left = n;
++  for (let at = 0; at < indices.length && left > 0; at++) {
++    const i = indices[at]!, w = weights[i]!;
++    const k = at === indices.length - 1 || w >= rest ? left : binomialDraw(r, left, w / rest);
++    out[i] = k; left -= k; rest -= w;
++  }
++  return out;
++}
+diff --git a/packages/engine/src/aggregate/players.ts b/packages/engine/src/aggregate/players.ts
+index b1cf7381..c7a2c0b3 100644
+--- a/packages/engine/src/aggregate/players.ts
++++ b/packages/engine/src/aggregate/players.ts
+@@ -332,6 +332,7 @@ class SideLines {
+       }
+       // Nobody of the role's lines played: whoever was on the pitch, by his minutes.
+       if (!out.some((w) => w > 0)) for (const e of list) out[e.line]! += e.minutes;
++      registerWeights(out);
+       cache[role.id] = out;
+     }
+     return out;
+@@ -396,6 +397,7 @@ class SideLines {
+           b = bounds[i]!;
+         if (b > a) out[this.takerAt(a + 1, key)]! += b - a;
+       }
++      registerWeights(out);
+       cache.set(key, out);
+     }
+     return out;
+@@ -721,3 +723,5 @@ function attributeSide(
+     );
+   }
+ }
++
++import { registerWeights } from './participation';

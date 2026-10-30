@@ -1,0 +1,1 @@
+{"name":"grid-wasm-phase","workload":"day","full":true,"hash":true,"cpu":{"own":{"ratio":0.9762,"lo":0.9459,"hi":1.0075,"call":"no difference"},"other":{"ratio":1.0115,"lo":0.9304,"hi":1.0996,"call":"no difference"}},"load1":[5.7236328125,5.42529296875,5.23095703125,4.9677734375,4.72998046875]}

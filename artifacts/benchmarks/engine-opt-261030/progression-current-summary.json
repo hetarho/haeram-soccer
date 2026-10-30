@@ -1,0 +1,149 @@
+[
+  {
+    "mode": "record-delta",
+    "width": 2,
+    "baseMode": "current",
+    "processes": 4,
+    "days": 480,
+    "ownDays": 54,
+    "wall": {
+      "ratio": 0.9862,
+      "lo": 0.9477,
+      "hi": 1.0262,
+      "call": "no difference"
+    },
+    "processCpu": {
+      "ratio": 0.8563,
+      "lo": 0.7932,
+      "hi": 0.9245,
+      "call": "faster"
+    },
+    "ownWall": {
+      "ratio": 0.917,
+      "lo": 0.8849,
+      "hi": 0.9573,
+      "call": "faster"
+    },
+    "sameHash": true,
+    "hashes": [
+      "4f83f3cc9664c698acd9db4a7e6adfd7fbdc717961cacd41e7794c9538c8eb5a",
+      "3b5bdd549c9bd54c193f001e39e1780d0851be8a7fc5e56f9b89d1724d89dd37"
+    ],
+    "calls": [
+      12,
+      12,
+      12,
+      12
+    ],
+    "epochChanges": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "startupMs": 82.822958,
+    "rssMax": 1480916992,
+    "loadRange": [
+      3.8720703125,
+      5.8671875
+    ]
+  },
+  {
+    "mode": "delta",
+    "width": 2,
+    "baseMode": "current",
+    "processes": 4,
+    "days": 480,
+    "ownDays": 54,
+    "wall": {
+      "ratio": 1.0889,
+      "lo": 1.0604,
+      "hi": 1.1182,
+      "call": "slower"
+    },
+    "processCpu": {
+      "ratio": 1.0158,
+      "lo": 0.9575,
+      "hi": 1.0776,
+      "call": "no difference"
+    },
+    "ownWall": {
+      "ratio": 1.0783,
+      "lo": 1.0517,
+      "hi": 1.1077,
+      "call": "slower"
+    },
+    "sameHash": true,
+    "hashes": [
+      "4f83f3cc9664c698acd9db4a7e6adfd7fbdc717961cacd41e7794c9538c8eb5a",
+      "3b5bdd549c9bd54c193f001e39e1780d0851be8a7fc5e56f9b89d1724d89dd37"
+    ],
+    "calls": [
+      12,
+      12,
+      12,
+      12
+    ],
+    "epochChanges": [
+      12,
+      12,
+      12,
+      12
+    ],
+    "startupMs": 83.66495849999998,
+    "rssMax": 1277919232,
+    "loadRange": [
+      3.83544921875,
+      5.33740234375
+    ]
+  },
+  {
+    "mode": "json-slim",
+    "width": 2,
+    "baseMode": "current",
+    "processes": 4,
+    "days": 480,
+    "ownDays": 54,
+    "wall": {
+      "ratio": 1.0457,
+      "lo": 1.0228,
+      "hi": 1.0691,
+      "call": "slower"
+    },
+    "processCpu": {
+      "ratio": 1.0121,
+      "lo": 0.9458,
+      "hi": 1.0831,
+      "call": "no difference"
+    },
+    "ownWall": {
+      "ratio": 1.0928,
+      "lo": 1.043,
+      "hi": 1.1332,
+      "call": "slower"
+    },
+    "sameHash": true,
+    "hashes": [
+      "4f83f3cc9664c698acd9db4a7e6adfd7fbdc717961cacd41e7794c9538c8eb5a",
+      "3b5bdd549c9bd54c193f001e39e1780d0851be8a7fc5e56f9b89d1724d89dd37"
+    ],
+    "calls": [
+      12,
+      12,
+      12,
+      12
+    ],
+    "epochChanges": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "startupMs": 81.66331250000002,
+    "rssMax": 1388937216,
+    "loadRange": [
+      3.60791015625,
+      12.24072265625
+    ]
+  }
+]

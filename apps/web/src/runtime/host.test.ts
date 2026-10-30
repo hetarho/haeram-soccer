@@ -1254,7 +1254,20 @@ function failingHelper(): HelperPort & { posted: number } {
     onmessage: null,
     postMessage(job) {
       port.posted++;
-      setTimeout(() => port.onmessage?.({ data: { id: job.id, error: 'boom' } }), 0);
+      setTimeout(
+        () =>
+          port.onmessage?.({
+            data: {
+              protocol: job.protocol,
+              session: job.session,
+              id: job.id,
+              worldRevision: job.worldRevision,
+              revision: 0,
+              error: 'boom',
+            },
+          }),
+        0,
+      );
     },
   };
   return port;

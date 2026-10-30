@@ -1,0 +1,194 @@
+[
+  {
+    "mode": "json-full",
+    "width": 2,
+    "processes": 4,
+    "days": 480,
+    "ownDays": 54,
+    "wall": {
+      "ratio": 0.7801,
+      "lo": 0.738,
+      "hi": 0.8246,
+      "call": "faster"
+    },
+    "processCpu": {
+      "ratio": 1.5676,
+      "lo": 1.4765,
+      "hi": 1.6643,
+      "call": "slower"
+    },
+    "ownWall": {
+      "ratio": 0.7041,
+      "lo": 0.659,
+      "hi": 0.7524,
+      "call": "faster"
+    },
+    "sameHash": true,
+    "hashes": [
+      "4f83f3cc9664c698acd9db4a7e6adfd7fbdc717961cacd41e7794c9538c8eb5a",
+      "3b5bdd549c9bd54c193f001e39e1780d0851be8a7fc5e56f9b89d1724d89dd37"
+    ],
+    "calls": [
+      12,
+      12,
+      12,
+      12
+    ],
+    "epochChanges": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "startupMs": 81.3115415,
+    "rssMax": 1335508992,
+    "loadRange": [
+      3.06689453125,
+      4.00537109375
+    ]
+  },
+  {
+    "mode": "json-slim",
+    "width": 2,
+    "processes": 4,
+    "days": 480,
+    "ownDays": 54,
+    "wall": {
+      "ratio": 0.7623,
+      "lo": 0.7449,
+      "hi": 0.7854,
+      "call": "faster"
+    },
+    "processCpu": {
+      "ratio": 1.5179,
+      "lo": 1.448,
+      "hi": 1.5911,
+      "call": "slower"
+    },
+    "ownWall": {
+      "ratio": 0.6777,
+      "lo": 0.6663,
+      "hi": 0.6894,
+      "call": "faster"
+    },
+    "sameHash": true,
+    "hashes": [
+      "4f83f3cc9664c698acd9db4a7e6adfd7fbdc717961cacd41e7794c9538c8eb5a",
+      "3b5bdd549c9bd54c193f001e39e1780d0851be8a7fc5e56f9b89d1724d89dd37"
+    ],
+    "calls": [
+      12,
+      12,
+      12,
+      12
+    ],
+    "epochChanges": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "startupMs": 80.75189599999999,
+    "rssMax": 1407483904,
+    "loadRange": [
+      2.73291015625,
+      3.54296875
+    ]
+  },
+  {
+    "mode": "delta",
+    "width": 2,
+    "processes": 4,
+    "days": 480,
+    "ownDays": 54,
+    "wall": {
+      "ratio": 0.8714,
+      "lo": 0.8229,
+      "hi": 0.9082,
+      "call": "faster"
+    },
+    "processCpu": {
+      "ratio": 1.6579,
+      "lo": 1.5983,
+      "hi": 1.7197,
+      "call": "slower"
+    },
+    "ownWall": {
+      "ratio": 0.8034,
+      "lo": 0.7567,
+      "hi": 0.8324,
+      "call": "faster"
+    },
+    "sameHash": true,
+    "hashes": [
+      "4f83f3cc9664c698acd9db4a7e6adfd7fbdc717961cacd41e7794c9538c8eb5a",
+      "3b5bdd549c9bd54c193f001e39e1780d0851be8a7fc5e56f9b89d1724d89dd37"
+    ],
+    "calls": [
+      12,
+      12,
+      12,
+      12
+    ],
+    "epochChanges": [
+      12,
+      12,
+      12,
+      12
+    ],
+    "startupMs": 86.61800000000002,
+    "rssMax": 1508327424,
+    "loadRange": [
+      2.73291015625,
+      3.77392578125
+    ]
+  },
+  {
+    "mode": "delta",
+    "width": 4,
+    "processes": 4,
+    "days": 480,
+    "ownDays": 54,
+    "wall": {
+      "ratio": 0.7626,
+      "lo": 0.7479,
+      "hi": 0.7776,
+      "call": "faster"
+    },
+    "processCpu": {
+      "ratio": 1.8677,
+      "lo": 1.7849,
+      "hi": 1.9544,
+      "call": "slower"
+    },
+    "ownWall": {
+      "ratio": 0.6615,
+      "lo": 0.6273,
+      "hi": 0.6976,
+      "call": "faster"
+    },
+    "sameHash": true,
+    "hashes": [
+      "4f83f3cc9664c698acd9db4a7e6adfd7fbdc717961cacd41e7794c9538c8eb5a",
+      "3b5bdd549c9bd54c193f001e39e1780d0851be8a7fc5e56f9b89d1724d89dd37"
+    ],
+    "calls": [
+      12,
+      12,
+      12,
+      12
+    ],
+    "epochChanges": [
+      12,
+      12,
+      12,
+      12
+    ],
+    "startupMs": 89.34256250000001,
+    "rssMax": 1467547648,
+    "loadRange": [
+      3.59765625,
+      5.51904296875
+    ]
+  }
+]

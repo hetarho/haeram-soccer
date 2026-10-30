@@ -1,0 +1,30 @@
+{
+  "baseline": "8b0032ee633941d76bab78b128525fcc9f749ab6",
+  "baselineArchiveBytesVerified": {
+    "apps/web/src/ui/StrategyPanel.tsx": {
+      "baselineSha256": "c4e42eeaa7703ca003b98695886754cf292bbb29d59fbc88ad463e4a8f08ae17",
+      "candidateSha256": "c4e42eeaa7703ca003b98695886754cf292bbb29d59fbc88ad463e4a8f08ae17",
+      "unchanged": true
+    },
+    "tests/e2e/builds.spec.ts": {
+      "baselineSha256": "d97759f83db218940a3c0f160c505c9b3945de90a045c4a85c133eeef62d5270",
+      "candidateSha256": "d97759f83db218940a3c0f160c505c9b3945de90a045c4a85c133eeef62d5270",
+      "unchanged": true
+    },
+    "packages/engine/src/grid/movement.ts": {
+      "baselineSha256": "e205d20e779c04eb8c3c618a32033042503650b6632092fc71bd0589037e8dc1",
+      "candidateSha256": "566094405f0bbf743fb1a252f18fe4e08027d4a31c8471d779f86a0a25393ae2",
+      "unchanged": false
+    }
+  },
+  "sameError": true,
+  "error": "Error: expect(locator).toHaveAttribute(expected) failed\n\nLocator: getByRole('dialog', { name: '\ub2e4\uc74c \uacbd\uae30 \uc0c1\uc138 \ub9ac\ud3ec\ud2b8' }).getByRole('tab', { name: '\uc804\uc220 \uc120\ud0dd', exact: true })\nExpected: \"true\"\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"toHaveAttribute\" getByRole('dialog', { name: '\ub2e4\uc74c \uacbd\uae30 \uc0c1\uc138 \ub9ac\ud3ec\ud2b8' }).getByRole('tab', { name: '\uc804\uc220 \uc120\ud0dd', exact: true }) with timeout 5000ms\n  - waiting for getByRole('dialog', { name: '\ub2e4\uc74c \uacbd\uae30 \uc0c1\uc138 \ub9ac\ud3ec\ud2b8' }).getByRole('tab', { name: '\uc804\uc220 \uc120\ud0dd', exact: true })",
+  "baselineBrowserStats": {
+    "startTime": "2026-10-30T16:48:41.438Z",
+    "duration": 9477.118,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

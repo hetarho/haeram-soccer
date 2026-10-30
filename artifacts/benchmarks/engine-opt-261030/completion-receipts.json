@@ -1,0 +1,54 @@
+[
+  {
+    "label": "movement-parity",
+    "script": "movement-parity.mjs",
+    "args": [],
+    "from": "2026-10-30T15:14:10.805Z",
+    "to": "2026-10-30T15:14:11.042Z",
+    "status": 0
+  },
+  {
+    "label": "grid-phase-screen",
+    "script": "variants.mjs",
+    "args": [
+      "screen",
+      "grid-wasm-phase",
+      "grid"
+    ],
+    "from": "2026-10-30T15:14:11.042Z",
+    "to": "2026-10-30T15:14:27.119Z",
+    "status": 0
+  },
+  {
+    "label": "grid-phase-confirm",
+    "script": "variants.mjs",
+    "args": [
+      "confirm",
+      "grid-wasm-phase",
+      "grid"
+    ],
+    "from": "2026-10-30T15:14:27.119Z",
+    "to": "2026-10-30T15:16:05.662Z",
+    "status": 0
+  },
+  {
+    "label": "grid-phase-day",
+    "script": "variants.mjs",
+    "args": [
+      "confirm",
+      "grid-wasm-phase",
+      "day"
+    ],
+    "from": "2026-10-30T15:16:05.662Z",
+    "to": "2026-10-30T15:16:27.263Z",
+    "status": 0
+  },
+  {
+    "label": "correctness-final",
+    "script": "verify.mjs",
+    "args": [],
+    "from": "2026-10-30T15:16:27.263Z",
+    "to": "2026-10-30T15:16:35.139Z",
+    "status": 1
+  }
+]

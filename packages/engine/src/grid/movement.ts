@@ -7,6 +7,7 @@
  * (→ARCH-9, T358): the same paths on every host.
  */
 import { cos, hypot, sin } from '../portable-math';
+import { tryPackedMovement } from './packed-movement';
 import { anticipationRead } from './freedom';
 import { defendSetPiece, restartPlaces, restartTaken, TRACKING } from './intentions';
 import {
@@ -306,6 +307,7 @@ export function advance(
         hold: before ? inside(p.before!) : [gp.pos[0], gp.pos[1]],
       });
     }
+  if (tryPackedMovement(movers, dt, C, PITCH, FULL_COS, FULL_SIN, onStep)) return;
   const whole = Math.floor(dt / C.step + 1e-9);
   const rest = dt - whole * C.step;
   for (let i = 0; i <= whole; i++) {

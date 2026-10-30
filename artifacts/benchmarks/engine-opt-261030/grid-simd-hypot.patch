@@ -1,0 +1,84 @@
+diff --git a/packages/engine/src/grid/movement.ts b/packages/engine/src/grid/movement.ts
+index 896c4c6f..2daf15ef 100644
+--- a/packages/engine/src/grid/movement.ts
++++ b/packages/engine/src/grid/movement.ts
+@@ -312,9 +312,15 @@ export function advance(
+     const h = i < whole ? C.step : rest;
+     if (h <= 1e-9) break;
+     const t = i * C.step;
++    for (let k = 0; k < movers.length; k++) {
++      const m = movers[k]!, target = t + 1e-9 < m.holdUntil ? m.hold : m.to;
++      batchX[2*k] = target[0] - m.gp.pos[0]; batchY[2*k] = target[1] - m.gp.pos[1];
++      batchX[2*k+1] = m.gp.vel?.[0] ?? 0; batchY[2*k+1] = m.gp.vel?.[1] ?? 0;
++    }
++    batchRun(movers.length * 2);
+     for (let k = 0; k < movers.length; k++) {
+       const m = movers[k]!;
+-      stepToward(m.gp, t + 1e-9 < m.holdUntil ? m.hold : m.to, m.vmax, h);
++      stepTowardBatch(m.gp, t + 1e-9 < m.holdUntil ? m.hold : m.to, m.vmax, h, batchOut[2*k]!, batchOut[2*k+1]!);
+     }
+     onStep?.(t + h);
+   }
+@@ -605,3 +611,62 @@ export function prepareOnClock(
+       defendSetPiece(s, { ...scene, marks: [...scene.marks, ...(scene.rest ?? [])] }, until);
+   };
+ }
++
++function stepTowardBatch(m: Mover, target: readonly [number, number], vmax: number, h: number, dist: number, speed: number) {
++  const C = GRID_MOVEMENT_CONFIG;
++  const v = (m.vel ??= [0, 0]);
++  // Standing on the point already: nothing to do.
++  if (v[0] === 0 && v[1] === 0 && m.pos[0] === target[0] && m.pos[1] === target[1]) return;
++  const dx = target[0] - m.pos[0],
++    dy = target[1] - m.pos[1];
++
++  // A standing player's speed is 0 without the call (`hypot(0, 0)` is exactly 0).
++
++  // Arrived: within reach of the point at a speed one whole step's braking stops.
++  if (dist <= C.arrive && speed <= C.braking * C.step + 1e-9) {
++    m.pos[0] = target[0];
++    m.pos[1] = target[1];
++    v[0] = v[1] = 0;
++    return;
++  }
++  const ux = dist > 0 ? dx / dist : speed > 0 ? v[0] / speed : 1;
++  const uy = dist > 0 ? dy / dist : speed > 0 ? v[1] / speed : 0;
++  let hx = ux,
++    hy = uy,
++    aligned = true;
++  if (speed > 1e-9) {
++    const cx = v[0] / speed,
++      cy = v[1] / speed;
++    const full = h === C.step;
++    const turn = full ? FULL_TURN : C.turn * RAD * h;
++    const c = full ? FULL_COS : cos(turn);
++    if (cx * ux + cy * uy < c) {
++      aligned = false;
++      const s = (cx * uy - cy * ux >= 0 ? 1 : -1) * (full ? FULL_SIN : sin(turn));
++      hx = cx * c - cy * s;
++      hy = cx * s + cy * c;
++    }
++  }
++  const facing = aligned ? 1 : Math.max(0, hx * ux + hy * uy);
++  // The fastest speed that braking step by step still stops within `dist`.
++  const stop = C.braking * (Math.sqrt((h * h) / 4 + (2 * dist) / C.braking) - h / 2);
++  const want = Math.min(vmax, stop) * facing;
++  const next =
++    want > speed
++      ? Math.min(want, speed + C.acceleration * h)
++      : Math.max(want, speed - C.braking * h);
++  v[0] = hx * next;
++  v[1] = hy * next;
++  if (dist > 0 && aligned && next * h >= dist) {
++    m.pos[0] = target[0];
++    m.pos[1] = target[1];
++    return;
++  }
++  m.pos[0] = clamp(m.pos[0] + v[0] * h, 0, PITCH.length);
++  m.pos[1] = clamp(m.pos[1] + v[1] * h, 0, PITCH.width);
++}
++
++const batchExports = new WebAssembly.Instance(new WebAssembly.Module(new Uint8Array([0,97,115,109,1,0,0,0,1,5,1,96,1,127,0,3,2,1,0,5,3,1,0,2,7,16,2,3,114,117,110,0,0,6,109,101,109,111,114,121,2,0,10,152,1,1,149,1,2,1,127,5,123,65,0,33,1,2,64,3,64,32,1,32,0,79,13,1,32,1,65,3,116,253,0,4,0,253,236,1,33,2,32,1,65,3,116,253,0,4,128,128,2,253,236,1,33,3,32,2,32,3,253,245,1,33,4,32,2,32,4,253,243,1,33,5,32,3,32,4,253,243,1,33,6,32,1,65,3,116,32,5,32,5,253,242,1,32,6,32,6,253,242,1,253,240,1,253,239,1,32,4,253,242,1,32,4,253,12,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,253,71,253,79,253,11,4,128,128,4,32,1,65,2,106,33,1,12,0,11,11,11]))).exports;
++const batchRun = batchExports.run as (n: number) => void;
++const batchMemory = (batchExports.memory as WebAssembly.Memory).buffer;
++const batchX = new Float64Array(batchMemory, 0, 4096), batchY = new Float64Array(batchMemory, 32768, 4096), batchOut = new Float64Array(batchMemory, 65536, 4096);

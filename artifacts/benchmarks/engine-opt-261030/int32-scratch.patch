@@ -1,0 +1,19 @@
+diff --git a/packages/engine/src/aggregate/players.ts b/packages/engine/src/aggregate/players.ts
+index b1cf7381..0ecb0a94 100644
+--- a/packages/engine/src/aggregate/players.ts
++++ b/packages/engine/src/aggregate/players.ts
+@@ -226,10 +226,10 @@ class SideLines {
+     this.slotCount = input.sides[side].slots.length;
+     this.slotLines = input.sides[side].slots.map((s) => LINE_INDEX[s.line]);
+     const n = this.rows.length;
+-    this.attempts = Array<number>(n).fill(0);
+-    this.completed = Array<number>(n).fill(0);
+-    this.broke = Array<number>(n).fill(0);
+-    this.split = Array<number>(n).fill(0);
++    this.attempts = new Int32Array(n);
++    this.completed = new Int32Array(n);
++    this.broke = new Int32Array(n);
++    this.split = new Int32Array(n);
+   }
+ 
+   /** The plan's action weight of a line at a slot, the same value read once (T326). */

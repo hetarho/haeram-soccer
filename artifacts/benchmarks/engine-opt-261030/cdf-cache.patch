@@ -1,0 +1,88 @@
+diff --git a/packages/engine/src/aggregate/participation.ts b/packages/engine/src/aggregate/participation.ts
+index 9b359fe9..51dbf496 100644
+--- a/packages/engine/src/aggregate/participation.ts
++++ b/packages/engine/src/aggregate/participation.ts
+@@ -75,17 +75,7 @@ export function binomialDraw(r: Rng, n: number, p: number): number {
+     const k = Math.round(mean + Math.sqrt(mean * (1 - p)) * normalDraw(r));
+     return Math.min(n, Math.max(0, k));
+   }
+-  const ratio = p / (1 - p),
+-    u = r();
+-  let k = 0,
+-    pk = noneOf(1 - p, n),
+-    cdf = pk;
+-  while (u > cdf && k < n) {
+-    pk *= ((n - k) / (k + 1)) * ratio;
+-    k++;
+-    cdf += pk;
+-  }
+-  return k;
++  return cachedBinomial(r, n, p);
+ }
+ /**
+  * `q ** n`, the chance that none of `n` trials succeeds: one or two trials by product, which
+@@ -896,3 +886,32 @@ export function recordLines(
+     .map((x) => index.get(x.other!)!);
+   return [...starters, ...entered];
+ }
++
++// Prototype only: bounded lazy inverse-CDF tables, same floating operations and uniform draw.
++const inverseCache = new Map<number, Map<number, { cdf: number[]; pk: number }>>();
++let inverseEntries = 0;
++export function cachedBinomial(r: Rng, n: number, p: number): number {
++  const u = r(), ratio = p / (1 - p);
++  let byP = inverseCache.get(n);
++  let entry = byP?.get(p);
++  if (!entry) {
++    if (inverseEntries >= 8192) { inverseCache.clear(); inverseEntries = 0; byP = undefined; }
++    if (!byP) inverseCache.set(n, byP = new Map());
++    const pk = noneOf(1 - p, n);
++    byP.set(p, entry = { cdf: [pk], pk });
++    inverseEntries++;
++  }
++  const cdf = entry.cdf;
++  let k = cdf.length - 1;
++  while (u > cdf[k]! && k < n) {
++    entry.pk *= ((n - k) / (k + 1)) * ratio;
++    k++;
++    cdf.push(cdf[k - 1]! + entry.pk);
++  }
++  let lo = 0, hi = k;
++  while (lo < hi) {
++    const mid = (lo + hi) >>> 1;
++    if (u > cdf[mid]!) lo = mid + 1; else hi = mid;
++  }
++  return lo;
++}
+diff --git a/packages/engine/src/aggregate/team.ts b/packages/engine/src/aggregate/team.ts
+index 9df58a51..b1de9618 100644
+--- a/packages/engine/src/aggregate/team.ts
++++ b/packages/engine/src/aggregate/team.ts
+@@ -13,7 +13,7 @@ import { clamp, random } from '../primitives';
+ import { AGGREGATE_CONFIG as C } from './config';
+ import { participationIssues, sideCards, sideUnits, type AggregateUnits } from './input';
+ import { deriveTeamFacts, inBoxCell, inGoalAreaCell } from './ledger';
+-import { noneOf } from './participation';
++import { noneOf, cachedBinomial } from './participation';
+ import type {
+   AggregateFouls,
+   AggregateInput,
+@@ -77,17 +77,7 @@ function binomial(r: Rng, n: number, p: number): number {
+     const k = Math.round(mean + Math.sqrt(mean * (1 - p)) * normal(r));
+     return Math.min(n, Math.max(0, k));
+   }
+-  const ratio = p / (1 - p),
+-    u = r();
+-  let k = 0,
+-    pk = noneOf(1 - p, n),
+-    cdf = pk;
+-  while (u > cdf && k < n) {
+-    pk *= ((n - k) / (k + 1)) * ratio;
+-    k++;
+-    cdf += pk;
+-  }
+-  return k;
++  return cachedBinomial(r, n, p);
+ }
+ /** Splits `n` over `weights` by sequential binomials. */
+ function multinomial(r: Rng, n: number, weights: readonly number[]): number[] {

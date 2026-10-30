@@ -1,0 +1,57 @@
+{
+  "productionCommit": "fa72a098c082380cafbe224357ad5c03613844e1",
+  "measuredSnapshot": "fcd511673d89705b99d638d200f6201548d8dd0b",
+  "backend": {
+    "unit": 1824,
+    "integration": 1267,
+    "contract": 48,
+    "failed": 0
+  },
+  "movementBrowserStats": {
+    "startTime": "2026-10-30T16:47:51.660Z",
+    "duration": 7845.995,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "helperBrowserResults": [
+    {
+      "browser": "chromium",
+      "days": 43,
+      "snapshots": 4,
+      "patches": 4,
+      "active": true,
+      "hash": "2cad0ff5fb2f52581369068a5bc1dfaa963aae5b153cf2536b9bda6a30232303"
+    },
+    {
+      "browser": "firefox",
+      "days": 43,
+      "snapshots": 4,
+      "patches": 4,
+      "active": true,
+      "hash": "2cad0ff5fb2f52581369068a5bc1dfaa963aae5b153cf2536b9bda6a30232303"
+    },
+    {
+      "browser": "webkit",
+      "days": 43,
+      "snapshots": 4,
+      "patches": 4,
+      "active": true,
+      "hash": "2cad0ff5fb2f52581369068a5bc1dfaa963aae5b153cf2536b9bda6a30232303"
+    }
+  ],
+  "fullGate": {
+    "passed": false,
+    "browserInterrupted": true,
+    "completedBrowserFailures": 17,
+    "note": "Systemic existing UI journey mismatches; no finalized full-browser JSON. Log is authoritative."
+  },
+  "baselineControl": {
+    "ref": "8b0032ee633941d76bab78b128525fcc9f749ab6",
+    "sameError": true,
+    "note": "Unchanged baseline rebuilt and its 390x844 builds case fails with the exact same missing tactic-tab error."
+  },
+  "mainCodePushed": false,
+  "ciRun": false
+}

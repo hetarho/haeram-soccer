@@ -1,0 +1,67 @@
+{
+  "at": "2026-10-30T15:22:54.802Z",
+  "productionSourceChanged": false,
+  "checks": [
+    {
+      "command": "pnpm run typecheck",
+      "passed": true
+    },
+    {
+      "command": "pnpm run lint",
+      "passed": true
+    },
+    {
+      "command": "pnpm run format:check",
+      "passed": true
+    },
+    {
+      "command": "pnpm exec vitest run --project unit packages/engine/src/grid packages/engine/src/aggregate scripts/perf --maxWorkers 1 --no-file-parallelism",
+      "passed": true,
+      "files": 13,
+      "tests": 173,
+      "seconds": 68.63
+    },
+    {
+      "command": "node artifacts/benchmarks/engine-opt-261030/verify.mjs",
+      "passed": true,
+      "candidates": 8,
+      "numericComparisons": 421600,
+      "evidence": "correctness-validated.stdout.txt"
+    },
+    {
+      "command": "node artifacts/benchmarks/engine-opt-261030/movement-parity.mjs",
+      "passed": true,
+      "comparisons": 81920
+    },
+    {
+      "command": "pnpm exec eslint artifacts/benchmarks/engine-opt-261030/*.mjs artifacts/benchmarks/engine-opt-261030/*.ts",
+      "passed": true
+    },
+    {
+      "command": "pnpm exec prettier --ignore-path /dev/null --check artifacts/benchmarks/engine-opt-261030/*.mjs artifacts/benchmarks/engine-opt-261030/*.ts",
+      "passed": true
+    },
+    {
+      "command": "pnpm exec tsc --noEmit --strict --skipLibCheck --target ES2023 --lib ES2023,DOM --module ESNext --moduleResolution Bundler --types node,vite/client artifacts/benchmarks/engine-opt-261030/fixture-api.ts",
+      "passed": true
+    },
+    {
+      "command": "git apply --check <each prototype patch>",
+      "passed": true,
+      "patches": 9
+    }
+  ],
+  "resolvedHarnessIssues": [
+    "Save canonicalization does not represent internal non-finite diagnostics.",
+    "Equal engine values produced unequal V8 serialization bytes.",
+    "A deterministic internal digest must include typed trace arrays.",
+    "Standalone TypeScript checking must retain project strict mode."
+  ],
+  "notRun": [
+    "full integration / season parity",
+    "browser / e2e",
+    "100-season capacity",
+    "mobile performance and memory",
+    "combined packed phase + record-delta protocol"
+  ]
+}

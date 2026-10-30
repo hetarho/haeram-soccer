@@ -1,0 +1,9 @@
+{
+  "baseline": "64005ff137d63ba2540aa26ba12a7f4f12a695fb",
+  "node": "v26.8.1",
+  "v8": "14.6.202.34-node.28",
+  "cpu": "Apple M1 Max",
+  "cores": 10,
+  "memory": 34359738368,
+  "harness": "85dfc4604d65b168bcd04fe57224f407cdef7add1bebd90bd2254f0f0b825865"
+}
