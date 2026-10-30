@@ -433,14 +433,19 @@ interface MoveTraits {
   cutBack: boolean;
   xt: number;
 }
-/** Traits by kind and cells, worked out once a process (T326): they read nothing else. */
-const TRAITS = new Map<number, MoveTraits>();
 /** The 40 grid cells a move runs between (`band * 5 + lane`). */
 const CELLS = 40;
+/**
+ * Traits by kind and cells, worked out once a process (T326): they read nothing else. A flat
+ * array indexed by the numeric key instead of a map (T612).
+ */
+const TRAITS: (MoveTraits | undefined)[] = Array<MoveTraits | undefined>(
+  AGGREGATE_MOVE_KINDS.length * CELLS * CELLS,
+).fill(undefined);
 function moveTraits(move: AggregateMove): MoveTraits {
   const key = (AGGREGATE_MOVE_KINDS.indexOf(move.kind) * CELLS + move.from) * CELLS + move.to;
-  let traits = TRAITS.get(key);
-  if (!traits) TRAITS.set(key, (traits = traitsOf(move)));
+  let traits = TRAITS[key];
+  if (!traits) TRAITS[key] = traits = traitsOf(move);
   return traits;
 }
 function traitsOf(move: AggregateMove): MoveTraits {
