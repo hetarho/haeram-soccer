@@ -198,7 +198,7 @@ export interface Job {
   side: 0 | 1;
   idx: number;
   intention: Omit<Intention, 'since' | 'until'>;
-  /** Seconds it holds; absent for the kind's `INTENTION_CONFIG.seconds`. */
+  /** Seconds it holds; undefined for the kind's `INTENTION_CONFIG.seconds`. */
   seconds?: number;
   reason: Extract<IntentionReason, 'replaced' | 'danger'>;
 }
@@ -236,7 +236,8 @@ export function planCoordination(
   danger: boolean,
   defenceOnly = false,
 ): CoordinationPlan {
-  const plan: CoordinationPlan = { handovers: [], shadows: [], jobs: [] };
+  // `escalate` present from the start, as `seconds` on every job (`assign`): one object shape each.
+  const plan: CoordinationPlan = { escalate: undefined, handovers: [], shadows: [], jobs: [] };
   const att = s.possession;
   const carrier = s.owner && s.owner[0] === att ? s.players[att][s.owner[1]]! : undefined;
   if (!carrier || !onPitch(carrier)) return plan;
@@ -264,13 +265,7 @@ function assign(
   reason: Job['reason'] = 'replaced',
   seconds?: number,
 ) {
-  plan.jobs.push({
-    side,
-    idx: gp.idx,
-    intention,
-    ...(seconds === undefined ? {} : { seconds }),
-    reason,
-  });
+  plan.jobs.push({ side, idx: gp.idx, intention, seconds, reason });
   claimed.add(gp);
 }
 /** `assign` for the attack, whose jobs all replace what the man had. */
