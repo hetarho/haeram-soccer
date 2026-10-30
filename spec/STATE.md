@@ -434,7 +434,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T617 | Incremental fixture helpers | ARCH | - | todo |
 | T618 | Safe packed movement phase | ARCH | T617 | todo |
 
 ## work
@@ -459,9 +458,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T617, then T618; coordinator final verification and configured main push after both candidates are settled.
+- implement-task T618; T617 local implementation and paired evidence are complete, combined final gate/main push follows both candidates.
 
 ## log
+- 261031 T617 done locally: incremental helper replicas and fallback guards; affected units 91 files/869 tests, quick checks/build pass. Real-worker confirmation equal hashes, total wall ×0.8987 and process CPU ×0.8046; full integration/browser gate remains after T618.
 - 261031 create-task review/engine-architecture-261030: owner authorizes production completion; T617 helper replication, T618 guarded packed movement; session ei31.
 - 261031 review-code engine-architecture-261030 ready: nine engine candidates, seventeen worker/transport configurations; F1/F2 accepted for follow-up planning, no production source adoption. Artifact commit 2a28f947 and remote checkpoint 848f8c57 (wip/eo30); project quick checks, 173 units and prototype parity passed; report 261030-eo30.
 - 261030 review-code engine-architecture-261030 start: owner-assigned isolated worktree codex/engine-opt-261030 at 64005ff1, session eo30; research and prototypes only.
