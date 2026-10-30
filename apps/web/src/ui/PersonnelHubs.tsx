@@ -54,21 +54,27 @@ export function PersonnelHub({
     setMarket(false);
     openPersonnel({ page: 'firstTeam', view: 'manager' });
   };
+  // The transfer market is a navigation entry of its own: it shows without the office's tabs,
+  // and the office's tabs leave it out.
   return (
     <>
-      <TabList
-        tabs={tabs.map(([id]) => [id, t(`personnel.${id}`)] as const)}
-        value={tab}
-        onChange={(view) =>
-          openPersonnel(
-            page === 'firstTeam'
-              ? { page, view: view as (typeof FIRST_TEAM_TABS)[number][0] }
-              : { page, view: view as (typeof STAFF_TABS)[number][0] },
-          )
-        }
-        label={t(`navigation.${page}`)}
-        idPrefix={page}
-      />
+      {tab !== 'market' && (
+        <TabList
+          tabs={tabs
+            .filter(([id]) => id !== 'market')
+            .map(([id]) => [id, t(`personnel.${id}`)] as const)}
+          value={tab}
+          onChange={(view) =>
+            openPersonnel(
+              page === 'firstTeam'
+                ? { page, view: view as (typeof FIRST_TEAM_TABS)[number][0] }
+                : { page, view: view as (typeof STAFF_TABS)[number][0] },
+            )
+          }
+          label={t(`navigation.${page}`)}
+          idPrefix={page}
+        />
+      )}
       <TabPanel idPrefix={page} value={tab}>
         {tab !== 'market' && (
           <FacilityOverview

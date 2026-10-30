@@ -1,0 +1,29 @@
+.badge {
+  display: inline-flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  min-height: 26px;
+  padding: 4px 7px;
+  font-family: var(--display);
+  font-size: 12px;
+  line-height: 1.2;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.badge[data-with-score] {
+  gap: 2px;
+  min-width: 38px;
+  min-height: 42px;
+}
+.mark {
+  font-size: inherit;
+  font-weight: 800;
+}
+.score {
+  font-size: 10px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}

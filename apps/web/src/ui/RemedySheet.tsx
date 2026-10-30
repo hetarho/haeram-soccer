@@ -1,6 +1,7 @@
 import type { World } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
+import { Card } from './Card';
 import { Dialog } from './Dialog';
 import { PixelIcon } from './PixelIcon';
 import {
@@ -45,7 +46,8 @@ export function useRemedyRunner(client: GameClient, onPrepare?: () => void) {
 
 /**
  * Every choice for one club state with its cost, effect, chances and cooldown before commit
- * (→WEB-44). Navigation choices close the sheet.
+ * (→WEB-44). Navigation choices close the sheet. It reads like the next-match report: the state
+ * on the fixture ticket first, the choices as cards under it, one wide button to close.
  */
 export function RemedySheet({
   w,
@@ -67,23 +69,30 @@ export function RemedySheet({
   });
   const current = key === 'cash' ? cashState(w) : teamStates(w).find((item) => item.key === key)!;
   return (
-    <Dialog label={STATE_TITLES[key]} onClose={onClose}>
-      <header className={s.remedyHead}>
-        <span className={s[current.tone]}>
-          {current.label} {current.value} · {current.status}
-        </span>
-      </header>
-      {current.advice ? (
-        <p data-surface="inset" className={s.remedyAdvice}>
-          {current.advice.text}
-        </p>
-      ) : (
-        current.detail && (
-          <p data-surface="inset" className={s.remedyDetail}>
-            {current.detail}
-          </p>
-        )
-      )}
+    <Dialog
+      label={STATE_TITLES[key]}
+      onClose={onClose}
+      wide
+      actions={
+        <div className={s.remedyActions}>
+          <button data-ui="primary" onClick={onClose}>
+            확인
+          </button>
+        </div>
+      }
+    >
+      <Card
+        as="section"
+        surface="ticket"
+        className={s.remedyReport}
+        aria-label="지금 상태"
+        meta={`${current.label} ${current.value} · ${current.status}${current.advice ? ' · 주의' : ''}`}
+      >
+        {(current.advice?.text ?? current.detail) && (
+          <p>{current.advice?.text ?? current.detail}</p>
+        )}
+      </Card>
+      <h3 className={s.remedyTitle}>할 수 있는 일</h3>
       <ul className={s.remedies}>
         {remedies(w, key).map((remedy) => (
           <li

@@ -359,7 +359,20 @@
       "match-away-badge-frame": "var(--button-tertiary-frame)",
       "match-away-badge-slice": "var(--button-tertiary-frame-slice)",
       "match-away-badge-fill": "var(--button-tertiary-fill)",
-      "match-away-badge-text": "var(--button-tertiary-text)"
+      "match-away-badge-text": "var(--button-tertiary-text)",
+      "result-badge-frame-width": "4px",
+      "result-win-badge-frame": "var(--button-secondary-frame)",
+      "result-win-badge-slice": "var(--button-secondary-frame-slice)",
+      "result-win-badge-fill": "var(--button-secondary-fill)",
+      "result-win-badge-text": "var(--button-secondary-text)",
+      "result-draw-badge-frame": "var(--button-tertiary-frame)",
+      "result-draw-badge-slice": "var(--button-tertiary-frame-slice)",
+      "result-draw-badge-fill": "var(--button-tertiary-fill)",
+      "result-draw-badge-text": "var(--button-tertiary-text)",
+      "result-loss-badge-frame": "var(--image-art-frame-ticket)",
+      "result-loss-badge-slice": "var(--image-art-frame-ticket-slice)",
+      "result-loss-badge-fill": "var(--surface)",
+      "result-loss-badge-text": "var(--danger)"
     }
   },
   "fonts": [

@@ -8,8 +8,11 @@ import { fixtureDate } from '../../../../packages/engine/src/calendar';
 import { competitionLabel, kindLabel, seasonName } from './format';
 import { matchBriefing, resultFor } from './scouting';
 import { clubOvr } from './OvrBadge';
+import { Card } from './Card';
 import { ClubCrest } from './ClubCrest';
 import { FormationPitch } from './FormationPitch';
+import { ResultBadge } from './ResultBadge';
+import type { ProjectedWorld } from '../runtime/protocol';
 import s from './MatchBriefing.module.css';
 
 /** Results from one side's view, oldest first: 승 2–1 chips with the opponent in the title. */
@@ -26,10 +29,7 @@ function Results({ w, club, fixtures }: { w: World; club: string; fixtures: Fixt
             data-result={result.result}
             title={`${seasonName(f.year)} · ${kindLabel[f.kind]} · vs ${other?.name ?? '상대'}`}
           >
-            <b>{result.result}</b>
-            <span>
-              {result.own}–{result.other}
-            </span>
+            <ResultBadge result={result.result} score={[result.own, result.other]} />
           </li>
         );
       })}
@@ -41,7 +41,11 @@ function Results({ w, club, fixtures }: { w: World; club: string; fixtures: Fixt
  * The manager's report to the owner before the next match (→WEB-11): how he means to play, both
  * sides side by side (us left, them right) and our last meetings. The owner proposes from here.
  */
-export function MatchBriefing({ w }: { w: World }) {
+export function MatchBriefing({
+  w,
+}: {
+  w: World & Pick<ProjectedWorld, 'nextOpponentLineup'>;
+}) {
   const brief = matchBriefing(w);
   if (!brief) return <p className={s.note}>다음 상대는 새 시즌 일정이 나오면 확인할 수 있어요.</p>;
   const { next, opponent, manager } = brief;
@@ -49,6 +53,10 @@ export function MatchBriefing({ w }: { w: World }) {
     ourOvr = clubOvr(w, own),
     theirOvr = clubOvr(w, opponent);
   const xi = startingSquad(w, own, next);
+  const theirXi =
+    w.nextOpponentLineup?.fixture === next.id && w.nextOpponentLineup.club === opponent.id
+      ? w.nextOpponentLineup.players
+      : [];
   const gap = ourOvr - theirOvr;
   const sides = [
     {
@@ -61,6 +69,7 @@ export function MatchBriefing({ w }: { w: World }) {
       school: w.manager.style ? STYLE_INFO[w.manager.style].label : '균형 · 창단 감독',
       recent: brief.ownRecent,
       slot: (index: number) => xi[index]?.name.split(' ').at(-1) ?? '—',
+      slotTitle: (index: number) => xi[index]?.name ?? '—',
     },
     {
       key: 'opponent',
@@ -71,15 +80,19 @@ export function MatchBriefing({ w }: { w: World }) {
       coach: manager.name,
       school: manager.style ? STYLE_INFO[manager.style].label : '균형',
       recent: brief.theirRecent,
-      slot: () => '',
+      slot: (index: number) => theirXi[index]?.name.split(' ').at(-1) ?? '—',
+      slotTitle: (index: number) => theirXi[index]?.name ?? '—',
     },
   ];
   return (
     <div className={s.briefing}>
-      <section className={s.memo} data-surface="sheet" aria-label="감독 보고">
-        <small>
-          감독 보고 · {w.manager.name} → 구단주 · {fixtureDate(w, next)}
-        </small>
+      <Card
+        as="section"
+        surface="ticket"
+        className={s.memo}
+        aria-label="감독 보고"
+        meta={`감독 보고 · ${w.manager.name} → 구단주 · ${fixtureDate(w, next)}`}
+      >
         <p>
           {opponent.name}전({brief.home ? '홈' : '원정'} · {competitionLabel(w, next)})은{' '}
           {FORMATIONS[w.tactic].name} {tacticLabel[w.tactic]}로 나가겠습니다.{' '}
@@ -93,16 +106,10 @@ export function MatchBriefing({ w }: { w: World }) {
               ? `전력은 상대가 ${-gap} 앞서 조심해야 합니다.`
               : '전력은 비슷합니다.'}
         </p>
-      </section>
+      </Card>
       <div className={s.sides}>
         {sides.map((side) => (
-          <section
-            key={side.key}
-            className={s.side}
-            data-surface="panel"
-            aria-label={side.label}
-            data-side={side.key}
-          >
+          <section key={side.key} className={s.side} aria-label={side.label} data-side={side.key}>
             <h3>
               <ClubCrest w={w} id={side.club.id} size={20} />
               <span>{side.club.name}</span>
@@ -131,21 +138,27 @@ export function MatchBriefing({ w }: { w: World }) {
               label={`${side.label} ${FORMATIONS[side.tactic].name} 스쿼드`}
               slot={side.slot}
               slotLabel={side.slot}
+              slotTitle={side.slotTitle}
             />
             <h4>최근 {side.recent.length}경기</h4>
             <Results w={w} club={side.club.id} fixtures={side.recent} />
           </section>
         ))}
       </div>
-      <section className={s.meetings} data-surface="panel" aria-label="최근 맞대결">
-        <h3>최근 맞대결 · {brief.meetings.length}경기</h3>
+      <Card
+        as="section"
+        surface="dark"
+        className={s.meetings}
+        aria-label="최근 맞대결"
+        title={`최근 맞대결 · ${brief.meetings.length}경기`}
+      >
         {brief.meetings.length ? (
           <ol>
             {brief.meetings.map((f) => {
               const result = resultFor(f, w.playerClub)!;
               return (
                 <li key={f.id} data-result={result.result}>
-                  <b>{result.result}</b> {result.own}–{result.other}
+                  <ResultBadge result={result.result} /> {result.own}–{result.other}
                   <small>
                     {seasonName(f.year)} · {kindLabel[f.kind]} ·{' '}
                     {f.home === w.playerClub ? '홈' : '원정'}
@@ -157,7 +170,7 @@ export function MatchBriefing({ w }: { w: World }) {
         ) : (
           <p className={s.note}>아직 맞대결 기록이 없어요.</p>
         )}
-      </section>
+      </Card>
     </div>
   );
 }

@@ -190,6 +190,12 @@
     "personnel.manager": "المدير الفني",
     "personnel.coaches": "الطاقم",
     "fixture.home": "على أرضه",
-    "fixture.away": "خارج أرضه"
+    "fixture.away": "خارج أرضه",
+    "result.win": "ف",
+    "result.win.label": "فوز",
+    "result.draw": "ت",
+    "result.draw.label": "تعادل",
+    "result.loss": "خ",
+    "result.loss.label": "خسارة"
   }
 }

@@ -178,6 +178,12 @@
     "personnel.manager": "Trainer",
     "personnel.coaches": "Staf",
     "fixture.home": "Thuis",
-    "fixture.away": "Uit"
+    "fixture.away": "Uit",
+    "result.win": "W",
+    "result.win.label": "Winst",
+    "result.draw": "G",
+    "result.draw.label": "Gelijkspel",
+    "result.loss": "V",
+    "result.loss.label": "Verlies"
   }
 }

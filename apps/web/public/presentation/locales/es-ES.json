@@ -181,6 +181,12 @@
     "personnel.manager": "Entrenador",
     "personnel.coaches": "Personal",
     "fixture.home": "Local",
-    "fixture.away": "Visitante"
+    "fixture.away": "Visitante",
+    "result.win": "V",
+    "result.win.label": "Victoria",
+    "result.draw": "E",
+    "result.draw.label": "Empate",
+    "result.loss": "D",
+    "result.loss.label": "Derrota"
   }
 }

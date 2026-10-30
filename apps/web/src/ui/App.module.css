@@ -215,6 +215,21 @@
 .nav button:hover:not(:disabled) {
   background: var(--surface-grain, none) var(--accent-fill);
 }
+/* Office work piling up: the design system's count sits in the entry's top-right corner. */
+.nav button,
+.mobileNav button {
+  position: relative;
+}
+.navCount {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  pointer-events: none;
+}
+.nav .navCount {
+  top: -2px;
+  right: -6px;
+}
 .nav .active {
   background: var(--surface-grain, none) var(--nav-active);
   color: var(--on-accent);
@@ -1802,7 +1817,6 @@
   margin: 0 calc(var(--gutter) * -1) 4px;
   padding: calc(2px + env(safe-area-inset-top)) var(--gutter) 2px;
   background: var(--surface-grain, none) var(--hud);
-  border-bottom: 1px solid var(--line);
   box-shadow: none;
 }
 .hudMenu {
@@ -2185,7 +2199,7 @@
     margin: 0 auto;
     z-index: 40;
     display: grid;
-    grid-template-columns: repeat(6, minmax(max-content, 1fr));
+    grid-template-columns: repeat(5, minmax(max-content, 1fr));
     overflow-x: auto;
     overscroll-behavior-inline: contain;
     align-items: end;

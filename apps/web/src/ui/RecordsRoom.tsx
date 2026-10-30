@@ -136,13 +136,6 @@ export function RecordsRoom({ state, client }: Props) {
     rememberManagerSeason(w.id, season, row, scroller()?.scrollTop ?? 0);
     openSeason(season.year);
   };
-  const returnToManagers = () => {
-    setTab('managers');
-    setYear(undefined);
-    history.pushState(null, '', '/history?section=club&view=managers');
-  };
-  const openedFrom =
-    managers.opened && managers.page?.rows.find((r) => r.id === managers.opened!.row);
   useEffect(() => {
     if (!request) return;
     useRecordRequest.getState().take();
@@ -183,45 +176,25 @@ export function RecordsRoom({ state, client }: Props) {
     if (next === 'seasons') setYear(undefined);
     recordScroll(0);
   };
-  const returnToList = () => {
-    leaveManagerSeason(w.id);
-    setYear(undefined);
-    history.pushState(null, '', COMPETITION_PATHS.history);
-    recordScroll(useTaskMemory.getState().scrolls['record-list'] ?? 0);
-  };
-  // A season is a sub-screen of the records: a navigator bar replaces the tabs (→WEB-54).
+  // A season opens under the records' tabs; its tab, 시즌별 기록, leads back to the list (→WEB-54).
   const seasonOpen = tab === 'seasons' && year !== undefined;
-  const backLabel = managers.opened
-    ? `← 감독 이력${openedFrom?.kind === 'tenure' ? ` · ${openedFrom.manager.name}` : ''}`
-    : '← 시즌별 기록';
   return (
     <>
       <h2 className={s.srOnly}>클럽 기록실</h2>
-      {seasonOpen ? (
-        <nav className={s.recordNavigator} aria-label="시즌 기록 이동" data-ui="record-navigator">
-          <button
-            data-ui="link"
-            className={s.navigatorBack}
-            type="button"
-            aria-label={backLabel}
-            onClick={managers.opened ? returnToManagers : returnToList}
-          >
-            <PixelIcon name="chevronLeft" size={16} />
-            {managers.opened ? '감독 이력' : '시즌별 기록'}
-          </button>
+      <div className={s.recordsNav} data-ui="toolbar">
+        <TabList
+          tabs={RECORD_TABS}
+          value={tab}
+          onChange={selectTab}
+          label="기록실 보기"
+          idPrefix="records"
+        />
+      </div>
+      {seasonOpen && (
+        <div className={s.recordNavigator} data-ui="record-navigator">
           <h3>
             {seasonName(year)} · 구단 시즌 기록{year === w.year ? ' · 진행 중' : ''}
           </h3>
-        </nav>
-      ) : (
-        <div className={s.recordsNav} data-ui="toolbar">
-          <TabList
-            tabs={RECORD_TABS}
-            value={tab}
-            onChange={selectTab}
-            label="기록실 보기"
-            idPrefix="records"
-          />
         </div>
       )}
       <div

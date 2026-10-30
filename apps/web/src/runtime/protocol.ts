@@ -13,6 +13,7 @@ import { z } from 'zod';
 z.config({ jitless: true });
 import type {
   World,
+  Player,
   Fixture,
   MatchPlayback,
   MatchRecord,
@@ -320,6 +321,12 @@ export type Body = Request['body'];
  */
 export type ProjectedWorld = Omit<World, 'people' | 'npcSeason' | 'managerHistory'> & {
   people?: never;
+  /** The next opponent's actual eligible XI, resolved with the worker's person registry. */
+  nextOpponentLineup?: {
+    fixture: string;
+    club: string;
+    players: Pick<Player, 'id' | 'name'>[];
+  };
 };
 export interface View {
   world: ProjectedWorld;

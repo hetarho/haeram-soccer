@@ -175,6 +175,12 @@
     "personnel.manager": "監督",
     "personnel.coaches": "スタッフ",
     "fixture.home": "ホーム",
-    "fixture.away": "アウェー"
+    "fixture.away": "アウェー",
+    "result.win": "勝",
+    "result.win.label": "勝利",
+    "result.draw": "分",
+    "result.draw.label": "引き分け",
+    "result.loss": "敗",
+    "result.loss.label": "敗北"
   }
 }

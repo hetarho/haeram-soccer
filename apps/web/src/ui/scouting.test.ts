@@ -16,6 +16,23 @@ describe('match briefing', () => {
     expect(matchBriefing(w)).toMatchObject({ ownRecent: [], theirRecent: [], meetings: [] });
     expect(JSON.stringify(w)).toBe(before);
   });
+  it('reads retained opponent results even when its previous-season fixtures are outside the view', () => {
+    const w = createWorld(input);
+    const { next, opponent } = matchBriefing(w)!;
+    const other = w.clubs.find((club) => club.id !== opponent.id && club.id !== w.playerClub)!;
+    const results = Array.from({ length: 10 }, (_, i) => ({
+      ...next,
+      id: `retained-${i}`,
+      year: next.year - 1,
+      round: i + 1,
+      home: opponent.id,
+      away: other.id,
+      score: { home: 2, away: 1 },
+    }));
+    w.recentResults = { [opponent.id]: results };
+    expect(matchBriefing(w)!.theirRecent).toEqual(results);
+    expect(w.fixtures.some((fixture) => fixture.id === results[0]!.id)).toBe(false);
+  });
   it("reads both sides' last ten settled results and our last ten meetings", () => {
     const w = createWorld(input);
     for (let i = 0; i < 16; i++) advanceRound(w);

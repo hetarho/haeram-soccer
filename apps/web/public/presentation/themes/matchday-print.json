@@ -352,7 +352,20 @@
       "match-away-badge-frame": "var(--image-art-match-away-badge)",
       "match-away-badge-slice": "var(--image-art-match-away-badge-slice)",
       "match-away-badge-fill": "#315565",
-      "match-away-badge-text": "#fff4de"
+      "match-away-badge-text": "#fff4de",
+      "result-badge-frame-width": "6px",
+      "result-win-badge-frame": "var(--image-art-result-win-badge)",
+      "result-win-badge-slice": "var(--image-art-result-win-badge-slice)",
+      "result-win-badge-fill": "#285b43",
+      "result-win-badge-text": "#fff4de",
+      "result-draw-badge-frame": "var(--image-art-result-draw-badge)",
+      "result-draw-badge-slice": "var(--image-art-result-draw-badge-slice)",
+      "result-draw-badge-fill": "#86652b",
+      "result-draw-badge-text": "#fff4de",
+      "result-loss-badge-frame": "var(--image-art-result-loss-badge)",
+      "result-loss-badge-slice": "var(--image-art-result-loss-badge-slice)",
+      "result-loss-badge-fill": "#9a3528",
+      "result-loss-badge-text": "#fff4de"
     }
   },
   "fonts": [
@@ -766,6 +779,27 @@
         "resource": "../../art/matchday-print/home-away-badges-v1/frame-away.webp",
         "width": 192,
         "height": 74,
+        "mode": "nine-slice",
+        "slice": 22
+      },
+      "image-art-result-win-badge": {
+        "resource": "../../art/matchday-print/result-badges-v1/frame-win.webp",
+        "width": 192,
+        "height": 136,
+        "mode": "nine-slice",
+        "slice": 22
+      },
+      "image-art-result-draw-badge": {
+        "resource": "../../art/matchday-print/result-badges-v1/frame-draw.webp",
+        "width": 192,
+        "height": 148,
+        "mode": "nine-slice",
+        "slice": 22
+      },
+      "image-art-result-loss-badge": {
+        "resource": "../../art/matchday-print/result-badges-v1/frame-loss.webp",
+        "width": 192,
+        "height": 133,
         "mode": "nine-slice",
         "slice": 22
       }

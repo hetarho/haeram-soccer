@@ -1,7 +1,7 @@
 .hub {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: 'header' 'fixture' 'links' 'stage' 'state';
+  grid-template-areas: 'header' 'fixture' 'state' 'rooms' 'links' 'stage';
   align-content: start;
   gap: 16px;
   width: 100%;
@@ -83,6 +83,69 @@
   inset: 0;
   width: 100%;
   height: 100%;
+}
+/* The manager's office: room art under a dim, the team's state small along its foot. */
+.office {
+  grid-area: state;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: clamp(240px, 25.6vw, 304px);
+  padding: 56px 12px 12px;
+  overflow: hidden;
+  border-radius: var(--scene-radius);
+  background: var(--surface-grain, none) var(--surface-deep);
+}
+.office > .officeArt {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.officeShade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(12 15 16 / 0.35), rgb(12 15 16 / 0.72));
+}
+/* One row on every width: the room's name, its manager, the way in. */
+.officeCaption {
+  position: absolute;
+  inset: 12px 14px auto;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-family: var(--display);
+}
+.officeCaption b {
+  font-size: 15px;
+  font-weight: 800;
+}
+.officeCaption span {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.officeCount {
+  font-size: 12px;
+}
+.officeEnter.officeEnter {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 2px 14px;
+  font-size: 12px;
+}
+.office .state {
+  position: relative;
+  z-index: 1;
+  padding: 0;
+  border: 0;
 }
 .stageLabel {
   position: absolute;
@@ -495,49 +558,39 @@ button.resources:active:not(:disabled) {
 }
 
 /* Remedy sheet: every choice states its effect and cost before commit. */
-.remedyHead {
-  display: grid;
-  gap: 2px;
-  margin-bottom: 10px;
+/* The remedy sheet reads like the next-match report: the state on the ticket, then choices. */
+.remedyReport p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
 }
-.remedyHead h2 {
-  font-size: 18px;
-}
-.remedyHead span {
-  font-size: 12px;
-  font-weight: 700;
+.remedyTitle {
+  margin: 16px 0 10px;
+  font-size: 15px;
   font-family: var(--display);
 }
-.remedyHead .good {
-  color: var(--positive);
+.remedyActions {
+  display: grid;
 }
-.remedyAdvice {
-  margin: 0 0 14px;
-  padding: 10px 12px;
-  border-inline-start: 3px solid var(--danger);
-  background: var(--surface-grain, none) var(--surface-2);
-  color: var(--text);
-  font-size: 13px;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
-}
-/* A state without advice explains itself without the warning edge. */
-.remedyDetail {
-  margin: 0 0 14px;
-  padding: 10px 12px;
-  border-inline-start: 3px solid var(--line);
-  background: var(--surface-grain, none) var(--surface-2);
-  color: var(--text);
-  font-size: 13px;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
+.remedyActions button {
+  min-height: 48px;
+  font-size: 12px;
+  font-family: var(--display);
 }
 .remedies {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
+}
+@media (max-width: 760px) {
+  .remedies {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 .remedies > li {
   display: grid;
@@ -849,10 +902,41 @@ button.resources:active:not(:disabled) {
   font-size: 15px;
 }
 /* League, cups, records and briefing: four links in one row. */
-.clubLinks {
-  grid-area: links;
+/* The clubhouse's rooms: one row of doors; the frame and icon art come from the theme. */
+.rooms {
+  grid-area: rooms;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.room {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 104px;
+  padding: 10px 6px;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+  word-break: keep-all;
+}
+@media (max-width: 760px) {
+  .rooms {
+    gap: 6px;
+  }
+  .room {
+    min-height: 84px;
+    padding: 8px 2px;
+    font-size: 11px;
+  }
+}
+.clubLinks {
+  grid-area: links;
+  display: flex;
+  justify-content: flex-end;
   gap: 12px;
 }
 .clubLinks button {

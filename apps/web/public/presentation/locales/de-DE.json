@@ -178,6 +178,12 @@
     "personnel.manager": "Trainer",
     "personnel.coaches": "Mitarbeiter",
     "fixture.home": "Heim",
-    "fixture.away": "Auswärts"
+    "fixture.away": "Auswärts",
+    "result.win": "S",
+    "result.win.label": "Sieg",
+    "result.draw": "U",
+    "result.draw.label": "Unentschieden",
+    "result.loss": "N",
+    "result.loss.label": "Niederlage"
   }
 }

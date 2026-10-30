@@ -13,6 +13,7 @@ import { PixelIcon } from '../ui/PixelIcon';
 import { TrophyIcon, type TrophyKind } from '../ui/TrophyIcon';
 import { OvrBadge } from '../ui/OvrBadge';
 import { HomeAwayBadge } from '../ui/HomeAwayBadge';
+import { ResultBadge } from '../ui/ResultBadge';
 import { Money } from '../ui/Money';
 import { AnimatedMoney } from '../ui/AnimatedMoney';
 import { BetaMark } from '../ui/BetaMark';
@@ -319,7 +320,7 @@ function Tabs({ runtime }: { runtime: Runtime }) {
         <Table w={w} ids={ownLeagueIds(w)} limit={8} />
       </Section>
       <Section title="OfficeBar">
-        <OfficeBar title="선수 계약" back={{ label: '사무실', onClick: noop }} />
+        <OfficeBar title="선수 계약" />
       </Section>
     </>
   );
@@ -368,6 +369,21 @@ function Badges({ runtime }: { runtime: Runtime }) {
     player = w.players[0];
   return (
     <>
+      <Section title="ResultBadge · 승 · 무 · 패">
+        <div className="ds-row">
+          <ResultBadge result="승" />
+          <ResultBadge result="무" />
+          <ResultBadge result="패" />
+        </div>
+      </Section>
+      <Section title="ResultBadge · 최근 경기 점수">
+        <div className="ds-row">
+          <ResultBadge result="승" score={[2, 1]} />
+          <ResultBadge result="무" score={[0, 0]} />
+          <ResultBadge result="패" score={[1, 3]} />
+          <ResultBadge result="승" score={[10, 2]} />
+        </div>
+      </Section>
       <Section title="HomeAwayBadge · 홈과 원정">
         <div className="ds-row">
           <HomeAwayBadge side="home" />

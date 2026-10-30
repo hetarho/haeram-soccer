@@ -23,10 +23,9 @@
   font-size: 12px;
   font-family: var(--display);
 }
-.proposalHead {
-  margin: 4px 0 0;
-  font-size: 15px;
-  font-family: var(--display);
+/* The owner's answer is one card under the manager's report. */
+.proposal {
+  margin-top: 12px;
 }
 .tabs {
   display: grid;
@@ -295,6 +294,10 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+}
+/* Reading the report ends on going home: the wider button; giving an opinion is the side door. */
+.reportActions {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
 }
 .actions button {
   min-height: 48px;

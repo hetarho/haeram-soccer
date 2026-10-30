@@ -31,6 +31,7 @@ import { FORMATIONS, lineOf, ROLE_LABEL } from '../../../../packages/engine/src/
 import { FormationPitch, LEVEL_LABEL } from './FormationPitch';
 import type { GameClient } from '../runtime/client';
 import { gameActionsBlocked, gameStore, useGameState } from '../runtime/store';
+import { Card } from './Card';
 import { Dialog } from './Dialog';
 import { FixtureKitSelector } from './FixtureKitSelector';
 import { Money } from './Money';
@@ -202,6 +203,8 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
   const [tab, setTab] = useState<PreparationTab>('tactic');
   const [preset, setPreset] = useState<'current' | 'strongest' | 'rest' | 'manual'>('current');
   const [open, setOpen] = useState(false);
+  // The report reads first; the owner's answer opens below it on request.
+  const [proposing, setProposing] = useState(false);
   const [preparing, setPreparing] = useState(false);
   const blocked = preparing || acting || !!w.critical;
   const previewBlocked = preparing || draftBlocked || !!w.critical;
@@ -230,6 +233,7 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
     setTactic(gameStore.getSnapshot().view?.world.tactic || 'balanced');
     setPreset('current');
     setTab(playerId ? 'lineup' : 'tactic');
+    setProposing(!!playerId);
     setMessage('');
     setOpen(true);
     void client.whenIdle().then(() => {
@@ -305,6 +309,14 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
     );
   };
   const selectTab = (value: PreparationTab) => setTab(value);
+  const propose = () => {
+    setProposing(true);
+    requestAnimationFrame(() =>
+      document
+        .getElementById(`${tabId}-proposal`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+    );
+  };
   return (
     <>
       {open && (
@@ -319,7 +331,16 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
                   {message || latestResponse?.detail}
                 </p>
               )}
-              {tab === 'tactic' ? (
+              {!proposing ? (
+                <div className={`${s.actions} ${s.reportActions}`}>
+                  <button data-ui="secondary" onClick={propose}>
+                    의견 전달
+                  </button>
+                  <button data-ui="primary" className={s.primary} onClick={close}>
+                    확인하고 홈으로
+                  </button>
+                </div>
+              ) : tab === 'tactic' ? (
                 <div className={s.actions}>
                   {w.manager.pending && (
                     <button
@@ -366,279 +387,294 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose, p
           )}
           <MatchBriefing w={w} />
           {/* The owner answers the report: a tactic request to the manager or a chosen XI. */}
-          <h3 className={s.proposalHead}>구단주 제안</h3>
-          {/* Its own draft and command, apart from the tactic and lineup below (→WEB-88). */}
-          {!preparing && <FixtureKitSelector client={client} blocked={blocked} />}
-          {playerId && (
-            <p className={s.message}>
-              {w.players.find((person) => person.id === playerId)?.name}의 다음 경기 준비를
-              확인해요. 선발을 직접 저장하기 전까지 감독의 현재 선택을 유지해요.
-            </p>
-          )}
-          <div className={s.tabs} role="tablist" aria-label="경기 준비 선택">
-            {(
-              [
-                ['tactic', '전술 선택'],
-                ['lineup', '선발 선택'],
-              ] as const
-            ).map(([value, label], i) => (
-              <button
-                key={value}
-                id={`${tabId}-${value}-tab`}
-                role="tab"
-                aria-selected={tab === value}
-                tabIndex={tab === value ? 0 : -1}
-                aria-controls={`${tabId}-${value}-panel`}
-                onClick={() => selectTab(value)}
-                onKeyDown={(event) => {
-                  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-                  event.preventDefault();
-                  const nextTab =
-                    event.key === 'Home'
-                      ? 'tactic'
-                      : event.key === 'End'
-                        ? 'lineup'
-                        : i === 0
-                          ? 'lineup'
-                          : 'tactic';
-                  selectTab(nextTab);
-                  document.getElementById(`${tabId}-${nextTab}-tab`)?.focus();
-                }}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-          <div
-            id={`${tabId}-tactic-panel`}
-            role="tabpanel"
-            aria-labelledby={`${tabId}-tactic-tab`}
-            hidden={tab !== 'tactic'}
-          >
-            <section data-surface="panel" className={s.section} aria-label="경기 전술 준비">
-              <div className={s.sectionHead}>
-                <h3>경기 흐름 바꾸기</h3>
-                <span>
-                  실제 적용: <b>{tacticLabel[w.tactic]}</b>
-                </span>
-              </div>
-              <div className={s.tactics}>
-                {(Object.keys(styles) as Tactic[]).map((value) => (
+          {proposing && (
+            <Card
+              as="section"
+              id={`${tabId}-proposal`}
+              className={s.proposal}
+              aria-label="구단주 제안"
+              title="구단주 제안"
+            >
+              {/* Its own draft and command, apart from the tactic and lineup below (→WEB-88). */}
+              {!preparing && <FixtureKitSelector client={client} blocked={blocked} />}
+              {playerId && (
+                <p className={s.message}>
+                  {w.players.find((person) => person.id === playerId)?.name}의 다음 경기 준비를
+                  확인해요. 선발을 직접 저장하기 전까지 감독의 현재 선택을 유지해요.
+                </p>
+              )}
+              <div className={s.tabs} role="tablist" aria-label="경기 준비 선택">
+                {(
+                  [
+                    ['tactic', '전술 선택'],
+                    ['lineup', '선발 선택'],
+                  ] as const
+                ).map(([value, label], i) => (
                   <button
                     key={value}
-                    disabled={previewBlocked}
-                    aria-pressed={tactic === value}
-                    onClick={() => setTactic(value)}
+                    id={`${tabId}-${value}-tab`}
+                    role="tab"
+                    aria-selected={tab === value}
+                    tabIndex={tab === value ? 0 : -1}
+                    aria-controls={`${tabId}-${value}-panel`}
+                    onClick={() => selectTab(value)}
+                    onKeyDown={(event) => {
+                      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+                      event.preventDefault();
+                      const nextTab =
+                        event.key === 'Home'
+                          ? 'tactic'
+                          : event.key === 'End'
+                            ? 'lineup'
+                            : i === 0
+                              ? 'lineup'
+                              : 'tactic';
+                      selectTab(nextTab);
+                      document.getElementById(`${tabId}-${nextTab}-tab`)?.focus();
+                    }}
                   >
-                    <b>
-                      {tacticLabel[value]}{' '}
-                      <span className={s.fit}>
-                        선발 적합도{' '}
-                        {tacticalProfile(valid ? selected : baseline, value, opponentTactic).fit}
-                        /100
-                      </span>
-                    </b>
-                    <span>{styles[value].advantage}</span>
-                    <small>{styles[value].tradeoff}</small>
+                    {label}
                   </button>
                 ))}
               </div>
-              <p className={s.hint}>
-                적합도는 현재 선발 능력과 피로의 요약입니다. 승리 확률이 아니며 상대와 홈·원정도
-                결과에 영향을 줍니다.
-              </p>
-              <TacticalLab
-                w={w}
-                players={valid ? selected : baseline}
-                applied={w.tactic}
-                selected={tactic}
-                opponent={opponentTactic}
-                onSelect={setTactic}
-              />
-              <div className={s.negotiation}>
-                <label>
-                  감독에게 전달할 방식
-                  <Select
-                    aria-label="전술 요청 방식"
-                    disabled={previewBlocked}
-                    value={tone}
-                    onValueChange={(value) => setTone(value as Tone)}
-                  >
-                    <option value="evidence">선수단 근거로 설득</option>
-                    <option value="respect">감독 판단 존중</option>
-                    <option value="support">지원 약속</option>
-                    <option value="demand">강하게 요구 · 신뢰 하락</option>
-                  </Select>
-                </label>
-                <div className={s.outlook} aria-label="감독 예상 반응">
-                  <span>예상 반응</span>
-                  <b>{outlook.label}</b>
-                  <small>
-                    {w.manager.name} · 신뢰 {Math.round(w.manager.trust)} · 철학{' '}
-                    {tacticLabel[w.manager.philosophy]}
-                    {outlook.trustRisk > 0
-                      ? tone === 'demand'
-                        ? ` · 강한 요구: 신뢰 ${outlook.trustRisk} 감소`
-                        : ` · 신뢰 최대 ${outlook.trustRisk} 감소 가능`
-                      : ''}
-                  </small>
-                </div>
-              </div>
-              <p className={s.hint}>
-                {outlook.alreadyAnswered
-                  ? '이번 라운드에 이미 답한 조합입니다. 다음 라운드에 다시 제안할 수 있어요.'
-                  : '성향과 신뢰에 따른 예상입니다. 실제 답변은 다를 수 있어요.'}
-              </p>
-              {w.manager.pending && (
-                <div data-surface="sheet" className={s.pending}>
-                  <p>
-                    {tacticLabel[w.manager.pending]} 조건부 수락 · 훈련 지원금{' '}
-                    <Money value={supportCost} code={clubOf(w).country} year={w.year} />
-                  </p>
-                </div>
-              )}
-            </section>
-          </div>
-          <div
-            id={`${tabId}-lineup-panel`}
-            role="tabpanel"
-            aria-labelledby={`${tabId}-lineup-tab`}
-            hidden={tab !== 'lineup'}
-          >
-            <section data-surface="panel" className={s.section} aria-label="선발 선수 준비">
-              <div className={s.sectionHead}>
-                <h3>선발 11명 고르기</h3>
-                <span>
-                  {FORMATIONS[w.tactic].name} ·{' '}
-                  {(['GK', 'DF', 'MF', 'FW'] as const)
-                    .map(
-                      (line) =>
-                        `${line} ${slots.filter((place) => lineOf(place.position) === line).length}`,
-                    )
-                    .join(' · ')}
-                </span>
-              </div>
-              <div className={s.presets}>
-                <button
-                  disabled={previewBlocked}
-                  aria-pressed={preset === 'strongest'}
-                  onClick={() => {
-                    setDraft(lineupPreset(w, 'strongest', next));
-                    setPreset('strongest');
-                  }}
-                >
-                  전력 우선으로 선택
-                </button>
-                <button
-                  disabled={previewBlocked}
-                  aria-pressed={preset === 'rest'}
-                  onClick={() => {
-                    setDraft(lineupPreset(w, 'rest', next));
-                    setPreset('rest');
-                  }}
-                >
-                  피로 회복 우선으로 선택
-                </button>
-              </div>
-              <Preview players={selected} baseline={baseline} tactic={w.tactic} />
-              <FormationPitch
-                tactic={w.tactic}
-                label={`${FORMATIONS[w.tactic].name} 선발 배치`}
-                slotLabel={(index) =>
-                  byId
-                    .get(draft[index] ?? '')
-                    ?.name.split(' ')
-                    .at(-1) ?? '—'
-                }
-                slotTitle={(index) => byId.get(draft[index] ?? '')?.name ?? '빈 자리'}
-                slot={(index) => {
-                  const place = slots[index]!,
-                    player = byId.get(draft[index] ?? '');
-                  const level = player?.positions[place.position];
-                  return (
-                    <div
-                      className={s.slotCard}
-                      data-surface="inset"
-                      data-testid={`formation-slot-${index}`}
-                      data-level={level ?? 0}
-                    >
-                      <small>
-                        {place.position} · {ROLE_LABEL[place.role]}
-                      </small>
-                      <b>{player ? player.name.split(' ').at(-1) : '—'}</b>
-                      {player && (
-                        <>
-                          <span>
-                            실효 {Math.round(slotOvr(player, place, ownMultiplier(player)))} ·{' '}
-                            {level ? LEVEL_LABEL[level] : '미숙'}
-                          </span>
-                          <span>적응 {player.adaptation.toFixed(2)}</span>
-                        </>
-                      )}
-                    </div>
-                  );
-                }}
-              />
-              <MatchdaySquad w={w} xi={valid ? selected : baseline} />
-              {replaced > 0 && (
-                <p className={s.hint}>이탈한 선발 {replaced}명은 활동 중인 선수로 대체합니다.</p>
-              )}
-              <p className={s.hint}>
-                자리마다 실효 능력과 피로를 비교해요. 직접 정한 선발은 변경할 때까지 유지합니다.
-              </p>
-              <details data-ui="disclosure" className={s.slots}>
-                <summary>선수별 교체</summary>
-                <div className={s.lineup}>
-                  {slots.map((place, slot) => (
-                    <label key={slot}>
-                      <span>
-                        {place.position} · {ROLE_LABEL[place.role]}
-                      </span>
-                      <Select
+              <div
+                id={`${tabId}-tactic-panel`}
+                role="tabpanel"
+                aria-labelledby={`${tabId}-tactic-tab`}
+                hidden={tab !== 'tactic'}
+              >
+                <section data-surface="panel" className={s.section} aria-label="경기 전술 준비">
+                  <div className={s.sectionHead}>
+                    <h3>경기 흐름 바꾸기</h3>
+                    <span>
+                      실제 적용: <b>{tacticLabel[w.tactic]}</b>
+                    </span>
+                  </div>
+                  <div className={s.tactics}>
+                    {(Object.keys(styles) as Tactic[]).map((value) => (
+                      <button
+                        key={value}
                         disabled={previewBlocked}
-                        aria-label={`선발 ${slot + 1} ${place.position}`}
-                        value={draft[slot] || ''}
-                        onValueChange={(value) => {
-                          setPreset('manual');
-                          setDraft((current) => {
-                            const updated = [...current],
-                              displaced = updated.indexOf(value);
-                            if (displaced >= 0 && displaced !== slot)
-                              updated[displaced] = updated[slot];
-                            updated[slot] = value;
-                            return updated;
-                          });
-                        }}
+                        aria-pressed={tactic === value}
+                        onClick={() => setTactic(value)}
                       >
-                        <option value="" disabled>
-                          선수를 선택하세요
-                        </option>
-                        {players
-                          .map((player) => ({
-                            player,
-                            value: slotOvr(player, place, ownMultiplier(player)),
-                          }))
-                          .sort(
-                            (a, b) => b.value - a.value || a.player.id.localeCompare(b.player.id),
-                          )
-                          .map(({ player, value }) => (
-                            <option key={player.id} value={player.id}>
-                              {player.name} · {player.position} · 실효 {Math.round(value)} · 피로{' '}
-                              {Math.round(player.fatigue)}
-                            </option>
-                          ))}
+                        <b>
+                          {tacticLabel[value]}{' '}
+                          <span className={s.fit}>
+                            선발 적합도{' '}
+                            {
+                              tacticalProfile(valid ? selected : baseline, value, opponentTactic)
+                                .fit
+                            }
+                            /100
+                          </span>
+                        </b>
+                        <span>{styles[value].advantage}</span>
+                        <small>{styles[value].tradeoff}</small>
+                      </button>
+                    ))}
+                  </div>
+                  <p className={s.hint}>
+                    적합도는 현재 선발 능력과 피로의 요약입니다. 승리 확률이 아니며 상대와 홈·원정도
+                    결과에 영향을 줍니다.
+                  </p>
+                  <TacticalLab
+                    w={w}
+                    players={valid ? selected : baseline}
+                    applied={w.tactic}
+                    selected={tactic}
+                    opponent={opponentTactic}
+                    onSelect={setTactic}
+                  />
+                  <div className={s.negotiation}>
+                    <label>
+                      감독에게 전달할 방식
+                      <Select
+                        aria-label="전술 요청 방식"
+                        disabled={previewBlocked}
+                        value={tone}
+                        onValueChange={(value) => setTone(value as Tone)}
+                      >
+                        <option value="evidence">선수단 근거로 설득</option>
+                        <option value="respect">감독 판단 존중</option>
+                        <option value="support">지원 약속</option>
+                        <option value="demand">강하게 요구 · 신뢰 하락</option>
                       </Select>
                     </label>
-                  ))}
-                </div>
-              </details>
-              {!valid && (
-                <p className={s.warning}>
-                  활동 중인 선수 11명이 필요합니다. 비어 있는 자리를 채우세요.
-                </p>
-              )}
-            </section>
-          </div>
+                    <div className={s.outlook} aria-label="감독 예상 반응">
+                      <span>예상 반응</span>
+                      <b>{outlook.label}</b>
+                      <small>
+                        {w.manager.name} · 신뢰 {Math.round(w.manager.trust)} · 철학{' '}
+                        {tacticLabel[w.manager.philosophy]}
+                        {outlook.trustRisk > 0
+                          ? tone === 'demand'
+                            ? ` · 강한 요구: 신뢰 ${outlook.trustRisk} 감소`
+                            : ` · 신뢰 최대 ${outlook.trustRisk} 감소 가능`
+                          : ''}
+                      </small>
+                    </div>
+                  </div>
+                  <p className={s.hint}>
+                    {outlook.alreadyAnswered
+                      ? '이번 라운드에 이미 답한 조합입니다. 다음 라운드에 다시 제안할 수 있어요.'
+                      : '성향과 신뢰에 따른 예상입니다. 실제 답변은 다를 수 있어요.'}
+                  </p>
+                  {w.manager.pending && (
+                    <div data-surface="sheet" className={s.pending}>
+                      <p>
+                        {tacticLabel[w.manager.pending]} 조건부 수락 · 훈련 지원금{' '}
+                        <Money value={supportCost} code={clubOf(w).country} year={w.year} />
+                      </p>
+                    </div>
+                  )}
+                </section>
+              </div>
+              <div
+                id={`${tabId}-lineup-panel`}
+                role="tabpanel"
+                aria-labelledby={`${tabId}-lineup-tab`}
+                hidden={tab !== 'lineup'}
+              >
+                <section data-surface="panel" className={s.section} aria-label="선발 선수 준비">
+                  <div className={s.sectionHead}>
+                    <h3>선발 11명 고르기</h3>
+                    <span>
+                      {FORMATIONS[w.tactic].name} ·{' '}
+                      {(['GK', 'DF', 'MF', 'FW'] as const)
+                        .map(
+                          (line) =>
+                            `${line} ${slots.filter((place) => lineOf(place.position) === line).length}`,
+                        )
+                        .join(' · ')}
+                    </span>
+                  </div>
+                  <div className={s.presets}>
+                    <button
+                      disabled={previewBlocked}
+                      aria-pressed={preset === 'strongest'}
+                      onClick={() => {
+                        setDraft(lineupPreset(w, 'strongest', next));
+                        setPreset('strongest');
+                      }}
+                    >
+                      전력 우선으로 선택
+                    </button>
+                    <button
+                      disabled={previewBlocked}
+                      aria-pressed={preset === 'rest'}
+                      onClick={() => {
+                        setDraft(lineupPreset(w, 'rest', next));
+                        setPreset('rest');
+                      }}
+                    >
+                      피로 회복 우선으로 선택
+                    </button>
+                  </div>
+                  <Preview players={selected} baseline={baseline} tactic={w.tactic} />
+                  <FormationPitch
+                    tactic={w.tactic}
+                    label={`${FORMATIONS[w.tactic].name} 선발 배치`}
+                    slotLabel={(index) =>
+                      byId
+                        .get(draft[index] ?? '')
+                        ?.name.split(' ')
+                        .at(-1) ?? '—'
+                    }
+                    slotTitle={(index) => byId.get(draft[index] ?? '')?.name ?? '빈 자리'}
+                    slot={(index) => {
+                      const place = slots[index]!,
+                        player = byId.get(draft[index] ?? '');
+                      const level = player?.positions[place.position];
+                      return (
+                        <div
+                          className={s.slotCard}
+                          data-surface="inset"
+                          data-testid={`formation-slot-${index}`}
+                          data-level={level ?? 0}
+                        >
+                          <small>
+                            {place.position} · {ROLE_LABEL[place.role]}
+                          </small>
+                          <b>{player ? player.name.split(' ').at(-1) : '—'}</b>
+                          {player && (
+                            <>
+                              <span>
+                                실효 {Math.round(slotOvr(player, place, ownMultiplier(player)))} ·{' '}
+                                {level ? LEVEL_LABEL[level] : '미숙'}
+                              </span>
+                              <span>적응 {player.adaptation.toFixed(2)}</span>
+                            </>
+                          )}
+                        </div>
+                      );
+                    }}
+                  />
+                  <MatchdaySquad w={w} xi={valid ? selected : baseline} />
+                  {replaced > 0 && (
+                    <p className={s.hint}>
+                      이탈한 선발 {replaced}명은 활동 중인 선수로 대체합니다.
+                    </p>
+                  )}
+                  <p className={s.hint}>
+                    자리마다 실효 능력과 피로를 비교해요. 직접 정한 선발은 변경할 때까지 유지합니다.
+                  </p>
+                  <details data-ui="disclosure" className={s.slots}>
+                    <summary>선수별 교체</summary>
+                    <div className={s.lineup}>
+                      {slots.map((place, slot) => (
+                        <label key={slot}>
+                          <span>
+                            {place.position} · {ROLE_LABEL[place.role]}
+                          </span>
+                          <Select
+                            disabled={previewBlocked}
+                            aria-label={`선발 ${slot + 1} ${place.position}`}
+                            value={draft[slot] || ''}
+                            onValueChange={(value) => {
+                              setPreset('manual');
+                              setDraft((current) => {
+                                const updated = [...current],
+                                  displaced = updated.indexOf(value);
+                                if (displaced >= 0 && displaced !== slot)
+                                  updated[displaced] = updated[slot];
+                                updated[slot] = value;
+                                return updated;
+                              });
+                            }}
+                          >
+                            <option value="" disabled>
+                              선수를 선택하세요
+                            </option>
+                            {players
+                              .map((player) => ({
+                                player,
+                                value: slotOvr(player, place, ownMultiplier(player)),
+                              }))
+                              .sort(
+                                (a, b) =>
+                                  b.value - a.value || a.player.id.localeCompare(b.player.id),
+                              )
+                              .map(({ player, value }) => (
+                                <option key={player.id} value={player.id}>
+                                  {player.name} · {player.position} · 실효 {Math.round(value)} ·
+                                  피로 {Math.round(player.fatigue)}
+                                </option>
+                              ))}
+                          </Select>
+                        </label>
+                      ))}
+                    </div>
+                  </details>
+                  {!valid && (
+                    <p className={s.warning}>
+                      활동 중인 선수 11명이 필요합니다. 비어 있는 자리를 채우세요.
+                    </p>
+                  )}
+                </section>
+              </div>
+            </Card>
+          )}
         </Dialog>
       )}
     </>

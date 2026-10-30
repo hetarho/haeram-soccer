@@ -2,6 +2,9 @@ import { worldMarketPage, worldMarketDetail } from '../../../../packages/engine/
 import { mediationPreview } from '../../../../packages/engine/src/mediation';
 import { fullStatsRead } from '../../../../packages/engine/src/npc-stats';
 import { personCareer } from './personCareer';
+import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
+import { recentClubResults } from '../../../../packages/engine/src/recent-results';
+import { startingSquad } from '../../../../packages/engine/src/world';
 import { staffMarket } from '../../../../packages/engine/src/staff';
 import { careerAssessment } from '../../../../packages/engine/src/career-assessment';
 import { nextEventDays } from '../../../../packages/engine/src/next-event';
@@ -384,6 +387,10 @@ export class Host {
     if (!w) return;
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     const ownGroup = groupKey(own);
+    const next = nextOwnFixture(w);
+    const opponentId = next && (next.home === w.playerClub ? next.away : next.home);
+    const opponent = w.clubs.find((club) => club.id === opponentId);
+    const briefingClubs = new Set(next ? [next.home, next.away] : [w.playerClub]);
     // The season's complete statistics are read on request (`full-stats`), not sent every day, and
     // so are the manager-history facts.
     const { people: _people, npcSeason: _season, managerHistory: _history, ...projected } = w;
@@ -399,6 +406,20 @@ export class Host {
       ),
       world: {
         ...projected,
+        // Browser projections omit `people`; resolving names there would regenerate old identities.
+        nextOpponentLineup:
+          next && opponent
+            ? {
+                fixture: next.id,
+                club: opponent.id,
+                players: startingSquad(w, opponent, next).map(({ id, name }) => ({ id, name })),
+              }
+            : undefined,
+        // The report gets both clubs' actual form, including a rival outside our league.
+        // Keep every other club's retained results on the worker instead of sending them daily.
+        recentResults: Object.fromEntries(
+          [...briefingClubs].map((club) => [club, recentClubResults(w, club)]),
+        ),
         mediations: [
           ...(w.mediations ?? []).filter((m) => m.status === 'pending'),
           ...(w.mediations ?? []).filter((m) => m.status !== 'pending').slice(-20),

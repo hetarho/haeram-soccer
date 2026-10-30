@@ -48,11 +48,12 @@ export const STORIES: Story[] = [
   ),
   story(
     'badges',
-    '능력치 · 금액 · 이름 링크',
+    '배지 · 승무패 · 능력치 · 금액',
     '기본 UI',
     [
       'OvrBadge',
       'HomeAwayBadge',
+      'ResultBadge',
       'Money',
       'AnimatedMoney',
       'BetaMark',
@@ -61,7 +62,7 @@ export const STORIES: Story[] = [
       'PersonCareer',
       'Term',
     ],
-    '홈·원정 배지, 능력치 등급, 잠재력, 금액 표기, BETA와 상세 정보 링크.',
+    '승·무·패와 점수 배지, 홈·원정 배지, 능력치 등급, 잠재력, 금액과 상세 정보 링크.',
   ),
   story(
     'charts',

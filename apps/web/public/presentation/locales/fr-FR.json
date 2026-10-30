@@ -181,6 +181,12 @@
     "personnel.manager": "Entraîneur",
     "personnel.coaches": "Personnel",
     "fixture.home": "Domicile",
-    "fixture.away": "Extérieur"
+    "fixture.away": "Extérieur",
+    "result.win": "V",
+    "result.win.label": "Victoire",
+    "result.draw": "N",
+    "result.draw.label": "Match nul",
+    "result.loss": "D",
+    "result.loss.label": "Défaite"
   }
 }

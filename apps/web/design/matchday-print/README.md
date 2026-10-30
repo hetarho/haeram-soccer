@@ -6,6 +6,7 @@ components and locale messages live outside the theme; the pack supplies their p
 | Family           | Source location                                | Deployed location                                |
 | ---------------- | ---------------------------------------------- | ------------------------------------------------ |
 | Home/away badges | [home-away-badges](home-away-badges/README.md) | `public/art/matchday-print/home-away-badges-v1/` |
+| Result badges | [result-badges](result-badges/README.md) | `public/art/matchday-print/result-badges-v1/` |
 
 Earlier print families still live at `../home-print`, `../controls-print`, `../hierarchy-print`,
 `../analysis-print`, `../surfaces-print` and `../rating-print`. These are legacy source paths;

@@ -9,20 +9,7 @@
   font-size: 12px;
   color: var(--text-muted);
 }
-/* The manager speaks to the owner first. */
-.memo {
-  display: grid;
-  gap: 4px;
-  padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--card-radius);
-  background: var(--surface-grain, none) var(--surface-2);
-}
-.memo small {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--accent-text);
-}
+/* The manager speaks to the owner first; the Card carries the frame. */
 .memo p {
   margin: 0;
   font-size: 14px;
@@ -41,9 +28,6 @@
   gap: 8px;
   min-width: 0;
   padding: 10px;
-  border: 1px solid var(--line);
-  border-radius: var(--card-radius);
-  background: var(--surface-grain, none) var(--surface);
 }
 .side h3 {
   display: flex;
@@ -60,6 +44,7 @@
 }
 .side h4 {
   margin: 2px 0 0;
+  text-align: center;
   font-size: 12px;
   color: var(--text-muted);
 }
@@ -85,57 +70,35 @@
   font-weight: 700;
   overflow-wrap: anywhere;
 }
+/* Up to ten results read as two rows of five, centred under the pitch like it. */
 .results {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(5, max-content);
+  justify-content: center;
   gap: 4px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 .results li {
-  display: grid;
-  justify-items: center;
-  min-width: 34px;
-  padding: 2px 4px;
-  border: 1px solid var(--line);
-  border-radius: var(--badge-radius);
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
+  display: flex;
 }
-.results li b,
-.meetings li b {
-  font-size: 12px;
-}
-[data-result='승'] b {
-  color: var(--positive);
-}
-[data-result='패'] b {
-  color: var(--danger);
-}
+/* A full-width card under the two sides: its few results sit centred, not in the left corner. */
 .meetings {
-  display: grid;
-  gap: 6px;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--card-radius);
-  background: var(--surface-grain, none) var(--surface);
-}
-.meetings h3 {
-  margin: 0;
-  font-size: 14px;
+  text-align: center;
 }
 .meetings ol {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 4px 12px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 20px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 .meetings li {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 6px;
   font-size: 13px;
   font-variant-numeric: tabular-nums;

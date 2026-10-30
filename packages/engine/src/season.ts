@@ -86,6 +86,7 @@ import { assertFullMatchRecord } from './match-model';
 import { attributeOwnMatch, captureSeasonClose } from './manager-history-capture';
 import { openNpcSeason, settleNpcSeason } from './npc-stats';
 import { activeMatchModel } from '../../contracts/src/match-model';
+import { recordRecentResult, retainRecentResults } from './recent-results';
 import {
   currentDay,
   ROUND_INTERVAL_DAYS,
@@ -290,6 +291,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
   }
   injuriesFromMatch(w, m);
   settleNpcSeason(w, playback);
+  recordRecentResult(w, m);
 }
 /** The own substitutes who came on, each with the XI slot of the player he replaced. */
 function substitutes(m: MatchRecord, side: 0 | 1, xi: readonly Player[]) {
@@ -684,6 +686,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   const finishes = leagueFinishes(w);
   // The promotion playoff belongs to the season just played: its squads retire after it.
   promote(w);
+  // Seed any untracked clubs in an older save before this season's fixture lists are discarded.
+  retainRecentResults(w);
   // The season's own match material, the playoff's included, becomes one heat map per own player
   // (→MATCH-5).
   reduceSeasonMaterial(w, w.history[w.history.length - 1]!);

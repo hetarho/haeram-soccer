@@ -136,24 +136,20 @@ export const useNavigation = create<{
 }));
 
 /** A primary entry resumes its last lens; explicit local tabs select their own lens. */
-export function openPrimary(page: Page) {
+export function openPrimary(page: Page | 'market') {
+  if (page === 'market') {
+    useTaskMemory.setState({ returning: undefined, parents: [] });
+    openMarket();
+    return;
+  }
   if (page === 'business') {
     useTaskMemory.setState({ returning: undefined, parents: [] });
     openOfficeLobby();
     useNavigation.setState({ officeFrom: 'dashboard' });
     return;
   }
-  const pages = page === 'league' ? SEASON_PAGES : page === 'history' ? HISTORY_PAGES : undefined;
-  const saved = useTaskMemory.getState().values[`hub-${page}`] as Page | undefined;
-  useNavigation
-    .getState()
-    .setPage(
-      pages?.some((candidate) => candidate === useNavigation.getState().page)
-        ? useNavigation.getState().page
-        : saved && pages?.some((candidate) => candidate === saved)
-          ? saved
-          : page,
-    );
+  // Each entry opens its own page: records, the league and the cups are no longer one hub.
+  useNavigation.getState().setPage(page);
 }
 useNavigation.subscribe(({ page }) => {
   const hub = SEASON_PAGES.some((candidate) => candidate === page)

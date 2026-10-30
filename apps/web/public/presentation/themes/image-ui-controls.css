@@ -1,5 +1,33 @@
 /* Reusable skins for semantic controls and surfaces. Layout stays with each view. */
 html[data-theme] {
+  [data-ui='result-badge'] {
+    --result-badge-frame: var(--result-draw-badge-frame);
+    --result-badge-slice: var(--result-draw-badge-slice);
+    --result-badge-fill: var(--result-draw-badge-fill);
+    --result-badge-ink: var(--result-draw-badge-text);
+    border: 1px solid transparent;
+    border-image: var(--result-badge-frame) var(--result-badge-slice) fill /
+      var(--result-badge-frame-width, 6px) stretch;
+    border-radius: 0;
+    background: var(--result-badge-fill) content-box;
+    color: var(--result-badge-ink);
+    box-shadow: none;
+  }
+
+  [data-ui='result-badge'][data-outcome='win'] {
+    --result-badge-frame: var(--result-win-badge-frame);
+    --result-badge-slice: var(--result-win-badge-slice);
+    --result-badge-fill: var(--result-win-badge-fill);
+    --result-badge-ink: var(--result-win-badge-text);
+  }
+
+  [data-ui='result-badge'][data-outcome='loss'] {
+    --result-badge-frame: var(--result-loss-badge-frame);
+    --result-badge-slice: var(--result-loss-badge-slice);
+    --result-badge-fill: var(--result-loss-badge-fill);
+    --result-badge-ink: var(--result-loss-badge-text);
+  }
+
   [data-ui='home-away-badge'] {
     --match-badge-frame: var(--match-home-badge-frame);
     --match-badge-slice: var(--match-home-badge-slice);
@@ -639,6 +667,36 @@ html[data-theme] {
   [data-ui='card'] > header {
     border: 0;
     background: none;
+  }
+
+  /* The home's two feature plates, for a surface that should read like them: the next-match
+     ticket and the dark season box. Both are artwork, not drawn lines. */
+  [data-surface='ticket'] {
+    border: 6px solid transparent;
+    border-image: var(--image-panel-frame)
+      var(--image-art-frame-ticket-slice, var(--image-frame-slice, 54)) / 17px stretch;
+    border-radius: var(--image-panel-radius, var(--image-radius, 0px));
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+    box-shadow: none;
+  }
+
+  [data-surface='ticket'] > header > div:first-child {
+    color: var(--accent-text);
+    font-weight: 800;
+    letter-spacing: 0.6px;
+  }
+
+  [data-surface='dark'] {
+    border: 0;
+    border-radius: var(--image-panel-radius, var(--image-radius, 0px));
+    background: var(--image-dark-fill, var(--image-ink-color)) var(--image-dark-material) repeat;
+    box-shadow: none;
+    color: var(--image-on-dark);
+  }
+
+  [data-surface='dark'] :is(h2, h3, h4, p, small, header > div) {
+    color: var(--image-on-dark);
   }
 
   [data-ui='content-panel'],

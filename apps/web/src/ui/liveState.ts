@@ -46,4 +46,10 @@ export const selectStrategyWorld = worldSelector([
   'playerClub',
   'year',
   'round',
+  'nextOpponentLineup',
+  'recentResults',
+  'ownMatches',
+  'cups',
+  'europe',
+  'discipline',
 ]);

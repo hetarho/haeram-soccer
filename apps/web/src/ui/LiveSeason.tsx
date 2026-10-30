@@ -1,9 +1,8 @@
 import { competitionRoute, selectedYear } from './competitionNavigation';
-import { useTaskState } from './taskMemory';
+import { useTaskMemory, useTaskState } from './taskMemory';
 import { CompetitionRecords, UnavailableLeagueRecord } from './CompetitionRecords';
 import { Segments } from './Segments';
 import { PixelIcon } from './PixelIcon';
-import { Select } from './Select';
 import {
   lazy,
   memo,
@@ -373,12 +372,15 @@ const PlayerPane = memo(function PlayerPane({
     </>
   );
 });
+/** Country, division and season: one filter row picks any league in any season (→WEB-65). */
 const LeagueScope = memo(function LeagueScope({
   league,
   onLeague,
+  onSeason,
 }: {
   league?: LeagueChoice;
   onLeague: (league?: LeagueChoice) => void;
+  onSeason: (year: number) => void;
 }) {
   const w = useGameState(selectLeagueWorld)!;
   return (
@@ -386,7 +388,7 @@ const LeagueScope = memo(function LeagueScope({
       <b className={s.srOnly}>
         {leagueName(league ?? ownLeague(w))} · {seasonName(w.year)}
       </b>
-      <LeaguePicker league={league} onLeague={onLeague} />
+      <LeaguePicker league={league} onLeague={onLeague} onSeason={onSeason} />
     </CompetitionHeader>
   );
 });
@@ -436,68 +438,6 @@ const ResultsPane = memo(function ResultsPane({
     </>
   );
 });
-/**
- * History's closed-season picker, between previous/next arrows. A season close adds its record
- * here without opening a screen or stopping the clock.
- */
-function SeasonPicker({
-  value,
-  onChange,
-}: {
-  value: number | undefined;
-  onChange: (year: number | undefined) => void;
-}) {
-  const current = useGameState((state) => state.view?.world.year);
-  const closed = useGameState((state) => state.view?.world.history.map((h) => h.year).join(','));
-  if (current === undefined) return null;
-  // Oldest first, restricted to closed seasons; current facts belong to Season.
-  const years = closed ? closed.split(',').map(Number) : [];
-  if (!years.length) return null;
-  const at = Math.max(0, years.indexOf(value ?? current));
-  const go = (index: number) => onChange(years[index] === current ? undefined : years[index]);
-  return (
-    <div
-      className={t.seasonPicker}
-      data-ui="season-picker"
-      role="group"
-      aria-label="리그 시즌 선택"
-    >
-      <button
-        data-ui="link"
-        type="button"
-        className={t.seasonStep}
-        aria-label="이전 시즌"
-        disabled={at === 0}
-        onClick={() => go(at - 1)}
-      >
-        <PixelIcon name="chevronLeft" size={20} />
-      </button>
-      <Select
-        data-ui="text-select"
-        aria-label="리그 시즌"
-        className={t.seasonSelect}
-        value={value ?? 'current'}
-        onValueChange={(next) => onChange(next === 'current' ? undefined : Number(next))}
-      >
-        {[...years].reverse().map((year) => (
-          <option key={year} value={year === current ? 'current' : year}>
-            {seasonName(year)}
-          </option>
-        ))}
-      </Select>
-      <button
-        data-ui="link"
-        type="button"
-        className={t.seasonStep}
-        aria-label="다음 시즌"
-        disabled={at === years.length - 1}
-        onClick={() => go(at + 1)}
-      >
-        <PixelIcon name="chevronRight" size={20} />
-      </button>
-    </div>
-  );
-}
 /**
  * Panels stay mounted. The simulation and canvas keep their identity when tabs change; a league
  * tab joins them once it has been opened.
@@ -660,6 +600,25 @@ export const LiveSeason = memo(function LiveSeason({
     }
   }, [archive, reviewYear, currentYear]);
   const reviewing = archive && reviewYear !== undefined;
+  // This season is the live league; a closed one opens its archive in the same league and tab.
+  const pickSeason = (year: number) => {
+    if (archive) {
+      setReviewYear(year);
+      return;
+    }
+    if (year === currentYear) return;
+    const params = new URLSearchParams({
+      section: 'league',
+      season: String(year),
+      view: leagueTab,
+    });
+    const chosen = leagueParam(league);
+    if (chosen) params.set('league', chosen);
+    useTaskMemory.setState((memory) => ({
+      addresses: { ...memory.addresses, leagueHistory: `/history?${params}` },
+    }));
+    useNavigation.getState().setPage('leagueHistory');
+  };
   // A league tab mounts the first time it is shown and stays mounted after, so it keeps what was
   // chosen in it; a tab never opened renders nothing while hidden.
   const shown = page === 'league' ? tab : undefined;
@@ -688,13 +647,12 @@ export const LiveSeason = memo(function LiveSeason({
   const inTabs = (id: Tab) => visibleTabs.some(([visible]) => visible === id);
   return (
     <div hidden={!active} data-testid="live-season" className={t.liveSeason}>
-      {archive && <SeasonPicker value={reviewYear} onChange={setReviewYear} />}
       {archive && reviewYear === undefined && (
         <p className={s.muted}>아직 마감된 리그 시즌이 없어요.</p>
       )}
       {page === 'league' && !reviewing && (
         <div className={t.navigation} data-ui="toolbar">
-          <LeagueScope league={league} onLeague={setLeague} />
+          <LeagueScope league={league} onLeague={setLeague} onSeason={pickSeason} />
           <div className={`${s.seasonTabs} ${t.tabs}`} role="tablist" aria-label="리그 보기">
             {visibleTabs.map(([id, label], i) => (
               <button
@@ -767,6 +725,7 @@ export const LiveSeason = memo(function LiveSeason({
             onTeamPart={setTeamPart}
             playerPart={playerPart}
             onPlayerPart={setPlayerPart}
+            onYear={pickSeason}
           />
           {pastTab === 'scorers' && playerPart === 'scorers' && (
             <p className={s.muted}>지난 시즌 징계 기록은 보관하지 않아요.</p>

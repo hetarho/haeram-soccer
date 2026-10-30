@@ -9,7 +9,11 @@ import { cashState, teamStates, type StateKey } from './teamState';
 import { RemedySheet } from './RemedySheet';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
-import { openLeagueSeason, openCupSeason, beginTaskDetour, useNavigation } from './state';
+import { openCupSeason, openPrimary, useNavigation } from './state';
+import { ROOMS } from './navigationTabs';
+import { stoppingEvents } from '../runtime/progression';
+import { eventDesk } from './eventRouting';
+import { useLocale } from '../presentation/react';
 import { currentCupBriefings } from './competitionNavigation';
 import { ClubLink } from './ClubLink';
 import { StrategyPanel } from './LazyStrategyPanel';
@@ -127,6 +131,44 @@ export function TeamState({
           onPrepare={onPrepare}
         />
       )}
+    </section>
+  );
+}
+
+/**
+ * The owner's office (→WEB-10/11): its room art, dimmed, with the team's state in small tiles
+ * over it, the way the stadium scene carries the club's crowd. Office work waiting for the owner
+ * shows its count in the caption, and the office opens from there.
+ */
+function OfficeScene({ w, children }: { w: World; children: ReactNode }) {
+  const pending = stoppingEvents(w).filter((item) => !!eventDesk(item)).length;
+  return (
+    <section className={s.office} data-home-part="office" aria-label="구단주 사무실">
+      <FacilityArt kind="manager" world={w} className={s.officeArt} />
+      <div className={s.officeShade} aria-hidden="true" />
+      <div className={s.officeCaption}>
+        <b>구단주 사무실</b>
+        <span>
+          결재 대기{' '}
+          {pending > 0 ? (
+            <b data-ui="count" className={s.officeCount}>
+              {pending > 99 ? '99+' : pending}
+            </b>
+          ) : (
+            '0'
+          )}
+          건
+        </span>
+        <button
+          type="button"
+          data-ui="primary"
+          className={s.officeEnter}
+          onClick={() => openPrimary('business')}
+        >
+          들어가기
+        </button>
+      </div>
+      {children}
     </section>
   );
 }
@@ -263,6 +305,30 @@ export function SeasonCard({ w, active }: { w: World; active: boolean }) {
   );
 }
 
+/**
+ * The clubhouse's rooms (→WEB-10): every place other than records, league and cups opens from
+ * here, and office work waiting for the owner shows its count on the office door.
+ */
+function ClubRooms() {
+  const { t } = useLocale();
+  return (
+    <nav className={s.rooms} aria-label="클럽하우스">
+      {ROOMS.map(([page, label]) => (
+        <button
+          key={page}
+          type="button"
+          className={s.room}
+          data-ui="place"
+          data-place={page}
+          onClick={() => openPrimary(page)}
+        >
+          <span>{t(label)}</span>
+        </button>
+      ))}
+    </nav>
+  );
+}
+
 export function ClubHub({
   w,
   client,
@@ -293,22 +359,11 @@ export function ClubHub({
     >
       <SeasonCard w={w} active={!away} />
       <NextMatchCard w={w} onPrepare={() => setPreparing(true)} />
+      <OfficeScene w={w}>
+        <TeamState w={w} client={client} onPrepare={() => setPreparing(true)} />
+      </OfficeScene>
+      <ClubRooms />
       <div className={s.clubLinks}>
-        <button data-ui="link" onClick={() => openLeagueSeason(w.year, w.year)}>
-          리그 보기
-        </button>
-        <button data-ui="link" aria-haspopup="dialog" onClick={() => setCupsOpen(true)}>
-          컵대회 보기
-        </button>
-        <button
-          data-ui="link"
-          onClick={() => {
-            beginTaskDetour('history');
-            useNavigation.getState().setPage('history');
-          }}
-        >
-          클럽 기록실
-        </button>
         <button data-ui="link" onClick={() => setJournalOpen(true)}>
           클럽 소식·시즌 브리핑
         </button>
@@ -317,7 +372,6 @@ export function ClubHub({
       <div className={s.stage} data-home-part="stage">
         <ClubScene w={w} />
       </div>
-      <TeamState w={w} client={client} onPrepare={() => setPreparing(true)} />
 
       {preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />}
       {journalOpen && (

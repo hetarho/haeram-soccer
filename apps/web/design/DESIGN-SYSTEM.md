@@ -204,6 +204,13 @@ wide can reduce its keyline below a visible pixel. `match-badge-frame-width` con
 art frame independently of its native source caps. Keep fallback fills inside the content
 box when the silhouette has transparent corners.
 
+Match outcomes use the shared `ResultBadge`, with compact and score-bearing variants in the
+`badges` story. Give win, draw and loss explicit `result-{win,draw,loss}-badge-{frame,slice,fill,text}`
+roles instead of plain bordered boxes. Keep these meanings separate from venue, action and
+rating roles. Outcome labels and accessible names belong in locale packs; keep scores live
+and preserve their team order in right-to-left layouts. The current print artwork and exact
+regeneration prompts are in [Matchday Print result badges](matchday-print/result-badges/README.md).
+
 The [theme contract](../src/presentation/contracts.ts) is the schema, and the
 [theme registry](../public/presentation/themes/index.json) is the available-theme inventory.
 

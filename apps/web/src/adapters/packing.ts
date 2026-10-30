@@ -9,6 +9,7 @@ import {
 import { buildSeasonFixtures } from '../../../../packages/engine/src/league-fixtures';
 import { packBitColumns, readBitColumns, type BitColumns } from './bitpacking';
 import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
+import { RECENT_RESULT_LIMIT } from '../../../../packages/contracts/src/recent-results';
 import type {
   World,
   MatchRecord,
@@ -137,6 +138,8 @@ interface Packed {
   world: World;
   dict: string[];
   fixtures: Tuple[];
+  /** Per club, the bounded cross-season fixture summaries, with shoot-outs in column 9. */
+  recentResults?: Record<string, Tuple[]>;
   matches: Tuple[];
   matchFields?: string;
   matchActors?: string;
@@ -229,6 +232,17 @@ export function pack(w: World): Packed {
     id(f.groupKey),
     f.score ? [f.score.home, f.score.away] : [],
   ];
+  const recentResults =
+    w.recentResults &&
+    Object.fromEntries(
+      Object.entries(w.recentResults).map(([club, results]) => [
+        club,
+        results.map((result) => [
+          ...fixture(result),
+          result.shootout ? [result.shootout.home, result.shootout.away] : [],
+        ]),
+      ]),
+    );
   const stats: number[] = [];
   const statWidth = w.ownMatches.every((m) => m.players.length === 11) ? 156 : 12;
   const matches = w.ownMatches.map((m) => {
@@ -440,6 +454,7 @@ export function pack(w: World): Packed {
       ...(careers ? { people: undefined } : {}),
       ...(model ? { matchModel: undefined, npcSeason: undefined } : {}),
       ...(managerHistory ? { managerHistory: undefined } : {}),
+      ...(recentResults ? { recentResults: undefined } : {}),
       fixtures: [],
       ownMatches: [],
       events: [],
@@ -472,6 +487,7 @@ export function pack(w: World): Packed {
     },
     dict,
     fixtures: w.fixtures.flatMap((f, i) => (f.score ? [[i, f.score.home, f.score.away]] : [])),
+    ...(recentResults ? { recentResults } : {}),
     matches: [],
     matchFields: integers(matchFields, 10),
     matchActors: '',
@@ -687,6 +703,43 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
       ...(score.length ? { score: { home: score[0], away: score[1] } } : {}),
     };
   };
+  if (
+    p.recentResults !== undefined &&
+    (p.world.recentResults !== undefined ||
+      !p.recentResults ||
+      typeof p.recentResults !== 'object' ||
+      Array.isArray(p.recentResults) ||
+      Object.keys(p.recentResults).length > p.world.clubs.length ||
+      Object.values(p.recentResults).some(
+        (results) =>
+          !Array.isArray(results) ||
+          results.length > RECENT_RESULT_LIMIT ||
+          results.some(
+            (row) =>
+              !Array.isArray(row) ||
+              row.length !== 10 ||
+              !Array.isArray(row[8]) ||
+              row[8].length !== 2 ||
+              !Array.isArray(row[9]) ||
+              (row[9].length !== 0 && row[9].length !== 2),
+          ),
+      ))
+  )
+    throw new Error('최근 경기 압축 데이터 손상');
+  const recentResults =
+    p.recentResults &&
+    Object.fromEntries(
+      Object.entries(p.recentResults).map(([club, results]) => [
+        club,
+        results.map((row) => {
+          const shootout = row[9] as number[];
+          return {
+            ...f(row),
+            ...(shootout.length ? { shootout: { home: shootout[0], away: shootout[1] } } : {}),
+          };
+        }),
+      ]),
+    );
   let packedMatches = p.matches;
   if (p.matchActorColumns !== undefined && p.matchFields === undefined)
     throw new Error('경기 참여자 압축 데이터 손상');
@@ -1097,6 +1150,7 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
     ...(model?.matchModel ? { matchModel: model.matchModel } : {}),
     ...(model?.npcSeason ? { npcSeason: model.npcSeason } : {}),
     ...(managers ? { managerHistory: managers.facts } : {}),
+    ...(recentResults ? { recentResults } : {}),
     fixtures: fixtures,
     ownMatches: matches,
     history,

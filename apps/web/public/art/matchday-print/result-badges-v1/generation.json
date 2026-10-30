@@ -1,0 +1,72 @@
+{
+  "method": "Three built-in image_gen edits; shared createUiArtPipeline alpha bounds and WebP encoding",
+  "date": "2026-10-30",
+  "sources": "apps/web/design/matchday-print/result-badges/sources",
+  "prompts": "apps/web/design/matchday-print/result-badges/prompts.json",
+  "geometry": "Opaque blank result tickets, transparent exterior, fixed source caps and filled centres; localized outcomes and scores remain live text.",
+  "assets": [
+    {
+      "file": "frame-win.webp",
+      "source": "win.png",
+      "crop": { "x": 26, "y": 82, "width": 1350, "height": 959 },
+      "filter": "",
+      "bytes": 7746,
+      "sha256": "ccb566907cdd994b8753fa2e69fd1d6f53345ee6cd2fafd6d1fcb0599aa29f92",
+      "width": 192,
+      "height": 136,
+      "role": "image-art-result-win-badge",
+      "mode": "nine-slice",
+      "slice": 22,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2669773,
+        "inputSha256": "7ada7e710d94167ed5a0654a0b64e13d9c8e2cb481ca46d7a846827ca62ceae3",
+        "width": 192,
+        "height": 136,
+        "quality": 85
+      }
+    },
+    {
+      "file": "frame-draw.webp",
+      "source": "draw.png",
+      "crop": { "x": 20, "y": 37, "width": 1361, "height": 1048 },
+      "filter": "",
+      "bytes": 9166,
+      "sha256": "2924deb225c9af8a0e708df219c490ec4b06b50cc8c069caf4db29c82d5cc398",
+      "width": 192,
+      "height": 148,
+      "role": "image-art-result-draw-badge",
+      "mode": "nine-slice",
+      "slice": 22,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2920351,
+        "inputSha256": "6cba155a5e1b8fdd0248e8404d1da99818c3724e6e969267a460e422107c55d8",
+        "width": 192,
+        "height": 148,
+        "quality": 85
+      }
+    },
+    {
+      "file": "frame-loss.webp",
+      "source": "loss.png",
+      "crop": { "x": 25, "y": 90, "width": 1352, "height": 940 },
+      "filter": "",
+      "bytes": 7976,
+      "sha256": "39478b69e801949aca22515b7852d91b977898f43293d5065cc1984fe2668c1d",
+      "width": 192,
+      "height": 133,
+      "role": "image-art-result-loss-badge",
+      "mode": "nine-slice",
+      "slice": 22,
+      "optimization": {
+        "policy": "compact-ui-and-responsive-scenes-v1",
+        "inputBytes": 2243893,
+        "inputSha256": "039d8cb78702b31fb9cf88d5ab026e936785c80db9083c8a2da3ddb86841edfb",
+        "width": 192,
+        "height": 133,
+        "quality": 85
+      }
+    }
+  ]
+}

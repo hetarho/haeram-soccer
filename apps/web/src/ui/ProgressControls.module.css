@@ -170,11 +170,10 @@
   font-size: 12px;
   line-height: 1.5;
   white-space: nowrap;
-  gap: 6px;
-  min-width: 132px;
+  gap: 4px;
 }
+/* The button is as wide as its words, AUTO or MANUAL. */
 .modeStatus {
-  width: 56px;
   flex: none;
   text-align: center;
   white-space: nowrap;
@@ -268,7 +267,6 @@
   }
   .modeSwitch {
     padding: 8px;
-    min-width: 124px;
   }
   .approvals {
     flex: 0 0 60px;

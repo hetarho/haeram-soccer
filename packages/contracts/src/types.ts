@@ -1,6 +1,7 @@
 import type { ClubBuild } from './build';
 import type { ClubIdentity, FixtureKitChoice, KitRole, MatchAppearance } from './identity';
 import type { ManagerHistoryFacts } from './manager-history';
+import type { RecentResults } from './recent-results';
 import type {
   IntentionObservation,
   MatchModelRevision,
@@ -1211,6 +1212,8 @@ export interface World {
   requested?: Tactic;
   fixtures: Fixture[];
   tables: Record<string, TableRow>;
+  /** Bounded cross-season results for every club; absent in saves made before tracking. */
+  recentResults?: RecentResults;
   /** The owner's shirt for one named unplayed own fixture (→KIT-7); absent is automatic. */
   kitChoice?: FixtureKitChoice;
   ownMatches: MatchRecord[];

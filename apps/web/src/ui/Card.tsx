@@ -3,7 +3,8 @@ import s from './Card.module.css';
 
 type CardProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
   as?: 'article' | 'section' | 'div';
-  surface?: 'sheet' | 'detail';
+  /** `ticket` and `dark` wear the home's next-match and season plates. */
+  surface?: 'sheet' | 'detail' | 'ticket' | 'dark';
   title?: ReactNode;
   meta?: ReactNode;
   actions?: ReactNode;

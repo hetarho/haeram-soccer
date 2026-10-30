@@ -31,17 +31,17 @@ import {
 import type { World } from '../../../../packages/contracts/src/types';
 import { country, priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
-import { NAV, TABS } from './navigationTabs';
+import { BOTTOM_ORDER, NAV, TABS, type NavEntry } from './navigationTabs';
+import { personnelRoute } from './personnelNavigation';
 import { HudCash } from './HudCash';
 import { DepartmentPolicySheet } from './DepartmentPolicySheet';
 import { PlayerPreparationHost } from './PlayerPreparationHost';
-import { TaskReturn } from './TaskReturn';
 import { taskAddress, useTaskMemory } from './taskMemory';
 import { ClubCrest } from './ClubCrest';
 import { ClubLink } from './ClubLink';
 import { competitionLabel, number, percent, seasonName } from './format';
 import { Money } from './Money';
-import { ProgressControls, ProgressOverview } from './ProgressControls';
+import { ProgressControls } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
 // The clubhouse loads when a game is ready, outside the founding/slot entry.
 const ClubHub = lazy(() => import('./ClubHub').then((module) => ({ default: module.ClubHub })));
@@ -50,7 +50,8 @@ const PlayGuide = lazy(() =>
   import('./PlayGuide').then((module) => ({ default: module.PlayGuide })),
 );
 import { gameActionsBlocked, gameStore, useGameState } from '../runtime/store';
-import { ProgressionController, useProgression } from '../runtime/progression';
+import { ProgressionController, stoppingEvents, useProgression } from '../runtime/progression';
+import { eventDesk } from './eventRouting';
 import { worldSelector } from './liveState';
 import { LeagueOverview, RankHistoryGraph, Standings } from './LeagueInsights';
 import { ownLeagueIds } from './league';
@@ -146,8 +147,26 @@ function rememberInGame(inGame: boolean) {
     /* Without session storage a reload shows the slots again. */
   }
 }
-function NavIcon({ page }: { page: Page }) {
-  const names: Record<Page, PixelIconName> = {
+/** Whether the first team shows its transfer market, which makes the market's entry current. */
+function useMarketOpen() {
+  const page = useNavigation((state) => state.page);
+  const [market, setMarket] = useState(false);
+  useEffect(() => {
+    const read = () =>
+      setMarket(personnelRoute(location.pathname, location.search)?.view === 'market');
+    read();
+    window.addEventListener('popstate', read);
+    window.addEventListener('tasknavigate', read);
+    return () => {
+      window.removeEventListener('popstate', read);
+      window.removeEventListener('tasknavigate', read);
+    };
+  }, [page]);
+  return page === 'firstTeam' && market;
+}
+function NavIcon({ page }: { page: NavEntry }) {
+  const names: Record<NavEntry, PixelIconName> = {
+    market: 'switch',
     dashboard: 'home',
     match: 'ball',
     league: 'table',
@@ -943,7 +962,8 @@ export function App() {
   const showNews = useNewsSheet((state) => state.show);
   const showGlossary = useGlossary((state) => state.show);
   const contentPage = useDeferredValue(page);
-  const competitionHub = Object.hasOwn(COMPETITION_PATHS, contentPage);
+  // Club records stand alone; league and cups keep their this-season and past-records tabs.
+  const competitionHub = Object.hasOwn(COMPETITION_PATHS, contentPage) && contentPage !== 'history';
   const changingView = contentPage !== page;
   const openMenu = useCallback(() => setMoreOpen(true), []);
   useEffect(() => {
@@ -989,6 +1009,21 @@ export function App() {
   }, []);
   const w = state?.view?.world;
   const playing = screen === 'game' && !!w && !replacing;
+  const officePending = playing ? stoppingEvents(w).filter((item) => !!eventDesk(item)).length : 0;
+  const marketOpen = useMarketOpen();
+  const current = (id: NavEntry) =>
+    id === 'market'
+      ? marketOpen
+      : !marketOpen && !!TABS.find(([tab]) => tab === id)?.[3].includes(page);
+  const officeBadge = (id: NavEntry) =>
+    id === 'dashboard' && officePending > 0 ? (
+      <>
+        <b data-ui="count" className={s.navCount} aria-hidden="true">
+          {officePending > 99 ? '99+' : officePending}
+        </b>
+        <span className={s.srOnly}> · 결재 대기 {officePending}건</span>
+      </>
+    ) : null;
   // Every world that comes into play joins the slot index (→SAVE-14).
   useEffect(() => {
     if (worldId) slots?.sync(gameStore.getSnapshot().view?.world);
@@ -1167,16 +1202,13 @@ export function App() {
               data-ui="navigation"
               key={id}
               disabled={menuDisabled}
-              aria-current={
-                TABS.find(([tab]) => tab === id)?.[3].includes(page) ? 'page' : undefined
-              }
-              className={
-                TABS.find(([tab]) => tab === id)?.[3].includes(page) ? s.active : undefined
-              }
+              aria-current={current(id) ? 'page' : undefined}
+              className={current(id) ? s.active : undefined}
               onClick={() => openPrimary(id)}
             >
               <NavIcon page={id} />
               {t(label)}
+              {officeBadge(id)}
             </button>
           ))}
         </nav>
@@ -1201,15 +1233,6 @@ export function App() {
             onDownload={download}
           />
         )}
-        {/* Season controls belong to management views; observation has its own speeds. */}
-        {client &&
-          controller &&
-          playing &&
-          !w.bankrupt &&
-          page !== 'match' &&
-          page !== 'league' &&
-          page !== 'europe' &&
-          page !== 'dashboard' && <ProgressOverview compact />}
         <div ref={scroller} className={s.scroller} data-testid="view-scroller">
           {client && controller && playing && !w.bankrupt && page !== 'match' && (
             <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
@@ -1262,7 +1285,6 @@ export function App() {
                   </div>
                 )}
                 <div className={s.views} inert={changingView} aria-busy={changingView}>
-                  {contentPage !== 'league' && contentPage !== 'europe' && <TaskReturn />}
                   <div className={s.coreContent} hidden={contentPage !== 'dashboard'}>
                     <ConnectedDashboard client={client} />
                   </div>
@@ -1306,20 +1328,24 @@ export function App() {
       </main>
       {playing && <AccessibleSaveStatus />}
       <nav ref={mobileNavigation} className={s.mobileNav} aria-label={t('shell.mobileNavigation')}>
-        {TABS.map(([id, label, full, owns]) => (
-          <button
-            data-ui="navigation"
-            key={id}
-            aria-label={t(full)}
-            aria-current={owns.includes(page) ? 'page' : undefined}
-            className={id === 'dashboard' ? s.homeTab : undefined}
-            disabled={menuDisabled}
-            onClick={() => openPrimary(id)}
-          >
-            <NavIcon page={id} />
-            <span>{t(label)}</span>
-          </button>
-        ))}
+        {BOTTOM_ORDER.map((id) => {
+          const [, label, full] = TABS.find(([tab]) => tab === id)!;
+          return (
+            <button
+              data-ui="navigation"
+              key={id}
+              aria-label={t(full)}
+              aria-current={current(id) ? 'page' : undefined}
+              className={id === 'dashboard' ? s.homeTab : undefined}
+              disabled={menuDisabled}
+              onClick={() => openPrimary(id)}
+            >
+              <NavIcon page={id} />
+              <span>{t(label)}</span>
+              {officeBadge(id)}
+            </button>
+          );
+        })}
       </nav>
       {client && playing && <ActionOutcome />}
       {/* The match theatre keeps its own controls clear; news waits until the owner returns. */}

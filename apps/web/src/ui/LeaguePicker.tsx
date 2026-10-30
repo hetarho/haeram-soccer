@@ -6,7 +6,39 @@ import { useGameState } from '../runtime/store';
 import { selectLeagueWorld } from './liveState';
 import { leagueParam, ownLeague, sameLeague, type LeagueChoice } from './league';
 import { Select } from './Select';
+import { seasonName } from './format';
 import s from './App.module.css';
+
+/** The season filter beside country and division: this season first, then closed ones. */
+function SeasonSelect({
+  value,
+  onChange,
+}: {
+  value?: number;
+  onChange: (year: number) => void;
+}) {
+  const current = useGameState((state) => state.view?.world.year);
+  const closed = useGameState((state) => state.view?.world.history.map((h) => h.year).join(','));
+  if (current === undefined) return null;
+  const years = [
+    current,
+    ...(closed ? closed.split(',').map(Number) : []).filter((year) => year !== current).reverse(),
+  ];
+  return (
+    <Select
+      aria-label="시즌"
+      value={String(value ?? current)}
+      onValueChange={(year) => onChange(Number(year))}
+    >
+      {years.map((year) => (
+        <option key={year} value={year}>
+          {seasonName(year)}
+          {year === current ? ' · 진행 중' : ''}
+        </option>
+      ))}
+    </Select>
+  );
+}
 
 /** A league's name: country and division, its regional group when the division has several. */
 export function leagueName(league: LeagueChoice, amateur = false) {
@@ -51,10 +83,15 @@ export const LeaguePicker = memo(function LeaguePicker({
   league,
   onLeague,
   own: base,
+  season,
+  onSeason,
 }: {
   league?: LeagueChoice;
   onLeague: (league?: LeagueChoice) => void;
   own?: LeagueChoice;
+  /** With `onSeason`, the season joins country and division in the same row. */
+  season?: number;
+  onSeason?: (year: number) => void;
 }) {
   const w = useGameState(selectLeagueWorld)!;
   const own = base ?? ownLeague(w),
@@ -116,6 +153,12 @@ export const LeaguePicker = memo(function LeaguePicker({
               </option>
             ))}
           </Select>
+        </label>
+      )}
+      {onSeason && (
+        <label>
+          <span className={s.srOnly}>시즌</span>
+          <SeasonSelect value={season} onChange={onSeason} />
         </label>
       )}
       {league && !sameLeague(league, own) && (

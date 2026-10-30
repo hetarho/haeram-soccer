@@ -1,0 +1,22 @@
+{
+  "method": "Built-in image_gen edits of the existing Matchday Print ticket",
+  "date": "2026-10-30",
+  "reference": "apps/web/public/art/matchday-print/home-away-badges-v1/frame-home.webp",
+  "assets": [
+    {
+      "id": "win",
+      "source": "sources/win.png",
+      "prompt": "Use case: precise-object-edit. Asset type: reusable blank WIN match-result badge skin in the Matchday Print football journal game. Edit the supplied ticket material reference into one compact almost-square ticket, width to height approximately 5:4. Change its surface ink to deep football green #285b43. Preserve the warm ivory double printed keyline, subtle paper flecks and letterpress grain, tiny clipped corners, flat front view. Make the centre fully opaque and entirely blank so live text can be placed on it. Keep all keylines inside the outer 7 percent and avoid any detail in the broad centre. The thin ivory lines must read at a final 36px width; restrained distress, no busy decoration. One single isolated asset, centered, occupying most of the canvas, small genuinely transparent exterior, no external shadow. No text, no letters, no numbers, no symbols, no icon, no shield, no logo, no mockup or scene. This is production UI artwork, not a screenshot."
+    },
+    {
+      "id": "draw",
+      "source": "sources/draw.png",
+      "prompt": "Use case: precise-object-edit. Asset type: reusable blank DRAW match-result badge skin in the Matchday Print football journal game. Edit the supplied ticket material reference into one compact almost-square ticket, width to height approximately 5:4. Change its surface ink to muted golden ochre #86652b. Preserve the warm ivory double printed keyline, subtle paper flecks and letterpress grain, tiny clipped corners, flat front view. Make the centre fully opaque and entirely blank so live text can be placed on it. Keep all keylines inside the outer 7 percent and avoid any detail in the broad centre. The thin ivory lines must read at a final 36px width; restrained distress, no busy decoration. One single isolated asset, centered, occupying most of the canvas, small genuinely transparent exterior, no external shadow. No text, no letters, no numbers, no symbols, no icon, no shield, no logo, no mockup or scene. This is production UI artwork, not a screenshot."
+    },
+    {
+      "id": "loss",
+      "source": "sources/loss.png",
+      "prompt": "Use case: precise-object-edit. Asset type: reusable blank LOSS match-result badge skin in the Matchday Print football journal game. Edit the supplied ticket material reference into one compact almost-square ticket, width to height approximately 5:4. Change its surface ink to deep vermilion red #9a3528. Preserve the warm ivory double printed keyline, subtle paper flecks and letterpress grain, tiny clipped corners, flat front view. Make the centre fully opaque and entirely blank so live text can be placed on it. Keep all keylines inside the outer 7 percent and avoid any detail in the broad centre. The thin ivory lines must read at a final 36px width; restrained distress, no busy decoration. One single isolated asset, centered, occupying most of the canvas, small genuinely transparent exterior, no external shadow. No text, no letters, no numbers, no symbols, no icon, no shield, no logo, no mockup or scene. This is production UI artwork, not a screenshot."
+    }
+  ]
+}

@@ -413,9 +413,11 @@ export const ClosedSeason = memo(function ClosedSeason({
   onTeamPart,
   playerPart,
   onPlayerPart,
+  onYear,
 }: {
   client: GameClient;
   year: number;
+  onYear: (year: number) => void;
   tab: PastTab;
   onTab: (tab: PastTab) => void;
   league?: LeagueChoice;
@@ -453,7 +455,13 @@ export const ClosedSeason = memo(function ClosedSeason({
             (league ?? ownThen!).group,
           )}
         </b>
-        <LeaguePicker league={league} onLeague={onLeague} own={ownThen} />
+        <LeaguePicker
+          league={league}
+          onLeague={onLeague}
+          own={ownThen}
+          season={year}
+          onSeason={onYear}
+        />
         <button type="button" onClick={() => openClubSeason(year)}>
           우리 구단의 이 시즌 기록
         </button>

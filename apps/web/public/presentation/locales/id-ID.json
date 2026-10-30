@@ -175,6 +175,12 @@
     "personnel.manager": "Manajer",
     "personnel.coaches": "Staf",
     "fixture.home": "Kandang",
-    "fixture.away": "Tandang"
+    "fixture.away": "Tandang",
+    "result.win": "M",
+    "result.win.label": "Menang",
+    "result.draw": "S",
+    "result.draw.label": "Seri",
+    "result.loss": "K",
+    "result.loss.label": "Kalah"
   }
 }

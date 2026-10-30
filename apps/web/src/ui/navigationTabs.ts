@@ -1,18 +1,29 @@
 import type { Page } from './state';
 
-/** Shared place order; competition details and records belong to the clubhouse (→WEB-10). */
-export const TABS: [Page, string, string, Page[]][] = [
+/** A navigation entry: a page, or the transfer market, which is a view of the first team. */
+export type NavEntry = Page | 'market';
+/** The five entries: the clubhouse holds every room of the club; league, cups, the transfer market
+ * and records sit beside it. The market owns no page: it is current while the first team shows it. */
+export const TABS: [NavEntry, string, string, Page[]][] = [
   [
     'dashboard',
     'navigation.dashboard',
     'navigation.dashboard',
-    ['dashboard', 'league', 'europe', 'history', 'leagueHistory', 'cupHistory', 'match'],
+    ['dashboard', 'match', 'business', 'firstTeam', 'staff', 'training', 'academy'],
   ],
-  ['business', 'navigation.business', 'navigation.business', ['business']],
-  ['firstTeam', 'navigation.firstTeam', 'navigation.firstTeam', ['firstTeam']],
-  ['staff', 'navigation.staff', 'navigation.staff', ['staff']],
-  ['training', 'navigation.training', 'navigation.training', ['training']],
-  ['academy', 'navigation.academy', 'navigation.academy', ['academy']],
+  ['league', 'navigation.short.league', 'navigation.league', ['league', 'leagueHistory']],
+  ['europe', 'navigation.short.europe', 'navigation.short.europe', ['europe', 'cupHistory']],
+  ['market', 'personnel.market', 'personnel.market', []],
+  ['history', 'navigation.short.history', 'navigation.history', ['history']],
 ];
-/** Desktop and phone entries share their hierarchy and order. */
-export const NAV: [Page, string][] = TABS.map(([page, , label]) => [page, label]);
+/** The bottom bar keeps the clubhouse in the middle: league and cups left, market and records right. */
+export const BOTTOM_ORDER: NavEntry[] = ['league', 'europe', 'dashboard', 'market', 'history'];
+/** The clubhouse's rooms, entered from its home (→WEB-10); the owner's office has its own scene. */
+export const ROOMS: [Page, string][] = [
+  ['firstTeam', 'navigation.firstTeam'],
+  ['staff', 'navigation.staff'],
+  ['training', 'navigation.training'],
+  ['academy', 'navigation.academy'],
+];
+/** The sidebar's entries in their order. */
+export const NAV: [NavEntry, string][] = TABS.map(([page, , label]) => [page, label]);

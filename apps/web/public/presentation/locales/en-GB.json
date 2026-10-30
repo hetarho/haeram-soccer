@@ -178,6 +178,12 @@
     "personnel.manager": "Manager",
     "personnel.coaches": "Staff",
     "fixture.home": "Home",
-    "fixture.away": "Away"
+    "fixture.away": "Away",
+    "result.win": "W",
+    "result.win.label": "Win",
+    "result.draw": "D",
+    "result.draw.label": "Draw",
+    "result.loss": "L",
+    "result.loss.label": "Loss"
   }
 }

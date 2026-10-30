@@ -17,6 +17,7 @@ import {
   trackingBoundarySchema,
 } from './match-model';
 import { managerHistoryFactsSchema } from './manager-history';
+import { RECENT_RESULT_LIMIT } from './recent-results';
 const money = z.string().regex(/^-?\d{1,80}$/);
 /** Money that is never negative: wages asked, contract amounts. */
 const amount = z.string().regex(/^\d{1,80}$/);
@@ -1088,6 +1089,7 @@ const worldSchema: z.ZodType<World> = z.object({
   tactic,
   requested: tactic.optional(),
   fixtures: z.array(fixture).max(20000),
+  recentResults: z.record(id, z.array(fixture).max(RECENT_RESULT_LIMIT)).optional(),
   tables: z.record(id, table),
   kitChoice: fixtureKitChoiceSchema.optional(),
   ownMatches: z.array(match).max(100000),
@@ -1282,6 +1284,23 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   assertMatchModelFormat(input);
   const w = worldSchema.parse(input);
   const ids = new Set(w.clubs.map((c) => c.id));
+  for (const [club, results] of Object.entries(w.recentResults ?? {})) {
+    const seen = new Set<string>();
+    if (!ids.has(club)) throw new Error('최근 경기 구단 참조 손상');
+    for (const result of results) {
+      if (
+        !result.score ||
+        seen.has(result.id) ||
+        !ids.has(result.home) ||
+        !ids.has(result.away) ||
+        result.home === result.away ||
+        (result.home !== club && result.away !== club) ||
+        result.year > w.year
+      )
+        throw new Error('최근 경기 기록 참조 손상');
+      seen.add(result.id);
+    }
+  }
   for (const [key, proposal] of Object.entries(w.playingCoachProposals || {})) {
     if (key !== proposal.person || !w.people?.[key]) throw new Error('플레잉 코치 인물 참조 손상');
     if (

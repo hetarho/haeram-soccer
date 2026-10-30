@@ -181,6 +181,12 @@
     "personnel.manager": "Técnico",
     "personnel.coaches": "Equipe",
     "fixture.home": "Casa",
-    "fixture.away": "Fora"
+    "fixture.away": "Fora",
+    "result.win": "V",
+    "result.win.label": "Vitória",
+    "result.draw": "E",
+    "result.draw.label": "Empate",
+    "result.loss": "D",
+    "result.loss.label": "Derrota"
   }
 }

@@ -89,25 +89,11 @@ export function OperationsView({
     setView(next);
     requestAnimationFrame(() => scroller()?.scrollTo({ top: 0 }));
   };
-  const toLobby = () => {
-    if (requestId) {
-      returnApprovalHome();
-      return;
-    }
-    if (history.state?.officeLobbyDepth) {
-      backToLobby = true;
-      history.go(-history.state.officeLobbyDepth);
-      return;
-    }
-    history.replaceState(null, '', officeAddress('lobby'));
-    setView('lobby');
-    requestAnimationFrame(() => scroller()?.scrollTo({ top: 0 }));
-  };
   const area = BUSINESS_TABS.find(([id]) => id === view);
   if (view === 'office')
     return (
       <>
-        <OfficeBar back={{ label: '사무실', onClick: toLobby }} title="결재라인 모아보기" />
+        <OfficeBar title="결재라인 모아보기" />
         <section aria-label="결재라인 모아보기">
           <Suspense fallback={<p role="status">결재라인을 여는 중…</p>}>
             <OwnerOffice key={w.id} client={client} controller={controller} />
@@ -131,7 +117,7 @@ export function OperationsView({
   const [id, label] = area;
   return (
     <>
-      <OfficeBar back={{ label: '사무실', onClick: toLobby }} title={label} />
+      <OfficeBar title={label} />
       {/* The bar names the area; its own panels carry their regions. */}
       <div data-office-view={id}>
         {requestId ? (

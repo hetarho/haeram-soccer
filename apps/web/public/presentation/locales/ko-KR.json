@@ -5,13 +5,13 @@
     "navigation.dashboard": "클럽하우스",
     "navigation.league": "리그",
     "navigation.europe": "컵 대회",
-    "navigation.history": "역사",
+    "navigation.history": "기록",
     "navigation.people": "선수단·스태프",
     "navigation.training": "훈련장",
     "navigation.business": "구단주 사무실",
     "navigation.short.league": "리그",
     "navigation.short.europe": "컵",
-    "navigation.short.history": "역사",
+    "navigation.short.history": "기록",
     "navigation.short.dashboard": "클럽하우스",
     "navigation.short.people": "선수단",
     "navigation.short.training": "훈련장",
@@ -175,6 +175,12 @@
     "personnel.manager": "감독",
     "personnel.coaches": "스태프",
     "fixture.home": "홈",
-    "fixture.away": "원정"
+    "fixture.away": "원정",
+    "result.win": "승",
+    "result.win.label": "승리",
+    "result.draw": "무",
+    "result.draw.label": "무승부",
+    "result.loss": "패",
+    "result.loss.label": "패배"
   }
 }

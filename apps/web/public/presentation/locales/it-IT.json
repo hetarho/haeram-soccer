@@ -181,6 +181,12 @@
     "personnel.manager": "Allenatore",
     "personnel.coaches": "Staff",
     "fixture.home": "Casa",
-    "fixture.away": "Trasferta"
+    "fixture.away": "Trasferta",
+    "result.win": "V",
+    "result.win.label": "Vittoria",
+    "result.draw": "N",
+    "result.draw.label": "Pareggio",
+    "result.loss": "P",
+    "result.loss.label": "Sconfitta"
   }
 }

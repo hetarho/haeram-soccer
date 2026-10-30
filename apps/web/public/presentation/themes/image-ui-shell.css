@@ -176,6 +176,10 @@ html[data-theme] {
     button:has([data-pixel-icon='trend']) {
     --image-icon: var(--image-art-icon-office);
   }
+  :is([data-ui='game-shell'] > [data-ui='sidebar'] nav, [data-ui='game-shell'] > nav)
+    button:has([data-pixel-icon='switch']) {
+    --image-icon: var(--image-art-icon-switch);
+  }
 
   [data-ui='game-shell'] > [data-ui='sidebar'] > div:last-child {
     position: relative;
@@ -217,10 +221,6 @@ html[data-theme] {
     margin-bottom: 0;
     background: none;
     border: 0;
-    background-image: var(--image-art-rule-dark);
-    background-position: center bottom;
-    background-size: calc(100% - 56px) 3px;
-    background-repeat: no-repeat;
   }
 
   /* The office bar wears the HUD's rule over the canvas, opaque above scrolling content. */
@@ -395,6 +395,46 @@ html[data-theme] {
     background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 384px);
     gap: 18px;
+  }
+
+  /* The clubhouse's rooms wear the team-state tile with their room's icon art (→WEB-10). */
+  [data-ui='place'] {
+    border: 1px solid transparent;
+    border-image: var(--image-tile-frame)
+      var(--image-art-frame-tile-slice, var(--image-frame-slice, 52)) / 4px stretch;
+    border-radius: var(--image-panel-radius, var(--image-radius, 0px));
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+    color: var(--image-ink-color);
+    box-shadow: none;
+  }
+
+  [data-ui='place']::before {
+    content: '';
+    width: 52px;
+    height: 52px;
+    background: var(--image-icon) center / contain no-repeat;
+  }
+
+  [data-ui='place']:hover:not(:disabled) {
+    background-color: var(--image-selected-row);
+    background-blend-mode: soft-light;
+  }
+
+  [data-place='business'] {
+    --image-icon: var(--image-art-icon-office);
+  }
+  [data-place='firstTeam'] {
+    --image-icon: var(--image-art-icon-manager);
+  }
+  [data-place='staff'] {
+    --image-icon: var(--image-art-icon-people);
+  }
+  [data-place='training'] {
+    --image-icon: var(--image-art-icon-training);
+  }
+  [data-place='academy'] {
+    --image-icon: var(--image-art-icon-boot);
   }
 
   /* The office lobby's desks wear the team-state tile frame: pressable game tiles (→WEB-39). */
@@ -749,6 +789,45 @@ html[data-theme] {
     margin-top: 6px;
     color: var(--image-muted);
     font-size: 12px;
+  }
+
+  /* In the manager's office the five conditions sit small and icon-free, in one row on every
+     width, over the dimmed room. */
+  [data-home-part='office'] [data-home-part='conditions'] {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+  }
+  [data-home-part='office'] [data-condition='strength'] {
+    grid-column: auto;
+  }
+  [data-home-part='office'] [data-condition] > button {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    min-height: 0;
+    padding: 4px;
+    text-align: center;
+  }
+  [data-home-part='office'] [data-condition] > button::before {
+    display: none;
+  }
+  [data-home-part='office'] [data-condition] > button > span,
+  [data-home-part='office'] [data-condition] > button > b,
+  [data-home-part='office'] [data-condition] > button > small {
+    grid-column: 1;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  [data-home-part='office'] [data-condition] > button > span,
+  [data-home-part='office'] [data-condition] > button > small {
+    font-size: 11px;
+  }
+  [data-home-part='office'] [data-condition] > button > b {
+    font-size: 18px;
+  }
+  [data-home-part='office'] [data-testid='team-state'] > p {
+    color: var(--image-on-dark);
   }
 
   [data-testid='view-scroller'] > footer {
