@@ -23,7 +23,7 @@ import { createHash } from 'node:crypto';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tmpdir, loadavg } from 'node:os';
-import { build } from 'esbuild';
+import { bundleWorkloads } from './bundle.mjs';
 import { median, verdict } from './stats.ts';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -76,23 +76,7 @@ function treeOf(spec, name) {
   return dir;
 }
 
-async function bundle(tree, name) {
-  const outfile = join(scratch, `${name}-${process.pid}.mjs`);
-  await build({
-    absWorkingDir: tree,
-    entryPoints: ['scripts/perf/workloads.ts'],
-    bundle: true,
-    platform: 'node',
-    format: 'esm',
-    outfile,
-    logLevel: 'error',
-    nodePaths: [join(repo, 'node_modules')],
-    banner: {
-      js: "import{createRequire}from'module';const require=createRequire(import.meta.url);",
-    },
-  });
-  return outfile;
-}
+const bundle = (tree, name) => bundleWorkloads(tree, join(scratch, `${name}-${process.pid}.mjs`));
 
 const baseSpec = arg('--base');
 if (!baseSpec) throw new Error('--base <git ref | dir> is required');
