@@ -15,9 +15,9 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| ei31 | ihaelam-ui-MacBookPro | autopilot | 2026-10-30T15:51Z | 2026-10-30T15:51Z | - |
 
 ## inbox
+- 261031 decided ARCH-30 T617 T618: engine implementation and backend/three-browser engine checks complete, but the full app browser gate has existing UI journey failures reproduced on unchanged 8b0032ee → keep completed code/evidence on codex/engine-opt-261030 and wip/ei31, hold main code push/CI until that UI gate is reconciled (alt: bypass the full gate | change owner UI flows inside the engine optimization). Report reports/261031-ei31.md.
 - 261031 decided ARCH-9 ARCH-34 T618: guarded Wasm qualifies locally but deployed CSP restricts compilation → adopt the independently qualifying packed JavaScript phase (final grid CPU ×0.9633, equal records), preserving scalar fallback and security headers; archive Wasm source/bytes/evidence (alt: expand CSP | ship two overlapping numeric backends).
 - 261031 decided ARCH-6 ARCH-9 ARCH-34 T617 T618: owner requests continued optimization attempts through completed implementation → production helper replication first, then guarded packed movement, with safe fallbacks and one combined final gate/main push (alt: stop at research | ship unguarded prototypes). Keep the assigned isolated worktree and all unrelated design changes separate.
 - 261031 decided ARCH-6 ARCH-9 ARCH-34 review/engine-architecture-261030: which experiments merit follow-up → F1 record-level helper replication (own-match wall ×0.9170, CPU ×0.8563 against current helpers, identical daily worlds) and F2 packed Wasm movement (grid CPU ×0.9476, identical records), F1 first; total elapsed-time/day CPU gains remain inconclusive (alt: per-step SIMD, ×1.0220 slower | naive snapshot epochs, live own-day ×1.0783 slower). Research artifacts 2a28f947 are retained on origin/wip/eo30; production source is unchanged.
@@ -458,9 +458,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- Coordinator final verification of T617/T618 combined source, then configured main push and one CI wait; details reports/261031-ei31.md.
+- Engine optimization complete on wip/ei31; main integration held by baseline UI browser failures. Reconcile that UI gate before full application verification/push; evidence reports/261031-ei31.md.
 
 ## log
+- 261031 ei31 verification: 1,824 unit / 1,267 integration / 48 contract passed; movement fault parity and real helper/reload parity pass on Chromium/Firefox/WebKit. Full app browser gate interrupted after 17 existing UI failures; unchanged baseline reproduces identical lineup error. Main code push/CI held; completed engine code and evidence on wip/ei31.
 - 261031 T618 done locally: packed JavaScript movement, scalar fallback and browser fault probe; final grid CPU ×0.9633, equal records. Combined real-worker wall ×0.8744/process CPU ×0.7910, equal worlds; final full-suite/browser/CI gate pending.
 - 261031 T617 done locally: incremental helper replicas and fallback guards; affected units 91 files/869 tests, quick checks/build pass. Real-worker confirmation equal hashes, total wall ×0.8987 and process CPU ×0.8046; full integration/browser gate remains after T618.
 - 261031 create-task review/engine-architecture-261030: owner authorizes production completion; T617 helper replication, T618 guarded packed movement; session ei31.
@@ -480,4 +481,3 @@
 - 261030 T607 done: the four dccefdb2 integration failures. A goal-line block whose byline-clamped rebound rested 0.80 m from its blocker now goes behind for a corner on revision 10 (`blockedBehind`; unit scene in box.test.ts; only 1975's league facts/observed positions re-recorded; 50 grid-bands 24/37, goals 3.24, fingerprint 12faf221). Coordination's box scene now takes its shape before the runners arrive (stale sequential placement under T599's pairing). News checks every unbeaten milestone against HIST-11's per-match cap, with a hand-made crowded pair. Typecheck, lint, format, affected units (85 files, 808 tests) and build pass; the four cases and the modified integration files are left to the final gate.
 - 261030 create-task T607: full integration145files/1259tests passed,4cases failed; no main code push, raw attempt-01 retained.
 - 261030 T606 done: no goal clip begins while the original viewing holds a goal (`replayEntryOpen` gates `startGoalReplay` and the picker at the moment of choice, a picker opened before the hold included); the hold runs its full length and a return keeps the original clock, so a final-sample hold can no longer finish the live match for a clip; shortcut and picker goals stay focusable with `aria-disabled` through the hold; archived clip play/pause display rechecked (T601's fix kept); format, typecheck, lint, affected units (42) and build pass; goal-replay browser journey left to the final Chromium gate.
-- 261030 create-task T606: focused T601 lifecycle/control verification repair from coordinator review; no policy change.
