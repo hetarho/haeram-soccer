@@ -1,0 +1,69 @@
+{
+  "recordedAt": "2026-10-30T00:20:14.298943+00:00",
+  "handoffParent": "3e3d3b29230a8fac669590df2f3637893b84c2ab",
+  "overallVerified": false,
+  "localFullBatchPassed": true,
+  "ciOutcome": "timed_out",
+  "pendingBecauseOfHandoffCutoff": true,
+  "failedJobs": [],
+  "originalMeasurementEvidence": "artifacts/benchmarks/vf30-attempt03-20d57486",
+  "scope": "Raw working reports retain their original source and may include an unfinished stage; verification.json and individual check exit codes determine success. No unexecuted check is counted as passed.",
+  "files": {
+    "check-1.log": {
+      "bytes": 11578,
+      "sha256": "d919d345d034ca47aa8e67aa843068701ba18123ef399e5820f52f185439ce47"
+    },
+    "check-2.log": {
+      "bytes": 1567,
+      "sha256": "b9c6c1fd5d8a6dc2bedfa57e69827c08e64aac0ab9828bab801e4dd124eaa700"
+    },
+    "check-3.log": {
+      "bytes": 164964,
+      "sha256": "d19244178df3427d1fa19f18a2e445bccb0647f88894b7c31d274e04109423a0"
+    },
+    "check-4.log": {
+      "bytes": 1070,
+      "sha256": "3e9f709ef04556e932fcc3fe36897e00807b40f6940622c01d2f4f5322683538"
+    },
+    "check-5.log": {
+      "bytes": 908,
+      "sha256": "51e31f654410a13f36882bdd962be3ad4652a08e6b8729c3b2dfeaf765721fb2"
+    },
+    "ci.json": {
+      "bytes": 2600,
+      "sha256": "651b8b24ac632de2187fde2e6be277ee1c8cb47d64f7e8ef495a85ec2227666b"
+    },
+    "contract-results.json": {
+      "bytes": 18623,
+      "sha256": "4869642f53f399429f6ab16707a518d0b3b78dcf181e553feb08613a35975b1d"
+    },
+    "e2e-results.json": {
+      "bytes": 2396072,
+      "sha256": "60b7c1f69c0f66594d4341b4d9f6854e9bf7fca87f4918bdb09b6b6145ea60f8"
+    },
+    "integration-results.json": {
+      "bytes": 473099,
+      "sha256": "cb88d6ba42fe6625b7a1a6446a5b2f6dce317a5fd31a8133f97b133cf222d4d0"
+    },
+    "loop.json": {
+      "bytes": 20017,
+      "sha256": "791aceb62fe31628b2a76237746089bf141f3f8cbdca9f166818ff260be712e8"
+    },
+    "measurement-reuse.json": {
+      "bytes": 908,
+      "sha256": "51e31f654410a13f36882bdd962be3ad4652a08e6b8729c3b2dfeaf765721fb2"
+    },
+    "t609-webkit-guard.json": {
+      "bytes": 1274023,
+      "sha256": "883884f4d6835bd0d70e6af1f8f5649c1243a93b33ecf8163b84670f3d71d757"
+    },
+    "unit-results.json": {
+      "bytes": 646758,
+      "sha256": "e070e05a86ecb1055e5855c77e91dedaa3217f63682ae2f65ff17e94aaa89a0a"
+    },
+    "verification.json": {
+      "bytes": 3103,
+      "sha256": "18fba2886aa3e52c90bad928b8494de15192d8692717b4b5d83a0c7740ca7ab7"
+    }
+  }
+}
