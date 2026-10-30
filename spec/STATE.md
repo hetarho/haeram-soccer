@@ -425,7 +425,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T610 | Complete pending CI verification after handoff | ARCH | T609 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -449,9 +448,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- Coordinator remote continuation: read reports/261030-vf31.md and actual CI/local gate state before source work or main push.
+- The vf30 verification handoff is complete: CI40976497055 passed all nine jobs on source 942fa32e; no remaining task in that scope. See reports/261030-cx30.md and its CI receipt. Existing calibration residuals and unrelated ideation remain outside this completed handoff.
 
 ## log
+- 261030 T610 done: resumed the relinquished vf30 handoff from origin/wip/vf30; CI40976497055 succeeded on 942fa32e (nine jobs, final Firefox completion at 00:47:27Z). Runtime source unchanged; typecheck, lint and project formatting pass. Receipt artifacts/benchmarks/cx30-ci-verification-261030/ci.json; report reports/261030-cx30.md.
 - 261030 vf30 handoff before 09:30KST: source 3e3d3b29230a, local full batch passed, final CI pending at the scheduled wait cutoff; local writer stopped, continue from wip/vf30 via reports/261030-vf31.md. Evidence artifacts/benchmarks/vf30-handoff-261030-002014.
 - 261030 T609 done: CI40961086172's five browser scenarios. Training waits for its restarted run to rest and closes the real first-eve report before roster navigation. Management's 1380 px choices measured the dialog entrance's last frame (uniform ≈0.9999 scale); `settle` also waits two frames and the assertions print measurements. Pitch counted at most 60 ms a frame, leaving WebKit's 16x match 12–15% behind its clock; frames now count their real time up to 250 ms (`frameElapsedMs`, new unit case). Continuity reads the same recorded playback from its kick-off (the whistle's still frame fits 2 of 3 figures on WebKit, reproduced offline from the trace screenshot). Typecheck, lint, format, affected units (19 files, 175 tests) and build pass; the browser cases are left to the coordinator.
 - 261030 T609 refine: CI40961086172 backend/Firefox/WebKit2 pass, Chromium training+WebKit1 fail; scoped repair preserves all thresholds/timeouts. Owner requests unfinished work remotely resumable by09:30KST.
@@ -471,5 +471,3 @@
 - 261030 T596 done: match-model revision 10 — every shot struck as its action starts, its second ball landing at its own speed and waiting for its winner, and won at least 1.2 m clear of the blocker or keeper; the stale T444/T445 resolve scenes expect the keeper's narrowing once; revisions 1–9 replay draw for draw; typecheck, lint, format:check, 913 affected unit tests, build and the four targeted CI cases pass; revision-10 digests and seeds re-recorded after T600.
 - 261030 update-ssot MATCH r44 + create-task: T596 diagnosed (2 stale revision-9 scenes, 2 second-ball defects) and rescoped to open revision 10; T599/T600 extend it.
 - 261030 vf30 start: owner-authorized autopilot; synchronized origin/main469d24c2, captured CI40866255294 failures and created scoped T596–T600.
-- 261030 page/theme publication: owner-requested changes verified on pinned Node 24.22.1; 1747 unit, 48 contract, all fast/resource checks and four-theme desktop/phone review pass. Focused Chromium rerun 9/9 includes menu default/hover contrast and modal touch-size stability.
-

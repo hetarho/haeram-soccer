@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "retrievedAt": "2026-10-30T00:48:31+00:00",
+  "transport": "single GitHub REST reads; no API polling",
+  "runEndpoint": "https://api.github.com/repos/hetarho/haeram-soccer/actions/runs/40976497055",
+  "jobsEndpoint": "https://api.github.com/repos/hetarho/haeram-soccer/actions/runs/40976497055/jobs?per_page=100",
+  "run": {
+    "id": 40976497055,
+    "name": "Verify web game",
+    "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40976497055",
+    "event": "push",
+    "head_branch": "main",
+    "head_sha": "942fa32ea645c1cc759304e3a3079d523138cddf",
+    "status": "completed",
+    "conclusion": "success",
+    "run_attempt": 1,
+    "created_at": "2026-10-29T23:56:51Z",
+    "updated_at": "2026-10-30T00:47:27Z"
+  },
+  "totalJobs": 9,
+  "jobs": [
+    {
+      "id": 123805714704,
+      "name": "unit",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40976497055/job/123805714704",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-29T23:56:54Z",
+      "completed_at": "2026-10-29T23:59:45Z",
+      "failedSteps": []
+    },
+    {
+      "id": 123805714937,
+      "name": "e2e (chromium 1/1)",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40976497055/job/123805714937",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-29T23:56:54Z",
+      "completed_at": "2026-10-30T00:38:36Z",
+      "failedSteps": []
+    },
+    {
+      "id": 123805714953,
+      "name": "integration (2/3)",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40976497055/job/123805714953",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-29T23:56:54Z",
+      "completed_at": "2026-10-30T00:01:30Z",
+      "failedSteps": []
+    },
+    {
+      "id": 123805714997,
+      "name": "e2e (webkit 2/2)",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40976497055/job/123805714997",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-29T23:56:54Z",
+      "completed_at": "2026-10-30T00:17:06Z",
+      "failedSteps": []
+    },
+    {
+      "id": 123805715000,
+      "name": "integration (3/3)",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40976497055/job/123805715000",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-29T23:56:54Z",
+      "completed_at": "2026-10-30T00:02:09Z",
+      "failedSteps": []
+    },
+    {
+      "id": 123805715027,
+      "name": "checks",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40976497055/job/123805715027",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-29T23:56:54Z",
+      "completed_at": "2026-10-29T23:59:23Z",
+      "failedSteps": []
+    },
+    {
+      "id": 123805715043,
+      "name": "e2e (webkit 1/2)",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40976497055/job/123805715043",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-29T23:56:54Z",
+      "completed_at": "2026-10-30T00:23:58Z",
+      "failedSteps": []
+    },
+    {
+      "id": 123805715085,
+      "name": "integration (1/3)",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40976497055/job/123805715085",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-29T23:56:54Z",
+      "completed_at": "2026-10-30T00:04:22Z",
+      "failedSteps": []
+    },
+    {
+      "id": 123805715180,
+      "name": "e2e (firefox 1/1)",
+      "html_url": "https://github.com/hetarho/haeram-soccer/actions/runs/40976497055/job/123805715180",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-29T23:56:54Z",
+      "completed_at": "2026-10-30T00:47:27Z",
+      "failedSteps": []
+    }
+  ],
+  "sourceComparison": {
+    "verifiedCommit": "942fa32ea645c1cc759304e3a3079d523138cddf",
+    "continuationCommit": "cb19f9bff85d207371fd3877e08c5178a70239bc",
+    "changedPaths": [
+      "artifacts/benchmarks/vf30-handoff-261030-002014/check-1.log",
+      "artifacts/benchmarks/vf30-handoff-261030-002014/check-2.log",
+      "artifacts/benchmarks/vf30-handoff-261030-002014/check-3.log",
+      "artifacts/benchmarks/vf30-handoff-261030-002014/check-4.log",
+      "artifacts/benchmarks/vf30-handoff-261030-002014/check-5.log",
+      "artifacts/benchmarks/vf30-handoff-261030-002014/ci.json",
+      "artifacts/benchmarks/vf30-handoff-261030-002014/contract-results.json",
+      "artifacts/benchmarks/vf30-handoff-261030-002014/e2e-results.json",
+      "artifacts/benchmarks/vf30-handoff-261030-002014/index.json",
+      "artifacts/benchmarks/vf30-handoff-261030-002014/integration-results.json",
+      "artifacts/benchmarks/vf30-handoff-261030-002014/loop.json",
+      "artifacts/benchmarks/vf30-handoff-261030-002014/measurement-reuse.json",
+      "artifacts/benchmarks/vf30-handoff-261030-002014/t609-webkit-guard.json",
+      "artifacts/benchmarks/vf30-handoff-261030-002014/unit-results.json",
+      "artifacts/benchmarks/vf30-handoff-261030-002014/verification.json",
+      "spec/STATE.md",
+      "spec/reports/261029-vf30.md",
+      "spec/reports/261030-vf31.md",
+      "spec/tasks/T610.fix-ci.md"
+    ],
+    "runtimePathsChanged": false,
+    "scope": "tracked source/configuration/assets; spec/ and artifacts/ changes only"
+  },
+  "limits": [
+    "Job success does not independently establish the absence of retried or flaky tests.",
+    "Earlier local batch and benchmark measurements retain their original source and machine provenance; they were not rerun on this host."
+  ]
+}
