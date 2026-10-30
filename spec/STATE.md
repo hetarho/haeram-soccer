@@ -425,6 +425,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T610 | Fix CI failure | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -448,7 +449,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- coordinator guard on the committed vf30 candidate, on WebKit and Chromium: tests/e2e/training.spec.ts (360x740, 390x844), club-identity-continuity.spec.ts phone cases, management-surfaces.spec.ts standard/pixel and mobile-match-presentation.spec.ts goal cue at 360; then the complete final batch, the capacity/performance reuse check, the configured main push and one CI read.
+- implement-task T610
 
 ## log
 - 261030 T609 done: CI40961086172's five browser scenarios. Training waits for its restarted run to rest and closes the real first-eve report before roster navigation. Management's 1380 px choices measured the dialog entrance's last frame (uniform ≈0.9999 scale); `settle` also waits two frames and the assertions print measurements. Pitch counted at most 60 ms a frame, leaving WebKit's 16x match 12–15% behind its clock; frames now count their real time up to 250 ms (`frameElapsedMs`, new unit case). Continuity reads the same recorded playback from its kick-off (the whistle's still frame fits 2 of 3 figures on WebKit, reproduced offline from the trace screenshot). Typecheck, lint, format, affected units (19 files, 175 tests) and build pass; the browser cases are left to the coordinator.
