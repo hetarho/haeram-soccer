@@ -2,7 +2,8 @@ import { cos, sin } from '../portable-math';
 import type { GRID_MOVEMENT_CONFIG, Mover } from './movement';
 import { createMovementKernel, MOVEMENT_KERNEL_STRIDE } from './movement-kernel';
 
-export const PACKED_MOVEMENT_CONFIG = { minimumSteps: 4 } as const;
+/** Execution threshold only; not an outcome-changing match-lab tunable. */
+const PACKED_MOVEMENT_CONFIG = { minimumSteps: 4 } as const;
 export interface PackedMover {
   gp: Mover;
   to: readonly [number, number];
