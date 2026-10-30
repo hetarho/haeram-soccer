@@ -434,7 +434,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T618 | Safe packed movement phase | ARCH | T617 | todo |
+| T618 | Safe packed movement phase | ARCH | T617 | doing@261031.ei31 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
