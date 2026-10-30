@@ -44,7 +44,7 @@ import { deliveryPoint, type DeliveryAim, type DeliveryKind } from './box';
 import { isLevel, modelAtLeast } from './rules';
 import type { GridSetup } from './setup';
 import { playShootout } from './shootout';
-import { moveAll, speedOf, startRuns, targetOf, type ShapeCache } from './shape';
+import { moveAll, newShapeCache, speedOf, startRuns, targetOf } from './shape';
 import {
   attackZones,
   carryTo,
@@ -667,7 +667,7 @@ export function playGrid(setup: GridSetup): GridResult {
     s.received = [side, d.target];
     // Only the defenders' targets are read, so the attack plans its box runs alone (`planCoordination`).
     updateIntentions(s, false, true);
-    const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
+    const cache = newShapeCache();
     const reads = new Map<GridPlayer, { to: [number, number]; at: number }>();
     for (const gp of s.players[other(side)])
       if (onPitch(gp))

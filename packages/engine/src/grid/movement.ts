@@ -21,7 +21,7 @@ import {
 } from './pitch';
 import type { Restart, RestartPreparer } from './restarts';
 import { modelAtLeast } from './rules';
-import { intentionTarget, SHAPE_CONFIG, speedOf, targetOf, type ShapeCache } from './shape';
+import { intentionTarget, newShapeCache, SHAPE_CONFIG, speedOf, targetOf } from './shape';
 import { kickOffPoint, onPitch, skill, slotOf, type GridPlayer, type GridState } from './state';
 
 /**
@@ -282,7 +282,7 @@ export function advance(
   onStep?: (seconds: number) => void,
 ): void {
   const C = GRID_MOVEMENT_CONFIG;
-  const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
+  const cache = newShapeCache();
   // Each side's planned moves by roster index; a player planned twice takes his last move.
   const planned: [(Move | undefined)[], (Move | undefined)[]] = [[], []];
   for (const m of plan) planned[m.gp.side][m.gp.idx] = m;
@@ -412,7 +412,7 @@ export function carryInStride(
   };
   const point = inside([gp.pos[0] + dx * reach, gp.pos[1] + dy * reach]);
   keep(point);
-  const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
+  const cache = newShapeCache();
   const others: {
     gp: GridPlayer;
     to: readonly [number, number];
@@ -515,7 +515,7 @@ export function readAt(s: GridState, gp: GridPlayer, attacking: 0 | 1, kick: num
  * target, read before an action changes the state so `before` can keep him on it until the kick.
  */
 export function heading(s: GridState): Map<GridPlayer, [number, number]> {
-  const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
+  const cache = newShapeCache();
   const out = new Map<GridPlayer, [number, number]>();
   for (const side of [0, 1] as const)
     for (const gp of s.players[side])

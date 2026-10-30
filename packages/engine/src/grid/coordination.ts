@@ -36,6 +36,7 @@ import {
   coverPoint,
   lineFloor,
   lineX,
+  newShapeCache,
   offsideLine,
   runContext,
   runPlan,
@@ -240,7 +241,7 @@ export function planCoordination(
   const carrier = s.owner && s.owner[0] === att ? s.players[att][s.owner[1]]! : undefined;
   if (!carrier || !onPitch(carrier)) return plan;
   const claimed = new Set<GridPlayer>();
-  const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
+  const cache = newShapeCache();
   // The attack's box scene (T443): who attacks which zone, read before either side plans, so the
   // defence knows which zones the attack fills.
   const box = boxScene(s, att);

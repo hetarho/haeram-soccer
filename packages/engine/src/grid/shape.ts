@@ -397,12 +397,22 @@ export interface ShapeCache {
   pressers: [number[]?, number[]?];
   defence: [number?, number?];
   /** Each side's on-pitch outfielders in roster order, the players a marker leans toward. */
-  outfield?: [GridPlayer[]?, GridPlayer[]?];
+  outfield: [GridPlayer[]?, GridPlayer[]?];
   /** Each side's defence against a box scene (`defendingBox`, candidate model, T443): the ball's side, or 0. */
-  box?: [number?, number?];
+  box: [number?, number?];
   /** Each side's goal-side marks near its box (`goalSideMarks`, revision 10), or null when off. */
-  goalSide?: [(GoalSideMarks | null)?, (GoalSideMarks | null)?];
+  goalSide: [(GoalSideMarks | null)?, (GoalSideMarks | null)?];
 }
+
+/** An empty `ShapeCache`, every field present from the start: one object shape for every cache. */
+export const newShapeCache = (): ShapeCache => ({
+  offside: [],
+  pressers: [],
+  defence: [],
+  outfield: [],
+  box: [],
+  goalSide: [],
+});
 
 /** Revision 10's goal-side marks of a defending side (T599): its marker → his man, and the men marked. */
 export interface GoalSideMarks {
@@ -423,9 +433,9 @@ export interface GoalSideMarks {
 export function goalSideMarks(
   s: GridState,
   side: 0 | 1,
-  cache: ShapeCache = { offside: [], pressers: [], defence: [] },
+  cache: ShapeCache = newShapeCache(),
 ): GoalSideMarks | null {
-  const held = (cache.goalSide ??= [])[side];
+  const held = cache.goalSide[side];
   if (held !== undefined) return held;
   const G = SHAPE_CONFIG.candidate.revision10.goalSide;
   const foe = other(side);
@@ -486,7 +496,7 @@ export function targetOf(
   s: GridState,
   side: 0 | 1,
   idx: number,
-  cache: ShapeCache = { offside: [], pressers: [], defence: [] },
+  cache: ShapeCache = newShapeCache(),
 ): [number, number] {
   const gp = s.players[side][idx]!;
   // The candidate model's intentions (`intentions.ts`) take him where they go, ahead of his shape.
@@ -586,7 +596,7 @@ export function shapePlace(
   s: GridState,
   side: 0 | 1,
   idx: number,
-  cache: ShapeCache = { offside: [], pressers: [], defence: [] },
+  cache: ShapeCache = newShapeCache(),
 ): [number, number] {
   const gp = s.players[side][idx]!;
   const tactic = s.setup.tactics[side];
@@ -691,7 +701,7 @@ export function shapePlace(
     let found = false,
       nx = 0,
       ny = 0;
-    const foes = ((cache.outfield ??= [])[foe] ??= s.players[foe].filter(
+    const foes = (cache.outfield[foe] ??= s.players[foe].filter(
       (opp) => onPitch(opp) && lineOfSlot(s, opp) !== 'GK',
     ));
     for (const opp of foes) {
@@ -717,7 +727,7 @@ export function shapePlace(
   if (
     line === 'DF' &&
     s.setup.model !== undefined &&
-    ((cache.box ??= [])[side] ??= defendingBox(s, side) ?? 0) !== 0
+    (cache.box[side] ??= defendingBox(s, side) ?? 0) !== 0
   )
     return toEngine(side, boxBackLine(s, side, y));
   if (line === 'DF') x = clamp(x, lineFloor(bx, cfg.line[0]), cfg.line[1]);
@@ -912,7 +922,7 @@ function keeperOut(s: GridState, side: 0 | 1, bx: number, by: number): Point | u
 /** Every on-pitch player but the carrier takes a step toward his target. */
 export function moveAll(s: GridState, dt: number): void {
   const moves: [GridPlayer, [number, number]][] = [];
-  const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
+  const cache = newShapeCache();
   for (const side of [0, 1] as const)
     for (const gp of s.players[side]) {
       if (!onPitch(gp) || (s.owner && s.owner[0] === side && s.owner[1] === gp.idx)) continue;

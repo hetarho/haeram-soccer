@@ -33,11 +33,11 @@ import { SHADOW_CONFIG } from './lanes';
 import { attackFrame, PITCH, type Point } from './pitch';
 import {
   lineX,
+  newShapeCache,
   setPieceTargets,
   SHAPE_CONFIG,
   shapePlace,
   targetOf,
-  type ShapeCache,
 } from './shape';
 import { createState, onPitch, other, slotOf, type GridPlayer, type GridState } from './state';
 import type { GridSetup } from './setup';
@@ -465,7 +465,7 @@ describe('grid coordination', () => {
       }));
       real(s, false, defenceOnly);
       const side = other(s.owner![0]);
-      const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
+      const cache = newShapeCache();
       const targets = s.players[side].map((gp) =>
         onPitch(gp) ? targetOf(s, side, gp.idx, cache) : undefined,
       );

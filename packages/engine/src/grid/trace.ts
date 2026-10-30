@@ -5,7 +5,7 @@ import type { Outcome, ShotOutcome } from './resolve';
 import type { EndedIntention, Intention, IntentionKind } from './intentions';
 import type { MotionKnot } from './movement';
 import type { Restart } from './restarts';
-import { pressers, targetOf, type ShapeCache } from './shape';
+import { newShapeCache, pressers, targetOf } from './shape';
 import { onPitch, other, type GridPlayer, type GridState } from './state';
 import type { Tags } from './tags';
 
@@ -291,7 +291,7 @@ function slotsNow(
   const intentions: (Intention | EndedIntention | null)[] | undefined = candidate
     ? new Array<null>(22).fill(null)
     : undefined;
-  const cache: ShapeCache = { offside: [], pressers: [], defence: [] };
+  const cache = newShapeCache();
   for (const sd of [0, 1] as const) {
     // On the candidate model only a press intention presses (`targetOf`).
     const press = sd === s.possession || candidate ? [] : pressers(s, sd);
