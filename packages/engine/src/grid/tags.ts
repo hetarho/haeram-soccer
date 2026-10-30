@@ -59,18 +59,29 @@ export function computeTags(
   const cell = cellOf(c);
   const band = bandOf(c[0]);
   const lane = laneOf(c[1]);
-  const opponents = s.players[foe]
-    .filter(onPitch)
-    .map((gp) => ({ gp, p: attackFrame(side, gp.pos) }));
   const { hypot } = s.math;
+  // The ball's x in the carrier's frame (`attackFrame`, without allocating).
+  const bx = side === 0 ? s.ball[0] : PITCH.length - s.ball[0];
   let pressure = 0,
     nearest = Infinity,
-    nearGoalSide = false;
-  for (const { p } of opponents) {
-    const d = hypot(p[0] - c[0], p[1] - c[1]);
+    nearGoalSide = false,
+    goalSide = 0,
+    overload = 0,
+    foesOn = 0;
+  // Each opponent on the pitch, in the carrier's frame (`attackFrame` inlined, so the scan allocates
+  // nothing), and the opponents around the ball.
+  for (const gp of s.players[foe]) {
+    if (!onPitch(gp)) continue;
+    foesOn++;
+    const px = side === 0 ? gp.pos[0] : PITCH.length - gp.pos[0];
+    const py = side === 0 ? gp.pos[1] : PITCH.width - gp.pos[1];
+    const d = hypot(px - c[0], py - c[1]);
     nearest = Math.min(nearest, d);
-    if (d <= TAG_CONFIG.pressureRadius) pressure += p[0] > c[0] ? 1 : 0.5;
-    if (d <= TAG_CONFIG.backToGoalRadius && p[0] > c[0]) nearGoalSide = true;
+    if (d <= TAG_CONFIG.pressureRadius) pressure += px > c[0] ? 1 : 0.5;
+    if (d <= TAG_CONFIG.backToGoalRadius && px > c[0]) nearGoalSide = true;
+    if (px > bx) goalSide++;
+    if (hypot(gp.pos[0] - s.ball[0], gp.pos[1] - s.ball[1]) <= TAG_CONFIG.overloadRadius)
+      overload--;
   }
   // The opponent's lines in the carrier's frame (its own frame's x runs the other way).
   const dfX = PITCH.length - lineX(s, foe, 'DF');
@@ -79,26 +90,21 @@ export function computeTags(
   let channel = false;
   if ((lane === 1 || lane === 3) && Math.abs(c[0] - dfX) <= TAG_CONFIG.channelReach) {
     const slots = FORMATIONS[s.setup.tactics[foe]].slots;
+    const opponents = s.players[foe]
+      .filter(onPitch)
+      .map((gp) => ({ gp, p: attackFrame(side, gp.pos) }));
     const cb = nearestAcross(opponents, slots, CENTRE_BACKS, c);
     const fb = nearestAcross(opponents, slots, FULL_BACKS, c);
     if (cb && fb)
       channel = c[1] >= Math.min(cb.p[1], fb.p[1]) && c[1] <= Math.max(cb.p[1], fb.p[1]);
   }
-  const ball = attackFrame(side, s.ball);
-  let overload = 0;
+  let menOn = 0;
   for (const gp of s.players[side])
-    if (
-      onPitch(gp) &&
-      hypot(gp.pos[0] - s.ball[0], gp.pos[1] - s.ball[1]) <= TAG_CONFIG.overloadRadius
-    )
-      overload++;
-  for (const gp of s.players[foe])
-    if (
-      onPitch(gp) &&
-      hypot(gp.pos[0] - s.ball[0], gp.pos[1] - s.ball[1]) <= TAG_CONFIG.overloadRadius
-    )
-      overload--;
-  const goalSide = opponents.filter(({ p }) => p[0] > ball[0]).length;
+    if (onPitch(gp)) {
+      menOn++;
+      if (hypot(gp.pos[0] - s.ball[0], gp.pos[1] - s.ball[1]) <= TAG_CONFIG.overloadRadius)
+        overload++;
+    }
   let phase: Tags['phase'];
   if (opts.setPiece) phase = 'setPiece';
   else if (opts.contest) phase = 'contest';
@@ -132,7 +138,7 @@ export function computeTags(
     overload,
     lead: s.score[side] - s.score[foe],
     minute: Math.floor(s.elapsed / 60) + 1,
-    menDiff: menOn(s, side) - menOn(s, foe),
+    menDiff: menOn - foesOn,
   };
 }
 
@@ -152,5 +158,3 @@ function nearestAcross(
     .filter(({ gp }) => positions.includes(slots[gp.slot]?.position ?? ''))
     .sort((a, b) => Math.abs(a.p[1] - c[1]) - Math.abs(b.p[1] - c[1]))[0];
 }
-/** A side's players on the pitch. */
-const menOn = (s: GridState, side: 0 | 1) => s.players[side].filter(onPitch).length;
