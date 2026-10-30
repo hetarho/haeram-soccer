@@ -3,12 +3,14 @@
 > Current checkout only; not an atomic lock or a cross-worktree coordination store. Content truth: ssot/. Task detail: tasks/. Notation: FORMAT.md.
 > Work-group checkpoints may add a CLI-generated work summary linking to spec/work/<group>.json. Read work board for live progress.
 > Running sessions add an active row; autopilot adds inbox lines for the owner to confirm and a report under reports/.
+> An open design (start-design) is checkout-local interactive state kept by vibe design — never written here.
 
 ## cfg
 - level: ?  # expert|mid|novice — filled by create-architecture calibration
 - lang: ?   # user's language — interviews, confirmations, reports
 - docs: en  # doc language
 - push: -   # - = commit only (default); a branch the user names is pushed once at session end — never asked
+- plan: main  # planning branch: tasks/SSOT are numbered and published here (vibe plan-sync → plan-push); - = this checkout only
 - brief: domain  # task brief scope: domain = whole cited domains, cited = cited decisions only
 - always: ARCH  # global rules every task brief includes: decision IDs or domains, - = none
 

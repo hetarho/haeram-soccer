@@ -4,7 +4,8 @@ description: >-
   작업의 진입점. "/start-vibe, 작업 시작하자, 이어서 해줘, 남은 거 해줘, 나 나갈게 알아서 해줘" 일 때 사용.
   STATE와 원격을 읽어 다른 기기의 진행을 확인하고, 시작할 때 한 번에 묻는다(모드: 함께=내가 결정 / 맡김=묻지 않고
   추천안으로 진행). 그 뒤 기획(create-ssot·update-ssot·create-task)과 구현(implement-task)을 스스로 골라 진행하고
-  태스크별로 커밋한다(push는 기본으로 하지 않는다). 맡김이면 결정함(STATE inbox)과 보고서를 남긴다. 아이디어를 쏟아내는 일은 ideation.
+  태스크별로 커밋한다(push는 기본으로 하지 않는다). 맡김이면 결정함(STATE inbox)과 보고서를 남긴다. 아이디어를 쏟아내는 일은 ideation,
+  화면을 보며 디자인을 다듬는 일은 start-design.
 ---
 
 # start-vibe — 작업 진행자
@@ -13,7 +14,7 @@ description: >-
 
 ## 공통 규칙 (모든 spec 스킬)
 1. 먼저 `vibe status --json` 또는 실행기 brief로 필요한 STATE 요약만 본다. 없으면 create-architecture로 보낸다.
-2. **문서 먼저**: 쓰기 전 실행기 배정 또는 `work status --json`으로 확인한다(CLI가 없으면 checkout·사용자 배정 확인). 단독/기획은 STATE에 시작·상태 변화를 기록한다. 워커는 STATE·SSOT 대신 runtime과 자기 acceptance 체크·result만 쓴다. 리뷰는 읽기 전용이며 리뷰 runtime만 쓴다. 브랜치명은 소유권이 아니다.
+2. **문서 먼저**: 쓰기 전 실행기 배정 또는 `work status --json`으로 확인한다(CLI가 없으면 checkout·사용자 배정 확인). 단독/기획은 STATE에 시작·상태 변화를 기록한다. 워커는 STATE·SSOT 대신 runtime과 자기 acceptance 체크·result만 쓴다. 리뷰는 읽기 전용이며 리뷰 runtime만 쓴다. 브랜치명은 소유권이 아니다. `vibe status`에 `design`이 있으면(이 checkout이 디자인 중) 커밋·push 전에 사용자에게 디자인이 끝났는지 묻고, 끝났으면 start-design 마감부터 한다 — 맡김은 디자인 변경을 건드리지 않고 주차한다.
 3. 산출 문서는 spec/FORMAT.md 표기를 따른다. `vibe format --section task|state|ssot|report` 중 필요한 발췌만 보고 FORMAT 전체를 읽지 않는다. 규칙에 없는 표기는 만들지 않는다.
 4. 질문·확인·보고는 cfg.lang 언어로, 상세도는 cfg.level대로. 산출 문서는 영어로 쓴다(FORMAT 언어 규칙). 선택지형 질문 도구(AskUserQuestion 등)가 있으면 사용. 맡김 모드(start-vibe)에서는 묻지 않는다 — 추천안으로 진행하고 STATE inbox와 보고서에 남긴다(되돌리기 어렵거나 프로젝트 밖에 영향을 주는 일은 주차). 권한 확인 창도 질문이다 — 창이 뜰 만한 명령은 실행하지 않고 주차한다(start-vibe 3절). 모드가 정해지지 않았으면 함께 모드다.
 5. **읽기**: brief·status 요약을 먼저 쓰고 부족한 ID·섹션만 읽는다. 결정은 `vibe brief <T###|ID-n|ID@rev>`로 원문 블록째 받는다 — 끝의 `end` 줄이 없거나 complete:no면 빠진 부분부터 다시 읽고, unfollowed·related는 필요한 것만 연다. 직접 읽은 결정은 다음 결정 줄·제목까지 본 블록만 근거로 쓴다. STATE·FORMAT·ARCH·큰 코드 전체를 반복 읽지 않는다. tasks/done/은 특정 회귀·검증 근거만 선택 조회한다. 출력은 요약·tail, 전체 로그는 파일로 남긴다.
@@ -34,6 +35,8 @@ hostManaged 실행기에서는 초기화·active·보고서 생성/종료·묶�
 | 상황 | 다음 |
 |---|---|
 | spec 없음 | create-architecture 초안, 스캐폴딩 parked |
+| route design(이 checkout이 디자인 중) | 함께: 디자인이 끝났는지 묻는다 → 끝: start-design 마감 / 아직: start-design 이어서. 맡김: 디자인 변경을 건드리지 않고 inbox parked 후 마감 |
+| 화면을 보며 디자인·스타일 다듬기 | start-design(함께 전용) |
 | 작은 버그·문구·스타일 수정 | 아래 경량 경로 |
 | 새 기능·기획 변경 | create-ssot/update-ssot → create-task 한 조각 |
 | pending·채택 review | create-task 한 조각 |
@@ -60,6 +63,7 @@ ideation/done/은 라우팅 후보가 아니다. 기획 조각의 전환 완료 
 
 ## 4. 커밋·검증·push
 - 커밋: 태스크·기획 조각·경량 수정마다 관련 파일만 커밋한다. 선점·active는 첫 작업 커밋에 포함, beat는 세션 시작·끝. 보고서 갱신은 태스크 3개(기본), 기획 조각의 태스크 소진, 세션 끝, 반복기 멈춤 중 먼저 온 묶음 경계. loop의 단위 세션 끝은 경계가 아니다.
+- 기획 문서는 cfg plan 브랜치(기본 `main`)에 항상 최신으로 둔다: 기획 조각은 `vibe plan-sync`로 시작하고, 기획 커밋은 spec/만 담아 커밋 직후 `vibe plan-push`한다. 코드 push 규칙(cfg push)과 무관하다. ID 충돌로 거절되면 고른 기획 스킬이 다시 채번해 올린다. 충돌·권한 문제로 실패하면 inbox parked에 남기고 구현으로 넘어가지 않는다(번호가 정본에 없는 태스크를 구현하지 않는다).
 - push는 기본으로 하지 않는다(cfg push `-`, 미정 `?`도 같다) — push마다 원격 CI가 돌아 빌드 시간을 쓴다. push 대상을 묻지 않는다. 사용자가 cfg push에 브랜치를 직접 적어 둔 경우에만 세션 끝·반복기 멈춤에 한 번 `vibe push`한다. 묶음 경계마다 push하지 않는다.
 - strict(cfg push 브랜치가 있고 다른 생존 세션·소유 불명 doing이 보일 때): 세션을 등록·커밋한 뒤 `vibe claim --tag <tag> --task T###`로 원격 선점 정보를 **먼저** 공유한다. claim은 원격 트리의 STATE에 자기 선점만 기록하므로 미검증 로컬 코드는 push하지 않는다. 원격 영수증을 로컬에 합친 뒤 소유권을 재확인한다. 다른 tag면 다른 후보. 원격이 선점을 판정한다. 태스크 검사·보고서는 유지하되 완료 코드의 검증·push는 기본으로 조정자의 최종 관문에 모은다. 단위별 코드 push는 명시적으로 요청받았을 때만이다. push 브랜치가 없으면 이 checkout 혼자 일한다. 같은 checkout의 동시 쓰기 금지.
 - 태스크=추가·변경·영향 **단위 테스트**+typecheck·lint·format. 통합·e2e·전체 스위트·CI 대기는 태스크마다 하지 않는다. 테스트 분류는 스크립트 이름이 아닌 격리 범위와 의존성으로 판단한다. 테스트 코드는 필요할 때 함께 수정하고 미실행 통합/e2e 목록은 result limits에 남긴다.
