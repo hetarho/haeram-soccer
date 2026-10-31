@@ -1196,6 +1196,11 @@ export interface World {
   settings?: GameSettings;
   /** Explicit optional business decisions; notification reads never resolve these. */
   decisionChoices?: string[];
+  /**
+   * Settled days each owner-held approval has waited, by decision id (→STAFF-48); absent while
+   * nothing waits and in older saves, which count from 0.
+   */
+  approvalWaits?: Record<string, number>;
   /** Season-review recommendations retained independently of the bounded notification feed. */
   academyReviews?: { id: string; year: number; kind: 'promote' | 'release' }[];
   bids?: TransferBid[];

@@ -2,6 +2,7 @@ import { openNeed } from './replacements';
 import { callUpFor } from './squad-target';
 import { SQUAD_TARGET } from './squad-size';
 import { isDelegated } from './responsibilities';
+import { countApprovalWaits } from './approvals';
 import { registrationRoom } from './registration';
 import { finishTerm, settleReputation } from './reputation';
 import { judgePromises } from './promises';
@@ -921,6 +922,7 @@ function beginDays(w: World) {
 function stepDay(w: World, capture: Settlement, observe: boolean) {
   const day = currentDay(w) + 1;
   w.calendar = { day };
+  countApprovalWaits(w);
   // The season closes the day after its final round; the empty summer is skipped.
   if (closingDay(w, day)) {
     closeSeason(w);
@@ -964,6 +966,7 @@ export function prepareRound(
   if (sequential || !clubs.has(w.playerClub)) return false;
   beginDays(w);
   w.calendar = { day };
+  countApprovalWaits(w);
   const phase = beginRound(w, observe, (copy, jobs) => {
     start(copy, jobs);
     return () => undefined;
