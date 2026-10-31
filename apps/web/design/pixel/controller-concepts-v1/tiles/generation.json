@@ -1,0 +1,41 @@
+{
+  "status": "proposed",
+  "theme": "pixel",
+  "sourceHashes": {
+    "X1": "02ecec7bfa499130995d917f66d5f3fba3177bbc0af0cd1467e93318e6b65d67",
+    "X2": "1a090aadc667594714eec883d193254142964838dbd00f0d0595e1a2df9e3020",
+    "X3": "10bc3a5d46843bf315b5e5149ccd8409bbb447dfdb22c45dd595c46183ef6492"
+  },
+  "assets": [
+    {
+      "file": "X1.png",
+      "source": "design/pixel/controller-concepts-v1/source.mjs#X1",
+      "bytes": 274,
+      "sha256": "4af3d537d8027a7c81c764c5363a493e29a2f82573b858a9c582b26d873835fa",
+      "width": 32,
+      "height": 32,
+      "mode": "tile",
+      "displaySize": 64
+    },
+    {
+      "file": "X2.png",
+      "source": "design/pixel/controller-concepts-v1/source.mjs#X2",
+      "bytes": 263,
+      "sha256": "f5c30ac064a6031d7fba25eb65b3636cc12701f60afb7c2404dc714d3a328ffe",
+      "width": 32,
+      "height": 32,
+      "mode": "tile",
+      "displaySize": 64
+    },
+    {
+      "file": "X3.png",
+      "source": "design/pixel/controller-concepts-v1/source.mjs#X3",
+      "bytes": 276,
+      "sha256": "2c7deaaecb0b483a730a146adfea372f4f3a31edb32c2416f6c78b79cdc8c11d",
+      "width": 32,
+      "height": 32,
+      "mode": "tile",
+      "displaySize": 64
+    }
+  ]
+}

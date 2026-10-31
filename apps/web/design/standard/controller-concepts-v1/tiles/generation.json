@@ -1,0 +1,44 @@
+{
+  "status": "proposed",
+  "theme": "standard",
+  "sourceHashes": {
+    "G1.png": "ba4252ae8aa79d610ffdc2f91cf98b5482d98852b8c696a6f78bb5c9b6da46e6",
+    "G2.png": "a50ba1f63c5179345c9a275d5afc17753e66c84b97061b2cd03571d37b606677",
+    "G3.png": "5e3e9fdab00a298bb408d8cf8aa06cda637c40a1bd99fbb9e9561eed702c5f2d"
+  },
+  "assets": [
+    {
+      "file": "G1.webp",
+      "source": "G1.png",
+      "filter": "scale=256:256",
+      "bytes": 16044,
+      "sha256": "674038ceb32bd19c5bb13be466ec2749ad8c55669eac87fddb9cfe4ef4ce480d",
+      "width": 256,
+      "height": 256,
+      "mode": "tile",
+      "displaySize": 256
+    },
+    {
+      "file": "G2.webp",
+      "source": "G2.png",
+      "filter": "scale=256:256",
+      "bytes": 23310,
+      "sha256": "213580121834f65174be72c54c74d0978836ae63985a763f5660367c1c541fc0",
+      "width": 256,
+      "height": 256,
+      "mode": "tile",
+      "displaySize": 256
+    },
+    {
+      "file": "G3.webp",
+      "source": "G3.png",
+      "filter": "scale=256:256",
+      "bytes": 6988,
+      "sha256": "431ce86708dba124ab6752d029792c17256b1bb9259669234b524e69e178466c",
+      "width": 256,
+      "height": 256,
+      "mode": "tile",
+      "displaySize": 256
+    }
+  ]
+}

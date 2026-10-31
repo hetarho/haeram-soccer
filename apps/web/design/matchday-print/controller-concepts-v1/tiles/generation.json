@@ -1,0 +1,44 @@
+{
+  "status": "proposed",
+  "theme": "matchday-print",
+  "sourceHashes": {
+    "P1.png": "e3049e30e6e0bc45fa8da60710e5d37345a338a252ef6648531ba8b8e0d4704d",
+    "P2.png": "398ce35bc37cd9561471e87d22b6db2670e523a28a688b9ca01c5b25aa2806be",
+    "P3.png": "96bac7fd3fcf7856117d15c22219e4e50fd414a380c4e1f1e37c9a9e6342e063"
+  },
+  "assets": [
+    {
+      "file": "P1.webp",
+      "source": "P1.png",
+      "filter": "scale=256:256",
+      "bytes": 4210,
+      "sha256": "de4f15c88b6aa37ba1a4948a580c7d3eaccec1ecdc3db2d33ed3b1622ef2bafa",
+      "width": 256,
+      "height": 256,
+      "mode": "tile",
+      "displaySize": 256
+    },
+    {
+      "file": "P2.webp",
+      "source": "P2.png",
+      "filter": "scale=256:256",
+      "bytes": 8120,
+      "sha256": "151b5e08f9fadf81babc4063f1b7f93b69766fd8779091595d40efa599adbb54",
+      "width": 256,
+      "height": 256,
+      "mode": "tile",
+      "displaySize": 256
+    },
+    {
+      "file": "P3.webp",
+      "source": "P3.png",
+      "filter": "scale=256:256",
+      "bytes": 3396,
+      "sha256": "96806116f2c7ff238a0cff70da83eef17199c1655736e4f0641aa513385a07dd",
+      "width": 256,
+      "height": 256,
+      "mode": "tile",
+      "displaySize": 256
+    }
+  ]
+}

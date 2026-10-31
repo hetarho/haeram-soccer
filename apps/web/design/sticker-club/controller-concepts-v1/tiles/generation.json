@@ -1,0 +1,44 @@
+{
+  "status": "proposed",
+  "theme": "sticker-club",
+  "sourceHashes": {
+    "S1.png": "e8b363e6c210aa708a75631cfd8f14abffdaa5c7b4fb9193e054f4dc7ec8f995",
+    "S2.png": "1fc57d31f48f73c30f2b050af3561d059675cda8924898087482c86ec9e60dd1",
+    "S3.png": "4f757c82bad78e8a926570a383e486ba6f4b84ffb823fe43e62234ac38bc6633"
+  },
+  "assets": [
+    {
+      "file": "S1.webp",
+      "source": "S1.png",
+      "filter": "scale=256:256",
+      "bytes": 1090,
+      "sha256": "75e2f7289523cdffe4b0de40001d89ff1d6e8b67d3da24582b02aaf6d530e60f",
+      "width": 256,
+      "height": 256,
+      "mode": "tile",
+      "displaySize": 256
+    },
+    {
+      "file": "S2.webp",
+      "source": "S2.png",
+      "filter": "scale=256:256",
+      "bytes": 1418,
+      "sha256": "87065688cfc924bc4e54493a4aa5009d75f49f6fd02d70d7b4b270f032afa832",
+      "width": 256,
+      "height": 256,
+      "mode": "tile",
+      "displaySize": 256
+    },
+    {
+      "file": "S3.webp",
+      "source": "S3.png",
+      "filter": "scale=256:256",
+      "bytes": 1086,
+      "sha256": "8ed26e22b6b663a4f54cbd035abd1df6e05f1a188aa0cd8fb2ae0b13015d2cc4",
+      "width": 256,
+      "height": 256,
+      "mode": "tile",
+      "displaySize": 256
+    }
+  ]
+}

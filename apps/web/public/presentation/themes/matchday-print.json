@@ -200,12 +200,12 @@
       "secondary-frame": "var(--image-panel-frame)",
       "secondary-text": "var(--image-ink-color)",
       "secondary-muted": "var(--image-muted)",
-      "image-transport-material": "var(--image-art-controller-weave)",
+      "image-transport-material": "var(--image-art-controller-background)",
       "transport-material-size": "256px",
-      "transport-material-blend": "soft-light",
-      "transport-fill": "#e7d2a5",
-      "transport-text": "#24231e",
-      "transport-muted": "#514733",
+      "transport-material-blend": "normal",
+      "transport-fill": "#612f37",
+      "transport-text": "#fff4dc",
+      "transport-muted": "#e9d5bd",
       "image-control-fill-mode": "fill",
       "button-secondary-frame": "var(--image-art-control-secondary)",
       "button-secondary-frame-slice": "var(--image-art-control-secondary-slice)",
@@ -839,6 +839,12 @@
         "height": 64,
         "mode": "nine-slice",
         "slice": 22
+      },
+      "image-art-controller-background": {
+        "resource": "../../art/matchday-print/controller-v1/material.webp",
+        "width": 256,
+        "height": 256,
+        "mode": "tile"
       }
     }
   },
