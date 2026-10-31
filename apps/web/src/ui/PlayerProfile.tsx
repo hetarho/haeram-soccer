@@ -55,7 +55,8 @@ function startingSlot(w: World, player: Player) {
 /**
  * A player read as football media would (→WEB-59, PLAYER-18): OVR and 실효 OVR, his positions on a
  * pitch by level, the 16 attributes by group, his best roles, personality and play traits, and —
- * for our own players — adaptation, its multiplier and an 적응 실패 flag.
+ * for our own players — adaptation, its multiplier and an 적응 실패 flag. `compact` sits under a
+ * card that already shows his rating and position (→WEB-109), so it leaves out its own head.
  */
 export function PlayerProfile({
   w,
@@ -79,26 +80,28 @@ export function PlayerProfile({
   const unsettled = own && player.unsettled !== undefined;
   return (
     <section className={`${s.profile} ${compact ? s.compact : ''}`} aria-label="선수 프로필">
-      <div className={s.head}>
-        <OvrBadge value={ovr} role={player.position} large />
-        <div className={s.headText}>
-          <b>{POSITION_LABEL[player.position]}</b>
-          <span data-testid="profile-effective">
-            실효 OVR {effective}
-            {slot ? ` · 선발 ${slot.position} ${ROLE_LABEL[slot.role]}` : ''}
-          </span>
-          {own && (
-            <span data-testid="profile-adaptation">
-              적응도 {player.adaptation.toFixed(2)} · {multiplierLabel(multiplier)}
-              {unsettled && (
-                <em data-ui="label" className={s.flag}>
-                  적응 실패
-                </em>
-              )}
+      {!compact && (
+        <div className={s.head}>
+          <OvrBadge value={ovr} role={player.position} large />
+          <div className={s.headText}>
+            <b>{POSITION_LABEL[player.position]}</b>
+            <span data-testid="profile-effective">
+              실효 OVR {effective}
+              {slot ? ` · 선발 ${slot.position} ${ROLE_LABEL[slot.role]}` : ''}
             </span>
-          )}
+            {own && (
+              <span data-testid="profile-adaptation">
+                적응도 {player.adaptation.toFixed(2)} · {multiplierLabel(multiplier)}
+                {unsettled && (
+                  <em data-ui="label" className={s.flag}>
+                    적응 실패
+                  </em>
+                )}
+              </span>
+            )}
+          </div>
         </div>
-      </div>
+      )}
       <div className={s.columns}>
         <PositionMap positions={player.positions} main={player.position} />
         <div className={s.side}>

@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r46 | Define the browser-demo rules for squad and growth.
+> r47 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 20 players (→CLUB-40), a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating sits at its league's average club XI plus its difficulty level's offset (→WEB-3: 쉬움 0, 보통 −2, 어려움 −4, 최상 −6; ±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -293,11 +293,27 @@
   - the reference club's own fees, measured beside (the unseen careers): its dearest sale £1.2m in the 1980s, £57m in the 2000s and £130m in the 2020s; sales 7–14% of its turnover from the 1960s (2% in the 2010s–2020s before); 1950s lower-division fees as before (second-tier buys about £800, sales £200).
   - ECON-29 on ENG ESP FRA GER (default build, reference club, 60 seasons), before → after: operating result before player trading 8.1% → 5.0%, player sales 7.6% → 11.7% of revenue, net result with trading 15.7% → 16.8%, facility ladder 39.2 → 41.3 seasons, none bankrupt; CLUB-25's wages unchanged (80 earns 7.37× 60, the second tier 40%).
 
+- CLUB-47 [o] Every market candidate not ours carries the scout's verdict (스카우트 판정): a grade A–E read against our current XI with the measures of the shortlist and the manager's requests (→!CLUB-33), and its reasons. ← the owner reads one answer before the detail, and it agrees with what the manager and the 단장 act on
+  - the gap: at the slot he would take (→!CLUB-14), his OVR there × level minus that slot's starter's, adaptation left out, as a request measures it; both values are rounded first, so the gap is the difference the owner reads.
+  - the first row that holds decides:
+    | grade | label | when |
+    |---|---|---|
+    | A | 즉시 주전 | gap ≥ 10, twice the request margin |
+    | B | 주전 보강 | gap ≥ 5, the request margin: the manager would ask for him |
+    | C | 경쟁 보강 | gap ≥ 2 (공격적's upgrade margin, the smallest the 단장 acts on), his line is short (→CLUB-33), or he is 23 or under, the slot is his main position and his potential is at least 5 above the starter's value there |
+    | D | 백업 | gap above −5 |
+    | E | 보강 효과 없음 | otherwise |
+  - the verdict names its slot, his value there and the starter's; its reasons add what the gap does not say, each a fact of the current world, at most two for and two against, in this order:
+    - for: the manager's pick for an open request · he meets an open request · his line is short · growth room (potential − OVR) of 5 or more at 23 or under · a free agent, no fee · tactical fit up (→CLUB-14)
+    - against: on arrival 3 or more below settled (→PLAYER-11) · 29 or older, pace and stamina falling each season (→PLAYER-17) · outside 재정 기조's money check for a signing (→ECON-33), with its reason
+  - the verdict reads exact facts (→PLAYER-18) whoever holds the chief scout post, as the shortlist is drawn; it changes nothing in the world and never gates an approach (→WEB-43).
+
 ## flow
 
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r47 261101 CLUB-47+ the scout's verdict: grade A–E from the slot gap of CLUB-33's request measure (A ≥10, B ≥5, C ≥2 or a short line or a prospect, D >−5, else E) with up to two reasons for and two against
 - r46 261101 CLUB-19✎ +1 more morale lost a settled round per overdue owner approval, at most 3 (→STAFF-48); CLUB-34/38✎ owner-held mediation stops either progression mode→waits in the 결재함
 - r45 261031 CLUB-46✎ value per ability point 1.125 everywhere→the wage's 1.105, the premium reaching a value by its points above 70 (in full from 80), lower-division values on the wage curve; premium anchors 0.3 (1950)…3.4 (2025)→0.5 (1950)…5.2 (2025), refit on dumped top-flight squads; measured 261031: 0 of 15 compared years outside the bands on 8 careers (10 before)
 - r44 261031 CLUB-25✎ transfer values follow the same index→+their own slope and the era's transfer premium; CLUB-46+ transfer values by era: value per ability point 1.105→1.125, a premium over the football index from 0.3 (1950) to 3.4 (2025), targets against the British record fee and the Premier League's average fee

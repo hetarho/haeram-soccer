@@ -18,6 +18,9 @@
 | cr01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T15:49Z | 2026-10-31T15:49Z | - |
 
 ## inbox
+- 261101 decided CLUB-47 T628: how the scout grades a candidate → the gap at the slot he would take, by CLUB-33's own margins (A ≥ 10 twice the request margin, B ≥ 5 the request margin, C ≥ 2 공격적's upgrade margin or a short line or a prospect at his main position, D > −5, else E), reasons only for what the gap does not say (alt: percentile against positional peers as FBref, a measure the engine does not keep | one weighted score of ability, potential, age and cost, which hides why).
+- 261101 decided WEB-109 T628: what our own players keep in the scout-report detail → head, 능력·성향 and the transaction bar in its completed state (계약 완료, as recruitment e2e reads it), no verdict or terms (alt: drop the bar, which breaks the completed-signing evidence).
+- 261101 suggest T623 T624 ARCH-30: on origin/main 67c9e974 four integration equivalence tests fail independently of T628 — calendar.progression-eng/esp (every progression mode records the same facts), full-model-throughput (T285 records/ledgers) and season.test (day/round/season advancement); ap01 ran only touched integration tests, so main CI will be red until approval waiting/overdue morale settles identically across progression paths.
 - 261101 decided WEB-42 WEB-45 STAFF-48 CLUB-19: what an unanswered owner approval costs once time no longer waits for it → a 7-day 결재 기한, then each overdue approval costs squad morale 1 a settled round (at most 3) with one overdue notice: one legible lever on the team, and a week before it bites even at x10 (alt: morale from the first day without grace | a per-kind consequence such as the asking player turning unhappy or a bid lapsing early | the staff deciding it for the owner at the deadline)
 - 261101 decided WEB-18 WEB-100: where the 결재함 stays in sight once approvals stop pausing play → a 결재함 button with waiting/overdue counts in the shared bottom controls beside 결재 설정, opening the office lobby tray, and tray rows reading D-n or 지연 n일 (alt: an icon beside notifications in the HUD | only the existing clubhouse navigation and office-scene counts)
 - 261101 suggest WEB-36 WEB-79: the design checkout (cb31) holds an uncommitted WEB r193 (settings feedback, observation confirmation); main now carries WEB r193 from ap01, so that design commit takes r194 when it lands
@@ -421,11 +424,11 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 194 | 187 | WEB-39✎ WEB-79✎ WEB-106+ WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ WEB-43✎ WEB-10✎ WEB-44✎ WEB-107+ WEB-86✎ WEB-108+ WEB-100✎ WEB-42✎ WEB-91✎ | 0 |
+| WEB | 195 | 187 | WEB-39✎ WEB-79✎ WEB-106+ WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ WEB-43✎ WEB-10✎ WEB-44✎ WEB-107+ WEB-86✎ WEB-108+ WEB-100✎ WEB-42✎ WEB-91✎ | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 6 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
-| CLUB | 46 | 46 | - | 0 |
+| CLUB | 47 | 47 | - | 0 |
 | MATCH | 44 | 44 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 37 | 37 | - | 0 |
@@ -486,6 +489,8 @@
 - 261101 update-ssot WEB r193 STAFF r37 CLUB r46 SAVE r59 (WEB-42✎ WEB-45✎ WEB-18✎ WEB-76✎ WEB-80✎ WEB-83✎ WEB-100✎ STAFF-48+ STAFF-15✎ STAFF-32✎ CLUB-19✎ CLUB-34✎ CLUB-38✎ SAVE-17✎) + create-task T623–T625: approvals never stop progression, 결재함 with a 7-day 결재 기한 and overdue morale cost; session ap01.
 - 261101 update-ssot ECON r40 (ECON-35+) SAVE r58 (SAVE-10✎) + create-task T622 currency levels at the 1999 rate; session cr01.
 - 261101 update-ssot WEB r194 (WEB-91✎): light controller/grass→selected P3/G1/X2/S1 materials and matching foregrounds; implemented in 92127406 on codex/controller-backgrounds-cb31.
+- 261101 T628 done: scout verdict A–E (CLUB r47) and the candidate detail as a scout report (WEB r195); unit/contract pass, 4 integration failures pre-exist on 67c9e974, e2e left to CI; session sr11.
+- 261101 update-ssot CLUB r47 (CLUB-47+) WEB r195 (WEB-109+) + create-task T628 scout verdict and the candidate detail as a scout report; session sr11.
 - 261031 T621 done: transfer values by era (CLUB r45), premium reaching values above the pivot, anchors 0.5 (1950)…5.2 (2025); 8 ENG careers 0 of 15 years outside CLUB-46 bands (10 before); ECON-29 bands unchanged; session tf31.
 - 261031 update-ssot CLUB r44 (CLUB-25✎ CLUB-46+) + create-task T621 transfer values by era; session tf31.
 - 261031 create-task review/engine-architecture-261030: owner authorizes production completion; T617 helper replication, T618 guarded packed movement; session ei31.
@@ -496,5 +501,3 @@
 - 261031 T617 done locally: incremental helper replicas and fallback guards; affected units 91 files/869 tests, quick checks/build pass. Real-worker confirmation equal hashes, total wall ×0.8987 and process CPU ×0.8046; full integration/browser gate remains after T618.
 - 261031 design ds30: owner-directed live UI polish closed. Covers the redrawn pixel icon set, five-entry navigation (리그·컵·클럽하우스·이적시장·기록), clubhouse quick actions, and an office lobby holding team state, room doors and approval trays. Also the designer kit commission plus theme and locale updates. E2E helpers and specs follow the design. Fixed: the first-team door reopened the market; discarded drafts did not re-render; sticker-club fixture text and select hints fell below AA. Design verify: task+batch passed, Chromium 335 passed.
 - 261031 update-ssot WEB r192 KIT r6: WEB-10✎ WEB-11✎ WEB-39✎ WEB-42✎ WEB-44✎ WEB-100✎ WEB-107+ WEB-86✎ WEB-108+ KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ (five-entry navigation, designer commission and fourteen shirt patterns as built in ds30; clubhouse quick actions; team state and room doors in the office lobby)
-- 261031 update-ssot WEB r190: WEB-43✎ (side-by-side candidate comparison, compare a candidate with a player of ours); code in the working tree, uncommitted
-- 261031 owner-directed clubhouse quick actions (chat, no task): owner actions that run on the spot move onto home as three quick-action tiles over the office scene — 분위기 (meeting, team building, win bonus, owner visit, manager backing), 피로 (rest XI, assistant's recovery training sheet, rest day, recovery support, camp, friendly), 훈련·육성 (first-team and youth training sheets in place, top prospect's promotion) — each a sheet with cost, effect and chances and no page moves; the five team-state tiles (with their remedy sheets and page links) and the four room doors move into the owner-office lobby under the desks, and room pages carry an office bar back to the lobby. Typecheck (own files), lint, format and related unit tests pass; e2e helpers/specs updated but not run
