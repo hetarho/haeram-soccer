@@ -1,4 +1,4 @@
-import { openPersonnel } from './personnel-navigation';
+import { managerCard, openPersonnel } from './personnel-navigation';
 import { marketInfo } from './market';
 import {
   createWorld,
@@ -31,12 +31,14 @@ async function found(page: Page, seed = 'short-contract') {
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
 
-const tab = (page: Page, name: string) =>
-  page
-    .getByRole('tablist', { name: name === '스태프' ? '코칭스태프실' : '감독 사무실' })
-    .getByRole('tab', { name: name === '선수' ? '선수 목록' : name, exact: true });
-/** The manager place from primary navigation, then its explicit players tab. */
+/** A tab of the club's section bar (→WEB-10): 1군 is the roster, 코치진 the manager and staff. */
+const section = (page: Page, name: string) =>
+  clubSections(page).getByRole('tab', { name, exact: true });
+/** 1군's roster through the club's section bar. */
 const openPeople = (page: Page) => openPersonnel(page, 'players');
+/** The manager's own 교체 in 코치진; every staff post has one too. */
+const replaceManager = (page: Page) =>
+  managerCard(page).getByRole('button', { name: '교체', exact: true });
 
 /** The free agents' list inside the manager market. */
 const freeAgents = (market: Locator) =>
@@ -50,7 +52,7 @@ const freeAgents = (market: Locator) =>
  */
 async function hireFirefighter(page: Page) {
   await openPersonnel(page, 'manager');
-  await page.getByRole('button', { name: '교체', exact: true }).click();
+  await replaceManager(page).click();
   const market = page.getByRole('dialog', { name: '감독 교체' });
   await expect(market.getByRole('heading', { name: '다른 구단 감독 · 보상금 필요' })).toBeVisible();
   const card = freeAgents(market).getByRole('article').filter({ hasText: '소방수' });
@@ -70,7 +72,7 @@ async function hireFirefighter(page: Page) {
   await expect(market).toHaveCount(0);
   await closeOutcome(page, '새 감독을 선임했어요');
   // The man just hired leaves the market (→STAFF-17).
-  await page.getByRole('button', { name: '교체', exact: true }).click();
+  await replaceManager(page).click();
   await expect(freeAgents(market).getByRole('article').first()).toBeVisible();
   await expect(market.getByRole('article').filter({ hasText: name })).toHaveCount(0);
   await market.getByRole('button', { name: '창 닫기' }).click();
@@ -89,58 +91,41 @@ test.describe('사람 at 360x740', () => {
     await chooseLevel(page, 2);
     await setResponsibility(page, '스폰서 계약', 'delegated');
     await openPersonnel(page, 'players');
-    const tabs = page.getByRole('tablist', { name: '감독 사무실' }).getByRole('tab');
-    // The manager market sits behind the manager's 교체, not in a tab of its own (→WEB-43); the
-    // transfer market is a primary entry of its own (→WEB-10).
-    await expect(tabs).toHaveText(['감독', '선수 목록']);
-    await expect(tab(page, '선수')).toHaveAttribute('aria-selected', 'true');
+    // 1군 is the roster with no local tabs: the manager stands with his staff in 코치진 and his
+    // market behind his 교체 (→WEB-43); the transfer market is a primary entry (→WEB-10).
+    await expect(page.getByRole('tablist', { name: '감독 사무실' })).toHaveCount(0);
+    await expect(section(page, '1군')).toHaveAttribute('aria-selected', 'true');
     await expect(page).toHaveURL(/\/first-team\?view=players$/);
-    for (const box of await tabs.evaluateAll((all) =>
-      all.map((button) => button.getBoundingClientRect().height),
-    ))
+    for (const box of await clubSections(page)
+      .getByRole('tab')
+      .evaluateAll((all) => all.map((button) => button.getBoundingClientRect().height)))
       expect(box).toBeGreaterThanOrEqual(44);
     await openPersonnel(page, 'manager');
-    await expect(page).toHaveURL(/\/first-team\?view=manager(?:&market=1)?$/);
-    // The manager's office keeps what 육성 means one labelled disclosure away (→WEB-10/43); the
-    // coaches work in the separate coaching-staff place.
+    await expect(page).toHaveURL(/\/staff\?view=coaches$/);
+    // The manager's card keeps what 육성 means one labelled disclosure away (→WEB-10/43), with
+    // every staff post listed under him.
+    await expect(managerCard(page)).toBeInViewport();
     const youth = page.getByText('27세 미만 선수 성장').first();
     await expect(youth).toBeHidden();
     await page.getByText('감독 능력·성향', { exact: true }).click();
     await expect(youth).toBeVisible();
-    await expect(page.getByRole('region', { name: '스태프', exact: true })).toHaveCount(0);
-    expect(await horizontalOverflow(page)).toBe(0);
-    // Keyboard movement stays within this place's local tabs, including wrapping and Home/End.
-    await tab(page, '감독').focus();
-    const keys: [string, '감독' | '선수'][] = [
-      ['ArrowRight', '선수'],
-      ['ArrowRight', '감독'],
-      ['ArrowLeft', '선수'],
-      ['Home', '감독'],
-      ['End', '선수'],
-      ['Home', '감독'],
-    ];
-    for (const [key, name] of keys) {
-      await page.keyboard.press(key);
-      await expect(tab(page, name)).toBeFocused();
-      await expect(tab(page, name)).toHaveAttribute('aria-selected', 'true');
-      await expect(page).toHaveURL(
-        name === '감독' ? /\/first-team\?view=manager$/ : /\/first-team\?view=players$/,
-      );
-    }
-    await expect(page.getByRole('tablist', { name: '코칭스태프실', exact: true })).toHaveCount(0);
-    // The coaches are a club section of their own (→WEB-10/43); the keyboard reaches them too.
-    const coachingPlace = clubSections(page).getByRole('tab', { name: '코치진', exact: true });
-    await clubSections(page).getByRole('tab', { selected: true }).focus();
-    await page.keyboard.press('ArrowRight');
-    await expect(coachingPlace).toBeFocused();
-    await expect(tab(page, '스태프')).toHaveAttribute('aria-selected', 'true');
-    await expect(page).toHaveURL(/\/staff\?view=coaches$/);
     await expect(page.getByRole('region', { name: '스태프', exact: true })).toBeVisible();
-    await tab(page, '스태프').focus();
-    await page.keyboard.press('ArrowRight');
-    await expect(tab(page, '스태프')).toBeFocused();
-    await expect(tab(page, '스태프')).toHaveAttribute('aria-selected', 'true');
-    await expect(page).toHaveURL(/\/staff\?view=coaches$/);
+    expect(await horizontalOverflow(page)).toBe(0);
+    // The keyboard moves along the club's section bar, each tab opening its section.
+    await section(page, '코치진').focus();
+    const keys: [string, string, RegExp][] = [
+      ['ArrowLeft', '1군', /\/first-team\?view=players$/],
+      ['ArrowRight', '코치진', /\/staff\?view=coaches$/],
+      ['ArrowRight', '훈련', /\/training$/],
+      ['ArrowLeft', '코치진', /\/staff\?view=coaches$/],
+    ];
+    for (const [key, name, address] of keys) {
+      await page.keyboard.press(key);
+      await expect(section(page, name)).toBeFocused();
+      await expect(section(page, name)).toHaveAttribute('aria-selected', 'true');
+      await expect(page).toHaveURL(address);
+    }
+    await expect(page.getByRole('region', { name: '스태프', exact: true })).toBeVisible();
     expect(await horizontalOverflow(page)).toBe(0);
 
     await hireFirefighter(page);
@@ -162,7 +147,8 @@ test.describe('사람 at 360x740', () => {
     await expect(page.getByTestId('coaching-mode')).toContainText('직접');
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
-    await expect(tab(page, '스태프')).toHaveAttribute('aria-selected', 'true');
+    await expect(section(page, '코치진')).toHaveAttribute('aria-selected', 'true');
+    await expect(page).toHaveURL(/\/staff\?view=coaches$/);
     // 감독 ends with who appoints, the rows the staff follow and whom they would appoint (→WEB-43).
     await openPersonnel(page, 'manager');
     const post = page.getByRole('region', { name: '감독 선임 위임' });
@@ -201,23 +187,27 @@ test.describe('사람 at 360x740', () => {
   });
 
   // Split from the journey above, which ran close to its 30 s limit on a loaded host.
-  test('older 감독 and squad addresses land on their 사람 tabs', async ({ page }) => {
+  test('older 감독 and squad addresses land on their club sections', async ({ page }) => {
     await found(page);
     await chooseLevel(page, 2);
     await setResponsibility(page, '스폰서 계약', 'delegated');
-    // An old address of the candidates tab opens 감독 with the market open.
+    // An old address of the candidates tab opens 코치진 with the manager's market open.
     await page.goto('/manager?view=candidates');
-    await expect(tab(page, '감독')).toHaveAttribute('aria-selected', 'true');
+    await expect(section(page, '코치진')).toHaveAttribute('aria-selected', 'true');
     const market = page.getByRole('dialog', { name: '감독 교체' });
     await expect(freeAgents(market).getByRole('article').first()).toBeVisible();
-    await expect(page).toHaveURL(/\/first-team\?view=manager(?:&market=1)?$/);
+    await expect(page).toHaveURL(/\/staff\?view=coaches&market=1$/);
     await market.getByRole('button', { name: '창 닫기' }).click();
-    // The older staff addresses land on their tabs of 사람.
-    await page.goto('/manager?view=coaches');
-    await expect(tab(page, '스태프')).toHaveAttribute('aria-selected', 'true');
     await expect(page).toHaveURL(/\/staff\?view=coaches$/);
+    // The older manager and staff addresses land on the same 코치진.
+    for (const address of ['/first-team?view=manager', '/manager?view=coaches']) {
+      await page.goto(address);
+      await expect(section(page, '코치진')).toHaveAttribute('aria-selected', 'true');
+      await expect(page).toHaveURL(/\/staff\?view=coaches$/);
+      await expect(managerCard(page)).toBeVisible();
+    }
     await page.goto('/squad');
-    await expect(tab(page, '선수')).toHaveAttribute('aria-selected', 'true');
+    await expect(section(page, '1군')).toHaveAttribute('aria-selected', 'true');
     await expect(page).toHaveURL(/\/first-team\?view=players$/);
     expect(await horizontalOverflow(page)).toBe(0);
   });
@@ -247,9 +237,10 @@ test('an unrenewed firefighter leaves at the close and the alert opens the marke
   const alert = page.getByRole('status').filter({ hasText: '감독이 떠났어요' });
   await expect(alert).toContainText('임시 감독이 팀을 맡고 있어요');
   await alert.getByRole('button', { name: '감독 선임하러 가기', exact: true }).click();
-  await expect(page.getByRole('tablist', { name: '감독 사무실', exact: true })).toBeVisible();
-  await expect(tab(page, '감독')).toHaveAttribute('aria-selected', 'true');
-  await expect(page).toHaveURL(/\/first-team\?view=manager(?:&market=1)?$/);
+  // The vacancy opens 코치진, the interim at its head and his market over it (→WEB-43/57).
+  await expect(section(page, '코치진')).toHaveAttribute('aria-selected', 'true');
+  await expect(page).toHaveURL(/\/staff\?view=coaches&market=1$/);
+  await expect(managerCard(page)).toContainText('새 감독을 뽑을 때까지 대행');
   // The interim's market is open; it keeps at least four free agents (→STAFF-17).
   const market = page.getByRole('dialog', { name: '감독 선임' });
   await expect(market).toContainText('(임시 감독)');

@@ -55,7 +55,8 @@ for (const width of [390, 1280]) {
     );
     for (const gone of ['클럽 소식·시즌 브리핑', '선수 계약', '재정·투자', '감독 사무실', '훈련장'])
       await expect(approvalQueue(page).getByRole('button', { name: gone })).toHaveCount(0);
-    await expect(page.getByTestId('team-state')).toBeHidden();
+    // The club's summary stays in the clubhouse; the office holds no copy of it (→WEB-44).
+    await expect(page.getByTestId('club-situation')).toBeHidden();
     const first = await review(page, ids[0]!).boundingBox();
     expect(first!.y + first!.height).toBeLessThanOrEqual(844);
     await expect(rows.getByRole('button', { name: '거절', exact: true })).toHaveCount(0);

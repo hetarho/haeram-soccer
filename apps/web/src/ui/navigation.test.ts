@@ -7,31 +7,50 @@ describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
     for (const [path, search, page, view, address] of [
       ['/squad', '', 'firstTeam', 'players', '/first-team?view=players'],
       ['/transfers', '', 'firstTeam', 'market', '/first-team?view=market'],
-      ['/people', '?view=manager', 'firstTeam', 'manager', '/first-team?view=manager'],
+      // The manager stands with his staff in 코치진 (→WEB-43): every older manager address lands there.
+      ['/people', '?view=manager', 'staff', 'coaches', '/staff?view=coaches'],
       ['/manager', '?view=coaches', 'staff', 'coaches', '/staff?view=coaches'],
-      ['/manager', '?view=delegation', 'firstTeam', 'manager', '/first-team?view=manager'],
+      ['/manager', '?view=delegation', 'staff', 'coaches', '/staff?view=coaches'],
+      ['/first-team', '?view=manager', 'staff', 'coaches', '/staff?view=coaches'],
       ['/first-team', '?view=training', 'training', undefined, '/training'],
     ])
       expect(routeOf(path!, search!)).toEqual({ page, ...(view ? { view } : {}), address });
     expect(routeOf('/training', '?view=academy')).toEqual({ page: 'academy', address: '/academy' });
-    for (const path of ['/manager', '/people'])
-      expect(routeOf(path, '?view=candidates')).toEqual({
-        page: 'firstTeam',
-        view: 'manager',
+    // The replacement market opens over the same manager workflow, however it was asked for.
+    for (const [path, search] of [
+      ['/manager', '?view=candidates'],
+      ['/people', '?view=candidates'],
+      ['/first-team', '?view=manager&market=1'],
+      ['/staff', '?view=manager&market=1'],
+    ])
+      expect(routeOf(path, search)).toEqual({
+        page: 'staff',
+        view: 'coaches',
         market: true,
-        address: '/first-team?view=manager&market=1',
+        address: '/staff?view=coaches&market=1',
       });
+    expect(routeOf('/staff', '?view=coaches&market=1')).toEqual({
+      page: 'staff',
+      view: 'coaches',
+      market: true,
+    });
+    // Only the manager's market: 이적시장 is the first team's market view, never this flag.
+    expect(routeOf('/first-team', '?view=market&market=1')).toEqual({
+      page: 'firstTeam',
+      view: 'market',
+      address: '/first-team?view=market',
+    });
   });
 
   it('retains canonical subviews, meaningful filters and direct-load defaults', () => {
-    for (const view of ['manager', 'players', 'market'])
+    for (const view of ['players', 'market'])
       expect(routeOf('/first-team', `?view=${view}`)).toEqual({ page: 'firstTeam', view });
     expect(routeOf('/staff', '?view=coaches')).toEqual({ page: 'staff', view: 'coaches' });
     expect(routeOf('/training', '')).toEqual({ page: 'training' });
     expect(routeOf('/staff', '?view=manager&player=p1')).toEqual({
-      page: 'firstTeam',
-      view: 'manager',
-      address: '/first-team?view=manager&player=p1',
+      page: 'staff',
+      view: 'coaches',
+      address: '/staff?view=coaches&player=p1',
     });
     expect(routeOf('/academy', '')).toEqual({ page: 'academy' });
     expect(routeOf('/first-team', '')).toEqual({
@@ -106,8 +125,8 @@ describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
       ['?view=players&work=recruitment', 'firstTeam', 'market', '/first-team?view=market'],
       ['?view=players&work=market', 'firstTeam', 'market', '/first-team?view=market'],
       ['?view=players&work=academy', 'academy', undefined, '/academy'],
-      ['?view=staff', 'firstTeam', 'manager', '/first-team?view=manager'],
-      ['?view=staff&work=manager', 'firstTeam', 'manager', '/first-team?view=manager'],
+      ['?view=staff', 'staff', 'coaches', '/staff?view=coaches'],
+      ['?view=staff&work=manager', 'staff', 'coaches', '/staff?view=coaches'],
       ['?view=staff&work=coaches', 'staff', 'coaches', '/staff?view=coaches'],
     ] as const)
       expect(routeOf('/direction', search)).toEqual({

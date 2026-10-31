@@ -1,13 +1,5 @@
 import { PixelIcon } from './PixelIcon';
-import { openPrimary } from './state';
 import o from './OfficeBar.module.css';
-
-/** A clubhouse room's bar: its doors stand in the owner's office, so it returns there. */
-export function RoomBar({ title }: { title: string }) {
-  return (
-    <OfficeBar back={{ label: '사무실', onClick: () => openPrimary('business') }} title={title} />
-  );
-}
 
 /** Local desk navigation; the shared HUD owns club identity, BETA and cash. */
 export function OfficeBar({

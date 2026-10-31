@@ -4,7 +4,9 @@ import {
   personnelAddress,
   personnelHome,
   personnelRoute,
+  WORK_RESPONSIBILITIES,
 } from './personnelNavigation';
+import { DESK_RESPONSIBILITIES } from './officeDesks';
 import {
   beginTaskDetour,
   openPeople,
@@ -108,12 +110,15 @@ describe('personnel actions and task continuity', () => {
     expect(personnelAddress(personnelHome('players'))).toBe('/first-team?view=players');
     expect(personnelAddress(personnelHome('training'))).toBe('/training');
     expect(personnelAddress(personnelHome('academy'))).toBe('/academy');
-    expect(personnelAddress(personnelHome('manager'))).toBe('/first-team?view=manager');
+    // The manager is found with his staff in 코치진, never as a hidden first-team default.
+    expect(personnelAddress(personnelHome('manager'))).toBe('/staff?view=coaches');
+    expect(personnelAddress(personnelHome('candidates'), true)).toBe(
+      '/staff?view=coaches&market=1',
+    );
     expect(personnelAddress(personnelHome('coaches'))).toBe('/staff?view=coaches');
-    expect(developmentDestination('people/manager')).toEqual({
-      page: 'firstTeam',
-      view: 'manager',
-    });
+    // A first-team address never carries the manager's market flag.
+    expect(personnelAddress(personnelHome('players'), true)).toBe('/first-team?view=players');
+    expect(developmentDestination('people/manager')).toEqual({ page: 'staff', view: 'coaches' });
     expect(developmentDestination('people/coaches')).toEqual({ page: 'staff', view: 'coaches' });
     expect(developmentDestination('business/facility')).toEqual({
       page: 'operations',
@@ -137,7 +142,8 @@ describe('personnel actions and task continuity', () => {
     openTraining('training');
     expect(history.at(-1)).toBe('/training');
     openPeople('candidates');
-    expect(history.at(-1)).toBe('/first-team?view=manager&market=1');
+    expect(history.at(-1)).toBe('/staff?view=coaches&market=1');
+    expect(useNavigation.getState().page).toBe('staff');
     expect(useTaskMemory.getState().values).toMatchObject({
       'market-role': 'DF',
       'market-viewingId': 'candidate-1',
@@ -166,6 +172,19 @@ describe('personnel actions and task continuity', () => {
     expect(useCoachRequest.getState().request).toEqual({ coach: 'youth' });
     beginTaskDetour('business');
     expect(useTaskMemory.getState().returning).toMatchObject({ page: 'academy', label: '유소년' });
+  });
+});
+
+describe('responsibilities in their owning workflows (→WEB-43/79)', () => {
+  it('gives every responsibility of the former player and staff desks exactly one workflow home', () => {
+    const homes = Object.values(WORK_RESPONSIBILITIES).flat();
+    expect(new Set(homes).size).toBe(homes.length);
+    expect([...homes].sort()).toEqual(
+      [...DESK_RESPONSIBILITIES.players, ...DESK_RESPONSIBILITIES.staff].sort(),
+    );
+    // Sponsorship stays with 구단 운영's 후원 section.
+    expect(homes).not.toContain('sponsors');
+    expect(DESK_RESPONSIBILITIES.sponsor).toEqual(['sponsors']);
   });
 });
 
@@ -198,7 +217,7 @@ describe('club sections and 구단 운영 (→WEB-10/39/110)', () => {
       ['identity', '/club-operations?view=identity', 'operations'],
       ['finance', '/club-operations?view=investment', 'operations'],
       ['players', '/first-team?view=players', 'firstTeam'],
-      ['staff', '/first-team?view=manager', 'firstTeam'],
+      ['staff', '/staff?view=coaches', 'staff'],
     ] as const) {
       openBusiness(desk);
       expect(at(), desk).toBe(address);

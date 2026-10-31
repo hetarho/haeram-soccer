@@ -84,10 +84,7 @@ function fixture() {
 afterEach(() => useTaskMemory.getState().activate('clean'));
 
 describe('live place composition', () => {
-  it.each([
-    ['firstTeam', 'manager', 'manager', '감독 재신임 발표'],
-    ['staff', 'coaches', 'coaching', '회복 집중 지원'],
-  ] as const)('mounts guarded choices with the real %s work', (page, tab, place, label) => {
+  const hub = (page: 'firstTeam' | 'staff', tab: string) => {
     const f = fixture();
     selection.tab = tab;
     const before = structuredClone(f.world);
@@ -100,12 +97,40 @@ describe('live place composition', () => {
         market: () => null,
       }),
     );
-    expect(html).toContain(`place-activities-${place}`);
-    expect(html).toContain(`${label} 검토`);
-    expect(html).toContain('authoritative personnel');
-    expect(html.match(/이 장소에서 할 일/g)).toHaveLength(1);
     expect(f.command).not.toHaveBeenCalled();
     expect(f.world).toEqual(before);
+    return html;
+  };
+
+  it('opens 1군 on its actual roster with no room art, local tabs or office-return bar', () => {
+    const html = hub('firstTeam', 'players');
+    expect(html.startsWith('<section aria-label="authoritative personnel">')).toBe(true);
+    for (const scaffold of [
+      '<figure',
+      'role="tablist"',
+      'data-ui="office-bar"',
+      'place-activities',
+    ])
+      expect(html).not.toContain(scaffold);
+  });
+
+  it("opens 코치진 on its people, then the manager's and the staff's guarded requests", () => {
+    const html = hub('staff', 'coaches');
+    // The actual manager and posts lead; no artwork or facility panel pushes them down.
+    expect(html.startsWith('<section aria-label="authoritative personnel">')).toBe(true);
+    expect(html).not.toContain('<figure');
+    expect(html).not.toContain('data-ui="office-bar"');
+    const people = html.indexOf('authoritative personnel'),
+      manager = html.indexOf('place-activities-manager'),
+      coaching = html.indexOf('place-activities-coaching');
+    expect(people).toBeLessThan(manager);
+    expect(manager).toBeLessThan(coaching);
+    expect(html).toContain('감독 재신임 발표 검토');
+    expect(html).toContain('회복 집중 지원 검토');
+    expect(html).toContain('aria-label="감독에게 요청"');
+    expect(html).toContain('aria-label="스태프에게 요청"');
+    // Training choices live in 훈련, never in the staff directory (→WEB-71).
+    expect(html).not.toContain('훈련 제안·강행');
   });
 
   it.each(['training', 'academy'] as const)(

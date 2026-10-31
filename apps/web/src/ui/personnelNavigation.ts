@@ -1,10 +1,26 @@
-/** Personnel destinations and compatibility addresses (→WEB-43/70/74). */
+import type { ResponsibilityKey } from '../../../../packages/contracts/src/types';
+
+/**
+ * Personnel destinations and compatibility addresses (→WEB-43/70/74). 1군 is the roster; the
+ * market is the primary 이적시장 entry. The manager stands with his staff in 코치진, so every
+ * older manager address lands there, with the replacement market open when it asked for it.
+ */
 export const FIRST_TEAM_TABS = [
-  ['manager', '감독'],
   ['players', '선수 목록'],
   ['market', '이적시장'],
 ] as const;
-export const STAFF_TABS = [['coaches', '스태프']] as const;
+export const STAFF_TABS = [['coaches', '코치진']] as const;
+/**
+ * The saved responsibilities each personnel workflow edits in place (→WEB-79/43), each in one
+ * home: the office's player and staff desks used to compose them; the shared component and its
+ * confirmation stay the same. Sponsorship is 구단 운영's (→WEB-110).
+ */
+export const WORK_RESPONSIBILITIES = {
+  players: ['contracts', 'sales'],
+  market: ['recruitment'],
+  coaches: ['manager', 'staff'],
+  academy: ['academy'],
+} as const satisfies Record<string, readonly ResponsibilityKey[]>;
 export type FirstTeamView = (typeof FIRST_TEAM_TABS)[number][0];
 export type StaffView = (typeof STAFF_TABS)[number][0];
 export type PersonnelHome =
@@ -22,22 +38,15 @@ export const PERSONNEL_PATHS = {
 export function personnelAddress(home: PersonnelHome, market = false) {
   return home.page === 'academy' || home.page === 'training'
     ? `/${home.page}`
-    : `${home.page === 'firstTeam' ? '/first-team' : '/staff'}?view=${home.view}${market ? '&market=1' : ''}`;
+    : `${home.page === 'firstTeam' ? '/first-team' : '/staff'}?view=${home.view}${market && home.page === 'staff' ? '&market=1' : ''}`;
 }
 /** Keep legacy engine read-model homes behind the same canonical navigation boundary. */
 export function personnelHome(view: string): PersonnelHome {
   if (view === 'academy') return { page: 'academy' };
   if (view === 'training') return { page: 'training' };
-  if (view === 'coaches') return { page: 'staff', view: 'coaches' };
-  return {
-    page: 'firstTeam',
-    view:
-      view === 'manager' || view === 'candidates'
-        ? 'manager'
-        : view === 'market'
-          ? 'market'
-          : 'players',
-  };
+  if (view === 'coaches' || view === 'manager' || view === 'candidates')
+    return { page: 'staff', view: 'coaches' };
+  return { page: 'firstTeam', view: view === 'market' ? 'market' : 'players' };
 }
 export function personnelRoute(pathname: string, search: string) {
   const at = (path: string) => pathname === path || pathname.startsWith(path + '/');
@@ -51,18 +60,15 @@ export function personnelRoute(pathname: string, search: string) {
   else if (at('/training')) home = personnelHome(asked === 'academy' ? 'academy' : 'training');
   else if (at('/first-team'))
     home = personnelHome(
-      asked === 'training'
-        ? 'training'
+      asked === 'training' || asked === 'manager' || asked === 'candidates'
+        ? asked
         : (FIRST_TEAM_TABS.find(([id]) => id === asked)?.[0] ?? 'players'),
     );
   else if (at('/academy')) home = personnelHome('academy');
-  else if (at('/staff'))
-    home = personnelHome(asked === 'manager' || asked === 'candidates' ? asked : 'coaches');
+  else if (at('/staff')) home = personnelHome('coaches');
   else return undefined;
-  const market =
-    home.page === 'firstTeam' &&
-    home.view === 'manager' &&
-    (asked === 'candidates' || params.get('market') === '1');
+  // The manager's replacement market opens over 코치진, for its own flag or an older candidates view.
+  const market = home.page === 'staff' && (asked === 'candidates' || params.get('market') === '1');
   // Keep task-specific filters/selection keys while replacing the grouping keys.
   params.delete('view');
   params.delete('market');

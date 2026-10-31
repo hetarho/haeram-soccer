@@ -93,7 +93,8 @@ import {
 } from './ClubStaff';
 import { AcademyPanel } from './AcademyPanel';
 import { TrainingView } from './TrainingView';
-import { RoomBar } from './OfficeBar';
+import { OfficeWorkResponsibility } from './PlayerOfficePanel';
+import { WORK_RESPONSIBILITIES } from './personnelNavigation';
 import management from './ManagementView.module.css';
 import { explorePlayers, ofScope, playerStatus } from './playerAnalysis';
 import { bansOf, banText } from './discipline';
@@ -111,7 +112,7 @@ import {
 } from '../../../../packages/engine/src/ops-staff';
 import { roundsUntilRefresh } from '../../../../packages/engine/src/managerMarket';
 import { ClubLink } from './ClubLink';
-import { runwayText } from './teamState';
+import { runwayText, squadAvailability } from './teamState';
 import { PlayerComparison } from './PlayerComparison';
 import { compactMoney, contractLine, number } from './format';
 import { Money } from './Money';
@@ -156,30 +157,45 @@ function TraitNote({ trait }: { trait?: ManagerTrait }) {
     </>
   );
 }
-/** Personnel and office screens compose these same action panels; neither copies commands. */
+/**
+ * Personnel and office screens compose these same action panels; neither copies commands. 1군
+ * leads with its roster, then its tactics and locker-room culture; 코치진 leads with the manager
+ * and every post's person or vacancy, then who appoints them (→WEB-43). Each ends with the
+ * responsibilities it owns.
+ */
 function PersonnelPanel({
   tab,
   state,
   client,
+  controller,
   onReplace,
-}: Props & { tab: PeopleTab; onReplace: () => void }) {
+}: Props & { tab: PeopleTab; controller: ProgressionController; onReplace: () => void }) {
   const w = state.view!.world;
-  return tab === 'players' ? (
+  const work = tab === 'players' || tab === 'market' ? tab : 'coaches';
+  return (
     <>
-      <AreaCriteria w={w} areas={['squad']} />
-      <Roster state={state} client={client} />
-    </>
-  ) : tab === 'market' ? (
-    <RecruitmentDesk state={state} client={client} />
-  ) : tab === 'manager' ? (
-    <>
-      <ManagerOffice state={state} client={client} onReplace={onReplace} />
-      <ManagerPost w={w} client={client} />
-    </>
-  ) : (
-    <>
-      <CoachingStaff w={w} client={client} />
-      <CoachingPlan w={w} />
+      {tab === 'players' ? (
+        <>
+          <Roster state={state} client={client} />
+          <TacticsTalk state={state} client={client} />
+          <AreaCriteria w={w} areas={['squad']} />
+        </>
+      ) : tab === 'market' ? (
+        <RecruitmentDesk state={state} client={client} />
+      ) : (
+        <>
+          <ManagerCard state={state} client={client} onReplace={onReplace} />
+          <CoachingStaff w={w} client={client} />
+          <ManagerPost w={w} client={client} />
+          <CoachingPlan w={w} />
+        </>
+      )}
+      <OfficeWorkResponsibility
+        w={w}
+        client={client}
+        controller={controller}
+        scope={WORK_RESPONSIBILITIES[work]}
+      />
     </>
   );
 }
@@ -236,12 +252,8 @@ function PersonnelRequest({
   if (item.ref === w.manager.id)
     return (
       <>
-        <PersonnelPanel
-          tab="manager"
-          state={state}
-          client={client}
-          onReplace={() => setMarket(true)}
-        />
+        <ManagerCard state={state} client={client} onReplace={() => setMarket(true)} />
+        <ManagerPost w={w} client={client} />
         {market && (
           <ManagerMarket
             state={state}
@@ -258,8 +270,78 @@ function PersonnelRequest({
     STAFF_ROLES.find((role) => role === item.ref);
   return <CoachingStaff w={w} client={client} selected={role} onCancel={cancel} error={error} />;
 }
-/** The manager's office: who he is and what he signed, and the owner's requests to him. */
-function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => void }) {
+/**
+ * The manager at the head of 코치진 (→WEB-43): who he is, what he signed, his school and habits,
+ * and the way to replace him — or, with an interim in charge, to appoint one.
+ */
+function ManagerCard({ state, client, onReplace }: Props & { onReplace: () => void }) {
+  const w = state.view!.world,
+    m = w.manager,
+    c = w.clubs.find((c) => c.id === w.playerClub)!;
+  const disabled = useGameState(gameActionsBlocked);
+  return (
+    <Panel title={m.name} note={m.interim ? 'INTERIM MANAGER · 감독 공석' : 'FIRST TEAM MANAGER'}>
+      <div className={s.panelBody} data-testid="manager-card">
+        <div className={s.personHead}>
+          <OvrBadge value={m.ability} role="감독" potential={m.potential} large />
+          <div>
+            <b>{personAge(w, m.born)}</b>
+            {m.person && <PersonCareerLink id={m.person} name={m.name} client={client} />}
+            <small>
+              {m.since}년 부임 ·{' '}
+              {m.interim ? '새 감독을 뽑을 때까지 대행' : contractLine(m.until, w.year)}
+              {growthNote(w, m)}
+            </small>
+          </div>
+        </div>
+        {/* No manager renews himself (→STAFF-14): unrenewed, he leaves at the close. */}
+        {managerRenewal(w) && (
+          <div
+            data-surface="inset"
+            className={`${s.renewal} ${s.leaving}`}
+            data-testid="manager-renewal"
+          >
+            <ManagerRenewal w={w} client={client} disabled={disabled} />
+          </div>
+        )}
+        <StyleCard style={m.interim ? undefined : m.style} />
+        <p className={s.muted}>
+          <TraitNote trait={m.trait} />
+        </p>
+        <div className={s.actions}>
+          {/* Like a coach's 교체, the market opens as a list over the office (→WEB-40). */}
+          <button onClick={onReplace}>{m.interim ? '감독 선임' : '교체'}</button>
+        </div>
+        <details data-ui="disclosure" className={management.reference}>
+          <summary>감독 능력·성향</summary>
+          <Attributes
+            rows={[
+              ['철학', tacticLabel[m.philosophy]],
+              ['육성', m.youth, YOUTH_HINT],
+              ['유연성', m.flexibility],
+              ['자존심', m.pride],
+              ['신뢰', m.trust],
+              ['불만 누적', m.conflicts],
+              ['연봉', <Money value={m.wage} code={c.country} year={w.year} />],
+            ]}
+          />
+          <p className={s.muted}>
+            {m.pride >= 75
+              ? '자존심이 강한 감독입니다. 신뢰가 낮아진 상태에서 간섭을 계속하면 떠날 수 있습니다.'
+              : m.flexibility >= 65
+                ? '변화를 비교적 열린 마음으로 받아들이는 감독입니다.'
+                : '자신의 철학을 지키려는 성향입니다. 납득할 근거와 지원을 준비하세요.'}
+          </p>
+        </details>
+      </div>
+    </Panel>
+  );
+}
+/**
+ * The first team's tactics (→WEB-43): the tactic in force and the owner's request to the
+ * manager, who answers by his school, trust and the tone of the request.
+ */
+function TacticsTalk({ state, client }: Props) {
   const w = state.view!.world,
     m = w.manager,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
@@ -270,138 +352,75 @@ function ManagerOffice({ state, client, onReplace }: Props & { onReplace: () => 
   // What a conditional acceptance asks the owner to put into training.
   const support = quote(c.country, w.year, 30);
   return (
-    <>
-      <div className={s.twoCols}>
-        <Panel title={m.name} note={m.interim ? 'INTERIM MANAGER' : 'FIRST TEAM MANAGER'}>
-          <div className={s.panelBody}>
-            <div className={s.personHead}>
-              <OvrBadge value={m.ability} role="감독" potential={m.potential} large />
-              <div>
-                <b>{personAge(w, m.born)}</b>
-                {m.person && <PersonCareerLink id={m.person} name={m.name} client={client} />}
-                <small>
-                  {m.since}년 부임 ·{' '}
-                  {m.interim ? '새 감독을 뽑을 때까지 대행' : contractLine(m.until, w.year)}
-                  {growthNote(w, m)}
-                </small>
-              </div>
-            </div>
-            {/* No manager renews himself (→STAFF-14): unrenewed, he leaves at the close. */}
-            {managerRenewal(w) && (
-              <div
-                data-surface="inset"
-                className={`${s.renewal} ${s.leaving}`}
-                data-testid="manager-renewal"
-              >
-                <ManagerRenewal w={w} client={client} disabled={disabled} />
-              </div>
-            )}
-            <StyleCard style={m.interim ? undefined : m.style} />
-            <p className={s.muted}>
-              <TraitNote trait={m.trait} />
-            </p>
-            <div className={s.actions}>
-              {/* Like a coach's 교체, the market opens as a list over the office (→WEB-40). */}
-              <button onClick={onReplace}>{m.interim ? '감독 선임' : '교체'}</button>
-            </div>
-            <details data-ui="disclosure" className={management.reference}>
-              <summary>감독 능력·성향</summary>
-              <Attributes
-                rows={[
-                  ['철학', tacticLabel[m.philosophy]],
-                  ['육성', m.youth, YOUTH_HINT],
-                  ['유연성', m.flexibility],
-                  ['자존심', m.pride],
-                  ['신뢰', m.trust],
-                  ['불만 누적', m.conflicts],
-                  ['연봉', <Money value={m.wage} code={c.country} year={w.year} />],
-                ]}
-              />
-              <p className={s.muted}>
-                {m.pride >= 75
-                  ? '자존심이 강한 감독입니다. 신뢰가 낮아진 상태에서 간섭을 계속하면 떠날 수 있습니다.'
-                  : m.flexibility >= 65
-                    ? '변화를 비교적 열린 마음으로 받아들이는 감독입니다.'
-                    : '자신의 철학을 지키려는 성향입니다. 납득할 근거와 지원을 준비하세요.'}
-              </p>
-            </details>
-          </div>
-        </Panel>
-        <Panel title="감독실에서의 대화" note="YOUR REQUEST">
-          <div className={s.panelBody}>
-            <p className={s.muted}>
-              현재 적용 전술: <b>{tacticLabel[w.tactic]}</b>
-              {w.requested && ` · 최근 요청: ${tacticLabel[w.requested]}`}
-            </p>
-            <div className={s.filters} style={{ marginTop: 20 }}>
-              <label>
-                전술{' '}
-                <Select
-                  aria-label="요청 전술"
-                  value={tactic}
-                  onValueChange={(value) => setTactic(value as typeof tactic)}
-                >
-                  {Object.entries(tacticLabel).map(([id, label]) => (
-                    <option key={id} value={id}>
-                      {label}
-                    </option>
-                  ))}
-                </Select>
-              </label>
-              <label>
-                말투{' '}
-                <Select
-                  aria-label="요청 말투"
-                  value={tone}
-                  onValueChange={(value) => setTone(value)}
-                >
-                  {Object.entries(toneLabel).map(([id, label]) => (
-                    <option key={id} value={id}>
-                      {label}
-                    </option>
-                  ))}
-                </Select>
-              </label>
-            </div>
-            <button
-              data-ui="primary"
-              className={s.primary}
-              disabled={disabled}
-              onClick={() => void client.command({ type: 'tactics', tactic, tone })}
+    <Panel title="전술 요청" note={`감독 ${m.name}`}>
+      <div className={s.panelBody} data-testid="tactics-talk">
+        <p className={s.muted}>
+          현재 적용 전술: <b>{tacticLabel[w.tactic]}</b>
+          {w.requested && ` · 최근 요청: ${tacticLabel[w.requested]}`}
+        </p>
+        <div className={s.filters} style={{ marginTop: 20 }}>
+          <label>
+            전술{' '}
+            <Select
+              aria-label="요청 전술"
+              value={tactic}
+              onValueChange={(value) => setTactic(value as typeof tactic)}
             >
-              감독에게 제안하기
+              {Object.entries(tacticLabel).map(([id, label]) => (
+                <option key={id} value={id}>
+                  {label}
+                </option>
+              ))}
+            </Select>
+          </label>
+          <label>
+            말투{' '}
+            <Select aria-label="요청 말투" value={tone} onValueChange={(value) => setTone(value)}>
+              {Object.entries(toneLabel).map(([id, label]) => (
+                <option key={id} value={id}>
+                  {label}
+                </option>
+              ))}
+            </Select>
+          </label>
+        </div>
+        <button
+          data-ui="primary"
+          className={s.primary}
+          disabled={disabled}
+          onClick={() => void client.command({ type: 'tactics', tactic, tone })}
+        >
+          감독에게 제안하기
+        </button>
+        {m.pending && (
+          <div data-surface="inset" className={s.critical} style={{ marginTop: 20 }}>
+            조건 대기: {tacticLabel[m.pending]}
+            <p>
+              훈련 지원 <Money value={support} code={c.country} year={w.year} /> 필요
+            </p>
+            <button
+              disabled={disabled}
+              onClick={() => void client.command({ type: 'accept-condition' })}
+            >
+              훈련 지원하고 수락
             </button>
-            {m.pending && (
-              <div data-surface="inset" className={s.critical} style={{ marginTop: 20 }}>
-                조건 대기: {tacticLabel[m.pending]}
-                <p>
-                  훈련 지원 <Money value={support} code={c.country} year={w.year} /> 필요
-                </p>
-                <button
-                  disabled={disabled}
-                  onClick={() => void client.command({ type: 'accept-condition' })}
-                >
-                  훈련 지원하고 수락
-                </button>
-              </div>
-            )}
-            {response && (
-              <blockquote data-surface="inset" className={s.notice} style={{ margin: '20px 0 0' }}>
-                <b>{response.title}</b>
-                <p>{response.detail}</p>
-              </blockquote>
-            )}
-            <details data-ui="disclosure" className={management.reference}>
-              <summary>대화 판단 기준</summary>
-              <p className={s.muted}>
-                요청 결과는 성향·신뢰·말투·이전 갈등을 따릅니다. 동일 요청은 신뢰를 반복해서 높이지
-                않습니다.
-              </p>
-            </details>
           </div>
-        </Panel>
+        )}
+        {response && (
+          <blockquote data-surface="inset" className={s.notice} style={{ margin: '20px 0 0' }}>
+            <b>{response.title}</b>
+            <p>{response.detail}</p>
+          </blockquote>
+        )}
+        <details data-ui="disclosure" className={management.reference}>
+          <summary>대화 판단 기준</summary>
+          <p className={s.muted}>
+            요청 결과는 성향·신뢰·말투·이전 갈등을 따릅니다. 동일 요청은 신뢰를 반복해서 높이지
+            않습니다.
+          </p>
+        </details>
       </div>
-    </>
+    </Panel>
   );
 }
 /**
@@ -903,6 +922,7 @@ function Roster({ state, client, work }: Props & { work?: 'contracts' | 'sales' 
   const disabled = useGameState(gameActionsBlocked);
   const active = w.players.filter((p) => p.status === 'active');
   const registered = squadRegistration(w);
+  const availability = squadAvailability(w);
   const window = transferWindow(w);
   const stancePlayer = w.players.find((p) => p.id === stanceId && canSetStance(p));
   const talkPlayer = work !== 'sales' ? active.find((p) => p.id === talkId) : undefined,
@@ -929,6 +949,11 @@ function Roster({ state, client, work }: Props & { work?: 'contracts' | 'sales' 
           </>
         }
       >
+        {/* Who can play now leads the roster (→WEB-43/44); each card names its injury or ban. */}
+        <p className={s.rosterViewSummary} data-testid="roster-availability">
+          출전 가능 <b>{availability.available}</b>/{availability.total}명 · 부상{' '}
+          {availability.injured}명 · 출장 정지 {availability.suspended}명
+        </p>
         <div className={s.rosterTools}>
           <label className={s.rosterSearch}>
             <span className={s.srOnly}>선수 찾기</span>
@@ -1230,16 +1255,31 @@ export default function Rich({
         state={state}
         client={client}
         panel={(tab, replace) => (
-          <PersonnelPanel tab={tab} state={state} client={client} onReplace={replace} />
+          <PersonnelPanel
+            tab={tab}
+            state={state}
+            client={client}
+            controller={controller}
+            onReplace={replace}
+          />
         )}
         market={(close) => <ManagerMarket state={state} client={client} onClose={close} />}
       />
     );
+  // The club's section bar names 훈련 and 유소년; no office-return bar sits over them (→WEB-10).
+  // 유소년 also edits its promotion/release responsibility in place.
   if (page === 'training' || page === 'academy')
     return (
       <>
-        <RoomBar title={page === 'training' ? '훈련장' : '유소년 훈련장'} />
         <TrainingView state={state} client={client} view={page} />
+        {page === 'academy' && (
+          <OfficeWorkResponsibility
+            w={state.view!.world}
+            client={client}
+            controller={controller}
+            scope={WORK_RESPONSIBILITIES.academy}
+          />
+        )}
       </>
     );
   if (page === 'operations')

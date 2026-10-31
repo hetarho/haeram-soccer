@@ -14,7 +14,7 @@ import type { World } from '../../packages/contracts/src/types';
 import { configureResponsibilities, matchReport } from './events';
 import { continueSlot } from './slots';
 import { chooseOption } from './select';
-import { enterOffice } from './office';
+import { openPersonnel } from './personnel-navigation';
 
 async function found(page: import('@playwright/test').Page) {
   await page.goto('/');
@@ -313,10 +313,13 @@ test("the fatigue remedy opens the assistant's training sheet with 회복 ready,
   await seed(page, w);
   await page.goto('/');
   await continueSlot(page);
-  // The team's state reads in the owner's office; home keeps only quick actions.
-  await enterOffice(page);
-  const state = page.getByRole('region', { name: '팀 상태' });
-  await state.getByRole('button', { name: /^피로 .* 대처 방법 보기$/ }).click();
+  // The clubhouse reads the tired starters; its 피로 quick action answers them (→WEB-44/107).
+  const hub = page.getByTestId('club-hub');
+  await expect(hub.getByTestId('situation-warning-fatigue')).toBeVisible();
+  await hub
+    .getByTestId('quick-actions')
+    .getByRole('button', { name: /^피로 .* · 주의 · 바로 할 수 있는 일/ })
+    .click();
   const sheet = page.getByRole('dialog', { name: '피로 관리' });
   const rest = sheet.getByRole('listitem').filter({ hasText: '휴식일 부여 요청' });
   await expect(rest).toContainText('분위기 −2');
@@ -325,17 +328,19 @@ test("the fatigue remedy opens the assistant's training sheet with 회복 ready,
   await sheet
     .getByRole('listitem')
     .filter({ hasText: '수석코치에게 회복 훈련 제안' })
-    .getByRole('button', { name: '열기', exact: true })
+    .getByRole('button', { name: '검토', exact: true })
     .click();
-  // The sheet closes and 훈련 opens the assistant's sheet with 회복 first; nothing has changed yet
-  // (→WEB-44, STAFF-19).
+  // The sheet closes and the assistant's sheet opens over the clubhouse with 회복 first; nothing
+  // has changed yet and no page changes (→WEB-107, STAFF-19).
   await expect(sheet).toBeHidden();
-  await expect(page).toHaveURL(/\/training$/);
+  await expect(page).not.toHaveURL(/\/training/);
+  await expect(hub).toBeVisible();
   const training = page.getByRole('dialog', { name: '수석코치 훈련 제안' });
   await expect(training.getByRole('listitem').first()).toContainText('회복 훈련');
   await expect(training.getByTestId('training-call-assistant')).toContainText('하드 트레이닝');
   await training.getByRole('button', { name: /^회복 훈련 강행/ }).click();
   await expect(training).toBeHidden();
+  await openPersonnel(page, 'training');
   await expect(page.getByTestId('training-focus')).toContainText('지금 회복 · 구단주 지시');
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   expect((await exportWorld(page)).trainingOrders?.assistant?.focus).toBe('recovery');

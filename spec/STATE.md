@@ -19,6 +19,9 @@
 | of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T17:23Z | 2026-10-31T17:29Z | - |
 
 ## inbox
+- 261101 decided WEB-43 WEB-71 WEB-102 T631: where the manager and the owner's place requests stand once room scaffolding goes → the manager's card heads 코치진 with every post under it, the tactics request moves beside the 1군 roster, and the manager/staff PlaceActivities follow the people instead of preceding them, the staff list's training suggestion dropped since training owner actions never sit in the staff directory (alt: keep a 감독 tab in 1군, a hidden first-team default the task rules out | remove the place requests, which WEB-102 still names, though the clubhouse quick actions repeat them); /first-team?view=manager and every older manager or candidates address land on /staff?view=coaches, with &market=1 for the replacement market.
+- 261101 decided WEB-11 WEB-44 WEB-107 T631: how the compact office entrance and the quick actions sit once the room art goes → one text line (결재 대기 n건 · 지연 n건 · 들어가기) heading the band that keeps the quick-action tiles, so the themes' compact icon-free tile rules for that band still apply without editing theme CSS outside the task's touches; the read-only club summary reuses the `stat-tile` role under NEXT MATCH (alt: a separate quick-action section, which the themes draw as 76px icon tiles too narrow for three columns at 360px | a summary of buttons, the redirect grid WEB-44 rules out).
+- 261101 decided WEB-70 WEB-72 WEB-43 T631: whether 훈련 and 유소년 lose their facility illustration with the room bars → keep the bounded training-ground and academy figures WEB-70/72 still require, dropping only the 사무실 office-return bar; the art-free rule applies to the people sections (alt: drop the illustrations too, against WEB-70's opening illustration).
 - 261101 decided WEB-39 WEB-11 WEB-54 T630: what becomes of the office's season journal (season briefing, league table, next match, club notices) once its launcher goes → removed with ClubJournal, since every fact has its own home: the clubhouse's season card and NEXT MATCH, the league page, 뉴스 and the records room's season in progress (alt: move the journal dialog to the clubhouse | keep it behind 결재라인 모아보기); WEB-39 rules out a repeated journal, and its journeys moved to those homes.
 - 261101 decided WEB-44 WEB-107 T630 T631: where the team-state tiles and their remedies stand once the office drops them → under the clubhouse quick actions as they are, until T631 turns them into the compact WEB-44 summary (alt: drop them now, leaving the squad and fatigue remedy sheets unreachable until T631 | build the compact summary here, T631's work); no commit loses an owner choice.
 - 261101 decided WEB-100 WEB-74 T630: how a review leads back → 결재함으로 and 취소 in the review with no office-bar back, every exit pushing the queue address and focusing the request still waiting, the one now in its place or the empty heading; a request opened from another task (an event card) begins a named detour the queue shows with TaskReturn, and the queue itself leaves by the primary navigation, so 나가기 and officeFrom go (alt: keep the 사무실/클럽하우스 bar backs, three controls for one return | return to the originating task after success, against WEB-100).
@@ -459,7 +462,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T631 | Readable club situation and actual people | WEB ARCH | T630 | todo |
 | T632 | Complete office and club journey regression coverage | WEB ARCH | T631 | todo |
 | T622 | Currency levels at the 1999 rate | ECON SAVE | - | todo |
 
@@ -485,13 +487,14 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T631 (of01 owner-office and club overhaul; T629–T630 done; then T632 only; leave unrelated T622 and ideation to their owners)
+- implement-task T632 (of01 owner-office and club overhaul; T629–T631 done; T632 is the last of this scope; leave unrelated T622 and ideation to their owners)
 - ap01 (approvals never stop progression, 결재함 with a 7-day 결재 기한, T623–T625) is done and pushed; report spec/reports/261101-ap01.md.
 - tf31 (transfer values by era) is done and pushed; owner to look at its two suggests (non-English currency levels ECON-2/5, the 1950s lower-division fee pyramid CLUB-25/46). Main's Chromium UI journeys await the ds30 spec migration.
 - Owner authorizes main publication of T617/T618 despite reproduced baseline UI e2e failures; publish unchanged engine source and observe CI. Evidence reports/261031-ei31.md.
 - create-task KIT (existing kit baseline r5–r6 remains pending outside of01; WEB r188–r195 baseline regression is included in T632).
 
 ## log
+- 261101 T631 done: clubhouse reads a compact read-only club summary (strength/division place, 출전 가능 with injured/suspended, 선발 피로, 분위기, 감독 입지; warnings in words) and a compact 결재함 entrance with waiting/overdue counts beside the quick actions; team-state tiles and room art removed; 1군 = roster with availability, tactics request and culture; 코치진 = manager card plus every post, then who appoints them and the owner's requests; manager addresses route to /staff?view=coaches(&market=1); each personnel workflow edits its own responsibilities in place; RoomBar gone from 훈련/유소년; unit 273 passed, build passed, e2e source left to the batch; session of01.
 - 261101 T630 done: the owner office is one 결재함 (ordered live requests, filters, counts, 결재 기한 labels, empty/filtered-empty states), reviews return to it with filter/scroll/focus, lobby scene/desk cards/room doors/journal removed, team-state tiles under the clubhouse quick actions until T631; unit 263 passed, build passed, e2e source left to the batch; session of01.
 - 261101 T629 done: shared club section bar (현황·1군·코치진·훈련·유소년·운영), /club-operations with 재정·투자/후원/구단 디자인, unselected office desks redirect to their workflow or section (requests stay), 1군 opens the roster; unit 290 passed, build passed, e2e source left to the batch; session of01.
 - 261101 update-ssot WEB r196 + create-task T629–T632: approval-only office, visible club sections, actual first-team/coach information and consolidated proactive operations; qualitative 2024-11-01–2026-11-01 Steam research in reports/261031-of01.md; session of01.
@@ -511,4 +514,3 @@
 - 261031 review-code engine-architecture-261030 ready: nine engine candidates, seventeen worker/transport configurations; F1/F2 accepted for follow-up planning, no production source adoption. Artifact commit 2a28f947 and remote checkpoint 848f8c57 (wip/eo30); project quick checks, 173 units and prototype parity passed; report 261030-eo30.
 - 261031 ei31 publication authorized: owner accepts baseline UI e2e failures and requests main push. Runtime code unchanged since fa72a098 and the successful engine checks; remote main is an ancestor of this worktree. Preserve the existing failure evidence without claiming a successful full app gate.
 - 261031 ei31 verification: 1,824 unit / 1,267 integration / 48 contract passed; movement fault parity and real helper/reload parity pass on Chromium/Firefox/WebKit. Full app browser gate interrupted after 17 existing UI failures; unchanged baseline reproduces identical lineup error. Main code push/CI held; completed engine code and evidence on wip/ei31.
-- 261031 T618 done locally: packed JavaScript movement, scalar fallback and browser fault probe; final grid CPU ×0.9633, equal records. Combined real-worker wall ×0.8744/process CPU ×0.7910, equal worlds; final full-suite/browser/CI gate pending.

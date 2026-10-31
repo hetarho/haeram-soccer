@@ -241,21 +241,17 @@ test('a new game goes into another slot, both careers survive switching and back
   await found(page);
   await openPersonnel(page, 'players');
   await expect(page).toHaveURL(/\/first-team\?view=players$/);
-  await expect(page.getByRole('tablist', { name: '감독 사무실', exact: true })).toBeVisible();
+  await openPersonnel(page, 'coaches');
+  await expect(page).toHaveURL(/\/staff\?view=coaches$/);
+  // Back and forward move between the club's sections.
   await page.goBack();
-  await expect(page).toHaveURL(/\/first-team\?view=manager$/);
-  await expect(page.getByRole('tab', { name: '감독', exact: true })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
-  await page.goForward();
   await expect(page).toHaveURL(/\/first-team\?view=players$/);
-  await expect(page.getByRole('tab', { name: '선수 목록', exact: true })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
+  await expect(page.getByTestId('roster-availability')).toBeVisible();
+  await page.goForward();
+  await expect(page).toHaveURL(/\/staff\?view=coaches$/);
+  await expect(page.getByTestId('manager-card')).toBeVisible();
   await page.goBack();
-  await expect(page).toHaveURL(/\/first-team\?view=manager$/);
+  await expect(page).toHaveURL(/\/first-team\?view=players$/);
   // The section was entered from the clubhouse's section bar; the office has no doors (→WEB-10/39).
   await page.goBack();
   await expect(page).toHaveURL(/\/journal$/);

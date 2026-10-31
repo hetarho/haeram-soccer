@@ -87,10 +87,10 @@ export const STORIES: Story[] = [
   ),
   story(
     'home-cards',
-    '시즌 · 다음 경기 · 퀵 액션 · 팀 상태',
+    '시즌 · 다음 경기 · 클럽 현황 · 퀵 액션',
     '홈 · 대회',
-    ['ClubHub', 'QuickActions', 'TeamStateTiles', 'RemedySheet'],
-    '홈의 개별 카드, 주제별 퀵 액션 시트, 사무실의 팀 상태와 대처 방법 시트.',
+    ['ClubHub', 'QuickActions', 'RemedySheet'],
+    '홈의 개별 카드, 읽기 전용 클럽 현황, 주제별 퀵 액션 시트와 대처 방법 시트.',
   ),
   story(
     'controller',
@@ -178,26 +178,18 @@ export const STORIES: Story[] = [
   ),
   story(
     'roster',
-    '선수단 · 필터',
+    '1군 · 선수단',
     '사람 · 훈련',
     ['Rich', 'RosterFilters', 'PersonnelHubs'],
-    '선수 카드, 이적 상태, 상세 지표와 계약 협상.',
+    '출전 가능 인원, 선수 카드, 이적 상태, 상세 지표, 계약 협상, 전술 요청과 라커룸 문화.',
     { page: 'firstTeam', query: 'view=players' },
   ),
   story(
-    'manager',
-    '감독 사무실',
-    '사람 · 훈련',
-    ['Rich', 'ClubStaff', 'StyleCard', 'PlaceActivities'],
-    '감독 성향, 전술 요청, 신뢰와 구단주 선택.',
-    { page: 'firstTeam', query: 'view=manager' },
-  ),
-  story(
     'staff',
-    '코칭스태프실',
+    '코치진 · 감독과 스태프',
     '사람 · 훈련',
-    ['Rich', 'ClubStaff', 'DecisionOwner'],
-    '직책별 스태프, 코칭 계획과 채용·계약.',
+    ['Rich', 'ClubStaff', 'StyleCard', 'DecisionOwner', 'PlaceActivities'],
+    '감독과 단장·스카우트·코치 자리의 실제 인물, 능력, 계약, 공석과 선임·교체, 그 뒤의 요청.',
     { page: 'staff', query: 'view=coaches' },
   ),
   story(
@@ -209,7 +201,7 @@ export const STORIES: Story[] = [
   ),
   story(
     'training',
-    '훈련장',
+    '훈련',
     '사람 · 훈련',
     ['TrainingView', 'TrainingOrderSheet', 'FacilityOverview'],
     '팀 훈련, 선수별 성장과 구단주 제안.',
@@ -217,7 +209,7 @@ export const STORIES: Story[] = [
   ),
   story(
     'academy',
-    '유소년 훈련장',
+    '유소년',
     '사람 · 훈련',
     ['TrainingView', 'AcademyPanel', 'PlayingCoachReview'],
     '유소년 선수, 훈련 방향과 승격/방출.',

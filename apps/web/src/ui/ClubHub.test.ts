@@ -2,13 +2,13 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { World } from '../../../../packages/contracts/src/types';
-import type { ClientState, GameClient } from '../runtime/client';
+import type { ClientState } from '../runtime/client';
 import type { View } from '../runtime/protocol';
 import { gameStore, initialClientState } from '../runtime/store';
-import { NextMatchCard, SeasonCard, CupBriefing } from './ClubHub';
-import { TeamState } from './TeamStateTiles';
+import { approvalRequests, overdueSummary } from '../runtime/progression';
+import { ClubSituation, NextMatchCard, OfficeEntrance, SeasonCard, CupBriefing } from './ClubHub';
 import korean from '../../public/presentation/locales/ko-KR.json';
-import { cashState, teamStates, type TeamStateItem } from './teamState';
+import { clubSituation, type SituationFact } from './teamState';
 import { openCupSeason } from './state';
 import { ownLeagueProgress } from './league';
 
@@ -31,14 +31,15 @@ vi.mock('../runtime/store', async (importOriginal) => {
       selector(original.gameStore.getState()),
   };
 });
-// Facility art reads the presentation packs; the markup checks need only its slot.
-vi.mock('./FacilityArt', () => ({
-  FacilityArt: ({ kind }: { kind: string }) => createElement('span', { 'data-facility-art': kind }),
-}));
 vi.mock('./teamState', async (importOriginal) => ({
   ...(await importOriginal<typeof import('./teamState')>()),
-  teamStates: vi.fn(),
-  cashState: vi.fn(),
+  clubSituation: vi.fn(),
+}));
+// The approval read model is the queue's own; the entrance only states its counts.
+vi.mock('../runtime/progression', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../runtime/progression')>()),
+  approvalRequests: vi.fn(() => []),
+  overdueSummary: vi.fn(() => ({ overdue: 0, morale: 0 })),
 }));
 
 // Only the card/calendar fields; no generated world or season simulation is needed.
@@ -211,87 +212,77 @@ describe('home season card', () => {
   });
 });
 
-describe('home condition warnings', () => {
-  beforeEach(() => {
-    vi.mocked(cashState).mockReturnValue({
-      key: 'cash',
-      label: '자금',
-      value: '충분',
-      status: '안정',
-      tone: 'good',
-    });
-  });
-  const states: TeamStateItem[] = [
-    { key: 'fatigue', label: '피로', value: '10', status: '상쾌', tone: 'good' },
+describe('home current-club summary (→WEB-44)', () => {
+  const facts: SituationFact[] = [
+    { key: 'strength', label: '팀 전력', value: '31', note: '리그 14/16위', tone: 'warn' },
     {
       key: 'squad',
-      label: '선수단',
-      value: '19/40',
-      status: '부족',
+      label: '출전 가능',
+      value: '16/19',
+      note: '부상 2 · 정지 1',
       tone: 'warn',
-      advice: { text: '선수 19명 · 선발을 채우기 어려워요.', actions: [] },
+      warning: '주의',
     },
+    { key: 'fatigue', label: '선발 피로', value: '12', note: '상쾌', tone: 'good' },
+    { key: 'morale', label: '분위기', value: '34', note: '위기', tone: 'bad', warning: '위험' },
+    { key: 'manager', label: '감독 입지', value: '대행', note: '대행 체제', tone: 'warn' },
   ];
+  const render = (items: SituationFact[]) => {
+    vi.mocked(clubSituation).mockReturnValue(items);
+    return renderToStaticMarkup(createElement(ClubSituation, { w: world() }));
+  };
 
-  function renderConditions(items: TeamStateItem[]) {
-    vi.mocked(teamStates).mockReturnValue(items);
-    return renderToStaticMarkup(
-      createElement(TeamState, {
-        w: world(),
-        client: {} as GameClient,
-        onPrepare: vi.fn(),
-      }),
+  it('reads every fact as text, strength first, with no tile to press', () => {
+    const markup = render(facts);
+    // A readable summary, not a grid of redirect buttons.
+    expect(markup).not.toContain('<button');
+    expect(markup).not.toContain('aria-haspopup');
+    expect(markup).toContain('aria-label="클럽 현황"');
+    expect(markup.indexOf('data-fact="strength"')).toBeLessThan(
+      markup.indexOf('data-fact="squad"'),
     );
-  }
-
-  it('marks the affected tile and names its warning without automatically rendering advice', () => {
-    const markup = renderConditions(states);
-    expect(markup).toContain('data-testid="state-warning-squad"');
-    expect(markup).not.toContain('data-testid="state-warning-fatigue"');
-    expect(markup).toContain('aria-label="선수단 19/40 · 부족 · 주의 · 대처 방법 보기"');
-    expect(markup).toContain('aria-haspopup="dialog"');
-    expect(markup).not.toContain('선수 19명');
-    expect(markup).not.toContain('team-state-alert');
+    for (const text of ['팀 전력', '리그 14/16위', '출전 가능', '16/19', '부상 2 · 정지 1'])
+      expect(markup).toContain(text);
+    expect(markup).toContain('<dt>감독 입지</dt><dd><b>대행</b>');
   });
 
-  it('marks every affected condition at once and clears the badges when the conditions recover', () => {
-    const tired: TeamStateItem = {
-      ...states[0],
-      tone: 'bad',
-      advice: { text: '회복이 필요해요.', actions: [] },
-    };
-    const warnings = renderConditions([tired, states[1]]);
-    expect(warnings).toContain('data-testid="state-warning-fatigue"');
-    expect(warnings).toContain('data-testid="state-warning-squad"');
-    const recovered = renderConditions(states.map((state) => ({ ...state, advice: undefined })));
-    expect(recovered).not.toContain('state-warning-');
-    expect(recovered).toContain('팀이 안정적이에요.');
+  it('names warnings in plain words beside their fact and drops them once the state recovers', () => {
+    const markup = render(facts);
+    expect(markup).toMatch(/data-testid="situation-warning-squad"[^>]*> · 주의</);
+    expect(markup).toMatch(/data-testid="situation-warning-morale"[^>]*> · 위험</);
+    // Strength compares; it never carries a repair badge.
+    expect(markup).not.toContain('situation-warning-strength');
+    const calm = render(facts.map((fact) => ({ ...fact, warning: undefined })));
+    expect(calm).not.toContain('situation-warning-');
+  });
+});
+
+describe('home office entrance (→WEB-11)', () => {
+  const entrance = () =>
+    renderToStaticMarkup(createElement(OfficeEntrance, { w: world(), children: null }));
+
+  it('states the actual waiting and overdue approvals without room art', () => {
+    vi.mocked(approvalRequests).mockReturnValue([
+      { id: 'a' },
+      { id: 'b' },
+      { id: 'c' },
+    ] as ReturnType<typeof approvalRequests>);
+    vi.mocked(overdueSummary).mockReturnValue({ overdue: 1, morale: 1 });
+    const markup = entrance();
+    expect(markup).toContain('aria-label="구단주 사무실"');
+    expect(markup).toMatch(/결재 대기 <b data-ui="count"[^>]*>3<\/b>건/);
+    expect(markup).toContain('지연 1건');
+    expect(markup).toContain('>들어가기</button>');
+    expect(markup).not.toContain('data-facility-art');
   });
 
-  it('leads with team strength, which never carries a warning badge', () => {
-    const markup = renderConditions([
-      { key: 'strength', label: '팀 전력', value: '31', status: '리그 14/16위', tone: 'warn' },
-      ...states,
-    ]);
-    expect(markup.indexOf('data-condition="strength"')).toBeLessThan(
-      markup.indexOf('data-condition="fatigue"'),
-    );
-    expect(markup).toContain('aria-label="팀 전력 31 · 리그 14/16위 · 대처 방법 보기"');
-    expect(markup).not.toContain('state-warning-strength');
-  });
-
-  it('does not call the team stable when the HUD cash needs attention', () => {
-    vi.mocked(cashState).mockReturnValue({
-      key: 'cash',
-      label: '자금',
-      value: '부족',
-      status: '위기',
-      tone: 'bad',
-      advice: { text: '자금이 부족해요.', actions: [] },
-    });
-    expect(
-      renderConditions(states.map((state) => ({ ...state, advice: undefined }))),
-    ).not.toContain('팀이 안정적이에요.');
+  it('reads 0 with nothing waiting and invents no work', () => {
+    vi.mocked(approvalRequests).mockReturnValue([]);
+    vi.mocked(overdueSummary).mockReturnValue({ overdue: 0, morale: 0 });
+    const markup = entrance();
+    expect(markup).toContain('결재 대기 0건');
+    expect(markup).not.toContain('data-ui="count"');
+    expect(markup).not.toContain('지연');
   });
 });
 

@@ -1,7 +1,7 @@
 .hub {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: 'header' 'fixture' 'state';
+  grid-template-areas: 'header' 'fixture' 'situation' 'state';
   align-content: start;
   gap: 16px;
   width: 100%;
@@ -66,39 +66,23 @@
   color: var(--warm);
 }
 
-/* The manager's office: room art under a dim, the team's state small along its foot. */
+/* The owner's band: the 결재함 line, then the quick actions small along its foot. No room art. */
 .office {
   grid-area: state;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  min-height: clamp(240px, 25.6vw, 304px);
-  padding: 56px 12px 12px;
-  overflow: hidden;
-  border-radius: var(--scene-radius);
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
   background: var(--surface-grain, none) var(--surface-deep);
 }
-.office > .officeArt {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-.officeShade {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgb(12 15 16 / 0.35), rgb(12 15 16 / 0.72));
-}
-/* One row on every width: the room's name, its manager, the way in. */
+/* One row on every width: the office's name, what waits there, the way in. */
 .officeCaption {
-  position: absolute;
-  inset: 12px 14px auto;
-  z-index: 1;
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #fff;
+  min-width: 0;
+  color: var(--text);
   font-family: var(--display);
 }
 .officeCaption b {
@@ -117,17 +101,103 @@
 .officeCount {
   font-size: 12px;
 }
+.officeLate {
+  color: var(--warning-text, var(--gold));
+  font-style: normal;
+  font-weight: 700;
+}
 .officeEnter.officeEnter {
   flex-shrink: 0;
-  min-height: 36px;
+  min-height: 44px;
   padding: 2px 14px;
   font-size: 12px;
 }
 .office .state {
-  position: relative;
-  z-index: 1;
   padding: 0;
   border: 0;
+}
+
+/* The current-club summary (→WEB-44): five quiet facts, read-only, under the season and fixture.
+   Wide screens hold one row; phones put strength and availability over the three moods. */
+.situation {
+  grid-area: situation;
+  min-width: 0;
+}
+.situation dl {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+}
+.fact {
+  display: grid;
+  align-content: center;
+  gap: 1px;
+  min-width: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
+  color: var(--text);
+  font-family: var(--display);
+}
+.fact dt {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fact dd {
+  display: grid;
+  min-width: 0;
+  margin: 0;
+}
+.fact dd > b {
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.factNote {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fact[data-tone='good'] .factNote {
+  color: var(--positive);
+}
+.fact[data-tone='warn'] dd > b,
+.fact[data-tone='warn'] .factNote {
+  color: var(--gold);
+}
+.fact[data-tone='bad'] dd > b,
+.fact[data-tone='bad'] .factNote {
+  color: var(--danger);
+}
+.factWarning {
+  font-weight: 800;
+}
+@media (max-width: 760px) {
+  .situation dl {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .fact {
+    grid-column: span 2;
+    padding: 4px 6px;
+  }
+  .fact[data-fact='strength'],
+  .fact[data-fact='squad'] {
+    grid-column: span 3;
+  }
+  .fact dd > b {
+    font-size: 15px;
+  }
 }
 
 .fixture {
@@ -640,10 +710,6 @@ button.resources:active:not(:disabled) {
   grid-column: 1 / -1;
   padding: 8px 14px 10px;
 }
-/* Strength leads team state on a row of its own (→WEB-44). */
-.state li[data-condition='strength'] {
-  grid-column: 1 / -1;
-}
 @media (max-width: 760px) {
   .seasonSummary > .resources > div,
   .cupSummary {
@@ -750,17 +816,6 @@ button.resources:active:not(:disabled) {
 .seasonMeter progress::-moz-progress-bar {
   background: var(--surface-grain, none) var(--accent);
 }
-/* Wide screens keep all five conditions in one row (→WEB-11). */
-@media (min-width: 1100px) {
-  /* Strength takes its place in the one row of five conditions. */
-  .state ul {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-  .state li[data-condition='strength'] {
-    grid-column: auto;
-  }
-}
-
 .competitions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
@@ -780,13 +835,6 @@ button.resources:active:not(:disabled) {
 .competitions strong {
   color: var(--accent-text);
   font-size: 15px;
-}
-/* A calm team says so under its state in the office. */
-.calm {
-  margin: 6px 0 0;
-  font-size: 12px;
-  color: var(--text-faint);
-  font-family: var(--display);
 }
 /* The owner's quick actions: one row of three topics on every width. */
 .state.quick ul {

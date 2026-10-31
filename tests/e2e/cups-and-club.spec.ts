@@ -211,13 +211,15 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await found(page, 'market-segment-journey');
     const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
     await openPersonnel(page, 'players');
-    const tabs = page.getByRole('tablist', { name: '감독 사무실' });
-    // The market left the first team's tabs for an entry of its own (→WEB-10).
-    await expect(tabs.getByRole('tab')).toHaveText(['감독', '선수 목록']);
+    const sections = page.getByRole('tablist', { name: '구단 섹션', exact: true });
+    // The market is an entry of its own (→WEB-10): 1군 has no market tab, and the market no
+    // club section bar.
+    await expect(sections).toBeVisible();
+    await expect(page.getByRole('tab', { name: '이적시장' })).toHaveCount(0);
     await openPersonnel(page, 'market');
     const market = page.getByRole('region', { name: '선수 영입 데스크' });
     await expect(market).toBeVisible();
-    await expect(tabs).toHaveCount(0);
+    await expect(sections).toHaveCount(0);
     await expect(nav.getByRole('button', { name: '이적시장', exact: true })).toHaveAttribute(
       'aria-current',
       'page',

@@ -85,12 +85,16 @@ for (const viewport of [
     const coaching = page.getByTestId('place-activities-coaching');
     await expect(coaching).toContainText('회복 집중 지원');
     await expect(coaching).toContainText('팀 빌딩 데이');
-    await coaching.getByRole('button', { name: '훈련 조건 검토', exact: true }).click();
+    // Training is suggested in 훈련, never from the staff directory (→WEB-71).
+    await expect(coaching.getByRole('button', { name: '훈련 조건 검토', exact: true })).toHaveCount(
+      0,
+    );
+    await openPersonnel(page, 'training');
+    await page.getByRole('button', { name: /^수석코치에게 훈련 제안·강행/ }).click();
     await expect(
       page.getByRole('dialog', { name: '수석코치 훈련 제안', exact: true }),
     ).toContainText('사임');
     await page.keyboard.press('Escape');
-    await openPersonnel(page, 'training');
     const training = page.getByTestId('place-activities-training');
     const rest = careOffer(backed, 'rest-day');
     await training.getByRole('button', { name: `${rest.label} 검토`, exact: true }).click();

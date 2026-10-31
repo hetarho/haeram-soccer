@@ -1,12 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import type { CareKind } from '../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import type { ClientState, GameClient } from '../runtime/client';
 import { AcademyPanel } from './AcademyPanel';
-import { activeDialogSurface, Dialog } from './Dialog';
+import { Dialog } from './Dialog';
 import { Money } from './Money';
-import { TrainingOrderSheet } from './TrainingOrderSheet';
 import {
   activityUnavailable,
   placeActivities,
@@ -22,9 +20,15 @@ export interface PlaceActivitiesProps {
 }
 
 type Inspection =
-  | { type: 'care'; kind: CareKind; revision: number }
-  | { type: 'training' }
-  | { type: 'academy'; player: string };
+  { type: 'care'; kind: CareKind; revision: number } | { type: 'academy'; player: string };
+
+/** Each section's owner choices by who carries them out; 코치진 holds two of them (→WEB-102). */
+const PLACE_LABEL: Record<ActivityPlace, string> = {
+  manager: '감독에게 요청',
+  coaching: '스태프에게 요청',
+  training: '훈련장에서 할 일',
+  academy: '유소년에서 할 일',
+};
 
 export function PlaceActivities(props: PlaceActivitiesProps) {
   const world = props.state.view?.world;
@@ -79,8 +83,6 @@ function Activities({ place, state, client }: PlaceActivitiesProps) {
       ? model.academy?.players.find(({ player }) => player.id === inspection.player)
       : undefined;
   const reviewedGroup = model.academy?.groups.find((group) => group.key === reviewed?.group);
-  const trainingErrorTarget =
-    inspection?.type === 'training' && error ? activeDialogSurface() : undefined;
   const submitCare = async () => {
     if (!care?.command || care.unavailable || reason || sending) return;
     setSending(true);
@@ -94,7 +96,7 @@ function Activities({ place, state, client }: PlaceActivitiesProps) {
   return (
     <section
       className={s.panel}
-      aria-label="이 장소에서 할 일"
+      aria-label={PLACE_LABEL[place]}
       data-testid={`place-activities-${place}`}
     >
       <ul className={s.facts} aria-label="현재 상태">
@@ -133,30 +135,6 @@ function Activities({ place, state, client }: PlaceActivitiesProps) {
             </button>
           </li>
         ))}
-        {place === 'coaching' && (
-          <li>
-            <div>
-              <b>{model.training.role}에게 훈련 제안·강행</b>
-              <p>
-                {model.training.member} 결정 · 다음 라운드 정산부터 {model.training.duration}라운드
-                유지
-              </p>
-              <small>
-                제안은 거절될 수 있고 재제안 기회를 소모해요.
-                {model.training.wait > 0 ? ` 재제안 ${model.training.wait}라운드 후.` : ''} 강행 시
-                사임 확률 {Math.round(model.training.risk * 100)}% · 공석이 생길 수 있어요.
-              </small>
-              <small>
-                회복은 성장 기회를 줄이고, 하드는 피로·부상·분위기 부담을 늘려요. 비교 후
-                제안하세요.
-              </small>
-              {model.training.unavailable && <p className={s.note}>{model.training.unavailable}</p>}
-            </div>
-            <button type="button" onClick={() => inspect({ type: 'training' })}>
-              훈련 조건 검토
-            </button>
-          </li>
-        )}
       </ul>
       {model.academy && (
         <AcademyPanel
@@ -238,16 +216,6 @@ function Activities({ place, state, client }: PlaceActivitiesProps) {
           </div>
         </Dialog>
       )}
-      {inspection?.type === 'training' && (
-        <TrainingOrderSheet w={w} client={scoped} coach={model.training.coach} onClose={close} />
-      )}
-      {trainingErrorTarget &&
-        createPortal(
-          <p role="alert" className={s.note}>
-            {error}
-          </p>,
-          trainingErrorTarget,
-        )}
       {inspection?.type === 'academy' && (
         <Dialog label="유소년 승격·방출 검토" onClose={close}>
           {reviewed ? (

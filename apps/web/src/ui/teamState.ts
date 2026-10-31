@@ -441,6 +441,19 @@ export function cashState(w: World): TeamStateItem {
   };
 }
 
+/**
+ * Who can play now (→WEB-44): the active first team, its injured and its suspended players — a
+ * player with a ban to serve in any competition (→CLUB-45) — and everyone else available.
+ */
+export function squadAvailability(w: World) {
+  const active = activePlayers(w);
+  const banned = new Set(w.discipline?.bans.map((ban) => ban.player));
+  const injured = active.filter((p) => isInjured(w, p)).length,
+    suspended = active.filter((p) => banned.has(p.id)).length,
+    out = active.filter((p) => isInjured(w, p) || banned.has(p.id)).length;
+  return { total: active.length, available: active.length - out, injured, suspended, out };
+}
+
 /** Current club condition (not season statistics), each with actions when it needs care. */
 export function teamStates(w: World): TeamStateItem[] {
   const fatigue = lineupSummary(startingSquad(w, clubOf(w)), w.tactic).fatigue;
@@ -448,14 +461,7 @@ export function teamStates(w: World): TeamStateItem[] {
     mood = moraleState(morale);
   const trust = Math.round(w.manager.trust),
     interim = w.manager.interim;
-  const active = activePlayers(w),
-    squad = active.length;
-  // Injured and suspended (→CLUB-45): a player with a ban to serve in any competition.
-  const banned = new Set(w.discipline?.bans.map((ban) => ban.player));
-  const injured = active.filter((p) => isInjured(w, p)).length,
-    suspended = active.filter((p) => banned.has(p.id)).length;
-  const out = active.filter((p) => isInjured(w, p) || banned.has(p.id)).length,
-    fit = squad - out;
+  const { total: squad, available: fit, injured, suspended, out } = squadAvailability(w);
   const missing = out ? `부상 ${injured} · 정지 ${suspended}` : '';
   const registered = squadRegistration(w);
   const club = clubOf(w),
@@ -571,4 +577,61 @@ export function urgentState(states: TeamStateItem[], cash?: TeamStateItem) {
   return [...(cash ? [cash] : []), ...states]
     .filter((state) => state.advice)
     .sort((a, b) => rank[a.tone] - rank[b.tone])[0];
+}
+
+/** One fact of the clubhouse's current-club summary (→WEB-44). */
+export interface SituationFact {
+  key: Exclude<StateKey, 'cash'>;
+  label: string;
+  value: string;
+  note: string;
+  tone: Tone;
+  /** A state that needs the owner, in plain words; strength is a comparison and has none. */
+  warning?: '주의' | '위험';
+}
+
+/**
+ * The clubhouse's current-club summary (→WEB-44): strength with its place in our division, who
+ * can play of the whole first team with the injured and the suspended, the starters' fatigue,
+ * 분위기 and the manager's standing. It only reads; the quick actions answer it (→WEB-107).
+ */
+export function clubSituation(w: World): SituationFact[] {
+  const states = teamStates(w);
+  const state = (key: StateKey) => states.find((item) => item.key === key)!;
+  const squad = squadAvailability(w);
+  const warning = (item: TeamStateItem) =>
+    item.advice ? (item.tone === 'bad' ? ('위험' as const) : ('주의' as const)) : undefined;
+  const fact = (key: SituationFact['key'], label: string): SituationFact => {
+    const item = state(key);
+    return {
+      key,
+      label,
+      value: item.value,
+      note: item.status,
+      tone: item.tone,
+      warning: warning(item),
+    };
+  };
+  const strength = state('strength'),
+    roster = state('squad');
+  return [
+    {
+      key: 'strength',
+      label: '팀 전력',
+      value: strength.value,
+      note: strength.status,
+      tone: strength.tone,
+    },
+    {
+      key: 'squad',
+      label: '출전 가능',
+      value: `${squad.available}/${squad.total}`,
+      note: `부상 ${squad.injured} · 정지 ${squad.suspended}`,
+      tone: roster.tone,
+      warning: warning(roster),
+    },
+    fact('fatigue', '선발 피로'),
+    fact('morale', '분위기'),
+    fact('manager', '감독 입지'),
+  ];
 }

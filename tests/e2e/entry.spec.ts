@@ -6,6 +6,7 @@ import { delegateSales } from './events';
 import { chooseOption } from './select';
 import { expect, test } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
+import { clubSections } from './office';
 test('serves a real static application entry', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('club-founding')).toBeVisible();
@@ -83,15 +84,13 @@ test('observes event-backed metrics, historical locks and responsive navigation'
     await expect(allMenu.getByRole('button', { name: label, exact: true })).toHaveCount(0);
   await allMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(allMenu).toHaveCount(0);
-  // First-team work opens on the roster with its real squad count.
+  // First-team work opens on the roster with its real squad count, under no local tabs.
   await openPersonnel(page, 'players');
-  await expect(page.getByRole('tablist', { name: '감독 사무실', exact: true })).toBeVisible();
-  const peopleTabs = page.getByRole('tablist', { name: '감독 사무실' }).getByRole('tab');
-  await expect(peopleTabs).toHaveText(['감독', '선수 목록']);
-  await expect(peopleTabs.filter({ hasText: '선수 목록' })).toHaveAttribute(
+  await expect(clubSections(page).getByRole('tab', { name: '1군', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
   );
+  await expect(page.getByRole('tablist', { name: '감독 사무실', exact: true })).toHaveCount(0);
   // A delegated premium sale can change the squad before kickoff; the heading must match
   // the actual cards rather than the founding count.
   const rosterCount = await page.locator('[class*="rosterCards"] article').count();

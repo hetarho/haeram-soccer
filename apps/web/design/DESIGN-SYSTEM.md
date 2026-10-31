@@ -208,6 +208,23 @@ cards or doors (→WEB-39/100). A row keeps its kind `label`, title, subject and
 (`stat-tile`, one row of four on every width, [OfficeDesk](../src/ui/OfficeDesk.tsx)) stay with
 구단 운영's sections.
 
+The clubhouse's current-club summary ([ClubSituation](../src/ui/ClubHub.tsx), →WEB-44) reuses the
+same `stat-tile` role as read-only facts: a `dl` of five tiles (strength with its division
+place, 출전 가능 of the whole team with the injured and suspended, 선발 피로, 분위기, 감독 입지),
+one row on wide screens and, on phones, strength and availability over the three moods in a
+six-column grid, so no tile drops below 12px text. Tone colours the value and note, and a
+warning is also written as a word (주의, 위험) beside the note; a summary tile never becomes a
+button or a redirect. It sits under the season card and NEXT MATCH, quieter than both. The
+office entrance below it is one text line (결재 대기 n건, 지연 n건, 들어가기) without room art,
+and keeps the quick actions in its band, where the themes' compact icon-free tile rules apply.
+
+People sections lead with their people: 1군 opens on the roster's availability line and cards,
+then the tactics request and culture criteria; 코치진 opens on the manager's card and every post
+with its person or vacancy, then who appoints them, then the owner's requests to the manager and
+the staff. No facility figure, room art or office-return bar precedes them; the club's section
+bar is their only navigation. Training and youth keep their bounded facility illustration
+(→WEB-70/72) directly above the working panels.
+
 Spend colour on meaning, not decoration. A change reads by sign: a rise in `--danger` red, a fall
 in `--cool` blue (`+3`, `-3`). Closing and comparing controls stay plain buttons; the primary
 colour marks the one main action. A detail that already fills its dialog needs no plate of its

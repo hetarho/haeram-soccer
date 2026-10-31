@@ -1,10 +1,10 @@
 import { expect, test } from '@playwright/test';
 import { preparedWorld } from '../fixtures/prepared-world';
 import { seedSlot, continueSlot } from './slots';
-import { openPersonnel } from './personnel-navigation';
+import { managerCard, openPersonnel } from './personnel-navigation';
 import { openLeague, openClubRecords } from './competition-navigation';
 import { horizontalOverflow, settle } from './layout';
-import { enterOffice } from './office';
+import { clubSections } from './office';
 
 for (const viewport of [
   { width: 360, height: 740 },
@@ -50,11 +50,23 @@ for (const viewport of [
     await openClubRecords(page);
     await expect(page.getByRole('tablist', { name: '기록실 보기', exact: true })).toBeVisible();
     await openPersonnel(page, 'players');
-    await expect(
-      page.getByRole('tablist', { name: '감독 사무실', exact: true }).getByRole('tab'),
-    ).toHaveText(['감독', '선수 목록']);
-    await expect(page.getByTestId('facility-overview')).toHaveAccessibleName('드레싱 룸');
+    // 1군 is the actual roster (→WEB-43): no local tabs, room art or office-return bar above it.
+    await expect(page.getByRole('tablist', { name: '감독 사무실', exact: true })).toHaveCount(0);
+    await expect(page.getByTestId('facility-overview')).toHaveCount(0);
+    await expect(page.locator('[data-ui="office-bar"]')).toHaveCount(0);
+    const active = world.players.filter((player) => player.status === 'active');
+    // Who can play leads it, counted from the whole first team with the injured and suspended.
+    await expect(page.getByTestId('roster-availability')).toHaveText(
+      new RegExp(`^출전 가능 \\d+/${active.length}명 · 부상 \\d+명 · 출장 정지 \\d+명$`),
+    );
     const search = page.getByRole('textbox', { name: '선수 찾기' });
+    // A fixture player is on the roster under his own name.
+    await search.fill(active[0].name);
+    await expect(page.getByText(active[0].name, { exact: true }).first()).toBeVisible();
+    // The first team's tactics and culture follow the roster on the same page.
+    await expect(
+      page.getByTestId('tactics-talk').getByRole('button', { name: '감독에게 제안하기' }),
+    ).toBeVisible();
     await search.fill('Retained work');
     const date = await page.getByTestId('game-date').innerText();
     const trigger = page
@@ -84,6 +96,9 @@ for (const viewport of [
     await openPersonnel(page, 'training');
     await expect(page).toHaveURL(/training$/);
     await expect(page.getByTestId('training-focus')).toBeVisible();
+    // 훈련 opens on its own workflow: the focus and the coach's suggestion, no office-return bar.
+    await expect(page.locator('[data-ui="office-bar"]')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /수석코치에게 훈련 제안·강행/ })).toBeVisible();
     // From the market a section opens through the clubhouse's section bar, so browser back
     // returns to the clubhouse; the office has no room doors (→WEB-10/39).
     await page.goBack();
@@ -93,26 +108,65 @@ for (const viewport of [
     await openPersonnel(page, 'academy');
     await expect(page.getByTestId('facility-overview')).toHaveAccessibleName('유소년 아카데미');
     await expect(page.getByTestId('youth-focus')).toBeVisible();
-    await openPersonnel(page, 'manager');
-    await expect(page.getByTestId('facility-overview')).toHaveAccessibleName('감독실');
-    await expect(page.getByTestId('place-activities-manager')).toBeVisible();
+    await expect(page.locator('[data-ui="office-bar"]')).toHaveCount(0);
+    // 코치진 leads with the actual manager and every post (→WEB-43), on the first viewport.
     await openPersonnel(page, 'coaches');
-    await expect(page.getByTestId('facility-overview')).toHaveAccessibleName('스태프 사무실');
-    await expect(page.getByTestId('place-activities-coaching')).toBeVisible();
+    await expect(page.getByTestId('facility-overview')).toHaveCount(0);
+    const manager = managerCard(page);
+    await expect(
+      page.getByRole('heading', { name: world.manager.name, exact: true }),
+    ).toBeVisible();
+    await expect(manager).toBeInViewport();
+    for (const member of world.staff ?? [])
+      await expect(page.locator(`#staff-post-${member.role}`)).toContainText(member.name);
+    const managerBox = (await manager.boundingBox())!;
+    const directorBox = (await page.locator('#staff-post-director').boundingBox())!;
+    expect(managerBox.y).toBeLessThan(directorBox.y);
+    // The owner's requests to the manager and the staff follow the people, never precede them.
+    const requests = (await page.getByTestId('place-activities-manager').boundingBox())!;
+    expect(directorBox.y).toBeLessThan(requests.y);
+    await expect(page.getByTestId('place-activities-coaching')).toBeAttached();
     await openPersonnel(page, 'players');
     await expect(search).toHaveValue('Retained work');
     await openPersonnel(page, 'coaches');
     await page.reload();
-    await expect(page.getByRole('tab', { name: '스태프', exact: true })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
-    await enterOffice(page);
-    await page.getByRole('button', { name: '선수 계약', exact: true }).click();
-    await expect(page.getByTestId('player-office-overview')).toBeVisible();
-    await page.getByRole('tab', { name: '영입', exact: true }).click();
-    await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
+    await expect(
+      clubSections(page).getByRole('tab', { name: '코치진', exact: true }),
+    ).toHaveAttribute('aria-selected', 'true');
+    await expect(managerCard(page)).toBeVisible();
     await settle(page);
     expect(await horizontalOverflow(page)).toBe(0);
   });
 }
+
+test('an older manager address opens the same manager workflow in 코치진', async ({ page }) => {
+  const world = preparedWorld('manager-journey');
+  world.settings!.mode = 'manual';
+  await seedSlot(page, world);
+  await page.goto('/');
+  await continueSlot(page);
+  await page.goto('/first-team?view=manager');
+  await expect(page).toHaveURL(/\/staff\?view=coaches$/);
+  await expect(managerCard(page)).toBeVisible();
+  await expect(page.getByRole('heading', { name: world.manager.name, exact: true })).toBeVisible();
+  // Asking for candidates opens the replacement market over it.
+  await page.goto('/manager?view=candidates');
+  await expect(page).toHaveURL(/\/staff\?view=coaches&market=1$/);
+  await expect(page.getByRole('dialog', { name: '감독 교체', exact: true })).toBeVisible();
+});
+
+test('a vacant manager post reads as an interim in charge with 감독 선임', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 740 });
+  const world = preparedWorld('manager-journey');
+  world.settings!.mode = 'manual';
+  world.manager.interim = true;
+  await seedSlot(page, world);
+  await page.goto('/');
+  await continueSlot(page);
+  await openPersonnel(page, 'coaches');
+  const manager = managerCard(page);
+  await expect(manager).toBeInViewport();
+  await expect(manager).toContainText('새 감독을 뽑을 때까지 대행');
+  await expect(page.getByText('INTERIM MANAGER · 감독 공석', { exact: true })).toBeVisible();
+  await expect(manager.getByRole('button', { name: '감독 선임', exact: true })).toBeVisible();
+});

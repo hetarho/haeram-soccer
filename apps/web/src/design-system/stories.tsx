@@ -30,9 +30,8 @@ import {
   PresentationSettingsControls,
   PresentationSettingsTrigger,
 } from '../ui/PresentationSettings';
-import { ClubHub, NextMatchCard, SeasonCard, CupBriefing } from '../ui/ClubHub';
+import { ClubHub, ClubSituation, NextMatchCard, SeasonCard, CupBriefing } from '../ui/ClubHub';
 import { QuickActions } from '../ui/QuickActions.tsx';
-import { TeamState } from '../ui/TeamStateTiles';
 import { NewsList, useNewsSheet } from '../ui/NewsFeed';
 import { ProgressControls, ProgressOverview } from '../ui/ProgressControls';
 import { ControllerBackgrounds } from './ControllerBackgrounds';
@@ -735,8 +734,8 @@ export default function StoryRenderer({
             <SeasonCard w={w} active />
             <NextMatchCard w={w} onPrepare={() => setPreparing(true)} />
             <CupBriefing w={w} />
+            <ClubSituation w={w} />
             <QuickActions w={w} client={client} />
-            <TeamState w={w} client={client} onPrepare={noop} />
           </>
         );
         break;

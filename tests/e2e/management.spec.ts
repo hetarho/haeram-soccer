@@ -19,15 +19,13 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await openPersonnel(page, 'players');
-  await expect(page.getByRole('tablist', { name: '감독 사무실', exact: true })).toBeVisible();
-  // First-team work starts on the roster; coaching work has its own primary hub.
-  const peopleTab = (name: string) =>
-    page.getByRole('tablist', { name: '감독 사무실' }).getByRole('tab', { name, exact: true });
-  await expect(peopleTab('선수 목록')).toHaveAttribute('aria-selected', 'true');
+  // First-team work starts on the roster, its tactics beside it; the manager and his staff
+  // have their own club section (→WEB-43).
+  await expect(page).toHaveURL(/\/first-team\?view=players$/);
   await openPersonnel(page, 'coaches');
   await expect(page.getByRole('region', { name: '스태프', exact: true })).toBeVisible();
   await expect(page).toHaveURL(/\/staff\?view=coaches$/);
-  await openPersonnel(page, 'manager');
+  await openPersonnel(page, 'players');
   await chooseOption(page.getByRole('combobox', { name: '요청 전술', exact: true }), 'counter');
   await chooseOption(page.getByRole('combobox', { name: '요청 말투', exact: true }), 'evidence');
   await page.getByRole('button', { name: '감독에게 제안하기' }).click();

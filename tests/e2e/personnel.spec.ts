@@ -21,7 +21,9 @@ for (const width of [360, 1280]) {
       ['/direction?view=players&work=contracts', /\/first-team\?view=players$/, '1군'],
       ['/direction?view=players&work=sales', /\/first-team\?view=players$/, '1군'],
       ['/direction?view=players&work=academy', /\/academy$/, '유소년'],
-      ['/direction?view=staff', /\/first-team\?view=manager$/, '1군'],
+      // Staff work, the manager's included, is 코치진 (→WEB-43).
+      ['/direction?view=staff', /\/staff\?view=coaches$/, '코치진'],
+      ['/direction?view=staff&work=manager', /\/staff\?view=coaches$/, '코치진'],
       ['/direction?view=staff&work=coaches', /\/staff\?view=coaches$/, '코치진'],
     ] as const) {
       await page.goto(asked);

@@ -40,8 +40,9 @@ export function resolveOffice(view: string | null): OfficeDestination {
 }
 /**
  * Where an older desk address without a selected request lands (→WEB-39): player work on the
- * roster, the market or the academy by its work tab, staff work with the manager or the coaches,
- * money, sponsors and design in their club-operations section. A request stays in the office.
+ * roster, the market or the academy by its work tab, staff work — the manager's included — in
+ * 코치진, money, sponsors and design in their club-operations section. A request stays in the
+ * office.
  */
 export function deskDestination(desk: WorkDesk, work: string | null) {
   if (desk === 'players')
@@ -50,8 +51,7 @@ export function deskDestination(desk: WorkDesk, work: string | null) {
       : work === 'academy'
         ? '/academy'
         : '/first-team?view=players';
-  if (desk === 'staff')
-    return work === 'coaches' ? '/staff?view=coaches' : '/first-team?view=manager';
+  if (desk === 'staff') return '/staff?view=coaches';
   return operationsAddress(desk);
 }
 

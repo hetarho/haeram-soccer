@@ -48,25 +48,27 @@ for (const viewport of [
     await expect(page.getByTestId('quick-warning-development')).toBeVisible();
     await expect(alert).toHaveCount(0);
     await expectHomeBounds(page);
-    const state = page.getByTestId('club-hub').getByTestId('team-state');
-    const squad = state.locator('[data-condition="squad"]');
-    const warning = squad.getByTestId('state-warning-squad');
-    const button = squad.getByRole('button', { name: /선수단.*주의.*대처 방법 보기/ });
-    await expect(warning).toBeVisible();
+    // The current-club summary reads the thin squad in plain words; it has nothing to press.
+    const situation = page.getByTestId('club-hub').getByTestId('club-situation');
+    const squad = situation.locator('[data-fact="squad"]');
+    await expect(squad).toContainText('19/19');
+    await expect(squad.getByTestId('situation-warning-squad')).toHaveText('· 주의');
+    await expect(situation.getByRole('button')).toHaveCount(0);
     await expect(alert).toHaveCount(0);
-    await expect(state).not.toContainText('선수 19명');
+    await expect(situation).not.toContainText('선수 19명');
+    // Its advice comes on request, from the quick action that answers it (→WEB-44/107).
+    const button = page
+      .getByTestId('quick-actions')
+      .getByRole('button', { name: /^훈련·육성 .* · 주의 · 바로 할 수 있는 일/ });
     await expectTouchSize(button);
-    // Clicking the badge uses the existing full-size tile button.
-    await warning.click();
-    const remedies = page.getByRole('dialog', { name: '선수단 채우기', exact: true });
+    await button.click();
+    const remedies = page.getByRole('dialog', { name: '훈련·육성', exact: true });
     await expect(remedies).toBeVisible();
     await expect(remedies).toContainText('선수 19명');
     await expect(remedies).toContainText('선발을 채우기 어려워요.');
-    await expect(remedies.getByRole('button', { name: '열기', exact: true }).first()).toBeVisible();
     await page.keyboard.press('Escape');
     await expect(remedies).toHaveCount(0);
     await expect(button).toBeFocused();
-    await expect(warning).toBeVisible();
     await button.press('Enter');
     await expect(remedies).toBeVisible();
     await remedies.getByRole('button', { name: '창 닫기', exact: true }).click();

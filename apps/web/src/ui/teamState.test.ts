@@ -7,8 +7,10 @@ import { ownLeagueIds } from './league';
 import {
   careRequest,
   cashState,
+  clubSituation,
   remedies,
   runwayText,
+  squadAvailability,
   STATE_TITLES,
   strengthPlace,
   teamStates,
@@ -257,6 +259,77 @@ describe('registration-aware squad state', () => {
     expect(teamStates(w).find((s) => s.key === 'squad')!.value).toBe('16/25 · 제외 4');
     expect(remedies(w, 'squad').find((r) => r.id === 'market')!.effect).toContain('21세 이하 제외');
     expect(remedies(w, 'squad').find((r) => r.id === 'market')!.effect).not.toContain('추정');
+  });
+});
+
+describe('clubhouse current-club summary (→WEB-44)', () => {
+  it('reads five facts from the world: strength, who can play, fatigue, 분위기 and the manager', () => {
+    const w = world();
+    const before = structuredClone(w);
+    const facts = clubSituation(w);
+    expect(facts.map((fact) => fact.label)).toEqual([
+      '팀 전력',
+      '출전 가능',
+      '선발 피로',
+      '분위기',
+      '감독 입지',
+    ]);
+    const states = teamStates(w);
+    const squad = w.players.filter((p) => p.status === 'active').length;
+    expect(facts[0]).toMatchObject({ value: states[0].value, note: states[0].status });
+    expect(facts[1]).toMatchObject({
+      value: `${squad}/${squad}`,
+      note: '부상 0 · 정지 0',
+      tone: 'good',
+    });
+    expect(facts.find((fact) => fact.key === 'manager')!.note).toMatch(/굳건|안정|흔들림|위기/);
+    // A calm new club carries no warning, and reading changes nothing.
+    expect(facts.filter((fact) => fact.warning)).toEqual([]);
+    expect(w).toEqual(before);
+  });
+  it('counts the injured and the suspended out of the whole first team and names warnings', () => {
+    const w = world();
+    const [hurt, banned, both] = w.players;
+    for (const p of [hurt, both]) p.injury = { year: w.year, day: 100, label: 'synthetic injury' };
+    w.discipline = {
+      year: w.year,
+      yellows: {},
+      bans: [
+        { player: banned.id, club: w.playerClub, matches: 1, scope: 'league', reason: 'yellows' },
+        { player: both.id, club: w.playerClub, matches: 2, scope: 'domestic', reason: 'dissent' },
+      ],
+      out: [],
+    };
+    const total = w.players.filter((p) => p.status === 'active').length;
+    expect(squadAvailability(w)).toEqual({
+      total,
+      available: total - 3,
+      injured: 2,
+      suspended: 2,
+      out: 3,
+    });
+    const squad = () => clubSituation(w).find((fact) => fact.key === 'squad')!;
+    // Three out is a warning (→CLUB-40): stated in words, not only by colour.
+    expect(squad()).toMatchObject({
+      value: `${total - 3}/${total}`,
+      note: '부상 2 · 정지 2',
+      tone: 'warn',
+      warning: '주의',
+    });
+    // Under sixteen players is critical.
+    for (const p of w.players.slice(15)) p.status = 'sold';
+    expect(squad()).toMatchObject({ value: '12/15', tone: 'bad', warning: '위험' });
+  });
+  it('reads an interim manager as 대행 체제 and never badges strength', () => {
+    const w = world();
+    w.manager.interim = true;
+    const facts = clubSituation(w);
+    expect(facts.find((fact) => fact.key === 'manager')).toMatchObject({
+      value: '대행',
+      note: '대행 체제',
+      warning: '주의',
+    });
+    expect(facts[0].warning).toBeUndefined();
   });
 });
 
