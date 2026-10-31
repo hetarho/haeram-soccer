@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r58 | Define the browser-demo rules for browser persistence and protocol.
+> r59 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -52,7 +52,7 @@
   - until the feature boundary in →SAVE-18, earlier rules cause compatibility failure (→SAVE-11): the slot lists 이전 규칙 with export and delete only, imports name the rules they need, and nothing overwrites the career.
   - the new-career feature boundary instead permits the recognized legacy-gameplay reset in →SAVE-18.
   - the 100-season profiles of SAVE-13 are measured again on the new model and must still fit SAVE-4.
-- SAVE-17 [o] A game's persisted career includes its seven business responsibilities, progression mode and observation triggers; its standing director/manager support policy; aptitude/person continuity and staff-career facts; and outstanding/resolved mediation promises (→WEB-45/5, →STAFF-26, →HIST-14/15).
+- SAVE-17 [o] A game's persisted career includes its seven business responsibilities, progression mode and observation triggers; the waiting days of each owner-held approval (→STAFF-48), absent in older saves, which start counting at 0; its standing director/manager support policy; aptitude/person continuity and staff-career facts; and outstanding/resolved mediation promises (→WEB-45/5, →STAFF-26, →HIST-14/15).
   - save/export/import preserve outstanding commitments and the linked person's actual age/history, without duplicate fulfilment, appointments or payments on reload.
   - unapplied policy drafts remain session UI work (→WEB-74), not applied policy or portable game-save facts.
   - retain existing corruption/compatibility protection and 100-season lossless budgets (→SAVE-4/11/13). Feature activation and compatibility for existing careers require →SAVE-18.
@@ -93,6 +93,7 @@
   - derived totals and display text are not a second persisted accomplishment database. Retain all source facts losslessly within the existing century and capacity limits (→SAVE-4/13), including repeated/interim appointments and a settled round after the century.
 
 ## chg
+- r59 261101 SAVE-17✎ +each owner-held approval's waiting days (→STAFF-48), absent in older saves→counting from 0
 - r58 261101 SAVE-10✎ catalog writer pin 2026-demo-1/2→2026-demo-3 to 2026-demo-1/2/3→2026-demo-4 for English careers only; another country's career pinned to them→a compatibility failure (its money re-levelled, →ECON-35)
 - r57 261028 SAVE-10✎ current engine rules 4.0.0→game version 0.7.0 (beta) shared by the app and the engine rules, raised each release, match-model revisions shipping inside it; 4.0.0 checkpoints load as 0.7.0 with the label rewritten
 - r56 261028 SAVE-20✎ applied shirts and own-shirt selection→kits with shorts/socks, the goalkeeper kit and own-kit selection; SAVE-21✎ missing shirt designs supplied→missing shirt/shorts/socks designs supplied
