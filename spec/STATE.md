@@ -490,6 +490,7 @@
 - create-task KIT (existing kit baseline r5–r6 remains pending outside of01; WEB r188–r195 baseline regression is included in T632).
 
 ## log
+- 261101 fix e2e live-state: an eve met during the league detour's office visit waits behind its reopen access without a dialog; the check accepts that Aug 7 reopen like a dismissed report (CI WebKit 41226127751).
 - 261101 fix web controls: at 360 px the 결재함 wrapped the bottom controls into two rows, so celebrations overlapped the clock (news.spec on CI); the two 결재 buttons are 44 px on phones and 다음 이벤트 has narrower sides, and resource-skins now asserts one row at 360/390 in every theme.
 - 261101 fix engine approvals: waiting days counted at the start of clubDay so day, round and season paths agree at the close (CI 41222347443: calendar.progression-eng/esp, season, full-model-throughput); portable golden regenerated; integration 1,268 and contract 48 passed.
 - 261101 ap01 closed: changed-code checks only at the owner's request (unit tier, touched integration/contract, 14 changed Chromium journeys); push main.
@@ -509,4 +510,3 @@
 - 261031 ei31 publication authorized: owner accepts baseline UI e2e failures and requests main push. Runtime code unchanged since fa72a098 and the successful engine checks; remote main is an ancestor of this worktree. Preserve the existing failure evidence without claiming a successful full app gate.
 - 261031 ei31 verification: 1,824 unit / 1,267 integration / 48 contract passed; movement fault parity and real helper/reload parity pass on Chromium/Firefox/WebKit. Full app browser gate interrupted after 17 existing UI failures; unchanged baseline reproduces identical lineup error. Main code push/CI held; completed engine code and evidence on wip/ei31.
 - 261031 T618 done locally: packed JavaScript movement, scalar fallback and browser fault probe; final grid CPU ×0.9633, equal records. Combined real-worker wall ×0.8744/process CPU ×0.7910, equal worlds; final full-suite/browser/CI gate pending.
-- 261031 T617 done locally: incremental helper replicas and fallback guards; affected units 91 files/869 tests, quick checks/build pass. Real-worker confirmation equal hashes, total wall ×0.8987 and process CPU ×0.8046; full integration/browser gate remains after T618.
