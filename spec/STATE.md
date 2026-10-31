@@ -16,8 +16,12 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | cr01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T15:49Z | 2026-10-31T15:49Z | - |
+| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T17:23Z | 2026-10-31T17:23Z | - |
 
 ## inbox
+- 261101 decided WEB-39 WEB-100 T630: what fills the owner office → one live ordered approval queue and contextual review with queue return (alt: retain desks with fewer cards | replace them with another overview dashboard); actual pending decisions deserve the first viewport.
+- 261101 decided WEB-10 WEB-43 WEB-110 T629 T631: where club facts and proactive work live → a visible club section bar, actual roster and combined manager/coach directory, and one operations home (alt: extra primary tabs | room-door navigation); preserve five primary entries and all unique gameplay.
+- 261101 decided WEB-44 WEB-107 T631: removing duplicate office state tiles → compact readable clubhouse facts and existing immediate owner remedies (alt: delete remedies | keep redirect grid); reduce travel without losing meaningful owner choices.
 - 261101 decided CLUB-47 T628: how the scout grades a candidate → the gap at the slot he would take, by CLUB-33's own margins (A ≥ 10 twice the request margin, B ≥ 5 the request margin, C ≥ 2 공격적's upgrade margin or a short line or a prospect at his main position, D > −5, else E), reasons only for what the gap does not say (alt: percentile against positional peers as FBref, a measure the engine does not keep | one weighted score of ability, potential, age and cost, which hides why).
 - 261101 decided WEB-109 T628: what our own players keep in the scout-report detail → head, 능력·성향 and the transaction bar in its completed state (계약 완료, as recruitment e2e reads it), no verdict or terms (alt: drop the bar, which breaks the completed-signing evidence).
 - 261101 suggest T623 T624 ARCH-30: on origin/main 67c9e974 four integration equivalence tests fail independently of T628 — calendar.progression-eng/esp (every progression mode records the same facts), full-model-throughput (T285 records/ledgers) and season.test (day/round/season advancement); ap01 ran only touched integration tests, so main CI will be red until approval waiting/overdue morale settles identically across progression paths.
@@ -424,7 +428,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 195 | 187 | WEB-39✎ WEB-79✎ WEB-106+ WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ WEB-43✎ WEB-10✎ WEB-44✎ WEB-107+ WEB-86✎ WEB-108+ WEB-100✎ WEB-42✎ WEB-91✎ | 0 |
+| WEB | 196 | 196 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 6 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
@@ -451,6 +455,10 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T629 | Visible club sections and consolidated operations | WEB ARCH | - | todo |
+| T630 | One focused approval queue | WEB ARCH | T629 | todo |
+| T631 | Readable club situation and actual people | WEB ARCH | T630 | todo |
+| T632 | Complete office and club journey regression coverage | WEB ARCH | T631 | todo |
 | T622 | Currency levels at the 1999 rate | ECON SAVE | - | todo |
 
 ## work
@@ -475,12 +483,14 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- implement-task T629 (of01 owner-office and club overhaul; then T630→T631→T632 only; leave unrelated T622 and ideation to their owners)
 - ap01 (approvals never stop progression, 결재함 with a 7-day 결재 기한, T623–T625) is done and pushed; report spec/reports/261101-ap01.md.
 - tf31 (transfer values by era) is done and pushed; owner to look at its two suggests (non-English currency levels ECON-2/5, the 1950s lower-division fee pyramid CLUB-25/46). Main's Chromium UI journeys await the ds30 spec migration.
 - Owner authorizes main publication of T617/T618 despite reproduced baseline UI e2e failures; publish unchanged engine source and observe CI. Evidence reports/261031-ei31.md.
-- create-task WEB KIT (WEB r188–r192 delta WEB-39✎ WEB-79✎ WEB-106+ WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ WEB-43✎ WEB-10✎ WEB-44✎ WEB-107+ WEB-86✎ WEB-108+ WEB-100✎ WEB-42✎, plus WEB r194 WEB-91✎, and KIT r5–r6 KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ are implemented by the ds30 and cb31 designs; a task records them and their e2e checks)
+- create-task KIT (existing kit baseline r5–r6 remains pending outside of01; WEB r188–r195 baseline regression is included in T632).
 
 ## log
+- 261101 update-ssot WEB r196 + create-task T629–T632: approval-only office, visible club sections, actual first-team/coach information and consolidated proactive operations; qualitative 2024-11-01–2026-11-01 Steam research in reports/261031-of01.md; session of01.
 - 261101 design controller: apply P3 burgundy paper, G1 forest matte, X2 midnight pixels and S1 butter clay; unit 1833, integration 1267, contract 48 and Chromium 335 passed; shared-checkout receipt stale after concurrent unrelated edits; preserve tested ce95aae4 in isolated cb31 commit.
 - 261101 ap01 closed: changed-code checks only at the owner's request (unit tier, touched integration/contract, 14 changed Chromium journeys); push main.
 - 261101 T625 done: 결재함 button in the bottom controls with waiting/overdue counts, tray rows with D-n/지연 n일, lobby tray heading with the overdue morale cost; session ap01.
@@ -500,4 +510,3 @@
 - 261031 T618 done locally: packed JavaScript movement, scalar fallback and browser fault probe; final grid CPU ×0.9633, equal records. Combined real-worker wall ×0.8744/process CPU ×0.7910, equal worlds; final full-suite/browser/CI gate pending.
 - 261031 T617 done locally: incremental helper replicas and fallback guards; affected units 91 files/869 tests, quick checks/build pass. Real-worker confirmation equal hashes, total wall ×0.8987 and process CPU ×0.8046; full integration/browser gate remains after T618.
 - 261031 design ds30: owner-directed live UI polish closed. Covers the redrawn pixel icon set, five-entry navigation (리그·컵·클럽하우스·이적시장·기록), clubhouse quick actions, and an office lobby holding team state, room doors and approval trays. Also the designer kit commission plus theme and locale updates. E2E helpers and specs follow the design. Fixed: the first-team door reopened the market; discarded drafts did not re-render; sticker-club fixture text and select hints fell below AA. Design verify: task+batch passed, Chromium 335 passed.
-- 261031 update-ssot WEB r192 KIT r6: WEB-10✎ WEB-11✎ WEB-39✎ WEB-42✎ WEB-44✎ WEB-100✎ WEB-107+ WEB-86✎ WEB-108+ KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ (five-entry navigation, designer commission and fourteen shirt patterns as built in ds30; clubhouse quick actions; team state and room doors in the office lobby)
