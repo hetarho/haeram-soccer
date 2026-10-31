@@ -1,7 +1,7 @@
 {
   "synthetic": true,
   "engine": "0.7.0",
-  "catalog": "2026-demo-3",
+  "catalog": "2026-demo-4",
   "definitions": [
     {
       "name": "founding-and-commercial-decisions",
@@ -1010,7 +1010,7 @@
         "year": 1960,
         "round": 0,
         "revision": 323,
-        "cash": "114439",
+        "cash": "7356163",
         "currency": "FRF",
         "income": "0",
         "expense": "0",
@@ -1033,133 +1033,133 @@
           {
             "id": "FRA:club:founder:0",
             "status": "active",
-            "wage": "441",
+            "wage": "28324",
             "career": [0, 0, 793, 429, 0, 0, 3, 3, 0, 74, 2700, 0]
           },
           {
             "id": "FRA:club:founder:1",
             "status": "active",
-            "wage": "317",
+            "wage": "20382",
             "career": [0, 0, 1279, 1108, 0, 0, 11, 1, 1, 0, 2700, 0]
           },
           {
             "id": "FRA:club:founder:2",
             "status": "active",
-            "wage": "395",
+            "wage": "25384",
             "career": [0, 0, 1237, 940, 1, 0, 163, 72, 2, 0, 2700, 0]
           },
           {
             "id": "FRA:club:founder:3",
             "status": "active",
-            "wage": "312",
+            "wage": "20074",
             "career": [4, 0, 1096, 803, 30, 12, 189, 59, 3, 0, 2430, 0]
           },
           {
             "id": "FRA:club:founder:4",
             "status": "active",
-            "wage": "288",
+            "wage": "18530",
             "career": [0, 1, 829, 632, 0, 0, 7, 15, 1, 0, 2790, 0]
           },
           {
             "id": "FRA:club:founder:5",
             "status": "active",
-            "wage": "391",
+            "wage": "25135",
             "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
           },
           {
             "id": "FRA:club:founder:6",
             "status": "active",
-            "wage": "261",
+            "wage": "16770",
             "career": [1, 1, 1415, 1175, 14, 5, 27, 8, 16, 0, 2320, 0]
           },
           {
             "id": "FRA:club:founder:7",
             "status": "active",
-            "wage": "395",
+            "wage": "25384",
             "career": [0, 2, 951, 816, 6, 1, 26, 14, 2, 0, 2419, 0]
           },
           {
             "id": "FRA:club:founder:8",
             "status": "active",
-            "wage": "427",
+            "wage": "27499",
             "career": [6, 0, 1837, 1114, 60, 26, 13, 9, 68, 0, 2304, 0]
           },
           {
             "id": "FRA:club:founder:9",
             "status": "active",
-            "wage": "357",
+            "wage": "22972",
             "career": [5, 3, 2219, 1725, 78, 23, 32, 26, 171, 0, 2509, 0]
           },
           {
             "id": "FRA:club:founder:10",
             "status": "active",
-            "wage": "350",
+            "wage": "22521",
             "career": [0, 2, 637, 359, 0, 0, 14, 4, 25, 0, 2720, 0]
           },
           {
             "id": "FRA:club:founder:11",
             "status": "active",
-            "wage": "387",
+            "wage": "24886",
             "career": [0, 0, 31, 21, 0, 0, 0, 0, 0, 3, 90, 0]
           },
           {
             "id": "FRA:club:founder:12",
             "status": "active",
-            "wage": "357",
+            "wage": "22972",
             "career": [0, 0, 57, 38, 0, 0, 0, 1, 0, 0, 90, 0]
           },
           {
             "id": "FRA:club:founder:13",
             "status": "active",
-            "wage": "387",
+            "wage": "24886",
             "career": [0, 0, 40, 28, 0, 0, 3, 1, 0, 0, 90, 0]
           },
           {
             "id": "FRA:club:founder:14",
             "status": "active",
-            "wage": "261",
+            "wage": "16770",
             "career": [0, 1, 1471, 1298, 4, 0, 102, 53, 2, 0, 2700, 0]
           },
           {
             "id": "FRA:club:founder:15",
             "status": "active",
-            "wage": "317",
+            "wage": "20382",
             "career": [0, 0, 126, 103, 0, 0, 4, 1, 1, 0, 270, 0]
           },
           {
             "id": "FRA:club:founder:16",
             "status": "active",
-            "wage": "387",
+            "wage": "24886",
             "career": [0, 0, 226, 180, 10, 3, 4, 1, 5, 0, 450, 0]
           },
           {
             "id": "FRA:club:founder:17",
             "status": "active",
-            "wage": "256",
+            "wage": "16441",
             "career": [0, 1, 311, 201, 8, 0, 2, 4, 13, 0, 360, 0]
           },
           {
             "id": "FRA:club:founder:18",
             "status": "active",
-            "wage": "327",
+            "wage": "20993",
             "career": [0, 1, 334, 225, 4, 0, 25, 10, 6, 0, 630, 0]
           },
           {
             "id": "FRA:club:founder:19",
             "status": "active",
-            "wage": "263",
+            "wage": "16934",
             "career": [0, 0, 38, 27, 0, 0, 4, 1, 0, 0, 90, 0]
           },
           {
             "id": "FRA:club:academy:1959:2",
             "status": "active",
-            "wage": "104",
+            "wage": "6679",
             "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
           },
           {
             "id": "FRA:club:academy:1959:0",
             "status": "active",
-            "wage": "77",
+            "wage": "4950",
             "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
           }
         ],
@@ -4266,7 +4266,7 @@
             "year": 1959,
             "rank": 16,
             "points": 13,
-            "cash": "11443944",
+            "cash": "735616277",
             "currency": "FRF-OLD",
             "champions": [
               {
@@ -4394,32 +4394,32 @@
           {
             "kind": "founding",
             "title": "클럽의 첫 페이지",
-            "amount": "7323850"
+            "amount": "470776464"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "470918"
+            "amount": "30270598"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "90068"
+            "amount": "5789602"
           },
           {
             "kind": "league-share",
             "title": "리그 분배금",
-            "amount": "369783"
+            "amount": "23769627"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84498"
+            "amount": "5431548"
           },
           {
             "kind": "operating-expenses",
             "title": "운영 경비",
-            "amount": "538044"
+            "amount": "34585439"
           },
           {
             "kind": "suspension",
@@ -4429,37 +4429,37 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84498"
+            "amount": "5431549"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84499"
+            "amount": "5431548"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "360654"
+            "amount": "23182848"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "87533"
+            "amount": "5626610"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84499"
+            "amount": "5431548"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "286146"
+            "amount": "18393481"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "89329"
+            "amount": "5742063"
           },
           {
             "kind": "cup-exit",
@@ -4469,12 +4469,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84497"
+            "amount": "5431549"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84499"
+            "amount": "5431548"
           },
           {
             "kind": "suspension",
@@ -4484,52 +4484,52 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "397409"
+            "amount": "25545431"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "88378"
+            "amount": "5680941"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84498"
+            "amount": "5431548"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84500"
+            "amount": "5431549"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84497"
+            "amount": "5431548"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "509970"
+            "amount": "32780843"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "90967"
+            "amount": "5847328"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84499"
+            "amount": "5431548"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84498"
+            "amount": "5431548"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84497"
+            "amount": "5431549"
           },
           {
             "kind": "rival-sacking",
@@ -4539,12 +4539,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "553616"
+            "amount": "35586410"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "91970"
+            "amount": "5911846"
           },
           {
             "kind": "injury",
@@ -4559,32 +4559,32 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84500"
+            "amount": "5431549"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84498"
+            "amount": "5431548"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84498"
+            "amount": "5431547"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "609896"
+            "amount": "39204116"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "93264"
+            "amount": "5995040"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84498"
+            "amount": "5431549"
           },
           {
             "kind": "injury",
@@ -4594,37 +4594,37 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84499"
+            "amount": "5431549"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84499"
+            "amount": "5431548"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "638611"
+            "amount": "41049884"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "93925"
+            "amount": "6037485"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84498"
+            "amount": "5431548"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84498"
+            "amount": "5431548"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "84499"
+            "amount": "5431549"
           },
           {
             "kind": "contract",
@@ -4679,22 +4679,22 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "669622"
+            "amount": "43043314"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "94638"
+            "amount": "6083327"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86694"
+            "amount": "5572763"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86696"
+            "amount": "5572761"
           },
           {
             "kind": "injury",
@@ -4704,42 +4704,42 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86696"
+            "amount": "5572761"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "589222"
+            "amount": "37875163"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "92789"
+            "amount": "5964479"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86694"
+            "amount": "5572763"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86695"
+            "amount": "5572761"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86696"
+            "amount": "5572762"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "552467"
+            "amount": "35512580"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "91944"
+            "amount": "5910148"
           },
           {
             "kind": "injury",
@@ -4749,7 +4749,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86694"
+            "amount": "5572762"
           },
           {
             "kind": "rival-sacking",
@@ -4759,32 +4759,32 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86696"
+            "amount": "5572761"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86695"
+            "amount": "5572762"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "583479"
+            "amount": "37506009"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "92657"
+            "amount": "5955990"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86696"
+            "amount": "5572763"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86694"
+            "amount": "5572760"
           },
           {
             "kind": "youth-intake",
@@ -4799,32 +4799,32 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86695"
+            "amount": "5572762"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "589222"
+            "amount": "37875163"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "92789"
+            "amount": "5964479"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86697"
+            "amount": "5572762"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86694"
+            "amount": "5572762"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86695"
+            "amount": "5572762"
           },
           {
             "kind": "suspension",
@@ -4834,12 +4834,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "1016493"
+            "amount": "65340193"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "102615"
+            "amount": "6596072"
           },
           {
             "kind": "injury",
@@ -4849,32 +4849,32 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86695"
+            "amount": "5572761"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86695"
+            "amount": "5572762"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86696"
+            "amount": "5572763"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "924607"
+            "amount": "59433735"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "100502"
+            "amount": "6460245"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86695"
+            "amount": "5572760"
           },
           {
             "kind": "rival-sacking",
@@ -4884,7 +4884,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86696"
+            "amount": "5572762"
           },
           {
             "kind": "injury",
@@ -4894,27 +4894,27 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86694"
+            "amount": "5572762"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "972847"
+            "amount": "62534625"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "101611"
+            "amount": "6531554"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86695"
+            "amount": "5572762"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86696"
+            "amount": "5572761"
           },
           {
             "kind": "rival-sacking",
@@ -4924,12 +4924,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86695"
+            "amount": "5572762"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "86695"
+            "amount": "5572762"
           },
           {
             "kind": "contract",
@@ -5590,7 +5590,7 @@
         "year": 2025,
         "round": 0,
         "revision": 323,
-        "cash": "7541159",
+        "cash": "484745357",
         "currency": "EUR",
         "income": "0",
         "expense": "0",
@@ -5613,127 +5613,127 @@
           {
             "id": "FRA:club:founder:0",
             "status": "active",
-            "wage": "4860",
+            "wage": "312420",
             "career": [0, 0, 955, 547, 0, 0, 3, 4, 0, 123, 3270, 0]
           },
           {
             "id": "FRA:club:founder:1",
             "status": "active",
-            "wage": "3498",
+            "wage": "224810",
             "career": [0, 0, 1338, 1155, 0, 0, 17, 4, 2, 0, 3151, 0]
           },
           {
             "id": "FRA:club:founder:2",
             "status": "active",
-            "wage": "4356",
+            "wage": "279987",
             "career": [1, 0, 986, 730, 1, 1, 117, 44, 1, 0, 2290, 0]
           },
           {
             "id": "FRA:club:founder:3",
             "status": "active",
-            "wage": "4719",
+            "wage": "303320",
             "career": [2, 0, 1136, 803, 22, 12, 211, 70, 1, 0, 2636, 0]
           },
           {
             "id": "FRA:club:founder:4",
             "status": "active",
-            "wage": "4356",
+            "wage": "279987",
             "career": [0, 1, 964, 741, 0, 0, 4, 10, 0, 0, 3241, 0]
           },
           {
             "id": "FRA:club:founder:5",
             "status": "active",
-            "wage": "3904",
+            "wage": "250899",
             "career": [0, 0, 11, 9, 0, 0, 0, 0, 0, 0, 16, 0]
           },
           {
             "id": "FRA:club:founder:6",
             "status": "active",
-            "wage": "3568",
+            "wage": "229306",
             "career": [4, 4, 1206, 1020, 23, 8, 22, 8, 9, 0, 2179, 0]
           },
           {
             "id": "FRA:club:founder:7",
             "status": "active",
-            "wage": "4356",
+            "wage": "279987",
             "career": [0, 1, 1353, 1138, 7, 1, 35, 16, 10, 0, 3230, 0]
           },
           {
             "id": "FRA:club:founder:8",
             "status": "active",
-            "wage": "4719",
+            "wage": "303320",
             "career": [11, 2, 2039, 1253, 57, 21, 14, 8, 67, 0, 2828, 0]
           },
           {
             "id": "FRA:club:founder:9",
             "status": "active",
-            "wage": "3568",
+            "wage": "229306",
             "career": [3, 2, 2028, 1539, 39, 12, 45, 19, 157, 0, 2677, 0]
           },
           {
             "id": "FRA:club:founder:10",
             "status": "active",
-            "wage": "3865",
+            "wage": "248414",
             "career": [0, 2, 606, 336, 0, 0, 11, 2, 8, 0, 2841, 0]
           },
           {
             "id": "FRA:club:founder:11",
             "status": "active",
-            "wage": "3865",
+            "wage": "248414",
             "career": [0, 0, 89, 49, 0, 0, 0, 1, 0, 8, 298, 0]
           },
           {
             "id": "FRA:club:founder:12",
             "status": "active",
-            "wage": "3568",
+            "wage": "229306",
             "career": [0, 0, 511, 339, 7, 2, 3, 3, 10, 0, 725, 0]
           },
           {
             "id": "FRA:club:founder:13",
             "status": "active",
-            "wage": "4271",
+            "wage": "274498",
             "career": [1, 0, 543, 410, 10, 1, 62, 26, 2, 0, 1130, 0]
           },
           {
             "id": "FRA:club:founder:14",
             "status": "active",
-            "wage": "3942",
+            "wage": "253383",
             "career": [0, 1, 1486, 1301, 1, 0, 88, 51, 1, 0, 2826, 0]
           },
           {
             "id": "FRA:club:founder:15",
             "status": "active",
-            "wage": "3498",
+            "wage": "224810",
             "career": [1, 0, 417, 327, 1, 1, 21, 2, 4, 0, 1040, 0]
           },
           {
             "id": "FRA:club:founder:16",
             "status": "active",
-            "wage": "4271",
+            "wage": "274498",
             "career": [0, 2, 617, 477, 6, 0, 10, 3, 8, 0, 975, 0]
           },
           {
             "id": "FRA:club:founder:17",
             "status": "active",
-            "wage": "3498",
+            "wage": "224810",
             "career": [0, 0, 479, 275, 15, 7, 6, 6, 13, 0, 980, 0]
           },
           {
             "id": "FRA:club:founder:18",
             "status": "active",
-            "wage": "3603",
+            "wage": "231553",
             "career": [1, 1, 685, 511, 11, 2, 68, 22, 12, 0, 1216, 0]
           },
           {
             "id": "FRA:club:founder:19",
             "status": "active",
-            "wage": "3981",
+            "wage": "255867",
             "career": [0, 2, 773, 597, 7, 1, 44, 28, 7, 0, 1273, 0]
           },
           {
             "id": "FRA:club:academy:2024:0",
             "status": "active",
-            "wage": "1805",
+            "wage": "116022",
             "career": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
           }
         ],
@@ -10531,7 +10531,7 @@
             "year": 2024,
             "rank": 9,
             "points": 41,
-            "cash": "7541159",
+            "cash": "484745357",
             "currency": "EUR",
             "champions": [
               {
@@ -10774,7 +10774,7 @@
           {
             "kind": "founding",
             "title": "클럽의 첫 페이지",
-            "amount": "7323850"
+            "amount": "470776464"
           },
           {
             "kind": "europe-qualification",
@@ -10784,67 +10784,67 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "54258"
+            "amount": "3487687"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1691"
+            "amount": "108720"
           },
           {
             "kind": "league-share",
             "title": "리그 분배금",
-            "amount": "362472"
+            "amount": "23299727"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38510"
+            "amount": "2475488"
           },
           {
             "kind": "operating-expenses",
             "title": "운영 경비",
-            "amount": "538044"
+            "amount": "34585439"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38512"
+            "amount": "2475488"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475487"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "51728"
+            "amount": "3325091"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1681"
+            "amount": "108086"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38512"
+            "amount": "2475488"
           },
           {
             "kind": "match-bonus",
             "title": "무승부 성과 수입",
-            "amount": "6473"
+            "amount": "416067"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "35963"
+            "amount": "2311693"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1695"
+            "amount": "108942"
           },
           {
             "kind": "cup-exit",
@@ -10854,32 +10854,32 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38510"
+            "amount": "2475488"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38512"
+            "amount": "2475488"
           },
           {
             "kind": "europe-prize",
             "title": "Europa League 경기 수당",
-            "amount": "82851"
+            "amount": "5325652"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "54775"
+            "amount": "3520951"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1693"
+            "amount": "108847"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38510"
+            "amount": "2475487"
           },
           {
             "kind": "transfer-request",
@@ -10894,27 +10894,27 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38512"
+            "amount": "2475488"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "53791"
+            "amount": "3457666"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1801"
+            "amount": "115791"
           },
           {
             "kind": "europe-prize",
             "title": "Europa League 경기 수당",
-            "amount": "82851"
+            "amount": "5325652"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475488"
           },
           {
             "kind": "suspension",
@@ -10924,12 +10924,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "69717"
+            "amount": "4481418"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1752"
+            "amount": "112589"
           },
           {
             "kind": "injury",
@@ -10939,17 +10939,17 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475488"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475486"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38510"
+            "amount": "2475489"
           },
           {
             "kind": "rival-sacking",
@@ -10959,12 +10959,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "72121"
+            "amount": "4635950"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1761"
+            "amount": "113191"
           },
           {
             "kind": "injury",
@@ -10974,47 +10974,47 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38513"
+            "amount": "2475488"
           },
           {
             "kind": "europe-prize",
             "title": "Europa League 경기 수당",
-            "amount": "82851"
+            "amount": "5325652"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "53236"
+            "amount": "3421991"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1798"
+            "amount": "115569"
           },
           {
             "kind": "europe-prize",
             "title": "Europa League 경기 수당",
-            "amount": "82851"
+            "amount": "5325652"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38510"
+            "amount": "2475488"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38512"
+            "amount": "2475486"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "78354"
+            "amount": "5036608"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1785"
+            "amount": "114745"
           },
           {
             "kind": "injury",
@@ -11034,7 +11034,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38510"
+            "amount": "2475488"
           },
           {
             "kind": "rival-sacking",
@@ -11049,37 +11049,37 @@
           {
             "kind": "europe-prize",
             "title": "Europa League 경기 수당",
-            "amount": "82851"
+            "amount": "5325652"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475489"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38512"
+            "amount": "2475488"
           },
           {
             "kind": "match-bonus",
             "title": "무승부 성과 수입",
-            "amount": "6473"
+            "amount": "416067"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "61102"
+            "amount": "3927665"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1845"
+            "amount": "118581"
           },
           {
             "kind": "europe-prize",
             "title": "Europa League 경기 수당",
-            "amount": "106153"
+            "amount": "6823492"
           },
           {
             "kind": "suspension",
@@ -11089,12 +11089,12 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "85226"
+            "amount": "5478305"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1812"
+            "amount": "116457"
           },
           {
             "kind": "injury",
@@ -11104,7 +11104,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475486"
           },
           {
             "kind": "injury",
@@ -11114,7 +11114,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475488"
           },
           {
             "kind": "rival-sacking",
@@ -11124,27 +11124,27 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475489"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "78387"
+            "amount": "5038738"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1785"
+            "amount": "114745"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475488"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38512"
+            "amount": "2475487"
           },
           {
             "kind": "injury",
@@ -11154,7 +11154,7 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38510"
+            "amount": "2475487"
           },
           {
             "kind": "rival-sacking",
@@ -11174,17 +11174,17 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "97256"
+            "amount": "6251617"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1859"
+            "amount": "119469"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475488"
           },
           {
             "kind": "suspension",
@@ -11194,47 +11194,47 @@
           {
             "kind": "europe-prize",
             "title": "Europa League 경기 수당",
-            "amount": "82851"
+            "amount": "5325652"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "62120"
+            "amount": "3993044"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1851"
+            "amount": "118962"
           },
           {
             "kind": "europe-prize",
             "title": "Europa League 경기 수당",
-            "amount": "82851"
+            "amount": "5325652"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475489"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475488"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "83741"
+            "amount": "5382897"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1806"
+            "amount": "116076"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475486"
           },
           {
             "kind": "rival-sacking",
@@ -11244,22 +11244,22 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38512"
+            "amount": "2475488"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475489"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "80194"
+            "amount": "5154877"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1792"
+            "amount": "115189"
           },
           {
             "kind": "injury",
@@ -11269,12 +11269,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38510"
+            "amount": "2475488"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38512"
+            "amount": "2475486"
           },
           {
             "kind": "youth-intake",
@@ -11289,17 +11289,17 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38510"
+            "amount": "2475488"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "81334"
+            "amount": "5228169"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1796"
+            "amount": "115474"
           },
           {
             "kind": "injury",
@@ -11309,57 +11309,57 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38513"
+            "amount": "2475488"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38510"
+            "amount": "2475489"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475486"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "92736"
+            "amount": "5961090"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1841"
+            "amount": "118327"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475488"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475488"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38512"
+            "amount": "2475488"
           },
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "103758"
+            "amount": "6669580"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1884"
+            "amount": "121086"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38510"
+            "amount": "2475487"
           },
           {
             "kind": "rival-sacking",
@@ -11369,12 +11369,12 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38512"
+            "amount": "2475488"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38510"
+            "amount": "2475488"
           },
           {
             "kind": "suspension",
@@ -11384,22 +11384,22 @@
           {
             "kind": "gate",
             "title": "홈 경기의 수입",
-            "amount": "100591"
+            "amount": "6465991"
           },
           {
             "kind": "match-cost",
             "title": "홈 경기 개최비",
-            "amount": "1871"
+            "amount": "120293"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38512"
+            "amount": "2475488"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38511"
+            "amount": "2475487"
           },
           {
             "kind": "rival-sacking",
@@ -11409,17 +11409,17 @@
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38512"
+            "amount": "2475488"
           },
           {
             "kind": "operating-cost",
             "title": "급여와 시설 유지비",
-            "amount": "38510"
+            "amount": "2475488"
           },
           {
             "kind": "league-merit",
             "title": "리그 순위 배분금",
-            "amount": "50746"
+            "amount": "3261962"
           },
           {
             "kind": "contract",

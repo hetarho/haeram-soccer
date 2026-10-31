@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| cr01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T15:49Z | 2026-10-31T15:49Z | - |
 
 ## inbox
 - 261101 decided WEB-39 WEB-43 WEB-100 T633: which review actions name their subject, and what a legacy or loan bid shows → the queue's 검토 names the request's known subject while accept/decline keep their exact names inside a review already headed by that request; terms come only from the pinned offer (outgoing) or our player's current contract (incoming), a loan shows its wage without any end, and a legacy target found in today's market list or an old row of ours shows identity only (alt: the subject in every answer button, renaming the existing accept/decline journeys | today's market terms for a legacy bid, which are not the bid's | his parent-club contract end as the loan's).
@@ -468,7 +467,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T622 | Currency levels at the 1999 rate | ECON SAVE | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -494,9 +492,10 @@
 ## next
 - of01: T629–T633 done locally; the host runs the final integrated batch on the candidate (browser specs named in T633's result) and publishes to main; leave T622/KIT to their owners.
 - ap01 (approvals never stop progression, 결재함 with a 7-day 결재 기한, T623–T625) is done and pushed; report spec/reports/261101-ap01.md.
-- tf31 (transfer values by era) is done and pushed; owner to look at its two suggests (non-English currency levels ECON-2/5, the 1950s lower-division fee pyramid CLUB-25/46). Main's Chromium UI journeys await the ds30 spec migration.
 - Owner authorizes main publication of T617/T618 despite reproduced baseline UI e2e failures; publish unchanged engine source and observe CI. Evidence reports/261031-ei31.md.
 - create-task KIT (existing kit baseline r5–r6 remains pending outside of01; WEB r188–r195 baseline regression is included in T632).
+- implement-task T629 (of01 owner-office and club overhaul; then T630→T631→T632 only; leave ideation to its owners)
+- cr01 put every country's money at its real 1999 rate against the pound (T622, ECON-35, catalog 2026-demo-4); careers outside England saved before it are refused on load. The 1950s lower-division fee pyramid suggest (CLUB-25/46) remains for the owner.
 
 ## log
 - 261101 T633 done: /club-operations static rewrite in _redirects; one request heading with its 결재 기한, distinct detail only and one 결재함으로 return (EventCard inDesk no longer repeats them); bid reviews show the pinned/own player's position, age, OVR/잠재력, our and counter fees and only the terms the bid carries (loans wage-only, legacy unknown stays unknown) through the pure bidFacts resolver also used for queue subjects; queue 검토 names its subject; unit 248 + 25 + 43 passed, build passed, browser specs left to the host batch; session of01.

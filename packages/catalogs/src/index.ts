@@ -1,4 +1,4 @@
-export const CATALOG_VERSION = '2026-demo-3';
+export const CATALOG_VERSION = '2026-demo-4';
 import squadRulesData from '../data/squad-rules.json' with { type: 'json' };
 import priceData from '../data/prices.json' with { type: 'json' };
 import footballData from '../data/football-index.json' with { type: 'json' };
@@ -19,6 +19,11 @@ export interface CountryProfile {
   terms: string[];
   given: string[];
   family: string[];
+  /**
+   * The country's money per £1 of 1901 prices, in its 1901 unit, that every quote multiplies: set
+   * so its 1999 amounts convert at the real rate, €1.518 per £ through the euro's fixed rates
+   * (→ECON-35).
+   */
   scale: number;
   source: string;
   reference: string;
@@ -52,7 +57,7 @@ export const COUNTRIES: CountryProfile[] = [
     terms: ['Forja', 'Aurora', 'Acero', 'Puerto', 'Sierra', 'Alameda'],
     given: ['Luis', 'Antonio', 'Manuel', 'Pablo', 'Ramon', 'Javier'],
     family: ['Vega', 'Moreno', 'Santos', 'Rojas', 'Navarro', 'Ruiz'],
-    scale: 25,
+    scale: 126.3,
     source: 'https://www.laliga.com/en-GB/transparency/institutional-information',
     reference: 'Modern: 20/22',
   },
@@ -68,7 +73,7 @@ export const COUNTRIES: CountryProfile[] = [
     terms: ['Eisen', 'Werk', 'Wald', 'Hafen', 'Adler', 'Kraft'],
     given: ['Otto', 'Fritz', 'Karl', 'Emil', 'Heinrich', 'Franz'],
     family: ['Weber', 'Keller', 'Fischer', 'Braun', 'Wolf', 'Schmidt'],
-    scale: 20,
+    scale: 111.2,
     source:
       'https://www.bundesliga.com/en/faq/what-are-the-rules-and-regulations-of-soccer/how-does-promotion-and-relegation-work-in-the-bundesliga-10645',
     reference: 'Modern: 18/18/20; 2 direct + relegation playoff',
@@ -85,7 +90,7 @@ export const COUNTRIES: CountryProfile[] = [
     terms: ['Ferro', 'Aurora', 'Borgo', 'Olivo', 'Officina', 'Vela'],
     given: ['Giovanni', 'Luigi', 'Carlo', 'Mario', 'Pietro', 'Enzo'],
     family: ['Ricci', 'Ferraro', 'Moretti', 'Costa', 'Rossi', 'Romano'],
-    scale: 25,
+    scale: 1988,
     source: 'https://www.lega-pro.com/com/2526-208L.pdf',
     reference: '2025/26: 20/20/3×20; regional allocation normalized',
   },
@@ -101,7 +106,7 @@ export const COUNTRIES: CountryProfile[] = [
     terms: ['Forges', 'Aurore', 'Port', 'Atelier', 'Vallee', 'Chene'],
     given: ['Louis', 'Pierre', 'Andre', 'Jean', 'Emile', 'Paul'],
     family: ['Laurent', 'Moreau', 'Garnier', 'Mercier', 'Petit', 'Dubois'],
-    scale: 25,
+    scale: 1607,
     source: 'https://ligue1.com/fr/articles/l1_article_5089-',
     reference: '2026/27: 18/18/18',
   },
@@ -117,7 +122,7 @@ export const COUNTRIES: CountryProfile[] = [
     terms: ['Ferro', 'Aurora', 'Mar', 'Oficina', 'Vale', 'Nave'],
     given: ['Joao', 'Miguel', 'Jose', 'Pedro', 'Nuno', 'Rui'],
     family: ['Silva', 'Costa', 'Pereira', 'Sousa', 'Lopes', 'Mendes'],
-    scale: 4500,
+    scale: 60510,
     source: 'https://www.ligaportugal.pt/pages/sobre-a-liga',
     reference: '2025/26: 18/18; reserves normalized to fictional senior clubs',
   },
@@ -133,7 +138,7 @@ export const COUNTRIES: CountryProfile[] = [
     terms: ['Haven', 'IJzer', 'Weide', 'Spoor', 'Wind', 'Brug'],
     given: ['Jan', 'Pieter', 'Willem', 'Hendrik', 'Dirk', 'Johan'],
     family: ['Bakker', 'Visser', 'Smit', 'Jansen', 'Vos', 'Bos'],
-    scale: 12,
+    scale: 9.019,
     source: 'https://www.knvb.nl/competities/eredivisie/historie',
     reference: 'Modern: 18/20; period-title qualification normalized',
   },
@@ -149,7 +154,7 @@ export const COUNTRIES: CountryProfile[] = [
     terms: ['Forge', 'Haven', 'Atelier', 'Val', 'Spoor', 'Union'],
     given: ['Jules', 'Victor', 'Leon', 'Henri', 'Luc', 'Paul'],
     family: ['Peeters', 'Janssens', 'Lambert', 'Willems', 'Dubois', 'Maes'],
-    scale: 25,
+    scale: 154.4,
     source:
       'https://www.proleague.be/nieuws/challenger-pro-league-heeft-nieuw-format-zonder-quota-voor-u23',
     reference: '2026/27: 18/15; senior/reserve/expansion exceptions normalized',

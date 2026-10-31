@@ -1,7 +1,26 @@
 import { describe, expect, it } from 'vitest';
+import { COUNTRIES, country } from '../../catalogs/src/index';
 import { broadcastQuote, footballQuote, quote } from './quotes';
 
-// Exact outputs captured from world.ts before extraction; these use only catalog data.
+/** Each country's money per £ before ECON-35's levels: its 1901 parity, carried by UK prices. */
+const PARITY: Record<string, number> = {
+  ENG: 1,
+  ESP: 25,
+  GER: 20,
+  ITA: 25,
+  FRA: 25,
+  POR: 4500,
+  NED: 12,
+  BEL: 25,
+};
+const all = (code: string, year: number, units: number) => [
+  quote(code, year, units),
+  footballQuote(code, year, units),
+  broadcastQuote(code, year, units),
+];
+
+// Exact outputs captured from world.ts before extraction, at the 1901 parities; these use only
+// catalog data.
 const cases = [
   ['ENG', 1901, 120, '28800', '28800', '28800'],
   ['ENG', 1970, 120, '228713', '228713', '246016'],
@@ -20,21 +39,43 @@ const cases = [
 
 describe('indexed quotes', () => {
   it.each(cases)(
-    '%s %i: %s base units retain exact price, football and broadcast amounts',
-    (code, year, units, price, football, broadcast) => {
-      expect(quote(code, year, units)).toBe(price);
-      expect(footballQuote(code, year, units)).toBe(football);
-      expect(broadcastQuote(code, year, units)).toBe(broadcast);
+    '%s %i: %s base units move from their parity amounts by the level alone',
+    (code, year, units, ...parity) => {
+      // One constant per country moves every amount alike: England's exactly, the others within
+      // the rounding of one parity minor unit (→ECON-35).
+      const level = country(code).scale / PARITY[code];
+      all(code, year, units).forEach((amount, i) => {
+        if (level === 1) expect(amount).toBe(parity[i]);
+        else
+          expect(Math.abs(Number(amount) - Number(parity[i]) * level)).toBeLessThanOrEqual(
+            level / 2 + 1,
+          );
+      });
     },
   );
 
   it('retains exact amounts on repeat calls interleaved across indices and cache keys', () => {
+    const first = new Map(
+      cases.map(([code, year, units]) => [`${code}:${year}:${units}`, all(code, year, units)]),
+    );
     for (const rows of [cases, [...cases].reverse(), cases]) {
-      for (const [code, year, units, price, football, broadcast] of rows) {
+      for (const [code, year, units] of rows) {
+        const [price, football, broadcast] = first.get(`${code}:${year}:${units}`)!;
         expect(broadcastQuote(code, year, units)).toBe(broadcast);
         expect(quote(code, year, units)).toBe(price);
         expect(footballQuote(code, year, units)).toBe(football);
       }
     }
+  });
+});
+
+describe('country money levels (ECON-35)', () => {
+  it("converts every euro country's 1999 money at the real €1.518 per £", () => {
+    const pence = Number(quote('ENG', 1999, 1000));
+    for (const c of COUNTRIES.filter((c) => c.code !== 'ENG'))
+      expect(
+        Math.abs(Number(quote(c.code, 1999, 1000)) / pence / 1.51805 - 1),
+        c.code,
+      ).toBeLessThan(0.001);
   });
 });
