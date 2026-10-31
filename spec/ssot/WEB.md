@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r194 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r195 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -568,6 +568,13 @@
   - Delivered drafts wait in 구단 디자인 until the owner adopts one, which applies it from the next unplayed match and ends the commission (→KIT-7); throws them all away, the fee staying spent; or has the same designer redraw them in the same colours for half the fee.
   - Drafts derive from the world's seed and revision, never the sporting random stream; a waiting commission persists with the save. A commission the cash cannot pay is unavailable. The calendar lock and read-only ownership disable commissioning, adopting, discarding and redrawing without hiding the design (→WEB-97).
 
+- WEB-109 [o] A market candidate's detail reads as a scout report, its conclusion first (→!CLUB-47). ← the owner decides from one answer, and no fact is shown twice
+  - head: rating chip, name, position, age and positions, potential with growth room, the comparison actions; then the verdict card: grade, label, one line naming the slot and the gap against its starter, and the reasons for and against.
+  - sections follow in this order, each heading carrying its answer so a closed section still reads: 우리 팀에서 (the slot on arrival → settled, XI strength and tactical fit before → after; open), 비용 (fee, loan fee, wage and term, then cash after a signing and after a loan with each fixed-cost runway in weeks or months; open), 능력·성향 (positions, roles, attributes, personality range, aptitude, traits; closed).
+  - each fact belongs to one place, a heading's answer line summarizing only its own section; no section nests a second disclosure; source club and scout listing sit on the head's meta line.
+  - the transaction bar stays at the dialog's foot while the detail scrolls; notes use the quiet note tone and the warning tone marks only what blocks an action. The bid sheet repeats only the head and verdict.
+  - our own players show the head, 능력·성향, the transaction bar in its completed state and the joined-player links, without a verdict or terms.
+
 ## flow
 
 - Progression: automatic paced days or explicit manual next-event → observation stop or mandatory blocker, resumed only as the selected mode permits; meanwhile delegated decisions are reported and owner-held ones join the 결재함, overdue after their 결재 기한.
@@ -578,6 +585,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r195 261101 WEB-109+ the candidate detail as a scout report: head, verdict card, 우리 팀에서 · 비용 · 능력·성향 sections whose headings carry their answer, each fact once, a transaction bar at the foot
 - r194 261101 WEB-91✎ controller light secondary/grass→burgundy paper, forest matte, midnight pixels and butter clay with matching local text
 - r193 261101 WEB-42/45✎ owner-held decision stops both modes→waits in the 결재함 without stopping (→STAFF-48); WEB-18✎ owner decisions stop the clock and manual move→observations and blockers only, +결재함 button; WEB-76/80✎ direct-decision priority→approvals never block; WEB-83✎ business decisions resolved before the next advance→observations only; WEB-100✎ +D-n/지연 n일 rows, lobby tray counts heading; flow Progression✎ direct decision stop→approvals queue
 - r192 261031 WEB-100✎ home approval cards→office lobby and desk approval trays; WEB-42✎ home business-approval cards→office approval trays

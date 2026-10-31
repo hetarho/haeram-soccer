@@ -16,6 +16,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | cr01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T15:49Z | 2026-10-31T15:49Z | - |
+| sr11 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T16:20Z | 2026-10-31T16:45Z | T628 |
 
 ## inbox
 - 261101 decided WEB-42 WEB-45 STAFF-48 CLUB-19: what an unanswered owner approval costs once time no longer waits for it → a 7-day 결재 기한, then each overdue approval costs squad morale 1 a settled round (at most 3) with one overdue notice: one legible lever on the team, and a week before it bites even at x10 (alt: morale from the first day without grace | a per-kind consequence such as the asking player turning unhappy or a bid lapsing early | the staff deciding it for the owner at the deadline)
@@ -421,11 +422,11 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 194 | 187 | WEB-39✎ WEB-79✎ WEB-106+ WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ WEB-43✎ WEB-10✎ WEB-44✎ WEB-107+ WEB-86✎ WEB-108+ WEB-100✎ WEB-42✎ WEB-91✎ | 0 |
+| WEB | 195 | 187 | WEB-39✎ WEB-79✎ WEB-106+ WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ WEB-43✎ WEB-10✎ WEB-44✎ WEB-107+ WEB-86✎ WEB-108+ WEB-100✎ WEB-42✎ WEB-91✎ | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 6 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
-| CLUB | 46 | 46 | - | 0 |
+| CLUB | 47 | 47 | - | 0 |
 | MATCH | 44 | 44 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 37 | 37 | - | 0 |
@@ -449,6 +450,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T622 | Currency levels at the 1999 rate | ECON SAVE | - | todo |
+| T628 | Scout verdict and the candidate detail as a scout report | CLUB WEB | - | doing@261101.sr11 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -478,6 +480,7 @@
 - create-task WEB KIT (WEB r188–r192 delta WEB-39✎ WEB-79✎ WEB-106+ WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ WEB-43✎ WEB-10✎ WEB-44✎ WEB-107+ WEB-86✎ WEB-108+ WEB-100✎ WEB-42✎, plus WEB r194 WEB-91✎, and KIT r5–r6 KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ are implemented by the ds30 and cb31 designs; a task records them and their e2e checks)
 
 ## log
+- 261101 update-ssot CLUB r47 (CLUB-47+) WEB r195 (WEB-109+) + create-task T628 scout verdict and the candidate detail as a scout report; session sr11.
 - 261101 ap01 closed: changed-code checks only at the owner's request (unit tier, touched integration/contract, 14 changed Chromium journeys); push main.
 - 261101 T625 done: 결재함 button in the bottom controls with waiting/overdue counts, tray rows with D-n/지연 n일, lobby tray heading with the overdue morale cost; session ap01.
 - 261101 T624 done: approvals never stop or refuse progression in either mode; office counts read approvalRequests; four e2e journeys rewritten for the final gate; session ap01.
@@ -497,4 +500,3 @@
 - 261031 update-ssot WEB r192 KIT r6: WEB-10✎ WEB-11✎ WEB-39✎ WEB-42✎ WEB-44✎ WEB-100✎ WEB-107+ WEB-86✎ WEB-108+ KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ (five-entry navigation, designer commission and fourteen shirt patterns as built in ds30; clubhouse quick actions; team state and room doors in the office lobby)
 - 261031 update-ssot WEB r190: WEB-43✎ (side-by-side candidate comparison, compare a candidate with a player of ours); code in the working tree, uncommitted
 - 261031 owner-directed clubhouse quick actions (chat, no task): owner actions that run on the spot move onto home as three quick-action tiles over the office scene — 분위기 (meeting, team building, win bonus, owner visit, manager backing), 피로 (rest XI, assistant's recovery training sheet, rest day, recovery support, camp, friendly), 훈련·육성 (first-team and youth training sheets in place, top prospect's promotion) — each a sheet with cost, effect and chances and no page moves; the five team-state tiles (with their remedy sheets and page links) and the four room doors move into the owner-office lobby under the desks, and room pages carry an office bar back to the lobby. Typecheck (own files), lint, format and related unit tests pass; e2e helpers/specs updated but not run
-- 261031 update-ssot WEB r189: WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ (no stadium scene on the clubhouse; the cash band shows on home like every view); code in the working tree, uncommitted
