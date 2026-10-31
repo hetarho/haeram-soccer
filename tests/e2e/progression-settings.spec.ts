@@ -397,9 +397,8 @@ for (const themeId of ['standard', 'pixel']) {
     );
     await expect(date).toHaveText(before);
     await expect(page.getByRole('button', { name: '다음 이벤트', exact: true })).toBeVisible();
-    const outcome = page.getByTestId('action-outcome');
-    await expect(outcome).toBeVisible();
-    await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
+    // The mode shortcut shows the switch itself; no outcome card or toast follows (→WEB-36).
+    await expect(page.getByTestId('action-outcome')).toHaveCount(0);
     await shortcut.click();
     await expect(page.getByTestId('progression-mode')).toHaveText('AUTO');
     await expect(dialog).toHaveCount(0);

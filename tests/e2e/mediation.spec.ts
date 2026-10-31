@@ -242,10 +242,9 @@ test('mediation-handover-on-apply discloses work and never replays its recorded 
     '선수 영입 1건',
   );
   await dialog.getByRole('button', { name: '자동으로 맡기기', exact: true }).click();
-  await page
-    .getByTestId('action-outcome')
-    .getByRole('button', { name: /^(확인|알림 닫기)$/ })
-    .click();
+  // The changed choice shows the result itself; no outcome card follows (→WEB-36).
+  await expect(dialog).toHaveCount(0);
+  await expect(page.getByTestId('action-outcome')).toHaveCount(0);
   const after = await exportedCareer(page);
   expect(after.mediations![0].status).toBe('resolved');
   expect(after.mediations![0].resolution!.support).toBe('balanced');
