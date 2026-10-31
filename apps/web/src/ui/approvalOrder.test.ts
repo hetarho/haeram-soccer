@@ -121,6 +121,14 @@ describe('approval queue order and filters (→WEB-100)', () => {
     );
     expect(requestSubject(w, request('coach', 'staff', { ref: 'b1' }))).toBeUndefined();
   });
+  it('names the known subject in each review action, so same-kind requests stay apart', () => {
+    const html = render(world(), [
+      request('bid', 'sales', { kind: 'incoming-bid', ref: 'b1', title: '매각 제안' }),
+      request('other', 'sales', { kind: 'incoming-bid', ref: 'x', title: '매각 제안' }),
+    ]);
+    expect(html).toContain('aria-label="매각 제안 · Real Player · Bidder FC · 검토하기"');
+    expect(html).toContain('aria-label="매각 제안 · 검토하기"');
+  });
 });
 
 describe('approval queue view (→WEB-39/100)', () => {

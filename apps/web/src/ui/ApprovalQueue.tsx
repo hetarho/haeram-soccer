@@ -71,7 +71,8 @@ export function ApprovalRows({
               type="button"
               className={s.review}
               data-review-id={item.id}
-              aria-label={`${item.title} · 검토하기`}
+              // Requests of one kind share a title, so the action names its subject as well.
+              aria-label={`${item.title}${subject ? ` · ${subject}` : ''} · 검토하기`}
               onClick={() => {
                 onReview?.(item, index);
                 openApprovalRequest(w.id, item);

@@ -16,9 +16,10 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | cr01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T15:49Z | 2026-10-31T15:49Z | - |
-| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T17:23Z | 2026-10-31T19:26Z | T633 |
+| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T17:23Z | 2026-10-31T19:27Z | T633 |
 
 ## inbox
+- 261101 decided WEB-39 WEB-43 WEB-100 T633: which review actions name their subject, and what a legacy or loan bid shows → the queue's 검토 names the request's known subject while accept/decline keep their exact names inside a review already headed by that request; terms come only from the pinned offer (outgoing) or our player's current contract (incoming), a loan shows its wage without any end, and a legacy target found in today's market list or an old row of ours shows identity only (alt: the subject in every answer button, renaming the existing accept/decline journeys | today's market terms for a legacy bid, which are not the bid's | his parent-club contract end as the loan's).
 - 261101 decided WEB-10 WEB-39 WEB-100 T633: how to finish the reviewed approval form → one request heading and queue return, real pinned player and known terms in place of repeated instructions, plus the canonical operations static rewrite (alt: ship name/fee only | redirect to another information page); the owner needs the facts before committing and direct URLs must work.
 - 261101 decided WEB-36 WEB-79 T633: integrating the newer shared settings work → retain r197 observation confirmation/no settings toast and the upstream approval-day fix; discard only the superseded lobby-art conflict (alt: restore old lobby | undo newer settings behavior).
 - 261101 decided WEB-71 WEB-79 T632: where incoming offers for our players are answered once the player desk's 들어온 매각 제안 list is gone → in the market's 이적 협상 board, which already answers a pending incoming bid inside a window whoever holds sales, so the desk list and its helper are deleted rather than restored onto 1군 (alt: restore the list above the 1군 roster, a second editor for the same answer that WEB-71 rules out | keep the unused helper for later).
@@ -468,7 +469,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T633 | Complete focused approval review and deployment routes | WEB ARCH | T632 | doing@261031.of01 |
 | T622 | Currency levels at the 1999 rate | ECON SAVE | - | todo |
 
 ## work
@@ -493,13 +493,14 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T633 (of01 host review fixes; then final integrated gate and main publication only, leave T622/KIT to their owners)
+- of01: T629–T633 done locally; the host runs the final integrated batch on the candidate (browser specs named in T633's result) and publishes to main; leave T622/KIT to their owners.
 - ap01 (approvals never stop progression, 결재함 with a 7-day 결재 기한, T623–T625) is done and pushed; report spec/reports/261101-ap01.md.
 - tf31 (transfer values by era) is done and pushed; owner to look at its two suggests (non-English currency levels ECON-2/5, the 1950s lower-division fee pyramid CLUB-25/46). Main's Chromium UI journeys await the ds30 spec migration.
 - Owner authorizes main publication of T617/T618 despite reproduced baseline UI e2e failures; publish unchanged engine source and observe CI. Evidence reports/261031-ei31.md.
 - create-task KIT (existing kit baseline r5–r6 remains pending outside of01; WEB r188–r195 baseline regression is included in T632).
 
 ## log
+- 261101 T633 done: /club-operations static rewrite in _redirects; one request heading with its 결재 기한, distinct detail only and one 결재함으로 return (EventCard inDesk no longer repeats them); bid reviews show the pinned/own player's position, age, OVR/잠재력, our and counter fees and only the terms the bid carries (loans wage-only, legacy unknown stays unknown) through the pure bidFacts resolver also used for queue subjects; queue 검토 names its subject; unit 248 + 25 + 43 passed, build passed, browser specs left to the host batch; session of01.
 - 261101 create-task T633: host visual review found missing /club-operations static rewrite and repeated request instructions; add actual target/terms context and verify integrated WEB r197 settings behavior. T629–T632 done locally; latest main integrated in e70ef0b5, final gate/publication pending; session of01.
 - 261101 T632 done: inventory walked (removed office items absent, every action has one home, incoming offers answered in the market's 이적 협상); dead player-desk code and the six room-name locale keys removed; registry-driven office/club journey per theme at 360px and desktop; stale owner-workflows, growth-core, facility-art and presentation-settings journeys and the office helpers moved to the actual destinations; design guide, UI-COVERAGE and report inventory updated; unit 292 + 112 passed, build passed, browser specs left to the host batch; session of01.
 - 261101 T631 done: clubhouse reads a compact read-only club summary (strength/division place, 출전 가능 with injured/suspended, 선발 피로, 분위기, 감독 입지; warnings in words) and a compact 결재함 entrance with waiting/overdue counts beside the quick actions; team-state tiles and room art removed; 1군 = roster with availability, tactics request and culture; 코치진 = manager card plus every post, then who appoints them and the owner's requests; manager addresses route to /staff?view=coaches(&market=1); each personnel workflow edits its own responsibilities in place; RoomBar gone from 훈련/유소년; unit 273 passed, build passed, e2e source left to the batch; session of01.
@@ -519,4 +520,3 @@
 - 261101 update-ssot ECON r40 (ECON-35+) SAVE r58 (SAVE-10✎) + create-task T622 currency levels at the 1999 rate; session cr01.
 - 261101 update-ssot WEB r194 (WEB-91✎): light controller/grass→selected P3/G1/X2/S1 materials and matching foregrounds; implemented in 92127406 on codex/controller-backgrounds-cb31.
 - 261101 T628 done: scout verdict A–E (CLUB r47) and the candidate detail as a scout report (WEB r195); unit/contract pass, 4 integration failures pre-exist on 67c9e974, e2e left to CI; session sr11.
-- 261101 update-ssot CLUB r47 (CLUB-47+) WEB r195 (WEB-109+) + create-task T628 scout verdict and the candidate detail as a scout report; session sr11.

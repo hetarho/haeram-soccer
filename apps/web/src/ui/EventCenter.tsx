@@ -1,9 +1,15 @@
 import { eventDesk } from './eventRouting';
 import { PixelIcon } from './PixelIcon';
-import { memo, useEffect, useId, useRef, useState } from 'react';
-import type { InboxItem, TransferBid, World } from '../../../../packages/contracts/src/types';
+import { memo, useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import type {
+  InboxItem,
+  Player,
+  TransferBid,
+  World,
+} from '../../../../packages/contracts/src/types';
 import { seasonDate, nextOwnFixture } from '../../../../packages/engine/src/calendar';
-import { clubOf } from '../../../../packages/engine/src/player-state';
+import { POSITION_LABEL } from '../../../../packages/engine/src/player';
+import { clubOf, overall } from '../../../../packages/engine/src/player-state';
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { releaseCost } from '../../../../packages/engine/src/staff-info';
 import type { GameClient } from '../runtime/client';
@@ -29,6 +35,8 @@ import {
   openApprovalRequest,
 } from './state';
 import { Money } from './Money';
+import { bidPlayer, bidTerms } from './bidFacts';
+import { contractLine } from './format';
 import { Dialog } from './Dialog';
 import { TabList, TabPanel } from './PageTabs';
 import s from './EventCenter.module.css';
@@ -55,15 +63,89 @@ const cardExit = fadeOutOnRemove([
 function bidFor(w: World, item: InboxItem): TransferBid | undefined {
   return item.ref ? w.bids?.find((bid) => bid.id === item.ref) : undefined;
 }
-function playerName(
-  w: World,
-  bid: TransferBid,
-  market: { player: { id: string; name: string } }[],
-) {
+
+/**
+ * What a bid's review needs before an answer (→WEB-39/43): the actual player — ours for an offer
+ * we received, the one our bid pinned otherwise — with his position, age and ability, the fees on
+ * the table and only the contract terms the bid itself carries. Unknown facts say so or stay out.
+ */
+function BidFacts({
+  w,
+  bid,
+  market,
+  format,
+}: {
+  w: World;
+  bid: TransferBid;
+  market: readonly { player: Player }[];
+  format: (value: string) => ReactNode;
+}) {
+  const found = bidPlayer(w, bid, market);
+  const player = found?.player;
+  const terms = bidTerms(bid, found);
+  const club = bid.club && w.clubs.find((c) => c.id === bid.club)?.name;
+  const coach = w.staff?.find((member) => member.person === bid.playerId);
+  const kind = bid.loan ? '임대료' : '이적료';
   return (
-    w.players.find((p) => p.id === bid.playerId)?.name ||
-    market.find((offer) => offer.player.id === bid.playerId)?.player.name ||
-    '선수'
+    <dl className={s.bid} data-testid="bid-facts">
+      <div>
+        <dt>{bid.direction === 'in' ? '우리 선수' : bid.loan ? '임대 대상' : '영입 대상'}</dt>
+        <dd>{player?.name ?? '선수 정보 없음'}</dd>
+      </div>
+      {player && (
+        <>
+          <div>
+            <dt>포지션·나이</dt>
+            <dd>
+              {player.position} · {POSITION_LABEL[player.position]} · {w.year - player.born}세
+            </dd>
+          </div>
+          <div>
+            <dt>능력</dt>
+            <dd>
+              OVR {overall(player)} · 잠재력 {Math.round(player.potential)}
+            </dd>
+          </div>
+        </>
+      )}
+      {club && (
+        <div>
+          <dt>{bid.direction === 'in' ? '제안 구단' : '상대 구단'}</dt>
+          <dd>{club}</dd>
+        </div>
+      )}
+      <div>
+        <dt>{bid.direction === 'in' ? `제안 ${kind}` : `우리 제안 ${kind}`}</dt>
+        <dd>{format(bid.fee)}</dd>
+      </div>
+      {bid.status === 'countered' && bid.counterFee && (
+        <div>
+          <dt>역제안 {kind}</dt>
+          <dd>{format(bid.counterFee)}</dd>
+        </div>
+      )}
+      {terms && (
+        <div>
+          <dt>
+            {bid.direction === 'in'
+              ? '현재 연봉·계약'
+              : bid.loan
+                ? '임대 중 연봉'
+                : '영입 후 연봉·계약'}
+          </dt>
+          <dd>
+            {format(terms.wage)}
+            {terms.until !== undefined && ` · ${contractLine(terms.until, w.year)}`}
+          </dd>
+        </div>
+      )}
+      {coach && (
+        <div>
+          <dt>코치 계약도 함께 종료</dt>
+          <dd>기존 계약 종료 비용 {format(releaseCost(w, coach))}</dd>
+        </div>
+      )}
+    </dl>
   );
 }
 
@@ -213,6 +295,7 @@ export const EventCard = memo(function EventCard({
   const acting = useGameState(gameActionsBlocked);
   const setPage = useNavigation((state) => state.setPage);
   const bid = bidFor(w, item);
+  const subject = bid && bidPlayer(w, bid, market)?.player.name;
   const desk = eventDesk(item);
   if (!inDesk && desk)
     return (
@@ -227,7 +310,7 @@ export const EventCard = memo(function EventCard({
           <span className={s.kind}>{KIND_LABEL[item.kind]}</span>
         </header>
         <h3>{item.title}</h3>
-        <p>{bid && `${playerName(w, bid, market)} · `}결재 대기</p>
+        <p>{subject && `${subject} · `}결재 대기</p>
         <button
           data-ui="primary"
           onClick={() => {
@@ -289,40 +372,14 @@ export const EventCard = memo(function EventCard({
       <header>
         <span className={s.kind}>{KIND_LABEL[item.kind]}</span>
       </header>
-      <h3>{item.title}</h3>
-      <p>{item.detail}</p>
-      {bid && (
-        <dl className={s.bid}>
-          <div>
-            <dt>선수</dt>
-            <dd>{playerName(w, bid, market)}</dd>
-          </div>
-          <div>
-            <dt>{bid.status === 'countered' ? '역제안 이적료' : '제안 이적료'}</dt>
-            <dd>{format(bid.counterFee || bid.fee)}</dd>
-          </div>
-          {w.staff?.some((member) => member.person === bid.playerId) && (
-            <div>
-              <dt>코치 계약도 함께 종료</dt>
-              <dd>
-                기존 계약 종료 비용{' '}
-                {format(
-                  releaseCost(
-                    w,
-                    w.staff.find((member) => member.person === bid.playerId),
-                  ),
-                )}
-              </dd>
-            </div>
-          )}
-          {bid.club && (
-            <div>
-              <dt>상대 구단</dt>
-              <dd>{w.clubs.find((c) => c.id === bid.club)?.name}</dd>
-            </div>
-          )}
-        </dl>
+      {/* In a review the request host already carries its heading and any distinct detail. */}
+      {!inDesk && (
+        <>
+          <h3>{item.title}</h3>
+          <p>{item.detail}</p>
+        </>
       )}
+      {bid && <BidFacts w={w} bid={bid} market={market} format={format} />}
       <div className={s.actions}>
         {bid?.direction === 'in' && bid.status === 'pending' ? (
           <>

@@ -5,6 +5,7 @@ import {
   resolveRegistryUrl,
   resolveResourceUrl,
 } from '../../apps/web/src/presentation/registry';
+import { pendingDecisions } from '../../packages/engine/src/stopping';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { clubhouseTab } from './competition-navigation';
 import { dismissFeedback } from './feedback';
@@ -107,6 +108,17 @@ for (const theme of themeRegistry.entries) {
     await first.click();
     const request = page.getByTestId('approval-request');
     await expect(request).toHaveAttribute('data-request-id', ids[0]!);
+    // One heading with its 결재 기한, the actual target and one named return, within the phone's
+    // width in this theme (→WEB-39/63/100).
+    const reviewed = pendingDecisions(w).find((item) => item.id === ids[0])!;
+    const target = w.bids!.find((bid) => bid.id === reviewed.ref)!.offer!.player;
+    await expect(request.getByRole('heading')).toHaveText([reviewed.title]);
+    await expect(request.getByTestId('approval-deadline')).toBeVisible();
+    await expect(request.getByTestId('bid-facts')).toContainText(target.name);
+    await expect(request.getByTestId('bid-facts')).toContainText('역제안 이적료');
+    await expect(request.getByRole('button', { name: '취소', exact: true })).toHaveCount(0);
+    await expectTarget(request.getByRole('button', { name: '결재함으로', exact: true }));
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
     await request.getByRole('button', { name: '거절', exact: true }).click();
     await expect(page).toHaveURL(/\/direction$/);
     await expect(rows).toHaveCount(ids.length - 1);

@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import type { ClientState, GameClient } from '../runtime/client';
-import { approvalRequests } from '../runtime/progression';
+import { approvalRequests, approvalStanding } from '../runtime/progression';
 import { approvalClient } from './approvalClient';
 import type { ApprovalRequest } from './eventRouting';
 import { approvalId, approvalWorld, returnApprovalHome, useNavigation } from './state';
@@ -10,6 +10,11 @@ import { useGameState } from '../runtime/store';
 
 const submitting = (state: ClientState) => !!(state.busy || state.pendingActions);
 
+/**
+ * A selected request's review (→WEB-39/100): its one heading with the 결재 기한 it still runs
+ * against, any detail the heading does not already say, one named return to the 결재함 and the
+ * request's own authoritative form. Leaving never answers it.
+ */
 export function ApprovalRequestHost({
   request,
   client,
@@ -43,6 +48,8 @@ export function ApprovalRequestHost({
   const w = client.state.view!.world;
   const pending =
     w.id === request.world && approvalRequests(w).some((item) => item.id === request.item.id);
+  const standing = pending ? approvalStanding(w, request.item.id) : undefined;
+  const { title, detail } = request.item;
   return (
     <section
       data-surface="panel"
@@ -51,17 +58,25 @@ export function ApprovalRequestHost({
       data-request-id={request.item.id}
       aria-label="결재 요청"
     >
-      <h2>{request.item.title}</h2>
-      <p>{request.item.detail}</p>
-      {/* Both leave the request unresolved and return to the 결재함 with its context (→WEB-100). */}
-      <div className={s.actions}>
-        <button type="button" data-ui="link" disabled={pendingSubmission} onClick={leave}>
-          결재함으로
-        </button>
-        <button type="button" disabled={pendingSubmission} onClick={leave}>
-          취소
-        </button>
-      </div>
+      <header>
+        <h2>{title}</h2>
+        {standing && (
+          <span className={standing.overdue ? s.overdue : s.due} data-testid="approval-deadline">
+            {standing.label}
+          </span>
+        )}
+      </header>
+      {detail && detail !== title && <p>{detail}</p>}
+      {/* The one way back: the 결재함 with its context, the request still waiting (→WEB-100). */}
+      <button
+        type="button"
+        data-ui="link"
+        className={s.return}
+        disabled={pendingSubmission}
+        onClick={leave}
+      >
+        결재함으로
+      </button>
       {error && <p role="alert">{error}</p>}
       {pending ? (
         children(scoped, error)

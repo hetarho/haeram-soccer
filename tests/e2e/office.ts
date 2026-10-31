@@ -82,7 +82,7 @@ export async function enterOffice(page: Page, options: { timeout?: number } = {}
     if (!new URL(page.url()).searchParams.has('request')) return;
     await page
       .getByTestId('approval-request')
-      .getByRole('button', { name: '취소', exact: true })
+      .getByRole('button', { name: '결재함으로', exact: true })
       .click();
     await expect(approvalQueue(page)).toBeVisible();
     return;

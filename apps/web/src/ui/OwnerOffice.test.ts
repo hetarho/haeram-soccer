@@ -203,7 +203,7 @@ describe('owner office page', () => {
 });
 
 describe('approval return controls', () => {
-  it('holds cancellation for queued and active submissions, then allows return even in read-only mode', () => {
+  it('holds the named return for queued and active submissions, then allows it even in read-only mode', () => {
     const request: ApprovalRequest = {
       world: 'office',
       desk: 'players',
@@ -237,8 +237,9 @@ describe('approval return controls', () => {
           children: () => null,
         }),
       );
-      const buttons = [...markup.matchAll(/<button([^>]*)>/g)];
-      expect(buttons).toHaveLength(2);
+      // One general return, no second 취소 beside it (→WEB-100).
+      const buttons = [...markup.matchAll(/<button([^>]*)>([^<]*)</g)];
+      expect(buttons.map(([, , name]) => name)).toEqual(['결재함으로']);
       expect(buttons.every(([, attrs]) => attrs.includes('disabled=""'))).toBe(
         busy || pendingActions > 0,
       );

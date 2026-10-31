@@ -2,6 +2,7 @@ import type { ResponsibilityKey, World } from '../../../../packages/contracts/sr
 import type { StopReason } from '../../../../packages/engine/src/stopping';
 import { RESPONSIBILITY_KEYS } from '../../../../packages/engine/src/responsibilities';
 import { RESPONSIBILITY_LABELS } from './intervention';
+import { bidPlayer } from './bidFacts';
 
 /** The 결재함's views (→WEB-100): every waiting request, the overdue ones, or one responsibility. */
 export type QueueFilter = 'all' | 'overdue' | ResponsibilityKey;
@@ -94,8 +95,7 @@ export function requestSubject(w: World, item: StopReason) {
   if (item.kind === 'incoming-bid' || item.kind === 'bid-response') {
     const bid = w.bids?.find((candidate) => candidate.id === item.ref);
     if (!bid) return;
-    const player =
-      w.players.find((candidate) => candidate.id === bid.playerId)?.name ?? bid.offer?.player.name;
+    const player = bidPlayer(w, bid)?.player.name;
     const club = w.clubs.find((candidate) => candidate.id === bid.club)?.name;
     return [player, club].filter(Boolean).join(' · ') || undefined;
   }

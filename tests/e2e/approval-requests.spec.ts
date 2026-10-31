@@ -1,4 +1,8 @@
 import { expect, test, type Page } from '@playwright/test';
+import { contractLine } from '../../apps/web/src/ui/format';
+import { approvalDeadline } from '../../packages/engine/src/approvals';
+import { POSITION_LABEL } from '../../packages/engine/src/player';
+import { overall } from '../../packages/engine/src/player-state';
 import { pendingDecisions } from '../../packages/engine/src/stopping';
 import { pendingAcquisitionCareer, importResponsibilityCareer } from './responsibility-fixtures';
 import { eventCard } from './events';
@@ -60,23 +64,55 @@ for (const width of [390, 1280]) {
     expect(first!.y + first!.height).toBeLessThanOrEqual(844);
     await expect(rows.getByRole('button', { name: '거절', exact: true })).toHaveCount(0);
 
+    // The review names the actual target its bid pinned, before any answer (→WEB-39/43).
+    const reviewed = pendingDecisions(w).find((candidate) => candidate.id === ids[0])!;
+    const target = w.bids!.find((bid) => bid.id === reviewed.ref)!.offer!.player;
+    await expect(review(page, ids[0]!)).toHaveAccessibleName(
+      `${reviewed.title} · ${target.name} · 검토하기`,
+    );
+    const left = approvalDeadline(w, reviewed.id);
+    await reviewFirst(page);
+    // A direct reload keeps the selected request, its one heading, its 결재 기한 and its terms.
+    await page.reload();
+    const opened = page.getByTestId('approval-request');
+    await expect(opened).toHaveAttribute('data-request-id', ids[0]!);
+    await expect(opened.getByRole('heading')).toHaveText([reviewed.title]);
+    await expect(opened.getByText(reviewed.title, { exact: true })).toHaveCount(1);
+    await expect(opened.getByTestId('approval-deadline')).toHaveText(
+      left > 0 ? `D-${left}` : `지연 ${1 - left}일`,
+    );
+    const facts = opened.getByTestId('bid-facts');
+    await expect(facts).toContainText(target.name);
+    await expect(facts).toContainText(
+      `${target.position} · ${POSITION_LABEL[target.position]} · ${w.year - target.born}세`,
+    );
+    await expect(facts).toContainText(
+      `OVR ${overall(target)} · 잠재력 ${Math.round(target.potential)}`,
+    );
+    await expect(facts).toContainText('우리 제안 이적료');
+    await expect(facts).toContainText('역제안 이적료');
+    await expect(facts).toContainText(contractLine(target.until, w.year));
+    // One named return; leaving answers nothing.
+    await expect(opened.getByRole('button', { name: '취소', exact: true })).toHaveCount(0);
+    await opened.getByRole('button', { name: '결재함으로', exact: true }).click();
+    await expect(approvalQueue(page)).toBeVisible();
+    await expect(page).toHaveURL(/\/direction$/);
+    await expect(review(page, ids[0]!)).toBeFocused();
+
     // A filter of the actual responsibility stays through a review and its return.
     const filters = approvalQueue(page).getByRole('group', { name: '결재함 보기', exact: true });
     const recruitment = filters.getByRole('button', { name: `선수 영입 ${ids.length}` });
     await recruitment.click();
     await expect(recruitment).toHaveAttribute('aria-pressed', 'true');
 
-    // Every cancellation route returns to the same unresolved queue without a command.
-    for (const exit of ['cancel', 'queue', 'browser'] as const) {
+    // Both ways out — the named return and browser back — reach the same unresolved queue.
+    for (const exit of ['queue', 'browser'] as const) {
       const request = await reviewFirst(page);
       await expect(officeTitle(page)).toHaveText('선수 계약');
       await expect(request).toHaveAttribute('data-request-id', ids[0]!);
       await expect(request.getByRole('button', { name: '역제안 수락', exact: true })).toBeVisible();
       if (exit === 'browser') await page.goBack();
-      else
-        await request
-          .getByRole('button', { name: exit === 'cancel' ? '취소' : '결재함으로', exact: true })
-          .click();
+      else await request.getByRole('button', { name: '결재함으로', exact: true }).click();
       await expect(approvalQueue(page)).toBeVisible();
       await expect(page).toHaveURL(/\/direction$/);
       await expect(approvalRows(page)).toHaveCount(ids.length);

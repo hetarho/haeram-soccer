@@ -58,6 +58,25 @@ for (const width of [360, 390, 1280]) {
       await expect(clubhouseTab(page)).toHaveAttribute('aria-current', 'page');
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
     }
+    // Each 구단 운영 section opens from its own address and again after a reload, as the static
+    // deployment serves it (→ARCH-23, →WEB-110); an older desk address lands on the same section.
+    for (const [view, name, legacy] of [
+      ['investment', '재정·투자', '/business?view=finance'],
+      ['sponsor', '후원', '/direction?view=sponsor'],
+      ['identity', '구단 디자인', '/direction?view=identity'],
+    ] as const) {
+      const section = operationsTabs(page).getByRole('tab', { name, exact: true });
+      for (const open of [
+        () => page.goto(`/club-operations?view=${view}`),
+        () => page.reload(),
+        () => page.goto(legacy),
+      ]) {
+        expect((await open())?.status()).toBe(200);
+        await expect(section).toHaveAttribute('aria-selected', 'true');
+        await expect(page).toHaveURL(new RegExp(`/club-operations\\?view=${view}$`));
+        await expect(clubhouseTab(page)).toHaveAttribute('aria-current', 'page');
+      }
+    }
     // The office queue has no copy of it (→WEB-39).
     await enterOffice(page);
     await expect(sections).toHaveCount(0);
