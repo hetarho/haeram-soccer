@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T21:04Z | 2026-10-31T22:25Z | T635 |
 
 ## inbox
 - 261101 decided WEB-69 WEB-74 T635: CI's selected club tab loses keyboard focus after navigation on every browser → repair production focus intent through the actual render lifecycle, retaining the exact keyboard/URL/state assertions; scope the same-person career action to the actual appointed manager while a dialog fades (alt: relax focus checks | add test-only refocusing | accept ambiguous matches).
