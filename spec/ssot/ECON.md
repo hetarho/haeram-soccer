@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r39 | Define the browser-demo rules for historical club economy.
+> r40 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -198,8 +198,14 @@
   - 지역 기반 S: home gate demand +S/10 % (→ECON-9); the 지역 후원 slot's offers ×(1 + S/200) (→ECON-8); with the 성골 유스 card, intake potential +S/25 and one more prospect from 50 (→CLUB-16).
   - 글로벌 인지도 S: the following reputation commands ×(1 + S/100) (→ECON-23); every other sponsor slot's offers ×(1 + S/250); with the 해외 유스 스카우트 card, intake potential +S/33.
   - both are shown in their areas' headers on the 방향 board (→WEB-60).
+- ECON-35 [o] Each playable country's money stands at its real 1999 rate against the pound: its level, the country's 1901 money per £1 of 1901 prices that every quote multiplies (→ECON-26), is set so that its 1999 amounts convert through the euro's fixed rates (→ECON-5) at €1.518 per £ (the year's ECB average), and its own price index carries it before and after (→ECON-2). ← one constant per country moves every amount of a career alike, so balance measured in price units (→ECON-29) stays as it was; a national price path before 1960 would carry the wars' inflations into careers' cash
+  - levels: ENG 1, ESP 126.3, GER 111.2 (Mark; the 1948 Deutsche Mark is a tenth), ITA 1,988, FRA 1,607 (old franc; the 1960 new franc is a hundredth), POR 60,510 (réis; the 1911 escudo is a thousandth), NED 9.019, BEL 154.4.
+  - measured 261101, the game's rate per £ against the real one (1960 Bretton Woods par values, 1980 and 1998 annual averages, 2025 €1.18): 1960 0.75–1.16, 1980 0.82–1.16, 1998 1.01–1.03, 2025 1.04–1.24; a 2025 top-flight regular (OVR 75, 27) earns about €1.5m in Italy and €1.0m in France, where the 1901 parities carried by UK prices (25 lire or francs per £) paid €19,000 and €16,000.
+  - before 1949 the inter-war and war years' rates are not followed: a country's amounts there are estimated (→ECON-3).
+  - a foreign player's fee and wage are quoted in the buyer's money from the same units as a home player's (→CLUB-25), so no country's level makes a player cheaper abroad.
 
 ## chg
+- r40 261101 ECON-35+ a country's money level: its 1901 parity carried by UK prices (ESP/ITA/FRA/BEL 25, GER 20, POR 4,500, NED 12 per £)→its real 1999 rate against the pound (ESP 126.3, GER 111.2, ITA 1,988, FRA 1,607, POR 60,510, NED 9.019, BEL 154.4)
 - r39 261029 ECON-25✎ 선수단·계약 with culture/support/renewal→선수단 culture only; support/renewal→재정; underlying policy keys/defaults/effects unchanged
 - r38 261016 ECON-25✎ recruitment rows 영입 기조 only→+director/manager support (균형 default), signings only→signings and mediation; economic coefficients and measurements unchanged
 - r37 261015 ECON-32✎ stadium 250/400/600/4,000/8,000/70,000/245,000/965,000→×2.5 from 600 (600…366,000), training ground 500/5,000/40,000/300,000/1,150,000→×4 from 1,500 (1,500…384,000), academy 400/4,000/32,000/240,000/980,000→0.8× the training ground, the whole 4,045,150→1,530,450; ECON-29✎ ladder 98.4→40.4 seasons, +the 16-career measurement on the new costs

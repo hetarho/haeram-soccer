@@ -15,8 +15,11 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| cr01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T15:49Z | 2026-10-31T15:49Z | - |
 
 ## inbox
+- 261101 decided ECON-35 ECON-2 ECON-5: how to bring other countries' money to real nominal levels without touching balance or making foreign players cheap → one level per country, set at its real 1999 rate against the pound (€1.518/£ through the euro's fixed rates), its own prices carrying it before and after: every amount of a career moves alike, and players abroad were already quoted in the buyer's money; measured within 0.75–1.24× of real rates 1960–2025 (alt: a 1960 link, which leaves 2025 up to 1.65× real | each country's own price path before 1960, which carries the wars' inflations into careers' cash and moves balance)
+- 261101 decided SAVE-10 SAVE-11 ECON-6: what becomes of careers outside England saved on catalog 2026-demo-1–3 once 2026-demo-4 re-levels their money → a compatibility failure, the save kept and exportable; English careers move their pin as before (alt: convert live amounts once on activation, as a currency change does, leaving their history at the old level under the same currency label)
 - 261031 decided ARCH-30 T621: the batch gate on 1ee725ea passed every stage but Chromium e2e (83 passed, 252 failed) while main has failed its UI journeys since the ds30 design (CI 41031470885, 41033470924; the design session is migrating the specs) → push the engine-only T621 to main: the 14 transfer-related cases (recruitment, records, contract-talks) fail identically on origin/main code without it, and the owner accepted these baseline UI failures for the engine-only publication earlier on 261031 (alt: hold the push until the ds30 spec migration lands and re-gate | run the whole Chromium suite on the baseline too, 1.3 h for the same answer).
 - 261031 decided CLUB-46 T621: r44's steeper value slope (1.125 a point everywhere) with a 1950s premium of 0.3–0.5 halved the 1950s lower-division fees of reference careers (tier-2 buys £1k → £494, sales £428 → £115), already below real lower-league fees of £150–3,500 → CLUB r45: the premium reaches a value by how far its points stand above the pivot (70), in full 10 points above it, no slope change, anchors refit on dumped top-flight squads of four careers (0.5 in 1950 to 5.2 in 2025; 0 of 15 years outside the bands in-sample) (alt: keep the uniform slope, which also passed the top-flight bands | an era-dependent slope, a second curve to keep).
 - 261031 suggest ECON-2 ECON-5: money outside England and the Netherlands sits far below real nominal levels for the whole game, because before 1960 every country follows the UK price path from its 1901 parity (25 lire/francs/pesetas, 20 marks, 4,500 reis per £); implied 1960 rates per £ ITA 25 lire (real 1,747), FRA 0.25 NF (13.8), POR 4.5 esc (80), ESP 25 ptas (168), BEL 25 BEF (140), GER 2 DM (11.7), NED 12 (10.6): a 2025 top-flight regular earns €10k in Italy and €9k in France against £865k in England. Ratios in price units are unaffected (ECON-29 holds); a fix needs each country's pre-1960 path or a 1960 exchange-rate link, a catalog version and a one-time live-amount conversion for existing saves (→ECON-6).
@@ -422,10 +425,10 @@
 | MATCH | 44 | 44 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 36 | 36 | - | 0 |
-| ECON | 39 | 39 | - | 0 |
+| ECON | 40 | 40 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 18 | 18 | - | 0 |
-| SAVE | 57 | 57 | - | 0 |
+| SAVE | 58 | 58 | - | 0 |
 | PLAYER | 10 | 10 | - | 0 |
 
 ## review
@@ -441,6 +444,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T622 | Currency levels at the 1999 rate | ECON SAVE | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -469,6 +473,7 @@
 - create-task WEB KIT (WEB r188–r192 delta WEB-39✎ WEB-79✎ WEB-106+ WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ WEB-43✎ WEB-10✎ WEB-44✎ WEB-107+ WEB-86✎ WEB-108+ WEB-100✎ WEB-42✎ and KIT r5–r6 KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ are implemented by the ds30 design; a task records them and their e2e checks)
 
 ## log
+- 261101 update-ssot ECON r40 (ECON-35+) SAVE r58 (SAVE-10✎) + create-task T622 currency levels at the 1999 rate; session cr01.
 - 261031 T621 done: transfer values by era (CLUB r45), premium reaching values above the pivot, anchors 0.5 (1950)…5.2 (2025); 8 ENG careers 0 of 15 years outside CLUB-46 bands (10 before); ECON-29 bands unchanged; session tf31.
 - 261031 update-ssot CLUB r44 (CLUB-25✎ CLUB-46+) + create-task T621 transfer values by era; session tf31.
 - 261031 create-task review/engine-architecture-261030: owner authorizes production completion; T617 helper replication, T618 guarded packed movement; session ei31.
@@ -488,4 +493,3 @@
 - 261030 T612 done: aggregate cuts kept against their parents (ab.mjs aggregate CPU, sameHash): A2 xT table ×0.9891, A3 traits array ×0.9873, A6 weights by role id ×0.9893 [0.9818, 0.9991], A10 role tables by line index ×0.9684 [0.9614, 0.9781], A12 `isPassKind` by comparison ×0.9854, A13 `moveKindIndex` ×0.9828, A14 keeping/forward kinds by comparison ×0.9895, A15 one role shape ×0.9889 [0.9814, 0.9992]; A1 A4 A5 A7 A8 A9 A11 A16 reverted (intervals include 1). Combined against c05e9194: aggregate ×0.9167 [0.9095, 0.9232]; day sameHash, own match days ×0.9582 [0.9336, 0.9835], other days ×0.9240 [0.9107, 0.9375]. Unit (grid 12 files 169 tests; changed 84 files 806 tests), typecheck, lint, format pass; integration-tier aggregate tests left to the final gate.
 - 261030 T611 done: grid cuts kept against their parents (ab.mjs grid CPU, sameHash): G1 ×0.9734, G4 ×0.9799, G3 ×0.9795, G6 `modelAtLeast` memo ×0.9821 [0.9750, 0.9893], G5 uniform plan/job shapes ×0.9877 [0.9798, 0.9980]; G2 shared screen caches ×1.0005 [0.9944, 1.0084] undone by f3020e09. Day workload against 4ab5e4d1 sameHash, own match days ×0.9583 [0.9418, 0.9750]. Grid/aggregate/perf units (13 files, 173 tests), typecheck, lint, format pass; integration grid files left to the final gate.
 - 261030 ep30 stopped after 2 units: each unit started its ab.mjs read in the background and its headless session ended with the read running; G1/G4/G3 measured faster (sameHash), G2/G6/G5 unmeasured; the loop's end push carried them to main at 2fc41d5f (unit suite passing). T611/T612 notes now require foreground reads; resumed as ep31.
-- 261030 create-task T611 T612: owner-requested engine speed-ups, result-identical, paired ab.mjs reads on this host; grid then aggregate.
