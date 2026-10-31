@@ -1,0 +1,17 @@
+[
+  {
+    "id": "X1",
+    "prompt": "Native 32×32 integer-grid olive LCD material with quiet two-pixel dither marks. No antialiasing, gradients or baked labels.",
+    "tool": "native integer-grid SVG"
+  },
+  {
+    "id": "X2",
+    "prompt": "Native 32×32 integer-grid midnight-blue scoreboard material with fine scan rows and restrained cyan pixel flecks. No antialiasing, gradients or baked labels.",
+    "tool": "native integer-grid SVG"
+  },
+  {
+    "id": "X3",
+    "prompt": "Native 32×32 integer-grid jade arcade material with low-contrast checker dither and pale green pixels. No antialiasing, gradients or baked labels.",
+    "tool": "native integer-grid SVG"
+  }
+]

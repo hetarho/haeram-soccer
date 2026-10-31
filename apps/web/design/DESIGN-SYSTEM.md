@@ -27,6 +27,13 @@ its mode label and change action in one MODE button beside approval settings.
 Menu labels, supporting copy and trailing icons inherit the action's local foreground roles;
 the page's muted ink may not contrast with a filled tertiary skin.
 
+The `controller-backgrounds` development story compares three materials per theme on the real
+transport, with automatic/manual controls and live selection labels. The owner selected P3,
+G1, X2 and S1; those materials and their local foregrounds are registered in the active packs.
+Alternatives remain in each theme's `controller-concepts-v1/`. Compare the material at its
+repeated display size and at phone width, including the local foreground on darker candidates.
+Keep review boards under `.tmp/`. See the [selection and regeneration recipe](controller-concepts-v1/README.md).
+
 ## Resources carry the design
 
 Author the visible surfaces, frames, texture and state marks as reusable image resources. A
@@ -382,7 +389,9 @@ selected states, popovers and lazy sections, not only the default screenshot. La
 wrappers, live graph facts and text links do not each need a decorative card.
 
 The [current page-refresh family](page-refresh-v1/README.md) records the bronze-to-ruby scale,
-European cartoon icon atlas, smooth yellow clay stickers and theme-specific controllers.
-Preserve grass, clay and native pixel materials instead of sharing an unrelated cloth texture.
+European cartoon icon atlas and smooth yellow clay stickers. The subsequent
+[controller selection](controller-concepts-v1/README.md) uses burgundy paper, forest-green matte
+material, midnight-blue pixel rows and butter-yellow clay, with matching local foregrounds.
+Preserve each material family instead of sharing an unrelated cloth texture.
 Full-colour illustrated icons render their colours rather than a monochrome mask. Material
 changes must cover the main page planes and controls together, with matching text contrast.

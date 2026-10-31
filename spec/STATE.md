@@ -499,6 +499,7 @@
 - 261101 T623 done: approval waiting days, 7-day 결재 기한, one overdue notice and overdue morale (−1 each a settled round, at most 3); portable golden regenerated for three all-direct scenarios; session ap01.
 - 261101 update-ssot WEB r193 STAFF r37 CLUB r46 SAVE r59 (WEB-42✎ WEB-45✎ WEB-18✎ WEB-76✎ WEB-80✎ WEB-83✎ WEB-100✎ STAFF-48+ STAFF-15✎ STAFF-32✎ CLUB-19✎ CLUB-34✎ CLUB-38✎ SAVE-17✎) + create-task T623–T625: approvals never stop progression, 결재함 with a 7-day 결재 기한 and overdue morale cost; session ap01.
 - 261101 update-ssot ECON r40 (ECON-35+) SAVE r58 (SAVE-10✎) + create-task T622 currency levels at the 1999 rate; session cr01.
+- 261101 design controller: apply P3 burgundy paper, G1 forest matte, X2 midnight pixels and S1 butter clay; unit 1833, integration 1267, contract 48 and Chromium 335 passed; shared-checkout receipt stale after concurrent unrelated edits; preserve tested ce95aae4 in isolated cb31 commit.
 - 261101 update-ssot WEB r194 (WEB-91✎): light controller/grass→selected P3/G1/X2/S1 materials and matching foregrounds; implemented in 92127406 on codex/controller-backgrounds-cb31.
 - 261101 T628 done: scout verdict A–E (CLUB r47) and the candidate detail as a scout report (WEB r195); unit/contract pass, 4 integration failures pre-exist on 67c9e974, e2e left to CI; session sr11.
 - 261101 update-ssot CLUB r47 (CLUB-47+) WEB r195 (WEB-109+) + create-task T628 scout verdict and the candidate detail as a scout report; session sr11.
