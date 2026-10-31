@@ -16,9 +16,11 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | cr01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T15:49Z | 2026-10-31T15:49Z | - |
-| sr11 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T16:20Z | 2026-10-31T16:45Z | T628 |
 
 ## inbox
+- 261101 decided CLUB-47 T628: how the scout grades a candidate → the gap at the slot he would take, by CLUB-33's own margins (A ≥ 10 twice the request margin, B ≥ 5 the request margin, C ≥ 2 공격적's upgrade margin or a short line or a prospect at his main position, D > −5, else E), reasons only for what the gap does not say (alt: percentile against positional peers as FBref, a measure the engine does not keep | one weighted score of ability, potential, age and cost, which hides why).
+- 261101 decided WEB-109 T628: what our own players keep in the scout-report detail → head, 능력·성향 and the transaction bar in its completed state (계약 완료, as recruitment e2e reads it), no verdict or terms (alt: drop the bar, which breaks the completed-signing evidence).
+- 261101 suggest T623 T624 ARCH-30: on origin/main 67c9e974 four integration equivalence tests fail independently of T628 — calendar.progression-eng/esp (every progression mode records the same facts), full-model-throughput (T285 records/ledgers) and season.test (day/round/season advancement); ap01 ran only touched integration tests, so main CI will be red until approval waiting/overdue morale settles identically across progression paths.
 - 261101 decided WEB-42 WEB-45 STAFF-48 CLUB-19: what an unanswered owner approval costs once time no longer waits for it → a 7-day 결재 기한, then each overdue approval costs squad morale 1 a settled round (at most 3) with one overdue notice: one legible lever on the team, and a week before it bites even at x10 (alt: morale from the first day without grace | a per-kind consequence such as the asking player turning unhappy or a bid lapsing early | the staff deciding it for the owner at the deadline)
 - 261101 decided WEB-18 WEB-100: where the 결재함 stays in sight once approvals stop pausing play → a 결재함 button with waiting/overdue counts in the shared bottom controls beside 결재 설정, opening the office lobby tray, and tray rows reading D-n or 지연 n일 (alt: an icon beside notifications in the HUD | only the existing clubhouse navigation and office-scene counts)
 - 261101 suggest WEB-36 WEB-79: the design checkout (cb31) holds an uncommitted WEB r193 (settings feedback, observation confirmation); main now carries WEB r193 from ap01, so that design commit takes r194 when it lands
@@ -450,7 +452,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T622 | Currency levels at the 1999 rate | ECON SAVE | - | todo |
-| T628 | Scout verdict and the candidate detail as a scout report | CLUB WEB | - | doing@261101.sr11 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -480,6 +481,7 @@
 - create-task WEB KIT (WEB r188–r192 delta WEB-39✎ WEB-79✎ WEB-106+ WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ WEB-43✎ WEB-10✎ WEB-44✎ WEB-107+ WEB-86✎ WEB-108+ WEB-100✎ WEB-42✎, plus WEB r194 WEB-91✎, and KIT r5–r6 KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ are implemented by the ds30 and cb31 designs; a task records them and their e2e checks)
 
 ## log
+- 261101 T628 done: scout verdict A–E (CLUB r47) and the candidate detail as a scout report (WEB r195); unit/contract pass, 4 integration failures pre-exist on 67c9e974, e2e left to CI; session sr11.
 - 261101 update-ssot CLUB r47 (CLUB-47+) WEB r195 (WEB-109+) + create-task T628 scout verdict and the candidate detail as a scout report; session sr11.
 - 261101 ap01 closed: changed-code checks only at the owner's request (unit tier, touched integration/contract, 14 changed Chromium journeys); push main.
 - 261101 T625 done: 결재함 button in the bottom controls with waiting/overdue counts, tray rows with D-n/지연 n일, lobby tray heading with the overdue morale cost; session ap01.
@@ -499,4 +501,3 @@
 - 261031 design ds30: owner-directed live UI polish closed. Covers the redrawn pixel icon set, five-entry navigation (리그·컵·클럽하우스·이적시장·기록), clubhouse quick actions, and an office lobby holding team state, room doors and approval trays. Also the designer kit commission plus theme and locale updates. E2E helpers and specs follow the design. Fixed: the first-team door reopened the market; discarded drafts did not re-render; sticker-club fixture text and select hints fell below AA. Design verify: task+batch passed, Chromium 335 passed.
 - 261031 update-ssot WEB r192 KIT r6: WEB-10✎ WEB-11✎ WEB-39✎ WEB-42✎ WEB-44✎ WEB-100✎ WEB-107+ WEB-86✎ WEB-108+ KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ (five-entry navigation, designer commission and fourteen shirt patterns as built in ds30; clubhouse quick actions; team state and room doors in the office lobby)
 - 261031 update-ssot WEB r190: WEB-43✎ (side-by-side candidate comparison, compare a candidate with a player of ours); code in the working tree, uncommitted
-- 261031 owner-directed clubhouse quick actions (chat, no task): owner actions that run on the spot move onto home as three quick-action tiles over the office scene — 분위기 (meeting, team building, win bonus, owner visit, manager backing), 피로 (rest XI, assistant's recovery training sheet, rest day, recovery support, camp, friendly), 훈련·육성 (first-team and youth training sheets in place, top prospect's promotion) — each a sheet with cost, effect and chances and no page moves; the five team-state tiles (with their remedy sheets and page links) and the four room doors move into the owner-office lobby under the desks, and room pages carry an office bar back to the lobby. Typecheck (own files), lint, format and related unit tests pass; e2e helpers/specs updated but not run
