@@ -99,8 +99,8 @@ In candidate lists, a player's name opens their record with the `link` role; it 
 the generic framed-button skin. Keep comparison toggles equally quiet and render their checked
 state with the theme's checkbox artwork. Explicit table columns reserve room for identity,
 ratings and money instead of inheriting the shared leading rank column's narrow width.
-Candidate details reuse sheet/detail materials for potential, scouting notes and cost groups;
-filter choices and transaction actions use explicit supporting-action roles.
+Candidate details follow the report pattern below; comparison actions keep the plain button
+skin, the loan action takes the secondary role and the bid or signing the primary role.
 
 Before reducing text or touch targets, inspect accumulated spacing: a panel's outer padding,
 header/body padding, child-list margins and mobile overrides may all add to the same inset.
@@ -125,6 +125,28 @@ controls belong outside the horizontal scroller so they remain readable while da
 Related pinned controls share one opaque material plane and one sticky position. Put a compact
 return, competition filters and view tabs inside that plane; separate sticky rows with fixed
 offsets or margins can expose scrolling table rows between them when content wraps.
+
+### Detail pages read as reports
+
+A detail page serves one decision. The recruitment candidate detail (WEB-109, CLUB-47) is the
+reference; apply the same order to other person, offer and facility details.
+
+1. **Conclusion first.** Under the identity head, one framed verdict plate gives the answer: a
+   grade or headline value, one line with the numbers behind it, and at most two facts for and
+   two against. Reasons add what the headline does not already say.
+2. **Sections in question order.** Who it is → what it does for us → what it costs → everything
+   else. Each section heading carries its answer on the same line, so a closed section still
+   reads; the sections the decision needs start open, reference material starts closed.
+3. **One disclosure level.** A section opens or closes; nothing inside it opens again. Do not
+   nest a full profile card, with its own head, inside a detail.
+4. **Each fact in one place.** A heading's answer summarizes only its own section. A rating chip,
+   trait list or personality read appears once.
+5. **Size marks importance.** The verdict plate is the only framed plate; sections are separated
+   by quiet rules, with muted labels and one bold value per fact.
+6. **Actions dock at the foot.** The transaction bar stays at the dialog's bottom edge while the
+   detail scrolls and covers the body's bottom padding. Notes use the note tone; the warning
+   tone marks only what blocks an action. The dialog's close icon is its only close control.
+7. **Money in weeks or months.** Runway reads through `runwayText`, never in rounds.
 
 ### Neutral material planes
 

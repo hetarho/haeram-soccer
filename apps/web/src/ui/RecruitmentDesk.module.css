@@ -181,92 +181,190 @@
   font-size: 12px;
   font-family: var(--display);
 }
-/* Potential and growth, centred on one line, with the full ability sheet folded under them. */
-.ability {
-  display: grid;
-  gap: 4px;
-  margin: 12px 0;
-  padding: 10px 12px 4px;
-  font-family: var(--display);
-}
-.abilityFigures {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.abilityFigures > span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 44px;
-}
-.abilityFigures small {
-  color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 800;
-}
-.abilityFigures b {
-  color: var(--text);
-  font-size: 26px;
-  font-weight: 900;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
 .card [data-tone='rise'] {
   color: var(--danger);
 }
 .card [data-tone='fall'] {
   color: var(--cool);
 }
-.build,
-.budget {
+.card em {
+  font-style: normal;
+}
+.origin {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: var(--display);
+  overflow-wrap: anywhere;
+}
+/* The scout's verdict leads the detail: its one framed plate, the grade its largest mark. */
+.verdict {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px 14px;
+  margin: 14px 0 6px;
+  padding: 12px 14px;
+  font-family: var(--display);
 }
-.build {
-  margin-top: 12px;
+.grade {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--badge-radius);
+  color: var(--text);
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1;
 }
-.build > div:first-child {
+.verdict:is([data-grade='A'], [data-grade='B']) .grade {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.verdict[data-grade='E'] .grade {
+  color: var(--text-muted);
+}
+.verdictText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.verdictText small {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+.verdictText strong {
+  color: var(--text);
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+.verdictText span {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.reasons {
   grid-column: 1 / -1;
-}
-.build > div {
   display: grid;
   gap: 3px;
-  padding: 10px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
 }
-.build span,
-.budget span {
+.reasons li {
+  display: flex;
+  gap: 6px;
+  color: var(--text);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.reasons li::before {
+  flex: 0 0 12px;
+  font-weight: 900;
+}
+.reasons[data-reason='for'] li::before {
+  content: '+';
+  color: var(--accent);
+}
+.reasons[data-reason='against'] li::before {
+  content: '−';
+  color: var(--warm);
+}
+/* Sections answer in their heading line, so a closed one still reads; quiet rules, no frames. */
+.section {
+  border-top: 1px solid var(--line);
+}
+.section > summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  min-height: 48px;
+  padding: 10px 0;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--display);
+}
+.section > summary::-webkit-details-marker {
+  display: none;
+}
+.section > summary span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 900;
+}
+.section > summary span::before {
+  content: '▸';
+  color: var(--text-faint);
+  font-size: 11px;
+  transition: transform 160ms ease;
+}
+.section[open] > summary span::before {
+  transform: rotate(90deg);
+}
+.section > summary b {
+  min-width: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-align: right;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+.section > summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.section[open] {
+  padding-bottom: 12px;
+}
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 16px;
+  margin: 0;
+}
+.facts > div {
+  min-width: 0;
+}
+.facts > .wide {
+  grid-column: 1 / -1;
+}
+.facts dt {
   color: var(--text-muted);
   font-size: 12px;
   font-weight: 800;
   font-family: var(--display);
 }
-.budget small {
+.facts dd {
+  margin: 2px 0 0;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--display);
+}
+.facts .sub {
+  display: block;
   color: var(--text-muted);
   font-size: 12px;
   font-weight: 600;
-  font-family: var(--display);
 }
-.build b {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-}
-.build small {
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 800;
-  font-family: var(--display);
-}
-.context {
-  margin: 7px 0;
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--text-muted);
-  font-family: var(--display);
+.section .note {
+  margin: 10px 0 0;
 }
 .costs {
   display: grid;
@@ -293,33 +391,28 @@
   font-variant-numeric: tabular-nums;
   font-family: var(--display);
 }
-.budget {
-  padding: 12px;
-}
-.budget > div {
-  display: grid;
-  gap: 3px;
-  min-width: 0;
-}
-.budget b {
-  color: var(--text);
-  font-size: 17px;
-  font-weight: 800;
-  overflow-wrap: anywhere;
-  font-variant-numeric: tabular-nums;
-  font-family: var(--display);
-}
-.card .free {
-  margin: 6px 0 10px;
-  color: var(--text-muted);
-  font-size: 12px;
-  font-family: var(--display);
-}
+/* The transaction bar stays at the dialog's foot while the detail scrolls (→WEB-109). It covers
+   the dialog body's bottom padding (App.module.css .modalBody) so nothing scrolls beneath it. */
 .transactions {
+  --dock-pad: 24px;
+  position: sticky;
+  bottom: calc(-1 * var(--dock-pad));
+  z-index: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-  margin-top: 10px;
+  margin: 4px 0 calc(-1 * var(--dock-pad));
+  padding: 12px 0 var(--dock-pad);
+  border-top: 1px solid var(--line);
+  background: var(--surface-grain, none) var(--surface);
+}
+.transactions:not(:last-child) {
+  margin-bottom: 0;
+}
+@media (max-width: 760px) {
+  .transactions {
+    --dock-pad: calc(20px + env(safe-area-inset-bottom));
+  }
 }
 .transactions button {
   min-height: 44px;
@@ -330,34 +423,33 @@
 }
 .transactions small {
   display: block;
-  color: var(--danger);
-  font-size: 12px;
   margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+  font-family: var(--display);
+}
+.transactions small[data-tone='block'] {
+  color: var(--danger);
+}
+.joined {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+.joined button {
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 12px;
   font-family: var(--display);
 }
 .primary {
   background: var(--surface-grain, none) var(--accent-fill);
   border-color: var(--accent);
   color: var(--on-accent);
-}
-.details {
-  border-top: 1px dashed var(--line);
-}
-.details summary {
-  min-height: 44px;
-  padding: 11px 0;
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 800;
-  cursor: pointer;
-  font-family: var(--display);
-}
-.details[open] {
-  padding-bottom: 8px;
-}
-.details summary:focus-visible {
-  outline: 3px solid var(--focus);
-  outline-offset: 2px;
 }
 .warning,
 .message {
@@ -935,41 +1027,6 @@
   color: var(--text-faint);
   font-size: 12px;
   font-family: var(--display);
-}
-.traits,
-.personality {
-  margin: 4px 0 0;
-  color: var(--text-muted);
-  font-size: 12px;
-  font-family: var(--display);
-}
-/* Play traits and the scout's personality read sit side by side. */
-.profileNotes {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin: 12px 0;
-}
-.profileNotes > div {
-  min-width: 0;
-}
-.profileNotes > div > span {
-  color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 800;
-}
-.profileNotes p {
-  color: var(--text);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
-}
-.card .profileNotes p {
-  margin: 3px 0 0;
-}
-.card .context {
-  margin: 8px 0;
 }
 @media (max-width: 380px) {
   .position {

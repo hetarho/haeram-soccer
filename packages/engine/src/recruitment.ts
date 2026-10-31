@@ -94,12 +94,20 @@ export function recruitmentFit(w: World, offer: TransferOffer, context = recruit
     .filter(({ place }) => place.position === offer.player.position)
     .sort((a, b) => b.gain - a.gain || a.index - b.index)[0];
   const taken = best.gain > 0 || !home ? best : home;
+  const starter = before[taken.index]!;
   const slot = {
     index: taken.index,
     position: taken.place.position,
     role: taken.place.role,
     arrival: Math.round(slotOvr(arriving, taken.place, adaptationMultiplier(arriving.adaptation))),
     settled: Math.round(slotOvr(arriving, taken.place, adaptationMultiplier(ADAPTATION_NEUTRAL))),
+    // CLUB-33's request measure there, adaptation left out, for the scout's verdict (→CLUB-47).
+    value: Math.round(slotOvr(arriving, taken.place)),
+    starter: {
+      id: starter.id,
+      name: starter.name,
+      value: Math.round(slotOvr(starter, taken.place)),
+    },
   };
   const afterStrength = lineupSummary(after, w.tactic).strength,
     afterFit = tacticalProfile(after, w.tactic, opponentTactic).fit;

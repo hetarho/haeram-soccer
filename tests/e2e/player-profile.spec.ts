@@ -79,8 +79,8 @@ for (const viewport of [
     await expect(page.getByTestId('roster-view-summary')).toHaveText('CB');
     await expect(roster.getByRole('article').first()).toBeVisible();
 
-    // A market candidate: positions with levels, the scout's range on his personality, and his
-    // 실효 OVR at the slot he would take on arrival and settled.
+    // A market candidate: positions with levels, the scout's verdict, his 실효 OVR at the slot he
+    // would take on arrival and settled, and the scout's range on his personality under 능력·성향.
     await openPersonnel(page, 'market');
     await marketRows(page)
       .first()
@@ -88,12 +88,12 @@ for (const viewport of [
       .click();
     const card = page.getByRole('dialog', { name: '영입 후보 상세' }).getByRole('article');
     await expect(card.getByTestId('candidate-positions')).toHaveText(/[A-Z]+ 최상/);
-    await expect(card.getByTestId('candidate-personality')).toContainText('~');
+    await expect(card.getByTestId('scout-verdict')).toContainText(/^[A-E]스카우트 판정/);
     await expect(card.getByTestId('candidate-slot')).toHaveText(/합류 \d+ → 적응 후 \d+/);
-    await card.getByText('능력 자세히', { exact: true }).click();
-    await expect(card.getByRole('region', { name: '선수 프로필' })).toContainText(
-      '수석 스카우트가 본 범위',
-    );
+    await card.getByText('능력·성향', { exact: true }).click();
+    const scouted = card.getByRole('region', { name: '선수 프로필' });
+    await expect(scouted.getByTestId('profile-personality')).toContainText('~');
+    await expect(scouted).toContainText('수석 스카우트가 본 범위');
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
     await closeMarketPanel(page, '영입 후보 상세');
