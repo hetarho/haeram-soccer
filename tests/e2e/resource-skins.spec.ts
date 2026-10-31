@@ -70,6 +70,11 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
           }),
       );
       const inbox = buttons.find((button) => button.name.startsWith('결재함'))!;
+      // One row: a wrapped transport would push the clock up under celebrations and content.
+      expect(
+        new Set(buttons.map((button) => Math.round(button.top))).size,
+        `${theme.id} ${width}`,
+      ).toBe(1);
       expect(inbox, `${theme.id} ${width}`).toBeDefined();
       expect(inbox.left).toBeGreaterThanOrEqual(0);
       expect(inbox.right).toBeLessThanOrEqual(width);

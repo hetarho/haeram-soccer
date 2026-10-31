@@ -284,11 +284,17 @@
   .modeSwitch {
     padding: 8px;
   }
+  /* Narrower sides keep 다음 이벤트 in the row beside both 결재 buttons in every theme at 360 px. */
+  .buttons .nextEvent {
+    gap: 4px;
+    padding-inline: 8px;
+  }
+  /* Two 결재 buttons share the row at 360 px: each keeps the 44 px target and two short lines. */
   .approvals {
-    flex: 0 0 60px;
-    width: 60px;
-    padding: 4px 6px;
-    line-height: 1.5;
+    flex: 0 0 44px;
+    width: 44px;
+    padding: 4px 2px;
+    line-height: 1.4;
     white-space: normal;
     word-break: keep-all;
   }
