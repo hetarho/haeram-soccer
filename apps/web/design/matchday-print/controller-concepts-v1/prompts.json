@@ -1,0 +1,23 @@
+[
+  {
+    "id": "P1",
+    "title": "버터 페이퍼",
+    "prompt": "Use case: stylized-concept\nAsset type: reusable 1024 by 1024 square seamless material tile for a football management game's controller background design proposal P1.\nPrimary request: Butter cream uncoated matchday programme paper, warm ivory and pale straw, soft visible irregular cellulose fibres and very few tiny ochre flecks. Fine letterpress-paper tooth, no folds. The most neutral and quiet option.\nComposition: edge-to-edge uniform material, perfectly orthographic flat overhead macro, same tone and texture density at all four edges, seamless repeat, no vignette, no gradient or directional lighting, no obvious repeating geometric motif. Main colour approximately #eadbb8.\nConstraints: texture stays subtle enough for small live interface text laid on top. Material alone, no screen mockup, no buttons, no icons, no text, no letters, no numbers, no labels, no logos, no frame, no border, no watermark.",
+    "transparent_background": false,
+    "tool": "built-in image_gen"
+  },
+  {
+    "id": "P2",
+    "title": "세이지 프레스",
+    "prompt": "Use case: stylized-concept\nAsset type: reusable 1024 by 1024 square seamless material tile for a football management game's controller background design proposal P2.\nPrimary request: Vintage pale sage green dyed paper, desaturated eucalyptus and soft olive undertones, natural irregular paper fibres, occasional soft darker green speckles. Archival football annual endpaper, beautifully tactile and restrained. Clearly green, not cream.\nComposition: edge-to-edge uniform material, perfectly orthographic flat overhead macro, same tone and texture density at all four edges, seamless repeat, no vignette, no gradient or directional lighting, no obvious repeating geometric motif. Main colour approximately #bfcbb4.\nConstraints: texture stays subtle enough for small live interface text laid on top. Material alone, no screen mockup, no buttons, no icons, no text, no letters, no numbers, no labels, no logos, no frame, no border, no watermark.",
+    "transparent_background": false,
+    "tool": "built-in image_gen"
+  },
+  {
+    "id": "P3",
+    "title": "버건디 커버",
+    "prompt": "Use case: stylized-concept\nAsset type: reusable 1024 by 1024 square seamless material tile for a football management game's controller background design proposal P3.\nPrimary request: Deep wine burgundy bookbinding paper, oxblood and muted red-brown, tightly pressed fine paper grain with subtle irregular fibres. Sophisticated vintage football programme cover stock. Dark but not black; no leather embossing, no woven pattern.\nComposition: edge-to-edge uniform material, perfectly orthographic flat overhead macro, same tone and texture density at all four edges, seamless repeat, no vignette, no gradient or directional lighting, no obvious repeating geometric motif. Main colour approximately #612f37.\nConstraints: texture stays subtle enough for small live interface text laid on top. Material alone, no screen mockup, no buttons, no icons, no text, no letters, no numbers, no labels, no logos, no frame, no border, no watermark.",
+    "transparent_background": false,
+    "tool": "built-in image_gen"
+  }
+]
