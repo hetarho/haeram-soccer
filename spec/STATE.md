@@ -450,7 +450,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T622 | Currency levels at the 1999 rate | ECON SAVE | - | todo |
-| T623 | Approval waiting days and overdue morale | STAFF CLUB SAVE | - | doing@261101.ap01 |
+| T623 | Approval waiting days and overdue morale | STAFF CLUB SAVE | - | doing@261031.ap01 |
 | T624 | Approvals never stop progression | WEB STAFF CLUB | T623 | todo |
 | T625 | 결재함 button and approval deadlines | WEB STAFF | T623 T624 | todo |
 
