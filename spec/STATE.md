@@ -478,6 +478,7 @@
 - create-task WEB KIT (WEB r188–r192 delta WEB-39✎ WEB-79✎ WEB-106+ WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ WEB-43✎ WEB-10✎ WEB-44✎ WEB-107+ WEB-86✎ WEB-108+ WEB-100✎ WEB-42✎, plus WEB r194 WEB-91✎, and KIT r5–r6 KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ are implemented by the ds30 and cb31 designs; a task records them and their e2e checks)
 
 ## log
+- 261101 fix engine approvals: waiting days counted at the start of clubDay so day, round and season paths agree at the close (CI 41222347443: calendar.progression-eng/esp, season, full-model-throughput); portable golden regenerated; integration 1,268 and contract 48 passed.
 - 261101 ap01 closed: changed-code checks only at the owner's request (unit tier, touched integration/contract, 14 changed Chromium journeys); push main.
 - 261101 T625 done: 결재함 button in the bottom controls with waiting/overdue counts, tray rows with D-n/지연 n일, lobby tray heading with the overdue morale cost; session ap01.
 - 261101 T624 done: approvals never stop or refuse progression in either mode; office counts read approvalRequests; four e2e journeys rewritten for the final gate; session ap01.
@@ -497,4 +498,3 @@
 - 261031 update-ssot WEB r192 KIT r6: WEB-10✎ WEB-11✎ WEB-39✎ WEB-42✎ WEB-44✎ WEB-100✎ WEB-107+ WEB-86✎ WEB-108+ KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ (five-entry navigation, designer commission and fourteen shirt patterns as built in ds30; clubhouse quick actions; team state and room doors in the office lobby)
 - 261031 update-ssot WEB r190: WEB-43✎ (side-by-side candidate comparison, compare a candidate with a player of ours); code in the working tree, uncommitted
 - 261031 owner-directed clubhouse quick actions (chat, no task): owner actions that run on the spot move onto home as three quick-action tiles over the office scene — 분위기 (meeting, team building, win bonus, owner visit, manager backing), 피로 (rest XI, assistant's recovery training sheet, rest day, recovery support, camp, friendly), 훈련·육성 (first-team and youth training sheets in place, top prospect's promotion) — each a sheet with cost, effect and chances and no page moves; the five team-state tiles (with their remedy sheets and page links) and the four room doors move into the owner-office lobby under the desks, and room pages carry an office bar back to the lobby. Typecheck (own files), lint, format and related unit tests pass; e2e helpers/specs updated but not run
-- 261031 update-ssot WEB r189: WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ (no stadium scene on the clubhouse; the cash band shows on home like every view); code in the working tree, uncommitted

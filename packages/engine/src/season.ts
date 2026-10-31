@@ -922,7 +922,6 @@ function beginDays(w: World) {
 function stepDay(w: World, capture: Settlement, observe: boolean) {
   const day = currentDay(w) + 1;
   w.calendar = { day };
-  countApprovalWaits(w);
   // The season closes the day after its final round; the empty summer is skipped.
   if (closingDay(w, day)) {
     closeSeason(w);
@@ -966,7 +965,6 @@ export function prepareRound(
   if (sequential || !clubs.has(w.playerClub)) return false;
   beginDays(w);
   w.calendar = { day };
-  countApprovalWaits(w);
   const phase = beginRound(w, observe, (copy, jobs) => {
     start(copy, jobs);
     return () => undefined;
@@ -998,9 +996,12 @@ export function completeRound(
 
 /**
  * Daily club business outside matches: facility works, academy intake, the transfer market, sponsors, the staff,
- * spring retirement announcements, contract talks, transfer requests and healed injuries.
+ * spring retirement announcements, contract talks, transfer requests and healed injuries. It opens
+ * by counting the owner's waiting approvals, once a day on every progression path, the season's
+ * close included (→STAFF-48).
  */
 export function clubDay(w: World) {
+  countApprovalWaits(w);
   settleNpcCoaching(w);
   qualifyManagers(w);
   progressFacilityWorks(w);
