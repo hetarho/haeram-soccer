@@ -1,12 +1,12 @@
 import { useEffect, useLayoutEffect, useRef, type KeyboardEvent, type ReactNode } from 'react';
-import { nextTabIndex } from './tabs';
+import { nextTabIndex, tabFocusLost, tabIntentOutcome, type TabIntent } from './tabs';
 import { taskAddress, useTaskState } from './taskMemory';
 import s from './App.module.css';
 
 /**
  * A tab bar (→WEB-69): labels over a hairline, the selected one underlined, scrolling sideways
  * when they do not fit. Arrow keys, Home and End move between tabs (→ nextTabIndex) and focus the
- * one they pick.
+ * one they pick, keeping it focused through its page's deferred mount (→ tabIntentOutcome).
  */
 export function TabList<T extends string>({
   tabs,
@@ -29,18 +29,51 @@ export function TabList<T extends string>({
   /** False for tabs that open pages of their own rather than one panel below them. */
   panel?: boolean;
 }) {
+  const bar = useRef<HTMLDivElement>(null);
+  // The tab the keyboard picked, until its selection commits or the owner turns elsewhere.
+  const intent = useRef<TabIntent<T> | undefined>(undefined);
+  useEffect(() => {
+    const drop = (event: Event) => {
+      if (event.type === 'focusin' && bar.current?.contains(event.target as Node)) return;
+      intent.current = undefined;
+    };
+    document.addEventListener('pointerdown', drop, true);
+    document.addEventListener('focusin', drop, true);
+    return () => {
+      document.removeEventListener('pointerdown', drop, true);
+      document.removeEventListener('focusin', drop, true);
+    };
+  }, []);
+  // A page whose view is deferred keeps the shell inert until it mounts, which takes the focus off
+  // the picked tab; once its selection commits, a focus nobody else took returns to that tab.
+  useLayoutEffect(() => {
+    const picked = intent.current;
+    if (!picked) return;
+    const outcome = tabIntentOutcome(picked, value);
+    if (outcome === 'keep') return;
+    intent.current = undefined;
+    const root = bar.current,
+      active = document.activeElement;
+    if (outcome === 'drop' || !root) return;
+    if (!tabFocusLost(active, document.body, !!active && root.contains(active))) return;
+    root
+      .querySelector<HTMLButtonElement>(`[role="tab"][id="${idPrefix}-tab-${value}"]`)
+      ?.focus({ preventScroll: true });
+  }, [value, idPrefix]);
   const keyboard = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     const next = nextTabIndex(event.key, index, tabs.length);
     if (next === undefined) return;
     event.preventDefault();
-    onChange(tabs[next][0]);
+    const tab = tabs[next][0];
+    intent.current = tab === value ? undefined : { from: value, to: tab };
+    onChange(tab);
     // Within this bar: a closing dialog's fading copy keeps the same IDs for a moment.
     event.currentTarget.parentElement
       ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
       [next]?.focus();
   };
   return (
-    <div className={className} role="tablist" aria-label={label}>
+    <div ref={bar} className={className} role="tablist" aria-label={label}>
       {tabs.map(([id, text], index) => (
         <button
           key={id}

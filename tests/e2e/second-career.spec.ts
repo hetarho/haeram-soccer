@@ -73,11 +73,18 @@ test('same-person-cross-role-links', async ({ page }) => {
     .filter({ has: page.getByRole('heading', { name: player.name, exact: true }) });
   await expect(card).toContainText('내부 승진');
   await card.getByRole('button', { name: /^감독 선임 ·/ }).click();
-  await page
-    .getByRole('dialog', { name: '감독 선임 확인' })
-    .getByRole('button', { name: '선임 확정', exact: true })
-    .click();
-  await page.getByRole('button', { name: `${player.name} 인물 경력`, exact: true }).click();
+  const confirm = page.getByRole('dialog', { name: '감독 선임 확인' });
+  await confirm.getByRole('button', { name: '선임 확정', exact: true }).click();
+  // The appointment closes the confirmation and the market, whose candidate card links the same
+  // person; his history then opens from the current manager's card, which now names him.
+  await expect(confirm).toHaveCount(0);
+  await expect(page.getByRole('dialog', { name: '감독 교체' })).toHaveCount(0);
+  const history = managerCard(page).getByRole('button', {
+    name: `${player.name} 인물 경력`,
+    exact: true,
+  });
+  await expect(history).toBeVisible();
+  await history.click();
   detail = page.getByRole('dialog', { name: '인물 경력', exact: true });
   await expect(detail).toContainText(`${player.born}년생`);
   await expect(detail).toContainText('감독 능력');
