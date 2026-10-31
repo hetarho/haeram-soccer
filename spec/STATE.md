@@ -16,7 +16,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | cr01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T15:49Z | 2026-10-31T15:49Z | - |
-| ap01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T16:01Z | 2026-10-31T16:07Z | T623 |
+| ap01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T16:01Z | 2026-10-31T16:25Z | T624 |
 
 ## inbox
 - 261101 decided WEB-42 WEB-45 STAFF-48 CLUB-19: what an unanswered owner approval costs once time no longer waits for it → a 7-day 결재 기한, then each overdue approval costs squad morale 1 a settled round (at most 3) with one overdue notice: one legible lever on the team, and a week before it bites even at x10 (alt: morale from the first day without grace | a per-kind consequence such as the asking player turning unhappy or a bid lapsing early | the staff deciding it for the owner at the deadline)
@@ -451,7 +451,7 @@
 |---|---|---|---|---|
 | T622 | Currency levels at the 1999 rate | ECON SAVE | - | todo |
 | T623 | Approval waiting days and overdue morale | STAFF CLUB SAVE | - | doing@261031.ap01 |
-| T624 | Approvals never stop progression | WEB STAFF CLUB | T623 | todo |
+| T624 | Approvals never stop progression | WEB STAFF CLUB | T623 | doing@261031.ap01 |
 | T625 | 결재함 button and approval deadlines | WEB STAFF | T623 T624 | todo |
 
 ## work
