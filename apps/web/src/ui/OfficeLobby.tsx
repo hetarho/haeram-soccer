@@ -80,7 +80,7 @@ export function OfficeLobby({
             </>
           }
         />
-        <ApprovalTray w={w} items={pending} />
+        <ApprovalTray w={w} items={pending} morale />
         <LobbyStats w={w} sponsors={sponsors} pending={pending} />
         <ul className={o.areas} aria-label="사무실 업무">
           {BUSINESS_TABS.map(([view, label]) => {

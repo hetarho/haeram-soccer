@@ -165,3 +165,48 @@ describe('controller approval overview', () => {
     },
   );
 });
+
+describe('controller 결재함 (→WEB-18)', () => {
+  const inbox = (markup: string) =>
+    markup.match(/<button[^>]*data-testid="approval-inbox"[^>]*>(.*?)<\/button>/)?.[0] ?? '';
+  it.each([
+    ['manual', false],
+    ['automatic', true],
+  ] as const)(
+    'stays enabled in %s mode, also with nothing waiting and while running',
+    (mode, running) => {
+      gameStore.getState().view!.world.settings!.mode = mode;
+      gameStore.setState({ busy: true, readonly: true });
+      const controller = {
+        store: createStore(() => ({ running, pace: 'x1' })),
+      } as unknown as ProgressionController;
+      const button = inbox(
+        renderToStaticMarkup(
+          createElement(ProgressControls, { client: {} as GameClient, controller }),
+        ),
+      );
+      expect(button).toContain('aria-label="결재함 · 대기 0건"');
+      expect(button).not.toContain('disabled');
+      expect(button).toContain('<b data-ui="count" aria-hidden="true">0</b>');
+      expect(button).not.toContain('지연');
+    },
+  );
+  it('counts what waits and marks the overdue ones', () => {
+    const w = gameStore.getState().view!.world;
+    w.settings!.responsibilities.manager = 'direct';
+    w.manager.interim = true;
+    w.manager.id = 'boss';
+    w.approvalWaits = { 'decision:manager:boss:1950': 8 };
+    const controller = {
+      store: createStore(() => ({ running: true, pace: 'x1' })),
+    } as unknown as ProgressionController;
+    const button = inbox(
+      renderToStaticMarkup(
+        createElement(ProgressControls, { client: {} as GameClient, controller }),
+      ),
+    );
+    expect(button).toContain('aria-label="결재함 · 대기 1건 · 지연 1건"');
+    expect(button).toContain('data-overdue="true"');
+    expect(button).toMatch(/>지연 <!-- -->1<\/b>|>지연 1<\/b>/);
+  });
+});

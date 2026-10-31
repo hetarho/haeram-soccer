@@ -247,6 +247,34 @@
   min-height: 44px;
   font-size: 12px;
 }
+/*
+ * The 결재함 carries its waiting count on its corner and its overdue count opposite in the warning
+ * colour (→WEB-18). Both badges sit over the frame, so a count arriving while the clock runs never
+ * moves a control.
+ */
+.inbox {
+  position: relative;
+}
+.inbox > [data-ui='count'],
+.late {
+  position: absolute;
+  top: -7px;
+  pointer-events: none;
+}
+.inbox > [data-ui='count'] {
+  right: -4px;
+}
+.late {
+  left: -4px;
+  padding: 0 5px;
+  border: 1px solid var(--danger);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--danger) 16%, var(--surface-deep));
+  color: var(--danger);
+  font-size: 10px;
+  line-height: 15px;
+  white-space: nowrap;
+}
 @media (max-width: 760px) {
   /* Reflow the two long actions inside one transport row, retaining every touch target. */
   .modeGroup {

@@ -313,6 +313,17 @@ test('approvals waiting in the 결재함 never stop a running clock (→WEB-42)'
   await expect(stop).toBeVisible();
   await stop.click();
   await expect(play).toBeVisible();
+  // The controller's 결재함 counts the same work and opens the office lobby's tray (→WEB-18/100).
+  const inbox = clock.getByTestId('approval-inbox');
+  await expect(inbox).toHaveAttribute('aria-label', /^결재함 · 대기 [1-9]/);
+  await inbox.click();
+  await expect(page.getByTestId('office-lobby')).toBeVisible();
+  await expect(
+    page
+      .getByRole('region', { name: '결재 대기 업무', exact: true })
+      .getByTestId('approval-deadline')
+      .first(),
+  ).toHaveText(/^(D-[1-7]|지연 \d+일)$/);
 });
 
 test('restored match eve uses actual match actions instead of acknowledging the observation', async ({

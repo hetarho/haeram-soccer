@@ -4,13 +4,19 @@ import { PixelIcon } from './PixelIcon';
 import { currentDay, seasonLength } from '../../../../packages/engine/src/calendar';
 import { lazy, memo, Suspense, useEffect, useRef, useState } from 'react';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
-import { useProgression, type Pace, type ProgressionController } from '../runtime/progression';
+import {
+  approvalRequests,
+  overdueSummary,
+  useProgression,
+  type Pace,
+  type ProgressionController,
+} from '../runtime/progression';
 import type { GameClient } from '../runtime/client';
 import { ProgressModeSwitch } from './ProgressModeSwitch';
 import { ownDivisionRound } from './league';
 import { useLocale } from '../presentation/react';
 import { Dialog } from './Dialog';
-import { openOwnerOffice } from './state';
+import { openOwnerOffice, openPrimary } from './state';
 import p from './ProgressControls.module.css';
 
 // The result notice's report loads only when opened, outside the main chunk (→ARCH-28).
@@ -93,6 +99,10 @@ export const ProgressControls = memo(function ProgressControls({
   const mode = settingsOf(w).mode;
   const manual = mode === 'manual';
   const blocked = !!(state.readonly || state.error || w.critical || w.bankrupt);
+  // Approvals never stop the clock, so the 결재함 stays in sight in both modes (→WEB-18/42).
+  const requests = approvalRequests(w),
+    approvals = requests.length,
+    late = overdueSummary(w, requests).overdue;
   const buttons = manual ? (
     <div className={p.buttons} role="group" aria-label="수동 진행">
       <button
@@ -146,6 +156,24 @@ export const ProgressControls = memo(function ProgressControls({
     <section className={p.controls} data-ui="season-transport" aria-label="시즌 진행">
       <div className={p.modeGroup}>
         <ProgressModeSwitch client={client} controller={controller} />
+        <button
+          className={`${p.approvals} ${p.inbox}`}
+          data-ui="secondary"
+          data-testid="approval-inbox"
+          data-overdue={late > 0 || undefined}
+          aria-label={`결재함 · 대기 ${approvals}건${late ? ` · 지연 ${late}건` : ''}`}
+          onClick={() => openPrimary('business')}
+        >
+          <span>결재함</span>
+          <b data-ui="count" aria-hidden="true">
+            {approvals > 99 ? '99+' : approvals}
+          </b>
+          {late > 0 && (
+            <b className={p.late} aria-hidden="true">
+              지연 {late}
+            </b>
+          )}
+        </button>
         <button
           className={p.approvals}
           data-ui="secondary"

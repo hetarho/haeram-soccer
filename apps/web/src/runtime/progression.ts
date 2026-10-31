@@ -10,6 +10,11 @@ import {
   seasonDate,
 } from '../../../../packages/engine/src/calendar';
 import { pendingDecisions, stoppingReasons } from '../../../../packages/engine/src/stopping';
+import {
+  approvalDeadline,
+  isOverdue,
+  overdueMoraleCost,
+} from '../../../../packages/engine/src/approvals';
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { currentLeagueRank } from '../../../../packages/engine/src/projection';
 import type { GameClient } from './client';
@@ -131,6 +136,18 @@ export function stoppingEvents(w: World) {
 /** Owner approvals waiting in the office's 결재함; they never stop progression (→WEB-42). */
 export function approvalRequests(w: World) {
   return pendingDecisions(w);
+}
+/** A waiting approval against its 결재 기한 (→STAFF-48): D-n within it, 지연 n일 once past it. */
+export function approvalStanding(w: World, id: string) {
+  const left = approvalDeadline(w, id);
+  return left > 0
+    ? { overdue: false, label: `D-${left}` }
+    : { overdue: true, label: `지연 ${1 - left}일` };
+}
+/** How many of `items` are past their 결재 기한, and the squad morale they cost a settled round. */
+export function overdueSummary(w: World, items: readonly { id: string }[] = approvalRequests(w)) {
+  const overdue = items.filter((item) => isOverdue(w, item.id)).length;
+  return { overdue, morale: overdueMoraleCost(overdue) };
 }
 /** An enabled pre-match report still awaiting the owner's explicit match choice. */
 export function pendingMatchReport(w: World) {

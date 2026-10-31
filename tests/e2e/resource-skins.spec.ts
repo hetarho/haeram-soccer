@@ -49,6 +49,42 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
     expect((await venue.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);
     await expect(page.locator('[data-home-part="entrances"]')).toHaveCount(0);
     await page.screenshot({ path: `.tmp/resource-audit/${theme.id}-home.png` });
+    // The 결재함 stays whole beside the other transport buttons at both phone widths (→WEB-18).
+    for (const width of [360, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      const buttons = await page.locator('[data-ui="season-transport"]').evaluate((node) =>
+        [...node.querySelectorAll('button')]
+          .filter((button) => button.offsetParent)
+          .map((button) => {
+            const r = button.getBoundingClientRect();
+            return {
+              name: button.getAttribute('aria-label') ?? button.textContent ?? '',
+              left: r.left,
+              right: r.right,
+              top: r.top,
+              bottom: r.bottom,
+              clipped: button.scrollWidth > button.clientWidth,
+            };
+          }),
+      );
+      const inbox = buttons.find((button) => button.name.startsWith('결재함'))!;
+      expect(inbox, `${theme.id} ${width}`).toBeDefined();
+      expect(inbox.left).toBeGreaterThanOrEqual(0);
+      expect(inbox.right).toBeLessThanOrEqual(width);
+      expect(inbox.clipped).toBe(false);
+      for (const other of buttons.filter((button) => button !== inbox))
+        expect(
+          inbox.right <= other.left ||
+            inbox.left >= other.right ||
+            inbox.bottom <= other.top ||
+            inbox.top >= other.bottom,
+          `${theme.id} ${width}: 결재함 overlaps ${other.name}`,
+        ).toBe(true);
+      expect(
+        (await page.getByTestId('approval-inbox').locator('span').evaluate(textContrast)).ratio,
+      ).toBeGreaterThanOrEqual(4.5);
+    }
+    await page.setViewportSize({ width: 390, height: 844 });
     const navigate = async (name: string) =>
       page.getByRole('button', { name, exact: true }).filter({ visible: true }).first().click();
     await openPersonnel(page, 'players');
