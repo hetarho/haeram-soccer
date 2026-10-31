@@ -1,6 +1,7 @@
 import type { ResponsibilityKey } from '../../../../packages/contracts/src/types';
 import type { AreaKey } from './areas';
 import { rememberTask } from './taskMemory';
+import { operationsAddress } from './clubSections';
 
 export const OFFICE_DESKS = [
   ['players', '선수 계약'],
@@ -36,6 +37,22 @@ export type OfficeDestination = WorkDesk | 'lobby' | 'office';
 export function resolveOffice(view: string | null): OfficeDestination {
   if (view === 'office') return 'office';
   return OFFICE_DESKS.find(([key]) => key === view)?.[0] ?? LEGACY_OFFICE[view ?? ''] ?? 'lobby';
+}
+/**
+ * Where an older desk address without a selected request lands (→WEB-39): player work on the
+ * roster, the market or the academy by its work tab, staff work with the manager or the coaches,
+ * money, sponsors and design in their club-operations section. A request stays in the office.
+ */
+export function deskDestination(desk: WorkDesk, work: string | null) {
+  if (desk === 'players')
+    return work === 'recruitment' || work === 'market'
+      ? '/first-team?view=market'
+      : work === 'academy'
+        ? '/academy'
+        : '/first-team?view=players';
+  if (desk === 'staff')
+    return work === 'coaches' ? '/staff?view=coaches' : '/first-team?view=manager';
+  return operationsAddress(desk);
 }
 
 /** Local work tabs keep real browser history while the focused office retains its desk. */

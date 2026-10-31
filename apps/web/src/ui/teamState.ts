@@ -327,7 +327,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
             ? `업무 기준에서 ${POLICY_INFO[invest].label} 단계를 ${toward(investStep.name)} 낮춰 적용해요 · ${investStep.summary}`
             : '이미 추가 지출이 없어요',
           unavailable: investStep ? undefined : '투자하는 줄이 없어요',
-          page: 'business',
+          page: 'operations',
           board: investStep ? { policy: { key: invest, level: investStep.level } } : undefined,
         },
         // Squad investment scales operating expenses (→ECON-16); offered while it can go down.
@@ -337,7 +337,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
                 id: 'support-down',
                 label: '선수단 투자 낮추기',
                 effect: `업무 기준에서 ${toward(support.name)} 낮춰 적용해요 · 운영 경비 연 ${format(saving)} 절감 · 라운드 성장과 피로 회복이 줄어요`,
-                page: 'business' as const,
+                page: 'operations' as const,
                 board: { policy: { key: 'support' as const, level: support.level } },
               },
             ]
@@ -349,7 +349,7 @@ export function remedies(w: World, key: StateKey): Remedy[] {
             ? `업무 기준에서 ${toward(ticket.name)} 올려 적용해요 · 홈 경기 입장 수입이 늘고 관중 수요는 줄어요`
             : '이미 가장 비싼 가격이에요',
           unavailable: ticket ? undefined : '티켓 가격 상한',
-          page: 'business',
+          page: 'operations',
           board: ticket ? { ticket: ticket.price } : undefined,
         },
         careRequest(w, 'friendly'),

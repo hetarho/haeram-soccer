@@ -109,9 +109,57 @@ export async function officeLobby(page: Page) {
   await expect(officeTitle(page)).toHaveText(LOBBY);
 }
 
-/** Opens one office area (선수 계약, 스태프 계약, 재정·투자, 후원, 구단 디자인, 결재라인 모아보기) from its lobby card. */
+/** The club's section bar over the clubhouse and club information pages (→WEB-10). */
+export const clubSections = (page: Page) =>
+  page.getByRole('tablist', { name: '구단 섹션', exact: true });
+/** 구단 운영's own section tabs (→WEB-110). */
+export const operationsTabs = (page: Page) =>
+  page.getByRole('tablist', { name: '구단 운영', exact: true });
+export const OPERATIONS_SECTIONS = ['재정·투자', '후원', '구단 디자인'];
+
+/**
+ * Opens one club section (현황, 1군, 코치진, 훈련, 유소년, 운영) through the clubhouse's section
+ * bar, leaving the office or the market first; observation reports covering it are dismissed.
+ */
+export async function openClubSection(
+  page: Page,
+  section: string,
+  options: { timeout?: number } = {},
+) {
+  await outsideOffice(page);
+  await dismissCelebration(page);
+  const covering = page.getByRole('dialog').filter({ has: page.getByTestId('event-group') });
+  if (await covering.isVisible())
+    await covering.getByRole('button', { name: '창 닫기', exact: true }).click();
+  if (!(await clubSections(page).isVisible())) await clubhouseTab(page).click(options);
+  const tab = clubSections(page).getByRole('tab', { name: section, exact: true });
+  if ((await tab.getAttribute('aria-selected')) !== 'true') await tab.click(options);
+  await expect(tab).toHaveAttribute('aria-selected', 'true');
+}
+
+/** Opens one section of 구단 운영 (재정·투자, 후원, 구단 디자인) through the club's sections. */
+export async function openOperations(
+  page: Page,
+  section = '재정·투자',
+  options: { timeout?: number } = {},
+) {
+  await closeOfficeOverview(page);
+  if (!(await operationsTabs(page).isVisible())) await openClubSection(page, '운영', options);
+  const tab = operationsTabs(page).getByRole('tab', { name: section, exact: true });
+  if ((await tab.getAttribute('aria-selected')) !== 'true') await tab.click(options);
+  await expect(tab).toHaveAttribute('aria-selected', 'true');
+}
+
+/**
+ * Opens where an office area's work lives now (→WEB-39/110): 재정·투자, 후원 and 구단 디자인 in
+ * 구단 운영, player and staff contracts with the roster and the coaches, 결재라인 모아보기 as the
+ * office's modal.
+ */
 export async function openOfficeArea(page: Page, area: string, options: { timeout?: number } = {}) {
   if (area === '투자') area = '재정·투자';
+  if (OPERATIONS_SECTIONS.includes(area)) return openOperations(page, area, options);
+  if (area === '선수 계약') return openClubSection(page, '1군', options);
+  if (area === '스태프 계약') return openClubSection(page, '코치진', options);
   if (area === '결재라인 모아보기') {
     const overview = page.getByRole('dialog', { name: area, exact: true });
     if (await overview.isVisible()) return;
@@ -136,9 +184,9 @@ export async function openOfficeArea(page: Page, area: string, options: { timeou
   await expect(officeTitle(page)).toHaveText(area);
 }
 
-/** Whole-club configuration is a secondary disclosure within investment. */
+/** Whole-club configuration is a secondary disclosure within 구단 운영's investment. */
 export async function openOfficeLibrary(page: Page) {
-  await openOfficeArea(page, '투자');
+  await openOperations(page, '재정·투자');
   const library = page.getByTestId('office-library');
   if ((await library.getAttribute('open')) === null)
     await library.locator(':scope > summary').click();

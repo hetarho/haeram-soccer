@@ -199,12 +199,12 @@ test('navigation detours and passing days keep the drafts beside the policy draf
     await expect(current.getByRole('alert')).toHaveCount(0);
     await expect(adoptButton(current, 0)).toBeEnabled();
   };
-  // Another office area and back.
+  // Another 구단 운영 section and back.
   await openOfficeArea(page, '투자');
   await openOfficeArea(page, '구단 디자인');
   view = designView(page);
   await expectDrafts(view);
-  // Another page and back: a fresh entry opens the lobby, and the drafts still wait (→WEB-74).
+  // Another page and back: the drafts still wait (→WEB-74).
   await leaveOffice(page);
   await openPersonnel(page, 'players');
   await expect(page).toHaveURL(/\/first-team\?view=players/);
@@ -268,7 +268,7 @@ test('a read-only tab inspects the design and the drafts but cannot commission o
   const viewer = await context.newPage();
   try {
     await viewer.setViewportSize({ width: 390, height: 844 });
-    await viewer.goto('/direction?view=identity');
+    await viewer.goto('/club-operations?view=identity');
     let view = designView(viewer);
     await expect(appliedPanel(view)).toBeVisible();
     await expect(view).toContainText('읽기 전용 상태에서는 의뢰할 수 없어요.');

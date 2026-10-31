@@ -1,15 +1,9 @@
-import { openOfficeWork } from './officeDesks';
-import { PlaceActivities } from './PlaceActivities';
-import { PlayerOfficeWork, OfficeWorkResponsibility } from './PlayerOfficePanel';
-import { DeskBody } from './OfficeDesk';
-import { saleOfferItems } from './playerOfficeWork';
 import { AreaCriteria } from './DirectionLines';
-import { approvalRequests } from '../runtime/progression';
 import { PersonnelHub } from './PersonnelHubs';
 import type { ProgressionController } from '../runtime/progression';
 import { squadRegistration } from './squadRegistration';
 import { PersonCareerLink } from './PersonCareer';
-import { useTaskState, useTaskMemory } from './taskMemory';
+import { useTaskState } from './taskMemory';
 import { PixelIcon } from './PixelIcon';
 import { Select } from './Select';
 import { lazy, Suspense, useEffect, useState } from 'react';
@@ -97,7 +91,6 @@ import {
   ManagerRenewal,
   TalkRulePanel,
 } from './ClubStaff';
-import { TabList, TabPanel, useAddressTab } from './PageTabs';
 import { AcademyPanel } from './AcademyPanel';
 import { TrainingView } from './TrainingView';
 import { RoomBar } from './OfficeBar';
@@ -130,6 +123,10 @@ type Props = { state: ClientState; client: GameClient };
  */
 const RecordsRoom = lazy(() =>
   import('./RecordsRoom').then((module) => ({ default: module.RecordsRoom })),
+);
+/** 구단 운영 loads as its own chunk on its first visit (→ARCH-28, →WEB-110). */
+const ClubOperations = lazy(() =>
+  import('./ClubOperations').then((module) => ({ default: module.ClubOperations })),
 );
 const toneLabel = {
   respect: '정중하게 제안',
@@ -183,103 +180,6 @@ function PersonnelPanel({
     <>
       <CoachingStaff w={w} client={client} />
       <CoachingPlan w={w} />
-    </>
-  );
-}
-const STAFF_WORK = [
-  ['manager', '감독 계약'],
-  ['coaches', '스태프 계약'],
-] as const;
-function OfficePersonnelWork({
-  desk,
-  state,
-  client,
-  controller,
-}: Props & { desk: 'players' | 'staff'; controller: ProgressionController }) {
-  const offers = desk === 'players' ? saleOfferItems(state.view!.world) : [];
-  if (desk === 'players')
-    return (
-      <PlayerOfficeWork
-        w={state.view!.world}
-        client={client}
-        controller={controller}
-        pending={approvalRequests(state.view!.world)}
-        work={(tab) =>
-          tab === 'recruitment' ? (
-            <RecruitmentDesk state={state} client={client} />
-          ) : tab === 'academy' ? (
-            <PlaceActivities place="academy" state={state} client={client} />
-          ) : (
-            <>
-              {tab === 'sales' && (
-                <section aria-label="들어온 매각 제안">
-                  {offers.map((item) => (
-                    <EventCard
-                      key={item.id}
-                      client={client}
-                      controller={controller}
-                      item={item}
-                      inDesk
-                    />
-                  ))}
-                  {!offers.length && <p>현재 답변할 매각 제안이 없어요.</p>}
-                </section>
-              )}
-              <Roster state={state} client={client} work={tab} />
-            </>
-          )
-        }
-      />
-    );
-  return <StaffOfficeWork state={state} client={client} controller={controller} />;
-}
-function StaffOfficeWork({
-  state,
-  client,
-  controller,
-}: Props & { controller: ProgressionController }) {
-  const w = state.view!.world;
-  const [tab, setTab] = useAddressTab('work', STAFF_WORK, 'manager', {
-    world: w.id,
-    key: 'office-work-staff',
-    path: '/direction?view=staff',
-    keepFirst: true,
-    older: (params) =>
-      (params.get('work') ?? useTaskMemory.getState().values['office-work-staff']) === 'coaches'
-        ? 'coaches'
-        : 'manager',
-  });
-  const [market, setMarket] = useState(false);
-  return (
-    <>
-      <TabList
-        tabs={STAFF_WORK}
-        value={tab}
-        label="스태프 계약 업무"
-        idPrefix="office-staff"
-        onChange={(next) => {
-          if (next === tab) return;
-          setTab(next);
-          openOfficeWork(next);
-        }}
-      />
-      <TabPanel idPrefix="office-staff" value={tab}>
-        <DeskBody>
-          <OfficeWorkResponsibility
-            w={w}
-            client={client}
-            controller={controller}
-            scope={[tab === 'manager' ? 'manager' : 'staff']}
-          />
-          <PersonnelPanel
-            tab={tab}
-            state={state}
-            client={client}
-            onReplace={() => setMarket(true)}
-          />
-        </DeskBody>
-      </TabPanel>
-      {market && <ManagerMarket state={state} client={client} onClose={() => setMarket(false)} />}
     </>
   );
 }
@@ -1300,31 +1200,19 @@ function Business({ state, client, controller }: Props & { controller: Progressi
     <>
       <OperationsView
         key={opened}
-        controller={controller}
         state={state}
         client={client}
-        legacy={<EconomicContext state={state} />}
         journal={<ClubJournal state={state} />}
-        personnel={(desk, scoped, request, error) =>
-          request ? (
-            <PersonnelRequest
-              key={`${request.world}:${request.item.id}`}
-              request={request}
-              state={state}
-              client={scoped}
-              controller={controller}
-              error={error}
-            />
-          ) : (
-            <OfficePersonnelWork
-              key={`${state.view!.world.id}:${desk}`}
-              desk={desk}
-              controller={controller}
-              state={state}
-              client={scoped}
-            />
-          )
-        }
+        personnel={(_desk, scoped, request, error) => (
+          <PersonnelRequest
+            key={`${request.world}:${request.item.id}`}
+            request={request}
+            state={state}
+            client={scoped}
+            controller={controller}
+            error={error}
+          />
+        )}
       />
     </>
   );
@@ -1354,6 +1242,24 @@ export default function Rich({
         <RoomBar title={page === 'training' ? '훈련장' : '유소년 훈련장'} />
         <TrainingView state={state} client={client} view={page} />
       </>
+    );
+  if (page === 'operations')
+    return (
+      <Suspense
+        fallback={
+          <div className={s.loading} role="status">
+            구단 운영을 여는 중…
+          </div>
+        }
+      >
+        <ClubOperations
+          key={state.view!.world.id}
+          state={state}
+          client={client}
+          controller={controller}
+          legacy={<EconomicContext state={state} />}
+        />
+      </Suspense>
     );
   if (page === 'business')
     return <Business state={state} client={client} controller={controller} />;

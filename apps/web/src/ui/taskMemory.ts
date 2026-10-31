@@ -56,8 +56,10 @@ export function taskAddress() {
 }
 export function rememberTask(page: Page) {
   const address = taskAddress();
-  // Request visits have their own history entry, never the default address of an ordinary desk.
-  if (page === 'business' && new URLSearchParams(location.search).has('request')) return;
+  // Request visits have their own history entry, and a desk address leads out of the office: the
+  // office entry resumes only its lobby.
+  const office = new URLSearchParams(location.search);
+  if (page === 'business' && (office.has('request') || office.has('view'))) return;
   const { addresses, scrolls } = useTaskMemory.getState();
   useTaskMemory.setState({
     addresses: { ...addresses, [page]: address },

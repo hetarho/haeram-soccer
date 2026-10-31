@@ -4,7 +4,7 @@ export interface Story {
   group: string;
   components: string[];
   description: string;
-  page?: 'firstTeam' | 'staff' | 'training' | 'academy' | 'business' | 'history';
+  page?: 'firstTeam' | 'staff' | 'training' | 'academy' | 'operations' | 'business' | 'history';
   query?: string;
 }
 
@@ -235,40 +235,32 @@ export const STORIES: Story[] = [
     '구단주 사무실',
     '운영 · 시설',
     ['OfficeLobby', 'Operations'],
-    '업무별 개요, 결재 요청과 업무 분장.',
+    '결재 요청과 결재 라인.',
     { page: 'business' },
   ),
   story(
-    'contracts',
-    '선수 계약 업무',
-    '운영 · 시설',
-    ['Rich', 'PlayerOfficePanel', 'BusinessWorkbench'],
-    '계약·영입·매각·유소년 업무와 결재 라인.',
-    { page: 'business', query: 'view=players' },
-  ),
-  story(
-    'staff-contracts',
-    '스태프 계약 업무',
-    '운영 · 시설',
-    ['Rich', 'BusinessWorkbench'],
-    '감독과 스태프의 계약 및 채용.',
-    { page: 'business', query: 'view=staff' },
-  ),
-  story(
     'investment',
-    '재정 · 투자 업무',
+    '구단 운영 · 재정·투자',
     '운영 · 시설',
-    ['Rich', 'FinanceOutlook', 'FinancialBreakdown', 'FacilityParts'],
-    '재정 현황, 출자, 시설과 투자 방향.',
-    { page: 'business', query: 'view=investment' },
+    ['ClubOperations', 'ClubNavigation', 'FinanceOutlook', 'FinancialBreakdown', 'FacilityParts'],
+    '구단 섹션 메뉴, 재정 현황, 출자, 시설과 투자 방향.',
+    { page: 'operations', query: 'view=investment' },
   ),
   story(
     'sponsors',
-    '후원 업무',
+    '구단 운영 · 후원',
     '운영 · 시설',
-    ['Rich', 'BusinessWorkbench'],
+    ['ClubOperations', 'BusinessWorkbench'],
     '후원 슬롯, 계약 조건과 제안.',
-    { page: 'business', query: 'view=sponsors' },
+    { page: 'operations', query: 'view=sponsor' },
+  ),
+  story(
+    'operations-identity',
+    '구단 운영 · 구단 디자인',
+    '운영 · 시설',
+    ['ClubOperations', 'ClubDesignView'],
+    '적용된 엠블럼·유니폼과 디자이너 의뢰.',
+    { page: 'operations', query: 'view=identity' },
   ),
   story(
     'identity',
@@ -438,6 +430,7 @@ export function previewAddress(item: Story, theme: string) {
     staff: '/staff',
     training: '/training',
     academy: '/academy',
+    operations: '/club-operations',
     business: '/direction',
     history: '/history?section=club',
   };

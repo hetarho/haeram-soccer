@@ -1,5 +1,6 @@
 import { COMPETITION_PATHS } from './competitionNavigation';
 import { CompetitionTabs } from './CompetitionTabs';
+import { ClubNavigation } from './ClubNavigation';
 import { OfficeOverviewHost } from './OfficeOverviewHost';
 import { CashAlarm } from './CashAlarm';
 import { FeedbackOverlay } from './FeedbackOverlay';
@@ -176,6 +177,7 @@ function NavIcon({ page }: { page: NavEntry }) {
     academy: 'training',
     training: 'training',
     staff: 'people',
+    operations: 'trend',
     business: 'trend',
     history: 'history',
   };
@@ -1269,6 +1271,7 @@ export function App() {
                   </div>
                 )}
                 <div className={s.views} inert={changingView} aria-busy={changingView}>
+                  <ClubNavigation page={contentPage} market={marketOpen} />
                   <div className={s.coreContent} hidden={contentPage !== 'dashboard'}>
                     <ConnectedDashboard client={client} />
                   </div>
@@ -1293,7 +1296,15 @@ export function App() {
                       <ConnectedEurope client={client} />
                     </div>
                     {(
-                      ['firstTeam', 'academy', 'staff', 'training', 'business', 'history'] as Page[]
+                      [
+                        'firstTeam',
+                        'academy',
+                        'staff',
+                        'training',
+                        'operations',
+                        'business',
+                        'history',
+                      ] as Page[]
                     ).includes(contentPage) && (
                       <ConnectedRich page={contentPage} client={client} controller={controller} />
                     )}

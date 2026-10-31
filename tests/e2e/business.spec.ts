@@ -25,10 +25,13 @@ import { acknowledgeEvents, chooseLevel } from './events';
 import { clubhouseTab } from './competition-navigation';
 import {
   aroundOffice,
+  clubSections,
   enterOffice,
   LOBBY,
+  officeBar,
   officeTitle,
   openOfficeArea,
+  operationsTabs,
   outsideOffice,
 } from './office';
 
@@ -68,7 +71,7 @@ async function playNext(page: Page) {
   await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
 }
 
-test('older operations addresses open their office area', async ({ page }) => {
+test('older operations addresses open their 구단 운영 section', async ({ page }) => {
   // Founds a club, then reloads the app cold for each of eight addresses; slow CI browsers need longer.
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
@@ -78,23 +81,30 @@ test('older operations addresses open their office area', async ({ page }) => {
   // The office opens on its lobby and keeps no ?view= there (→WEB-39); there is no 캠페인 area.
   await expect(officeTitle(page)).toHaveText(LOBBY);
   await expect(page).toHaveURL(/\/direction$/);
-  await expect(
-    page.getByTestId('office-lobby').getByRole('button', { name: '캠페인', exact: true }),
-  ).toHaveCount(0);
-  // Every older /business address opens its area under /direction.
+  await expect(clubSections(page)).toHaveCount(0);
+  await page.goto('/business');
+  await expect(officeTitle(page)).toHaveText(LOBBY);
+  await expect(page).toHaveURL(/\/direction$/);
+  // Every older unselected money or sponsor address opens its 구단 운영 section (→WEB-110).
   for (const [asked, area, now] of [
-    ['/business', LOBBY, /\/direction$/],
-    ['/business?view=facility', '재정·투자', /\/direction\?view=investment$/],
-    ['/business?view=marketing', '재정·투자', /\/direction\?view=investment$/],
-    ['/business?view=strategy', '재정·투자', /\/direction\?view=investment$/],
-    ['/business?view=build', '재정·투자', /\/direction\?view=investment$/],
-    ['/business?view=finance', '재정·투자', /\/direction\?view=investment$/],
-    ['/business?view=sponsor', '후원', /\/direction\?view=sponsor$/],
-    ['/direction?view=build', '재정·투자', /\/direction\?view=investment$/],
+    ['/business?view=facility', '재정·투자', /\/club-operations\?view=investment$/],
+    ['/business?view=marketing', '재정·투자', /\/club-operations\?view=investment$/],
+    ['/business?view=strategy', '재정·투자', /\/club-operations\?view=investment$/],
+    ['/business?view=build', '재정·투자', /\/club-operations\?view=investment$/],
+    ['/business?view=finance', '재정·투자', /\/club-operations\?view=investment$/],
+    ['/business?view=sponsor', '후원', /\/club-operations\?view=sponsor$/],
+    ['/direction?view=build', '재정·투자', /\/club-operations\?view=investment$/],
+    ['/direction?view=identity', '구단 디자인', /\/club-operations\?view=identity$/],
   ] as const) {
     await page.goto(asked);
-    await expect(officeTitle(page)).toHaveText(area);
+    await expect(
+      operationsTabs(page).getByRole('tab', { name: area, exact: true }),
+    ).toHaveAttribute('aria-selected', 'true');
+    await expect(
+      clubSections(page).getByRole('tab', { name: '운영', exact: true }),
+    ).toHaveAttribute('aria-selected', 'true');
     await expect(page).toHaveURL(now);
+    await expect(officeBar(page)).toHaveCount(0);
   }
   await expect(page.getByRole('region', { name: '캠페인', exact: true })).toHaveCount(0);
   // Campaigns are no more (→ECON-7): 자금 shows none to start.
@@ -180,7 +190,7 @@ test('pays sponsor installments only for league games after the actual contract'
   // A 1950 club in England has only the local slot open (→ECON-8).
   const offer = sponsorOffers(before, 'local').find((candidate) => candidate.kind === 'stable')!;
   await openBusiness(page, '후원');
-  await expect(page.locator('[data-office-view="sponsor"]')).toContainText(
+  await expect(page.locator('[data-operations-view="sponsor"]')).toContainText(
     '계약 이후 경기만 지급하며',
   );
   await expect(page.getByTestId('sponsor-slot-shirt')).toContainText('1979/80 시즌부터');

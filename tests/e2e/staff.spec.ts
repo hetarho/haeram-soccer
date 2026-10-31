@@ -19,7 +19,7 @@ import {
 import { horizontalOverflow } from './layout';
 import { chooseOption } from './select';
 import { clubhouseTab } from './competition-navigation';
-import { enterOffice, officeLobby } from './office';
+import { clubSections } from './office';
 
 /** The default seed's first season offers a firefighter among the four candidates. */
 async function found(page: Page, seed = 'short-contract') {
@@ -128,14 +128,11 @@ test.describe('사람 at 360x740', () => {
       );
     }
     await expect(page.getByRole('tablist', { name: '코칭스태프실', exact: true })).toHaveCount(0);
-    // The coaching room's door stands in the office lobby (→WEB-39).
-    await enterOffice(page);
-    await officeLobby(page);
-    const coachingPlace = page
-      .getByRole('navigation', { name: '클럽하우스 시설', exact: true })
-      .getByRole('button', { name: '코칭스태프실', exact: true });
-    await coachingPlace.focus();
-    await page.keyboard.press('Enter');
+    // The coaches are a club section of their own (→WEB-10/43); the keyboard reaches them too.
+    const coachingPlace = clubSections(page).getByRole('tab', { name: '코치진', exact: true });
+    await clubSections(page).getByRole('tab', { selected: true }).focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(coachingPlace).toBeFocused();
     await expect(tab(page, '스태프')).toHaveAttribute('aria-selected', 'true');
     await expect(page).toHaveURL(/\/staff\?view=coaches$/);
     await expect(page.getByRole('region', { name: '스태프', exact: true })).toBeVisible();

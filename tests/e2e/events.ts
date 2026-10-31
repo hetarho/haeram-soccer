@@ -7,7 +7,10 @@ import {
   officeBar,
   officeLobby,
   officeTitle,
+  openClubSection,
   openOfficeArea,
+  openOperations,
+  operationsTabs,
   outsideOffice,
 } from './office';
 import { dismissFeedback as dismissSettingsToast } from './feedback';
@@ -100,7 +103,16 @@ export async function configureResponsibilities(
     !wasInOffice && (await officeBar(page).count())
       ? (await officeTitle(page).innerText()).trim()
       : undefined;
-  const home = !wasInOffice && !room && (await nav.locator('[data-pixel-icon="home"]').count()) > 0;
+  // 구단 운영 is a club section outside the office, reached again by its own section tab.
+  const operations =
+    !wasInOffice && !room && (await operationsTabs(page).count())
+      ? (await operationsTabs(page).getByRole('tab', { selected: true }).innerText()).trim()
+      : undefined;
+  const home =
+    !wasInOffice &&
+    !room &&
+    !operations &&
+    (await nav.locator('[data-pixel-icon="home"]').count()) > 0;
   // The running progression can open its match report over the controls at any moment, even
   // between closing one and pressing pause; close it and press again.
   const pause = page.getByRole('button', { name: '자동 진행 정지', exact: true });
@@ -194,14 +206,18 @@ export async function configureResponsibilities(
   else if (officeArea) await openOfficeArea(page, officeArea);
   else {
     await outsideOffice(page);
-    if (room) {
-      await enterOffice(page);
-      await officeLobby(page);
-      await page
-        .getByRole('navigation', { name: '클럽하우스 시설', exact: true })
-        .getByRole('button', { name: room, exact: true })
-        .click();
-      await expect(officeTitle(page)).toHaveText(room);
+    if (operations) await openOperations(page, operations);
+    else if (room) {
+      // A room is a club section now, which resumes the work it left (→WEB-10/74).
+      const section =
+        room === '코칭스태프실'
+          ? '코치진'
+          : room === '훈련장'
+            ? '훈련'
+            : room === '유소년 훈련장'
+              ? '유소년'
+              : '1군';
+      await openClubSection(page, section);
     } else if (home) await clubhouseTab(page).click();
     else if (returnLabel)
       await page

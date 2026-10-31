@@ -1,14 +1,12 @@
 import { expect, test } from '@playwright/test';
 import { preparedWorld } from '../fixtures/prepared-world';
 import { continueSlot, seedSlot } from './slots';
-import { enterOffice, leaveOffice, officeBar, openOfficeArea } from './office';
+import { clubSections, leaveOffice, officeBar, openOfficeArea } from './office';
 import { exportedCareer } from './career-fixtures';
 import { horizontalOverflow } from './layout';
 
 for (const width of [360, 1280]) {
-  test(`player overview opens independent work and cancels scoped approvals at ${width}`, async ({
-    page,
-  }) => {
+  test(`older player and staff desks open the actual workflow at ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     const world = preparedWorld('manager-journey');
     world.settings!.mode = 'manual';
@@ -17,28 +15,35 @@ for (const width of [360, 1280]) {
     await seedSlot(page, world);
     await page.goto('/');
     await continueSlot(page);
-    await enterOffice(page);
-    await openOfficeArea(page, '선수 계약');
-    const overview = page.getByTestId('player-office-overview');
-    await expect(overview).toBeVisible();
-    await expect(page.getByRole('tablist', { name: '선수 계약 업무' }).getByRole('tab')).toHaveText(
-      ['개요', '계약', '영입', '매각', '유소년 승격·방출'],
-    );
-    const figures = page.getByTestId('desk-stats');
-    await expect(figures).toContainText('1군 연봉 약정');
-    await expect(figures).toContainText('이번 시즌 만료');
-    await expect(page.getByTestId('desk-responsibilities')).toHaveCount(0);
-    await overview.getByRole('button', { name: '계약 업무 열기', exact: true }).click();
-    const inline = page.getByTestId('desk-responsibilities');
-    for (const [tab, responsibility] of [
-      ['계약', '선수 계약'],
-      ['영입', '선수 영입'],
-      ['매각', '선수 매각'],
-      ['유소년 승격·방출', '유소년 승격·방출'],
-    ]) {
-      await page.getByRole('tab', { name: tab, exact: true }).click();
-      await expect(inline.getByRole('group')).toHaveCount(1);
-      const choices = inline.getByRole('group', { name: responsibility, exact: true });
+    // An unselected desk is no office place: each work tab lands on its own club section (→WEB-39).
+    for (const [asked, now, section] of [
+      ['/direction?view=players', /\/first-team\?view=players$/, '1군'],
+      ['/direction?view=players&work=contracts', /\/first-team\?view=players$/, '1군'],
+      ['/direction?view=players&work=sales', /\/first-team\?view=players$/, '1군'],
+      ['/direction?view=players&work=academy', /\/academy$/, '유소년'],
+      ['/direction?view=staff', /\/first-team\?view=manager$/, '1군'],
+      ['/direction?view=staff&work=coaches', /\/staff\?view=coaches$/, '코치진'],
+    ] as const) {
+      await page.goto(asked);
+      await expect(page).toHaveURL(now);
+      await expect(
+        clubSections(page).getByRole('tab', { name: section, exact: true }),
+      ).toHaveAttribute('aria-selected', 'true');
+      await expect(officeBar(page)).toHaveCount(0);
+    }
+    await page.goto('/direction?view=players&work=sales');
+    await expect(page.getByRole('textbox', { name: '선수 찾기', exact: true })).toBeVisible();
+    expect(await horizontalOverflow(page)).toBe(0);
+    // Recruitment is the market, an entry of its own without the club's section bar (→WEB-10).
+    await page.goto('/direction?view=players&work=recruitment');
+    await expect(page).toHaveURL(/\/first-team\?view=market$/);
+    await expect(page.getByRole('table', { name: '영입 후보 목록', exact: true })).toBeVisible();
+    await expect(clubSections(page)).toHaveCount(0);
+    // The player responsibilities stay in the shared overview; cancelling commits nothing (→WEB-79).
+    await openOfficeArea(page, '결재라인 모아보기');
+    const overview = page.getByRole('dialog', { name: '결재라인 모아보기', exact: true });
+    for (const responsibility of ['선수 계약', '선수 영입', '선수 매각', '유소년 승격·방출']) {
+      const choices = overview.getByRole('group', { name: responsibility, exact: true });
       const applied = await choices.locator('button[aria-pressed="true"]').innerText();
       await choices.locator('button[aria-pressed="false"]').click();
       const confirm = page.getByRole('dialog', {
@@ -50,24 +55,7 @@ for (const width of [360, 1280]) {
         'aria-pressed',
         'true',
       );
-      await expect(page.getByRole('radiogroup', { name: '라커룸 문화', exact: true })).toHaveCount(
-        0,
-      );
     }
-    // Back/forward restores the actual work, then the named office return skips local tab entries.
-    await page.goBack();
-    await expect(page.getByRole('tab', { name: '매각', exact: true })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
-    await page.goForward();
-    await expect(page.getByRole('tab', { name: '유소년 승격·방출', exact: true })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
-    await officeBar(page).getByRole('button', { name: '사무실', exact: true }).click();
-    await expect(page.getByTestId('office-lobby')).toBeVisible();
-    expect(await horizontalOverflow(page)).toBe(0);
     await leaveOffice(page);
     expect((await exportedCareer(page)).settings).toEqual(before);
   });

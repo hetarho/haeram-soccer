@@ -2,21 +2,14 @@ import { useState, type HTMLAttributes, type ReactNode } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import type { StopReason } from '../../../../packages/engine/src/stopping';
 import type { SponsorSlotView } from '../../../../packages/engine/src/sponsors';
-import { clubOf } from '../../../../packages/engine/src/player-state';
-import { settingsOf } from '../../../../packages/engine/src/responsibilities';
-import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';
 import { Card } from './Card';
 import { FacilityArt } from './FacilityArt';
 import type { FacilityScene } from './facilityScene';
-import { compactMoney, seasonName } from './format';
 import { RESPONSIBILITY_LABELS } from './intervention';
-import { Money } from './Money';
 import { eventDesk } from './eventRouting';
-import { DESK_RESPONSIBILITIES } from './officeDesks';
 import { delegationCounts } from './officeSummary';
-import { playerOfficeOverview } from './playerOfficeWork';
 import { cashState } from './teamState';
-import { openApprovalRequest, type BusinessView } from './state';
+import { openApprovalRequest } from './state';
 import { approvalStanding, overdueSummary } from '../runtime/progression';
 import s from './OfficeDesk.module.css';
 
@@ -188,109 +181,6 @@ export function DeskBody({
 /** A desk's approval line and criteria side by side on wide screens, stacked on phones. */
 export function DeskSettings({ children }: { children: ReactNode }) {
   return <div className={s.settings}>{children}</div>;
-}
-
-const SCENES: Record<BusinessView, FacilityScene> = {
-  players: 'locker',
-  staff: 'staff',
-  investment: 'training',
-  sponsor: 'stadium',
-  identity: 'locker',
-};
-
-/** One desk's scene, then the figures its work turns on, read from the live world only. */
-export function OfficeDeskScene({
-  w,
-  view,
-  title,
-  sponsors,
-  pending,
-}: {
-  w: World;
-  view: Exclude<BusinessView, 'identity'>;
-  title: string;
-  sponsors: readonly SponsorSlotView[];
-  pending: readonly StopReason[];
-}) {
-  const club = clubOf(w);
-  const waiting = pending.filter((item) => eventDesk(item) === view);
-  const settings = settingsOf(w);
-  const auto = DESK_RESPONSIBILITIES[view].filter(
-    (key) => settings.responsibilities[key] === 'delegated',
-  ).length;
-  const line = DESK_RESPONSIBILITIES[view].length
-    ? `자동 처리 ${auto}/${DESK_RESPONSIBILITIES[view].length}`
-    : undefined;
-  let stats: DeskStat[], caption: ReactNode;
-  if (view === 'players') {
-    const facts = playerOfficeOverview(w, pending);
-    caption = `1군 ${facts.players}명 · 유소년 ${w.academy?.players.length ?? 0}명 · ${line}`;
-    stats = [
-      {
-        label: '1군 연봉 약정',
-        value: <Money value={facts.wage} code={club.country} year={w.year} />,
-        note: '연간',
-      },
-      { label: '이번 시즌 만료', value: `${facts.expiring.length}명` },
-      { label: '계약 협상', value: `${facts.talks.length}건` },
-      {
-        label: '영입 / 매각 제안',
-        value: `${facts.outgoing.length} / ${facts.incoming.length}건`,
-      },
-    ];
-  } else if (view === 'staff') {
-    caption = line;
-    stats = [
-      {
-        label: w.manager.interim ? '임시 감독' : '감독',
-        value: w.manager.name,
-        note: `${seasonName(w.manager.until - 1)} 시즌까지`,
-      },
-      { label: '감독 능력', value: w.manager.ability },
-      { label: '스태프', value: `${w.staff?.length ?? 0}명` },
-    ];
-  } else if (view === 'investment') {
-    const cash = cashState(w);
-    const works = Object.keys(w.facilityWorks ?? {}).length;
-    const stadium = STADIUM_STEPS[w.stadium];
-    caption = `${stadium.name} · 훈련장 ${w.trainingGround}단계 · 유소년 시설 ${w.academyFacility}단계`;
-    stats = [
-      { label: '보유 현금', value: compactMoney(w.cash, club.country, w.year) },
-      { label: cash.label, value: cash.value, note: cash.status },
-      { label: '경기장', value: `${stadium.capacity.toLocaleString('ko-KR')}석` },
-      { label: '진행 중인 공사', value: `${works}건` },
-    ];
-  } else {
-    const open = sponsors.filter((slot) => slot.open),
-      signed = open.filter((slot) => slot.contract),
-      next = sponsors.filter((slot) => !slot.open).sort((a, b) => a.opens - b.opens)[0];
-    caption = line;
-    stats = [
-      { label: '계약한 자리', value: `${signed.length} / ${open.length}` },
-      {
-        label: '빈 자리',
-        value: `${open.length - signed.length}자리`,
-        note: open.some((slot) => !slot.contract && slot.offers.length) ? '제안 도착' : undefined,
-      },
-      {
-        label: '다음 열리는 자리',
-        value: next?.label ?? '없음',
-        note: next ? `${seasonName(next.opens)} 시즌` : undefined,
-      },
-    ];
-  }
-  return (
-    <>
-      <DeskScene
-        w={w}
-        kind={SCENES[view]}
-        title={title}
-        caption={caption}
-        pending={waiting.length}
-      />
-      <DeskStats label={`${title} 지표`} stats={stats} />
-    </>
-  );
 }
 
 /** The lobby's scene: the room with the office's waiting count and its two ways in. */

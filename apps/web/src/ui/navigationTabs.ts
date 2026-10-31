@@ -9,7 +9,7 @@ export const TABS: [NavEntry, string, string, Page[]][] = [
     'dashboard',
     'navigation.dashboard',
     'navigation.dashboard',
-    ['dashboard', 'match', 'business', 'firstTeam', 'staff', 'training', 'academy'],
+    ['dashboard', 'match', 'business', 'firstTeam', 'staff', 'training', 'academy', 'operations'],
   ],
   ['league', 'navigation.short.league', 'navigation.league', ['league', 'leagueHistory']],
   ['europe', 'navigation.short.europe', 'navigation.short.europe', ['europe', 'cupHistory']],

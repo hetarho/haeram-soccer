@@ -395,17 +395,17 @@ export async function designInEditor(editor: Locator, design: ClubIdentity, pres
   if (design.goalkeeper) await editGoalkeeper(editor, design.goalkeeper);
 }
 
-/** 구단주 사무실 › 구단 디자인: the applied design, or the drafts a commission delivered. */
+/** 구단 운영 › 구단 디자인: the applied design, or the drafts a commission delivered. */
 export const designView = (page: Page) =>
   page.getByRole('region', { name: '구단 디자인', exact: true });
 export const appliedPanel = (view: Locator) =>
   view.getByRole('heading', { name: '지금 디자인', exact: true });
 export const draftsPanel = (view: Locator) =>
   view.getByRole('heading', { name: '받은 시안', exact: true });
-/** 구단주 사무실 › 구단 디자인 from home, once its lazily loaded area is there (→WEB-39/108). */
+/** 구단 운영 › 구단 디자인 from home, once its lazily loaded section is there (→WEB-108/110). */
 export async function openDesign(page: Page) {
   await openOfficeArea(page, '구단 디자인');
-  await expect(page).toHaveURL(/\/direction\?view=identity$/);
+  await expect(page).toHaveURL(/\/club-operations\?view=identity$/);
   const view = designView(page);
   await expect(appliedPanel(view).or(draftsPanel(view))).toBeVisible();
   return view;

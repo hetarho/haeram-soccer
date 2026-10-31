@@ -2,7 +2,6 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ClientState, GameClient } from '../runtime/client';
-import type { ProgressionController } from '../runtime/progression';
 import { createWorld } from '../../../../packages/engine/src/index';
 import { OperationsView } from './Operations';
 import korean from '../../public/presentation/locales/ko-KR.json';
@@ -32,18 +31,24 @@ describe('owner-office overview navigation', () => {
       level: 'easy',
     });
     const state = { view: { world, sponsors: [] } } as unknown as ClientState;
-    const html = renderToStaticMarkup(
-      createElement(OperationsView, {
-        state,
-        client: {} as GameClient,
-        controller: {} as ProgressionController,
-        legacy: null,
-        journal: null,
-        personnel: () => null,
-      }),
-    );
+    const office = () =>
+      renderToStaticMarkup(
+        createElement(OperationsView, {
+          state,
+          client: {} as GameClient,
+          journal: null,
+          personnel: () => null,
+        }),
+      );
+    const html = office();
     expect(html).toContain('data-testid="office-lobby"');
     expect(html).toContain('<h2>구단주 사무실</h2>');
     expect(html).not.toContain('<section aria-label="결재라인 모아보기">');
+    // The office carries no copy of the club's section bar (→WEB-10).
+    expect(html).not.toContain('club-section-tab');
+    // An unselected desk is no office place any more: it renders nothing while it leaves for the
+    // club section that holds its work (→WEB-39/110).
+    vi.stubGlobal('location', { search: '?view=investment' });
+    expect(office()).toBe('');
   });
 });

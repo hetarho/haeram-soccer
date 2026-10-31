@@ -75,7 +75,7 @@ import {
 } from './club-identity-helpers';
 import { ALL_DELEGATED, configureResponsibilities } from './events';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { leaveOffice, officeBar } from './office';
+import { leaveOffice, operationsTabs } from './office';
 
 /**
  * KIT-9/12/15, WEB-86/87/108, SAVE-3/5/6/11/20/21/22: club designs and the kit a match was played
@@ -511,9 +511,11 @@ test('a refused adoption and a failed checkpoint keep the committed save, the dr
   await retrySave(page);
   await expect.poll(async () => ownClub(await savedWorld(page)).identity).toEqual(adopted);
   await page.reload();
-  // A reload restores the view it left: the office's design area, not home.
-  await expect(officeBar(page)).toBeVisible();
-  await expect(page).toHaveURL(/\/direction\?view=identity$/);
+  // A reload restores the view it left: 구단 운영's design section, not home.
+  await expect(
+    operationsTabs(page).getByRole('tab', { name: '구단 디자인', exact: true }),
+  ).toHaveAttribute('aria-selected', 'true');
+  await expect(page).toHaveURL(/\/club-operations\?view=identity$/);
   const reloaded = await savedWorld(page);
   expect(ownClub(reloaded).identity).toEqual(adopted);
   expect('designCommission' in reloaded).toBe(false);

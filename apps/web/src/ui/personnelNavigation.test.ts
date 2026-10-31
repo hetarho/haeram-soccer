@@ -22,6 +22,11 @@ import {
   openPrimary,
   leaveOffice,
   openOfficeLobby,
+  openBusiness,
+  openOperations,
+  openFacility,
+  leaveDesk,
+  useFacilityRequest,
 } from './state';
 import { useTaskMemory } from './taskMemory';
 
@@ -45,6 +50,9 @@ function browser() {
     pushState: (_state: unknown, _title: string, address: string) => {
       current = new URL(address, current);
       history.push(address);
+    },
+    replaceState: (_state: unknown, _title: string, address: string) => {
+      current = new URL(address, current);
     },
   });
   useTaskMemory.getState().activate('personnel-test');
@@ -110,7 +118,7 @@ describe('personnel actions and task continuity', () => {
     });
     expect(developmentDestination('people/coaches')).toEqual({ page: 'staff', view: 'coaches' });
     expect(developmentDestination('business/facility')).toEqual({
-      page: 'business',
+      page: 'operations',
       view: 'investment',
     });
     expect(personnelRoute('/staff', '?view=manager&market=1')).toMatchObject({ market: true });
@@ -160,6 +168,86 @@ describe('personnel actions and task continuity', () => {
     expect(useCoachRequest.getState().request).toEqual({ coach: 'youth' });
     beginTaskDetour('business');
     expect(useTaskMemory.getState().returning).toMatchObject({ page: 'academy', label: '유소년' });
+  });
+});
+
+describe('club sections and 구단 운영 (→WEB-10/39/110)', () => {
+  const at = () => location.pathname + location.search;
+  it('opens each section on its default when fresh and on its retained work after', () => {
+    browser();
+    for (const [section, address] of [
+      ['firstTeam', '/first-team?view=players'],
+      ['staff', '/staff?view=coaches'],
+      ['training', '/training'],
+      ['academy', '/academy'],
+      ['operations', '/club-operations?view=investment'],
+      ['dashboard', '/journal'],
+    ] as const) {
+      openPrimary(section);
+      expect(at(), section).toBe(address);
+      expect(useNavigation.getState().page).toBe(section);
+    }
+    openOperations('sponsor');
+    openPrimary('dashboard');
+    openPrimary('operations');
+    expect(at()).toBe('/club-operations?view=sponsor');
+  });
+  it('opens an unselected desk as the work it stands for, never as an office place', () => {
+    browser();
+    for (const [desk, address, page] of [
+      ['investment', '/club-operations?view=investment', 'operations'],
+      ['sponsor', '/club-operations?view=sponsor', 'operations'],
+      ['identity', '/club-operations?view=identity', 'operations'],
+      ['finance', '/club-operations?view=investment', 'operations'],
+      ['players', '/first-team?view=players', 'firstTeam'],
+      ['staff', '/first-team?view=manager', 'firstTeam'],
+    ] as const) {
+      openBusiness(desk);
+      expect(at(), desk).toBe(address);
+      expect(useNavigation.getState().page).toBe(page);
+    }
+    openPrimary('business');
+    expect(at()).toBe('/direction');
+    expect(useNavigation.getState().page).toBe('business');
+  });
+  it('replaces a stale desk address in place without making it the office entry', () => {
+    const entries = browser();
+    openPrimary('business');
+    entries.length = 0;
+    // Back/forward or an old bookmark can still show a desk address on the office page.
+    history.replaceState(null, '', '/direction?view=sponsor&work=x');
+    leaveDesk();
+    expect(at()).toBe('/club-operations?view=sponsor');
+    expect(useNavigation.getState().page).toBe('operations');
+    expect(entries).toEqual([]);
+    openPrimary('business');
+    expect(at()).toBe('/direction');
+  });
+  it('opens a facility in 재정·투자 with a named return, all scoped to one game', () => {
+    browser();
+    openTraining('academy');
+    openFacility('academy');
+    expect(at()).toBe('/club-operations?view=investment');
+    expect(useFacilityRequest.getState().request).toBe('academy');
+    expect(useTaskMemory.getState().returning).toMatchObject({
+      page: 'academy',
+      address: '/academy',
+      label: '유소년',
+      target: 'operations',
+    });
+    returnToTask();
+    expect(at()).toBe('/academy');
+    openFacility('stadium');
+    openOperations('identity');
+    openPrimary('dashboard');
+    activateTaskWorld('another-game');
+    expect(useFacilityRequest.getState().request).toBeUndefined();
+    expect(useTaskMemory.getState().addresses).toEqual({});
+    expect(useTaskMemory.getState().returning).toBeUndefined();
+    // Another game opens 구단 운영 fresh, not on the previous game's design section.
+    useNavigation.setState({ page: 'dashboard' });
+    openPrimary('operations');
+    expect(at()).toBe('/club-operations?view=investment');
   });
 });
 

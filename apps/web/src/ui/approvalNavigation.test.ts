@@ -35,17 +35,28 @@ beforeEach(() => {
 });
 afterEach(() => vi.unstubAllGlobals());
 describe('world-scoped approval navigation', () => {
-  it('preserves explicit office work tabs through canonical reload addresses', () => {
+  it('sends unselected work tabs to their workflow and keeps a request with its work', () => {
     expect(routeOf('/direction', '?view=players&work=sales')).toEqual({
-      page: 'business',
+      page: 'firstTeam',
       view: 'players',
+      address: '/first-team?view=players',
     });
     expect(routeOf('/business', '?view=players&work=recruitment')).toMatchObject({
-      address: '/direction?view=players&work=recruitment',
+      page: 'firstTeam',
+      view: 'market',
+      address: '/first-team?view=market',
     });
     expect(routeOf('/direction', '?view=staff&work=coaches')).toEqual({
+      page: 'staff',
+      view: 'coaches',
+      address: '/staff?view=coaches',
+    });
+    expect(
+      routeOf('/business', '?view=players&work=recruitment&request=r1&requestWorld=w1'),
+    ).toEqual({
       page: 'business',
-      view: 'staff',
+      view: 'players',
+      address: '/direction?view=players&work=recruitment&request=r1&requestWorld=w1',
     });
   });
   it('keeps the request identity in canonical history and leaves the work unresolved', () => {
@@ -61,7 +72,8 @@ describe('world-scoped approval navigation', () => {
     leaveOffice();
     expect(location.pathname).toBe('/journal');
     expect(approvalId()).toBeUndefined();
-    expect(useTaskMemory.getState().addresses.business).toBe('/direction?view=players');
+    // The office entry resumes the lobby, never a desk that now leads out of the office.
+    expect(useTaskMemory.getState().addresses.business).toBe('/direction');
     // The browser can revisit the old request and display its live/resolved state.
     expect(useTaskMemory.getState().approvalRequests[first.id].item).toEqual(first);
   });

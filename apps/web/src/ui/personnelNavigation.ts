@@ -12,8 +12,9 @@ export type PersonnelHome =
   | { page: 'academy'; view?: 'academy' }
   | { page: 'training'; view?: 'training' }
   | { page: 'staff'; view: StaffView };
+/** A fresh 1군 entry opens the roster (→WEB-43). */
 export const PERSONNEL_PATHS = {
-  firstTeam: '/first-team?view=manager',
+  firstTeam: '/first-team?view=players',
   training: '/training',
   academy: '/academy',
   staff: '/staff?view=coaches',
@@ -80,8 +81,8 @@ export function personnelRoute(pathname: string, search: string) {
 /** Legacy development read-model links resolve to the final authoritative work. */
 export function developmentDestination(
   home: string,
-): PersonnelHome | { page: 'business'; view: 'investment' } {
+): PersonnelHome | { page: 'operations'; view: 'investment' } {
   return home.startsWith('business/')
-    ? { page: 'business', view: 'investment' }
+    ? { page: 'operations', view: 'investment' }
     : personnelHome(home.split('/')[1]);
 }

@@ -159,7 +159,7 @@ describe('team state', () => {
       'ticket-up',
     ]);
     for (const choice of settings) {
-      expect(choice.page, choice.id).toBe('business');
+      expect(choice.page, choice.id).toBe('operations');
       expect(choice.command, choice.id).toBeUndefined();
     }
     expect(settings.map((choice) => choice.board)).toEqual([

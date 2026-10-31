@@ -10,7 +10,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { createWorld, simulateSeason } from '../../packages/engine/src/index';
 import { settle } from './layout';
 import { continueSlot, seedSlot } from './slots';
-import { leaveOffice, officeTitle } from './office';
+import { leaveOffice, officeTitle, operationsTabs } from './office';
 
 async function found(page: Page) {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -255,8 +255,14 @@ test('recruitment needs open on demand and academy operations open their exact w
   await openPersonnel(page, 'academy');
   await page.getByRole('button', { name: /유소년 시설 .*공사 보기/ }).click();
   await expect(page.getByTestId('facility-academy')).toBeVisible();
-  // The office opens on 재정·투자, the academy facility's desk (→WEB-39).
-  await expect(officeTitle(page)).toHaveText('재정·투자');
+  // 구단 운영 opens on 재정·투자, where facilities are built (→WEB-110).
+  await expect(page).toHaveURL(/\/club-operations\?view=investment$/);
+  await expect(
+    operationsTabs(page).getByRole('tab', { name: '재정·투자', exact: true }),
+  ).toHaveAttribute('aria-selected', 'true');
+  // The detour names its way back to the academy (→WEB-74).
+  await page.getByRole('button', { name: '← 돌아가기 · 유소년', exact: true }).click();
+  await expect(page).toHaveURL(/\/academy$/);
 });
 
 test('opens club seasons in records and retains the detail scope through league and cup visits', async ({

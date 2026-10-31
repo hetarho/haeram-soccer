@@ -15,6 +15,7 @@ export function TabList<T extends string>({
   label,
   idPrefix,
   className = `${s.seasonTabs} ${s.operationsTabs}`,
+  panel = true,
 }: {
   tabs: readonly (readonly [T, ReactNode])[];
   value: T;
@@ -25,6 +26,8 @@ export function TabList<T extends string>({
   idPrefix: string;
   /** The bar's classes; a page's tab bar by default. */
   className?: string;
+  /** False for tabs that open pages of their own rather than one panel below them. */
+  panel?: boolean;
 }) {
   const keyboard = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     const next = nextTabIndex(event.key, index, tabs.length);
@@ -45,7 +48,7 @@ export function TabList<T extends string>({
           id={`${idPrefix}-tab-${id}`}
           role="tab"
           aria-selected={value === id}
-          aria-controls={`${idPrefix}-panel`}
+          aria-controls={panel ? `${idPrefix}-panel` : undefined}
           tabIndex={value === id ? 0 : -1}
           onKeyDown={(event) => keyboard(event, index)}
           onClick={() => onChange(id)}

@@ -13,7 +13,8 @@ import {
   HISTORY_PAGES,
   SEASON_PAGES,
 } from './competitionNavigation';
-import { OFFICE_DESKS, resolveOffice, type WorkDesk } from './officeDesks';
+import { deskDestination, OFFICE_DESKS, resolveOffice, type WorkDesk } from './officeDesks';
+import { operationsAddress, operationsRoute, type OperationsView } from './clubSections';
 import { isTaskDestination, rememberTask, taskAddress, useTaskMemory } from './taskMemory';
 import { create } from 'zustand';
 import { eventDesk, type ApprovalRequest } from './eventRouting';
@@ -31,7 +32,7 @@ import type {
   ManagerHistoryPage,
   ManagerSourceSeason,
 } from '../../../../packages/contracts/src/manager-history-view';
-/** The six places and their retained competition and match views. */
+/** The places, the club's sections and their retained competition and match views. */
 export type Page =
   | 'dashboard'
   | 'match'
@@ -41,6 +42,7 @@ export type Page =
   | 'academy'
   | 'training'
   | 'staff'
+  | 'operations'
   | 'business'
   | 'history'
   | 'leagueHistory'
@@ -50,6 +52,7 @@ const paths: Record<Page, string> = {
   match: '/matches',
   ...COMPETITION_PATHS,
   ...PERSONNEL_PATHS,
+  operations: operationsAddress(),
   business: '/direction',
 };
 
@@ -68,18 +71,20 @@ export function officeAddress(view: OfficeView) {
   return `${paths.business}${view === 'lobby' ? '' : `?view=${view}`}`;
 }
 /** Where a setting lives (→WEB-71): a page and its tab. */
-export type Home = PersonnelHome | { page: 'business'; view: BusinessView };
+export type Home = PersonnelHome | { page: 'operations'; view: OperationsView };
 
 /** Where an address lands. */
 export interface Route {
   page: Page;
-  /** The personnel workflow or office view. */
-  view?: PeopleTab | TrainingTab | OfficeView;
+  /** The personnel workflow, club-operations section or office view. */
+  view?: PeopleTab | TrainingTab | OfficeView | OperationsView;
   /** The manager workflow opens with the replacement market. */
   market?: true;
   /** The address to show instead of the one asked for, for older and non-canonical ones. */
   address?: string;
 }
+/** The keys an office address names its desk or request by, which its destination drops. */
+const OFFICE_KEYS = ['view', 'work', 'request', 'requestWorld'];
 /** Resolve canonical destinations and meaningful older deep links. */
 export function routeOf(pathname: string, search: string): Route {
   const at = (path: string) => pathname === path || pathname.startsWith(path + '/');
@@ -87,12 +92,24 @@ export function routeOf(pathname: string, search: string): Route {
   if (competition) return competition;
   const personnel = personnelRoute(pathname, search);
   if (personnel) return personnel;
+  const operations = operationsRoute(pathname, search);
+  if (operations) return operations;
   const asked = new URLSearchParams(search).get('view');
   if (!at(paths.business) && !at('/business'))
     return {
       page: (Object.entries(paths).find(([, path]) => at(path))?.[0] as Page) || 'dashboard',
     };
-  const route: Route = { page: 'business', view: officeView(asked) };
+  const view = officeView(asked);
+  const params = new URLSearchParams(search);
+  // An unselected desk is the work it stands for; a selected request keeps its office review.
+  if (view !== 'lobby' && view !== 'office' && !params.has('request')) {
+    const target = new URL(deskDestination(view, params.get('work')), 'https://haeram.invalid');
+    for (const [key, value] of params)
+      if (!OFFICE_KEYS.includes(key)) target.searchParams.append(key, value);
+    const landing = routeOf(target.pathname, target.search);
+    return { ...landing, address: landing.address ?? target.pathname + target.search };
+  }
+  const route: Route = { page: 'business', view };
   let address = officeAddress(route.view as OfficeView);
   const work = new URLSearchParams(search).get('work');
   if (work && (route.view === 'players' || route.view === 'staff'))
@@ -275,11 +292,43 @@ export function openPeople(tab: PeopleRequest) {
 export function openTraining(tab: TrainingTab) {
   openPersonnel(personnelHome(tab));
 }
-/** Opens the office on a view: from elsewhere through its address, while it shows by request. */
+/**
+ * Shows the page an address lands on, as a history entry or replacing an address that has no
+ * page of its own (an older desk's); the replaced address is never remembered as a task.
+ */
+function visit(address: string, replace = false) {
+  const asked = new URL(address, 'https://haeram.invalid');
+  const route = routeOf(asked.pathname, asked.search);
+  const target = route.address ?? asked.pathname + asked.search;
+  if (!replace) rememberTask(useNavigation.getState().page);
+  if (taskAddress() !== target) {
+    if (replace) history.replaceState(null, '', target);
+    else history.pushState(null, '', target);
+  }
+  if (route.market) usePeopleView.getState().open('candidates');
+  useNavigation.setState({ page: route.page });
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event('tasknavigate'));
+}
+/** Opens one section of 구단 운영 (→WEB-110). */
+export function openOperations(view: OperationsView = 'investment') {
+  visit(operationsAddress(view));
+}
+/** An office desk address left without a selected request goes where its work lives now. */
+export function leaveDesk() {
+  visit(taskAddress(), true);
+}
+/**
+ * Opens the office on a view: from elsewhere through its address, while it shows by request. A
+ * desk opens the work it stands for, outside the office (→WEB-39).
+ */
 export function openBusiness(
   destination: OfficeView | 'strategy' | 'build' | 'finance' | 'facility' | 'marketing',
 ) {
   const view = officeView(destination);
+  if (view !== 'lobby' && view !== 'office') {
+    visit(officeAddress(view));
+    return;
+  }
   if (useNavigation.getState().page === 'business') {
     useBusinessView.getState().open(view);
     return;
@@ -316,6 +365,7 @@ export function activateTaskWorld(world: string) {
     useContractTalk.getState().close();
     useCupRequest.getState().take();
     useLeagueSeason.getState().take();
+    useFacilityRequest.getState().take();
   }
   useTaskMemory.getState().activate(world);
 }
@@ -345,16 +395,16 @@ export function returnApprovalHome(request?: ApprovalRequest) {
       useNavigation.getState().page !== 'business')
   )
     return;
-  const desk = officeView(new URLSearchParams(location.search).get('view'));
+  // Desks are no office places any more: the office entry resumes its lobby.
   useTaskMemory.setState((memory) => ({
-    addresses: { ...memory.addresses, business: officeAddress(desk) },
+    addresses: { ...memory.addresses, business: officeAddress('lobby') },
   }));
   history.pushState(null, '', '/journal');
   useNavigation.setState({ page: 'dashboard' });
 }
 /** Opens the page and tab where a setting lives (→WEB-71). */
 export function openHome(home: Home) {
-  if (home.page === 'business') openBusiness(home.view);
+  if (home.page === 'operations') openOperations(home.view);
   else openPersonnel(home);
 }
 /** Opens the first-team transfer market. */
@@ -600,13 +650,15 @@ export function beginTaskDetour(target: Page, address?: string) {
           ? '훈련장'
           : page === 'academy'
             ? '유소년'
-            : page === 'history'
-              ? '클럽 시즌 기록'
-              : page === 'league' || page === 'leagueHistory'
-                ? '리그'
-                : page === 'europe' || page === 'cupHistory'
-                  ? '컵 대회'
-                  : '클럽 홈';
+            : page === 'operations'
+              ? '구단 운영'
+              : page === 'history'
+                ? '클럽 시즌 기록'
+                : page === 'league' || page === 'leagueHistory'
+                  ? '리그'
+                  : page === 'europe' || page === 'cupHistory'
+                    ? '컵 대회'
+                    : '클럽 홈';
   useTaskMemory.setState({
     parents:
       prior.returning && isTaskDestination(prior.returning.target, page)
@@ -650,9 +702,9 @@ export const usePlayerPreparation = create<{
 
 export const useFacilityRequest = oneShot<'stadium' | 'training' | 'academy'>();
 export function openFacility(part: 'stadium' | 'training' | 'academy') {
-  beginTaskDetour('business');
+  beginTaskDetour('operations', operationsAddress('investment'));
   useFacilityRequest.getState().open(part);
-  openBusiness('investment');
+  openOperations('investment');
 }
 
 export const useRecordRequest = oneShot<{ year: number }>();

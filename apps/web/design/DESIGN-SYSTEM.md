@@ -133,6 +133,15 @@ Related pinned controls share one opaque material plane and one sticky position.
 return, competition filters and view tabs inside that plane; separate sticky rows with fixed
 offsets or margins can expose scrolling table rows between them when content wraps.
 
+Navigation between sibling pages reuses the shared page-tab treatment rather than a new card,
+door or button row. The club's section bar (현황, 1군, 코치진, 훈련, 유소년, 운영; →WEB-10) is
+the shared `ClubNavigation` component: the shell renders it once above the clubhouse and club
+pages, so arrow-key focus stays on the bar while its tabs change pages, and its tabs name no
+panel (`TabList` with `panel={false}`). A page's own sections, such as 구단 운영's 재정·투자,
+후원 and 구단 디자인, keep the ordinary tab list and panel below it. Pages without the bar (the
+owner office, the transfer market, competitions) must not grow a copy of it; themes style both
+bars through the same tab roles, never per-page selectors.
+
 ### Detail pages read as reports
 
 A detail page serves one decision. The recruitment candidate detail (WEB-109, CLUB-47) is the

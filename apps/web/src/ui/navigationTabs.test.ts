@@ -23,6 +23,7 @@ describe('five navigation entries (→WEB-10)', () => {
       'staff',
       'training',
       'academy',
+      'operations',
     ]);
     const owns = TABS.flatMap(([, , , pages]) => pages);
     expect(new Set(owns).size).toBe(owns.length);

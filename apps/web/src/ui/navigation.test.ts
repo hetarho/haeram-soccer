@@ -56,31 +56,105 @@ describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
     expect(routeOf('/', '')).toEqual({ page: 'dashboard' });
   });
 
-  it('routeOf opens the office lobby at /direction and every area by its ?view= (→WEB-39)', () => {
+  it('routeOf keeps /direction for the approval lobby and its overview (→WEB-39)', () => {
     expect(routeOf('/direction', '')).toEqual({ page: 'business', view: 'lobby' });
-    for (const view of ['players', 'staff', 'investment', 'sponsor', 'identity', 'office'])
-      expect(routeOf('/direction', `?view=${view}`)).toEqual({ page: 'business', view });
+    expect(routeOf('/direction', '?view=office')).toEqual({ page: 'business', view: 'office' });
     // An unknown view opens the lobby.
     expect(routeOf('/direction', '?view=campaigns')).toEqual({
       page: 'business',
       view: 'lobby',
       address: '/direction',
     });
-    for (const [search, view, address] of [
-      ['', 'lobby', '/direction'],
-      ['?view=strategy', 'investment', '/direction?view=investment'],
-      ['?view=build', 'investment', '/direction?view=investment'],
-      ['?view=finance', 'investment', '/direction?view=investment'],
-      ['?view=sponsor', 'sponsor', '/direction?view=sponsor'],
-      ['?view=office', 'office', '/direction?view=office'],
-      // Views from before 방향: 시설 is 증축 now, 마케팅 and its campaigns sit under 자금.
-      ['?view=facility', 'investment', '/direction?view=investment'],
-      ['?view=marketing', 'investment', '/direction?view=investment'],
-    ] as const)
-      expect(routeOf('/business', search)).toEqual({ page: 'business', view, address });
+    expect(routeOf('/business', '')).toEqual({
+      page: 'business',
+      view: 'lobby',
+      address: '/direction',
+    });
+    expect(routeOf('/business', '?view=office')).toEqual({
+      page: 'business',
+      view: 'office',
+      address: '/direction?view=office',
+    });
   });
 
-  it('names five working desks, with office reserved for the overview modal', () => {
+  it('sends older unselected money, sponsor and design desks to 구단 운영 (→WEB-110)', () => {
+    for (const [search, view] of [
+      ['?view=investment', 'investment'],
+      ['?view=sponsor', 'sponsor'],
+      ['?view=identity', 'identity'],
+      // Views from before 방향: 시설 is 증축 now, 마케팅 and its campaigns sit under 자금.
+      ['?view=strategy', 'investment'],
+      ['?view=build', 'investment'],
+      ['?view=finance', 'investment'],
+      ['?view=facility', 'investment'],
+      ['?view=marketing', 'investment'],
+    ] as const)
+      for (const path of ['/direction', '/business'])
+        expect(routeOf(path, search)).toEqual({
+          page: 'operations',
+          view,
+          address: `/club-operations?view=${view}`,
+        });
+  });
+
+  it('sends older unselected personnel desks to the actual workflow their work names', () => {
+    for (const [search, page, view, address] of [
+      ['?view=players', 'firstTeam', 'players', '/first-team?view=players'],
+      ['?view=players&work=overview', 'firstTeam', 'players', '/first-team?view=players'],
+      ['?view=players&work=contracts', 'firstTeam', 'players', '/first-team?view=players'],
+      ['?view=players&work=sales', 'firstTeam', 'players', '/first-team?view=players'],
+      ['?view=players&work=recruitment', 'firstTeam', 'market', '/first-team?view=market'],
+      ['?view=players&work=market', 'firstTeam', 'market', '/first-team?view=market'],
+      ['?view=players&work=academy', 'academy', undefined, '/academy'],
+      ['?view=staff', 'firstTeam', 'manager', '/first-team?view=manager'],
+      ['?view=staff&work=manager', 'firstTeam', 'manager', '/first-team?view=manager'],
+      ['?view=staff&work=coaches', 'staff', 'coaches', '/staff?view=coaches'],
+    ] as const)
+      expect(routeOf('/direction', search)).toEqual({
+        page,
+        ...(view ? { view } : {}),
+        address,
+      });
+    // Task-specific selection survives the move; the desk's own keys do not.
+    expect(routeOf('/direction', '?view=players&work=recruitment&player=p1&line=DF')).toEqual({
+      page: 'firstTeam',
+      view: 'market',
+      address: '/first-team?view=market&player=p1&line=DF',
+    });
+  });
+
+  it('keeps a selected request in its office review ahead of any desk move', () => {
+    expect(routeOf('/direction', '?view=investment&request=r1&requestWorld=w1')).toEqual({
+      page: 'business',
+      view: 'investment',
+    });
+    expect(routeOf('/direction', '?view=players&work=sales&request=r1&requestWorld=w1')).toEqual({
+      page: 'business',
+      view: 'players',
+    });
+    expect(routeOf('/business', '?view=finance&request=r1&requestWorld=w1')).toEqual({
+      page: 'business',
+      view: 'investment',
+      address: '/direction?view=investment&request=r1&requestWorld=w1',
+    });
+  });
+
+  it('resolves /club-operations with its section, 재정·투자 by default', () => {
+    expect(routeOf('/club-operations', '')).toEqual({
+      page: 'operations',
+      view: 'investment',
+      address: '/club-operations?view=investment',
+    });
+    for (const view of ['investment', 'sponsor', 'identity'])
+      expect(routeOf('/club-operations', `?view=${view}`)).toEqual({ page: 'operations', view });
+    expect(routeOf('/club-operations', '?view=players&slot=kit')).toEqual({
+      page: 'operations',
+      view: 'investment',
+      address: '/club-operations?view=investment&slot=kit',
+    });
+  });
+
+  it('keeps desk names only for request reviews, with office reserved for the overview modal', () => {
     expect(BUSINESS_TABS.map(([id, label]) => `${id}:${label}`)).toEqual([
       'players:선수 계약',
       'staff:스태프 계약',
@@ -92,11 +166,6 @@ describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
     expect(officeView(null)).toBe('lobby');
     expect(officeAddress('lobby')).toBe('/direction');
     expect(officeAddress('office')).toBe('/direction?view=office');
-    expect(routeOf('/business', '?view=identity')).toEqual({
-      page: 'business',
-      view: 'identity',
-      address: '/direction?view=identity',
-    });
   });
 });
 
