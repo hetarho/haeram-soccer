@@ -494,13 +494,14 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- of01: T629–T634 and the shared-tab fix passed the complete final gate on 28bab2ce (unit 1,889; integration 1,270 + 4 existing skips; contract 48; catalogs/presentation/build; Chromium 343); main publication, CI and final visual review next.
+- of01: overhaul published on main as 308d425e; local gate/visual review passed, but CI 41244030798 found club-tab keyboard focus lost under slow rendering and an ambiguous fading-dialog career locator. Plan and implement the scoped repair, then affected browser cases and the final publication gate.
 - ap01 (approvals never stop progression, 결재함 with a 7-day 결재 기한, T623–T625) is done and pushed; report spec/reports/261101-ap01.md.
 - Owner authorizes main publication of T617/T618 despite reproduced baseline UI e2e failures; publish unchanged engine source and observe CI. Evidence reports/261031-ei31.md.
 - create-task KIT (existing kit baseline r5–r6 remains pending outside of01; WEB r188–r195 baseline regression is included in T632).
 - cr01 put every country's money at its real 1999 rate against the pound (T622, ECON-35, catalog 2026-demo-4); careers outside England saved before it are refused on load. The 1950s lower-division fee pyramid suggest (CLUB-25/46) remains for the owner.
 
 ## log
+- 261101 of01 CI 41244030798 completed: checks, unit and integration shards passed; staff keyboard 1군 focus failed in all three browsers, plus WebKit's career-history locator matched the current card and fading manager dialog. Failed logs/traces retained; scoped repair follows, no assertion relaxation.
 - 261101 of01 final batch passed on 28bab2ce: clean/stable candidate, type/lint/format, unit 1,889, integration 1,270 (4 existing skips), contract 48, catalogs, presentation, build and Chromium 343; focused all-theme journey 4/4 also passed. Main push and one CI wait follow.
 - 261101 fix web club tabs: shared page tabs now have min-width 44px as well as min-height; the final browser gate had 339 passed / 4 failures on this same actual 1군 width. Typecheck, lint, format, affected unit 19 files / 192 tests and build passed; exact all-theme assertions unchanged, host focused/full final gates next; session of01.
 - 261101 T634 done: manual 다음 이벤트 from the office moves to the clubhouse before the unchanged controller acts, so a fresh advance or a reopen shows its report at once; the design request form resets on commission/adopt/discard success; shared club/operations helpers wait for address and rendered view to agree; all 21 gate cases moved to their actual contexts, plus a pre-eve office next-event journey; unit 38 + 45 + 19 passed, build passed, browser specs left to the host batch; session of01.
@@ -520,4 +521,3 @@
 - 261101 ap01 closed: changed-code checks only at the owner's request (unit tier, touched integration/contract, 14 changed Chromium journeys); push main.
 - 261101 T625 done: 결재함 button in the bottom controls with waiting/overdue counts, tray rows with D-n/지연 n일, lobby tray heading with the overdue morale cost; session ap01.
 - 261101 T624 done: approvals never stop or refuse progression in either mode; office counts read approvalRequests; four e2e journeys rewritten for the final gate; session ap01.
-- 261101 T623 done: approval waiting days, 7-day 결재 기한, one overdue notice and overdue morale (−1 each a settled round, at most 3); portable golden regenerated for three all-direct scenarios; session ap01.
