@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r196 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r197 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -141,7 +141,7 @@
 - WEB-36 [o] Every committed player decision shows an outcome card built from recorded facts only: changed date, cash (with delta), supporters, rank, squad size, stadium capacity and facility levels, applied tactic, training, manager trust or manager, reputation, ticket price, and up to two new engine records.
   - automatic clock ticks never produce a card; `next-match` never does, because live playback reveals the result.
   - decisions made inside sheets are summarized together after every dialog closes, against the world each decision published.
-  - settings commands instead show a compact bottom toast titled 설정을 적용했어요, dismissing automatically after a short interval. It occupies no content space and clears the bottom transport/navigation and safe areas; keep keyboard dismissal, live status and reduced motion. Other decision summaries retain their recorded facts.
+  - settings commands, including mode switches and report/delegation choices, produce no card or toast: the changed control shows the result itself, and a card held for an earlier decision is kept.
   - reading inbox items never produces a card.
 - WEB-37 [o] Actions state their consequence before commit. Watch actions show the days advanced before kickoff; bulk progression names what it settles; manager hiring and player sale confirm spend, departures, tactic and squad-size changes.
 - WEB-38 [o] The pixel theme uses the night-broadcast visual language: charcoal and off-white, natural grass-green primary accents, flat surfaces, fine dividers and clear numeric hierarchy; other theme packs use the common presentation boundary (→WEB-91).
@@ -390,9 +390,9 @@
 - WEB-79 [o] 결재라인 모아보기 shows all report/delegation/background preferences in one scrollable modal over the current task, the same from every entry: the owner-office heading, the shared controller and the existing who-decides/report links. An address naming the overview opens the queue with it open. On phones it follows →!WEB-106. Relevant personnel and sponsorship workflows also edit their own saved responsibilities through the same component and confirmation workflow (→WEB-45/82).
   - Business choices read 직접 / 자동 with equal touch targets and an applied state filled with the theme's secondary or tertiary button artwork and contrasting text; direct waits for owner approval, automatic follows configured criteria and reports outcomes. Match-eve/window-opening observations retain 보고받기 / 위임 and remain independent of business choices and progression mode.
   - The overview contains both observations and all seven independent responsibilities, with 전체 직접 / 전체 자동 bulk choices that also enable/disable both observations, preserving mode/background settings. A mixed configuration never marks a global choice as applied. Then show automatic-mode background limits and 경기 결과 알림 (→WEB-64/18); manual hides only these automatic preferences.
-  - A changed business choice or bulk action opens the existing illustrated explicit confirmation naming every changed scope and affected pending work (→WEB-82). The same workflow applies inline and in the overview. Eligible direct actions remain available while 자동 is applied; owner action does not silently flip responsibility.
-  - Confirmation commits only reviewed changes. Cancel, close, Escape, backdrop or leaving commits nothing. Busy/read-only/error/critical protections and stale-world checks remain, failed applications are retryable. Observations apply their explicit choice without a second apply step.
-  - Success closes the confirmation, retains its originating desk or overview, and reports a bottom toast (→WEB-36). Closing the overview restores focus to its trigger; it never starts the clock. There is no global apply footer.
+  - A changed business or observation choice, or a bulk action, opens the existing illustrated explicit confirmation naming every changed scope and affected pending work (→WEB-82). The same workflow applies inline and in the overview. Eligible direct actions remain available while 자동 is applied; owner action does not silently flip responsibility.
+  - Confirmation commits only reviewed changes. Cancel, close, Escape, backdrop or leaving commits nothing. Busy/read-only/error/critical protections and stale-world checks remain, failed applications are retryable.
+  - Success closes the confirmation and retains its originating desk or overview without a toast (→WEB-36). Turning the match-eve report on during the eve itself opens no NEXT MATCH dialog: the report waits behind its usual reopen access (→WEB-42). Closing the overview restores focus to its trigger; it never starts the clock. There is no global apply footer.
 
 - WEB-80 [o] General progression controls are exclusive to the selected mode.
   - manual: 다음 이벤트 is the only general time-advance action. It reaches the next configured event or the next own fixture result when match-eve observation is off (→WEB-76); no season-end substitute stop is added.
@@ -585,6 +585,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r197 261101 WEB-36✎ settings toast→no feedback for settings commands; WEB-79✎ observations apply directly→same confirmation as business choices; report turned on during the eve waits behind its reopen access
 - r196 261101 WEB-10✎ WEB-11✎ WEB-14✎ WEB-18✎ WEB-39✎ WEB-43✎ WEB-44✎ WEB-60✎ WEB-71✎ WEB-72✎ WEB-77✎ WEB-79✎ WEB-86✎ WEB-100✎ WEB-107✎: office desks/doors and redirect tiles→one approval queue, visible club sections and actual people; home return→queue return; proactive work in office→club operations; WEB-110+ consolidated operations
 - r195 261101 WEB-109+ the candidate detail as a scout report: head, verdict card, 우리 팀에서 · 비용 · 능력·성향 sections whose headings carry their answer, each fact once, a transaction bar at the foot
 - r194 261101 WEB-91✎ controller light secondary/grass→burgundy paper, forest matte, midnight pixels and butter clay with matching local text

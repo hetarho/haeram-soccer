@@ -438,7 +438,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 196 | 196 | - | 0 |
+| WEB | 197 | 196 | WEB-36✎ WEB-79✎ | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 6 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
@@ -490,6 +490,7 @@
 
 ## next
 - ap01 (approvals never stop progression, 결재함 with a 7-day 결재 기한, T623–T625) is done and pushed; report spec/reports/261101-ap01.md.
+- create-task WEB: record the directly implemented r197 changes (no settings toast, observation confirmation) with their e2e checks; the lobby shortcut overlay is interim until T630 removes the lobby scene.
 - tf31 (transfer values by era) is done and pushed; owner to look at its two suggests (non-English currency levels ECON-2/5, the 1950s lower-division fee pyramid CLUB-25/46). Main's Chromium UI journeys await the ds30 spec migration.
 - Owner authorizes main publication of T617/T618 despite reproduced baseline UI e2e failures; publish unchanged engine source and observe CI. Evidence reports/261031-ei31.md.
 - create-task KIT (existing kit baseline r5–r6 remains pending outside of01; WEB r188–r195 baseline regression is included in T632).
@@ -501,6 +502,10 @@
 - 261101 T629 done: shared club section bar (현황·1군·코치진·훈련·유소년·운영), /club-operations with 재정·투자/후원/구단 디자인, unselected office desks redirect to their workflow or section (requests stay), 1군 opens the roster; unit 290 passed, build passed, e2e source left to the batch; session of01.
 - 261101 update-ssot WEB r196 + create-task T629–T632: approval-only office, visible club sections, actual first-team/coach information and consolidated proactive operations; qualitative 2024-11-01–2026-11-01 Steam research in reports/261031-of01.md; session of01.
 - 261101 design controller: apply P3 burgundy paper, G1 forest matte, X2 midnight pixels and S1 butter clay; unit 1833, integration 1267, contract 48 and Chromium 335 passed; shared-checkout receipt stale after concurrent unrelated edits; preserve tested ce95aae4 in isolated cb31 commit.
+- 261101 update-ssot WEB r197 (WEB-36✎ WEB-79✎): settings commands show no toast; eve/window observations take the business confirmation and an eve report turned on during the eve waits behind its reopen access; owner-requested fixes made directly in the shared checkout, rebased onto 64243a3f and pushed by session 5d; batch gate on the 09509a0b base passed (unit, integration, contract, catalogs, build, Chromium 335). The same commit moves the current lobby's 클럽 소식·시즌 브리핑 and 결재라인 모아보기 buttons onto its artwork's lower edge (owner request; typecheck, lint, format, 164 unit tests, build, manual previews at 360/390/1280); r196's WEB-39 replaces that lobby, so the overlay is interim until T630 and adds no WEB text.
+- 261101 fix e2e live-state: an eve met during the league detour's office visit waits behind its reopen access without a dialog; the check accepts that Aug 7 reopen like a dismissed report (CI WebKit 41226127751).
+- 261101 fix web controls: at 360 px the 결재함 wrapped the bottom controls into two rows, so celebrations overlapped the clock (news.spec on CI); the two 결재 buttons are 44 px on phones and 다음 이벤트 has narrower sides, and resource-skins now asserts one row at 360/390 in every theme.
+- 261101 fix engine approvals: waiting days counted at the start of clubDay so day, round and season paths agree at the close (CI 41222347443: calendar.progression-eng/esp, season, full-model-throughput); portable golden regenerated; integration 1,268 and contract 48 passed.
 - 261101 ap01 closed: changed-code checks only at the owner's request (unit tier, touched integration/contract, 14 changed Chromium journeys); push main.
 - 261101 T625 done: 결재함 button in the bottom controls with waiting/overdue counts, tray rows with D-n/지연 n일, lobby tray heading with the overdue morale cost; session ap01.
 - 261101 T624 done: approvals never stop or refuse progression in either mode; office counts read approvalRequests; four e2e journeys rewritten for the final gate; session ap01.
@@ -511,7 +516,3 @@
 - 261101 T628 done: scout verdict A–E (CLUB r47) and the candidate detail as a scout report (WEB r195); unit/contract pass, 4 integration failures pre-exist on 67c9e974, e2e left to CI; session sr11.
 - 261101 update-ssot CLUB r47 (CLUB-47+) WEB r195 (WEB-109+) + create-task T628 scout verdict and the candidate detail as a scout report; session sr11.
 - 261031 T621 done: transfer values by era (CLUB r45), premium reaching values above the pivot, anchors 0.5 (1950)…5.2 (2025); 8 ENG careers 0 of 15 years outside CLUB-46 bands (10 before); ECON-29 bands unchanged; session tf31.
-- 261031 update-ssot CLUB r44 (CLUB-25✎ CLUB-46+) + create-task T621 transfer values by era; session tf31.
-- 261031 create-task review/engine-architecture-261030: owner authorizes production completion; T617 helper replication, T618 guarded packed movement; session ei31.
-- 261031 review-code engine-architecture-261030 ready: nine engine candidates, seventeen worker/transport configurations; F1/F2 accepted for follow-up planning, no production source adoption. Artifact commit 2a28f947 and remote checkpoint 848f8c57 (wip/eo30); project quick checks, 173 units and prototype parity passed; report 261030-eo30.
-- 261031 ei31 publication authorized: owner accepts baseline UI e2e failures and requests main push. Runtime code unchanged since fa72a098 and the successful engine checks; remote main is an ancestor of this worktree. Preserve the existing failure evidence without claiming a successful full app gate.

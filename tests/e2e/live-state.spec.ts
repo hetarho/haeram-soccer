@@ -91,9 +91,12 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
       async () =>
         (await mini.getByRole('button', { name: '자동 진행 정지' }).isVisible()) ||
         (await eveOn('1950년 8월 7일').isVisible()) ||
-        (dismissedEve && (await reopenOn('1950년 8월 7일').isVisible())),
+        (await reopenOn('1950년 8월 7일').isVisible()),
     )
     .toBe(true);
+  // An eve met inside the detour's office visit never opens its dialog there (CI WebKit
+  // 41226127751): it waits behind its reopen access exactly as a dismissed report does.
+  if (await reopenOn('1950년 8월 7일').isVisible()) dismissedEve = true;
   await expect(rankTab).toHaveAttribute('aria-selected', 'true');
   const playersTab = page.getByRole('tab', { name: '선수 기록', exact: true });
   // Cover both event orders without racing an observed report's background lock.

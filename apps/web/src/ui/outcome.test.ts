@@ -10,6 +10,7 @@ import {
 import { sellPlayer } from '../../../../packages/engine/src/testing';
 import { makePlayer } from '../../../../packages/engine/src/world';
 import { resolveCare } from '../../../../packages/engine/src/care';
+import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { describeOutcome, newEvents } from './outcome';
 
 const world = () =>
@@ -104,6 +105,13 @@ describe('action outcome summaries', () => {
   it('never summarizes a match that live playback has yet to reveal', () => {
     const before = world();
     expect(describeOutcome({ type: 'next-match' }, before, before)).toBeUndefined();
+  });
+
+  it('leaves a settings change to the control that shows it, without a card or toast', () => {
+    const before = world();
+    const settings = { ...settingsOf(before), mode: 'manual' as const };
+    const next = after(before, (w) => (w.settings = settings));
+    expect(describeOutcome({ type: 'settings', settings }, before, next)).toBeUndefined();
   });
 
   it('finds new records even when the view keeps a bounded event tail', () => {
