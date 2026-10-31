@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T20:15Z | 2026-10-31T20:16Z | T634 |
 
 ## inbox
 - 261101 decided WEB-74 WEB-83 SAVE-20 T634: final browser gate found integration regressions after the office consolidation → repair explicit observation reopening, completed design-form state and shared navigation readiness; move old test contexts to their actual homes while retaining every business/geometry assertion (alt: publish with failures | restore duplicate desks); latest T622 source is integrated before the new gate.
