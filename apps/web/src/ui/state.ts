@@ -18,6 +18,7 @@ import { operationsAddress, operationsRoute, type OperationsView } from './clubS
 import { isTaskDestination, rememberTask, taskAddress, useTaskMemory } from './taskMemory';
 import { create } from 'zustand';
 import { eventDesk, type ApprovalRequest } from './eventRouting';
+import { QUEUE_RETURN, type QueueReturn } from './approvalOrder';
 import type { StopReason } from '../../../../packages/engine/src/stopping';
 import type { BoardRequest } from './board';
 import type { AreaKey } from './areas';
@@ -132,8 +133,6 @@ const arrival = typeof location === 'undefined' ? undefined : arrive();
 
 export const useNavigation = create<{
   page: Page;
-  /** The page the owner office was entered from, where 나가기 returns (→WEB-39). */
-  officeFrom?: Page;
   setPage: (page: Page) => void;
   /** Redirects without a history entry (e.g. a match address without a live match). */
   replacePage: (page: Page) => void;
@@ -162,7 +161,6 @@ export function openPrimary(page: Page | 'market') {
   if (page === 'business') {
     useTaskMemory.setState({ returning: undefined, parents: [] });
     openOfficeLobby();
-    useNavigation.setState({ officeFrom: 'dashboard' });
     return;
   }
   // The market is an entry of its own, so the first team's door resumes the team, not the market.
@@ -184,13 +182,6 @@ useNavigation.subscribe(({ page }) => {
       : undefined;
   if (hub)
     useTaskMemory.setState((memory) => ({ values: { ...memory.values, [`hub-${hub}`]: page } }));
-});
-
-// However the office is reached — a page change, an address, back or a task return — the page
-// before it is where leaving returns.
-useNavigation.subscribe((state, previous) => {
-  if (state.page === 'business' && previous.page !== 'business')
-    useNavigation.setState({ officeFrom: previous.page });
 });
 
 /** A one-shot request a page takes when it opens, or at once while it is showing. */
@@ -224,24 +215,9 @@ export const useCoachRequest = oneShot<{
   focus?: TrainingFocus | YouthFocus;
   player?: string;
 }>();
-/** The primary navigation's entry to the owner office (→WEB-10/39). */
+/** The entry to the owner office's 결재함 (→WEB-10/39): the clubhouse entrance and the controller. */
 export function openOfficeLobby() {
   openBusiness('lobby');
-}
-/**
- * 나가기 from the owner office: back to the task that detoured into it, otherwise to the page it
- * was entered from, home by default.
- */
-export function leaveOffice() {
-  if (approvalId()) {
-    returnApprovalHome();
-    return;
-  }
-  if (useTaskMemory.getState().returning?.target === 'business') {
-    returnToTask();
-    return;
-  }
-  useNavigation.getState().setPage(useNavigation.getState().officeFrom ?? 'dashboard');
 }
 /** Overview overlays the current task, including an existing department sheet. */
 export function openOwnerOffice() {
@@ -354,10 +330,8 @@ export function activateTaskWorld(world: string) {
   if (
     approvalId() &&
     ((approvalWorld() && approvalWorld() !== world) || (previous && previous !== world))
-  ) {
+  )
     useNavigation.getState().replacePage('dashboard');
-    useNavigation.setState({ officeFrom: undefined });
-  }
   if (previous && previous !== world) {
     usePeopleView.getState().take();
     useCoachRequest.getState().take();
@@ -373,7 +347,9 @@ export function openApprovalRequest(world: string, item: StopReason) {
   const desk = eventDesk(item);
   if (!desk) return;
   useTaskMemory.getState().activate(world);
-  rememberTask(useNavigation.getState().page);
+  // A request reviewed from another task keeps that task's named return beside the 결재함.
+  if (useNavigation.getState().page === 'business') rememberTask('business');
+  else beginTaskDetour('business');
   const request: ApprovalRequest = { world, desk, item: { ...item } };
   useTaskMemory.setState((memory) => ({
     approvalRequests: { ...memory.approvalRequests, [item.id]: request },
@@ -395,12 +371,22 @@ export function returnApprovalHome(request?: ApprovalRequest) {
       useNavigation.getState().page !== 'business')
   )
     return;
-  // Desks are no office places any more: the office entry resumes its lobby.
-  useTaskMemory.setState((memory) => ({
+  // Every way out of a review leads to the 결재함 with its filter and scroll, focus going to the
+  // request still waiting there or the one in its place (→WEB-100). The office entry resumes it.
+  const memory = useTaskMemory.getState(),
+    id = request?.item.id ?? approvalId() ?? '',
+    from = memory.values[QUEUE_RETURN] as QueueReturn | undefined;
+  useTaskMemory.setState({
     addresses: { ...memory.addresses, business: officeAddress('lobby') },
-  }));
-  history.pushState(null, '', '/journal');
-  useNavigation.setState({ page: 'dashboard' });
+    values: {
+      ...memory.values,
+      [QUEUE_RETURN]: { id, index: from?.id === id ? from.index : 0, back: true },
+    },
+  });
+  history.pushState(null, '', officeAddress('lobby'));
+  if (useNavigation.getState().page === 'business') useBusinessView.getState().open('lobby');
+  useNavigation.setState({ page: 'business' });
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event('tasknavigate'));
 }
 /** Opens the page and tab where a setting lives (→WEB-71). */
 export function openHome(home: Home) {

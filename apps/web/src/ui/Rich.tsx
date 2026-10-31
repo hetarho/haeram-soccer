@@ -46,7 +46,7 @@ import { UNHAPPY_MORALE } from '../../../../packages/engine/src/morale';
 import { ratio } from '../../../../packages/engine/src/primitives';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
 import type { ClientState, GameClient } from '../runtime/client';
-import { ClubJournal, Panel } from './App';
+import { Panel } from './App';
 import { RecruitmentDesk } from './RecruitmentDesk';
 import { OperationsView } from './Operations';
 import { EventCard } from './EventCenter';
@@ -1202,7 +1202,6 @@ function Business({ state, client, controller }: Props & { controller: Progressi
         key={opened}
         state={state}
         client={client}
-        journal={<ClubJournal state={state} />}
         personnel={(_desk, scoped, request, error) => (
           <PersonnelRequest
             key={`${request.world}:${request.item.id}`}

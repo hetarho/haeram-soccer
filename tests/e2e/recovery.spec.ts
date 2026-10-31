@@ -256,9 +256,7 @@ test('a new game goes into another slot, both careers survive switching and back
   );
   await page.goBack();
   await expect(page).toHaveURL(/\/first-team\?view=manager$/);
-  // The room was entered by its office lobby door, and the office from home (→WEB-39).
-  await page.goBack();
-  await expect(page.getByTestId('office-lobby')).toBeVisible();
+  // The section was entered from the clubhouse's section bar; the office has no doors (→WEB-10/39).
   await page.goBack();
   await expect(page).toHaveURL(/\/journal$/);
   await expect(page.getByTestId('club-hub')).toBeVisible();

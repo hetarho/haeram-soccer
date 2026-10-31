@@ -5,6 +5,7 @@ import { orderIds, ownDivisionRound, ownLeague, ownLeagueIds, ownLeagueProgress 
 import { leagueName } from './LeaguePicker';
 import { competitionLabel } from './format';
 import { QuickActions } from './QuickActions';
+import { TeamState } from './TeamStateTiles';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { openCupSeason, openPrimary, useNavigation } from './state';
@@ -63,8 +64,8 @@ export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => voi
 
 /**
  * The owner's office (→WEB-10/11): its room art, dimmed, with the owner's quick actions in small
- * tiles over it. Office work waiting for the owner shows its count in the caption, and the office
- * — the team's state, the rooms and every view and setting — opens from there.
+ * tiles over it. Office work waiting for the owner shows its count in the caption, and its
+ * 결재함 opens from there.
  */
 function OfficeScene({ w, children }: { w: World; children: ReactNode }) {
   const pending = approvalRequests(w).length;
@@ -226,6 +227,8 @@ export function ClubHub({ w, client }: { w: World; client: GameClient }) {
       <OfficeScene w={w}>
         <QuickActions w={w} client={client} />
       </OfficeScene>
+      {/* The club's state and its remedies left the office for the clubhouse (→WEB-39/44). */}
+      <TeamState w={w} client={client} onPrepare={() => setPreparing(true)} />
 
       {preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />}
       {cupsOpen && (

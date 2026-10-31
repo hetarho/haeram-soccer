@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BOTTOM_ORDER, NAV, ROOMS, TABS } from './navigationTabs';
+import { BOTTOM_ORDER, NAV, TABS } from './navigationTabs';
 
 describe('five navigation entries (→WEB-10)', () => {
   it('lists the clubhouse, league, cups, market and records; the bottom bar centres the clubhouse', () => {
@@ -32,6 +32,5 @@ describe('five navigation entries (→WEB-10)', () => {
     expect(TABS.find(([id]) => id === 'history')?.[3]).toEqual(['history']);
     // The market is a view of the first team: it owns no page of its own.
     expect(TABS.find(([id]) => id === 'market')?.[3]).toEqual([]);
-    expect(ROOMS.map(([page]) => page).every((page) => TABS[0][3].includes(page))).toBe(true);
   });
 });

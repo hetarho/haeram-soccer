@@ -84,9 +84,10 @@ for (const viewport of [
     await openPersonnel(page, 'training');
     await expect(page).toHaveURL(/training$/);
     await expect(page.getByTestId('training-focus')).toBeVisible();
-    // A room is entered by its lobby door, so browser back returns to the lobby (→WEB-39).
+    // From the market a section opens through the clubhouse's section bar, so browser back
+    // returns to the clubhouse; the office has no room doors (→WEB-10/39).
     await page.goBack();
-    await expect(page.getByTestId('office-lobby')).toBeVisible();
+    await expect(page.getByTestId('club-hub')).toBeVisible();
     await page.goForward();
     await expect(page.getByTestId('training-focus')).toBeVisible();
     await openPersonnel(page, 'academy');

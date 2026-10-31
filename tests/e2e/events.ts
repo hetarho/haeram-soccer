@@ -1,6 +1,7 @@
 import type { GameSettings, ResponsibilityKey } from '../../packages/contracts/src/types';
 import { expect, type Locator, type Page } from '@playwright/test';
 import {
+  approvalRows,
   enterOffice,
   inOffice,
   LOBBY,
@@ -264,13 +265,13 @@ export async function reviewEvent(page: Page, card: Locator = eventCard(page).fi
   return request;
 }
 
-/** The rows of the office lobby's approval tray (→WEB-39); home leaves office work out. */
+/** The rows of the office's 결재함 in its order (→WEB-39/100); home leaves office work out. */
 export async function approvalTray(page: Page) {
   await enterOffice(page);
   await officeLobby(page);
-  return page.getByRole('region', { name: '결재 대기 업무', exact: true }).getByRole('listitem');
+  return approvalRows(page);
 }
-/** Opens a waiting office request from the lobby tray: the first, or the first with `title`. */
+/** Opens a waiting office request from the 결재함: the first, or the first with `title`. */
 export async function reviewInOffice(page: Page, title?: string | RegExp) {
   const rows = await approvalTray(page);
   await (title === undefined ? rows : rows.filter({ hasText: title }))

@@ -234,8 +234,8 @@ export const STORIES: Story[] = [
     'office',
     '구단주 사무실',
     '운영 · 시설',
-    ['OfficeLobby', 'Operations'],
-    '결재 요청과 결재 라인.',
+    ['ApprovalQueue', 'Operations'],
+    '결재함과 결재 요청.',
     { page: 'business' },
   ),
   story(

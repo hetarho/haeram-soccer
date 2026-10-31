@@ -20,8 +20,6 @@ import {
   openContractTalk,
   activateTaskWorld,
   openPrimary,
-  leaveOffice,
-  openOfficeLobby,
   openBusiness,
   openOperations,
   openFacility,
@@ -252,15 +250,15 @@ describe('club sections and 구단 운영 (→WEB-10/39/110)', () => {
 });
 
 describe('primary office entry', () => {
-  it('returns a primary office visit to the clubhouse and a contextual visit to its place', () => {
+  it('opens the 결재함 itself and leaves an earlier detour behind', () => {
     browser();
     openTraining('training');
-    openOfficeLobby();
-    leaveOffice();
-    expect(useNavigation.getState().page).toBe('training');
+    beginTaskDetour('business');
+    expect(useTaskMemory.getState().returning).toMatchObject({ page: 'training' });
+    // The clubhouse entrance and the controller open the queue, never a desk or a room door.
     openPrimary('business');
-    expect(location.pathname).toBe('/direction');
-    leaveOffice();
-    expect(useNavigation.getState().page).toBe('dashboard');
+    expect(location.pathname + location.search).toBe('/direction');
+    expect(useNavigation.getState().page).toBe('business');
+    expect(useTaskMemory.getState().returning).toBeUndefined();
   });
 });

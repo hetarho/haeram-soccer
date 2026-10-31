@@ -113,7 +113,8 @@ for (const width of [1280, 390]) {
     // Answering one in the office leaves the other waiting and the report still open to reopen.
     const request = await reviewInOffice(page);
     await request.getByRole('button', { name: '거절', exact: true }).click();
-    await expect(page).toHaveURL(/\/journal$/);
+    // The answered review returns to the 결재함, whose controller still offers 다음 이벤트.
+    await expect(page).toHaveURL(/\/direction$/);
     await next.click();
     await expect(group).toContainText('내일 경기');
     await expect(result).toBeEnabled();

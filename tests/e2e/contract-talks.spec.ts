@@ -127,8 +127,8 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await expect(sheet).toHaveCount(0);
 
   // The manager could not talk him round: the roster card on 사람's 선수 wears the badge with its
-  // reason.
-  await expect(page).toHaveURL(/\/journal$/);
+  // reason. The answered review returned to the 결재함 (→WEB-100).
+  await expect(page).toHaveURL(/\/direction$/);
   await openPersonnel(page, 'players');
   const roster = page.locator('article').filter({ hasText: name });
   // 선수 ends with who answers talks: the owner, at level 1 (→WEB-43).

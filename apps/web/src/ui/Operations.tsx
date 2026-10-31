@@ -12,31 +12,26 @@ import {
   approvalId,
   approvalWorld,
   leaveDesk,
-  leaveOffice,
-  openBusiness,
   openOwnerOffice,
   returnApprovalHome,
   type OfficeView,
 } from './state';
 import { OfficeBar } from './OfficeBar';
-import { OfficeLobby } from './OfficeLobby';
+import { ApprovalQueue } from './ApprovalQueue';
 import { DeskBody } from './OfficeDesk';
 
 /**
- * The owner office (→WEB-39): its lobby and the review of a selected request, which composes the
+ * The owner office (→WEB-39): its 결재함 and the review of a selected request, which composes the
  * authoritative form of its work. Proactive work lives in the club's sections (→WEB-110), so a
  * desk opened without a request leaves for them.
  */
 export function OperationsView({
   state,
   client,
-  journal,
   personnel,
 }: {
   state: ClientState;
   client: GameClient;
-  /** The season briefing and club news, opened from the lobby. */
-  journal: ReactNode;
   personnel: (
     desk: 'players' | 'staff',
     client: GameClient,
@@ -62,7 +57,7 @@ export function OperationsView({
     officeView(new URLSearchParams(location.search).get('view')),
   );
   const area = BUSINESS_TABS.find(([id]) => id === view);
-  // The overview is a modal over the lobby; an address that names it lands there with it open.
+  // The overview is a modal over the queue; an address that names it lands there with it open.
   useEffect(() => {
     if (view !== 'office') return;
     history.replaceState(history.state, '', officeAddress('lobby'));
@@ -73,26 +68,13 @@ export function OperationsView({
     if (area && !requestId) leaveDesk();
   }, [area, requestId]);
   if (!area)
-    return (
-      <>
-        <OfficeBar back={{ label: '클럽하우스', onClick: leaveOffice }} title="구단주 사무실" />
-        <OfficeLobby
-          w={w}
-          client={client}
-          sponsors={state.view!.sponsors}
-          pending={approvalRequests(w)}
-          journal={journal}
-          onOpen={openBusiness}
-          onOverview={openOwnerOffice}
-        />
-      </>
-    );
+    return <ApprovalQueue w={w} pending={approvalRequests(w)} onOverview={openOwnerOffice} />;
   if (!requestId) return null;
   const [id, label] = area;
   return (
     <>
-      <OfficeBar back={{ label: '사무실', onClick: () => returnApprovalHome() }} title={label} />
-      {/* The bar names the request's work; its own form carries its regions. */}
+      <OfficeBar title={label} />
+      {/* The bar names the request's work; the review carries its return and its own form. */}
       <DeskBody data-office-view={id}>
         {request && request.world === w.id && request.desk === id ? (
           <ApprovalRequestHost key={`${w.id}:${requestId}`} request={request} client={client}>
@@ -112,7 +94,9 @@ export function OperationsView({
         ) : (
           <section data-testid="approval-request">
             <p role="status">이미 처리되었거나 조건이 바뀐 요청이에요.</p>
-            <button onClick={() => returnApprovalHome()}>홈으로</button>
+            <button type="button" data-ui="link" onClick={() => returnApprovalHome()}>
+              결재함으로
+            </button>
           </section>
         )}
       </DeskBody>

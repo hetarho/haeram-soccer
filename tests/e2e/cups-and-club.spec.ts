@@ -5,7 +5,7 @@ import { test, expect } from '@playwright/test';
 import { chooseLevel, closeOutcome, setResponsibility } from './events';
 import { chooseOption } from './select';
 import { horizontalOverflow } from './layout';
-import { enterOffice } from './office';
+import { watchNext } from './watch';
 
 async function found(page: import('@playwright/test').Page, seed: string) {
   await page.goto('/');
@@ -181,18 +181,19 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(sheet).toHaveCount(0);
     expect(await horizontalOverflow(page)).toBe(0);
 
-    // A club named inside another sheet opens on top of it; Escape closes only the top one.
-    // The journal opens from the owner office lobby (→WEB-39).
-    await enterOffice(page);
+    // A club named inside another sheet opens on top of it; Escape closes only the top one. Once
+    // a match is played our own sheet names its opponent (→WEB-58).
+    await watchNext(page, { manual: true });
+    await page.getByRole('button', { name: '결과 보기', exact: true }).click();
+    await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
+    await page.getByRole('button', { name: '홈으로', exact: true }).click();
+    await openLeague(page);
     await page
-      .getByTestId('office-lobby')
-      .getByRole('button', { name: '클럽 소식·시즌 브리핑', exact: true })
-      .click();
-    const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
-    const club = journal
       .getByRole('table', { name: '리그 순위표' })
-      .getByRole('button', { name: /팀 정보$/ })
-      .nth(1);
+      .getByRole('button', { name: 'Haeram Athletic 팀 정보', exact: true })
+      .click();
+    const own = page.getByRole('dialog', { name: 'Haeram Athletic', exact: true });
+    const club = own.getByRole('button', { name: /팀 정보$/ }).first();
     const clubName = (await club.getAttribute('aria-label'))!.replace(/ 팀 정보$/, '');
     await club.click();
     const stacked = page.getByRole('dialog', { name: clubName, exact: true });
@@ -200,7 +201,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(page.getByRole('dialog')).toHaveCount(2);
     await page.keyboard.press('Escape');
     await expect(stacked).toHaveCount(0);
-    await expect(journal).toBeVisible();
+    await expect(own).toBeVisible();
     await expect(club).toBeFocused();
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog')).toHaveCount(0);

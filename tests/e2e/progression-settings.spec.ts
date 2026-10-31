@@ -4,7 +4,7 @@ import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsi
 import { expect, test, type Page } from '@playwright/test';
 import { chooseLevel, configureResponsibilities, dismissSettingsToast, openOffice } from './events';
 import { horizontalOverflow, settle } from './layout';
-import { leaveOffice } from './office';
+import { approvalQueue, approvalRows, leaveOffice } from './office';
 async function foundQuiet(page: Page) {
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
@@ -313,17 +313,27 @@ test('approvals waiting in the 결재함 never stop a running clock (→WEB-42)'
   await expect(stop).toBeVisible();
   await stop.click();
   await expect(play).toBeVisible();
-  // The controller's 결재함 counts the same work and opens the office lobby's tray (→WEB-18/100).
+  // The controller's 결재함 counts the same work and opens the office's queue (→WEB-18/100).
   const inbox = clock.getByTestId('approval-inbox');
   await expect(inbox).toHaveAttribute('aria-label', /^결재함 · 대기 [1-9]/);
+  const label = (await inbox.getAttribute('aria-label'))!;
   await inbox.click();
-  await expect(page.getByTestId('office-lobby')).toBeVisible();
-  await expect(
-    page
-      .getByRole('region', { name: '결재 대기 업무', exact: true })
-      .getByTestId('approval-deadline')
-      .first(),
-  ).toHaveText(/^(D-[1-7]|지연 \d+일)$/);
+  await expect(approvalQueue(page)).toBeVisible();
+  await expect(approvalRows(page)).toHaveCount(Number(/대기 (\d+)/.exec(label)![1]));
+  await expect(approvalRows(page).first().getByTestId('approval-deadline')).toHaveText(
+    /^(D-[1-7]|지연 \d+일)$/,
+  );
+  // The open queue follows the running clock: its rows count their waiting days down, or leave
+  // when their own course closes them, without the office stopping play (→WEB-97/100).
+  const read = () =>
+    approvalRows(page).evaluateAll((rows) => rows.map((row) => row.textContent).join('|'));
+  const before = await read();
+  await play.click();
+  await expect(stop).toBeVisible();
+  await expect.poll(read, { timeout: 30000 }).not.toBe(before);
+  await expect(approvalQueue(page)).toBeVisible();
+  await stop.click();
+  await expect(play).toBeVisible();
 });
 
 test('restored match eve uses actual match actions instead of acknowledging the observation', async ({

@@ -349,25 +349,22 @@ test('keeps a foreign league selected across all competition lenses without subs
   await expect(page).not.toHaveURL(/league=/);
 });
 
-test('keeps the home briefing informational alongside the public clock and links the current club record', async ({
+test('keeps the home briefing informational alongside the public clock and opens the current club record', async ({
   page,
 }) => {
   await found(page);
   const hub = page.getByTestId('club-hub');
   await expect(hub.getByRole('button', { name: '시즌 진행 도구', exact: true })).toHaveCount(0);
+  await expect(hub.getByRole('button', { name: '한 라운드 진행', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
-  // The club journal stands in the owner office lobby (→WEB-39).
+  // The office holds its 결재함 and repeats no season journal (→WEB-39).
   await enterOffice(page);
-  await page.getByRole('button', { name: '클럽 소식·시즌 브리핑', exact: true }).click();
-  const briefing = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
-  await expect(briefing.getByRole('button', { name: '한 라운드 진행', exact: true })).toHaveCount(
-    0,
-  );
-  await expect(
-    briefing.getByRole('heading', { name: '우리 팀의 순위 경쟁', exact: true }),
-  ).toBeVisible();
-  await briefing.getByRole('button', { name: '이번 시즌 구단 기록 →', exact: true }).click();
-  await expect(briefing).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /클럽 소식/ })).toHaveCount(0);
+  // The season in progress opens from the records room's season list (→WEB-54).
+  await openClubRecords(page);
+  const row = page.getByRole('button', { name: '1950/51 구단 시즌 기록 보기', exact: true });
+  await row.evaluate((element) => element.scrollIntoView({ block: 'center' }));
+  await row.click();
   await expect(page).toHaveURL(/\/history\?section=club&season=1950/);
   await clubhouseTab(page).click();
   await advanceOneRound(page);

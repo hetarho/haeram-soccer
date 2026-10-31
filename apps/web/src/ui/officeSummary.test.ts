@@ -1,151 +1,19 @@
-import { createElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
-import type { StopReason } from '../../../../packages/engine/src/stopping';
-import { OfficeLobby } from './OfficeLobby';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import type { World } from '../../../../packages/contracts/src/types';
-import type { SponsorSlotView } from '../../../../packages/engine/src/sponsors';
 import {
   defaultSettings,
   RESPONSIBILITY_KEYS,
 } from '../../../../packages/engine/src/responsibilities';
-import { delegationCounts, officeFacts } from './officeSummary';
-import type { GameClient } from '../runtime/client';
-import korean from '../../public/presentation/locales/ko-KR.json';
-vi.mock('./FacilityArt', () => ({ FacilityArt: () => null }));
-vi.mock('./teamState', () => ({
-  cashState: () => ({ value: '약 12주' }),
-  teamStates: () => [
-    { key: 'strength', label: '팀 전력', value: '61', status: '리그 3/20위', tone: 'good' },
-  ],
-  placeTraining: () => ({ focus: '균형 훈련' }),
-}));
-vi.mock('../presentation/react', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('../presentation/react')>()),
-  useLocale: () => ({
-    t: (key: string) => korean.messages[key as keyof typeof korean.messages] ?? key,
-  }),
-}));
-const world = () =>
-  ({
-    playerClub: 'club',
-    year: 1950,
-    cash: '10000',
-    clubs: [{ id: 'club', country: 'ENG' }],
-    players: [
-      { id: 'one', name: 'One', status: 'active', wage: '100', until: 1951 },
-      { status: 'sold', wage: '200' },
-    ],
-    academy: { players: [{ id: 'youth' }] },
-    manager: { name: 'Manager' },
-    staff: [],
-    settings: defaultSettings(),
-  }) as unknown as World;
-const slots = [{ open: true }, { open: false }] as SponsorSlotView[];
-describe('office lobby facts', () => {
-  it('leads with actual work and retains independent saved choices on inspection', () => {
-    const w = world(),
-      before = structuredClone(w);
-    const facts = officeFacts(w, slots);
-    expect(facts.players).toBe('1군 1명 · 유소년 1명 · 만료 1명 · 계약 협상 0건');
-    expect(facts.staff).toBe('감독 Manager · 스태프 0명 · 결재 대기 0건');
-    expect(facts.investment).toContain('자금 여력 약 12주');
-    expect(facts.sponsor).toBe('후원 0/1자리');
-    expect(w).toEqual(before);
-  });
-  it('leads the lobby with live pending requests and opens their matching desk facts', () => {
-    const w = world();
-    const pending = [
-      {
-        id: 'manager-approval',
-        responsibility: 'manager',
-        kind: 'staff-renewal',
-        title: 'Manager renewal',
-      },
-    ] as StopReason[];
-    const html = renderToStaticMarkup(
-      createElement(OfficeLobby, {
-        w,
-        client: {} as GameClient,
-        sponsors: slots,
-        pending,
-        onOpen: vi.fn(),
-        onOverview: vi.fn(),
-      }),
-    );
-    expect(html).toContain('결재함 · 대기 1건');
-    // The team's state and the clubhouse's room doors moved here from home.
-    expect(html).toContain('data-testid="team-state"');
-    for (const room of ['감독 사무실', '코칭스태프실', '훈련장', '유소년 훈련장'])
-      expect(html).toContain(`>${room}</span>`);
-    expect(html).toContain('감독 Manager · 1군 1명');
-    expect(html).toContain('1군 균형 훈련');
-    expect(html).toContain('Manager renewal · 검토하기');
-    expect(html).toContain('재정·투자');
-    expect(html).toContain('data-testid="desk-scene"');
-    expect(html).not.toContain('role="dialog"');
-    expect(officeFacts(w, slots, pending).staff).toContain('결재 대기 1건');
-  });
-  it('reads each request against its 결재 기한 and heads the lobby tray with the overdue cost', () => {
-    const w = world();
-    const pending = [
-      { id: 'late', responsibility: 'manager', kind: 'staff-renewal', title: 'Late renewal' },
-      { id: 'fresh', responsibility: 'contracts', kind: 'contract-talk', title: 'Fresh talk' },
-      { id: 'new', responsibility: 'sales', kind: 'incoming-bid', title: 'New offer' },
-    ] as StopReason[];
-    w.approvalWaits = { late: 9, fresh: 3 };
-    const html = renderToStaticMarkup(
-      createElement(OfficeLobby, {
-        w,
-        client: {} as GameClient,
-        sponsors: slots,
-        pending,
-        onOpen: vi.fn(),
-        onOverview: vi.fn(),
-      }),
-    );
-    // 9 days waited is 3 past the 7-day deadline; 3 days leaves 4; one arrived today leaves 7.
-    expect(html).toContain('결재함 · 대기 3건');
-    expect(html).toContain(' · 지연 1건 · 라운드마다 분위기 −1');
-    const deadlines = [...html.matchAll(/data-testid="approval-deadline">([^<]+)</g)].map(
-      (match) => match[1],
-    );
-    expect(deadlines).toEqual(['지연 3일', 'D-4', 'D-7']);
-    w.approvalWaits = { late: 6 };
-    const calm = renderToStaticMarkup(
-      createElement(OfficeLobby, {
-        w,
-        client: {} as GameClient,
-        sponsors: slots,
-        pending,
-        onOpen: vi.fn(),
-        onOverview: vi.fn(),
-      }),
-    );
-    expect(calm).toContain('D-1');
-    expect(calm).not.toContain('지연');
-  });
-  it('keeps ongoing construction visible alongside finance', () => {
-    const w = world();
-    w.facilityWorks = {
-      stadium: { to: 1, year: 1950, day: 180 },
-      training: { to: 1, year: 1950, day: 90 },
-    };
-    expect(officeFacts(w, slots).investment).toContain('공사 중 2건');
-  });
+import { delegationCounts } from './officeSummary';
+
+describe('office delegation counts', () => {
   it('counts observations and all seven responsibilities without conflating them', () => {
-    const w = world();
+    const w = { settings: defaultSettings() } as unknown as World;
     for (const key of RESPONSIBILITY_KEYS) w.settings!.responsibilities[key] = 'direct';
     w.settings!.observations = { matchEve: true, windowOpen: true };
     expect(delegationCounts(w)).toEqual({ delegated: 0, direct: 9, total: 9 });
     w.settings!.responsibilities.sponsors = 'delegated';
     w.settings!.observations.windowOpen = false;
     expect(delegationCounts(w)).toEqual({ delegated: 2, direct: 7, total: 9 });
-  });
-  it('counts signed sponsor slots among the open ones', () => {
-    expect(
-      officeFacts(world(), [{ open: true, contract: {} }, { open: false }] as SponsorSlotView[])
-        .sponsor,
-    ).toBe('후원 1/1자리');
   });
 });

@@ -4,14 +4,7 @@ import { ClubNavigation } from './ClubNavigation';
 import { OfficeOverviewHost } from './OfficeOverviewHost';
 import { CashAlarm } from './CashAlarm';
 import { FeedbackOverlay } from './FeedbackOverlay';
-import {
-  activateTaskWorld,
-  openClubSeason,
-  openPeople,
-  openPrimary,
-  useNavigation,
-  type Page,
-} from './state';
+import { activateTaskWorld, openPeople, openPrimary, useNavigation, type Page } from './state';
 import { PixelIcon, type PixelIconName } from './PixelIcon';
 import { useLocale } from '../presentation/react';
 import type { Translator } from '../presentation/locale';
@@ -39,9 +32,7 @@ import { DepartmentPolicySheet } from './DepartmentPolicySheet';
 import { PlayerPreparationHost } from './PlayerPreparationHost';
 import { taskAddress, useTaskMemory } from './taskMemory';
 import { ClubCrest } from './ClubCrest';
-import { ClubLink } from './ClubLink';
-import { competitionLabel, number, percent, seasonName } from './format';
-import { Money } from './Money';
+import { number, seasonName } from './format';
 import { ProgressControls } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
 // The clubhouse loads when a game is ready, outside the founding/slot entry.
@@ -53,16 +44,8 @@ const PlayGuide = lazy(() =>
 import { gameActionsBlocked, gameStore, useGameState } from '../runtime/store';
 import { ProgressionController, approvalRequests, useProgression } from '../runtime/progression';
 import { worldSelector } from './liveState';
-import { LeagueOverview, RankHistoryGraph, Standings } from './LeagueInsights';
-import { ownLeagueIds } from './league';
-import {
-  daysUntilNextMatch,
-  fixtureDate,
-  nextOwnFixture,
-  ROUND_INTERVAL_DAYS,
-  seasonDayLabel,
-  todayStamp,
-} from '../../../../packages/engine/src/calendar';
+import { Standings } from './LeagueInsights';
+import { todayStamp } from '../../../../packages/engine/src/calendar';
 import s from './App.module.css';
 import { Dialog } from './Dialog';
 import { ActionOutcome } from './ActionOutcome';
@@ -220,163 +203,6 @@ export function Panel({
 }
 export function Table({ w, ids, limit }: { w: World; ids: string[]; limit?: number }) {
   return <Standings w={w} ids={ids} limit={limit} />;
-}
-/** The season briefing and club news; the owner office opens it (→WEB-39). */
-export function ClubJournal({ state }: { state: ClientState }) {
-  const setPage = useNavigation((state) => state.setPage);
-  const v = state.view!,
-    w = v.world,
-    c = w.clubs.find((c) => c.id === w.playerClub)!,
-    t = w.tables[c.id],
-    next = nextOwnFixture(w),
-    home = w.clubs.find((c) => c.id === next?.home),
-    away = w.clubs.find((c) => c.id === next?.away);
-  const members = w.clubs.filter((club) => ownLeagueIds(w).includes(club.id));
-  const last = w.ownMatches.slice(-5);
-  const remaining = w.fixtures.filter(
-    (f) =>
-      !f.score &&
-      ['league', 'lower'].includes(f.kind) &&
-      (f.home === w.playerClub || f.away === w.playerClub),
-  ).length;
-  const winRate = percent(t.won, t.played);
-  return (
-    <>
-      <div className={s.hero}>
-        <div>
-          <div className={s.eyebrow}>SEASON {seasonName(w.year)}</div>
-          <h2>{c.name}</h2>
-          <p>
-            {w.lower ? '아마추어 리그' : `${c.tier + 1}부`} · 남은 우리 리그 경기{' '}
-            {Math.max(0, remaining)}개
-          </p>
-        </div>
-        <button type="button" onClick={() => openClubSeason(w.year)}>
-          이번 시즌 구단 기록 →
-        </button>
-      </div>
-      <LeagueOverview w={w} onOpenLeague={() => setPage('league')} />
-      <div className={s.stats}>
-        {(
-          [
-            [
-              '운영 자금',
-              <Money value={w.cash} code={c.country} year={w.year} />,
-              <>
-                연간 운영비 <Money value={v.annualCost} code={c.country} year={w.year} />
-              </>,
-            ],
-            ['우리의 서포터', number(c.fans), '경기 결과·해외 마케팅·글로벌 인지도에 따라 변화'],
-            [
-              '이번 시즌',
-              `${t.points} pts`,
-              `${t.played}경기 · ${t.won}승 ${t.drawn}무 ${t.lost}패`,
-            ],
-            [
-              '쌓아온 기록',
-              `${number(v.totalMatches)} matches`,
-              `${w.history.length}개 시즌 · 승률 ${winRate}`,
-            ],
-          ] as [string, ReactNode, ReactNode][]
-        ).map(([label, value, note]) => (
-          <div data-surface="sheet" className={s.stat} key={label}>
-            <div className={s.label}>{label}</div>
-            <strong>{value}</strong>
-            <small>{note}</small>
-          </div>
-        ))}
-      </div>
-      <div className={s.grid}>
-        <div className={s.stack}>
-          <Panel title="다음 경기" note={<NextMatchNote />}>
-            <div className={s.fixture}>
-              <small>
-                {seasonName(w.year)} · {country(c.country).name} · {c.tier + 1}부
-              </small>
-              <div className={s.fixtureTeams}>
-                <div>
-                  {home ? <ClubLink w={w} id={home.id} crest={20} /> : '시즌의 마지막 페이지'}
-                </div>
-                <b>vs</b>
-                <div>
-                  {away ? <ClubLink w={w} id={away.id} crest={20} /> : '다음 시즌을 기다립니다'}
-                </div>
-              </div>
-            </div>
-            <div className={s.panelFoot}>
-              최근 경기{' '}
-              {last.length
-                ? last.map((m) => {
-                    const a = m.home === w.playerClub ? m.score.home : m.score.away,
-                      b = m.home === w.playerClub ? m.score.away : m.score.home;
-                    return (
-                      <span key={m.id} className={s.pill} style={{ marginRight: 6 }}>
-                        {a > b ? 'W' : a === b ? 'D' : 'L'} {a}–{b}
-                      </span>
-                    );
-                  })
-                : '아직 첫 휘슬이 울리지 않았습니다.'}
-            </div>
-          </Panel>
-          <RankHistoryGraph w={w} />
-          <Panel
-            title="리그의 지금"
-            note={`${c.tier + 1}부 · ${members.length} CLUBS`}
-            footer={<button onClick={() => setPage('league')}>전체 리그 보기 →</button>}
-          >
-            <Table w={w} ids={members.map((c) => c.id)} limit={6} />
-          </Panel>
-        </div>
-        <div className={s.stack}>
-          <Panel title="클럽의 작은 소식" note="THE NOTICEBOARD">
-            <div className={s.panelBody}>
-              <ul className={s.timeline}>
-                {w.events
-                  .slice(-7)
-                  .reverse()
-                  .map((e, i) => (
-                    <li key={i}>
-                      <small>{seasonDayLabel(e.year, e.round * ROUND_INTERVAL_DAYS)}</small>
-                      <h3>{e.title}</h3>
-                      <p>{e.detail}</p>
-                    </li>
-                  ))}
-              </ul>
-            </div>
-          </Panel>
-          <Panel title="숫자로 보는 이번 시즌" note="ON THE PITCH">
-            <div className={s.panelBody}>
-              <div data-ui="attribute" className={s.attribute}>
-                <span>득점 / 실점</span>
-                <b>
-                  {t.gf} / {t.ga}
-                </b>
-              </div>
-              <div data-ui="attribute" className={s.attribute}>
-                <span>클럽 평판</span>
-                <b>{number(c.reputation)} / 100</b>
-              </div>
-              <div data-ui="attribute" className={s.attribute}>
-                <span>감독과의 신뢰</span>
-                <b>{number(w.manager.trust)} / 100</b>
-              </div>
-              <div data-ui="attribute" className={s.attribute}>
-                <span>연간 손익</span>
-                <b>
-                  <Money
-                    value={BigInt(w.income) - BigInt(w.expense)}
-                    code={c.country}
-                    year={w.year}
-                  />
-                </b>
-              </div>
-            </div>
-            <div className={s.panelFoot}>지표를 비교하고, 다음 선택을 바꿔보세요.</div>
-          </Panel>
-        </div>
-      </div>
-    </>
-  );
 }
 const selectContentWorld = worldSelector([
   'year',
@@ -628,17 +454,6 @@ function ReadonlyBadge() {
       </button>
       <span className={open ? s.readonlyDetail : s.srOnly}>{text}</span>
     </span>
-  );
-}
-function NextMatchNote() {
-  const w = useGameState((state) => state.view?.world)!;
-  const next = nextOwnFixture(w);
-  return (
-    <>
-      {next
-        ? `${fixtureDate(w, next)} · ${daysUntilNextMatch(w)}일 후 · ${competitionLabel(w, next)}`
-        : '시즌 마무리'}
-    </>
   );
 }
 /**

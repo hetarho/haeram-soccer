@@ -338,7 +338,8 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
     .getByTestId('manager-renewal')
     .getByRole('button', { name: /^재계약/ })
     .click();
-  await expect(page).toHaveURL(/\/journal$/);
+  // An answered review returns to the 결재함 (→WEB-100).
+  await expect(page).toHaveURL(/\/direction$/);
   await expect((await approvalTray(page)).filter({ hasText: renewal })).toHaveCount(0);
   await openPeople(page);
   await openPersonnel(page, 'manager');

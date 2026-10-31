@@ -53,9 +53,10 @@ export function ApprovalRequestHost({
     >
       <h2>{request.item.title}</h2>
       <p>{request.item.detail}</p>
+      {/* Both leave the request unresolved and return to the 결재함 with its context (→WEB-100). */}
       <div className={s.actions}>
         <button type="button" data-ui="link" disabled={pendingSubmission} onClick={leave}>
-          홈으로
+          결재함으로
         </button>
         <button type="button" disabled={pendingSubmission} onClick={leave}>
           취소
@@ -66,7 +67,7 @@ export function ApprovalRequestHost({
         children(scoped, error)
       ) : (
         <p role="status">
-          이미 처리되었거나 조건이 바뀐 요청이에요. 홈에서 최신 요청을 확인해 주세요.
+          이미 처리되었거나 조건이 바뀐 요청이에요. 결재함에서 남은 요청을 확인해 주세요.
         </p>
       )}
     </section>

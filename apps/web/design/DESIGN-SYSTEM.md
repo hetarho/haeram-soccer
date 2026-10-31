@@ -197,12 +197,16 @@ long-title and multi-action variants in the `cards` workbench story, then review
 such as the fixture notebook.
 
 `ticket` and `dark` wear the home's next-match and season plates. A screen built like the
-next-match report leads with one `ticket` (the memo, or the owner office's pending-work tray) and
+next-match report leads with one `ticket` (the memo, or a work's pending-request tray) and
 keeps `dark` for a single summary band; the remaining records use `detail`.
 
-Owner-office rooms ([OfficeDesk](../src/ui/OfficeDesk.tsx)) show their facility artwork with
-only the room's name and pending count on it. Figures (`stat-tile`, one row of four on every
-width), actions and the tray sit outside the artwork so it is never covered (→WEB-39).
+The owner office is its work queue ([ApprovalQueue](../src/ui/ApprovalQueue.tsx)): the office
+bar's quiet 결재함 heading, one counts line with the secondary overview link, `Segments` filters
+and the request rows, so the first phone viewport shows actual work rather than artwork, desk
+cards or doors (→WEB-39/100). A row keeps its kind `label`, title, subject and 결재 기한 beside a
+44px review action; on phones the action spans the row's two text lines. The work figures
+(`stat-tile`, one row of four on every width, [OfficeDesk](../src/ui/OfficeDesk.tsx)) stay with
+구단 운영's sections.
 
 Spend colour on meaning, not decoration. A change reads by sign: a rise in `--danger` red, a fall
 in `--cool` blue (`+3`, `-3`). Closing and comparing controls stay plain buttons; the primary

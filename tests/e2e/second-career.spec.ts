@@ -342,12 +342,13 @@ test('a disclosed player departure ends both jobs and charges coach compensation
     .getByTestId('approval-request')
     .getByRole('button', { name: '수락하고 매각', exact: true })
     .click();
-  await expect(page).toHaveURL(/\/journal$/);
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  // The answered review returns to the 결재함, and exporting comes back to it (→WEB-100).
+  await expect(page).toHaveURL(/\/direction$/);
+  await expect(page.getByTestId('approval-queue')).toBeVisible();
   await expect(page.getByTestId('approval-request')).toHaveCount(0);
   const after = await exportedCareer(page);
-  await expect(page).toHaveURL(/\/journal$/);
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await expect(page).toHaveURL(/\/direction$/);
+  await expect(page.getByTestId('approval-queue')).toBeVisible();
   expect(BigInt(after.cash)).toBe(BigInt(w.cash) + BigInt(bid.fee) - BigInt(owed));
   expect(after.people![player.id].club).toBe(club);
   expect(after.staff!.some((s) => s.person === player.id)).toBe(false);

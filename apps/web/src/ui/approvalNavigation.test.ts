@@ -3,13 +3,13 @@ import type { StopReason } from '../../../../packages/engine/src/stopping';
 import {
   approvalId,
   activateTaskWorld,
-  leaveOffice,
   openApprovalRequest,
   returnApprovalHome,
   routeOf,
   useNavigation,
 } from './state';
 import { useTaskMemory } from './taskMemory';
+import { QUEUE_RETURN } from './approvalOrder';
 
 const first: StopReason = {
   id: 'decision:sales:first',
@@ -31,7 +31,7 @@ beforeEach(() => {
   vi.stubGlobal('history', { pushState: vi.fn(navigate), replaceState: vi.fn(navigate) });
   vi.stubGlobal('document', { querySelector: () => undefined });
   useTaskMemory.getState().activate(`reset-${++serial}`);
-  useNavigation.setState({ page: 'dashboard', officeFrom: undefined });
+  useNavigation.setState({ page: 'dashboard' });
 });
 afterEach(() => vi.unstubAllGlobals());
 describe('world-scoped approval navigation', () => {
@@ -69,13 +69,42 @@ describe('world-scoped approval navigation', () => {
     });
     expect(useTaskMemory.getState().approvalRequests[first.id].item).toEqual(first);
     expect(history.pushState).toHaveBeenCalledOnce();
-    leaveOffice();
-    expect(location.pathname).toBe('/journal');
+    // Reviewed from home, the request keeps home as a named return beside the 결재함.
+    expect(useTaskMemory.getState().returning).toMatchObject({
+      page: 'dashboard',
+      label: '클럽 홈',
+      target: 'business',
+    });
+    returnApprovalHome(useTaskMemory.getState().approvalRequests[first.id]);
+    // Every way out of a review leads to the queue itself, unresolved (→WEB-100).
+    expect(location.pathname + location.search).toBe('/direction');
+    expect(useNavigation.getState().page).toBe('business');
     expect(approvalId()).toBeUndefined();
-    // The office entry resumes the lobby, never a desk that now leads out of the office.
     expect(useTaskMemory.getState().addresses.business).toBe('/direction');
+    expect(useTaskMemory.getState().values[QUEUE_RETURN]).toEqual({
+      id: first.id,
+      index: 0,
+      back: true,
+    });
     // The browser can revisit the old request and display its live/resolved state.
     expect(useTaskMemory.getState().approvalRequests[first.id].item).toEqual(first);
+  });
+  it('returns a review opened from the queue to its place there, without a detour', () => {
+    history.pushState(null, '', '/direction');
+    useNavigation.setState({ page: 'business' });
+    // The queue records which row a review left from (→ApprovalQueue).
+    useTaskMemory.getState().activate('world');
+    useTaskMemory.setState({ values: { [QUEUE_RETURN]: { id: second.id, index: 2 } } });
+    openApprovalRequest('world', second);
+    expect(useTaskMemory.getState().returning).toBeUndefined();
+    expect(approvalId()).toBe(second.id);
+    returnApprovalHome();
+    expect(location.pathname + location.search).toBe('/direction');
+    expect(useTaskMemory.getState().values[QUEUE_RETURN]).toEqual({
+      id: second.id,
+      index: 2,
+      back: true,
+    });
   });
   it('does not let the previous request return a later one home', () => {
     openApprovalRequest('world', first);

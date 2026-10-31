@@ -1,6 +1,5 @@
 import { expect, type Page } from '@playwright/test';
 import { settle } from './layout';
-import { enterOffice, officeLobby } from './office';
 import { chooseOption } from './select';
 
 // Imported careers can retain the root address as their remembered dashboard route.
@@ -71,16 +70,10 @@ export async function openLeague(page: Page, archive: boolean | number = false) 
 }
 /**
  * Resume the selected current-season league/lens without an own-league selection request: the
- * journal's league link in the owner office restores the notebook.
+ * league's primary entry restores its retained address and notebook (→WEB-10/74).
  */
 export async function resumeLeague(page: Page) {
-  await enterOffice(page);
-  await officeLobby(page);
-  await page.getByRole('button', { name: '클럽 소식·시즌 브리핑', exact: true }).click();
-  await page
-    .getByRole('dialog', { name: '시즌 상세와 클럽 소식', exact: true })
-    .getByRole('button', { name: '전체 리그 보기 →', exact: true })
-    .click();
+  await primaryEntry(page, 'table').click();
   await expect(page).toHaveURL((url) => url.pathname === '/season');
   await expect(leagueTabs(page)).toBeVisible();
   await settle(page);

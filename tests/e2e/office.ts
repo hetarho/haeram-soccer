@@ -4,9 +4,17 @@ import { dismissFeedback } from './feedback';
 
 /** Local desk navigation within the shared management shell (→WEB-39). */
 export const officeBar = (page: Page) => page.locator('[data-ui="office-bar"]');
-/** The office or area name the bar shows: 구단주 사무실 in the lobby, else the area. */
+/** The name the bar shows: 결재함 on the office's queue, else the reviewed request's work. */
 export const officeTitle = (page: Page) => officeBar(page).getByRole('heading');
-export const LOBBY = '구단주 사무실';
+export const LOBBY = '결재함';
+/** The clubhouse's office scene, the office's entrance (→WEB-11). */
+export const OFFICE = '구단주 사무실';
+/** The office's queue (→WEB-39/100): every waiting request as a row of its list. */
+export const approvalQueue = (page: Page) => page.getByTestId('approval-queue');
+export const approvalRows = (page: Page) =>
+  approvalQueue(page)
+    .getByRole('list', { name: '결재 대기 업무', exact: true })
+    .getByRole('listitem');
 const OFFICE_PATH = /^\/(direction|business)(\/|$)/;
 
 /**
@@ -53,12 +61,13 @@ async function dismissCelebration(page: Page) {
 /** The office scene's 들어가기 on the clubhouse home, the office's only entrance (→WEB-11). */
 export const officeEntrance = (page: Page) =>
   page
-    .getByRole('region', { name: LOBBY, exact: true })
+    .getByRole('region', { name: OFFICE, exact: true })
     .getByRole('button', { name: '들어가기', exact: true });
 
 /**
- * Enters the owner office through the clubhouse office scene (→WEB-11/39). Dismiss an observation
- * dialog before navigating; dismissing never resolves its work. A no-op inside the office.
+ * Enters the owner office's 결재함 through the clubhouse office scene (→WEB-11/39). Dismiss an
+ * observation dialog before navigating; dismissing never resolves its work. Inside the office it
+ * leaves a review for the queue, unresolved.
  */
 export async function enterOffice(page: Page, options: { timeout?: number } = {}) {
   if (await inOffice(page)) {
@@ -67,6 +76,8 @@ export async function enterOffice(page: Page, options: { timeout?: number } = {}
       .getByTestId('approval-request')
       .getByRole('button', { name: '취소', exact: true })
       .click();
+    await expect(approvalQueue(page)).toBeVisible();
+    return;
   }
   await dismissCelebration(page);
   const covering = page.getByRole('dialog').filter({ has: page.getByTestId('event-group') });
@@ -100,12 +111,15 @@ export async function closeOfficeOverview(page: Page) {
     await overview.getByRole('button', { name: '창 닫기', exact: true }).click();
 }
 
-/** Back to the lobby from an area by ← 사무실; a no-op in the lobby. */
+/** Back to the queue from a review by its named 결재함으로; a no-op on the queue. */
 export async function officeLobby(page: Page) {
   await closeOfficeOverview(page);
   await dismissFeedback(page);
   if ((await officeTitle(page).innerText()).trim() !== LOBBY)
-    await officeBar(page).getByRole('button', { name: '사무실', exact: true }).click();
+    await page
+      .getByTestId('approval-request')
+      .getByRole('button', { name: '결재함으로', exact: true })
+      .click();
   await expect(officeTitle(page)).toHaveText(LOBBY);
 }
 
@@ -153,7 +167,7 @@ export async function openOperations(
 /**
  * Opens where an office area's work lives now (→WEB-39/110): 재정·투자, 후원 and 구단 디자인 in
  * 구단 운영, player and staff contracts with the roster and the coaches, 결재라인 모아보기 as the
- * office's modal.
+ * office's modal and 결재함 as the office itself, which has no other areas.
  */
 export async function openOfficeArea(page: Page, area: string, options: { timeout?: number } = {}) {
   if (area === '투자') area = '재정·투자';
@@ -172,16 +186,10 @@ export async function openOfficeArea(page: Page, area: string, options: { timeou
     await expect(overview).toBeVisible();
     return;
   }
+  if (area !== LOBBY) throw new Error(`The owner office has no ${area} area`);
   await closeOfficeOverview(page);
   await enterOffice(page, options);
-  if ((await officeTitle(page).innerText()).trim() === area) return;
   await officeLobby(page);
-  await dismissCelebration(page);
-  await page
-    .getByTestId('office-lobby')
-    .getByRole('button', { name: area, exact: true })
-    .click(options);
-  await expect(officeTitle(page)).toHaveText(area);
 }
 
 /** Whole-club configuration is a secondary disclosure within 구단 운영's investment. */

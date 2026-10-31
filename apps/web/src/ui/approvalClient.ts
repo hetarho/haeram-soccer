@@ -32,7 +32,7 @@ export function approvalClient(
     )
       return;
     if (!pending()) {
-      failed('이미 처리되었거나 조건이 바뀐 요청이에요. 홈에서 최신 요청을 확인해 주세요.');
+      failed('이미 처리되었거나 조건이 바뀐 요청이에요. 결재함에서 남은 요청을 확인해 주세요.');
       return;
     }
     inFlight = true;
