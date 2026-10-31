@@ -1293,7 +1293,6 @@ html[data-theme] {
   }
 
   [data-testid='action-outcome'],
-  [data-testid='settings-toast'],
   [data-testid='event-card'],
   [data-testid='event-group'],
   [data-testid='runtime-alerts'] > div,

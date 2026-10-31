@@ -2,7 +2,7 @@ import { chooseOption, selectOptions } from './select';
 import { createWorld, advanceDays } from '../../packages/engine/src/index';
 import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsibility-fixtures';
 import { expect, test, type Page } from '@playwright/test';
-import { chooseLevel, configureResponsibilities, dismissSettingsToast, openOffice } from './events';
+import { chooseLevel, configureResponsibilities, openOffice } from './events';
 import { horizontalOverflow, settle } from './layout';
 import { leaveOffice } from './office';
 async function foundQuiet(page: Page) {
@@ -488,7 +488,6 @@ for (const width of [390, 1280]) {
       ...Array(7).fill('자동'),
     ]);
     await expect(allDelegated).toHaveAttribute('aria-pressed', 'true');
-    await dismissSettingsToast(page);
     await bulk.getByRole('button', { name: '전체 직접', exact: true }).click();
     const reportDialog = page.getByRole('dialog', { name: '직접 결재하겠습니다.', exact: true });
     await expect(reportDialog).toContainText('경기 전날 보고');
@@ -558,13 +557,8 @@ for (const width of [390, 1280]) {
       'aria-pressed',
       'true',
     );
-    const toast = page.getByTestId('action-outcome');
-    await expect(toast).toHaveText('설정을 적용했어요');
-    await expect(toast).toBeVisible();
-    // The settings toast remains within the viewport above shared navigation (→WEB-36/39).
-    const box = (await toast.boundingBox())!;
-    expect(box.y + box.height).toBeLessThanOrEqual(page.viewportSize()!.height);
-    await expect(toast).toHaveCount(0, { timeout: 6000 });
+    // The changed choice is the feedback; a settings change shows no card or toast (→WEB-36).
+    await expect(page.getByTestId('action-outcome')).toHaveCount(0);
     await choice.getByRole('button', { name: '직접', exact: true }).click();
     const direct = page.getByRole('dialog', { name: '직접 결재하겠습니다.', exact: true });
     await expect(direct.locator('[data-facility-art="manager"]')).toBeVisible();

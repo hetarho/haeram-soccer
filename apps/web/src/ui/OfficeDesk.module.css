@@ -10,8 +10,8 @@
   margin: 0 auto;
 }
 
-/* A room's scene: artwork under a light shade with its name on top; its ways in sit on a strip
-   under the art and its figures below the scene, so neither covers the picture. */
+/* A room's scene: name at the top and shortcuts over the lower edge of the artwork;
+   the room's figures remain below the scene. */
 .scene {
   overflow: hidden;
   border-radius: var(--scene-radius, var(--card-radius));
@@ -19,6 +19,9 @@
 }
 .view {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   min-height: clamp(180px, 19vw, 240px);
   padding: 12px;
 }
@@ -68,11 +71,13 @@
   overflow-wrap: anywhere;
 }
 .sceneActions {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
-  padding: 8px 10px;
+  margin-top: auto;
 }
 .sceneActions button {
   min-height: 38px;
@@ -217,7 +222,6 @@
     padding: 10px 8px;
   }
   .sceneActions {
-    padding: 6px;
     gap: 6px;
   }
   .sceneActions button {

@@ -192,8 +192,10 @@ next-match report leads with one `ticket` (the memo, or the owner office's pendi
 keeps `dark` for a single summary band; the remaining records use `detail`.
 
 Owner-office rooms ([OfficeDesk](../src/ui/OfficeDesk.tsx)) show their facility artwork with
-only the room's name and pending count on it. Figures (`stat-tile`, one row of four on every
-width), actions and the tray sit outside the artwork so it is never covered (→WEB-39).
+the room's name and pending count at the top. Lobby shortcuts overlay its lower edge, with
+space between the heading and actions even when the buttons wrap on phones. Figures
+(`stat-tile`, one row of four on every width), work controls and the tray sit outside the
+artwork (→WEB-39).
 
 Spend colour on meaning, not decoration. A change reads by sign: a rise in `--danger` red, a fall
 in `--cool` blue (`+3`, `-3`). Closing and comparing controls stay plain buttons; the primary

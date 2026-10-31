@@ -30,8 +30,7 @@ export interface Outcome {
   note?: string;
 }
 
-const titles: Record<Command['type'], string> = {
-  settings: '설정을 적용했어요',
+const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
   advance: '한 라운드를 진행했어요',
   'advance-days': '하루를 진행했어요',
   'next-match': '다음 경기까지 진행했어요',
@@ -164,12 +163,13 @@ export function describeOutcome(
   after: World,
   limit = 3,
 ): Outcome | undefined {
-  // Reading news decides nothing, live playback reveals a watched result, the season review
-  // reports a closed season and the design screen itself shows a designer's drafts and what
-  // became of them.
+  // Reading news decides nothing, a settings change shows on screen itself, live playback
+  // reveals a watched result, the season review reports a closed season and the design screen
+  // itself shows a designer's drafts and what became of them.
   if (
     before.id !== after.id ||
     before.year !== after.year ||
+    command.type === 'settings' ||
     command.type === 'next-match' ||
     command.type === 'next-event' ||
     command.type === 'advance-days' ||

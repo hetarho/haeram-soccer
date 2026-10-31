@@ -10,10 +10,8 @@ import {
   openOfficeArea,
   outsideOffice,
 } from './office';
-import { dismissFeedback as dismissSettingsToast } from './feedback';
 import { clubhouseTab } from './competition-navigation';
 
-export { dismissSettingsToast };
 const LABELS: Record<ResponsibilityKey, string> = {
   manager: '감독 인사',
   staff: '스태프 인사',
@@ -73,7 +71,6 @@ async function confirmAuthority(page: Page, label: string, value: 'direct' | 'de
     })
     .click();
   await expect(choice).toHaveAttribute('aria-pressed', 'true');
-  await dismissSettingsToast(page);
 }
 /** Change only requested office choices, then return to the originating public task. */
 export async function configureResponsibilities(
@@ -144,7 +141,6 @@ export async function configureResponsibilities(
         })
         .click();
       await expect(dialog).toHaveCount(0);
-      await dismissSettingsToast(page);
     }
   } else {
     for (const [key, value] of entries)
@@ -170,7 +166,6 @@ export async function configureResponsibilities(
           .click();
       await expect(mode).toHaveText(expected);
       await dismissMatchReport(page);
-      await dismissSettingsToast(page);
     }
   }
   // Explicit report choices are applied after the mode-entry default.
@@ -184,10 +179,16 @@ export async function configureResponsibilities(
       })
       .getByRole('button', { name: value ? '보고받기' : '위임', exact: true });
     if ((await choice.getAttribute('aria-pressed')) !== 'true') {
+      // A report choice confirms like a business choice (→WEB-79).
       await choice.click();
+      const dialog = page.getByRole('dialog', {
+        name: value ? '직접 결재하겠습니다.' : '자동으로 처리하겠습니다.',
+        exact: true,
+      });
+      await dialog
+        .getByRole('button', { name: value ? '직접 결재하기' : '자동으로 맡기기', exact: true })
+        .click();
       await expect(choice).toHaveAttribute('aria-pressed', 'true');
-      await dismissMatchReport(page);
-      await dismissSettingsToast(page);
     }
   }
   if (officeArea === LOBBY) await officeLobby(page);

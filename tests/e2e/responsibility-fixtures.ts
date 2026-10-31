@@ -48,8 +48,3 @@ export async function importResponsibilityCareer(page: Page, world: World) {
   // A 35-round career on the released model: CI WebKit 40233059787 opened it in over 5 s.
   await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 15000 });
 }
-export async function closeSettingsOutcome(page: Page) {
-  const outcome = page.getByTestId('action-outcome');
-  await expect(outcome).toContainText('설정을 적용했어요');
-  await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
-}
