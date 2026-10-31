@@ -16,7 +16,6 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | cr01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T15:49Z | 2026-10-31T15:49Z | - |
-| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T17:23Z | 2026-10-31T19:27Z | T633 |
 
 ## inbox
 - 261101 decided WEB-39 WEB-43 WEB-100 T633: which review actions name their subject, and what a legacy or loan bid shows → the queue's 검토 names the request's known subject while accept/decline keep their exact names inside a review already headed by that request; terms come only from the pinned offer (outgoing) or our player's current contract (incoming), a loan shows its wage without any end, and a legacy target found in today's market list or an old row of ours shows identity only (alt: the subject in every answer button, renaming the existing accept/decline journeys | today's market terms for a legacy bid, which are not the bid's | his parent-club contract end as the loan's).
