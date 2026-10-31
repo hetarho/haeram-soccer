@@ -6,7 +6,8 @@ import * as prices from './market-prices';
 
 /**
  * Captured from contracts.ts before extraction; synthetic ratings, no generated world. Only the GER
- * 2020 star reaches the transfer premium (CLUB-46): the others stand at or below the pivot.
+ * 2020 star reaches the transfer premium (CLUB-46): the others stand at or below the pivot. Amounts
+ * outside England stand at each country's 1999-rate level (ECON-35).
  */
 const vectors = [
   {
@@ -45,8 +46,8 @@ const vectors = [
     share: 0.275,
     wageUnits: 135.9569881607702,
     valueUnits: 271.9139763215404,
-    wage: '1526716',
-    value: '3053432',
+    wage: '7712968',
+    value: '15425937',
   },
   {
     code: 'GER',
@@ -58,8 +59,8 @@ const vectors = [
     share: 1,
     wageUnits: 2442.672761947402,
     valueUnits: 11267.065689690868,
-    wage: '44625397',
-    value: '205838985',
+    wage: '248117208',
+    value: '1144464755',
   },
   {
     code: 'ITA',
@@ -71,8 +72,8 @@ const vectors = [
     share: 0.15,
     wageUnits: 36.86584172568527,
     valueUnits: 36.86584172568527,
-    wage: '10374546',
-    value: '10374546',
+    wage: '824983884',
+    value: '824983884',
   },
   {
     code: 'ENG',
@@ -97,8 +98,8 @@ const vectors = [
     share: 0.03,
     wageUnits: 8.147351021376446,
     valueUnits: 16.294702042752892,
-    wage: '1607',
-    value: '3213',
+    wage: '103279',
+    value: '206558',
   },
 ];
 

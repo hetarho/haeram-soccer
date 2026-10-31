@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| cr01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T15:49Z | 2026-10-31T15:49Z | - |
+| cr01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T15:49Z | 2026-10-31T15:53Z | T622 |
 
 ## inbox
 - 261101 decided ECON-35 ECON-2 ECON-5: how to bring other countries' money to real nominal levels without touching balance or making foreign players cheap → one level per country, set at its real 1999 rate against the pound (€1.518/£ through the euro's fixed rates), its own prices carrying it before and after: every amount of a career moves alike, and players abroad were already quoted in the buyer's money; measured within 0.75–1.24× of real rates 1960–2025 (alt: a 1960 link, which leaves 2025 up to 1.65× real | each country's own price path before 1960, which carries the wars' inflations into careers' cash and moves balance)
@@ -444,7 +444,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T622 | Currency levels at the 1999 rate | ECON SAVE | - | todo |
+| T622 | Currency levels at the 1999 rate | ECON SAVE | - | doing@261101.cr01 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |

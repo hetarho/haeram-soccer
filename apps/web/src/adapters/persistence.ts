@@ -28,7 +28,9 @@ import {
   earlierRulesMessage,
   isEarlierEngine,
   NEWER_GAME_MESSAGE,
+  PARITY_LEVEL_CATALOGS,
   PRIOR_CATALOG_HASHES,
+  RELEVELLED_MONEY_MESSAGE,
   SUPPORTED_ENGINE_VERSIONS,
   SaveCompatibilityError,
 } from '../../../../packages/contracts/src/versions';
@@ -188,15 +190,19 @@ export async function recognizedLegacy(raw: string): Promise<boolean> {
 export async function decode(raw: string): Promise<{ world: World; envelope: Envelope }> {
   const { value, envelope: e } = await readCheckpoint(raw, SUPPORTED_ENGINE_VERSIONS, true);
   const world = validateWorld(value, LOAD_CATALOG);
+  const country = world.clubs.find((c) => c.id === world.playerClub)!.country;
   if (
     world.id !== e.worldId ||
     world.engine !== e.engine ||
     world.catalog !== e.catalog ||
     world.catalogHash !== e.catalogHash ||
-    world.currency !==
-      currency(world.clubs.find((c) => c.id === world.playerClub)!.country, world.year).code
+    world.currency !== currency(country, world.year).code
   )
     throw new Error('저장 헤더와 세계가 일치하지 않습니다.');
+  // Only England's money kept its level when the catalog re-levelled the rest (→ECON-35): elsewhere
+  // a career's records would mix two levels, so it is refused, never reinterpreted (→SAVE-10).
+  if (country !== 'ENG' && PARITY_LEVEL_CATALOGS.includes(world.catalog))
+    throw new SaveCompatibilityError(RELEVELLED_MONEY_MESSAGE);
   return { world, envelope: e };
 }
 /**

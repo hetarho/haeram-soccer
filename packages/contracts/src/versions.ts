@@ -94,11 +94,22 @@ export type CatalogPin = Pick<World, 'catalog' | 'catalogHash'>;
  * the football index and the sponsor-slot eras and left prices as they were, so a 2026-demo-1 save
  * changes no recorded fact and moves its pin on writer activation (→SAVE-10). Catalog 2026-demo-3
  * adds sourced registration rules; both older pins preserve historical prices and index facts.
+ * 2026-demo-4 re-levels every country's money but England's (→ECON-35), so only an English career
+ * moves from these pins; another country's is refused on load.
  */
 export const PRIOR_CATALOG_HASHES: Readonly<Record<string, string>> = {
+  '2026-demo-3': '5c4dc847344070fba54562572233a41a00ca2adac9c132f6a93845876b06da4f',
   '2026-demo-2': 'f51d581ce05db0e27e25216615b1cce5c67e00bf6bb5da6118407f63167284ae',
   '2026-demo-1': '94375c9a798cba789f2d6b319171bf7b45d52090ab0b83ca56b14626d196f679',
 };
+/** Catalogs whose money stood at the 1901 parities, before 2026-demo-4's levels (→ECON-35). */
+export const PARITY_LEVEL_CATALOGS: readonly string[] = [
+  '2026-demo-1',
+  '2026-demo-2',
+  '2026-demo-3',
+];
+export const RELEVELLED_MONEY_MESSAGE =
+  '화폐 수준이 바뀌기 전에 저장된 잉글랜드 밖 커리어라 열 수 없습니다. 원본 파일을 보관하세요.';
 /** Explicitly released historical rules; an arbitrary older semver is not reset permission. */
 export const LEGACY_ENGINE_VERSIONS: readonly string[] = [
   ...Array.from({ length: 23 }, (_, minor) => `1.${minor}.0`),

@@ -75,6 +75,23 @@ describe('bounded whole-world market', () => {
     expect(last.items.length).toBeLessThanOrEqual(7);
   });
 
+  it('quotes a player abroad in our money, never by his club’s currency (→ECON-35)', () => {
+    const w = worldMarketFixture();
+    const target = foreignTarget(w);
+    const spanish = worldMarketOffer(w, target)!;
+    expect(spanish.foreign).toBe(true);
+    for (const code of ['ITA', 'POR', 'NED', 'ENG']) {
+      w.clubs[1].country = code;
+      const offer = worldMarketOffer(w, target)!;
+      expect(offer.player.id).toBe(spanish.player.id);
+      expect([offer.fee, offer.loanFee, offer.player.wage]).toEqual([
+        spanish.fee,
+        spanish.loanFee,
+        spanish.player.wage,
+      ]);
+    }
+  });
+
   it('combines name, recommendation, league/team, proficient position, line and fit filters', () => {
     const w = worldMarketFixture();
     w.clubs[1].strength = 80;

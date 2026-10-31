@@ -52,7 +52,9 @@ import {
   isSaveCompatibilityError,
   MANAGER_HISTORY_CHECKPOINT_SCHEMA,
   NEWER_GAME_MESSAGE,
+  PARITY_LEVEL_CATALOGS,
   PRIOR_CATALOG_HASHES,
+  RELEVELLED_MONEY_MESSAGE,
   SaveCompatibilityError,
   SUPPORTED_CHECKPOINT_SCHEMAS,
   SUPPORTED_ENGINE_VERSIONS,
@@ -445,7 +447,7 @@ describe('compatible rule upgrades', () => {
     }
   });
 
-  for (const catalog of ['2026-demo-1', '2026-demo-2'])
+  for (const catalog of ['2026-demo-1', '2026-demo-2', '2026-demo-3'])
     it(`loads a ${catalog} save, moves its catalog pin on activation and round-trips`, async () => {
       const legacy = world();
       legacy.revision = 9;
@@ -455,7 +457,7 @@ describe('compatible rule upgrades', () => {
       const decoded = (await decode(await encode(legacy))).world;
       expect(canonical(decoded)).toBe(before);
       expect(decoded.catalog).toBe(catalog);
-      expect(CATALOG_VERSION).toBe('2026-demo-3');
+      expect(CATALOG_VERSION).toBe('2026-demo-4');
       const upgraded = upgradeWorldRules(decoded, CURRENT_CATALOG);
       expect(canonical(upgraded)).toBe(
         canonical({
@@ -472,6 +474,17 @@ describe('compatible rule upgrades', () => {
       const wrong = { ...legacy, catalogHash: 'a'.repeat(64) };
       await expect(decode(await encode(wrong))).rejects.toThrow(SaveCompatibilityError);
     });
+
+  it('refuses a career outside England saved before its money was re-levelled (→ECON-35)', async () => {
+    const italian = simulatedWorld({ ...FOUNDING, country: 'ITA' });
+    expect(canonical((await decode(await encode(italian))).world)).toBe(canonical(italian));
+    for (const catalog of PARITY_LEVEL_CATALOGS) {
+      const legacy = { ...italian, catalog, catalogHash: PRIOR_CATALOG_HASHES[catalog] };
+      const failure = await decode(await encode(legacy)).catch((error: unknown) => error);
+      expect(failure).toBeInstanceOf(SaveCompatibilityError);
+      expect((failure as Error).message).toBe(RELEVELLED_MONEY_MESSAGE);
+    }
+  });
 
   it('does not reinterpret future worlds or overflow a revision during a pure upgrade', () => {
     const future = { ...world(), engine: '9.0.0' };
