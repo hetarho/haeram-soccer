@@ -358,11 +358,25 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   const replay = await openRecordedMatch(page);
   const cue = replay.getByTestId('goal-cue');
   const score = replay.getByTestId('match-score').locator('strong');
-  await expect(cue).toBeVisible({ timeout: 2 * replayMinuteMs + 5000 });
+  // The page presses 일시정지 on the frame a cue appears: the cue holds one second, less than
+  // Playwright's polling and click take on a slow WebKit runner (CI 41154314385).
+  const pauseOnCue = (timeout: number) =>
+    page.waitForFunction(
+      () => {
+        const pause = document
+          .querySelector('[data-testid="goal-cue"]')
+          ?.closest('[role="dialog"]')
+          ?.querySelector<HTMLButtonElement>('button[aria-label="일시정지"]');
+        pause?.click();
+        return !!pause;
+      },
+      undefined,
+      { polling: 'raf', timeout },
+    );
+  await pauseOnCue(2 * replayMinuteMs + 5000);
   await expect(cue).toContainText(played.highlights[0]!.player);
   await expect(score).toHaveText('1 : 0');
   // A pause during the hold keeps the cue until playback resumes.
-  await replay.getByRole('button', { name: '일시정지', exact: true }).click();
   await page.waitForTimeout(1500);
   await expect(cue).toBeVisible();
   await replay.getByRole('button', { name: '재생', exact: true }).click();
@@ -378,7 +392,8 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   await scrubber.fill('11');
   await expect(score).toHaveText('1 : 0');
   await replay.getByRole('button', { name: '재생', exact: true }).click();
-  await expect(cue).toBeVisible({ timeout: replayMinuteMs + 4000 });
+  await pauseOnCue(replayMinuteMs + 4000);
+  await expect(cue).toBeVisible();
   await expect(score).toHaveText('1 : 1');
   await expect(replay.getByTestId('goal-score')).toHaveText('1');
 });

@@ -150,6 +150,12 @@ for (const { id: theme } of baseline.themeRegistry.entries)
           .first()
           .evaluate((value) => value.scrollWidth - value.clientWidth),
       ).toBeLessThanOrEqual(1);
+      // Reach the trigger by keyboard: Firefox keeps a clicked control's focus ring off when a key
+      // is pressed on it afterwards, while Chromium turns it on. WebKit's Tab skips buttons, so
+      // focus() brings it back there and its next key lights the ring.
+      await pace.press('Tab');
+      await page.keyboard.press('Shift+Tab');
+      await pace.focus();
       await pace.press('ArrowDown');
       const list = page.getByRole('listbox', { name: '자동 진행 배속', exact: true });
       await expect(list).toBeVisible();

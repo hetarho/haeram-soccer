@@ -1,6 +1,6 @@
 import { watchNext } from './watch';
 import { expect, test, type Locator } from '@playwright/test';
-import { expectHomeBounds, viewGeometry } from './layout';
+import { expectHomeBounds, settle, viewGeometry } from './layout';
 import { createWorld } from '../../packages/engine/src/index';
 import { activePlayers } from '../../packages/engine/src/world';
 import { importResponsibilityCareer } from './responsibility-fixtures';
@@ -135,9 +135,12 @@ for (const viewport of [
     const journalButton = page
       .getByTestId('office-lobby')
       .getByRole('button', { name: '클럽 소식·시즌 브리핑', exact: true });
+    // A click while the lobby still slides in makes Firefox scroll the moving button into view.
+    await settle(page);
     await journalButton.click();
     const dialog = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
     await expect(dialog).toBeVisible();
+    const opened = (await viewGeometry(page)).scroll;
     expect(await dialog.evaluate((element) => element.contains(document.activeElement))).toBe(true);
     await page.keyboard.press('Tab');
     expect(await dialog.evaluate((element) => element.contains(document.activeElement))).toBe(true);
@@ -152,7 +155,8 @@ for (const viewport of [
     await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
     await expect(dialog).toHaveCount(0);
     await expect(journalButton).toBeFocused();
-    expect((await viewGeometry(page)).scroll).toBe(0);
+    // Closing returns focus to the journal without moving the lobby.
+    expect((await viewGeometry(page)).scroll).toBe(opened);
     expect(await page.evaluate(() => scrollY)).toBe(0);
     await leaveOffice(page);
 
