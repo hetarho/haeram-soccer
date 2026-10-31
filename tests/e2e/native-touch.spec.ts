@@ -111,6 +111,8 @@ for (const viewport of [
     await expect(preparation.getByLabel('감독 예상 반응')).toContainText('신뢰 18 감소');
     await preparation.getByRole('tab', { name: '선발 선택', exact: true }).click();
     await preparation.getByText('선수별 교체', { exact: true }).click();
+    // Measure the opened rows at rest; mid-animation a 44px row read 43.99994 (CI 41175339655).
+    await settle(page);
     const selectors = await preparation.getByRole('combobox').evaluateAll((elements) =>
       elements.map((element) => {
         const bounds = element.getBoundingClientRect();

@@ -148,9 +148,13 @@ test('a seen goal replays its build-up and returns to the original viewing', asy
   await speed(4).click();
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   const scrubber = page.getByRole('slider', { name: '경기 시간', exact: true });
-  const target = Number(await scrubber.inputValue()) + 1;
-  await scrubber.fill(String(target));
-  await expect.poll(presented).toBe(samples[target]!.time.toFixed(2));
+  // At 4× the slider can reach the next step between reading and filling it, and a fill to the
+  // value it already holds seeks nothing; read again until a seek takes (CI 41175339655).
+  await expect(async () => {
+    const target = Number(await scrubber.inputValue()) + 1;
+    await scrubber.fill(String(target));
+    await expect.poll(presented, { timeout: 2000 }).toBe(samples[target]!.time.toFixed(2));
+  }).toPass();
   const original = await presented();
   await page.waitForTimeout(400);
   expect(await presented()).toBe(original);
