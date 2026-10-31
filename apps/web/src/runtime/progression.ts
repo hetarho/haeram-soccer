@@ -124,9 +124,13 @@ function storedClocks(): Record<string, ClockRecord> {
     return {};
   }
 }
-/** Dated live decisions and enabled observations, independent of notification read state. */
+/** Enabled observations that stop progression, independent of notification read state. */
 export function stoppingEvents(w: World) {
   return stoppingReasons(w);
+}
+/** Owner approvals waiting in the office's 결재함; they never stop progression (→WEB-42). */
+export function approvalRequests(w: World) {
+  return pendingDecisions(w);
 }
 /** An enabled pre-match report still awaiting the owner's explicit match choice. */
 export function pendingMatchReport(w: World) {
@@ -439,7 +443,6 @@ export class ProgressionController {
         state.error ||
         w.critical ||
         w.bankrupt ||
-        pendingDecisions(w).length ||
         daysUntilNextMatch(w) !== 1
       )
         return;
@@ -528,7 +531,6 @@ export class ProgressionController {
       }));
       return;
     }
-    if (pendingDecisions(w).length) return;
     this.inFlight = true;
     try {
       const reply = await this.client.command({ type: 'next-event' }, { background: true });
@@ -645,7 +647,6 @@ export class ProgressionController {
       state.error ||
       state.view?.world.critical ||
       state.view?.world.bankrupt ||
-      (state.view && pendingDecisions(state.view.world).length > 0) ||
       !state.view
     )
       return;

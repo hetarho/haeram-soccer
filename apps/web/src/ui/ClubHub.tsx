@@ -8,8 +8,7 @@ import { QuickActions } from './QuickActions';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { openCupSeason, openPrimary, useNavigation } from './state';
-import { stoppingEvents } from '../runtime/progression';
-import { eventDesk } from './eventRouting';
+import { approvalRequests } from '../runtime/progression';
 import { currentCupBriefings } from './competitionNavigation';
 import { ClubLink } from './ClubLink';
 import { StrategyPanel } from './LazyStrategyPanel';
@@ -68,7 +67,7 @@ export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => voi
  * — the team's state, the rooms and every view and setting — opens from there.
  */
 function OfficeScene({ w, children }: { w: World; children: ReactNode }) {
-  const pending = stoppingEvents(w).filter((item) => !!eventDesk(item)).length;
+  const pending = approvalRequests(w).length;
   return (
     <section className={s.office} data-home-part="office" aria-label="구단주 사무실">
       <FacilityArt kind="manager" world={w} className={s.officeArt} />

@@ -295,10 +295,9 @@ test('with the manager post delegated a resignation is filled at once and the cl
 });
 
 test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
-  // Runs the clock from August to April at the fastest pace. Level 2 keeps the manager's renewal
-  // with the owner (from level 3 the staff take it →WEB-45); match eves, offers and the winter
-  // window stop it on the way. On the released model those eight months ran past the slow 90 s
-  // budget on CI Firefox (run 40243569140).
+  // Runs the clock from August to April at the fastest pace with the manager's renewal kept by the
+  // owner (→WEB-45); approvals waiting never stop it (→WEB-42). On the released model those eight
+  // months ran past the slow 90 s budget on CI Firefox (run 40243569140).
   test.setTimeout(180_000);
   await found(page);
   await chooseLevel(page, 4);
@@ -312,43 +311,26 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   const play = progress.getByRole('button', { name: '자동 진행 시작', exact: true }),
     pause = progress.getByRole('button', { name: '자동 진행 정지', exact: true });
   const card = page.getByTestId('event-card').first();
-  // Office work stops the clock without a home card: home's office scene counts it (→WEB-39).
-  const waiting = page
-    .getByTestId('club-hub')
-    .locator('[data-home-part="office"] [data-ui="count"]');
+  const date = page.getByTestId('game-date');
   const renewal = '감독 재계약';
   // Read without auto-waiting: a card may leave between a count and a text query.
   const cardText = () =>
     card.evaluateAll((cards) => (cards[0] as HTMLElement | undefined)?.innerText ?? '');
-  const waitingText = () =>
-    waiting.evaluateAll((counts) => (counts[0] as HTMLElement | undefined)?.innerText ?? '');
   await chooseOption(pace, 'x10');
   await play.click();
-  for (let stops = 0; ; stops++) {
-    expect(stops).toBeLessThan(80);
-    await expect(card.or(waiting).first()).toBeVisible({ timeout: 75000 });
-    const text = await cardText(),
-      count = await waitingText();
+  // Approvals never stop the clock (→WEB-42): it runs on to 1 April, when the renewal joins the
+  // office's 결재함. Only an observation stops it on the way: play it through or read it, and
+  // run on. Play ignores a tap in the first half second after the clock stops itself.
+  await expect(async () => {
+    if ((await date.innerText()) >= '1951.04.01') return;
     const through = card.getByRole('button', { name: '결과만 보고 계속', exact: true });
-    if (count && !(await through.count())) {
-      // The renewal waits in the office lobby's tray; anything else there is answered.
-      if (await (await approvalTray(page)).filter({ hasText: renewal }).count()) break;
-      await clubhouseTab(page).click();
-    }
-    // Another stop on the way: decline an offer, play a match through or read the news, then run on.
     if (await through.count()) await through.click();
-    else await acknowledgeEvents(page);
-    // A request answered can raise the next at once, so only a card is awaited to change.
-    if (text) await expect.poll(cardText, { timeout: 10000 }).not.toBe(text);
-    // Pace selection only sets the pace (→WEB-18): play starts the clock again when it rests. Play
-    // ignores a tap in the first half second after the clock stops itself, so retry until it runs.
-    await expect(async () => {
-      if ((await cardText()) || (await waitingText())) return;
-      if (await play.isVisible()) await play.click();
-      await expect(pause.or(card).or(waiting).first()).toBeVisible({ timeout: 1000 });
-    }).toPass({ timeout: 15000 });
-  }
-  await expect(page.getByTestId('game-date')).toHaveText('1951.04.01');
+    else if (await cardText()) await acknowledgeEvents(page);
+    if (await play.isVisible()) await play.click();
+    throw new Error(`still ${await date.innerText()}`);
+  }).toPass({ timeout: 150_000, intervals: [1000] });
+  if (await pause.isVisible()) await pause.click();
+  await expect(play).toBeVisible();
   const tray = await approvalTray(page);
   await tray
     .filter({ hasText: renewal })

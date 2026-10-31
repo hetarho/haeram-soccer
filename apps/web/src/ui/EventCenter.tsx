@@ -4,7 +4,6 @@ import { memo, useEffect, useId, useRef, useState } from 'react';
 import type { InboxItem, TransferBid, World } from '../../../../packages/contracts/src/types';
 import { seasonDate, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/player-state';
-import { pendingDecisions } from '../../../../packages/engine/src/stopping';
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { releaseCost } from '../../../../packages/engine/src/staff-info';
 import type { GameClient } from '../runtime/client';
@@ -97,11 +96,9 @@ export const EventCenter = memo(function EventCenter({
   const setPage = useNavigation((state) => state.setPage);
   const unfinished = useUnfinishedPlayback();
   const resume = !running ? unfinished : undefined;
-  // Office work waits in the owner's office behind the menu's count; only what has no desk shows here.
+  // Only observations stop the clock; approvals wait in the office's 결재함 (→WEB-42/100).
   const events =
-    w && !running
-      ? stoppingEvents(w).filter((item) => !eventDesk(item) && (!resume || item.kind !== 'match'))
-      : [];
+    w && !running ? stoppingEvents(w).filter((item) => !resume || item.kind !== 'match') : [];
   const key = w ? `${w.id}:${seasonDate(w)}` : '';
   const date = w ? seasonDate(w) : '';
   const eve = !resume && !running && w && !!pendingMatchReport(w);
@@ -239,7 +236,6 @@ export const EventCard = memo(function EventCard({
   const club = clubOf(w);
   const format = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   if (eve) {
-    const blocked = acting || pendingDecisions(w).length > 0;
     const watch = () => {
       controller.clearMatchEve();
       return watchNextMatch(client, controller, () => setPage('match'), { fromEve: true });
@@ -253,12 +249,12 @@ export const EventCard = memo(function EventCard({
           <button
             data-ui="primary"
             className={s.primary}
-            disabled={blocked}
+            disabled={acting}
             onClick={() => void watch()}
           >
             관전하기 ▶
           </button>
-          <button disabled={blocked} onClick={() => controller.playThrough()}>
+          <button disabled={acting} onClick={() => controller.playThrough()}>
             결과만 보고 계속
           </button>
         </div>

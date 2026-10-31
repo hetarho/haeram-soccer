@@ -107,21 +107,20 @@ for (const width of [1280, 390]) {
     await expect(group.getByRole('button', { name: '검토하기', exact: true })).toHaveCount(0);
     const next = page.getByRole('button', { name: '다음 이벤트', exact: true });
     const result = group.getByRole('button', { name: '결과만 보고 계속', exact: true });
-    // Next-event remains a report-reopen action; the unresolved decisions block settlement.
+    // Next-event remains a report-reopen action; the waiting approvals never hold settlement (→WEB-83).
     await expect(next).toBeEnabled();
-    await expect(result).toBeDisabled();
-    for (const left of [1, 0]) {
-      const request = await reviewInOffice(page);
-      await request.getByRole('button', { name: '거절', exact: true }).click();
-      await expect(page).toHaveURL(/\/journal$/);
-      await next.click();
-      await expect(group).toContainText('내일 경기');
-      await expect(next).toBeEnabled();
-      if (left) await expect(result).toBeDisabled();
-      else await expect(result).toBeEnabled();
-    }
+    await expect(result).toBeEnabled();
+    // Answering one in the office leaves the other waiting and the report still open to reopen.
+    const request = await reviewInOffice(page);
+    await request.getByRole('button', { name: '거절', exact: true }).click();
+    await expect(page).toHaveURL(/\/journal$/);
+    await next.click();
     await expect(group).toContainText('내일 경기');
+    await expect(result).toBeEnabled();
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
+    const before = await page.getByTestId('game-date').innerText();
+    await result.click();
+    await expect(page.getByTestId('game-date')).not.toHaveText(before);
   });
 }
 

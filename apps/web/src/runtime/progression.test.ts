@@ -677,7 +677,7 @@ describe('explicit automatic and manual modes', () => {
     );
     expect(controller.store.getState().running).toBe(false);
   });
-  it('allows access to a same-date match report while protecting unresolved owner decisions', async () => {
+  it('opens a same-date match report and plays it through with owner approvals waiting (→WEB-42)', async () => {
     const world = manual();
     world.calendar = { day: 6 };
     world.settings!.responsibilities.manager = 'direct';
@@ -687,8 +687,7 @@ describe('explicit automatic and manual modes', () => {
     await controller.nextEvent();
     expect(controller.store.getState().eventRequest).toBe(1);
     await controller.playThrough();
-    expect(s.command).not.toHaveBeenCalled();
-    expect(world.calendar.day).toBe(6);
+    expect(s.command).toHaveBeenCalledWith({ type: 'advance-days', days: 1 }, { background: true });
   });
   it('keeps report reopening behind ownership, processing, action and recovery protections', async () => {
     const world = manual();
@@ -714,7 +713,7 @@ describe('explicit automatic and manual modes', () => {
     expect(controller.store.getState().eventRequest).toBe(0);
     expect(s.command).not.toHaveBeenCalled();
   });
-  it('automatic-resume-after-last-decision: reading a sale notice never settles the actual sale', async () => {
+  it('an arriving sale offer waits in the 결재함 without stopping the running clock (→WEB-42)', async () => {
     const s = setup();
     controller = s.controller;
     const waiting = structuredClone(w);
@@ -737,15 +736,12 @@ describe('explicit automatic and manual modes', () => {
     });
     controller.start();
     await vi.advanceTimersByTimeAsync(1000);
-    expect(controller.store.getState().running).toBe(false);
-    waiting.inbox = [];
+    expect(controller.store.getState().running).toBe(true);
+    expect(waiting.bids[0].status).toBe('pending');
+    // A clock stopped with the offer still waiting starts again at once.
+    controller.pause();
     gameStore.publish({ ...gameStore.getSnapshot(), view: { world: waiting } as View });
-    controller.eventDecided();
     controller.start();
-    expect(controller.store.getState().running).toBe(false);
-    waiting.bids[0].status = 'rejected';
-    gameStore.publish({ ...gameStore.getSnapshot(), view: { world: waiting } as View });
-    controller.eventDecided();
     expect(controller.store.getState().running).toBe(true);
   });
   it('mode-change-during-inflight clears automatic debt and cannot resume from an old reply', async () => {
@@ -840,7 +836,7 @@ describe('explicit automatic and manual modes', () => {
     expect(controller.store.getState().matchEve).toBeUndefined();
     expect(controller.store.getState().running).toBe(false);
   });
-  it('keeps manual requests blocked by ownership, worker/save errors and current business decisions', async () => {
+  it('keeps manual requests blocked by ownership and worker/save errors, never by owner approvals', async () => {
     const world = manual(),
       s = setup(undefined, world);
     controller = s.controller;
@@ -858,10 +854,11 @@ describe('explicit automatic and manual modes', () => {
       await controller.nextEvent();
     }
     gameStore.publish({ ...gameStore.getSnapshot(), readonly: false, error: undefined });
+    expect(s.command).not.toHaveBeenCalled();
     world.settings!.responsibilities.manager = 'direct';
     world.manager.interim = true;
     await controller.nextEvent();
-    expect(s.command).not.toHaveBeenCalled();
+    expect(s.command).toHaveBeenCalledWith({ type: 'next-event' }, { background: true });
   });
 });
 

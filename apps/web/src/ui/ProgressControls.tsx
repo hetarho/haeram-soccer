@@ -1,17 +1,10 @@
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
-import { pendingDecisions } from '../../../../packages/engine/src/stopping';
 import { Select } from './Select';
 import { PixelIcon } from './PixelIcon';
 import { currentDay, seasonLength } from '../../../../packages/engine/src/calendar';
 import { lazy, memo, Suspense, useEffect, useRef, useState } from 'react';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
-import { useUnfinishedPlayback } from '../runtime/matchView';
-import {
-  pendingMatchReport,
-  useProgression,
-  type Pace,
-  type ProgressionController,
-} from '../runtime/progression';
+import { useProgression, type Pace, type ProgressionController } from '../runtime/progression';
 import type { GameClient } from '../runtime/client';
 import { ProgressModeSwitch } from './ProgressModeSwitch';
 import { ownDivisionRound } from './league';
@@ -99,17 +92,13 @@ export const ProgressControls = memo(function ProgressControls({
   const w = state.view!.world;
   const mode = settingsOf(w).mode;
   const manual = mode === 'manual';
-  const unfinished = useUnfinishedPlayback();
-  const pending = pendingDecisions(w).length > 0;
   const blocked = !!(state.readonly || state.error || w.critical || w.bankrupt);
   const buttons = manual ? (
     <div className={p.buttons} role="group" aria-label="수동 진행">
       <button
         data-ui="link"
         className={p.nextEvent}
-        disabled={
-          gameActionsBlocked(state) || blocked || (pending && !unfinished && !pendingMatchReport(w))
-        }
+        disabled={gameActionsBlocked(state) || blocked}
         onClick={() => void controller.nextEvent()}
       >
         다음 이벤트

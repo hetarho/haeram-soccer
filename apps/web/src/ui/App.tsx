@@ -50,8 +50,7 @@ const PlayGuide = lazy(() =>
   import('./PlayGuide').then((module) => ({ default: module.PlayGuide })),
 );
 import { gameActionsBlocked, gameStore, useGameState } from '../runtime/store';
-import { ProgressionController, stoppingEvents, useProgression } from '../runtime/progression';
-import { eventDesk } from './eventRouting';
+import { ProgressionController, approvalRequests, useProgression } from '../runtime/progression';
 import { worldSelector } from './liveState';
 import { LeagueOverview, RankHistoryGraph, Standings } from './LeagueInsights';
 import { ownLeagueIds } from './league';
@@ -994,7 +993,7 @@ export function App() {
   }, []);
   const w = state?.view?.world;
   const playing = screen === 'game' && !!w && !replacing;
-  const officePending = playing ? stoppingEvents(w).filter((item) => !!eventDesk(item)).length : 0;
+  const officePending = playing ? approvalRequests(w).length : 0;
   const marketOpen = useMarketOpen();
   const current = (id: NavEntry) =>
     id === 'market'

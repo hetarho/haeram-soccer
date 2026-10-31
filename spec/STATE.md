@@ -16,7 +16,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | cr01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T15:49Z | 2026-10-31T15:49Z | - |
-| ap01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T16:01Z | 2026-10-31T16:25Z | T624 |
+| ap01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T16:01Z | 2026-10-31T16:36Z | - |
 
 ## inbox
 - 261101 decided WEB-42 WEB-45 STAFF-48 CLUB-19: what an unanswered owner approval costs once time no longer waits for it → a 7-day 결재 기한, then each overdue approval costs squad morale 1 a settled round (at most 3) with one overdue notice: one legible lever on the team, and a week before it bites even at x10 (alt: morale from the first day without grace | a per-kind consequence such as the asking player turning unhappy or a bid lapsing early | the staff deciding it for the owner at the deadline)
@@ -450,7 +450,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T622 | Currency levels at the 1999 rate | ECON SAVE | - | todo |
-| T624 | Approvals never stop progression | WEB STAFF CLUB | T623 | doing@261031.ap01 |
 | T625 | 결재함 button and approval deadlines | WEB STAFF | T623 T624 | todo |
 
 ## work
@@ -481,6 +480,7 @@
 - create-task WEB KIT (WEB r188–r192 delta WEB-39✎ WEB-79✎ WEB-106+ WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ WEB-43✎ WEB-10✎ WEB-44✎ WEB-107+ WEB-86✎ WEB-108+ WEB-100✎ WEB-42✎, plus WEB r194 WEB-91✎, and KIT r5–r6 KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ are implemented by the ds30 and cb31 designs; a task records them and their e2e checks)
 
 ## log
+- 261101 T624 done: approvals never stop or refuse progression in either mode; office counts read approvalRequests; four e2e journeys rewritten for the final gate; session ap01.
 - 261101 T623 done: approval waiting days, 7-day 결재 기한, one overdue notice and overdue morale (−1 each a settled round, at most 3); portable golden regenerated for three all-direct scenarios; session ap01.
 - 261101 update-ssot WEB r193 STAFF r37 CLUB r46 SAVE r59 (WEB-42✎ WEB-45✎ WEB-18✎ WEB-76✎ WEB-80✎ WEB-83✎ WEB-100✎ STAFF-48+ STAFF-15✎ STAFF-32✎ CLUB-19✎ CLUB-34✎ CLUB-38✎ SAVE-17✎) + create-task T623–T625: approvals never stop progression, 결재함 with a 7-day 결재 기한 and overdue morale cost; session ap01.
 - 261101 update-ssot ECON r40 (ECON-35+) SAVE r58 (SAVE-10✎) + create-task T622 currency levels at the 1999 rate; session cr01.
@@ -500,4 +500,3 @@
 - 261031 update-ssot WEB r189: WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ (no stadium scene on the clubhouse; the cash band shows on home like every view); code in the working tree, uncommitted
 - 261031 update-ssot WEB r188: WEB-39✎ WEB-79✎ WEB-106+ (office room artwork kept clear, overview modal from every entry, phone bottom sheets); code already in the working tree, uncommitted
 - 261030 review-code engine-architecture-261030 start: owner-assigned isolated worktree codex/engine-opt-261030 at 64005ff1, session eo30; research and prototypes only.
-- 261030 engine speed-up final gate: 8dd01ffc full local batch passed (verify:batch 50 min, Chromium 334 passed) and main CI41015066295 succeeded (CI41002035381 on 2fc41d5f failed only format:check, fixed in c05e9194). Combined against 4ab5e4d1 on this host, all sameHash: grid ×0.9112 [0.9074, 0.9164] (345→315 ms a match), aggregate ×0.9168 [0.9060, 0.9296], day own-match days ×0.9052 [0.8883, 0.9310] (790→695 ms), other days ×0.9347 [0.9261, 0.9416].

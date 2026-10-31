@@ -19,7 +19,7 @@ vi.mock('../runtime/store', async (original) => ({
 }));
 vi.mock('../runtime/progression', async (original) => ({
   ...(await original<typeof import('../runtime/progression')>()),
-  stoppingEvents: () => [{ id: 'request' }],
+  approvalRequests: () => [{ id: 'request' }],
 }));
 vi.mock('../../../../packages/engine/src/pending-work-preview', () => ({
   pendingWorkPreview: () => [],
@@ -234,7 +234,6 @@ describe('approval return controls', () => {
       const markup = renderToStaticMarkup(
         createElement(ApprovalRequestHost, {
           client,
-          controller,
           request,
           children: () => null,
         }),

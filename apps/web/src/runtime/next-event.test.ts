@@ -9,7 +9,7 @@ import {
 } from '../../../../packages/engine/src/calendar';
 import { transferOffers } from '../../../../packages/engine/src/ops-squad';
 import { ratio, random } from '../../../../packages/engine/src/primitives';
-import { stoppingReasons } from '../../../../packages/engine/src/stopping';
+import { pendingDecisions, stoppingReasons } from '../../../../packages/engine/src/stopping';
 const input = {
   country: 'ENG' as const,
   name: 'Worker Next Event',
@@ -95,7 +95,7 @@ describe('manual next-event sole-writer protocol', () => {
     expect(await h.handle(request)).toBe(reply);
     expect(JSON.stringify(w)).toBe(settled);
   });
-  it('groups two real counteroffers and the coincident match eve, and reading cannot bypass them', async () => {
+  it('stops at the match eve while two real counteroffers wait in the 결재함, never held by them', async () => {
     const { h } = await host(),
       w = h.world!;
     w.settings!.responsibilities.recruitment = 'direct';
@@ -127,18 +127,13 @@ describe('manual next-event sole-writer protocol', () => {
     );
     expect(reply.ok).toBe(true);
     expect(currentDay(w)).toBe(6);
-    const group = stoppingReasons(w);
-    expect(group.filter((i) => i.kind === 'bid-response')).toHaveLength(2);
-    expect(group.filter((i) => i.kind === 'match')).toHaveLength(1);
-    expect(group.every((i) => i.year === w.year && i.day === 6)).toBe(true);
-    await h.handle(req('read', w.revision, { type: 'command', command: { type: 'read-inbox' } }));
-    expect(
-      (
-        await h.handle(
-          req('blocked', w.revision, { type: 'command', command: { type: 'next-event' } }),
-        )
-      ).ok,
-    ).toBe(false);
-    expect(currentDay(w)).toBe(6);
+    // Only the observation stops; the counteroffers wait in the 결재함 (→WEB-42/83).
+    expect(stoppingReasons(w).map((i) => i.kind)).toEqual(['match']);
+    expect(pendingDecisions(w).filter((i) => i.kind === 'bid-response')).toHaveLength(2);
+    const reply2 = await h.handle(
+      req('onward', w.revision, { type: 'command', command: { type: 'next-event' } }),
+    );
+    expect(reply2.ok).toBe(true);
+    expect(currentDay(w)).toBeGreaterThan(6);
   });
 });
