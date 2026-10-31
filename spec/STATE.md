@@ -471,7 +471,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T636 | Fix CI failure | ARCH | - | todo |
+| T636 | Settle owner journey overlays and sponsor actions | WEB | T635 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -498,6 +498,7 @@
 - implement-task T636
 
 ## log
+- 261101 create-task T636: CI 41250503124 passed Chromium, both WebKit shards and all non-browser checks; Firefox exposed a late promotion celebration blocking office entry and a flaky sponsor click. Preserve exact assertions and repair actual overlay/readiness causes, with targeted three-browser checks before the full gate; session of01.
 - 261101 T635 done: the CI trace showed the shell's inert deferred-view container taking focus off the keyboard's club tab; the shared TabList carries the keyboard's pick to its committed selection and returns a lost focus there (never over a click, deliberate focus, tick or other world), and the same-person journey opens 인물 경력 from the current manager card after the market closes; staff.spec unchanged; unit 11 files / 81 tests and build passed, staff/second-career cases left to the host's three-browser gate; session of01.
 - 261101 create-task T635: CI 41244030798 staff keyboard focus fails on Chromium/Firefox/WebKit; inspect downloaded traces and repair actual focus lifecycle without weakening checks. Also scope the fading-dialog career-history match to the current manager; host targeted three-browser gate before full batch; session of01.
 - 261101 of01 CI 41244030798 completed: checks, unit and integration shards passed; staff keyboard 1군 focus failed in all three browsers, plus WebKit's career-history locator matched the current card and fading manager dialog. Failed logs/traces retained; scoped repair follows, no assertion relaxation.
@@ -517,4 +518,3 @@
 - 261101 fix e2e live-state: an eve met during the league detour's office visit waits behind its reopen access without a dialog; the check accepts that Aug 7 reopen like a dismissed report (CI WebKit 41226127751).
 - 261101 fix web controls: at 360 px the 결재함 wrapped the bottom controls into two rows, so celebrations overlapped the clock (news.spec on CI); the two 결재 buttons are 44 px on phones and 다음 이벤트 has narrower sides, and resource-skins now asserts one row at 360/390 in every theme.
 - 261101 fix engine approvals: waiting days counted at the start of clubDay so day, round and season paths agree at the close (CI 41222347443: calendar.progression-eng/esp, season, full-model-throughput); portable golden regenerated; integration 1,268 and contract 48 passed.
-- 261101 ap01 closed: changed-code checks only at the owner's request (unit tier, touched integration/contract, 14 changed Chromium journeys); push main.
