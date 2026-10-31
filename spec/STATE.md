@@ -16,7 +16,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | cr01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T15:49Z | 2026-10-31T15:49Z | - |
-| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T19:20Z | 2026-10-31T19:20Z | - |
+| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T17:23Z | 2026-10-31T19:26Z | T633 |
 
 ## inbox
 - 261101 decided WEB-10 WEB-39 WEB-100 T633: how to finish the reviewed approval form → one request heading and queue return, real pinned player and known terms in place of repeated instructions, plus the canonical operations static rewrite (alt: ship name/fee only | redirect to another information page); the owner needs the facts before committing and direct URLs must work.
@@ -468,7 +468,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T633 | Complete focused approval review and deployment routes | WEB ARCH | T632 | todo |
+| T633 | Complete focused approval review and deployment routes | WEB ARCH | T632 | doing@261031.of01 |
 | T622 | Currency levels at the 1999 rate | ECON SAVE | - | todo |
 
 ## work
