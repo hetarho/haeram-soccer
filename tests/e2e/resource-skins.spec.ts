@@ -57,13 +57,15 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
           .filter((button) => button.offsetParent)
           .map((button) => {
             const r = button.getBoundingClientRect();
+            // Badges sit over the frame on purpose; only the label must stay inside it.
+            const label = (button.querySelector('span') ?? button).getBoundingClientRect();
             return {
               name: button.getAttribute('aria-label') ?? button.textContent ?? '',
               left: r.left,
               right: r.right,
               top: r.top,
               bottom: r.bottom,
-              clipped: button.scrollWidth > button.clientWidth,
+              labelInside: label.left >= r.left - 0.5 && label.right <= r.right + 0.5,
             };
           }),
       );
@@ -71,7 +73,7 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
       expect(inbox, `${theme.id} ${width}`).toBeDefined();
       expect(inbox.left).toBeGreaterThanOrEqual(0);
       expect(inbox.right).toBeLessThanOrEqual(width);
-      expect(inbox.clipped).toBe(false);
+      expect(inbox.labelInside).toBe(true);
       for (const other of buttons.filter((button) => button !== inbox))
         expect(
           inbox.right <= other.left ||
