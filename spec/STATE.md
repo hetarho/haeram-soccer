@@ -422,7 +422,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 193 | 187 | WEB-39✎ WEB-79✎ WEB-106+ WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ WEB-43✎ WEB-10✎ WEB-44✎ WEB-107+ WEB-86✎ WEB-108+ WEB-100✎ WEB-42✎ | 0 |
+| WEB | 194 | 187 | WEB-39✎ WEB-79✎ WEB-106+ WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ WEB-43✎ WEB-10✎ WEB-44✎ WEB-107+ WEB-86✎ WEB-108+ WEB-100✎ WEB-42✎ WEB-91✎ | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 6 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
@@ -479,11 +479,12 @@
 - ap01: T623–T625 (approvals never stop progression; 결재함 with a 7-day 결재 기한 and overdue morale cost) in worktree .tmp/ap01 on work/ap01.
 - tf31 (transfer values by era) is done and pushed; owner to look at its two suggests (non-English currency levels ECON-2/5, the 1950s lower-division fee pyramid CLUB-25/46). Main's Chromium UI journeys await the ds30 spec migration.
 - Owner authorizes main publication of T617/T618 despite reproduced baseline UI e2e failures; publish unchanged engine source and observe CI. Evidence reports/261031-ei31.md.
-- create-task WEB KIT (WEB r188–r192 delta WEB-39✎ WEB-79✎ WEB-106+ WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ WEB-43✎ WEB-10✎ WEB-44✎ WEB-107+ WEB-86✎ WEB-108+ WEB-100✎ WEB-42✎ and KIT r5–r6 KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ are implemented by the ds30 design; a task records them and their e2e checks)
+- create-task WEB KIT (WEB r188–r192 delta WEB-39✎ WEB-79✎ WEB-106+ WEB-11✎ WEB-38✎ WEB-72✎ WEB-93✎ WEB-43✎ WEB-10✎ WEB-44✎ WEB-107+ WEB-86✎ WEB-108+ WEB-100✎ WEB-42✎, plus WEB r194 WEB-91✎, and KIT r5–r6 KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ are implemented by the ds30 and cb31 designs; a task records them and their e2e checks)
 
 ## log
 - 261101 update-ssot WEB r193 STAFF r37 CLUB r46 SAVE r59 (WEB-42✎ WEB-45✎ WEB-18✎ WEB-76✎ WEB-80✎ WEB-83✎ WEB-100✎ STAFF-48+ STAFF-15✎ STAFF-32✎ CLUB-19✎ CLUB-34✎ CLUB-38✎ SAVE-17✎) + create-task T623–T625: approvals never stop progression, 결재함 with a 7-day 결재 기한 and overdue morale cost; session ap01.
 - 261101 update-ssot ECON r40 (ECON-35+) SAVE r58 (SAVE-10✎) + create-task T622 currency levels at the 1999 rate; session cr01.
+- 261101 update-ssot WEB r194 (WEB-91✎): light controller/grass→selected P3/G1/X2/S1 materials and matching foregrounds; implemented in 92127406 on codex/controller-backgrounds-cb31.
 - 261031 T621 done: transfer values by era (CLUB r45), premium reaching values above the pivot, anchors 0.5 (1950)…5.2 (2025); 8 ENG careers 0 of 15 years outside CLUB-46 bands (10 before); ECON-29 bands unchanged; session tf31.
 - 261031 update-ssot CLUB r44 (CLUB-25✎ CLUB-46+) + create-task T621 transfer values by era; session tf31.
 - 261031 create-task review/engine-architecture-261030: owner authorizes production completion; T617 helper replication, T618 guarded packed movement; session ei31.
@@ -500,5 +501,4 @@
 - 261031 update-ssot WEB r188: WEB-39✎ WEB-79✎ WEB-106+ (office room artwork kept clear, overview modal from every entry, phone bottom sheets); code already in the working tree, uncommitted
 - 261030 review-code engine-architecture-261030 start: owner-assigned isolated worktree codex/engine-opt-261030 at 64005ff1, session eo30; research and prototypes only.
 - 261030 engine speed-up final gate: 8dd01ffc full local batch passed (verify:batch 50 min, Chromium 334 passed) and main CI41015066295 succeeded (CI41002035381 on 2fc41d5f failed only format:check, fixed in c05e9194). Combined against 4ab5e4d1 on this host, all sameHash: grid ×0.9112 [0.9074, 0.9164] (345→315 ms a match), aggregate ×0.9168 [0.9060, 0.9296], day own-match days ×0.9052 [0.8883, 0.9310] (790→695 ms), other days ×0.9347 [0.9261, 0.9416].
-- 261030 T612 done: aggregate cuts kept against their parents (ab.mjs aggregate CPU, sameHash): A2 xT table ×0.9891, A3 traits array ×0.9873, A6 weights by role id ×0.9893 [0.9818, 0.9991], A10 role tables by line index ×0.9684 [0.9614, 0.9781], A12 `isPassKind` by comparison ×0.9854, A13 `moveKindIndex` ×0.9828, A14 keeping/forward kinds by comparison ×0.9895, A15 one role shape ×0.9889 [0.9814, 0.9992]; A1 A4 A5 A7 A8 A9 A11 A16 reverted (intervals include 1). Combined against c05e9194: aggregate ×0.9167 [0.9095, 0.9232]; day sameHash, own match days ×0.9582 [0.9336, 0.9835], other days ×0.9240 [0.9107, 0.9375]. Unit (grid 12 files 169 tests; changed 84 files 806 tests), typecheck, lint, format pass; integration-tier aggregate tests left to the final gate.
 - 261030 T611 done: grid cuts kept against their parents (ab.mjs grid CPU, sameHash): G1 ×0.9734, G4 ×0.9799, G3 ×0.9795, G6 `modelAtLeast` memo ×0.9821 [0.9750, 0.9893], G5 uniform plan/job shapes ×0.9877 [0.9798, 0.9980]; G2 shared screen caches ×1.0005 [0.9944, 1.0084] undone by f3020e09. Day workload against 4ab5e4d1 sameHash, own match days ×0.9583 [0.9418, 0.9750]. Grid/aggregate/perf units (13 files, 173 tests), typecheck, lint, format pass; integration grid files left to the final gate.
