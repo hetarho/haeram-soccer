@@ -4,7 +4,7 @@ import { PlayerLink } from './PlayerSheet';
 import { useTaskState } from './taskMemory';
 import { Select } from './Select';
 import { PixelIcon } from './PixelIcon';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type {
   Line,
   TransferBid,
@@ -13,17 +13,17 @@ import type {
   WorldMarketOffer,
 } from '../../../../packages/contracts/src/types';
 import { POSITIONS } from '../../../../packages/contracts/src/player';
-import type { Personality } from '../../../../packages/contracts/src/player';
 import {
   lineOf,
-  PERSONALITY_LABEL,
   POSITION_LABEL,
   ROLE_LABEL,
   TRAIT_LABEL,
 } from '../../../../packages/engine/src/player';
-import { releaseCost, staffMember } from '../../../../packages/engine/src/staff-info';
+import { releaseCost } from '../../../../packages/engine/src/staff-info';
 import { positionsLabel } from './FormationPitch';
-import { gradeLabel, PlayerProfile } from './PlayerProfile';
+import { bestRoles, PlayerProfile } from './PlayerProfile';
+import { runwayText } from './teamState';
+import type { ScoutVerdict } from '../../../../packages/engine/src/scout-verdict';
 import { bidBoard } from '../../../../packages/engine/src/transfers';
 import { transferWindow } from '../../../../packages/engine/src/transfer-window';
 import { bidKind, freeSigning, visibleBids } from './bids';
@@ -74,9 +74,75 @@ const BID_STATUS: Record<TransferBid['status'], string> = {
   expired: '기한 만료',
   completed: '이적 완료',
 };
-const delta = (value: number) => (value > 0 ? `+${value}` : String(value));
-const runway = (value: number) => (value >= 999 ? '999라운드 이상' : `${value}라운드`);
+const delta = (value: number) => (value > 0 ? `+${value}` : value < 0 ? String(value) : '±0');
+// Colour only marks direction: a rise in red, a fall in blue.
+const tone = (value: number) => (value > 0 ? 'rise' : value < 0 ? 'fall' : undefined);
 
+/** The scout's verdict (→CLUB-47): grade, the slot it reads and the facts the gap does not say. */
+function VerdictCard({ verdict }: { verdict: ScoutVerdict }) {
+  return (
+    <section
+      className={s.verdict}
+      data-surface="detail"
+      data-grade={verdict.grade}
+      data-testid="scout-verdict"
+      aria-label="스카우트 판정"
+    >
+      <b className={s.grade}>{verdict.grade}</b>
+      <div className={s.verdictText}>
+        <small>스카우트 판정</small>
+        <strong>{verdict.label}</strong>
+        <span>
+          {verdict.slot.position} 자리 {verdict.slot.value} · 주전 {verdict.starter.name}{' '}
+          {verdict.starter.value} <em data-tone={tone(verdict.gap)}>({delta(verdict.gap)})</em>
+        </span>
+      </div>
+      {verdict.pros.length > 0 && (
+        <ul className={s.reasons} data-reason="for" aria-label="장점">
+          {verdict.pros.map((reason) => (
+            <li key={reason}>{reason}</li>
+          ))}
+        </ul>
+      )}
+      {verdict.cons.length > 0 && (
+        <ul className={s.reasons} data-reason="against" aria-label="단점">
+          {verdict.cons.map((reason) => (
+            <li key={reason}>{reason}</li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+/** A detail section whose heading carries its answer, so a closed section still reads (→WEB-109). */
+function Section({
+  title,
+  answer,
+  open,
+  children,
+}: {
+  title: string;
+  answer: ReactNode;
+  open?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <details className={s.section} open={open}>
+      <summary>
+        <span>{title}</span>
+        <b>{answer}</b>
+      </summary>
+      {children}
+    </details>
+  );
+}
+
+/**
+ * A candidate read as a scout report (→WEB-109): head, verdict, then 우리 팀에서 · 비용 · 능력·성향,
+ * each fact once, with the transaction bar at the foot. The bid sheet repeats only the head and
+ * verdict.
+ */
 function CandidateCard({
   w,
   candidate,
@@ -87,7 +153,7 @@ function CandidateCard({
   onRecruit,
   onBid,
   pending,
-  actions = true,
+  bid = false,
 }: {
   w: World;
   candidate: Candidate;
@@ -99,17 +165,22 @@ function CandidateCard({
   onRecruit: (loan: boolean) => void;
   onBid: () => void;
   pending?: TransferBid;
-  actions?: boolean;
+  bid?: boolean;
 }) {
-  const { offer, buy, loan } = candidate,
+  const { offer, buy, loan, verdict } = candidate,
     player = offer.player,
     club = clubOf(w);
   const cash = (value: string) => <Money value={value} code={club.country} year={w.year} />;
+  const short = (value: string) => compactMoney(value, club.country, w.year);
   const window = transferWindow(w);
-  const scout = staffMember(w, 'scout')?.ability;
   const growth = Math.max(0, Math.round(player.potential) - overall(player));
-  // Colour only marks direction: a rise in red, a fall in blue.
-  const tone = (value: number) => (value > 0 ? 'rise' : value < 0 ? 'fall' : undefined);
+  const best = bestRoles(player, 1)[0];
+  const origin = offer.own
+    ? '우리 선수 · 재영입할 수 없어요'
+    : offer.recommended
+      ? '스카우트 추천'
+      : '직접 발굴';
+  const free = BigInt(offer.fee) === 0n;
   return (
     <article
       className={s.card}
@@ -122,152 +193,145 @@ function CandidateCard({
         <div>
           <h3>{player.name}</h3>
           <span>
-            {player.position} · {POSITION_LABEL[player.position]} · {w.year - player.born}세
+            {player.position} · {POSITION_LABEL[player.position]} · {w.year - player.born}세 ·
+            잠재력 {Math.round(player.potential)}
+            {growth > 0 && <em data-tone="rise"> +{growth}</em>}
           </span>
           <small className={s.positions} data-testid="candidate-positions">
             {positionsLabel(player.positions)}
           </small>
+          <small className={s.origin}>
+            {sourceLabel(w, offer)} · {origin}
+          </small>
         </div>
       </header>
-      <div className={s.compareActions}>
-        <button aria-pressed={selected} onClick={onCompare}>
-          <PixelIcon name={selected ? 'check' : 'switch'} size={16} />
-          비교
-        </button>
-        {onCompareOwn && !offer.own && (
-          <button onClick={onCompareOwn}>
-            <PixelIcon name="people" size={16} />
-            우리 선수와 비교
+      {!bid && (
+        <div className={s.compareActions}>
+          <button aria-pressed={selected} onClick={onCompare}>
+            <PixelIcon name={selected ? 'check' : 'switch'} size={16} />
+            비교
           </button>
-        )}
-      </div>
-      <div className={s.ability} data-surface="detail">
-        <div className={s.abilityFigures}>
-          <span>
-            <small>잠재력</small>
-            <b>{Math.round(player.potential)}</b>
-          </span>
-          <span>
-            <small>성장 여지</small>
-            <b data-tone={tone(growth)}>+{growth}</b>
-          </span>
+          {onCompareOwn && !offer.own && (
+            <button onClick={onCompareOwn}>
+              <PixelIcon name="people" size={16} />
+              우리 선수와 비교
+            </button>
+          )}
         </div>
-        <details data-ui="disclosure" className={s.details}>
-          <summary>능력 자세히</summary>
-          <PlayerProfile w={w} player={player} own={offer.own} compact />
-        </details>
-      </div>
-      <p className={s.context}>
-        {sourceLabel(w, offer)}
-        {offer.own
-          ? ' · 우리 선수 · 재영입할 수 없어요'
-          : offer.recommended
-            ? ' · 스카우트 추천'
-            : ' · 직접 발굴'}
-      </p>
-      <div className={s.profileNotes}>
-        <div>
-          <span>플레이 특성</span>
-          <p className={s.traits}>
-            {player.traits.length
-              ? player.traits.map((trait) => TRAIT_LABEL[trait]).join(' · ')
-              : '특성 없음'}
-          </p>
-        </div>
-        <div>
-          <span>성향 리포트</span>
-          <p className={s.personality} data-testid="candidate-personality">
-            {(Object.keys(PERSONALITY_LABEL) as (keyof Personality)[])
-              .map(
-                (key) =>
-                  `${PERSONALITY_LABEL[key]} ${gradeLabel(player.personality[key], offer.own, scout)}`,
-              )
-              .join(' · ')}
-          </p>
-        </div>
-      </div>
-      {offer.available && (
-        <>
-          <div className={s.build} aria-label="영입 전력 변화">
-            <div data-surface="detail" data-testid="candidate-slot">
-              <span>
+      )}
+      {verdict && <VerdictCard verdict={verdict} />}
+      {!bid && offer.available && (
+        <Section
+          title="우리 팀에서"
+          answer={
+            <>
+              {buy.slot.position} 자리 · {buy.manual ? '직접 교체 시 전력' : '선발 전력'}{' '}
+              <em data-tone={tone(buy.strengthDelta)}>{delta(buy.strengthDelta)}</em>
+            </>
+          }
+          open
+        >
+          <dl className={s.facts} aria-label="영입 전력 변화">
+            <div data-testid="candidate-slot" className={s.wide}>
+              <dt>
                 {buy.slot.position} {ROLE_LABEL[buy.slot.role]} 자리 실효 OVR
-              </span>
-              <b>
+              </dt>
+              <dd>
                 합류 {buy.slot.arrival} → 적응 후 {buy.slot.settled}
-              </b>
+              </dd>
             </div>
-            <div data-surface="detail">
-              <span>{buy.manual ? '직접 교체 시 전력' : '자동 선발 전력'}</span>
-              <b>
+            <div>
+              <dt>{buy.manual ? '직접 교체 시 전력' : '자동 선발 전력'}</dt>
+              <dd>
                 {buy.beforeStrength} → {buy.afterStrength}{' '}
                 <small data-tone={tone(buy.strengthDelta)}>({delta(buy.strengthDelta)})</small>
-              </b>
+              </dd>
             </div>
-            <div data-surface="detail">
-              <span>{buy.manual ? '직접 교체 시 적합도' : '전술 적합도'}</span>
-              <b>
+            <div>
+              <dt>{buy.manual ? '직접 교체 시 적합도' : '전술 적합도'}</dt>
+              <dd>
                 {buy.beforeFit} → {buy.afterFit}{' '}
                 <small data-tone={tone(buy.fitDelta)}>({delta(buy.fitDelta)})</small>
-              </b>
+              </dd>
             </div>
-          </div>
-          <p className={s.context}>
-            {offer.foreign
-              ? '해외에서 합류 · 적응에 시간이 필요해요. '
-              : '국내에서 합류 · 적응에 시간이 필요해요. '}
+          </dl>
+          <p className={s.note}>
+            {offer.foreign ? '해외에서 합류' : '국내에서 합류'} · 적응에 시간이 필요해요.{' '}
             {buy.manual
               ? '수동 선발 교체 예시예요. 영입 후 선발을 직접 정해야 적용돼요.'
               : buy.willStart
                 ? '현재 능력과 피로 기준의 자동 선발 후보예요.'
                 : '현재 선발을 유지하며 로테이션 후보로 합류해요.'}
           </p>
-        </>
+        </Section>
       )}
-      <dl className={s.costs} data-surface="detail">
-        <div>
-          <dt>이적료</dt>
-          <dd>{cash(offer.fee)}</dd>
-        </div>
-        <div>
-          <dt>1시즌 임대료</dt>
-          <dd>{cash(offer.loanFee)}</dd>
-        </div>
-        <div>
-          <dt>연봉</dt>
-          <dd>{cash(player.wage)}</dd>
-        </div>
-        <div>
-          <dt>계약 / 임대 반환</dt>
-          <dd>
-            {player.until}년 / {w.year + 1}년
-          </dd>
-        </div>
-      </dl>
-      {BigInt(offer.fee) === 0n && <p className={s.free}>이적료 없음 · 연봉은 계속 지급해요</p>}
-      {offer.available && (
-        <>
-          <div className={s.budget} data-surface="detail">
+      {!bid && !offer.own && (
+        <Section
+          title="비용"
+          answer={`${free ? '이적료 없음' : `이적료 ${short(offer.fee)}`} · 연봉 ${short(player.wage)}`}
+          open
+        >
+          <dl className={s.facts}>
             <div>
-              <span>영입 후 자금</span>
-              <b>{cash(buy.cashAfter)}</b>
-              <small>고정 지출 {runway(buy.runwayRounds)} 여유</small>
+              <dt>이적료</dt>
+              <dd>{cash(offer.fee)}</dd>
             </div>
             <div>
-              <span>임대 후 자금</span>
-              <b>{cash(loan.cashAfter)}</b>
-              <small>고정 지출 {runway(loan.runwayRounds)} 여유</small>
+              <dt>1시즌 임대료</dt>
+              <dd>{cash(offer.loanFee)}</dd>
             </div>
-          </div>
-          <p className={s.note}>
-            연간 고정 지출 {cash(buy.annualAfter)} · 새 연봉 포함, 미래 수입 제외
-          </p>
-        </>
+            <div>
+              <dt>연봉</dt>
+              <dd>{cash(player.wage)}</dd>
+            </div>
+            <div>
+              <dt>계약 / 임대 반환</dt>
+              <dd>
+                {player.until}년 / {w.year + 1}년
+              </dd>
+            </div>
+            {offer.available && (
+              <>
+                <div>
+                  <dt>영입 후 자금</dt>
+                  <dd>
+                    {cash(buy.cashAfter)}{' '}
+                    <small className={s.sub}>자금 여력 {runwayText(buy.runwayRounds)}</small>
+                  </dd>
+                </div>
+                <div>
+                  <dt>임대 후 자금</dt>
+                  <dd>
+                    {cash(loan.cashAfter)}{' '}
+                    <small className={s.sub}>자금 여력 {runwayText(loan.runwayRounds)}</small>
+                  </dd>
+                </div>
+              </>
+            )}
+          </dl>
+          {(offer.available || free) && (
+            <p className={s.note}>
+              {free && '이적료 없음 · 연봉은 계속 지급해요. '}
+              {offer.available && (
+                <>연간 고정 지출 {cash(buy.annualAfter)} · 새 연봉 포함, 미래 수입 제외</>
+              )}
+            </p>
+          )}
+        </Section>
       )}
-      {(!buy.eligible || !buy.affordable) && (
-        <p className={s.note}>{offer.own ? '우리 선수는 재영입할 수 없어요.' : buy.reason}</p>
+      {!bid && (
+        <Section
+          title="능력·성향"
+          answer={`${best ? `${ROLE_LABEL[best.role]} ${best.ovr} · ` : ''}${
+            player.traits.length
+              ? player.traits.map((trait) => TRAIT_LABEL[trait]).join('·')
+              : '특성 없음'
+          }`}
+        >
+          <PlayerProfile w={w} player={player} own={offer.own} compact />
+        </Section>
       )}
-      {actions &&
+      {!bid &&
         (pending ? (
           <p className={s.pending} data-surface="detail" data-testid="pending-bid">
             {pending.status === 'countered' ? (
@@ -302,13 +366,14 @@ function CandidateCard({
                 </button>
               )}
               {offer.available && !offer.freeAgent && !window.open ? (
-                <small>{window.label}</small>
+                <small data-tone="block">{window.label}</small>
               ) : (
-                (!buy.eligible || !buy.affordable) && <small>{buy.reason}</small>
+                (!buy.eligible || !buy.affordable) && <small data-tone="block">{buy.reason}</small>
               )}
             </div>
             <div>
               <button
+                data-ui="secondary"
                 disabled={
                   offer.freeAgent || blocked || !window.open || !loan.eligible || !loan.affordable
                 }
@@ -316,25 +381,27 @@ function CandidateCard({
               >
                 1시즌 임대
               </button>
-              {offer.available && !offer.freeAgent && (
-                <small>판매 구단이 2–4일 뒤 답해요. 수락 시 임대료와 연봉이 발생해요.</small>
-              )}
               {offer.freeAgent ? (
                 <small>자유계약 선수는 임대할 수 없어요. 자유계약 영입을 이용해 주세요.</small>
+              ) : !loan.eligible || !loan.affordable ? (
+                <small data-tone="block">{loan.reason}</small>
               ) : (
-                (!loan.eligible || !loan.affordable) && <small>{loan.reason}</small>
+                offer.available && (
+                  <small>판매 구단이 2–4일 뒤 답해요. 수락 시 임대료와 연봉이 발생해요.</small>
+                )
               )}
             </div>
           </div>
         ))}
-      {w.players.some((person) => person.id === player.id && person.status === 'active') && (
-        <div className={s.transactions} aria-label="합류한 선수 관리">
-          <PlayerLink id={player.id} name={player.name} />
-          <button type="button" onClick={() => openCoachSheet('assistant', undefined, player.id)}>
-            합류 선수 훈련 보기
-          </button>
-        </div>
-      )}
+      {!bid &&
+        w.players.some((person) => person.id === player.id && person.status === 'active') && (
+          <div className={s.joined} aria-label="합류한 선수 관리">
+            <PlayerLink id={player.id} name={player.name} />
+            <button type="button" onClick={() => openCoachSheet('assistant', undefined, player.id)}>
+              합류 선수 훈련 보기
+            </button>
+          </div>
+        )}
     </article>
   );
 }
@@ -477,12 +544,12 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
     // Inside a control that already answers the tap: the notation, the exact amount as its title.
     plain = (value: string) => <Money value={value} code={club.country} year={w.year} plain />,
     text = (value: string) => compactMoney(value, club.country, w.year);
-  const render = (candidate: Candidate, current: boolean, actions = true) => (
+  const render = (candidate: Candidate, current: boolean, bid = false) => (
     <CandidateCard
       key={candidate.offer.player.id}
       w={w}
       candidate={candidate}
-      actions={actions}
+      bid={bid}
       blocked={blocked || !current || candidate.revision !== w.revision || candidate.offer.own}
       selected={selectedComparison.some((target) => target.playerId === candidate.offer.player.id)}
       onCompare={() => toggle(candidate.offer.target)}
@@ -1247,7 +1314,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             </p>
           )}
           {bidDetail.value ? (
-            render(bidDetail.value, bidDetail.current, false)
+            render(bidDetail.value, bidDetail.current, true)
           ) : (
             <p role="status">{bidDetail.error ?? '제안 조건을 확인하고 있어요.'}</p>
           )}
@@ -1295,15 +1362,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         </Dialog>
       )}
       {viewing && (
-        <Dialog
-          label="영입 후보 상세"
-          onClose={() => setViewing(undefined)}
-          actions={
-            <div className={s.close}>
-              <button onClick={() => setViewing(undefined)}>닫기</button>
-            </div>
-          }
-        >
+        <Dialog label="영입 후보 상세" onClose={() => setViewing(undefined)}>
           {message?.world === w.id && (
             <p data-surface="inset" className={s.message} role="status">
               {message.text}

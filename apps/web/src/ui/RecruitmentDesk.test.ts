@@ -71,7 +71,15 @@ const offer: WorldMarketOffer = {
   foreign: true,
 };
 const preview = {
-  slot: { index: 0, position: 'GK', role: 'shotStopper', arrival: 32, settled: 40 },
+  slot: {
+    index: 0,
+    position: 'GK',
+    role: 'shotStopper',
+    arrival: 32,
+    settled: 40,
+    value: 40,
+    starter: { id: 'starter', name: 'Starting Keeper', value: 34 },
+  },
   beforeStrength: 40,
   afterStrength: 41,
   strengthDelta: 1,
@@ -96,6 +104,15 @@ const detail = (): MarketDetail => ({
   buy: { ...preview },
   loan: { ...preview, fee: offer.loanFee },
   bid: { asking: offer.fee, chance: 0.5, label: '보통', counterPossible: true },
+  verdict: {
+    grade: 'B',
+    label: '주전 보강',
+    gap: 6,
+    slot: { position: 'GK', role: 'shotStopper', value: 40 },
+    starter: { id: 'starter', name: 'Starting Keeper', value: 34 },
+    pros: ['전술 적합도 +1'],
+    cons: ['적응 전 32 · 적응 후 40'],
+  },
 });
 let tree: ReactElement;
 const client = {
@@ -351,16 +368,72 @@ describe('paged whole-world recruitment desk', () => {
     choices['world-market-bidding'] = { target: offer.target, asking: offer.fee };
     reads.detail = detail();
     const markup = render();
-    expect(markup).toContain('<dt>연봉</dt>');
-    expect(markup).toContain('계약 / 임대 반환');
-    expect(markup).toContain('합류 32 → 적응 후 40');
+    // The bid sheet repeats only the head and the verdict above its own fee steps (→WEB-109).
     expect(markup).toContain('직접 발굴');
+    expect(markup).toContain('aria-label="스카우트 판정"');
+    expect(markup).not.toContain('<dt>연봉</dt>');
+    expect(markup).not.toContain('<span>우리 팀에서</span>');
+    expect(markup).not.toContain('aria-label="선수 프로필"');
     expect(submit().props.disabled).toBe(false);
     await (submit().props.onClick as () => Promise<void>)();
     expect(client.command).toHaveBeenCalledWith(
       { type: 'bid', target: offer.target, fee: '1000' },
       { background: true },
     );
+  });
+  it('reads as a scout report: head, verdict, then sections whose headings carry their answer', () => {
+    choices['world-market-viewing'] = offer.target;
+    reads.detail = detail();
+    const markup = render();
+    const at = (text: string) => {
+      const index = markup.indexOf(text);
+      expect(index, text).toBeGreaterThan(-1);
+      return index;
+    };
+    const order = [
+      '<h3>External Player</h3>',
+      'aria-label="스카우트 판정"',
+      '<span>우리 팀에서</span>',
+      '<span>비용</span>',
+      '<span>능력·성향</span>',
+      '>이적 제안</button>',
+    ].map(at);
+    expect(order).toEqual([...order].sort((a, b) => a - b));
+    expect(markup).toContain('GK 자리 40 · 주전 Starting Keeper 34');
+    expect(markup).toContain('적응 전 32 · 적응 후 40');
+    // Our team and costs open, the full profile closed; each heading carries its answer.
+    expect(markup).toMatch(
+      /<details[^>]*open=""[^>]*><summary><span>우리 팀에서<\/span><b>GK 자리 · 선발 전력 /,
+    );
+    expect(markup).toMatch(
+      /<details[^>]*open=""[^>]*><summary><span>비용<\/span><b>이적료 [^<]+ · 연봉 /,
+    );
+    expect(markup).toMatch(/<details(?![^>]*open)[^>]*><summary><span>능력·성향<\/span>/);
+    // One rating chip, one personality read, and no second close button.
+    const card = markup.slice(markup.indexOf('<article'), markup.indexOf('</article>'));
+    expect(card.match(/data-tier=/g)).toHaveLength(1);
+    expect(card.match(/프로의식/g)).toHaveLength(1);
+    expect(markup).not.toContain('>닫기<');
+    // Money runway in weeks or months, never rounds; neutral notes are not warnings.
+    expect(markup).toContain('자금 여력 1년 이상');
+    expect(markup).not.toContain('라운드');
+    expect(markup).not.toContain('data-tone="block"');
+  });
+  it("shows our own player's head, profile and completed bar without a verdict or terms", () => {
+    choices['world-market-viewing'] = offer.target;
+    reads.detail = detail();
+    reads.detail.offer = { ...offer, own: true, available: false };
+    reads.detail.buy = { ...preview, eligible: false, reason: '이미 계약한 선수입니다.' };
+    reads.detail.loan = { ...preview, eligible: false, reason: '이미 계약한 선수입니다.' };
+    reads.detail.verdict = undefined;
+    const markup = render();
+    expect(markup).toContain('우리 선수 · 재영입할 수 없어요');
+    expect(markup).toContain('<span>능력·성향</span>');
+    expect(markup).not.toContain('aria-label="스카우트 판정"');
+    expect(markup).not.toContain('<span>비용</span>');
+    expect(markup).not.toContain('<span>우리 팀에서</span>');
+    expect(markup).toMatch(/<button[^>]*disabled=""[^>]*>계약 완료<\/button>/);
+    expect(markup).toContain('<small data-tone="block">이미 계약한 선수입니다.</small>');
   });
   it('selects a player by identity and signs a selected free agent through the existing command', () => {
     render();
