@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T17:23Z | 2026-10-31T19:26Z | T633 |
+| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T20:15Z | 2026-10-31T20:15Z | - |
 
 ## inbox
 - 261101 decided WEB-39 WEB-100 T630: what fills the owner office → one live ordered approval queue and contextual review with queue return (alt: retain desks with fewer cards | replace them with another overview dashboard); actual pending decisions deserve the first viewport.
@@ -405,6 +405,7 @@
 - 261031 decided ARCH-9 ARCH-34 T618: guarded Wasm qualifies locally but deployed CSP restricts compilation → adopt the independently qualifying packed JavaScript phase (final grid CPU ×0.9633, equal records), preserving scalar fallback and security headers; archive Wasm source/bytes/evidence (alt: expand CSP | ship two overlapping numeric backends).
 - 261101 decided WEB-10 WEB-39 WEB-100 T633: how to finish the reviewed approval form → one request heading and queue return, real pinned player and known terms in place of repeated instructions, plus the canonical operations static rewrite (alt: ship name/fee only | redirect to another information page); the owner needs the facts before committing and direct URLs must work.
 - 261101 decided WEB-36 WEB-79 T633: integrating the newer shared settings work → retain r197 observation confirmation/no settings toast and the upstream approval-day fix; discard only the superseded lobby-art conflict (alt: restore old lobby | undo newer settings behavior).
+- 261101 decided WEB-74 WEB-83 SAVE-20 T634: final browser gate found integration regressions after the office consolidation → repair explicit observation reopening, completed design-form state and shared navigation readiness; move old test contexts to their actual homes while retaining every business/geometry assertion (alt: publish with failures | restore duplicate desks); latest T622 source is integrated before the new gate.
 
 ## ideation
 | id | st |
@@ -461,6 +462,7 @@
 | T631 | Readable club situation and actual people | WEB ARCH | T630 | todo |
 | T632 | Complete office and club journey regression coverage | WEB ARCH | T631 | todo |
 | T633 | Complete focused approval review and deployment routes | WEB ARCH | T632 | doing@261031.of01 |
+| T634 | Repair office integration and retained club journeys | ARCH WEB KIT SAVE | T633 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -484,12 +486,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T629 (of01 owner-office and club overhaul; then T630→T631→T632 only; leave ideation to its owners)
 - ap01 (approvals never stop progression, 결재함 with a 7-day 결재 기한, T623–T625) is done and pushed; report spec/reports/261101-ap01.md.
 - cr01 put every country's money at its real 1999 rate against the pound (T622, ECON-35, catalog 2026-demo-4); careers outside England saved before it are refused on load. The 1950s lower-division fee pyramid suggest (CLUB-25/46) remains for the owner.
 - Owner authorizes main publication of T617/T618 despite reproduced baseline UI e2e failures; publish unchanged engine source and observe CI. Evidence reports/261031-ei31.md.
 - create-task KIT (existing kit baseline r5–r6 remains pending outside of01; WEB r188–r195 baseline regression is included in T632).
 - implement-task T633 (of01 host review fixes; then final integrated gate and main publication only, leave T622/KIT to their owners)
+- implement-task T634 (of01 release repair from the host Chromium gate; then host final batch, main push and CI only).
 
 ## log
 - 261101 T622 done: every country's money at its real 1999 rate against the pound (ECON r40 ECON-35, SAVE r58 SAVE-10), catalog 2026-demo-4; ESP/ITA reference careers identical over 60 seasons, FRA/GER split only at a 90%-wage tie, ECON-29 bands as before, none bankrupt; session cr01.
@@ -502,13 +504,13 @@
 - 261101 update-ssot WEB r193 STAFF r37 CLUB r46 SAVE r59 (WEB-42✎ WEB-45✎ WEB-18✎ WEB-76✎ WEB-80✎ WEB-83✎ WEB-100✎ STAFF-48+ STAFF-15✎ STAFF-32✎ CLUB-19✎ CLUB-34✎ CLUB-38✎ SAVE-17✎) + create-task T623–T625: approvals never stop progression, 결재함 with a 7-day 결재 기한 and overdue morale cost; session ap01.
 - 261101 update-ssot ECON r40 (ECON-35+) SAVE r58 (SAVE-10✎) + create-task T622 currency levels at the 1999 rate; session cr01.
 - 261101 update-ssot WEB r194 (WEB-91✎): light controller/grass→selected P3/G1/X2/S1 materials and matching foregrounds; implemented in 92127406 on codex/controller-backgrounds-cb31.
-- 261101 T628 done: scout verdict A–E (CLUB r47) and the candidate detail as a scout report (WEB r195); unit/contract pass, 4 integration failures pre-exist on 67c9e974, e2e left to CI; session sr11.
 - 261101 update-ssot CLUB r47 (CLUB-47+) WEB r195 (WEB-109+) + create-task T628 scout verdict and the candidate detail as a scout report; session sr11.
 - 261101 update-ssot WEB r196 + create-task T629–T632: approval-only office, visible club sections, actual first-team/coach information and consolidated proactive operations; qualitative 2024-11-01–2026-11-01 Steam research in reports/261031-of01.md; session of01.
 - 261101 update-ssot WEB r197 (WEB-36✎ WEB-79✎): settings commands show no toast; eve/window observations take the business confirmation and an eve report turned on during the eve waits behind its reopen access; owner-requested fixes made directly in the shared checkout, rebased onto 64243a3f and pushed by session 5d; batch gate on the 09509a0b base passed (unit, integration, contract, catalogs, build, Chromium 335). The same commit moves the current lobby's 클럽 소식·시즌 브리핑 and 결재라인 모아보기 buttons onto its artwork's lower edge (owner request; typecheck, lint, format, 164 unit tests, build, manual previews at 360/390/1280); r196's WEB-39 replaces that lobby, so the overlay is interim until T630 and adds no WEB text.
 - 261101 fix e2e live-state: an eve met during the league detour's office visit waits behind its reopen access without a dialog; the check accepts that Aug 7 reopen like a dismissed report (CI WebKit 41226127751).
 - 261101 design controller: apply P3 burgundy paper, G1 forest matte, X2 midnight pixels and S1 butter clay; unit 1833, integration 1267, contract 48 and Chromium 335 passed; shared-checkout receipt stale after concurrent unrelated edits; preserve tested ce95aae4 in isolated cb31 commit.
 - 261101 create-task T633: host visual review found missing /club-operations static rewrite and repeated request instructions; add actual target/terms context and verify integrated WEB r197 settings behavior. T629–T632 done locally; latest main integrated in e70ef0b5, final gate/publication pending; session of01.
+- 261101 create-task T634: host Chromium gate 320 passed / 21 failed; fix two real observation/design-state defects and stale navigation/measurement contexts, with exact existing assertions retained. Latest T622 main integrated in ba915286; no overhaul code pushed until the repaired final gate passes; session of01.
 - 261031 update-ssot CLUB r44 (CLUB-25✎ CLUB-46+) + create-task T621 transfer values by era; session tf31.
 - 261031 create-task review/engine-architecture-261030: owner authorizes production completion; T617 helper replication, T618 guarded packed movement; session ei31.
 - 261031 review-code engine-architecture-261030 ready: nine engine candidates, seventeen worker/transport configurations; F1/F2 accepted for follow-up planning, no production source adoption. Artifact commit 2a28f947 and remote checkpoint 848f8c57 (wip/eo30); project quick checks, 173 units and prototype parity passed; report 261030-eo30.
