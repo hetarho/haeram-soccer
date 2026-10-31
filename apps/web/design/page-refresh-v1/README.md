@@ -4,6 +4,10 @@ Approved behavior and appearance follow WEB-11/18/55/58/69/91/96. Artwork in `so
 is implemented working output from the built-in image tool, not a separate source of policy.
 [prompts.json](prompts.json) retains every exact prompt, alpha choice and style reference.
 
+Controller materials from this baseline are superseded by the owner's P3/G1/X2/S1
+[selection](../controller-concepts-v1/README.md). Run `prepare-controller-backgrounds.mjs`
+after this recipe to restore the selected material and local foregrounds.
+
 - `rating-frames.png`: bronze, silver, gold, platinum and ruby engraved frames for Print and Stadium Green.
 - `sticker-components.png`, `sticker-ruby.png`: smooth clay controls, continuous rounded rims and five rating faces.
 - `sticker-materials.png`: quiet oat/cream/vanilla material planes and sunny yellow primary/controller material.

@@ -214,9 +214,7 @@ export function OwnerOffice({
                 detail={detail}
                 delegated={!settings.observations[key]}
                 blocked={blocked}
-                onSelect={(delegated) =>
-                  void apply(officeProposal(w, { observations: { [key]: !delegated } }))
-                }
+                onSelect={(delegated) => propose({ observations: { [key]: !delegated } })}
               />
             ))}
           {(scope ?? RESPONSIBILITY_KEYS).map((key) => (

@@ -1,0 +1,21 @@
+{
+  "theme": "standard",
+  "selectedCandidate": "G1",
+  "selectedOn": "2026-10-31",
+  "sourceHashes": {
+    "sources/G1.png": "ba4252ae8aa79d610ffdc2f91cf98b5482d98852b8c696a6f78bb5c9b6da46e6"
+  },
+  "assets": [
+    {
+      "file": "material.webp",
+      "source": "apps/web/design/standard/controller-concepts-v1/sources/G1.png",
+      "filter": "scale=256:256",
+      "bytes": 16044,
+      "sha256": "674038ceb32bd19c5bb13be466ec2749ad8c55669eac87fddb9cfe4ef4ce480d",
+      "width": 256,
+      "height": 256,
+      "role": "image-art-controller-background",
+      "mode": "tile"
+    }
+  ]
+}

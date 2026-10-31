@@ -106,13 +106,20 @@ export const EventCenter = memo(function EventCenter({
   const resumeKey = w && resume ? `${w.id}:watch:${resume.record.id}` : undefined;
   const resumeOpen = !!resumeKey && opened === resumeKey;
   const acting = useGameState(gameActionsBlocked);
+  // The day the match-eve report was last off: turning it on during the eve itself leaves the
+  // report behind its pill instead of opening it over the office.
+  const reportOn = !!w && settingsOf(w).observations.matchEve;
+  const quietDay = useRef<string>(undefined);
   useEffect(() => setOpened(undefined), [page]);
   useEffect(() => {
     const requested = eventRequest !== previousRequest.current;
     previousRequest.current = eventRequest;
-    if (eveKey) setOpened(eveKey);
+    if (eveKey && (requested || eveKey !== quietDay.current)) setOpened(eveKey);
     else if (resumeKey && requested) setOpened(resumeKey);
   }, [eveKey, resumeKey, eventRequest]);
+  useEffect(() => {
+    if (!reportOn) quietDay.current = key;
+  }, [reportOn, key]);
   if (!w || page === 'business' || running || (!events.length && !resumeOpen)) return null;
   const inDialog = compact || eve || resumeOpen;
   const label = resumeOpen ? '관전 이어보기' : eve ? 'NEXT MATCH' : `${date} 이벤트`;

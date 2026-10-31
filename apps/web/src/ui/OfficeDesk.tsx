@@ -24,7 +24,7 @@ export type DeskStat = { label: string; value: ReactNode; note?: ReactNode };
 
 /**
  * A room of the owner office (→WEB-39), worn like the clubhouse's office scene: its artwork under
- * a light shade with the room's name and waiting count, its ways in on a strip under the art.
+ * a light shade with the room's name and waiting count, its ways in over the lower edge of the art.
  */
 export function DeskScene({
   w,
@@ -61,8 +61,8 @@ export function DeskScene({
           )}
           {caption && <span className={s.caption}>{caption}</span>}
         </header>
+        {actions && <footer className={s.sceneActions}>{actions}</footer>}
       </div>
-      {actions && <footer className={s.sceneActions}>{actions}</footer>}
     </section>
   );
 }

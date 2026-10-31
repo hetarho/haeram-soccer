@@ -1,0 +1,20 @@
+{
+  "theme": "pixel",
+  "selectedCandidate": "X2",
+  "selectedOn": "2026-10-31",
+  "sourceHashes": {
+    "source.mjs#X2": "1a090aadc667594714eec883d193254142964838dbd00f0d0595e1a2df9e3020"
+  },
+  "assets": [
+    {
+      "file": "material.png",
+      "source": "apps/web/design/pixel/controller-concepts-v1/source.mjs#X2",
+      "bytes": 263,
+      "sha256": "f5c30ac064a6031d7fba25eb65b3636cc12701f60afb7c2404dc714d3a328ffe",
+      "width": 32,
+      "height": 32,
+      "role": "image-art-controller-background",
+      "mode": "tile"
+    }
+  ]
+}

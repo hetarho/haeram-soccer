@@ -35,6 +35,7 @@ import { QuickActions } from '../ui/QuickActions.tsx';
 import { TeamState } from '../ui/TeamStateTiles';
 import { NewsList, useNewsSheet } from '../ui/NewsFeed';
 import { ProgressControls, ProgressOverview } from '../ui/ProgressControls';
+import { ControllerBackgrounds } from './ControllerBackgrounds';
 import { ProgressModeSwitch } from '../ui/ProgressModeSwitch';
 import { HudCash } from '../ui/HudCash';
 import { AppMenu } from '../ui/AppMenu';
@@ -738,6 +739,9 @@ export default function StoryRenderer({
             <TeamState w={w} client={client} onPrepare={noop} />
           </>
         );
+        break;
+      case 'controller-backgrounds':
+        content = <ControllerBackgrounds client={client} controller={controller} />;
         break;
       case 'controller':
         content = (

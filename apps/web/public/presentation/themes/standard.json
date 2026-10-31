@@ -182,12 +182,12 @@
       "secondary-frame": "var(--image-panel-frame)",
       "secondary-text": "var(--image-ink-color)",
       "secondary-muted": "var(--image-muted)",
-      "image-transport-material": "var(--image-art-controller-grass)",
+      "image-transport-material": "var(--image-art-controller-background)",
       "transport-material-size": "256px",
-      "transport-material-blend": "soft-light",
-      "transport-fill": "#cadbc3",
-      "transport-text": "#173024",
-      "transport-muted": "#36503c",
+      "transport-material-blend": "normal",
+      "transport-fill": "#183e30",
+      "transport-text": "#f0f7e7",
+      "transport-muted": "#d1e1c9",
       "image-detail": "#2d4b39",
       "image-detail-material": "var(--image-art-paper-detail)",
       "image-detail-frame": "none",
@@ -893,6 +893,12 @@
         "height": 64,
         "mode": "nine-slice",
         "slice": 22
+      },
+      "image-art-controller-background": {
+        "resource": "../../art/standard/controller-v1/material.webp",
+        "width": 256,
+        "height": 256,
+        "mode": "tile"
       }
     }
   },

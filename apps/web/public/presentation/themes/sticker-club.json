@@ -196,12 +196,12 @@
       "secondary-frame": "var(--image-panel-frame)",
       "secondary-text": "var(--image-ink-color)",
       "secondary-muted": "var(--image-muted)",
-      "image-transport-material": "var(--image-art-vermilion)",
+      "image-transport-material": "var(--image-art-controller-background)",
       "transport-material-size": "256px",
       "transport-material-blend": "normal",
-      "transport-fill": "#f4cf59",
-      "transport-text": "#17382b",
-      "transport-muted": "#40543a",
+      "transport-fill": "#f0cd67",
+      "transport-text": "#2b402e",
+      "transport-muted": "#4e5c36",
       "image-detail": "#fffbef",
       "image-detail-material": "var(--image-art-paper-detail)",
       "image-detail-frame": "none",
@@ -805,6 +805,12 @@
         "height": 64,
         "mode": "nine-slice",
         "slice": 22
+      },
+      "image-art-controller-background": {
+        "resource": "../../art/sticker-club/controller-v1/material.webp",
+        "width": 256,
+        "height": 256,
+        "mode": "tile"
       }
     }
   },

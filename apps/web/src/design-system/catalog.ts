@@ -100,6 +100,13 @@ export const STORIES: Story[] = [
     '진행 속도, 재생/정지, 업무 분장, 현금과 게임 메뉴. 시간은 흐르지 않습니다.',
   ),
   story(
+    'controller-backgrounds',
+    '컨트롤러 배경 · 시안 3종',
+    '홈 · 대회',
+    ['ProgressControls'],
+    '테마마다 재질과 색이 다른 배경 후보 3종. 번호를 골라 비교합니다.',
+  ),
+  story(
     'league',
     '리그 순위 · 라운드 결과',
     '홈 · 대회',

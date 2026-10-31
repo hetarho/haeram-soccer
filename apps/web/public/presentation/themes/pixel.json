@@ -169,12 +169,12 @@
       "secondary-frame": "var(--image-panel-frame)",
       "secondary-text": "var(--image-ink-color)",
       "secondary-muted": "var(--image-muted)",
-      "image-transport-material": "var(--image-art-controller-pixels)",
+      "image-transport-material": "var(--image-art-controller-background)",
       "transport-material-size": "64px",
       "transport-material-blend": "normal",
-      "transport-fill": "#c1cbb2",
-      "transport-text": "#17221b",
-      "transport-muted": "#354434",
+      "transport-fill": "#202e48",
+      "transport-text": "#e4f2ef",
+      "transport-muted": "#adcaca",
       "image-detail": "#2c3c2f",
       "image-detail-material": "var(--image-art-paper-detail)",
       "image-detail-frame": "none",
@@ -372,12 +372,7 @@
       "format": "woff2",
       "style": "normal",
       "display": "swap",
-      "fallbacks": [
-        {
-          "resource": "/fonts/galmuri14.woff",
-          "format": "woff"
-        }
-      ]
+      "fallbacks": [{ "resource": "/fonts/galmuri14.woff", "format": "woff" }]
     },
     {
       "family": "Galmuri11",
@@ -386,12 +381,7 @@
       "format": "woff2",
       "style": "normal",
       "display": "swap",
-      "fallbacks": [
-        {
-          "resource": "/fonts/galmuri11.woff",
-          "format": "woff"
-        }
-      ]
+      "fallbacks": [{ "resource": "/fonts/galmuri11.woff", "format": "woff" }]
     },
     {
       "family": "Galmuri11",
@@ -400,12 +390,7 @@
       "format": "woff2",
       "style": "normal",
       "display": "swap",
-      "fallbacks": [
-        {
-          "resource": "/fonts/galmuri11-bold.woff",
-          "format": "woff"
-        }
-      ]
+      "fallbacks": [{ "resource": "/fonts/galmuri11-bold.woff", "format": "woff" }]
     }
   ],
   "images": {
@@ -782,6 +767,12 @@
         "height": 128,
         "mode": "nine-slice",
         "slice": 16
+      },
+      "image-art-controller-background": {
+        "resource": "../../art/pixel/controller-v1/material.png",
+        "width": 32,
+        "height": 32,
+        "mode": "tile"
       }
     }
   },
@@ -974,11 +965,7 @@
         "viewBox": "0 0 24 24",
         "shapeRendering": "crispEdges",
         "layers": [
-          {
-            "d": "M5 3h5v18H5Z M14 3h5v18h-5Z",
-            "fill": "currentColor",
-            "fillRule": "evenodd"
-          }
+          { "d": "M5 3h5v18H5Z M14 3h5v18h-5Z", "fill": "currentColor", "fillRule": "evenodd" }
         ]
       }
     },
