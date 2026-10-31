@@ -167,6 +167,20 @@
   overflow-wrap: anywhere;
   word-break: keep-all;
 }
+/* A row's 결재 기한 under its title; overdue rows and counts take the warning colour (→STAFF-48). */
+.request .due,
+.request .overdue {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.due {
+  color: var(--text-muted);
+}
+.overdue {
+  color: var(--danger);
+}
 .review.review {
   min-height: 38px;
   padding: 2px 16px;

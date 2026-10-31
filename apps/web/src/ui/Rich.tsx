@@ -4,7 +4,7 @@ import { PlayerOfficeWork, OfficeWorkResponsibility } from './PlayerOfficePanel'
 import { DeskBody } from './OfficeDesk';
 import { saleOfferItems } from './playerOfficeWork';
 import { AreaCriteria } from './DirectionLines';
-import { stoppingEvents } from '../runtime/progression';
+import { approvalRequests } from '../runtime/progression';
 import { PersonnelHub } from './PersonnelHubs';
 import type { ProgressionController } from '../runtime/progression';
 import { squadRegistration } from './squadRegistration';
@@ -203,7 +203,7 @@ function OfficePersonnelWork({
         w={state.view!.world}
         client={client}
         controller={controller}
-        pending={stoppingEvents(state.view!.world)}
+        pending={approvalRequests(state.view!.world)}
         work={(tab) =>
           tab === 'recruitment' ? (
             <RecruitmentDesk state={state} client={client} />

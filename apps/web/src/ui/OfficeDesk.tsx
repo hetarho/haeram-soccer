@@ -17,6 +17,7 @@ import { delegationCounts } from './officeSummary';
 import { playerOfficeOverview } from './playerOfficeWork';
 import { cashState } from './teamState';
 import { openApprovalRequest, type BusinessView } from './state';
+import { approvalStanding, overdueSummary } from '../runtime/progression';
 import s from './OfficeDesk.module.css';
 
 export type DeskStat = { label: string; value: ReactNode; note?: ReactNode };
@@ -93,27 +94,35 @@ function requestTag(item: StopReason) {
 
 /**
  * Waiting decisions on the office's ticket, like the next-match report's memo: the first few as
- * rows with their responsibility and a review button, the rest one tap away.
+ * rows with their responsibility, 결재 기한 and a review button, the rest one tap away. The lobby's
+ * tray also names what the overdue ones cost the squad each settled round (→WEB-100, →STAFF-48).
  */
 export function ApprovalTray({
   w,
   items,
   limit = 4,
+  morale = false,
 }: {
   w: World;
   items: readonly StopReason[];
   limit?: number;
+  morale?: boolean;
 }) {
   const [all, setAll] = useState(false);
   const shown = all ? items : items.slice(0, limit);
+  const late = overdueSummary(w, items);
+  const meta = (
+    <>
+      {`결재함 · 대기 ${items.length}건`}
+      {late.overdue > 0 && (
+        <b className={s.overdue}>
+          {` · 지연 ${late.overdue}건${morale ? ` · 라운드마다 분위기 −${late.morale}` : ''}`}
+        </b>
+      )}
+    </>
+  );
   return (
-    <Card
-      as="section"
-      surface="ticket"
-      className={s.tray}
-      aria-label="결재 대기 업무"
-      meta={`결재함 · 대기 ${items.length}건`}
-    >
+    <Card as="section" surface="ticket" className={s.tray} aria-label="결재 대기 업무" meta={meta}>
       {items.length ? (
         <ul className={s.requests}>
           {shown.map((item) => (
@@ -121,7 +130,10 @@ export function ApprovalTray({
               <span data-ui="label" className={s.tag}>
                 {requestTag(item)}
               </span>
-              <span className={s.request}>{item.title}</span>
+              <span className={s.request}>
+                {item.title}
+                <Standing w={w} id={item.id} />
+              </span>
               <button
                 type="button"
                 className={s.review}
@@ -148,6 +160,16 @@ export function ApprovalTray({
         </button>
       )}
     </Card>
+  );
+}
+
+/** A row's days to its 결재 기한, in the warning colour once it is overdue. */
+function Standing({ w, id }: { w: World; id: string }) {
+  const { overdue, label } = approvalStanding(w, id);
+  return (
+    <small className={overdue ? s.overdue : s.due} data-testid="approval-deadline">
+      {label}
+    </small>
   );
 }
 

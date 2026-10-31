@@ -2,6 +2,7 @@ import { openNeed } from './replacements';
 import { callUpFor } from './squad-target';
 import { SQUAD_TARGET } from './squad-size';
 import { isDelegated } from './responsibilities';
+import { countApprovalWaits } from './approvals';
 import { registrationRoom } from './registration';
 import { finishTerm, settleReputation } from './reputation';
 import { judgePromises } from './promises';
@@ -995,9 +996,12 @@ export function completeRound(
 
 /**
  * Daily club business outside matches: facility works, academy intake, the transfer market, sponsors, the staff,
- * spring retirement announcements, contract talks, transfer requests and healed injuries.
+ * spring retirement announcements, contract talks, transfer requests and healed injuries. It opens
+ * by counting the owner's waiting approvals, once a day on every progression path, the season's
+ * close included (→STAFF-48).
  */
 export function clubDay(w: World) {
+  countApprovalWaits(w);
   settleNpcCoaching(w);
   qualifyManagers(w);
   progressFacilityWorks(w);

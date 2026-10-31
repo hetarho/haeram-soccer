@@ -70,7 +70,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/europe.ts',
     'packages/engine/src/knockout.ts',
   ],
-  'apps/web/src/ui/EventCenter.tsx': ['packages/engine/src/stopping.ts'],
   'apps/web/src/ui/FacilityParts.tsx': [
     'packages/engine/src/finance.ts',
     'packages/engine/src/investment.ts',
@@ -101,7 +100,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/policy.ts',
     'packages/engine/src/projection.ts',
   ],
-  'apps/web/src/ui/ProgressControls.tsx': ['packages/engine/src/stopping.ts'],
   'apps/web/src/ui/RecruitmentDesk.tsx': [
     'packages/engine/src/recruitment.ts',
     'packages/engine/src/transfers.ts',

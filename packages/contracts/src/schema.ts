@@ -1054,6 +1054,10 @@ const worldSchema: z.ZodType<World> = z.object({
   intervention: z.literal([1, 2, 3, 4]).optional(),
   settings: gameSettingsSchema.optional(),
   decisionChoices: z.array(z.string().max(300)).max(10000).optional(),
+  approvalWaits: z
+    .record(z.string().max(300), z.number().int().min(1).max(100000))
+    .refine((waits) => Object.keys(waits).length <= 500)
+    .optional(),
   academyReviews: z
     .array(
       z.strictObject({

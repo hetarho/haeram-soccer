@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r45 | Define the browser-demo rules for squad and growth.
+> r47 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 20 players (→CLUB-40), a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating sits at its league's average club XI plus its difficulty level's offset (→WEB-3: 쉬움 0, 보통 −2, 어려움 −4, 최상 −6; ±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -63,7 +63,7 @@
   - age 30–32 −15 points, 33+ −30; contract in its final season −20, one season after this −10
   - fixed-cost runway under the first 재정 기조 step (→ECON-33; 13 rounds at 표준) −20, under the second (30 rounds at 표준) −10; never below 80%
 
-- CLUB-19 [o] Squad morale (0–100, new clubs 60) moves +6/+1/−6 after own wins/draws/defeats (±2 more for a two-goal margin; a motivator manager takes 2 off a defeat), drifts 15% per settled round toward a baseline of 58 + 4 per squad-investment level above standard + (manager trust − 50)/10 + the manager style, build and synergy terms + 1 for each 리더 in the last starting XI (at most 3, →PLAYER-9), within 30–80, falls 2 more per round while starters average fatigue ≥ 40, and 1 more in each settled round from the squad's third 하드 round in a row (→CLUB-11). Match strength adds (morale − 60)/10; older saves without morale stay exactly unchanged.
+- CLUB-19 [o] Squad morale (0–100, new clubs 60) moves +6/+1/−6 after own wins/draws/defeats (±2 more for a two-goal margin; a motivator manager takes 2 off a defeat), drifts 15% per settled round toward a baseline of 58 + 4 per squad-investment level above standard + (manager trust − 50)/10 + the manager style, build and synergy terms + 1 for each 리더 in the last starting XI (at most 3, →PLAYER-9), within 30–80, falls 2 more per round while starters average fatigue ≥ 40, 1 more in each settled round from the squad's third 하드 round in a row (→CLUB-11), and 1 more in each settled round for each overdue owner approval, at most 3 (→STAFF-48). Match strength adds (morale − 60)/10; older saves without morale stay exactly unchanged.
 
 - CLUB-20 [o] The owner does not run the dressing room: morale and fitness actions are requests to the manager or the staff, made once per cooldown (settled rounds since the last use). Every request exposes a concrete disadvantage as well as its possible gain: an expense/obligation, fatigue, morale/trust loss, or a real backfire outcome. Requests that depend on people can work, do little or backfire; every chance is stated before the request and drawn from the world's own stream for that request and round. ← a chairman paying random bonuses or treating the squad himself is not how football clubs work
   | request | by | cost (1901 units) | outcomes | cooldown |
@@ -181,7 +181,7 @@
   - each move and each answer reaches the inbox as a 단장 report naming the need, the manager's request when it is one, the row behind it and the money check.
 
 - CLUB-34 [o] Actual financial opposition by the director to an unmet manager reinforcement request produces a mediation event under →CLUB-38, with each person's actual explanation.
-  - mediation belongs to player recruitment (→WEB-45): owner-held recruitment stops for mediation in either progression mode; delegated recruitment resolves it under →STAFF-26 and reports the result.
+  - mediation belongs to player recruitment (→WEB-45): owner-held recruitment waits in the 결재함 for mediation without stopping either progression mode (→STAFF-48); delegated recruitment resolves it under →STAFF-26 and reports the result.
   - the owner can support the director, support the manager or use the standing balanced approach, and may make a recorded reinforcement promise (→CLUB-35).
   - a missed first-choice pick does not by itself prove a conflict; distinguish budget restrictions, failed bids, unavailable candidates and the owner's own decision. Current window-request evaluation remains →CLUB-33; mediation's interaction with it is →CLUB-36.
 
@@ -209,7 +209,7 @@
 - CLUB-38 [o] During an open transfer window, mediation requires a manager request with a suitable available candidate, actual director opposition because existing financial criteria block the recruitment, and no qualifying arrival yet meeting that request (→CLUB-33).
   - emit at most once for the same manager, reinforcement request and transfer window. Retain that fact across daily checks, shortlist refreshes, screen changes and reloads; a different candidate for the same request does not renew the allowance.
   - a failed negotiation, no available suitable candidate or an owner refusal alone produces an ordinary factual report, not a financial-conflict mediation. The report must state the actual cause (→STAFF-8).
-  - ownership and stopping behaviour remain →CLUB-34: recruitment direct stops in either mode; recruitment delegated resolves/reports under →CLUB-39.
+  - ownership and waiting behaviour remain →CLUB-34: recruitment direct waits in the 결재함 in either mode; recruitment delegated resolves/reports under →CLUB-39.
 
 - CLUB-39 [o] Delegated mediation follows the standing support policy (→STAFF-26); direct mediation can choose another outcome for that case (→CLUB-34).
   | support policy | resolution of the disputed request |
@@ -293,11 +293,28 @@
   - the reference club's own fees, measured beside (the unseen careers): its dearest sale £1.2m in the 1980s, £57m in the 2000s and £130m in the 2020s; sales 7–14% of its turnover from the 1960s (2% in the 2010s–2020s before); 1950s lower-division fees as before (second-tier buys about £800, sales £200).
   - ECON-29 on ENG ESP FRA GER (default build, reference club, 60 seasons), before → after: operating result before player trading 8.1% → 5.0%, player sales 7.6% → 11.7% of revenue, net result with trading 15.7% → 16.8%, facility ladder 39.2 → 41.3 seasons, none bankrupt; CLUB-25's wages unchanged (80 earns 7.37× 60, the second tier 40%).
 
+- CLUB-47 [o] Every market candidate not ours carries the scout's verdict (스카우트 판정): a grade A–E read against our current XI with the measures of the shortlist and the manager's requests (→!CLUB-33), and its reasons. ← the owner reads one answer before the detail, and it agrees with what the manager and the 단장 act on
+  - the gap: at the slot he would take (→!CLUB-14), his OVR there × level minus that slot's starter's, adaptation left out, as a request measures it; both values are rounded first, so the gap is the difference the owner reads.
+  - the first row that holds decides:
+    | grade | label | when |
+    |---|---|---|
+    | A | 즉시 주전 | gap ≥ 10, twice the request margin |
+    | B | 주전 보강 | gap ≥ 5, the request margin: the manager would ask for him |
+    | C | 경쟁 보강 | gap ≥ 2 (공격적's upgrade margin, the smallest the 단장 acts on), his line is short (→CLUB-33), or he is 23 or under, the slot is his main position and his potential is at least 5 above the starter's value there |
+    | D | 백업 | gap above −5 |
+    | E | 보강 효과 없음 | otherwise |
+  - the verdict names its slot, his value there and the starter's; its reasons add what the gap does not say, each a fact of the current world, at most two for and two against, in this order:
+    - for: the manager's pick for an open request · he meets an open request · his line is short · growth room (potential − OVR) of 5 or more at 23 or under · a free agent, no fee · tactical fit up (→CLUB-14)
+    - against: on arrival 3 or more below settled (→PLAYER-11) · 29 or older, pace and stamina falling each season (→PLAYER-17) · outside 재정 기조's money check for a signing (→ECON-33), with its reason
+  - the verdict reads exact facts (→PLAYER-18) whoever holds the chief scout post, as the shortlist is drawn; it changes nothing in the world and never gates an approach (→WEB-43).
+
 ## flow
 
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r47 261101 CLUB-47+ the scout's verdict: grade A–E from the slot gap of CLUB-33's request measure (A ≥10, B ≥5, C ≥2 or a short line or a prospect, D >−5, else E) with up to two reasons for and two against
+- r46 261101 CLUB-19✎ +1 more morale lost a settled round per overdue owner approval, at most 3 (→STAFF-48); CLUB-34/38✎ owner-held mediation stops either progression mode→waits in the 결재함
 - r45 261031 CLUB-46✎ value per ability point 1.125 everywhere→the wage's 1.105, the premium reaching a value by its points above 70 (in full from 80), lower-division values on the wage curve; premium anchors 0.3 (1950)…3.4 (2025)→0.5 (1950)…5.2 (2025), refit on dumped top-flight squads; measured 261031: 0 of 15 compared years outside the bands on 8 careers (10 before)
 - r44 261031 CLUB-25✎ transfer values follow the same index→+their own slope and the era's transfer premium; CLUB-46+ transfer values by era: value per ability point 1.105→1.125, a premium over the football index from 0.3 (1950) to 3.4 (2025), targets against the British record fee and the Premier League's average fee
 - r43 261029 CLUB-20✎ requests may be unopposed gains→all disclose a real cost/obligation/adverse outcome; backing morale +2→−2, rest-day morale +2→−2; existing paid requests and stochastic chances preserved

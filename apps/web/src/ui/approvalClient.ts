@@ -1,6 +1,6 @@
 import type { GameClient } from '../runtime/client';
 import { gameActionsBlocked } from '../runtime/store';
-import { stoppingEvents } from '../runtime/progression';
+import { approvalRequests } from '../runtime/progression';
 import { answersRequest, type ApprovalRequest } from './eventRouting';
 
 /** Keep the authoritative client's commands, adding only the request journey's freshness guard. */
@@ -15,7 +15,9 @@ export function approvalClient(
   const isCurrent = () => client.state.view?.world.id === request.world && current();
   const pending = () => {
     const w = client.state.view?.world;
-    return w?.id === request.world && stoppingEvents(w).some((item) => item.id === request.item.id);
+    return (
+      w?.id === request.world && approvalRequests(w).some((item) => item.id === request.item.id)
+    );
   };
   const command: GameClient['command'] = async (body, options) => {
     const w = client.state.view?.world;

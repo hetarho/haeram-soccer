@@ -1,5 +1,5 @@
 # STAFF Manager demands and personality
-> r36 | Define the browser-demo rules for manager demands and personality.
+> r37 | Define the browser-demo rules for manager demands and personality.
 
 ## decisions
 - STAFF-1 [o] Manager offers show ability, development (육성: growth of players under 27), philosophy, flexibility, pride, selection trait (or none), salary and term; hiring charges disclosed costs.
@@ -57,7 +57,7 @@
   - delegated, a vacancy or a volunteer's post is filled at once by the first match in the option's order, unless 자원봉사; with no match a volunteer holds it, the staff report it once and look again daily and when the season's candidates change.
   - delegated, at the season boundary an expiring paid coach who meets the option and is affordable is renewed (going wage, 10% fee, the option's term) unless a match beats him clearly: 3+ ability (the ablest first) or a wage 10%+ lower (the cheapest first). One who no longer meets it is replaced by the first match, renewed when there is none and he is affordable, else a volunteer takes the post; under 자원봉사 a volunteer takes it.
   - a changed 코치 기조 acts at once only on a vacancy or a volunteer's post; a contracted coach is judged at his contract's end.
-  - not delegated: on 1 April a renewal-season inbox item (kind staff-renewal; stops for owner-held staff appointments →WEB-45) lists coaches whose contracts end at the close; the owner renews (going wage fixed for a term of 1–5 seasons, 10% fee) or replaces. Unrenewed coaches leave at the close with a staff-renewal vacancy item.
+  - not delegated: on 1 April a renewal-season inbox item (kind staff-renewal; owner-held staff appointments wait in the 결재함 →WEB-45, →STAFF-48) lists coaches whose contracts end at the close; the owner renews (going wage fixed for a term of 1–5 seasons, 10% fee) or replaces. Unrenewed coaches leave at the close with a staff-renewal vacancy item.
   - the delegated staff report one summary of renewals and hires; 코치진 shows whom 코치 기조 would hire today in each department.
 
 - STAFF-16 [o] Managers and coaches have an age and a ceiling (potential): one younger than his prime starts 0.7 a year below the level drawn for him and can reach up to 1.1 a year above it; each season he closes 15–40% of the gap; from 60 he loses 0–2 a season with his ceiling. ← trusting a young manager or coach should be a real bet on growth
@@ -187,7 +187,7 @@
   - the whole actual coaching period contributes to →STAFF-30, even when the person does not play matches. Conversion approval and salary are →STAFF-32/33; scheduled retirement and continued coaching are →STAFF-34/35; eligible posts and early role termination are →STAFF-36/37. Aptitude qualification is →STAFF-38 and career intentions require →STAFF-25.
 
 - STAFF-32 [o] A playing-coach conversion belongs jointly to player contracts and staff appointments (→WEB-45).
-  - if either responsibility is direct, stop progression and let the owner review/approve the combined proposal once, including both roles and their terms/costs. Do not auto-commit one half while waiting for the other.
+  - if either responsibility is direct, the combined proposal waits in the 결재함 without stopping progression (→STAFF-48) and the owner reviews/approves it once, including both roles and their terms/costs. Do not auto-commit one half while waiting for the other.
   - only when both responsibilities are delegated may staff complete the conversion automatically, under the ordinary contract, hiring and affordability rules, and report it. Automatic time mode never bypasses an owner-held part of the decision.
 
 - STAFF-33 [o] A playing coach receives his player-contract salary plus the ordinary coaching salary for the post he holds.
@@ -264,12 +264,17 @@
   - at the season close, before contract expiry and renewal (→STAFF-14), a manager still at trust 0 resigns.
   - the first settled round he is at 10 or less (again after recovering above it) is an event and an inbox notice that he is considering resigning, with no resignation draw that round, so the owner can act first (a public vote of confidence →CLUB-20).
   - the departure is a resignation (→STAFF-7, departure reason resigned) reported as a breakdown of trust; with the manager post delegated the staff appoint a successor at once (→STAFF-18).
+- STAFF-48 [o] An owner-held business decision (→WEB-45) waits in the office's 결재함 while time runs in either progression mode, and nobody answers it for the owner. Its 결재 기한 is 7 days: one left unanswered through 7 settled days is overdue (결재 지연), and every settled league round costs squad morale 1 for each overdue approval, at most 3 a round (→!CLUB-19). ← a request left on the owner's desk unsettles the dressing room, while the season never waits for it
+  - a waiting day counts when a settled day starts with the decision still owner-held and unanswered. Waiting ends when the owner answers it, when its own course closes it (a bid's deadline, a contract or season ending, an expired proposal) or when its category is delegated (→WEB-82, the staff then decide it); one brought back to direct counts again from 0.
+  - the day a decision becomes overdue the owner gets one notification naming it and its morale cost; there is no repeat notice while it stays overdue.
+  - match-eve and window-opening observations are not approvals: they never wait in the 결재함 and never become overdue.
 
 ## flow
 
 - Second career: active-player aptitude evaluation → retirement announcement and optional one-time encouragement → playing-coach appointment or retirement/coaching candidacy → actual coaching employment for at least three cumulative years → management candidacy only with managerial aptitude → direct/delegated appointment.
 
 ## chg
+- r37 261101 STAFF-48+ owner-held approvals wait in the 결재함 without stopping time: 7-day 결재 기한, then 결재 지연 costs squad morale 1 per overdue approval a settled round (at most 3), one overdue notice; STAFF-15✎ renewal-season item stops for owner-held appointments→waits in the 결재함; STAFF-32✎ direct conversion stops progression→waits in the 결재함
 - r36 261027 STAFF-47+ trust floor: 10%/round at trust ≤10, 25% at 0, certain resignation at the close at 0, warning on first reaching ≤10
 - r35 261025 STAFF-46+ the manager gives each player a positional freedom from his flexibility × the role's creativity × the player's 판단력; no owner control
 - r34 261019 STAFF-14✎ +styles bend decision tables and duels in the grid engine, re-measured; STAFF-21✎ 동기부여형 체력→체력/침착성, 데이터 헤드코치 시야/위치선정→판단력/위치선정; STAFF-22✎ +each slot's place in the formation's shape per phase; STAFF-45+ substitution habits by style and selection trait

@@ -5,6 +5,7 @@ import { policyOf } from './policy';
 import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
 import { buildEffects } from './build';
+import { overdueApprovals, overdueMoraleCost } from './approvals';
 
 /** New clubs start here; strength is unaffected at this value. */
 export const MORALE_START = 60;
@@ -83,8 +84,9 @@ export const UNHAPPY_MORALE = 1;
 export const HARD_STREAK = { from: 3, cost: 1 } as const;
 /**
  * Each settled round drifts toward the baseline; an exhausted XI loses heart, and so does one
- * with unhappy starters or one worn by a run of 하드 트레이닝. An older save without morale starts
- * from 60 once an unhappy starter costs it.
+ * with unhappy starters, one worn by a run of 하드 트레이닝 or one whose owner leaves approvals
+ * overdue (→STAFF-48). An older save without morale starts from 60 once an unhappy starter
+ * costs it.
  */
 export function settleMorale(w: World) {
   const starters = ownStarters(w),
@@ -99,6 +101,7 @@ export function settleMorale(w: World) {
     (moraleBaseline(w) - w.morale) * 0.15 -
     (fatigue >= 40 ? 2 : 0) -
     unhappy * UNHAPPY_MORALE -
-    hard;
+    hard -
+    overdueMoraleCost(overdueApprovals(w).length);
   w.morale = Math.round(clamp(w.morale + drift, 0, 100));
 }

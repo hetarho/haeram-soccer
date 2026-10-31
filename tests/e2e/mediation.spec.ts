@@ -190,29 +190,39 @@ test('retained-promise-status', async ({ page }) => {
 });
 
 for (const mode of ['manual', 'automatic'] as const)
-  test(`direct mediation stops ${mode} and survives reading notifications`, async ({ page }) => {
+  test(`direct mediation waits in the 결재함 without stopping ${mode} and survives reading notifications`, async ({
+    page,
+  }) => {
     const { exportedCareer } = await import('./career-fixtures');
     const w = fixture();
     ask(w, 'GK');
     w.settings!.mode = mode;
     await importResponsibilityCareer(page, w);
     const before = await exportedCareer(page);
+    // Neither mode is stopped or refused by the waiting mediation (→WEB-42).
     if (mode === 'manual')
-      await expect(page.getByRole('button', { name: '다음 이벤트', exact: true })).toBeDisabled();
-    else await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
+      await expect(page.getByRole('button', { name: '다음 이벤트', exact: true })).toBeEnabled();
+    else {
+      await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
+      await expect(page.getByTestId('game-date')).not.toHaveText(
+        await page.getByTestId('game-date').innerText(),
+      );
+      await page.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
+      await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
+    }
     await page.getByTestId('communications-button').click();
     const sheet = page.getByRole('dialog', { name: '알림·뉴스', exact: true });
     await sheet.getByRole('button', { name: '모두 읽음', exact: true }).click();
     await sheet.getByRole('button', { name: '닫기', exact: true }).click();
     const after = await exportedCareer(page);
-    expect(after.calendar).toEqual(before.calendar);
+    if (mode === 'manual') expect(after.calendar).toEqual(before.calendar);
     expect(after.mediations![0].status).toBe('pending');
     expect(after.promises ?? []).toHaveLength(0);
     // Both wait in the office lobby's tray; home's event cards leave office work out (→WEB-39).
     await expect(page.getByTestId('event-card')).toHaveCount(0);
-    await expect(
-      (await approvalTray(page)).getByRole('button', { name: /· 검토하기$/ }),
-    ).toHaveCount(2);
+    const reviews = (await approvalTray(page)).getByRole('button', { name: /· 검토하기$/ });
+    if (mode === 'manual') await expect(reviews).toHaveCount(2);
+    else expect(await reviews.count()).toBeGreaterThanOrEqual(2);
   });
 
 test('mediation-handover-on-apply discloses work and never replays its recorded policy', async ({

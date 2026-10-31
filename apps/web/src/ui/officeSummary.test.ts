@@ -86,6 +86,45 @@ describe('office lobby facts', () => {
     expect(html).not.toContain('role="dialog"');
     expect(officeFacts(w, slots, pending).staff).toContain('결재 대기 1건');
   });
+  it('reads each request against its 결재 기한 and heads the lobby tray with the overdue cost', () => {
+    const w = world();
+    const pending = [
+      { id: 'late', responsibility: 'manager', kind: 'staff-renewal', title: 'Late renewal' },
+      { id: 'fresh', responsibility: 'contracts', kind: 'contract-talk', title: 'Fresh talk' },
+      { id: 'new', responsibility: 'sales', kind: 'incoming-bid', title: 'New offer' },
+    ] as StopReason[];
+    w.approvalWaits = { late: 9, fresh: 3 };
+    const html = renderToStaticMarkup(
+      createElement(OfficeLobby, {
+        w,
+        client: {} as GameClient,
+        sponsors: slots,
+        pending,
+        onOpen: vi.fn(),
+        onOverview: vi.fn(),
+      }),
+    );
+    // 9 days waited is 3 past the 7-day deadline; 3 days leaves 4; one arrived today leaves 7.
+    expect(html).toContain('결재함 · 대기 3건');
+    expect(html).toContain(' · 지연 1건 · 라운드마다 분위기 −1');
+    const deadlines = [...html.matchAll(/data-testid="approval-deadline">([^<]+)</g)].map(
+      (match) => match[1],
+    );
+    expect(deadlines).toEqual(['지연 3일', 'D-4', 'D-7']);
+    w.approvalWaits = { late: 6 };
+    const calm = renderToStaticMarkup(
+      createElement(OfficeLobby, {
+        w,
+        client: {} as GameClient,
+        sponsors: slots,
+        pending,
+        onOpen: vi.fn(),
+        onOverview: vi.fn(),
+      }),
+    );
+    expect(calm).toContain('D-1');
+    expect(calm).not.toContain('지연');
+  });
   it('keeps ongoing construction visible alongside finance', () => {
     const w = world();
     w.facilityWorks = {

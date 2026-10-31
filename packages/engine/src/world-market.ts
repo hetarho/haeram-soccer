@@ -19,6 +19,7 @@ import { staffEffects } from './staff';
 import { transferOffers, isForeignCandidate } from './ops-squad';
 import { bidOutlook } from './transfers';
 import { recruitmentPreview, recruitmentContext, recruitmentFit } from './recruitment';
+import { scoutVerdict } from './scout-verdict';
 
 const recommendedIds = (w: World) =>
   new Set(w.shortlist?.year === w.year ? w.shortlist.entries.map((entry) => entry.playerId) : []);
@@ -198,12 +199,14 @@ export function worldMarketPage(w: World, input: WorldMarketQuery): WorldMarketP
 export function worldMarketDetail(w: World, target: WorldMarketTarget, fee?: string, loan = false) {
   const offer = worldMarketOffer(w, target);
   if (!offer) throw new Error('이적 대상의 소속이나 커리어가 바뀌었어요. 목록을 새로 확인하세요.');
+  const buy = recruitmentPreview(w, offer);
   return {
     world: w.id,
     revision: w.revision,
     offer: structuredClone(offer),
-    buy: recruitmentPreview(w, offer),
+    buy,
     loan: recruitmentPreview(w, offer, true),
+    verdict: scoutVerdict(w, offer, buy),
     bid: bidOutlook(w, target, fee ?? (loan ? offer.loanFee : offer.fee), loan),
   };
 }

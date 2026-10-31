@@ -20,6 +20,7 @@ import { useNavigation } from './state';
 const reports = vi.hoisted(() => ({
   resume: undefined as MatchPlayback | undefined,
   events: [] as InboxItem[],
+  approvals: [] as InboxItem[],
   eve: false,
 }));
 vi.mock('./state', async (importOriginal) => {
@@ -37,6 +38,7 @@ vi.mock('../runtime/matchView', () => ({ useUnfinishedPlayback: () => reports.re
 vi.mock('../runtime/progression', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../runtime/progression')>()),
   stoppingEvents: () => reports.events,
+  approvalRequests: () => reports.approvals,
   pendingMatchReport: () => (reports.eve ? { id: 'tomorrow' } : undefined),
 }));
 
@@ -55,6 +57,7 @@ const render = () => renderToStaticMarkup(createElement(CommunicationsButton));
 beforeEach(() => {
   reports.resume = undefined;
   reports.events = [];
+  reports.approvals = [];
   reports.eve = false;
   vi.stubGlobal('localStorage', { getItem: () => null });
   gameStore.setState(
@@ -148,7 +151,8 @@ describe('unfinished observation access', () => {
 });
 describe('home business requests', () => {
   it("leaves office requests to the owner's office instead of the home", () => {
-    reports.events = [
+    // Approvals never stop the clock, so they are never among the stopping events (→WEB-42).
+    reports.approvals = [
       {
         id: 'decision:sales:bid',
         attention: true,

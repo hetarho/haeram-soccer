@@ -12,7 +12,7 @@ import {
 } from './index';
 import { nextEventDays, advanceToNextEvent } from './next-event';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
-import { stoppingReasons } from './stopping';
+import { pendingDecisions, stoppingReasons } from './stopping';
 import { currency, priceIndex } from '../../catalogs/src/index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
@@ -34,7 +34,7 @@ function world() {
   return w;
 }
 describe('ordered manual next-event settlement', () => {
-  it('rejects automatic and actual unresolved decisions before any mutation', () => {
+  it('rejects automatic before any mutation and is never held by owner approvals', () => {
     const w = world();
     w.settings!.mode = 'automatic';
     const before = canonical(w);
@@ -43,9 +43,11 @@ describe('ordered manual next-event settlement', () => {
     w.settings!.mode = 'manual';
     w.settings!.responsibilities.manager = 'direct';
     w.manager.interim = true;
-    const pending = canonical(w);
-    expect(() => advanceToNextEvent(w)).toThrow('대기 중인');
-    expect(canonical(w)).toBe(pending);
+    expect(pendingDecisions(w).map((p) => p.responsibility)).toEqual(['manager']);
+    // The approval waits in the 결재함 while the request reaches the match eve (→WEB-42).
+    expect(advanceToNextEvent(w).map((r) => r.kind)).toEqual(['match']);
+    expect(daysUntilNextMatch(w)).toBe(1);
+    expect(pendingDecisions(w).map((p) => p.responsibility)).toEqual(['manager']);
   });
   it('arrives on successive own match eves and keeps exactly the one-day path facts', () => {
     const fast = world(),

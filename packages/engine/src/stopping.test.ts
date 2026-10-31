@@ -118,6 +118,16 @@ describe('shared domain-owned stopping policy', () => {
     w.settings!.responsibilities.sales = 'delegated';
     expect(pendingDecisions(w).map((i) => i.ref)).toEqual(['buy']);
   });
+  it('never stops progression for owner approvals (→WEB-42)', () => {
+    const w = world();
+    w.calendar = { day: seasonDayOf(w.year, 1, 1) };
+    w.settings!.observations.matchEve = false;
+    const p = activePlayers(w)[0];
+    p.until = w.year + 1;
+    contractTalks(w);
+    expect(pendingDecisions(w).some((i) => i.ref === p.id)).toBe(true);
+    expect(stoppingReasons(w)).toEqual([]);
+  });
   it('observations are independent of every business responsibility', () => {
     const w = world();
     for (const key of RESPONSIBILITY_KEYS) w.settings!.responsibilities[key] = 'delegated';

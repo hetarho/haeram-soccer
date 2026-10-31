@@ -14,7 +14,10 @@ export interface StopReason extends InboxItem {
 }
 export const decisionId = (key: ResponsibilityKey, ref: string, version = '') =>
   `decision:${key}:${ref}:${version}`;
-/** Live, dated decision references. Inbox retention and read state are never business authority. */
+/**
+ * Live, dated owner approvals waiting in the 결재함. They never stop progression (→WEB-42); inbox
+ * retention and read state are never business authority.
+ */
 export function pendingDecisions(w: World, includeDelegated = false): StopReason[] {
   const year = w.year,
     day = currentDay(w),
@@ -182,8 +185,9 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
         );
   return reasons;
 }
+/** The enabled observations that stop progression today; owner approvals never do (→WEB-42/45). */
 export function stoppingReasons(w: World): StopReason[] {
-  const reasons = pendingDecisions(w),
+  const reasons: StopReason[] = [],
     preferences = settingsOf(w).observations;
   if (preferences.matchEve && daysUntilNextMatch(w) === 1) {
     const fixture = nextOwnFixture(w)!;

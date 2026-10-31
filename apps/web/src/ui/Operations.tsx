@@ -2,7 +2,7 @@ import type { ProgressionController } from '../runtime/progression';
 import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import { useTaskMemory } from './taskMemory';
 import { ApprovalRequestHost } from './ApprovalRequestHost';
-import { stoppingEvents } from '../runtime/progression';
+import { approvalRequests } from '../runtime/progression';
 import { eventDesk, type ApprovalRequest } from './eventRouting';
 import type { ClientState, GameClient } from '../runtime/client';
 import { BusinessWorkbench } from './BusinessWorkbench';
@@ -66,7 +66,7 @@ export function OperationsView({
   const requests = useTaskMemory((memory) => memory.approvalRequests);
   const requestId = approvalId();
   const liveRequest = requestId
-    ? stoppingEvents(w).find((item) => item.id === requestId)
+    ? approvalRequests(w).find((item) => item.id === requestId)
     : undefined;
   const [request] = useState(() =>
     requestId && approvalWorld() === w.id
@@ -125,7 +125,7 @@ export function OperationsView({
           w={w}
           client={client}
           sponsors={state.view!.sponsors}
-          pending={stoppingEvents(w).filter((item) => !!eventDesk(item))}
+          pending={approvalRequests(w)}
           journal={journal}
           onOpen={openArea}
           onOverview={openOwnerOffice}
@@ -133,7 +133,7 @@ export function OperationsView({
       </>
     );
   const [id, label] = area;
-  const pending = stoppingEvents(w);
+  const pending = approvalRequests(w);
   return (
     <>
       <OfficeBar back={{ label: '사무실', onClick: toLobby }} title={label} />
@@ -150,12 +150,7 @@ export function OperationsView({
         )}
         {requestId ? (
           request && request.world === w.id && request.desk === id ? (
-            <ApprovalRequestHost
-              key={`${w.id}:${requestId}`}
-              request={request}
-              client={client}
-              controller={controller}
-            >
+            <ApprovalRequestHost key={`${w.id}:${requestId}`} request={request} client={client}>
               {(scoped, error) =>
                 id === 'players' || id === 'staff' ? (
                   personnel(id, scoped, request, error)

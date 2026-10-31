@@ -2,14 +2,7 @@ import { chooseOption, selectOptions } from './select';
 import { createWorld, advanceDays } from '../../packages/engine/src/index';
 import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsibility-fixtures';
 import { expect, test, type Page } from '@playwright/test';
-import {
-  approvalTray,
-  chooseLevel,
-  configureResponsibilities,
-  dismissSettingsToast,
-  openOffice,
-  reviewInOffice,
-} from './events';
+import { chooseLevel, configureResponsibilities, dismissSettingsToast, openOffice } from './events';
 import { horizontalOverflow, settle } from './layout';
 import { leaveOffice } from './office';
 async function foundQuiet(page: Page) {
@@ -294,49 +287,43 @@ test('a page that closed with the clock running plays the time away on return an
   await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
 });
 
-test('deciding the event that stopped a running clock plays on (→WEB-42)', async ({ page }) => {
+test('approvals waiting in the 결재함 never stop a running clock (→WEB-42)', async ({ page }) => {
   await foundQuiet(page);
-  // Level 1 stops for every event kind, so the first one the clock meets stops it.
+  // Level 4 observes nothing, so only the owner can stop the clock; offers and mediation stay
+  // with the owner.
   await chooseLevel(page, 4);
-  await configureResponsibilities(page, { responsibilities: { sales: 'direct' } });
+  await configureResponsibilities(page, {
+    responsibilities: { sales: 'direct', recruitment: 'direct' },
+  });
   const clock = page.getByRole('region', { name: '시즌 진행', exact: true });
   await chooseOption(clock.getByRole('combobox', { name: '자동 진행 배속', exact: true }), 'x10');
   const play = clock.getByRole('button', { name: '자동 진행 시작', exact: true }),
     stop = clock.getByRole('button', { name: '자동 진행 정지', exact: true }),
-    card = page.getByTestId('event-card');
-  // Office work stops the clock behind the office scene's count, not as a home card (→WEB-39).
+    date = page.getByTestId('game-date');
+  // Office work waits behind the office scene's count, never as a home card (→WEB-39/100).
   const waiting = page
     .getByTestId('club-hub')
     .locator('[data-home-part="office"] [data-ui="count"]');
   await play.click();
-  for (let i = 0; i < 10; i++) {
-    await expect(card.or(waiting).first()).toBeVisible({ timeout: 20000 });
-    await expect(play).toBeVisible();
-    if (await card.isVisible()) {
-      const text = await card.innerText();
-      if (text.includes('내일 경기')) {
-        await card.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
-        await expect(stop).toBeVisible();
-        continue;
-      }
-    }
-    // The last event waiting is decided (확인, or 거절 for an offer): the clock runs again
-    // without play.
-    const office = !(await card.isVisible());
-    const others = office
-      ? await (await approvalTray(page)).count()
-      : Number(/남은 이벤트 (\d+)개/.exec(await card.innerText())?.[1] ?? 1);
-    const controls = office ? await reviewInOffice(page) : card;
-    const read = controls.getByRole('button', { name: '확인', exact: true });
-    await (
-      (await read.count()) ? read : controls.getByRole('button', { name: '거절', exact: true })
-    ).click();
-    if (others > 1) continue;
-    await expect(stop).toBeVisible();
-    await stop.click();
-    return;
-  }
-  throw new Error('No event other than a match eve stopped the clock');
+  await expect(waiting).toBeVisible({ timeout: 60000 });
+  await expect(page.getByTestId('event-card')).toHaveCount(0);
+  await expect(stop).toBeVisible();
+  const shown = await date.innerText();
+  await expect(date).not.toHaveText(shown);
+  await expect(stop).toBeVisible();
+  await stop.click();
+  await expect(play).toBeVisible();
+  // The controller's 결재함 counts the same work and opens the office lobby's tray (→WEB-18/100).
+  const inbox = clock.getByTestId('approval-inbox');
+  await expect(inbox).toHaveAttribute('aria-label', /^결재함 · 대기 [1-9]/);
+  await inbox.click();
+  await expect(page.getByTestId('office-lobby')).toBeVisible();
+  await expect(
+    page
+      .getByRole('region', { name: '결재 대기 업무', exact: true })
+      .getByTestId('approval-deadline')
+      .first(),
+  ).toHaveText(/^(D-[1-7]|지연 \d+일)$/);
 });
 
 test('restored match eve uses actual match actions instead of acknowledging the observation', async ({

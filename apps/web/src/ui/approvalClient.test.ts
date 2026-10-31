@@ -7,7 +7,9 @@ import { approvalClient } from './approvalClient';
 import type { ApprovalRequest } from './eventRouting';
 
 const live = vi.hoisted(() => ({ ids: ['first', 'second'] }));
-vi.mock('../runtime/progression', () => ({ stoppingEvents: () => live.ids.map((id) => ({ id })) }));
+vi.mock('../runtime/progression', () => ({
+  approvalRequests: () => live.ids.map((id) => ({ id })),
+}));
 const request: ApprovalRequest = {
   world: 'world',
   desk: 'players',

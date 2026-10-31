@@ -1,7 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import type { ClientState, GameClient } from '../runtime/client';
-import type { ProgressionController } from '../runtime/progression';
-import { stoppingEvents } from '../runtime/progression';
+import { approvalRequests } from '../runtime/progression';
 import { approvalClient } from './approvalClient';
 import type { ApprovalRequest } from './eventRouting';
 import { approvalId, approvalWorld, returnApprovalHome, useNavigation } from './state';
@@ -14,12 +13,10 @@ const submitting = (state: ClientState) => !!(state.busy || state.pendingActions
 export function ApprovalRequestHost({
   request,
   client,
-  controller,
   children,
 }: {
   request: ApprovalRequest;
   client: GameClient;
-  controller: ProgressionController;
   children: (client: GameClient, error: string) => ReactNode;
 }) {
   const [error, setError] = useState('');
@@ -37,17 +34,15 @@ export function ApprovalRequestHost({
           approvalWorld() === request.world &&
           approvalId() === request.item.id &&
           useNavigation.getState().page === 'business',
-        () => {
-          returnApprovalHome(request);
-          controller.eventDecided();
-        },
+        // Answering an approval neither starts nor stops the clock (→WEB-42).
+        () => returnApprovalHome(request),
         setError,
       ),
-    [client, request, controller],
+    [client, request],
   );
   const w = client.state.view!.world;
   const pending =
-    w.id === request.world && stoppingEvents(w).some((item) => item.id === request.item.id);
+    w.id === request.world && approvalRequests(w).some((item) => item.id === request.item.id);
   return (
     <section
       data-surface="panel"
