@@ -138,10 +138,69 @@ export const clubSections = (page: Page) =>
 export const operationsTabs = (page: Page) =>
   page.getByRole('tablist', { name: '구단 운영', exact: true });
 export const OPERATIONS_SECTIONS = ['재정·투자', '후원', '구단 디자인'];
+const CLUB_SECTIONS: Record<string, string> = {
+  dashboard: '현황',
+  firstTeam: '1군',
+  staff: '코치진',
+  training: '훈련',
+  academy: '유소년',
+  operations: '운영',
+};
+
+/**
+ * The club section the active address shows, read once the rendered view agrees with it: the
+ * deferred view has caught up (its container is no longer busy) and the section bar selects the
+ * address's section, or neither has one. Null outside the club pages (the office, competitions,
+ * records, the market). A reload or a lazy first render waits for its view to mount, so a
+ * departing view's selection is never taken for the destination's.
+ */
+export async function settledClubSection(page: Page) {
+  const current: { value?: string | null } = {};
+  await expect
+    .poll(
+      async () => {
+        current.value = await page.evaluate((sections) => {
+          const views = document.querySelector('[data-testid="view-scroller"] > [aria-busy]');
+          if (views?.getAttribute('aria-busy') !== 'false') return undefined;
+          const { pathname, search } = location;
+          const at = (path: string) => pathname === path || pathname.startsWith(path + '/');
+          const view = new URLSearchParams(search).get('view');
+          // `/` is the clubhouse's start alias of /journal (→WEB-62).
+          const expected =
+            pathname === '/' || at('/journal')
+              ? 'dashboard'
+              : at('/first-team')
+                ? view === 'market'
+                  ? null
+                  : 'firstTeam'
+                : at('/staff')
+                  ? 'staff'
+                  : at('/training')
+                    ? 'training'
+                    : at('/academy')
+                      ? 'academy'
+                      : at('/club-operations')
+                        ? 'operations'
+                        : null;
+          const selected =
+            document
+              .querySelector('[role="tablist"] [id^="club-section-tab-"][aria-selected="true"]')
+              ?.id.slice('club-section-tab-'.length) ?? null;
+          if (selected !== expected) return undefined;
+          return expected === null ? null : sections[expected];
+        }, CLUB_SECTIONS);
+        return current.value !== undefined;
+      },
+      { timeout: 15000 },
+    )
+    .toBe(true);
+  return current.value ?? null;
+}
 
 /**
  * Opens one club section (현황, 1군, 코치진, 훈련, 유소년, 운영) through the clubhouse's section
  * bar, leaving the office or the market first; observation reports covering it are dismissed.
+ * Each decision reads the settled view (→ settledClubSection), and the visible clicks remain.
  */
 export async function openClubSection(
   page: Page,
@@ -153,21 +212,51 @@ export async function openClubSection(
   const covering = page.getByRole('dialog').filter({ has: page.getByTestId('event-group') });
   if (await covering.isVisible())
     await covering.getByRole('button', { name: '창 닫기', exact: true }).click();
-  if (!(await clubSections(page).isVisible())) await clubhouseTab(page).click(options);
+  // A click pushes its address at once, so the old view never agrees with the new address.
+  let current = await settledClubSection(page);
+  if (current === null) {
+    await clubhouseTab(page).click(options);
+    current = await settledClubSection(page);
+  }
   const tab = clubSections(page).getByRole('tab', { name: section, exact: true });
-  if ((await tab.getAttribute('aria-selected')) !== 'true') await tab.click(options);
+  if (current !== section) await tab.click(options);
+  expect(await settledClubSection(page)).toBe(section);
   await expect(tab).toHaveAttribute('aria-selected', 'true');
 }
 
-/** Opens one section of 구단 운영 (재정·투자, 후원, 구단 디자인) through the club's sections. */
+/**
+ * Opens one section of 구단 운영 (재정·투자, 후원, 구단 디자인) through the club's sections. Its
+ * tabs mount with the lazy operations view; their selection is read once it agrees with the
+ * address's ?view=, never from a departing section.
+ */
 export async function openOperations(
   page: Page,
   section = '재정·투자',
   options: { timeout?: number } = {},
 ) {
   await closeOfficeOverview(page);
-  if (!(await operationsTabs(page).isVisible())) await openClubSection(page, '운영', options);
-  const tab = operationsTabs(page).getByRole('tab', { name: section, exact: true });
+  if ((await settledClubSection(page)) !== '운영') await openClubSection(page, '운영', options);
+  const tabs = operationsTabs(page);
+  await expect
+    .poll(
+      () =>
+        tabs
+          .evaluate(
+            (list) => {
+              const view = new URLSearchParams(location.search).get('view') ?? 'investment';
+              return (
+                list.querySelector('[role="tab"][aria-selected="true"]')?.id ===
+                `club-operations-tab-${view}`
+              );
+            },
+            undefined,
+            { timeout: 1000 },
+          )
+          .catch(() => false),
+      { timeout: 15000 },
+    )
+    .toBe(true);
+  const tab = tabs.getByRole('tab', { name: section, exact: true });
   if ((await tab.getAttribute('aria-selected')) !== 'true') await tab.click(options);
   await expect(tab).toHaveAttribute('aria-selected', 'true');
 }

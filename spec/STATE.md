@@ -15,8 +15,10 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T20:28Z | 2026-10-31T20:28Z | T634 |
 
 ## inbox
+- 261101 decided WEB-39 WEB-74 WEB-83 T634: host review found the partial manual fix only opens reports already waiting, leaving a fresh next-event advance hidden by EventCenter's business guard → connect the explicit office action to the existing report-capable clubhouse for both advance and reopen, leaving controller rules/approvals unchanged; revise the new unit test and add the pre-eve office browser case (alt: require a second click to see the event | predict the next stop in UI). Resume preserved edits with .tmp/host-review-T634.md before task-tier checks.
 - 261101 decided WEB-74 WEB-83 SAVE-20 T634: final browser gate found integration regressions after the office consolidation → repair explicit observation reopening, completed design-form state and shared navigation readiness; move old test contexts to their actual homes while retaining every business/geometry assertion (alt: publish with failures | restore duplicate desks); latest T622 source is integrated before the new gate.
 - 261101 decided WEB-39 WEB-43 WEB-100 T633: which review actions name their subject, and what a legacy or loan bid shows → the queue's 검토 names the request's known subject while accept/decline keep their exact names inside a review already headed by that request; terms come only from the pinned offer (outgoing) or our player's current contract (incoming), a loan shows its wage without any end, and a legacy target found in today's market list or an old row of ours shows identity only (alt: the subject in every answer button, renaming the existing accept/decline journeys | today's market terms for a legacy bid, which are not the bid's | his parent-club contract end as the loan's).
 - 261101 decided WEB-10 WEB-39 WEB-100 T633: how to finish the reviewed approval form → one request heading and queue return, real pinned player and known terms in place of repeated instructions, plus the canonical operations static rewrite (alt: ship name/fee only | redirect to another information page); the owner needs the facts before committing and direct URLs must work.
@@ -492,7 +494,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T634 (of01 release repair from the host Chromium gate; then host final batch, main push and CI only).
+- implement-task T634 (resume preserved edits; read .tmp/host-review-T634.md for the fresh manual-advance case; then host final batch, main push and CI only).
 - ap01 (approvals never stop progression, 결재함 with a 7-day 결재 기한, T623–T625) is done and pushed; report spec/reports/261101-ap01.md.
 - Owner authorizes main publication of T617/T618 despite reproduced baseline UI e2e failures; publish unchanged engine source and observe CI. Evidence reports/261031-ei31.md.
 - create-task KIT (existing kit baseline r5–r6 remains pending outside of01; WEB r188–r195 baseline regression is included in T632).

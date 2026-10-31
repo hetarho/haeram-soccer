@@ -1,4 +1,4 @@
-import { openPersonnel } from './personnel-navigation';
+import { managerCard, openPersonnel } from './personnel-navigation';
 import { marketInfo, marketCandidate, closeMarketPanel } from './market';
 import { approvalTray, dismissMatchReport, openOffice } from './events';
 import { test, expect, type Page } from '@playwright/test';
@@ -442,7 +442,8 @@ test('promise-personnel-changes preserves director-independent promises and canc
     .click();
   expect((await exportedCareer(page)).promises![0].status).toBe('pending');
   await openPersonnel(page, 'manager');
-  await page.getByRole('button', { name: '교체', exact: true }).click();
+  // The staff share 코치진 with the manager, so his card holds the replacement (→WEB-43).
+  await managerCard(page).getByRole('button', { name: '교체', exact: true }).click();
   const card = page
     .getByRole('article')
     .filter({ has: page.getByRole('button', { name: /^감독 선임 ·/ }) })

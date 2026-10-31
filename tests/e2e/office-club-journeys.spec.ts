@@ -39,8 +39,13 @@ function controllerMaterial(entry: (typeof themeRegistry.entries)[number]) {
   return resolveResourceUrl(pack.images.ui[role!].resource, url);
 }
 
-/** A touch target keeps 44 CSS px each way; layout works in 1/64 px, so snap the float noise. */
+/**
+ * A touch target keeps 44 CSS px each way; layout works in 1/64 px, so snap the float noise. It is
+ * measured once finite entrance motion has landed: a review card's scale entrance draws its 44px
+ * return smaller until it ends.
+ */
 async function expectTarget(target: Locator) {
+  await settle(target.page());
   const size = await target.evaluate((element) => {
     const { width, height } = element.getBoundingClientRect();
     const snap = (value: number) => Math.round(value * 64) / 64;

@@ -121,8 +121,10 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await openPersonnel(page, 'coaches');
     await page.getByText('스태프 선임 기준', { exact: true }).click();
     await expect(page.getByRole('button', { name: /^코치 기조 · 최고 수준/ })).toBeVisible();
-    // Level 3 hands every department to the staff at once.
+    // Level 3 hands every department to the staff at once. The settings leave a club section for
+    // the clubhouse, so the journey walks back to 코치진 to read it.
     await chooseLevel(page, 3);
+    await openPersonnel(page, 'coaches');
     await expect(page.getByTestId('coaching-mode')).toContainText('자동');
     await expect(page.getByTestId('decision-owner-staff')).toContainText('자동');
     expect(await horizontalOverflow(page)).toBe(0);

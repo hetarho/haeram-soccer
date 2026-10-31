@@ -325,7 +325,11 @@ test('a shirt chosen for the next fixture and a waiting commission survive reloa
   };
 
   await page.reload();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  // A reload restores the view it left: 구단 운영's design section, not home (→WEB-74).
+  await expect(
+    operationsTabs(page).getByRole('tab', { name: '구단 디자인', exact: true }),
+  ).toHaveAttribute('aria-selected', 'true');
+  await expect(page).toHaveURL(/\/club-operations\?view=identity$/);
   expect((await savedWorld(page)).kitChoice).toEqual(choice);
   expect((await savedWorld(page)).designCommission).toEqual(waiting);
   await expectChoice();

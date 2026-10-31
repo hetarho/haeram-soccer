@@ -60,7 +60,8 @@ test('surveys every management destination during uninterrupted calendar play', 
   for (const view of ['players', 'market', 'manager', 'coaches', 'training', 'academy'] as const) {
     await openPersonnel(page, view);
     await continues();
-    if (view === 'manager')
+    // The tactics request stands beside the 1군 roster, under the same lock (→WEB-43/97).
+    if (view === 'players')
       await expect(
         page.getByRole('button', { name: '감독에게 제안하기', exact: true }),
       ).toBeDisabled();

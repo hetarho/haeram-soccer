@@ -18,9 +18,10 @@ import { Segments } from './Segments';
 import s from './ClubDesignView.module.css';
 
 /**
- * 구단주 사무실 › 구단 디자인: the current design, then a change request one step at a time — the
- * main, sub and point colours, then the designer — and the drafts it sends. Adopting one or
- * throwing them all away returns to the first page.
+ * 구단 운영 › 구단 디자인: the current design, then a change request one step at a time — the
+ * main, sub and point colours, then the designer — and the drafts it sends. The request's form
+ * starts again once the drafts arrive; adopting one or throwing them all away returns to the first
+ * page.
  */
 
 const KIT_LABEL = { home: '홈', away: '원정', third: '서드' } as const;
@@ -33,6 +34,28 @@ const SLOTS = [
 type Step = 'home' | 0 | 1 | 2 | 'confirm';
 /** A colour step's answer: a colour, `null` for 없음, or nothing yet. */
 type ColourPick = string | null | undefined;
+type DesignCommand = Extract<
+  Parameters<GameClient['command']>[0],
+  { type: 'design-commission' | 'adopt-design' | 'discard-designs' | 'redraw-designs' }
+>;
+/** The change request being composed: its step, the colours picked so far and the designer. */
+export interface DesignForm {
+  step: Step;
+  colours: ColourPick[];
+  studio: DesignStudio;
+}
+export const FRESH_DESIGN_FORM: DesignForm = { step: 'home', colours: [], studio: 'studio' };
+
+/**
+ * The form once a design command has succeeded (→WEB-108). A commission, an adoption and a
+ * discard each finish the request, so the form starts again on the first page: once the
+ * commission is gone — adopted, thrown away, or replaced by an imported file of the same game —
+ * the view shows the applied design, never the finished request. A redraw keeps the drafts. A
+ * failed command keeps its form for a retry and never reaches here.
+ */
+export function designFormAfter(form: DesignForm, command: DesignCommand['type']): DesignForm {
+  return command === 'redraw-designs' ? form : FRESH_DESIGN_FORM;
+}
 
 /** A design at a glance: the crest and the three shirts. */
 function DesignCard({ identity, size = 48 }: { identity: ClubIdentity; size?: number }) {
@@ -123,21 +146,27 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
   const applied = identityOf(w, w.playerClub);
   const readonly = useGameState((current) => current.readonly);
   const blocked = useGameState(gameActionsBlocked);
-  const [step, setStep] = useState<Step>('home');
-  const [colours, setColours] = useState<ColourPick[]>([]);
-  const [studio, setStudio] = useState<DesignStudio>('studio');
+  const [step, setStep] = useState<Step>(FRESH_DESIGN_FORM.step);
+  const [colours, setColours] = useState<ColourPick[]>(FRESH_DESIGN_FORM.colours);
+  const [studio, setStudio] = useState<DesignStudio>(FRESH_DESIGN_FORM.studio);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string>();
   const commission = w.designCommission;
   const busy = readonly || blocked || pending;
 
-  const send = async (command: Parameters<GameClient['command']>[0], after?: Step) => {
+  const send = async (command: DesignCommand) => {
     setPending(true);
     setError(undefined);
     const reply = await client.command(command);
     setPending(false);
-    if (!reply?.ok) setError(client.state.error ?? '요청을 처리하지 못했어요.');
-    else if (after !== undefined) setStep(after);
+    if (!reply?.ok) {
+      setError(client.state.error ?? '요청을 처리하지 못했어요.');
+      return;
+    }
+    const form = designFormAfter({ step, colours, studio }, command.type);
+    setStep(form.step);
+    setColours(form.colours);
+    setStudio(form.studio);
   };
 
   // Delivered drafts wait here until one is adopted or all are thrown away.
@@ -161,7 +190,7 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
                   type="button"
                   data-ui="primary"
                   disabled={busy}
-                  onClick={() => void send({ type: 'adopt-design', draft: index }, 'home')}
+                  onClick={() => void send({ type: 'adopt-design', draft: index })}
                 >
                   이 시안으로 결정
                 </button>
@@ -172,7 +201,7 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
             <button
               type="button"
               disabled={busy}
-              onClick={() => void send({ type: 'discard-designs' }, 'home')}
+              onClick={() => void send({ type: 'discard-designs' })}
             >
               전부 버리기
             </button>

@@ -10,7 +10,7 @@ import type { View } from '../runtime/protocol';
 import { gameStore, initialClientState } from '../runtime/store';
 import { openOwnerOffice } from './state';
 import { useTaskMemory } from './taskMemory';
-import { ProgressControls, ProgressOverview } from './ProgressControls';
+import { nextEventPlace, ProgressControls, ProgressOverview } from './ProgressControls';
 
 vi.mock('../runtime/store', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../runtime/store')>()),
@@ -129,6 +129,18 @@ describe('unified bottom progression controls', () => {
     expect(markup).not.toContain('progress-mode');
     expect(markup).not.toContain('MANUAL');
     expect(markup).not.toContain('AUTO');
+  });
+});
+
+describe('manual 다음 이벤트 from the owner office (→WEB-39/83)', () => {
+  it('opens what it reopens at the clubhouse, since the office draws no observation', () => {
+    expect(nextEventPlace('business', true)).toBe('dashboard');
+  });
+
+  it('stays in place for an advance, and wherever a report can open', () => {
+    expect(nextEventPlace('business', false)).toBeUndefined();
+    for (const page of ['dashboard', 'firstTeam', 'staff', 'operations', 'league'] as const)
+      expect(nextEventPlace(page, true)).toBeUndefined();
   });
 });
 

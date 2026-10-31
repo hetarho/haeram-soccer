@@ -263,6 +263,8 @@ test('with the manager post delegated a resignation is filled at once and the cl
   await expect(page.getByTestId('decision-owner-manager')).toContainText('자동');
   const founding = page.getByRole('heading', { name: 'William Hawkins', exact: true });
   await expect(founding).toBeVisible();
+  // The tactics request stands beside the 1군 roster (→WEB-43).
+  await openPersonnel(page, 'players');
   for (const tactic of ['counter', 'press']) {
     await chooseOption(page.getByRole('combobox', { name: '요청 전술', exact: true }), tactic);
     await chooseOption(page.getByRole('combobox', { name: '요청 말투', exact: true }), 'demand');
@@ -271,6 +273,8 @@ test('with the manager post delegated a resignation is filled at once and the cl
   }
   await expect(page.locator('blockquote')).toContainText('감독의 사직서');
   // The staff appointed a free agent at once: no departure alert, no interim in charge.
+  await openPersonnel(page, 'manager');
+  await expect(managerCard(page)).toBeVisible();
   await expect(founding).toHaveCount(0);
   await expect(page.getByText('FIRST TEAM MANAGER', { exact: true })).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: '감독이 떠났어요' })).toHaveCount(0);

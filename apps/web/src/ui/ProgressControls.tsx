@@ -7,16 +7,18 @@ import { gameActionsBlocked, useGameState } from '../runtime/store';
 import {
   approvalRequests,
   overdueSummary,
+  pendingMatchReport,
   useProgression,
   type Pace,
   type ProgressionController,
 } from '../runtime/progression';
 import type { GameClient } from '../runtime/client';
+import { unfinishedPlayback, useMatchView } from '../runtime/matchView';
 import { ProgressModeSwitch } from './ProgressModeSwitch';
 import { ownDivisionRound } from './league';
 import { useLocale } from '../presentation/react';
 import { Dialog } from './Dialog';
-import { openOwnerOffice, openPrimary } from './state';
+import { openOwnerOffice, openPrimary, useNavigation, type Page } from './state';
 import p from './ProgressControls.module.css';
 
 // The result notice's report loads only when opened, outside the main chunk (→ARCH-28).
@@ -72,6 +74,16 @@ export const ProgressOverview = memo(function ProgressOverview({
   );
 });
 
+/**
+ * Where the manual 다음 이벤트 shows what it reopens (→WEB-83). The owner office keeps to its
+ * approvals and draws no observation over them (→WEB-39), so a match-eve report or an unfinished
+ * viewing the action reopens opens at the clubhouse, beside NEXT MATCH (→WEB-11); the office's
+ * queue or review is remembered as the task left. An advance, and every other place, stays put.
+ */
+export function nextEventPlace(page: Page, reopens: boolean): Page | undefined {
+  return page === 'business' && reopens ? 'dashboard' : undefined;
+}
+
 /** Play starts the shared clock; the dropdown only sets its pace (→WEB-18). */
 export const ProgressControls = memo(function ProgressControls({
   client,
@@ -109,7 +121,15 @@ export const ProgressControls = memo(function ProgressControls({
         data-ui="link"
         className={p.nextEvent}
         disabled={gameActionsBlocked(state) || blocked}
-        onClick={() => void controller.nextEvent()}
+        onClick={() => {
+          // The same reopen the controller makes: an unfinished viewing, else the eve's report.
+          const reopens =
+            !!unfinishedPlayback(state.playback, useMatchView.getState()) ||
+            !!pendingMatchReport(w);
+          const place = nextEventPlace(useNavigation.getState().page, reopens);
+          if (place) openPrimary(place);
+          void controller.nextEvent();
+        }}
       >
         다음 이벤트
         <PixelIcon name="chevronRight" size={16} />

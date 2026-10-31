@@ -43,17 +43,22 @@ for (const width of [360, 390, 1280]) {
       '유소년',
       '운영',
     ]);
+    // 현황 resumes the clubhouse address the session entered by: the start address / is its
+    // supported alias of /journal (→WEB-62/74), and either shows the clubhouse itself.
+    const clubhouse = (url: URL) =>
+      (url.pathname === '/journal' || url.pathname === '/') && url.search === '';
     for (const [section, now] of [
       ['1군', /\/first-team\?view=players$/],
       ['코치진', /\/staff\?view=coaches$/],
       ['훈련', /\/training$/],
       ['유소년', /\/academy$/],
       ['운영', /\/club-operations\?view=investment$/],
-      ['현황', /\/journal$/],
+      ['현황', clubhouse],
     ] as const) {
       const tab = sections.getByRole('tab', { name: section, exact: true });
       await tab.click();
       await expect(page).toHaveURL(now);
+      if (section === '현황') await expect(page.getByTestId('club-hub')).toBeVisible();
       await expect(tab).toHaveAttribute('aria-selected', 'true');
       await expect(clubhouseTab(page)).toHaveAttribute('aria-current', 'page');
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);

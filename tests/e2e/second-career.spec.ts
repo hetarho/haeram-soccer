@@ -1,4 +1,4 @@
-import { openPersonnel } from './personnel-navigation';
+import { managerCard, openPersonnel } from './personnel-navigation';
 import { test, expect } from '@playwright/test';
 import { importSecondCareer } from './career-fixtures';
 import { horizontalOverflow } from './layout';
@@ -66,7 +66,8 @@ test('same-person-cross-role-links', async ({ page }) => {
   await expect(detail).toContainText('3년 근무 충족');
   await detail.getByRole('button', { name: '닫기', exact: true }).last().click();
   await openPersonnel(page, 'manager');
-  await page.getByRole('button', { name: '교체', exact: true }).click();
+  // The staff share 코치진 with the manager, so his card holds the replacement (→WEB-43).
+  await managerCard(page).getByRole('button', { name: '교체', exact: true }).click();
   const card = page
     .getByRole('article')
     .filter({ has: page.getByRole('heading', { name: player.name, exact: true }) });
@@ -89,7 +90,7 @@ test('employed-coach-manager-quote', async ({ page }) => {
   await importResponsibilityCareer(page, w);
   await openPersonnel(page, 'players');
   await openPersonnel(page, 'manager');
-  await page.getByRole('button', { name: '교체', exact: true }).click();
+  await managerCard(page).getByRole('button', { name: '교체', exact: true }).click();
   const card = page
     .getByRole('article')
     .filter({ has: page.getByRole('heading', { name: player.name, exact: true }) });
