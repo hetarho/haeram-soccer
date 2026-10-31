@@ -16,6 +16,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | cr01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T15:49Z | 2026-10-31T15:49Z | - |
+| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T19:20Z | 2026-10-31T19:20Z | - |
 
 ## inbox
 - 261101 decided WEB-71 WEB-79 T632: where incoming offers for our players are answered once the player desk's 들어온 매각 제안 list is gone → in the market's 이적 협상 board, which already answers a pending incoming bid inside a window whoever holds sales, so the desk list and its helper are deleted rather than restored onto 1군 (alt: restore the list above the 1군 roster, a second editor for the same answer that WEB-71 rules out | keep the unused helper for later).
