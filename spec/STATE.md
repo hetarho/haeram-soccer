@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T20:15Z | 2026-10-31T20:15Z | - |
+| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T20:15Z | 2026-10-31T20:16Z | T634 |
 
 ## inbox
 - 261101 decided WEB-39 WEB-100 T630: what fills the owner office → one live ordered approval queue and contextual review with queue return (alt: retain desks with fewer cards | replace them with another overview dashboard); actual pending decisions deserve the first viewport.
@@ -462,7 +462,7 @@
 | T631 | Readable club situation and actual people | WEB ARCH | T630 | todo |
 | T632 | Complete office and club journey regression coverage | WEB ARCH | T631 | todo |
 | T633 | Complete focused approval review and deployment routes | WEB ARCH | T632 | doing@261031.of01 |
-| T634 | Repair office integration and retained club journeys | ARCH WEB KIT SAVE | T633 | todo |
+| T634 | Repair office integration and retained club journeys | ARCH WEB KIT SAVE | T633 | doing@261031.of01 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
