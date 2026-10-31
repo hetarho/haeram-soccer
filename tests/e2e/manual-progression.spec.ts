@@ -9,8 +9,8 @@ import {
 import { pendingDecisions } from '../../packages/engine/src/stopping';
 import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsibility-fixtures';
 import { horizontalOverflow } from './layout';
-import { configureResponsibilities, matchReport, reviewInOffice } from './events';
-import { leaveOffice } from './office';
+import { approvalTray, configureResponsibilities, matchReport, reviewInOffice } from './events';
+import { leaveOffice, officeBar } from './office';
 
 for (const width of [1280, 390]) {
   test(`exclusive-controls ${width}`, async ({ page }) => {
@@ -111,17 +111,64 @@ for (const width of [1280, 390]) {
     await expect(next).toBeEnabled();
     await expect(result).toBeEnabled();
     // Answering one in the office leaves the other waiting and the report still open to reopen.
+    const waiting = pendingDecisions(w).length;
     const request = await reviewInOffice(page);
     await request.getByRole('button', { name: '거절', exact: true }).click();
     // The answered review returns to the 결재함, whose controller still offers 다음 이벤트.
     await expect(page).toHaveURL(/\/direction$/);
+    const before = await page.getByTestId('game-date').innerText();
     await next.click();
+    // The office draws no observation: the report reopens at the clubhouse, on the same date and
+    // without answering the approval still waiting (→WEB-39/83).
     await expect(group).toContainText('내일 경기');
+    await expect(officeBar(page)).toHaveCount(0);
+    await expect(page.getByTestId('game-date')).toHaveText(before);
+    await expect(page.getByTestId('approval-inbox')).toHaveAccessibleName(
+      new RegExp(`^결재함 · 대기 ${waiting - 1}건`),
+    );
     await expect(result).toBeEnabled();
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
-    const before = await page.getByTestId('game-date').innerText();
     await result.click();
     await expect(page.getByTestId('game-date')).not.toHaveText(before);
+  });
+
+  test(`office-next-event-reaches-eve ${width}`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    const w = pendingAcquisitionCareer();
+    w.settings!.mode = 'manual';
+    w.settings!.observations.windowOpen = false;
+    // Before the eve, with the two countered bids waiting for the owner.
+    const eve = fixtureDay(nextOwnFixture(w)!) - 1;
+    expect(currentDay(w)).toBeLessThan(eve);
+    for (const item of w.inbox || []) operate(w, { type: 'read-inbox', id: item.id });
+    const expected = structuredClone(w);
+    while (currentDay(expected) < eve) advanceDays(expected, 1, undefined, false);
+    const waiting = pendingDecisions(expected).length;
+    expect(waiting).toBeGreaterThanOrEqual(1);
+    await importResponsibilityCareer(page, w);
+    // Ordinary entry keeps the office to its approvals, with no observation opened there.
+    await expect(await approvalTray(page)).toHaveCount(pendingDecisions(w).length);
+    await expect(page.getByTestId('event-group')).toHaveCount(0);
+    const date = page.getByTestId('game-date');
+    await expect(date).toHaveText(todayStamp(w));
+    const next = page.getByRole('button', { name: '다음 이벤트', exact: true });
+    await next.click();
+    // One action from the office settles the days to the eve and shows its report at the
+    // clubhouse (→WEB-39/83); no approval is answered on the way.
+    await expect(matchReport(page).getByTestId('event-group')).toContainText('내일 경기');
+    await expect(officeBar(page)).toHaveCount(0);
+    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await expect(date).toHaveText(todayStamp(expected));
+    await expect(page.getByTestId('approval-inbox')).toHaveAccessibleName(
+      new RegExp(`^결재함 · 대기 ${waiting}건`),
+    );
+    // Manual stays stopped there until another explicit action (→WEB-5).
+    await expect(page.getByTestId('progression-mode')).toHaveText('MANUAL');
+    await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toHaveCount(0);
+    await expect(next).toBeEnabled();
+    await expect(date).toHaveText(todayStamp(expected));
+    // The approvals still wait in the queue.
+    await expect(await approvalTray(page)).toHaveCount(waiting);
   });
 }
 

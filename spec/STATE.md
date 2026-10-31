@@ -470,7 +470,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T634 | Repair office integration and retained club journeys | ARCH WEB KIT SAVE | T633 | doing@261031.of01 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -494,13 +493,14 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T634 (resume preserved edits; read .tmp/host-review-T634.md for the fresh manual-advance case; then host final batch, main push and CI only).
+- T629–T634 are done locally on work/of01; host final batch (unit, integration, contract, catalogs, build, Chromium), then main push and CI.
 - ap01 (approvals never stop progression, 결재함 with a 7-day 결재 기한, T623–T625) is done and pushed; report spec/reports/261101-ap01.md.
 - Owner authorizes main publication of T617/T618 despite reproduced baseline UI e2e failures; publish unchanged engine source and observe CI. Evidence reports/261031-ei31.md.
 - create-task KIT (existing kit baseline r5–r6 remains pending outside of01; WEB r188–r195 baseline regression is included in T632).
 - cr01 put every country's money at its real 1999 rate against the pound (T622, ECON-35, catalog 2026-demo-4); careers outside England saved before it are refused on load. The 1950s lower-division fee pyramid suggest (CLUB-25/46) remains for the owner.
 
 ## log
+- 261101 T634 done: manual 다음 이벤트 from the office moves to the clubhouse before the unchanged controller acts, so a fresh advance or a reopen shows its report at once; the design request form resets on commission/adopt/discard success; shared club/operations helpers wait for address and rendered view to agree; all 21 gate cases moved to their actual contexts, plus a pre-eve office next-event journey; unit 38 + 45 + 19 passed, build passed, browser specs left to the host batch; session of01.
 - 261101 create-task T634: host Chromium gate 320 passed / 21 failed; fix two real observation/design-state defects and stale navigation/measurement contexts, with exact existing assertions retained. Latest T622 main integrated in ba915286; no overhaul code pushed until the repaired final gate passes; session of01.
 - 261101 T633 done: /club-operations static rewrite in _redirects; one request heading with its 결재 기한, distinct detail only and one 결재함으로 return (EventCard inDesk no longer repeats them); bid reviews show the pinned/own player's position, age, OVR/잠재력, our and counter fees and only the terms the bid carries (loans wage-only, legacy unknown stays unknown) through the pure bidFacts resolver also used for queue subjects; queue 검토 names its subject; unit 248 + 25 + 43 passed, build passed, browser specs left to the host batch; session of01.
 - 261101 create-task T633: host visual review found missing /club-operations static rewrite and repeated request instructions; add actual target/terms context and verify integrated WEB r197 settings behavior. T629–T632 done locally; latest main integrated in e70ef0b5, final gate/publication pending; session of01.
@@ -520,4 +520,3 @@
 - 261101 T623 done: approval waiting days, 7-day 결재 기한, one overdue notice and overdue morale (−1 each a settled round, at most 3); portable golden regenerated for three all-direct scenarios; session ap01.
 - 261101 update-ssot WEB r193 STAFF r37 CLUB r46 SAVE r59 (WEB-42✎ WEB-45✎ WEB-18✎ WEB-76✎ WEB-80✎ WEB-83✎ WEB-100✎ STAFF-48+ STAFF-15✎ STAFF-32✎ CLUB-19✎ CLUB-34✎ CLUB-38✎ SAVE-17✎) + create-task T623–T625: approvals never stop progression, 결재함 with a 7-day 결재 기한 and overdue morale cost; session ap01.
 - 261101 update-ssot ECON r40 (ECON-35+) SAVE r58 (SAVE-10✎) + create-task T622 currency levels at the 1999 rate; session cr01.
-- 261101 update-ssot WEB r194 (WEB-91✎): light controller/grass→selected P3/G1/X2/S1 materials and matching foregrounds; implemented in 92127406 on codex/controller-backgrounds-cb31.

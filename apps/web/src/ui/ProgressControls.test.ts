@@ -133,14 +133,13 @@ describe('unified bottom progression controls', () => {
 });
 
 describe('manual 다음 이벤트 from the owner office (→WEB-39/83)', () => {
-  it('opens what it reopens at the clubhouse, since the office draws no observation', () => {
-    expect(nextEventPlace('business', true)).toBe('dashboard');
+  it('moves to the clubhouse, since the office draws no observation it reaches or reopens', () => {
+    expect(nextEventPlace('business')).toBe('dashboard');
   });
 
-  it('stays in place for an advance, and wherever a report can open', () => {
-    expect(nextEventPlace('business', false)).toBeUndefined();
+  it('stays in place wherever a report can open', () => {
     for (const page of ['dashboard', 'firstTeam', 'staff', 'operations', 'league'] as const)
-      expect(nextEventPlace(page, true)).toBeUndefined();
+      expect(nextEventPlace(page)).toBeUndefined();
   });
 });
 

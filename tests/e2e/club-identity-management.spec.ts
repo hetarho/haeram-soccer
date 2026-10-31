@@ -326,9 +326,11 @@ test('an imported file brings its own design and none of the drafts waiting in t
     .click();
   await expect(crestFill(hud(page), '#123456')).not.toHaveCount(0);
   // The waiting drafts went with the replaced save: none can be adopted over the newer design.
+  // The section stays mounted across a same-game import; its finished request starts again.
   const imported = await openDesign(page);
   await expect(appliedPanel(imported)).toBeVisible();
   await expect(draftsPanel(imported)).toHaveCount(0);
+  await expect(imported.getByRole('heading', { name: '디자이너', exact: true })).toHaveCount(0);
   await expect(crestFill(imported, '#123456')).not.toHaveCount(0);
   const current: World = await exportWorld(page);
   expect(ownClub(current).identity).toEqual(newer);
