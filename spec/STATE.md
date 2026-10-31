@@ -471,6 +471,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T636 | Fix CI failure | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -494,10 +495,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- ap01 (approvals never stop progression, 결재함 with a 7-day 결재 기한, T623–T625) is done and pushed; report spec/reports/261101-ap01.md.
-- Owner authorizes main publication of T617/T618 despite reproduced baseline UI e2e failures; publish unchanged engine source and observe CI. Evidence reports/261031-ei31.md.
-- create-task KIT (existing kit baseline r5–r6 remains pending outside of01; WEB r188–r195 baseline regression is included in T632).
-- cr01 put every country's money at its real 1999 rate against the pound (T622, ECON-35, catalog 2026-demo-4); careers outside England saved before it are refused on load. The 1950s lower-division fee pyramid suggest (CLUB-25/46) remains for the owner.
+- implement-task T636
 
 ## log
 - 261101 T635 done: the CI trace showed the shell's inert deferred-view container taking focus off the keyboard's club tab; the shared TabList carries the keyboard's pick to its committed selection and returns a lost focus there (never over a click, deliberate focus, tick or other world), and the same-person journey opens 인물 경력 from the current manager card after the market closes; staff.spec unchanged; unit 11 files / 81 tests and build passed, staff/second-career cases left to the host's three-browser gate; session of01.
