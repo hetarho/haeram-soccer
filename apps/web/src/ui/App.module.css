@@ -1161,6 +1161,7 @@
 .seasonTabs button {
   position: relative;
   flex: 0 0 auto;
+  min-width: 44px;
   min-height: 44px;
   padding: 4px 10px;
   white-space: nowrap;
