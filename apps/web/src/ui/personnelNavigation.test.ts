@@ -59,6 +59,15 @@ afterEach(() => {
   useCoachRequest.getState().take();
 });
 describe('personnel actions and task continuity', () => {
+  it("opens the first team's door on the team after the market entry (→WEB-10)", () => {
+    browser();
+    openPrimary('market');
+    expect(location.pathname + location.search).toBe('/first-team?view=market');
+    openPrimary('dashboard');
+    openPrimary('firstTeam');
+    expect(location.pathname + location.search).toBe('/first-team?view=players');
+    expect(useNavigation.getState().page).toBe('firstTeam');
+  });
   it('returns between subviews of one hub and clears one-shot actions for another game', () => {
     browser();
     openPeople('players');

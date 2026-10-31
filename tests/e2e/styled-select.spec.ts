@@ -1,6 +1,6 @@
 import { openClubRecords } from './competition-navigation';
 import { watchNext } from './watch';
-import { delegateSales } from './events';
+import { delegateSales, proposeOnReport } from './events';
 import { expect, test, type Locator } from '@playwright/test';
 import { chooseOption, optionList } from './select';
 import { horizontalOverflow, settle } from './layout';
@@ -134,6 +134,8 @@ for (const viewport of [
     await delegateSales(page);
     await page.getByTestId('club-hub').getByRole('button', { name: '상세 리포트' }).click();
     const sheet = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
+    await expect(sheet).toBeVisible();
+    await proposeOnReport(sheet);
     const tone = sheet.getByRole('combobox', { name: '전술 요청 방식', exact: true });
     const list = await optionList(tone);
     await tone.press('End');
@@ -157,9 +159,10 @@ for (const viewport of [
     expect(bounds!.y).toBeGreaterThanOrEqual(0);
     expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(viewport.width);
     expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(viewport.height);
+    // Phone option rows are the compact 36px of the dropdown design; the closed control is 44px.
     expect(
-      (await players.getByRole('option').first().boundingBox())!.height,
-    ).toBeGreaterThanOrEqual(44);
+      Math.round((await players.getByRole('option').first().boundingBox())!.height),
+    ).toBeGreaterThanOrEqual(36);
     await inspector.press('End');
     const last = players.getByRole('option').last();
     await expect(last).toBeInViewport();

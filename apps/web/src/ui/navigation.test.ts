@@ -1,7 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { createIdentityDraft } from '../../../../packages/engine/src/club-identity';
-import { afterApply, clubDesignState, type ClubDesignDraft } from './ClubDesignView';
-import { reduceIdentityDraft } from './clubIdentityDraft';
 import { BUSINESS_TABS, officeAddress, officeView, routeOf } from './state';
 import { useTaskMemory } from './taskMemory';
 
@@ -103,62 +100,9 @@ describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
   });
 });
 
-describe('the career design draft (→WEB-74, WEB-86)', () => {
-  const applied = createIdentityDraft({ country: 'ENG', seed: 'career-design', color: '#3A7bC2' });
-  const edited = reduceIdentityDraft(applied, { type: 'colour', index: 0, colour: '#E0218A' });
-  const work: ClubDesignDraft = { worldId: 'w1', entry: structuredClone(applied), draft: edited };
-
-  it('shows the applied design until an edit, then the draft against its entry', () => {
-    expect(clubDesignState(null, 'w1', applied)).toEqual({
-      draft: null,
-      value: applied,
-      changed: false,
-      stale: false,
-    });
-    expect(clubDesignState(work, 'w1', applied)).toEqual({
-      draft: work,
-      value: edited,
-      changed: true,
-      stale: false,
-    });
-    // An edit taken back by hand is a draft with nothing to apply.
-    expect(
-      clubDesignState({ ...work, draft: structuredClone(applied) }, 'w1', applied).changed,
-    ).toBe(false);
-  });
-
-  it('compares designs, not objects or revisions, and ignores another game', () => {
-    // A day later the world is a new projection carrying an equal design: the draft stands.
-    const projected = JSON.parse(JSON.stringify(applied));
-    expect(clubDesignState(work, 'w1', projected)).toMatchObject({ changed: true, stale: false });
-    // Another applied design since the draft began makes it stale, never silently replaced.
-    const newer = reduceIdentityDraft(applied, {
-      type: 'crest-colour',
-      region: 'primary',
-      colour: '#123456',
-    });
-    expect(clubDesignState(work, 'w1', newer)).toMatchObject({ value: edited, stale: true });
-    // A draft kept for another game is not this game's.
-    expect(clubDesignState(work, 'w2', applied)).toEqual({
-      draft: null,
-      value: applied,
-      changed: false,
-      stale: false,
-    });
-  });
-
-  it('clears after its apply and keeps an edit made while the apply was queued', () => {
-    expect(afterApply(work, edited)).toBeNull();
-    expect(afterApply(null, edited)).toBeNull();
-    const later = reduceIdentityDraft(edited, { type: 'shirt-reuse', role: 'away' });
-    expect(afterApply({ ...work, draft: later }, edited)).toEqual({
-      worldId: 'w1',
-      entry: edited,
-      draft: later,
-    });
-  });
-
-  it('task memory keeps a career draft until another game is activated', () => {
+describe('task memory across games (→WEB-74)', () => {
+  it('keeps unfinished work until another game is activated', () => {
+    const work = { worldId: 'w1', step: 1 };
     const memory = useTaskMemory.getState();
     memory.activate('w1');
     useTaskMemory.setState({ values: { 'club-identity-draft': work } });

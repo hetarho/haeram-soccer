@@ -148,6 +148,14 @@ export function openPrimary(page: Page | 'market') {
     useNavigation.setState({ officeFrom: 'dashboard' });
     return;
   }
+  // The market is an entry of its own, so the first team's door resumes the team, not the market.
+  if (
+    page === 'firstTeam' &&
+    useTaskMemory.getState().addresses.firstTeam?.includes('view=market')
+  ) {
+    openPersonnel({ page: 'firstTeam', view: 'players' });
+    return;
+  }
   // Each entry opens its own page: records, the league and the cups are no longer one hub.
   useNavigation.getState().setPage(page);
 }

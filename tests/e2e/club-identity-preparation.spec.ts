@@ -12,7 +12,7 @@ import {
   operate,
 } from '../../packages/engine/src/index';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
-import { ALL_DELEGATED } from './events';
+import { ALL_DELEGATED, proposeOnReport } from './events';
 import { savedWorld, canvasPixels } from './club-identity-helpers';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { watchNext } from './watch';
@@ -55,6 +55,9 @@ const hubPreparation = (page: Page) =>
 async function openKit(page: Page, opener: Locator) {
   await opener.click();
   const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
+  // The report reads first; the owner's proposal, with its shirt choice, opens by 의견 전달.
+  await expect(dialog).toBeVisible();
+  await proposeOnReport(dialog);
   const kit = dialog.getByTestId('fixture-kit');
   await kit.getByTestId('fixture-kit-summary').click();
   await expect(

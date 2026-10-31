@@ -9,9 +9,17 @@ import {
 import { legacySettings } from '../../packages/engine/src/responsibilities';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { test, expect, type Locator, type Page } from '@playwright/test';
-import { chooseLevel, setResponsibility, acknowledgeEvents, closeOutcome } from './events';
+import {
+  approvalTray,
+  chooseLevel,
+  setResponsibility,
+  acknowledgeEvents,
+  closeOutcome,
+} from './events';
 import { horizontalOverflow } from './layout';
 import { chooseOption } from './select';
+import { clubhouseTab } from './competition-navigation';
+import { enterOffice, officeLobby } from './office';
 
 /** The default seed's first season offers a firefighter among the four candidates. */
 async function found(page: Page, seed = 'short-contract') {
@@ -75,13 +83,16 @@ test.describe('사람 at 360x740', () => {
   test('사람 tabs keep their address and the manager criteria preview a gegenpress pick', async ({
     page,
   }) => {
+    // Every room visit goes through the office lobby's doors (→WEB-39): past 30 s on a loaded host.
+    test.slow();
     await found(page);
     await chooseLevel(page, 2);
     await setResponsibility(page, '스폰서 계약', 'delegated');
     await openPersonnel(page, 'players');
     const tabs = page.getByRole('tablist', { name: '감독 사무실' }).getByRole('tab');
-    // The manager market sits behind the manager's 교체, not in a tab of its own (→WEB-43).
-    await expect(tabs).toHaveText(['감독', '선수 목록', '이적시장']);
+    // The manager market sits behind the manager's 교체, not in a tab of its own (→WEB-43); the
+    // transfer market is a primary entry of its own (→WEB-10).
+    await expect(tabs).toHaveText(['감독', '선수 목록']);
     await expect(tab(page, '선수')).toHaveAttribute('aria-selected', 'true');
     await expect(page).toHaveURL(/\/first-team\?view=players$/);
     for (const box of await tabs.evaluateAll((all) =>
@@ -100,29 +111,28 @@ test.describe('사람 at 360x740', () => {
     expect(await horizontalOverflow(page)).toBe(0);
     // Keyboard movement stays within this place's local tabs, including wrapping and Home/End.
     await tab(page, '감독').focus();
-    await page.keyboard.press('ArrowRight');
-    await expect(tab(page, '선수')).toBeFocused();
-    await expect(tab(page, '선수')).toHaveAttribute('aria-selected', 'true');
-    await expect(page).toHaveURL(/\/first-team\?view=players$/);
-    await page.keyboard.press('End');
-    await expect(tab(page, '이적시장')).toBeFocused();
-    await expect(tab(page, '이적시장')).toHaveAttribute('aria-selected', 'true');
-    await expect(page).toHaveURL(/\/first-team\?view=market$/);
-    await page.keyboard.press('ArrowRight');
-    await expect(tab(page, '감독')).toBeFocused();
-    await expect(tab(page, '감독')).toHaveAttribute('aria-selected', 'true');
-    await expect(page).toHaveURL(/\/first-team\?view=manager$/);
-    await page.keyboard.press('ArrowLeft');
-    await expect(tab(page, '이적시장')).toBeFocused();
-    await expect(tab(page, '이적시장')).toHaveAttribute('aria-selected', 'true');
-    await expect(page).toHaveURL(/\/first-team\?view=market$/);
-    await page.keyboard.press('Home');
-    await expect(tab(page, '감독')).toBeFocused();
-    await expect(tab(page, '감독')).toHaveAttribute('aria-selected', 'true');
-    await expect(page).toHaveURL(/\/first-team\?view=manager$/);
+    const keys: [string, '감독' | '선수'][] = [
+      ['ArrowRight', '선수'],
+      ['ArrowRight', '감독'],
+      ['ArrowLeft', '선수'],
+      ['Home', '감독'],
+      ['End', '선수'],
+      ['Home', '감독'],
+    ];
+    for (const [key, name] of keys) {
+      await page.keyboard.press(key);
+      await expect(tab(page, name)).toBeFocused();
+      await expect(tab(page, name)).toHaveAttribute('aria-selected', 'true');
+      await expect(page).toHaveURL(
+        name === '감독' ? /\/first-team\?view=manager$/ : /\/first-team\?view=players$/,
+      );
+    }
     await expect(page.getByRole('tablist', { name: '코칭스태프실', exact: true })).toHaveCount(0);
+    // The coaching room's door stands in the office lobby (→WEB-39).
+    await enterOffice(page);
+    await officeLobby(page);
     const coachingPlace = page
-      .getByRole('navigation', { name: '모바일 게임 메뉴', exact: true })
+      .getByRole('navigation', { name: '클럽하우스 시설', exact: true })
       .getByRole('button', { name: '코칭스태프실', exact: true });
     await coachingPlace.focus();
     await page.keyboard.press('Enter');
@@ -296,47 +306,61 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   await setResponsibility(page, '선수 영입', 'direct');
   await openPeople(page);
   await hireFirefighter(page);
-  await page.getByRole('button', { name: '클럽하우스', exact: true }).click();
+  await clubhouseTab(page).click();
   const progress = page.getByRole('region', { name: '시즌 진행', exact: true });
   const pace = progress.getByRole('combobox', { name: '자동 진행 배속', exact: true });
   const play = progress.getByRole('button', { name: '자동 진행 시작', exact: true }),
     pause = progress.getByRole('button', { name: '자동 진행 정지', exact: true });
   const card = page.getByTestId('event-card').first();
+  // Office work stops the clock without a home card: home's office scene counts it (→WEB-39).
+  const waiting = page
+    .getByTestId('club-hub')
+    .locator('[data-home-part="office"] [data-ui="count"]');
   const renewal = '감독 재계약';
   // Read without auto-waiting: a card may leave between a count and a text query.
   const cardText = () =>
     card.evaluateAll((cards) => (cards[0] as HTMLElement | undefined)?.innerText ?? '');
+  const waitingText = () =>
+    waiting.evaluateAll((counts) => (counts[0] as HTMLElement | undefined)?.innerText ?? '');
   await chooseOption(pace, 'x10');
   await play.click();
   for (let stops = 0; ; stops++) {
     expect(stops).toBeLessThan(80);
-    await expect(card).toBeVisible({ timeout: 75000 });
-    const text = await cardText();
-    if (text.includes(renewal)) break;
-    // Another stop on the way: decline an offer, play a match through or read the news, then run on.
+    await expect(card.or(waiting).first()).toBeVisible({ timeout: 75000 });
+    const text = await cardText(),
+      count = await waitingText();
     const through = card.getByRole('button', { name: '결과만 보고 계속', exact: true });
+    if (count && !(await through.count())) {
+      // The renewal waits in the office lobby's tray; anything else there is answered.
+      if (await (await approvalTray(page)).filter({ hasText: renewal }).count()) break;
+      await clubhouseTab(page).click();
+    }
+    // Another stop on the way: decline an offer, play a match through or read the news, then run on.
     if (await through.count()) await through.click();
     else await acknowledgeEvents(page);
-    await expect.poll(cardText, { timeout: 10000 }).not.toBe(text);
+    // A request answered can raise the next at once, so only a card is awaited to change.
+    if (text) await expect.poll(cardText, { timeout: 10000 }).not.toBe(text);
     // Pace selection only sets the pace (→WEB-18): play starts the clock again when it rests. Play
     // ignores a tap in the first half second after the clock stops itself, so retry until it runs.
     await expect(async () => {
-      if (await cardText()) return;
+      if ((await cardText()) || (await waitingText())) return;
       if (await play.isVisible()) await play.click();
-      await expect(pause.or(card).first()).toBeVisible({ timeout: 1000 });
+      await expect(pause.or(card).or(waiting).first()).toBeVisible({ timeout: 1000 });
     }).toPass({ timeout: 15000 });
   }
-  await expect(card).toContainText(renewal);
   await expect(page.getByTestId('game-date')).toHaveText('1951.04.01');
-  await expect(card).toContainText('스태프 재계약');
-  await card.getByRole('button', { name: '검토하기', exact: true }).click();
+  const tray = await approvalTray(page);
+  await tray
+    .filter({ hasText: renewal })
+    .getByRole('button', { name: /· 검토하기$/ })
+    .click();
   await expect(page).toHaveURL(/view=staff&request=/);
   await page
     .getByTestId('manager-renewal')
     .getByRole('button', { name: /^재계약/ })
     .click();
   await expect(page).toHaveURL(/\/journal$/);
-  await expect(card).toHaveCount(0);
+  await expect((await approvalTray(page)).filter({ hasText: renewal })).toHaveCount(0);
   await openPeople(page);
   await openPersonnel(page, 'manager');
   await expect(page.getByText(/1950년 부임 · 계약 1951\/52 시즌 끝까지/)).toBeVisible();

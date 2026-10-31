@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-31",
+  "theme": "pixel",
+  "status": "Generated artwork prepared for page integration; not registered in the theme pack",
+  "tool": "built-in image_gen",
+  "prompt": "apps/web/design/pixel/club-briefing-v1/prompt.json",
+  "source": {
+    "file": "apps/web/design/pixel/club-briefing-v1/sources/club-briefing-v1.png",
+    "width": 2172,
+    "height": 724,
+    "bytes": 2166329,
+    "sha256": "25a6c13989194edf0e343cac273b390d68d03fe10621363f432950d2e5941b76"
+  },
+  "preparation": "Shared createUiArtPipeline Chromium raster encoding: complete scene reduced with nearest-neighbour rendering to a finer native 480x160 grid, lossless PNG. No crop or semantic edits. The same native asset is suitable for mobile. PNG then losslessly recompressed with ffmpeg compression level 9 and mixed prediction.",
+  "assets": [
+    {
+      "file": "club-briefing.png",
+      "source": "apps/web/design/pixel/club-briefing-v1/sources/club-briefing-v1.png",
+      "bytes": 168019,
+      "sha256": "652db8b4d0ac54c953f8f7066ea4c09a6344b9bb3682182c3e661ebddc0cd2ec",
+      "width": 480,
+      "height": 160
+    }
+  ]
+}

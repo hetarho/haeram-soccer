@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-31",
+  "theme": "standard",
+  "status": "Generated artwork prepared for page integration; not registered in the theme pack",
+  "tool": "built-in image_gen",
+  "prompt": "apps/web/design/standard/club-briefing-v1/prompt.json",
+  "source": {
+    "file": "apps/web/design/standard/club-briefing-v1/sources/club-briefing-v1.png",
+    "width": 2172,
+    "height": 724,
+    "bytes": 2526376,
+    "sha256": "0063592d1cf84bf39c870b4e7c4e39edb22d86ca36fb168ee72fafeadbfbe2df"
+  },
+  "preparation": "Shared createUiArtPipeline Chromium raster encoding: complete scene scaled to 960x320 and 480x160, quality-85 WebP. No crop or semantic edits. Minor aspect differences are normalized by whole-scene scaling.",
+  "assets": [
+    {
+      "file": "club-briefing.webp",
+      "source": "apps/web/design/standard/club-briefing-v1/sources/club-briefing-v1.png",
+      "bytes": 66688,
+      "sha256": "c870a0f424ff87fb69be34954d0024ae37f255e25ec18138aca2b66ac5f5d4a4",
+      "width": 960,
+      "height": 320
+    },
+    {
+      "file": "club-briefing.small.webp",
+      "source": "apps/web/design/standard/club-briefing-v1/sources/club-briefing-v1.png",
+      "bytes": 20934,
+      "sha256": "cf76741368a8c9893e4c0a631b5416f4ccb924536b92b95b7dc6c411d589d7c4",
+      "width": 480,
+      "height": 160
+    }
+  ]
+}

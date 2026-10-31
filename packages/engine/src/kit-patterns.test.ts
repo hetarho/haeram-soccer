@@ -52,7 +52,8 @@ function visibleColours(design: ShirtDesign): Set<string> {
 
 describe('shirt pattern regions', () => {
   it('each named pattern occupies its broad regions on a 5×5 grid', () => {
-    const expected: Record<ShirtPattern, string[]> = {
+    // Pinstripes are narrower than a cell; their own case reads them finely.
+    const expected: Record<Exclude<ShirtPattern, 'pinstripes'>, string[]> = {
       plain: ['.....', '.....', '.....', '.....', '.....'],
       stripes: ['.#.#.', '.#.#.', '.#.#.', '.#.#.', '.#.#.'],
       hoops: ['.....', '#####', '.....', '#####', '.....'],
@@ -61,12 +62,26 @@ describe('shirt pattern regions', () => {
       sash: ['##...', '###..', '.###.', '..###', '...##'],
       checks: ['##.##', '##.##', '..#..', '##.##', '##.##'],
       chevron: ['.....', '.....', '##.##', '..#..', '.....'],
+      quarters: ['..###', '..###', '#####', '###..', '###..'],
+      centre: ['..#..', '..#..', '..#..', '..#..', '..#..'],
+      panels: ['#...#', '#...#', '#...#', '#...#', '#...#'],
+      yoke: ['#####', '#####', '.....', '.....', '.....'],
+      diagonal: ['....#', '...##', '..###', '.####', '#####'],
     };
-    for (const pattern of SHIRT_PATTERNS)
+    for (const pattern of SHIRT_PATTERNS.filter((name) => name !== 'pinstripes'))
       expect({ pattern, grid: grid(shirt(pattern), 5) }).toEqual({
         pattern,
         grid: expected[pattern],
       });
+  });
+
+  it('pinstripes draw five thin full-height stripes over under a third of the shirt', () => {
+    const row = grid(shirt('pinstripes'), 100)[50]!;
+    expect(row.match(/#+/g)).toHaveLength(5);
+    const share = row.split('').filter((cell) => cell === '#').length / row.length;
+    expect(share).toBeGreaterThan(0.25);
+    expect(share).toBeLessThan(0.33);
+    expect(new Set(grid(shirt('pinstripes'), 100).map((line) => line))).toHaveProperty('size', 1);
   });
 
   it('checks alternate on a readable 3×3 grid, filled at the top left', () => {

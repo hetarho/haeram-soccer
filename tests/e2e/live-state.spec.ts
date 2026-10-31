@@ -1,4 +1,10 @@
-import { openClubhouse, openLeague, resumeLeague, returnToMatch } from './competition-navigation';
+import {
+  clubhouseTab,
+  openClubhouse,
+  openLeague,
+  resumeLeague,
+  returnToMatch,
+} from './competition-navigation';
 import { watchNext } from './watch';
 import { test, expect, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -8,6 +14,7 @@ import type { World } from '../../packages/contracts/src/types';
 import { configureResponsibilities, matchReport } from './events';
 import { continueSlot } from './slots';
 import { chooseOption } from './select';
+import { enterOffice } from './office';
 
 async function found(page: import('@playwright/test').Page) {
   await page.goto('/');
@@ -24,7 +31,6 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
   await configureResponsibilities(page, {
     responsibilities: { recruitment: 'delegated', sales: 'delegated' },
   });
-  const menu = page.getByRole('navigation', { name: '게임 메뉴', exact: true });
   const date = page.getByTestId('game-date');
   await openLeague(page);
   const rankTab = page.getByRole('tab', { name: '팀 기록', exact: true });
@@ -51,7 +57,7 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toBeVisible();
   const mini = page.getByRole('region', { name: '시즌 진행', exact: true });
   await expect(mini.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
-  await menu.getByRole('button', { name: '클럽하우스', exact: true }).click();
+  await clubhouseTab(page).click();
   const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
   await chooseOption(pace, 'x2');
   await expect(pace).toHaveAttribute('data-value', 'x2');
@@ -241,7 +247,7 @@ test('watching a match pauses the calendar and retains playback across page swit
     'aria-selected',
     'true',
   );
-  // The match has no menu entry; retrace the league entry through the clubhouse.
+  // The match has no menu entry; browser back retraces the league entry to it.
   await expect(menu.getByRole('button', { name: '경기', exact: true })).toHaveCount(0);
   await returnToMatch(page);
   await expect(timeline).toBeVisible();
@@ -307,6 +313,8 @@ test("the fatigue remedy opens the assistant's training sheet with 회복 ready,
   await seed(page, w);
   await page.goto('/');
   await continueSlot(page);
+  // The team's state reads in the owner's office; home keeps only quick actions.
+  await enterOffice(page);
   const state = page.getByRole('region', { name: '팀 상태' });
   await state.getByRole('button', { name: /^피로 .* 대처 방법 보기$/ }).click();
   const sheet = page.getByRole('dialog', { name: '피로 관리' });

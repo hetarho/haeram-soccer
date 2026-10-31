@@ -51,7 +51,6 @@ export function TransferRecords({
           onChange={setDirection}
         />
         <Select
-          data-ui="text-select"
           aria-label="이적 기록 시즌"
           value={year === undefined ? ALL : String(year)}
           onValueChange={(value) => setSeason(value)}

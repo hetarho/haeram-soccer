@@ -114,11 +114,7 @@
   font-family: var(--display);
 }
 .negotiation :global([data-select-trigger]) {
-  font-size: 12px;
-  min-height: 44px;
   width: 100%;
-  padding: 7px;
-  font-family: var(--display);
 }
 .outlook {
   display: grid;
@@ -257,10 +253,6 @@
 }
 .lineup :global([data-select-trigger]) {
   width: 100%;
-  font-size: 12px;
-  min-height: 44px;
-  padding: 8px;
-  font-family: var(--display);
 }
 .primary {
   background: var(--surface-grain, none) var(--accent-fill);
@@ -347,12 +339,6 @@
   }
   .negotiation {
     gap: 8px;
-  }
-  .negotiation :global([data-select-trigger]),
-  .lineup :global([data-select-trigger]) {
-    height: 48px;
-    appearance: none;
-    padding-right: 30px;
   }
   .outlook b {
     font-size: 12px;

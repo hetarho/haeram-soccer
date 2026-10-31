@@ -65,6 +65,7 @@ export function createSyntheticPresentation(baseline: {
       'shell.cashDetails': 'Budget {amount} · {status} · Details',
       'facility.era.heritage': 'Ère de test',
       'facility.stadium': 'Tribune {stage}',
+      'facility.manager': 'Bureau de test',
     },
   };
   const theme = structuredClone(baseline.theme);

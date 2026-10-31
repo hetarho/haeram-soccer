@@ -26,10 +26,10 @@ const MatchReport = lazy(() =>
 );
 
 const PACES: [Pace, string, string][] = [
-  ['x1', 'x1', '1초에 하루'],
-  ['x2', 'x2', '0.5초에 하루'],
-  ['x5', 'x5', '0.2초에 하루'],
-  ['x10', 'x10', '0.1초에 하루'],
+  ['x1', '1×', '1초에 하루'],
+  ['x2', '2×', '0.5초에 하루'],
+  ['x5', '5×', '0.2초에 하루'],
+  ['x10', '10×', '0.1초에 하루'],
 ];
 
 /**
@@ -134,6 +134,7 @@ export const ProgressControls = memo(function ProgressControls({
       </button>
       <Select
         className={p.pace}
+        hintLayout="inline"
         aria-label="자동 진행 배속"
         value={pace}
         disabled={blocked || (!running && state.processing)}

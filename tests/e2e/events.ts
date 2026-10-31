@@ -1,7 +1,17 @@
 import type { GameSettings, ResponsibilityKey } from '../../packages/contracts/src/types';
 import { expect, type Locator, type Page } from '@playwright/test';
-import { inOffice, LOBBY, officeLobby, officeTitle, openOfficeArea, outsideOffice } from './office';
+import {
+  enterOffice,
+  inOffice,
+  LOBBY,
+  officeBar,
+  officeLobby,
+  officeTitle,
+  openOfficeArea,
+  outsideOffice,
+} from './office';
 import { dismissFeedback as dismissSettingsToast } from './feedback';
+import { clubhouseTab } from './competition-navigation';
 
 export { dismissSettingsToast };
 const LABELS: Record<ResponsibilityKey, string> = {
@@ -21,6 +31,18 @@ export function matchReport(page: Page) {
   return page
     .getByRole('dialog')
     .filter({ has: page.getByRole('heading', { name: 'NEXT MATCH', exact: true }) });
+}
+/**
+ * Opens the owner's proposal on the next-match report: the report reads first, and its tactic and
+ * lineup tabs and shirt choice show after 의견 전달. A no-op once the proposal is open.
+ */
+export async function proposeOnReport(dialog: Locator) {
+  const propose = dialog.getByRole('button', { name: '의견 전달', exact: true });
+  const proposal = dialog.getByRole('region', { name: '구단주 제안', exact: true });
+  // The report is lazily loaded: wait for either state before deciding.
+  await expect(propose.or(proposal).first()).toBeVisible();
+  if (await propose.isVisible()) await propose.click();
+  await expect(proposal).toBeVisible();
 }
 export async function dismissMatchReport(page: Page) {
   const eve = matchReport(page);
@@ -73,6 +95,12 @@ export async function configureResponsibilities(
       ? (await nav.first().getAttribute('aria-label')) || (await nav.first().innerText()).trim()
       : undefined;
   const officeArea = wasInOffice ? (await officeTitle(page).innerText()).trim() : undefined;
+  // A room shows its name in its bar and is reached again by its lobby door (→WEB-39).
+  const room =
+    !wasInOffice && (await officeBar(page).count())
+      ? (await officeTitle(page).innerText()).trim()
+      : undefined;
+  const home = !wasInOffice && !room && (await nav.locator('[data-pixel-icon="home"]').count()) > 0;
   // The running progression can open its match report over the controls at any moment, even
   // between closing one and pressing pause; close it and press again.
   const pause = page.getByRole('button', { name: '자동 진행 정지', exact: true });
@@ -166,7 +194,16 @@ export async function configureResponsibilities(
   else if (officeArea) await openOfficeArea(page, officeArea);
   else {
     await outsideOffice(page);
-    if (returnLabel)
+    if (room) {
+      await enterOffice(page);
+      await officeLobby(page);
+      await page
+        .getByRole('navigation', { name: '클럽하우스 시설', exact: true })
+        .getByRole('button', { name: room, exact: true })
+        .click();
+      await expect(officeTitle(page)).toHaveText(room);
+    } else if (home) await clubhouseTab(page).click();
+    else if (returnLabel)
       await page
         .getByRole('navigation')
         .getByRole('button', { name: returnLabel, exact: true })
@@ -211,6 +248,43 @@ export async function reviewEvent(page: Page, card: Locator = eventCard(page).fi
   return request;
 }
 
+/** The rows of the office lobby's approval tray (→WEB-39); home leaves office work out. */
+export async function approvalTray(page: Page) {
+  await enterOffice(page);
+  await officeLobby(page);
+  return page.getByRole('region', { name: '결재 대기 업무', exact: true }).getByRole('listitem');
+}
+/** Opens a waiting office request from the lobby tray: the first, or the first with `title`. */
+export async function reviewInOffice(page: Page, title?: string | RegExp) {
+  const rows = await approvalTray(page);
+  await (title === undefined ? rows : rows.filter({ hasText: title }))
+    .first()
+    .getByRole('button', { name: /· 검토하기$/ })
+    .click();
+  const request = page.getByTestId('approval-request');
+  await expect(request).toBeVisible();
+  return request;
+}
+/** Waiting office work, as home's office scene counts it. */
+const officeWaiting = (page: Page) =>
+  page.getByTestId('club-hub').locator('[data-home-part="office"] [data-ui="count"]');
+
+/** Answers an opened request or card: confirms a report, else declines (mediation: 단장 우선). */
+async function answer(page: Page, work: Locator) {
+  const mediation = page.getByRole('dialog', { name: '영입 중재 검토', exact: true });
+  if (await mediation.isVisible()) {
+    await mediation.getByRole('radio', { name: '단장 우선', exact: true }).check();
+    await mediation.getByRole('button', { name: '이번 중재 결정 확정', exact: true }).click();
+    return;
+  }
+  const contract = page.getByRole('dialog', { name: '계약 협상', exact: true });
+  const controls = (await contract.isVisible()) ? contract : work;
+  const read = controls.getByRole('button', { name: '확인', exact: true });
+  await (
+    (await read.count()) ? read : controls.getByRole('button', { name: '거절', exact: true })
+  ).click();
+}
+
 /**
  * Reads every pending attention card with '확인', e.g. after importing a career mid-season; an
  * offer that waits for an answer instead (another club's bid) is declined.
@@ -225,29 +299,32 @@ export async function acknowledgeEvents(page: Page) {
     const current = await title();
     const count = await eventCard(page).count();
     // An observation is not a dismissible report; the caller can prepare or watch the match.
-    if (!current || current.includes('내일 경기')) return;
+    if (!current || current.includes('내일 경기')) return answerOffice(page);
     const reviewing = card.getByRole('button', { name: '검토하기', exact: true });
     const inDesk = (await reviewing.count()) > 0;
-    const work = inDesk ? await reviewEvent(page, card) : card;
-    const mediation = page.getByRole('dialog', { name: '영입 중재 검토', exact: true });
-    if (await mediation.isVisible()) {
-      const review = page.getByRole('dialog', { name: '영입 중재 검토', exact: true });
-      await review.getByRole('radio', { name: '단장 우선', exact: true }).check();
-      await review.getByRole('button', { name: '이번 중재 결정 확정', exact: true }).click();
-    } else {
-      const contract = page.getByRole('dialog', { name: '계약 협상', exact: true });
-      const controls = (await contract.isVisible()) ? contract : work;
-      const read = controls.getByRole('button', { name: '확인', exact: true });
-      await (
-        (await read.count()) ? read : controls.getByRole('button', { name: '거절', exact: true })
-      ).click();
-    }
+    await answer(page, inDesk ? await reviewEvent(page, card) : card);
     if (inDesk) await expect(page.getByTestId('approval-request')).toHaveCount(0);
     await expect
       .poll(async () => [await eventCard(page).count(), await title()], { timeout: 10000 })
       .not.toEqual([count, current]);
   }
   throw new Error('Too many pending events to acknowledge');
+}
+
+/** Answers the office's waiting requests one by one, then steps back out to home. */
+async function answerOffice(page: Page) {
+  if (!(await officeWaiting(page).count())) return;
+  let last = Infinity;
+  for (let i = 0; i < 20; i++) {
+    const count = await (await approvalTray(page)).count();
+    if (!count) return outsideOffice(page);
+    expect(count, 'an answered request leaves the tray').toBeLessThan(last);
+    last = count;
+    const request = await reviewInOffice(page);
+    await answer(page, request);
+    await expect(request).toHaveCount(0);
+  }
+  throw new Error('Too many pending office requests to answer');
 }
 
 /**

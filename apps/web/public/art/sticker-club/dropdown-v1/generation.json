@@ -1,0 +1,65 @@
+{
+  "method": "Built-in image_gen atlas; shared createUiArtPipeline alpha slicing and WebP encoding",
+  "date": "2026-10-31",
+  "sources": "apps/web/design/sticker-club/dropdown-v1",
+  "source": "sources/plates.png",
+  "sourceSha256": "10219366426369b87287cc6331c7246757864706cfd05583a316d920e5577c3e",
+  "prompts": "apps/web/design/sticker-club/dropdown-v1/prompts.json",
+  "geometry": "Separate trigger, popup and selected-row nine-slice plates; filled centres and fixed source caps. Live labels, icons and focus remain HTML/SVG.",
+  "assets": [
+    {
+      "file": "frame-trigger.webp",
+      "source": "sources/plates.png",
+      "crop": {
+        "x": 61,
+        "y": 179,
+        "width": 1134,
+        "height": 243
+      },
+      "filter": "scale=1152:384",
+      "bytes": 2202,
+      "sha256": "6e9408340052a8e71d53b760971232a66789751c6205ca56d7c828c5f334ffee",
+      "role": "image-art-dropdown-trigger",
+      "width": 192,
+      "height": 64,
+      "mode": "nine-slice",
+      "slice": 22
+    },
+    {
+      "file": "frame-popup.webp",
+      "source": "sources/plates.png",
+      "crop": {
+        "x": 59,
+        "y": 509,
+        "width": 1137,
+        "height": 247
+      },
+      "filter": "scale=1152:384",
+      "bytes": 2292,
+      "sha256": "7d0163cc7f74a61bc835a613a8dab0a41168acae25720c5bc3d368f4535033a1",
+      "role": "image-art-dropdown-popup",
+      "width": 192,
+      "height": 64,
+      "mode": "nine-slice",
+      "slice": 22
+    },
+    {
+      "file": "frame-selection.webp",
+      "source": "sources/plates.png",
+      "crop": {
+        "x": 61,
+        "y": 835,
+        "width": 1133,
+        "height": 240
+      },
+      "filter": "scale=1152:384",
+      "bytes": 2192,
+      "sha256": "334806b7fdf8b2163707a0674bdf88f6e0d29a74dd71133c6f3ee0bf7a6381c0",
+      "role": "image-art-dropdown-selection",
+      "width": 192,
+      "height": 64,
+      "mode": "nine-slice",
+      "slice": 22
+    }
+  ]
+}

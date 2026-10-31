@@ -1,0 +1,191 @@
+/* Two players face each other: heads on top, then each measure as one row across both. */
+.compare {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  font-family: var(--display);
+}
+.heads {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.head {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
+  text-align: center;
+}
+.head h3 {
+  margin: 2px 0 0;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.head small {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.head button {
+  min-height: 40px;
+  margin-top: 4px;
+  padding: 4px 12px;
+  font-size: 12px;
+}
+.sideLabel {
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 800;
+}
+.versus {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--text);
+  color: var(--surface);
+  font-size: 12px;
+  font-weight: 900;
+  transform: translate(-50%, -50%);
+}
+
+/* A measure: left value, its name in the middle, right value. */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.table caption {
+  padding: 0 0 6px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+}
+.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.table tbody tr + tr {
+  border-top: 1px dashed var(--line);
+}
+.table th[scope='row'] {
+  width: 30%;
+  padding: 7px 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: center;
+}
+.table td,
+.table th {
+  white-space: normal;
+}
+.table td {
+  padding: 7px 4px;
+  font-size: 14px;
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.table td[data-side='left'] {
+  text-align: right;
+}
+.table td[data-side='right'] {
+  text-align: left;
+}
+/* The better value of a directed measure stands out by weight, not colour. */
+.table td b {
+  color: var(--text-muted);
+  font-weight: 700;
+}
+.table td[data-better] b {
+  color: var(--text);
+  font-weight: 900;
+}
+.table tfoot td {
+  padding: 6px 4px 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Attributes meet in the middle: each bar grows away from the measure's name. */
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+td[data-side='left'] .bar {
+  flex-direction: row;
+}
+td[data-side='right'] .bar {
+  flex-direction: row-reverse;
+}
+.bar b {
+  flex: 0 0 26px;
+  text-align: center;
+}
+.track {
+  display: flex;
+  flex: 1;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--inset-fill, rgb(0 0 0 / 12%));
+}
+td[data-side='left'] .track {
+  justify-content: flex-end;
+}
+.track i {
+  display: block;
+  height: 100%;
+  background: var(--text-faint);
+}
+td[data-better] .track i {
+  background: var(--text);
+}
+
+@media (max-width: 760px) {
+  .heads {
+    gap: 8px;
+  }
+  .head {
+    padding: 10px 6px;
+  }
+  .head h3 {
+    font-size: 15px;
+  }
+  .table th[scope='row'] {
+    width: 28%;
+    font-size: 11px;
+  }
+  .table td {
+    font-size: 13px;
+  }
+  .bar {
+    gap: 4px;
+  }
+  .bar b {
+    flex-basis: 22px;
+  }
+}

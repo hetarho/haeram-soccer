@@ -1,12 +1,12 @@
 import { openPersonnel } from './personnel-navigation';
-import { clubhouseDate, openLeague } from './competition-navigation';
+import { clubhouseDate, openLeague, primaryEntry } from './competition-navigation';
 import { marketFilters, marketRows, closeMarketPanel } from './market';
 import { watchNext } from './watch';
 import { chooseOption, selectOptions } from './select';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { COUNTRIES } from '../../packages/catalogs/src/index';
 import { expectHomeBounds, expectViewFits, settle } from './layout';
-import { chooseLevel } from './events';
+import { chooseLevel, proposeOnReport } from './events';
 
 async function expectTouchControl(
   control: Locator,
@@ -101,6 +101,8 @@ for (const viewport of [
     await expectTouchControl(prepare, viewport);
     await prepare.click();
     const preparation = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
+    await expect(preparation).toBeVisible();
+    await proposeOnReport(preparation);
     const tone = preparation.getByRole('combobox', { name: '전술 요청 방식', exact: true });
     await expectTouchControl(tone, viewport);
     await tone.focus();
@@ -143,6 +145,8 @@ for (const viewport of [
       .getByTestId('club-hub')
       .getByRole('button', { name: '상세 리포트', exact: true })
       .click();
+    await expect(preparation).toBeVisible();
+    await proposeOnReport(preparation);
     await preparation.getByRole('tab', { name: '선발 선택', exact: true }).click();
     await preparation.getByText('선수별 교체', { exact: true }).click();
     await expect(keeper).toHaveAttribute('data-value', replacement!);
@@ -174,11 +178,10 @@ for (const viewport of [
     await career.click();
     await expect(career).toHaveAttribute('aria-checked', 'true');
     await page.keyboard.press('Escape');
-    const marketTab = page
-      .getByRole('tablist', { name: '감독 사무실' })
-      .getByRole('tab', { name: '이적시장', exact: true });
-    await expectTouchControl(marketTab, viewport);
-    await marketTab.click();
+    // The transfer market is a primary entry of its own (→WEB-10).
+    const marketEntry = primaryEntry(page, 'switch');
+    await expectTouchControl(marketEntry, viewport);
+    await marketEntry.click();
     const filter = await marketFilters(page);
     const order = filter.getByRole('combobox', { name: '영입 후보 정렬', exact: true });
     await expectTouchControl(order, viewport);

@@ -3,45 +3,61 @@
   gap: 14px;
   min-width: 0;
 }
-.facts {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
-  gap: 12px;
-  margin: 0;
-}
-.facts dt {
-  color: var(--text-muted);
-  font-size: 12px;
-}
-.facts dd {
-  margin: 4px 0 0;
-  font-size: 18px;
-  font-weight: 700;
-}
+/* The four player works as cards: who decides, what they follow, the way in. */
 .stances {
-  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: 12px;
+  list-style: none;
 }
-.stances li {
+.stances > li {
+  display: flex;
   min-width: 0;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--line);
 }
-.stances h3 {
+.stance {
+  flex: 1;
+}
+.stance p {
   margin: 0;
-  font-size: 15px;
-}
-.stances p {
-  margin: 6px 0;
   font-size: 13px;
   overflow-wrap: anywhere;
 }
-.stances button {
-  display: block;
-  min-height: 44px;
-  white-space: normal;
-  text-align: start;
+.owner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+.owner [data-ui='label'] {
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 800;
+}
+.owner [data-auto='false'] {
+  color: var(--accent-text);
+}
+.waiting {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+.waiting b {
+  font-size: 11px;
+}
+.stance button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 40px;
+  margin-left: auto;
+  font-size: 13px;
+}
+@media (max-width: 760px) {
+  .stances {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
 }

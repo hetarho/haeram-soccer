@@ -51,15 +51,8 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await page.setViewportSize({ width: 390, height: 844 });
   const mobileMenu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(mobileMenu).toBeVisible();
-  // The same six destinations appear on desktop and phones; the office opens from home.
-  const tabs = [
-    '클럽하우스',
-    '구단주 사무실',
-    '감독 사무실',
-    '코칭스태프실',
-    '훈련장',
-    '유소년 훈련장',
-  ];
+  // Five entries; the bottom bar keeps the clubhouse in the middle (→WEB-10).
+  const tabs = ['리그', '컵', '클럽하우스', '이적시장', '기록'];
   await expect(mobileMenu.getByRole('button')).toHaveCount(tabs.length);
   expect(
     await mobileMenu
@@ -91,13 +84,10 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await allMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(allMenu).toHaveCount(0);
   // First-team work opens on the roster with its real squad count.
-  await expect(mobileMenu.getByRole('button', { name: '감독 사무실', exact: true })).toHaveText(
-    '감독 사무실',
-  );
   await openPersonnel(page, 'players');
   await expect(page.getByRole('tablist', { name: '감독 사무실', exact: true })).toBeVisible();
   const peopleTabs = page.getByRole('tablist', { name: '감독 사무실' }).getByRole('tab');
-  await expect(peopleTabs).toHaveText(['감독', '선수 목록', '이적시장']);
+  await expect(peopleTabs).toHaveText(['감독', '선수 목록']);
   await expect(peopleTabs.filter({ hasText: '선수 목록' })).toHaveAttribute(
     'aria-selected',
     'true',

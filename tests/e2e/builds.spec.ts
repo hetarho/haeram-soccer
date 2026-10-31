@@ -12,6 +12,7 @@ import {
 } from '../../packages/engine/src/index';
 import type { Tactic } from '../../packages/contracts/src/types';
 import { settle } from './layout';
+import { proposeOnReport } from './events';
 
 test('discloses roster and opponent tactical fit before an actual seeded match', async ({
   page,
@@ -45,6 +46,7 @@ test('discloses roster and opponent tactical fit before an actual seeded match',
   const rival = dialog.getByRole('region', { name: '상대 팀', exact: true });
   await expect(rival.getByText(opponent.name, { exact: true })).toBeVisible();
   await expect(rival).toContainText(tacticLabel[opponentTactic]);
+  await proposeOnReport(dialog);
   const tactics = dialog.getByRole('region', { name: '경기 전술 준비' });
   const disclosures: Record<Tactic, { benefit: string; cost: string }> = {
     balanced: {
@@ -134,17 +136,26 @@ for (const viewport of [
     const opener = page.getByTestId('club-hub').getByRole('button', { name: '상세 리포트' });
     await opener.click();
     const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
+    await expect(dialog).toBeVisible();
+    await proposeOnReport(dialog);
     const tacticTab = dialog.getByRole('tab', { name: '전술 선택', exact: true });
     const lineupTab = dialog.getByRole('tab', { name: '선발 선택', exact: true });
     await expect(tacticTab).toHaveAttribute('aria-selected', 'true');
     const cards = dialog.getByRole('region', { name: '경기 전술 준비' }).getByRole('button');
     await settle(page);
-    const bounds = await Promise.all((await cards.all()).map((card) => card.boundingBox()));
+    // One read for all four: 의견 전달 smooth-scrolls the proposal into view, and separate reads
+    // could straddle that scroll.
+    const bounds = await cards.evaluateAll((elements) =>
+      elements.map((element) => {
+        const { x, y } = element.getBoundingClientRect();
+        return { x, y };
+      }),
+    );
     expect(bounds).toHaveLength(4);
-    expect(bounds[0]!.y).toBe(bounds[1]!.y);
-    expect(bounds[2]!.y).toBe(bounds[3]!.y);
-    expect(bounds[1]!.x).toBeGreaterThan(bounds[0]!.x);
-    expect(bounds[2]!.y).toBeGreaterThan(bounds[0]!.y);
+    expect(bounds[0].y).toBe(bounds[1].y);
+    expect(bounds[2].y).toBe(bounds[3].y);
+    expect(bounds[1].x).toBeGreaterThan(bounds[0].x);
+    expect(bounds[2].y).toBeGreaterThan(bounds[0].y);
     await tacticTab.focus();
     await page.keyboard.press('ArrowRight');
     await expect(lineupTab).toBeFocused();

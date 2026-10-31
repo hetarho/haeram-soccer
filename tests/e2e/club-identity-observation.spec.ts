@@ -1,4 +1,4 @@
-import { openClubRecords } from './competition-navigation';
+import { openClubhouse, openClubRecords } from './competition-navigation';
 import { expect, test, type Page } from '@playwright/test';
 import { describeShirt } from '../../apps/web/src/ui/kitPainting';
 import { UNRECORDED_LOOK } from '../../apps/web/src/ui/matchAppearance';
@@ -16,9 +16,17 @@ import { colourArea, torsoShare, wornFigures, type CanvasImage } from '../fixtur
 import { ALL_DELEGATED } from './events';
 import { openCurrentClubSeason } from './record-navigation';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { pitchImage, savedWorld, visiblePitch, watchToWhistle } from './club-identity-helpers';
+import {
+  adoptDraft,
+  commission,
+  openDesign,
+  pitchImage,
+  savedWorld,
+  visiblePitch,
+  watchToWhistle,
+} from './club-identity-helpers';
 import { openWatchAction } from './watch';
-import { leaveOffice, openOfficeArea } from './office';
+import { leaveOffice } from './office';
 
 /**
  * KIT-8/12, WEB-49/50, MATCH-36, SAVE-22: the live pitch Canvas dresses its player figures in the
@@ -108,7 +116,7 @@ test('the live Canvas wears the recorded stripes, checks and keeper colours at p
   ).toHaveCount(1);
 });
 
-test('a design applied while the match is paused mid-match leaves its recorded shirts on the pitch', async ({
+test('a design adopted while the match is paused mid-match leaves its recorded shirts on the pitch', async ({
   page,
 }) => {
   test.slow();
@@ -123,33 +131,19 @@ test('a design applied while the match is paused mid-match leaves its recorded s
   await page.getByRole('button', { name: '전반 종료 · 45분', exact: true }).click();
   await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('결과 보기');
   expect(await figures(page, STRIPES)).toBeGreaterThanOrEqual(3);
-  // The owner recolours the home shirt in 구단주 사무실 › 구단 디자인 and applies it (→KIT-9).
-  const edited = '#ff6d00';
-  await openOfficeArea(page, '구단 디자인');
-  // The editor loads lazily with the area (T251).
-  const design = page.getByRole('region', { name: '구단 디자인', exact: true });
-  await expect(design.getByRole('group', { name: '색상', exact: true })).toBeVisible();
-  await design
-    .getByRole('group', { name: '편집할 유니폼', exact: true })
-    .getByRole('button', { name: '홈 유니폼', exact: true })
-    .click();
-  await design.getByLabel('홈 색 코드', { exact: true }).fill(edited);
-  await design
-    .getByRole('group', { name: '구단 디자인 적용', exact: true })
-    .getByRole('button', { name: '적용', exact: true })
-    .click();
-  const outcome = page.getByTestId('action-outcome');
-  await expect(outcome).toContainText('구단 디자인을 적용했어요');
-  await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
+  // The owner commissions an orange design in 구단주 사무실 › 구단 디자인 and adopts a draft (→KIT-9).
+  const edited = '#f77f00';
+  const design = await openDesign(page);
+  const { drafts } = await commission(page, design, [edited]);
+  await adoptDraft(design, 0);
+  const adopted = drafts[0]!;
+  expect(adopted.kits.home.primary).toBe(edited);
   await expect
-    .poll(async () => identityOf(await savedWorld(page), w.playerClub).kits.home.primary)
-    .toBe(edited);
+    .poll(async () => identityOf(await savedWorld(page), w.playerClub).kits.home)
+    .toEqual(adopted.kits.home);
   // The unfinished match report resumes the same playback and its recorded kit (→WEB-50/83).
   await leaveOffice(page);
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '클럽하우스', exact: true })
-    .click();
+  await openClubhouse(page);
   const back = await openWatchAction(page);
   await expect(back).toHaveAccessibleName('관전 이어보기');
   await back.click();
@@ -157,6 +151,7 @@ test('a design applied while the match is paused mid-match leaves its recorded s
   // The resumed playback runs on: wait for a moment its figures stand clear of each other.
   await expect.poll(() => figures(page, STRIPES)).toBeGreaterThanOrEqual(3);
   expect(await figures(page, { ...STRIPES, primary: edited })).toBe(0);
+  expect(await figures(page, adopted.kits.home)).toBe(0);
   expect(await recorded(page, next.id)).toEqual(expected);
 });
 

@@ -98,7 +98,6 @@ export function Dialog({
   onClose,
   wide = false,
   picker = false,
-  centered = false,
   actions: footerActions,
 }: {
   label: string;
@@ -107,8 +106,6 @@ export function Dialog({
   wide?: boolean;
   /** A small centered panel over a light dim that keeps the page behind it visible. */
   picker?: boolean;
-  /** Keep a large overview centered on phones as well as desktop. */
-  centered?: boolean;
   actions?: ReactNode;
 }) {
   const element = useRef<HTMLElement>(null);
@@ -133,7 +130,8 @@ export function Dialog({
       active instanceof HTMLElement && active !== document.body ? active : pointerTrigger?.deref();
     const layer = backdrop.current!;
     const unlock = lockLayer(layer);
-    const mobile = !picker && !centered && sheet();
+    // Every dialog but a picker rises as a bottom sheet on phones.
+    const mobile = !picker && sheet();
     play(layer, [{ opacity: 0 }, { opacity: 1 }], { duration: 200 });
     play(
       element.current,
@@ -225,7 +223,7 @@ export function Dialog({
   return createPortal(
     <div
       ref={backdrop}
-      className={`${s.modalBackdrop} ${picker ? s.picker : ''} ${centered ? s.centered : ''}`}
+      className={`${s.modalBackdrop} ${picker ? s.picker : ''}`}
       onClick={(e) => {
         if (e.target === e.currentTarget) requestClose();
       }}
@@ -241,6 +239,7 @@ export function Dialog({
         tabIndex={-1}
       >
         <header className={s.modalHead} data-ui="dialog-header">
+          <span className={s.sheetHandle} aria-hidden="true" />
           <h2 id={labelId}>{label}</h2>
           <button
             data-ui="icon"

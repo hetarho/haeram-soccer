@@ -3,11 +3,12 @@ import { createWorld, advanceDays } from '../../packages/engine/src/index';
 import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsibility-fixtures';
 import { expect, test, type Page } from '@playwright/test';
 import {
+  approvalTray,
   chooseLevel,
   configureResponsibilities,
   dismissSettingsToast,
   openOffice,
-  reviewEvent,
+  reviewInOffice,
 } from './events';
 import { horizontalOverflow, settle } from './layout';
 import { leaveOffice } from './office';
@@ -303,22 +304,29 @@ test('deciding the event that stopped a running clock plays on (→WEB-42)', asy
   const play = clock.getByRole('button', { name: '자동 진행 시작', exact: true }),
     stop = clock.getByRole('button', { name: '자동 진행 정지', exact: true }),
     card = page.getByTestId('event-card');
+  // Office work stops the clock behind the office scene's count, not as a home card (→WEB-39).
+  const waiting = page
+    .getByTestId('club-hub')
+    .locator('[data-home-part="office"] [data-ui="count"]');
   await play.click();
   for (let i = 0; i < 10; i++) {
-    await expect(card).toBeVisible({ timeout: 20000 });
+    await expect(card.or(waiting).first()).toBeVisible({ timeout: 20000 });
     await expect(play).toBeVisible();
-    const text = await card.innerText();
-    if (text.includes('내일 경기')) {
-      await card.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
-      await expect(stop).toBeVisible();
-      continue;
+    if (await card.isVisible()) {
+      const text = await card.innerText();
+      if (text.includes('내일 경기')) {
+        await card.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
+        await expect(stop).toBeVisible();
+        continue;
+      }
     }
     // The last event waiting is decided (확인, or 거절 for an offer): the clock runs again
     // without play.
-    const others = Number(/남은 이벤트 (\d+)개/.exec(text)?.[1] ?? 1);
-    const controls = (await card.getByRole('button', { name: '검토하기', exact: true }).count())
-      ? await reviewEvent(page, card)
-      : card;
+    const office = !(await card.isVisible());
+    const others = office
+      ? await (await approvalTray(page)).count()
+      : Number(/남은 이벤트 (\d+)개/.exec(await card.innerText())?.[1] ?? 1);
+    const controls = office ? await reviewInOffice(page) : card;
     const read = controls.getByRole('button', { name: '확인', exact: true });
     await (
       (await read.count()) ? read : controls.getByRole('button', { name: '거절', exact: true })
@@ -394,10 +402,12 @@ for (const themeId of ['standard', 'pixel']) {
     await dialog.getByRole('checkbox').check();
     await dialog.getByRole('button', { name: '수동 모드로 변경', exact: true }).click();
     await expect(page.getByTestId('progression-mode')).toHaveText('MANUAL');
+    // The shortcut is as wide as its word, AUTO or MANUAL, with the label inside it.
     const afterMode = await modeGeometry();
-    expect(afterMode.button!.x).toBe(beforeMode.button!.x);
-    expect(afterMode.button!.width).toBe(beforeMode.button!.width);
-    expect(afterMode.label!.width).toBe(beforeMode.label!.width);
+    expect(afterMode.label!.x).toBeGreaterThan(afterMode.button!.x);
+    expect(afterMode.label!.x + afterMode.label!.width).toBeLessThanOrEqual(
+      afterMode.button!.x + afterMode.button!.width,
+    );
     await expect(date).toHaveText(before);
     await expect(page.getByRole('button', { name: '다음 이벤트', exact: true })).toBeVisible();
     const outcome = page.getByTestId('action-outcome');

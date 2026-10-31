@@ -3,73 +3,152 @@
   gap: 14px;
   min-width: 0;
 }
-/*
- * The apply bar stays at the top edge of the content region while the editor scrolls under it; the
- * floating news button owns the bottom edge (→WEB-51).
- */
-.bar {
-  position: sticky;
-  top: var(--task-offset, 0px);
-  z-index: 20;
+.panel {
   display: grid;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: 10px;
+  padding: 12px 14px;
   border: 1px solid var(--line-strong);
   border-radius: var(--card-radius);
   background: var(--surface-grain, none) var(--surface);
   min-width: 0;
 }
-.bar[data-changed='true'] {
-  border-color: var(--accent);
+.panel h3 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 15px;
 }
-.row {
+/* A design at a glance: the crest, then the three shirts with their names. */
+.design {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 10px;
-  min-width: 0;
+  gap: 14px;
 }
-.row svg {
-  flex: 0 0 auto;
+.kits {
+  display: flex;
+  gap: 10px;
 }
-.status {
-  flex: 1 1 auto;
-  min-width: 0;
+.kits figure {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  margin: 0;
+}
+.kits figcaption {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+/* A request step: where it stands, then the colours chosen so far. */
+.stepHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.count {
   font-family: var(--display);
-  font-size: 13px;
-  line-height: 1.5;
+  font-size: 12px;
+  color: var(--text-muted);
 }
-.actions {
+.chosen {
+  display: flex;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+}
+.chosen li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.chip {
+  width: 16px;
+  height: 16px;
+}
+.chip[data-empty] {
+  border: 1px dashed var(--line-strong);
+}
+.nav {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.nav button {
+  min-height: 44px;
+  min-width: 88px;
+}
+.ask {
+  margin: 4px 0 0;
+  font-family: var(--display);
+  font-size: 16px;
+  font-weight: 800;
+}
+.palette {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
-.actions button {
-  min-height: 44px;
-  padding: 6px 12px;
+/* A bare colour square: the theme's control frame and fill are taken off, pressed included. */
+button.swatch {
+  position: relative;
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+  border: 0 !important;
+  border-image: none !important;
+  border-radius: 0;
+  background: none !important;
+  box-shadow: none !important;
 }
-.apply {
-  background: var(--surface-grain, none) var(--accent-fill);
-  color: var(--on-accent);
+.fill {
+  position: absolute;
+  inset: 0;
+}
+button.swatch[aria-pressed='true'] .fill {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+button.swatch:disabled {
+  opacity: 0.25;
+}
+button.none {
+  min-height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+button.none[aria-pressed='true'] {
   border-color: var(--accent);
-  font-weight: 700;
 }
-.alert {
-  display: grid;
-  gap: 8px;
-  padding: 10px 12px;
-  border: 1px solid var(--danger);
-  border-radius: var(--card-radius);
-}
-.alert p,
-.done {
+.terms {
   margin: 0;
   font-size: 13px;
-  line-height: 1.6;
-  color: var(--text);
 }
-.alert > button {
+.request {
   justify-self: start;
+  min-height: 44px;
+  padding: 6px 18px;
+}
+.drafts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.draft {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--card-radius);
+}
+.draft > button {
   min-height: 44px;
 }
 .note {
@@ -77,4 +156,9 @@
   font-size: 12px;
   line-height: 1.6;
   color: var(--text-muted);
+}
+.warn {
+  margin: 0;
+  font-size: 12px;
+  color: var(--danger);
 }

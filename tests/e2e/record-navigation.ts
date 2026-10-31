@@ -1,16 +1,9 @@
 import { openClubRecords } from './competition-navigation';
 import { expect, type Page } from '@playwright/test';
 
-/**
- * The records tabs, stepping back out of a season sub-screen a return restored (→WEB-54/74):
- * its navigator bar stands where the tabs were.
- */
+/** The records tabs, which stay above an opened season too (→WEB-54). */
 export async function showRecordTabs(page: Page) {
-  const tabs = page.getByRole('tablist', { name: '기록실 보기' });
-  const navigator = page.getByRole('navigation', { name: '시즌 기록 이동', exact: true });
-  await expect(tabs.or(navigator)).toBeVisible();
-  if (await navigator.isVisible()) await navigator.getByRole('button').click();
-  await expect(tabs).toBeVisible();
+  await expect(page.getByRole('tablist', { name: '기록실 보기' })).toBeVisible();
 }
 /** Enter the current club season through the user-facing season list. */
 export async function openCurrentClubSeason(page: Page) {

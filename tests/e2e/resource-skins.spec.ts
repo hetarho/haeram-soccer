@@ -48,10 +48,6 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
     await imageSkin(venue);
     expect((await venue.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);
     await expect(page.locator('[data-home-part="entrances"]')).toHaveCount(0);
-    const dim = await page
-      .locator('[data-home-part="scene"] [data-facility-art]')
-      .evaluate((node) => getComputedStyle(node, '::after').backgroundColor);
-    expect(dim).toBe('rgba(5, 12, 10, 0.58)');
     await page.screenshot({ path: `.tmp/resource-audit/${theme.id}-home.png` });
     const navigate = async (name: string) =>
       page.getByRole('button', { name, exact: true }).filter({ visible: true }).first().click();

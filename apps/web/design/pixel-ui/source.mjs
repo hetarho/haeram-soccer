@@ -1,4 +1,5 @@
 import { uiIconSvg, uiSvg, UI_PICTOGRAMS } from '../../../../scripts/ui-art-resources.mjs';
+import { pixelIcon } from './icons.mjs';
 
 // Native pixel source: two source pixels become one CSS pixel at a 16px frame slice / 8px edge.
 const frames = {
@@ -18,13 +19,6 @@ const glyphs = {
   E: ['11111', '10000', '10000', '11110', '10000', '10000', '11111'],
   R: ['11110', '10001', '10001', '11110', '10100', '10010', '10001'],
   M: ['10001', '11011', '10101', '10101', '10001', '10001', '10001'],
-};
-const addedGlyphs = {
-  boot: 'M3 2h5v7h2v2h4v3H1v-4h2Z M9 7h2v2H9Z',
-  supporters: 'M2 1h3v3H2ZM11 1h3v3h-3ZM6 3h4v4H6ZM1 5h4v2H3v7H1ZM11 5h4v9h-2V7h-2ZM5 8h6v7H5Z',
-  manager: 'M6 1h4v2h2v4h-2v2H6V7H4V3h2ZM4 10h3l1 3 1-3h3v2h2v4H2v-4h2Z',
-  shirt: 'M4 1h3v2h2V1h3v2h2v2h2v4h-4v7H4V9H0V5h2V3h2Z',
-  heart: 'M2 2h4v2h4V2h4v2h2v6h-2v2h-2v2h-2v2H6v-2H4v-2H2v-2H0V4h2Z',
 };
 const roles = { league: 'table', office: 'trend' };
 function pixelFrame(fill, edge, light) {
@@ -104,20 +98,14 @@ export function pixelDetailSources() {
   return sources;
 }
 
-export function pixelUiSources(theme) {
+export function pixelUiSources() {
   const sources = [];
-  const add = (name, svg) => sources.push({ name, svg, source: `source.mjs#${name}` });
+  const add = (name, svg, source = `source.mjs#${name}`) => sources.push({ name, svg, source });
   for (const [name, [fill, edge, light]] of Object.entries(frames))
     add(`frame-${name}`, pixelFrame(fill, edge, light));
   for (const name of UI_PICTOGRAMS) {
-    const icon = addedGlyphs[name]
-      ? {
-          viewBox: '0 0 16 16',
-          shapeRendering: 'crispEdges',
-          layers: [{ d: addedGlyphs[name], fill: 'currentColor' }],
-        }
-      : theme.icons[roles[name] || name].default;
-    add(`icon-${name}`, uiIconSvg(icon));
+    const icon = pixelIcon(roles[name] || name);
+    add(`icon-${name}`, uiIconSvg(icon), `icons.mjs#${roles[name] || name}`);
   }
   for (const [name, fill, grain] of [
     ['canvas', '#111415', '#151b1a'],

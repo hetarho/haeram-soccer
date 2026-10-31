@@ -1,14 +1,7 @@
-/* The office lobby: the room, then a desk card per area (→WEB-39). */
-.lobby {
-  display: grid;
-  gap: 14px;
-  width: 100%;
-  max-width: 1180px;
-  margin: 0 auto;
-}
+/* The office lobby's doors: one tile per desk, worn like the clubhouse's rooms (→WEB-39). */
 .areas {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
   margin: 0;
   padding: 0;
@@ -31,9 +24,6 @@
 .areas > li:nth-child(5) {
   animation-delay: 160ms;
 }
-.areas > li:nth-child(6) {
-  animation-delay: 200ms;
-}
 @keyframes rise {
   from {
     opacity: 0;
@@ -43,17 +33,18 @@
 .area {
   position: relative;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 10px;
+  grid-template-rows: auto auto 1fr;
+  justify-items: center;
+  align-content: start;
+  gap: 4px;
   width: 100%;
-  min-height: 72px;
-  padding: 12px 26px 12px 12px;
+  min-height: 150px;
+  padding: 14px 10px 12px;
   border: 1px solid var(--popover-edge);
   border-radius: var(--card-radius);
   background: var(--surface-grain, none) var(--surface);
   color: inherit;
-  text-align: left;
+  text-align: center;
   font: inherit;
 }
 .area:active:not(:disabled) {
@@ -62,48 +53,52 @@
 .icon {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--surface-grain, none) var(--surface-deep);
+  width: 52px;
+  height: 52px;
+  margin-bottom: 2px;
   color: var(--accent-text);
 }
-.text {
-  display: grid;
-  gap: 3px;
-  min-width: 0;
-}
-.text b {
+.label {
   font-size: 16px;
   font-weight: 800;
   line-height: 1.25;
 }
-.text small {
+.fact {
+  max-width: 100%;
   font-size: 12px;
-  line-height: 1.4;
+  line-height: 1.45;
   color: var(--text-muted);
   overflow-wrap: anywhere;
   word-break: keep-all;
   font-family: var(--display);
 }
-.more {
+.count {
   position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
-  color: var(--text-faint);
+  top: 8px;
+  right: 8px;
+  font-size: 12px;
 }
 @media (max-width: 760px) {
   .areas {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
+    gap: 6px;
   }
   .area {
-    grid-template-columns: auto minmax(0, 1fr);
-    align-content: center;
-    gap: 8px;
-    min-height: 88px;
-    padding: 10px 22px 10px 10px;
+    min-height: 120px;
+    padding: 10px 6px;
+  }
+  .icon {
+    width: 40px;
+    height: 40px;
+  }
+  .label {
+    font-size: 14px;
+  }
+  .fact {
+    font-size: 11px;
+  }
+  .areas > li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -111,34 +106,46 @@
     animation: none;
   }
 }
-
-@media (max-width: 760px) {
-  .icon {
-    width: 28px;
-    height: 28px;
-  }
-  .text b {
-    font-size: 14px;
-  }
-}
-
-.pending {
+/* The clubhouse's rooms: one row of doors under the team's state; the frame and icon art come
+   from the theme's place tile. */
+.rooms {
   display: grid;
-  gap: 6px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.room {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 4px;
   min-width: 0;
+  min-height: 112px;
+  padding: 10px 6px;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+  word-break: keep-all;
 }
-.pending h2 {
-  margin: 0;
-  font-size: 16px;
-}
-.pending p {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 13px;
-}
-.pending button {
-  min-height: 44px;
-  white-space: normal;
+.room small {
+  max-width: 100%;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  opacity: 0.8;
   overflow-wrap: anywhere;
-  text-align: start;
+  font-family: var(--display);
+}
+@media (max-width: 760px) {
+  .rooms {
+    gap: 6px;
+  }
+  .room {
+    min-height: 96px;
+    padding: 8px 2px;
+    font-size: 12px;
+  }
+  .room small {
+    font-size: 11px;
+  }
 }

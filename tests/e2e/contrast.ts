@@ -1,12 +1,15 @@
-/** Contrast against the element's painted fallback surface, including translucent ancestors. */
-export function textContrast(element: Element) {
+/**
+ * Contrast against the element's painted fallback surface, including translucent ancestors. A
+ * control that paints its face on a pseudo-element names it, e.g. '::before'.
+ */
+export function textContrast(element: Element, face?: string) {
   const rgba = (value: string) => {
     const parts = value.match(/[\d.]+/g)!.map(Number);
     return [parts[0], parts[1], parts[2], parts[3] ?? 1];
   };
   const blend = (front: number[], back: number[]) =>
     front.slice(0, 3).map((channel, index) => channel * front[3] + back[index] * (1 - front[3]));
-  const layers: number[][] = [];
+  const layers: number[][] = face ? [rgba(getComputedStyle(element, face).backgroundColor)] : [];
   let opacity = 1;
   for (let node: Element | null = element; node; node = node.parentElement) {
     const style = getComputedStyle(node);

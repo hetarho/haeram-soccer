@@ -90,46 +90,6 @@ export async function expectHomeBounds(page: Page) {
   expect(geometry.width, measured).toBeLessThanOrEqual(geometry.clientWidth);
 }
 
-/** A bounded background covers the scene; the stadium remains larger than the visits. */
-export async function expectHomeSceneRatio(page: Page) {
-  const artwork = page.locator('[data-home-part="scene"] [data-facility-art="stadium"]');
-  const image = artwork.locator('img');
-  await expect(image).toBeVisible();
-  await expect
-    .poll(() => image.evaluate((node: HTMLImageElement) => node.complete && node.naturalWidth > 0))
-    .toBe(true);
-  const geometry = await artwork.evaluate((node) => {
-    const bounds = node.getBoundingClientRect();
-    const img = node.querySelector('img')!;
-    const picture = img.getBoundingClientRect();
-    const stage = node.closest('[data-home-part="stage"]')!;
-    const card = document.querySelector('[data-home-part="season-card"]')!.getBoundingClientRect();
-    return {
-      width: bounds.width,
-      height: bounds.height,
-      ratio: bounds.width / bounds.height,
-      imageRatio: picture.width / picture.height,
-      nativeRatio: img.naturalWidth / img.naturalHeight,
-      artworkBottom: bounds.bottom,
-      seasonCardBottom: card.bottom,
-      stageTop: stage.getBoundingClientRect().top,
-      stageHeight: stage.getBoundingClientRect().height,
-      statsInside: !!stage.querySelector('[data-home-part="season-stats"]'),
-    };
-  });
-  // Layout/transform precision can report the 156px clamp as 155.99996948242188px.
-  // Round to 0.01 CSS px for both bounds, retaining real size regressions.
-  const height = Math.round(geometry.height * 100) / 100;
-  expect(height).toBeGreaterThanOrEqual(156);
-  expect(height).toBeLessThanOrEqual(244);
-  expect(await image.evaluate((node) => getComputedStyle(node).objectFit)).toBe('cover');
-  // The season figures sit in their own card above the scene, never on it (→WEB-11).
-  expect(geometry.statsInside).toBe(false);
-  expect(geometry.stageTop).toBeGreaterThanOrEqual(geometry.seasonCardBottom);
-  expect(geometry.stageHeight - geometry.height).toBeLessThanOrEqual(24);
-  return geometry;
-}
-
 /** Seven whole standings rows must fit before the fixed transport at the default phone size. */
 export async function expectCompactStandings(page: Page) {
   await settle(page);

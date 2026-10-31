@@ -1,5 +1,5 @@
 import { openPersonnel } from './personnel-navigation';
-import { openLeague } from './competition-navigation';
+import { clubhouseTab, openLeague } from './competition-navigation';
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 import { decode } from '../../apps/web/src/adapters/persistence';
@@ -16,9 +16,9 @@ import {
 import { chooseOption, selectOptions } from './select';
 import { continueSlot, seedSlot } from './slots';
 import { committedRaw, savedWorld } from './club-identity-helpers';
-import { expectHomeBounds, expectHomeSceneRatio, settle } from './layout';
+import { expectHomeBounds, settle } from './layout';
 import { textContrast } from './contrast';
-import { leaveOffice, openOfficeArea } from './office';
+import { leaveOffice, openOfficeLibrary } from './office';
 import { openSaveMenu } from './save-menu';
 
 const PREFERENCE_KEY = 'haeram-soccor:presentation';
@@ -128,17 +128,21 @@ for (const { id: theme } of baseline.themeRegistry.entries)
       await page.getByRole('button', { name: '자동 모드로 변경', exact: true }).click();
       const date = await page.getByTestId('game-date').innerText();
       const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
-      const dropdownFrame = /\/art\/.+\/frame-dropdown\.(?:webp|png)/;
-      await expect(pace).toHaveCSS('border-image-source', dropdownFrame);
+      // Each theme draws the trigger and its list with its own select art (image-select-frame);
+      // the trigger wears it on its ::before face.
+      const dropdownFrame = /\/art\/.+\.(?:webp|png)/;
+      const triggerFrame = () =>
+        pace.evaluate((element) => getComputedStyle(element, '::before').borderImageSource);
+      await expect.poll(triggerFrame).toMatch(dropdownFrame);
       await pace.click();
       await expect(pace).toHaveAttribute('aria-expanded', 'true');
       await expect(pace).toHaveCSS('outline-style', 'none');
       await pace.click();
       await chooseOption(pace, 'x10');
       await pace.hover();
-      await expect(pace).toHaveCSS('border-image-source', dropdownFrame);
+      await expect.poll(triggerFrame).toMatch(dropdownFrame);
       await expect
-        .poll(async () => (await pace.evaluate(textContrast)).ratio)
+        .poll(async () => (await pace.evaluate(textContrast, '::before')).ratio)
         .toBeGreaterThanOrEqual(4.5);
       expect(
         await pace
@@ -150,7 +154,7 @@ for (const { id: theme } of baseline.themeRegistry.entries)
       const list = page.getByRole('listbox', { name: '자동 진행 배속', exact: true });
       await expect(list).toBeVisible();
       await expect(pace).toHaveCSS('outline-style', 'solid');
-      await expect(pace).toHaveCSS('border-image-source', dropdownFrame);
+      await expect.poll(triggerFrame).toMatch(dropdownFrame);
       await expect(list).toHaveCSS('border-image-source', dropdownFrame);
       const checked = list.getByRole('option', { selected: true });
       for (const item of [checked, checked.locator('small')])
@@ -181,8 +185,8 @@ for (const { id: theme } of baseline.themeRegistry.entries)
           height: first.height,
         };
       });
-      // Firefox can report an 8px gap as 7.99998px; allow one layout subpixel.
-      expect(spacing.gap).toBeGreaterThanOrEqual(8 - 1 / 64);
+      // Plain menu rows without frames stack flush and never overlap; allow one layout subpixel.
+      expect(spacing.gap).toBeGreaterThanOrEqual(-1 / 64);
       expect(spacing.inset).toBeGreaterThanOrEqual(8);
       expect(spacing.height).toBeGreaterThanOrEqual(44);
       await expect
@@ -240,7 +244,6 @@ for (const width of [390, 1380])
       });
       expect(homeSkin.frame).toContain(assetPath);
       expect(homeSkin.fill).toContain(assetPath);
-      await expectHomeSceneRatio(page);
       const stats = page.getByRole('region', { name: '이번 시즌', exact: true });
       await expect(stats).toBeVisible();
       await expect(stats.locator('[data-pixel-icon="play"]')).toHaveCount(0);
@@ -301,10 +304,7 @@ for (const width of [390, 1380])
         .click({ position: { x: 8, y: 8 } });
       await expect(page.getByRole('region', { name: '선수 프로필', exact: true })).toBeVisible();
       await page.getByRole('dialog').getByRole('button', { name: '창 닫기', exact: true }).click();
-      await page
-        .getByRole('navigation')
-        .getByRole('button', { name: '클럽하우스', exact: true })
-        .click();
+      await clubhouseTab(page).click();
       await expect(page.getByTestId('club-hub')).toBeVisible();
       await expect(page.getByTestId('game-date')).toHaveText(date);
       expect(await commands(page)).toBe(sent);
@@ -406,7 +406,7 @@ for (const width of [390, 1380])
       await loadPausedGame(page);
       const raw = await committedRaw(page);
       const date = await page.getByTestId('calendar').innerText();
-      const art = page.locator('[data-facility-art="stadium"] img');
+      const art = page.locator('[data-facility-art="manager"] img');
       const artwork = await art.getAttribute('src');
       const pack = await (await page.request.get(`/presentation/themes/${entry.resource}`)).json();
       const picker = await openSettings(page);
@@ -481,7 +481,7 @@ test('theme reveal keeps controls in the composited dialog and backdrop', async 
               const result = update();
               // The new root must capture the selected art in this callback, before returning.
               document.documentElement.dataset.themeSnapshotArt =
-                document.querySelector('[data-facility-art="stadium"] img')?.getAttribute('src') ??
+                document.querySelector('[data-facility-art="manager"] img')?.getAttribute('src') ??
                 '';
               return result;
             }
@@ -515,7 +515,7 @@ test('theme reveal keeps controls in the composited dialog and backdrop', async 
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'pixel');
   await expect(page.locator('html')).toHaveAttribute(
     'data-theme-snapshot-art',
-    (await page.locator('[data-facility-art="stadium"] img').getAttribute('src'))!,
+    (await page.locator('[data-facility-art="manager"] img').getAttribute('src'))!,
   );
   await expect.poll(closePaths).not.toBe(standardClose);
   await expect(dialog).toBeVisible();
@@ -658,13 +658,14 @@ test('unseen routed locale and theme change actual resources while game facts, d
   const world = (await decode(raw)).world;
   const date = await page.getByTestId('calendar').innerText();
   const sent = await commands(page);
-  await openOfficeArea(page, '구단 디자인');
-  const design = page.getByRole('region', { name: '구단 디자인', exact: true });
-  const colour = design.getByLabel('홈 색 코드', { exact: true });
-  await colour.fill('#00A6A6');
-  await expect(design.getByRole('status')).toContainText('적용 전 초안');
+  await openOfficeLibrary(page);
+  const finance = page.getByRole('region', { name: '재정', exact: true });
+  await finance.getByRole('button', { name: /어디서 벌고/ }).click();
+  await finance.getByRole('radio', { name: '재정 기조 신중', exact: true }).click();
+  const draft = page.getByTestId('strategy-draft');
+  await expect(draft).toContainText('신중');
   const address = page.url();
-  // The unapplied design remains available across a settings detour (→WEB-39).
+  // The unapplied policy draft remains available across a settings detour (→WEB-39).
   await leaveOffice(page);
   await openSettings(page, 'locale');
   await chooseOption(page.getByTestId('presentation-locale'), fixture.locale.id);
@@ -676,10 +677,9 @@ test('unseen routed locale and theme change actual resources while game facts, d
   await closeSettings(page);
   await expect(page.getByTestId('calendar')).toHaveText(date, { useInnerText: true });
   await expect(page.getByTestId('hud-cash')).toContainText('Budget de test');
-  await openOfficeArea(page, '구단 디자인');
+  await openOfficeLibrary(page);
   expect(page.url()).toBe(address);
-  await expect(colour).toHaveValue('#00A6A6');
-  await expect(design.getByRole('status')).toContainText('적용 전 초안');
+  await expect(draft).toContainText('신중');
   expect(await commands(page)).toBe(sent);
   expect(await committedRaw(page)).toBe(raw);
   await leaveOffice(page);
@@ -687,12 +687,14 @@ test('unseen routed locale and theme change actual resources while game facts, d
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
     .getByRole('button', { name: 'Resource-only club home', exact: true })
     .click();
-  const image = page.locator('[data-facility-art="stadium"] img');
+  const image = page.locator('[data-facility-art="manager"] img');
+  // Home's art is the owner's office scene, below NEXT MATCH; it loads once scrolled to.
+  await image.scrollIntoViewIfNeeded();
   await expect(image).toHaveAttribute(
     'src',
-    /\/__presentation-fixtures\/scenes\/heritage\/stadium-0\.svg$/,
+    /\/__presentation-fixtures\/scenes\/heritage\/manager-\d+\.svg$/,
   );
-  await expect(image).toHaveAttribute('alt', 'Ère de test Tribune 1 Signal de test');
+  await expect(image).toHaveAttribute('alt', 'Ère de test Bureau de test Signal de test');
   await expect
     .poll(() =>
       image.evaluate(
@@ -712,7 +714,7 @@ test('unseen routed locale and theme change actual resources while game facts, d
     fixture.localeUrl,
     fixture.themeUrl,
     fixture.theme.stylesheet!,
-    '/__presentation-fixtures/scenes/heritage/stadium-0.svg',
+    new URL((await image.getAttribute('src'))!, page.url()).pathname,
     '/__presentation-fixtures/home.svg',
   ])
     expect(fixture.requests.get(path), path).toBeGreaterThan(0);

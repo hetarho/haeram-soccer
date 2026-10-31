@@ -220,7 +220,8 @@ export function Panel({
 export function Table({ w, ids, limit }: { w: World; ids: string[]; limit?: number }) {
   return <Standings w={w} ids={ids} limit={limit} />;
 }
-function ClubJournal({ state }: { state: ClientState }) {
+/** The season briefing and club news; the owner office opens it (→WEB-39). */
+export function ClubJournal({ state }: { state: ClientState }) {
   const setPage = useNavigation((state) => state.setPage);
   const v = state.view!,
     w = v.world,
@@ -425,6 +426,8 @@ const selectContentWorld = worldSelector([
   'build',
   'direction',
   'managerMarket',
+  // Discarding the designer's drafts changes only the commission (→WEB-108).
+  'designCommission',
 ]);
 function useContentState(): ClientState {
   useLocale(); // Locale changes refresh memoized view boundaries without resetting them.
@@ -500,7 +503,7 @@ const ConnectedDashboard = memo(function ConnectedDashboard({ client }: { client
         </div>
       }
     >
-      <ClubHub w={w} client={client} journal={<ClubJournal state={state} />} />
+      <ClubHub w={w} client={client} />
     </Suspense>
   );
 });
@@ -729,7 +732,6 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
 }) {
   const { t } = useLocale();
   const state = useGameState((state) => state);
-  const home = useNavigation((state) => state.page === 'dashboard');
   const critical = playing ? state.view?.world.critical : undefined;
   const blocked = state.busy || state.readonly;
   const error = state.error || localError;
@@ -780,25 +782,8 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
           )}
         </FeedbackOverlay>
       )}
-      {/* Routine notices remain in the inbox; debt retains its existing status band. */}
-      {playing && !home && <CashAlarm />}
-      {state.busy && (
-        <div data-surface="inset" className={s.foregroundProgress}>
-          <div
-            className={s.progress}
-            role="progressbar"
-            aria-label={t('shell.progress')}
-            aria-valuenow={Math.round(state.progress * 100)}
-            aria-valuemin={0}
-            aria-valuemax={100}
-          >
-            <i style={{ width: `${Math.max(5, state.progress * 100)}%` }} />
-          </div>
-          {state.view && (
-            <button onClick={() => client.cancel()}>{t('shell.cancelProgress')}</button>
-          )}
-        </div>
-      )}
+      {/* Routine notices remain in the inbox; debt retains its status band on every view. */}
+      {playing && <CashAlarm />}
     </>
   );
 });

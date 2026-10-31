@@ -8,6 +8,7 @@ import type {
   TrainingCoach,
   TrainingFocus,
   World,
+  YouthFocus,
 } from '../../../../packages/contracts/src/types';
 import { lineupPreset, lineupSummary } from '../../../../packages/engine/src/strategy';
 import { activePlayers, clubOf, isInjured } from '../../../../packages/engine/src/player-state';
@@ -45,8 +46,11 @@ export interface StateAction {
   tab?: PeopleRequest | TrainingTab;
   /** Opens the tactic and lineup preparation sheet. */
   prepare?: boolean;
-  /** Opens 훈련 on this coach's training sheet with the focus ready to suggest (→WEB-44). */
-  coach?: { coach: 'assistant'; focus: TrainingFocus };
+  /**
+   * This coach's training sheet with the focus ready to suggest (→WEB-44): over 훈련 from a
+   * remedy, in place from the clubhouse's quick actions.
+   */
+  coach?: { coach: TrainingCoach; focus?: TrainingFocus | YouthFocus };
   /**
    * Opens 방향 with this dial change as the board's draft, ready to apply there; the remedy
    * itself changes nothing (→WEB-44, WEB-71).

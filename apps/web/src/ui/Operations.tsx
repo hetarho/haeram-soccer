@@ -13,11 +13,14 @@ import {
   officeView,
   approvalId,
   approvalWorld,
+  leaveOffice,
+  openOwnerOffice,
   returnApprovalHome,
   type OfficeView,
 } from './state';
 import { OfficeBar } from './OfficeBar';
 import { OfficeLobby } from './OfficeLobby';
+import { DeskBody, DeskSettings, OfficeDeskScene } from './OfficeDesk';
 import { AreaCriteria } from './DirectionLines';
 import { DESK_AREAS, DESK_RESPONSIBILITIES } from './officeDesks';
 
@@ -42,6 +45,7 @@ export function OperationsView({
   state,
   client,
   legacy,
+  journal,
   controller,
   personnel,
 }: {
@@ -49,6 +53,8 @@ export function OperationsView({
   state: ClientState;
   client: GameClient;
   legacy: ReactNode;
+  /** The season briefing and club news, opened from the lobby. */
+  journal: ReactNode;
   personnel: (
     desk: 'players' | 'staff',
     client: GameClient,
@@ -73,6 +79,13 @@ export function OperationsView({
   const [view, setView] = useState<OfficeView>(() =>
     officeView(new URLSearchParams(location.search).get('view')),
   );
+  // The overview is a modal over the lobby; an address that names it lands there with it open.
+  useEffect(() => {
+    if (view !== 'office') return;
+    history.replaceState(history.state, '', officeAddress('lobby'));
+    setView('lobby');
+    openOwnerOffice();
+  }, [view]);
   // An area opened from the lobby returns there through history, so browser back agrees.
   useEffect(() => {
     if (view !== 'lobby' || !backToLobby) return;
@@ -89,37 +102,52 @@ export function OperationsView({
     setView(next);
     requestAnimationFrame(() => scroller()?.scrollTo({ top: 0 }));
   };
+  const toLobby = () => {
+    if (requestId) {
+      returnApprovalHome();
+      return;
+    }
+    if (history.state?.officeLobbyDepth) {
+      backToLobby = true;
+      history.go(-history.state.officeLobbyDepth);
+      return;
+    }
+    history.replaceState(null, '', officeAddress('lobby'));
+    setView('lobby');
+    requestAnimationFrame(() => scroller()?.scrollTo({ top: 0 }));
+  };
   const area = BUSINESS_TABS.find(([id]) => id === view);
-  if (view === 'office')
-    return (
-      <>
-        <OfficeBar title="결재라인 모아보기" />
-        <section aria-label="결재라인 모아보기">
-          <Suspense fallback={<p role="status">결재라인을 여는 중…</p>}>
-            <OwnerOffice key={w.id} client={client} controller={controller} />
-          </Suspense>
-        </section>
-      </>
-    );
   if (!area)
     return (
       <>
-        <OfficeBar title="구단주 사무실" />
+        <OfficeBar back={{ label: '클럽하우스', onClick: leaveOffice }} title="구단주 사무실" />
         <OfficeLobby
           w={w}
+          client={client}
           sponsors={state.view!.sponsors}
           pending={stoppingEvents(w).filter((item) => !!eventDesk(item))}
+          journal={journal}
           onOpen={openArea}
-          onOverview={() => openArea('office')}
+          onOverview={openOwnerOffice}
         />
       </>
     );
   const [id, label] = area;
+  const pending = stoppingEvents(w);
   return (
     <>
-      <OfficeBar title={label} />
+      <OfficeBar back={{ label: '사무실', onClick: toLobby }} title={label} />
       {/* The bar names the area; its own panels carry their regions. */}
-      <div data-office-view={id}>
+      <DeskBody data-office-view={id}>
+        {!requestId && id !== 'identity' && (
+          <OfficeDeskScene
+            w={w}
+            view={id}
+            title={label}
+            sponsors={state.view!.sponsors}
+            pending={pending}
+          />
+        )}
         {requestId ? (
           request && request.world === w.id && request.desk === id ? (
             <ApprovalRequestHost
@@ -150,17 +178,21 @@ export function OperationsView({
         ) : null}
         {!requestId && (
           <>
-            {id !== 'players' && id !== 'staff' && DESK_RESPONSIBILITIES[id].length > 0 && (
-              <Suspense fallback={null}>
-                <OwnerOffice
-                  key={`${w.id}:${id}`}
-                  client={client}
-                  controller={controller}
-                  scope={DESK_RESPONSIBILITIES[id]}
-                />
-              </Suspense>
+            {id !== 'players' && id !== 'staff' && id !== 'identity' && (
+              <DeskSettings>
+                {DESK_RESPONSIBILITIES[id].length > 0 && (
+                  <Suspense fallback={null}>
+                    <OwnerOffice
+                      key={`${w.id}:${id}`}
+                      client={client}
+                      controller={controller}
+                      scope={DESK_RESPONSIBILITIES[id]}
+                    />
+                  </Suspense>
+                )}
+                <AreaCriteria w={w} areas={DESK_AREAS[id]} />
+              </DeskSettings>
             )}
-            {id !== 'players' && id !== 'staff' && <AreaCriteria w={w} areas={DESK_AREAS[id]} />}
             {id === 'players' || id === 'staff' ? (
               personnel(id, client)
             ) : id === 'investment' ? (
@@ -188,7 +220,7 @@ export function OperationsView({
             )}
           </>
         )}
-      </div>
+      </DeskBody>
     </>
   );
 }

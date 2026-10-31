@@ -1,3 +1,4 @@
+import { clubhouseTab } from './competition-navigation';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { versionLabel } from '../../apps/web/src/ui/versionLabel';
 import { readPresentationBaselines } from '../fixtures/presentation';
@@ -93,13 +94,7 @@ async function slotsThenPlay(page: Page, theme?: string) {
   await expect(bar.getByTestId('beta-mark')).toHaveCount(0);
   await expect(bar.getByTestId('hud-cash')).toHaveCount(0);
   await expect(bar.getByRole('button', { name: '나가기', exact: true })).toHaveCount(0);
-  await expectTargets([
-    page
-      .getByRole('navigation')
-      .getByRole('button', { name: '클럽하우스', exact: true })
-      .filter({ visible: true })
-      .first(),
-  ]);
+  await expectTargets([clubhouseTab(page)]);
   expect((await hud.getByTestId('hud-cash').boundingBox())!.width).toBeGreaterThanOrEqual(44);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 }

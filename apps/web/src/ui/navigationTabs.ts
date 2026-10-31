@@ -18,7 +18,7 @@ export const TABS: [NavEntry, string, string, Page[]][] = [
 ];
 /** The bottom bar keeps the clubhouse in the middle: league and cups left, market and records right. */
 export const BOTTOM_ORDER: NavEntry[] = ['league', 'europe', 'dashboard', 'market', 'history'];
-/** The clubhouse's rooms, entered from its home (→WEB-10); the owner's office has its own scene. */
+/** The clubhouse's rooms, whose doors stand in the owner's office lobby (→WEB-10/39). */
 export const ROOMS: [Page, string][] = [
   ['firstTeam', 'navigation.firstTeam'],
   ['staff', 'navigation.staff'],

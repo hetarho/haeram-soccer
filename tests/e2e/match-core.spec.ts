@@ -1,6 +1,6 @@
 import { openLeague, returnToMatch } from './competition-navigation';
 import { watchNext } from './watch';
-import { configureResponsibilities } from './events';
+import { configureResponsibilities, proposeOnReport } from './events';
 import { expect, test, type Page } from '@playwright/test';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import {
@@ -257,7 +257,7 @@ for (const viewport of [
       .getByRole('button', { name: '순위 추이', exact: true })
       .click();
     await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
-    // Retrace the league entry through the clubhouse to the retained theatre.
+    // The league is a primary entry, so back leads straight to the retained theatre.
     await returnToMatch(page);
     await expectCompactMatch(page, viewport);
     await page.getByRole('button', { name: '경기 상세', exact: true }).click();
@@ -294,6 +294,7 @@ for (const viewport of [
     await prepare.click();
     const preparation = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
     await expect(preparation).toBeVisible();
+    await proposeOnReport(preparation);
     // The settled match on screen offers no shirt choice; only the next fixture does (→WEB-88).
     const upcoming = nextOwnFixture(reference)!;
     expect(upcoming.id).not.toBe(first.record.id);

@@ -523,7 +523,6 @@ function SeasonRecords({
               <PixelIcon name="chevronLeft" size={20} />
             </button>
             <Select
-              data-ui="text-select"
               aria-label="기록 시즌"
               className={t.seasonSelect}
               value={year}
@@ -549,7 +548,6 @@ function SeasonRecords({
           <label className={s.recordScope}>
             <span className={s.srOnly}>대회 범위</span>
             <Select
-              data-ui="text-select"
               aria-label="기록 대회 범위"
               value={filter}
               onValueChange={(value) => setFilter(value)}

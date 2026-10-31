@@ -27,6 +27,7 @@ import { compactMoney, money } from '../../apps/web/src/ui/format';
 import type { World, WorldMarketOffer } from '../../packages/contracts/src/types';
 import { horizontalOverflow } from './layout';
 import { chooseLevel, closeOutcome, setResponsibility } from './events';
+import { clubhouseTab, primaryEntry } from './competition-navigation';
 
 async function exportWorld(page: Page): Promise<World> {
   await page.getByRole('button', { name: '설정', exact: true }).click();
@@ -53,15 +54,11 @@ async function foundMarket(page: Page, seed: string, difficulty: '쉬움' | '어
   });
 }
 
-/** Contextual market entry retains the same global market as the owner recruitment desk. */
-const marketTab = (page: Page) =>
-  page
-    .getByRole('tablist', { name: '감독 사무실' })
-    .getByRole('tab', { name: '이적시장', exact: true });
+/** The transfer market is a primary entry of its own, current while it shows (→WEB-10). */
+const marketEntry = (page: Page) => primaryEntry(page, 'switch');
 async function openMarket(page: Page) {
-  await openPersonnel(page, 'players');
-  await marketTab(page).click();
-  await expect(marketTab(page)).toHaveAttribute('aria-selected', 'true');
+  await openPersonnel(page, 'market');
+  await expect(marketEntry(page)).toHaveAttribute('aria-current', 'page');
   await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
 }
 
@@ -133,10 +130,6 @@ async function completeLoan(page: Page, before: World, offer: WorldMarketOffer, 
 
 /** Let real dates answer pending bids; explicitly decline unrelated owner requests when needed. */
 async function settlePaidLoans(page: Page, players: string[]) {
-  const nav = page.getByRole('navigation', {
-    name: (page.viewportSize()?.width ?? 1280) <= 760 ? '모바일 게임 메뉴' : '게임 메뉴',
-    exact: true,
-  });
   for (let event = 0; event < 10; event++) {
     const current = await exportWorld(page);
     const bids = players.map((id) => current.bids!.find((bid) => bid.playerId === id && bid.loan)!);
@@ -145,7 +138,7 @@ async function settlePaidLoans(page: Page, players: string[]) {
       return current;
     }
     expect(bids.every((bid) => bid.status === 'completed' || bid.status === 'pending')).toBe(true);
-    await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
+    await clubhouseTab(page).click();
     if (pendingDecisions(current).length) await acknowledgeEvents(page);
     else await page.getByRole('button', { name: '다음 이벤트', exact: true }).click();
   }
@@ -434,7 +427,7 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   );
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
-  await expect(marketTab(page)).toHaveAttribute('aria-selected', 'true');
+  await expect(marketEntry(page)).toHaveAttribute('aria-current', 'page');
   await marketCandidate(page, free.player.id, free.player.name);
   await expect(freeCard.getByRole('button', { name: '계약 완료', exact: true })).toBeDisabled();
   await closeMarketPanel(page, '영입 후보 상세');

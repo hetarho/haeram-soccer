@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-31",
+  "theme": "matchday-print",
+  "status": "Generated artwork prepared for page integration; not registered in the theme pack",
+  "tool": "built-in image_gen",
+  "prompt": "apps/web/design/matchday-print/club-briefing-v1/prompt.json",
+  "source": {
+    "file": "apps/web/design/matchday-print/club-briefing-v1/sources/club-briefing-v1.png",
+    "width": 2172,
+    "height": 724,
+    "bytes": 3494053,
+    "sha256": "cfca9e1af14b450934772581891a508c8c986c4833eff7baf8d5bb4efa520afc"
+  },
+  "preparation": "Shared createUiArtPipeline Chromium raster encoding: complete scene scaled to 960x320 and 480x160, quality-85 WebP. No crop or semantic edits. Minor aspect differences are normalized by whole-scene scaling.",
+  "assets": [
+    {
+      "file": "club-briefing.webp",
+      "source": "apps/web/design/matchday-print/club-briefing-v1/sources/club-briefing-v1.png",
+      "bytes": 98146,
+      "sha256": "dc7cf1451a8389ec0e1224d5389d1621107ab6a4bff7ea8de9ec5eb0e7dcdedd",
+      "width": 960,
+      "height": 320
+    },
+    {
+      "file": "club-briefing.small.webp",
+      "source": "apps/web/design/matchday-print/club-briefing-v1/sources/club-briefing-v1.png",
+      "bytes": 26856,
+      "sha256": "59fa0079815dd2252e60c097852334c654c6b013a70a732aedb80575cbc56779",
+      "width": 480,
+      "height": 160
+    }
+  ]
+}

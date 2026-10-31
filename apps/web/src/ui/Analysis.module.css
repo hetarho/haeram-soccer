@@ -196,6 +196,8 @@
 .controls input {
   width: 100%;
   min-width: 0;
+}
+.controls input {
   min-height: 48px;
   font-size: 13px;
 }

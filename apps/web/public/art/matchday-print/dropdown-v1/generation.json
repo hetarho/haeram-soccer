@@ -1,0 +1,65 @@
+{
+  "method": "Built-in image_gen atlas; shared createUiArtPipeline alpha slicing and WebP encoding",
+  "date": "2026-10-31",
+  "sources": "apps/web/design/matchday-print/dropdown-v1",
+  "source": "sources/plates.png",
+  "sourceSha256": "f06b515cde39a3d2831d7568c48291f3db1919c2b9c0a2d21a23245d5f4f138e",
+  "prompts": "apps/web/design/matchday-print/dropdown-v1/prompts.json",
+  "geometry": "Separate trigger, popup and selected-row nine-slice plates; filled centres and fixed source caps. Live labels, icons and focus remain HTML/SVG.",
+  "assets": [
+    {
+      "file": "frame-trigger.webp",
+      "source": "sources/plates.png",
+      "crop": {
+        "x": 67,
+        "y": 167,
+        "width": 1120,
+        "height": 267
+      },
+      "filter": "scale=1152:384",
+      "bytes": 3566,
+      "sha256": "12057aea73184f5cfdfd9d643dcfdef78274128f20a21adedde55b013dd6884f",
+      "role": "image-art-dropdown-trigger",
+      "width": 192,
+      "height": 64,
+      "mode": "nine-slice",
+      "slice": 22
+    },
+    {
+      "file": "frame-popup.webp",
+      "source": "sources/plates.png",
+      "crop": {
+        "x": 67,
+        "y": 513,
+        "width": 1120,
+        "height": 269
+      },
+      "filter": "scale=1152:384",
+      "bytes": 3130,
+      "sha256": "d0fbaeeb9126cabeb1b1fcec85aa2fa1d436442f3370bea59a6773b965e7194b",
+      "role": "image-art-dropdown-popup",
+      "width": 192,
+      "height": 64,
+      "mode": "nine-slice",
+      "slice": 22
+    },
+    {
+      "file": "frame-selection.webp",
+      "source": "sources/plates.png",
+      "crop": {
+        "x": 67,
+        "y": 860,
+        "width": 1120,
+        "height": 266
+      },
+      "filter": "scale=1152:384",
+      "bytes": 3718,
+      "sha256": "ac56c1372021c5d782e6e536267b00c94d5c49d54b6d06f4bc9bc1069f0e7475",
+      "role": "image-art-dropdown-selection",
+      "width": 192,
+      "height": 64,
+      "mode": "nine-slice",
+      "slice": 22
+    }
+  ]
+}

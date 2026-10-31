@@ -1,27 +1,21 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
-import { clubOf } from '../../../../packages/engine/src/player-state';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { orderIds, ownDivisionRound, ownLeague, ownLeagueIds, ownLeagueProgress } from './league';
 import { leagueName } from './LeaguePicker';
-import { competitionLabel, number } from './format';
-import { cashState, teamStates, type StateKey } from './teamState';
-import { RemedySheet } from './RemedySheet';
+import { competitionLabel } from './format';
+import { QuickActions } from './QuickActions';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { openCupSeason, openPrimary, useNavigation } from './state';
-import { ROOMS } from './navigationTabs';
 import { stoppingEvents } from '../runtime/progression';
 import { eventDesk } from './eventRouting';
-import { useLocale } from '../presentation/react';
 import { currentCupBriefings } from './competitionNavigation';
 import { ClubLink } from './ClubLink';
 import { StrategyPanel } from './LazyStrategyPanel';
 import { Dialog } from './Dialog';
 import s from './ClubHub.module.css';
-import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';
 import { FacilityArt } from './FacilityArt';
-import { CashAlarm } from './CashAlarm';
 import { Card } from './Card';
 import { PixelIcon } from './PixelIcon';
 import { HomeAwayBadge } from './HomeAwayBadge';
@@ -68,77 +62,10 @@ export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => voi
   );
 }
 
-/** Current conditions reveal their explanation and remedies when the owner opens a tile. */
-export function TeamState({
-  w,
-  client,
-  onPrepare,
-}: {
-  w: World;
-  client: GameClient;
-  onPrepare: () => void;
-}) {
-  const [sheet, setSheet] = useState<StateKey>();
-  const states = teamStates(w);
-  return (
-    <section className={s.state} aria-label="팀 상태" data-testid="team-state">
-      <ul data-home-part="conditions">
-        {states.map((state) => (
-          <li key={state.key} className={s[state.tone]} data-condition={state.key}>
-            <button
-              aria-label={`${state.label} ${state.value} · ${state.status}${state.advice ? ' · 주의' : ''} · 대처 방법 보기`}
-              aria-haspopup="dialog"
-              onClick={(event) => {
-                event.currentTarget.focus();
-                setSheet(state.key);
-              }}
-            >
-              <span className={s.stateLabel}>
-                {state.label}
-                {state.advice && (
-                  <span
-                    className={s.warningBadge}
-                    data-testid={`state-warning-${state.key}`}
-                    aria-hidden="true"
-                  >
-                    !
-                  </span>
-                )}
-              </span>
-              <b>
-                <i key={state.value} className={s.bump}>
-                  {state.value}
-                </i>
-              </b>
-              <small>
-                {state.status
-                  .split(/(\d+)/)
-                  .map((part, index) => (index % 2 ? <strong key={index}>{part}</strong> : part))}
-              </small>
-            </button>
-          </li>
-        ))}
-      </ul>
-      {!states.some((state) => state.advice) && !cashState(w).advice && (
-        <p className={s.calm}>팀이 안정적이에요. 상태를 누르면 미리 챙길 방법을 볼 수 있어요.</p>
-      )}
-      {sheet && (
-        <RemedySheet
-          w={w}
-          client={client}
-          state={sheet}
-          onClose={() => setSheet(undefined)}
-          onPrepare={onPrepare}
-        />
-      )}
-    </section>
-  );
-}
-
 /**
- * The owner's office (→WEB-10/11): its room art, dimmed, with the team's state in small tiles
- * over it, the way the stadium scene carries the club's crowd. Office work waiting for the owner
- * shows its count in the caption, and the office opens from there.
+ * The owner's office (→WEB-10/11): its room art, dimmed, with the owner's quick actions in small
+ * tiles over it. Office work waiting for the owner shows its count in the caption, and the office
+ * — the team's state, the rooms and every view and setting — opens from there.
  */
 function OfficeScene({ w, children }: { w: World; children: ReactNode }) {
   const pending = stoppingEvents(w).filter((item) => !!eventDesk(item)).length;
@@ -170,34 +97,6 @@ function OfficeScene({ w, children }: { w: World; children: ReactNode }) {
       </div>
       {children}
     </section>
-  );
-}
-
-function ClubScene({ w }: { w: World }) {
-  const club = clubOf(w);
-  return (
-    <figure
-      className={s.scene}
-      data-home-part="scene"
-      aria-label={`우리 구장 · ${STADIUM_STEPS[w.stadium].name} ${STADIUM_STEPS[w.stadium].capacity}석 · 팬 ${club.fans}명`}
-    >
-      <FacilityArt kind="stadium" world={w} className={s.sceneArt} />
-      <div className={s.sceneCaption} data-home-part="scene-caption">
-        <span className={s.badge}>
-          <i aria-hidden="true">♥</i>
-          {number(club.fans)}명의 서포터
-        </span>
-        <b>{STADIUM_STEPS[w.stadium].name}</b>
-        <span className={s.badge}>
-          <i aria-hidden="true">▲</i>
-          {number(STADIUM_STEPS[w.stadium].capacity)}석
-        </span>
-      </div>
-      <CashAlarm overlay />
-      <span className={s.stageLabel} data-home-part="stage-label">
-        구장 {w.stadium + 1}단계
-      </span>
-    </figure>
   );
 }
 
@@ -305,51 +204,17 @@ export function SeasonCard({ w, active }: { w: World; active: boolean }) {
   );
 }
 
-/**
- * The clubhouse's rooms (→WEB-10): every place other than records, league and cups opens from
- * here, and office work waiting for the owner shows its count on the office door.
- */
-function ClubRooms() {
-  const { t } = useLocale();
-  return (
-    <nav className={s.rooms} aria-label="클럽하우스">
-      {ROOMS.map(([page, label]) => (
-        <button
-          key={page}
-          type="button"
-          className={s.room}
-          data-ui="place"
-          data-place={page}
-          onClick={() => openPrimary(page)}
-        >
-          <span>{t(label)}</span>
-        </button>
-      ))}
-    </nav>
-  );
-}
-
-export function ClubHub({
-  w,
-  client,
-  journal,
-}: {
-  w: World;
-  client: GameClient;
-  journal: ReactNode;
-}) {
+export function ClubHub({ w, client }: { w: World; client: GameClient }) {
   // Home stays mounted while hidden: only leaving it matters, not moves between other pages.
   const away = useNavigation((state) => state.page !== 'dashboard');
-  const [journalOpen, setJournalOpen] = useState(false);
   const [preparing, setPreparing] = useState(false);
   const [cupsOpen, setCupsOpen] = useState(false);
   useEffect(() => {
-    if (away && (journalOpen || preparing || cupsOpen)) {
-      setJournalOpen(false);
+    if (away && (preparing || cupsOpen)) {
       setPreparing(false);
       setCupsOpen(false);
     }
-  }, [away, journalOpen, preparing, cupsOpen]);
+  }, [away, preparing, cupsOpen]);
   return (
     <section
       className={s.hub}
@@ -360,27 +225,12 @@ export function ClubHub({
       <SeasonCard w={w} active={!away} />
       <NextMatchCard w={w} onPrepare={() => setPreparing(true)} />
       <OfficeScene w={w}>
-        <TeamState w={w} client={client} onPrepare={() => setPreparing(true)} />
+        <QuickActions w={w} client={client} />
       </OfficeScene>
-      <ClubRooms />
-      <div className={s.clubLinks}>
-        <button data-ui="link" onClick={() => setJournalOpen(true)}>
-          클럽 소식·시즌 브리핑
-        </button>
-      </div>
-      {/* The scene's frame stays its own part; season figures live in the card above. */}
-      <div className={s.stage} data-home-part="stage">
-        <ClubScene w={w} />
-      </div>
 
       {preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />}
-      {journalOpen && (
-        <Dialog label="시즌 상세와 클럽 소식" onClose={() => setJournalOpen(false)} wide>
-          {journal}
-        </Dialog>
-      )}
       {cupsOpen && (
-        <Dialog label="컵대회" centered wide onClose={() => setCupsOpen(false)}>
+        <Dialog label="컵대회" wide onClose={() => setCupsOpen(false)}>
           <CupBriefing w={w} onOpen={() => setCupsOpen(false)} />
         </Dialog>
       )}

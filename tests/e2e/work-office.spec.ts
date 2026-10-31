@@ -12,9 +12,12 @@ import {
   openOfficeLibrary,
 } from './office';
 import { horizontalOverflow } from './layout';
+import { clubhouseTab } from './competition-navigation';
 
 for (const width of [360, 390, 1280]) {
   test(`working desks retain authority and shared command panels at ${width}`, async ({ page }) => {
+    // Every room is reached through the office lobby's doors (→WEB-39).
+    test.slow();
     await page.setViewportSize({ width, height: 844 });
     const w = createWorld({
       name: 'Synthetic Work Office',
@@ -29,16 +32,20 @@ for (const width of [360, 390, 1280]) {
     const before = structuredClone(w.settings);
     await importResponsibilityCareer(page, w);
     await expect(page.getByRole('region', { name: '구단 시설 방문' })).toHaveCount(0);
-    const navigation = page.getByRole('navigation').filter({ visible: true }).last();
+    // The rooms open from their doors in the office lobby and lead back to it (→WEB-39).
     for (const [destination, content] of [
       ['감독 사무실', '감독실'],
       ['훈련장', '1군 훈련장'],
     ] as const) {
-      await navigation.getByRole('button', { name: destination, exact: true }).click();
+      await enterOffice(page);
+      await page
+        .getByRole('navigation', { name: '클럽하우스 시설', exact: true })
+        .getByRole('button', { name: destination, exact: true })
+        .click();
       if (destination === '훈련장') await expect(page.getByTestId('training-focus')).toBeVisible();
       else await expect(page.getByTestId('facility-overview')).toHaveAccessibleName(content);
-      await navigation.getByRole('button', { name: '클럽하우스', exact: true }).click();
-      await expect(page.getByTestId('club-hub')).toBeVisible();
+      await officeBar(page).getByRole('button', { name: '사무실', exact: true }).click();
+      await expect(page.getByTestId('office-lobby')).toBeVisible();
     }
     await enterOffice(page);
     const lobby = page.getByTestId('office-lobby');
@@ -48,21 +55,17 @@ for (const width of [360, 390, 1280]) {
     await expect(lobby.getByRole('button', { name: '운영 방침', exact: true })).toHaveCount(0);
     const overviewTrigger = lobby.getByRole('button', { name: '결재라인 모아보기', exact: true });
     await overviewTrigger.click();
-    const overview = page.getByRole('region', { name: '결재라인 모아보기', exact: true });
-    await expect(page.getByRole('dialog', { name: '결재라인 모아보기', exact: true })).toHaveCount(
-      0,
-    );
-    await expect(page.getByTestId('communications-button')).toBeVisible();
-    await expect(page.locator('[data-ui="season-transport"]')).toBeVisible();
-    await expect(
-      navigation.getByRole('button', { name: '구단주 사무실', exact: true }),
-    ).toHaveAttribute('aria-current', 'page');
+    // The overview opens as the modal over the lobby, like every other entry to it.
+    const overview = page.getByRole('dialog', { name: '결재라인 모아보기', exact: true });
+    await expect(overview).toBeVisible();
+    await expect(clubhouseTab(page)).toHaveAttribute('aria-current', 'page');
     await expect(
       overview
         .getByRole('group', { name: '선수 영입', exact: true })
         .getByRole('button', { name: '자동', exact: true }),
     ).toHaveAttribute('aria-pressed', 'true');
-    await officeBar(page).getByRole('button', { name: '사무실', exact: true }).click();
+    await page.keyboard.press('Escape');
+    await expect(overview).toHaveCount(0);
     await expect(lobby).toBeVisible();
     await openOfficeArea(page, '선수 계약');
     await expect(page).toHaveURL(/view=players(?:&work=overview)?$/);

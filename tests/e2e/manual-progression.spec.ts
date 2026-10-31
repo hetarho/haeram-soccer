@@ -9,7 +9,7 @@ import {
 import { pendingDecisions } from '../../packages/engine/src/stopping';
 import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsibility-fixtures';
 import { horizontalOverflow } from './layout';
-import { configureResponsibilities, matchReport } from './events';
+import { configureResponsibilities, matchReport, reviewInOffice } from './events';
 import { leaveOffice } from './office';
 
 for (const width of [1280, 390]) {
@@ -103,31 +103,23 @@ for (const width of [1280, 390]) {
     await importResponsibilityCareer(page, w);
     const group = page.getByTestId('event-group');
     await expect(group).toContainText('내일 경기');
-    const review = group.getByRole('button', { name: '검토하기', exact: true });
-    await expect(review).toHaveCount(2);
+    // The decisions wait in the owner office's tray, not in the match eve (→WEB-39).
+    await expect(group.getByRole('button', { name: '검토하기', exact: true })).toHaveCount(0);
     const next = page.getByRole('button', { name: '다음 이벤트', exact: true });
     const result = group.getByRole('button', { name: '결과만 보고 계속', exact: true });
     // Next-event remains a report-reopen action; the unresolved decisions block settlement.
     await expect(next).toBeEnabled();
     await expect(result).toBeDisabled();
-    await review.first().click();
-    await page
-      .getByTestId('approval-request')
-      .getByRole('button', { name: '거절', exact: true })
-      .click();
-    await next.click();
-    await expect(review).toHaveCount(1);
-    await expect(next).toBeEnabled();
-    await expect(result).toBeDisabled();
-    await review.first().click();
-    await page
-      .getByTestId('approval-request')
-      .getByRole('button', { name: '거절', exact: true })
-      .click();
-    await next.click();
-    await expect(review).toHaveCount(0);
-    await expect(next).toBeEnabled();
-    await expect(result).toBeEnabled();
+    for (const left of [1, 0]) {
+      const request = await reviewInOffice(page);
+      await request.getByRole('button', { name: '거절', exact: true }).click();
+      await expect(page).toHaveURL(/\/journal$/);
+      await next.click();
+      await expect(group).toContainText('내일 경기');
+      await expect(next).toBeEnabled();
+      if (left) await expect(result).toBeDisabled();
+      else await expect(result).toBeEnabled();
+    }
     await expect(group).toContainText('내일 경기');
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
   });

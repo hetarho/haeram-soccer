@@ -305,7 +305,7 @@ describe('club identity draft reducer (→KIT-9/10, WEB-86)', () => {
     expect(reduceIdentityDraft(ENTRY, noSecondary)).toBe(ENTRY);
     expect(
       // @ts-expect-error — a shirt pattern is not a crest field pattern
-      reduceIdentityDraft(ENTRY, { type: 'shirt-pattern', role: 'home', pattern: 'quarters' }),
+      reduceIdentityDraft(ENTRY, { type: 'shirt-pattern', role: 'home', pattern: 'cross' }),
     ).toBe(ENTRY);
   });
 

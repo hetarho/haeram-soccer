@@ -1,13 +1,9 @@
-import { openLeague } from './competition-navigation';
+import { clubhouseTab, openLeague } from './competition-navigation';
 import { openPersonnel } from './personnel-navigation';
-import { expect, test, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator } from '@playwright/test';
 import { expectCompactStandings, expectHomeBounds, horizontalOverflow, settle } from './layout';
 import { textContrast } from './contrast';
 import { leaveOffice, openOfficeArea } from './office';
-
-async function navigate(page: Page, name: string) {
-  await page.getByRole('button', { name, exact: true }).filter({ visible: true }).first().click();
-}
 
 async function surface(locator: Locator) {
   return locator.evaluate((element) => {
@@ -57,6 +53,9 @@ for (const themeId of ['standard', 'pixel']) {
   test(`${themeId}: management cards, transport and choices retain inset content and separate actions`, async ({
     page,
   }) => {
+    // Four widths, each through the office, home, league and the squad room behind the office
+    // lobby's door (→WEB-39): about 7 s a width on a loaded host.
+    test.slow();
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript((themeId) => {
       localStorage.setItem(
@@ -119,7 +118,7 @@ for (const themeId of ['standard', 'pixel']) {
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
       await leaveOffice(page);
-      await navigate(page, '클럽하우스');
+      await clubhouseTab(page).click();
       await expectHomeBounds(page);
       const fixture = page.getByRole('region', { name: '다음 경기', exact: true });
       const card = await surface(fixture);
@@ -187,6 +186,8 @@ for (const themeId of ['standard', 'pixel']) {
         .filter({ has: page.getByRole('heading', { name: '우리 클럽의 선수들', exact: true }) });
       const row = panel.locator('article').first();
       await expect(row).toBeVisible();
+      // A room shown again eases its rows out of the hover they had on the last visit.
+      await settle(page);
       const beforeHover = await surface(row);
       await row.hover();
       await settle(page);

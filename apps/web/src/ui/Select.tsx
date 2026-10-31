@@ -58,6 +58,7 @@ type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'value' | 'onChange' 
   value: string | number;
   onValueChange: (value: string) => void;
   children: ReactNode;
+  hintLayout?: 'stacked' | 'inline';
 };
 
 export function Select({
@@ -67,6 +68,7 @@ export function Select({
   disabled,
   className,
   name,
+  hintLayout = 'stacked',
   ...props
 }: Props) {
   const trigger = useRef<HTMLButtonElement>(null);
@@ -128,11 +130,14 @@ export function Select({
         top = Math.max(top, area.top);
         bottom = Math.min(bottom, area.bottom);
       }
-      const popupWidth = Math.min(Math.max(anchor.width, 220), width - 24);
+      const style = getComputedStyle(popup);
+      const minimumWidth = parseFloat(style.getPropertyValue('--select-popup-min-width')) || 192;
+      const heightLimit = parseFloat(style.getPropertyValue('--select-popup-max-height')) || 280;
+      const popupWidth = Math.min(Math.max(anchor.width, minimumWidth), width - 24);
       const below = Math.max(0, bottom - anchor.bottom - 12);
       const above = Math.max(0, anchor.top - top - 12);
       const upwards = below < Math.min(180, popup.scrollHeight) && above > below;
-      const maxHeight = Math.min(360, upwards ? above : below);
+      const maxHeight = Math.min(heightLimit, upwards ? above : below);
       popup.style.width = `${popupWidth}px`;
       popup.style.maxHeight = `${maxHeight}px`;
       popup.style.left = `${Math.max(left + 12, Math.min(anchor.left, left + width - popupWidth - 12))}px`;
@@ -269,7 +274,7 @@ export function Select({
         onKeyDown={key}
       >
         <span className={s.value}>{current?.label || '선택하세요'}</span>
-        <PixelIcon name="chevronDown" size={16} className={s.chevron} />
+        <PixelIcon name="chevronDown" size={12} className={s.chevron} />
       </button>
       {open && !blocked && (
         <div
@@ -279,6 +284,8 @@ export function Select({
           aria-label={props['aria-label']}
           aria-labelledby={props['aria-labelledby']}
           popover="auto"
+          data-select-content=""
+          data-hint-layout={hintLayout}
           className={s.content}
           onToggle={(event) => {
             if (event.newState === 'closed') setOpen(false);
@@ -292,6 +299,7 @@ export function Select({
               <div
                 id={`${id}-${choice.value}`}
                 role="option"
+                data-select-option=""
                 aria-selected={choice.value === String(value)}
                 aria-disabled={choice.disabled || undefined}
                 className={s.item}
@@ -309,12 +317,12 @@ export function Select({
                 }}
               >
                 <span className={choice.hint ? s.hinted : undefined}>
-                  {choice.label}
+                  <span className={s.optionLabel}>{choice.label}</span>
                   {choice.hint && <small>{choice.hint}</small>}
                 </span>
                 {choice.value === String(value) && (
                   <span className={s.check}>
-                    <PixelIcon name="check" size={16} />
+                    <PixelIcon name="check" size={14} />
                   </span>
                 )}
               </div>

@@ -1,23 +1,48 @@
-/* One facility part: its heading, ladder or levels, demand, work in progress and next work. */
+/* Each facility on its own card: its artwork beside the heading, steps, demand and next work. */
+.parts {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
 .part {
   --surface-panel-padding: max(12px, var(--panel-padding));
   display: grid;
-  gap: var(--row-padding);
+  grid-template-columns: minmax(180px, 280px) minmax(0, 1fr);
+  align-items: start;
+  gap: 14px;
   padding: var(--surface-panel-padding);
-  margin-bottom: var(--panel-padding);
   min-width: 0;
-  border-bottom: 1px solid var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
 }
-.part:last-of-type {
-  border-bottom: 0;
+.part > .art {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--card-radius);
 }
-.part > button {
+.body {
+  display: grid;
+  gap: var(--row-padding);
+  min-width: 0;
+}
+.body > button {
   min-height: var(--control-min-height);
   width: auto;
   justify-self: start;
 }
-.part > :first-child {
+.body > :first-child {
   margin-bottom: 0;
+}
+@media (max-width: 760px) {
+  .part {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .part > .art {
+    aspect-ratio: 16 / 7;
+  }
 }
 /* The stadium's eight steps as one track: built steps lit, the next work marked. */
 .ladder {

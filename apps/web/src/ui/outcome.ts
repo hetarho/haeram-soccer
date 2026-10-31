@@ -72,6 +72,10 @@ const titles: Record<Command['type'], string> = {
   'sign-sponsor': '후원 계약을 맺었어요',
   'club-identity': '구단 디자인을 적용했어요',
   'match-kit': '다음 경기 유니폼을 정했어요',
+  'design-commission': '디자이너가 시안을 보내왔어요',
+  'adopt-design': '구단 디자인을 바꿨어요',
+  'discard-designs': '시안을 모두 버렸어요',
+  'redraw-designs': '디자이너가 시안을 다시 그렸어요',
 };
 const notes: Partial<Record<Command['type'], string>> = {
   lineup: '다음 경기부터 바꿀 때까지 이 선발을 씁니다.',
@@ -160,15 +164,20 @@ export function describeOutcome(
   after: World,
   limit = 3,
 ): Outcome | undefined {
-  // Reading news decides nothing, live playback reveals a watched result and the season review
-  // reports a closed season.
+  // Reading news decides nothing, live playback reveals a watched result, the season review
+  // reports a closed season and the design screen itself shows a designer's drafts and what
+  // became of them.
   if (
     before.id !== after.id ||
     before.year !== after.year ||
     command.type === 'next-match' ||
     command.type === 'next-event' ||
     command.type === 'advance-days' ||
-    command.type === 'read-inbox'
+    command.type === 'read-inbox' ||
+    command.type === 'design-commission' ||
+    command.type === 'adopt-design' ||
+    command.type === 'discard-designs' ||
+    command.type === 'redraw-designs'
   )
     return undefined;
   const club = clubOf(after),

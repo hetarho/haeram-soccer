@@ -40,8 +40,6 @@
     "shell.loadingSlots": "Opening game slots…",
     "shell.loadingOffice": "Opening the club office…",
     "shell.footer": "HAERAM FOOTBALL · A fictional club, your history.",
-    "shell.progress": "World processing progress",
-    "shell.cancelProgress": "Stop processing",
     "save.start": "Start without signing in",
     "save.complete": "Saved",
     "save.waiting": "Save pending",

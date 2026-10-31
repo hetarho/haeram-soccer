@@ -1,6 +1,8 @@
 import type { Page } from '@playwright/test';
+import { primaryEntry } from './competition-navigation';
 import { dismissMatchReport } from './events';
 import { settle } from './layout';
+import { enterOffice, officeLobby } from './office';
 
 /** Follow the final gameplay hierarchy through the visible navigation. */
 export async function openPersonnel(
@@ -8,6 +10,12 @@ export async function openPersonnel(
   view: 'players' | 'market' | 'training' | 'academy' | 'manager' | 'coaches',
 ) {
   await dismissMatchReport(page);
+  // The transfer market is a primary entry of its own, outside the rooms (→WEB-10).
+  if (view === 'market') {
+    await primaryEntry(page, 'switch').click();
+    await settle(page);
+    return;
+  }
   const hub =
     view === 'academy'
       ? '유소년 훈련장'
@@ -16,9 +24,11 @@ export async function openPersonnel(
         : view === 'coaches'
           ? '코칭스태프실'
           : '감독 사무실';
-  const mobile = (page.viewportSize()?.width ?? 1280) <= 760;
+  // The rooms' doors stand in the owner's office lobby (→WEB-39).
+  await enterOffice(page);
+  await officeLobby(page);
   await page
-    .getByRole('navigation', { name: mobile ? '모바일 게임 메뉴' : '게임 메뉴', exact: true })
+    .getByRole('navigation', { name: '클럽하우스 시설', exact: true })
     .getByRole('button', { name: hub, exact: true })
     .click();
   // Click local tabs only after the incoming view stops moving; Firefox otherwise scrolls it.
@@ -26,7 +36,6 @@ export async function openPersonnel(
   if (view === 'academy' || view === 'training') return;
   const label = {
     players: '선수 목록',
-    market: '이적시장',
     training: '훈련',
     manager: '감독',
     coaches: '스태프',

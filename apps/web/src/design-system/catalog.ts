@@ -83,14 +83,14 @@ export const STORIES: Story[] = [
     '클럽하우스 전체',
     '홈 · 대회',
     ['ClubHub', 'NewsFeed'],
-    '시즌 요약, 다음 경기, 팀 상태와 소식 카드.',
+    '시즌 요약, 다음 경기, 구단주 사무실과 퀵 액션.',
   ),
   story(
     'home-cards',
-    '시즌 · 다음 경기 · 팀 상태',
+    '시즌 · 다음 경기 · 퀵 액션 · 팀 상태',
     '홈 · 대회',
-    ['ClubHub', 'RemedySheet'],
-    '홈의 개별 카드와 상태별 대처 방법 시트.',
+    ['ClubHub', 'QuickActions', 'TeamStateTiles', 'RemedySheet'],
+    '홈의 개별 카드, 주제별 퀵 액션 시트, 사무실의 팀 상태와 대처 방법 시트.',
   ),
   story(
     'controller',

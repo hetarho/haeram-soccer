@@ -1,3 +1,4 @@
+import { clubhouseTab } from './competition-navigation';
 import {
   ALL_DELEGATED,
   configureResponsibilities,
@@ -15,7 +16,7 @@ async function identity(page: Page) {
 }
 async function manual(page: Page, all = false) {
   await dismissMatchReport(page);
-  await page.getByRole('button', { name: '클럽하우스', exact: true }).first().click();
+  await clubhouseTab(page).click();
   await configureResponsibilities(page, {
     responsibilities: all ? ALL_DELEGATED : { recruitment: 'delegated', sales: 'delegated' },
     mode: 'manual',

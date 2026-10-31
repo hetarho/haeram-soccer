@@ -15,6 +15,7 @@ import {
 import { gateProjection } from '../../../../packages/engine/src/finance';
 import { facilityInvestmentPreview } from '../../../../packages/engine/src/investment';
 import { Dialog } from './Dialog';
+import { FacilityArt } from './FacilityArt';
 import { number } from './format';
 import s from './BusinessWorkbench.module.css';
 import f from './FacilityParts.module.css';
@@ -101,90 +102,98 @@ export function FacilityParts({
   const reviewed = review ? preview(review) : undefined;
   return (
     <>
-      <section
-        data-surface="panel"
-        className={f.part}
-        aria-label="경기장"
-        data-testid="facility-stadium"
-      >
-        <div className={s.panelHeading}>
-          <div>
-            <h3>경기장 · {STADIUM_STEPS[w.stadium].name}</h3>
-            <p>
-              {number(STADIUM_STEPS[w.stadium].capacity)}석 · 증축은 공사 중 관중석 10% 폐쇄,
-              재건축은 새 구장이 열릴 때까지 지금 구장을 그대로 써요.
-            </p>
-          </div>
-        </div>
-        <ol data-ui="facility-steps" className={f.ladder} aria-label="경기장 단계" tabIndex={0}>
-          {STADIUM_STEPS.map((step, index) => (
-            <li
-              key={step.name}
-              data-ui="facility-step"
-              data-state={
-                index < w.stadium
-                  ? 'built'
-                  : index === w.stadium
-                    ? 'current'
-                    : w.facilityWorks?.stadium?.to === index
-                      ? 'building'
-                      : undefined
-              }
-              data-testid={`stadium-step-${index}`}
-            >
-              <b>{number(step.capacity)}</b>
-              <small>{step.work ? WORK_INFO[step.work].label : '창단'}</small>
-            </li>
-          ))}
-        </ol>
-        <div className={s.metrics}>
-          <div>
-            <span>홈 관중 예상</span>
-            <b>
-              {number(gate.attendanceLow)}–{number(gate.attendanceHigh)}명
-            </b>
-          </div>
-          <div>
-            <span>좌석이 충분하면 올 관중</span>
-            <b>{number(gate.wanted)}명</b>
-          </div>
-        </div>
-        {work('stadium')}
-        {next('stadium')}
-      </section>
-      {(['training', 'academy'] as const).map((part) => (
+      <div className={f.parts}>
         <section
           data-surface="panel"
-          key={part}
           className={f.part}
-          aria-label={FACILITY_PART_LABEL[part]}
-          data-testid={`facility-${part}`}
+          aria-label="경기장"
+          data-testid="facility-stadium"
         >
-          <div className={s.panelHeading}>
-            <div>
-              <h3>
-                {FACILITY_PART_LABEL[part]} · {partLevel(w, part)}/{MAX_LEVEL}단계
-              </h3>
-              <p>{levelEffect(part, partLevel(w, part))}</p>
+          <FacilityArt kind="stadium" world={w} className={f.art} />
+          <div className={f.body}>
+            <div className={s.panelHeading}>
+              <div>
+                <h3>경기장 · {STADIUM_STEPS[w.stadium].name}</h3>
+                <p>
+                  {number(STADIUM_STEPS[w.stadium].capacity)}석 · 증축은 공사 중 관중석 10% 폐쇄,
+                  재건축은 새 구장이 열릴 때까지 지금 구장을 그대로 써요.
+                </p>
+              </div>
             </div>
-          </div>
-          <ol className={f.levels} aria-label={`${FACILITY_PART_LABEL[part]} 단계별 효과`}>
-            {Array.from({ length: MAX_LEVEL }, (_, i) => i + 1).map((level) => (
-              <li key={level} data-built={level <= partLevel(w, part) || undefined}>
-                <b
-                  data-ui="level-mark"
-                  data-state={level <= partLevel(w, part) ? 'built' : undefined}
+            <ol data-ui="facility-steps" className={f.ladder} aria-label="경기장 단계" tabIndex={0}>
+              {STADIUM_STEPS.map((step, index) => (
+                <li
+                  key={step.name}
+                  data-ui="facility-step"
+                  data-state={
+                    index < w.stadium
+                      ? 'built'
+                      : index === w.stadium
+                        ? 'current'
+                        : w.facilityWorks?.stadium?.to === index
+                          ? 'building'
+                          : undefined
+                  }
+                  data-testid={`stadium-step-${index}`}
                 >
-                  {level}
+                  <b>{number(step.capacity)}</b>
+                  <small>{step.work ? WORK_INFO[step.work].label : '창단'}</small>
+                </li>
+              ))}
+            </ol>
+            <div className={s.metrics}>
+              <div>
+                <span>홈 관중 예상</span>
+                <b>
+                  {number(gate.attendanceLow)}–{number(gate.attendanceHigh)}명
                 </b>
-                <small>{levelEffect(part, level)}</small>
-              </li>
-            ))}
-          </ol>
-          {work(part)}
-          {next(part)}
+              </div>
+              <div>
+                <span>좌석이 충분하면 올 관중</span>
+                <b>{number(gate.wanted)}명</b>
+              </div>
+            </div>
+            {work('stadium')}
+            {next('stadium')}
+          </div>
         </section>
-      ))}
+        {(['training', 'academy'] as const).map((part) => (
+          <section
+            data-surface="panel"
+            key={part}
+            className={f.part}
+            aria-label={FACILITY_PART_LABEL[part]}
+            data-testid={`facility-${part}`}
+          >
+            <FacilityArt kind={part} world={w} className={f.art} />
+            <div className={f.body}>
+              <div className={s.panelHeading}>
+                <div>
+                  <h3>
+                    {FACILITY_PART_LABEL[part]} · {partLevel(w, part)}/{MAX_LEVEL}단계
+                  </h3>
+                  <p>{levelEffect(part, partLevel(w, part))}</p>
+                </div>
+              </div>
+              <ol className={f.levels} aria-label={`${FACILITY_PART_LABEL[part]} 단계별 효과`}>
+                {Array.from({ length: MAX_LEVEL }, (_, i) => i + 1).map((level) => (
+                  <li key={level} data-built={level <= partLevel(w, part) || undefined}>
+                    <b
+                      data-ui="level-mark"
+                      data-state={level <= partLevel(w, part) ? 'built' : undefined}
+                    >
+                      {level}
+                    </b>
+                    <small>{levelEffect(part, level)}</small>
+                  </li>
+                ))}
+              </ol>
+              {work(part)}
+              {next(part)}
+            </div>
+          </section>
+        ))}
+      </div>
       {review && reviewed?.next ? (
         <Dialog
           label={`${FACILITY_PART_LABEL[review]} 공사 확인`}

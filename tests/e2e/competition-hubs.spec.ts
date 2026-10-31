@@ -9,56 +9,32 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
   await page.goto('/');
   await page.getByRole('button', { name: '클럽 창단 →', exact: true }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  const clubhouseAddress = page.url();
-  const returnHome = page.getByRole('button', { name: '돌아가기 · 클럽 홈', exact: true });
-  const seasonTabs = page.getByRole('tablist', { name: '시즌', exact: true });
-  await page.getByRole('button', { name: '컵대회 보기', exact: true }).click();
-  const cups = page.getByRole('dialog', { name: '컵대회', exact: true });
-  await cups.getByRole('button', { name: '잉글랜드 컵 현재 대회 보기', exact: true }).click();
-  await expect(cups).toBeHidden();
-  await expect(page).toHaveURL(/season\?competition=cup.*cup=cup/);
-  await expect(page.getByRole('region', { name: '잉글랜드 컵', exact: true })).toBeVisible();
-  await expect(returnHome).toBeVisible();
-  await seasonTabs.getByRole('tab', { name: '리그', exact: true }).click();
-  await expect(returnHome).toBeVisible();
-  await page.goBack();
-  await expect(seasonTabs.getByRole('tab', { name: '컵 대회', exact: true })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
-  await expect(returnHome).toBeVisible();
-  await page.goForward();
-  await expect(seasonTabs.getByRole('tab', { name: '리그', exact: true })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
-  await expect(returnHome).toBeVisible();
-  await returnHome.click();
-  await expect(page).toHaveURL(clubhouseAddress);
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  const menuEntry = (name: string) =>
+    page
+      .getByRole('navigation', { name: '모바일 게임 메뉴', exact: true })
+      .getByRole('button', { name, exact: true });
+  // League and cups are primary entries of their own; history moves between them (→WEB-10).
+  await openCups(page);
+  await expect(page).toHaveURL(/season\?competition=cup/);
+  const firstCupAddress = page.url();
   await openLeague(page);
+  await expect(page).toHaveURL(/season\?competition=league/);
   await expect(page.getByTestId('mini-clock')).toHaveCount(0);
-  await expect(page.locator('[data-ui="toolbar"]').filter({ visible: true })).toContainText(
-    '돌아가기',
-  );
-  await seasonTabs.getByRole('tab', { name: '컵 대회', exact: true }).click();
-  await expect(returnHome).toBeVisible();
-  await returnHome.click();
-  await expect(page).toHaveURL(clubhouseAddress);
-  await expect(page.getByTestId('club-hub')).toBeVisible();
-  await openLeague(page);
-  const leagueTab = await page.getByRole('tab', { name: '리그', exact: true }).boundingBox();
-  const countrySelect = await page
-    .getByRole('combobox', { name: '국가', exact: true })
-    .boundingBox();
-  expect(Math.abs(leagueTab!.y - countrySelect!.y)).toBeLessThanOrEqual(2);
+  await page.goBack();
+  await expect(page).toHaveURL(firstCupAddress);
+  await expect(
+    page
+      .getByRole('tablist', { name: '컵 대회', exact: true })
+      .getByRole('tab', { name: '컵 대회' }),
+  ).toHaveAttribute('aria-selected', 'true');
+  await page.goForward();
+  await expect(page).toHaveURL(/season\?competition=league/);
+  await expect(page.getByRole('tablist', { name: '리그 보기', exact: true })).toBeVisible();
   await chooseOption(page.getByRole('combobox', { name: '국가', exact: true }), 'GER');
   await page.getByRole('tab', { name: '선수 기록', exact: true }).click();
   await expect(page).toHaveURL(/competition=league.*view=players.*league=GER\.0\.0/);
   const leagueAddress = page.url();
-  const home = page
-    .getByRole('navigation', { name: '모바일 게임 메뉴', exact: true })
-    .getByRole('button', { name: '클럽하우스', exact: true });
+  const home = menuEntry('클럽하우스');
   await home.click();
   await expect(page).toHaveURL(/\/journal$/);
   await resumeLeague(page);
@@ -85,15 +61,6 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
   );
   await page.goForward();
   await expect(page).toHaveURL(leagueAddress);
-  // A separate fresh current-league entry deliberately selects our competition.
-  await home.click();
-  await expect(page).toHaveURL(/\/journal$/);
-  await openLeague(page);
-  await expect(page.getByRole('combobox', { name: '국가', exact: true })).toHaveAttribute(
-    'data-value',
-    'ENG',
-  );
-  await expect(page).not.toHaveURL(leagueAddress);
   await openClubRecords(page);
   await expect(page.getByRole('table', { name: '시즌별 기록', exact: true })).toBeVisible();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
@@ -102,10 +69,8 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
     /history\?section=league.*season=1940.*league=GER\.0\.0.*view=players.*detail=trend/,
   );
   await expect(page.getByText('선택한 시즌의 기록이 없어요.', { exact: true })).toBeVisible();
-  await expect(page.getByRole('tab', { name: '이전 리그 기록', exact: true })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
+  // A closed league season belongs to the league entry.
+  await expect(menuEntry('리그')).toHaveAttribute('aria-current', 'page');
   await page.reload();
   await expect(page.getByText('선택한 시즌의 기록이 없어요.', { exact: true })).toBeVisible();
   // A legacy explicit current year belongs to Season and keeps its competition and lens.
@@ -128,9 +93,5 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
   await expect(page.getByRole('region', { name: '컵 대회 역사', exact: true })).toContainText(
     '아직 기록된 대회가 없어요.',
   );
-  await expect(
-    page
-      .getByRole('navigation', { name: '모바일 게임 메뉴', exact: true })
-      .getByRole('button', { name: '클럽하우스', exact: true }),
-  ).toHaveAttribute('aria-current', 'page');
+  await expect(menuEntry('컵')).toHaveAttribute('aria-current', 'page');
 });

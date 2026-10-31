@@ -603,19 +603,6 @@
     min-height: 48px;
   }
 }
-.progress {
-  height: 4px;
-  background: var(--surface-grain, none) var(--surface-2);
-  margin-bottom: 18px;
-  overflow: hidden;
-  border-radius: 4px;
-}
-.progress i {
-  display: block;
-  height: 4px;
-  background: var(--surface-grain, none) var(--warm);
-}
-
 .selected {
   border: 1px solid var(--accent) !important;
   background: var(--surface-grain, none) var(--surface-2);
@@ -688,9 +675,6 @@
 .playControls label {
   font-size: var(--label-size);
   font-family: var(--display);
-}
-.playControls :global([data-select-trigger]) {
-  padding: 7px;
 }
 .matchStats {
   padding: 10px 22px 20px;
@@ -1054,21 +1038,6 @@
   flex-shrink: 0;
 }
 
-.foregroundProgress {
-  position: fixed;
-  right: 18px;
-  bottom: calc(20px + env(safe-area-inset-bottom));
-  z-index: 8;
-  width: min(260px, calc(100vw - 36px));
-  padding: 12px;
-  background: var(--surface-grain, none) var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--card-radius);
-  box-shadow: none;
-}
-.foregroundProgress .progress {
-  margin-bottom: 8px;
-}
 .seasonPaneTitle {
   margin-bottom: 18px;
 }
@@ -1081,12 +1050,6 @@
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
-  }
-}
-
-@media (max-width: 760px) {
-  .foregroundProgress {
-    bottom: calc(88px + env(safe-area-inset-bottom));
   }
 }
 
@@ -1255,6 +1218,7 @@
   box-shadow: none;
 }
 .modalHead {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1317,11 +1281,7 @@
   }
   .layout .main :global([data-select-trigger]),
   .modal :global([data-select-trigger]) {
-    appearance: none;
-    height: auto;
     min-width: 44px;
-    font-size: var(--subheading-size);
-    padding: 1px 8px;
   }
   .layout .main :global(input[type='range']),
   .modal :global(input[type='range']) {
@@ -1463,15 +1423,20 @@
     width: 100%;
     margin: 10px 0 0;
   }
+  /* Phones open every dialog but a picker as a bottom sheet: it rises from the bottom edge,
+     leaves the dimmed page showing above it and carries a grab handle. */
   .modalBackdrop {
     align-items: flex-end;
     padding: 0;
   }
   .modal {
     max-width: none !important;
-    max-height: calc(100dvh - env(safe-area-inset-top) - 12px);
+    max-height: calc(90dvh - env(safe-area-inset-top));
     /* Edge-aligned sheets keep square corners. */
     border-radius: 0;
+  }
+  .modalBackdrop:not(.picker) .sheetHandle {
+    display: block;
   }
   .modalHead {
     padding: 14px 16px;
@@ -2119,10 +2084,6 @@
   justify-content: flex-start;
   margin-bottom: 0;
 }
-.seasonBar :global([data-select-trigger]) {
-  height: 44px;
-  min-height: 44px;
-}
 .seasonBar {
   display: flex;
   flex-wrap: wrap;
@@ -2388,7 +2349,7 @@
   }
 }
 
-/* One control height: buttons, dropdowns and inputs in a row share a baseline and edge. */
+/* Filter layouts own alignment; the shared Select owns its typography and compact height. */
 .filters {
   align-items: flex-end;
 }
@@ -2400,16 +2361,10 @@
   color: var(--text-muted);
   font-family: var(--display);
 }
-.filters > button,
-.filters :global([data-select-trigger]),
+.filters > button:not([data-select-trigger]),
 .filters input {
   height: 44px;
   min-height: 44px;
-}
-.filters :global([data-select-trigger]) {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
 }
 .toggles {
   display: grid;
@@ -3416,13 +3371,18 @@
   }
 }
 
-.modalBackdrop.centered {
-  align-items: center;
-  padding: 12px;
-}
-.centered > .modal {
-  max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-  border-radius: var(--dialog-radius);
+.sheetHandle {
+  display: none;
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 40px;
+  height: 4px;
+  margin-left: -20px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.35;
+  pointer-events: none;
 }
 
 /* Competition navigation and its scope share a row before the view tabs. */
@@ -3445,18 +3405,12 @@
 .competitionFilters > :global([data-select-trigger]) {
   flex: 1 1 0;
   min-width: 0;
-  padding-inline: 6px;
-  font-size: 12px;
 }
 .competitionScope .leaguePicker > label {
   flex: 1 1 60px;
 }
 .competitionScope .leaguePicker > label:first-child {
   flex-basis: 80px;
-}
-.competitionScope .leaguePicker :global([data-select-trigger]) {
-  padding-inline: 6px;
-  font-size: 12px;
 }
 .competitionScope .leagueHome {
   min-height: var(--control-min-height);

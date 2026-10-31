@@ -1,5 +1,5 @@
 import { openPersonnel } from './personnel-navigation';
-import { openClubRecords, openLeague } from './competition-navigation';
+import { openClubhouse, openClubRecords, openLeague } from './competition-navigation';
 import { openOfficeLibrary } from './office';
 import { marketRows, marketFilters, marketInfo, closeMarketPanel } from './market';
 import { finishSeason, advanceOneRound } from './season-progression';
@@ -47,11 +47,9 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await draft.getByRole('button', { name: '적용', exact: true }).click();
   await expect(draft).toHaveCount(0);
   await expect(page.getByTestId('area-summary-global')).toHaveText('해외 홍보 · 없음 · 안 함');
-  // The market is a first-team tab.
+  // The market is a primary entry, a view of the first team (→WEB-10).
   await leaveOffice(page);
-  await openPersonnel(page, 'players');
-  await peopleTab('이적시장').click();
-  await expect(peopleTab('이적시장')).toHaveAttribute('aria-selected', 'true');
+  await openPersonnel(page, 'market');
   await expect(page).toHaveURL(/\/first-team\?view=market$/);
   const marketFilter = await marketFilters(page);
   await chooseOption(
@@ -72,9 +70,9 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await closeMarketPanel(page, '영입 후보 상세');
   await expect(await marketInfo(page)).toContainText('선수단 정원 21/40');
   await closeMarketPanel(page, '영입 정보');
-  await peopleTab('선수 목록').click();
+  await openPersonnel(page, 'players');
   await expect(page.getByText('선수단 21/40', { exact: true })).toBeVisible();
-  await page.getByRole('button', { name: '클럽하우스', exact: true }).click();
+  await openClubhouse(page);
   await finishSeason(page);
   await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1951');
   await expect(page.getByTestId('game-round')).toHaveText('0');
@@ -82,11 +80,10 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   // A closed season no longer interrupts: its review waits in the league's season list.
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog', { name: '시즌 진행 도구' })).toHaveCount(0);
-  await openLeague(page, true);
-  await chooseOption(page.getByRole('combobox', { name: '리그 시즌', exact: true }), '1950');
+  await openLeague(page, 1950);
   await openSeasonReview(page);
   await expect(page.getByTestId('season-move')).toBeVisible();
-  await page.getByRole('button', { name: '← 돌아가기 · 리그', exact: true }).click();
+  await page.goBack();
   // The review opens first; the final table is the closed season's next tab.
   await page
     .getByRole('tablist', { name: '지난 시즌 보기' })
@@ -124,7 +121,7 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await saveMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   const raw = readFileSync((await file.path())!);
   expect(JSON.parse(raw.toString()).codec).toBe('gzip-cjk14');
-  await page.getByRole('button', { name: '클럽하우스', exact: true }).click();
+  await openClubhouse(page);
   await advanceOneRound(page);
   await expect(page.getByTestId('game-round')).toHaveText('1');
   await (
@@ -152,8 +149,7 @@ test('browses every historical regional group and resets filters on country chan
   await page.keyboard.press('Escape');
   await page.setViewportSize({ width: 390, height: 844 });
   // Other leagues' past tables live on the league page, never in the records room (→WEB-54).
-  await openLeague(page, true);
-  await chooseOption(page.getByRole('combobox', { name: '리그 시즌', exact: true }), '1950');
+  await openLeague(page, 1950);
   await page
     .getByRole('tablist', { name: '지난 시즌 보기' })
     .getByRole('tab', { name: '순위표', exact: true })

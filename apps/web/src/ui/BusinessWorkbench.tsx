@@ -285,168 +285,170 @@ function MoneyWorkbench({
             </details>
           )}
         </>
-      ) : (
-        <div data-surface="panel" className={s.panel}>
-          {tab === 'build' ? (
-            <FacilityParts w={w} blocked={blocked} act={act} format={format} />
-          ) : tab === 'sponsor' ? (
-            <>
-              <div className={s.panelHeading}>
-                <h3>후원 자리</h3>
-                <span>자리마다 한 계약 · 리그 경기마다 분할 지급</span>
-              </div>
-              <p className={s.note}>
-                올해 예정된 우리 리그 {games}경기 기준이에요. 금액은 계약할 때 정해져 기간 내내
-                고정되고, 끝나면 그때의 디비전·평판·순위·팬으로 다시 매겨요. 계약 이후 경기만
-                지급하며 강등되면 남은 기간이 30% 줄어요.
-              </p>
-              <div className={s.slots}>
-                {sponsorViews.map((view) => (
-                  <section
-                    data-surface="panel"
-                    className={s.slot}
-                    key={view.slot}
-                    aria-label={view.label}
-                    data-testid={`sponsor-slot-${view.slot}`}
-                  >
-                    <header className={s.slotHeading}>
-                      <h4>{view.label}</h4>
-                      <span>
-                        구단 상업 가치의 {Math.round(view.share * 100)}% · 보너스{' '}
-                        {bonusRule[view.bonus]}
-                      </span>
-                    </header>
-                    {!view.open ? (
-                      <p className={s.note}>
-                        {opening(
-                          view.opens,
-                          view.status,
-                          view.capacity,
-                          w.year,
-                          STADIUM_STEPS[w.stadium].capacity,
-                        )}
-                      </p>
-                    ) : view.contract ? (
-                      <SponsorContractCard
-                        contract={view.contract}
-                        rule={view.bonus}
-                        effective={sponsorAnnual(w, view.contract)}
-                        next={
-                          view.contract.lastPaid < w.year && played < games
-                            ? roundShare(sponsorAnnual(w, view.contract), played + 1, games)
-                            : '0'
-                        }
-                        bonus={bonusMetric(view.bonus, view.contract.bonus)}
-                        year={w.year}
-                        format={format}
-                      />
-                    ) : (
-                      <div className={s.cards}>
-                        {view.offers.map((offer, index) => (
-                          <article
-                            data-surface="panel"
-                            className={s.card}
-                            key={offer.kind}
-                            data-testid={`sponsor-${view.slot}-${offer.kind}`}
-                          >
-                            <h3>{SPONSOR_KIND_LABELS[offer.kind]}</h3>
-                            <p>
-                              {offer.name} · {offer.term}시즌 · {season(offer.until - 1)}까지
-                            </p>
-                            <div className={s.metrics}>
-                              <div>
-                                <span>연간 기본금</span>
-                                <b>{format(offer.annual)}</b>
-                              </div>
-                              <div>
-                                <span>다음 리그 기본 지급분</span>
-                                <b>
-                                  {format(
-                                    played < games
-                                      ? roundShare(offer.annual, played + 1, games)
-                                      : '0',
-                                  )}
-                                </b>
-                              </div>
-                              {bonusMetric(view.bonus, offer.bonus)}
-                            </div>
-                            <p className={s.note}>
-                              {bonusNote[view.bonus]} · {kindNote[offer.kind]}
-                            </p>
-                            <button
-                              disabled={blocked}
-                              onClick={() =>
-                                void act(
-                                  { type: 'sign-sponsor', slot: view.slot, offer: index },
-                                  `${view.label} 계약을 맺었어요. 다음 리그 경기부터 나눠 지급돼요.`,
-                                )
-                              }
-                            >
-                              {view.label} 계약
-                            </button>
-                          </article>
-                        ))}
-                      </div>
+      ) : tab === 'build' ? (
+        <FacilityParts w={w} blocked={blocked} act={act} format={format} />
+      ) : tab === 'sponsor' ? (
+        <div className={s.sponsorDesk}>
+          <header className={s.heading}>
+            <h2>후원 자리</h2>
+            <span>자리마다 한 계약 · 리그 경기마다 분할 지급</span>
+          </header>
+          <p className={s.note}>
+            올해 예정된 우리 리그 {games}경기 기준이에요. 금액은 계약할 때 정해져 기간 내내
+            고정되고, 끝나면 그때의 디비전·평판·순위·팬으로 다시 매겨요. 계약 이후 경기만 지급하며
+            강등되면 남은 기간이 30% 줄어요.
+          </p>
+          <div className={s.slots}>
+            {sponsorViews.map((view) => (
+              <section
+                data-surface="panel"
+                className={s.slot}
+                key={view.slot}
+                aria-label={view.label}
+                data-testid={`sponsor-slot-${view.slot}`}
+                data-slot-state={!view.open ? 'locked' : view.contract ? 'signed' : 'vacant'}
+              >
+                <header className={s.slotHeading}>
+                  <h4>
+                    {view.label}
+                    <span data-ui="label" className={s.slotState}>
+                      {!view.open
+                        ? '잠긴 자리'
+                        : view.contract
+                          ? '계약 중'
+                          : `빈 자리 · 제안 ${view.offers.length}건`}
+                    </span>
+                  </h4>
+                  <span>
+                    구단 상업 가치의 {Math.round(view.share * 100)}% · 보너스{' '}
+                    {bonusRule[view.bonus]}
+                  </span>
+                </header>
+                {!view.open ? (
+                  <p className={s.note}>
+                    {opening(
+                      view.opens,
+                      view.status,
+                      view.capacity,
+                      w.year,
+                      STADIUM_STEPS[w.stadium].capacity,
                     )}
-                  </section>
-                ))}
-              </div>
-              <section className={s.delegation} aria-label="후원 위임">
-                <DecisionOwner
-                  w={w}
-                  decision="sponsors"
-                  auto="열린 후원 자리가 비면 운영팀이 그 자리의 안정형 제안 중 보장 금액이 가장 큰 계약을 바로 맺고 알려 줘요."
-                  owner="후원 계약은 직접 골라요. 시즌을 빈 자리로 시작할 때와, 마지막 시즌인 계약이 남은 4월 1일에 알림으로 알려 드려요."
-                />
-              </section>
-            </>
-          ) : tab === 'marketing' ? (
-            <>
-              {/* Campaigns are no more (→ECON-7): one started before settles here, read-only. */}
-              <div className={s.panelHeading}>
-                <h3>진행 중인 캠페인</h3>
-                <span>새 캠페인은 없어요 · 방향의 지역·글로벌에서 투자해요</span>
-              </div>
-              <div className={s.cards}>
-                {w.campaigns.map((campaign) => (
-                  <article
-                    data-surface="panel"
-                    className={s.card}
-                    key={campaign.id}
-                    data-testid={`campaign-${campaign.kind}`}
-                  >
-                    <h3>
-                      {CAMPAIGNS.find((offer) => offer.kind === campaign.kind)?.label ?? '캠페인'}
-                    </h3>
-                    <div className={s.metrics}>
-                      <div>
-                        <span>지급한 비용</span>
-                        <b>{format(campaign.cost)}</b>
-                      </div>
-                      <div>
-                        <span>현재 운영 자금</span>
-                        <b>{format(w.cash)}</b>
-                      </div>
-                    </div>
-                    <p className={s.note}>
-                      {campaign.remaining}라운드 뒤 실제 수입과 팬을 정산해요.
-                    </p>
-                  </article>
-                ))}
-              </div>
-              {w.events
-                .filter((event) => event.kind === 'campaign-result')
-                .slice(-2)
-                .map((event, index) => (
-                  <p className={s.result} key={index}>
-                    <b>{event.title}</b>
-                    <span>{event.detail}</span>
                   </p>
-                ))}
-            </>
-          ) : null}
+                ) : view.contract ? (
+                  <SponsorContractCard
+                    contract={view.contract}
+                    rule={view.bonus}
+                    effective={sponsorAnnual(w, view.contract)}
+                    next={
+                      view.contract.lastPaid < w.year && played < games
+                        ? roundShare(sponsorAnnual(w, view.contract), played + 1, games)
+                        : '0'
+                    }
+                    bonus={bonusMetric(view.bonus, view.contract.bonus)}
+                    year={w.year}
+                    format={format}
+                  />
+                ) : (
+                  <div className={s.cards}>
+                    {view.offers.map((offer, index) => (
+                      <article
+                        data-surface="panel"
+                        className={s.card}
+                        key={offer.kind}
+                        data-testid={`sponsor-${view.slot}-${offer.kind}`}
+                      >
+                        <h3>{SPONSOR_KIND_LABELS[offer.kind]}</h3>
+                        <p>
+                          {offer.name} · {offer.term}시즌 · {season(offer.until - 1)}까지
+                        </p>
+                        <div className={s.metrics}>
+                          <div>
+                            <span>연간 기본금</span>
+                            <b>{format(offer.annual)}</b>
+                          </div>
+                          <div>
+                            <span>다음 리그 기본 지급분</span>
+                            <b>
+                              {format(
+                                played < games ? roundShare(offer.annual, played + 1, games) : '0',
+                              )}
+                            </b>
+                          </div>
+                          {bonusMetric(view.bonus, offer.bonus)}
+                        </div>
+                        <p className={s.note}>
+                          {bonusNote[view.bonus]} · {kindNote[offer.kind]}
+                        </p>
+                        <button
+                          disabled={blocked}
+                          onClick={() =>
+                            void act(
+                              { type: 'sign-sponsor', slot: view.slot, offer: index },
+                              `${view.label} 계약을 맺었어요. 다음 리그 경기부터 나눠 지급돼요.`,
+                            )
+                          }
+                        >
+                          {view.label} 계약
+                        </button>
+                      </article>
+                    ))}
+                  </div>
+                )}
+              </section>
+            ))}
+          </div>
+          <section className={s.delegation} aria-label="후원 위임">
+            <DecisionOwner
+              w={w}
+              decision="sponsors"
+              auto="열린 후원 자리가 비면 운영팀이 그 자리의 안정형 제안 중 보장 금액이 가장 큰 계약을 바로 맺고 알려 줘요."
+              owner="후원 계약은 직접 골라요. 시즌을 빈 자리로 시작할 때와, 마지막 시즌인 계약이 남은 4월 1일에 알림으로 알려 드려요."
+            />
+          </section>
         </div>
-      )}
+      ) : tab === 'marketing' ? (
+        <div data-surface="panel" className={s.panel}>
+          {/* Campaigns are no more (→ECON-7): one started before settles here, read-only. */}
+          <div className={s.panelHeading}>
+            <h3>진행 중인 캠페인</h3>
+            <span>새 캠페인은 없어요 · 방향의 지역·글로벌에서 투자해요</span>
+          </div>
+          <div className={s.cards}>
+            {w.campaigns.map((campaign) => (
+              <article
+                data-surface="panel"
+                className={s.card}
+                key={campaign.id}
+                data-testid={`campaign-${campaign.kind}`}
+              >
+                <h3>
+                  {CAMPAIGNS.find((offer) => offer.kind === campaign.kind)?.label ?? '캠페인'}
+                </h3>
+                <div className={s.metrics}>
+                  <div>
+                    <span>지급한 비용</span>
+                    <b>{format(campaign.cost)}</b>
+                  </div>
+                  <div>
+                    <span>현재 운영 자금</span>
+                    <b>{format(w.cash)}</b>
+                  </div>
+                </div>
+                <p className={s.note}>{campaign.remaining}라운드 뒤 실제 수입과 팬을 정산해요.</p>
+              </article>
+            ))}
+          </div>
+          {w.events
+            .filter((event) => event.kind === 'campaign-result')
+            .slice(-2)
+            .map((event, index) => (
+              <p className={s.result} key={index}>
+                <b>{event.title}</b>
+                <span>{event.detail}</span>
+              </p>
+            ))}
+        </div>
+      ) : null}
       {message && (
         <p data-surface="inset" className={s.message} role="status">
           {message}

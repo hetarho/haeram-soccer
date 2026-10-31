@@ -18,6 +18,7 @@ import {
   remedies,
   STATE_TITLES,
   teamStates,
+  type Remedy,
   type StateAction,
   type StateKey,
 } from './teamState';
@@ -42,6 +43,31 @@ export function useRemedyRunner(client: GameClient, onPrepare?: () => void) {
     } else if (action.page === 'academy') openTraining((action.tab as TrainingTab) ?? 'academy');
     else if (action.page) setPage(action.page);
   };
+}
+
+/** One choice as a sheet lists it: who carries it out, its effect, chances and cost or block. */
+export function RemedyBody({ remedy }: { remedy: Remedy }) {
+  return (
+    <div>
+      <b>
+        {remedy.label}
+        {remedy.by && <small className={s.remedyBy}>{remedy.by}</small>}
+      </b>
+      <small>{remedy.effect}</small>
+      {remedy.chances && (
+        <ul className={s.chances} aria-label={`${remedy.label} 결과 확률`}>
+          {remedy.chances.map((chance) => (
+            <li key={chance.text}>
+              <b>{chance.chance}%</b> {chance.text}
+            </li>
+          ))}
+        </ul>
+      )}
+      {(remedy.cost || remedy.unavailable) && (
+        <em>{remedy.unavailable || `비용 ${remedy.cost}`}</em>
+      )}
+    </div>
+  );
 }
 
 /**
@@ -100,25 +126,7 @@ export function RemedySheet({
             data-surface="tile"
             className={remedy.unavailable ? s.remedyOff : undefined}
           >
-            <div>
-              <b>
-                {remedy.label}
-                {remedy.by && <small className={s.remedyBy}>{remedy.by}</small>}
-              </b>
-              <small>{remedy.effect}</small>
-              {remedy.chances && (
-                <ul className={s.chances} aria-label={`${remedy.label} 결과 확률`}>
-                  {remedy.chances.map((chance) => (
-                    <li key={chance.text}>
-                      <b>{chance.chance}%</b> {chance.text}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {(remedy.cost || remedy.unavailable) && (
-                <em>{remedy.unavailable || `비용 ${remedy.cost}`}</em>
-              )}
-            </div>
+            <RemedyBody remedy={remedy} />
             <button
               data-ui={remedy.command ? undefined : 'link'}
               disabled={!!remedy.unavailable || (acting && !!remedy.command)}

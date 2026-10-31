@@ -1,5 +1,5 @@
 import { openPersonnel } from './personnel-navigation';
-import { openLeague } from './competition-navigation';
+import { clubhouseTab, openLeague } from './competition-navigation';
 import { advanceOneRound } from './season-progression';
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
@@ -58,7 +58,7 @@ test('one writer, live read-only updates and ownership after reload', async ({ p
   await expect(second.getByTestId('game-round')).toHaveText('1', { timeout: 10000 });
   await page.close();
   await second.reload();
-  await second.getByRole('button', { name: '클럽하우스', exact: true }).first().click();
+  await clubhouseTab(second).click();
   await expect(second.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
   await second.close();
 });
@@ -256,6 +256,9 @@ test('a new game goes into another slot, both careers survive switching and back
   );
   await page.goBack();
   await expect(page).toHaveURL(/\/first-team\?view=manager$/);
+  // The room was entered by its office lobby door, and the office from home (→WEB-39).
+  await page.goBack();
+  await expect(page.getByTestId('office-lobby')).toBeVisible();
   await page.goBack();
   await expect(page).toHaveURL(/\/journal$/);
   await expect(page.getByTestId('club-hub')).toBeVisible();

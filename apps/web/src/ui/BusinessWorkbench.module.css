@@ -1,6 +1,4 @@
 .workbench {
-  max-width: 900px;
-  margin: auto;
   min-width: 0;
 }
 .heading {
@@ -138,14 +136,50 @@
   min-height: 44px;
   margin-top: 5px;
 }
+/* The sponsor desk: its open slots as wide cards, the slots still to open as small tiles. */
+.sponsorDesk {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.sponsorDesk > .heading,
+.sponsorDesk > .note {
+  margin: 0;
+}
 .slots {
   display: grid;
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: 10px;
 }
 .slot {
   min-width: 0;
-  padding-top: 10px;
-  border-top: 1px solid var(--line);
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
+}
+.slot:not([data-slot-state='locked']) {
+  grid-column: 1 / -1;
+}
+.slot[data-slot-state='locked'] {
+  opacity: 0.78;
+}
+.slot[data-slot-state='locked'] .slotHeading {
+  display: grid;
+  gap: 4px;
+}
+.slotState {
+  margin-left: 8px;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  vertical-align: 2px;
+}
+.slot[data-slot-state='signed'] .slotState {
+  color: var(--positive);
+}
+.slot[data-slot-state='vacant'] .slotState {
+  color: var(--accent-text);
 }
 .slotHeading {
   display: flex;
@@ -157,7 +191,7 @@
 }
 .slotHeading h4 {
   margin: 0;
-  font-size: 14px;
+  font-size: 15px;
 }
 .slotHeading span {
   color: var(--text-muted);
@@ -169,9 +203,7 @@
 }
 /* Who signs sponsors at the current intervention level ends 후원 (→ECON-21, WEB-45). */
 .delegation {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
+  min-width: 0;
 }
 .detailActions,
 .reviewActions {

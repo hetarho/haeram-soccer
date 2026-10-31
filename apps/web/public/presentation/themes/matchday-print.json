@@ -52,9 +52,6 @@
       "nav-surface": "#faf3e3",
       "nav-edge": "#81745b",
       "popover-edge": "#81745b",
-      "scene-caption-surface": "#24251fe8",
-      "scene-caption-text": "#fff2d8",
-      "scene-caption-icon": "#f5d18c",
       "team-state-fill": "var(--surface)",
       "fixture-control-fill": "var(--accent-fill)",
       "fixture-control-text": "var(--on-accent)",
@@ -217,8 +214,8 @@
       "supporting-button-frame-width": "8px",
       "image-field-frame-slice": "var(--image-art-control-input-slice)",
       "image-field-frame-width": "8px",
-      "image-select-frame": "var(--image-art-control-dropdown)",
-      "image-select-frame-slice": "var(--image-art-control-dropdown-slice)",
+      "image-select-frame": "var(--image-art-frame-ticket)",
+      "image-select-frame-slice": "var(--image-art-frame-ticket-slice)",
       "checkbox-frame": "none",
       "checkbox-border-width": "0px",
       "checkbox-padding": "0px",
@@ -365,7 +362,26 @@
       "result-loss-badge-frame": "var(--image-art-result-loss-badge)",
       "result-loss-badge-slice": "var(--image-art-result-loss-badge-slice)",
       "result-loss-badge-fill": "#9a3528",
-      "result-loss-badge-text": "#fff4de"
+      "result-loss-badge-text": "#fff4de",
+      "select-trigger-frame-width": "6px",
+      "select-popup-frame": "var(--image-art-frame-ticket)",
+      "select-popup-frame-slice": "var(--image-art-frame-ticket-slice)",
+      "select-popup-frame-width": "6px",
+      "select-selection-frame": "var(--image-art-frame-stamp)",
+      "select-selection-frame-slice": "var(--image-art-frame-stamp-slice)",
+      "select-selection-frame-width": "4px",
+      "select-popup-fill": "#fff6e6",
+      "select-selection-fill": "#a63724",
+      "select-selection-text": "#fff1d8",
+      "select-selection-muted": "#fff1d8",
+      "select-font-family": "var(--body)",
+      "select-font-size": "13px",
+      "select-hint-size": "12px",
+      "select-trigger-height": "36px",
+      "select-option-height": "32px",
+      "select-popup-max-height": "280px",
+      "select-popup-min-width": "176px",
+      "select-chevron-size": "10px"
     }
   },
   "fonts": [
@@ -800,6 +816,27 @@
         "resource": "../../art/matchday-print/result-badges-v1/frame-loss.webp",
         "width": 192,
         "height": 133,
+        "mode": "nine-slice",
+        "slice": 22
+      },
+      "image-art-dropdown-trigger": {
+        "resource": "../../art/matchday-print/dropdown-v1/frame-trigger.webp",
+        "width": 192,
+        "height": 64,
+        "mode": "nine-slice",
+        "slice": 22
+      },
+      "image-art-dropdown-popup": {
+        "resource": "../../art/matchday-print/dropdown-v1/frame-popup.webp",
+        "width": 192,
+        "height": 64,
+        "mode": "nine-slice",
+        "slice": 22
+      },
+      "image-art-dropdown-selection": {
+        "resource": "../../art/matchday-print/dropdown-v1/frame-selection.webp",
+        "width": 192,
+        "height": 64,
         "mode": "nine-slice",
         "slice": 22
       }

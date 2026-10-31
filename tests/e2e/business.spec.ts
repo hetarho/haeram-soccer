@@ -22,6 +22,7 @@ import { compactMoney, number } from '../../apps/web/src/ui/format';
 import type { World } from '../../packages/contracts/src/types';
 import { horizontalOverflow, settle } from './layout';
 import { acknowledgeEvents, chooseLevel } from './events';
+import { clubhouseTab } from './competition-navigation';
 import {
   aroundOffice,
   enterOffice,
@@ -59,10 +60,7 @@ const openBusiness = (page: Page, area?: string) =>
 
 async function playNext(page: Page) {
   await outsideOffice(page);
-  await page
-    .getByRole('navigation', { name: '모바일 게임 메뉴' })
-    .getByRole('button', { name: '클럽하우스', exact: true })
-    .click();
+  await clubhouseTab(page).click();
   // A match can leave an owner-held decision (a mediation after an injury) before the next one.
   await acknowledgeEvents(page);
   await watchNext(page);

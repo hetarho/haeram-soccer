@@ -55,8 +55,9 @@
   min-width: 0;
   padding: 4px 10px 4px 4px;
   border-radius: var(--card-radius);
-  border: 1px solid var(--line-strong);
-  background: var(--surface-grain, none) var(--surface-deep);
+  border: 0;
+  background: var(--image-detail, var(--surface-deep)) var(--image-detail-material) repeat;
+  background-size: var(--image-material-size, 256px);
   font-size: 13px;
 }
 .requests li small {
@@ -112,8 +113,11 @@
   text-align: left;
 }
 .picked {
-  border-color: var(--gold) !important;
   box-shadow: none;
+}
+.role > button:is(:hover, :focus-visible) {
+  background-color: var(--image-selected-row, var(--surface-2));
+  background-blend-mode: soft-light;
 }
 .who,
 .money {

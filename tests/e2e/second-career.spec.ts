@@ -2,6 +2,7 @@ import { openPersonnel } from './personnel-navigation';
 import { test, expect } from '@playwright/test';
 import { importSecondCareer } from './career-fixtures';
 import { horizontalOverflow } from './layout';
+import { reviewInOffice } from './events';
 test('qualitative-aptitude-visibility', async ({ page }) => {
   await importSecondCareer(page);
   const aptitude = page.getByTestId('profile-aptitude');
@@ -334,8 +335,7 @@ test('a disclosed player departure ends both jobs and charges coach compensation
   });
   const owed = playingCoachDepartureCost(w, player.id);
   await importResponsibilityCareer(page, w);
-  const card = page.getByTestId('event-card').filter({ hasText: '선수·코치 계약 종료 검토' });
-  await card.getByRole('button', { name: '검토하기', exact: true }).click();
+  await reviewInOffice(page, '선수·코치 계약 종료 검토');
   await expect(page.getByTestId('approval-request')).toContainText('코치 계약도 함께 종료');
   await expect(page.getByTestId('approval-request')).toContainText('기존 계약 종료 비용');
   await page

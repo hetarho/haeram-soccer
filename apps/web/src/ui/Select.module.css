@@ -1,29 +1,42 @@
 .trigger.trigger {
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  gap: 4px;
+  gap: 8px;
   width: 100%;
   min-width: 44px;
   max-width: 100%;
-  min-height: var(--control-min-height);
-  padding: 1px 8px;
-  border: 1px solid var(--popover-edge);
+  min-height: var(--select-trigger-height, 36px);
+  padding: 0 10px;
+  border: 0;
   border-radius: var(--control-radius);
-  background: var(--surface-grain, none) var(--surface-deep);
+  background: none;
   color: var(--text);
   box-shadow: none;
   text-align: left;
-  font-weight: 500;
-  line-height: 1.2;
+  font-family: var(--select-font-family, var(--body));
+  font-size: var(--select-font-size, 13px);
+  font-weight: 400;
+  line-height: 1.35;
   transition:
     background-color 140ms,
     box-shadow 140ms;
 }
+.trigger::before {
+  content: '';
+  position: absolute;
+  inset: var(--select-face-inset, 2px) 0;
+  z-index: -1;
+  border: 1px solid var(--popover-edge);
+  border-radius: var(--control-radius);
+  background: var(--surface-grain, none) var(--surface-deep);
+  pointer-events: none;
+}
 .trigger.trigger:hover:not(:disabled),
 .trigger[data-state='open'] {
-  background: var(--surface-grain, none) var(--surface-deep);
-  border-color: var(--popover-edge);
+  background: none;
 }
 .trigger.trigger[data-state='open'] {
   box-shadow: var(--popover-shadow);
@@ -37,11 +50,13 @@
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  line-height: 1.2;
+  line-height: 1.35;
 }
 .chevron {
-  flex: 0 0 16px;
-  opacity: 0.65;
+  flex: 0 0 var(--select-chevron-size, 10px);
+  width: var(--select-chevron-size, 10px);
+  height: var(--select-chevron-size, 10px);
+  opacity: 0.7;
   transition: transform 160ms;
 }
 .trigger[data-state='open'] .chevron {
@@ -50,10 +65,10 @@
 .content {
   z-index: 100;
   margin: 0;
-  padding: 5px;
+  padding: 2px;
   inset: auto;
   max-width: min(420px, calc(100vw - 24px));
-  max-height: 360px;
+  max-height: var(--select-popup-max-height, 280px);
   overflow-y: auto;
   overscroll-behavior: contain;
   background: var(--surface-grain, none) var(--surface-deep);
@@ -61,16 +76,19 @@
   border: 1px solid var(--popover-edge);
   border-radius: var(--card-radius);
   box-shadow: var(--popover-shadow);
+  font-family: var(--select-font-family, var(--body));
+  font-size: var(--select-font-size, 13px);
+  font-weight: 400;
 }
 .item {
   position: relative;
   display: flex;
   align-items: center;
-  min-height: 44px;
-  padding: 10px 34px 10px 12px;
+  min-height: var(--select-option-height, 32px);
+  padding: 3px 24px 3px 6px;
   border-radius: var(--control-radius);
-  font-size: 14px;
-  line-height: 1.45;
+  font-size: var(--select-font-size, 13px);
+  line-height: 1.35;
   overflow-wrap: anywhere;
   user-select: none;
   cursor: pointer;
@@ -78,7 +96,7 @@
 }
 .item[data-state='checked'] {
   color: var(--text);
-  font-weight: 600;
+  font-weight: 500;
   background: var(--surface-grain, none) var(--surface-2);
 }
 .item[data-highlighted] {
@@ -91,21 +109,31 @@
 }
 .check {
   position: absolute;
-  right: 10px;
+  right: 6px;
   display: flex;
 }
 .group {
-  padding: 8px 12px 4px;
+  padding: 5px 6px 2px;
   color: var(--text-muted);
-  font-size: 12px;
-  font-family: var(--display);
+  font-size: 11px;
+  font-weight: 500;
+  font-family: var(--select-font-family, var(--body));
 }
 @media (max-width: 760px) {
   .trigger.trigger {
-    font-size: 16px;
+    --select-face-inset: 6px;
+    min-height: 44px;
+    font-size: var(--select-font-size, 13px);
   }
   .item {
-    font-size: 15px;
+    min-height: 36px;
+    font-size: var(--select-font-size, 13px);
+  }
+}
+@media (pointer: coarse) {
+  .trigger.trigger {
+    --select-face-inset: 6px;
+    min-height: 44px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -125,11 +153,24 @@
 .hinted {
   display: grid;
   gap: 2px;
+  width: 100%;
+  min-width: 0;
+}
+.optionLabel {
+  min-width: 0;
 }
 .hinted small {
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: var(--select-hint-size, 12px);
   font-weight: 400;
-  line-height: 1.4;
-  font-family: var(--display);
+  line-height: 1.35;
+  font-family: var(--select-font-family, var(--body));
+}
+.content[data-hint-layout='inline'] .hinted {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+.content[data-hint-layout='inline'] .hinted small {
+  text-align: right;
 }

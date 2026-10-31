@@ -4,10 +4,9 @@ import { operatingCosts } from '../../../../packages/engine/src/finance';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import { Money } from './Money';
 import s from './App.module.css';
-import c from './CashAlarm.module.css';
 
 /** Debt plays on under a red band counting down to bankruptcy (→ECON-24). */
-export function CashAlarm({ overlay = false }: { overlay?: boolean }) {
+export function CashAlarm() {
   const w = useGameState((state) => state.view?.world);
   if (!w || w.bankrupt) return null;
   const own = w.clubs.find((club) => club.id === w.playerClub)!;
@@ -18,7 +17,7 @@ export function CashAlarm({ overlay = false }: { overlay?: boolean }) {
     <div
       data-ui="notice"
       data-tone="danger"
-      className={overlay ? c.overlay : s.cashAlarm}
+      className={s.cashAlarm}
       role="status"
       data-testid="cash-alarm"
     >

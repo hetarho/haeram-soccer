@@ -40,8 +40,6 @@
     "shell.loadingSlots": "Abriendo ranuras de partida…",
     "shell.loadingOffice": "Abriendo las oficinas del club…",
     "shell.footer": "HAERAM FOOTBALL · Un club ficticio, tu historia.",
-    "shell.progress": "Progreso de la simulación",
-    "shell.cancelProgress": "Detener simulación",
     "save.start": "Empieza sin iniciar sesión",
     "save.complete": "Partida guardada",
     "save.waiting": "Guardado pendiente",

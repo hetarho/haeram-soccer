@@ -39,8 +39,7 @@ test('rules three retains a joint career and promise through scoped drafts, hand
   await finance.getByRole('button', { name: /어디서 벌고/ }).click();
   await finance.getByRole('radio', { name: '재정 기조 신중', exact: true }).click();
   await leaveOffice(page);
-  await openPersonnel(page, 'players');
-  await page.getByRole('tab', { name: '이적시장', exact: true }).click();
+  await openPersonnel(page, 'market');
   await marketInfo(page);
   await page.getByRole('button', { name: /^영입 기조/ }).click();
   const sheet = page.getByRole('dialog', { name: '영입 업무 기준', exact: true });
@@ -120,8 +119,7 @@ test('the market discloses combined departure compensation before its approval',
   const compensation = playingCoachDepartureCost(w, player.id);
   await page.setViewportSize({ width: 390, height: 844 });
   await importResponsibilityCareer(page, w);
-  await openPersonnel(page, 'players');
-  await page.getByRole('tab', { name: '이적시장', exact: true }).click();
+  await openPersonnel(page, 'market');
   await page.getByRole('button', { name: /^이적 협상 ·/ }).click();
   const negotiation = page.getByRole('region', { name: '진행 중인 협상' });
   await expect(negotiation).toContainText('선수·코치 계약 함께 종료');

@@ -30,7 +30,9 @@ import {
   PresentationSettingsControls,
   PresentationSettingsTrigger,
 } from '../ui/PresentationSettings';
-import { ClubHub, NextMatchCard, SeasonCard, TeamState, CupBriefing } from '../ui/ClubHub';
+import { ClubHub, NextMatchCard, SeasonCard, CupBriefing } from '../ui/ClubHub';
+import { QuickActions } from '../ui/QuickActions.tsx';
+import { TeamState } from '../ui/TeamStateTiles';
 import { NewsList, useNewsSheet } from '../ui/NewsFeed';
 import { ProgressControls, ProgressOverview } from '../ui/ProgressControls';
 import { ProgressModeSwitch } from '../ui/ProgressModeSwitch';
@@ -75,7 +77,7 @@ import { GameIndexStore } from '../adapters/games';
 import { memoryStorage } from './session';
 import { Dialog } from '../ui/Dialog';
 import { FeedbackOverlay } from '../ui/FeedbackOverlay';
-import { CommunicationsCenter, EventCenter } from '../ui/EventCenter';
+import { CommunicationsCenter } from '../ui/EventCenter';
 import { OwnerOffice } from '../ui/OwnerOfficeView';
 import { GlossaryHost } from '../ui/Glossary';
 import { useGlossary } from '../ui/metricGlossary';
@@ -724,18 +726,7 @@ export default function StoryRenderer({
         );
         break;
       case 'home':
-        content = (
-          <ClubHub
-            w={w}
-            client={client}
-            journal={
-              <>
-                <EventCenter client={client} controller={controller} />
-                <NewsList w={w} />
-              </>
-            }
-          />
-        );
+        content = <ClubHub w={w} client={client} />;
         break;
       case 'home-cards':
         content = (
@@ -743,6 +734,7 @@ export default function StoryRenderer({
             <SeasonCard w={w} active />
             <NextMatchCard w={w} onPrepare={() => setPreparing(true)} />
             <CupBriefing w={w} />
+            <QuickActions w={w} client={client} />
             <TeamState w={w} client={client} onPrepare={noop} />
           </>
         );

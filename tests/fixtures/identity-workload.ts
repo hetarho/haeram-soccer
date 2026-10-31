@@ -18,7 +18,7 @@ import { selectMatchKits } from '../../packages/engine/src/kit-selection';
 /**
  * T255: the marked synthetic cosmetic workload of the active-management century (KIT-9/6/12/13).
  * At each season's start the owner applies a complete own design through the real `club-identity`
- * command, cycling the 24-colour crest palette, the eight shirt patterns and the six ready-made
+ * command, cycling the 24-colour crest palette, the fourteen shirt patterns and the six ready-made
  * crest compositions by season number alone; before the final active checkpoint the owner chooses
  * a shirt for the real next own fixture through the real `match-kit` command. Every command is
  * checked as it runs: recorded appearances stay exactly as they were, the design applied last is
@@ -39,9 +39,9 @@ function shirt(pattern: ShirtPattern, primary: string, secondary: string, trim?:
 /**
  * Season `n`'s complete own design. Pure and deterministic: one, two then three representative
  * colours in turn; the crest composition `n` of six; home, away and third on patterns `n`, `n + 3`
- * and `n + 5` of eight (always three different ones) in palette colours, each with a trim one season
- * in three. Consecutive seasons always differ, and every 24 seasons cover the whole palette, all
- * eight patterns on every role and all six compositions.
+ * and `n + 5` of fourteen (always three different ones) in palette colours, each with a trim one
+ * season in three. Consecutive seasons always differ, every 24 seasons cover the whole palette, all
+ * fourteen patterns on every role and all six compositions, and the designs repeat every 168.
  */
 export function seasonIdentity(n: number): ClubIdentity {
   const main = colour(n),

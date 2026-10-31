@@ -7,6 +7,7 @@ import { ATTRIBUTES, LINES, PLAY_TRAITS, POSITIONS } from './player';
 import {
   assertIdentityFormatVersions,
   clubIdentitySchema,
+  designCommissionSchema,
   fixtureKitChoiceSchema,
   matchAppearanceSchema,
 } from './identitySchema';
@@ -1092,6 +1093,7 @@ const worldSchema: z.ZodType<World> = z.object({
   recentResults: z.record(id, z.array(fixture).max(RECENT_RESULT_LIMIT)).optional(),
   tables: z.record(id, table),
   kitChoice: fixtureKitChoiceSchema.optional(),
+  designCommission: designCommissionSchema.optional(),
   ownMatches: z.array(match).max(100000),
   matchModel: matchModelStateSchema.optional(),
   npcSeason: npcSeasonSchema.optional(),

@@ -1,28 +1,24 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
-import {
-  linkedIdentityColours,
-  reduceIdentityDraft,
-} from '../../apps/web/src/ui/clubIdentityDraft';
+import { linkedIdentityColours } from '../../apps/web/src/ui/clubIdentityDraft';
 import { canonical } from '../../packages/contracts/src/index';
 import {
   KIT_ROLES,
   type AppearanceSide,
+  type ClubIdentity,
   type ShirtDesign,
   type ShirtPattern,
 } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
 import { MANAGER_HISTORY_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
-import { identityOf, nextOwnFixture } from '../../packages/engine/src/index';
+import { nextOwnFixture } from '../../packages/engine/src/index';
 import { legacyCrestMap } from '../../packages/engine/src/identity-legacy';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import {
   adoptedCareer,
   containerOneCheckpoint,
   delegatedCareer,
-  EDITED_SHIRT_COLOUR,
-  FIRST_COLOUR,
   FOUNDED_DESIGN,
   FUTURE_CHECKPOINTS,
   manifestOf,
@@ -30,18 +26,22 @@ import {
 } from '../fixtures/club-identity';
 import { colourArea, torsoShare, wornFigures } from '../fixtures/figure-evidence';
 import {
-  applyButton,
-  applyDesign,
+  adoptButton,
+  adoptDraft,
+  appliedPanel,
   canvasPixels,
   checkpointStorage,
   closeNotices,
   closePreparation,
   colourCode,
+  commission,
+  type CommissionColours,
   committedRaw,
   continueGame,
   crestFill,
   designInEditor,
-  designStatus,
+  draftItems,
+  draftsPanel,
   exportRaw,
   exportWorld,
   failableWrites,
@@ -63,7 +63,8 @@ import {
   ownClub,
   PHONE_VIEWPORTS,
   pitchImage,
-  refuseNextApply,
+  refuseNextDesignCommand,
+  requestButton,
   retrySave,
   SAVE_DATA_UPDATED,
   savedWorld,
@@ -74,19 +75,20 @@ import {
 } from './club-identity-helpers';
 import { ALL_DELEGATED, configureResponsibilities } from './events';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { officeBar } from './office';
+import { leaveOffice, officeBar } from './office';
 
 /**
- * KIT-9/12/15, WEB-86/87, SAVE-3/5/6/11/20/21/22: club designs and the kit a match was played in
- * stay exact through founding, settlement, later edits, export/import, reload, slot parking,
- * read-only inspection, failed writes and newer data. Evidence is the stored checkpoints and the
- * exported files decoded in Node against literal designs, beside what the page draws.
+ * KIT-9/12/15, WEB-86/87/108, SAVE-3/5/6/11/20/21/22: club designs and the kit a match was played
+ * in stay exact through founding, settlement, a later adopted commission, export/import, reload,
+ * slot parking, read-only inspection, failed writes and newer data. Evidence is the stored
+ * checkpoints and the exported files decoded in Node against literal or delivered designs, beside
+ * what the page draws.
  */
 
 /** The ready-made crest `FOUNDED_DESIGN` recolours: french, sash, crown. */
 const PRESET = '프렌치 방패 · 왕관';
-/** An unapplied representative colour that no applied design uses. */
-const DRAFT_COLOUR = '#00A6A6';
+/** Commission colours from the designer's palette that no founded or opposing design uses. */
+const COMMISSIONED = ['#ff8fab', '#4fd1a5'] as const satisfies CommissionColours;
 /** A pattern unlike `pattern`, for the wrong-pattern control. */
 const otherPattern = (pattern: ShirtPattern): ShirtPattern =>
   pattern === 'stripes' ? 'hoops' : 'stripes';
@@ -211,24 +213,28 @@ test.describe(() => {
       await page.getByTestId('match-next-action').click();
       await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
 
-      // Edit the linked palette; the already recorded appearance remains frozen (→KIT-9/12).
-      const actions = [
-        { type: 'kit-colour', role: 'home', colour: EDITED_SHIRT_COLOUR },
-        { type: 'kit-colour', role: 'away', colour: '#1B2A49' },
-        ...(worn.role === 'third'
-          ? [{ type: 'kit-colour', role: 'third', colour: EDITED_SHIRT_COLOUR } as const]
-          : []),
-      ] as const;
-      const edited = actions.reduce(reduceIdentityDraft, design);
+      // A designer's draft is adopted; the already recorded appearance remains frozen (→KIT-9/12).
+      // No figure, crest or keeper of that match wears a commissioned colour.
+      for (const colour of COMMISSIONED)
+        expect(JSON.stringify(frozen).toLowerCase()).not.toContain(colour);
       const view = await openDesign(page);
-      for (const action of actions)
-        await colourCode(view, `${KIT_LABEL[action.role]} 색 코드`).fill(action.colour);
-      await keepScreenshot(
-        testInfo,
-        `edited crest preview ${size}`,
-        view.getByRole('img', { name: /^엠블럼 미리보기/ }),
-      );
-      await applyDesign(page, view);
+      const { drafts } = await commission(page, view, COMMISSIONED);
+      // The draft that would dress that fixture in a commissioned colour today (→KIT-7).
+      const shirtToday = (draft: ClubIdentity) => {
+        const today = structuredClone(played);
+        ownClub(today).identity = draft;
+        return appearanceForFixture(today, record).sides[side].shirt;
+      };
+      const chosen = drafts.findIndex((draft) => {
+        const { primary, secondary } = shirtToday(draft);
+        return [primary, secondary].some((colour) =>
+          (COMMISSIONED as readonly (string | undefined)[]).includes(colour),
+        );
+      });
+      expect(chosen).toBeGreaterThanOrEqual(0);
+      const edited = drafts[chosen]!;
+      await keepScreenshot(testInfo, `adopted draft ${size}`, draftItems(view).nth(chosen));
+      await adoptDraft(view, chosen);
       await expect(crestFill(hud(page), edited.crest.primary)).not.toHaveCount(0);
 
       const raw = await exportRaw(page);
@@ -267,7 +273,7 @@ test.describe(() => {
           await expect(crestFill(score, today)).toHaveCount(0);
         const canvas = visiblePitch(replay);
         await expectWorn(canvas, worn, todaySide.shirt);
-        expect(await canvasPixels(canvas, EDITED_SHIRT_COLOUR)).toBe(0);
+        expect(await canvasPixels(canvas, COMMISSIONED[0])).toBe(0);
         await keepScreenshot(
           testInfo,
           `recorded match after import ${size}`,
@@ -279,7 +285,7 @@ test.describe(() => {
     });
 });
 
-test('a shirt chosen for the next fixture survives reload and slot parking; another game gets neither it nor the design draft', async ({
+test('a shirt chosen for the next fixture and a waiting commission survive reload and slot parking; another game gets neither', async ({
   page,
 }) => {
   test.slow();
@@ -300,6 +306,14 @@ test('a shirt chosen for the next fixture survives reload and slot parking; anot
   );
   await expect.poll(async () => (await savedWorld(page)).kitChoice).toEqual(choice);
   await closePreparation(page, chosen.dialog, true);
+  // A waiting commission is this game's, kept with its save (→WEB-108).
+  const waiting = await commission(page, await openDesign(page), COMMISSIONED);
+  const expectDrafts = async () => {
+    const view = await openDesign(page);
+    await expect(draftItems(view)).toHaveCount(waiting.drafts.length);
+    expect(ownClub(await savedWorld(page)).identity).toEqual(applied);
+  };
+  await leaveOffice(page);
   const expectChoice = async () => {
     const { dialog, kit } = await openKit(page);
     await expect(kit).toHaveAttribute('data-fixture-id', next.id);
@@ -313,11 +327,9 @@ test('a shirt chosen for the next fixture survives reload and slot parking; anot
   await page.reload();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   expect((await savedWorld(page)).kitChoice).toEqual(choice);
+  expect((await savedWorld(page)).designCommission).toEqual(waiting);
   await expectChoice();
-  // An unapplied draft is session work of this game only (→WEB-74/86).
-  const draft = await openDesign(page);
-  await colourCode(draft, '홈 색 코드').fill(DRAFT_COLOUR);
-  await expect(designStatus(draft)).toHaveText('적용 전 초안');
+  await expectDrafts();
 
   // A new game in slot 2 parks this one first (→SAVE-14).
   await newGameIn(page, 2);
@@ -331,26 +343,27 @@ test('a shirt chosen for the next fixture survives reload and slot parking; anot
   expect(index.slots[0]?.worldId).toBe(w.id);
   const parked = (await decode((await idbGet(page, 'games', index.slots[0]!.id))!)).world;
   expect(parked.kitChoice).toEqual(choice);
+  expect(parked.designCommission).toEqual(waiting);
   expect(ownClub(parked).identity).toEqual(applied);
   const second = await savedWorld(page);
   expect(second.id).not.toBe(w.id);
   expect('kitChoice' in second).toBe(false);
+  expect('designCommission' in second).toBe(false);
   const other = await openKit(page);
   await expect(other.kit.getByTestId('fixture-kit-summary')).toHaveText(/· 자동$/);
   await expect(other.kit.getByRole('radio', { checked: true })).toHaveCount(0);
   await closePreparation(page, other.dialog, false);
   const otherDesign = await openDesign(page);
-  await expect(colourCode(otherDesign, '홈 색 코드')).toHaveValue(FIRST_COLOUR);
-  await expect(designStatus(otherDesign)).toHaveText('적용된 디자인');
+  await expect(appliedPanel(otherDesign)).toBeVisible();
+  await expect(draftsPanel(otherDesign)).toHaveCount(0);
 
-  // Restored, the first game still has its choice and its applied design.
+  // Restored, the first game still has its choice, its applied design and its drafts.
   await continueGame(page, 1);
   await expect.poll(async () => (await savedWorld(page)).id).toBe(w.id);
   expect((await savedWorld(page)).kitChoice).toEqual(choice);
+  expect((await savedWorld(page)).designCommission).toEqual(waiting);
   await expectChoice();
-  const restored = await openDesign(page);
-  await expect(colourCode(restored, '홈 색 코드')).toHaveValue(applied.colours[0]);
-  await expect(designStatus(restored)).toHaveText('적용된 디자인');
+  await expectDrafts();
 });
 
 /**
@@ -431,11 +444,8 @@ test('a read-only tab installs nothing; taking ownership adopts the designs once
   const crest = legacyCrestMap(legacy).get(legacy.playerClub)!;
   await expect(crestFill(hud(page), crest.primary)).not.toHaveCount(0);
   const view = await openDesign(page);
-  await expect(designStatus(view)).toHaveText('읽기 전용');
-  await expect(applyButton(view)).toBeDisabled();
-  const main = colourCode(view, '홈 색 코드');
-  await expect(main).toHaveValue(ownClub(legacy).color);
-  await expect(main).toBeDisabled();
+  await expect(view).toContainText('읽기 전용 상태에서는 의뢰할 수 없어요.');
+  await expect(requestButton(view)).toBeDisabled();
   await expect(crestFill(view, crest.primary)).not.toHaveCount(0);
   // Nothing was installed in memory or written: the export is the stored checkpoint itself.
   expect(await exportRaw(page)).toBe(raw);
@@ -445,14 +455,14 @@ test('a read-only tab installs nothing; taking ownership adopts the designs once
   await holder.close();
   await expect(readOnly).toHaveCount(0, { timeout: 20000 });
   await expectAdopted(page, legacy, raw);
-  await expect(main).toBeEnabled();
-  await expect(main).toHaveValue(ownClub(legacy).color);
+  await expect(requestButton(view)).toBeEnabled();
+  await expect(crestFill(view, crest.primary)).not.toHaveCount(0);
   const inbox = await openNotices(page);
   await expect(notice(inbox, '다른 탭이 닫혀 이 탭에서 이어서 플레이합니다.')).toHaveCount(1);
   await expect(notice(inbox, SAVE_DATA_UPDATED)).toHaveCount(1);
 });
 
-test('a refused apply and a failed checkpoint keep the committed save, the draft and the export', async ({
+test('a refused adoption and a failed checkpoint keep the committed save, the drafts and the export', async ({
   page,
 }) => {
   test.slow();
@@ -462,62 +472,51 @@ test('a refused apply and a failed checkpoint keep the committed save, the draft
   const w = delegatedCareer('identity-continuity-failures', 'Failsafe Kits');
   await importResponsibilityCareer(page, w);
   const view = await openDesign(page);
-  const field = colourCode(view, '홈 색 코드');
-  // A first apply commits, so the committed checkpoint has a verified previous copy (→SAVE-3).
-  await field.fill('#2A9D8F');
-  await applyDesign(page, view);
-  const committed = reduceIdentityDraft(identityOf(w, w.playerClub), {
-    type: 'kit-colour',
-    role: 'home',
-    colour: '#2A9D8F',
-  });
+  // A first adoption commits, so the committed checkpoint has a verified previous copy (→SAVE-3).
+  const first = await commission(page, view, ['#2b9348']);
+  await adoptDraft(view, 0);
+  const committed = first.drafts[0]!;
   await expect.poll(async () => ownClub(await savedWorld(page)).identity).toEqual(committed);
+  const { drafts } = await commission(page, view, COMMISSIONED);
   const before = await checkpointStorage(page);
   expect(before.previous).not.toBeNull();
 
-  // The host refuses an outdated apply before any effect: draft, disk and export are untouched.
-  await field.fill('#E76F51');
-  await refuseNextApply(page);
-  await applyButton(view).click();
-  const failure = view.getByRole('alert');
-  await expect(failure).toContainText('구단 디자인을 적용하지 못했어요.');
-  expect(await identityCommands(page)).toBe(2);
-  await expect(designStatus(view)).toHaveText('적용 전 초안');
-  await expect(field).toHaveValue('#E76F51');
+  // The host refuses an outdated adoption before any effect: drafts, disk and export are untouched.
+  await refuseNextDesignCommand(page);
+  await adoptButton(view, 1).click();
+  await expect(view.getByRole('alert')).toBeVisible();
+  expect(await identityCommands(page)).toEqual({ 'design-commission': 2, 'adopt-design': 2 });
+  await expect(draftItems(view)).toHaveCount(drafts.length);
   expect(await checkpointStorage(page)).toEqual(before);
   expect(ownClub(await savedWorld(page)).identity).toEqual(committed);
-  // The export steps out of the office and back (→WEB-39): the notice closes, the draft stays.
-  expect(ownClub(await exportWorld(page)).identity).toEqual(committed);
-  await expect(field).toHaveValue('#E76F51');
-  await expect(designStatus(view)).toHaveText('적용 전 초안');
+  // The export steps out of the office and back (→WEB-39): the notice closes, the drafts stay.
+  const exported = await exportWorld(page);
+  expect(ownClub(exported).identity).toEqual(committed);
+  expect(exported.designCommission?.drafts).toEqual(drafts);
+  await expect(draftItems(view)).toHaveCount(drafts.length);
 
-  // Applied, but its checkpoint cannot be written: the committed save stays loadable and the
-  // applied design remains exportable from memory until a retry commits it (→SAVE-3/8).
+  // Adopted, but its checkpoint cannot be written: the committed save stays loadable and the
+  // adopted design remains exportable from memory until a retry commits it (→SAVE-3/8).
   await failWrites(page, true);
-  await applyButton(view).click();
-  await expect(designStatus(view)).toHaveText('적용된 디자인');
-  const outcome = page.getByTestId('action-outcome');
-  await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
+  await adoptDraft(view, 1);
   await expect(page.getByRole('alert').filter({ hasText: '저장 실패' })).toBeVisible();
-  const retried = reduceIdentityDraft(committed, {
-    type: 'kit-colour',
-    role: 'home',
-    colour: '#E76F51',
-  });
+  const adopted = drafts[1]!;
   const failed = await checkpointStorage(page);
   expect([failed.active, failed.manifest]).toEqual([before.active, before.manifest]);
   // The committed checkpoint was copied and read back as the previous copy before the write.
   expect(failed.previous).toBe(before.active);
   expect(ownClub((await decode(failed.active!)).world).identity).toEqual(committed);
-  expect(ownClub(await exportWorld(page)).identity).toEqual(retried);
+  expect(ownClub(await exportWorld(page)).identity).toEqual(adopted);
   await failWrites(page, false);
   await retrySave(page);
-  await expect.poll(async () => ownClub(await savedWorld(page)).identity).toEqual(retried);
+  await expect.poll(async () => ownClub(await savedWorld(page)).identity).toEqual(adopted);
   await page.reload();
   // A reload restores the view it left: the office's design area, not home.
   await expect(officeBar(page)).toBeVisible();
   await expect(page).toHaveURL(/\/direction\?view=identity$/);
-  expect(ownClub(await savedWorld(page)).identity).toEqual(retried);
+  const reloaded = await savedWorld(page);
+  expect(ownClub(reloaded).identity).toEqual(adopted);
+  expect('designCommission' in reloaded).toBe(false);
 });
 
 test('a failed adoption write keeps the original checkpoint and still exports the adopted career', async ({

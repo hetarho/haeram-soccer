@@ -35,8 +35,9 @@ describe('portable presentation skins and delivery budgets', () => {
           expect(theme.token(`${role}-slice`)).toBe(String(image.slice));
         }
       }
-      // Room for the result-badge frames (three 8–9 KB nine-slices) beside the home set.
-      expect(total).toBeLessThan(330_000);
+      // Room for the result-badge frames (three 8–9 KB nine-slices) and the dropdown and
+      // club-briefing frames beside the home set.
+      expect(total).toBeLessThan(340_000);
       expect(theme.tokens['image-rendering']).toBe(pack.tokens.imageTreatment.imageRendering);
     },
   );

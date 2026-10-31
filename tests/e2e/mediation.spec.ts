@@ -1,6 +1,6 @@
 import { openPersonnel } from './personnel-navigation';
 import { marketInfo, marketCandidate, closeMarketPanel } from './market';
-import { dismissMatchReport, openOffice } from './events';
+import { approvalTray, dismissMatchReport, openOffice } from './events';
 import { test, expect, type Page } from '@playwright/test';
 import {
   createWorld,
@@ -208,8 +208,10 @@ for (const mode of ['manual', 'automatic'] as const)
     expect(after.calendar).toEqual(before.calendar);
     expect(after.mediations![0].status).toBe('pending');
     expect(after.promises ?? []).toHaveLength(0);
+    // Both wait in the office lobby's tray; home's event cards leave office work out (→WEB-39).
+    await expect(page.getByTestId('event-card')).toHaveCount(0);
     await expect(
-      page.getByTestId('event-card').getByRole('button', { name: '검토하기', exact: true }),
+      (await approvalTray(page)).getByRole('button', { name: /· 검토하기$/ }),
     ).toHaveCount(2);
   });
 

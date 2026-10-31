@@ -5,6 +5,7 @@ import { test, expect } from '@playwright/test';
 import { chooseLevel, closeOutcome, setResponsibility } from './events';
 import { chooseOption } from './select';
 import { horizontalOverflow } from './layout';
+import { enterOffice } from './office';
 
 async function found(page: import('@playwright/test').Page, seed: string) {
   await page.goto('/');
@@ -158,7 +159,6 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     page,
   }) => {
     await found(page, 'club-links-journey');
-    const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
     await openCups(page);
     const tie = page
       .getByRole('region', { name: '잉글랜드 컵' })
@@ -182,9 +182,10 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     expect(await horizontalOverflow(page)).toBe(0);
 
     // A club named inside another sheet opens on top of it; Escape closes only the top one.
-    await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
+    // The journal opens from the owner office lobby (→WEB-39).
+    await enterOffice(page);
     await page
-      .getByTestId('club-hub')
+      .getByTestId('office-lobby')
       .getByRole('button', { name: '클럽 소식·시즌 브리핑', exact: true })
       .click();
     const journal = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
@@ -205,41 +206,33 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(page.getByRole('dialog')).toHaveCount(0);
   });
 
-  test('keeps the transfer market as a 사람 tab with its own address', async ({ page }) => {
+  test('keeps the transfer market as a primary entry with its own address', async ({ page }) => {
     await found(page, 'market-segment-journey');
     const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
     await openPersonnel(page, 'players');
     const tabs = page.getByRole('tablist', { name: '감독 사무실' });
-    await expect(tabs.getByRole('tab')).toHaveText(['감독', '선수 목록', '이적시장']);
-    await tabs.getByRole('tab', { name: '이적시장', exact: true }).click();
-    await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
-    await expect(tabs.getByRole('tab', { name: '이적시장' })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
-    await expect(nav.getByRole('button', { name: '감독 사무실', exact: true })).toHaveAttribute(
+    // The market left the first team's tabs for an entry of its own (→WEB-10).
+    await expect(tabs.getByRole('tab')).toHaveText(['감독', '선수 목록']);
+    await openPersonnel(page, 'market');
+    const market = page.getByRole('region', { name: '선수 영입 데스크' });
+    await expect(market).toBeVisible();
+    await expect(tabs).toHaveCount(0);
+    await expect(nav.getByRole('button', { name: '이적시장', exact: true })).toHaveAttribute(
       'aria-current',
       'page',
     );
     await expect(page).toHaveURL(/\/first-team\?view=market$/);
     expect(await horizontalOverflow(page)).toBe(0);
-    // The market's address reopens 사람 on the market.
+    // The market's address reopens the market.
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
-    await expect(tabs.getByRole('tab', { name: '이적시장' })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
-    await expect(page.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
-    await tabs.getByRole('tab', { name: '선수 목록', exact: true }).click();
+    await expect(market).toBeVisible();
+    await openPersonnel(page, 'players');
     await expect(page.getByText('선수단 20/40', { exact: true })).toBeVisible();
     await expect(page).toHaveURL(/\/first-team\?view=players$/);
     // The older market address lands there too, replaced in the address bar.
     await page.goto('/transfers');
-    await expect(tabs.getByRole('tab', { name: '이적시장' })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
+    await expect(market).toBeVisible();
     await expect(page).toHaveURL(/\/first-team\?view=market$/);
   });
 

@@ -246,17 +246,21 @@ describe('management screen calendar locks', () => {
     expect(entries.find((button) => button.label === '되돌리기')?.disabled).toBe(false);
     expect(entries.filter((button) => !button.disabled).length).toBeGreaterThan(2);
   });
-  it('locks club-design application while keeping its draft editable and discardable', () => {
+  it("locks adopting or discarding the designer's drafts while the calendar runs", () => {
     const entry = identityOf(world, world.playerClub);
-    const draft = structuredClone(entry);
-    draft.colours[0] = '#abcdef';
-    drafts['club-identity-draft'] = { worldId: world.id, entry, draft };
-    expectLocked(
-      () => createElement(ClubDesignView, { state: gameStore.getState(), client }),
-      /^적용$/,
-    );
-    const entries = render(createElement(ClubDesignView, { state: gameStore.getState(), client }));
-    expect(entries.find((button) => button.label === '되돌리기')?.disabled).toBe(false);
+    world.designCommission = {
+      studio: 'studio',
+      colours: [...entry.colours],
+      drafts: [structuredClone(entry), structuredClone(entry)],
+    };
+    try {
+      expectLocked(
+        () => createElement(ClubDesignView, { state: gameStore.getState(), client }),
+        /^(이 시안으로 결정|전부 버리기)$/,
+      );
+    } finally {
+      delete world.designCommission;
+    }
   });
   it('locks mode changes and retains stop and pace during worker calculation', () => {
     gameStore.setState({ processing: true });

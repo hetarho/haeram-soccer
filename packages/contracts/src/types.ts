@@ -1,5 +1,13 @@
 import type { ClubBuild } from './build';
-import type { ClubIdentity, FixtureKitChoice, KitRole, MatchAppearance } from './identity';
+import type {
+  ClubIdentity,
+  DesignCommission,
+  DesignStudio,
+  FixtureKitChoice,
+  IdentityColours,
+  KitRole,
+  MatchAppearance,
+} from './identity';
 import type { ManagerHistoryFacts } from './manager-history';
 import type { RecentResults } from './recent-results';
 import type {
@@ -1216,6 +1224,8 @@ export interface World {
   recentResults?: RecentResults;
   /** The owner's shirt for one named unplayed own fixture (→KIT-7); absent is automatic. */
   kitChoice?: FixtureKitChoice;
+  /** The designer's drafts waiting for the owner's pick; absent when none was commissioned. */
+  designCommission?: DesignCommission;
   ownMatches: MatchRecord[];
   /** The persisted match model and its counters' coverage (→SAVE-23); absent before activation. */
   matchModel?: MatchModelState;
@@ -1386,5 +1396,13 @@ export type Command =
   | { type: 'build'; build: ClubBuild; name?: string }
   /** Applies the owner's design to the own club (→KIT-9); no other club can be named. */
   | { type: 'club-identity'; identity: ClubIdentity }
+  /** Pays a designer from operating funds for fresh drafts in the owner's colours. */
+  | { type: 'design-commission'; studio: DesignStudio; colours: IdentityColours }
+  /** Applies one of the commissioned drafts and closes the commission. */
+  | { type: 'adopt-design'; draft: number }
+  /** Throws every commissioned draft away; the fee stays spent. */
+  | { type: 'discard-designs' }
+  /** Pays half the fee for fresh drafts from the same designer in the same colours. */
+  | { type: 'redraw-designs' }
   /** Our shirt role for the named next own fixture (→KIT-6); `null` returns it to automatic. */
   | { type: 'match-kit'; fixtureId: string; role: KitRole | null };

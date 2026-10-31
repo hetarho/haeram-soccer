@@ -59,6 +59,8 @@ export function ScoutShortlist({
                 {row.entries.map(({ index, offer, pick }) => (
                   <button
                     key={offer.player.id}
+                    data-ui="navigation"
+                    data-surface="detail"
                     type="button"
                     className={pick ? s.picked : undefined}
                     disabled={disabled}
@@ -110,7 +112,7 @@ export function RecruitmentNeeds({
     <section data-surface="sheet" className={s.shortlist} aria-label="감독 영입 요청">
       <header>
         <h3>지금 필요한 영입</h3>
-        <button type="button" onClick={() => openStaff('scout')}>
+        <button data-ui="tertiary" type="button" onClick={() => openStaff('scout')}>
           수석 스카우트 {scout?.name ?? '공석'} · 보기
         </button>
       </header>
@@ -120,7 +122,7 @@ export function RecruitmentNeeds({
           <ul>
             {requests.map(({ line, request }) => (
               <li key={line} data-kind={request.kind}>
-                <button type="button" onClick={() => onRole(line)}>
+                <button data-ui="tertiary" type="button" onClick={() => onRole(line)}>
                   {REQUEST_WHY[request.kind]} 후보 보기
                 </button>
                 <span>

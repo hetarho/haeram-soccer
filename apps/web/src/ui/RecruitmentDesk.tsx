@@ -27,7 +27,7 @@ import { gradeLabel, PlayerProfile } from './PlayerProfile';
 import { bidBoard } from '../../../../packages/engine/src/transfers';
 import { transferWindow } from '../../../../packages/engine/src/transfer-window';
 import { bidKind, freeSigning, visibleBids } from './bids';
-import { clubOf, overall } from '../../../../packages/engine/src/player-state';
+import { activePlayers, clubOf, overall } from '../../../../packages/engine/src/player-state';
 import { recruitmentLineNeed } from '../../../../packages/engine/src/recruitment';
 import type { ClientState, GameClient } from '../runtime/client';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
@@ -51,6 +51,7 @@ import {
   type MarketDetail,
   type MarketQuery,
 } from './worldMarket';
+import { PlayerCompare, type CompareSide } from './PlayerCompare';
 import s from './RecruitmentDesk.module.css';
 
 type Candidate = MarketDetail;
@@ -82,6 +83,7 @@ function CandidateCard({
   blocked,
   selected,
   onCompare,
+  onCompareOwn,
   onRecruit,
   onBid,
   pending,
@@ -92,6 +94,8 @@ function CandidateCard({
   blocked: boolean;
   selected: boolean;
   onCompare: () => void;
+  /** Opens this candidate beside a player of ours. */
+  onCompareOwn?: () => void;
   onRecruit: (loan: boolean) => void;
   onBid: () => void;
   pending?: TransferBid;
@@ -103,9 +107,11 @@ function CandidateCard({
   const cash = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   const window = transferWindow(w);
   const scout = staffMember(w, 'scout')?.ability;
+  const growth = Math.max(0, Math.round(player.potential) - overall(player));
+  // Colour only marks direction: a rise in red, a fall in blue.
+  const tone = (value: number) => (value > 0 ? 'rise' : value < 0 ? 'fall' : undefined);
   return (
     <article
-      data-surface="panel"
       className={s.card}
       data-testid={`candidate-${player.id}`}
       data-candidate-id={player.id}
@@ -122,17 +128,34 @@ function CandidateCard({
             {positionsLabel(player.positions)}
           </small>
         </div>
+      </header>
+      <div className={s.compareActions}>
         <button aria-pressed={selected} onClick={onCompare}>
+          <PixelIcon name={selected ? 'check' : 'switch'} size={16} />
           비교
         </button>
-      </header>
-      <div className={s.ability}>
-        <span>
-          잠재력 <b>{Math.round(player.potential)}</b>
-        </span>
-        <span>
-          성장 여지 <b>+{Math.max(0, Math.round(player.potential) - overall(player))}</b>
-        </span>
+        {onCompareOwn && !offer.own && (
+          <button onClick={onCompareOwn}>
+            <PixelIcon name="people" size={16} />
+            우리 선수와 비교
+          </button>
+        )}
+      </div>
+      <div className={s.ability} data-surface="detail">
+        <div className={s.abilityFigures}>
+          <span>
+            <small>잠재력</small>
+            <b>{Math.round(player.potential)}</b>
+          </span>
+          <span>
+            <small>성장 여지</small>
+            <b data-tone={tone(growth)}>+{growth}</b>
+          </span>
+        </div>
+        <details data-ui="disclosure" className={s.details}>
+          <summary>능력 자세히</summary>
+          <PlayerProfile w={w} player={player} own={offer.own} compact />
+        </details>
       </div>
       <p className={s.context}>
         {sourceLabel(w, offer)}
@@ -142,23 +165,31 @@ function CandidateCard({
             ? ' · 스카우트 추천'
             : ' · 직접 발굴'}
       </p>
-      <p className={s.traits}>
-        {player.traits.length
-          ? player.traits.map((trait) => TRAIT_LABEL[trait]).join(' · ')
-          : '특성 없음'}
-      </p>
-      <p className={s.personality} data-testid="candidate-personality">
-        {(Object.keys(PERSONALITY_LABEL) as (keyof Personality)[])
-          .map(
-            (key) =>
-              `${PERSONALITY_LABEL[key]} ${gradeLabel(player.personality[key], offer.own, scout)}`,
-          )
-          .join(' · ')}
-      </p>
+      <div className={s.profileNotes}>
+        <div>
+          <span>플레이 특성</span>
+          <p className={s.traits}>
+            {player.traits.length
+              ? player.traits.map((trait) => TRAIT_LABEL[trait]).join(' · ')
+              : '특성 없음'}
+          </p>
+        </div>
+        <div>
+          <span>성향 리포트</span>
+          <p className={s.personality} data-testid="candidate-personality">
+            {(Object.keys(PERSONALITY_LABEL) as (keyof Personality)[])
+              .map(
+                (key) =>
+                  `${PERSONALITY_LABEL[key]} ${gradeLabel(player.personality[key], offer.own, scout)}`,
+              )
+              .join(' · ')}
+          </p>
+        </div>
+      </div>
       {offer.available && (
         <>
           <div className={s.build} aria-label="영입 전력 변화">
-            <div data-testid="candidate-slot">
+            <div data-surface="detail" data-testid="candidate-slot">
               <span>
                 {buy.slot.position} {ROLE_LABEL[buy.slot.role]} 자리 실효 OVR
               </span>
@@ -166,17 +197,18 @@ function CandidateCard({
                 합류 {buy.slot.arrival} → 적응 후 {buy.slot.settled}
               </b>
             </div>
-            <div>
+            <div data-surface="detail">
               <span>{buy.manual ? '직접 교체 시 전력' : '자동 선발 전력'}</span>
               <b>
                 {buy.beforeStrength} → {buy.afterStrength}{' '}
-                <small>({delta(buy.strengthDelta)})</small>
+                <small data-tone={tone(buy.strengthDelta)}>({delta(buy.strengthDelta)})</small>
               </b>
             </div>
-            <div>
+            <div data-surface="detail">
               <span>{buy.manual ? '직접 교체 시 적합도' : '전술 적합도'}</span>
               <b>
-                {buy.beforeFit} → {buy.afterFit} <small>({delta(buy.fitDelta)})</small>
+                {buy.beforeFit} → {buy.afterFit}{' '}
+                <small data-tone={tone(buy.fitDelta)}>({delta(buy.fitDelta)})</small>
               </b>
             </div>
           </div>
@@ -192,7 +224,7 @@ function CandidateCard({
           </p>
         </>
       )}
-      <dl className={s.costs}>
+      <dl className={s.costs} data-surface="detail">
         <div>
           <dt>이적료</dt>
           <dd>{cash(offer.fee)}</dd>
@@ -202,7 +234,7 @@ function CandidateCard({
           <dd>{cash(offer.loanFee)}</dd>
         </div>
         <div>
-          <dt>반복 연봉</dt>
+          <dt>연봉</dt>
           <dd>{cash(player.wage)}</dd>
         </div>
         <div>
@@ -215,7 +247,7 @@ function CandidateCard({
       {BigInt(offer.fee) === 0n && <p className={s.free}>이적료 없음 · 연봉은 계속 지급해요</p>}
       {offer.available && (
         <>
-          <div className={s.budget}>
+          <div className={s.budget} data-surface="detail">
             <div>
               <span>영입 후 자금</span>
               <b>{cash(buy.cashAfter)}</b>
@@ -237,7 +269,7 @@ function CandidateCard({
       )}
       {actions &&
         (pending ? (
-          <p className={s.pending} data-testid="pending-bid">
+          <p className={s.pending} data-surface="detail" data-testid="pending-bid">
             {pending.status === 'countered' ? (
               <>역제안 {cash(pending.counterFee || pending.fee)} · 알림·결정에서 답해 주세요</>
             ) : (
@@ -303,10 +335,6 @@ function CandidateCard({
           </button>
         </div>
       )}
-      <details data-ui="disclosure" className={s.details}>
-        <summary>능력 자세히</summary>
-        <PlayerProfile w={w} player={player} own={offer.own} compact />
-      </details>
     </article>
   );
 }
@@ -327,6 +355,10 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
     [],
   );
   const [comparing, setComparing] = useTaskState(w.id, 'market-comparing', false);
+  // A candidate beside a player of ours; `player` is the owner's pick, else the best fit.
+  const [ownCompare, setOwnCompare] = useTaskState<
+    { target: WorldMarketTarget; player?: string } | undefined
+  >(w.id, 'market-own-compare', undefined);
   const [message, setMessage] = useState<{ world: string; text: string }>();
   const [bidding, setBidding] = useTaskState<
     { target: WorldMarketTarget; asking: string } | undefined
@@ -369,6 +401,12 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
     w.id,
     w.revision,
     comparing ? selectedComparison[1] : undefined,
+  );
+  const ownCandidate = useMarketDetail(
+    client,
+    w.id,
+    w.revision,
+    ownCompare?.target.world === w.id ? ownCompare.target : undefined,
   );
   const asking = BigInt(bidding?.asking ?? '0');
   const steps = [80n, 100n, 115n, 130n];
@@ -448,6 +486,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       blocked={blocked || !current || candidate.revision !== w.revision || candidate.offer.own}
       selected={selectedComparison.some((target) => target.playerId === candidate.offer.player.id)}
       onCompare={() => toggle(candidate.offer.target)}
+      onCompareOwn={() => setOwnCompare({ target: candidate.offer.target })}
       onRecruit={(loan) => {
         if (current) void recruit(candidate, loan);
       }}
@@ -461,17 +500,57 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       pending={pendingFor(candidate.offer.player.id)}
     />
   );
+  /** Our active players for a candidate: his slot's position first, then by OVR. */
+  const ownOptions = (candidate: Candidate) => {
+    const position = candidate.buy.slot.position;
+    return activePlayers(w)
+      .filter((p) => p.id !== candidate.offer.player.id)
+      .sort(
+        (a, b) =>
+          Number(b.position === position) - Number(a.position === position) ||
+          Number(lineOf(b.position) === lineOf(position)) -
+            Number(lineOf(a.position) === lineOf(position)) ||
+          overall(b) - overall(a),
+      );
+  };
+  const candidateSide = (
+    candidate: Candidate,
+    label: string,
+    onOpen?: () => void,
+  ): CompareSide => ({
+    label,
+    player: candidate.offer.player,
+    own: candidate.offer.own,
+    terms: {
+      fee: candidate.offer.fee,
+      loanFee: candidate.offer.loanFee,
+      freeAgent: candidate.offer.freeAgent,
+      cashAfter: candidate.buy.cashAfter,
+      annualAfter: candidate.buy.annualAfter,
+    },
+    action: onOpen && <button onClick={onOpen}>상세 · 제안</button>,
+  });
   const board = bidBoard(w),
     shownBids = visibleBids(board, expanded);
   const outgoing = bids.filter(
     (bid) => bid.direction === 'out' && (bid.status === 'pending' || bid.status === 'countered'),
   );
   return (
-    <section className={s.desk} aria-label="선수 영입 데스크">
+    <section
+      className={s.desk}
+      data-ui="recruitment-desk"
+      data-surface="sheet"
+      aria-label="선수 영입 데스크"
+    >
       <header className={s.toolbar}>
-        <h3>
-          영입 후보 <span>{page ? `총 ${page.total}명` : '조회 중'}</span>
-        </h3>
+        <div className={s.heading}>
+          <span className={s.deskMark} aria-hidden="true">
+            <PixelIcon name="people" size={26} />
+          </span>
+          <h3>
+            영입 후보 <span>{page ? `총 ${page.total}명` : '조회 중'}</span>
+          </h3>
+        </div>
         <div
           className={`${s.window} ${window.open ? s.windowOpen : ''}`}
           data-testid="transfer-window"
@@ -482,6 +561,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
         <div className={s.tools}>
           {selectedComparison.length > 0 && (
             <button
+              data-ui="secondary"
               type="button"
               aria-label={`선택한 ${selectedComparison.length}명 비교`}
               disabled={selectedComparison.length !== 2}
@@ -491,6 +571,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             </button>
           )}
           <button
+            data-ui="secondary"
             type="button"
             aria-label="영입 필터"
             aria-haspopup="dialog"
@@ -504,12 +585,14 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             )}
           </button>
           <button
+            data-ui="tertiary"
             type="button"
             aria-label={`이적 협상 · ${outgoing.length}건 진행 중${board.some(({ actionable }) => actionable) ? ' · 응답 필요' : ''}`}
             aria-haspopup="dialog"
             aria-expanded={panel === 'negotiations'}
             onClick={() => setPanel('negotiations')}
           >
+            <PixelIcon name="switch" size={16} />
             협상
             {bids.length > 0 && (
               <span className={s.count}>
@@ -518,6 +601,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             )}
           </button>
           <button
+            data-ui="tertiary"
             type="button"
             className={s.infoTrigger}
             aria-label="영입 정보 · 필요한 영입과 감독 요청"
@@ -525,7 +609,8 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             aria-expanded={panel === 'info'}
             onClick={() => setPanel('info')}
           >
-            <span aria-hidden="true">!</span>
+            <PixelIcon name="news" size={18} />
+            정보
           </button>
         </div>
       </header>
@@ -545,11 +630,22 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       </label>
       {market.error && (
         <p data-surface="inset" role="alert" className={s.warning}>
-          {market.error} <button onClick={market.retry}>목록 다시 조회</button>
+          {market.error}{' '}
+          <button data-ui="tertiary" onClick={market.retry}>
+            목록 다시 조회
+          </button>
         </p>
       )}
       {!page && !market.error && <p role="status">세계 선수 목록을 불러오고 있어요.</p>}
       <table className={s.candidateTable} aria-label="영입 후보 목록">
+        <colgroup>
+          <col />
+          <col className={s.ratingColumn} />
+          <col className={s.potentialColumn} />
+          <col className={s.feeColumn} />
+          <col className={s.wageColumn} />
+          <col className={s.compareColumn} />
+        </colgroup>
         <thead>
           <tr>
             <th scope="col">선수</th>
@@ -591,37 +687,62 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
               >
                 <td>
                   <button
+                    data-ui="link"
                     type="button"
                     className={s.playerName}
                     aria-label={`${player.name} 상세 보기`}
                     onClick={() => setViewing(offer.target)}
                   >
-                    <b>{player.name}</b>
-                    <small title={source}>
-                      {player.position} · {w.year - player.born}세
-                      {offer.own
-                        ? ' · 우리 선수'
-                        : !offer.available
-                          ? ' · 접근 불가'
-                          : pending
-                            ? ' · 협상 중'
-                            : ''}
-                      {offer.recommended ? ' · 스카우트 추천' : ''}
-                      {' · '}
-                      {source}
-                    </small>
+                    <span className={s.playerIdentity}>
+                      <span className={s.position} aria-hidden="true">
+                        {player.position}
+                      </span>
+                      <span className={s.playerText}>
+                        <b>{player.name}</b>
+                        <small title={source}>
+                          {player.position} · {w.year - player.born}세
+                          {offer.own
+                            ? ' · 우리 선수'
+                            : !offer.available
+                              ? ' · 접근 불가'
+                              : pending
+                                ? ' · 협상 중'
+                                : ''}
+                          {offer.recommended ? ' · 스카우트 추천' : ''}
+                          {' · '}
+                          {source}
+                        </small>
+                      </span>
+                    </span>
                   </button>
                 </td>
                 <td>
                   <OvrBadge value={overall(player)} />
                 </td>
-                <td className={s.potentialValue}>{Math.round(player.potential)}</td>
-                <td className={s.feeValue}>
-                  {offer.freeAgent ? <span className={s.freeTag}>자유계약</span> : plain(offer.fee)}
+                <td>
+                  <span className={s.potentialValue}>
+                    <b>{Math.round(player.potential)}</b>
+                    <span className={s.potentialTrack} aria-hidden="true">
+                      <i style={{ width: `${Math.max(0, Math.min(100, player.potential))}%` }} />
+                    </span>
+                  </span>
                 </td>
-                <td className={s.wageColumn}>{plain(player.wage)}</td>
+                <td className={s.feeValue}>
+                  {offer.freeAgent ? (
+                    <span className={s.freeTag}>
+                      <PixelIcon name="check" size={12} />
+                      자유계약
+                    </span>
+                  ) : (
+                    <span className={s.moneyValue}>{plain(offer.fee)}</span>
+                  )}
+                </td>
+                <td className={s.wageColumn}>
+                  <span className={s.wageValue}>{plain(player.wage)}</span>
+                </td>
                 <td>
                   <button
+                    data-ui="link"
                     type="button"
                     className={s.compareToggle}
                     aria-label={`${player.name} 비교`}
@@ -630,11 +751,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                     )}
                     onClick={() => toggle(offer.target)}
                   >
-                    <span aria-hidden="true">
-                      {selectedComparison.some((target) => target.playerId === player.id)
-                        ? '✓'
-                        : '+'}
-                    </span>
+                    <span className={s.compareMark} aria-hidden="true" />
                   </button>
                 </td>
               </tr>
@@ -646,7 +763,9 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                 {filtered
                   ? '이 조건에 맞는 선수가 없어요. 필터를 지우고 다시 찾아보세요.'
                   : '현재 조회할 수 있는 현역 선수가 없어요.'}
-                <button onClick={() => setQuery(DEFAULT_MARKET_QUERY)}>필터 지우기</button>
+                <button data-ui="tertiary" onClick={() => setQuery(DEFAULT_MARKET_QUERY)}>
+                  필터 지우기
+                </button>
               </td>
             </tr>
           )}
@@ -654,18 +773,23 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       </table>
       {page && (
         <nav className={s.pagination} aria-label="영입 목록 페이지">
-          <button disabled={page.page === 0} onClick={() => changeQuery({ page: page.page - 1 })}>
-            이전 페이지
+          <button
+            data-ui="tertiary"
+            disabled={page.page === 0}
+            onClick={() => changeQuery({ page: page.page - 1 })}
+          >
+            <PixelIcon name="chevronLeft" size={14} /> 이전 페이지
           </button>
           <span role="status">
             총 {page.total}명 · {page.page + 1} /{' '}
             {Math.max(1, Math.ceil(page.total / page.pageSize))} 페이지 · {page.items.length}명 표시
           </span>
           <button
+            data-ui="tertiary"
             disabled={(page.page + 1) * page.pageSize >= page.total}
             onClick={() => changeQuery({ page: page.page + 1 })}
           >
-            다음 페이지
+            다음 페이지 <PixelIcon name="chevronRight" size={14} />
           </button>
         </nav>
       )}
@@ -676,6 +800,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           actions={
             <div className={s.bidActions}>
               <button
+                data-ui="tertiary"
                 type="button"
                 onClick={() => {
                   setQuery(DEFAULT_MARKET_QUERY);
@@ -701,6 +826,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             {(['all', 'GK', 'DF', 'MF', 'FW'] as const).map((value) => (
               <button
                 key={value}
+                data-ui={(query.line ?? 'all') === value && !query.position ? 'secondary' : 'link'}
                 aria-pressed={(query.line ?? 'all') === value && !query.position}
                 onClick={() => changeQuery({ line: value === 'all' ? undefined : value })}
               >
@@ -709,7 +835,12 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             ))}
           </div>
           <div className={s.filters}>
-            <button className={s.recommendation} onClick={() => changeQuery({ line: recommended })}>
+            <button
+              data-ui="tertiary"
+              className={s.recommendation}
+              onClick={() => changeQuery({ line: recommended })}
+            >
+              <PixelIcon name="star" size={16} />
               추천 포지션: {lineNames[recommended]} · {recommended}
             </button>
             <label>
@@ -797,12 +928,14 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
               </Select>
             </label>
             <button
+              data-ui={query.recommendedOnly ? 'secondary' : 'tertiary'}
               aria-pressed={!!query.recommendedOnly}
               onClick={() => changeQuery({ recommendedOnly: !query.recommendedOnly })}
             >
               스카우트 추천만
             </button>
             <button
+              data-ui={query.fit === 'improves' ? 'secondary' : 'tertiary'}
               aria-pressed={query.fit === 'improves'}
               onClick={() => changeQuery({ fit: query.fit === 'improves' ? 'all' : 'improves' })}
             >
@@ -874,6 +1007,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                         {bid.direction === 'in' ? '매각' : '수락'}
                       </button>
                       <button
+                        data-ui="tertiary"
                         disabled={blocked}
                         onClick={() =>
                           void client.command({ type: 'respond-bid', id: bid.id, accept: false })
@@ -886,7 +1020,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                 </div>
               ))}
               {shownBids.length < board.length && (
-                <button type="button" onClick={() => setExpanded(true)}>
+                <button data-ui="tertiary" type="button" onClick={() => setExpanded(true)}>
                   {board.length}건 모두 보기
                 </button>
               )}
@@ -911,7 +1045,12 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             }}
           />
           {/* The recruitment level lives on the operating board (→WEB-71); here it is a line to it. */}
-          <button type="button" className={s.policyLine} onClick={() => openDirection('scouting')}>
+          <button
+            data-ui="tertiary"
+            type="button"
+            className={s.policyLine}
+            onClick={() => openDirection('scouting')}
+          >
             <span>
               영입 기조 · <b>{currentStepName(w, 'recruitment')}</b>
             </span>
@@ -957,18 +1096,90 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             </div>
           }
         >
-          <div className={s.cards}>
-            {[comparisonA, comparisonB].map((reading, index) => (
-              <div key={selectedComparison[index]?.playerId ?? index}>
-                {reading.value ? (
-                  render(reading.value, reading.current)
-                ) : (
+          {comparisonA.value && comparisonB.value ? (
+            <PlayerCompare
+              w={w}
+              label="두 후보 비교표"
+              sides={
+                [comparisonA.value, comparisonB.value].map((candidate, index) =>
+                  candidateSide(candidate, `후보 ${index ? 'B' : 'A'}`, () => {
+                    setComparing(false);
+                    setViewing(candidate.offer.target);
+                  }),
+                ) as [CompareSide, CompareSide]
+              }
+            />
+          ) : (
+            [comparisonA, comparisonB].map((reading, index) =>
+              reading.value ? null : (
+                <div key={selectedComparison[index]?.playerId ?? index}>
                   <p role="status">{reading.error ?? '비교 선수 정보를 불러오고 있어요.'}</p>
-                )}
-                {reading.error && <button onClick={reading.retry}>선수 다시 조회</button>}
-              </div>
-            ))}
-          </div>
+                  {reading.error && (
+                    <button data-ui="tertiary" onClick={reading.retry}>
+                      선수 다시 조회
+                    </button>
+                  )}
+                </div>
+              ),
+            )
+          )}
+        </Dialog>
+      )}
+      {ownCompare && (
+        <Dialog
+          label="우리 선수와 비교"
+          onClose={() => setOwnCompare(undefined)}
+          wide
+          actions={
+            <div className={s.close}>
+              <button onClick={() => setOwnCompare(undefined)}>비교 마치기</button>
+            </div>
+          }
+        >
+          {ownCandidate.value ? (
+            (() => {
+              const candidate = ownCandidate.value;
+              const ours = ownOptions(candidate);
+              const mine = ours.find((p) => p.id === ownCompare.player) ?? ours[0];
+              return mine ? (
+                <>
+                  <label className={s.ownPick}>
+                    <span>비교할 우리 선수</span>
+                    <Select
+                      aria-label="비교할 우리 선수"
+                      value={mine.id}
+                      onValueChange={(id) => setOwnCompare({ ...ownCompare, player: id })}
+                    >
+                      {ours.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.position} · {p.name} · OVR {overall(p)}
+                        </option>
+                      ))}
+                    </Select>
+                  </label>
+                  <PlayerCompare
+                    w={w}
+                    label="후보와 우리 선수 비교표"
+                    sides={[
+                      candidateSide(candidate, '영입 후보'),
+                      { label: '우리 선수', player: mine, own: true },
+                    ]}
+                  />
+                </>
+              ) : (
+                <p role="status">비교할 우리 선수가 없어요.</p>
+              );
+            })()
+          ) : (
+            <>
+              <p role="status">{ownCandidate.error ?? '선수 정보를 불러오고 있어요.'}</p>
+              {ownCandidate.error && (
+                <button data-ui="tertiary" onClick={ownCandidate.retry}>
+                  선수 다시 조회
+                </button>
+              )}
+            </>
+          )}
         </Dialog>
       )}
       {bidding && (
@@ -977,7 +1188,9 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           onClose={() => setBidding(undefined)}
           actions={
             <div className={s.bidActions}>
-              <button onClick={() => setBidding(undefined)}>취소</button>
+              <button data-ui="tertiary" onClick={() => setBidding(undefined)}>
+                취소
+              </button>
               <button
                 data-ui="primary"
                 className={s.primary}
@@ -1038,7 +1251,11 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           ) : (
             <p role="status">{bidDetail.error ?? '제안 조건을 확인하고 있어요.'}</p>
           )}
-          {bidDetail.error && <button onClick={bidDetail.retry}>제안 조건 다시 조회</button>}
+          {bidDetail.error && (
+            <button data-ui="tertiary" onClick={bidDetail.retry}>
+              제안 조건 다시 조회
+            </button>
+          )}
           <p className={s.note}>
             요구 이적료 {format(outlook?.asking || bidding.asking)} · 상대 구단은 2–4일 뒤
             수락·거절·역제안 중 하나로 답해요. 수락되면 그날 이적료가 나가요.
@@ -1048,6 +1265,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
               <button
                 key={String(percent)}
                 role="radio"
+                data-ui={step === i ? 'secondary' : 'tertiary'}
                 aria-checked={step === i}
                 className={step === i ? s.bidPicked : undefined}
                 onClick={() => setStep(i)}
@@ -1096,7 +1314,11 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           ) : (
             <p role="status">{detail.error ?? '선수 정보를 불러오고 있어요.'}</p>
           )}
-          {detail.error && <button onClick={detail.retry}>선수 다시 조회</button>}
+          {detail.error && (
+            <button data-ui="tertiary" onClick={detail.retry}>
+              선수 다시 조회
+            </button>
+          )}
         </Dialog>
       )}
     </section>

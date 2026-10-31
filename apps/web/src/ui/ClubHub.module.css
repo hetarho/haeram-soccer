@@ -1,7 +1,7 @@
 .hub {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: 'header' 'fixture' 'state' 'rooms' 'links' 'stage';
+  grid-template-areas: 'header' 'fixture' 'state';
   align-content: start;
   gap: 16px;
   width: 100%;
@@ -66,24 +66,6 @@
   color: var(--warm);
 }
 
-.scene {
-  height: clamp(156px, 23vw, 244px);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  min-height: 0;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: var(--scene-radius);
-  background: var(--surface-grain, none) var(--surface-deep);
-}
-.scene > .sceneArt {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
 /* The manager's office: room art under a dim, the team's state small along its foot. */
 .office {
   grid-area: state;
@@ -146,54 +128,6 @@
   z-index: 1;
   padding: 0;
   border: 0;
-}
-.stageLabel {
-  position: absolute;
-  right: 12px;
-  bottom: 8px;
-  z-index: 1;
-  padding: 2px 5px;
-  font-size: 12px;
-  line-height: 1.4;
-  letter-spacing: 0.6px;
-  color: var(--text-muted);
-  background: var(--surface-grain, none) var(--surface-deep);
-  font-family: var(--display);
-}
-.sceneCaption {
-  position: absolute;
-  inset: 8px 8px auto;
-  padding: 5px 8px;
-  background: var(--scene-caption-surface, #0c0f10d9);
-  z-index: 1;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 6px;
-}
-.sceneCaption b {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--scene-caption-text, #fff);
-  text-shadow: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-  padding: 3px 0;
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--scene-caption-text, var(--text-muted));
-  font-family: var(--display);
-}
-.badge i {
-  font-style: normal;
-  color: var(--scene-caption-icon, var(--gold));
 }
 
 .fixture {
@@ -296,12 +230,6 @@
     flex-direction: column;
     gap: 16px;
   }
-  .stageLabel {
-    right: 8px;
-    bottom: 8px;
-    font-size: 12px;
-    font-family: var(--display);
-  }
   .resources b {
     font-size: 20px;
   }
@@ -386,7 +314,6 @@
 
 /* Each condition opens its own explanation and remedies. */
 .state {
-  grid-area: state;
   padding: 10px 0;
   border-radius: var(--card-radius);
   border: 1px solid var(--line);
@@ -510,21 +437,12 @@
 .bad b {
   color: var(--danger);
 }
-.calm {
-  margin: 6px 0 0;
-  font-size: 12px;
-  color: var(--text-faint);
-  font-family: var(--display);
-}
 @media (max-width: 760px) and (max-height: 780px) {
   .state {
     padding: 8px 10px;
   }
   .state li button {
     padding: 3px 2px;
-  }
-  .calm {
-    display: none;
   }
 }
 /* The stats row opens the season detail. */
@@ -550,11 +468,6 @@ button.resources:active:not(:disabled) {
   font-style: normal;
   font-size: 14px;
   color: var(--text-faint);
-}
-@media (max-width: 760px) {
-  .calm {
-    display: none;
-  }
 }
 
 /* Remedy sheet: every choice states its effect and cost before commit. */
@@ -654,11 +567,6 @@ button.resources:active:not(:disabled) {
 .remedyOff em {
   color: var(--text-faint);
 }
-/* The stadium occupies one bounded row without reserving spare viewport height. */
-.stage {
-  grid-area: stage;
-  min-width: 0;
-}
 /* The season card: round, rank, record and cups over the season-progress rule (→WEB-11). */
 .seasonCard {
   grid-area: header;
@@ -731,24 +639,6 @@ button.resources:active:not(:disabled) {
 .seasonSummary > .seasonMeter {
   grid-column: 1 / -1;
   padding: 8px 14px 10px;
-}
-.sceneArt img {
-  object-fit: cover !important;
-  object-position: center !important;
-}
-.scene .sceneArt::after {
-  background: rgb(5 12 10 / 58%);
-}
-.sceneCaption,
-.stageLabel {
-  background: none;
-  color: #fff;
-  text-shadow: 0 1px 3px #000;
-}
-.sceneCaption b,
-.badge,
-.badge i {
-  color: #fff;
 }
 /* Strength leads team state on a row of its own (→WEB-44). */
 .state li[data-condition='strength'] {
@@ -860,16 +750,6 @@ button.resources:active:not(:disabled) {
 .seasonMeter progress::-moz-progress-bar {
   background: var(--surface-grain, none) var(--accent);
 }
-@media (max-width: 760px) {
-  .sceneCaption {
-    inset: 8px 9px auto;
-  }
-  .sceneCaption b,
-  .badge {
-    font-size: 12px;
-    font-family: var(--display);
-  }
-}
 /* Wide screens keep all five conditions in one row (→WEB-11). */
 @media (min-width: 1100px) {
   /* Strength takes its place in the one row of five conditions. */
@@ -901,44 +781,14 @@ button.resources:active:not(:disabled) {
   color: var(--accent-text);
   font-size: 15px;
 }
-/* League, cups, records and briefing: four links in one row. */
-/* The clubhouse's rooms: one row of doors; the frame and icon art come from the theme. */
-.rooms {
-  grid-area: rooms;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
+/* A calm team says so under its state in the office. */
+.calm {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--text-faint);
+  font-family: var(--display);
 }
-.room {
-  position: relative;
-  display: grid;
-  justify-items: center;
-  align-content: center;
-  gap: 6px;
-  min-width: 0;
-  min-height: 104px;
-  padding: 10px 6px;
-  font-size: 14px;
-  font-weight: 800;
-  text-align: center;
-  word-break: keep-all;
-}
-@media (max-width: 760px) {
-  .rooms {
-    gap: 6px;
-  }
-  .room {
-    min-height: 84px;
-    padding: 8px 2px;
-    font-size: 11px;
-  }
-}
-.clubLinks {
-  grid-area: links;
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-}
-.clubLinks button {
-  min-height: 44px;
+/* The owner's quick actions: one row of three topics on every width. */
+.state.quick ul {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }

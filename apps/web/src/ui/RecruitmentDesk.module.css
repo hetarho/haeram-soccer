@@ -1,12 +1,14 @@
 .desk {
   min-width: 0;
+  padding: var(--card-padding, 12px);
+  --table-row-height: 58px;
 }
 .search {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
   gap: 8px;
-  margin-bottom: 6px;
+  margin: 14px 0 12px;
   color: var(--text-muted);
   font-family: var(--display);
   font-size: 12px;
@@ -30,6 +32,10 @@
 .pagination button,
 .empty button,
 .warning button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   min-height: 44px;
   padding: 8px;
 }
@@ -64,8 +70,11 @@
 .roles {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
-  margin: 12px 0 8px;
+  gap: 4px;
+  margin: 12px 0;
+  padding: 4px;
+  background: var(--image-detail, var(--surface-2)) var(--image-detail-material) repeat;
+  background-size: var(--image-material-size, 256px);
 }
 .roles button {
   min-height: 44px;
@@ -73,20 +82,13 @@
   font-size: 12px;
   font-family: var(--display);
 }
-.roles button[aria-pressed='true'],
-.filters button[aria-pressed='true'] {
-  background: var(--surface-grain, none) var(--surface-2);
-  border-color: var(--accent);
-  color: var(--text);
-}
 .filters {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
 }
-.filters button,
-.filters :global([data-select-trigger]) {
+.filters button:not([data-select-trigger]) {
   height: 48px;
   min-height: 48px;
   font-size: 12px;
@@ -94,19 +96,23 @@
   font-family: var(--display);
 }
 .filters label {
-  display: flex;
-  gap: 7px;
-  align-items: center;
+  display: grid;
+  gap: 5px;
   font-size: 12px;
   color: var(--text-muted);
   font-family: var(--display);
   min-width: 0;
 }
 .filters :global([data-select-trigger]) {
+  width: 100%;
   max-width: 100%;
 }
 .recommendation {
-  background: var(--surface-grain, none) var(--surface-2);
+  grid-column: 1 / -1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 .note {
   margin: 9px 0;
@@ -120,12 +126,9 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
+/* A candidate fills its dialog: no plate of its own, only its light inner cards. */
 .card {
   min-width: 0;
-  padding: 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--card-radius);
-  background: var(--surface-grain, none) var(--surface);
 }
 .cardHead {
   display: flex;
@@ -138,37 +141,83 @@
   min-width: 0;
 }
 .cardHead h3 {
-  font-size: 15px;
+  font-size: 20px;
+  font-weight: 800;
   overflow-wrap: anywhere;
 }
 .cardHead span {
   font-size: 12px;
+  font-weight: 700;
   color: var(--text-muted);
   font-family: var(--display);
 }
+/* The two ways to compare sit under the name, on every width. */
+.compareActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.compareActions button {
+  display: inline-flex;
+  flex: 1 1 0;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 40px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--display);
+}
 .cardHead button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   flex: 0 0 auto;
   min-height: 44px;
   padding: 7px 10px;
   font-size: 12px;
   font-family: var(--display);
 }
-.cardHead button[aria-pressed='true'] {
-  border-color: var(--accent);
-  background: var(--surface-grain, none) var(--surface-2);
-}
+/* Potential and growth, centred on one line, with the full ability sheet folded under them. */
 .ability {
-  display: flex;
-  gap: 18px;
-  margin: 9px 0;
-  font-size: 12px;
-  color: var(--text-muted);
+  display: grid;
+  gap: 4px;
+  margin: 12px 0;
+  padding: 10px 12px 4px;
   font-family: var(--display);
 }
-.ability b {
+.abilityFigures {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.abilityFigures > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+}
+.abilityFigures small {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+.abilityFigures b {
   color: var(--text);
-  font-size: 17px;
-  margin-left: 4px;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.card [data-tone='rise'] {
+  color: var(--danger);
+}
+.card [data-tone='fall'] {
+  color: var(--cool);
 }
 .build,
 .budget {
@@ -176,29 +225,40 @@
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
+.build {
+  margin-top: 12px;
+}
+.build > div:first-child {
+  grid-column: 1 / -1;
+}
 .build > div {
   display: grid;
   gap: 3px;
-  padding: 8px;
-  background: var(--surface-grain, none) var(--surface-2);
-  border-radius: var(--card-radius);
+  padding: 10px 12px;
 }
 .build span,
-.budget span,
+.budget span {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 800;
+  font-family: var(--display);
+}
 .budget small {
   color: var(--text-muted);
   font-size: 12px;
+  font-weight: 600;
   font-family: var(--display);
 }
 .build b {
-  font-size: 14px;
+  font-size: 16px;
+  font-weight: 800;
   color: var(--text);
   font-variant-numeric: tabular-nums;
 }
 .build small {
   color: var(--text-muted);
-  font-size: 12px;
-  font-weight: normal;
+  font-size: 13px;
+  font-weight: 800;
   font-family: var(--display);
 }
 .context {
@@ -211,34 +271,40 @@
 .costs {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 7px 10px;
-  margin: 10px 0;
+  gap: 12px;
+  margin: 12px 0;
+  padding: 12px;
 }
 .costs > div {
   min-width: 0;
 }
 .costs dt {
   font-size: 12px;
+  font-weight: 800;
   color: var(--text-muted);
   font-family: var(--display);
 }
 .costs dd {
   margin: 2px 0 0;
-  font-size: 12px;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 800;
   overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
   font-family: var(--display);
 }
+.budget {
+  padding: 12px;
+}
 .budget > div {
   display: grid;
   gap: 3px;
-  padding-top: 6px;
-  border-top: 1px solid var(--line);
   min-width: 0;
 }
 .budget b {
   color: var(--text);
-  font-size: 12px;
+  font-size: 17px;
+  font-weight: 800;
   overflow-wrap: anywhere;
   font-variant-numeric: tabular-nums;
   font-family: var(--display);
@@ -275,16 +341,19 @@
   color: var(--on-accent);
 }
 .details {
-  margin-top: 8px;
-  border-top: 1px solid var(--line);
+  border-top: 1px dashed var(--line);
 }
 .details summary {
   min-height: 44px;
   padding: 11px 0;
-  color: var(--text-muted);
-  font-size: 12px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 800;
   cursor: pointer;
   font-family: var(--display);
+}
+.details[open] {
+  padding-bottom: 8px;
 }
 .details summary:focus-visible {
   outline: 3px solid var(--focus);
@@ -343,6 +412,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
+  margin: 6px 0 0;
   min-height: 18px;
   color: var(--text-muted);
   font-size: 12px;
@@ -370,11 +440,27 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0 6px;
-  padding: 4px 0;
+  padding: 0;
+}
+.heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.deskMark {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 42px;
+  height: 42px;
+  color: var(--image-on-dark, var(--text));
+  background: var(--image-dark-fill, var(--surface-deep)) var(--image-dark-material) repeat;
+  background-size: var(--image-material-size, 256px);
+  border-radius: var(--image-control-radius, var(--control-radius));
 }
 .toolbar h3 {
   margin: 0;
-  font-size: 14px;
+  font-size: 18px;
 }
 .toolbar h3 span {
   margin-left: 3px;
@@ -385,6 +471,7 @@
 .tools {
   margin-left: auto;
   flex-wrap: wrap;
+  gap: 6px;
 }
 .tools button {
   display: inline-flex;
@@ -393,29 +480,16 @@
   gap: 5px;
   min-width: 44px;
   min-height: 44px;
-  padding: 6px 8px;
+  padding: 6px 12px;
   font-family: var(--display);
   font-size: 12px;
 }
-.tools button[aria-expanded='true'] {
-  border-color: var(--accent);
-}
 .tools .infoTrigger {
-  padding: 6px;
-  color: var(--text-muted);
-}
-.infoTrigger > span {
-  display: grid;
-  place-items: center;
-  width: 19px;
-  height: 19px;
-  border: 1px solid currentColor;
-  border-radius: 50%;
-  font-weight: 700;
+  padding: 6px 10px;
 }
 .activeDot,
 .count {
-  color: var(--accent-text);
+  color: inherit;
 }
 .candidateTable {
   width: 100%;
@@ -424,19 +498,20 @@
   font-family: var(--display);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
+  white-space: normal;
 }
 .candidateTable th,
 .candidateTable td {
-  padding: 4px 6px;
+  padding: 8px;
   border-bottom: 1px solid var(--line);
   text-align: center;
 }
 .candidateTable td {
-  padding-top: 2px;
-  padding-bottom: 2px;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 .candidateTable th {
-  height: 28px;
+  height: 32px;
   color: var(--text-muted);
   background: var(--surface-grain, none) var(--surface-2);
   font-size: 11px;
@@ -444,6 +519,7 @@
 }
 .candidateTable th:first-child,
 .candidateTable td:first-child {
+  width: auto;
   padding-left: 0;
   text-align: left;
 }
@@ -456,27 +532,31 @@
   padding-left: 0;
 }
 .ratingColumn {
-  width: 54px;
+  width: 64px;
 }
 .potentialColumn {
-  width: 42px;
+  width: 68px;
 }
 .feeColumn {
-  width: 80px;
+  width: 112px;
 }
 .wageColumn {
-  width: 88px;
+  width: 100px;
 }
 .compareColumn {
-  width: 44px;
+  width: 48px;
 }
 .candidateTable tbody tr {
   cursor: pointer;
 }
-.candidateTable tbody tr:hover,
-.candidateTable tbody tr:focus-within,
-.candidateTable tbody tr[data-selected] {
-  background: var(--surface-grain, none) var(--surface-2);
+.desk .candidateTable tbody tr:is(:hover, :focus-within, [data-selected]) > td {
+  background:
+    var(--image-table-row-rule, none) left bottom / 100% 1px no-repeat,
+    var(--image-detail, var(--surface-2)) var(--image-detail-material) repeat;
+  background-size:
+    100% 1px,
+    var(--image-material-size, 256px);
+  background-blend-mode: normal;
 }
 .candidateTable td > span[data-tier] {
   min-width: 34px;
@@ -490,7 +570,7 @@
   gap: 2px;
   width: 100%;
   min-width: 44px;
-  min-height: 44px;
+  min-height: 48px;
   padding: 4px 8px;
   border: 0;
   border-radius: 0;
@@ -507,8 +587,8 @@
   white-space: nowrap;
 }
 .playerName b {
-  font-size: 13px;
-  line-height: 18px;
+  font-size: 14px;
+  line-height: 20px;
 }
 .playerName small {
   color: var(--text-muted);
@@ -517,16 +597,80 @@
   font-weight: 500;
 }
 .potentialValue {
+  display: inline-grid;
+  justify-items: center;
+  gap: 4px;
+  color: var(--text);
+  font-family: var(--score);
+  font-size: 15px;
+}
+.potentialTrack {
+  display: block;
+  width: 30px;
+  height: 4px;
+  overflow: hidden;
+  background: var(--image-canvas, var(--surface-deep)) var(--image-canvas-material) repeat;
+}
+.potentialTrack i {
+  display: block;
+  height: 100%;
+  background: var(--image-primary, var(--accent-fill)) var(--image-primary-material) repeat;
+}
+.playerIdentity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+.desk .candidateTable .playerName .playerIdentity {
+  text-decoration: none;
+}
+.playerName:hover .playerText b {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.position {
+  display: grid;
+  place-items: center;
+  flex: none;
+  min-width: 34px;
+  height: 30px;
+  color: var(--image-on-dark, var(--text));
+  background: var(--image-dark-fill, var(--surface-deep)) var(--image-dark-material) repeat;
+  background-size: var(--image-material-size, 256px);
+  border-radius: var(--image-control-radius, var(--control-radius));
+  font-size: 11px;
+  font-weight: 800;
+}
+.playerText {
+  flex: 1;
+  min-width: 0;
+}
+.moneyValue {
+  color: var(--text);
+  font-family: var(--score);
+  font-size: 14px;
+  font-weight: 700;
+}
+.wageValue {
   color: var(--text-muted);
+  font-size: 13px;
 }
 .feeValue {
   white-space: nowrap;
+  text-align: right;
 }
 .freeTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
   color: var(--accent-text);
   font-size: 11px;
 }
 .compareToggle {
+  display: inline-grid;
+  place-items: center;
   width: 44px;
   height: 44px;
   padding: 0;
@@ -538,23 +682,88 @@
 .compareToggle[aria-pressed='true'] {
   color: var(--accent-text);
 }
+.compareMark {
+  width: 22px;
+  height: 22px;
+  background: var(--checkbox-off-art, var(--image-quiet-material)) center / contain no-repeat;
+  image-rendering: var(--image-rendering, auto);
+}
+.compareToggle[aria-pressed='true'] .compareMark {
+  background-image: var(--checkbox-on-art, var(--image-primary-material));
+}
 @media (max-width: 760px) {
-  .wageColumn {
+  .desk {
+    padding: 10px;
+  }
+  .deskMark {
     display: none;
   }
+  .toolbar h3 {
+    font-size: 16px;
+  }
+  .toolbar h3 span {
+    display: block;
+    margin: 2px 0 0;
+    font-size: 11px;
+  }
+  .tools button {
+    padding: 6px 8px;
+    gap: 4px;
+  }
+  .search {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .playerName {
+    padding: 4px 3px;
+  }
+  .playerIdentity {
+    gap: 6px;
+  }
+  .position {
+    min-width: 27px;
+    height: 26px;
+    font-size: 10px;
+  }
+  .playerName b {
+    font-size: 12px;
+    line-height: 18px;
+  }
+  .playerName small {
+    font-size: 11px;
+  }
+  .wageColumn {
+    display: none;
+    width: 0;
+  }
   .ratingColumn {
-    width: 46px;
+    width: 42px;
   }
   .potentialColumn {
-    width: 34px;
+    width: 40px;
   }
   .feeColumn {
-    width: 64px;
+    width: 74px;
+  }
+  .compareColumn {
+    width: 40px;
+  }
+  .moneyValue {
+    font-size: 12px;
   }
   .candidateTable th,
   .candidateTable td {
     padding-right: 3px;
     padding-left: 3px;
+  }
+  .pagination {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .pagination > span {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    font-size: 11px;
   }
 }
 .negotiations {
@@ -600,8 +809,8 @@
   padding: 10px 12px;
   border-radius: var(--card-radius);
   font-size: 13px;
-  color: var(--gold);
-  border: 1px dashed var(--gold-edge);
+  color: var(--text);
+  border: 0;
 }
 .bidSteps {
   display: grid;
@@ -621,8 +830,7 @@
   font-family: var(--display);
 }
 .bidPicked {
-  border-color: var(--gold) !important;
-  color: var(--gold);
+  font-weight: 800;
 }
 .bidActions {
   display: grid;
@@ -734,4 +942,49 @@
   color: var(--text-muted);
   font-size: 12px;
   font-family: var(--display);
+}
+/* Play traits and the scout's personality read sit side by side. */
+.profileNotes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 12px 0;
+}
+.profileNotes > div {
+  min-width: 0;
+}
+.profileNotes > div > span {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+.profileNotes p {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.card .profileNotes p {
+  margin: 3px 0 0;
+}
+.card .context {
+  margin: 8px 0;
+}
+@media (max-width: 380px) {
+  .position {
+    display: none;
+  }
+}
+/* The player of ours a candidate is compared against. */
+.ownPick {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 12px;
+  font-family: var(--display);
+}
+.ownPick > span {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 800;
 }

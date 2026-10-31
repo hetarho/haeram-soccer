@@ -25,6 +25,8 @@ import type { Envelope } from '../adapters/repository';
 import { clubBuildSchema, gameSettingsSchema } from '../../../../packages/contracts/src/schema';
 import {
   clubIdentitySchema,
+  designStudioSchema,
+  identityColoursSchema,
   kitRoleSchema,
 } from '../../../../packages/contracts/src/identitySchema';
 import { STRATEGY_NAME_LIMIT } from '../../../../packages/contracts/src/build';
@@ -235,6 +237,14 @@ const command = z.discriminatedUnion('type', [
   z.strictObject({ type: z.literal('club-identity'), identity: clubIdentitySchema }),
   // The engine's role vocabulary, or null for automatic selection (→KIT-6).
   z.strictObject({ type: z.literal('match-kit'), fixtureId: ref, role: kitRoleSchema.nullable() }),
+  z.strictObject({
+    type: z.literal('design-commission'),
+    studio: designStudioSchema,
+    colours: identityColoursSchema,
+  }),
+  z.strictObject({ type: z.literal('adopt-design'), draft: z.number().int().min(0).max(3) }),
+  z.strictObject({ type: z.literal('discard-designs') }),
+  z.strictObject({ type: z.literal('redraw-designs') }),
 ]);
 export const requestSchema = z.object({
   protocol: z.literal(1),

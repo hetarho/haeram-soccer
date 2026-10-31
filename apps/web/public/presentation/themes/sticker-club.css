@@ -46,28 +46,13 @@ html[data-theme='sticker-club'] {
     color: #f5efd9;
   }
 
-  [data-home-part='fixture'] :is(h2, h3) ~ span {
+  [data-home-part='fixture'] :is(h2, h3) ~ span:not([data-ui='home-away-badge']) {
     color: #f5efd9;
-  }
-
-  [data-home-part='scene-caption'] i {
-    mask: none;
-    background: var(--image-art-icon-people) center / contain no-repeat;
-  }
-
-  [data-home-part='scene-caption'] > span:first-child i {
-    mask: none;
-    background: var(--image-art-icon-heart) center / contain no-repeat;
   }
 
   [data-ui='season-transport'] button > [data-pixel-icon='play'] {
     mask: none;
     background: var(--image-art-icon-play) center / contain no-repeat;
-  }
-
-  [data-home-part='scene'] {
-    overflow: hidden;
-    border-radius: 12px;
   }
 
   [data-home-part='season-meter'] progress::-webkit-progress-value,

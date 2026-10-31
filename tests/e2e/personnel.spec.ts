@@ -24,8 +24,9 @@ for (const width of [360, 1280]) {
     await expect(page.getByRole('tablist', { name: '선수 계약 업무' }).getByRole('tab')).toHaveText(
       ['개요', '계약', '영입', '매각', '유소년 승격·방출'],
     );
-    await expect(overview).toContainText('1군 연봉 약정');
-    await expect(overview).toContainText('이번 시즌 계약 만료');
+    const figures = page.getByTestId('desk-stats');
+    await expect(figures).toContainText('1군 연봉 약정');
+    await expect(figures).toContainText('이번 시즌 만료');
     await expect(page.getByTestId('desk-responsibilities')).toHaveCount(0);
     await overview.getByRole('button', { name: '계약 업무 열기', exact: true }).click();
     const inline = page.getByTestId('desk-responsibilities');

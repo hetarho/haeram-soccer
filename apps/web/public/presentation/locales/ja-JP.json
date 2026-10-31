@@ -40,8 +40,6 @@
     "shell.loadingSlots": "ゲームスロットを開いています…",
     "shell.loadingOffice": "クラブ事務所を開いています…",
     "shell.footer": "HAERAM FOOTBALL · 架空のクラブ、あなたの歴史。",
-    "shell.progress": "ワールド処理の進行状況",
-    "shell.cancelProgress": "処理を中止",
     "save.start": "ログインせずに始める",
     "save.complete": "保存完了",
     "save.waiting": "保存待ち",

@@ -96,7 +96,7 @@ export interface KitPainter<S extends KitCanvas = HTMLCanvasElement> {
   readonly size: number;
 }
 
-/** The Korean names of the eight shirt patterns, in `SHIRT_PATTERNS` order. */
+/** The Korean names of the shirt patterns, in `SHIRT_PATTERNS` order. */
 export const SHIRT_PATTERN_LABELS: Readonly<Record<ShirtPattern, string>> = {
   plain: '단색',
   stripes: '세로 줄무늬',
@@ -106,6 +106,12 @@ export const SHIRT_PATTERN_LABELS: Readonly<Record<ShirtPattern, string>> = {
   sash: '대각선 띠',
   checks: '체크',
   chevron: '갈매기 무늬',
+  pinstripes: '가는 세로줄',
+  quarters: '4분할',
+  centre: '가운데 줄',
+  panels: '옆구리 배색',
+  yoke: '어깨 배색',
+  diagonal: '대각선 반반',
 };
 
 /** A spoken description of a shirt for an accessible name: pattern, then each colour it shows. */

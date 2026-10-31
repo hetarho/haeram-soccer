@@ -10,8 +10,22 @@ import {
   RESPONSIBILITY_KEYS,
 } from '../../../../packages/engine/src/responsibilities';
 import { delegationCounts, officeFacts } from './officeSummary';
+import type { GameClient } from '../runtime/client';
+import korean from '../../public/presentation/locales/ko-KR.json';
 vi.mock('./FacilityArt', () => ({ FacilityArt: () => null }));
-vi.mock('./teamState', () => ({ cashState: () => ({ value: '약 12주' }) }));
+vi.mock('./teamState', () => ({
+  cashState: () => ({ value: '약 12주' }),
+  teamStates: () => [
+    { key: 'strength', label: '팀 전력', value: '61', status: '리그 3/20위', tone: 'good' },
+  ],
+  placeTraining: () => ({ focus: '균형 훈련' }),
+}));
+vi.mock('../presentation/react', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../presentation/react')>()),
+  useLocale: () => ({
+    t: (key: string) => korean.messages[key as keyof typeof korean.messages] ?? key,
+  }),
+}));
 const world = () =>
   ({
     playerClub: 'club',
@@ -52,16 +66,23 @@ describe('office lobby facts', () => {
     const html = renderToStaticMarkup(
       createElement(OfficeLobby, {
         w,
+        client: {} as GameClient,
         sponsors: slots,
         pending,
         onOpen: vi.fn(),
         onOverview: vi.fn(),
       }),
     );
-    expect(html).toContain('결재 대기 1건');
+    expect(html).toContain('결재함 · 대기 1건');
+    // The team's state and the clubhouse's room doors moved here from home.
+    expect(html).toContain('data-testid="team-state"');
+    for (const room of ['감독 사무실', '코칭스태프실', '훈련장', '유소년 훈련장'])
+      expect(html).toContain(`>${room}</span>`);
+    expect(html).toContain('감독 Manager · 1군 1명');
+    expect(html).toContain('1군 균형 훈련');
     expect(html).toContain('Manager renewal · 검토하기');
     expect(html).toContain('재정·투자');
-    expect(html).toContain('data-testid="facility-overview"');
+    expect(html).toContain('data-testid="desk-scene"');
     expect(html).not.toContain('role="dialog"');
     expect(officeFacts(w, slots, pending).staff).toContain('결재 대기 1건');
   });

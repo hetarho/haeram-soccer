@@ -114,33 +114,20 @@ for (const viewport of VIEWPORTS)
     const cup = career.cupWinner.honours.find((honour) => honour.label.endsWith('컵 우승'))!;
     await expect(winner.getByRole('button', { name: cup.action.accessibleLabel })).toBeVisible();
 
-    // The cup opens its season of our records; the named return comes back to the same list.
-    const at = await scrollTo(page, winner);
-    expect(at).toBeGreaterThan(0);
+    // The cup opens its season of our records under the records' tabs (→WEB-54).
+    await scrollTo(page, winner);
     await winner.getByRole('button', { name: cup.action.accessibleLabel }).click();
     await expect(page).toHaveURL(new RegExp(`/history\\?section=club&season=${career.cupSeason}$`));
     await expect(
       page.getByRole('heading', { name: `${seasonName(career.cupSeason)} · 구단 시즌 기록` }),
     ).toBeVisible();
-    const back = page.getByRole('button', {
-      name: `← 감독 이력 · ${career.cupWinner.name}`,
-      exact: true,
-    });
-    await expect(back).toBeVisible();
-    // The season's league table and the existing way back to the season still work.
-    await page.getByRole('button', { name: '이 시즌 리그 순위표', exact: true }).click();
-    await page.getByRole('button', { name: '← 돌아가기 · 클럽 시즌 기록', exact: true }).click();
-    await expect(back).toBeVisible();
-    await back.click();
+    // Its tab, entered again, keeps the loaded list and the inspected tenure (→WEB-74).
+    const managers = page.getByRole('tab', { name: '감독 이력', exact: true });
+    await managers.click();
     await expect(page).toHaveURL(/\/history\?section=club&view=managers$/);
-    await expect(page.getByRole('tab', { name: '감독 이력', exact: true })).toHaveAttribute(
-      'aria-selected',
-      'true',
-    );
+    await expect(managers).toHaveAttribute('aria-selected', 'true');
     await expect(list.getByRole('article')).toHaveCount(total);
     await expect(toggle(winner)).toHaveAttribute('aria-expanded', 'true');
-    await expect.poll(() => viewScroll(page)).toBeGreaterThan(at - 8);
-    expect(await viewScroll(page)).toBeLessThan(at + 8);
 
     // A tenure's season through the browser's back button: the same list, tenure and place.
     const source = career.closer.sources[0]!;

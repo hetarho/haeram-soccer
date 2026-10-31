@@ -13,7 +13,8 @@ import {
   UNHAPPY_CONFIG,
 } from '../../packages/engine/src/index';
 import { encode } from '../../apps/web/src/adapters/persistence';
-import { eventCard, reviewEvent } from './events';
+import { eventCard, reviewInOffice } from './events';
+import { openClubhouse } from './competition-navigation';
 import { continueSlot } from './slots';
 import { savedWorld } from './club-identity-helpers';
 
@@ -102,8 +103,9 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await page.goto('/');
   await continueSlot(page);
   const card = eventCard(page);
-  await expect(card).toContainText(`${name} 선수 계약에 답변해 주세요`);
-  await reviewEvent(page, card);
+  // The talk waits in the owner office's tray, not among home's events (→WEB-39).
+  await expect(card).toHaveCount(0);
+  await reviewInOffice(page, `${name} 선수 계약에 답변해 주세요`);
   await expect(page).toHaveURL(/\/direction\?view=players&request=/);
 
   // The sheet states the demand, the floor, the term, the cost, the runway and the risk.
@@ -136,7 +138,7 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   await expect(roster.getByText('언해피 · 재계약 거절')).toBeVisible();
   await expect(roster).toContainText('시장');
 
-  await page.getByRole('button', { name: '클럽하우스', exact: true }).click();
+  await openClubhouse(page);
   await expect(card).toHaveCount(0);
 
   // Six weeks later he hands in a transfer request.

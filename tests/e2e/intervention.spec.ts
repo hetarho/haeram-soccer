@@ -1,7 +1,7 @@
-import { openLeague, resumeLeague } from './competition-navigation';
+import { clubhouseTab, openLeague, resumeLeague } from './competition-navigation';
 import { watchNext } from './watch';
 import { chooseOption, selectOptions } from './select';
-import { chooseLevel, delegateSales } from './events';
+import { chooseLevel, delegateSales, proposeOnReport } from './events';
 import { test, expect } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
 import { leaveOffice, openOfficeArea } from './office';
@@ -10,6 +10,8 @@ import { savedWorld } from './club-identity-helpers';
 test('changes a real starting XI through the mobile preparation sheet, saves it and shows earned finances', async ({
   page,
 }) => {
+  // Prepares and reloads twice, watches a match and visits the office; slow browsers need longer.
+  test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
@@ -23,6 +25,8 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   const prepare = hub.getByRole('button', { name: '상세 리포트', exact: true });
   await prepare.click();
   const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
+  await expect(dialog).toBeVisible();
+  await proposeOnReport(dialog);
   await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();
   await dialog.getByText('선수별 교체', { exact: true }).click();
   const keeper = dialog.getByRole('combobox', { name: '선발 1 GK', exact: true });
@@ -46,12 +50,12 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   // A decision saves in the background (→SAVE-8); reload once it is on disk.
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
-  const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await prepare.click();
   // The manager's report names who picks the XI.
   await expect(dialog.getByRole('region', { name: '감독 보고', exact: true })).toContainText(
     '정해 주신 11명',
   );
+  await proposeOnReport(dialog);
   await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();
   await dialog.getByText('선수별 교체', { exact: true }).click();
   await expect(keeper).toHaveAttribute('data-value', other!);
@@ -74,6 +78,8 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
     .getByTestId('match-theatre')
     .getByRole('button', { name: '상세 리포트', exact: true })
     .click();
+  await expect(dialog).toBeVisible();
+  await proposeOnReport(dialog);
   await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();
   await dialog.getByRole('button', { name: '감독의 자동 선발로 전환', exact: true }).click();
   await expect(dialog.getByRole('status')).toContainText(
@@ -82,7 +88,7 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await dialog.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
-  await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
+  await clubhouseTab(page).click();
   // The automatic XI survived the reload: no owner-chosen lineup is saved.
   expect((await savedWorld(page)).lineup).toBeUndefined();
   await openOfficeArea(page, '투자');
@@ -111,17 +117,13 @@ for (const viewport of [
     await expect(page.getByTestId('club-hub')).toBeVisible();
     // Level 4 stops only for money, so an incoming offer cannot interrupt the clock here.
     await chooseLevel(page, 4);
-    const nav = page.getByRole('navigation', {
-      name: viewport.width < 760 ? '모바일 게임 메뉴' : '게임 메뉴',
-      exact: true,
-    });
     await openLeague(page);
     await page.getByRole('tab', { name: '순위표', exact: true }).click();
     const country = page.getByRole('combobox', { name: '국가', exact: true });
     await chooseOption(country, 'FRA');
     const contextUrl = page.url();
     // The clock runs on home; sheets opened there never pause it.
-    await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
+    await clubhouseTab(page).click();
     const date = page.getByTestId('game-date');
     await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
     await expect(date).toHaveText('1950.08.02');
@@ -154,7 +156,7 @@ for (const viewport of [
     await expect(page).toHaveURL(contextUrl);
     await expect(country).toHaveAttribute('data-value', 'FRA');
 
-    await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
+    await clubhouseTab(page).click();
     await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: /^\d+시즌 진행$/ })).toHaveCount(0);
   });
@@ -179,6 +181,8 @@ test('prepares a subsequent match from the theatre while keeping the recorded sc
     .getByRole('button', { name: '상세 리포트', exact: true })
     .click();
   const preparation = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
+  await expect(preparation).toBeVisible();
+  await proposeOnReport(preparation);
   await preparation.getByRole('tab', { name: '선발 선택' }).click();
   await preparation.getByRole('button', { name: '피로 회복 우선으로 선택' }).click();
   await preparation.getByRole('button', { name: '이 선발로 다음 경기 준비' }).click();

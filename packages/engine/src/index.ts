@@ -8,6 +8,7 @@ export {
 } from './match-model';
 export * from './responsibilities';
 export * from './club-identity';
+export * from './design-studio';
 export * from './settings';
 export * from './world';
 export * from './season';

@@ -1,0 +1,65 @@
+{
+  "method": "Built-in image_gen atlas; shared createUiArtPipeline alpha slicing and WebP encoding",
+  "date": "2026-10-31",
+  "sources": "apps/web/design/standard/dropdown-v1",
+  "source": "sources/plates.png",
+  "sourceSha256": "eece2ef594990545061b1ddd9eb6e424f18e73d59c8e083da20e21f565bf5172",
+  "prompts": "apps/web/design/standard/dropdown-v1/prompts.json",
+  "geometry": "Separate trigger, popup and selected-row nine-slice plates; filled centres and fixed source caps. Live labels, icons and focus remain HTML/SVG.",
+  "assets": [
+    {
+      "file": "frame-trigger.webp",
+      "source": "sources/plates.png",
+      "crop": {
+        "x": 62,
+        "y": 159,
+        "width": 1130,
+        "height": 240
+      },
+      "filter": "scale=1152:384",
+      "bytes": 3142,
+      "sha256": "04db2c47d6ede474524b9ca6d9fc71f1d0cbc7f6b842c35c3d54bd2a9effedbe",
+      "role": "image-art-dropdown-trigger",
+      "width": 192,
+      "height": 64,
+      "mode": "nine-slice",
+      "slice": 22
+    },
+    {
+      "file": "frame-popup.webp",
+      "source": "sources/plates.png",
+      "crop": {
+        "x": 61,
+        "y": 509,
+        "width": 1132,
+        "height": 234
+      },
+      "filter": "scale=1152:384",
+      "bytes": 3250,
+      "sha256": "965780ade1719eb7cc5badf972e374962940a8c3a438aed221ab8ef0dd64aa61",
+      "role": "image-art-dropdown-popup",
+      "width": 192,
+      "height": 64,
+      "mode": "nine-slice",
+      "slice": 22
+    },
+    {
+      "file": "frame-selection.webp",
+      "source": "sources/plates.png",
+      "crop": {
+        "x": 62,
+        "y": 856,
+        "width": 1130,
+        "height": 235
+      },
+      "filter": "scale=1152:384",
+      "bytes": 3382,
+      "sha256": "f8918fe2359bf991b82f4f287bb8fc001734e43fae7f254aa2a8e285f66fa691",
+      "role": "image-art-dropdown-selection",
+      "width": 192,
+      "height": 64,
+      "mode": "nine-slice",
+      "slice": 22
+    }
+  ]
+}

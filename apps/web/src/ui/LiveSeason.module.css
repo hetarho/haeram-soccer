@@ -28,16 +28,10 @@
   flex: 0 0 104px;
   width: 104px;
   min-width: 104px;
-  font-weight: 700;
 }
 .seasonSelect > span:first-child {
   flex: 1;
   text-align: center;
-}
-.seasonSelect > :last-child {
-  flex-basis: 10px;
-  width: 10px;
-  height: 10px;
 }
 .seasonStep > :first-child {
   width: 14px;

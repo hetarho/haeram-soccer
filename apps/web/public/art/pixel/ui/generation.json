@@ -1,8 +1,8 @@
 {
-  "method": "Native pixel-grid SVG sources and existing semantic glyph paths; lossless Chromium PNG encoding",
-  "date": "2026-10-24",
+  "method": "Native pixel-grid SVG sources and 24px semantic glyph paths; lossless Chromium PNG encoding",
+  "date": "2026-10-30",
   "sources": "apps/web/design/pixel-ui",
-  "geometry": "128px stepped frames use a 16px nine-slice region; 32px discrete materials repeat independently. Live text remains HTML.",
+  "geometry": "24px integer-grid glyphs share SVG and PNG geometry. 128px stepped frames use a 16px nine-slice region; 32px discrete materials repeat independently. Live text remains HTML.",
   "assets": [
     {
       "file": "frame-panel.png",
@@ -42,99 +42,99 @@
     },
     {
       "file": "icon-home.png",
-      "source": "apps/web/design/pixel-ui/source.mjs#icon-home",
-      "bytes": 1616,
-      "sha256": "ce6774af2948f66148a787328cf0d878931337ea4249a10637c0b86484659dec"
+      "source": "apps/web/design/pixel-ui/icons.mjs#home",
+      "bytes": 1674,
+      "sha256": "d9e31fa8f408f146c2fcb34b4c7aba7202d23f3887686a6fbbd0f9b6617159ba"
     },
     {
       "file": "icon-league.png",
-      "source": "apps/web/design/pixel-ui/source.mjs#icon-league",
-      "bytes": 1633,
-      "sha256": "5a88b4112c5ebfdfcd7903411ebc160f66638502eb4b3539e12cee1b729fce0b"
+      "source": "apps/web/design/pixel-ui/icons.mjs#table",
+      "bytes": 1620,
+      "sha256": "a1fed47f50a0be68dc34a8328afdba184f3152edc503aa4c64a15484cedff1e3"
     },
     {
       "file": "icon-cup.png",
-      "source": "apps/web/design/pixel-ui/source.mjs#icon-cup",
-      "bytes": 1634,
-      "sha256": "25d2e9a0e1e3c4d257d200b6cfc17d33730d4c4cf05ab1d48ebffbf1b3907252"
+      "source": "apps/web/design/pixel-ui/icons.mjs#cup",
+      "bytes": 1685,
+      "sha256": "de646a149c9b234298c329df2b2147eb0d2636ef4797d551310157ed1a43b32d"
     },
     {
       "file": "icon-history.png",
-      "source": "apps/web/design/pixel-ui/source.mjs#icon-history",
-      "bytes": 1606,
-      "sha256": "0e2c16b9add45043be239485c87f78768f4ce00eabb29431ccea48b7a013e15b"
+      "source": "apps/web/design/pixel-ui/icons.mjs#history",
+      "bytes": 1619,
+      "sha256": "473be150e7865e48ff6346bbc51b5b3bd3d0bc3d5802b6b97f086b8cd7955792"
     },
     {
       "file": "icon-people.png",
-      "source": "apps/web/design/pixel-ui/source.mjs#icon-people",
-      "bytes": 1610,
-      "sha256": "626ac46e3699d3917de0ce69d940cd1d8151a3d1c07ca3c25220e359abe25093"
+      "source": "apps/web/design/pixel-ui/icons.mjs#people",
+      "bytes": 1622,
+      "sha256": "026d291cd502e2c9f6c43974240cae5c130d475a494ca78b227059e8e38b4692"
     },
     {
       "file": "icon-training.png",
-      "source": "apps/web/design/pixel-ui/source.mjs#icon-training",
-      "bytes": 1613,
-      "sha256": "7d65b9518c912c203208b307ca100b23b1fc46fc20c137ce782adcba33397953"
+      "source": "apps/web/design/pixel-ui/icons.mjs#training",
+      "bytes": 1611,
+      "sha256": "978a6e2f5272ff869f44358985af1a161bdadf1ddcf73933d54dac8145511740"
     },
     {
       "file": "icon-office.png",
-      "source": "apps/web/design/pixel-ui/source.mjs#icon-office",
-      "bytes": 1604,
-      "sha256": "5d8a868520eb4aa76cc2a8932843d237aa97008d8ba6eed77b6ce91ee2958e4f"
+      "source": "apps/web/design/pixel-ui/icons.mjs#trend",
+      "bytes": 1694,
+      "sha256": "24b0a1a9c06b4d1a211ddbbe79e790c6dd5341f18e39bc8c9879756d77a84eea"
     },
     {
       "file": "icon-boot.png",
-      "source": "apps/web/design/pixel-ui/source.mjs#icon-boot",
-      "bytes": 1604,
-      "sha256": "aac7ab1659546b2d5b1c77ce26ac68e7b3e0fa118f89936d356ebde6e5611037"
+      "source": "apps/web/design/pixel-ui/icons.mjs#boot",
+      "bytes": 1652,
+      "sha256": "b74c4e3eb6946d6f3891e393e636842e86dfdebb3353cc33c269dc4fb9c371fd"
     },
     {
       "file": "icon-supporters.png",
-      "source": "apps/web/design/pixel-ui/source.mjs#icon-supporters",
-      "bytes": 1642,
-      "sha256": "898f47cb03c2d3f931a077291af4e9719c3a5f48609ca7a4a584f7f6e100a585"
+      "source": "apps/web/design/pixel-ui/icons.mjs#supporters",
+      "bytes": 1691,
+      "sha256": "47da18c685e2ba02d68f39d8a036a078b795cd07a6c7feea765e2bdb7d247d04"
     },
     {
       "file": "icon-manager.png",
-      "source": "apps/web/design/pixel-ui/source.mjs#icon-manager",
-      "bytes": 1683,
-      "sha256": "05468983989f3c4ea4cd327d2ab5b6eefc596c047cdbbd3c98a08e5f7323aceb"
+      "source": "apps/web/design/pixel-ui/icons.mjs#manager",
+      "bytes": 1681,
+      "sha256": "e95f6fded5bf56c858381f9ecd5a4d2f97b5b86a42a8a3a481c56e59f3e8b7b3"
     },
     {
       "file": "icon-shirt.png",
-      "source": "apps/web/design/pixel-ui/source.mjs#icon-shirt",
-      "bytes": 1597,
-      "sha256": "d7db5b658d74876c3e267def47ae12b5ae59116e2a8442f4c09fb6244fface80"
+      "source": "apps/web/design/pixel-ui/icons.mjs#shirt",
+      "bytes": 1647,
+      "sha256": "7566a9697b0b5b97a46fe7e3b1b690c9bc742a9b1561faa1196c97eb68266f8c"
     },
     {
       "file": "icon-bell.png",
-      "source": "apps/web/design/pixel-ui/source.mjs#icon-bell",
-      "bytes": 1595,
-      "sha256": "872d457e56aaf2ad887203d1a25a166c343cddbefe921c0d3b65759e2ca79593"
+      "source": "apps/web/design/pixel-ui/icons.mjs#bell",
+      "bytes": 1681,
+      "sha256": "0038ac583cf9361a87966b91295a40b4baf97e0d81f394e816d69f925727cf38"
     },
     {
       "file": "icon-menu.png",
-      "source": "apps/web/design/pixel-ui/source.mjs#icon-menu",
-      "bytes": 1585,
-      "sha256": "3ebb58550624e59941f1a3a471c13870d419e8e68b6c58978b1d5149edc1dba9"
+      "source": "apps/web/design/pixel-ui/icons.mjs#menu",
+      "bytes": 1584,
+      "sha256": "3790bbb67341bb45a937b70cd14f730808983c3c09f5e74309941e2b777ce357"
     },
     {
       "file": "icon-switch.png",
-      "source": "apps/web/design/pixel-ui/source.mjs#icon-switch",
-      "bytes": 1643,
-      "sha256": "6806cf636bca3c4cccc9cad15d96dd327bb71ed0ae7f2135757676dd5ef3b228"
+      "source": "apps/web/design/pixel-ui/icons.mjs#switch",
+      "bytes": 1709,
+      "sha256": "2904195757ba25571a067cb79b5d87ebf1ffa18d3697cacb5ac4cf33823eaed3"
     },
     {
       "file": "icon-play.png",
-      "source": "apps/web/design/pixel-ui/source.mjs#icon-play",
-      "bytes": 1606,
-      "sha256": "26c79bc429f69258c707dac4d50a37618d0fc607932cfa943d1c6dd210973a2d"
+      "source": "apps/web/design/pixel-ui/icons.mjs#play",
+      "bytes": 1647,
+      "sha256": "01964104530f735fd5a1352b47550de20b11f733d188e3780d1463ce3a0e823f"
     },
     {
       "file": "icon-heart.png",
-      "source": "apps/web/design/pixel-ui/source.mjs#icon-heart",
-      "bytes": 1599,
-      "sha256": "03b4145dc4c934a47eb5b0a2cfec570a0a695d26db0cecf83d61b8622debe68b"
+      "source": "apps/web/design/pixel-ui/icons.mjs#heart",
+      "bytes": 1695,
+      "sha256": "6fb26f6adde31dccb76896323d95927552c6d0ff0b40e576d0efac4332c3ade8"
     },
     {
       "file": "canvas.png",

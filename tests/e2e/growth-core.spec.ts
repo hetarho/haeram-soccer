@@ -27,7 +27,7 @@ for (const viewport of [
   { width: 360, height: 740 },
   { width: 390, height: 844 },
 ]) {
-  test(`19-player warning opens from its home tile at ${viewport.width}x${viewport.height}`, async ({
+  test(`19-player warning opens from its office tile at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
@@ -44,19 +44,20 @@ for (const viewport of [
     world.morale = 80;
     for (const player of activePlayers(world)) player.fatigue = 0;
     await importResponsibilityCareer(page, world);
+    const alert = page.getByTestId('team-state-alert');
+    // Home's 훈련·육성 quick actions answer the thin squad; its state reads in the office.
+    await expect(page.getByTestId('quick-warning-development')).toBeVisible();
+    await expect(alert).toHaveCount(0);
+    await expectHomeBounds(page);
+    await enterOffice(page);
     const state = page.getByTestId('team-state');
     const squad = state.locator('[data-condition="squad"]');
     const warning = squad.getByTestId('state-warning-squad');
     const button = squad.getByRole('button', { name: /선수단.*주의.*대처 방법 보기/ });
-    const alert = page.getByTestId('team-state-alert');
     await expect(warning).toBeVisible();
     await expect(alert).toHaveCount(0);
     await expect(state).not.toContainText('선수 19명');
     await expectTouchSize(button);
-    await expectHomeBounds(page);
-    await enterOffice(page);
-    await expect(alert).toHaveCount(0);
-    await leaveOffice(page);
     // Clicking the badge uses the existing full-size tile button.
     await warning.click();
     const remedies = page.getByRole('dialog', { name: '선수단 채우기', exact: true });
@@ -72,6 +73,7 @@ for (const viewport of [
     await expect(remedies).toBeVisible();
     await remedies.getByRole('button', { name: '창 닫기', exact: true }).click();
     await expect(button).toBeFocused();
+    await leaveOffice(page);
     await chooseOption(page.getByRole('combobox', { name: '자동 진행 배속', exact: true }), 'x10');
     await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
     await expect(page.getByTestId('event-group')).toBeVisible({ timeout: 15000 });
@@ -119,12 +121,20 @@ for (const viewport of [
     for (const figure of ['라운드', '리그 순위', '승점 0'])
       await expect(season.getByText(figure, { exact: true })).toBeVisible();
     await expect(page.getByTestId('hub-record')).toHaveText('0-0-0');
+    // Home groups the owner's quick actions by topic (→WEB-107).
+    const quick = page.getByTestId('quick-actions');
+    for (const group of ['분위기', '피로', '훈련·육성'])
+      await expect(quick.getByText(group, { exact: true })).toBeVisible();
+    // Team state and the journal live in the owner office lobby (→WEB-39/44).
+    await enterOffice(page);
     const state = page.getByRole('region', { name: '팀 상태' });
     // Strength changes with the lineup, fatigue and morale, so it leads team state (→WEB-44).
     for (const chip of ['팀 전력', '피로', '분위기', '감독 입지', '선수단'])
       await expect(state.getByText(chip, { exact: true })).toBeVisible();
 
-    const journalButton = hub.getByRole('button', { name: '클럽 소식·시즌 브리핑', exact: true });
+    const journalButton = page
+      .getByTestId('office-lobby')
+      .getByRole('button', { name: '클럽 소식·시즌 브리핑', exact: true });
     await journalButton.click();
     const dialog = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
     await expect(dialog).toBeVisible();
@@ -144,6 +154,7 @@ for (const viewport of [
     await expect(journalButton).toBeFocused();
     expect((await viewGeometry(page)).scroll).toBe(0);
     expect(await page.evaluate(() => scrollY)).toBe(0);
+    await leaveOffice(page);
 
     await watchNext(page, { manual: true });
     await expect(

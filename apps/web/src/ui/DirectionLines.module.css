@@ -22,3 +22,55 @@
   color: var(--text-muted);
   font-family: var(--display);
 }
+/* A desk's criteria: one card, each area a pressable row that opens its sheet. */
+.criteria {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.criteriaHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding-bottom: 6px;
+}
+.criteriaHead h3 {
+  margin: 0;
+  font-size: 16px;
+}
+.criteriaHead small {
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: 12px;
+}
+.criterion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px 12px;
+  width: 100%;
+  min-height: 46px;
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 500;
+}
+.criterion > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.criterion b {
+  font-weight: 800;
+}
+.criterion small {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 2px;
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+}

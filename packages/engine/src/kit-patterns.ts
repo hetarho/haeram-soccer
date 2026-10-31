@@ -1,5 +1,5 @@
 /**
- * KIT-3–5, KIT-7, MATCH-36: the one geometry of the eight shirt patterns and the optional trim
+ * KIT-3–5, KIT-7, MATCH-36: the one geometry of the shirt patterns and the optional trim
  * (spec/ssot/KIT.md), on the tactical marker and on the player figure's torso. Kit selection samples
  * the torso and the painters draw both, so a point gets the same colour everywhere. Pure data and
  * arithmetic: no Canvas, DOM or React.
@@ -85,6 +85,18 @@ const REGIONS: Readonly<Record<ShirtPattern, readonly Polygon[]>> = Object.freez
       [1, 0.45],
       [0.5, 0.75],
       [0, 0.45],
+    ],
+  ]),
+  pinstripes: freeze([0.1, 0.3, 0.5, 0.7, 0.9].map((x) => rect(x - 0.03, 0, x + 0.03, 1))),
+  quarters: freeze([rect(0.5, 0, 1, 0.5), rect(0, 0.5, 0.5, 1)]),
+  centre: freeze([rect(0.35, 0, 0.65, 1)]),
+  panels: freeze([rect(0, 0, 0.22, 1), rect(0.78, 0, 1, 1)]),
+  yoke: freeze([rect(0, 0, 1, 0.3)]),
+  diagonal: freeze([
+    [
+      [1, 0],
+      [1, 1],
+      [0, 1],
     ],
   ]),
 });

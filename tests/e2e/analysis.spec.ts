@@ -1,7 +1,7 @@
 import { openPersonnel } from './personnel-navigation';
 import { clubhouseDate, openClubRecords, openLeague } from './competition-navigation';
 import { watchNext } from './watch';
-import { delegateSales } from './events';
+import { delegateSales, proposeOnReport } from './events';
 import { finishSeason } from './season-progression';
 import { openCurrentClubSeason, openSeasonReview, showRecordTabs } from './record-navigation';
 import { chooseOption, selectOptions } from './select';
@@ -67,11 +67,11 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   // A closed season no longer interrupts: its review waits in the league's season list.
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog', { name: '시즌 진행 도구' })).toHaveCount(0);
-  await openLeague(page, true);
-  await chooseOption(page.getByRole('combobox', { name: '리그 시즌', exact: true }), '1950');
+  await openLeague(page, 1950);
   await openSeasonReview(page);
   await expect(page.getByTestId('season-move')).toBeVisible();
-  await page.getByRole('button', { name: '← 돌아가기 · 리그', exact: true }).click();
+  // Back to that season's league pages through the league's own season filter.
+  await openLeague(page, 1950);
   // The live tabs belong to the season in progress; a closed season keeps its pages in its own.
   await expect(page.getByRole('tablist', { name: '리그 보기' })).toHaveCount(0);
   const past = page.getByRole('tablist', { name: '지난 시즌 보기' }),
@@ -81,7 +81,8 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   const table = page.getByRole('region', { name: '최종 순위표' });
   await expect(table).toContainText('Haeram');
   await expect(table.locator('tbody tr')).toHaveCount(16);
-  await expect(page).toHaveURL(/season=1950&tab=table/);
+  // The season filter addresses the closed season with the tab it opened on.
+  await expect(page).toHaveURL(/season=1950&view=table/);
   // A rival from that table opens its sheet with the all-time record against us.
   await table
     .getByRole('button', { name: /팀 정보$/ })
@@ -119,13 +120,18 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   expect(scorerRows).toBeGreaterThan(0);
   expect(scorerRows).toBeLessThanOrEqual(10);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-  // Closed-season arrows stay within History; the Season hub opens current facts.
-  await expect(page.getByRole('button', { name: '이전 시즌', exact: true })).toBeDisabled();
-  await expect(page.getByRole('button', { name: '다음 시즌', exact: true })).toBeDisabled();
+  // The league's season filter holds the closed season beside this one, which opens current facts.
+  const season = page.getByRole('combobox', { name: '시즌', exact: true });
+  await expect(season).toHaveAttribute('data-value', '1950');
+  expect((await selectOptions(season)).map((option) => option.value)).toEqual(['1951', '1950']);
   await openLeague(page);
   await expect(page.getByRole('tablist', { name: '리그 보기' })).toBeVisible();
   await expect(past).toHaveCount(0);
-  await expect(page.getByRole('group', { name: '리그 시즌 선택', exact: true })).toHaveCount(0);
+  // A closed season opens on the tab the live league shows.
+  await page
+    .getByRole('tablist', { name: '리그 보기' })
+    .getByRole('tab', { name: '선수 기록', exact: true })
+    .click();
   await openLeague(page, true);
   await expect(pastTab('선수 기록')).toHaveAttribute('aria-selected', 'true');
   await expect(scorers).toBeVisible();
@@ -386,6 +392,8 @@ test('compares tactical rules as previews while the applied tactic and date stay
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await page.getByRole('button', { name: '상세 리포트', exact: true }).click();
   const sheet = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
+  await expect(sheet).toBeVisible();
+  await proposeOnReport(sheet);
   await sheet.getByText('전술 실험실 · 네 가지 비교', { exact: true }).click();
   const lab = sheet.getByRole('region', { name: '전술 실험실', exact: true });
   await expect(lab.getByRole('article')).toHaveCount(4);
@@ -432,7 +440,7 @@ test('opens the manager report on the next match without progressing the world',
   const meetings = sheet.getByRole('region', { name: '최근 맞대결' });
   await expect(meetings).toContainText('최근 맞대결 · 0경기');
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-  await sheet.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
+  await sheet.getByRole('button', { name: '확인하고 홈으로', exact: true }).click();
   await expect(page.getByTestId('game-date')).toHaveText('1950.08.01');
   await expectHomeBounds(page);
 });

@@ -1,0 +1,43 @@
+{
+  "method": "Native integer-grid SVG sources; shared lossless Chromium PNG encoding",
+  "date": "2026-10-31",
+  "sources": "apps/web/design/pixel/dropdown-v1",
+  "source": "source.mjs",
+  "sourceSha256": "4d058ad94c98eaab658b40ff32791d65ce4d511257a9a1fb1cff8f1730c5b175",
+  "geometry": "Separate trigger, popup and selected-row nine-slice plates; filled centres and fixed source caps. Live labels, icons and focus remain HTML/SVG.",
+  "assets": [
+    {
+      "file": "frame-trigger.png",
+      "source": "apps/web/design/pixel/dropdown-v1/source.mjs",
+      "bytes": 1038,
+      "sha256": "4849602e9a183518bc58c5fdc933a22eaa89c26a88af31395e0fdfc707273947",
+      "role": "image-art-dropdown-trigger",
+      "width": 128,
+      "height": 128,
+      "mode": "nine-slice",
+      "slice": 16
+    },
+    {
+      "file": "frame-popup.png",
+      "source": "apps/web/design/pixel/dropdown-v1/source.mjs",
+      "bytes": 1040,
+      "sha256": "c98083a597e30ead394cb3b12bdb0b3571e78fd55c8d86a4dcabd1cd922aa51b",
+      "role": "image-art-dropdown-popup",
+      "width": 128,
+      "height": 128,
+      "mode": "nine-slice",
+      "slice": 16
+    },
+    {
+      "file": "frame-selection.png",
+      "source": "apps/web/design/pixel/dropdown-v1/source.mjs",
+      "bytes": 1039,
+      "sha256": "ee454989b747f370c8e8b33d44b9925811de3892df526efd511bc28fc156e6ef",
+      "role": "image-art-dropdown-selection",
+      "width": 128,
+      "height": 128,
+      "mode": "nine-slice",
+      "slice": 16
+    }
+  ]
+}

@@ -9,6 +9,7 @@ import { staffCommand } from './ops-staff';
 import { advanceToNextEvent } from './next-event';
 import { applySettings } from './settings';
 import { applyClubIdentity, chooseMatchKit } from './identity-operations';
+import { adoptDesign, commissionDesign, discardDesigns, redrawDesigns } from './design-studio';
 
 // Read models and limits the app and other modules import from here.
 export { campaignOffers, sponsorAnnual, sponsorOffers, sponsorSlots } from './ops-commercial';
@@ -49,6 +50,18 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       break;
     case 'match-kit':
       chooseMatchKit(w, cmd.fixtureId, cmd.role);
+      break;
+    case 'design-commission':
+      commissionDesign(w, cmd.studio, cmd.colours);
+      break;
+    case 'adopt-design':
+      adoptDesign(w, cmd.draft);
+      break;
+    case 'discard-designs':
+      discardDesigns(w);
+      break;
+    case 'redraw-designs':
+      redrawDesigns(w);
       break;
     // Day steps run in the host; as a command they change nothing.
     case 'advance-days':

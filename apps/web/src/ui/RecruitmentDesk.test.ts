@@ -288,7 +288,12 @@ describe('paged whole-world recruitment desk', () => {
     const markup = render();
     expect(markup).toContain('2 / 2 페이지');
     expect(markup).toContain('aria-label="선택한 2명 비교"');
-    const previous = elements(tree).find((node) => node.props.children === '이전 페이지')!;
+    // The pager's label sits beside its chevron icon.
+    const previous = elements(tree).find(
+      (node) =>
+        Array.isArray(node.props.children) &&
+        (node.props.children as ReactNode[]).includes(' 이전 페이지'),
+    )!;
     (previous.props.onClick as () => void)();
     expect(choices['world-market-query']).toMatchObject({ page: 0 });
     expect(choices['world-market-comparison']).toHaveLength(2);
@@ -346,7 +351,7 @@ describe('paged whole-world recruitment desk', () => {
     choices['world-market-bidding'] = { target: offer.target, asking: offer.fee };
     reads.detail = detail();
     const markup = render();
-    expect(markup).toContain('반복 연봉');
+    expect(markup).toContain('<dt>연봉</dt>');
     expect(markup).toContain('계약 / 임대 반환');
     expect(markup).toContain('합류 32 → 적응 후 40');
     expect(markup).toContain('직접 발굴');

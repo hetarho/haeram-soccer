@@ -122,7 +122,7 @@ describe('club identity vocabulary (→KIT-1, KIT-2, KIT-3)', () => {
     ).toBe(true);
     // Crest field patterns are not shirt patterns.
     expect(
-      shirtDesignSchema.safeParse({ pattern: 'quarters', primary: '#ffffff', secondary: '#000000' })
+      shirtDesignSchema.safeParse({ pattern: 'cross', primary: '#ffffff', secondary: '#000000' })
         .success,
     ).toBe(false);
   });

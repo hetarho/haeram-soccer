@@ -95,6 +95,13 @@ column labels orient the reader, body values stay readable, and row separators r
 than both. An own-club mark may identify our row without turning every alternate row into a
 large highlighted block.
 
+In candidate lists, a player's name opens their record with the `link` role; it must not inherit
+the generic framed-button skin. Keep comparison toggles equally quiet and render their checked
+state with the theme's checkbox artwork. Explicit table columns reserve room for identity,
+ratings and money instead of inheriting the shared leading rank column's narrow width.
+Candidate details reuse sheet/detail materials for potential, scouting notes and cost groups;
+filter choices and transaction actions use explicit supporting-action roles.
+
 Before reducing text or touch targets, inspect accumulated spacing: a panel's outer padding,
 header/body padding, child-list margins and mobile overrides may all add to the same inset.
 Give each boundary one spacing owner. Keep dense data rows and explanatory copy compact while
@@ -151,6 +158,26 @@ appearance. A card does not become a button merely by containing actions. Compar
 long-title and multi-action variants in the `cards` workbench story, then review a real consumer
 such as the fixture notebook.
 
+`ticket` and `dark` wear the home's next-match and season plates. A screen built like the
+next-match report leads with one `ticket` (the memo, or the owner office's pending-work tray) and
+keeps `dark` for a single summary band; the remaining records use `detail`.
+
+Owner-office rooms ([OfficeDesk](../src/ui/OfficeDesk.tsx)) show their facility artwork with
+only the room's name and pending count on it. Figures (`stat-tile`, one row of four on every
+width), actions and the tray sit outside the artwork so it is never covered (→WEB-39).
+
+Spend colour on meaning, not decoration. A change reads by sign: a rise in `--danger` red, a fall
+in `--cool` blue (`+3`, `-3`). Closing and comparing controls stay plain buttons; the primary
+colour marks the one main action. A detail that already fills its dialog needs no plate of its
+own: drop the outer card and keep its grouped facts on light `detail` cards. Labels such as
+이적료 or 성향 리포트 stay small but bold; the values they name are larger and heavier.
+[PlayerCompare](../src/ui/PlayerCompare.tsx) sets two players side by side on every width, the
+better value marked by weight.
+
+On phones every [Dialog](../src/ui/Dialog.tsx) opens as a bottom sheet with a grab handle and the
+dimmed page visible above it; `picker` is the only centered exception, kept for the small theme
+and language pickers (→WEB-106).
+
 ### States and component coverage
 
 | Component             | Resource responsibilities                                                     | Cases to compare                                                                                       |
@@ -177,6 +204,20 @@ the transport's foreground discards the resource or makes dark-theme field value
 
 Dropdown focus rings follow `:focus-visible`. Opening a list with a pointer does not force a
 focus ring; keyboard navigation retains its visible focus cue alongside the existing artwork.
+
+Dropdowns use separate trigger, popup and selected-row plates; an input's inset frame is too
+heavy around a floating list. Render each authored centre with nine-slice fill and keep live
+labels, chevrons and checks outside the bitmap. Use the shared Select typography tokens rather
+than inheriting a nearby heading's size or weight. The working compact treatment uses a 36px
+desktop trigger, 44px closed-control touch targets, compact 32px desktop/36px mobile option rows,
+and no extra margins between options; hinted options grow naturally. Border and padding share
+one 6px popup inset per side. Long lists scroll within their 280px limit. See the [dropdown resource family](dropdown-v1/README.md)
+for sources, exact prompts, geometry and theme-specific colours.
+
+Product screens reuse that Select treatment for settings, season/history scopes, competition
+filters, tactics, analysis, recruitment and transport pace. Screen styles may set its width,
+flex behavior and placement, but do not replace its resource frame, typography or height with
+local field rules. There are no separate unframed season or presentation-choice skins.
 
 A control that becomes unavailable only briefly while it may hold keyboard focus, such as the
 goal-scene replay shortcut and its picker's goals during a goal's hold, uses `aria-disabled`

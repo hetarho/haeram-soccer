@@ -27,7 +27,6 @@
 .seasonPicker .seasonSelect.seasonSelect {
   flex: 0 1 200px;
   min-width: 0;
-  font-weight: 700;
 }
 .seasonSelect > span:first-child {
   flex: 1;

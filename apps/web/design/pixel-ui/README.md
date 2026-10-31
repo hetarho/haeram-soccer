@@ -3,8 +3,8 @@
 The active page refresh adds a native integer-grid controller tile and bronze/silver/gold/platinum/ruby rating frames. See [current sources and regeneration](../page-refresh-v1/README.md). Run that recipe after the baseline recipes below to retain the current registered resources.
 
 `source.mjs` is the editable native source for the refreshed night-broadcast interface. It uses
-flat charcoal/grass materials, stepped fixed corners and the existing semantic pixel glyph paths.
-The small boot, manager, shirt, supporters and heart glyphs extend that same integer grid.
+flat charcoal/grass materials and stepped fixed corners. `icons.mjs` owns the semantic glyphs
+and the small boot, manager, shirt, supporters and heart glyphs on a shared 24px integer grid.
 The wordmark and low terrace vignette are authored on the grid too; no generated smooth art is
 substituted for this established pixel family. Existing facility scenes and bitmap fonts are retained.
 
@@ -16,6 +16,12 @@ This preparation requires project dependencies and Playwright Chromium. `--check
 checksums using Node alone. Shared resource authorship/encoding lives in
 `scripts/ui-art-resources.mjs`; the selected pixel stylesheet supplies dimensions and nearest-neighbor
 rendering while leaving the live pitch alone.
+
+Working icon refinement, 2026-10-30: glyphs use a 24px grid instead of 16px, with smaller
+stair steps, finer two-pixel rules and more room for windows, handles and clothing details.
+Displayed sizes and the filled pixel-art style are retained. The preparation script synchronizes
+semantic SVG paths in the theme pack and the shell's PNG masks from the same editable source;
+increasing PNG resolution alone does not add detail to the underlying silhouette.
 
 Keep review galleries, profiles and one-off capture scripts under ignored `.tmp/`; record outcomes
 in the task and remove those disposable files. Follow the

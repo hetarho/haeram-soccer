@@ -12,24 +12,29 @@ const OFFICE_PATH = /^\/(direction|business)(\/|$)/;
 /**
  * Read the active route and its rendered office context together. A request can return home
  * between separate locator reads; a departing office heading must never become a return target.
- * A reload on an office route still waits for its real heading to mount.
+ * A reload on an office route still waits for its real heading to mount, as long as a career
+ * import may take to open (→ importResponsibilityCareer).
  */
 async function officeContext(page: Page) {
   const current: { value?: { area: string; libraryOpen: boolean } | null } = {};
   await expect
-    .poll(async () => {
-      current.value = await officeTitle(page).evaluateAll((headings, officePath) => {
-        if (!new RegExp(officePath).test(location.pathname)) return null;
-        const area = headings[0]?.textContent?.trim();
-        if (!area) return undefined;
-        return {
-          area,
-          libraryOpen:
-            document.querySelector('[data-testid="office-library"]')?.hasAttribute('open') ?? false,
-        };
-      }, OFFICE_PATH.source);
-      return current.value !== undefined;
-    })
+    .poll(
+      async () => {
+        current.value = await officeTitle(page).evaluateAll((headings, officePath) => {
+          if (!new RegExp(officePath).test(location.pathname)) return null;
+          const area = headings[0]?.textContent?.trim();
+          if (!area) return undefined;
+          return {
+            area,
+            libraryOpen:
+              document.querySelector('[data-testid="office-library"]')?.hasAttribute('open') ??
+              false,
+          };
+        }, OFFICE_PATH.source);
+        return current.value !== undefined;
+      },
+      { timeout: 15000 },
+    )
     .toBe(true);
   return current.value ?? null;
 }
@@ -45,8 +50,14 @@ async function dismissCelebration(page: Page) {
   if (await banner.isVisible()) await banner.click({ timeout: 2000 }).catch(() => undefined);
 }
 
+/** The office scene's 들어가기 on the clubhouse home, the office's only entrance (→WEB-11). */
+export const officeEntrance = (page: Page) =>
+  page
+    .getByRole('region', { name: LOBBY, exact: true })
+    .getByRole('button', { name: '들어가기', exact: true });
+
 /**
- * Enters the owner office through primary navigation (→WEB-10/39). Dismiss an observation
+ * Enters the owner office through the clubhouse office scene (→WEB-11/39). Dismiss an observation
  * dialog before navigating; dismissing never resolves its work. A no-op inside the office.
  */
 export async function enterOffice(page: Page, options: { timeout?: number } = {}) {
@@ -68,11 +79,7 @@ export async function enterOffice(page: Page, options: { timeout?: number } = {}
   if (await covering.isVisible())
     await covering.getByRole('button', { name: '창 닫기', exact: true }).click();
   await dismissFeedback(page);
-  const entrance = page
-    .getByRole('navigation')
-    .getByRole('button', { name: '구단주 사무실', exact: true })
-    .filter({ visible: true })
-    .first();
+  const entrance = officeEntrance(page);
   await entrance.evaluate((element) => element.scrollIntoView({ block: 'start' }));
   for (let attempt = 0; ; attempt++) {
     try {

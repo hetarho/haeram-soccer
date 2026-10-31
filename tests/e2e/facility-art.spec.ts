@@ -1,4 +1,5 @@
 import { openPersonnel } from './personnel-navigation';
+import { openClubhouse } from './competition-navigation';
 import { expect, test, type Page } from '@playwright/test';
 import { checkpoint } from '../../apps/web/src/adapters/persistence';
 import { currency } from '../../packages/catalogs/src/index';
@@ -6,7 +7,7 @@ import { advanceDays, createWorld, operate, prepareSeason } from '../../packages
 import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
 import { acknowledgeEvents } from './events';
-import { expectHomeBounds, expectHomeSceneRatio, settle } from './layout';
+import { expectHomeBounds, settle } from './layout';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { createThemeResolver } from '../../apps/web/src/presentation/theme';
 import {
@@ -127,6 +128,8 @@ for (const scenario of [
   test(`loads only current ${scenario.era} facility scenes at ${scenario.width}px`, async ({
     page,
   }) => {
+    // Every room opens through the office lobby's doors (→WEB-39): eight visits from home.
+    test.slow();
     const requested = new Set<string>();
     page.on('request', (request) => {
       const pathname = new URL(request.url()).pathname;
@@ -140,17 +143,13 @@ for (const scenario of [
       page,
       artWorld(scenario.year, scenario.stadium, scenario.training, scenario.academy),
     );
-    await expectArt(page, 'stadium', scenario.era, scenario.stadium);
-    const panorama = await expectHomeSceneRatio(page);
-    await page.setViewportSize({ width: scenario.width, height: scenario.height + 160 });
-    const taller = await expectHomeSceneRatio(page);
-    expect(taller.height).toBeCloseTo(panorama.height, 2);
-    await page.setViewportSize({ width: scenario.width, height: scenario.height });
+    // Home shows the office scene; the stadium has no home artwork (→WEB-11).
+    await expectArt(page, 'manager', scenario.era, 0);
     await expectHomeBounds(page);
     await page.getByRole('button', { name: '상세 리포트', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
     await expect(dialog).toBeVisible();
-    await dialog.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
+    await dialog.getByRole('button', { name: '확인하고 홈으로', exact: true }).click();
     await expect(dialog).toHaveCount(0);
     await openPersonnel(page, 'players');
     const people = page.getByRole('tabpanel');
@@ -203,7 +202,7 @@ for (const scenario of [
     await openPersonnel(page, 'training');
     await expectArt(page, 'training', scenario.era, scenario.training);
     expect([...requested].sort()).toEqual(
-      (['stadium', 'locker', 'training', 'academy', 'manager', 'staff'] as const)
+      (['locker', 'training', 'academy', 'manager', 'staff'] as const)
         .map(
           (kind) =>
             defaultTheme.facility({
@@ -257,7 +256,7 @@ test('updates era, training and academy scenes only on actual completion, retain
   expect(w.facilityWorks?.academy?.to).toBe(1);
   for (const item of w.inbox || []) item.read = true;
   await load(page, w);
-  await expectArt(page, 'stadium', 'heritage', 0);
+  await expectArt(page, 'manager', 'heritage', 0);
   await openPersonnel(page, 'training');
   await expectArt(page, 'training', 'heritage', 0);
   await openPersonnel(page, 'academy');
@@ -273,11 +272,11 @@ test('updates era, training and academy scenes only on actual completion, retain
   await openPersonnel(page, 'academy');
   await expectArt(page, 'academy', 'terraces', 1);
   await expect(page.getByTestId('facility-overview')).toContainText('1단계 유소년 시설');
-  await page.getByRole('button', { name: '클럽하우스', exact: true }).click();
-  await expectArt(page, 'stadium', 'terraces', 0);
+  await openClubhouse(page);
+  await expectArt(page, 'manager', 'terraces', 0);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
-  await expectArt(page, 'stadium', 'terraces', 0);
+  await expectArt(page, 'manager', 'terraces', 0);
   await openPersonnel(page, 'training');
   await expectArt(page, 'training', 'terraces', 1);
   await openPersonnel(page, 'academy');

@@ -452,6 +452,52 @@ html[data-theme] {
     color: var(--image-muted);
   }
 
+  [data-office-area]:hover:not(:disabled) {
+    background-color: var(--image-selected-row);
+    background-blend-mode: soft-light;
+  }
+
+  /* Each desk door carries its room's icon art; the crest stands for the design desk. */
+  [data-desk-icon]:not([data-desk-icon='identity']) {
+    background: var(--image-icon) center / contain no-repeat;
+  }
+  [data-desk-icon]:not([data-desk-icon='identity']) > * {
+    visibility: hidden;
+  }
+  [data-desk-icon='players'] {
+    --image-icon: var(--image-art-icon-shirt);
+  }
+  [data-desk-icon='staff'] {
+    --image-icon: var(--image-art-icon-manager);
+  }
+  [data-desk-icon='investment'] {
+    --image-icon: var(--image-art-icon-office);
+  }
+  [data-desk-icon='sponsor'] {
+    --image-icon: var(--image-art-icon-supporters);
+  }
+
+  /* An office room's scene wears the clubhouse office's dark frame; its figures sit on tiles. */
+  [data-office-part='scene'] {
+    border: 0;
+    border-radius: var(--image-panel-radius, var(--image-radius, 0px));
+    background: var(--image-dark-fill, var(--image-ink-color));
+  }
+
+  [data-ui='stat-tile'] {
+    border: 1px solid transparent;
+    border-image: var(--image-tile-frame)
+      var(--image-art-frame-tile-slice, var(--image-frame-slice, 52)) / 4px stretch;
+    border-radius: var(--image-panel-radius, var(--image-radius, 0px));
+    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+    background-size: var(--image-material-size, 384px);
+    color: var(--image-ink-color);
+  }
+
+  [data-ui='stat-tile'] :is(dt, small) {
+    color: var(--image-muted);
+  }
+
   [data-home-part='fixture'] h2 {
     font-size: 18px;
     line-height: 1.4;
@@ -519,7 +565,6 @@ html[data-theme] {
     background-size: 220px;
   }
 
-  [data-home-part='stage'],
   [data-home-part='season-card'] {
     isolation: isolate;
   }
@@ -541,50 +586,6 @@ html[data-theme] {
 
   [data-home-part='season-card'] [data-home-part='season-meter'] :is(span, b) {
     color: var(--image-on-dark);
-  }
-
-  [data-home-part='scene'] {
-    min-height: 0;
-    margin: 0;
-    border: 0;
-    border-radius: var(--image-panel-radius, var(--image-radius, 0px));
-    background: var(--image-dark-fill, var(--image-ink-color));
-  }
-
-  [data-home-part='scene-caption'] {
-    inset: 12px 14px auto;
-    padding: 0;
-    gap: 8px;
-    background: none;
-  }
-
-  [data-home-part='scene-caption'] > span,
-  [data-home-part='scene-caption'] > b,
-  [data-home-part='stage-label'] {
-    min-height: 0;
-    padding: 0;
-    border: 0;
-    border-image: none;
-    background: none;
-    color: #fff;
-    font-size: 12px;
-    line-height: 1.5;
-    text-shadow: 0 1px 3px #000;
-  }
-
-  [data-home-part='scene-caption'] > b {
-    margin: 0 auto;
-    font-weight: 700;
-  }
-
-  [data-home-part='scene-caption'] i {
-    color: #fff;
-  }
-
-  [data-home-part='stage-label'] {
-    right: 14px;
-    bottom: 12px;
-    letter-spacing: 0;
   }
 
   :is([data-home-part='season-stats'], [data-home-part='cup-summary']) {
@@ -894,13 +895,10 @@ html[data-theme] {
   }
 
   [data-ui='season-transport'] [data-select-trigger][role='combobox'] {
-    height: 44px;
+    --select-face-inset: 0px;
     min-height: 44px;
+    height: 44px;
     min-width: 78px;
-    padding-inline: 6px;
-    padding-block: 1px;
-    gap: 4px;
-    font-size: 12px;
   }
 
   [data-ui='season-transport'] > i {
@@ -1121,20 +1119,6 @@ html[data-theme] {
     }
     [data-home-part='season-card'] [data-home-part='season-meter'] {
       padding: 0 12px 12px;
-    }
-    [data-home-part='scene-caption'] {
-      inset: 12px;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-    [data-home-part='scene-caption'] > b {
-      flex: 0 0 100%;
-      order: -1;
-      margin: 0;
-    }
-    [data-home-part='stage-label'] {
-      bottom: 12px;
-      right: 12px;
     }
     :is([data-home-part='season-stats'], [data-home-part='cup-summary']) {
       margin: 0;

@@ -146,7 +146,8 @@ describe('identity workload is deterministic', () => {
       new Set(cycle.map(({ crest }) => `${crest.shape}/${crest.pattern}/${crest.emblem}`)),
     ).toEqual(new Set(CREST_PRESETS.map((p) => `${p.shape}/${p.pattern}/${p.emblem}`)));
     expect(cycle.slice(0, 3).map((design) => design.colours.length)).toEqual([1, 2, 3]);
-    expect(canonical(designs[24])).toBe(canonical(designs[0]));
+    // 24 palette colours, 14 patterns, 6 compositions and 3 colour counts meet again at 168.
+    expect(canonical(seasonIdentity(168))).toBe(canonical(designs[0]));
   });
 
   it('leaves equal worlds and evidence for equal careers', () => {

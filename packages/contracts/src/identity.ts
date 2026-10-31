@@ -66,7 +66,7 @@ export const CREST_EMBLEMS = [
   'clover',
   'horseshoe',
 ] as const;
-/** KIT-5: the eight shirt patterns — a vocabulary of their own, not the crest field patterns. */
+/** KIT-5: the shirt patterns — a vocabulary of their own, not the crest field patterns. */
 export const SHIRT_PATTERNS = [
   'plain',
   'stripes',
@@ -76,7 +76,15 @@ export const SHIRT_PATTERNS = [
   'sash',
   'checks',
   'chevron',
+  'pinstripes',
+  'quarters',
+  'centre',
+  'panels',
+  'yoke',
+  'diagonal',
 ] as const;
+/** The designers the owner can commission, cheapest first; a dearer one delivers more drafts. */
+export const DESIGN_STUDIOS = ['local', 'studio', 'star'] as const;
 export const KIT_ROLES = ['home', 'away', 'third'] as const;
 export const KIT_WARNINGS = ['teams', 'grass', 'goalkeepers'] as const;
 
@@ -86,6 +94,7 @@ export type CrestEmblem = (typeof CREST_EMBLEMS)[number];
 export type ShirtPattern = (typeof SHIRT_PATTERNS)[number];
 export type KitRole = (typeof KIT_ROLES)[number];
 export type KitWarning = (typeof KIT_WARNINGS)[number];
+export type DesignStudio = (typeof DESIGN_STUDIOS)[number];
 
 /** One to three representative colours, each `#RRGGBB` in its stored spelling. */
 export type IdentityColours = [string] | [string, string] | [string, string, string];
@@ -142,6 +151,12 @@ export interface ClubIdentity {
   kits: Record<KitRole, ShirtDesign>;
   parts?: Partial<Record<KitRole, KitParts>>;
   goalkeeper?: GoalkeeperKit;
+}
+/** The drafts a commissioned designer delivered in the owner's colours, until one is adopted. */
+export interface DesignCommission {
+  studio: DesignStudio;
+  colours: IdentityColours;
+  drafts: ClubIdentity[];
 }
 /** KIT-7: the owner's shirt for exactly one named unplayed own fixture. */
 export interface FixtureKitChoice {

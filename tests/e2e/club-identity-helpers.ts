@@ -1,4 +1,4 @@
-import { openClubRecords } from './competition-navigation';
+import { openClubhouse, openClubRecords } from './competition-navigation';
 import { expect, type Locator, type Page, type TestInfo } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode } from '../../apps/web/src/adapters/persistence';
@@ -6,15 +6,17 @@ import { SHIRT_PATTERN_LABELS } from '../../apps/web/src/ui/kitPainting';
 import {
   KIT_ROLES,
   type ClubIdentity,
+  type DesignStudio,
   type KitRole,
   type KitParts,
   type GoalkeeperKit,
 } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
+import { DESIGNERS } from '../../packages/engine/src/design-fees';
 import type { CanvasImage } from '../fixtures/figure-evidence';
 import { continueSlot } from './slots';
 import { watchNext } from './watch';
-import { configureResponsibilities } from './events';
+import { configureResponsibilities, proposeOnReport } from './events';
 import { aroundOffice, openOfficeArea, outsideOffice } from './office';
 
 /**
@@ -235,17 +237,25 @@ export const failWrites = (page: Page, on: boolean) =>
   );
 
 interface IdentityProbe {
-  sent: number;
+  sent: Record<string, number>;
   stale: number;
 }
 type ProbeWindow = typeof window & { identityProbe: IdentityProbe };
 /**
- * Counts the club-identity commands the page sends its engine worker; `refuseNextApply` makes the
- * next one carry an outdated world revision, which the host refuses before any effect (→SAVE-6).
+ * Counts the club-identity and design-commission commands the page sends its engine worker, by
+ * type; `refuseNextDesignCommand` makes the next one carry an outdated world revision, which the
+ * host refuses before any effect (→SAVE-6).
  */
 export async function watchIdentityCommands(page: Page) {
   await page.addInitScript(() => {
-    const probe = { sent: 0, stale: 0 };
+    const watched = [
+      'club-identity',
+      'design-commission',
+      'adopt-design',
+      'discard-designs',
+      'redraw-designs',
+    ];
+    const probe: IdentityProbe = { sent: {}, stale: 0 };
     (window as ProbeWindow).identityProbe = probe;
     const post = Worker.prototype.postMessage;
     Worker.prototype.postMessage = function (
@@ -257,20 +267,22 @@ export async function watchIdentityCommands(page: Page) {
         expectedRevision?: number;
         body?: { type?: string; command?: { type?: string } };
       } | null;
-      if (request?.body?.type === 'command' && request.body.command?.type === 'club-identity') {
-        probe.sent++;
+      const type = request?.body?.type === 'command' ? request.body.command?.type : undefined;
+      if (type && watched.includes(type)) {
+        probe.sent[type] = (probe.sent[type] ?? 0) + 1;
         if (probe.stale > 0) {
           probe.stale--;
-          message = { ...request, expectedRevision: (request.expectedRevision ?? 0) - 1 };
+          message = { ...request, expectedRevision: (request!.expectedRevision ?? 0) - 1 };
         }
       }
       Reflect.apply(post, this, transfer === undefined ? [message] : [message, transfer]);
     } as typeof post;
   });
 }
+/** The watched commands sent so far, by type. */
 export const identityCommands = (page: Page) =>
   page.evaluate(() => (window as ProbeWindow).identityProbe.sent);
-export const refuseNextApply = (page: Page) =>
+export const refuseNextDesignCommand = (page: Page) =>
   page.evaluate(() => {
     (window as ProbeWindow).identityProbe.stale = 1;
   });
@@ -383,26 +395,92 @@ export async function designInEditor(editor: Locator, design: ClubIdentity, pres
   if (design.goalkeeper) await editGoalkeeper(editor, design.goalkeeper);
 }
 
-/** 구단주 사무실 › 구단 디자인 from home, once its lazily loaded editor is there (→WEB-39). */
+/** 구단주 사무실 › 구단 디자인: the applied design, or the drafts a commission delivered. */
+export const designView = (page: Page) =>
+  page.getByRole('region', { name: '구단 디자인', exact: true });
+export const appliedPanel = (view: Locator) =>
+  view.getByRole('heading', { name: '지금 디자인', exact: true });
+export const draftsPanel = (view: Locator) =>
+  view.getByRole('heading', { name: '받은 시안', exact: true });
+/** 구단주 사무실 › 구단 디자인 from home, once its lazily loaded area is there (→WEB-39/108). */
 export async function openDesign(page: Page) {
   await openOfficeArea(page, '구단 디자인');
   await expect(page).toHaveURL(/\/direction\?view=identity$/);
-  const view = page.getByRole('region', { name: '구단 디자인', exact: true });
-  await expect(view.getByRole('group', { name: '색상', exact: true })).toBeVisible();
+  const view = designView(page);
+  await expect(appliedPanel(view).or(draftsPanel(view))).toBeVisible();
   return view;
 }
-export const designBar = (view: Locator) =>
-  view.getByRole('group', { name: '구단 디자인 적용', exact: true });
-export const designStatus = (view: Locator) => designBar(view).getByRole('status');
-export const applyButton = (view: Locator) =>
-  designBar(view).getByRole('button', { name: '적용', exact: true });
-/** 적용 that succeeds, with its outcome card read (→WEB-36). */
-export async function applyDesign(page: Page, view: Locator) {
-  await applyButton(view).click();
-  await expect(designStatus(view)).toHaveText('적용된 디자인');
-  const outcome = page.getByTestId('action-outcome');
-  await expect(outcome).toContainText('구단 디자인을 적용했어요');
-  await outcome.getByRole('button', { name: /^(확인|알림 닫기)$/ }).click();
+export const requestButton = (view: Locator) =>
+  view.getByRole('button', { name: '변경 의뢰', exact: true });
+export const DESIGNER_LABEL: Record<DesignStudio, string> = {
+  local: '동네 디자이너',
+  studio: '디자인 스튜디오',
+  star: '유명 디자이너',
+};
+/** The colours of a commission: the main, then 보조 and 포인트, each `null` or left out for 없음. */
+export type CommissionColours = readonly [string, (string | null)?, (string | null)?];
+const COLOUR_STEPS = ['메인', '보조', '포인트'] as const;
+export const paletteOf = (view: Locator, step: (typeof COLOUR_STEPS)[number]) =>
+  view.getByRole('group', { name: `${step} 색`, exact: true });
+/**
+ * 변경 의뢰 up to the designer step: the main colour, then 보조 and 포인트 or 없음, where 보조 없음
+ * leaves no 포인트 to choose (→WEB-108). Nothing is sent yet.
+ */
+export async function chooseColours(view: Locator, colours: CommissionColours) {
+  await requestButton(view).click();
+  for (const [index, step] of COLOUR_STEPS.entries()) {
+    if (index === 2 && !colours[1]) break;
+    await paletteOf(view, step)
+      .getByRole('button', { name: colours[index] ?? '없음', exact: true })
+      .click();
+    await view.getByRole('button', { name: '다음', exact: true }).click();
+  }
+  await expect(view.getByRole('heading', { name: '디자이너', exact: true })).toBeVisible();
+}
+/** Picks the designer and answers 예; the drafts arrive at once. */
+export async function confirmCommission(view: Locator, studio: DesignStudio = 'studio') {
+  await view
+    .getByRole('group', { name: '디자이너', exact: true })
+    .getByRole('button', { name: DESIGNER_LABEL[studio], exact: true })
+    .click();
+  await view.getByRole('button', { name: '예', exact: true }).click();
+  await expect(draftsPanel(view)).toBeVisible();
+  await expect(draftItems(view)).toHaveCount(DESIGNERS[studio].drafts);
+}
+/**
+ * A whole commission (→WEB-108) and the drafts it delivered, read back from the committed save:
+ * their contents are the designer's, generated from the world's seed and revision.
+ */
+export async function commission(
+  page: Page,
+  view: Locator,
+  colours: CommissionColours,
+  studio: DesignStudio = 'studio',
+) {
+  const revision = (await savedWorld(page)).revision;
+  await chooseColours(view, colours);
+  await confirmCommission(view, studio);
+  return committedCommission(page, revision);
+}
+/** The commission the save holds once a revision after `revision` is committed. */
+export async function committedCommission(page: Page, revision: number) {
+  await expect.poll(async () => (await savedWorld(page)).revision).toBeGreaterThan(revision);
+  return (await savedWorld(page)).designCommission!;
+}
+/** The delivered drafts, in their order, each with its 이 시안으로 결정. */
+export const draftItems = (view: Locator) =>
+  view
+    .getByRole('listitem')
+    .filter({ has: view.page().getByRole('button', { name: '이 시안으로 결정', exact: true }) });
+export const adoptButton = (view: Locator, draft: number) =>
+  draftItems(view).nth(draft).getByRole('button', { name: '이 시안으로 결정', exact: true });
+export const discardButton = (view: Locator) =>
+  view.getByRole('button', { name: '전부 버리기', exact: true });
+export const redrawButton = (view: Locator) => view.getByRole('button', { name: /^재설정 · 반값/ });
+/** 이 시안으로 결정: the draft becomes the club's design and the view returns to it (→KIT-12). */
+export async function adoptDraft(view: Locator, draft: number) {
+  await adoptButton(view, draft).click();
+  await expect(appliedPanel(view)).toBeVisible();
 }
 
 export const hubPreparation = (page: Page) =>
@@ -412,15 +490,13 @@ export async function openKit(page: Page, opener?: Locator) {
   // Home's preparation is outside the office, back home from wherever it was entered.
   if (!opener) {
     await outsideOffice(page);
-    if (!(await page.getByTestId('club-hub').isVisible()))
-      await page
-        .getByRole('navigation')
-        .getByRole('button', { name: '클럽하우스', exact: true })
-        .first()
-        .click();
+    if (!(await page.getByTestId('club-hub').isVisible())) await openClubhouse(page);
   }
   await (opener ?? hubPreparation(page)).click();
   const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
+  // The report reads first; the owner's proposal, with its shirt choice, opens by 의견 전달.
+  await expect(dialog).toBeVisible();
+  await proposeOnReport(dialog);
   const kit = dialog.getByTestId('fixture-kit');
   await kit.getByTestId('fixture-kit-summary').click();
   await expect(

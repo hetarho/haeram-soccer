@@ -355,7 +355,26 @@
       "result-loss-badge-frame": "var(--image-art-frame-ticket)",
       "result-loss-badge-slice": "var(--image-art-frame-ticket-slice)",
       "result-loss-badge-fill": "var(--surface)",
-      "result-loss-badge-text": "var(--danger)"
+      "result-loss-badge-text": "var(--danger)",
+      "select-trigger-frame-width": "6px",
+      "select-popup-frame": "var(--image-art-control-dropdown)",
+      "select-popup-frame-slice": "var(--image-art-control-dropdown-slice)",
+      "select-popup-frame-width": "6px",
+      "select-selection-frame": "var(--image-art-frame-stamp)",
+      "select-selection-frame-slice": "var(--image-art-frame-stamp-slice)",
+      "select-selection-frame-width": "4px",
+      "select-popup-fill": "#243e30",
+      "select-selection-fill": "#afbf9a",
+      "select-selection-text": "#183522",
+      "select-selection-muted": "#183522",
+      "select-font-family": "var(--body)",
+      "select-font-size": "13px",
+      "select-hint-size": "12px",
+      "select-trigger-height": "36px",
+      "select-option-height": "32px",
+      "select-popup-max-height": "280px",
+      "select-popup-min-width": "176px",
+      "select-chevron-size": "10px"
     }
   },
   "fonts": [
@@ -853,6 +872,27 @@
         "width": 64,
         "height": 82,
         "mode": "image"
+      },
+      "image-art-dropdown-trigger": {
+        "resource": "../../art/standard/dropdown-v1/frame-trigger.webp",
+        "width": 192,
+        "height": 64,
+        "mode": "nine-slice",
+        "slice": 22
+      },
+      "image-art-dropdown-popup": {
+        "resource": "../../art/standard/dropdown-v1/frame-popup.webp",
+        "width": 192,
+        "height": 64,
+        "mode": "nine-slice",
+        "slice": 22
+      },
+      "image-art-dropdown-selection": {
+        "resource": "../../art/standard/dropdown-v1/frame-selection.webp",
+        "width": 192,
+        "height": 64,
+        "mode": "nine-slice",
+        "slice": 22
       }
     }
   },

@@ -1,6 +1,6 @@
 import { openPersonnel } from './personnel-navigation';
-import { openClubRecords, openCups, openLeague } from './competition-navigation';
-import { openOfficeLibrary } from './office';
+import { clubhouseTab, openClubRecords, openCups, openLeague } from './competition-navigation';
+import { enterOffice, openOfficeLibrary } from './office';
 import { gameHud } from './layout';
 import { marketRows, marketFilters, marketInfo, closeMarketPanel } from './market';
 import { advanceOneRound } from './season-progression';
@@ -20,7 +20,11 @@ async function found(page: Page) {
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
-const nav = (page: Page) => page.getByRole('navigation', { name: '모바일 게임 메뉴' });
+/** A room names itself in its bar while the clubhouse entry stays current (→WEB-10/39). */
+async function expectRoom(page: Page, room: string) {
+  await expect(officeTitle(page)).toHaveText(room);
+  await expect(clubhouseTab(page)).toHaveAttribute('aria-current', 'page');
+}
 /** 구단주 사무실 › 업무 기준, entered from home (→WEB-39). */
 async function openOperations(page: Page) {
   await openOfficeLibrary(page);
@@ -29,8 +33,7 @@ async function openOperations(page: Page) {
 
 test('contextual-sheet-restores-candidate', async ({ page }) => {
   await found(page);
-  await openPersonnel(page, 'players');
-  await page.getByRole('tab', { name: '이적시장', exact: true }).click();
+  await openPersonnel(page, 'market');
   const filter = await marketFilters(page);
   const roles = filter.getByRole('group', { name: '영입 포지션 선택' });
   await roles.getByRole('button', { name: 'GK', exact: true }).click();
@@ -96,8 +99,7 @@ test('department-sheet-preserves-other-drafts', async ({ page }) => {
   await finance.getByRole('radio', { name: '재정 기조 신중', exact: true }).click();
   await expect(page.getByTestId('strategy-draft')).toBeVisible();
   await leaveOffice(page);
-  await openPersonnel(page, 'players');
-  await page.getByRole('tab', { name: '이적시장', exact: true }).click();
+  await openPersonnel(page, 'market');
   await marketInfo(page);
   await page.getByRole('button', { name: /^영입 기조/ }).click();
   const sheet = page.getByRole('dialog', { name: '영입 업무 기준', exact: true });
@@ -140,9 +142,7 @@ test('retains an unapplied academy investment through a detour and discards it e
     .getByRole('button', { name: '창 닫기', exact: true })
     .click();
   await expect(page.getByRole('dialog', { name: '유소년 업무 기준', exact: true })).toHaveCount(0);
-  await expect(
-    nav(page).getByRole('button', { name: '유소년 훈련장', exact: true }),
-  ).toHaveAttribute('aria-current', 'page');
+  await expectRoom(page, '유소년 훈련장');
   await openOperations(page);
   const draft = page.getByTestId('strategy-board').getByTestId('strategy-draft');
   await expect(draft).toContainText('유소년 투자 기본 운영 → 육성 강화');
@@ -209,7 +209,9 @@ for (const viewport of [
     const staff = page.getByRole('dialog', { name: '수석코치 선임', exact: true });
     await expect(staff).toBeVisible();
     await staff.getByRole('button', { name: '창 닫기', exact: true }).click();
-    await page.getByRole('button', { name: '← 돌아가기 · 훈련장', exact: true }).click();
+    // The coach's post opens in the coaching room; the training room is entered again by its door.
+    await expectRoom(page, '코칭스태프실');
+    await openPersonnel(page, 'training');
     await expect(page.getByTestId('training-focus')).toBeVisible();
   });
 
@@ -232,7 +234,9 @@ test('a player profile leads to that player training and keeps the squad search'
   const sheet = page.getByRole('dialog', { name: `${name} 개별 훈련`, exact: true });
   await expect(sheet).toBeVisible();
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await page.getByRole('button', { name: '← 돌아가기 · 선수 목록', exact: true }).click();
+  // The sheet opens in the training room; the squad, entered again, keeps its search (→WEB-74).
+  await expectRoom(page, '훈련장');
+  await openPersonnel(page, 'players');
   await expect(page.getByRole('textbox', { name: '선수 찾기' })).toHaveValue(name);
 });
 
@@ -240,8 +244,7 @@ test('recruitment needs open on demand and academy operations open their exact w
   page,
 }) => {
   await found(page);
-  await openPersonnel(page, 'players');
-  await page.getByRole('tab', { name: '이적시장', exact: true }).click();
+  await openPersonnel(page, 'market');
   await expect(marketRows(page).first()).toBeVisible();
   const needs = page.getByRole('region', { name: '감독 영입 요청', exact: true });
   await expect(needs).toHaveCount(0);
@@ -252,12 +255,8 @@ test('recruitment needs open on demand and academy operations open their exact w
   await openPersonnel(page, 'academy');
   await page.getByRole('button', { name: /유소년 시설 .*공사 보기/ }).click();
   await expect(page.getByTestId('facility-academy')).toBeVisible();
-  // The office opened on 시설; leaving it returns to the academy that asked (→WEB-39/74).
+  // The office opens on 재정·투자, the academy facility's desk (→WEB-39).
   await expect(officeTitle(page)).toHaveText('재정·투자');
-  await leaveOffice(page);
-  await expect(
-    nav(page).getByRole('button', { name: '유소년 훈련장', exact: true }),
-  ).toHaveAttribute('aria-current', 'page');
 });
 
 test('opens club seasons in records and retains the detail scope through league and cup visits', async ({
@@ -279,12 +278,8 @@ test('opens club seasons in records and retains the detail scope through league 
     'aria-selected',
     'true',
   );
-  // The current season's league and cup carry the named return in their compact header (→WEB-40).
-  const returnToSeason = page.getByRole('button', {
-    name: '돌아가기 · 클럽 시즌 기록',
-    exact: true,
-  });
-  await returnToSeason.click();
+  // Records entered again keep the season with its view and scope (→WEB-74).
+  await openClubRecords(page);
   await expect(page.getByRole('combobox', { name: '기록 대회 범위', exact: true })).toHaveAttribute(
     'data-value',
     'cup',
@@ -300,16 +295,18 @@ test('opens club seasons in records and retains the detail scope through league 
     'cup',
   );
   await expect(page.getByRole('region', { name: '잉글랜드 컵', exact: true })).toBeVisible();
-  await returnToSeason.click();
+  await openClubRecords(page);
   await expect(page).toHaveURL(/season=1950.*part=matches.*competition=cup/);
-  await page.getByRole('button', { name: '← 시즌별 기록', exact: true }).click();
+  // The season opens under the records' tabs; 시즌별 기록 leads back to the list (→WEB-54).
+  const seasons = page.getByRole('tab', { name: '시즌별 기록', exact: true });
+  await seasons.click();
   await expect(list).toBeVisible();
   await expect(page).toHaveURL(/\/history\?section=club$/);
   // Explicit undefined must clear a deep-linked initial year as well as an in-session pick.
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.goto('/history?season=1950');
   await expect(page.getByRole('combobox', { name: '기록 시즌', exact: true })).toBeVisible();
-  await page.getByRole('button', { name: '← 시즌별 기록', exact: true }).click();
+  await seasons.click();
   await expect(list).toBeVisible();
   await expect(page).toHaveURL(/\/history\?section=club$/);
 });
@@ -353,7 +350,9 @@ test('keeps the home briefing informational alongside the public clock and links
   const hub = page.getByTestId('club-hub');
   await expect(hub.getByRole('button', { name: '시즌 진행 도구', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
-  await hub.getByRole('button', { name: '클럽 소식·시즌 브리핑', exact: true }).click();
+  // The club journal stands in the owner office lobby (→WEB-39).
+  await enterOffice(page);
+  await page.getByRole('button', { name: '클럽 소식·시즌 브리핑', exact: true }).click();
   const briefing = page.getByRole('dialog', { name: '시즌 상세와 클럽 소식' });
   await expect(briefing.getByRole('button', { name: '한 라운드 진행', exact: true })).toHaveCount(
     0,
@@ -364,7 +363,7 @@ test('keeps the home briefing informational alongside the public clock and links
   await briefing.getByRole('button', { name: '이번 시즌 구단 기록 →', exact: true }).click();
   await expect(briefing).toHaveCount(0);
   await expect(page).toHaveURL(/\/history\?section=club&season=1950/);
-  await nav(page).getByRole('button', { name: '클럽하우스', exact: true }).click();
+  await clubhouseTab(page).click();
   await advanceOneRound(page);
   await expect(page.getByTestId('game-round')).toHaveText('1');
 });
@@ -413,7 +412,8 @@ test('chooses a cup once and keeps its archived season through competition and c
   );
   await page.getByRole('button', { name: '이 시즌 구단 기록', exact: true }).click();
   await expect(page).toHaveURL(/\/history\?section=club&season=1950/);
-  await page.getByRole('button', { name: '← 돌아가기 · 컵 대회', exact: true }).click();
+  // The cups entered again keep the archived season (→WEB-74).
+  await openCups(page, true);
   await expect(page).toHaveURL(/section=cup.*cup=cup.*season=1950/);
   await expect(page.getByRole('combobox', { name: '대진표 시즌', exact: true })).toHaveAttribute(
     'data-value',
@@ -464,8 +464,7 @@ test('recruitment support round-trips between department sheet and full board', 
   page,
 }) => {
   await found(page);
-  await openPersonnel(page, 'players');
-  await page.getByRole('tab', { name: '이적시장', exact: true }).click();
+  await openPersonnel(page, 'market');
   await marketInfo(page);
   const trigger = page.getByRole('button', { name: /^영입 기조/ });
   const sheet = page.getByRole('dialog', { name: '영입 업무 기준', exact: true });

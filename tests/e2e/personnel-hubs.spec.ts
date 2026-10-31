@@ -4,13 +4,16 @@ import { seedSlot, continueSlot } from './slots';
 import { openPersonnel } from './personnel-navigation';
 import { openLeague, openClubRecords } from './competition-navigation';
 import { horizontalOverflow, settle } from './layout';
+import { enterOffice } from './office';
 
 for (const viewport of [
   { width: 360, height: 740 },
   { width: 390, height: 844 },
   { width: 1280, height: 900 },
 ]) {
-  test(`six gameplay entries and personnel workflows at ${viewport.width}px`, async ({ page }) => {
+  test(`five gameplay entries and personnel workflows at ${viewport.width}px`, async ({ page }) => {
+    // Every room is reached through the office lobby's doors (→WEB-39).
+    test.slow();
     await page.setViewportSize(viewport);
     const world = preparedWorld('manager-journey');
     world.settings!.mode = 'manual';
@@ -21,33 +24,35 @@ for (const viewport of [
       name: viewport.width <= 760 ? '모바일 게임 메뉴' : '게임 메뉴',
       exact: true,
     });
+    // The sidebar's clubhouse entry also carries the office's pending count after its label.
     expect(
-      await nav
-        .getByRole('button')
-        .evaluateAll((buttons) =>
-          buttons.map((button) => button.getAttribute('aria-label') ?? button.textContent?.trim()),
-        ),
-    ).toEqual([
-      '클럽하우스',
-      '구단주 사무실',
-      '감독 사무실',
-      '코칭스태프실',
-      '훈련장',
-      '유소년 훈련장',
-    ]);
+      (
+        await nav
+          .getByRole('button')
+          .evaluateAll((buttons) =>
+            buttons.map(
+              (button) => button.getAttribute('aria-label') ?? button.textContent?.trim() ?? '',
+            ),
+          )
+      ).map((label) => label.replace(/\d*( · 결재 대기 \d+건)?$/, '')),
+    ).toEqual(
+      viewport.width <= 760
+        ? ['리그', '컵', '클럽하우스', '이적시장', '기록']
+        : ['클럽하우스', '리그', '컵', '이적시장', '기록'],
+    );
     for (const button of await nav.getByRole('button').all()) {
       const box = await button.boundingBox();
       expect(box!.width).toBeGreaterThanOrEqual(44);
       expect(box!.height).toBeGreaterThanOrEqual(44);
     }
     await openLeague(page);
-    await expect(page.getByRole('tablist', { name: '시즌', exact: true })).toBeVisible();
+    await expect(page.getByRole('tablist', { name: '리그 보기', exact: true })).toBeVisible();
     await openClubRecords(page);
-    await expect(page.getByRole('tablist', { name: '역사', exact: true })).toBeVisible();
+    await expect(page.getByRole('tablist', { name: '기록실 보기', exact: true })).toBeVisible();
     await openPersonnel(page, 'players');
     await expect(
       page.getByRole('tablist', { name: '감독 사무실', exact: true }).getByRole('tab'),
-    ).toHaveText(['감독', '선수 목록', '이적시장']);
+    ).toHaveText(['감독', '선수 목록']);
     await expect(page.getByTestId('facility-overview')).toHaveAccessibleName('드레싱 룸');
     const search = page.getByRole('textbox', { name: '선수 찾기' });
     await search.fill('Retained work');
@@ -79,8 +84,9 @@ for (const viewport of [
     await openPersonnel(page, 'training');
     await expect(page).toHaveURL(/training$/);
     await expect(page.getByTestId('training-focus')).toBeVisible();
+    // A room is entered by its lobby door, so browser back returns to the lobby (→WEB-39).
     await page.goBack();
-    await expect(page).toHaveURL(/first-team\?view=market$/);
+    await expect(page.getByTestId('office-lobby')).toBeVisible();
     await page.goForward();
     await expect(page.getByTestId('training-focus')).toBeVisible();
     await openPersonnel(page, 'academy');
@@ -100,8 +106,7 @@ for (const viewport of [
       'aria-selected',
       'true',
     );
-    await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
-    await nav.getByRole('button', { name: '구단주 사무실', exact: true }).click();
+    await enterOffice(page);
     await page.getByRole('button', { name: '선수 계약', exact: true }).click();
     await expect(page.getByTestId('player-office-overview')).toBeVisible();
     await page.getByRole('tab', { name: '영입', exact: true }).click();

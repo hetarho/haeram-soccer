@@ -3,11 +3,13 @@ import {
   CREST_EMBLEMS,
   CREST_PATTERNS,
   CREST_SHAPES,
+  DESIGN_STUDIOS,
   KIT_ROLES,
   KIT_WARNINGS,
   SHIRT_PATTERNS,
   type ClubIdentity,
   type CrestDesign,
+  type DesignCommission,
   type FixtureKitChoice,
   type GoalkeeperKit,
   type KitParts,
@@ -59,12 +61,14 @@ const setsPart = (parts: ClubIdentity['parts']) =>
   KIT_ROLES.some(
     (role) => parts?.[role]?.shorts !== undefined || parts?.[role]?.socks !== undefined,
   );
+export const identityColoursSchema = z.union([
+  z.tuple([colour]),
+  z.tuple([colour, colour]),
+  z.tuple([colour, colour, colour]),
+]);
+export const designStudioSchema = z.enum(DESIGN_STUDIOS);
 const identityFields = {
-  colours: z.union([
-    z.tuple([colour]),
-    z.tuple([colour, colour]),
-    z.tuple([colour, colour, colour]),
-  ]),
+  colours: identityColoursSchema,
   crest: crestDesignSchema,
   kits: z.strictObject({
     home: shirtDesignSchema,
@@ -122,6 +126,12 @@ export function normaliseIdentity(identity: ClubIdentity): ClubIdentity {
     ...(goalkeeper ? { goalkeeper } : {}),
   };
 }
+/** A delivered set of drafts: at most the dearest designer's four. */
+export const designCommissionSchema: z.ZodType<DesignCommission> = z.strictObject({
+  studio: designStudioSchema,
+  colours: identityColoursSchema,
+  drafts: z.array(clubIdentitySchema).min(1).max(4),
+});
 export const fixtureKitChoiceSchema: z.ZodType<FixtureKitChoice> = z.strictObject({
   fixtureId: id,
   role: kitRoleSchema,

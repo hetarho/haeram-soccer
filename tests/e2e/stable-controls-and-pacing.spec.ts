@@ -1,7 +1,7 @@
 import { openPersonnel } from './personnel-navigation';
 import { openClubhouse, openLeague, openCups, openClubRecords } from './competition-navigation';
 import { watchNext } from './watch';
-import { delegateSales } from './events';
+import { delegateSales, proposeOnReport } from './events';
 import { expect, test } from '@playwright/test';
 import { chooseLevel } from './events';
 import { advanceToNextMatch, createWorld } from '../../packages/engine/src/index';
@@ -86,8 +86,11 @@ test('surveys every management destination during uninterrupted calendar play', 
   await expect(page.getByRole('button', { name: '추가 출자', exact: true })).toBeDisabled();
   await continues();
   await openOfficeArea(page, '구단 디자인');
-  await page.getByLabel('홈 색 코드', { exact: true }).fill('#ABCDEF');
-  await expect(page.getByRole('button', { name: '적용', exact: true })).toBeDisabled();
+  // A design commission opens to its colour steps, whose picks stay locked while the clock runs.
+  await page.getByRole('button', { name: '변경 의뢰', exact: true }).click();
+  const palette = page.getByRole('group', { name: '메인 색', exact: true });
+  await expect(palette.getByRole('button')).not.toHaveCount(0);
+  await expect(palette.getByRole('button', { disabled: false })).toHaveCount(0);
   await continues();
   // Leaving is also ordinary navigation; the clock continues.
   await leaveOffice(page);
@@ -159,6 +162,7 @@ test('keeps browsing available and management edits locked over real automatic t
   await prepare.click();
   const sheet = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
   await expect(sheet).toBeVisible();
+  await proposeOnReport(sheet);
   await expect(
     sheet.getByRole('button', { name: '감독에게 전술 요청', exact: true }),
   ).toBeDisabled();
@@ -171,6 +175,8 @@ test('keeps browsing available and management edits locked over real automatic t
   await page.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
   await expect(mode).toBeEnabled();
   await prepare.click();
+  await expect(sheet).toBeVisible();
+  await proposeOnReport(sheet);
   await expect(
     sheet.getByRole('button', { name: '감독에게 전술 요청', exact: true }),
   ).toBeEnabled();

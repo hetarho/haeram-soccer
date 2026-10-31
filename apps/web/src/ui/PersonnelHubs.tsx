@@ -7,6 +7,7 @@ import { openPersonnel, usePeopleView, type PeopleTab } from './state';
 import { useTaskState } from './taskMemory';
 import { TabList, TabPanel, useAddressTab } from './PageTabs';
 import { FacilityOverview } from './FacilityOverview';
+import { RoomBar } from './OfficeBar';
 import { tacticLabel } from '../../../../packages/engine/src/tactics';
 
 /** Small hub composition; contract desks render these same authoritative action panels. */
@@ -58,6 +59,7 @@ export function PersonnelHub({
   // and the office's tabs leave it out.
   return (
     <>
+      {tab !== 'market' && <RoomBar title={t(`navigation.${page}`)} />}
       {tab !== 'market' && (
         <TabList
           tabs={tabs

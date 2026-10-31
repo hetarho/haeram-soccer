@@ -1,3 +1,4 @@
+import { clubhouseTab } from './competition-navigation';
 import { expect, type Page } from '@playwright/test';
 import { acknowledgeEvents, configureResponsibilities, dismissMatchReport } from './events';
 import { chooseOption } from './select';
@@ -10,9 +11,7 @@ export async function openWatchAction(page: Page) {
   const resume = page
     .getByRole('dialog', { name: '관전 이어보기', exact: true })
     .getByRole('button', { name: '관전 이어보기', exact: true });
-  const home = page
-    .getByRole('navigation')
-    .getByRole('button', { name: '클럽하우스', exact: true });
+  const home = clubhouseTab(page);
   for (let attempt = 0; ; attempt++) {
     if (await watch.isVisible()) return watch;
     if (await resume.isVisible()) return resume;

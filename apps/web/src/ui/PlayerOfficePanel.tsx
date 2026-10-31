@@ -1,15 +1,15 @@
 import { lazy, Suspense, type ReactNode } from 'react';
 import type { ResponsibilityKey, World } from '../../../../packages/contracts/src/types';
 import type { StopReason } from '../../../../packages/engine/src/stopping';
-import { clubOf } from '../../../../packages/engine/src/player-state';
 import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
-import { openApprovalRequest } from './state';
 import { useTaskMemory } from './taskMemory';
 import { TabList, TabPanel, useAddressTab } from './PageTabs';
 import { openOfficeWork } from './officeDesks';
 import { AreaCriteria } from './DirectionLines';
-import { Money } from './Money';
+import { Card } from './Card';
+import { ApprovalTray, DeskBody, DeskSettings } from './OfficeDesk';
+import { PixelIcon } from './PixelIcon';
 import {
   PLAYER_WORK_SCOPES,
   PLAYER_WORK_TABS,
@@ -33,51 +33,46 @@ export function PlayerOverview({
   onWork: (tab: PlayerWorkTab) => void;
 }) {
   const facts = playerOfficeOverview(w, pending);
-  const club = clubOf(w);
+  // A joint approval waits in more than one work; the tray lists it once.
+  const waiting = [
+    ...new Map(facts.stances.flatMap((row) => row.pending).map((item) => [item.id, item])).values(),
+  ];
   return (
     <section
       className={s.overview}
       aria-label="선수 계약 개요"
       data-testid="player-office-overview"
     >
-      <dl className={s.facts}>
-        <div>
-          <dt>1군 연봉 약정 · 연간</dt>
-          <dd>
-            <Money value={facts.wage} code={club.country} year={w.year} />
-          </dd>
-        </div>
-        <div>
-          <dt>이번 시즌 계약 만료</dt>
-          <dd>{facts.expiring.length}명</dd>
-        </div>
-        <div>
-          <dt>현재 계약 협상</dt>
-          <dd>{facts.talks.length}건</dd>
-        </div>
-        <div>
-          <dt>진행 중인 영입 / 매각 제안</dt>
-          <dd>
-            {facts.outgoing.length} / {facts.incoming.length}건
-          </dd>
-        </div>
-      </dl>
+      <ApprovalTray w={w} items={waiting} />
       <ul className={s.stances}>
         {facts.stances.map((row) => (
           <li key={row.key}>
-            <h3>{row.name}</h3>
-            <p>{row.applied}</p>
-            <p>
-              {row.actor} · {row.auto ? '자동' : '직접'} · 결재 대기 {row.pending.length}건
-            </p>
-            <button data-ui="link" onClick={() => onWork(row.key)}>
-              {PLAYER_WORK_TABS.find(([key]) => key === row.key)![1]} 업무 열기
-            </button>
-            {row.pending.map((item) => (
-              <button key={item.id} data-ui="link" onClick={() => openApprovalRequest(w.id, item)}>
-                {item.title} · 검토하기
-              </button>
-            ))}
+            <Card
+              surface="detail"
+              className={s.stance}
+              title={row.name}
+              meta={
+                <span className={s.owner}>
+                  <span data-ui="label" data-auto={row.auto}>
+                    {row.auto ? '자동' : '직접'}
+                  </span>
+                  {row.actor}
+                  {row.pending.length > 0 && (
+                    <span className={s.waiting}>
+                      결재 대기 <b data-ui="count">{row.pending.length}</b>
+                    </span>
+                  )}
+                </span>
+              }
+              actions={
+                <button type="button" onClick={() => onWork(row.key)}>
+                  {PLAYER_WORK_TABS.find(([key]) => key === row.key)![1]} 업무 열기
+                  <PixelIcon name="chevronRight" size={14} />
+                </button>
+              }
+            >
+              <p>{row.applied}</p>
+            </Card>
           </li>
         ))}
       </ul>
@@ -141,16 +136,18 @@ export function PlayerOfficeWork({
         {tab === 'overview' ? (
           <PlayerOverview w={w} pending={pending} onWork={select} />
         ) : (
-          <>
-            <OfficeWorkResponsibility
-              w={w}
-              client={client}
-              controller={controller}
-              scope={[scope!.responsibility]}
-            />
-            <AreaCriteria w={w} areas={scope!.areas} />
+          <DeskBody>
+            <DeskSettings>
+              <OfficeWorkResponsibility
+                w={w}
+                client={client}
+                controller={controller}
+                scope={[scope!.responsibility]}
+              />
+              <AreaCriteria w={w} areas={scope!.areas} />
+            </DeskSettings>
             {work(tab)}
-          </>
+          </DeskBody>
         )}
       </TabPanel>
     </>

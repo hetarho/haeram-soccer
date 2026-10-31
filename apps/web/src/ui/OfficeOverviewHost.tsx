@@ -23,7 +23,7 @@ export function OfficeOverviewHost({
   }, [setOpen]);
   if (!open) return null;
   return (
-    <Dialog label="결재라인 모아보기" centered wide onClose={() => setOpen(false)}>
+    <Dialog label="결재라인 모아보기" wide onClose={() => setOpen(false)}>
       <Suspense fallback={<p role="status">결재라인을 여는 중…</p>}>
         <OwnerOffice key={id} client={client} controller={controller} />
       </Suspense>

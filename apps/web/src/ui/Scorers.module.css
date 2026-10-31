@@ -126,10 +126,6 @@
 }
 .filters :global([data-select-trigger]) {
   max-width: 245px;
-  min-height: 36px;
-  padding: 6px 8px;
-  font-size: 12px;
-  font-family: var(--display);
 }
 .chart {
   margin: 0;
@@ -209,7 +205,6 @@
     flex: 1;
     min-width: 0;
     max-width: none;
-    min-height: 44px;
   }
   .metric button {
     min-height: 44px;

@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-31",
+  "theme": "sticker-club",
+  "status": "Generated artwork prepared for page integration; not registered in the theme pack",
+  "tool": "built-in image_gen",
+  "prompt": "apps/web/design/sticker-club/club-briefing-v1/prompt.json",
+  "source": {
+    "file": "apps/web/design/sticker-club/club-briefing-v1/sources/club-briefing-v1.png",
+    "width": 2160,
+    "height": 728,
+    "bytes": 2139476,
+    "sha256": "285e40d0e36b048586c12a41cfa2aa5aa9de22c75e1d605d0720b5d0c1a443b9"
+  },
+  "preparation": "Shared createUiArtPipeline Chromium raster encoding: complete scene scaled to 960x320 and 480x160, quality-85 WebP. No crop or semantic edits. Minor aspect differences are normalized by whole-scene scaling.",
+  "assets": [
+    {
+      "file": "club-briefing.webp",
+      "source": "apps/web/design/sticker-club/club-briefing-v1/sources/club-briefing-v1.png",
+      "bytes": 61018,
+      "sha256": "327cc580dd41c25dbd73ab9c95856eb3dae6aac508287e1f6274692b6df1bff4",
+      "width": 960,
+      "height": 320
+    },
+    {
+      "file": "club-briefing.small.webp",
+      "source": "apps/web/design/sticker-club/club-briefing-v1/sources/club-briefing-v1.png",
+      "bytes": 21316,
+      "sha256": "17c09ae1ad4b1a3cdfc7b1fd530767bb3b6b5bb24150dd6483d236d7304cfbcb",
+      "width": 480,
+      "height": 160
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 import { openOfficeWork } from './officeDesks';
 import { PlaceActivities } from './PlaceActivities';
 import { PlayerOfficeWork, OfficeWorkResponsibility } from './PlayerOfficePanel';
+import { DeskBody } from './OfficeDesk';
 import { saleOfferItems } from './playerOfficeWork';
 import { AreaCriteria } from './DirectionLines';
 import { stoppingEvents } from '../runtime/progression';
@@ -51,7 +52,7 @@ import { UNHAPPY_MORALE } from '../../../../packages/engine/src/morale';
 import { ratio } from '../../../../packages/engine/src/primitives';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
 import type { ClientState, GameClient } from '../runtime/client';
-import { Panel } from './App';
+import { ClubJournal, Panel } from './App';
 import { RecruitmentDesk } from './RecruitmentDesk';
 import { OperationsView } from './Operations';
 import { EventCard } from './EventCenter';
@@ -99,6 +100,7 @@ import {
 import { TabList, TabPanel, useAddressTab } from './PageTabs';
 import { AcademyPanel } from './AcademyPanel';
 import { TrainingView } from './TrainingView';
+import { RoomBar } from './OfficeBar';
 import management from './ManagementView.module.css';
 import { explorePlayers, ofScope, playerStatus } from './playerAnalysis';
 import { bansOf, banText } from './discipline';
@@ -262,13 +264,20 @@ function StaffOfficeWork({
         }}
       />
       <TabPanel idPrefix="office-staff" value={tab}>
-        <OfficeWorkResponsibility
-          w={w}
-          client={client}
-          controller={controller}
-          scope={[tab === 'manager' ? 'manager' : 'staff']}
-        />
-        <PersonnelPanel tab={tab} state={state} client={client} onReplace={() => setMarket(true)} />
+        <DeskBody>
+          <OfficeWorkResponsibility
+            w={w}
+            client={client}
+            controller={controller}
+            scope={[tab === 'manager' ? 'manager' : 'staff']}
+          />
+          <PersonnelPanel
+            tab={tab}
+            state={state}
+            client={client}
+            onReplace={() => setMarket(true)}
+          />
+        </DeskBody>
       </TabPanel>
       {market && <ManagerMarket state={state} client={client} onClose={() => setMarket(false)} />}
     </>
@@ -1295,6 +1304,7 @@ function Business({ state, client, controller }: Props & { controller: Progressi
         state={state}
         client={client}
         legacy={<EconomicContext state={state} />}
+        journal={<ClubJournal state={state} />}
         personnel={(desk, scoped, request, error) =>
           request ? (
             <PersonnelRequest
@@ -1338,8 +1348,13 @@ export default function Rich({
         market={(close) => <ManagerMarket state={state} client={client} onClose={close} />}
       />
     );
-  if (page === 'training') return <TrainingView state={state} client={client} view="training" />;
-  if (page === 'academy') return <TrainingView state={state} client={client} view="academy" />;
+  if (page === 'training' || page === 'academy')
+    return (
+      <>
+        <RoomBar title={page === 'training' ? '훈련장' : '유소년 훈련장'} />
+        <TrainingView state={state} client={client} view={page} />
+      </>
+    );
   if (page === 'business')
     return <Business state={state} client={client} controller={controller} />;
   return (

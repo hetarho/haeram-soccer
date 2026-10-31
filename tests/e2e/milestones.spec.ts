@@ -1,3 +1,4 @@
+import { clubhouseTab } from './competition-navigation';
 import { watchNext } from './watch';
 import { delegateSales, dismissMatchReport } from './events';
 import { expect, test, type Page } from '@playwright/test';
@@ -62,8 +63,8 @@ for (const viewport of [
     const progressBox = (await hub
       .getByRole('progressbar', { name: '리그 진행률', exact: true })
       .boundingBox())!;
-    const conditionsBox = (await hub.getByTestId('team-state').boundingBox())!;
-    // NEXT MATCH follows the season card, ahead of the links, scene and team state.
+    const conditionsBox = (await hub.getByTestId('quick-actions').boundingBox())!;
+    // NEXT MATCH follows the season card, ahead of the office scene and its quick actions.
     expect(progressBox.y + progressBox.height).toBeLessThanOrEqual(cardBox.y);
     expect(cardBox.y + cardBox.height).toBeLessThanOrEqual(conditionsBox.y);
     expect(
@@ -132,10 +133,7 @@ for (const viewport of [
     await watchNext(page, { manual: true });
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
-    await page
-      .getByRole('navigation', { name: viewport.width < 760 ? '모바일 게임 메뉴' : '게임 메뉴' })
-      .getByRole('button', { name: '클럽하우스', exact: true })
-      .click();
+    await clubhouseTab(page).click();
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
     await expect(hub).toBeVisible();

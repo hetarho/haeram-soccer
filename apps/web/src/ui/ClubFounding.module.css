@@ -72,6 +72,8 @@
 .start input,
 .start :global([data-select-trigger]) {
   width: 100%;
+}
+.start input {
   font-size: 16px;
   min-height: 48px;
   background: var(--surface-grain, none) var(--surface);

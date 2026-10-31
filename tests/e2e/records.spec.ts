@@ -155,22 +155,18 @@ for (const [label, viewport] of [
       await row.evaluate((element) => element.scrollIntoView({ block: 'center' }));
       await row.click();
       await expect(page).toHaveURL(/\/history\?section=club&season=1950/);
-      // The season is a sub-screen: the records tabs give way to its navigator bar (→WEB-54).
-      await expect(page.getByRole('tablist', { name: '기록실 보기' })).toHaveCount(0);
-      const navigator = page.getByRole('navigation', { name: '시즌 기록 이동', exact: true });
+      // A season opens under the records' tabs; its tab, 시즌별 기록, leads back to the list (→WEB-54).
+      await expect(tab('시즌별 기록')).toHaveAttribute('aria-selected', 'true');
+      const navigator = page.locator('[data-ui="record-navigator"]');
       await expect(navigator.getByRole('heading')).toHaveText('1950/51 · 구단 시즌 기록');
-      const back = navigator.getByRole('button', { name: '← 시즌별 기록', exact: true });
       const links = [
         page.getByRole('button', { name: '이 시즌 리그 순위표', exact: true }),
         page.getByRole('button', { name: '이 시즌 컵 대회 기록', exact: true }),
       ];
-      const backBounds = (await back.boundingBox())!;
       const buttonBounds = await Promise.all(links.map((button) => button.boundingBox()));
-      expect(backBounds.height).toBeGreaterThanOrEqual(44);
       expect(buttonBounds.every((box) => box && box.height >= 44)).toBe(true);
       expect(buttonBounds.every((box) => box!.y === buttonBounds[0]!.y)).toBe(true);
-      expect(backBounds.y).toBeLessThan(buttonBounds[0]!.y);
-      for (const button of [back, ...links]) {
+      for (const button of links) {
         expect(await button.evaluate((element) => getComputedStyle(element).borderTopWidth)).toBe(
           '0px',
         );
@@ -182,9 +178,11 @@ for (const [label, viewport] of [
       ).toHaveAttribute('aria-selected', 'true');
       await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('1950/51');
       await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('Haeram');
-      await page.getByRole('button', { name: '← 돌아가기 · 클럽 시즌 기록', exact: true }).click();
+      await page.goBack();
       await expect(navigator).toBeVisible();
-      await back.click();
+      await tab('시즌별 기록').click();
+      await expect(navigator).toHaveCount(0);
+      await expect(seasons).toBeVisible();
       await expect(tab('시즌별 기록')).toHaveAttribute('aria-selected', 'true');
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
@@ -349,8 +347,8 @@ for (const [label, viewport] of [
       await expect(page.getByRole('heading', { name: '그해의 각국 리그' })).toHaveCount(0);
       await expect(page.getByRole('heading', { name: '클럽대항전 우승과 순위' })).toHaveCount(0);
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-      // The season is a sub-screen; its navigator bar leads back to the tabs (→WEB-54).
-      await page.getByRole('button', { name: '← 시즌별 기록', exact: true }).click();
+      // The season opens under the records' tabs; 시즌별 기록 leads back to the list (→WEB-54).
+      await tab('시즌별 기록').click();
       await tab('시즌별 기록').focus();
       await page.keyboard.press('End');
       await expect(tab('감독 이력')).toHaveAttribute('aria-selected', 'true');

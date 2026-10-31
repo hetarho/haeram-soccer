@@ -79,16 +79,8 @@
   color: var(--text);
 }
 .buttons .pace.pace {
-  width: 60px;
+  width: 78px;
   min-width: 44px;
-  height: 44px;
-  min-height: 44px;
-  padding: 8px 6px;
-  gap: 5px;
-  border: 0;
-  background: transparent;
-  font-size: 13px;
-  font-weight: 500;
 }
 .progress {
   position: absolute;
@@ -105,10 +97,6 @@
     gap: var(--control-gap);
     min-height: 58px;
     padding: max(10px, var(--control-gap)) var(--control-gap);
-  }
-  .buttons .pace.pace {
-    height: 48px;
-    min-height: 48px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
