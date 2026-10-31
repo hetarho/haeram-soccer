@@ -10,7 +10,7 @@ import { transferOffers } from '../../packages/engine/src/index';
 import { detectMediations } from '../../packages/engine/src/mediation';
 import { lineOf } from '../../packages/engine/src/player';
 import { leaveOffice } from './office';
-/** 구단주 사무실 › 업무 기준, entered from home (→WEB-39). */
+/** 구단 운영 › 재정·투자's whole-club configuration, entered through the club sections (→WEB-110). */
 async function operations(page: Page) {
   await openOfficeLibrary(page);
   await expect(page.getByTestId('strategy-board')).toBeVisible();

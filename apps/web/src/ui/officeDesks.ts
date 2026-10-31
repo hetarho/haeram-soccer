@@ -1,6 +1,5 @@
 import type { ResponsibilityKey } from '../../../../packages/contracts/src/types';
 import type { AreaKey } from './areas';
-import { rememberTask } from './taskMemory';
 import { operationsAddress } from './clubSections';
 
 export const OFFICE_DESKS = [
@@ -53,19 +52,4 @@ export function deskDestination(desk: WorkDesk, work: string | null) {
         : '/first-team?view=players';
   if (desk === 'staff') return '/staff?view=coaches';
   return operationsAddress(desk);
-}
-
-/** Local work tabs keep real browser history while the focused office retains its desk. */
-export function openOfficeWork(work: string) {
-  const url = new URL(location.href);
-  if (url.searchParams.get('work') === work) return;
-  rememberTask('business');
-  url.searchParams.set('work', work);
-  const depth = history.state?.officeLobbyDepth;
-  history.pushState(
-    depth ? { ...history.state, officeLobbyDepth: depth + 1 } : null,
-    '',
-    `${url.pathname}${url.search}${url.hash}`,
-  );
-  if (typeof window !== 'undefined') window.dispatchEvent(new Event('tasknavigate'));
 }

@@ -53,8 +53,8 @@ for (const themeId of ['standard', 'pixel']) {
   test(`${themeId}: management cards, transport and choices retain inset content and separate actions`, async ({
     page,
   }) => {
-    // Four widths, each through the office, home, league and the squad room behind the office
-    // lobby's door (→WEB-39): about 7 s a width on a loaded host.
+    // Four widths, each through the office's 결재라인 overview, home, league and 1군 (→WEB-10/39):
+    // about 7 s a width on a loaded host.
     test.slow();
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript((themeId) => {

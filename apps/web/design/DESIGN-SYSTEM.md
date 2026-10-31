@@ -197,8 +197,9 @@ long-title and multi-action variants in the `cards` workbench story, then review
 such as the fixture notebook.
 
 `ticket` and `dark` wear the home's next-match and season plates. A screen built like the
-next-match report leads with one `ticket` (the memo, or a work's pending-request tray) and
-keeps `dark` for a single summary band; the remaining records use `detail`.
+next-match report leads with one `ticket` (the memo) and keeps `dark` for a single summary band;
+the remaining records use `detail`. Waiting requests are listed only by the 결재함's rows below,
+never as a second tray inside another work.
 
 The owner office is its work queue ([ApprovalQueue](../src/ui/ApprovalQueue.tsx)): the office
 bar's quiet 결재함 heading, one counts line with the secondary overview link, `Segments` filters
@@ -224,6 +225,16 @@ with its person or vacancy, then who appoints them, then the owner's requests to
 the staff. No facility figure, room art or office-return bar precedes them; the club's section
 bar is their only navigation. Training and youth keep their bounded facility illustration
 (→WEB-70/72) directly above the working panels.
+
+Facility art appears where its facility is worked, never as a page's entrance: the training
+ground and academy above 훈련 and 유소년, every facility's stage beside its works in 구단 운영's
+재정·투자, and the manager's office (or, for a delegation, the staff room) as the 결재라인
+overview's and its confirmation's supporting scene. The clubhouse, 1군 and 코치진 carry none, so
+theme checks that need a mounted scene behind an open picker use 훈련's. Each work ends with the
+responsibilities it owns through the shared `WorkResponsibility` confirmation (1군 contracts and
+sales, the market's recruitment, 코치진's manager and staff, 유소년's academy; sponsorship in
+구단 운영 › 후원); offers for our players are answered in the market's 이적 협상, not copied
+onto the roster (→WEB-71).
 
 Spend colour on meaning, not decoration. A change reads by sign: a rise in `--danger` red, a fall
 in `--cool` blue (`+3`, `-3`). Closing and comparing controls stay plain buttons; the primary

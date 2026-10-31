@@ -85,7 +85,7 @@ test.describe('사람 at 360x740', () => {
   test('사람 tabs keep their address and the manager criteria preview a gegenpress pick', async ({
     page,
   }) => {
-    // Every room visit goes through the office lobby's doors (→WEB-39): past 30 s on a loaded host.
+    // Many club-section visits (→WEB-10): past 30 s on a loaded host.
     test.slow();
     await found(page);
     await chooseLevel(page, 2);

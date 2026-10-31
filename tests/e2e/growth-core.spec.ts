@@ -124,12 +124,18 @@ for (const viewport of [
     const quick = page.getByTestId('quick-actions');
     for (const group of ['분위기', '피로', '훈련·육성'])
       await expect(quick.getByText(group, { exact: true })).toBeVisible();
-    // The team's state and its remedies stand on the clubhouse; the office holds only its 결재함
-    // (→WEB-39/44).
-    const state = hub.getByRole('region', { name: '팀 상태' });
-    // Strength changes with the lineup, fatigue and morale, so it leads team state (→WEB-44).
-    for (const chip of ['팀 전력', '피로', '분위기', '감독 입지', '선수단'])
-      await expect(state.getByText(chip, { exact: true })).toBeVisible();
+    // The club's situation and its remedies stand on the clubhouse; the office holds only its
+    // 결재함 (→WEB-39/44).
+    const situation = hub.getByRole('region', { name: '클럽 현황', exact: true });
+    // Strength changes with the lineup, fatigue and morale, so it leads the summary (→WEB-44).
+    await expect(situation.locator('dt')).toHaveText([
+      '팀 전력',
+      '출전 가능',
+      '선발 피로',
+      '분위기',
+      '감독 입지',
+    ]);
+    await expect(situation.getByRole('button')).toHaveCount(0);
 
     const reportButton = hub.getByRole('button', { name: '상세 리포트', exact: true });
     // A click while home still slides in makes Firefox scroll the moving button into view.

@@ -32,8 +32,9 @@ import {
   stepIndex,
   stepName,
   stepValue,
+  type BoardDraft,
 } from './board';
-import { DIRECTION_AREAS, type AreaKey } from './areas';
+import { areaOf, DIRECTION_AREAS, type AreaKey } from './areas';
 import { TICKET_LEVELS } from './ticketLevels';
 
 const world = () =>
@@ -281,6 +282,36 @@ describe('department draft boundaries', () => {
     useTaskMemory.setState({ values: { 'board-draft': { direction: { finance: 'careful' } } } });
     useTaskMemory.getState().activate('second');
     expect(useTaskMemory.getState().values).toEqual({});
+  });
+});
+
+describe('player criteria areas', () => {
+  it('keeps culture in the squad area and financial player rows in finance under the same keys', () => {
+    expect(areaOf('culture')).toMatchObject({ key: 'squad', rows: [] });
+    expect(areaOf('support').key).toBe('finance');
+    expect(areaOf('renewal').key).toBe('finance');
+    const rows = DIRECTION_AREAS.flatMap((area) => area.rows);
+    expect(new Set(rows).size).toBe(rows.length);
+  });
+  it('applies/discards only finance and keeps culture and recruitment drafts independent', () => {
+    const w = world();
+    const draft: BoardDraft = {
+      build: { culture: 'family', scouting: 'data' },
+      policy: { support: 4, recruitment: 2 },
+      direction: { renewal: 'frugal' },
+    };
+    const finance = departmentDraft(w, draft, 'finance');
+    expect(finance.policy).toEqual({ support: 4 });
+    expect(finance.direction).toEqual({ renewal: 'frugal' });
+    expect(finance.build).toBeUndefined();
+    const remaining = discardDepartment(w, draft, 'finance');
+    expect(remaining.policy).toEqual({ recruitment: 2 });
+    expect(remaining.direction).toBeUndefined();
+    expect(
+      draftChanges(w, remaining)
+        .filter((change) => change.kind === 'card')
+        .map((change) => change.slot),
+    ).toEqual(['scouting', 'culture']);
   });
 });
 

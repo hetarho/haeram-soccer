@@ -131,7 +131,7 @@ test('a design adopted while the match is paused mid-match leaves its recorded s
   await page.getByRole('button', { name: '전반 종료 · 45분', exact: true }).click();
   await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('결과 보기');
   expect(await figures(page, STRIPES)).toBeGreaterThanOrEqual(3);
-  // The owner commissions an orange design in 구단주 사무실 › 구단 디자인 and adopts a draft (→KIT-9).
+  // The owner commissions an orange design in 구단 운영 › 구단 디자인 and adopts a draft (→KIT-9).
   const edited = '#f77f00';
   const design = await openDesign(page);
   const { drafts } = await commission(page, design, [edited]);

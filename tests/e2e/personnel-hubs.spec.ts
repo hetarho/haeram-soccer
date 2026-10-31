@@ -12,7 +12,7 @@ for (const viewport of [
   { width: 1280, height: 900 },
 ]) {
   test(`five gameplay entries and personnel workflows at ${viewport.width}px`, async ({ page }) => {
-    // Every room is reached through the office lobby's doors (→WEB-39).
+    // Every club section is reached through the shared section bar (→WEB-10).
     test.slow();
     await page.setViewportSize(viewport);
     const world = preparedWorld('manager-journey');

@@ -64,7 +64,7 @@ for (const viewport of [
       .getByRole('progressbar', { name: '리그 진행률', exact: true })
       .boundingBox())!;
     const conditionsBox = (await hub.getByTestId('quick-actions').boundingBox())!;
-    // NEXT MATCH follows the season card, ahead of the office scene and its quick actions.
+    // NEXT MATCH follows the season card, ahead of the office entrance and its quick actions.
     expect(progressBox.y + progressBox.height).toBeLessThanOrEqual(cardBox.y);
     expect(cardBox.y + cardBox.height).toBeLessThanOrEqual(conditionsBox.y);
     expect(

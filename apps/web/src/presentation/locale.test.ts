@@ -97,23 +97,21 @@ describe('locale messages', () => {
     ]);
   });
 
-  it('names the final six-entry hierarchy and personnel subviews', () => {
+  it('names the club sections and retires the physical room names (→WEB-10/43)', () => {
     const { t } = createLoadedLocale(koreanRegistry, korean);
     expect(
-      ['dashboard', 'business', 'firstTeam', 'staff', 'training', 'academy'].map((key) =>
-        t(`navigation.${key}`),
+      ['overview', 'firstTeam', 'staff', 'training', 'academy', 'operations'].map((key) =>
+        t(`club.section.${key}`),
       ),
-    ).toEqual([
-      '클럽하우스',
-      '구단주 사무실',
-      '감독 사무실',
-      '코칭스태프실',
-      '훈련장',
-      '유소년 훈련장',
-    ]);
-    expect(
-      ['players', 'market', 'training', 'manager', 'coaches'].map((key) => t(`personnel.${key}`)),
-    ).toEqual(['선수 목록', '이적시장', '훈련', '감독', '스태프']);
+    ).toEqual(['현황', '1군', '코치진', '훈련', '유소년', '운영']);
+    expect(t('personnel.market')).toBe('이적시장');
+    // No pack keeps a room label for the people the sections now show.
+    for (const entry of registry.entries) {
+      const pack = readResource(entry.resource) as LocalePack;
+      for (const key of ['firstTeam', 'staff', 'academy'])
+        for (const id of [`navigation.${key}`, `navigation.short.${key}`])
+          expect(pack.messages, `${entry.id} ${id}`).not.toHaveProperty([id]);
+    }
   });
 
   it('preserves current Korean shell copy', () => {

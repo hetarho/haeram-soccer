@@ -10,7 +10,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { createWorld, simulateSeason } from '../../packages/engine/src/index';
 import { settle } from './layout';
 import { continueSlot, seedSlot } from './slots';
-import { leaveOffice, officeTitle, operationsTabs } from './office';
+import { clubSections, leaveOffice, officeBar, operationsTabs } from './office';
 
 async function found(page: Page) {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -20,12 +20,19 @@ async function found(page: Page) {
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
-/** A room names itself in its bar while the clubhouse entry stays current (→WEB-10/39). */
-async function expectRoom(page: Page, room: string) {
-  await expect(officeTitle(page)).toHaveText(room);
+/**
+ * A club section is selected in the section bar while the clubhouse entry stays current; no room
+ * bar names it (→WEB-10/43).
+ */
+async function expectSection(page: Page, section: string) {
+  await expect(clubSections(page).getByRole('tab', { name: section, exact: true })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
   await expect(clubhouseTab(page)).toHaveAttribute('aria-current', 'page');
+  await expect(officeBar(page)).toHaveCount(0);
 }
-/** 구단주 사무실 › 업무 기준, entered from home (→WEB-39). */
+/** 구단 운영 › 재정·투자's whole-club configuration, entered through the club sections (→WEB-110). */
 async function openOperations(page: Page) {
   await openOfficeLibrary(page);
   await expect(page.getByTestId('view-scroller').getByTestId('strategy-board')).toBeVisible();
@@ -142,7 +149,7 @@ test('retains an unapplied academy investment through a detour and discards it e
     .getByRole('button', { name: '창 닫기', exact: true })
     .click();
   await expect(page.getByRole('dialog', { name: '유소년 업무 기준', exact: true })).toHaveCount(0);
-  await expectRoom(page, '유소년 훈련장');
+  await expectSection(page, '유소년');
   await openOperations(page);
   const draft = page.getByTestId('strategy-board').getByTestId('strategy-draft');
   await expect(draft).toContainText('유소년 투자 기본 운영 → 육성 강화');
@@ -209,8 +216,8 @@ for (const viewport of [
     const staff = page.getByRole('dialog', { name: '수석코치 선임', exact: true });
     await expect(staff).toBeVisible();
     await staff.getByRole('button', { name: '창 닫기', exact: true }).click();
-    // The coach's post opens in the coaching room; the training room is entered again by its door.
-    await expectRoom(page, '코칭스태프실');
+    // The coach's post opens in 코치진; 훈련 is entered again through its section tab.
+    await expectSection(page, '코치진');
     await openPersonnel(page, 'training');
     await expect(page.getByTestId('training-focus')).toBeVisible();
   });
@@ -234,8 +241,8 @@ test('a player profile leads to that player training and keeps the squad search'
   const sheet = page.getByRole('dialog', { name: `${name} 개별 훈련`, exact: true });
   await expect(sheet).toBeVisible();
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
-  // The sheet opens in the training room; the squad, entered again, keeps its search (→WEB-74).
-  await expectRoom(page, '훈련장');
+  // The sheet opens in 훈련; the squad, entered again, keeps its search (→WEB-74).
+  await expectSection(page, '훈련');
   await openPersonnel(page, 'players');
   await expect(page.getByRole('textbox', { name: '선수 찾기' })).toHaveValue(name);
 });

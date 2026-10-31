@@ -10,7 +10,6 @@ import { gameStore, initialClientState } from '../runtime/store';
 import { ApprovalRequestHost } from './ApprovalRequestHost';
 import type { ApprovalRequest } from './eventRouting';
 import { OfficeRow, OwnerOffice, PendingHandover } from './OwnerOfficeView';
-import { PLAYER_WORK_SCOPES } from './playerOfficeWork';
 import { DESK_RESPONSIBILITIES } from './officeDesks';
 import { officeBulkChange, officeProposal, officeSettings } from './officeChanges';
 vi.mock('../runtime/store', async (original) => ({
@@ -122,12 +121,12 @@ describe('owner office page', () => {
     },
   );
   it('scopes each player work confirmation to its single saved responsibility', () => {
-    for (const scope of Object.values(PLAYER_WORK_SCOPES)) {
+    for (const responsibility of DESK_RESPONSIBILITIES.players) {
       const html = renderToStaticMarkup(
         createElement(OwnerOffice, {
           client: {} as GameClient,
           controller,
-          scope: [scope.responsibility],
+          scope: [responsibility],
         }),
       );
       expect(html.match(/>직접<\/button>/g)).toHaveLength(1);

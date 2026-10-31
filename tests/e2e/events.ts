@@ -282,7 +282,7 @@ export async function reviewInOffice(page: Page, title?: string | RegExp) {
   await expect(request).toBeVisible();
   return request;
 }
-/** Waiting office work, as home's office scene counts it. */
+/** Waiting office work, as home's office entrance counts it. */
 const officeWaiting = (page: Page) =>
   page.getByTestId('club-hub').locator('[data-home-part="office"] [data-ui="count"]');
 

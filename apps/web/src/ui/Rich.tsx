@@ -93,7 +93,7 @@ import {
 } from './ClubStaff';
 import { AcademyPanel } from './AcademyPanel';
 import { TrainingView } from './TrainingView';
-import { OfficeWorkResponsibility } from './PlayerOfficePanel';
+import { WorkResponsibility } from './WorkResponsibility';
 import { WORK_RESPONSIBILITIES } from './personnelNavigation';
 import management from './ManagementView.module.css';
 import { explorePlayers, ofScope, playerStatus } from './playerAnalysis';
@@ -160,8 +160,8 @@ function TraitNote({ trait }: { trait?: ManagerTrait }) {
 /**
  * Personnel and office screens compose these same action panels; neither copies commands. 1군
  * leads with its roster, then its tactics and locker-room culture; 코치진 leads with the manager
- * and every post's person or vacancy, then who appoints them (→WEB-43). Each ends with the
- * responsibilities it owns.
+ * and every post's person or vacancy, then who appoints them (→WEB-43). Offers for our players
+ * are answered in the market's 이적 협상 (→WEB-71). Each ends with the responsibilities it owns.
  */
 function PersonnelPanel({
   tab,
@@ -190,7 +190,7 @@ function PersonnelPanel({
           <CoachingPlan w={w} />
         </>
       )}
-      <OfficeWorkResponsibility
+      <WorkResponsibility
         w={w}
         client={client}
         controller={controller}
@@ -906,17 +906,16 @@ function ContractTalkSheet({
   );
 }
 /** 사람's 선수: the roster with each player's stance and contract talks (→WEB-43). */
-function Roster({ state, client, work }: Props & { work?: 'contracts' | 'sales' }) {
-  const prefix = work ? `office-roster-${work}` : 'roster';
+function Roster({ state, client }: Props) {
   const v = state.view!,
     w = v.world,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
-    [view, setView] = useTaskState<RosterView>(w.id, `${prefix}-view`, DEFAULT_ROSTER_VIEW),
-    [comparing, setComparing] = useTaskState(w.id, `${prefix}-comparing`, false),
-    [fullTable, setFullTable] = useTaskState(w.id, `${prefix}-table`, false),
-    [playerQuery, setPlayerQuery] = useTaskState(w.id, `${prefix}-query`, ''),
-    [playerPage, setPlayerPage] = useTaskState(w.id, `${prefix}-page`, 0),
-    [stanceId, setStanceId] = useTaskState<string | undefined>(w.id, `${prefix}-stance`, undefined);
+    [view, setView] = useTaskState<RosterView>(w.id, 'roster-view', DEFAULT_ROSTER_VIEW),
+    [comparing, setComparing] = useTaskState(w.id, 'roster-comparing', false),
+    [fullTable, setFullTable] = useTaskState(w.id, 'roster-table', false),
+    [playerQuery, setPlayerQuery] = useTaskState(w.id, 'roster-query', ''),
+    [playerPage, setPlayerPage] = useTaskState(w.id, 'roster-page', 0),
+    [stanceId, setStanceId] = useTaskState<string | undefined>(w.id, 'roster-stance', undefined);
   const talkId = useContractTalk((state) => state.id),
     { open: openTalk, close: closeTalk } = useContractTalk.getState();
   const disabled = useGameState(gameActionsBlocked);
@@ -925,7 +924,7 @@ function Roster({ state, client, work }: Props & { work?: 'contracts' | 'sales' 
   const availability = squadAvailability(w);
   const window = transferWindow(w);
   const stancePlayer = w.players.find((p) => p.id === stanceId && canSetStance(p));
-  const talkPlayer = work !== 'sales' ? active.find((p) => p.id === talkId) : undefined,
+  const talkPlayer = active.find((p) => p.id === talkId),
     talk = talkPlayer && talkFor(w, talkPlayer);
   const { scope } = view;
   const tallies = v.tallies.players;
@@ -1007,7 +1006,7 @@ function Roster({ state, client, work }: Props & { work?: 'contracts' | 'sales' 
                 <small>성장 +{(p.developed || 0).toFixed(2)}</small>
               </div>
               <div className={s.rosterActions}>
-                {work !== 'sales' && p.status === 'active' && talkFor(w, p) && (
+                {p.status === 'active' && talkFor(w, p) && (
                   <button
                     type="button"
                     className={s.stanceBadge}
@@ -1020,7 +1019,7 @@ function Roster({ state, client, work }: Props & { work?: 'contracts' | 'sales' 
                     협상
                   </button>
                 )}
-                {work !== 'contracts' && canSetStance(p) && (
+                {canSetStance(p) && (
                   <StanceBadge player={p} disabled={disabled} onOpen={() => setStanceId(p.id)} />
                 )}
               </div>
@@ -1107,7 +1106,7 @@ function Roster({ state, client, work }: Props & { work?: 'contracts' | 'sales' 
                         </td>
                         <td>{p.until}</td>
                         <td>
-                          {work !== 'contracts' && canSetStance(p) && (
+                          {canSetStance(p) && (
                             <StanceBadge
                               player={p}
                               disabled={disabled}
@@ -1125,14 +1124,12 @@ function Roster({ state, client, work }: Props & { work?: 'contracts' | 'sales' 
         </details>
         <div className={s.panelFoot}>
           감독이 포메이션 자리마다 실효 능력과 피로를 따져 선발을 고르고, 부상 선수는 빼요. 선수마다
-          {work === 'contracts'
-            ? '계약 협상이 열려 있으면 하한과 기간, 비용을 확인하고 답변할 수 있어요.'
-            : '이적 상태 뱃지(이적 명단·협상 가능·이적 불가)를 눌러 바꿀 수 있어요.'}{' '}
-          제안은 이적시장 기간에 실제 구단이 보내고, 수락해야 이적이 성사돼요. 최소 14명·골키퍼
-          1명을 유지해야 해요. 지금: {window.label}
+          이적 상태 뱃지(이적 명단·협상 가능·이적 불가)를 눌러 바꿀 수 있어요. 제안은 이적시장
+          기간에 실제 구단이 보내고, 수락해야 이적이 성사돼요. 최소 14명·골키퍼 1명을 유지해야 해요.
+          지금: {window.label}
         </div>
       </Panel>
-      {!work && <TalkRulePanel w={w} client={client} />}
+      <TalkRulePanel w={w} client={client} />
       {comparing && (
         <PlayerComparison
           w={w}
@@ -1273,7 +1270,7 @@ export default function Rich({
       <>
         <TrainingView state={state} client={client} view={page} />
         {page === 'academy' && (
-          <OfficeWorkResponsibility
+          <WorkResponsibility
             w={state.view!.world}
             client={client}
             controller={controller}

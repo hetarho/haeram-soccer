@@ -218,7 +218,7 @@ for (const mode of ['manual', 'automatic'] as const)
     if (mode === 'manual') expect(after.calendar).toEqual(before.calendar);
     expect(after.mediations![0].status).toBe('pending');
     expect(after.promises ?? []).toHaveLength(0);
-    // Both wait in the office lobby's tray; home's event cards leave office work out (→WEB-39).
+    // Both wait in the office's 결재함; home's event cards leave office work out (→WEB-39/100).
     await expect(page.getByTestId('event-card')).toHaveCount(0);
     const reviews = (await approvalTray(page)).getByRole('button', { name: /· 검토하기$/ });
     if (mode === 'manual') await expect(reviews).toHaveCount(2);

@@ -44,7 +44,7 @@ import {
 } from './club-identity-helpers';
 
 /**
- * KIT-9/12/13, WEB-39/49/74/108, SAVE-6/20: in a career 구단주 사무실 › 구단 디자인 changes the
+ * KIT-9/12/13, WEB-49/74/108/110, SAVE-6/20: in a career 구단 운영 › 구단 디자인 changes the
  * crest and kits only through a designer commission. Colours and a designer are chosen, the fee is
  * paid at once, and the delivered drafts wait in the save until one is adopted, all are thrown away
  * or they are redrawn at half the fee. Evidence is the committed and exported checkpoints, decoded,

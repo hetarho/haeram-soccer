@@ -412,7 +412,10 @@ for (const width of [390, 1380])
       await loadPausedGame(page);
       const raw = await committedRaw(page);
       const date = await page.getByTestId('calendar').innerText();
-      const art = page.locator('[data-facility-art="manager"] img');
+      // The clubhouse has no facility scene (→WEB-11); 훈련 keeps its training ground (→WEB-70/72).
+      await openPersonnel(page, 'training');
+      const art = page.locator('[data-facility-art="training"] img');
+      await expect(art).toBeVisible();
       const artwork = await art.getAttribute('src');
       const pack = await (await page.request.get(`/presentation/themes/${entry.resource}`)).json();
       const picker = await openSettings(page);
@@ -432,8 +435,9 @@ for (const width of [390, 1380])
       await closeSettings(page);
       await expectHomeBounds(page);
       await expect(page.getByTestId('calendar')).toHaveText(date, { useInnerText: true });
+      // A reload continues the game where it was, on 훈련 (→WEB-62).
       await page.reload();
-      await expect(page.getByTestId('club-hub')).toBeVisible();
+      await expect(art).toBeVisible();
       expect(await background(page)).toBe(pack.tokens.palette.bg);
       await expect(page.getByTestId('calendar')).toHaveText(date, { useInnerText: true });
       expect(await committedRaw(page)).toBe(raw);
@@ -444,7 +448,7 @@ for (const width of [390, 1380])
       await expect(picker).toBeVisible();
       await closeSettings(page);
       await page.reload();
-      await expect(page.getByTestId('club-hub')).toBeVisible();
+      await expect(art).toBeVisible();
       expect(await background(page)).toBe(baseline.theme.tokens.palette.bg);
       expect(await committedRaw(page)).toBe(raw);
       await expectHomeBounds(page);
@@ -487,7 +491,7 @@ test('theme reveal keeps controls in the composited dialog and backdrop', async 
               const result = update();
               // The new root must capture the selected art in this callback, before returning.
               document.documentElement.dataset.themeSnapshotArt =
-                document.querySelector('[data-facility-art="manager"] img')?.getAttribute('src') ??
+                document.querySelector('[data-facility-art="training"] img')?.getAttribute('src') ??
                 '';
               return result;
             }
@@ -510,6 +514,9 @@ test('theme reveal keeps controls in the composited dialog and backdrop', async 
     !(await page.evaluate(() => typeof document.startViewTransition === 'function')),
     'The browser uses the immediate fallback without native snapshots.',
   );
+  // 훈련's training-ground scene stays mounted behind the picker (→WEB-70/93).
+  await openPersonnel(page, 'training');
+  await expect(page.locator('[data-facility-art="training"] img')).toBeVisible();
   const dialog = await openSettings(page);
   const closePaths = () =>
     dialog
@@ -521,7 +528,7 @@ test('theme reveal keeps controls in the composited dialog and backdrop', async 
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'pixel');
   await expect(page.locator('html')).toHaveAttribute(
     'data-theme-snapshot-art',
-    (await page.locator('[data-facility-art="manager"] img').getAttribute('src'))!,
+    (await page.locator('[data-facility-art="training"] img').getAttribute('src'))!,
   );
   await expect.poll(closePaths).not.toBe(standardClose);
   await expect(dialog).toBeVisible();
@@ -693,9 +700,15 @@ test('unseen routed locale and theme change actual resources while game facts, d
     .getByRole('navigation', { name: '모바일 게임 메뉴' })
     .getByRole('button', { name: 'Resource-only club home', exact: true })
     .click();
-  const image = page.locator('[data-facility-art="manager"] img');
-  // Home's art is the owner's office scene, below NEXT MATCH; it loads once scrolled to.
-  await image.scrollIntoViewIfNeeded();
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await expect(page.locator('img[src$="/__presentation-fixtures/home.svg"]:visible')).toBeVisible();
+  // The owner's office scene heads the 결재라인 overview, opened from the bottom controls.
+  await page
+    .locator('[data-ui="season-transport"]')
+    .getByRole('button', { name: '결재라인 모아보기', exact: true })
+    .click();
+  const overview = page.getByRole('dialog', { name: '결재라인 모아보기', exact: true });
+  const image = overview.locator('[data-facility-art="manager"] img');
   await expect(image).toHaveAttribute(
     'src',
     /\/__presentation-fixtures\/scenes\/heritage\/manager-\d+\.svg$/,
@@ -708,7 +721,9 @@ test('unseen routed locale and theme change actual resources while game facts, d
       ),
     )
     .toBe(true);
-  await expect(page.locator('img[src$="/__presentation-fixtures/home.svg"]:visible')).toBeVisible();
+  const scene = new URL((await image.getAttribute('src'))!, page.url()).pathname;
+  await overview.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await expect(overview).toHaveCount(0);
   expect(
     await page.evaluate(() =>
       getComputedStyle(document.documentElement)
@@ -720,7 +735,7 @@ test('unseen routed locale and theme change actual resources while game facts, d
     fixture.localeUrl,
     fixture.themeUrl,
     fixture.theme.stylesheet!,
-    new URL((await image.getAttribute('src'))!, page.url()).pathname,
+    scene,
     '/__presentation-fixtures/home.svg',
   ])
     expect(fixture.requests.get(path), path).toBeGreaterThan(0);

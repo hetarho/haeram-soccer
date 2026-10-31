@@ -1,13 +1,15 @@
 import { expect, type Page } from '@playwright/test';
+import type { World } from '../../packages/contracts/src/types';
+import { pendingDecisions } from '../../packages/engine/src/stopping';
 import { clubhouseTab } from './competition-navigation';
 import { dismissFeedback } from './feedback';
 
-/** Local desk navigation within the shared management shell (→WEB-39). */
+/** The office's compact heading bar inside the shared management shell (→WEB-39). */
 export const officeBar = (page: Page) => page.locator('[data-ui="office-bar"]');
 /** The name the bar shows: 결재함 on the office's queue, else the reviewed request's work. */
 export const officeTitle = (page: Page) => officeBar(page).getByRole('heading');
 export const LOBBY = '결재함';
-/** The clubhouse's office scene, the office's entrance (→WEB-11). */
+/** The clubhouse's one-line office entrance (→WEB-11). */
 export const OFFICE = '구단주 사무실';
 /** The office's queue (→WEB-39/100): every waiting request as a row of its list. */
 export const approvalQueue = (page: Page) => page.getByTestId('approval-queue');
@@ -15,6 +17,16 @@ export const approvalRows = (page: Page) =>
   approvalQueue(page)
     .getByRole('list', { name: '결재 대기 업무', exact: true })
     .getByRole('listitem');
+/** A waiting request's 검토 in the queue. */
+export const reviewButton = (page: Page, id: string) =>
+  approvalQueue(page).locator(`[data-review-id="${id}"]`);
+/** The 결재함's order (→WEB-100): longest waiting first, so overdue first, then the request ID. */
+export function approvalOrder(w: World) {
+  const waits = w.approvalWaits ?? {};
+  return pendingDecisions(w)
+    .sort((a, b) => (waits[b.id] ?? 0) - (waits[a.id] ?? 0) || (a.id < b.id ? -1 : 1))
+    .map((item) => item.id);
+}
 const OFFICE_PATH = /^\/(direction|business)(\/|$)/;
 
 /**
@@ -24,20 +36,13 @@ const OFFICE_PATH = /^\/(direction|business)(\/|$)/;
  * import may take to open (→ importResponsibilityCareer).
  */
 async function officeContext(page: Page) {
-  const current: { value?: { area: string; libraryOpen: boolean } | null } = {};
+  const current: { value?: string | null } = {};
   await expect
     .poll(
       async () => {
         current.value = await officeTitle(page).evaluateAll((headings, officePath) => {
           if (!new RegExp(officePath).test(location.pathname)) return null;
-          const area = headings[0]?.textContent?.trim();
-          if (!area) return undefined;
-          return {
-            area,
-            libraryOpen:
-              document.querySelector('[data-testid="office-library"]')?.hasAttribute('open') ??
-              false,
-          };
+          return headings[0]?.textContent?.trim() || undefined;
         }, OFFICE_PATH.source);
         return current.value !== undefined;
       },
@@ -58,14 +63,17 @@ async function dismissCelebration(page: Page) {
   if (await banner.isVisible()) await banner.click({ timeout: 2000 }).catch(() => undefined);
 }
 
-/** The office scene's 들어가기 on the clubhouse home, the office's only entrance (→WEB-11). */
+/**
+ * The 들어가기 of the clubhouse's office entrance (→WEB-11); the bottom controls' 결재함 opens the
+ * same queue (→WEB-18).
+ */
 export const officeEntrance = (page: Page) =>
   page
     .getByRole('region', { name: OFFICE, exact: true })
     .getByRole('button', { name: '들어가기', exact: true });
 
 /**
- * Enters the owner office's 결재함 through the clubhouse office scene (→WEB-11/39). Dismiss an
+ * Enters the owner office's 결재함 through the clubhouse's office entrance (→WEB-11/39). Dismiss an
  * observation dialog before navigating; dismissing never resolves its work. Inside the office it
  * leaves a review for the queue, unresolved.
  */
@@ -222,18 +230,15 @@ export async function outsideOffice(page: Page) {
 }
 
 /**
- * Runs a menu action (an export, a save retry) from outside the office and returns to the same
- * office area afterwards, so a test reading the save mid-edit keeps its place and draft. Transient
- * notices of the area (a failed apply) do not survive the visit.
+ * Runs a menu action (an export, a save retry) from outside the office and returns to its 결재함
+ * afterwards. Leaving passes through the queue — a review is left by 결재함으로, unresolved — so
+ * the queue is where the office resumes (→WEB-100); outside the office the action runs in place,
+ * keeping a club section's place and draft.
  */
 export async function aroundOffice<T>(page: Page, action: () => Promise<T>) {
-  const context = await officeContext(page);
-  if (!context) return action();
-  const { area, libraryOpen } = context;
+  if (!(await inOffice(page))) return action();
   await leaveOffice(page);
   const result = await action();
-  if (area === LOBBY) await enterOffice(page);
-  else if (area === '재정·투자' && libraryOpen) await openOfficeLibrary(page);
-  else await openOfficeArea(page, area);
+  await enterOffice(page);
   return result;
 }

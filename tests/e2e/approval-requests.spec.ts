@@ -1,25 +1,24 @@
 import { expect, test, type Page } from '@playwright/test';
-import type { World } from '../../packages/contracts/src/types';
 import { pendingDecisions } from '../../packages/engine/src/stopping';
 import { pendingAcquisitionCareer, importResponsibilityCareer } from './responsibility-fixtures';
 import { eventCard } from './events';
-import { approvalQueue, approvalRows, enterOffice, officeLobby, officeTitle } from './office';
+import {
+  approvalOrder,
+  approvalQueue,
+  approvalRows,
+  enterOffice,
+  officeLobby,
+  officeTitle,
+  reviewButton as review,
+} from './office';
 import { exportedCareer } from './career-fixtures';
 
-/** The 결재함's order (→WEB-100): longest waiting first, so overdue first, then the request ID. */
-function queueOrder(w: World) {
-  const waits = w.approvalWaits ?? {};
-  return pendingDecisions(w)
-    .sort((a, b) => (waits[b.id] ?? 0) - (waits[a.id] ?? 0) || (a.id < b.id ? -1 : 1))
-    .map((item) => item.id);
-}
 /** The office opens on its 결재함 (→WEB-39); home leaves office work out of its events. */
 async function queue(page: Page) {
   await enterOffice(page);
   await officeLobby(page);
   return approvalRows(page);
 }
-const review = (page: Page, id: string) => approvalQueue(page).locator(`[data-review-id="${id}"]`);
 async function reviewFirst(page: Page) {
   await (
     await queue(page)
@@ -40,7 +39,7 @@ for (const width of [390, 1280]) {
     const w = pendingAcquisitionCareer();
     w.settings!.mode = 'manual';
     w.settings!.observations = { matchEve: false, windowOpen: false };
-    const ids = queueOrder(w);
+    const ids = approvalOrder(w);
     expect(ids.length).toBeGreaterThanOrEqual(2);
     await importResponsibilityCareer(page, w);
     await expect(eventCard(page)).toHaveCount(0);

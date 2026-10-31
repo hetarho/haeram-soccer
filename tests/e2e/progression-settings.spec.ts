@@ -300,7 +300,7 @@ test('approvals waiting in the 결재함 never stop a running clock (→WEB-42)'
   const play = clock.getByRole('button', { name: '자동 진행 시작', exact: true }),
     stop = clock.getByRole('button', { name: '자동 진행 정지', exact: true }),
     date = page.getByTestId('game-date');
-  // Office work waits behind the office scene's count, never as a home card (→WEB-39/100).
+  // Office work waits behind the office entrance's count, never as a home card (→WEB-39/100).
   const waiting = page
     .getByTestId('club-hub')
     .locator('[data-home-part="office"] [data-ui="count"]');
