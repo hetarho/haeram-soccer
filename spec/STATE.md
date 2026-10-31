@@ -15,9 +15,10 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T21:04Z | 2026-10-31T21:31Z | - |
+| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T21:04Z | 2026-10-31T22:24Z | - |
 
 ## inbox
+- 261101 decided WEB-69 WEB-74 T635: CI's selected club tab loses keyboard focus after navigation on every browser → repair production focus intent through the actual render lifecycle, retaining the exact keyboard/URL/state assertions; scope the same-person career action to the actual appointed manager while a dialog fades (alt: relax focus checks | add test-only refocusing | accept ambiguous matches).
 - 261101 decided WEB-10 WEB-63 T629 T634: final all-theme journey reached the club sections but 1군 measured 40.703125px (pixel 43.34375px) wide → give the shared page tabs the same 44px minimum width as their existing height, retaining exact geometry assertions and all theme resources (alt: weaken the touch target check | pad only one label); this is a bounded style correction with no new policy.
 - 261101 decided WEB-39 WEB-74 WEB-83 T634: host review found the partial manual fix only opens reports already waiting, leaving a fresh next-event advance hidden by EventCenter's business guard → connect the explicit office action to the existing report-capable clubhouse for both advance and reopen, leaving controller rules/approvals unchanged; revise the new unit test and add the pre-eve office browser case (alt: require a second click to see the event | predict the next stop in UI). Resume preserved edits with .tmp/host-review-T634.md before task-tier checks.
 - 261101 decided WEB-74 WEB-83 SAVE-20 T634: final browser gate found integration regressions after the office consolidation → repair explicit observation reopening, completed design-form state and shared navigation readiness; move old test contexts to their actual homes while retaining every business/geometry assertion (alt: publish with failures | restore duplicate desks); latest T622 source is integrated before the new gate.
@@ -471,6 +472,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T635 | Retain club-tab keyboard focus through navigation | ARCH WEB | T634 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -499,6 +501,7 @@
 - Owner authorizes main publication of T617/T618 despite reproduced baseline UI e2e failures; publish unchanged engine source and observe CI. Evidence reports/261031-ei31.md.
 - create-task KIT (existing kit baseline r5–r6 remains pending outside of01; WEB r188–r195 baseline regression is included in T632).
 - cr01 put every country's money at its real 1999 rate against the pound (T622, ECON-35, catalog 2026-demo-4); careers outside England saved before it are refused on load. The 1950s lower-division fee pyramid suggest (CLUB-25/46) remains for the owner.
+- implement-task T635 (of01 CI focus/history repair; host affected cases in all browsers, then final gate/publication and CI).
 
 ## log
 - 261101 of01 final batch passed on 28bab2ce: clean/stable candidate, type/lint/format, unit 1,889, integration 1,270 (4 existing skips), contract 48, catalogs, presentation, build and Chromium 343; focused all-theme journey 4/4 also passed. Main push and one CI wait follow.
@@ -519,5 +522,5 @@
 - 261101 fix engine approvals: waiting days counted at the start of clubDay so day, round and season paths agree at the close (CI 41222347443: calendar.progression-eng/esp, season, full-model-throughput); portable golden regenerated; integration 1,268 and contract 48 passed.
 - 261101 ap01 closed: changed-code checks only at the owner's request (unit tier, touched integration/contract, 14 changed Chromium journeys); push main.
 - 261101 T625 done: 결재함 button in the bottom controls with waiting/overdue counts, tray rows with D-n/지연 n일, lobby tray heading with the overdue morale cost; session ap01.
-- 261101 T624 done: approvals never stop or refuse progression in either mode; office counts read approvalRequests; four e2e journeys rewritten for the final gate; session ap01.
 - 261101 T623 done: approval waiting days, 7-day 결재 기한, one overdue notice and overdue morale (−1 each a settled round, at most 3); portable golden regenerated for three all-direct scenarios; session ap01.
+- 261101 create-task T635: CI 41244030798 staff keyboard focus fails on Chromium/Firefox/WebKit; inspect downloaded traces and repair actual focus lifecycle without weakening checks. Also scope the fading-dialog career-history match to the current manager; host targeted three-browser gate before full batch; session of01.
