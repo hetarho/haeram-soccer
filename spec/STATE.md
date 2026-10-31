@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-10-31T20:28Z | 2026-10-31T20:28Z | T634 |
 
 ## inbox
 - 261101 decided WEB-39 WEB-74 WEB-83 T634: host review found the partial manual fix only opens reports already waiting, leaving a fresh next-event advance hidden by EventCenter's business guard → connect the explicit office action to the existing report-capable clubhouse for both advance and reopen, leaving controller rules/approvals unchanged; revise the new unit test and add the pre-eve office browser case (alt: require a second click to see the event | predict the next stop in UI). Resume preserved edits with .tmp/host-review-T634.md before task-tier checks.
