@@ -16,6 +16,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | bd02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T16:10Z | 2026-11-01T16:10Z | - |
+| of02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T17:19Z | 2026-11-01T17:19Z | - |
 
 ## inbox
 - 261102 decided WEB-112 WEB-74 WEB-59 T644: what a prospect's name opens in 팀's 유소년 list, since the player sheet reads only first-team players → his existing 유소년 승격·방출 검토 on the academy page, asked by a one-shot request the academy place takes (`openAcademyProspect`/`useAcademyReview`); it reads until the owner commits a choice there; coach names open PersonCareer only when a retained person exists, otherwise they are plain text in the same row height (alt: plain-text prospect names | extend the player sheet to prospects, a new inspector). Session of02.
