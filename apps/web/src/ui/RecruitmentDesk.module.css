@@ -722,19 +722,6 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-.position {
-  display: grid;
-  place-items: center;
-  flex: none;
-  min-width: 34px;
-  height: 30px;
-  color: var(--image-on-dark, var(--text));
-  background: var(--image-dark-fill, var(--surface-deep)) var(--image-dark-material) repeat;
-  background-size: var(--image-material-size, 256px);
-  border-radius: var(--image-control-radius, var(--control-radius));
-  font-size: 11px;
-  font-weight: 800;
-}
 .playerText {
   flex: 1;
   min-width: 0;
@@ -811,11 +798,6 @@
   }
   .playerIdentity {
     gap: 6px;
-  }
-  .position {
-    min-width: 27px;
-    height: 26px;
-    font-size: 10px;
   }
   .playerName b {
     font-size: 12px;
@@ -1027,11 +1009,6 @@
   color: var(--text-faint);
   font-size: 12px;
   font-family: var(--display);
-}
-@media (max-width: 380px) {
-  .position {
-    display: none;
-  }
 }
 /* The player of ours a candidate is compared against. */
 .ownPick {

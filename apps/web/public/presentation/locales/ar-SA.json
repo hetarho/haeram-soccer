@@ -199,6 +199,10 @@
     "result.draw": "ت",
     "result.draw.label": "تعادل",
     "result.loss": "خ",
-    "result.loss.label": "خسارة"
+    "result.loss.label": "خسارة",
+    "position.family.GK": "حارس المرمى",
+    "position.family.DF": "دفاع",
+    "position.family.MF": "خط الوسط",
+    "position.family.FW": "هجوم"
   }
 }

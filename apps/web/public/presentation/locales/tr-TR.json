@@ -187,6 +187,10 @@
     "result.draw": "B",
     "result.draw.label": "Beraberlik",
     "result.loss": "M",
-    "result.loss.label": "Mağlubiyet"
+    "result.loss.label": "Mağlubiyet",
+    "position.family.GK": "Kaleci",
+    "position.family.DF": "Savunma",
+    "position.family.MF": "Orta saha",
+    "position.family.FW": "Hücum"
   }
 }

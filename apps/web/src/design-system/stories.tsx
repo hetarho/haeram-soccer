@@ -13,6 +13,8 @@ import { PixelIcon } from '../ui/PixelIcon';
 import { TrophyIcon, type TrophyKind } from '../ui/TrophyIcon';
 import { OvrBadge } from '../ui/OvrBadge';
 import { HomeAwayBadge } from '../ui/HomeAwayBadge';
+import { PositionBadge } from '../ui/PositionBadge';
+import { POSITIONS } from '../../../../packages/contracts/src/player';
 import { ResultBadge } from '../ui/ResultBadge';
 import { Money } from '../ui/Money';
 import { AnimatedMoney } from '../ui/AnimatedMoney';
@@ -389,6 +391,13 @@ function Badges({ runtime }: { runtime: Runtime }) {
         <div className="ds-row">
           <HomeAwayBadge side="home" />
           <HomeAwayBadge side="away" />
+        </div>
+      </Section>
+      <Section title="PositionBadge · 골키퍼 · 수비 · 미드필드 · 공격">
+        <div className="ds-row">
+          {POSITIONS.map((position) => (
+            <PositionBadge key={position} position={position} />
+          ))}
         </div>
       </Section>
       <Section title="OvrBadge · 등급과 잠재력">

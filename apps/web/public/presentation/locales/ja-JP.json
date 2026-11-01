@@ -184,6 +184,10 @@
     "result.draw": "分",
     "result.draw.label": "引き分け",
     "result.loss": "敗",
-    "result.loss.label": "敗北"
+    "result.loss.label": "敗北",
+    "position.family.GK": "ゴールキーパー",
+    "position.family.DF": "守備",
+    "position.family.MF": "中盤",
+    "position.family.FW": "攻撃"
   }
 }

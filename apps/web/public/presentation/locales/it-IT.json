@@ -190,6 +190,10 @@
     "result.draw": "N",
     "result.draw.label": "Pareggio",
     "result.loss": "P",
-    "result.loss.label": "Sconfitta"
+    "result.loss.label": "Sconfitta",
+    "position.family.GK": "Portiere",
+    "position.family.DF": "Difesa",
+    "position.family.MF": "Centrocampo",
+    "position.family.FW": "Attacco"
   }
 }

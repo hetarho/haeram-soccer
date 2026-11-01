@@ -187,6 +187,10 @@
     "result.draw": "G",
     "result.draw.label": "Gelijkspel",
     "result.loss": "V",
-    "result.loss.label": "Verlies"
+    "result.loss.label": "Verlies",
+    "position.family.GK": "Keeper",
+    "position.family.DF": "Verdediging",
+    "position.family.MF": "Middenveld",
+    "position.family.FW": "Aanval"
   }
 }

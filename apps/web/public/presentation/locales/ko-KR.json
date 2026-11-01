@@ -184,6 +184,10 @@
     "result.draw": "무",
     "result.draw.label": "무승부",
     "result.loss": "패",
-    "result.loss.label": "패배"
+    "result.loss.label": "패배",
+    "position.family.GK": "골키퍼",
+    "position.family.DF": "수비",
+    "position.family.MF": "미드필드",
+    "position.family.FW": "공격"
   }
 }

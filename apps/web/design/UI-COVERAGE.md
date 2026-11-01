@@ -146,6 +146,7 @@ Every module below was included in the source review; Card is the subsequent sha
 | [PlayingCoachReview.tsx](../src/ui/PlayingCoachReview.tsx)       | 4 / – / –                 | sheet                                                                                                                                                | academy                                     |
 | [PolicyBoard.tsx](../src/ui/PolicyBoard.tsx)                     | – / – / –                 | Composed/default skin                                                                                                                                | policy                                      |
 | [PolicyContext.tsx](../src/ui/PolicyContext.tsx)                 | – / – / –                 | Composed/default skin                                                                                                                                | policy                                      |
+| [PositionBadge.tsx](../src/ui/PositionBadge.tsx)                 | – / – / –                 | position-badge (shared family palette, no theme material)                                                                                            | badges, recruitment                         |
 | [PresentationSettings.tsx](../src/ui/PresentationSettings.tsx)   | 2 / – / –                 | Composed/default skin                                                                                                                                | settings                                    |
 | [ProgressControls.tsx](../src/ui/ProgressControls.tsx)           | 4 / – / –                 | season-overview, calendar-header, link, icon, season-transport                                                                                       | controller                                  |
 | [ProgressModeSwitch.tsx](../src/ui/ProgressModeSwitch.tsx)       | 3 / 1 / –                 | primary                                                                                                                                              | controller                                  |
@@ -178,6 +179,8 @@ Every module below was included in the source review; Card is the subsequent sha
 ## Rendered preview inventory
 
 Each registered preview below loaded at both desktop and mobile widths; the 50 initial entries retain their audit baseline and cards was added in the material-plane follow-up. This is app-content coverage, not a request to theme the workbench itself.
+
+PositionBadge joined `badges` and the recruitment rows after this audit (T643). Its rendered family colours, contrast and phone visibility in all four registered themes belong to the browser batch run of `tests/e2e/position-badges.spec.ts`; this inventory does not claim them as inspected.
 
 | Preview             | App components                                                                                   | Desktop / mobile      |
 | ------------------- | ------------------------------------------------------------------------------------------------ | --------------------- |

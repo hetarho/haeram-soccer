@@ -5,6 +5,8 @@ import type { WorldMarketOffer, WorldMarketPage } from '../../../../packages/con
 import { worldMarketFixture } from '../../../../packages/engine/src/world-market.testkit';
 import type { ClientState, GameClient } from '../runtime/client';
 import { initialClientState } from '../runtime/store';
+import korean from '../../public/presentation/locales/ko-KR.json';
+import { PositionBadge } from './PositionBadge';
 import { RecruitmentDesk } from './RecruitmentDesk';
 import {
   DEFAULT_MARKET_QUERY,
@@ -54,6 +56,12 @@ vi.mock('../runtime/store', async (original) => ({
 vi.mock('./Dialog', () => ({
   Dialog: ({ children, actions }: { children: ReactNode; actions: ReactNode }) =>
     createElement('div', {}, children, actions),
+}));
+vi.mock('../presentation/react', async (original) => ({
+  ...(await original<typeof import('../presentation/react')>()),
+  useLocale: () => ({
+    t: (id: string) => korean.messages[id as keyof typeof korean.messages] ?? id,
+  }),
 }));
 
 // Three represented clubs and a prepared XI; no world initialization, progression or worker.
@@ -189,9 +197,20 @@ describe('paged whole-world recruitment desk', () => {
     expect(reads.inspect.mock.calls.every((args) => args[3] === undefined)).toBe(true);
   });
   it('keeps four compact rows inspectable with source and status while scope help lives in filters', () => {
+    const families = [
+      ['GK', 'GK', '골키퍼'],
+      ['LWB', 'DF', '수비'],
+      ['AM', 'MF', '미드필드'],
+      ['ST', 'FW', '공격'],
+    ] as const;
     const offers = Array.from({ length: 4 }, (_, index) => ({
       ...offer,
-      player: { ...offer.player, id: `external-${index}`, name: `Player ${index}` },
+      player: {
+        ...offer.player,
+        id: `external-${index}`,
+        name: `Player ${index}`,
+        position: families[index][0],
+      },
       target: { ...offer.target, playerId: `external-${index}` },
       own: index === 1,
       recommended: index === 2,
@@ -206,11 +225,25 @@ describe('paged whole-world recruitment desk', () => {
     expect(markup).toContain('우리 선수');
     expect(markup).toContain('스카우트 추천');
     expect(markup).toContain('협상 중');
-    for (const candidate of offers) {
+    for (const [index, candidate] of offers.entries()) {
+      const [position, line, family] = families[index];
+      expect(markup).toContain(`data-candidate-id="${candidate.player.id}" data-line="${line}"`);
       const inspector = control(`${candidate.player.name} 상세 보기`);
+      // The shared family badge replaces the old dark tile inside the one name target (→WEB-113).
+      const badge = elements(inspector).find((node) => node.type === PositionBadge)!;
+      expect(badge.props.position).toBe(position);
+      const name = renderToStaticMarkup(inspector);
+      expect(name).toContain(
+        `data-ui="position-badge" data-line="${line}" title="${family}"><span class="`,
+      );
+      expect(name).toContain(`">${family} </span>${position}</span>`);
+      expect(name).not.toMatch(/aria-hidden|tabindex|<a |<button[^>]*>.*<button/);
       const metadata = elements(inspector).find((node) => node.type === 'small')!;
       expect(metadata.props.title).toBe('Foreign Club · 스페인 1부');
-      expect(renderToStaticMarkup(metadata)).toContain(`${w.year - candidate.player.born}세`);
+      // The badge carries the code, so the metadata line starts with the age.
+      expect(renderToStaticMarkup(metadata)).toMatch(
+        new RegExp(`^<small[^>]*>${w.year - candidate.player.born}세`),
+      );
       expect(renderToStaticMarkup(metadata)).toContain('Foreign Club');
       (inspector.props.onClick as () => void)();
       expect(choices['world-market-viewing']).toEqual(candidate.target);

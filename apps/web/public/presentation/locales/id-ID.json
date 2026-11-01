@@ -184,6 +184,10 @@
     "result.draw": "S",
     "result.draw.label": "Seri",
     "result.loss": "K",
-    "result.loss.label": "Kalah"
+    "result.loss.label": "Kalah",
+    "position.family.GK": "Kiper",
+    "position.family.DF": "Pertahanan",
+    "position.family.MF": "Lini tengah",
+    "position.family.FW": "Serangan"
   }
 }

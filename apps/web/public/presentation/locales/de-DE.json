@@ -187,6 +187,10 @@
     "result.draw": "U",
     "result.draw.label": "Unentschieden",
     "result.loss": "N",
-    "result.loss.label": "Niederlage"
+    "result.loss.label": "Niederlage",
+    "position.family.GK": "Torwart",
+    "position.family.DF": "Abwehr",
+    "position.family.MF": "Mittelfeld",
+    "position.family.FW": "Angriff"
   }
 }

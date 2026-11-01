@@ -190,6 +190,10 @@
     "result.draw": "E",
     "result.draw.label": "Empate",
     "result.loss": "D",
-    "result.loss.label": "Derrota"
+    "result.loss.label": "Derrota",
+    "position.family.GK": "Portero",
+    "position.family.DF": "Defensa",
+    "position.family.MF": "Centro del campo",
+    "position.family.FW": "Ataque"
   }
 }

@@ -190,6 +190,10 @@
     "result.draw": "N",
     "result.draw.label": "Match nul",
     "result.loss": "D",
-    "result.loss.label": "Défaite"
+    "result.loss.label": "Défaite",
+    "position.family.GK": "Gardien",
+    "position.family.DF": "Défense",
+    "position.family.MF": "Milieu",
+    "position.family.FW": "Attaque"
   }
 }

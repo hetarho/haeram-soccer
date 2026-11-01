@@ -333,6 +333,16 @@ wide can reduce its keyline below a visible pixel. `match-badge-frame-width` con
 art frame independently of its native source caps. Keep fallback fills inside the content
 box when the silhouette has transparent corners.
 
+Player positions use the shared `PositionBadge` wherever a row shows a position (WEB-113).
+It derives the family from the engine's `lineOf` and keeps the actual code visible, with the
+family name read first from the `position.family.*` locale messages. Goalkeeper gold, defence
+blue, midfield green and attack coral are one palette for every theme: light fills with dark
+ink (at least 6.9:1 in the source values) and a darker family edge that separates the badge
+from light paper. Themes contribute only the badge radius; never put a dark material, OVR tier
+or club colour behind the fill, and do not make the badge a target of its own inside a row's
+link. Keep it visible at the narrowest phone width, and review all four families together in
+the `badges` story. Computed contrast in each registered theme is a browser-run check.
+
 Match outcomes use the shared `ResultBadge`, with compact and score-bearing variants in the
 `badges` story. Give win, draw and loss explicit `result-{win,draw,loss}-badge-{frame,slice,fill,text}`
 roles instead of plain bordered boxes. Keep these meanings separate from venue, action and

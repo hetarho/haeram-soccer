@@ -187,6 +187,10 @@
     "result.draw": "D",
     "result.draw.label": "Draw",
     "result.loss": "L",
-    "result.loss.label": "Loss"
+    "result.loss.label": "Loss",
+    "position.family.GK": "Goalkeeper",
+    "position.family.DF": "Defence",
+    "position.family.MF": "Midfield",
+    "position.family.FW": "Attack"
   }
 }

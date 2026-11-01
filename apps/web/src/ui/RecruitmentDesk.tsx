@@ -35,6 +35,7 @@ import { Dialog } from './Dialog';
 import { compactMoney } from './format';
 import { Money } from './Money';
 import { OvrBadge } from './OvrBadge';
+import { PositionBadge } from './PositionBadge';
 import { OfferAnswers } from './ClubStaff';
 import { RecruitmentNeeds, ScoutShortlist } from './ScoutShortlist';
 import { openCoachSheet, openDirection } from './state';
@@ -761,13 +762,11 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                     onClick={() => setViewing(offer.target)}
                   >
                     <span className={s.playerIdentity}>
-                      <span className={s.position} aria-hidden="true">
-                        {player.position}
-                      </span>
+                      <PositionBadge position={player.position} />
                       <span className={s.playerText}>
                         <b>{player.name}</b>
                         <small title={source}>
-                          {player.position} · {w.year - player.born}세
+                          {w.year - player.born}세
                           {offer.own
                             ? ' · 우리 선수'
                             : !offer.available

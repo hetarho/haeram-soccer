@@ -1,0 +1,60 @@
+/*
+ * Position families share one palette in every theme (→WEB-113): light family fills with dark
+ * ink (≥ 6.9:1) and a darker family edge that keeps the badge apart from light paper. Themes
+ * supply only geometry; no theme material covers the fill.
+ */
+.badge {
+  --position-fill: #7db8f2;
+  --position-ink: #0a2340;
+  --position-edge: #2d68a8;
+  position: relative;
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  min-width: 36px;
+  height: 28px;
+  padding: 0 4px;
+  border: 1px solid var(--position-edge);
+  border-radius: var(--image-badge-radius, var(--badge-radius, 4px));
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.badge.badge {
+  background: var(--position-fill);
+  color: var(--position-ink);
+}
+.badge[data-line='GK'] {
+  --position-fill: #f2c230;
+  --position-ink: #2b2000;
+  --position-edge: #8a6a00;
+}
+.badge[data-line='MF'] {
+  --position-fill: #7fd18c;
+  --position-ink: #0c3417;
+  --position-edge: #2c7f3f;
+}
+.badge[data-line='FW'] {
+  --position-fill: #ff8f7a;
+  --position-ink: #4a0f05;
+  --position-edge: #b8432f;
+}
+/* Read as "수비 CB"; the badge itself shows only the code. */
+.family {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+@media (max-width: 760px) {
+  .badge {
+    min-width: 32px;
+    height: 24px;
+    padding: 0 3px;
+  }
+}

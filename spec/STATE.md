@@ -19,6 +19,7 @@
 | of02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T16:24Z | 2026-11-01T16:24Z | - |
 
 ## inbox
+- 261102 decided WEB-113 WEB-90 ARCH-21 T643: how the shared position badge names its family and where its isolated test lives → the family name comes from new `position.family.GK|DF|MF|FW` messages in all 12 locale packs (Korean 골키퍼/수비/미드필드/공격, as the engine's LINE_LABEL), read before the code and visually hidden; the test is `PositionBadge.test.ts`, since the unit tier only collects `*.test.ts` and the planned `.test.tsx` would never run; the market metadata line drops its repeated code now that the badge shows it at every width (alt: LINE_LABEL Korean literals in a reusable component, against the design guide's locale rule | keep the code twice in a 360px row). Session of02.
 - 261102 decided WEB-112 WEB-113: gather our people in primary 팀 immediately before 이적시장, using 1군/유소년/코치 compact lists and existing detailed-management views; retain restored artwork there and home/office, with office personnel tabs removed (alt: another office directory | delete the restored illustrations for density). Position families use engine lineOf: gold GK, blue DF, green MF and coral FW with readable code/labels, shared by Team and market. Session of02.
 - 261102 decided WEB-40 WEB-47 WEB-65: how League and Cup browse seasons → one page per competition over every kept season with a one-row header (country/division selects with groups as options, or one cup select listing every domestic and continental cup) and a ‹ season › stepper; 이전 리그 기록/이전 컵대회 기록 tabs, the stacked title line and 우리 리그로 go, and 우리 구단 시즌 기록 moves into a closed season's 순위표 (alt: keep the season dropdown and History tabs | an icon-only own-league button squeezed into the row at 360px).
 - 261102 decided PLAYER-27: how the 발롱도르 is decided → from the 1955/56 close, goals ×4 + assists ×3 + team honours (European Cup +40, its final +15, other continental +15, top-flight title +25, domestic cup +10) + (OVR − 70) × 2, 15+ top-flight league appearances, podium of three; nationality not modelled (alt: European players only before 1995, which needs nationality data the world lacks | OVR alone, which ignores the season).
@@ -482,7 +483,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T643 | Shared readable position badges in the market | WEB | T637 | doing@261101.of02 |
 | T644 | Compact Team directory before the transfer market | WEB | T643 | todo |
 | T640 | League and Cup browse every season from a one-row header | WEB HIST | - | todo |
 | T641 | Ballon d'Or award, archive and contract effects | PLAYER HIST CLUB | - | todo |
@@ -510,10 +510,11 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T643 (of02), then T644; this checkout handles only those tasks.
+- implement-task T644 (of02); this checkout handles only that task.
 - implement-task T640 (bd02), then T641, T642
 
 ## log
+- 261102 T643 done: shared PositionBadge (engine lineOf family, actual code, localized hidden family name; gold GK, blue DF, green MF, coral FW with dark ink and a family edge, theme badge radius only) replaces the market's dark tile in every row and stays visible at 360px; badges story shows all 14 positions; typecheck/lint/format, affected unit 13 files / 119 tests plus locale/catalog/lock/architecture tests and build passed; tests/e2e/position-badges.spec.ts left to the host gate; session of02.
 - 261102 update-ssot WEB r200; create-task T643 T644: add primary Team with compact own first-team/youth/coach lists and shared four-family position badges; preserve restored art and office relocation. Canonical max T642 after plan-sync, other session bd02 tasks unchanged; only of02 work in this checkout.
 - 261102 T637 done: home keeps the season card, NEXT MATCH and the illustrated manager-room entrance with actual counts; the office heads its unchanged 결재함 with the manager room, then ClubSituation and the three quick actions once; the section bar starts with 사무실 and lives only on the office and its working pages; 1군 shows the locker room, 코치진 감독실 and 스태프 사무실 over their own people. Typecheck/lint/format, unit 28 files / 291 tests and build passed; browser journeys updated and left to the host gate; session of02.
 - 261102 create-task T637: restore original illustrations; remove the new home bar, team facts and immediate actions from home and compose them once in the office. Preserve the queue, real workflows, focus/load fixes and all game rules; session of02.
@@ -533,4 +534,3 @@
 - 261101 fix web club tabs: shared page tabs now have min-width 44px as well as min-height; the final browser gate had 339 passed / 4 failures on this same actual 1군 width. Typecheck, lint, format, affected unit 19 files / 192 tests and build passed; exact all-theme assertions unchanged, host focused/full final gates next; session of01.
 - 261101 T634 done: manual 다음 이벤트 from the office moves to the clubhouse before the unchanged controller acts, so a fresh advance or a reopen shows its report at once; the design request form resets on commission/adopt/discard success; shared club/operations helpers wait for address and rendered view to agree; all 21 gate cases moved to their actual contexts, plus a pre-eve office next-event journey; unit 38 + 45 + 19 passed, build passed, browser specs left to the host batch; session of01.
 - 261101 create-task T634: host Chromium gate 320 passed / 21 failed; fix two real observation/design-state defects and stale navigation/measurement contexts, with exact existing assertions retained. Latest T622 main integrated in ba915286; no overhaul code pushed until the repaired final gate passes; session of01.
-- 261101 T633 done: /club-operations static rewrite in _redirects; one request heading with its 결재 기한, distinct detail only and one 결재함으로 return (EventCard inDesk no longer repeats them); bid reviews show the pinned/own player's position, age, OVR/잠재력, our and counter fees and only the terms the bid carries (loans wage-only, legacy unknown stays unknown) through the pure bidFacts resolver also used for queue subjects; queue 검토 names its subject; unit 248 + 25 + 43 passed, build passed, browser specs left to the host batch; session of01.
