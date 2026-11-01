@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| of02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T15:48Z | 2026-11-01T15:48Z | - |
 
 ## inbox
 - 261101 decided WEB-110 WEB-63 ARCH-28 T636: the failed Firefox sponsor trace shows 결재 담당 (a lazy chunk with no fallback) mounting above the offers between the click's mousedown and mouseup, so the tap signed nothing and the world stayed r0 → render the scoped responsibilities with 구단 운영's own lazy chunk (static import inside ClubOperations, entry unchanged) and guard in business.spec that the section mounts whole (alt: wait in the journey for the panel before tapping, which hides the shift owners still meet | reserve its height in a fallback, which still swaps content under a tap).
@@ -448,7 +449,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 197 | 197 | - | 0 |
+| WEB | 198 | 198 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 6 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
@@ -475,6 +476,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T637 | Restore illustrations and office-contained work | WEB | T636 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -498,8 +500,11 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- implement-task T637
 
 ## log
+- 261102 create-task T637: restore original illustrations; remove the new home bar, team facts and immediate actions from home and compose them once in the office. Preserve the queue, real workflows, focus/load fixes and all game rules; session of02.
+- 261102 update-ssot WEB r198: restore original room illustrations and move the home club bar, current-team summary and quick actions into the office; preserve the completed queue and real workflows. Session of02, isolated worktree.
 - 261101 of01 completed owner-office overhaul: main ebcc87fc passed CI 41258080379 (all 9 jobs; Chromium, Firefox, both WebKit shards), after the clean 81d165e0 local gate and 9 targeted browser cases. Primary and continuation reports closed; source unchanged after verification.
 - 261101 of01 combined final gate passed on clean 81d165e0: type/lint/format, unit 1893, integration 1270 (4 existing skips), contract 48, catalogs, presentation, build, Chromium 343; targeted sponsor/region/staff journeys 9 of 9 across all three browsers. T636 and the common-panel follow-up are verified; main publication and CI follow.
 - 261101 fix web scoped responsibilities: mount OwnerOffice with WorkResponsibility sections as well as operations, resolving the same traced late-panel shift in 1군, market, 코치진 and 유소년. Typecheck, lint, format, affected unit and build passed; host final browser gates follow; session of01.
@@ -518,5 +523,3 @@
 - 261101 T631 done: clubhouse reads a compact read-only club summary (strength/division place, 출전 가능 with injured/suspended, 선발 피로, 분위기, 감독 입지; warnings in words) and a compact 결재함 entrance with waiting/overdue counts beside the quick actions; team-state tiles and room art removed; 1군 = roster with availability, tactics request and culture; 코치진 = manager card plus every post, then who appoints them and the owner's requests; manager addresses route to /staff?view=coaches(&market=1); each personnel workflow edits its own responsibilities in place; RoomBar gone from 훈련/유소년; unit 273 passed, build passed, e2e source left to the batch; session of01.
 - 261101 T630 done: the owner office is one 결재함 (ordered live requests, filters, counts, 결재 기한 labels, empty/filtered-empty states), reviews return to it with filter/scroll/focus, lobby scene/desk cards/room doors/journal removed, team-state tiles under the clubhouse quick actions until T631; unit 263 passed, build passed, e2e source left to the batch; session of01.
 - 261101 T629 done: shared club section bar (현황·1군·코치진·훈련·유소년·운영), /club-operations with 재정·투자/후원/구단 디자인, unselected office desks redirect to their workflow or section (requests stay), 1군 opens the roster; unit 290 passed, build passed, e2e source left to the batch; session of01.
-- 261101 update-ssot WEB r196 + create-task T629–T632: approval-only office, visible club sections, actual first-team/coach information and consolidated proactive operations; qualitative 2024-11-01–2026-11-01 Steam research in reports/261031-of01.md; session of01.
-- 261101 design controller: apply P3 burgundy paper, G1 forest matte, X2 midnight pixels and S1 butter clay; unit 1833, integration 1267, contract 48 and Chromium 335 passed; shared-checkout receipt stale after concurrent unrelated edits; preserve tested ce95aae4 in isolated cb31 commit.
