@@ -1,14 +1,12 @@
-import { lazy, Suspense } from 'react';
 import type { ResponsibilityKey, World } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
-const OwnerOffice = lazy(() =>
-  import('./OwnerOfficeView').then((module) => ({ default: module.OwnerOffice })),
-);
+import { OwnerOffice } from './OwnerOfficeView';
 
 /**
  * A workflow's own saved responsibilities (→WEB-79): 1군, the market, 코치진 and 유소년 edit theirs
- * through the same guarded confirmation component the 결재라인 overview uses.
+ * through the same guarded confirmation component the 결재라인 overview uses. Mount the panel
+ * with its lazy section so it cannot arrive later and push that section's actions under a tap.
  */
 export function WorkResponsibility({
   w,
@@ -22,13 +20,11 @@ export function WorkResponsibility({
   scope: readonly ResponsibilityKey[];
 }) {
   return (
-    <Suspense fallback={<p role="status">결재 설정을 여는 중…</p>}>
-      <OwnerOffice
-        key={`${w.id}:${scope.join(',')}`}
-        client={client}
-        controller={controller}
-        scope={scope}
-      />
-    </Suspense>
+    <OwnerOffice
+      key={`${w.id}:${scope.join(',')}`}
+      client={client}
+      controller={controller}
+      scope={scope}
+    />
   );
 }
