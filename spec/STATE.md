@@ -16,7 +16,6 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | of02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T15:48Z | 2026-11-01T16:36Z | T644 |
-| bd02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T16:10Z | 2026-11-01T16:10Z | - |
 
 ## inbox
 - 261102 decided WEB-112 WEB-113: gather our people in primary 팀 immediately before 이적시장, using 1군/유소년/코치 compact lists and existing detailed-management views; retain restored artwork there and home/office, with office personnel tabs removed (alt: another office directory | delete the restored illustrations for density). Position families use engine lineOf: gold GK, blue DF, green MF and coral FW with readable code/labels, shared by Team and market. Session of02.
@@ -510,9 +509,9 @@
 ## next
 - implement-task T637
 - implement-task T643 (of02), then T644; this checkout handles only those tasks.
-- bd02: batch gate on main, push, CI wait
 
 ## log
+- 261102 bd02 final gate passed on 77c8ac86: type/lint/format, unit 1914, integration 1272 (4 existing skips), contract 48, catalogs, presentation, build, Chromium 344; the first gate's 3 Chromium failures (records tab list, cup re-entry) fixed in 77c8ac86. Pushing main; report spec/reports/261102-bd02.md.
 - 261102 create-task T640 T641 T642: one-row League/Cup header with a season stepper; Ballon d'Or engine (podium archive, bonus clause, talk premium); records view, player honours, talk premium and news. Numbered from T640 to leave room for of02; session bd02.
 - 261102 update-ssot WEB r199 CLUB r48 HIST r19 PLAYER r11: League/Cup browse every kept season on one page with a one-row ‹ season › header (no previous-league/cup tabs, closed cup seasons open on the winner); 발롱도르 from 1955/56 with podium archive, records view, news, contract premium and bonus clause; session bd02.
 - 261102 update-ssot WEB CLUB HIST PLAYER start (bd02)
@@ -532,4 +531,3 @@
 - 261101 of01 CI 41244030798 completed: checks, unit and integration shards passed; staff keyboard 1군 focus failed in all three browsers, plus WebKit's career-history locator matched the current card and fading manager dialog. Failed logs/traces retained; scoped repair follows, no assertion relaxation.
 - 261101 of01 final batch passed on 28bab2ce: clean/stable candidate, type/lint/format, unit 1,889, integration 1,270 (4 existing skips), contract 48, catalogs, presentation, build and Chromium 343; focused all-theme journey 4/4 also passed. Main push and one CI wait follow.
 - 261101 fix web club tabs: shared page tabs now have min-width 44px as well as min-height; the final browser gate had 339 passed / 4 failures on this same actual 1군 width. Typecheck, lint, format, affected unit 19 files / 192 tests and build passed; exact all-theme assertions unchanged, host focused/full final gates next; session of01.
-- 261101 T634 done: manual 다음 이벤트 from the office moves to the clubhouse before the unchanged controller acts, so a fresh advance or a reopen shows its report at once; the design request form resets on commission/adopt/discard success; shared club/operations helpers wait for address and rendered view to agree; all 21 gate cases moved to their actual contexts, plus a pre-eve office next-event journey; unit 38 + 45 + 19 passed, build passed, browser specs left to the host batch; session of01.
