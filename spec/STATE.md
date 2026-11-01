@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| of02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T17:19Z | 2026-11-01T17:19Z | - |
+| of02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T17:19Z | 2026-11-01T18:32Z | - |
 
 ## inbox
 - 261102 decided WEB-112 WEB-74 WEB-59 T644: what a prospect's name opens in 팀's 유소년 list, since the player sheet reads only first-team players → his existing 유소년 승격·방출 검토 on the academy page, asked by a one-shot request the academy place takes (`openAcademyProspect`/`useAcademyReview`); it reads until the owner commits a choice there; coach names open PersonCareer only when a retained person exists, otherwise they are plain text in the same row height (alt: plain-text prospect names | extend the player sheet to prospects, a new inspector). Session of02.
@@ -511,6 +511,7 @@
 - of02: combined host gate, main push and CI wait
 
 ## log
+- 261102 fix growth-core regression journey: return through the real clubhouse entry after office advice, before asserting the Home-only progression timeline. Both phone failures passed every office warning/dialog/focus assertion and reached real progression; the final timeline lookup retained its old Home assumption. No app, assertion, timeout or game rule changed; session of02.
 - 261102 fix office keyboard continuity: keep the persistent section navigation outside the inert content boundary and select from the eager page; only the dashboard/working content stays inert while its deferred view changes. This preserves consecutive key events without losing focus between selection and view commit. Replaces the delayed-focus attempt with the existing TabList recovery logic; strict focus/URL assertions remain, staff repeated twice per browser; of02.
 - 261102 fix tab focus recovery: retain the keyboard pick across focus lost to the body/inert view and restore it after the committed rendering update, cancelling on a genuine pointer/focus change or a superseding selection. WebKit lost the selected office 운영 tab after keyboard navigation; keep the exact focus/URL assertions. Existing WEB-69 and T635 behavior, bounded PageTabs correction; of02.
 - 261102 fix staff browser geometry: settle finite motion and snap tab bounds to the existing 1/64px layout unit before the unchanged 44px check; WebKit returned 43.9999961853 for an actual 44px tab. Combined focused gate passed all 36 theme/browser office/Team/badge cases and 8/9 related cases; keep those results and rerun staff plus captures. Session of02.

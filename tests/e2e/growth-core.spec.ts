@@ -81,6 +81,9 @@ for (const viewport of [
     await expect(remedies).toBeVisible();
     await remedies.getByRole('button', { name: '창 닫기', exact: true }).click();
     await expect(button).toBeFocused();
+    // The progress timeline lives on Home; the office advice above stays in the office.
+    await clubhouseTab(page).click();
+    await expect(hub).toBeVisible();
     await chooseOption(page.getByRole('combobox', { name: '자동 진행 배속', exact: true }), 'x10');
     await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
     await expect(page.getByTestId('event-group')).toBeVisible({ timeout: 15000 });
