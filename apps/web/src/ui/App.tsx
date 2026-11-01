@@ -1083,12 +1083,16 @@ export function App() {
                     {t('shell.loadingView')}
                   </div>
                 )}
-                <div className={s.views} inert={changingView} aria-busy={changingView}>
-                  <ClubNavigation page={contentPage} />
-                  <div className={s.coreContent} hidden={contentPage !== 'dashboard'}>
+                <div className={s.views} aria-busy={changingView}>
+                  <ClubNavigation page={page} />
+                  <div
+                    className={s.coreContent}
+                    hidden={contentPage !== 'dashboard'}
+                    inert={changingView}
+                  >
                     <ConnectedDashboard client={client} />
                   </div>
-                  <div id="competition-hub-panel" className={s.views}>
+                  <div id="competition-hub-panel" className={s.views} inert={changingView}>
                     <LiveSeason
                       key={worldId}
                       page={contentPage}
