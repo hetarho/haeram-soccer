@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| bd02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T16:10Z | 2026-11-01T16:10Z | - |
 | of02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T17:19Z | 2026-11-01T17:19Z | - |
 
 ## inbox
@@ -510,7 +509,6 @@
 
 ## next
 - of02: combined host gate, main push and CI wait
-- bd02: batch gate on main, push, CI wait
 
 ## log
 - 261102 fix office keyboard continuity: keep the persistent section navigation outside the inert content boundary and select from the eager page; only the dashboard/working content stays inert while its deferred view changes. This preserves consecutive key events without losing focus between selection and view commit. Replaces the delayed-focus attempt with the existing TabList recovery logic; strict focus/URL assertions remain, staff repeated twice per browser; of02.
@@ -531,14 +529,5 @@
 - 261102 T640 done: League/Cup one-row header (country/division with groups as options, one cup select) and a shared ‹ season › stepper; no 이전 컵대회 기록 tab; closed cup seasons open on the winner; web unit 1184 passed, e2e specs updated for the batch gate; session bd02.
 - 261102 T641 done: season-close Ballon d'Or podium archived from 1955/56 (goals, assists, honours, class; 15+ top-flight apps), our winner's bonus clause paid at the close, recent podiums priced into talks and the delegated cap, the star-only bonus clause drawn after the existing four; unit 670, targeted integration (contracts, season equivalence, throughput) and contract tier passed; session bd02.
 - 261102 T642 done: 클럽 기록실 발롱도르 view with the season stepper, winners and most-wins boards; player-sheet honours, contract-talk premium line and one award news item per closed season (ours celebrated); web unit 1189 and news integration passed; session bd02.
+- 261102 bd02 final gate passed on 77c8ac86: type/lint/format, unit 1914, integration 1272 (4 existing skips), contract 48, catalogs, presentation, build, Chromium 344; the first gate's 3 Chromium failures (records tab list, cup re-entry) fixed in 77c8ac86. Pushing main; report spec/reports/261102-bd02.md.
 - 261101 of01 completed owner-office overhaul: main ebcc87fc passed CI 41258080379 (all 9 jobs; Chromium, Firefox, both WebKit shards), after the clean 81d165e0 local gate and 9 targeted browser cases. Primary and continuation reports closed; source unchanged after verification.
-- 261101 of01 combined final gate passed on clean 81d165e0: type/lint/format, unit 1893, integration 1270 (4 existing skips), contract 48, catalogs, presentation, build, Chromium 343; targeted sponsor/region/staff journeys 9 of 9 across all three browsers. T636 and the common-panel follow-up are verified; main publication and CI follow.
-- 261101 fix web scoped responsibilities: mount OwnerOffice with WorkResponsibility sections as well as operations, resolving the same traced late-panel shift in 1군, market, 코치진 and 유소년. Typecheck, lint, format, affected unit and build passed; host final browser gates follow; session of01.
-- 261101 T636 done: the Firefox traces showed one close queueing two 승격 확정! banners over the office entrance, and 후원's lazy 결재 담당 panel mounting above the offers mid-click; enterOffice taps every queued or late banner within its existing attempt bound, ClubOperations mounts the scoped responsibilities with its own chunk, and business.spec guards the whole section and the signed slot with every money assertion kept; typecheck/lint/format, unit 3 files / 25 tests and build passed, both cases left to the host's three-browser gate; session of01.
-- 261101 create-task T636: CI 41250503124 passed Chromium, both WebKit shards and all non-browser checks; Firefox exposed a late promotion celebration blocking office entry and a flaky sponsor click. Preserve exact assertions and repair actual overlay/readiness causes, with targeted three-browser checks before the full gate; session of01.
-- 261101 T635 done: the CI trace showed the shell's inert deferred-view container taking focus off the keyboard's club tab; the shared TabList carries the keyboard's pick to its committed selection and returns a lost focus there (never over a click, deliberate focus, tick or other world), and the same-person journey opens 인물 경력 from the current manager card after the market closes; staff.spec unchanged; unit 11 files / 81 tests and build passed, staff/second-career cases left to the host's three-browser gate; session of01.
-- 261101 create-task T635: CI 41244030798 staff keyboard focus fails on Chromium/Firefox/WebKit; inspect downloaded traces and repair actual focus lifecycle without weakening checks. Also scope the fading-dialog career-history match to the current manager; host targeted three-browser gate before full batch; session of01.
-- 261101 of01 CI 41244030798 completed: checks, unit and integration shards passed; staff keyboard 1군 focus failed in all three browsers, plus WebKit's career-history locator matched the current card and fading manager dialog. Failed logs/traces retained; scoped repair follows, no assertion relaxation.
-- 261101 of01 final batch passed on 28bab2ce: clean/stable candidate, type/lint/format, unit 1,889, integration 1,270 (4 existing skips), contract 48, catalogs, presentation, build and Chromium 343; focused all-theme journey 4/4 also passed. Main push and one CI wait follow.
-- 261101 fix web club tabs: shared page tabs now have min-width 44px as well as min-height; the final browser gate had 339 passed / 4 failures on this same actual 1군 width. Typecheck, lint, format, affected unit 19 files / 192 tests and build passed; exact all-theme assertions unchanged, host focused/full final gates next; session of01.
-- 261101 T634 done: manual 다음 이벤트 from the office moves to the clubhouse before the unchanged controller acts, so a fresh advance or a reopen shows its report at once; the design request form resets on commission/adopt/discard success; shared club/operations helpers wait for address and rendered view to agree; all 21 gate cases moved to their actual contexts, plus a pre-eve office next-event journey; unit 38 + 45 + 19 passed, build passed, browser specs left to the host batch; session of01.
