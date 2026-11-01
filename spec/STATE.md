@@ -19,6 +19,7 @@
 | bd02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T16:10Z | 2026-11-01T16:10Z | - |
 
 ## inbox
+- 261102 decided WEB-112 WEB-113: gather our people in primary 팀 immediately before 이적시장, using 1군/유소년/코치 compact lists and existing detailed-management views; retain restored artwork there and home/office, with office personnel tabs removed (alt: another office directory | delete the restored illustrations for density). Position families use engine lineOf: gold GK, blue DF, green MF and coral FW with readable code/labels, shared by Team and market. Session of02.
 - 261102 decided WEB-40 WEB-47 WEB-65: how League and Cup browse seasons → one page per competition over every kept season with a one-row header (country/division selects with groups as options, or one cup select listing every domestic and continental cup) and a ‹ season › stepper; 이전 리그 기록/이전 컵대회 기록 tabs, the stacked title line and 우리 리그로 go, and 우리 구단 시즌 기록 moves into a closed season's 순위표 (alt: keep the season dropdown and History tabs | an icon-only own-league button squeezed into the row at 360px).
 - 261102 decided PLAYER-27: how the 발롱도르 is decided → from the 1955/56 close, goals ×4 + assists ×3 + team honours (European Cup +40, its final +15, other continental +15, top-flight title +25, domestic cup +10) + (OVR − 70) × 2, 15+ top-flight league appearances, podium of three; nationality not modelled (alt: European players only before 1995, which needs nationality data the world lacks | OVR alone, which ignores the season).
 - 261102 decided CLUB-26 CLUB-29: how the award reaches contracts → demand ×1.20 for a winner and ×1.10 for a podium within the last three closed seasons, the improved-contract test and 재계약 기조 caps measured on that worth, plus a Ballon d'Or bonus clause (80+ or recent podium; 40–90% of contracts by agent; 25–100% of the yearly wage, paid at the close he wins) (alt: premium on every market wage, which moves transfer prices and calibration | premium without moving the caps, so a delegated club declines every recent winner).
@@ -454,7 +455,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 199 | 199 | - | 0 |
+| WEB | 200 | 200 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 6 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
@@ -485,6 +486,8 @@
 | T640 | League and Cup browse every season from a one-row header | WEB HIST | - | todo |
 | T641 | Ballon d'Or award, archive and contract effects | PLAYER HIST CLUB | - | todo |
 | T642 | Ballon d'Or records view, player honours, talk premium and news | WEB HIST PLAYER CLUB | T640 T641 | todo |
+| T643 | Shared readable position badges in the market | WEB | T637 | todo |
+| T644 | Compact Team directory before the transfer market | WEB | T643 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -510,6 +513,7 @@
 ## next
 - implement-task T637
 - implement-task T640 (bd02), then T641, T642
+- implement-task T643 (of02), then T644; this checkout handles only those tasks.
 
 ## log
 - 261102 create-task T640 T641 T642: one-row League/Cup header with a season stepper; Ballon d'Or engine (podium archive, bonus clause, talk premium); records view, player honours, talk premium and news. Numbered from T640 to leave room for of02; session bd02.
@@ -517,6 +521,7 @@
 - 261102 update-ssot WEB CLUB HIST PLAYER start (bd02)
 - 261102 create-task T637: restore original illustrations; remove the new home bar, team facts and immediate actions from home and compose them once in the office. Preserve the queue, real workflows, focus/load fixes and all game rules; session of02.
 - 261102 update-ssot WEB r198: restore original room illustrations and move the home club bar, current-team summary and quick actions into the office; preserve the completed queue and real workflows. Session of02, isolated worktree.
+- 261102 update-ssot WEB r200; create-task T643 T644: add primary Team with compact own first-team/youth/coach lists and shared four-family position badges; preserve restored art and office relocation. Canonical max T642 after plan-sync, other session bd02 tasks unchanged; only of02 work in this checkout.
 - 261101 of01 completed owner-office overhaul: main ebcc87fc passed CI 41258080379 (all 9 jobs; Chromium, Firefox, both WebKit shards), after the clean 81d165e0 local gate and 9 targeted browser cases. Primary and continuation reports closed; source unchanged after verification.
 - 261101 of01 combined final gate passed on clean 81d165e0: type/lint/format, unit 1893, integration 1270 (4 existing skips), contract 48, catalogs, presentation, build, Chromium 343; targeted sponsor/region/staff journeys 9 of 9 across all three browsers. T636 and the common-panel follow-up are verified; main publication and CI follow.
 - 261101 fix web scoped responsibilities: mount OwnerOffice with WorkResponsibility sections as well as operations, resolving the same traced late-panel shift in 1군, market, 코치진 and 유소년. Typecheck, lint, format, affected unit and build passed; host final browser gates follow; session of01.
@@ -531,4 +536,3 @@
 - 261101 create-task T634: host Chromium gate 320 passed / 21 failed; fix two real observation/design-state defects and stale navigation/measurement contexts, with exact existing assertions retained. Latest T622 main integrated in ba915286; no overhaul code pushed until the repaired final gate passes; session of01.
 - 261101 T633 done: /club-operations static rewrite in _redirects; one request heading with its 결재 기한, distinct detail only and one 결재함으로 return (EventCard inDesk no longer repeats them); bid reviews show the pinned/own player's position, age, OVR/잠재력, our and counter fees and only the terms the bid carries (loans wage-only, legacy unknown stays unknown) through the pure bidFacts resolver also used for queue subjects; queue 검토 names its subject; unit 248 + 25 + 43 passed, build passed, browser specs left to the host batch; session of01.
 - 261101 create-task T633: host visual review found missing /club-operations static rewrite and repeated request instructions; add actual target/terms context and verify integrated WEB r197 settings behavior. T629–T632 done locally; latest main integrated in e70ef0b5, final gate/publication pending; session of01.
-- 261101 T632 done: inventory walked (removed office items absent, every action has one home, incoming offers answered in the market's 이적 협상); dead player-desk code and the six room-name locale keys removed; registry-driven office/club journey per theme at 360px and desktop; stale owner-workflows, growth-core, facility-art and presentation-settings journeys and the office helpers moved to the actual destinations; design guide, UI-COVERAGE and report inventory updated; unit 292 + 112 passed, build passed, browser specs left to the host batch; session of01.
