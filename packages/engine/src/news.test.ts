@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
-import type { MatchRecord, Player, TransferBid, World } from '../../contracts/src/types';
+import type {
+  BallonDorPlace,
+  MatchRecord,
+  Player,
+  TransferBid,
+  World,
+} from '../../contracts/src/types';
 import {
   activePlayers,
   advanceCups,
@@ -98,6 +104,42 @@ describe('club news', () => {
     const honour = clubNews(champion).find((n) => n.id === `${champion.year - 1}:honour:league`);
     expect(honour).toMatchObject({ celebrate: true });
     expect(honour!.title).toContain('우승');
+  });
+
+  it('reports the closed season’s Ballon d’Or, celebrating only our own winner (→HIST-11)', () => {
+    const w = cachedWorld('last-round', () => {
+      const world = simulatedWorld(founding(), { rounds: 30 });
+      while (world.round < 46) advanceRound(world, undefined, false);
+      return world;
+    });
+    closeSeason(w);
+    const last = w.history.at(-1)!,
+      other = w.clubs.find((club) => club.id !== w.playerClub)!;
+    const place = (id: string, club: string, points: number): BallonDorPlace => ({
+      id,
+      name: `Player ${id}`,
+      club,
+      position: 'ST',
+      goals: 30,
+      assists: 8,
+      appearances: 40,
+      points,
+      honours: ['league'],
+    });
+    const id = `${last.year}:honour:ballon-dor`;
+    expect(find(clubNews(w), id)).toBeUndefined();
+    last.ballonDor = [place('a', other.id, 180), place('b', w.playerClub, 150)];
+    const theirs = find(clubNews(w), id)!;
+    expect(theirs).toMatchObject({ tag: '기록', tone: 'neutral', weight: 'notable' });
+    expect(theirs.celebrate).toBeUndefined();
+    expect(theirs.title).toBe(`발롱도르: Player a(${other.name})`);
+    expect(theirs.detail).toContain('2위 Player b');
+    last.ballonDor = [place('b', w.playerClub, 150)];
+    expect(find(clubNews(w), id)).toMatchObject({
+      title: 'Player b, 발롱도르 수상!',
+      weight: 'major',
+      celebrate: true,
+    });
   });
 });
 

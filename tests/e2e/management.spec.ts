@@ -96,7 +96,11 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   const german = page.getByRole('region', { name: '최종 순위표' });
   await expect(german).toContainText('1950/51 · 독일 1부');
   await expect(german.locator('tbody tr')).toHaveCount(18);
-  await page.getByRole('button', { name: '우리 리그로', exact: true }).click();
+  // Our country again returns to our league that season (→WEB-65).
+  await chooseOption(
+    page.getByRole('group', { name: '리그 선택' }).getByRole('combobox', { name: '국가' }),
+    'ENG',
+  );
   await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('Haeram');
   await openClubRecords(page);
   await openCurrentClubSeason(page);
@@ -153,16 +157,17 @@ test('browses every historical regional group and resets filters on country chan
     .getByRole('tab', { name: '순위표', exact: true })
     .click();
   const picker = page.getByRole('group', { name: '리그 선택' });
-  await chooseOption(picker.getByRole('combobox', { name: '디비전', exact: true }), '2');
+  const division = picker.getByRole('combobox', { name: '디비전', exact: true });
   const standings = page.getByRole('region', { name: '최종 순위표' });
   const rows = standings.locator('tbody tr');
   const firstClubs: string[] = [];
+  // Each regional group is a division option of its own (→WEB-40).
   for (const [value, group] of [
-    ['0', 'A'],
-    ['1', 'B'],
-    ['2', 'C'],
+    ['2.0', 'A'],
+    ['2.1', 'B'],
+    ['2.2', 'C'],
   ]) {
-    await chooseOption(picker.getByRole('combobox', { name: '지역 그룹', exact: true }), value);
+    await chooseOption(division, value);
     await expect(standings).toContainText(`1950/51 · 이탈리아 3부 ${group}조 · 20팀`);
     await expect(rows).toHaveCount(20);
     firstClubs.push(await rows.first().locator('td:nth-child(2)').innerText());

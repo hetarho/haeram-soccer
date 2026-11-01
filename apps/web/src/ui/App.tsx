@@ -1,5 +1,3 @@
-import { COMPETITION_PATHS } from './competitionNavigation';
-import { CompetitionTabs } from './CompetitionTabs';
 import { ClubNavigation } from './ClubNavigation';
 import { OfficeOverviewHost } from './OfficeOverviewHost';
 import { CashAlarm } from './CashAlarm';
@@ -765,7 +763,6 @@ export function App() {
   const showGlossary = useGlossary((state) => state.show);
   const contentPage = useDeferredValue(page);
   // Club records stand alone; league and cups keep their this-season and past-records tabs.
-  const competitionHub = Object.hasOwn(COMPETITION_PATHS, contentPage) && contentPage !== 'history';
   const changingView = contentPage !== page;
   const openMenu = useCallback(() => setMoreOpen(true), []);
   useEffect(() => {
@@ -1091,17 +1088,7 @@ export function App() {
                   <div className={s.coreContent} hidden={contentPage !== 'dashboard'}>
                     <ConnectedDashboard client={client} />
                   </div>
-                  {contentPage !== 'league' && contentPage !== 'europe' && (
-                    <CompetitionTabs page={contentPage} />
-                  )}
-                  <div
-                    id="competition-hub-panel"
-                    className={s.views}
-                    role={competitionHub ? 'tabpanel' : undefined}
-                    aria-labelledby={
-                      competitionHub ? `competition-hub-tab-${contentPage}` : undefined
-                    }
-                  >
+                  <div id="competition-hub-panel" className={s.views}>
                     <LiveSeason
                       key={worldId}
                       page={contentPage}

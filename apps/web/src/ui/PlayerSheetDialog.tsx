@@ -25,6 +25,7 @@ import {
 } from './playerAnalysis';
 import { PlayerPerformance } from './PlayerPerformance';
 import { PlayerProfile } from './PlayerProfile';
+import { ballonDorLine } from './ballonDorText';
 import { openCoachSheet, openContractTalk, usePlayerPreparation, usePlayerSheet } from './state';
 import a from './Analysis.module.css';
 import s from './App.module.css';
@@ -96,6 +97,9 @@ export function PlayerSheet({
         {agentOf(w, player)}등급
       </p>
       {active && !player.loanUntil && <p>계약 조항: {clausesLabel(player.clauses)}</p>}
+      {ballonDorLine(w.history, player.id) && (
+        <p data-testid="ballon-dor-honours">{ballonDorLine(w.history, player.id)}</p>
+      )}
       <PlayerProfile w={w} player={player} own={active} />
       <PersonCareerLink id={player.id} name={player.name} client={client} />
       {active && <PlayingCoachReview w={w} player={player} client={client} />}

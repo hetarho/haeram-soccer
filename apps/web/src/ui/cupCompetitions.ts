@@ -17,3 +17,22 @@ export function lineageName(w: World, { key, first }: (typeof LINEAGES)[number])
     first
   );
 }
+
+/**
+ * The closed seasons a competition has a record for, oldest first (→WEB-40): our country's or
+ * another country's domestic cup by its winner, a continental lineage by its archived winner.
+ */
+export function cupSeasons(
+  history: readonly Pick<World['history'][number], 'year' | 'champions' | 'europe'>[],
+  country: string,
+  key: string,
+) {
+  return history
+    .filter((h) =>
+      key === 'cup'
+        ? !!h.champions.find((entry) => entry.country === country)?.cup
+        : h.europe.some((entry) => entry.kind === key),
+    )
+    .map((h) => h.year)
+    .sort((a, b) => a - b);
+}

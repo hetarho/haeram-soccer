@@ -200,11 +200,11 @@ for (const viewport of [
     const regional = COUNTRIES.find((item) => item.groups.some((group) => group.length > 1))!;
     const regionalTier = regional.groups.findIndex((group) => group.length > 1);
     await chooseOption(country, regional.code);
-    await chooseOption(tier, String(regionalTier));
-    const group = page.getByRole('combobox', { name: '지역 그룹', exact: true });
-    await expectTouchControl(group, viewport);
-    await chooseOption(group, '1');
-    await expect(group).toHaveAttribute('data-value', '1');
+    // A regional group is a division option of its own (→WEB-40).
+    await chooseOption(tier, `${regionalTier}.1`);
+    await expect(tier).toHaveAttribute('data-value', `${regionalTier}.1`);
+    for (const step of ['이전 시즌', '다음 시즌'])
+      await expectTouchControl(page.getByRole('button', { name: step, exact: true }), viewport);
     await expect(page.getByRole('table', { name: '리그 순위표' }).getByRole('row')).not.toHaveCount(
       1,
     );

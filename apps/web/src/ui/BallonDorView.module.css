@@ -1,0 +1,44 @@
+/* 발롱도르 (→WEB-111): our club's rows carry the accent, the winner his gold mark. */
+.own {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.ownTag {
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 11px;
+  font-style: normal;
+}
+.winner {
+  color: var(--gold);
+}
+.honours {
+  display: block;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+.winners {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.winners li {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.boards {
+  display: grid;
+  gap: 12px;
+}
+@media (min-width: 760px) {
+  .boards {
+    grid-template-columns: 1fr 1fr;
+  }
+}

@@ -22,11 +22,9 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
   await expect(page.getByTestId('mini-clock')).toHaveCount(0);
   await page.goBack();
   await expect(page).toHaveURL(firstCupAddress);
-  await expect(
-    page
-      .getByRole('tablist', { name: '컵 대회', exact: true })
-      .getByRole('tab', { name: '컵 대회' }),
-  ).toHaveAttribute('aria-selected', 'true');
+  // This season is the stepper's newest: nothing newer to step to (→WEB-40).
+  await expect(page.getByRole('combobox', { name: '컵 대회', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: '다음 시즌', exact: true })).toBeDisabled();
   await page.goForward();
   await expect(page).toHaveURL(/season\?competition=league/);
   await expect(page.getByRole('tablist', { name: '리그 보기', exact: true })).toBeVisible();
@@ -48,16 +46,16 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
     'true',
   );
   await openCups(page);
-  await chooseOption(page.getByRole('combobox', { name: '국내 컵 국가', exact: true }), 'POR');
+  await chooseOption(page.getByRole('combobox', { name: '컵 대회', exact: true }), 'cup:POR');
   await expect(page.getByRole('region', { name: '포르투갈 컵', exact: true })).toBeVisible();
   const cupAddress = page.url();
   await openLeague(page);
   await expect(page).toHaveURL(leagueAddress);
   await page.goBack();
   await expect(page).toHaveURL(cupAddress);
-  await expect(page.getByRole('combobox', { name: '국내 컵 국가', exact: true })).toHaveAttribute(
+  await expect(page.getByRole('combobox', { name: '컵 대회', exact: true })).toHaveAttribute(
     'data-value',
-    'POR',
+    'cup:POR',
   );
   await page.goForward();
   await expect(page).toHaveURL(leagueAddress);
@@ -82,13 +80,9 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
   );
   await page.goto('/europe?competition=cup&period=history&season=1940&country=GER');
   await expect(page).toHaveURL(/history\?section=cup.*season=1940.*country=GER.*cup=cup/);
-  await expect(page.getByRole('tab', { name: '독일 컵', exact: true })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
-  await expect(page.getByRole('combobox', { name: '국내 컵 국가', exact: true })).toHaveAttribute(
+  await expect(page.getByRole('combobox', { name: '컵 대회', exact: true })).toHaveAttribute(
     'data-value',
-    'GER',
+    'cup:GER',
   );
   await expect(page.getByRole('region', { name: '컵 대회 역사', exact: true })).toContainText(
     '아직 기록된 대회가 없어요.',

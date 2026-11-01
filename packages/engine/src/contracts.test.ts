@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { currency, footballIndex, priceIndex } from '../../catalogs/src/index';
 import type {
   AgentRating,
+  BallonDorPlace,
   ManagerStyle,
   Player,
   PolicyLevel,
@@ -13,6 +14,9 @@ import type {
 import {
   activePlayers,
   advanceRound,
+  ballonDorStar,
+  playerWorth,
+  scaleBy,
   agentOf,
   agentPremium,
   applyClauses,
@@ -920,6 +924,77 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     expect(demand(5)).toBe(ratio(market.toString(), 1040n, 1000n));
   });
 
+  it('prices a recent Ballon d’Or podium into his worth, demand and the staff’s cap (→CLUB-26)', () => {
+    // Two seasons back by default: within the premium's three, and never the last season whose
+    // books the staff's revenue check reads.
+    const podium = (w: World, id: string, place: 0 | 1, year = w.year - 2) => {
+      const entry = (who: string): BallonDorPlace => ({
+        id: who,
+        name: who,
+        club: clubOf(w).id,
+        position: 'ST',
+        goals: 20,
+        assists: 5,
+        appearances: 30,
+        points: 95,
+        honours: [],
+      });
+      const places = [entry('first'), entry('second')];
+      places[place] = entry(id);
+      // The podium joins that season's archive, or a bare one placed in order before the rest.
+      let season = w.history.find((h) => h.year === year);
+      if (!season) {
+        season = {
+          year,
+          currency: w.currency,
+          income: '0',
+          expense: '0',
+          champions: [],
+          europe: [],
+        } as unknown as World['history'][number];
+        w.history.push(season);
+        w.history.sort((a, b) => a.year - b.year);
+      }
+      season.ballonDor = places;
+    };
+    const winner = talking(80);
+    const market = marketWage(winner.w, winner.p),
+      plain = talkTerms(winner.w, winner.p);
+    expect(playerWorth(winner.w, winner.p)).toBe(market);
+    podium(winner.w, winner.p.id, 0);
+    expect(playerWorth(winner.w, winner.p)).toBe(ratio(market, 1200n, 1000n));
+    const priced = talkTerms(winner.w, winner.p);
+    expect(priced.demand).toBe(
+      scaleBy(
+        playerWorth(winner.w, winner.p),
+        buildEffects(winner.w).wage * agentPremium(agentOf(winner.w, winner.p)),
+        1000n,
+      ),
+    );
+    expect(Number(priced.demand) / Number(plain.demand)).toBeCloseTo(1.2, 4);
+    expect(BigInt(priced.floor)).toBeGreaterThan(BigInt(plain.floor));
+    // A second place three seasons back still counts ×1.10; four back no longer does.
+    const second = talking(80);
+    podium(second.w, second.p.id, 1, second.w.year - 3);
+    expect(playerWorth(second.w, second.p)).toBe(
+      ratio(marketWage(second.w, second.p), 1100n, 1000n),
+    );
+    const faded = talking(80);
+    podium(faded.w, faded.p.id, 0, faded.w.year - 4);
+    expect(playerWorth(faded.w, faded.p)).toBe(marketWage(faded.w, faded.p));
+    // 표준 keeps a recent winner: its 110% cap is measured on his worth, not his market wage.
+    const kept = talking(80);
+    kept.p.agent = 5;
+    kept.w.morale = 50;
+    podium(kept.w, kept.p.id, 0);
+    operate(kept.w, { type: 'direction', key: 'renewal', option: 'standard' });
+    expect(BigInt(talkTerms(kept.w, kept.p).floor)).toBeGreaterThan(
+      (BigInt(marketWage(kept.w, kept.p)) * 11n) / 10n,
+    );
+    newYear(kept.w);
+    expect(talkItems(kept.w, kept.p.id)[0]!.title).toContain('받아들였어요');
+  });
+
   it('keeps clause shares and sizes in their ranges, leaning with the agent', () => {
     const { w, p } = talking(80);
     const sample = (agent: AgentRating) => {
@@ -971,8 +1046,10 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     operate(w, { type: 'intervention', level: 1 });
     newYear(w);
     const clauses = p.talk!.clauses!;
+    // Rated 80, he is a star whose contracts may carry the Ballon d'Or bonus (→CLUB-29).
+    expect(ballonDorStar(w, p)).toBe(true);
     expect(clauses).toEqual(
-      settleClauses(w.seed, p, agentOf(w, p), w.year, seasonDayOf(w.year, 1, 1)),
+      settleClauses(w.seed, p, agentOf(w, p), w.year, seasonDayOf(w.year, 1, 1), true),
     );
     expect(talkItems(w, p.id)[0].detail).toContain(`에이전트 ${agentOf(w, p)}등급`);
     w.calendar = { day: currentDay(w) + 3 };

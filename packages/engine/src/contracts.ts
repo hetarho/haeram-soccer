@@ -42,6 +42,7 @@ import { transferWindowDays } from './transfer-window';
 import { financeProjection } from './projection';
 import { isDelegated } from './responsibilities';
 import { AMBITION_UNHAPPY, GRADE_LABEL } from './player';
+import { BALLON_DOR_CONFIG, ballonDorPremium } from './ballon-dor';
 
 /**
  * The division a player's ability suits in a country, between tiers where it falls between their
@@ -110,7 +111,9 @@ export const CLAUSE_CONFIG: Record<'promotion' | 'relegation', ClauseOdds> = {
 const between = (a: number, b: number, t: number) => a + (b - a) * t;
 /**
  * The clauses of a contract `p` signs on season day `day` of `year`, from his stream for that
- * signing: four draws, whether each clause is in and its size, whatever the outcome.
+ * signing: six draws, whether each clause is in and its size, whatever the outcome. The Ballon
+ * d'Or bonus draws last, so the promotion and relegation clauses are those of the four-draw
+ * stream, and it is kept only for a `star` (→CLUB-29).
  */
 export function settleClauses(
   seed: string,
@@ -118,33 +121,46 @@ export function settleClauses(
   agent: AgentRating,
   year: number,
   day: number,
+  star = false,
 ): ContractClauses {
   const r = random(`${seed}:clauses:${p.id}:${year}:${day}`),
     t = (agent - 1) / 4;
-  const draw = (clause: keyof typeof CLAUSE_CONFIG) => {
-    const { share, from, to } = CLAUSE_CONFIG[clause],
-      has = r() < between(share[0], share[1], t),
+  const draw = ({ share, from, to }: ClauseOdds) => {
+    const has = r() < between(share[0], share[1], t),
       at = r(),
       low = between(from[0], to[0], t),
       high = between(from[1], to[1], t);
     return has ? Math.round(low + (high - low) * at) : 0;
   };
-  const promotion = draw('promotion'),
-    relegation = draw('relegation');
+  const promotion = draw(CLAUSE_CONFIG.promotion),
+    relegation = draw(CLAUSE_CONFIG.relegation),
+    ballonDor = draw(BALLON_DOR_CONFIG.clause);
   return {
     ...(promotion ? { promotion } : {}),
     ...(relegation ? { relegation: -relegation } : {}),
+    ...(star && ballonDor ? { ballonDor } : {}),
   };
+}
+/**
+ * Whether a contract `p` signs today may carry the Ballon d'Or bonus (→CLUB-29): rated 80+, or on
+ * a podium within the premium's seasons.
+ */
+export function ballonDorStar(w: World, p: Player) {
+  return (
+    overall(p) >= BALLON_DOR_CONFIG.clause.ability ||
+    ballonDorPremium(w.history, w.year, p.id).factor > 1
+  );
 }
 /** The clauses of a contract `p` signs today. */
 export function signingClauses(w: World, p: Player) {
-  return settleClauses(w.seed, p, agentOf(w, p), w.year, currentDay(w));
+  return settleClauses(w.seed, p, agentOf(w, p), w.year, currentDay(w), ballonDorStar(w, p));
 }
-/** Clauses as the owner reads them: 승격 시 +25% · 강등 시 −40%, or 없음. */
+/** Clauses as the owner reads them: 승격 시 +25% · 강등 시 −40% · 발롱도르 보너스, or 없음. */
 export function clausesLabel(clauses: ContractClauses | undefined) {
   const parts = [
     clauses?.promotion ? `승격 시 연봉 +${clauses.promotion}%` : '',
     clauses?.relegation ? `강등 시 연봉 −${-clauses.relegation}%` : '',
+    clauses?.ballonDor ? `발롱도르 수상 시 연봉의 ${clauses.ballonDor}% 보너스` : '',
   ].filter(Boolean);
   return parts.length ? parts.join(' · ') : '승격·강등 조항 없음';
 }
@@ -255,12 +271,20 @@ export function talkGoodwill(w: World, p: Player) {
   };
 }
 /**
- * What a player asks now: his market wage times the build's player-wage effects (→ECON-22) and his
+ * What a player is worth to a contract (→CLUB-26): his market wage times his Ballon d'Or premium,
+ * the measure of his demand, of an improved contract and of 재계약 기조's caps.
+ */
+export function playerWorth(w: World, p: Player) {
+  const { factor } = ballonDorPremium(w.history, w.year, p.id);
+  return factor === 1 ? marketWage(w, p) : scaleBy(marketWage(w, p), factor, 1000n);
+}
+/**
+ * What a player asks now: his worth times the build's player-wage effects (→ECON-22) and his
  * agent's premium (→CLUB-30), and the floor he accepts, demand × (1 − goodwill).
  */
 export function talkTerms(w: World, p: Player) {
   const multiplier = buildEffects(w).wage * agentPremium(agentOf(w, p)),
-    demand = scaleBy(marketWage(w, p), multiplier, 1000n),
+    demand = scaleBy(playerWorth(w, p), multiplier, 1000n),
     goodwill = talkGoodwill(w, p);
   return {
     demand,
@@ -283,10 +307,10 @@ export function staffTerm(w: World, p: Player): TalkTerm {
     term = until - w.year - (talkWindow(w) === 'winter' ? 1 : 0);
   return clamp(term, terms[0], terms[terms.length - 1]) as TalkTerm;
 }
-/** Whether a player is paid 25% or more below his market wage. */
+/** Whether a player is paid 25% or more below his worth (→CLUB-26). */
 function underpaid(w: World, p: Player) {
   const share = BigInt(Math.round(TALK_CONFIG.improveBelow * 1000));
-  return BigInt(p.wage) * 1000n <= BigInt(marketWage(w, p)) * share;
+  return BigInt(p.wage) * 1000n <= BigInt(playerWorth(w, p)) * share;
 }
 /** A renewal or an improved contract (계약 개선), as the talk is named. */
 export const TALK_LABEL: Record<ContractTalk['kind'], string> = {
@@ -544,7 +568,7 @@ export function staffTalkVerdict(w: World, p: Player) {
     renewal = directionOption(w, 'renewal').name,
     stance = financeStance(w),
     finance = directionOption(w, 'finance').name,
-    ceiling = scaleBy(marketWage(w, p), rule.maxPay, 1000n),
+    ceiling = scaleBy(playerWorth(w, p), rule.maxPay, 1000n),
     raise = BigInt(talk.floor) - BigInt(p.wage),
     perRound = (BigInt(operatingCosts(w).annual) + raise) / BigInt(SEASON_ROUNDS),
     runway = perRound * BigInt(stance.runway),
@@ -553,7 +577,7 @@ export function staffTalkVerdict(w: World, p: Player) {
   if (BigInt(talk.floor) > BigInt(ceiling))
     return {
       accept: false as const,
-      reason: `하한 ${moneyLabel(w, talk.floor)}이 연봉 상한(시장가의 ${Math.round(rule.maxPay * 100)}%, ${moneyLabel(w, ceiling)})을 넘어 거절했어요(재계약 기조 ${renewal}).`,
+      reason: `하한 ${moneyLabel(w, talk.floor)}이 연봉 상한(시장가${ballonDorPremium(w.history, w.year, p.id).factor > 1 ? '·발롱도르 프리미엄' : ''}의 ${Math.round(rule.maxPay * 100)}%, ${moneyLabel(w, ceiling)})을 넘어 거절했어요(재계약 기조 ${renewal}).`,
     };
   if (rule.startersOnly && !ownStarters(w).some((starter) => starter.id === p.id))
     return {

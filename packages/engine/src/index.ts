@@ -47,6 +47,8 @@ export * from './dynamics';
 export * from './careers';
 export * from './discipline';
 export * from './contracts';
+export * from './ballon-dor';
+export * from './ballon-dor-award';
 export * from './hiring';
 export * from './direction';
 export * from './presets';

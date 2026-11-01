@@ -32,6 +32,8 @@ function fixture() {
     playerClub: 'own',
     clubs: [{ id: 'own', country: 'ENG', tier: 0, fans: 800, reputation: 10 }],
     players: [player('active', 25), { ...player('sold', 25), status: 'sold' }],
+    // No closed season yet: no Ballon d'Or podium prices a signing (→CLUB-29).
+    history: [],
     manager: {
       id: 'manager',
       name: 'Synthetic Manager',

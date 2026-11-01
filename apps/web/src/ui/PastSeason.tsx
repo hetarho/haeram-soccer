@@ -14,6 +14,7 @@ import { RankChart, RankHistoryGraph, rankAxis, ZoneLegend } from './LeagueInsig
 import { seasonName, signed } from './format';
 import { divisionName, finalZones, sameLeague, type LeagueChoice } from './league';
 import { LeaguePicker } from './LeaguePicker';
+import { CompetitionHeader } from './CompetitionTabs';
 import { selectReviewWorld } from './liveState';
 import {
   finalRows,
@@ -446,28 +447,25 @@ export const ClosedSeason = memo(function ClosedSeason({
     );
   return (
     <>
-      <div className={s.competitionScope} aria-label="선택한 리그와 시즌">
-        <b>
-          {seasonName(year)} ·{' '}
-          {divisionName(
-            (league ?? ownThen!).code,
-            (league ?? ownThen!).tier,
-            (league ?? ownThen!).group,
-          )}
-        </b>
-        <LeaguePicker
-          league={league}
-          onLeague={onLeague}
-          own={ownThen}
-          season={year}
-          onSeason={onYear}
-        />
-        <button type="button" onClick={() => openClubSeason(year)}>
-          우리 구단의 이 시즌 기록
-        </button>
-      </div>
-      {/* Pinned like the live tabs; the season list above them scrolls away. */}
-      <div className={t.navigation}>
+      {/* Pinned like the live tabs: the same one-row header, then the closed season's tabs. */}
+      <div className={t.navigation} data-ui="toolbar">
+        <CompetitionHeader page="leagueHistory">
+          <b className={s.srOnly}>
+            {seasonName(year)} ·{' '}
+            {divisionName(
+              (league ?? ownThen!).code,
+              (league ?? ownThen!).tier,
+              (league ?? ownThen!).group,
+            )}
+          </b>
+          <LeaguePicker
+            league={league}
+            onLeague={onLeague}
+            own={ownThen}
+            season={year}
+            onSeason={onYear}
+          />
+        </CompetitionHeader>
         <TabList
           tabs={PAST_TABS}
           value={tab}
@@ -485,7 +483,12 @@ export const ClosedSeason = memo(function ClosedSeason({
         className={`${s.seasonPane} ${t.pane}`}
       >
         {tab === 'table' ? (
-          <FinalTable w={w} season={season} rows={tableRows} read={read} league={other} />
+          <>
+            <FinalTable w={w} season={season} rows={tableRows} read={read} league={other} />
+            <button type="button" className={r.clubSeason} onClick={() => openClubSeason(year)}>
+              우리 구단 시즌 기록
+            </button>
+          </>
         ) : tab === 'matches' ? (
           other ? (
             <UnavailableLeagueRecord

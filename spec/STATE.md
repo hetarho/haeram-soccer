@@ -486,9 +486,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T640 | League and Cup browse every season from a one-row header | WEB HIST | - | todo |
-| T641 | Ballon d'Or award, archive and contract effects | PLAYER HIST CLUB | - | todo |
-| T642 | Ballon d'Or records view, player honours, talk premium and news | WEB HIST PLAYER CLUB | T640 T641 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -512,7 +509,8 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T640 (bd02), then T641, T642
+- of02: combined host gate, main push and CI wait
+- bd02: batch gate on main, push, CI wait
 
 ## log
 - 261102 fix Team browser assertion: manager-journey has two distinct active players named Albert Brooks, so require one correctly named button per actual player ID row, preserving exact row counts and the same inspector/retention/geometry checks. First focused gate: office and badge 24 cases passed across all themes/browsers; Team 12 stopped at this identity assertion; session of02.
@@ -526,6 +524,9 @@
 - 261102 create-task T640 T641 T642: one-row League/Cup header with a season stepper; Ballon d'Or engine (podium archive, bonus clause, talk premium); records view, player honours, talk premium and news. Numbered from T640 to leave room for of02; session bd02.
 - 261102 update-ssot WEB r199 CLUB r48 HIST r19 PLAYER r11: League/Cup browse every kept season on one page with a one-row ‹ season › header (no previous-league/cup tabs, closed cup seasons open on the winner); 발롱도르 from 1955/56 with podium archive, records view, news, contract premium and bonus clause; session bd02.
 - 261102 update-ssot WEB CLUB HIST PLAYER start (bd02)
+- 261102 T640 done: League/Cup one-row header (country/division with groups as options, one cup select) and a shared ‹ season › stepper; no 이전 컵대회 기록 tab; closed cup seasons open on the winner; web unit 1184 passed, e2e specs updated for the batch gate; session bd02.
+- 261102 T641 done: season-close Ballon d'Or podium archived from 1955/56 (goals, assists, honours, class; 15+ top-flight apps), our winner's bonus clause paid at the close, recent podiums priced into talks and the delegated cap, the star-only bonus clause drawn after the existing four; unit 670, targeted integration (contracts, season equivalence, throughput) and contract tier passed; session bd02.
+- 261102 T642 done: 클럽 기록실 발롱도르 view with the season stepper, winners and most-wins boards; player-sheet honours, contract-talk premium line and one award news item per closed season (ours celebrated); web unit 1189 and news integration passed; session bd02.
 - 261101 of01 completed owner-office overhaul: main ebcc87fc passed CI 41258080379 (all 9 jobs; Chromium, Firefox, both WebKit shards), after the clean 81d165e0 local gate and 9 targeted browser cases. Primary and continuation reports closed; source unchanged after verification.
 - 261101 of01 combined final gate passed on clean 81d165e0: type/lint/format, unit 1893, integration 1270 (4 existing skips), contract 48, catalogs, presentation, build, Chromium 343; targeted sponsor/region/staff journeys 9 of 9 across all three browsers. T636 and the common-panel follow-up are verified; main publication and CI follow.
 - 261101 fix web scoped responsibilities: mount OwnerOffice with WorkResponsibility sections as well as operations, resolving the same traced late-panel shift in 1군, market, 코치진 and 유소년. Typecheck, lint, format, affected unit and build passed; host final browser gates follow; session of01.

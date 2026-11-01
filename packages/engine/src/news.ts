@@ -1148,7 +1148,35 @@ function honours(w: World): NewsItem[] {
   for (const europe of last.europe)
     if (europe.winner === w.playerClub && !won('europe-honor'))
       items.push({ ...base(`europe-${europe.kind}`), title: `${name}, ${europe.name} 정상!` });
+  const award = ballonDorNews(w, last);
+  if (award?.ours) items.push({ ...base('ballon-dor'), title: award.title, detail: award.detail });
+  else if (award) {
+    const { id, year, round, order, tag } = base('ballon-dor');
+    items.push({ id, year, round, order, tag, tone: 'neutral', weight: 'notable', ...award.text });
+  }
   return items;
+}
+
+/**
+ * The closed season's Ballon d'Or (→HIST-11, PLAYER-27): one item naming the winner and the
+ * podium; our winner is a major, celebrated item, anyone else's a notable fact.
+ */
+function ballonDorNews(w: World, last: World['history'][number]) {
+  const podium = last.ballonDor;
+  if (!podium?.length) return undefined;
+  const clubName = (id: string) => w.clubs.find((club) => club.id === id)?.name ?? id;
+  const winner = podium[0]!,
+    ours = winner.club === w.playerClub;
+  const detail = podium
+    .map(
+      (place, i) =>
+        `${i + 1}위 ${place.name}(${clubName(place.club)}) ${place.goals}골 ${place.assists}도움 · ${place.points}점`,
+    )
+    .join(' · ');
+  const title = ours
+    ? `${winner.name}, 발롱도르 수상!`
+    : `발롱도르: ${winner.name}(${clubName(winner.club)})`;
+  return { ours, title, detail, text: { title, detail } };
 }
 
 /** Club decisions and outcomes worth a headline; the rest of the ledger stays in the archive. */

@@ -72,7 +72,7 @@ for (const [label, viewport] of [
       ).toBe(0);
     });
 
-    test('reads the records room in six tabs with Elo context, chart bubbles and player sheets', async ({
+    test('reads the records room in seven tabs with Elo context, chart bubbles and player sheets', async ({
       page,
     }) => {
       // A whole season is played first; slow CI browsers need the longer budget.
@@ -87,6 +87,7 @@ for (const [label, viewport] of [
         '선수 통산',
         '이적 기록',
         '감독 이력',
+        '발롱도르',
       ]);
       await expect(tab('시즌별 기록')).toHaveAttribute('aria-selected', 'true');
       await expect(page).toHaveURL(/\/history\?section=club$/);
@@ -350,7 +351,10 @@ for (const [label, viewport] of [
       // The season opens under the records' tabs; 시즌별 기록 leads back to the list (→WEB-54).
       await tab('시즌별 기록').click();
       await tab('시즌별 기록').focus();
+      // End reaches the last tab, 발롱도르; the one before it is 감독 이력.
       await page.keyboard.press('End');
+      await expect(tab('발롱도르')).toHaveAttribute('aria-selected', 'true');
+      await page.keyboard.press('ArrowLeft');
       await expect(tab('감독 이력')).toHaveAttribute('aria-selected', 'true');
       await expect(page).toHaveURL(/\/history\?section=club&view=managers$/);
       await expect(page.getByRole('heading', { name: '감독들이 남긴 계절' })).toBeVisible();
