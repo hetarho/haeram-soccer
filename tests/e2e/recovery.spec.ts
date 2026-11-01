@@ -243,16 +243,22 @@ test('a new game goes into another slot, both careers survive switching and back
   await expect(page).toHaveURL(/\/first-team\?view=players$/);
   await openPersonnel(page, 'coaches');
   await expect(page).toHaveURL(/\/staff\?view=coaches$/);
-  // Back and forward move between the club's sections.
+  // Team is a real history entry before each detailed workflow; local tabs replace its lens.
   await page.goBack();
-  await expect(page).toHaveURL(/\/first-team\?view=players$/);
-  await expect(page.getByTestId('roster-availability')).toBeVisible();
+  await expect(page).toHaveURL(/\/team\?view=coaches$/);
+  await expect(page.getByTestId('team-coaches')).toBeVisible();
   await page.goForward();
   await expect(page).toHaveURL(/\/staff\?view=coaches$/);
   await expect(page.getByTestId('manager-card')).toBeVisible();
   await page.goBack();
+  await expect(page).toHaveURL(/\/team\?view=coaches$/);
+  await expect(page.getByTestId('team-coaches')).toBeVisible();
+  await page.goBack();
   await expect(page).toHaveURL(/\/first-team\?view=players$/);
-  // The section was entered from the clubhouse's section bar; the office has no doors (→WEB-10/39).
+  await expect(page.getByTestId('roster-availability')).toBeVisible();
+  await page.goBack();
+  await expect(page).toHaveURL(/\/team\?view=players$/);
+  await expect(page.getByTestId('team-players')).toBeVisible();
   await page.goBack();
   await expect(page).toHaveURL(/\/journal$/);
   await expect(page.getByTestId('club-hub')).toBeVisible();
