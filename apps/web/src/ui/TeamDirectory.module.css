@@ -72,6 +72,7 @@
 .figureColumn {
   width: 56px;
 }
+/* The season plus its localized suffix fits the pixel score font on phones too. */
 .contractColumn {
   width: 88px;
 }
@@ -120,9 +121,6 @@
   }
   .figureColumn {
     width: 44px;
-  }
-  .contractColumn {
-    width: 76px;
   }
   .number {
     font-size: 12px;
