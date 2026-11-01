@@ -51,4 +51,27 @@ describe('archived domestic competition scope', () => {
     expect(html).not.toContain('경기 기록을 불러오는 중');
     expect(html).not.toContain('Retained bracket');
   });
+
+  it('opens a closed season on its winner, with no season control of its own (→WEB-40)', () => {
+    const html = renderToStaticMarkup(
+      createElement(CupHistory, {
+        w: world,
+        client: {} as GameClient,
+        competition: 'cup',
+        countryCode: 'GER',
+        picked: 1950,
+        onYear: vi.fn(),
+      }),
+    );
+    const winner = html.slice(html.indexOf('data-testid="cup-season-winner"'));
+    expect(winner).toMatch(/^data-testid="cup-season-winner"[^]*1950\/51[^]*우승[^]*german-winner/);
+    expect(html.indexOf('cup-season-winner')).toBeLessThan(html.indexOf('우리 클럽의 컵 여정'));
+    // The header's stepper owns the season: no select or arrows here, and our season review
+    // sits with our road.
+    expect(html).not.toContain('data-select-trigger');
+    expect(html).not.toContain('이전 컵 시즌');
+    expect(html.indexOf('우리 구단 시즌 기록')).toBeGreaterThan(
+      html.indexOf('우리 클럽의 컵 여정'),
+    );
+  });
 });

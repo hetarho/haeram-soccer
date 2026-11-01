@@ -1,6 +1,4 @@
 import { LINEAGES, lineageName } from './cupCompetitions';
-import { openClubSeason } from './state';
-import { PixelIcon } from './PixelIcon';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type {
   CupFinal,
@@ -12,13 +10,13 @@ import { domesticCupName } from '../../../../packages/engine/src/competition-key
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import type { GameClient } from '../runtime/client';
 import { Bracket, Club } from './Bracket';
+import { openClubSeason } from './state';
 import { archivedKnockout } from './bracketTree';
 import { cupHonours, type CupHonours, type Feat } from './cupHonours';
 import { cupRoute, runLine, runResult, type RouteArchive, type RouteRow } from './cupRoute';
 import { Dialog } from './Dialog';
 import { MatchReport } from './MatchReport';
 import { reducedMotion } from './motion';
-import { Select } from './Select';
 import { seasonName } from './format';
 import s from './App.module.css';
 import c from './CupsView.module.css';
@@ -79,55 +77,6 @@ function finalLine(w: World, winner: string, final?: CupFinal) {
         {final.decided === 'pens' ? ' (승부차기)' : ''}
       </em>
       <Club w={w} id={final.runnerUp} />
-    </>
-  );
-}
-
-/** Previous and next arrows around the list of seasons the competition was played. */
-function CupSeasonPicker({
-  years,
-  year,
-  onChange,
-}: {
-  years: number[];
-  year: number;
-  onChange: (year: number) => void;
-}) {
-  const at = years.indexOf(year);
-  return (
-    <>
-      <button
-        data-ui="icon"
-        type="button"
-        className={ch.seasonStep}
-        aria-label="이전 컵 시즌"
-        disabled={at <= 0}
-        onClick={() => onChange(years[at - 1])}
-      >
-        <PixelIcon name="chevronLeft" size={20} />
-      </button>
-      <Select
-        aria-label="대진표 시즌"
-        className={ch.seasonSelect}
-        value={year}
-        onValueChange={(next) => onChange(Number(next))}
-      >
-        {[...years].reverse().map((entry) => (
-          <option key={entry} value={entry}>
-            {seasonName(entry)}
-          </option>
-        ))}
-      </Select>
-      <button
-        data-ui="icon"
-        type="button"
-        className={ch.seasonStep}
-        aria-label="다음 컵 시즌"
-        disabled={at === years.length - 1}
-        onClick={() => onChange(years[at + 1])}
-      >
-        <PixelIcon name="chevronRight" size={20} />
-      </button>
     </>
   );
 }
@@ -349,7 +298,7 @@ export function CupHistory({
   const [report, setReport] = useState<MatchRecord>();
   const [allRuns, setAllRuns] = useState(false),
     [allFinals, setAllFinals] = useState(false);
-  const stepper = useRef<HTMLDivElement>(null),
+  const stepper = useRef<HTMLElement>(null),
     journey = useRef<HTMLElement>(null);
   const runId = useId();
   // Closed seasons never change: the honours follow the number of seasons and the competition.
@@ -404,11 +353,9 @@ export function CupHistory({
     name = key === 'cup' ? chip : (final?.name ?? chip);
   const reveal = (target: HTMLElement | null) =>
     target?.scrollIntoView({ block: 'start', behavior: reducedMotion() ? 'auto' : 'smooth' });
+  // The season moves in the header's stepper; the page returns to its winner.
   const showBracket = (next: number) => {
     setPicked(next);
-    stepper.current
-      ?.querySelector<HTMLElement>('[data-select-trigger]')
-      ?.focus({ preventScroll: true });
     reveal(stepper.current);
   };
   const showJourney = (next: number) => {
@@ -440,29 +387,23 @@ export function CupHistory({
           </p>
         ) : (
           <>
-            <section className={ch.historySection} aria-label="시즌별 대진">
-              <h4>시즌별 대진</h4>
-              <div ref={stepper} className={ch.seasonPicker} role="group" aria-label="컵 시즌 선택">
-                <CupSeasonPicker years={years} year={year} onChange={setPicked} />
-              </div>
-              <button type="button" onClick={() => openClubSeason(year)}>
-                이 시즌 구단 기록
-              </button>
-              <p className={ch.seasonFinal}>
-                <b>
+            <section ref={stepper} className={ch.historySection} aria-label="시즌별 대진">
+              <div data-surface="sheet" className={ch.winner} data-testid="cup-season-winner">
+                <small>
                   {seasonName(year)}
-                  {final.name && ` ${final.name}`}
-                </b>{' '}
-                · 우승 <Club w={w} id={final.winner} strong />
+                  {final.name && ` ${final.name}`} 우승
+                </small>
+                <p className={ch.winnerClub}>
+                  <Club w={w} id={final.winner} strong />
+                </p>
                 {final.final && (
-                  <>
-                    {' '}
-                    · 결승 {final.final.score[0]}–{final.final.score[1]}{' '}
+                  <p className={ch.winnerFinal}>
+                    결승 {final.final.score[0]}–{final.final.score[1]}
+                    {final.final.decided === 'pens' && ' (승부차기)'} ·{' '}
                     <Club w={w} id={final.final.runnerUp} />
-                    {final.final.decided === 'pens' && ' (승부차기)'}
-                  </>
+                  </p>
                 )}
-              </p>
+              </div>
               {season && (
                 <p data-surface="inset" className={c.status}>
                   {ownCompetition ? runLine(season, key) : '우리 클럽은 나서지 않았어요'}
@@ -475,6 +416,13 @@ export function CupHistory({
                 aria-label="우리 클럽의 컵 여정"
               >
                 <h4>우리 클럽의 컵 여정</h4>
+                <button
+                  type="button"
+                  className={ch.clubSeason}
+                  onClick={() => openClubSeason(year)}
+                >
+                  우리 구단 시즌 기록
+                </button>
                 {archive?.failed ? (
                   <p className={c.note}>경기 기록을 읽지 못했어요.</p>
                 ) : !route ? (

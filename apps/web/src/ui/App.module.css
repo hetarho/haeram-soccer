@@ -2766,10 +2766,6 @@
   overflow-x: auto;
   scrollbar-width: none;
 }
-/* Competition hubs have a second local tab row; preserve the compact table viewport. */
-.competitionTabs {
-  margin-bottom: 4px;
-}
 .operationsTabs button {
   flex: 0 0 auto;
   white-space: nowrap;
@@ -3208,7 +3204,7 @@
   position: absolute;
   inset: -6px 0;
 }
-/* The league views' league choice (→WEB-65); the way back to ours sits beside the selects. */
+/* The league views' league choice (→WEB-65): country and division, then the season stepper. */
 .leaguePicker {
   margin-bottom: 0;
   gap: 8px;
@@ -3216,12 +3212,6 @@
 .leaguePicker > label {
   flex: 1 1 120px;
   min-width: 0;
-}
-.leagueHome.leagueHome {
-  align-self: flex-end;
-  width: auto;
-  min-height: 48px;
-  padding: 0 16px;
 }
 
 .brandSignal {
@@ -3330,7 +3320,7 @@
 .competitionScope {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 4px;
   margin: 0;
   font-size: var(--label-size);
@@ -3386,11 +3376,7 @@
   pointer-events: none;
 }
 
-/* Competition navigation and its scope share a row before the view tabs. */
-.competitionScope > .competitionTabs {
-  flex: 0 0 auto;
-  margin: 0;
-}
+/* League and Cup's one-row header (→WEB-40): selects give way, the season stepper keeps its size. */
 .competitionScope .leaguePicker {
   flex: 1 1 150px;
   flex-wrap: nowrap;
@@ -3412,11 +3398,6 @@
 }
 .competitionScope .leaguePicker > label:first-child {
   flex-basis: 80px;
-}
-.competitionScope .leagueHome {
-  min-height: var(--control-min-height);
-  padding-inline: 8px;
-  font-size: 12px;
 }
 @media (max-width: 760px) {
   .competitionScope {

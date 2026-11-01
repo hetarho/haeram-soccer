@@ -1,6 +1,7 @@
 import { COMPETITION_PATHS, competitionRoute, selectedYear } from './competitionNavigation';
 import { Select } from './Select';
-import { LINEAGES, lineageName } from './cupCompetitions';
+import { cupSeasons, LINEAGES, lineageName } from './cupCompetitions';
+import { SeasonStepper } from './SeasonStepper';
 import { useCupRequest, useNavigation } from './state';
 import { useTaskMemory, useTaskState } from './taskMemory';
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react';
@@ -21,7 +22,7 @@ import type { GameClient } from '../runtime/client';
 import { Bracket, Club } from './Bracket';
 import { number, seasonName } from './format';
 import { orderIds } from './league';
-import { replaceQuery, TabList, useAddressTab } from './PageTabs';
+import { replaceQuery, useAddressTab } from './PageTabs';
 import { CompetitionHeader } from './CompetitionTabs';
 import s from './App.module.css';
 import c from './CupsView.module.css';
@@ -370,63 +371,73 @@ export function CupsView({
   const active = tabs.some(([id]) => id === tab) ? tab : 'cup';
   const tournament = w.europe.find((t) => t.key === active);
   const lineage = LINEAGES.find((entry) => entry.key === active);
+  // The stepper runs over the seasons this competition has a record for, then this season.
+  const closed = cupSeasons(w.history, countryCode, active),
+    years = [...closed, w.year];
+  // A season chosen for another competition stays only when this one has a record for it.
+  const pastYear = year !== undefined && closed.includes(year) ? year : closed.at(-1);
+  const shownYear = period === 'current' ? w.year : (pastYear ?? w.year);
+  // An address or another competition's season this one has no record for settles on its latest.
+  useEffect(() => {
+    if (period === 'history' && activePage && pastYear !== undefined && pastYear !== year)
+      setYear(pastYear);
+  }, [period, activePage, pastYear, year, setYear]);
+  // One select names every domestic cup by its country and every continental lineage.
+  const choice = active === 'cup' ? cupKey(countryCode) : active;
+  const choose = (value: string) => {
+    if (!value.startsWith('cup:')) return setTab(value);
+    setTab('cup');
+    setCountry(value.slice(4));
+  };
+  // A closed season opens in the history page, this season in the live one, the competition kept.
+  const pickYear = (next: number) => {
+    if (period === 'history' && next !== w.year) return setYear(next);
+    if (period === 'current' && next === w.year) return;
+    const target = next === w.year ? 'europe' : 'cupHistory';
+    const params = new URLSearchParams(COMPETITION_PATHS[target].split('?')[1]);
+    params.set('cup', active);
+    if (active === 'cup' && countryCode !== clubOf(w).country) params.set('country', countryCode);
+    if (target === 'cupHistory') params.set('season', String(next));
+    useTaskMemory.setState((memory) => ({
+      addresses: {
+        ...memory.addresses,
+        [target]: `${COMPETITION_PATHS[target].split('?')[0]}?${params}`,
+      },
+    }));
+    useNavigation.getState().setPage(target);
+  };
   return (
     <>
-      {period === 'current' ? (
-        <div className={c.navigation} data-ui="toolbar">
-          <CompetitionHeader page="europe">
-            <div className={s.competitionFilters}>
-              <Select aria-label="컵 대회" value={active} onValueChange={setTab}>
-                {tabs.map(([id, name]) => (
-                  <option key={id} value={id}>
-                    {name}
+      <div className={c.navigation} data-ui="toolbar">
+        <CompetitionHeader page={context}>
+          <div className={s.competitionFilters}>
+            <Select aria-label="컵 대회" value={choice} onValueChange={choose}>
+              <optgroup label="국내 컵">
+                {countries.map(([code]) => (
+                  <option key={code} value={cupKey(code)}>
+                    {domesticCupName(code)}
                   </option>
                 ))}
-              </Select>
-              {active === 'cup' && (
-                <Select aria-label="국내 컵 국가" value={countryCode} onValueChange={setCountry}>
-                  {countries.map(([code, name]) => (
-                    <option key={code} value={code}>
-                      {name}
-                    </option>
-                  ))}
-                </Select>
-              )}
-            </div>
-          </CompetitionHeader>
-        </div>
-      ) : (
-        <TabList
-          tabs={tabs}
-          value={active}
-          onChange={setTab}
-          label="컵 대회"
-          idPrefix="cup-competition"
-          className={`${s.seasonTabs} ${c.tabs}`}
-        />
-      )}
+              </optgroup>
+              <optgroup label="클럽대항전">
+                {LINEAGES.map((entry) => (
+                  <option key={entry.key} value={entry.key}>
+                    {lineageName(w, entry)}
+                  </option>
+                ))}
+              </optgroup>
+            </Select>
+          </div>
+          <SeasonStepper years={years} value={shownYear} current={w.year} onChange={pickYear} />
+        </CompetitionHeader>
+      </div>
       <div
         id="cup-competition-panel"
-        role={period === 'current' ? 'region' : 'tabpanel'}
-        aria-label={period === 'current' ? '현재 컵 대회 상세' : undefined}
-        aria-labelledby={period === 'history' ? `cup-competition-tab-${active}` : undefined}
+        role="region"
+        aria-label={period === 'current' ? '현재 컵 대회 상세' : '지난 컵 대회 상세'}
       >
-        {period === 'history' && (
-          <div className={s.recordControls}>
-            <b>{tabs.find(([id]) => id === active)?.[1]} · 지난 시즌·역사</b>
-          </div>
-        )}
         {period === 'current' && (
           <p className={s.muted}>최근 5시즌 구단 계수 · {number(coefficient)}점</p>
-        )}
-        {period === 'history' && active === 'cup' && (
-          <Select aria-label="국내 컵 국가" value={countryCode} onValueChange={setCountry}>
-            {countries.map(([code, name]) => (
-              <option key={code} value={code}>
-                {name}
-              </option>
-            ))}
-          </Select>
         )}
         {period === 'current' && active === 'cup' && (
           <DomesticCup w={w} countryCode={countryCode} />
@@ -438,7 +449,7 @@ export function CupsView({
           <p className={s.panelBody}>
             {lineage && w.year < lineage.founded
               ? `${seasonName(lineage.founded)} 시즌에 창설돼요.`
-              : '이번 시즌에는 열리지 않는 대회예요. 지난 시즌·역사에서 보관된 기록을 볼 수 있어요.'}
+              : '이번 시즌에는 열리지 않는 대회예요. 시즌을 넘기면 보관된 기록을 볼 수 있어요.'}
           </p>
         )}
         {period === 'history' && (
@@ -455,7 +466,7 @@ export function CupsView({
               w={w}
               client={client}
               competition={active}
-              picked={year}
+              picked={pastYear}
               onYear={setYear}
             />
           </Suspense>

@@ -305,7 +305,7 @@ test('opens club seasons in records and retains the detail scope through league 
   await page.getByRole('button', { name: '이 시즌 컵 대회 기록', exact: true }).click();
   await expect(page.getByRole('combobox', { name: '컵 대회', exact: true })).toHaveAttribute(
     'data-value',
-    'cup',
+    'cup:ENG',
   );
   await expect(page.getByRole('region', { name: '잉글랜드 컵', exact: true })).toBeVisible();
   await openClubRecords(page);
@@ -403,42 +403,33 @@ test('chooses a cup once and keeps its archived season through competition and c
   await expect(page.getByTestId('game-round')).toHaveText('0');
   await page.keyboard.press('Escape');
   await openCups(page);
-  const competition = page.getByRole('tablist', { name: '컵 대회', exact: true });
+  const competition = page.getByRole('combobox', { name: '컵 대회', exact: true }),
+    season = page.getByRole('combobox', { name: '시즌', exact: true });
   await openCups(page, true);
-  await chooseOption(page.getByRole('combobox', { name: '대진표 시즌', exact: true }), '1950');
-  await competition.getByRole('tab', { name: 'European Cup', exact: true }).click();
-  await expect(page.getByRole('tab', { name: '이전 컵대회 기록', exact: true })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
+  await expect(season).toHaveAttribute('data-value', '1951');
+  await chooseOption(season, '1950');
+  await chooseOption(competition, 'ucl');
+  // No tab bar splits this season from past ones; the competition and season share one row.
+  await expect(page.getByRole('tab', { name: '이전 컵대회 기록', exact: true })).toHaveCount(0);
   await expect(page.getByRole('region', { name: '컵 대회 역사', exact: true })).toContainText(
     '1955/56',
   );
   await expect(page.getByRole('tablist', { name: '역사를 볼 대회' })).toHaveCount(0);
-  await competition.getByRole('tab', { name: '잉글랜드 컵', exact: true }).click();
-  await expect(page.getByRole('combobox', { name: '대진표 시즌', exact: true })).toHaveAttribute(
-    'data-value',
-    '1950',
-  );
-  await page.getByRole('button', { name: '이 시즌 구단 기록', exact: true }).click();
+  await chooseOption(competition, 'cup:ENG');
+  await expect(season).toHaveAttribute('data-value', '1950');
+  await expect(page.getByTestId('cup-season-winner')).toContainText('1950/51');
+  await page.getByRole('button', { name: '우리 구단 시즌 기록', exact: true }).click();
   await expect(page).toHaveURL(/\/history\?section=club&season=1950/);
   // The cups entered again keep the archived season (→WEB-74).
   await openCups(page, true);
   await expect(page).toHaveURL(/section=cup.*cup=cup.*season=1950/);
-  await expect(page.getByRole('combobox', { name: '대진표 시즌', exact: true })).toHaveAttribute(
-    'data-value',
-    '1950',
-  );
+  await expect(season).toHaveAttribute('data-value', '1950');
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  // A season the cup has no record for settles on its latest recorded one.
   await page.goto('/europe?competition=cup&period=history&season=1940');
-  await expect(page.getByRole('region', { name: '컵 대회 역사', exact: true })).toContainText(
-    '1940/41 · 잉글랜드 컵의 대회 기록이 없어요.',
-  );
-  await page.getByRole('button', { name: '최근 기록된 시즌 보기', exact: true }).click();
-  await expect(page.getByRole('combobox', { name: '대진표 시즌', exact: true })).toHaveAttribute(
-    'data-value',
-    '1951',
-  );
+  await expect(season).toHaveAttribute('data-value', '1951');
+  await expect(page).toHaveURL(/section=cup.*season=1951/);
+  await expect(page.getByTestId('cup-season-winner')).toContainText('1951/52');
 });
 
 test('department sheet is readonly in a second tab and restores its task', async ({

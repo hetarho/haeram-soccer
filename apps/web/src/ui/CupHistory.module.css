@@ -17,51 +17,27 @@
   font-size: 14px;
 }
 /* Season stepper: previous and next arrows around the season list, oldest on the left. */
-.seasonPicker {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  scroll-margin-top: 12px;
-}
-.seasonPicker .seasonSelect.seasonSelect {
-  flex: 0 1 200px;
-  min-width: 0;
-}
-.seasonSelect > span:first-child {
-  flex: 1;
-  text-align: center;
-}
-.seasonStep {
-  flex: none;
+/* A closed season opens on its winner (→WEB-40): the club, then the final that decided it. */
+.winner {
   display: grid;
-  place-items: center;
-  width: 44px;
-  min-width: 44px;
-  height: 44px;
-  min-height: 44px;
-  padding: 0;
-  border-radius: var(--control-radius);
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: var(--card-radius);
+  scroll-margin-top: 72px;
 }
-.seasonStep svg {
-  width: 20px;
-  height: 20px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.winner small {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: var(--display);
 }
-.seasonStep:disabled {
-  opacity: 0.35;
+.winnerClub {
+  margin: 0;
+  font-size: 17px;
 }
-.seasonFinal {
+.winnerFinal {
   margin: 0;
   font-size: 13px;
-  line-height: 1.9;
-}
-.seasonFinal b {
-  font-size: 14px;
+  color: var(--text-muted);
 }
 .journey {
   gap: 8px;
@@ -331,4 +307,10 @@
   color: var(--surface-deep);
   background: var(--gold);
   font-family: var(--display);
+}
+/* Our club's season review from the closed cup season (→WEB-54), quiet beside our road. */
+.clubSeason {
+  justify-self: start;
+  width: auto;
+  padding-inline: 16px;
 }

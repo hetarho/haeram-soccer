@@ -85,18 +85,25 @@ export async function returnToMatch(page: Page) {
   await expect(page.getByTestId('match-theatre')).toBeVisible();
   await settle(page);
 }
-/** The cups through their primary entry; this season or past records by their own tabs. */
+/**
+ * The cups through their primary entry (→WEB-40): this season, or with `archive` the latest closed
+ * season of the selected competition, reached by the header's season stepper.
+ */
 export async function openCups(page: Page, archive = false) {
-  const tabs = page.getByRole('tablist', { name: '컵 대회', exact: true });
-  if (!(await tabs.isVisible())) await primaryEntry(page, 'cup').click();
-  await expect(tabs).toBeVisible();
+  const competition = page.getByRole('combobox', { name: '컵 대회', exact: true });
+  if (!(await competition.isVisible())) await primaryEntry(page, 'cup').click();
+  await expect(competition).toBeVisible();
   await settle(page);
-  const tab = tabs.getByRole('tab', {
-    name: archive ? '이전 컵대회 기록' : '컵 대회',
-    exact: true,
-  });
-  await tab.click();
-  await expect(tab).toHaveAttribute('aria-selected', 'true');
+  const closed = new URL(page.url()).pathname === '/history';
+  if (archive && !closed) {
+    await page.getByRole('button', { name: '이전 시즌', exact: true }).click();
+    await expect(page).toHaveURL((url) => url.pathname === '/history');
+  } else if (!archive && closed) {
+    await chooseOption(page.getByRole('combobox', { name: '시즌', exact: true }), { index: 0 });
+    await expect(page).toHaveURL((url) => url.pathname === '/season');
+  }
+  await expect(competition).toBeVisible();
+  await settle(page);
 }
 /** The club records room through the 기록 entry. */
 export async function openClubRecords(page: Page) {

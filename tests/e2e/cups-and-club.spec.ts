@@ -26,7 +26,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await openCups(page);
     await expect(page.getByRole('combobox', { name: '컵 대회', exact: true })).toHaveAttribute(
       'data-value',
-      'cup',
+      'cup:ENG',
     );
     const cup = page.getByRole('region', { name: '잉글랜드 컵' });
     // A new amateur club enters the cup in its first round, drawn before the season starts.
@@ -35,11 +35,10 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(cup).toContainText('다음');
     await chooseOption(page.getByRole('combobox', { name: '컵 대회', exact: true }), 'ucl');
     await expect(page.getByText('1955/56 시즌에 창설돼요.', { exact: true })).toBeVisible();
-    await openCups(page, true);
-    await page.getByRole('tab', { name: '잉글랜드 컵', exact: true }).click();
-    await expect(page.getByRole('region', { name: '컵 대회 역사' })).toContainText(
-      '아직 기록된 대회가 없어요',
-    );
+    // No season has closed yet: the header's stepper has nowhere older to go (→WEB-40).
+    await chooseOption(page.getByRole('combobox', { name: '컵 대회', exact: true }), 'cup:ENG');
+    await expect(page.getByRole('button', { name: '이전 시즌', exact: true })).toBeDisabled();
+    await expect(page.getByRole('tab', { name: '이전 컵대회 기록' })).toHaveCount(0);
     expect(await horizontalOverflow(page)).toBe(0);
   });
 
@@ -255,9 +254,11 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await openCups(page);
     await openCups(page, true);
     const history = page.getByRole('region', { name: '컵 대회 역사' });
-    const picker = history.getByRole('group', { name: '컵 시즌 선택' });
-    await expect(picker.getByRole('combobox', { name: '대진표 시즌' })).toHaveText(/1950\/51/);
-    await expect(picker.getByRole('button', { name: '이전 컵 시즌' })).toBeDisabled();
+    // The header's stepper holds the season; the closed season opens on its winner (→WEB-40).
+    const picker = page.getByRole('group', { name: '시즌 넘기기' });
+    await expect(picker.getByRole('combobox', { name: '시즌' })).toHaveText(/1950\/51/);
+    await expect(picker.getByRole('button', { name: '이전 시즌' })).toBeDisabled();
+    await expect(history.getByTestId('cup-season-winner')).toContainText('1950/51');
     // The closed season's bracket opens as a tree from the last 32 to the final.
     await expect(history.getByRole('group', { name: '대진 보기' })).toBeVisible();
     const tree = history.getByRole('group', { name: '대진표', exact: true });

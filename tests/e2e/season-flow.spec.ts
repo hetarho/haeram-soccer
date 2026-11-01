@@ -91,7 +91,8 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   await expect(picker.getByRole('combobox', { name: '디비전', exact: true })).toHaveText('1부');
   await page.getByRole('tab', { name: '순위표', exact: true }).click();
   await expect(page.getByRole('table', { name: '리그 순위표' })).not.toContainText('우리 팀');
-  await page.getByRole('button', { name: '우리 리그로', exact: true }).click();
+  // Our country again returns to our league (→WEB-65).
+  await chooseOption(picker.getByRole('combobox', { name: '국가', exact: true }), 'ENG');
   await expect(page.getByRole('table', { name: '리그 순위표' })).toContainText('우리 팀');
   await expect(page).not.toHaveURL(/league=/);
   await page.getByRole('tab', { name: '선수 기록', exact: true }).click();

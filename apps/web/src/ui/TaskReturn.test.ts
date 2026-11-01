@@ -5,7 +5,7 @@ import type { Page } from './state';
 import type { TaskReturn as ReturnContext } from './taskMemory';
 import { TaskReturn } from './TaskReturn';
 import { returnToTask } from './state';
-import { CompetitionHeader, CompetitionTabs } from './CompetitionTabs';
+import { CompetitionHeader } from './CompetitionTabs';
 import korean from '../../public/presentation/locales/ko-KR.json';
 
 const context = vi.hoisted(() => ({
@@ -61,7 +61,7 @@ describe('named competition return', () => {
     expect(returnToTask).not.toHaveBeenCalled();
   });
 
-  it('keeps the competition header to its filters and tabs, with no return', () => {
+  it('keeps the competition header to its filters and season stepper, with no return', () => {
     const league = renderToStaticMarkup(
       createElement(CompetitionHeader, {
         page: 'league',
@@ -71,15 +71,14 @@ describe('named competition return', () => {
     expect(league).toContain('aria-label="대회 탐색"');
     expect(league).toContain('aria-label="국가"');
     expect(league).not.toContain('돌아가기');
-    // The league picks its season in its filters, so it has no this-season/past tabs.
+    // League and Cup step their seasons in the header, so neither has this-season/past tabs.
     expect(league).not.toContain('role="tablist"');
-    const cups = renderToStaticMarkup(
-      createElement(CompetitionHeader, { page: 'europe', children: null }),
-    );
-    expect(cups).toContain('role="tablist"');
-    expect(cups).not.toContain('돌아가기');
-    CompetitionTabs({ page: 'europe' })!.props.onChange('cupHistory');
-    expect(context.setPage).toHaveBeenCalledExactlyOnceWith('cupHistory');
+    for (const page of ['europe', 'cupHistory'] as const) {
+      const cups = renderToStaticMarkup(createElement(CompetitionHeader, { page, children: null }));
+      expect(cups).not.toContain('role="tablist"');
+      expect(cups).toContain('data-competition="cup"');
+      expect(cups).not.toContain('돌아가기');
+    }
   });
   it.each([
     ['league', 'europe'],

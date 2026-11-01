@@ -6,32 +6,29 @@ import { useGameState } from '../runtime/store';
 import { selectLeagueWorld } from './liveState';
 import { leagueParam, ownLeague, sameLeague, type LeagueChoice } from './league';
 import { Select } from './Select';
-import { seasonName } from './format';
+import { SeasonStepper } from './SeasonStepper';
 import s from './App.module.css';
 
-/** The season filter beside country and division: this season first, then closed ones. */
-function SeasonSelect({ value, onChange }: { value?: number; onChange: (year: number) => void }) {
+/** Every kept season, oldest first and the season in progress last (→WEB-40). */
+function useLeagueSeasons() {
   const current = useGameState((state) => state.view?.world.year);
   const closed = useGameState((state) => state.view?.world.history.map((h) => h.year).join(','));
-  if (current === undefined) return null;
-  const years = [
+  if (current === undefined) return undefined;
+  return {
     current,
-    ...(closed ? closed.split(',').map(Number) : []).filter((year) => year !== current).reverse(),
-  ];
-  return (
-    <Select
-      aria-label="시즌"
-      value={String(value ?? current)}
-      onValueChange={(year) => onChange(Number(year))}
-    >
-      {years.map((year) => (
-        <option key={year} value={year}>
-          {seasonName(year)}
-          {year === current ? ' · 진행 중' : ''}
-        </option>
-      ))}
-    </Select>
-  );
+    years: [
+      ...(closed ? closed.split(',').map(Number) : []).filter((year) => year < current),
+      current,
+    ],
+  };
+}
+
+/** A division option's value, its tier and regional group: `2.1` for 3부 B조. */
+export const divisionValue = (league: Pick<LeagueChoice, 'tier' | 'group'>) =>
+  `${league.tier}.${league.group}`;
+export function parseDivision(value: string): Pick<LeagueChoice, 'tier' | 'group'> {
+  const [tier, group] = value.split('.').map(Number);
+  return { tier: tier || 0, group: group || 0 };
 }
 
 /** A league's name: country and division, its regional group when the division has several. */
@@ -68,8 +65,9 @@ export function useLeagueFixtures(client: GameClient, w: World, league?: LeagueC
 }
 
 /**
- * Which league the league views show: any country, division and regional group of the pyramid,
- * the own league first (→WEB-65). Choosing the own league again clears the choice, so a promotion
+ * Which league the league views show (→WEB-40, WEB-65): any country, and any division with each of
+ * its regional groups as an option of its own, the own league first; then, with `onSeason`, the
+ * season stepper in the same row. Choosing the own league again clears the choice, so a promotion
  * or relegation carries the views along. A closed season passes `own`, our league that season, so
  * the league we play in now reads like any other there.
  */
@@ -83,11 +81,12 @@ export const LeaguePicker = memo(function LeaguePicker({
   league?: LeagueChoice;
   onLeague: (league?: LeagueChoice) => void;
   own?: LeagueChoice;
-  /** With `onSeason`, the season joins country and division in the same row. */
+  /** With `onSeason`, the season stepper joins country and division in the same row. */
   season?: number;
   onSeason?: (year: number) => void;
 }) {
   const w = useGameState(selectLeagueWorld)!;
+  const seasons = useLeagueSeasons();
   const own = base ?? ownLeague(w),
     // The amateur level sits one tier below the country's professional divisions.
     amateur = !country(own.code).groups[own.tier],
@@ -114,51 +113,28 @@ export const LeaguePicker = memo(function LeaguePicker({
         <span className={s.srOnly}>디비전</span>
         <Select
           aria-label="디비전"
-          value={shown.tier}
-          onValueChange={(value) =>
-            choose(
-              Number(value) === own.tier && shown.code === own.code
-                ? own
-                : { code: shown.code, tier: Number(value), group: 0 },
-            )
-          }
+          value={divisionValue(shown)}
+          onValueChange={(value) => choose({ code: shown.code, ...parseDivision(value) })}
         >
-          {cp.groups.map((_, i) => (
-            <option key={i} value={i}>
-              {i + 1}부
-            </option>
-          ))}
+          {cp.groups.flatMap((groups, tier) =>
+            groups.map((_, group) => (
+              <option key={`${tier}.${group}`} value={divisionValue({ tier, group })}>
+                {tier + 1}부{groups.length > 1 ? ` ${String.fromCharCode(65 + group)}조` : ''}
+              </option>
+            )),
+          )}
           {amateur && shown.code === own.code && (
-            <option value={own.tier}>아마추어 리그 · 프로 진입 도전</option>
+            <option value={divisionValue(own)}>아마추어 리그</option>
           )}
         </Select>
       </label>
-      {cp.groups[shown.tier]?.length > 1 && (
-        <label>
-          <span className={s.srOnly}>지역 그룹</span>
-          <Select
-            aria-label="지역 그룹"
-            value={shown.group}
-            onValueChange={(value) => choose({ ...shown, group: Number(value) })}
-          >
-            {cp.groups[shown.tier].map((_, i) => (
-              <option key={i} value={i}>
-                {String.fromCharCode(65 + i)}
-              </option>
-            ))}
-          </Select>
-        </label>
-      )}
-      {onSeason && (
-        <label>
-          <span className={s.srOnly}>시즌</span>
-          <SeasonSelect value={season} onChange={onSeason} />
-        </label>
-      )}
-      {league && !sameLeague(league, own) && (
-        <button type="button" className={s.leagueHome} onClick={() => onLeague(undefined)}>
-          우리 리그로
-        </button>
+      {onSeason && seasons && (
+        <SeasonStepper
+          years={seasons.years}
+          value={season ?? seasons.current}
+          current={seasons.current}
+          onChange={onSeason}
+        />
       )}
     </div>
   );

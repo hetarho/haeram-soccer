@@ -686,3 +686,10 @@
     animation: none;
   }
 }
+/* The closed league table's way to our own season review (→WEB-40), quiet under the table. */
+.clubSeason {
+  justify-self: start;
+  width: auto;
+  margin-top: 10px;
+  padding-inline: 16px;
+}
