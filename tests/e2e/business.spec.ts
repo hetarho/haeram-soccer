@@ -66,7 +66,9 @@ async function playNext(page: Page) {
   await clubhouseTab(page).click();
   // A match can leave an owner-held decision (a mediation after an injury) before the next one.
   await acknowledgeEvents(page);
-  await watchNext(page);
+  // Read each settled round before progressing again: a running clock can open the next eve
+  // over the investment controls while their export/navigation is in flight (CI Firefox).
+  await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
 }
