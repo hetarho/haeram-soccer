@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| of02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T15:48Z | 2026-11-01T15:48Z | - |
+| of02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T15:48Z | 2026-11-01T16:24Z | T643 |
 | bd02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T16:10Z | 2026-11-01T16:10Z | - |
 
 ## inbox
@@ -486,7 +486,7 @@
 | T640 | League and Cup browse every season from a one-row header | WEB HIST | - | todo |
 | T641 | Ballon d'Or award, archive and contract effects | PLAYER HIST CLUB | - | todo |
 | T642 | Ballon d'Or records view, player honours, talk premium and news | WEB HIST PLAYER CLUB | T640 T641 | todo |
-| T643 | Shared readable position badges in the market | WEB | T637 | todo |
+| T643 | Shared readable position badges in the market | WEB | T637 | doing@261101.of02 |
 | T644 | Compact Team directory before the transfer market | WEB | T643 | todo |
 
 ## work
