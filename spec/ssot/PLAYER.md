@@ -1,5 +1,5 @@
 # PLAYER Player model
-> r10 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
+> r11 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
 
 ## decisions
 - PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 16 attributes, positions with levels, personality and play traits, potential. Other clubs' match squads use seasonal generation from club strength (→WORLD-6, →LEAGUE-10); cross-role person continuity and retirement eligibility are →WORLD-10/11. Development, adaptation and attribute ageing below continue to apply to the own club's players and academy; this does not apply own-club development to every NPC squad. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
@@ -183,11 +183,19 @@
   - 규율 is how firmly he keeps his place in the shape, 압박 성향 how readily he presses, 예측력 how early he reads a pass or a run; 예측력 sets when he reacts, 위치선정 where he stands and 판단력 what he decides, so no attribute counts twice.
   - they are not formal attributes: no growth, training, adaptation or OVR weight.
 
+- PLAYER-27 [o] Each season close from 1955/56 awards the 발롱도르 to the world's best player of the season just played, with second and third places. ← the award fans argue about every year, earned by the season rather than by reputation
+  - points come from the season's complete settled aggregates over all competitions (→!HIST-17): goals × 4, assists × 3, and class (his OVR at the close − 70) × 2 when above 70.
+  - team honours add points, each only when he played for the winning club in that competition: the European Cup (and its successor) won +40, lost in its final +15; another continental competition won +15; a top-flight league title +25; a domestic cup +10.
+  - only players with at least 15 top-flight league appearances that season are eligible; nationality is not modelled, so every such player counts. Ties: more points, then higher OVR, then stable ID.
+  - a season not tracked whole from its first day awards nothing; no award is back-filled for seasons before the career or before 1955/56.
+  - the award is a fact of the season, not a rating: it changes no attribute, OVR, morale or match strength. Its effects are the contract premium and bonus clause (→CLUB-26/29), news (→HIST-11) and its views (→WEB-111).
+
 ## flow
 - a player's season: joins (start by PLAYER-11) → starts and training raise adaptation (PLAYER-12) and attributes (PLAYER-15) → a manager change costs adaptation (PLAYER-13) → still below 0.50 after 23 rounds: 적응 실패 (PLAYER-14) → past potential only at 0.90+ (PLAYER-16) → ageing by group (PLAYER-17)
 - in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; role and play traits shape his choices and runs (PLAYER-5, PLAYER-9); each choice and action reads its attributes (PLAYER-2)
 
 ## chg
+- r11 261102 PLAYER-27+ season-close 발롱도르 from 1955/56: podium of three by goals, assists, team honours and class among players with 15+ top-flight league appearances; a fact with contract, news and view effects only
 - r10 261025 PLAYER-26+ four inspector tendencies (자유도 from the manager, 규율, 압박 성향, 예측력) from attributes and a stable personality drive movement; not formal attributes
 - r9 261019 PLAYER-1✎ PLAYER-2✎ 14→16 attributes, +정신 판단력 and 침착성 (young players about 5 lower at generation), 몸싸움 +aerial challenges, 크로스 +set-piece deliveries; PLAYER-5✎ +roles set positions, movement and favoured actions; PLAYER-6✎ +판단력/침착성 in every position's weights, 앵커 none→판단력, 딥라잉 시야→시야/판단력, 포처 위치선정→위치선정/침착성; PLAYER-9✎ attempt their action more often→bend decisions and runs; PLAYER-15✎ assistant 패스/시야→+판단력/침착성; PLAYER-17✎ +판단력/침착성 in the 32/33/−0.5 group; PLAYER-19✎ match attributes 14 with personality as the mental model→16 with 판단력/침착성, personality off-pitch; PLAYER-20✎ +the 16 attributes start new careers (→SAVE-19)
 - r8 261016 PLAYER-22✎ initial components/calculation open→equal professionalism/understanding/teaching mean for coaching and understanding/team-judgement mean for management, existing five-grade generation distribution, fixed person-specific qualities

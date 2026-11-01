@@ -16,8 +16,13 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | of02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T15:48Z | 2026-11-01T15:48Z | - |
+| bd02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T16:10Z | 2026-11-01T16:10Z | - |
 
 ## inbox
+- 261102 decided WEB-40 WEB-47 WEB-65: how League and Cup browse seasons → one page per competition over every kept season with a one-row header (country/division selects with groups as options, or one cup select listing every domestic and continental cup) and a ‹ season › stepper; 이전 리그 기록/이전 컵대회 기록 tabs, the stacked title line and 우리 리그로 go, and 우리 구단 시즌 기록 moves into a closed season's 순위표 (alt: keep the season dropdown and History tabs | an icon-only own-league button squeezed into the row at 360px).
+- 261102 decided PLAYER-27: how the 발롱도르 is decided → from the 1955/56 close, goals ×4 + assists ×3 + team honours (European Cup +40, its final +15, other continental +15, top-flight title +25, domestic cup +10) + (OVR − 70) × 2, 15+ top-flight league appearances, podium of three; nationality not modelled (alt: European players only before 1995, which needs nationality data the world lacks | OVR alone, which ignores the season).
+- 261102 decided CLUB-26 CLUB-29: how the award reaches contracts → demand ×1.20 for a winner and ×1.10 for a podium within the last three closed seasons, the improved-contract test and 재계약 기조 caps measured on that worth, plus a Ballon d'Or bonus clause (80+ or recent podium; 40–90% of contracts by agent; 25–100% of the yearly wage, paid at the close he wins) (alt: premium on every market wage, which moves transfer prices and calibration | premium without moving the caps, so a delegated club declines every recent winner).
+- 261102 decided WEB-111: where the 발롱도르 is browsed → the last 클럽 기록실 view with the same season stepper, all-time winners and most wins, plus player-sheet honours (alt: a League tab, though the award spans leagues | a new primary entry beyond the five).
 - 261101 decided WEB-110 WEB-63 ARCH-28 T636: the failed Firefox sponsor trace shows 결재 담당 (a lazy chunk with no fallback) mounting above the offers between the click's mousedown and mouseup, so the tap signed nothing and the world stayed r0 → render the scoped responsibilities with 구단 운영's own lazy chunk (static import inside ClubOperations, entry unchanged) and guard in business.spec that the section mounts whole (alt: wait in the journey for the panel before tapping, which hides the shift owners still meet | reserve its height in a fallback, which still swaps content under a tap).
 - 261101 decided WEB-52 T636: one season close queued two promotion banners and the office entry closed only the first → the shared helper taps every queued banner and acknowledges one arriving during an entry attempt by its own tap, within the existing 2000ms × 3 attempt bound (alt: wait the ~5 s banners out | force the entrance click).
 - 261101 suggest WEB-52 T636: a club entering the professional pyramid from the amateur league records two promotion events at one close (the amateur exchange's 프로 무대 입성 `<club> · 3부` and the tier move's 새로운 무대로 `4부 → 3부`), so news shows 승격 확정! twice and two celebrations queue (CI 41250503124 management trace) → one headline per promotion in a later news task.
@@ -449,19 +454,19 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 25 | 25 | - | 2 |
-| WEB | 198 | 198 | - | 0 |
+| WEB | 199 | 199 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 6 | 6 | - | 0 |
 | KIT | 6 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
-| CLUB | 47 | 47 | - | 0 |
+| CLUB | 48 | 48 | - | 0 |
 | MATCH | 44 | 44 | - | 0 |
 | LEAGUE | 10 | 10 | - | 0 |
 | STAFF | 37 | 37 | - | 0 |
 | ECON | 40 | 40 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
-| HIST | 18 | 18 | - | 0 |
+| HIST | 19 | 19 | - | 0 |
 | SAVE | 59 | 59 | - | 0 |
-| PLAYER | 10 | 10 | - | 0 |
+| PLAYER | 11 | 11 | - | 0 |
 
 ## review
 | id | st |
@@ -477,6 +482,9 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T637 | Restore illustrations and office-contained work | WEB | T636 | todo |
+| T640 | League and Cup browse every season from a one-row header | WEB HIST | - | todo |
+| T641 | Ballon d'Or award, archive and contract effects | PLAYER HIST CLUB | - | todo |
+| T642 | Ballon d'Or records view, player honours, talk premium and news | WEB HIST PLAYER CLUB | T640 T641 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -501,8 +509,12 @@
 
 ## next
 - implement-task T637
+- implement-task T640 (bd02), then T641, T642
 
 ## log
+- 261102 create-task T640 T641 T642: one-row League/Cup header with a season stepper; Ballon d'Or engine (podium archive, bonus clause, talk premium); records view, player honours, talk premium and news. Numbered from T640 to leave room for of02; session bd02.
+- 261102 update-ssot WEB r199 CLUB r48 HIST r19 PLAYER r11: League/Cup browse every kept season on one page with a one-row ‹ season › header (no previous-league/cup tabs, closed cup seasons open on the winner); 발롱도르 from 1955/56 with podium archive, records view, news, contract premium and bonus clause; session bd02.
+- 261102 update-ssot WEB CLUB HIST PLAYER start (bd02)
 - 261102 create-task T637: restore original illustrations; remove the new home bar, team facts and immediate actions from home and compose them once in the office. Preserve the queue, real workflows, focus/load fixes and all game rules; session of02.
 - 261102 update-ssot WEB r198: restore original room illustrations and move the home club bar, current-team summary and quick actions into the office; preserve the completed queue and real workflows. Session of02, isolated worktree.
 - 261101 of01 completed owner-office overhaul: main ebcc87fc passed CI 41258080379 (all 9 jobs; Chromium, Firefox, both WebKit shards), after the clean 81d165e0 local gate and 9 targeted browser cases. Primary and continuation reports closed; source unchanged after verification.
@@ -520,6 +532,3 @@
 - 261101 T633 done: /club-operations static rewrite in _redirects; one request heading with its 결재 기한, distinct detail only and one 결재함으로 return (EventCard inDesk no longer repeats them); bid reviews show the pinned/own player's position, age, OVR/잠재력, our and counter fees and only the terms the bid carries (loans wage-only, legacy unknown stays unknown) through the pure bidFacts resolver also used for queue subjects; queue 검토 names its subject; unit 248 + 25 + 43 passed, build passed, browser specs left to the host batch; session of01.
 - 261101 create-task T633: host visual review found missing /club-operations static rewrite and repeated request instructions; add actual target/terms context and verify integrated WEB r197 settings behavior. T629–T632 done locally; latest main integrated in e70ef0b5, final gate/publication pending; session of01.
 - 261101 T632 done: inventory walked (removed office items absent, every action has one home, incoming offers answered in the market's 이적 협상); dead player-desk code and the six room-name locale keys removed; registry-driven office/club journey per theme at 360px and desktop; stale owner-workflows, growth-core, facility-art and presentation-settings journeys and the office helpers moved to the actual destinations; design guide, UI-COVERAGE and report inventory updated; unit 292 + 112 passed, build passed, browser specs left to the host batch; session of01.
-- 261101 T631 done: clubhouse reads a compact read-only club summary (strength/division place, 출전 가능 with injured/suspended, 선발 피로, 분위기, 감독 입지; warnings in words) and a compact 결재함 entrance with waiting/overdue counts beside the quick actions; team-state tiles and room art removed; 1군 = roster with availability, tactics request and culture; 코치진 = manager card plus every post, then who appoints them and the owner's requests; manager addresses route to /staff?view=coaches(&market=1); each personnel workflow edits its own responsibilities in place; RoomBar gone from 훈련/유소년; unit 273 passed, build passed, e2e source left to the batch; session of01.
-- 261101 T630 done: the owner office is one 결재함 (ordered live requests, filters, counts, 결재 기한 labels, empty/filtered-empty states), reviews return to it with filter/scroll/focus, lobby scene/desk cards/room doors/journal removed, team-state tiles under the clubhouse quick actions until T631; unit 263 passed, build passed, e2e source left to the batch; session of01.
-- 261101 T629 done: shared club section bar (현황·1군·코치진·훈련·유소년·운영), /club-operations with 재정·투자/후원/구단 디자인, unselected office desks redirect to their workflow or section (requests stay), 1군 opens the roster; unit 290 passed, build passed, e2e source left to the batch; session of01.
