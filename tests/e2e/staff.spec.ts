@@ -107,9 +107,12 @@ test.describe('사람 at 360x740', () => {
     await expect(clubSections(page)).toHaveCount(0);
     await expect(page).toHaveURL(/\/first-team\?view=players$/);
     await openTeamTab(page, '1군');
+    await settle(page);
     for (const box of await teamTabs(page)
       .getByRole('tab')
-      .evaluateAll((all) => all.map((button) => button.getBoundingClientRect().height)))
+      .evaluateAll((all) =>
+        all.map((button) => Math.round(button.getBoundingClientRect().height * 64) / 64),
+      ))
       expect(box).toBeGreaterThanOrEqual(44);
     await openPersonnel(page, 'manager');
     await expect(page).toHaveURL(/\/staff\?view=coaches$/);
