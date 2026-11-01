@@ -86,6 +86,7 @@ import { captureAppearance } from './match-appearance';
 import { assertFullMatchRecord } from './match-model';
 import { attributeOwnMatch, captureSeasonClose } from './manager-history-capture';
 import { openNpcSeason, settleNpcSeason } from './npc-stats';
+import { ballonDorPodium, payBallonDorBonus } from './ballon-dor-award';
 import { activeMatchModel } from '../../contracts/src/match-model';
 import { recordRecentResult, retainRecentResults } from './recent-results';
 import {
@@ -628,6 +629,10 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
       ...(cupFinal ? { cupFinal } : {}),
     };
   });
+  // The Ballon d'Or reads the season as played, before any club or player moves (→PLAYER-27);
+  // a won bonus clause is booked in the closing season's ledger (→CLUB-29).
+  const ballonDor = ballonDorPodium(w, champions);
+  payBallonDorBonus(w, ballonDor);
   const valuation = clubValuation(w);
   const europeCoefficients = associationCoefficients(w);
   w.history.push({
@@ -680,6 +685,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     clubValue: valuation.total,
     runs: cupRuns(w),
     ...seasonRecords(w, order, oldTier, oldGroup),
+    ...(ballonDor ? { ballonDor } : {}),
   });
   w.lastChampions = champions.map(({ country, club, cup }) => ({ country, club, cup }));
   const startersBeforeDepartures = [...ownStarters(w)];

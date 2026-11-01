@@ -483,6 +483,8 @@ const expenseKinds: Record<string, string> = {
   /** Every paid owner request (`care:<kind>`, →CLUB-20); the friendly earns instead. */
   care: '구단주 요청',
   'win-bonus': '승리 수당',
+  // A won award's contract bonus (→CLUB-29).
+  'ballon-dor-bonus': '발롱도르 보너스',
 };
 /** The ledger line an entry belongs to: paid owner requests share one line. */
 const ledgerKey = (kind: string) =>

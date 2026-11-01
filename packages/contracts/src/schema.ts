@@ -117,10 +117,11 @@ const club = z.object({
   cohesion: z.number().finite().min(0.3).max(1).optional(),
   identity: clubIdentitySchema.optional(),
 });
-/** Whole percent of the wage (→CLUB-29): a promotion rise, a relegation cut. */
+/** Whole percent of the wage (→CLUB-29): a promotion rise, a relegation cut, a Ballon d'Or bonus. */
 const clauses = z.strictObject({
   promotion: z.number().int().min(1).max(100).optional(),
   relegation: z.number().int().min(-99).max(-1).optional(),
+  ballonDor: z.number().int().min(1).max(100).optional(),
 });
 const player = z
   .object({
@@ -560,6 +561,25 @@ const archive = z.object({
     .optional(),
   brackets: z.array(bracket).max(8).optional(),
   heat: z.record(id, z.array(z.number().int().min(0).max(1000000)).length(40)).optional(),
+  // The podium, winner first (→PLAYER-27): three distinct players at most.
+  ballonDor: z
+    .array(
+      z.strictObject({
+        id,
+        name: text,
+        club: id,
+        position,
+        goals: z.number().int().nonnegative(),
+        assists: z.number().int().nonnegative(),
+        appearances: z.number().int().min(1).max(200),
+        points: z.number().int().nonnegative(),
+        honours: z.array(z.enum(['europe', 'europe-final', 'continental', 'league', 'cup'])).max(5),
+      }),
+    )
+    .min(1)
+    .max(3)
+    .refine((places) => new Set(places.map((place) => place.id)).size === places.length)
+    .optional(),
 });
 const knockoutRound = z.strictObject({
   label: text,

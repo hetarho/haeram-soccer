@@ -218,6 +218,11 @@ export type AgentRating = 1 | 2 | 3 | 4 | 5;
 export interface ContractClauses {
   promotion?: number;
   relegation?: number;
+  /**
+   * The Ballon d'Or bonus (→CLUB-29): paid once, in whole percent of the yearly wage, at the close
+   * of a season whose award he wins while under this contract at our club.
+   */
+  ballonDor?: number;
 }
 /** Why a player turned unhappy (→CLUB-27): the club declined his renewal or improved contract. */
 export type UnhappyReason = 'renewal-declined' | 'improve-declined' | 'ambition';
@@ -945,6 +950,26 @@ export interface SeasonArchive {
   brackets?: BracketArchive[];
   /** Own player ID → his 40 cell touch counts over the season's own matches (→MATCH-5). */
   heat?: Record<string, number[]>;
+  /**
+   * The season's Ballon d'Or podium, winner first (→PLAYER-27, HIST-13); absent before 1955/56,
+   * for a season not tracked whole and for closes before the award existed.
+   */
+  ballonDor?: BallonDorPlace[];
+}
+/** A team honour that earned Ballon d'Or points, counted only with a contribution (→PLAYER-27). */
+export type BallonDorHonour = 'europe' | 'europe-final' | 'continental' | 'league' | 'cup';
+/** One Ballon d'Or place: the player's stable identity and the season's figures that placed him. */
+export interface BallonDorPlace {
+  id: string;
+  name: string;
+  /** The club of his last contribution that season. */
+  club: string;
+  position: Position;
+  goals: number;
+  assists: number;
+  appearances: number;
+  points: number;
+  honours: BallonDorHonour[];
 }
 /** A finished knockout from its first round of 32 clubs or fewer to the final; clubs index `clubs`. */
 export interface BracketArchive {
