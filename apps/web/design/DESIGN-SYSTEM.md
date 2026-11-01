@@ -143,14 +143,17 @@ return, competition filters and view tabs inside that plane; separate sticky row
 offsets or margins can expose scrolling table rows between them when content wraps.
 
 Navigation between sibling pages reuses the shared page-tab treatment rather than a new card,
-door or button row. The office's section bar (사무실, 1군, 코치진, 훈련, 유소년, 운영; →WEB-10)
-is the shared `ClubNavigation` component: the shell renders it once above the owner office and
-its working pages, so arrow-key focus stays on the bar while its tabs change pages, and its tabs
-name no panel (`TabList` with `panel={false}`). Its first tab, which Home reaches, opens the
-office's queue, never the home briefing. A page's own sections, such as 구단 운영's 재정·투자,
-후원 and 구단 디자인, keep the ordinary tab list and panel below it. Pages without the bar (the
-clubhouse's home briefing, the transfer market, competitions) must not grow a copy of it; themes
-style both bars through the same tab roles, never per-page selectors.
+door or button row. The office's section bar (사무실, 훈련, 운영; →WEB-10) is the shared
+`ClubNavigation` component: the shell renders it once above the owner office and its working
+pages. Select it from the requested page and keep it outside the inert content boundary while
+the deferred body changes. Only the departing dashboard/working content becomes inert; the
+persistent bar stays focusable, so consecutive arrow/Home/End keys keep both focus and selection.
+Its tabs name no panel (`TabList` with `panel={false}`). Its first tab, which Home reaches, opens
+the office's queue, never the home briefing. A page's own sections, such as 구단 운영's 재정·투자,
+후원 and 구단 디자인, keep the ordinary tab list and panel below it. Pages without the office bar
+(the clubhouse briefing, Team directory and personnel detail pages, the market, competitions)
+must not grow a copy. Team owns 1군/유소년/코치 and its detailed work has one quiet return to its
+own list. Themes style the shared bars through their tab roles, never per-page selectors.
 
 ### Detail pages read as reports
 
