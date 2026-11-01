@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| of02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T15:48Z | 2026-11-01T15:51Z | - |
 
 ## inbox
 - 261101 decided WEB-110 WEB-63 ARCH-28 T636: the failed Firefox sponsor trace shows 결재 담당 (a lazy chunk with no fallback) mounting above the offers between the click's mousedown and mouseup, so the tap signed nothing and the world stayed r0 → render the scoped responsibilities with 구단 운영's own lazy chunk (static import inside ClubOperations, entry unchanged) and guard in business.spec that the section mounts whole (alt: wait in the journey for the panel before tapping, which hides the shift owners still meet | reserve its height in a fallback, which still swaps content under a tap).
