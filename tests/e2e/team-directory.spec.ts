@@ -100,9 +100,12 @@ for (const theme of themeRegistry.entries) {
     const fills = new Map(shown.map((badge) => [badge.line, badge.fill]));
     expect(new Set(fills.values()).size).toBe(4);
     for (const player of active)
-      await expect(players.getByRole('button', { name: `${player.name} 선수 기록` })).toHaveCount(
-        1,
-      );
+      await expect(
+        players.getByTestId(`team-row-${player.id}`).getByRole('button', {
+          name: `${player.name} 선수 기록`,
+          exact: true,
+        }),
+      ).toHaveCount(1);
     const first = rows.first();
     const firstName = first.getByRole('button');
     await expectTarget(firstName);
