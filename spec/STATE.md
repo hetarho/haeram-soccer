@@ -482,7 +482,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T643 | Shared readable position badges in the market | WEB | T637 | todo |
+| T643 | Shared readable position badges in the market | WEB | T637 | doing@261101.of02 |
 | T644 | Compact Team directory before the transfer market | WEB | T643 | todo |
 | T640 | League and Cup browse every season from a one-row header | WEB HIST | - | todo |
 | T641 | Ballon d'Or award, archive and contract effects | PLAYER HIST CLUB | - | todo |
