@@ -16,6 +16,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | bd02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T16:10Z | 2026-11-01T16:10Z | - |
+| of02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T16:36Z | 2026-11-01T16:36Z | - |
 
 ## inbox
 - 261102 decided WEB-113 WEB-90 ARCH-21 T643: how the shared position badge names its family and where its isolated test lives → the family name comes from new `position.family.GK|DF|MF|FW` messages in all 12 locale packs (Korean 골키퍼/수비/미드필드/공격, as the engine's LINE_LABEL), read before the code and visually hidden; the test is `PositionBadge.test.ts`, since the unit tier only collects `*.test.ts` and the planned `.test.tsx` would never run; the market metadata line drops its repeated code now that the badge shows it at every width (alt: LINE_LABEL Korean literals in a reusable component, against the design guide's locale rule | keep the code twice in a 360px row). Session of02.
