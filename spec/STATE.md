@@ -483,7 +483,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T644 | Compact Team directory before the transfer market | WEB | T643 | todo |
+| T644 | Compact Team directory before the transfer market | WEB | T643 | doing@261101.of02 |
 | T640 | League and Cup browse every season from a one-row header | WEB HIST | - | todo |
 | T641 | Ballon d'Or award, archive and contract effects | PLAYER HIST CLUB | - | todo |
 | T642 | Ballon d'Or records view, player honours, talk premium and news | WEB HIST PLAYER CLUB | T640 T641 | todo |
