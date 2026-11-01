@@ -40,6 +40,7 @@ import {
   UNHAPPY_CONFIG,
   UNHAPPY_REASON,
 } from '../../../../packages/engine/src/contracts';
+import { ballonDorPremiumLine } from './ballonDorText';
 import { operatingCosts } from '../../../../packages/engine/src/finance';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import { UNHAPPY_MORALE } from '../../../../packages/engine/src/morale';
@@ -867,6 +868,9 @@ function ContractTalkSheet({
         에이전트 {agent}등급(1–5){premium ? ` · 요구 +${premium}%` : ''} · 새 계약 조항:{' '}
         {clausesLabel(talk.clauses)}
       </p>
+      {ballonDorPremiumLine(w, player.id) && (
+        <p data-testid="ballon-dor-premium">{ballonDorPremiumLine(w, player.id)}</p>
+      )}
       <p className={s.muted}>
         {window === 'summer'
           ? '여름 계약: 이번 시즌을 포함해 1–5시즌'

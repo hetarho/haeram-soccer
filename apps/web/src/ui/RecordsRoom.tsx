@@ -24,6 +24,7 @@ import { PlayerLink } from './PlayerSheet';
 import { archivePlayback } from './replay';
 import { SeasonAnalysis } from './SeasonAnalysis';
 import { TransferRecords } from './TransferRecords';
+import { BallonDorView } from './BallonDorView';
 import { Segments } from './Segments';
 import { Select } from './Select';
 import {
@@ -245,6 +246,8 @@ export function RecordsRoom({ state, client }: Props) {
           <ClubLeaders w={w} />
         ) : tab === 'transfers' ? (
           <TransferRecords w={w} ledger={state.view!.transferLedger ?? []} />
+        ) : tab === 'ballonDor' ? (
+          <BallonDorView w={w} />
         ) : (
           <>
             <ManagerRecords

@@ -483,7 +483,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T637 | Restore illustrations and office-contained work | WEB | T636 | todo |
-| T642 | Ballon d'Or records view, player honours, talk premium and news | WEB HIST PLAYER CLUB | T640 T641 | todo |
 | T643 | Shared readable position badges in the market | WEB | T637 | doing@261101.of02 |
 | T644 | Compact Team directory before the transfer market | WEB | T643 | doing@261101.of02 |
 
@@ -511,7 +510,7 @@
 ## next
 - implement-task T637
 - implement-task T643 (of02), then T644; this checkout handles only those tasks.
-- implement-task T642 (bd02)
+- bd02: batch gate on main, push, CI wait
 
 ## log
 - 261102 create-task T640 T641 T642: one-row League/Cup header with a season stepper; Ballon d'Or engine (podium archive, bonus clause, talk premium); records view, player honours, talk premium and news. Numbered from T640 to leave room for of02; session bd02.
@@ -522,6 +521,7 @@
 - 261102 update-ssot WEB r200; create-task T643 T644: add primary Team with compact own first-team/youth/coach lists and shared four-family position badges; preserve restored art and office relocation. Canonical max T642 after plan-sync, other session bd02 tasks unchanged; only of02 work in this checkout.
 - 261102 T640 done: League/Cup one-row header (country/division with groups as options, one cup select) and a shared ‹ season › stepper; no 이전 컵대회 기록 tab; closed cup seasons open on the winner; web unit 1184 passed, e2e specs updated for the batch gate; session bd02.
 - 261102 T641 done: season-close Ballon d'Or podium archived from 1955/56 (goals, assists, honours, class; 15+ top-flight apps), our winner's bonus clause paid at the close, recent podiums priced into talks and the delegated cap, the star-only bonus clause drawn after the existing four; unit 670, targeted integration (contracts, season equivalence, throughput) and contract tier passed; session bd02.
+- 261102 T642 done: 클럽 기록실 발롱도르 view with the season stepper, winners and most-wins boards; player-sheet honours, contract-talk premium line and one award news item per closed season (ours celebrated); web unit 1189 and news integration passed; session bd02.
 - 261101 of01 completed owner-office overhaul: main ebcc87fc passed CI 41258080379 (all 9 jobs; Chromium, Firefox, both WebKit shards), after the clean 81d165e0 local gate and 9 targeted browser cases. Primary and continuation reports closed; source unchanged after verification.
 - 261101 of01 combined final gate passed on clean 81d165e0: type/lint/format, unit 1893, integration 1270 (4 existing skips), contract 48, catalogs, presentation, build, Chromium 343; targeted sponsor/region/staff journeys 9 of 9 across all three browsers. T636 and the common-panel follow-up are verified; main publication and CI follow.
 - 261101 fix web scoped responsibilities: mount OwnerOffice with WorkResponsibility sections as well as operations, resolving the same traced late-panel shift in 1군, market, 코치진 and 유소년. Typecheck, lint, format, affected unit and build passed; host final browser gates follow; session of01.
@@ -533,4 +533,3 @@
 - 261101 of01 final batch passed on 28bab2ce: clean/stable candidate, type/lint/format, unit 1,889, integration 1,270 (4 existing skips), contract 48, catalogs, presentation, build and Chromium 343; focused all-theme journey 4/4 also passed. Main push and one CI wait follow.
 - 261101 fix web club tabs: shared page tabs now have min-width 44px as well as min-height; the final browser gate had 339 passed / 4 failures on this same actual 1군 width. Typecheck, lint, format, affected unit 19 files / 192 tests and build passed; exact all-theme assertions unchanged, host focused/full final gates next; session of01.
 - 261101 T634 done: manual 다음 이벤트 from the office moves to the clubhouse before the unchanged controller acts, so a fresh advance or a reopen shows its report at once; the design request form resets on commission/adopt/discard success; shared club/operations helpers wait for address and rendered view to agree; all 21 gate cases moved to their actual contexts, plus a pre-eve office next-event journey; unit 38 + 45 + 19 passed, build passed, browser specs left to the host batch; session of01.
-- 261101 create-task T634: host Chromium gate 320 passed / 21 failed; fix two real observation/design-state defects and stale navigation/measurement contexts, with exact existing assertions retained. Latest T622 main integrated in ba915286; no overhaul code pushed until the repaired final gate passes; session of01.
