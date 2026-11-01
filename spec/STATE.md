@@ -513,6 +513,7 @@
 - bd02: batch gate on main, push, CI wait
 
 ## log
+- 261102 fix tab focus recovery: retain the keyboard pick across focus lost to the body/inert view and restore it after the committed rendering update, cancelling on a genuine pointer/focus change or a superseding selection. WebKit lost the selected office 운영 tab after keyboard navigation; keep the exact focus/URL assertions. Existing WEB-69 and T635 behavior, bounded PageTabs correction; of02.
 - 261102 fix staff browser geometry: settle finite motion and snap tab bounds to the existing 1/64px layout unit before the unchanged 44px check; WebKit returned 43.9999961853 for an actual 44px tab. Combined focused gate passed all 36 theme/browser office/Team/badge cases and 8/9 related cases; keep those results and rerun staff plus captures. Session of02.
 - 261102 fix Team coach columns: retain the 88px contract width on phones so the real season/end suffix fits the pixel score font; keep all zero-overflow and row-density assertions. Integrated main's committed competition/award work without changing its checkout; of02 verifies the combined candidate.
 - 261102 fix Team browser assertion: manager-journey has two distinct active players named Albert Brooks, so require one correctly named button per actual player ID row, preserving exact row counts and the same inspector/retention/geometry checks. First focused gate: office and badge 24 cases passed across all themes/browsers; Team 12 stopped at this identity assertion; session of02.

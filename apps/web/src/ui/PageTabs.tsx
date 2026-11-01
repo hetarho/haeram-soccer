@@ -34,7 +34,12 @@ export function TabList<T extends string>({
   const intent = useRef<TabIntent<T> | undefined>(undefined);
   useEffect(() => {
     const drop = (event: Event) => {
-      if (event.type === 'focusin' && bar.current?.contains(event.target as Node)) return;
+      const focused = event.target instanceof Element ? event.target : null;
+      if (
+        event.type === 'focusin' &&
+        tabFocusLost(focused, document.body, !!focused && !!bar.current?.contains(focused))
+      )
+        return;
       intent.current = undefined;
     };
     document.addEventListener('pointerdown', drop, true);
@@ -51,14 +56,26 @@ export function TabList<T extends string>({
     if (!picked) return;
     const outcome = tabIntentOutcome(picked, value);
     if (outcome === 'keep') return;
-    intent.current = undefined;
-    const root = bar.current,
-      active = document.activeElement;
-    if (outcome === 'drop' || !root) return;
-    if (!tabFocusLost(active, document.body, !!active && root.contains(active))) return;
-    root
-      .querySelector<HTMLButtonElement>(`[role="tab"][id="${idPrefix}-tab-${value}"]`)
-      ?.focus({ preventScroll: true });
+    const root = bar.current;
+    if (outcome === 'drop' || !root) {
+      intent.current = undefined;
+      return;
+    }
+    // WebKit may keep the departing view inert through its rendering update. Recover after
+    // that update, while the same keyboard intent is still ours; a real pointer/focus move
+    // cancels it. The second frame also lets the shell's committed layout take effect.
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => {
+        if (intent.current !== picked || !root.isConnected) return;
+        const active = document.activeElement;
+        intent.current = undefined;
+        if (!tabFocusLost(active, document.body, !!active && root.contains(active))) return;
+        root
+          .querySelector<HTMLButtonElement>(`[role="tab"][id="${idPrefix}-tab-${value}"]`)
+          ?.focus({ preventScroll: true });
+      });
+    });
+    return () => cancelAnimationFrame(frame);
   }, [value, idPrefix]);
   const keyboard = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     const next = nextTabIndex(event.key, index, tabs.length);
