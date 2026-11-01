@@ -11,6 +11,7 @@ import { FinanceOutlook } from './FinanceOutlook';
 import { AreaCriteria } from './DirectionLines';
 import { DeskBody, DeskSettings, DeskStats, type DeskStat } from './OfficeDesk';
 import { DESK_AREAS, DESK_RESPONSIBILITIES } from './officeDesks';
+import { OwnerOffice } from './OwnerOfficeView';
 import { OPERATIONS_PATH, OPERATIONS_VIEWS, type OperationsView } from './clubSections';
 import { TabList, TabPanel, useAddressTab } from './PageTabs';
 import { openOperations } from './state';
@@ -21,9 +22,6 @@ import { cashState } from './teamState';
 /** The direction board and its composer load on first visit (→ARCH-28). */
 const StrategyBoard = lazy(() =>
   import('./StrategyBoard').then((module) => ({ default: module.StrategyBoard })),
-);
-const OwnerOffice = lazy(() =>
-  import('./OwnerOfficeView').then((module) => ({ default: module.OwnerOffice })),
 );
 
 /** The applied facts a section's controls change, read from the live world only. */
@@ -123,15 +121,15 @@ export function ClubOperations({
           )}
           {view !== 'identity' && (
             <DeskSettings>
+              {/* Mounted with the section, which loads as its own chunk: a panel arriving later
+                  would push the offers below it away from an owner's tap. */}
               {responsibilities.length > 0 && (
-                <Suspense fallback={null}>
-                  <OwnerOffice
-                    key={`${w.id}:${view}`}
-                    client={client}
-                    controller={controller}
-                    scope={responsibilities}
-                  />
-                </Suspense>
+                <OwnerOffice
+                  key={`${w.id}:${view}`}
+                  client={client}
+                  controller={controller}
+                  scope={responsibilities}
+                />
               )}
               <AreaCriteria w={w} areas={DESK_AREAS[view]} />
             </DeskSettings>

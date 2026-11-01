@@ -17,6 +17,10 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261101 decided WEB-110 WEB-63 ARCH-28 T636: the failed Firefox sponsor trace shows 결재 담당 (a lazy chunk with no fallback) mounting above the offers between the click's mousedown and mouseup, so the tap signed nothing and the world stayed r0 → render the scoped responsibilities with 구단 운영's own lazy chunk (static import inside ClubOperations, entry unchanged) and guard in business.spec that the section mounts whole (alt: wait in the journey for the panel before tapping, which hides the shift owners still meet | reserve its height in a fallback, which still swaps content under a tap).
+- 261101 decided WEB-52 T636: one season close queued two promotion banners and the office entry closed only the first → the shared helper taps every queued banner and acknowledges one arriving during an entry attempt by its own tap, within the existing 2000ms × 3 attempt bound (alt: wait the ~5 s banners out | force the entrance click).
+- 261101 suggest WEB-52 T636: a club entering the professional pyramid from the amateur league records two promotion events at one close (the amateur exchange's 프로 무대 입성 `<club> · 3부` and the tier move's 새로운 무대로 `4부 → 3부`), so news shows 승격 확정! twice and two celebrations queue (CI 41250503124 management trace) → one headline per promotion in a later news task.
+- 261101 suggest WEB-63 WEB-79 T636: `WorkResponsibility` (1군, market, 코치진, 유소년) still loads its scoped OwnerOffice lazily behind a one-line text fallback, so the panel can grow under an owner's tap on a first visit as 후원 did → mount it with those sections' chunks the way ClubOperations now does.
 - 261101 decided WEB-69 WEB-74 T635: CI's selected club tab loses keyboard focus after navigation on every browser → repair production focus intent through the actual render lifecycle, retaining the exact keyboard/URL/state assertions; scope the same-person career action to the actual appointed manager while a dialog fades (alt: relax focus checks | add test-only refocusing | accept ambiguous matches).
 - 261101 decided WEB-10 WEB-63 T629 T634: final all-theme journey reached the club sections but 1군 measured 40.703125px (pixel 43.34375px) wide → give the shared page tabs the same 44px minimum width as their existing height, retaining exact geometry assertions and all theme resources (alt: weaken the touch target check | pad only one label); this is a bounded style correction with no new policy.
 - 261101 decided WEB-39 WEB-74 WEB-83 T634: host review found the partial manual fix only opens reports already waiting, leaving a fresh next-event advance hidden by EventCenter's business guard → connect the explicit office action to the existing report-capable clubhouse for both advance and reopen, leaving controller rules/approvals unchanged; revise the new unit test and add the pre-eve office browser case (alt: require a second click to see the event | predict the next stop in UI). Resume preserved edits with .tmp/host-review-T634.md before task-tier checks.
@@ -471,7 +475,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T636 | Settle owner journey overlays and sponsor actions | WEB | T635 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -495,9 +498,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T636
+- host gate T636: management.spec regional groups and business.spec sponsor installments on Chromium/Firefox/WebKit, then the full batch, main push and one CI wait
 
 ## log
+- 261101 T636 done: the Firefox traces showed one close queueing two 승격 확정! banners over the office entrance, and 후원's lazy 결재 담당 panel mounting above the offers mid-click; enterOffice taps every queued or late banner within its existing attempt bound, ClubOperations mounts the scoped responsibilities with its own chunk, and business.spec guards the whole section and the signed slot with every money assertion kept; typecheck/lint/format, unit 3 files / 25 tests and build passed, both cases left to the host's three-browser gate; session of01.
 - 261101 create-task T636: CI 41250503124 passed Chromium, both WebKit shards and all non-browser checks; Firefox exposed a late promotion celebration blocking office entry and a flaky sponsor click. Preserve exact assertions and repair actual overlay/readiness causes, with targeted three-browser checks before the full gate; session of01.
 - 261101 T635 done: the CI trace showed the shell's inert deferred-view container taking focus off the keyboard's club tab; the shared TabList carries the keyboard's pick to its committed selection and returns a lost focus there (never over a click, deliberate focus, tick or other world), and the same-person journey opens 인물 경력 from the current manager card after the market closes; staff.spec unchanged; unit 11 files / 81 tests and build passed, staff/second-career cases left to the host's three-browser gate; session of01.
 - 261101 create-task T635: CI 41244030798 staff keyboard focus fails on Chromium/Firefox/WebKit; inspect downloaded traces and repair actual focus lifecycle without weakening checks. Also scope the fading-dialog career-history match to the current manager; host targeted three-browser gate before full batch; session of01.
@@ -517,4 +521,3 @@
 - 261101 update-ssot WEB r197 (WEB-36✎ WEB-79✎): settings commands show no toast; eve/window observations take the business confirmation and an eve report turned on during the eve waits behind its reopen access; owner-requested fixes made directly in the shared checkout, rebased onto 64243a3f and pushed by session 5d; batch gate on the 09509a0b base passed (unit, integration, contract, catalogs, build, Chromium 335). The same commit moves the current lobby's 클럽 소식·시즌 브리핑 and 결재라인 모아보기 buttons onto its artwork's lower edge (owner request; typecheck, lint, format, 164 unit tests, build, manual previews at 360/390/1280); r196's WEB-39 replaces that lobby, so the overlay is interim until T630 and adds no WEB text.
 - 261101 fix e2e live-state: an eve met during the league detour's office visit waits behind its reopen access without a dialog; the check accepts that Aug 7 reopen like a dismissed report (CI WebKit 41226127751).
 - 261101 fix web controls: at 360 px the 결재함 wrapped the bottom controls into two rows, so celebrations overlapped the clock (news.spec on CI); the two 결재 buttons are 44 px on phones and 다음 이벤트 has narrower sides, and resource-skins now asserts one row at 360/390 in every theme.
-- 261101 fix engine approvals: waiting days counted at the start of clubDay so day, round and season paths agree at the close (CI 41222347443: calendar.progression-eng/esp, season, full-model-throughput); portable golden regenerated; integration 1,268 and contract 48 passed.

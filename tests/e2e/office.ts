@@ -57,10 +57,23 @@ export async function inOffice(page: Page) {
   return (await officeContext(page)) !== null;
 }
 
-/** An achievement banner (→WEB-52) clears itself; a tap closes it at once. */
+const celebrationBanner = (page: Page) =>
+  page.getByTestId('celebration').locator('[role="status"]');
+
+/**
+ * An achievement banner (→WEB-52) clears itself; a tap closes it at once. Banners arriving together
+ * queue, as a season close's promotion headlines do, and each tap brings up the next one.
+ */
 async function dismissCelebration(page: Page) {
-  const banner = page.getByTestId('celebration').locator('[role="status"]');
-  if (await banner.isVisible()) await banner.click({ timeout: 2000 }).catch(() => undefined);
+  const banner = celebrationBanner(page);
+  while (await banner.isVisible()) {
+    // One that cleared itself first leaves nothing to tap.
+    const tapped = await banner
+      .click({ timeout: 2000 })
+      .then(() => true)
+      .catch(() => false);
+    if (!tapped) return;
+  }
 }
 
 /**
@@ -98,6 +111,7 @@ export async function enterOffice(page: Page, options: { timeout?: number } = {}
   if (await covering.isVisible())
     await covering.getByRole('button', { name: '창 닫기', exact: true }).click();
   await dismissFeedback(page);
+  await dismissCelebration(page);
   const entrance = officeEntrance(page);
   await entrance.evaluate((element) => element.scrollIntoView({ block: 'start' }));
   for (let attempt = 0; ; attempt++) {
@@ -105,9 +119,13 @@ export async function enterOffice(page: Page, options: { timeout?: number } = {}
       await entrance.click({ ...options, timeout: 2000 });
       break;
     } catch (error) {
-      // Leaving a watched match may resume the clock and open the next eve after our dismissal.
-      if (attempt >= 2 || !(await covering.isVisible())) throw error;
-      await covering.getByRole('button', { name: '창 닫기', exact: true }).click();
+      // Leaving a watched match may resume the clock and open the next eve after our dismissal,
+      // and an achievement earned meanwhile raises its banner over the entrance.
+      const celebrating = await celebrationBanner(page).isVisible();
+      if (attempt >= 2 || !(celebrating || (await covering.isVisible()))) throw error;
+      if (celebrating) await dismissCelebration(page);
+      if (await covering.isVisible())
+        await covering.getByRole('button', { name: '창 닫기', exact: true }).click();
     }
   }
   await expect(officeBar(page)).toBeVisible();

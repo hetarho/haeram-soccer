@@ -194,11 +194,15 @@ test('pays sponsor installments only for league games after the actual contract'
     '계약 이후 경기만 지급하며',
   );
   await expect(page.getByTestId('sponsor-slot-shirt')).toContainText('1979/80 시즌부터');
+  // The section mounts whole: its 결재 담당 never arrives later above the offers and moves them
+  // away from the tap (Firefox CI 41250503124 signed nothing that way).
+  expect(await page.getByTestId('desk-responsibilities').count()).toBe(1);
   await page
     .getByTestId('sponsor-local-stable')
     .getByRole('button', { name: '지역 후원 계약', exact: true })
     .click();
   await expect(page.getByRole('button', { name: '지역 후원 계약', exact: true })).toHaveCount(0);
+  await expect(page.getByTestId('sponsor-slot-local')).toHaveAttribute('data-slot-state', 'signed');
   await expect(page.getByTestId('sponsor-contract-local')).toContainText(offer.name);
   const signed = await exportWorld(page);
   expect(signed.cash).toBe(before.cash);
