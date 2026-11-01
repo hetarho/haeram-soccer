@@ -420,10 +420,15 @@ test('chooses a cup once and keeps its archived season through competition and c
   await expect(page.getByTestId('cup-season-winner')).toContainText('1950/51');
   await page.getByRole('button', { name: '우리 구단 시즌 기록', exact: true }).click();
   await expect(page).toHaveURL(/\/history\?section=club&season=1950/);
-  // The cups entered again keep the archived season (→WEB-74).
-  await openCups(page, true);
+  // Our season record's cup link leads back to that archived cup season (→WEB-54/74).
+  await page.getByRole('button', { name: '이 시즌 컵 대회 기록', exact: true }).click();
   await expect(page).toHaveURL(/section=cup.*cup=cup.*season=1950/);
   await expect(season).toHaveAttribute('data-value', '1950');
+  // The cups entered again open this season; the stepper's previous one is the latest closed.
+  await openCups(page);
+  await expect(season).toHaveAttribute('data-value', '1952');
+  await openCups(page, true);
+  await expect(page).toHaveURL(/section=cup.*cup=cup.*season=1951/);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   // A season the cup has no record for settles on its latest recorded one.
   await page.goto('/europe?competition=cup&period=history&season=1940');

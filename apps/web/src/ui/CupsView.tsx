@@ -377,11 +377,12 @@ export function CupsView({
   // A season chosen for another competition stays only when this one has a record for it.
   const pastYear = year !== undefined && closed.includes(year) ? year : closed.at(-1);
   const shownYear = period === 'current' ? w.year : (pastYear ?? w.year);
-  // An address or another competition's season this one has no record for settles on its latest.
+  // An address or another competition's season this one has no record for settles on its latest,
+  // once the entry has read the address's season.
   useEffect(() => {
-    if (period === 'history' && activePage && pastYear !== undefined && pastYear !== year)
-      setYear(pastYear);
-  }, [period, activePage, pastYear, year, setYear]);
+    if (period !== 'history' || !activePage || entering) return;
+    if (pastYear !== undefined && pastYear !== year) setYear(pastYear);
+  }, [period, activePage, entering, pastYear, year, setYear]);
   // One select names every domestic cup by its country and every continental lineage.
   const choice = active === 'cup' ? cupKey(countryCode) : active;
   const choose = (value: string) => {
