@@ -1,5 +1,6 @@
 import { AreaCriteria } from './DirectionLines';
 import { PersonnelHub } from './PersonnelHubs';
+import { FacilityOverview } from './FacilityOverview';
 import type { ProgressionController } from '../runtime/progression';
 import { squadRegistration } from './squadRegistration';
 import { PersonCareerLink } from './PersonCareer';
@@ -159,9 +160,11 @@ function TraitNote({ trait }: { trait?: ManagerTrait }) {
 }
 /**
  * Personnel and office screens compose these same action panels; neither copies commands. 1군
- * leads with its roster, then its tactics and locker-room culture; 코치진 leads with the manager
- * and every post's person or vacancy, then who appoints them (→WEB-43). Offers for our players
- * are answered in the market's 이적 협상 (→WEB-71). Each ends with the responsibilities it owns.
+ * leads with its roster under the current locker room, then its tactics and locker-room culture;
+ * 코치진 leads with the manager under his office and every post's person or vacancy under the
+ * coaching workroom, then who appoints them (→WEB-43/72). Each room heads its own people, so
+ * neither scene pushes the other's list off a phone's first view. Offers for our players are
+ * answered in the market's 이적 협상 (→WEB-71). Each ends with the responsibilities it owns.
  */
 function PersonnelPanel({
   tab,
@@ -172,10 +175,14 @@ function PersonnelPanel({
 }: Props & { tab: PeopleTab; controller: ProgressionController; onReplace: () => void }) {
   const w = state.view!.world;
   const work = tab === 'players' || tab === 'market' ? tab : 'coaches';
+  const coach = `감독 ${w.manager.name} · ${tacticLabel[w.tactic]}`;
   return (
     <>
       {tab === 'players' ? (
         <>
+          <FacilityOverview w={w} kind="locker" title="드레싱 룸">
+            {coach}
+          </FacilityOverview>
           <Roster state={state} client={client} />
           <TacticsTalk state={state} client={client} />
           <AreaCriteria w={w} areas={['squad']} />
@@ -184,7 +191,13 @@ function PersonnelPanel({
         <RecruitmentDesk state={state} client={client} />
       ) : (
         <>
+          <FacilityOverview w={w} kind="manager" title="감독실">
+            {coach}
+          </FacilityOverview>
           <ManagerCard state={state} client={client} onReplace={onReplace} />
+          <FacilityOverview w={w} kind="staff" title="스태프 사무실">
+            스태프 {w.staff?.length ?? 0}명
+          </FacilityOverview>
           <CoachingStaff w={w} client={client} />
           <ManagerPost w={w} client={client} />
           <CoachingPlan w={w} />

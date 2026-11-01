@@ -18,7 +18,7 @@ import { continueSlot, seedSlot } from './slots';
 import { committedRaw, savedWorld } from './club-identity-helpers';
 import { expectHomeBounds, settle } from './layout';
 import { textContrast } from './contrast';
-import { leaveOffice, openOfficeLibrary } from './office';
+import { enterOffice, leaveOffice, openOfficeLibrary } from './office';
 import { openSaveMenu } from './save-menu';
 
 const PREFERENCE_KEY = 'haeram-soccor:presentation';
@@ -253,7 +253,9 @@ for (const width of [390, 1380])
       const stats = page.getByRole('region', { name: '이번 시즌', exact: true });
       await expect(stats).toBeVisible();
       await expect(stats.locator('[data-pixel-icon="play"]')).toHaveCount(0);
-      await page.getByRole('button', { name: /^피로/ }).click();
+      // The quick actions are the office's (→WEB-107); entering it neither stops nor sends play.
+      await enterOffice(page);
+      await page.getByTestId('quick-actions').getByRole('button', { name: /^피로/ }).click();
       const remedies = page.getByRole('dialog', { name: '피로 관리', exact: true });
       await expect(remedies).toBeVisible();
       await settle(page);
@@ -412,7 +414,7 @@ for (const width of [390, 1380])
       await loadPausedGame(page);
       const raw = await committedRaw(page);
       const date = await page.getByTestId('calendar').innerText();
-      // The clubhouse has no facility scene (→WEB-11); 훈련 keeps its training ground (→WEB-70/72).
+      // 훈련 keeps its training ground (→WEB-70/72); its era/stage scene changes with the pack.
       await openPersonnel(page, 'training');
       const art = page.locator('[data-facility-art="training"] img');
       await expect(art).toBeVisible();

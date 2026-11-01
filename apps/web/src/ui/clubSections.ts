@@ -1,11 +1,12 @@
 import type { Page } from './state';
 
 /**
- * The club's sections (→WEB-10): the clubhouse and the club information pages share this bar.
- * The owner office, the competitions and the transfer market, an entry of its own, have none.
+ * The club's sections (→WEB-10): the owner office and its working pages share this bar, 사무실
+ * first, opening the office's queue. The clubhouse's home briefing, the competitions and the
+ * transfer market, an entry of its own, have none.
  */
 export const CLUB_SECTIONS = [
-  ['dashboard', 'club.section.overview'],
+  ['business', 'club.section.office'],
   ['firstTeam', 'club.section.firstTeam'],
   ['staff', 'club.section.staff'],
   ['training', 'club.section.training'],

@@ -51,7 +51,7 @@ describe('the club section bar (→WEB-10/69)', () => {
     const html = render('operations');
     expect(html).toContain('role="tablist" aria-label="구단 섹션"');
     expect([...html.matchAll(/role="tab"[^>]*>([^<]+)</g)].map((match) => match[1])).toEqual([
-      '현황',
+      '사무실',
       '1군',
       '코치진',
       '훈련',
@@ -64,13 +64,22 @@ describe('the club section bar (→WEB-10/69)', () => {
     expect(html).not.toContain('aria-controls');
   });
 
-  it('shows on the clubhouse and club pages, never on the office, market or competitions', () => {
-    for (const page of ['dashboard', 'firstTeam', 'staff', 'training', 'academy'] as const)
+  it('leads with the office, which opens its queue rather than the home briefing', () => {
+    // The first tab, which Home and the first arrow step reach, is the office itself.
+    expect(CLUB_SECTIONS[0]).toEqual(['business', 'club.section.office']);
+    expect(CLUB_SECTIONS.map(([id]) => id)).not.toContain('dashboard');
+    const first = render('business').match(/<[^>]*role="tab"[^>]*>/)?.[0];
+    expect(first).toContain('id="club-section-tab-business"');
+    expect(first).toContain('aria-selected="true"');
+  });
+
+  it('shows on the office and its working pages, never on home, the market or competitions', () => {
+    for (const page of ['business', 'firstTeam', 'staff', 'training', 'academy'] as const)
       expect(render(page), page).toMatch(
         new RegExp(`id="club-section-tab-${page}"[^>]*aria-selected="true"`),
       );
     expect(render('firstTeam', true)).toBe('');
-    for (const page of ['business', 'league', 'europe', 'history', 'match'] as const) {
+    for (const page of ['dashboard', 'league', 'europe', 'history', 'match'] as const) {
       expect(render(page), page).toBe('');
       expect(clubSection(page, false)).toBeUndefined();
     }
@@ -96,6 +105,8 @@ describe('the club section bar (→WEB-10/69)', () => {
         const message = pack.messages[key];
         expect(typeof message === 'string' && message.trim(), `${entry.id} ${key}`).toBeTruthy();
       }
+      // The home briefing is no section, so no pack keeps its old 현황 label.
+      expect(pack.messages, entry.id).not.toHaveProperty(['club.section.overview']);
     }
   });
 });

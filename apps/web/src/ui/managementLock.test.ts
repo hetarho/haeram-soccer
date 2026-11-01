@@ -241,6 +241,25 @@ describe('management screen calendar locks', () => {
     );
     expect(entries.find((button) => button.label === '교체')?.disabled).toBe(false);
   });
+  it("keeps the office's queue and quick-action topics open to inspection over automatic ticks", () => {
+    // The quick actions moved into the office (→WEB-107): opening a topic's sheet reads, so it
+    // stays available while the clock runs; the sheet's own commands keep the shared lock.
+    vi.stubGlobal('location', { origin: 'https://game.test', pathname: '/business', search: '' });
+    for (const processing of [false, true]) {
+      gameStore.setState({ processing });
+      const entries = render(
+        createElement(Rich, { state: gameStore.getState(), client, page: 'business', controller }),
+      );
+      const topics = entries.filter((button) => button.label.includes('바로 할 수 있는 일'));
+      expect(topics.map((button) => button.label.split(' ')[0])).toEqual([
+        '분위기',
+        '피로',
+        '훈련·육성',
+      ]);
+      expect(topics.every((button) => !button.disabled)).toBe(true);
+      expect(entries.find((button) => button.label === '결재라인 모아보기')?.disabled).toBe(false);
+    }
+  });
   it('locks policy application while leaving preset drafts and reset usable', () => {
     drafts['board-draft'] = { policy: { support: 5 } };
     expectLocked(() => createElement(StrategyBoard, { w: world, client }), /^적용$/);

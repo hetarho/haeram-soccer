@@ -6,7 +6,16 @@ import type { ClientState } from '../runtime/client';
 import type { View } from '../runtime/protocol';
 import { gameStore, initialClientState } from '../runtime/store';
 import { approvalRequests, overdueSummary } from '../runtime/progression';
-import { ClubSituation, NextMatchCard, OfficeEntrance, SeasonCard, CupBriefing } from './ClubHub';
+import {
+  ClubHub,
+  ClubSituation,
+  NextMatchCard,
+  OfficeEntrance,
+  OfficeTeam,
+  SeasonCard,
+  CupBriefing,
+} from './ClubHub';
+import type { GameClient } from '../runtime/client';
 import korean from '../../public/presentation/locales/ko-KR.json';
 import { clubSituation, type SituationFact } from './teamState';
 import { openCupSeason } from './state';
@@ -34,6 +43,14 @@ vi.mock('../runtime/store', async (importOriginal) => {
 vi.mock('./teamState', async (importOriginal) => ({
   ...(await importOriginal<typeof import('./teamState')>()),
   clubSituation: vi.fn(),
+}));
+// The artwork adapter resolves theme resources; these units only place its reserved slot.
+vi.mock('./FacilityArt', () => ({
+  FacilityArt: ({ kind }: { kind: string }) => createElement('span', { 'data-facility-art': kind }),
+}));
+// The quick actions' own sheets and commands are their module's; here only where they stand.
+vi.mock('./QuickActions', () => ({
+  QuickActions: () => createElement('section', { 'data-testid': 'quick-actions' }),
 }));
 // The approval read model is the queue's own; the entrance only states its counts.
 vi.mock('../runtime/progression', async (importOriginal) => ({
@@ -212,7 +229,7 @@ describe('home season card', () => {
   });
 });
 
-describe('home current-club summary (→WEB-44)', () => {
+describe('the office current-club summary (→WEB-44)', () => {
   const facts: SituationFact[] = [
     { key: 'strength', label: '팀 전력', value: '31', note: '리그 14/16위', tone: 'warn' },
     {
@@ -257,11 +274,10 @@ describe('home current-club summary (→WEB-44)', () => {
   });
 });
 
-describe('home office entrance (→WEB-11)', () => {
-  const entrance = () =>
-    renderToStaticMarkup(createElement(OfficeEntrance, { w: world(), children: null }));
+describe('home office entrance (→WEB-11/72)', () => {
+  const entrance = () => renderToStaticMarkup(createElement(OfficeEntrance, { w: world() }));
 
-  it('states the actual waiting and overdue approvals without room art', () => {
+  it('states the actual waiting and overdue approvals as live text over the manager room', () => {
     vi.mocked(approvalRequests).mockReturnValue([
       { id: 'a' },
       { id: 'b' },
@@ -270,10 +286,15 @@ describe('home office entrance (→WEB-11)', () => {
     vi.mocked(overdueSummary).mockReturnValue({ overdue: 1, morale: 1 });
     const markup = entrance();
     expect(markup).toContain('aria-label="구단주 사무실"');
+    // The art leads in its reserved slot; the caption and the way in are HTML after it.
+    expect(markup.match(/data-facility-art="[^"]+"/g)).toEqual(['data-facility-art="manager"']);
+    expect(markup.indexOf('data-facility-art')).toBeLessThan(markup.indexOf('결재 대기'));
     expect(markup).toMatch(/결재 대기 <b data-ui="count"[^>]*>3<\/b>건/);
     expect(markup).toContain('지연 1건');
     expect(markup).toContain('>들어가기</button>');
-    expect(markup).not.toContain('data-facility-art');
+    // The office holds the team summary and the quick actions, not its entrance.
+    expect(markup).not.toContain('quick-actions');
+    expect(markup).not.toContain('club-situation');
   });
 
   it('reads 0 with nothing waiting and invents no work', () => {
@@ -283,6 +304,45 @@ describe('home office entrance (→WEB-11)', () => {
     expect(markup).toContain('결재 대기 0건');
     expect(markup).not.toContain('data-ui="count"');
     expect(markup).not.toContain('지연');
+  });
+});
+
+describe('the home briefing and the office team content (→WEB-11/39)', () => {
+  const client = {} as GameClient;
+  const facts: SituationFact[] = [
+    { key: 'strength', label: '팀 전력', value: '31', note: '리그 14/16위', tone: 'ok' },
+  ];
+
+  it('keeps the season card, NEXT MATCH and the illustrated entrance only on home', () => {
+    vi.mocked(approvalRequests).mockReturnValue([]);
+    vi.mocked(clubSituation).mockReturnValue(facts);
+    const w = world();
+    w.tables = {} as World['tables'];
+    const markup = renderToStaticMarkup(createElement(ClubHub, { w, client }));
+    const season = markup.indexOf('data-home-part="season-card"'),
+      fixture = markup.indexOf('data-home-part="fixture"'),
+      office = markup.indexOf('data-home-part="office"');
+    expect(season).toBeGreaterThan(-1);
+    expect(season).toBeLessThan(fixture);
+    expect(fixture).toBeLessThan(office);
+    expect(markup).toContain('data-facility-art="manager"');
+    // No section bar, team summary or quick-action tiles stay on home.
+    for (const moved of ['club-situation', 'quick-actions', 'role="tablist"', '팀 전력'])
+      expect(markup, moved).not.toContain(moved);
+  });
+
+  it('places the summary, then the quick actions in the compact office band, once each', () => {
+    vi.mocked(clubSituation).mockReturnValue(facts);
+    const markup = renderToStaticMarkup(createElement(OfficeTeam, { w: world(), client }));
+    expect(markup).toContain('aria-label="팀 현황"');
+    expect(markup.match(/data-testid="club-situation"/g)).toHaveLength(1);
+    expect(markup.match(/data-testid="quick-actions"/g)).toHaveLength(1);
+    expect(markup.indexOf('club-situation')).toBeLessThan(markup.indexOf('quick-actions'));
+    // The band names the office so the themes keep its compact icon-free tiles (→WEB-91).
+    expect(markup).toMatch(/data-home-part="office"><section data-testid="quick-actions"/);
+    // The summary reads; the quick actions are the only controls.
+    expect(markup).not.toContain('<button');
+    expect(markup).not.toContain('data-facility-art');
   });
 });
 

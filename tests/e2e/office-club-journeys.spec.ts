@@ -5,6 +5,13 @@ import {
   resolveRegistryUrl,
   resolveResourceUrl,
 } from '../../apps/web/src/presentation/registry';
+import {
+  FACILITY_ERAS,
+  validateThemePack,
+  type FacilityKind,
+} from '../../apps/web/src/presentation/contracts';
+import { facilityStageTop } from '../../apps/web/src/presentation/facilityImages';
+import { createThemeResolver } from '../../apps/web/src/presentation/theme';
 import { pendingDecisions } from '../../packages/engine/src/stopping';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { clubhouseTab } from './competition-navigation';
@@ -40,6 +47,54 @@ function controllerMaterial(entry: (typeof themeRegistry.entries)[number]) {
 }
 
 /**
+ * Every resource a pack resolves for one facility role, in any era or stage and responsive size,
+ * through the shared resolver (→ARCH-32): a scene shows the selected theme's own artwork.
+ */
+function sceneResources(entry: (typeof themeRegistry.entries)[number], kind: FacilityKind) {
+  const url = resolvePackUrl(entry, resolveRegistryUrl('theme'));
+  const pack = validateThemePack(JSON.parse(readFileSync(`${root}${url.slice(1)}`, 'utf8')));
+  const resolver = createThemeResolver(pack, { url });
+  return FACILITY_ERAS.flatMap((era) =>
+    Array.from({ length: facilityStageTop(kind) + 1 }, (_, stage) => {
+      const scene = resolver.facility({ era, kind, stage });
+      return [scene.src, ...scene.variants.map((variant) => variant.src)];
+    }).flat(),
+  ).map((src) => new URL(src, 'https://pack.invalid').pathname);
+}
+
+/**
+ * The visible scenes of the current place, in order, each loaded from this theme's resources in a
+ * slot reserved before it loads (→WEB-72/91).
+ */
+async function expectScenes(
+  page: Page,
+  entry: (typeof themeRegistry.entries)[number],
+  kinds: readonly FacilityKind[],
+) {
+  const art = page.locator('[data-facility-art]').filter({ visible: true });
+  await expect(art).toHaveCount(kinds.length);
+  for (const [index, kind] of kinds.entries()) {
+    const scene = art.nth(index);
+    await expect(scene).toHaveAttribute('data-facility-art', kind);
+    // The slot holds its height whether or not the image has arrived.
+    expect((await scene.boundingBox())!.height).toBeGreaterThanOrEqual(100);
+    const image = scene.locator('img');
+    await image.scrollIntoViewIfNeeded();
+    await expect
+      .poll(() =>
+        image.evaluate((element: HTMLImageElement) =>
+          element.complete && element.naturalWidth > 0 ? new URL(element.currentSrc).pathname : '',
+        ),
+      )
+      .toBeTruthy();
+    const loaded = await image.evaluate(
+      (element: HTMLImageElement) => new URL(element.currentSrc).pathname,
+    );
+    expect(sceneResources(entry, kind), `${entry.id} ${kind}`).toContain(loaded);
+  }
+}
+
+/**
  * A touch target keeps 44 CSS px each way; layout works in 1/64 px, so snap the float noise. It is
  * measured once finite entrance motion has landed: a review card's scale entrance draws its 44px
  * return smaller until it ends.
@@ -65,10 +120,10 @@ async function openSection(page: Page, name: string) {
 
 // Every registered theme, from the registry rather than a list of our own (→ARCH-32, →WEB-91).
 for (const theme of themeRegistry.entries) {
-  test(`${theme.id}: 결재함 review returns to the remaining queue and the club sections show the actual people at 360px and desktop`, async ({
+  test(`${theme.id}: 결재함 review returns to the remaining queue and the office sections show the actual people under their rooms at 360px and desktop`, async ({
     page,
   }) => {
-    // Two widths through the queue, a review, its return and three club sections.
+    // Two widths through home, the queue, a review, its return and three office sections.
     test.slow();
     await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [
       PREFERENCE_KEY,
@@ -99,15 +154,30 @@ for (const theme of themeRegistry.entries) {
     expect(await rows.evaluateAll((items) => items.map((item) => item.dataset.requestId))).toEqual(
       ids,
     );
-    // The office holds its queue only: no club-section bar, and its first request is reachable
-    // above the bottom controls on the phone's first view.
-    await expect(clubSections(page)).toHaveCount(0);
+    // The office carries the one section bar with 사무실 selected; its manager room heads the
+    // queue as an illustrated header, the club summary and quick actions follow the queue once
+    // each, and its first request is reachable above the bottom controls on the phone's first
+    // view (→WEB-10/39/44/107).
+    await expect(clubSections(page)).toHaveCount(1);
+    await expect(
+      clubSections(page).getByRole('tab', { name: '사무실', exact: true }),
+    ).toHaveAttribute('aria-selected', 'true');
+    const queueBox = (await page.getByTestId('approval-queue').boundingBox())!;
+    for (const id of ['club-situation', 'quick-actions']) {
+      await expect(page.getByTestId(id)).toHaveCount(1);
+      expect((await page.getByTestId(id).boundingBox())!.y).toBeGreaterThanOrEqual(
+        queueBox.y + queueBox.height,
+      );
+    }
     const first = reviewButton(page, ids[0]!);
     await expectTarget(first);
     const firstBox = (await first.boundingBox())!;
     const transportBox = (await transport.boundingBox())!;
     expect(firstBox.y + firstBox.height).toBeLessThanOrEqual(transportBox.y);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+    const roomBox = (await page.getByTestId('facility-overview').boundingBox())!;
+    expect(roomBox.y + roomBox.height).toBeLessThanOrEqual(queueBox.y);
+    await expectScenes(page, theme, ['manager']);
 
     // Review → decline → the refreshed queue, focused on the request now in its place (→WEB-100).
     await first.click();
@@ -137,13 +207,26 @@ for (const theme of themeRegistry.entries) {
     await expect(next).toBeFocused();
     await expect(inbox).toHaveAccessibleName(new RegExp(`^결재함 · 대기 ${ids.length - 1}건`));
 
-    // The clubhouse's entrance reads what is left (→WEB-11).
+    // The clubhouse's illustrated entrance reads what is left; home keeps no section bar, club
+    // summary or quick actions (→WEB-11).
     await dismissFeedback(page);
     await clubhouseTab(page).click();
+    const hub = page.getByTestId('club-hub');
     await expect(page.getByTestId('office-waiting')).toContainText(`결재 대기 ${ids.length - 1}건`);
+    await expect(clubSections(page)).toHaveCount(0);
+    for (const id of ['club-situation', 'quick-actions'])
+      await expect(page.getByTestId(id)).toHaveCount(0);
+    await expectScenes(page, theme, ['manager']);
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+    const phoneEntrance = officeEntrance(page);
+    await expectTarget(phoneEntrance);
+    await phoneEntrance.click();
+    await expect(hub).toBeHidden();
+    await expect(rows).toHaveCount(ids.length - 1);
 
-    // 1군 is the actual roster, found by a fixture player's name (→WEB-43).
+    // 1군 is the actual roster under its locker room, found by a fixture player's name (→WEB-43).
     await openSection(page, '1군');
+    await expectScenes(page, theme, ['locker']);
     await expect(page).toHaveURL(/\/first-team\?view=players$/);
     const active = w.players.filter((player) => player.status === 'active');
     await expect(page.getByTestId('roster-availability')).toContainText(`/${active.length}명`);
@@ -151,7 +234,8 @@ for (const theme of themeRegistry.entries) {
     await search.fill(active[0].name);
     await expect(page.getByText(active[0].name, { exact: true }).first()).toBeVisible();
 
-    // 코치진 leads with the actual manager and every post's person on the first view.
+    // 코치진 leads with the actual manager under his office on the first view, and every post's
+    // person under the coaching workroom.
     await openSection(page, '코치진');
     await expect(page).toHaveURL(/\/staff\?view=coaches$/);
     await expect(managerCard(page)).toBeInViewport();
@@ -159,23 +243,33 @@ for (const theme of themeRegistry.entries) {
     for (const member of w.staff ?? [])
       await expect(page.locator(`#staff-post-${member.role}`)).toContainText(member.name);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+    // The lazily loaded workroom loads once scrolled to; the page then reads from its top again.
+    await expectScenes(page, theme, ['manager', 'staff']);
+    await page.getByTestId('view-scroller').evaluate((element) => element.scrollTo(0, 0));
 
-    // Desktop keeps the same people first and the same queue behind the clubhouse entrance.
+    // Desktop keeps the same people first under their rooms and the same queue behind the
+    // clubhouse entrance.
     await page.setViewportSize({ width: 1280, height: 900 });
     await settle(page);
     await expect(managerCard(page)).toBeInViewport();
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+    await expectScenes(page, theme, ['manager', 'staff']);
     await clubhouseTab(page).click();
+    await expect(clubSections(page)).toHaveCount(0);
+    await expectScenes(page, theme, ['manager']);
     const entrance = officeEntrance(page);
     await expectTarget(entrance);
     await entrance.click();
     await expect(rows).toHaveCount(ids.length - 1);
     await expect(reviewButton(page, ids[1]!)).toBeInViewport();
-    await expect(clubSections(page)).toHaveCount(0);
+    await expect(clubSections(page)).toHaveCount(1);
+    for (const id of ['club-situation', 'quick-actions'])
+      await expect(page.getByTestId(id)).toHaveCount(1);
+    await expectScenes(page, theme, ['manager']);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-    // Back in the club, 1군 keeps its search (→WEB-74).
-    await clubhouseTab(page).click();
+    // Back in the office's 1군, the roster under its room keeps its search (→WEB-74).
     await openSection(page, '1군');
+    await expectScenes(page, theme, ['locker']);
     await expect(search).toHaveValue(active[0].name);
   });
 }

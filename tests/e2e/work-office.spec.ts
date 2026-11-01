@@ -4,6 +4,8 @@ import { RESPONSIBILITY_KEYS } from '../../packages/engine/src/responsibilities'
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { exportedCareer } from './career-fixtures';
 import {
+  approvalQueue,
+  CLUB_SECTION_LABELS,
   clubSections,
   enterOffice,
   leaveOffice,
@@ -15,7 +17,7 @@ import { horizontalOverflow } from './layout';
 import { clubhouseTab } from './competition-navigation';
 
 for (const width of [360, 390, 1280]) {
-  test(`club sections and 구단 운영 hold proactive work outside the office at ${width}`, async ({
+  test(`the office's sections and 구단 운영 hold its proactive work at ${width}`, async ({
     page,
   }) => {
     test.slow();
@@ -32,33 +34,34 @@ for (const width of [360, 390, 1280]) {
     for (const key of RESPONSIBILITY_KEYS) w.settings!.responsibilities[key] = 'delegated';
     const before = structuredClone(w.settings);
     await importResponsibilityCareer(page, w);
-    // The clubhouse and every club information page share one section bar (→WEB-10).
+    // The home briefing has no section bar; the office and every working page share one, which
+    // the illustrated entrance leads into (→WEB-10/11).
     await clubhouseTab(page).click();
     const sections = clubSections(page);
-    await expect(sections.getByRole('tab')).toHaveText([
-      '현황',
-      '1군',
-      '코치진',
-      '훈련',
-      '유소년',
-      '운영',
-    ]);
-    // 현황 resumes the clubhouse address the session entered by: the start address / is its
-    // supported alias of /journal (→WEB-62/74), and either shows the clubhouse itself.
-    const clubhouse = (url: URL) =>
-      (url.pathname === '/journal' || url.pathname === '/') && url.search === '';
+    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await expect(sections).toHaveCount(0);
+    await enterOffice(page);
+    await expect(sections.getByRole('tab')).toHaveText(CLUB_SECTION_LABELS);
+    await expect(sections.getByRole('tab', { name: '사무실', exact: true })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    // 사무실 opens the office's queue, never the home briefing.
     for (const [section, now] of [
       ['1군', /\/first-team\?view=players$/],
       ['코치진', /\/staff\?view=coaches$/],
       ['훈련', /\/training$/],
       ['유소년', /\/academy$/],
       ['운영', /\/club-operations\?view=investment$/],
-      ['현황', clubhouse],
+      ['사무실', /\/direction$/],
     ] as const) {
       const tab = sections.getByRole('tab', { name: section, exact: true });
       await tab.click();
       await expect(page).toHaveURL(now);
-      if (section === '현황') await expect(page.getByTestId('club-hub')).toBeVisible();
+      if (section === '사무실') {
+        await expect(approvalQueue(page)).toBeVisible();
+        await expect(page.getByTestId('club-hub')).toBeHidden();
+      }
       await expect(tab).toHaveAttribute('aria-selected', 'true');
       await expect(clubhouseTab(page)).toHaveAttribute('aria-current', 'page');
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
@@ -82,10 +85,11 @@ for (const width of [360, 390, 1280]) {
         await expect(clubhouseTab(page)).toHaveAttribute('aria-current', 'page');
       }
     }
-    // The office queue has no copy of it (→WEB-39).
+    // The office queue carries the one shared bar (→WEB-39), and leaving for home drops it.
     await enterOffice(page);
-    await expect(sections).toHaveCount(0);
+    await expect(sections).toHaveCount(1);
     await leaveOffice(page);
+    await expect(sections).toHaveCount(0);
     // 재정·투자: every facility and the scoped spending criteria (→WEB-14/110).
     await openOperations(page, '재정·투자');
     for (const part of ['stadium', 'training', 'academy'])

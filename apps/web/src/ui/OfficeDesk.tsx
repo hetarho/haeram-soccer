@@ -32,6 +32,18 @@ export function DeskBody({
   );
 }
 
+/**
+ * The office overview's column (→WEB-39): its room scene as an illustrated header, the 결재함 and
+ * the team content below, all as wide as the queue.
+ */
+export function OfficeOverview({ children }: { children: ReactNode }) {
+  return (
+    <div className={s.overview} data-office-view="lobby">
+      {children}
+    </div>
+  );
+}
+
 /** A desk's approval line and criteria side by side on wide screens, stacked on phones. */
 export function DeskSettings({ children }: { children: ReactNode }) {
   return <div className={s.settings}>{children}</div>;

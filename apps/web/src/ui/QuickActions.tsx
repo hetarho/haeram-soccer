@@ -11,9 +11,11 @@ import type { Remedy } from './teamState';
 import s from './ClubHub.module.css';
 
 /**
- * The clubhouse's quick actions (→WEB-11): one tile per topic with the figure it moves, opening
- * a sheet of choices that act where they stand — a request, a command or a coach's training
- * sheet over the clubhouse — each with its cost, effect and chances before commit (→WEB-44).
+ * The owner office's quick actions (→WEB-107): one tile per topic with the figure it moves,
+ * opening a sheet of choices that act where they stand — a request, a command or a coach's
+ * training sheet over the office — each with its cost, effect and chances before commit
+ * (→WEB-44). No choice changes the page; the sheets belong to the office's overview and close
+ * with it when the owner leaves it or opens a request.
  */
 export function QuickActions({ w, client }: { w: World; client: GameClient }) {
   const [open, setOpen] = useState<QuickGroupKey>();

@@ -134,13 +134,14 @@ return, competition filters and view tabs inside that plane; separate sticky row
 offsets or margins can expose scrolling table rows between them when content wraps.
 
 Navigation between sibling pages reuses the shared page-tab treatment rather than a new card,
-door or button row. The club's section bar (현황, 1군, 코치진, 훈련, 유소년, 운영; →WEB-10) is
-the shared `ClubNavigation` component: the shell renders it once above the clubhouse and club
-pages, so arrow-key focus stays on the bar while its tabs change pages, and its tabs name no
-panel (`TabList` with `panel={false}`). A page's own sections, such as 구단 운영's 재정·투자,
+door or button row. The office's section bar (사무실, 1군, 코치진, 훈련, 유소년, 운영; →WEB-10)
+is the shared `ClubNavigation` component: the shell renders it once above the owner office and
+its working pages, so arrow-key focus stays on the bar while its tabs change pages, and its tabs
+name no panel (`TabList` with `panel={false}`). Its first tab, which Home reaches, opens the
+office's queue, never the home briefing. A page's own sections, such as 구단 운영's 재정·투자,
 후원 and 구단 디자인, keep the ordinary tab list and panel below it. Pages without the bar (the
-owner office, the transfer market, competitions) must not grow a copy of it; themes style both
-bars through the same tab roles, never per-page selectors.
+clubhouse's home briefing, the transfer market, competitions) must not grow a copy of it; themes
+style both bars through the same tab roles, never per-page selectors.
 
 ### Detail pages read as reports
 
@@ -201,36 +202,53 @@ next-match report leads with one `ticket` (the memo) and keeps `dark` for a sing
 the remaining records use `detail`. Waiting requests are listed only by the 결재함's rows below,
 never as a second tray inside another work.
 
-The owner office is its work queue ([ApprovalQueue](../src/ui/ApprovalQueue.tsx)): the office
-bar's quiet 결재함 heading, one counts line with the secondary overview link, `Segments` filters
-and the request rows, so the first phone viewport shows actual work rather than artwork, desk
-cards or doors (→WEB-39/100). A row keeps its kind `label`, title, subject and 결재 기한 beside a
-44px review action; on phones the action spans the row's two text lines. The work figures
-(`stat-tile`, one row of four on every width, [OfficeDesk](../src/ui/OfficeDesk.tsx)) stay with
-구단 운영's sections.
+The owner office ([OfficeOverview](../src/ui/OfficeDesk.tsx) in
+[Operations](../src/ui/Operations.tsx), →WEB-39/100) is one column as wide as its queue: the
+manager-room `FacilityOverview` as an illustrated header, then the work queue
+([ApprovalQueue](../src/ui/ApprovalQueue.tsx)) — the office bar's quiet 결재함 heading, one counts
+line with the secondary overview link, `Segments` filters and the request rows — then the team
+content. The header's art slot is shorter on phones (112px, near the art's 3:1) so the first
+request still sits above the bottom controls in the first phone viewport; desk cards and doors
+stay retired. A row keeps its kind `label`, title, subject and 결재 기한 beside a 44px review
+action; on phones the action spans the row's two text lines. The work figures (`stat-tile`, one
+row of four on every width, [OfficeDesk](../src/ui/OfficeDesk.tsx)) stay with 구단 운영's sections.
 
-The clubhouse's current-club summary ([ClubSituation](../src/ui/ClubHub.tsx), →WEB-44) reuses the
-same `stat-tile` role as read-only facts: a `dl` of five tiles (strength with its division
-place, 출전 가능 of the whole team with the injured and suspended, 선발 피로, 분위기, 감독 입지),
-one row on wide screens and, on phones, strength and availability over the three moods in a
-six-column grid, so no tile drops below 12px text. Tone colours the value and note, and a
-warning is also written as a word (주의, 위험) beside the note; a summary tile never becomes a
-button or a redirect. It sits under the season card and NEXT MATCH, quieter than both. The
-office entrance below it is one text line (결재 대기 n건, 지연 n건, 들어가기) without room art,
-and keeps the quick actions in its band, where the themes' compact icon-free tile rules apply.
+The office's team content ([OfficeTeam](../src/ui/ClubHub.tsx)) follows the queue as supporting
+work, never in its place. Its current-club summary (`ClubSituation`, →WEB-44) reuses the same
+`stat-tile` role as read-only facts: a `dl` of five tiles (strength with its division place,
+출전 가능 of the whole team with the injured and suspended, 선발 피로, 분위기, 감독 입지), one row
+on wide screens and, on phones, strength and availability over the three moods in a six-column
+grid, so no tile drops below 12px text. Tone colours the value and note, and a warning is also
+written as a word (주의, 위험) beside the note; a summary tile never becomes a button or a
+redirect. The three quick actions (→WEB-107) sit in a compact band below it that keeps the
+`data-home-part="office"` hook, so the themes' compact icon-free tile rules still apply without
+per-theme edits; their sheets and the coach's training sheet open over the office and leave with
+it.
 
-People sections lead with their people: 1군 opens on the roster's availability line and cards,
-then the tactics request and culture criteria; 코치진 opens on the manager's card and every post
-with its person or vacancy, then who appoints them, then the owner's requests to the manager and
-the staff. No facility figure, room art or office-return bar precedes them; the club's section
-bar is their only navigation. Training and youth keep their bounded facility illustration
+The clubhouse's home briefing keeps the season card, NEXT MATCH and the illustrated office
+entrance only (→WEB-11): the manager-room art fills a reserved slot (168–280px) under a light top
+shade, with one live caption line over its top edge — 구단주 사무실, 결재 대기 n건 · 지연 n건 and a
+44px 들어가기. Caption text stays light over the shaded art in every theme. Home has no section
+bar, club summary or quick actions.
+
+People sections lead with their people under their own rooms: 1군 opens on the current locker
+room (it follows the completed stadium) over the roster's availability line and cards, then the
+tactics request and culture criteria; 코치진 heads the manager's card with his office and every
+post with its person or vacancy with the coaching workroom, then who appoints them, then the
+owner's requests to the manager and the staff. Each room heads its own people, so neither scene
+pushes the other's list off a phone's first view; no room menu or office-return bar stands
+before them, and the office's section bar is their only navigation. The market view of 1군 (the
+primary 이적시장) carries no art. Training and youth keep their bounded facility illustration
 (→WEB-70/72) directly above the working panels.
 
-Facility art appears where its facility is worked, never as a page's entrance: the training
-ground and academy above 훈련 and 유소년, every facility's stage beside its works in 구단 운영's
-재정·투자, and the manager's office (or, for a delegation, the staff room) as the 결재라인
-overview's and its confirmation's supporting scene. The clubhouse, 1군 and 코치진 carry none, so
-theme checks that need a mounted scene behind an open picker use 훈련's. Each work ends with the
+Facility art appears where its room or facility is worked: the manager's office on the home
+entrance and the office overview, the locker room over 1군's roster, the manager's office and
+the coaching workroom over 코치진's people, the training ground and academy above 훈련 and
+유소년, every facility's stage beside its works in 구단 운영's 재정·투자, and the manager's office
+(or, for a delegation, the staff room) as the 결재라인 overview's and its confirmation's
+supporting scene. Every scene is a `FacilityArt` slot with an HTML caption, never a hidden or
+disclosure-only thumbnail; a check that inspects a scene behind a dialog scopes it to the dialog,
+since home's entrance shows the same room. Each work ends with the
 responsibilities it owns through the shared `WorkResponsibility` confirmation (1군 contracts and
 sales, the market's recruitment, 코치진's manager and staff, 유소년's academy; sponsorship in
 구단 운영 › 후원); offers for our players are answered in the market's 이적 협상, not copied

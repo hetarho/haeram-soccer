@@ -50,14 +50,21 @@ for (const viewport of [
     await openClubRecords(page);
     await expect(page.getByRole('tablist', { name: '기록실 보기', exact: true })).toBeVisible();
     await openPersonnel(page, 'players');
-    // 1군 is the actual roster (→WEB-43): no local tabs, room art or office-return bar above it.
+    // 1군 is the actual roster under its current locker room (→WEB-43/72): no local tabs, room
+    // menu or office-return bar above it.
+    const rooms = page.getByTestId('facility-overview');
     await expect(page.getByRole('tablist', { name: '감독 사무실', exact: true })).toHaveCount(0);
-    await expect(page.getByTestId('facility-overview')).toHaveCount(0);
+    await expect(rooms).toHaveCount(1);
+    await expect(rooms).toHaveAccessibleName('드레싱 룸');
     await expect(page.locator('[data-ui="office-bar"]')).toHaveCount(0);
     const active = world.players.filter((player) => player.status === 'active');
     // Who can play leads it, counted from the whole first team with the injured and suspended.
     await expect(page.getByTestId('roster-availability')).toHaveText(
       new RegExp(`^출전 가능 \\d+/${active.length}명 · 부상 \\d+명 · 출장 정지 \\d+명$`),
+    );
+    const locker = (await rooms.boundingBox())!;
+    expect(locker.y + locker.height).toBeLessThanOrEqual(
+      (await page.getByTestId('roster-availability').boundingBox())!.y,
     );
     const search = page.getByRole('textbox', { name: '선수 찾기' });
     // A fixture player is on the roster under his own name.
@@ -99,19 +106,25 @@ for (const viewport of [
     // 훈련 opens on its own workflow: the focus and the coach's suggestion, no office-return bar.
     await expect(page.locator('[data-ui="office-bar"]')).toHaveCount(0);
     await expect(page.getByRole('button', { name: /수석코치에게 훈련 제안·강행/ })).toBeVisible();
-    // From the market a section opens through the clubhouse's section bar, so browser back
-    // returns to the clubhouse; the office has no room doors (→WEB-10/39).
+    // From the market a section opens through the office, entered by the clubhouse's illustrated
+    // entrance, so browser back returns to the office's queue; it has no room doors (→WEB-10/39).
     await page.goBack();
-    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await expect(page.getByTestId('approval-queue')).toBeVisible();
+    await expect(
+      clubSections(page).getByRole('tab', { name: '사무실', exact: true }),
+    ).toHaveAttribute('aria-selected', 'true');
     await page.goForward();
     await expect(page.getByTestId('training-focus')).toBeVisible();
     await openPersonnel(page, 'academy');
     await expect(page.getByTestId('facility-overview')).toHaveAccessibleName('유소년 아카데미');
     await expect(page.getByTestId('youth-focus')).toBeVisible();
     await expect(page.locator('[data-ui="office-bar"]')).toHaveCount(0);
-    // 코치진 leads with the actual manager and every post (→WEB-43), on the first viewport.
+    // 코치진 leads with the actual manager under his office, on the first viewport, and every post
+    // under the coaching workroom (→WEB-43/72).
     await openPersonnel(page, 'coaches');
-    await expect(page.getByTestId('facility-overview')).toHaveCount(0);
+    await expect(rooms).toHaveCount(2);
+    await expect(rooms.nth(0)).toHaveAccessibleName('감독실');
+    await expect(rooms.nth(1)).toHaveAccessibleName('스태프 사무실');
     const manager = managerCard(page);
     await expect(
       page.getByRole('heading', { name: world.manager.name, exact: true }),
@@ -121,7 +134,11 @@ for (const viewport of [
       await expect(page.locator(`#staff-post-${member.role}`)).toContainText(member.name);
     const managerBox = (await manager.boundingBox())!;
     const directorBox = (await page.locator('#staff-post-director').boundingBox())!;
-    expect(managerBox.y).toBeLessThan(directorBox.y);
+    const officeBox = (await rooms.nth(0).boundingBox())!,
+      workroomBox = (await rooms.nth(1).boundingBox())!;
+    expect(officeBox.y + officeBox.height).toBeLessThanOrEqual(managerBox.y);
+    expect(managerBox.y + managerBox.height).toBeLessThanOrEqual(workroomBox.y);
+    expect(workroomBox.y + workroomBox.height).toBeLessThanOrEqual(directorBox.y);
     // The owner's requests to the manager and the staff follow the people, never precede them.
     const requests = (await page.getByTestId('place-activities-manager').boundingBox())!;
     expect(directorBox.y).toBeLessThan(requests.y);

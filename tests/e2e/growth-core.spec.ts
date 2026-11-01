@@ -5,6 +5,8 @@ import { createWorld } from '../../packages/engine/src/index';
 import { activePlayers } from '../../packages/engine/src/world';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { chooseOption } from './select';
+import { enterOffice } from './office';
+import { clubhouseTab } from './competition-navigation';
 
 async function expectTouchSize(target: Locator) {
   // Firefox's protocol subtracts rounded quad coordinates: a 44px target at a fractional y
@@ -26,7 +28,7 @@ for (const viewport of [
   { width: 360, height: 740 },
   { width: 390, height: 844 },
 ]) {
-  test(`19-player warning opens from its clubhouse tile at ${viewport.width}x${viewport.height}`, async ({
+  test(`19-player warning opens from its office quick action at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
@@ -44,12 +46,18 @@ for (const viewport of [
     for (const player of activePlayers(world)) player.fatigue = 0;
     await importResponsibilityCareer(page, world);
     const alert = page.getByTestId('team-state-alert');
-    // Home's 훈련·육성 quick actions answer the thin squad; its state reads beside them.
+    // Home keeps only its briefing and the office entrance (→WEB-11).
+    const hub = page.getByTestId('club-hub');
+    await expect(hub).toBeVisible();
+    for (const moved of ['quick-actions', 'club-situation', 'quick-warning-development'])
+      await expect(hub.getByTestId(moved)).toHaveCount(0);
+    // The office's 훈련·육성 quick actions answer the thin squad; its state reads beside them.
+    await enterOffice(page);
     await expect(page.getByTestId('quick-warning-development')).toBeVisible();
     await expect(alert).toHaveCount(0);
     await expectHomeBounds(page);
     // The current-club summary reads the thin squad in plain words; it has nothing to press.
-    const situation = page.getByTestId('club-hub').getByTestId('club-situation');
+    const situation = page.getByTestId('club-situation');
     const squad = situation.locator('[data-fact="squad"]');
     await expect(squad).toContainText('19/19');
     await expect(squad.getByTestId('situation-warning-squad')).toHaveText('· 주의');
@@ -120,22 +128,9 @@ for (const viewport of [
     for (const figure of ['라운드', '리그 순위', '승점 0'])
       await expect(season.getByText(figure, { exact: true })).toBeVisible();
     await expect(page.getByTestId('hub-record')).toHaveText('0-0-0');
-    // Home groups the owner's quick actions by topic (→WEB-107).
-    const quick = page.getByTestId('quick-actions');
-    for (const group of ['분위기', '피로', '훈련·육성'])
-      await expect(quick.getByText(group, { exact: true })).toBeVisible();
-    // The club's situation and its remedies stand on the clubhouse; the office holds only its
-    // 결재함 (→WEB-39/44).
-    const situation = hub.getByRole('region', { name: '클럽 현황', exact: true });
-    // Strength changes with the lineup, fatigue and morale, so it leads the summary (→WEB-44).
-    await expect(situation.locator('dt')).toHaveText([
-      '팀 전력',
-      '출전 가능',
-      '선발 피로',
-      '분위기',
-      '감독 입지',
-    ]);
-    await expect(situation.getByRole('button')).toHaveCount(0);
+    // The club's situation and the quick actions moved into the office (→WEB-11/39).
+    await expect(hub.getByTestId('quick-actions')).toHaveCount(0);
+    await expect(hub.getByRole('region', { name: '클럽 현황', exact: true })).toHaveCount(0);
 
     const reportButton = hub.getByRole('button', { name: '상세 리포트', exact: true });
     // A click while home still slides in makes Firefox scroll the moving button into view.
@@ -161,6 +156,26 @@ for (const viewport of [
     // Closing returns focus to the report without moving home.
     expect((await viewGeometry(page)).scroll).toBe(opened);
     expect(await page.evaluate(() => scrollY)).toBe(0);
+
+    // The office groups the owner's quick actions by topic beside the club's situation, below its
+    // 결재함 (→WEB-39/44/107).
+    await enterOffice(page);
+    const quick = page.getByTestId('quick-actions');
+    for (const group of ['분위기', '피로', '훈련·육성'])
+      await expect(quick.getByText(group, { exact: true })).toBeVisible();
+    const situation = page.getByRole('region', { name: '클럽 현황', exact: true });
+    // Strength changes with the lineup, fatigue and morale, so it leads the summary (→WEB-44).
+    await expect(situation.locator('dt')).toHaveText([
+      '팀 전력',
+      '출전 가능',
+      '선발 피로',
+      '분위기',
+      '감독 입지',
+    ]);
+    await expect(situation.getByRole('button')).toHaveCount(0);
+    await expectHomeBounds(page);
+    await clubhouseTab(page).click();
+    await expect(hub).toBeVisible();
 
     await watchNext(page, { manual: true });
     await expect(

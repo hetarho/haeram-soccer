@@ -63,10 +63,14 @@ for (const viewport of [
     const progressBox = (await hub
       .getByRole('progressbar', { name: '리그 진행률', exact: true })
       .boundingBox())!;
-    const conditionsBox = (await hub.getByTestId('quick-actions').boundingBox())!;
-    // NEXT MATCH follows the season card, ahead of the office entrance and its quick actions.
+    const entranceBox = (await hub
+      .getByRole('region', { name: '구단주 사무실', exact: true })
+      .boundingBox())!;
+    // NEXT MATCH follows the season card, ahead of the illustrated office entrance; the quick
+    // actions are the office's (→WEB-11/107).
     expect(progressBox.y + progressBox.height).toBeLessThanOrEqual(cardBox.y);
-    expect(cardBox.y + cardBox.height).toBeLessThanOrEqual(conditionsBox.y);
+    expect(cardBox.y + cardBox.height).toBeLessThanOrEqual(entranceBox.y);
+    await expect(hub.getByTestId('quick-actions')).toHaveCount(0);
     expect(
       await nextCard.evaluate(
         (element) =>

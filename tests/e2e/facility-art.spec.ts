@@ -1,6 +1,6 @@
 import { openPersonnel } from './personnel-navigation';
 import { openClubhouse } from './competition-navigation';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { checkpoint } from '../../apps/web/src/adapters/persistence';
 import { currency } from '../../packages/catalogs/src/index';
 import { advanceDays, createWorld, operate, prepareSeason } from '../../packages/engine/src/index';
@@ -8,6 +8,7 @@ import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
 import { acknowledgeEvents } from './events';
 import { expectHomeBounds, settle } from './layout';
+import { enterOffice } from './office';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { createThemeResolver } from '../../apps/web/src/presentation/theme';
 import {
@@ -89,9 +90,14 @@ async function load(page: Page, world: World) {
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
 
-async function expectArt(page: Page, kind: FacilityKind, era: FacilityEra, stage: number) {
+async function expectArt(
+  scope: Page | Locator,
+  kind: FacilityKind,
+  era: FacilityEra,
+  stage: number,
+) {
   // Home stays mounted while hidden; inspect only the current place's facility art.
-  const img = page.locator(`[data-facility-art="${kind}"] img`).filter({ visible: true });
+  const img = scope.locator(`[data-facility-art="${kind}"] img`).filter({ visible: true });
   const source = defaultTheme.facility({ era, kind, stage }).src;
   await expect(img).toBeVisible();
   await expect(img).toHaveAttribute('src', source);
@@ -120,7 +126,8 @@ async function expectOverviewArt(page: Page, era: FacilityEra) {
     .getByRole('button', { name: '결재라인 모아보기', exact: true })
     .click();
   await expect(sheet).toBeVisible();
-  await expectArt(page, 'manager', era, 0);
+  // Home's office entrance shows the same room behind the sheet.
+  await expectArt(sheet, 'manager', era, 0);
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(sheet).toHaveCount(0);
 }
@@ -141,7 +148,7 @@ for (const scenario of [
   test(`loads only current ${scenario.era} facility scenes at ${scenario.width}px`, async ({
     page,
   }) => {
-    // Six club-section visits and the 결재라인 overview, from home.
+    // Home, the office, six office-section visits and the 결재라인 overview.
     test.slow();
     const requested = new Set<string>();
     page.on('request', (request) => {
@@ -156,25 +163,59 @@ for (const scenario of [
       page,
       artWorld(scenario.year, scenario.stadium, scenario.training, scenario.academy),
     );
-    // The clubhouse leads with its facts: neither a stadium nor an office scene (→WEB-11/39).
-    await expect(page.getByTestId('club-hub').locator('[data-facility-art]')).toHaveCount(0);
+    // The clubhouse's office entrance keeps the manager room and no stadium scene (→WEB-11/72).
+    const home = page.getByTestId('club-hub').locator('[data-facility-art]');
+    await expect(home).toHaveCount(1);
+    await expect(home).toHaveAttribute('data-facility-art', 'manager');
     await expectHomeBounds(page);
+    await expectArt(page, 'manager', scenario.era, 0);
     await page.getByRole('button', { name: '상세 리포트', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
     await expect(dialog).toBeVisible();
     await dialog.getByRole('button', { name: '확인하고 홈으로', exact: true }).click();
     await expect(dialog).toHaveCount(0);
     const overview = page.getByTestId('facility-overview');
-    // 1군 and 코치진 lead with the actual people; no room art precedes them (→WEB-43/72).
-    for (const tab of ['players', 'coaches'] as const) {
+    // The office heads its queue with the same manager room (→WEB-39/72).
+    await settle(page);
+    await enterOffice(page);
+    await expect(overview).toHaveCount(1);
+    await expect(overview).toHaveAccessibleName('구단주 사무실');
+    await expectHomeBounds(page);
+    await expectArt(page, 'manager', scenario.era, 0);
+    // 1군 keeps its current locker room, which follows the completed stadium; 코치진 the
+    // manager's office and the coaching workroom, each over its own people (→WEB-43/72).
+    for (const [tab, rooms] of [
+      ['players', [['locker', scenario.stadium]]],
+      [
+        'coaches',
+        [
+          ['manager', 0],
+          ['staff', 0],
+        ],
+      ],
+    ] as const) {
       // A tab clicked while the page still slides in sits partly outside the view, and Firefox's
       // scroll-into-view then nudges the column by its 2px padding; home bounds need it at rest.
       await settle(page);
       await openPersonnel(page, tab);
-      await expect(overview).toHaveCount(0);
-      await expect(page.locator('[data-facility-art]').filter({ visible: true })).toHaveCount(0);
+      await expect(overview).toHaveCount(rooms.length);
+      await expect(page.locator('[data-facility-art]').filter({ visible: true })).toHaveCount(
+        rooms.length,
+      );
       await expectHomeBounds(page);
+      // A lazily loaded room further down loads once it is scrolled to.
+      for (const [kind, stage] of rooms) await expectArt(page, kind, scenario.era, stage);
     }
+    // The people follow their own rooms: the manager under his office and the posts under the
+    // workroom.
+    const [office, workroom] = await overview.evaluateAll((figures) =>
+      figures.map((figure) => figure.getBoundingClientRect().bottom),
+    );
+    const manager = (await page.getByTestId('manager-card').boundingBox())!;
+    expect(office).toBeLessThanOrEqual(manager.y);
+    expect(manager.y + manager.height).toBeLessThanOrEqual(workroom!);
+    // The column reads from its top again, as the rest of this visit expects.
+    await page.getByTestId('view-scroller').evaluate((element) => element.scrollTo(0, 0));
     await openPersonnel(page, 'market');
     await expect(overview).toHaveCount(0);
     await openPersonnel(page, 'training');
@@ -203,14 +244,20 @@ for (const scenario of [
     await openPersonnel(page, 'training');
     await expectArt(page, 'training', scenario.era, scenario.training);
     expect([...requested].sort()).toEqual(
-      (['training', 'academy', 'manager'] as const)
+      (['training', 'academy', 'manager', 'locker', 'staff'] as const)
         .map(
           (kind) =>
             defaultTheme.facility({
               era: scenario.era,
               kind,
               stage:
-                kind === 'training' ? scenario.training : kind === 'academy' ? scenario.academy : 0,
+                kind === 'training'
+                  ? scenario.training
+                  : kind === 'academy'
+                    ? scenario.academy
+                    : kind === 'locker'
+                      ? scenario.stadium
+                      : 0,
             }).src,
         )
         .sort(),
@@ -267,8 +314,10 @@ test('updates era, training and academy scenes only on actual completion, retain
   await openPersonnel(page, 'academy');
   await expectArt(page, 'academy', 'terraces', 1);
   await expect(page.getByTestId('facility-overview')).toContainText('1단계 유소년 시설');
+  // The home entrance's manager room follows the calendar era too (→WEB-72).
   await openClubhouse(page);
-  await expect(page.getByTestId('club-hub').locator('[data-facility-art]')).toHaveCount(0);
+  await expect(page.getByTestId('club-hub').locator('[data-facility-art]')).toHaveCount(1);
+  await expectArt(page, 'manager', 'terraces', 0);
   await expectOverviewArt(page, 'terraces');
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();

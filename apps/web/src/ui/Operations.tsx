@@ -18,12 +18,15 @@ import {
 } from './state';
 import { OfficeBar } from './OfficeBar';
 import { ApprovalQueue } from './ApprovalQueue';
-import { DeskBody } from './OfficeDesk';
+import { DeskBody, OfficeOverview } from './OfficeDesk';
+import { FacilityOverview } from './FacilityOverview';
+import { OfficeTeam } from './ClubHub';
 
 /**
- * The owner office (→WEB-39): its 결재함 and the review of a selected request, which composes the
- * authoritative form of its work. Proactive work lives in the club's sections (→WEB-110), so a
- * desk opened without a request leaves for them.
+ * The owner office (→WEB-39): under its manager-room scene the live 결재함 leads, then the club
+ * summary and the owner's quick actions; a selected request's review composes the authoritative
+ * form of its work. Proactive work lives in the club's sections (→WEB-110), so a desk opened
+ * without a request leaves for them.
  */
 export function OperationsView({
   state,
@@ -68,7 +71,13 @@ export function OperationsView({
     if (area && !requestId) leaveDesk();
   }, [area, requestId]);
   if (!area)
-    return <ApprovalQueue w={w} pending={approvalRequests(w)} onOverview={openOwnerOffice} />;
+    return (
+      <OfficeOverview>
+        <FacilityOverview w={w} kind="manager" title="구단주 사무실" />
+        <ApprovalQueue w={w} pending={approvalRequests(w)} onOverview={openOwnerOffice} />
+        <OfficeTeam w={w} client={client} />
+      </OfficeOverview>
+    );
   if (!requestId) return null;
   const [id, label] = area;
   return (

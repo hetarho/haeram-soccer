@@ -100,10 +100,10 @@ describe('locale messages', () => {
   it('names the club sections and retires the physical room names (→WEB-10/43)', () => {
     const { t } = createLoadedLocale(koreanRegistry, korean);
     expect(
-      ['overview', 'firstTeam', 'staff', 'training', 'academy', 'operations'].map((key) =>
+      ['office', 'firstTeam', 'staff', 'training', 'academy', 'operations'].map((key) =>
         t(`club.section.${key}`),
       ),
-    ).toEqual(['현황', '1군', '코치진', '훈련', '유소년', '운영']);
+    ).toEqual(['사무실', '1군', '코치진', '훈련', '유소년', '운영']);
     expect(t('personnel.market')).toBe('이적시장');
     // No pack keeps a room label for the people the sections now show.
     for (const entry of registry.entries) {

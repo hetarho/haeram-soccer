@@ -78,13 +78,16 @@ test('older operations addresses open their 구단 운영 section', async ({ pag
   await found(page, 'direction-addresses');
   await enterOffice(page);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  // The office opens on its lobby and keeps no ?view= there (→WEB-39); there is no 캠페인 area.
+  // The office opens on its lobby and keeps no ?view= there (→WEB-39), as its section bar's
+  // 사무실 (→WEB-10); there is no 캠페인 area.
+  const office = clubSections(page).getByRole('tab', { name: '사무실', exact: true });
   await expect(officeTitle(page)).toHaveText(LOBBY);
   await expect(page).toHaveURL(/\/direction$/);
-  await expect(clubSections(page)).toHaveCount(0);
+  await expect(office).toHaveAttribute('aria-selected', 'true');
   await page.goto('/business');
   await expect(officeTitle(page)).toHaveText(LOBBY);
   await expect(page).toHaveURL(/\/direction$/);
+  await expect(office).toHaveAttribute('aria-selected', 'true');
   // Every older unselected money or sponsor address opens its 구단 운영 section (→WEB-110).
   for (const [asked, area, now] of [
     ['/business?view=facility', '재정·투자', /\/club-operations\?view=investment$/],

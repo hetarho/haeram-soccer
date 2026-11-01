@@ -15,6 +15,7 @@ import { configureResponsibilities, matchReport } from './events';
 import { continueSlot } from './slots';
 import { chooseOption } from './select';
 import { openPersonnel } from './personnel-navigation';
+import { enterOffice } from './office';
 
 async function found(page: import('@playwright/test').Page) {
   await page.goto('/');
@@ -316,14 +317,40 @@ test("the fatigue remedy opens the assistant's training sheet with 회복 ready,
   await seed(page, w);
   await page.goto('/');
   await continueSlot(page);
-  // The clubhouse reads the tired starters; its 피로 quick action answers them (→WEB-44/107).
+  // Home reads no team state; the office's summary reads the tired starters and its 피로 quick
+  // action answers them (→WEB-11/44/107).
   const hub = page.getByTestId('club-hub');
-  await expect(hub.getByTestId('situation-warning-fatigue')).toBeVisible();
-  await hub
+  await expect(hub).toBeVisible();
+  await expect(hub.getByTestId('situation-warning-fatigue')).toHaveCount(0);
+  await enterOffice(page);
+  const queue = page.getByTestId('approval-queue');
+  await expect(page.getByTestId('situation-warning-fatigue')).toBeVisible();
+  const sheet = page.getByRole('dialog', { name: '피로 관리' });
+  const training = page.getByRole('dialog', { name: '수석코치 훈련 제안' });
+  const openAssistant = async () => {
+    await page
+      .getByTestId('quick-actions')
+      .getByRole('button', { name: /^피로 .* · 주의 · 바로 할 수 있는 일/ })
+      .click();
+    await sheet
+      .getByRole('listitem')
+      .filter({ hasText: '수석코치에게 회복 훈련 제안' })
+      .getByRole('button', { name: '검토', exact: true })
+      .click();
+  };
+  // Leaving the office takes the assistant's sheet it opened with it, committing nothing.
+  await openAssistant();
+  await expect(training).toBeVisible();
+  await expect(page).toHaveURL(/\/direction$/);
+  await page.goBack();
+  await expect(hub).toBeVisible();
+  await expect(training).toHaveCount(0);
+  await expect(sheet).toHaveCount(0);
+  await enterOffice(page);
+  await page
     .getByTestId('quick-actions')
     .getByRole('button', { name: /^피로 .* · 주의 · 바로 할 수 있는 일/ })
     .click();
-  const sheet = page.getByRole('dialog', { name: '피로 관리' });
   const rest = sheet.getByRole('listitem').filter({ hasText: '휴식일 부여 요청' });
   await expect(rest).toContainText('분위기 −2');
   await expect(rest).toContainText('전원 피로 −6');
@@ -333,12 +360,11 @@ test("the fatigue remedy opens the assistant's training sheet with 회복 ready,
     .filter({ hasText: '수석코치에게 회복 훈련 제안' })
     .getByRole('button', { name: '검토', exact: true })
     .click();
-  // The sheet closes and the assistant's sheet opens over the clubhouse with 회복 first; nothing
+  // The sheet closes and the assistant's sheet opens over the office with 회복 first; nothing
   // has changed yet and no page changes (→WEB-107, STAFF-19).
   await expect(sheet).toBeHidden();
-  await expect(page).not.toHaveURL(/\/training/);
-  await expect(hub).toBeVisible();
-  const training = page.getByRole('dialog', { name: '수석코치 훈련 제안' });
+  await expect(page).toHaveURL(/\/direction$/);
+  await expect(queue).toBeVisible();
   await expect(training.getByRole('listitem').first()).toContainText('회복 훈련');
   await expect(training.getByTestId('training-call-assistant')).toContainText('하드 트레이닝');
   await training.getByRole('button', { name: /^회복 훈련 강행/ }).click();

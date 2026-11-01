@@ -1,12 +1,18 @@
 import { createElement, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { createStore } from 'zustand/vanilla';
 import type { World } from '../../../../packages/contracts/src/types';
+import { clubMilestones, createWorld, transferOffers } from '../../../../packages/engine/src/index';
+import { sponsorSlots } from '../../../../packages/engine/src/operations';
+import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import type { ClientState, GameClient } from '../runtime/client';
+import type { ProgressionController } from '../runtime/progression';
 import type { View } from '../runtime/protocol';
-import { initialClientState } from '../runtime/store';
+import { gameStore, initialClientState } from '../runtime/store';
 import { useTaskMemory } from './taskMemory';
 import { PersonnelHub } from './PersonnelHubs';
+import Rich from './Rich';
 import { TrainingView } from './TrainingView';
 
 const selection = vi.hoisted(() => ({ tab: 'manager' }));
@@ -20,9 +26,25 @@ vi.mock('../presentation/react', async (original) => ({
   ...(await original<typeof import('../presentation/react')>()),
   useLocale: () => ({ t: (key: string) => key }),
 }));
+// Server rendering reads the store's initial snapshot; these units read the state they prepare.
+vi.mock('../runtime/store', async (original) => {
+  const store = await original<typeof import('../runtime/store')>();
+  return {
+    ...store,
+    useGameState: (selector: (state: ClientState) => unknown) =>
+      selector(store.gameStore.getState()),
+  };
+});
 vi.mock('./FacilityOverview', () => ({
-  FacilityOverview: ({ children }: { children: ReactNode }) =>
-    createElement('figure', {}, children),
+  FacilityOverview: ({
+    kind,
+    title,
+    children,
+  }: {
+    kind: string;
+    title: string;
+    children?: ReactNode;
+  }) => createElement('figure', { 'data-scene': kind, 'data-title': title }, children),
 }));
 
 function fixture() {
@@ -81,7 +103,11 @@ function fixture() {
   useTaskMemory.getState().activate(world.id);
   return { world, state, client, command };
 }
-afterEach(() => useTaskMemory.getState().activate('clean'));
+afterEach(() => {
+  useTaskMemory.getState().activate('clean');
+  gameStore.setState(initialClientState, true);
+  vi.unstubAllGlobals();
+});
 
 describe('live place composition', () => {
   const hub = (page: 'firstTeam' | 'staff', tab: string) => {
@@ -102,8 +128,9 @@ describe('live place composition', () => {
     return html;
   };
 
-  it('opens 1군 on its actual roster with no room art, local tabs or office-return bar', () => {
+  it('opens 1군 on its panel, the people with their rooms, with no room menu or office bar', () => {
     const html = hub('firstTeam', 'players');
+    // The panel places each room beside its own people (→ the Rich composition below).
     expect(html.startsWith('<section aria-label="authoritative personnel">')).toBe(true);
     for (const scaffold of [
       '<figure',
@@ -116,7 +143,7 @@ describe('live place composition', () => {
 
   it("opens 코치진 on its people, then the manager's and the staff's guarded requests", () => {
     const html = hub('staff', 'coaches');
-    // The actual manager and posts lead; no artwork or facility panel pushes them down.
+    // The actual manager and posts lead; no room menu stands before them.
     expect(html.startsWith('<section aria-label="authoritative personnel">')).toBe(true);
     expect(html).not.toContain('<figure');
     expect(html).not.toContain('data-ui="office-bar"');
@@ -176,4 +203,89 @@ describe('live place composition', () => {
       expect(f.command).not.toHaveBeenCalled();
     },
   );
+});
+
+describe('rooms beside their people (→WEB-43/72)', () => {
+  // The authoritative panels read a whole generated club; the artwork stays the stub above.
+  const world = createWorld({
+    name: 'Synthetic Rooms',
+    country: 'ENG',
+    color: '#224466',
+    seed: 'personnel-rooms',
+    level: 'easy',
+  });
+  const controller = {
+    store: createStore(() => ({ running: false, pace: 'x1', reason: '' })),
+  } as unknown as ProgressionController;
+  const rich = (page: 'firstTeam' | 'staff', tab: string) => {
+    selection.tab = tab;
+    vi.stubGlobal('location', {
+      origin: 'https://game.test',
+      pathname: page === 'staff' ? '/staff' : '/first-team',
+      search: `?view=${tab}`,
+    });
+    const state: ClientState = {
+      ...initialClientState,
+      busy: false,
+      view: {
+        world,
+        careers: {},
+        coaches: {},
+        totalMatches: 0,
+        supportUsed: 0,
+        milestones: clubMilestones(world),
+        managers: [],
+        transfers: transferOffers(world),
+        sponsors: sponsorSlots(world),
+        annualCost: '0',
+        coefficient: 0,
+        news: [],
+        tallies: { players: {}, leagueReds: {} },
+      } as View,
+    };
+    gameStore.setState(state, true);
+    useTaskMemory.getState().activate(world.id);
+    const command = vi.fn<GameClient['command']>();
+    const html = renderToStaticMarkup(
+      createElement(Rich, {
+        state,
+        client: { state, command } as unknown as GameClient,
+        page,
+        controller,
+      }),
+    );
+    expect(command).not.toHaveBeenCalled();
+    return html;
+  };
+  const scenes = (html: string) =>
+    [...html.matchAll(/data-scene="([^"]+)" data-title="([^"]+)"/g)].map(
+      ([, kind, title]) => `${kind}:${title}`,
+    );
+  const coach = `감독 ${world.manager.name} · ${tacticLabel[world.tactic]}`;
+
+  it('heads the 1군 roster with the current locker room and keeps the market free of art', () => {
+    const html = rich('firstTeam', 'players');
+    expect(scenes(html)).toEqual(['locker:드레싱 룸']);
+    // A live caption, then the actual roster at once.
+    expect(html).toContain(`data-title="드레싱 룸">${coach}</figure>`);
+    expect(html.indexOf('data-scene="locker"')).toBeLessThan(html.indexOf(world.players[0].name));
+    expect(scenes(rich('firstTeam', 'market'))).toEqual([]);
+  });
+
+  it('heads the manager with his office and the posts with the coaching workroom in 코치진', () => {
+    const html = rich('staff', 'coaches');
+    expect(scenes(html)).toEqual(['manager:감독실', 'staff:스태프 사무실']);
+    expect(html).toContain(`data-title="감독실">${coach}</figure>`);
+    expect(html).toContain(`data-title="스태프 사무실">스태프 ${world.staff!.length}명</figure>`);
+    const office = html.indexOf('data-scene="manager"'),
+      manager = html.indexOf('data-testid="manager-card"'),
+      workroom = html.indexOf('data-scene="staff"'),
+      post = html.indexOf(`id="staff-post-${world.staff![0].role}"`);
+    // Each room heads its own people, so neither pushes the other's list down.
+    expect(office).toBeGreaterThan(-1);
+    expect(office).toBeLessThan(manager);
+    expect(manager).toBeLessThan(workroom);
+    expect(workroom).toBeLessThan(post);
+    expect(html).not.toContain('role="tablist"');
+  });
 });

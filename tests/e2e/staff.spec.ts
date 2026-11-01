@@ -112,18 +112,28 @@ test.describe('사람 at 360x740', () => {
     await expect(page.getByRole('region', { name: '스태프', exact: true })).toBeVisible();
     expect(await horizontalOverflow(page)).toBe(0);
     // The keyboard moves along the club's section bar, each tab opening its section.
+    // Home reaches the first tab, the office's own queue, never the home briefing (→WEB-10).
     await section(page, '코치진').focus();
     const keys: [string, string, RegExp][] = [
       ['ArrowLeft', '1군', /\/first-team\?view=players$/],
       ['ArrowRight', '코치진', /\/staff\?view=coaches$/],
       ['ArrowRight', '훈련', /\/training$/],
       ['ArrowLeft', '코치진', /\/staff\?view=coaches$/],
+      ['Home', '사무실', /\/direction$/],
+      ['End', '운영', /\/club-operations\?view=investment$/],
+      ['Home', '사무실', /\/direction$/],
+      ['ArrowRight', '1군', /\/first-team\?view=players$/],
+      ['ArrowRight', '코치진', /\/staff\?view=coaches$/],
     ];
     for (const [key, name, address] of keys) {
       await page.keyboard.press(key);
       await expect(section(page, name)).toBeFocused();
       await expect(section(page, name)).toHaveAttribute('aria-selected', 'true');
       await expect(page).toHaveURL(address);
+      if (name === '사무실') {
+        await expect(page.getByTestId('approval-queue')).toBeVisible();
+        await expect(page.getByTestId('club-hub')).toBeHidden();
+      }
     }
     await expect(page.getByRole('region', { name: '스태프', exact: true })).toBeVisible();
     expect(await horizontalOverflow(page)).toBe(0);

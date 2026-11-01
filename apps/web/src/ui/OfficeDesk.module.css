@@ -10,6 +10,26 @@
   margin: 0 auto;
 }
 
+/* The office overview: scene, queue and team content share the queue's width. */
+.overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 14px;
+  width: 100%;
+  max-width: 880px;
+  min-width: 0;
+  margin: 0 auto;
+}
+/* The room is a header: a slot near the art's 3:1 shape on phones keeps the first request in
+   the first view; it is reserved before the image loads. */
+.overview > figure {
+  margin: 0;
+}
+.overview > figure > [data-facility-art] {
+  height: clamp(112px, 18vw, 220px);
+}
+
 /* A work's figures: one row of tiles. */
 .stats {
   display: grid;
@@ -72,7 +92,8 @@
 }
 
 @media (max-width: 760px) {
-  .body {
+  .body,
+  .overview {
     gap: 10px;
   }
   /* Still one row of four on a phone: smaller type, no second row. */

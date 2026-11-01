@@ -77,8 +77,8 @@ async function dismissCelebration(page: Page) {
 }
 
 /**
- * The 들어가기 of the clubhouse's office entrance (→WEB-11); the bottom controls' 결재함 opens the
- * same queue (→WEB-18).
+ * The 들어가기 of the clubhouse's illustrated office entrance (→WEB-11); the bottom controls'
+ * 결재함 and the office section bar's 사무실 open the same queue (→WEB-10/18).
  */
 export const officeEntrance = (page: Page) =>
   page
@@ -149,15 +149,17 @@ export async function officeLobby(page: Page) {
   await expect(officeTitle(page)).toHaveText(LOBBY);
 }
 
-/** The club's section bar over the clubhouse and club information pages (→WEB-10). */
+/** The club's section bar over the owner office and its working pages (→WEB-10). */
 export const clubSections = (page: Page) =>
   page.getByRole('tablist', { name: '구단 섹션', exact: true });
 /** 구단 운영's own section tabs (→WEB-110). */
 export const operationsTabs = (page: Page) =>
   page.getByRole('tablist', { name: '구단 운영', exact: true });
 export const OPERATIONS_SECTIONS = ['재정·투자', '후원', '구단 디자인'];
+/** The office's section bar, 사무실 first (→WEB-10). */
+export const CLUB_SECTION_LABELS = ['사무실', '1군', '코치진', '훈련', '유소년', '운영'];
 const CLUB_SECTIONS: Record<string, string> = {
-  dashboard: '현황',
+  business: '사무실',
   firstTeam: '1군',
   staff: '코치진',
   training: '훈련',
@@ -166,9 +168,10 @@ const CLUB_SECTIONS: Record<string, string> = {
 };
 
 /**
- * The club section the active address shows, read once the rendered view agrees with it: the
+ * The office section the active address shows, read once the rendered view agrees with it: the
  * deferred view has caught up (its container is no longer busy) and the section bar selects the
- * address's section, or neither has one. Null outside the club pages (the office, competitions,
+ * address's section, or neither has one. 사무실 on the office's own addresses, its reviews
+ * included; null outside the office and its working pages (the home briefing, competitions,
  * records, the market). A reload or a lazy first render waits for its view to mount, so a
  * departing view's selection is never taken for the destination's.
  */
@@ -183,10 +186,10 @@ export async function settledClubSection(page: Page) {
           const { pathname, search } = location;
           const at = (path: string) => pathname === path || pathname.startsWith(path + '/');
           const view = new URLSearchParams(search).get('view');
-          // `/` is the clubhouse's start alias of /journal (→WEB-62).
+          // The home briefing (/journal, or its start alias `/` →WEB-62) has no section bar.
           const expected =
-            pathname === '/' || at('/journal')
-              ? 'dashboard'
+            at('/business') || at('/direction')
+              ? 'business'
               : at('/first-team')
                 ? view === 'market'
                   ? null
@@ -216,24 +219,26 @@ export async function settledClubSection(page: Page) {
 }
 
 /**
- * Opens one club section (현황, 1군, 코치진, 훈련, 유소년, 운영) through the clubhouse's section
- * bar, leaving the office or the market first; observation reports covering it are dismissed.
- * Each decision reads the settled view (→ settledClubSection), and the visible clicks remain.
+ * Opens one office section (사무실, 1군, 코치진, 훈련, 유소년, 운영) through the office's section
+ * bar, entering the office through the clubhouse's illustrated entrance first when the page has no
+ * bar (the home briefing, the market, competitions); observation reports covering it are
+ * dismissed. 사무실 is the office's queue, so a review is left for it unresolved. Each decision
+ * reads the settled view (→ settledClubSection), and the visible clicks remain.
  */
 export async function openClubSection(
   page: Page,
   section: string,
   options: { timeout?: number } = {},
 ) {
-  await outsideOffice(page);
+  await closeOfficeOverview(page);
   await dismissCelebration(page);
   const covering = page.getByRole('dialog').filter({ has: page.getByTestId('event-group') });
   if (await covering.isVisible())
     await covering.getByRole('button', { name: '창 닫기', exact: true }).click();
   // A click pushes its address at once, so the old view never agrees with the new address.
   let current = await settledClubSection(page);
-  if (current === null) {
-    await clubhouseTab(page).click(options);
+  if (current === null || (section === '사무실' && current === section)) {
+    await enterOffice(page, options);
     current = await settledClubSection(page);
   }
   const tab = clubSections(page).getByRole('tab', { name: section, exact: true });

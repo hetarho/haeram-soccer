@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { orderIds, ownDivisionRound, ownLeague, ownLeagueIds, ownLeagueProgress } from './league';
@@ -15,6 +15,7 @@ import { ClubLink } from './ClubLink';
 import { StrategyPanel } from './LazyStrategyPanel';
 import { Dialog } from './Dialog';
 import s from './ClubHub.module.css';
+import { FacilityArt } from './FacilityArt';
 import { Card } from './Card';
 import { PixelIcon } from './PixelIcon';
 import { HomeAwayBadge } from './HomeAwayBadge';
@@ -62,16 +63,18 @@ export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => voi
 }
 
 /**
- * The owner's band on the clubhouse (→WEB-11/107): one compact line naming the approvals that
- * actually wait, the overdue ones among them, and the way into the 결재함, then the owner's
- * quick actions in small tiles. No room art pushes them down.
+ * The clubhouse's illustrated way into the owner office (→WEB-11/72): the manager-room art in its
+ * reserved slot under a light shade, with the approvals that actually wait, the overdue ones among
+ * them and 들어가기 as live text on top. The office holds the club summary and quick actions.
  */
-export function OfficeEntrance({ w, children }: { w: World; children: ReactNode }) {
+export function OfficeEntrance({ w }: { w: World }) {
   const requests = approvalRequests(w);
   const pending = requests.length,
     overdue = overdueSummary(w, requests).overdue;
   return (
     <section className={s.office} data-home-part="office" aria-label="구단주 사무실">
+      <FacilityArt kind="manager" world={w} className={s.officeArt} />
+      <div className={s.officeShade} aria-hidden="true" />
       <div className={s.officeCaption}>
         <b>구단주 사무실</b>
         <span data-testid="office-waiting">
@@ -94,7 +97,6 @@ export function OfficeEntrance({ w, children }: { w: World; children: ReactNode 
           들어가기
         </button>
       </div>
-      {children}
     </section>
   );
 }
@@ -204,10 +206,10 @@ export function SeasonCard({ w, active }: { w: World; active: boolean }) {
 }
 
 /**
- * Where the club stands now (→WEB-44), beside the season briefing and quieter than it: strength
- * and its place in our division, who can play, fatigue, 분위기 and the manager's standing, with
- * warnings in plain words. It only reads — no tile redirects anywhere; the quick actions below
- * answer it and the club sections hold the real workflows.
+ * Where the club stands now (→WEB-44), beside the office's owner work and quieter than it:
+ * strength and its place in our division, who can play, fatigue, 분위기 and the manager's
+ * standing, with warnings in plain words. It only reads — no tile redirects anywhere; the quick
+ * actions beside it answer it and the club sections hold the real workflows.
  */
 export function ClubSituation({ w }: { w: World }) {
   return (
@@ -241,6 +243,22 @@ export function ClubSituation({ w }: { w: World }) {
   );
 }
 
+/**
+ * The office's supporting team content under its 결재함 (→WEB-39/44/107): the club summary, then
+ * the owner's three quick actions in the office's compact band, so neither replaces the queue.
+ */
+export function OfficeTeam({ w, client }: { w: World; client: GameClient }) {
+  return (
+    <section className={s.team} aria-label="팀 현황" data-office-part="team">
+      <ClubSituation w={w} />
+      {/* The band keeps the themes' compact office tiles (→WEB-91). */}
+      <div className={s.officeActions} data-home-part="office">
+        <QuickActions w={w} client={client} />
+      </div>
+    </section>
+  );
+}
+
 export function ClubHub({ w, client }: { w: World; client: GameClient }) {
   // Home stays mounted while hidden: only leaving it matters, not moves between other pages.
   const away = useNavigation((state) => state.page !== 'dashboard');
@@ -261,10 +279,7 @@ export function ClubHub({ w, client }: { w: World; client: GameClient }) {
     >
       <SeasonCard w={w} active={!away} />
       <NextMatchCard w={w} onPrepare={() => setPreparing(true)} />
-      <ClubSituation w={w} />
-      <OfficeEntrance w={w}>
-        <QuickActions w={w} client={client} />
-      </OfficeEntrance>
+      <OfficeEntrance w={w} />
 
       {preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />}
       {cupsOpen && (

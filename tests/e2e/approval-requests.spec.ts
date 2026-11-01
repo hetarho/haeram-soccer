@@ -58,8 +58,15 @@ for (const width of [390, 1280]) {
     );
     for (const gone of ['클럽 소식·시즌 브리핑', '선수 계약', '재정·투자', '감독 사무실', '훈련장'])
       await expect(approvalQueue(page).getByRole('button', { name: gone })).toHaveCount(0);
-    // The club's summary stays in the clubhouse; the office holds no copy of it (→WEB-44).
-    await expect(page.getByTestId('club-situation')).toBeHidden();
+    // The club's summary and the quick actions are the office's, once each and below its queue;
+    // the home briefing keeps no copy (→WEB-11/44/107).
+    const queueBox = (await approvalQueue(page).boundingBox())!;
+    for (const id of ['club-situation', 'quick-actions']) {
+      const part = page.getByTestId(id);
+      await expect(part).toHaveCount(1);
+      await expect(page.getByTestId('club-hub').getByTestId(id)).toHaveCount(0);
+      expect((await part.boundingBox())!.y).toBeGreaterThanOrEqual(queueBox.y + queueBox.height);
+    }
     const first = await review(page, ids[0]!).boundingBox();
     expect(first!.y + first!.height).toBeLessThanOrEqual(844);
     await expect(rows.getByRole('button', { name: '거절', exact: true })).toHaveCount(0);
