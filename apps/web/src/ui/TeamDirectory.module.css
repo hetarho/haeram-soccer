@@ -8,6 +8,14 @@
   gap: 0;
   min-width: 0;
 }
+/* Keep the choice reachable without scrolling the departing list back to its top. */
+.tabs {
+  position: sticky;
+  top: var(--task-offset, 0px);
+  z-index: 6;
+  min-width: 0;
+  background: var(--surface-grain, none) var(--bg);
+}
 .toolbar {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

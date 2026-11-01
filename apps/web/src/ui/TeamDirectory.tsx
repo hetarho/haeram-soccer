@@ -69,13 +69,15 @@ export function TeamDirectory({ state, client }: { state: ClientState; client: G
   };
   return (
     <section className={s.directory} data-ui="team-directory" aria-label={t('navigation.team')}>
-      <TabList<TeamView>
-        tabs={TEAM_VIEWS.map(([id, label]) => [id, t(label)] as const)}
-        value={view}
-        onChange={choose}
-        label={t('team.directory')}
-        idPrefix="team"
-      />
+      <div className={s.tabs}>
+        <TabList<TeamView>
+          tabs={TEAM_VIEWS.map(([id, label]) => [id, t(label)] as const)}
+          value={view}
+          onChange={choose}
+          label={t('team.directory')}
+          idPrefix="team"
+        />
+      </div>
       <TabPanel idPrefix="team" value={view}>
         {view === 'coaches' ? (
           <CoachList w={w} client={client} />
