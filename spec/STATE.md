@@ -16,6 +16,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | bd02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T16:10Z | 2026-11-01T16:10Z | - |
+| of02 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T16:24Z | 2026-11-01T16:24Z | - |
 
 ## inbox
 - 261102 decided WEB-112 WEB-113: gather our people in primary 팀 immediately before 이적시장, using 1군/유소년/코치 compact lists and existing detailed-management views; retain restored artwork there and home/office, with office personnel tabs removed (alt: another office directory | delete the restored illustrations for density). Position families use engine lineOf: gold GK, blue DF, green MF and coral FW with readable code/labels, shared by Team and market. Session of02.
