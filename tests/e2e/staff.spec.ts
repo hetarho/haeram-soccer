@@ -1,3 +1,4 @@
+import { settle } from './layout';
 import { managerCard, openPersonnel } from './personnel-navigation';
 import { marketInfo } from './market';
 import {
