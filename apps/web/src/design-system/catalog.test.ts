@@ -29,5 +29,12 @@ describe('design-system catalog', () => {
     expect(url.searchParams.get('view')).toBe('players');
     expect(url.searchParams.get('__design_system')).toBe('roster');
     expect(url.searchParams.get('theme')).toBe('pixel');
+    // 팀's compact directory previews on its own real address (→WEB-112).
+    const team = STORIES.find((story) => story.id === 'team')!;
+    const teamUrl = new URL(previewAddress(team, 'standard'), 'http://localhost');
+    expect(teamUrl.pathname).toBe('/team');
+    expect(teamUrl.searchParams.get('view')).toBe('players');
+    expect(team.components).toEqual(expect.arrayContaining(['TeamDirectory', 'PositionBadge']));
+    expect(matchingStories('TEAMDIRECTORY').map((story) => story.id)).toContain('team');
   });
 });

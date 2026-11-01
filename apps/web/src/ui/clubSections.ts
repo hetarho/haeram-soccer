@@ -1,23 +1,19 @@
 import type { Page } from './state';
 
 /**
- * The club's sections (→WEB-10): the owner office and its working pages share this bar, 사무실
- * first, opening the office's queue. The clubhouse's home briefing, the competitions and the
- * transfer market, an entry of its own, have none.
+ * The office's sections (→WEB-10): 사무실, 훈련 and 운영 share this bar, 사무실 first, opening the
+ * office's queue. Our people belong to the primary 팀 entry (→WEB-112), so neither its directory
+ * nor its detailed pages show this bar; nor do the home briefing, the competitions or the market.
  */
 export const CLUB_SECTIONS = [
   ['business', 'club.section.office'],
-  ['firstTeam', 'club.section.firstTeam'],
-  ['staff', 'club.section.staff'],
   ['training', 'club.section.training'],
-  ['academy', 'club.section.academy'],
   ['operations', 'club.section.operations'],
 ] as const satisfies readonly (readonly [Page, string])[];
 export type ClubSection = (typeof CLUB_SECTIONS)[number][0];
 
-/** The section a page shows, or none: the first team's market view belongs to 이적시장. */
-export function clubSection(page: Page, market: boolean): ClubSection | undefined {
-  if (page === 'firstTeam' && market) return undefined;
+/** The section a page shows, or none. */
+export function clubSection(page: Page): ClubSection | undefined {
   return CLUB_SECTIONS.find(([id]) => id === page)?.[0];
 }
 

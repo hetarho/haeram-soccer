@@ -109,6 +109,15 @@ ratings and money instead of inheriting the shared leading rank column's narrow 
 Candidate details follow the report pattern below; comparison actions keep the plain button
 skin, the loan action takes the secondary role and the bid or signing the primary role.
 
+People directories share the candidate list's density rather than drawing a card per person.
+팀's 1군, 유소년 and 코치 lists (WEB-112) compose the market's table, name-cell and rating
+column classes, so a row is the same height as a market row at the same width and theme; their
+own module adds only the toolbar, extra columns and vacancy state. Phones keep the name with
+its position badge and a short fact line plus two or three numeric columns; wider screens add
+wage, contract or age columns. A vacant post reads as a muted label in the name cell, never as
+a person, and a name without a linked record keeps the link's row height without a target. The
+illustrated detailed workflows stay separate pages reached by named management links.
+
 Before reducing text or touch targets, inspect accumulated spacing: a panel's outer padding,
 header/body padding, child-list margins and mobile overrides may all add to the same inset.
 Give each boundary one spacing owner. Keep dense data rows and explanatory copy compact while

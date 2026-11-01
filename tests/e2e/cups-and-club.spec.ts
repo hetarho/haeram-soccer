@@ -214,15 +214,26 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
     await openPersonnel(page, 'players');
     const sections = page.getByRole('tablist', { name: '구단 섹션', exact: true });
-    // The market is an entry of its own (→WEB-10): 1군 has no market tab, and the market no
-    // club section bar.
-    await expect(sections).toBeVisible();
+    const teamWay = page.locator('[data-ui="team-return"]');
+    // The market is an entry of its own (→WEB-10): 1군 belongs to 팀, with its way back there and
+    // no office bar or market tab, and the market has neither.
+    await expect(teamWay).toBeVisible();
+    await expect(sections).toHaveCount(0);
+    await expect(nav.getByRole('button', { name: '팀', exact: true })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
     await expect(page.getByRole('tab', { name: '이적시장' })).toHaveCount(0);
     await openPersonnel(page, 'market');
     const market = page.getByRole('region', { name: '선수 영입 데스크' });
     await expect(market).toBeVisible();
     await expect(sections).toHaveCount(0);
+    await expect(teamWay).toHaveCount(0);
     await expect(nav.getByRole('button', { name: '이적시장', exact: true })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    await expect(nav.getByRole('button', { name: '팀', exact: true })).not.toHaveAttribute(
       'aria-current',
       'page',
     );

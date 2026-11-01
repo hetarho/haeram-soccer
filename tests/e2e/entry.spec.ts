@@ -52,9 +52,13 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await page.setViewportSize({ width: 390, height: 844 });
   const mobileMenu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(mobileMenu).toBeVisible();
-  // Five entries; the bottom bar keeps the clubhouse in the middle (→WEB-10).
-  const tabs = ['리그', '컵', '클럽하우스', '이적시장', '기록'];
+  // Six entries; 팀 sits immediately before the market (→WEB-10), all six in view at once.
+  const tabs = ['리그', '컵', '클럽하우스', '팀', '이적시장', '기록'];
   await expect(mobileMenu.getByRole('button')).toHaveCount(tabs.length);
+  expect(
+    await mobileMenu.evaluate((bar) => bar.scrollWidth - bar.clientWidth),
+    'the bottom bar scrolls no entry out of view',
+  ).toBeLessThanOrEqual(0);
   expect(
     await mobileMenu
       .getByRole('button')
@@ -86,10 +90,11 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   await expect(allMenu).toHaveCount(0);
   // First-team work opens on the roster with its real squad count, under no local tabs.
   await openPersonnel(page, 'players');
-  await expect(clubSections(page).getByRole('tab', { name: '1군', exact: true })).toHaveAttribute(
-    'aria-selected',
-    'true',
+  await expect(mobileMenu.getByRole('button', { name: '팀', exact: true })).toHaveAttribute(
+    'aria-current',
+    'page',
   );
+  await expect(clubSections(page)).toHaveCount(0);
   await expect(page.getByRole('tablist', { name: '감독 사무실', exact: true })).toHaveCount(0);
   // A delegated premium sale can change the squad before kickoff; the heading must match
   // the actual cards rather than the founding count.

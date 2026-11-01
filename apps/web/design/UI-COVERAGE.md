@@ -167,6 +167,7 @@ Every module below was included in the source review; Card is the subsequent sha
 | [StyleCard.tsx](../src/ui/StyleCard.tsx)                         | – / – / –                 | panel                                                                                                                                                | staff, styles                               |
 | [TacticalLab.tsx](../src/ui/TacticalLab.tsx)                     | 1 / – / –                 | disclosure, panel                                                                                                                                    | preparation                                 |
 | [TaskReturn.tsx](../src/ui/TaskReturn.tsx)                       | 1 / – / –                 | Composed/default skin                                                                                                                                | Composed in app views                       |
+| [TeamDirectory.tsx](../src/ui/TeamDirectory.tsx)                 | 5 / 1 / 2                 | team-directory, team-return, link, tertiary, position-badge                                                                                          | team                                        |
 | [TeamSheet.tsx](../src/ui/TeamSheet.tsx)                         | – / – / –                 | Composed/default skin                                                                                                                                | Composed in app views                       |
 | [TeamSheetDialog.tsx](../src/ui/TeamSheetDialog.tsx)             | – / – / –                 | Composed/default skin                                                                                                                                | Composed in app views                       |
 | [Term.tsx](../src/ui/Term.tsx)                                   | 1 / – / –                 | term                                                                                                                                                 | badges, glossary                            |
@@ -181,6 +182,8 @@ Every module below was included in the source review; Card is the subsequent sha
 Each registered preview below loaded at both desktop and mobile widths; the 50 initial entries retain their audit baseline and cards was added in the material-plane follow-up. This is app-content coverage, not a request to theme the workbench itself.
 
 PositionBadge joined `badges` and the recruitment rows after this audit (T643). Its rendered family colours, contrast and phone visibility in all four registered themes belong to the browser batch run of `tests/e2e/position-badges.spec.ts`; this inventory does not claim them as inspected.
+
+TeamDirectory joined as the `team` preview after this audit (T644). It composes the market's table, name-cell and rating classes rather than a skin of its own; its row density against the market, phone/desktop columns and all-theme rendering belong to the browser batch run of `tests/e2e/team-directory.spec.ts`, and this inventory does not claim them as inspected.
 
 | Preview             | App components                                                                                   | Desktop / mobile      |
 | ------------------- | ------------------------------------------------------------------------------------------------ | --------------------- |
@@ -204,6 +207,7 @@ PositionBadge joined `badges` and the recruitment rows after this audit (T643). 
 | profile             | PlayerProfile, PlayerPerformance, PlayerAdvancedStats                                            | Inspected / inspected |
 | player-sheet        | PlayerSheetDialog                                                                                | Inspected / inspected |
 | comparison          | PlayerComparison                                                                                 | Inspected / inspected |
+| team                | TeamDirectory, PositionBadge, OvrBadge, PageTabs                                                 | Pending / pending     |
 | roster              | Rich, RosterFilters, PersonnelHubs                                                               | Pending / pending     |
 | staff               | Rich, ClubStaff, StyleCard, DecisionOwner, PlaceActivities                                       | Pending / pending     |
 | recruitment         | RecruitmentDesk, ScoutShortlist, MediationReview                                                 | Inspected / inspected |

@@ -4,7 +4,7 @@ import { seedSlot, continueSlot } from './slots';
 import { managerCard, openPersonnel } from './personnel-navigation';
 import { openLeague, openClubRecords } from './competition-navigation';
 import { horizontalOverflow, settle } from './layout';
-import { clubSections } from './office';
+import { clubSections, teamEntry, teamReturn } from './office';
 
 for (const viewport of [
   { width: 360, height: 740 },
@@ -37,8 +37,8 @@ for (const viewport of [
       ).map((label) => label.replace(/\d*( · 결재 대기 \d+건)?$/, '')),
     ).toEqual(
       viewport.width <= 760
-        ? ['리그', '컵', '클럽하우스', '이적시장', '기록']
-        : ['클럽하우스', '리그', '컵', '이적시장', '기록'],
+        ? ['리그', '컵', '클럽하우스', '팀', '이적시장', '기록']
+        : ['클럽하우스', '리그', '컵', '팀', '이적시장', '기록'],
     );
     for (const button of await nav.getByRole('button').all()) {
       const box = await button.boundingBox();
@@ -147,9 +147,10 @@ for (const viewport of [
     await expect(search).toHaveValue('Retained work');
     await openPersonnel(page, 'coaches');
     await page.reload();
-    await expect(
-      clubSections(page).getByRole('tab', { name: '코치진', exact: true }),
-    ).toHaveAttribute('aria-selected', 'true');
+    // A reloaded 코치진 stays 팀's, its way back naming the 코치 list (→WEB-112).
+    await expect(teamReturn(page)).toHaveText('← 팀 · 코치');
+    await expect(teamEntry(page)).toHaveAttribute('aria-current', 'page');
+    await expect(clubSections(page)).toHaveCount(0);
     await expect(managerCard(page)).toBeVisible();
     await settle(page);
     expect(await horizontalOverflow(page)).toBe(0);

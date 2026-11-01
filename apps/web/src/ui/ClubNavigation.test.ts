@@ -38,24 +38,21 @@ const controller: PresentationController = {
   registerNeed: () => () => {},
   dispose: vi.fn(),
 };
-const render = (page: Page, market = false) =>
+const render = (page: Page) =>
   renderToStaticMarkup(
     createElement(PresentationProvider, {
       controller,
-      children: createElement(ClubNavigation, { page, market }),
+      children: createElement(ClubNavigation, { page }),
     }),
   );
 
-describe('the club section bar (→WEB-10/69)', () => {
-  it('lists the six sections as page tabs with the current one selected', () => {
+describe('the office section bar (→WEB-10/69/112)', () => {
+  it('lists the three office sections as page tabs with the current one selected', () => {
     const html = render('operations');
     expect(html).toContain('role="tablist" aria-label="구단 섹션"');
     expect([...html.matchAll(/role="tab"[^>]*>([^<]+)</g)].map((match) => match[1])).toEqual([
       '사무실',
-      '1군',
-      '코치진',
       '훈련',
-      '유소년',
       '운영',
     ]);
     expect(html).toMatch(/id="club-section-tab-operations"[^>]*aria-selected="true"/);
@@ -73,15 +70,25 @@ describe('the club section bar (→WEB-10/69)', () => {
     expect(first).toContain('aria-selected="true"');
   });
 
-  it('shows on the office and its working pages, never on home, the market or competitions', () => {
-    for (const page of ['business', 'firstTeam', 'staff', 'training', 'academy'] as const)
+  it('shows on the office and its working pages, never on 팀, our people, home or competitions', () => {
+    for (const page of ['business', 'training', 'operations'] as const)
       expect(render(page), page).toMatch(
         new RegExp(`id="club-section-tab-${page}"[^>]*aria-selected="true"`),
       );
-    expect(render('firstTeam', true)).toBe('');
-    for (const page of ['dashboard', 'league', 'europe', 'history', 'match'] as const) {
+    // Our people belong to the primary 팀 entry, its list and detailed pages alike (→WEB-112).
+    for (const page of [
+      'team',
+      'firstTeam',
+      'staff',
+      'academy',
+      'dashboard',
+      'league',
+      'europe',
+      'history',
+      'match',
+    ] as const) {
       expect(render(page), page).toBe('');
-      expect(clubSection(page, false)).toBeUndefined();
+      expect(clubSection(page)).toBeUndefined();
     }
   });
 
@@ -105,8 +112,9 @@ describe('the club section bar (→WEB-10/69)', () => {
         const message = pack.messages[key];
         expect(typeof message === 'string' && message.trim(), `${entry.id} ${key}`).toBeTruthy();
       }
-      // The home briefing is no section, so no pack keeps its old 현황 label.
-      expect(pack.messages, entry.id).not.toHaveProperty(['club.section.overview']);
+      // Neither the home briefing nor our people are sections, so no pack keeps their labels.
+      for (const retired of ['overview', 'firstTeam', 'staff', 'academy'])
+        expect(pack.messages, entry.id).not.toHaveProperty([`club.section.${retired}`]);
     }
   });
 });

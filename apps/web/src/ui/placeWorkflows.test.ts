@@ -110,6 +110,8 @@ afterEach(() => {
 });
 
 describe('live place composition', () => {
+  const leadsBackToTeam =
+    /^<div[^>]*data-ui="team-return"><button[^>]*>team\.back<\/button><\/div><section aria-label="authoritative personnel">/;
   const hub = (page: 'firstTeam' | 'staff', tab: string) => {
     const f = fixture();
     selection.tab = tab;
@@ -130,8 +132,11 @@ describe('live place composition', () => {
 
   it('opens 1군 on its panel, the people with their rooms, with no room menu or office bar', () => {
     const html = hub('firstTeam', 'players');
-    // The panel places each room beside its own people (→ the Rich composition below).
-    expect(html.startsWith('<section aria-label="authoritative personnel">')).toBe(true);
+    // One quiet way back to 팀 (→WEB-112), then the panel, which places each room beside its own
+    // people (→ the Rich composition below).
+    expect(html).toMatch(leadsBackToTeam);
+    // The market is an entry of its own, with no way back to a Team list.
+    expect(hub('firstTeam', 'market')).not.toContain('team-return');
     for (const scaffold of [
       '<figure',
       'role="tablist"',
@@ -143,8 +148,8 @@ describe('live place composition', () => {
 
   it("opens 코치진 on its people, then the manager's and the staff's guarded requests", () => {
     const html = hub('staff', 'coaches');
-    // The actual manager and posts lead; no room menu stands before them.
-    expect(html.startsWith('<section aria-label="authoritative personnel">')).toBe(true);
+    // The actual manager and posts lead after the way back to 팀; no room menu stands before them.
+    expect(html).toMatch(leadsBackToTeam);
     expect(html).not.toContain('<figure');
     expect(html).not.toContain('data-ui="office-bar"');
     const people = html.indexOf('authoritative personnel'),

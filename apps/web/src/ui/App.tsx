@@ -76,7 +76,7 @@ function AwayHost({ controller }: { controller: ProgressionController }) {
   ) : null;
 }
 /**
- * The squad, staff, operations and records pages load as their own chunk, outside the first-play
+ * The Team directory, squad, staff, operations and records pages load as their own chunk, outside the first-play
  * entry (→ARCH-28). It is fetched once a game is in play, so a first visit seldom waits for it.
  */
 const loadRich = () => import('./Rich');
@@ -154,6 +154,7 @@ function NavIcon({ page }: { page: NavEntry }) {
     match: 'ball',
     league: 'table',
     europe: 'cup',
+    team: 'people',
     leagueHistory: 'history',
     cupHistory: 'history',
     firstTeam: 'people',
@@ -1086,7 +1087,7 @@ export function App() {
                   </div>
                 )}
                 <div className={s.views} inert={changingView} aria-busy={changingView}>
-                  <ClubNavigation page={contentPage} market={marketOpen} />
+                  <ClubNavigation page={contentPage} />
                   <div className={s.coreContent} hidden={contentPage !== 'dashboard'}>
                     <ConnectedDashboard client={client} />
                   </div>
@@ -1112,6 +1113,7 @@ export function App() {
                     </div>
                     {(
                       [
+                        'team',
                         'firstTeam',
                         'academy',
                         'staff',

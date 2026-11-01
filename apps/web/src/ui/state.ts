@@ -15,6 +15,7 @@ import {
 } from './competitionNavigation';
 import { deskDestination, OFFICE_DESKS, resolveOffice, type WorkDesk } from './officeDesks';
 import { operationsAddress, operationsRoute, type OperationsView } from './clubSections';
+import { teamAddress, teamRoute, type TeamView } from './teamNavigation';
 import { isTaskDestination, rememberTask, taskAddress, useTaskMemory } from './taskMemory';
 import { create } from 'zustand';
 import { eventDesk, type ApprovalRequest } from './eventRouting';
@@ -39,6 +40,7 @@ export type Page =
   | 'match'
   | 'league'
   | 'europe'
+  | 'team'
   | 'firstTeam'
   | 'academy'
   | 'training'
@@ -53,6 +55,7 @@ const paths: Record<Page, string> = {
   match: '/matches',
   ...COMPETITION_PATHS,
   ...PERSONNEL_PATHS,
+  team: teamAddress(),
   operations: operationsAddress(),
   business: '/direction',
 };
@@ -77,8 +80,8 @@ export type Home = PersonnelHome | { page: 'operations'; view: OperationsView };
 /** Where an address lands. */
 export interface Route {
   page: Page;
-  /** The personnel workflow, club-operations section or office view. */
-  view?: PeopleTab | TrainingTab | OfficeView | OperationsView;
+  /** The personnel workflow, Team list, club-operations section or office view. */
+  view?: PeopleTab | TrainingTab | OfficeView | OperationsView | TeamView;
   /** The manager workflow opens with the replacement market. */
   market?: true;
   /** The address to show instead of the one asked for, for older and non-canonical ones. */
@@ -95,6 +98,8 @@ export function routeOf(pathname: string, search: string): Route {
   if (personnel) return personnel;
   const operations = operationsRoute(pathname, search);
   if (operations) return operations;
+  const team = teamRoute(pathname, search);
+  if (team) return team;
   const asked = new URLSearchParams(search).get('view');
   if (!at(paths.business) && !at('/business'))
     return {
@@ -285,6 +290,10 @@ function visit(address: string, replace = false) {
   useNavigation.setState({ page: route.page });
   if (typeof window !== 'undefined') window.dispatchEvent(new Event('tasknavigate'));
 }
+/** Opens one of 팀's lists (→WEB-112); reading it issues no command. */
+export function openTeam(view: TeamView = 'players') {
+  visit(teamAddress(view));
+}
 /** Opens one section of 구단 운영 (→WEB-110). */
 export function openOperations(view: OperationsView = 'investment') {
   visit(operationsAddress(view));
@@ -340,6 +349,7 @@ export function activateTaskWorld(world: string) {
     useCupRequest.getState().take();
     useLeagueSeason.getState().take();
     useFacilityRequest.getState().take();
+    useAcademyReview.getState().take();
   }
   useTaskMemory.getState().activate(world);
 }
@@ -628,23 +638,25 @@ export function beginTaskDetour(target: Page, address?: string) {
   rememberTask(page);
   const view = new URLSearchParams(location.search).get('view');
   const label =
-    page === 'firstTeam'
-      ? (FIRST_TEAM_TABS.find(([id]) => id === (view ?? 'players'))?.[1] ?? '1군')
-      : page === 'staff'
-        ? (STAFF_TABS.find(([id]) => id === (view ?? 'manager'))?.[1] ?? '코치진')
-        : page === 'training'
-          ? '훈련장'
-          : page === 'academy'
-            ? '유소년'
-            : page === 'operations'
-              ? '구단 운영'
-              : page === 'history'
-                ? '클럽 시즌 기록'
-                : page === 'league' || page === 'leagueHistory'
-                  ? '리그'
-                  : page === 'europe' || page === 'cupHistory'
-                    ? '컵 대회'
-                    : '클럽 홈';
+    page === 'team'
+      ? '팀'
+      : page === 'firstTeam'
+        ? (FIRST_TEAM_TABS.find(([id]) => id === (view ?? 'players'))?.[1] ?? '1군')
+        : page === 'staff'
+          ? (STAFF_TABS.find(([id]) => id === (view ?? 'manager'))?.[1] ?? '코치진')
+          : page === 'training'
+            ? '훈련장'
+            : page === 'academy'
+              ? '유소년'
+              : page === 'operations'
+                ? '구단 운영'
+                : page === 'history'
+                  ? '클럽 시즌 기록'
+                  : page === 'league' || page === 'leagueHistory'
+                    ? '리그'
+                    : page === 'europe' || page === 'cupHistory'
+                      ? '컵 대회'
+                      : '클럽 홈';
   useTaskMemory.setState({
     parents:
       prior.returning && isTaskDestination(prior.returning.target, page)
@@ -686,6 +698,15 @@ export const usePlayerPreparation = create<{
   close: () => set({ id: undefined, world: undefined }),
 }));
 
+/**
+ * A prospect's review in 유소년 (→WEB-112): Team's academy list names a prospect, and the academy's
+ * own place opens his existing review there. Opening it reads; only its actions commit.
+ */
+export const useAcademyReview = oneShot<string>();
+export function openAcademyProspect(id: string) {
+  useAcademyReview.getState().open(id);
+  openPersonnel({ page: 'academy' });
+}
 export const useFacilityRequest = oneShot<'stadium' | 'training' | 'academy'>();
 export function openFacility(part: 'stadium' | 'training' | 'academy') {
   beginTaskDetour('operations', operationsAddress('investment'));

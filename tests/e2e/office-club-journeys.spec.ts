@@ -24,6 +24,11 @@ import {
   officeEntrance,
   officeTitle,
   reviewButton,
+  TEAM_WORK,
+  teamDirectory,
+  teamEntry,
+  teamReturn,
+  teamTabs,
 } from './office';
 import { managerCard } from './personnel-navigation';
 import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsibility-fixtures';
@@ -110,8 +115,28 @@ async function expectTarget(target: Locator) {
   expect(size.height).toBeGreaterThanOrEqual(44);
 }
 
-/** One club section through the shared section bar (→WEB-10). */
+/**
+ * One office section through the shared section bar (→WEB-10), or our people's detailed page
+ * through the primary 팀 entry, its list's tab and its named management link (→WEB-112).
+ */
 async function openSection(page: Page, name: string) {
+  const people = TEAM_WORK[name];
+  if (people) {
+    const entry = teamEntry(page);
+    await expectTarget(entry);
+    await entry.click();
+    const list = teamTabs(page).getByRole('tab', { name: people.tab, exact: true });
+    await expectTarget(list);
+    await list.click();
+    await expect(list).toHaveAttribute('aria-selected', 'true');
+    const manage = teamDirectory(page).getByRole('button', { name: people.manage, exact: true });
+    await expectTarget(manage);
+    await manage.click();
+    await expect(teamReturn(page)).toBeVisible();
+    await expect(clubSections(page)).toHaveCount(0);
+    await expect(entry).toHaveAttribute('aria-current', 'page');
+    return;
+  }
   const tab = clubSections(page).getByRole('tab', { name, exact: true });
   await expectTarget(tab);
   await tab.click();
@@ -120,10 +145,10 @@ async function openSection(page: Page, name: string) {
 
 // Every registered theme, from the registry rather than a list of our own (→ARCH-32, →WEB-91).
 for (const theme of themeRegistry.entries) {
-  test(`${theme.id}: 결재함 review returns to the remaining queue and the office sections show the actual people under their rooms at 360px and desktop`, async ({
+  test(`${theme.id}: 결재함 review returns to the remaining queue and 팀 leads to the actual people under their rooms at 360px and desktop`, async ({
     page,
   }) => {
-    // Two widths through home, the queue, a review, its return and three office sections.
+    // Two widths through home, the queue, a review, its return and 팀's two detailed pages.
     test.slow();
     await page.addInitScript(([key, value]) => localStorage.setItem(key, value), [
       PREFERENCE_KEY,
@@ -224,7 +249,8 @@ for (const theme of themeRegistry.entries) {
     await expect(hub).toBeHidden();
     await expect(rows).toHaveCount(ids.length - 1);
 
-    // 1군 is the actual roster under its locker room, found by a fixture player's name (→WEB-43).
+    // 1군, through 팀, is the actual roster under its locker room, found by a fixture player's
+    // name (→WEB-43/112).
     await openSection(page, '1군');
     await expectScenes(page, theme, ['locker']);
     await expect(page).toHaveURL(/\/first-team\?view=players$/);
@@ -267,7 +293,7 @@ for (const theme of themeRegistry.entries) {
       await expect(page.getByTestId(id)).toHaveCount(1);
     await expectScenes(page, theme, ['manager']);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-    // Back in the office's 1군, the roster under its room keeps its search (→WEB-74).
+    // Back in 1군 through 팀, the roster under its room keeps its search (→WEB-74).
     await openSection(page, '1군');
     await expectScenes(page, theme, ['locker']);
     await expect(search).toHaveValue(active[0].name);

@@ -19,7 +19,7 @@ import {
 import { horizontalOverflow } from './layout';
 import { chooseOption } from './select';
 import { clubhouseTab } from './competition-navigation';
-import { clubSections } from './office';
+import { clubSections, enterOffice, openTeamTab, teamEntry, teamReturn, teamTabs } from './office';
 
 /** The default seed's first season offers a firefighter among the four candidates. */
 async function found(page: Page, seed = 'short-contract') {
@@ -31,10 +31,18 @@ async function found(page: Page, seed = 'short-contract') {
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
 
-/** A tab of the club's section bar (→WEB-10): 1군 is the roster, 코치진 the manager and staff. */
+/** A tab of the office's section bar (→WEB-10): 사무실, 훈련 and 운영. */
 const section = (page: Page, name: string) =>
   clubSections(page).getByRole('tab', { name, exact: true });
-/** 1군's roster through the club's section bar. */
+/** A list of 팀 (→WEB-112): 1군, 유소년 and 코치. */
+const teamTab = (page: Page, name: string) =>
+  teamTabs(page).getByRole('tab', { name, exact: true });
+/** A detailed people page keeps 팀 current and leads back to its list (→WEB-112). */
+async function expectTeamPage(page: Page, list: string) {
+  await expect(teamReturn(page)).toHaveText(`← 팀 · ${list}`);
+  await expect(teamEntry(page)).toHaveAttribute('aria-current', 'page');
+}
+/** 1군's roster through 팀. */
 const openPeople = (page: Page) => openPersonnel(page, 'players');
 /** The manager's own 교체 in 코치진; every staff post has one too. */
 const replaceManager = (page: Page) =>
@@ -94,9 +102,12 @@ test.describe('사람 at 360x740', () => {
     // 1군 is the roster with no local tabs: the manager stands with his staff in 코치진 and his
     // market behind his 교체 (→WEB-43); the transfer market is a primary entry (→WEB-10).
     await expect(page.getByRole('tablist', { name: '감독 사무실' })).toHaveCount(0);
-    await expect(section(page, '1군')).toHaveAttribute('aria-selected', 'true');
+    await expect(teamReturn(page)).toHaveText('← 팀 · 1군');
+    await expect(teamEntry(page)).toHaveAttribute('aria-current', 'page');
+    await expect(clubSections(page)).toHaveCount(0);
     await expect(page).toHaveURL(/\/first-team\?view=players$/);
-    for (const box of await clubSections(page)
+    await openTeamTab(page, '1군');
+    for (const box of await teamTabs(page)
       .getByRole('tab')
       .evaluateAll((all) => all.map((button) => button.getBoundingClientRect().height)))
       expect(box).toBeGreaterThanOrEqual(44);
@@ -111,19 +122,35 @@ test.describe('사람 at 360x740', () => {
     await expect(youth).toBeVisible();
     await expect(page.getByRole('region', { name: '스태프', exact: true })).toBeVisible();
     expect(await horizontalOverflow(page)).toBe(0);
-    // The keyboard moves along the club's section bar, each tab opening its section.
-    // Home reaches the first tab, the office's own queue, never the home briefing (→WEB-10).
-    await section(page, '코치진').focus();
+    // The keyboard moves along 팀's lists, each tab showing its list in place (→WEB-69/112).
+    await openTeamTab(page, '코치');
+    await teamTab(page, '코치').focus();
+    const lists: [string, string, RegExp][] = [
+      ['ArrowLeft', '유소년', /\/team\?view=academy$/],
+      ['ArrowRight', '코치', /\/team\?view=coaches$/],
+      ['ArrowRight', '1군', /\/team\?view=players$/],
+      ['End', '코치', /\/team\?view=coaches$/],
+      ['Home', '1군', /\/team\?view=players$/],
+      ['ArrowLeft', '코치', /\/team\?view=coaches$/],
+    ];
+    for (const [key, name, address] of lists) {
+      await page.keyboard.press(key);
+      await expect(teamTab(page, name)).toBeFocused();
+      await expect(teamTab(page, name)).toHaveAttribute('aria-selected', 'true');
+      await expect(page).toHaveURL(address);
+    }
+    await expect(page.getByTestId('team-coaches')).toBeVisible();
+    // The office's own bar moves the same way, each tab opening its section; Home reaches the
+    // first tab, the office's own queue, never the home briefing (→WEB-10).
+    await enterOffice(page);
+    await section(page, '사무실').focus();
     const keys: [string, string, RegExp][] = [
-      ['ArrowLeft', '1군', /\/first-team\?view=players$/],
-      ['ArrowRight', '코치진', /\/staff\?view=coaches$/],
       ['ArrowRight', '훈련', /\/training$/],
-      ['ArrowLeft', '코치진', /\/staff\?view=coaches$/],
-      ['Home', '사무실', /\/direction$/],
+      ['ArrowRight', '운영', /\/club-operations\?view=investment$/],
+      ['ArrowRight', '사무실', /\/direction$/],
       ['End', '운영', /\/club-operations\?view=investment$/],
+      ['ArrowLeft', '훈련', /\/training$/],
       ['Home', '사무실', /\/direction$/],
-      ['ArrowRight', '1군', /\/first-team\?view=players$/],
-      ['ArrowRight', '코치진', /\/staff\?view=coaches$/],
     ];
     for (const [key, name, address] of keys) {
       await page.keyboard.press(key);
@@ -135,6 +162,7 @@ test.describe('사람 at 360x740', () => {
         await expect(page.getByTestId('club-hub')).toBeHidden();
       }
     }
+    await openPersonnel(page, 'coaches');
     await expect(page.getByRole('region', { name: '스태프', exact: true })).toBeVisible();
     expect(await horizontalOverflow(page)).toBe(0);
 
@@ -157,7 +185,7 @@ test.describe('사람 at 360x740', () => {
     await expect(page.getByTestId('coaching-mode')).toContainText('직접');
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await page.reload();
-    await expect(section(page, '코치진')).toHaveAttribute('aria-selected', 'true');
+    await expectTeamPage(page, '코치');
     await expect(page).toHaveURL(/\/staff\?view=coaches$/);
     // 감독 ends with who appoints, the rows the staff follow and whom they would appoint (→WEB-43).
     await openPersonnel(page, 'manager');
@@ -197,13 +225,13 @@ test.describe('사람 at 360x740', () => {
   });
 
   // Split from the journey above, which ran close to its 30 s limit on a loaded host.
-  test('older 감독 and squad addresses land on their club sections', async ({ page }) => {
+  test('older 감독 and squad addresses land on their detailed people pages', async ({ page }) => {
     await found(page);
     await chooseLevel(page, 2);
     await setResponsibility(page, '스폰서 계약', 'delegated');
     // An old address of the candidates tab opens 코치진 with the manager's market open.
     await page.goto('/manager?view=candidates');
-    await expect(section(page, '코치진')).toHaveAttribute('aria-selected', 'true');
+    await expectTeamPage(page, '코치');
     const market = page.getByRole('dialog', { name: '감독 교체' });
     await expect(freeAgents(market).getByRole('article').first()).toBeVisible();
     await expect(page).toHaveURL(/\/staff\?view=coaches&market=1$/);
@@ -212,12 +240,12 @@ test.describe('사람 at 360x740', () => {
     // The older manager and staff addresses land on the same 코치진.
     for (const address of ['/first-team?view=manager', '/manager?view=coaches']) {
       await page.goto(address);
-      await expect(section(page, '코치진')).toHaveAttribute('aria-selected', 'true');
+      await expectTeamPage(page, '코치');
       await expect(page).toHaveURL(/\/staff\?view=coaches$/);
       await expect(managerCard(page)).toBeVisible();
     }
     await page.goto('/squad');
-    await expect(section(page, '1군')).toHaveAttribute('aria-selected', 'true');
+    await expectTeamPage(page, '1군');
     await expect(page).toHaveURL(/\/first-team\?view=players$/);
     expect(await horizontalOverflow(page)).toBe(0);
   });
@@ -248,7 +276,7 @@ test('an unrenewed firefighter leaves at the close and the alert opens the marke
   await expect(alert).toContainText('임시 감독이 팀을 맡고 있어요');
   await alert.getByRole('button', { name: '감독 선임하러 가기', exact: true }).click();
   // The vacancy opens 코치진, the interim at its head and his market over it (→WEB-43/57).
-  await expect(section(page, '코치진')).toHaveAttribute('aria-selected', 'true');
+  await expectTeamPage(page, '코치');
   await expect(page).toHaveURL(/\/staff\?view=coaches&market=1$/);
   await expect(managerCard(page)).toContainText('새 감독을 뽑을 때까지 대행');
   // The interim's market is open; it keeps at least four free agents (→STAFF-17).

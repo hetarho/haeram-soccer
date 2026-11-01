@@ -11,6 +11,7 @@ import {
   placeActivityClient,
   type ActivityPlace,
 } from './placeActivityChoices';
+import { useAcademyReview } from './state';
 import s from './PlaceActivities.module.css';
 
 export interface PlaceActivitiesProps {
@@ -69,6 +70,14 @@ function Activities({ place, state, client }: PlaceActivitiesProps) {
     setError('');
     setInspection(next);
   };
+  // A prospect named in 팀's academy list opens his review here, as its own row would (→WEB-112).
+  const asked = useAcademyReview((store) => (place === 'academy' ? store.request : undefined));
+  useEffect(() => {
+    if (!asked) return;
+    useAcademyReview.getState().take();
+    if (model.academy?.players.some(({ player }) => player.id === asked))
+      inspect({ type: 'academy', player: asked });
+  }, [asked]);
   const care =
     inspection?.type === 'care'
       ? model.choices.find((choice) => choice.id === inspection.kind)

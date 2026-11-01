@@ -1,0 +1,122 @@
+/*
+ * 팀's compact lists (→WEB-112). Rows reuse the transfer market's table and name-cell classes, so
+ * both lists keep one density at each width and theme; this module only lays out the toolbar,
+ * the extra columns and the states the market has no need of.
+ */
+.directory {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+}
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'search search'
+    'sort manage'
+    'count count';
+  align-items: center;
+  gap: 6px 8px;
+  margin: 10px 0 8px;
+}
+.search {
+  grid-area: search;
+  display: block;
+  min-width: 0;
+}
+.search input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+}
+.sort {
+  grid-area: sort;
+  min-width: 0;
+  max-width: 220px;
+}
+.count {
+  grid-area: count;
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: var(--label-size, 12px);
+  font-variant-numeric: tabular-nums;
+}
+.manage {
+  grid-area: manage;
+  justify-self: end;
+  min-height: 44px;
+  padding-inline: 4px;
+  color: var(--accent-text);
+  font-family: var(--display);
+  white-space: nowrap;
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.table tbody tr {
+  cursor: auto;
+}
+.figureColumn {
+  width: 56px;
+}
+.contractColumn {
+  width: 88px;
+}
+.number {
+  color: var(--text);
+  font-family: var(--score);
+  font-size: 13px;
+  white-space: nowrap;
+}
+/* A name nobody can open keeps the link's row height and alignment. */
+.plainName {
+  display: flex;
+}
+.vacant {
+  color: var(--text-muted);
+  font-style: italic;
+}
+.empty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+  color: var(--text-muted);
+}
+.back {
+  display: flex;
+  margin: 0 0 4px;
+}
+.back button {
+  min-height: 44px;
+  padding-inline: 4px;
+  color: var(--accent-text);
+  font-family: var(--display);
+}
+@media (min-width: 761px) {
+  .toolbar {
+    grid-template-columns: minmax(180px, 320px) auto minmax(0, 1fr) auto;
+    grid-template-areas: 'search sort count manage';
+  }
+}
+@media (max-width: 760px) {
+  .wide {
+    display: none;
+    width: 0;
+  }
+  .figureColumn {
+    width: 44px;
+  }
+  .contractColumn {
+    width: 76px;
+  }
+  .number {
+    font-size: 12px;
+  }
+}

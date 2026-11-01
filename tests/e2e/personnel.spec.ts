@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { preparedWorld } from '../fixtures/prepared-world';
 import { continueSlot, seedSlot } from './slots';
-import { clubSections, leaveOffice, officeBar, openOfficeArea } from './office';
+import { clubSections, leaveOffice, officeBar, openOfficeArea, teamReturn } from './office';
 import { exportedCareer } from './career-fixtures';
 import { horizontalOverflow } from './layout';
 
@@ -15,22 +15,22 @@ for (const width of [360, 1280]) {
     await seedSlot(page, world);
     await page.goto('/');
     await continueSlot(page);
-    // An unselected desk is no office place: each work tab lands on its own club section (→WEB-39).
-    for (const [asked, now, section] of [
+    // An unselected desk is no office place: each work tab lands on its own detailed people page,
+    // which 팀 owns and leads back to (→WEB-39/112).
+    for (const [asked, now, list] of [
       ['/direction?view=players', /\/first-team\?view=players$/, '1군'],
       ['/direction?view=players&work=contracts', /\/first-team\?view=players$/, '1군'],
       ['/direction?view=players&work=sales', /\/first-team\?view=players$/, '1군'],
       ['/direction?view=players&work=academy', /\/academy$/, '유소년'],
       // Staff work, the manager's included, is 코치진 (→WEB-43).
-      ['/direction?view=staff', /\/staff\?view=coaches$/, '코치진'],
-      ['/direction?view=staff&work=manager', /\/staff\?view=coaches$/, '코치진'],
-      ['/direction?view=staff&work=coaches', /\/staff\?view=coaches$/, '코치진'],
+      ['/direction?view=staff', /\/staff\?view=coaches$/, '코치'],
+      ['/direction?view=staff&work=manager', /\/staff\?view=coaches$/, '코치'],
+      ['/direction?view=staff&work=coaches', /\/staff\?view=coaches$/, '코치'],
     ] as const) {
       await page.goto(asked);
       await expect(page).toHaveURL(now);
-      await expect(
-        clubSections(page).getByRole('tab', { name: section, exact: true }),
-      ).toHaveAttribute('aria-selected', 'true');
+      await expect(teamReturn(page)).toHaveText(`← 팀 · ${list}`);
+      await expect(clubSections(page)).toHaveCount(0);
       await expect(officeBar(page)).toHaveCount(0);
     }
     await page.goto('/direction?view=players&work=sales');

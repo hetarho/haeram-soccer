@@ -17,8 +17,10 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   await page.getByRole('button', { name: '클럽 창단' }).click();
   const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(nav).toBeVisible();
-  // Five entries share the bar, the clubhouse in the middle, each a 44 px touch target (→WEB-10).
-  await expect(nav.getByRole('button')).toHaveCount(5);
+  // Six entries share the bar, 팀 just before the market, each a 44 px touch target, all in view
+  // without scrolling the bar (→WEB-10).
+  await expect(nav.getByRole('button')).toHaveCount(6);
+  expect(await nav.evaluate((bar) => bar.scrollWidth - bar.clientWidth)).toBeLessThanOrEqual(0);
   const metrics = await nav.getByRole('button').evaluateAll((buttons) =>
     buttons.map((button) => {
       const rect = button.getBoundingClientRect();

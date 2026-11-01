@@ -34,8 +34,8 @@ for (const width of [360, 390, 1280]) {
     for (const key of RESPONSIBILITY_KEYS) w.settings!.responsibilities[key] = 'delegated';
     const before = structuredClone(w.settings);
     await importResponsibilityCareer(page, w);
-    // The home briefing has no section bar; the office and every working page share one, which
-    // the illustrated entrance leads into (→WEB-10/11).
+    // The home briefing has no section bar; the office and its working pages share one, which
+    // the illustrated entrance leads into; our people belong to 팀 instead (→WEB-10/11/112).
     await clubhouseTab(page).click();
     const sections = clubSections(page);
     await expect(page.getByTestId('club-hub')).toBeVisible();
@@ -48,10 +48,7 @@ for (const width of [360, 390, 1280]) {
     );
     // 사무실 opens the office's queue, never the home briefing.
     for (const [section, now] of [
-      ['1군', /\/first-team\?view=players$/],
-      ['코치진', /\/staff\?view=coaches$/],
       ['훈련', /\/training$/],
-      ['유소년', /\/academy$/],
       ['운영', /\/club-operations\?view=investment$/],
       ['사무실', /\/direction$/],
     ] as const) {

@@ -1,5 +1,6 @@
 import { AreaCriteria } from './DirectionLines';
 import { PersonnelHub } from './PersonnelHubs';
+import { TeamDirectory, TeamReturn } from './TeamDirectory';
 import { FacilityOverview } from './FacilityOverview';
 import type { ProgressionController } from '../runtime/progression';
 import { squadRegistration } from './squadRegistration';
@@ -1257,6 +1258,9 @@ export default function Rich({
   page,
   controller,
 }: Props & { page: Page; controller: ProgressionController }) {
+  // 팀's compact directory of our people (→WEB-112); their detailed pages follow.
+  if (page === 'team')
+    return <TeamDirectory key={state.view!.world.id} state={state} client={client} />;
   if (page === 'firstTeam' || page === 'staff')
     return (
       <PersonnelHub
@@ -1276,11 +1280,12 @@ export default function Rich({
         market={(close) => <ManagerMarket state={state} client={client} onClose={close} />}
       />
     );
-  // The club's section bar names 훈련 and 유소년; no office-return bar sits over them (→WEB-10).
+  // The office's section bar names 훈련; 유소년 is 팀's, whose list it returns to (→WEB-10/112).
   // 유소년 also edits its promotion/release responsibility in place.
   if (page === 'training' || page === 'academy')
     return (
       <>
+        {page === 'academy' && <TeamReturn page="academy" />}
         <TrainingView state={state} client={client} view={page} />
         {page === 'academy' && (
           <WorkResponsibility

@@ -149,67 +149,101 @@ export async function officeLobby(page: Page) {
   await expect(officeTitle(page)).toHaveText(LOBBY);
 }
 
-/** The club's section bar over the owner office and its working pages (→WEB-10). */
+/** The office's section bar over the owner office and its working pages (→WEB-10). */
 export const clubSections = (page: Page) =>
   page.getByRole('tablist', { name: '구단 섹션', exact: true });
 /** 구단 운영's own section tabs (→WEB-110). */
 export const operationsTabs = (page: Page) =>
   page.getByRole('tablist', { name: '구단 운영', exact: true });
 export const OPERATIONS_SECTIONS = ['재정·투자', '후원', '구단 디자인'];
-/** The office's section bar, 사무실 first (→WEB-10). */
-export const CLUB_SECTION_LABELS = ['사무실', '1군', '코치진', '훈련', '유소년', '운영'];
+/** The office's section bar, 사무실 first (→WEB-10); our people belong to 팀 (→WEB-112). */
+export const CLUB_SECTION_LABELS = ['사무실', '훈련', '운영'];
 const CLUB_SECTIONS: Record<string, string> = {
   business: '사무실',
-  firstTeam: '1군',
-  staff: '코치진',
   training: '훈련',
-  academy: '유소년',
   operations: '운영',
 };
+/**
+ * Our people's detailed pages, each reached from its 팀 list by a named management link
+ * (→WEB-112); helpers still name them as the sections they were.
+ */
+export const TEAM_WORK: Record<string, { page: string; tab: string; manage: string }> = {
+  '1군': { page: 'firstTeam', tab: '1군', manage: '1군 관리' },
+  유소년: { page: 'academy', tab: '유소년', manage: '유소년 관리' },
+  코치진: { page: 'staff', tab: '코치', manage: '코치진 관리' },
+};
+export const TEAM_TABS = ['1군', '유소년', '코치'];
+/** The primary 팀 entry (→WEB-10), the one entry drawn with the people icon. */
+export const teamEntry = (page: Page) =>
+  page
+    .getByRole('navigation')
+    .getByRole('button')
+    .filter({ has: page.locator('[data-pixel-icon="people"]') })
+    .filter({ visible: true })
+    .first();
+/** 팀's 1군/유소년/코치 tabs. */
+export const teamTabs = (page: Page) => page.getByRole('tablist', { name: '팀 명단', exact: true });
+/** 팀's list on show, with its management link. */
+export const teamDirectory = (page: Page) => page.locator('[data-ui="team-directory"]');
+/** A detailed people page's way back to its 팀 list. */
+export const teamReturn = (page: Page) =>
+  page.locator('[data-ui="team-return"]').getByRole('button');
 
 /**
- * The office section the active address shows, read once the rendered view agrees with it: the
- * deferred view has caught up (its container is no longer busy) and the section bar selects the
- * address's section, or neither has one. 사무실 on the office's own addresses, its reviews
- * included; null outside the office and its working pages (the home briefing, competitions,
- * records, the market). A reload or a lazy first render waits for its view to mount, so a
- * departing view's selection is never taken for the destination's.
+ * The office section or people page the active address shows, read once the rendered view
+ * agrees with it: the deferred view has caught up (its container is no longer busy) and the
+ * section bar selects the address's section — or, on a people page, its way back to 팀 is shown
+ * without an office bar — or neither has one. 사무실 on the office's own addresses, its reviews
+ * included; 1군, 코치진 or 유소년 on their detailed pages; null elsewhere (the home briefing, 팀's
+ * lists, competitions, records, the market). A reload or a lazy first render waits for its view
+ * to mount, so a departing view's selection is never taken for the destination's.
  */
 export async function settledClubSection(page: Page) {
   const current: { value?: string | null } = {};
+  const people = Object.fromEntries(
+    Object.entries(TEAM_WORK).map(([label, { page: id }]) => [id, label]),
+  );
   await expect
     .poll(
       async () => {
-        current.value = await page.evaluate((sections) => {
-          const views = document.querySelector('[data-testid="view-scroller"] > [aria-busy]');
-          if (views?.getAttribute('aria-busy') !== 'false') return undefined;
-          const { pathname, search } = location;
-          const at = (path: string) => pathname === path || pathname.startsWith(path + '/');
-          const view = new URLSearchParams(search).get('view');
-          // The home briefing (/journal, or its start alias `/` →WEB-62) has no section bar.
-          const expected =
-            at('/business') || at('/direction')
-              ? 'business'
-              : at('/first-team')
-                ? view === 'market'
-                  ? null
-                  : 'firstTeam'
-                : at('/staff')
-                  ? 'staff'
-                  : at('/training')
-                    ? 'training'
-                    : at('/academy')
-                      ? 'academy'
-                      : at('/club-operations')
-                        ? 'operations'
-                        : null;
-          const selected =
-            document
-              .querySelector('[role="tablist"] [id^="club-section-tab-"][aria-selected="true"]')
-              ?.id.slice('club-section-tab-'.length) ?? null;
-          if (selected !== expected) return undefined;
-          return expected === null ? null : sections[expected];
-        }, CLUB_SECTIONS);
+        current.value = await page.evaluate(
+          ({ sections, people }) => {
+            const views = document.querySelector('[data-testid="view-scroller"] > [aria-busy]');
+            if (views?.getAttribute('aria-busy') !== 'false') return undefined;
+            const { pathname, search } = location;
+            const at = (path: string) => pathname === path || pathname.startsWith(path + '/');
+            const view = new URLSearchParams(search).get('view');
+            const selected =
+              document
+                .querySelector('[role="tablist"] [id^="club-section-tab-"][aria-selected="true"]')
+                ?.id.slice('club-section-tab-'.length) ?? null;
+            const person = at('/first-team')
+              ? view === 'market'
+                ? null
+                : 'firstTeam'
+              : at('/staff')
+                ? 'staff'
+                : at('/academy')
+                  ? 'academy'
+                  : null;
+            if (person) {
+              const back = document.querySelector('[data-ui="team-return"]');
+              return back && selected === null ? people[person] : undefined;
+            }
+            // The home briefing (/journal, or its start alias `/` →WEB-62) has no section bar.
+            const expected =
+              at('/business') || at('/direction')
+                ? 'business'
+                : at('/training')
+                  ? 'training'
+                  : at('/club-operations')
+                    ? 'operations'
+                    : null;
+            if (selected !== expected) return undefined;
+            return expected === null ? null : sections[expected];
+          },
+          { sections: CLUB_SECTIONS, people },
+        );
         return current.value !== undefined;
       },
       { timeout: 15000 },
@@ -219,11 +253,31 @@ export async function settledClubSection(page: Page) {
 }
 
 /**
- * Opens one office section (사무실, 1군, 코치진, 훈련, 유소년, 운영) through the office's section
- * bar, entering the office through the clubhouse's illustrated entrance first when the page has no
- * bar (the home briefing, the market, competitions); observation reports covering it are
- * dismissed. 사무실 is the office's queue, so a review is left for it unresolved. Each decision
- * reads the settled view (→ settledClubSection), and the visible clicks remain.
+ * Opens one of 팀's lists (1군, 유소년, 코치) through the primary 팀 entry and its tabs, once
+ * the list agrees with the address's ?view=.
+ */
+export async function openTeamTab(page: Page, tab: string, options: { timeout?: number } = {}) {
+  await closeOfficeOverview(page);
+  await dismissCelebration(page);
+  const view = { '1군': 'players', 유소년: 'academy', 코치: 'coaches' }[tab];
+  if (!view) throw new Error(`팀 has no ${tab} list`);
+  if (new URL(page.url()).pathname !== '/team') await teamEntry(page).click(options);
+  await expect(page).toHaveURL((url) => url.pathname === '/team');
+  const target = teamTabs(page).getByRole('tab', { name: tab, exact: true });
+  await expect(teamTabs(page)).toBeVisible();
+  if ((await target.getAttribute('aria-selected')) !== 'true') await target.click(options);
+  await expect(target).toHaveAttribute('aria-selected', 'true');
+  await expect(page).toHaveURL((url) => url.searchParams.get('view') === view);
+  await expect(teamDirectory(page).getByTestId(`team-${view}`)).toBeVisible();
+}
+
+/**
+ * Opens one office section (사무실, 훈련, 운영) through the office's section bar, entering the
+ * office through the clubhouse's illustrated entrance first when the page has no bar (the home
+ * briefing, 팀, the market, competitions); observation reports covering it are dismissed. 사무실
+ * is the office's queue, so a review is left for it unresolved. 1군, 코치진 and 유소년 open
+ * through 팀's list and its named management link instead (→WEB-112). Each decision reads the
+ * settled view (→ settledClubSection), and the visible clicks remain.
  */
 export async function openClubSection(
   page: Page,
@@ -237,7 +291,22 @@ export async function openClubSection(
     await covering.getByRole('button', { name: '창 닫기', exact: true }).click();
   // A click pushes its address at once, so the old view never agrees with the new address.
   let current = await settledClubSection(page);
-  if (current === null || (section === '사무실' && current === section)) {
+  const people = TEAM_WORK[section];
+  if (people) {
+    if (current === section) return;
+    await openTeamTab(page, people.tab, options);
+    await teamDirectory(page)
+      .getByRole('button', { name: people.manage, exact: true })
+      .click(options);
+    expect(await settledClubSection(page)).toBe(section);
+    await expect(teamReturn(page)).toBeVisible();
+    return;
+  }
+  if (
+    current === null ||
+    Object.hasOwn(TEAM_WORK, current) ||
+    (section === '사무실' && current === section)
+  ) {
     await enterOffice(page, options);
     current = await settledClubSection(page);
   }

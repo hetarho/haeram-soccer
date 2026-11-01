@@ -5,11 +5,12 @@ import { FIRST_TEAM_TABS, STAFF_TABS } from './personnelNavigation';
 import { openPersonnel, usePeopleView, type PeopleTab } from './state';
 import { useTaskState } from './taskMemory';
 import { useAddressTab } from './PageTabs';
+import { TeamReturn } from './TeamDirectory';
 
 /**
  * 1군 and 코치진 (→WEB-43): each opens on its actual people under their rooms' illustrations,
- * which the panel places beside them, with no room menu or office-return bar; the office's
- * section bar leads between them (→WEB-10). 1군 is the roster, its market view the primary
+ * which the panel places beside them, with no room menu or office-return bar; a quiet link leads
+ * back to the 팀 list that owns them (→WEB-112). 1군 is the roster, its market view the primary
  * 이적시장 entry. 코치진 is the manager with his staff, the manager's replacement market over it,
  * and after them the requests the manager and the coaches take from the owner (→WEB-102). Both
  * compose the same authoritative panels the office's request reviews use; neither copies a
@@ -60,6 +61,7 @@ export function PersonnelHub({
   };
   return (
     <>
+      {tab !== 'market' && <TeamReturn page={page} />}
       {panel(tab as PeopleTab, replace)}
       {page === 'staff' && (
         <>

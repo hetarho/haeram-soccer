@@ -10,7 +10,15 @@ import { expect, test, type Page } from '@playwright/test';
 import { createWorld, simulateSeason } from '../../packages/engine/src/index';
 import { settle } from './layout';
 import { continueSlot, seedSlot } from './slots';
-import { clubSections, leaveOffice, officeBar, operationsTabs } from './office';
+import {
+  clubSections,
+  leaveOffice,
+  officeBar,
+  operationsTabs,
+  TEAM_WORK,
+  teamEntry,
+  teamReturn,
+} from './office';
 
 async function found(page: Page) {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -21,10 +29,18 @@ async function found(page: Page) {
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
 /**
- * A club section is selected in the section bar while the clubhouse entry stays current; no room
- * bar names it (→WEB-10/43).
+ * An office section is selected in the section bar while the clubhouse entry stays current; our
+ * people's pages keep 팀 current, with its way back and no office bar. No room bar names either
+ * (→WEB-10/43/112).
  */
 async function expectSection(page: Page, section: string) {
+  if (Object.hasOwn(TEAM_WORK, section)) {
+    await expect(teamReturn(page)).toBeVisible();
+    await expect(teamEntry(page)).toHaveAttribute('aria-current', 'page');
+    await expect(clubSections(page)).toHaveCount(0);
+    await expect(officeBar(page)).toHaveCount(0);
+    return;
+  }
   await expect(clubSections(page).getByRole('tab', { name: section, exact: true })).toHaveAttribute(
     'aria-selected',
     'true',

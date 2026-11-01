@@ -16,8 +16,9 @@ export async function openPersonnel(
     await settle(page);
     return;
   }
-  // The club's section bar leads to each people and training section (→WEB-10/43): 1군 is the
-  // roster, and the manager stands with his staff in 코치진. Neither has local tabs.
+  // 팀's lists lead to each people page by a named management link, and the office's section
+  // bar to 훈련 (→WEB-10/43/112): 1군 is the roster, and the manager stands with his staff in
+  // 코치진. Neither has local tabs.
   await openClubSection(
     page,
     view === 'academy'

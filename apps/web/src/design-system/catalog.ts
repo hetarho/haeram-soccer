@@ -4,7 +4,8 @@ export interface Story {
   group: string;
   components: string[];
   description: string;
-  page?: 'firstTeam' | 'staff' | 'training' | 'academy' | 'operations' | 'business' | 'history';
+  page?:
+    'team' | 'firstTeam' | 'staff' | 'training' | 'academy' | 'operations' | 'business' | 'history';
   query?: string;
 }
 
@@ -176,6 +177,14 @@ export const STORIES: Story[] = [
     '경기 · 선수',
     ['PlayerComparison'],
     '두 선수 선택과 시즌/통산 비교.',
+  ),
+  story(
+    'team',
+    '팀 · 1군·유소년·코치 목록',
+    '사람 · 훈련',
+    ['TeamDirectory', 'PositionBadge', 'OvrBadge', 'PageTabs'],
+    '우리 1군·유소년·코치진을 이적시장과 같은 밀도의 한 줄 목록으로: 검색, 정렬, 공석 표시와 상세 관리 링크.',
+    { page: 'team', query: 'view=players' },
   ),
   story(
     'roster',
@@ -419,6 +428,7 @@ export function matchingStories(query: string, group?: string) {
 /** Keep each screen's real pathname so its address-driven tabs work in the preview. */
 export function previewAddress(item: Story, theme: string) {
   const paths = {
+    team: '/team',
     firstTeam: '/first-team',
     staff: '/staff',
     training: '/training',
