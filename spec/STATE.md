@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| of01 | ihaelam-ui-MacBookPro | autopilot | 2026-11-01T00:13Z | 2026-11-01T00:13Z | - |
 
 ## inbox
 - 261101 decided WEB-110 WEB-63 ARCH-28 T636: the failed Firefox sponsor trace shows 결재 담당 (a lazy chunk with no fallback) mounting above the offers between the click's mousedown and mouseup, so the tap signed nothing and the world stayed r0 → render the scoped responsibilities with 구단 운영's own lazy chunk (static import inside ClubOperations, entry unchanged) and guard in business.spec that the section mounts whole (alt: wait in the journey for the panel before tapping, which hides the shift owners still meet | reserve its height in a fallback, which still swaps content under a tap).
@@ -499,9 +498,9 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- host gate T636: management.spec regional groups and business.spec sponsor installments on Chromium/Firefox/WebKit, then the full batch, main push and one CI wait
 
 ## log
+- 261101 of01 completed owner-office overhaul: main ebcc87fc passed CI 41258080379 (all 9 jobs; Chromium, Firefox, both WebKit shards), after the clean 81d165e0 local gate and 9 targeted browser cases. Primary and continuation reports closed; source unchanged after verification.
 - 261101 of01 combined final gate passed on clean 81d165e0: type/lint/format, unit 1893, integration 1270 (4 existing skips), contract 48, catalogs, presentation, build, Chromium 343; targeted sponsor/region/staff journeys 9 of 9 across all three browsers. T636 and the common-panel follow-up are verified; main publication and CI follow.
 - 261101 fix web scoped responsibilities: mount OwnerOffice with WorkResponsibility sections as well as operations, resolving the same traced late-panel shift in 1군, market, 코치진 and 유소년. Typecheck, lint, format, affected unit and build passed; host final browser gates follow; session of01.
 - 261101 T636 done: the Firefox traces showed one close queueing two 승격 확정! banners over the office entrance, and 후원's lazy 결재 담당 panel mounting above the offers mid-click; enterOffice taps every queued or late banner within its existing attempt bound, ClubOperations mounts the scoped responsibilities with its own chunk, and business.spec guards the whole section and the signed slot with every money assertion kept; typecheck/lint/format, unit 3 files / 25 tests and build passed, both cases left to the host's three-browser gate; session of01.
@@ -521,4 +520,3 @@
 - 261101 T629 done: shared club section bar (현황·1군·코치진·훈련·유소년·운영), /club-operations with 재정·투자/후원/구단 디자인, unselected office desks redirect to their workflow or section (requests stay), 1군 opens the roster; unit 290 passed, build passed, e2e source left to the batch; session of01.
 - 261101 update-ssot WEB r196 + create-task T629–T632: approval-only office, visible club sections, actual first-team/coach information and consolidated proactive operations; qualitative 2024-11-01–2026-11-01 Steam research in reports/261031-of01.md; session of01.
 - 261101 design controller: apply P3 burgundy paper, G1 forest matte, X2 midnight pixels and S1 butter clay; unit 1833, integration 1267, contract 48 and Chromium 335 passed; shared-checkout receipt stale after concurrent unrelated edits; preserve tested ce95aae4 in isolated cb31 commit.
-- 261101 update-ssot WEB r197 (WEB-36✎ WEB-79✎): settings commands show no toast; eve/window observations take the business confirmation and an eve report turned on during the eve waits behind its reopen access; owner-requested fixes made directly in the shared checkout, rebased onto 64243a3f and pushed by session 5d; batch gate on the 09509a0b base passed (unit, integration, contract, catalogs, build, Chromium 335). The same commit moves the current lobby's 클럽 소식·시즌 브리핑 and 결재라인 모아보기 buttons onto its artwork's lower edge (owner request; typecheck, lint, format, 164 unit tests, build, manual previews at 360/390/1280); r196's WEB-39 replaces that lobby, so the overlay is interim until T630 and adds no WEB text.
