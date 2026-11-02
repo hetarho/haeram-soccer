@@ -99,10 +99,9 @@ test('contextual-sheet-restores-candidate', async ({ page }) => {
   await expect(marketRows(page).first()).toBeVisible();
   await closeMarketPanel(page, '영입 정보');
   const retainedFilter = await marketFilters(page);
-  await expect(retainedFilter.getByRole('button', { name: 'GK', exact: true })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  );
+  await expect(
+    retainedFilter.getByRole('combobox', { name: '영입 포지션', exact: true }),
+  ).toHaveAttribute('data-value', 'line:GK');
   await closeMarketPanel(page, '영입 필터');
   await marketInfo(page);
   await expect(page.locator('button[aria-label="선택한 2명 비교"]')).toBeEnabled();

@@ -57,7 +57,7 @@ const leagueTabs = (page: Page) => page.getByRole('tablist', { name: '리그 보
 
 /**
  * The league (→WEB-10). A closed season opens from the league's own season filter: `archive`
- * picks that season, the latest closed one when given as true.
+ * picks that season, the latest closed one when given as true, in our league that season.
  */
 export async function openLeague(page: Page, archive: boolean | number = false) {
   await openCurrentLeague(page);
@@ -66,6 +66,13 @@ export async function openLeague(page: Page, archive: boolean | number = false) 
   await chooseOption(season, archive === true ? { index: 1 } : String(archive));
   await expect(page).toHaveURL((url) => url.pathname === '/history');
   await expect(page.getByRole('tablist', { name: '지난 시즌 보기', exact: true })).toBeVisible();
+  // Stepping keeps the league on screen (→WEB-65); where we played elsewhere that season,
+  // 우리 리그 leads there.
+  const own = page.getByRole('button', { name: '우리 리그 보기', exact: true });
+  if (await own.count()) {
+    await own.click();
+    await expect(own).toHaveCount(0);
+  }
   await settle(page);
 }
 /**

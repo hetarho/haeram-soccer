@@ -45,6 +45,8 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
   test('switches a player transfer stance from the roster badge and sets coaching per department', async ({
     page,
   }) => {
+    // Two delegation levels, the roster and every coaching post: about 30 s of real steps.
+    test.slow();
     await found(page, 'listing-journey');
     await chooseLevel(page, 2);
     await setResponsibility(page, '스폰서 계약', 'delegated');
