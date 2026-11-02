@@ -149,8 +149,12 @@ test('a player profile reads his training and keeps the squad search', async ({ 
   await page.getByRole('textbox', { name: '선수 찾기' }).fill(name);
   await playerLink.click();
   const sheet = page.getByRole('dialog', { name, exact: true });
-  // The assistant's call for him reads; the owner changes nothing (→CLUB-13).
-  await expect(sheet.getByTestId('player-training')).toContainText('코치 판단');
+  // The assistant's call for him reads: a fresh, rested player trains with the squad, so his line
+  // names the squad's focus as 팀 훈련 (코치 판단 only for a focus of his own); the owner changes
+  // nothing (→CLUB-11, CLUB-13).
+  await expect(sheet.getByTestId('player-training')).toHaveText(
+    /^훈련 (균형 훈련|회복 훈련|하드 트레이닝) · 팀 훈련 · 팀과 같은 \1을\(를\) 소화해요\.$/,
+  );
   await expect(sheet.getByRole('button', { name: '이 선수 훈련 변경', exact: true })).toHaveCount(
     0,
   );

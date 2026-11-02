@@ -62,13 +62,17 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
     const direct = keys.find((key) => !isDelegated(w, key));
     if (!includeDelegated && !direct) continue;
     const key = direct ?? 'contracts';
+    // He is one of our players: the browser's projection, which carries no `people`, names him
+    // from the squad as the worker does from his career record.
+    const name =
+      w.people?.[proposal.person]?.name ?? w.players.find((p) => p.id === proposal.person)?.name;
     reasons.push({
       id: `decision:playing-coach:${proposal.person}`,
       year,
       day,
       kind: 'staff-renewal',
       ref: proposal.person,
-      title: `${w.people?.[proposal.person]?.name ?? '선수'} 플레잉 코치 계약 검토`,
+      title: `${name ?? '선수'} 플레잉 코치 계약 검토`,
       detail: '선수와 코치 계약을 함께 승인해 주세요.',
       attention: true,
       responsibility: key,

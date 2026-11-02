@@ -105,7 +105,8 @@ for (const viewport of [
       .evaluateAll((elements) => elements.forEach((element) => (element.scrollTop = 0)));
     const before = await exportWorld(page);
     const initial = clubMilestones(before);
-    expect(initial.total).toBe(8);
+    // Seven milestones: 우리만의 선발 (a saved owner XI) left with owner lineups (T648).
+    expect(initial.total).toBe(7);
     expect(initial.completed).toBe(0);
     expect(initial.next).toBeDefined();
     expect(before.ownMatches).toHaveLength(0);

@@ -133,10 +133,12 @@ export async function openPlayerSheet(page: Page, { at }: { at?: readonly [numbe
     );
   }
   for (const [x, y] of points) {
-    // Checked between taps, so a sheet that opened is never closed by a tap on its backdrop.
+    // Checked between taps, so a sheet that opened is never closed by a tap on its backdrop. A
+    // closed sheet's copy fading out for 180 ms is aria-hidden and takes no taps: it is not open.
     const state = await page.evaluate(
       ([px, py]) => {
-        if (document.querySelector('[data-testid="player-inspector"]')) return 'open';
+        const sheets = document.querySelectorAll('[data-testid="player-inspector"]');
+        if ([...sheets].some((sheet) => !sheet.closest('[aria-hidden="true"]'))) return 'open';
         const pitch = document.querySelector('[data-testid="match-theatre"] canvas[data-pickable]');
         return document.elementFromPoint(px, py) === pitch ? 'tap' : 'skip';
       },

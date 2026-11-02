@@ -65,6 +65,18 @@ describe('combined playing-coach agreement', () => {
         }
       }
   });
+  it('names the player in the 결재함 row, in the browser projection without people as well', () => {
+    const { w, id } = world();
+    w.settings!.responsibilities.staff = 'direct';
+    stagePlayingCoach(w, id, 1, 2);
+    const title = `${w.people![id].name} 플레잉 코치 계약 검토`;
+    const row = (world: typeof w) =>
+      pendingDecisions(world).find((reason) => reason.id === `decision:playing-coach:${id}`);
+    expect(row(w)?.title).toBe(title);
+    const { people: _people, ...projected } = w;
+    void _people;
+    expect(row(projected)?.title).toBe(title);
+  });
   it('quotes additive wages and ordinary costs without reducing player salary or adding a special fee', () => {
     const { w, id } = world();
     const p = w.players.find((p) => p.id === id)!,

@@ -50,10 +50,13 @@ test('the lab watches a match in the game’s match view and replays it with edi
   await expect(page.getByText('유니폼 미기록')).toHaveCount(0);
 
   // Pausing works as in the game's live view: 경기 상세 holds the instant a seek in it moves to,
-  // and the match plays on from there once it closes, at the speed chosen next.
+  // and the match plays on from there once it closes, at the speed chosen next. It opens once the
+  // match is into its second minute, past its first recorded sample, so the instant it holds lies
+  // after the timeline's start and Home is a real seek back; 8× gets there in under two seconds.
   const canvas = theatre.getByLabel('22명의 선수와 공으로 표현하는 경기');
   const seconds = async () => Number(await canvas.getAttribute('data-seconds'));
-  await expect.poll(seconds).toBeGreaterThan(0);
+  await page.getByRole('radio', { name: '8×', exact: true }).click();
+  await expect.poll(seconds).toBeGreaterThan(60);
   const details = await openMatchDetails(page);
   const timeline = details.getByRole('slider', { name: '경기 시간', exact: true });
   await expect.poll(async () => Number(await timeline.inputValue())).toBeGreaterThan(0);

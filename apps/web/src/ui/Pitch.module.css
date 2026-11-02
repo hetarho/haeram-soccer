@@ -244,14 +244,16 @@
   font-size: 12px;
   font-family: var(--display);
 }
-/* Above the pitch: the tactical matchup beside the speed chips. */
+/*
+ * Above the pitch: the tactical matchup beside the speed chips. The wrapper boxes nothing, so on a
+ * phone the minute/action and the matchup share what the chips leave, each cut with an ellipsis,
+ * and the chips never shrink or leave the screen; wider rows push the matchup to the chips.
+ */
 .metaControls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
+  display: contents;
 }
 .matchup {
+  margin-left: auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
