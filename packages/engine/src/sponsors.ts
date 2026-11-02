@@ -13,6 +13,7 @@ import { currentDay, seasonDayOf } from './calendar';
 import { credit } from './transactions';
 import { isDelegated } from './responsibilities';
 import { STADIUM_STEPS } from './facilities';
+import { sponsorFactor } from './owner-traits';
 
 /**
  * Sponsor contracts by slot (→ECON-8), measured against ECON-29 (spec/ssot/ECON.md).
@@ -163,7 +164,8 @@ export function commercialValue(w: World) {
 }
 /**
  * A slot's offers, valued today (→ECON-8): one per kind, except that a slot without a bonus has
- * no performance-linked offer, whose lower base would buy nothing.
+ * no performance-linked offer, whose lower base would buy nothing. 마케팅 귀재 raises every offer,
+ * its base and bonus alike (→OWNER-5).
  */
 export function sponsorOffers(w: World, slot: SponsorSlot): SponsorOffer[] {
   const c = clubOf(w),
@@ -171,7 +173,10 @@ export function sponsorOffers(w: World, slot: SponsorSlot): SponsorOffer[] {
     bases = baseEffects(w),
     // The 지역 후원 slot grows with 지역 기반, every other with 글로벌 인지도 (→ECON-34).
     value =
-      commercialValue(w) * share * (slot === 'local' ? bases.localSponsor : bases.globalSponsor),
+      commercialValue(w) *
+      share *
+      (slot === 'local' ? bases.localSponsor : bases.globalSponsor) *
+      sponsorFactor(w),
     town = c.name.split(' ')[0];
   return SPONSOR_KINDS.flatMap((kind, i) => {
     if (kind === 'performance' && bonus === 'none') return [];

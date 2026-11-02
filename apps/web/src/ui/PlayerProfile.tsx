@@ -1,5 +1,6 @@
 import { careerAssessment } from '../../../../packages/engine/src/career-assessment';
 import { STAFF_INFO, staffMember } from '../../../../packages/engine/src/staff-info';
+import { scoutRangeScale } from '../../../../packages/engine/src/owner-traits';
 import type { Grade, Personality } from '../../../../packages/contracts/src/player';
 import type { Player, World } from '../../../../packages/contracts/src/types';
 import {
@@ -39,11 +40,12 @@ export function bestRoles(player: Pick<Player, 'attrs' | 'position'>, count = 3)
 }
 /**
  * A personality grade as the owner sees it (→PLAYER-18): exact for his own players, otherwise the
- * chief scout's range ("보통~높음"), as wide as the scout's ability allows.
+ * chief scout's range ("보통~높음"), as wide as the scout's ability allows and `scale` narrows it
+ * (원석 감별사, →OWNER-5).
  */
-export function gradeLabel(grade: Grade, own: boolean, scoutAbility?: number) {
+export function gradeLabel(grade: Grade, own: boolean, scoutAbility?: number, scale = 1) {
   if (own) return GRADE_LABEL[grade];
-  const [low, high] = personalityRange(grade, scoutAbility);
+  const [low, high] = personalityRange(grade, scoutAbility, scale);
   return low === high ? GRADE_LABEL[low] : `${GRADE_LABEL[low]}~${GRADE_LABEL[high]}`;
 }
 /** The slot a player of ours holds in the XI, if he starts. */
@@ -77,6 +79,7 @@ export function PlayerProfile({
     ? Math.round(slotOvr(player, slot, multiplier))
     : Math.round(mainOvr(player) * multiplier);
   const scout = staffMember(w, 'scout')?.ability;
+  const range = scoutRangeScale(w);
   const unsettled = own && player.unsettled !== undefined;
   return (
     <section className={`${s.profile} ${compact ? s.compact : ''}`} aria-label="선수 프로필">
@@ -119,7 +122,7 @@ export function PlayerProfile({
             {(Object.keys(PERSONALITY_LABEL) as (keyof Personality)[]).map((key) => (
               <div key={key}>
                 <dt>{PERSONALITY_LABEL[key]}</dt>
-                <dd>{gradeLabel(player.personality[key], own, scout)}</dd>
+                <dd>{gradeLabel(player.personality[key], own, scout, range)}</dd>
               </div>
             ))}
           </dl>

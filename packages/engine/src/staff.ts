@@ -34,6 +34,7 @@ import { pushInbox } from './inbox';
 import { moneyLabel, operatingCosts } from './finance';
 import { currentDay, seasonDayOf } from './calendar';
 import { COACH_CAREER, coachProspect, coachSeason } from './coaching';
+import { hasTrait, networkCandidates, networkedCandidate } from './owner-traits';
 import { STYLE_INFO } from './styles';
 import {
   coachCriteriaOf,
@@ -125,6 +126,11 @@ const CANDIDATE_ABILITY: readonly (readonly [number, number])[] = [
   [55, 78],
   [65, 90],
 ];
+/** The season's bands: the three, then 마당발's more in the top one (→OWNER-5). */
+function candidateBands(w: World) {
+  const top = CANDIDATE_ABILITY[CANDIDATE_ABILITY.length - 1]!;
+  return [...CANDIDATE_ABILITY, ...Array.from({ length: networkCandidates(w) }, () => top)];
+}
 /** The attributes each coaching department grows (→STAFF-11, →PLAYER-15). */
 export const DEPARTMENT_ATTRIBUTES: Partial<Record<StaffRole, readonly Attribute[]>> = {
   assistant: ['passing', 'vision', 'decisions', 'composure'],
@@ -287,7 +293,7 @@ export function coachWage(w: World, ability: number) {
 type StaffCandidate = Staff & { fee: string };
 /** The season's draws per club and department; delegated staff look at them every day. */
 const candidateCache = new Map<string, readonly StaffCandidate[]>();
-/** Three seeded candidates per role and season; anyone already employed is not offered. */
+/** Three seeded candidates per role and season, 마당발's more; anyone already employed is not offered. */
 export function staffCandidates(w: World, role: StaffRole): StaffCandidate[] {
   if (!STAFF_ROLES.includes(role)) return [];
   return staffMarket(w, [role])[role]!;
@@ -312,7 +318,7 @@ export function staffMarket(
   }
   return Object.fromEntries(
     roles.map((role) => {
-      const key = `${w.seed}|${w.playerClub}|${code}|${w.year}|${role}`;
+      const key = `${w.seed}|${w.playerClub}|${code}|${w.year}|${role}${hasTrait(w, 'networker') ? '|networker' : ''}`;
       let drawn = candidateCache.get(key);
       if (!drawn) {
         drawn = drawCandidates(w, role, code);
@@ -351,7 +357,7 @@ export function staffMarket(
   );
 }
 function drawCandidates(w: World, role: StaffRole, code: string): StaffCandidate[] {
-  return CANDIDATE_ABILITY.map(([min, max], i) => {
+  return candidateBands(w).map(([min, max], i) => {
     const r = random(`${w.seed}:staff-market:${w.year}:${role}:${i}`);
     const name = personName(code, r),
       peak = integer(r, min, max),
@@ -368,7 +374,7 @@ function drawCandidates(w: World, role: StaffRole, code: string): StaffCandidate
       ),
       ability = career.ability,
       wage = coachWage(w, ability);
-    return {
+    return networkedCandidate(w, {
       id: `${w.playerClub}:staff:${role}:${w.year}:${i}`,
       role,
       name,
@@ -380,7 +386,7 @@ function drawCandidates(w: World, role: StaffRole, code: string): StaffCandidate
       born: w.year - career.age,
       potential: career.potential,
       fee: ratio(wage, 1n, 4n),
-    };
+    });
   });
 }
 const roleOrder = (a: Staff, b: Staff) => STAFF_ROLES.indexOf(a.role) - STAFF_ROLES.indexOf(b.role);

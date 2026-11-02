@@ -19,6 +19,7 @@ import { synergyEffects } from './synergy';
 import { isDelegated } from './responsibilities';
 import { debutRule, directionOf, directionOption, financeStance, releaseRule } from './direction';
 import { academyFacilityTerms } from './facilities';
+import { intakePotential } from './owner-traits';
 
 /** First-team squad limit shared with signings. */
 /** Prospects held at once; intakes stop while the academy is full. */
@@ -113,14 +114,18 @@ export function academyIntakeSize(w: World) {
     baseEffects(w).intake
   );
 }
-/** Potential added to every prospect by academy investment, the club build and synergies. */
+/**
+ * Potential added to every prospect by academy investment, the club build, synergies, the bases
+ * and 원석 감별사 (→OWNER-5).
+ */
 export function academyPotentialBonus(w: World) {
   return (
     policyEffects(policyOf(w)).academyPotential +
     policyEffects(policyOf(w)).grassrootsPotential +
     buildEffects(w).academyPotential +
     synergyEffects(w).academyPotential +
-    baseEffects(w).intakePotential
+    baseEffects(w).intakePotential +
+    intakePotential(w)
   );
 }
 /** Runs once per season on the intake day. */

@@ -16,6 +16,7 @@ import { lineOf } from './player';
 import { MARKET_CONFIG, marketValueAt, marketWageAt } from './contracts';
 import { compareIds, scaleBy } from './primitives';
 import { staffEffects } from './staff';
+import { askedFeeFactor } from './owner-traits';
 import { transferOffers, isForeignCandidate } from './ops-squad';
 import { bidOutlook } from './transfers';
 import { recruitmentPreview, recruitmentContext, recruitmentFit } from './recruitment';
@@ -24,13 +25,15 @@ import { scoutVerdict } from './scout-verdict';
 const recommendedIds = (w: World) =>
   new Set(w.shortlist?.year === w.year ? w.shortlist.entries.map((entry) => entry.playerId) : []);
 const graduateIds = (w: World) => new Set(w.players.filter((p) => p.graduate).map((p) => p.id));
+/** The share of his value a club asks us: the 단장's negotiation and 협상의 달인 (→STAFF-20, OWNER-5). */
+const askingMultiplier = (w: World) => staffEffects(w).feeMultiplier * askedFeeFactor(w);
 
 function clubOffer(
   w: World,
   club: Club,
   player: Player,
   recommended: Set<string>,
-  feeMultiplier = staffEffects(w).feeMultiplier,
+  feeMultiplier = askingMultiplier(w),
   owned = new Set(activePlayers(w).map((p) => p.id)),
   graduates = graduateIds(w),
 ): WorldMarketOffer {
@@ -104,7 +107,7 @@ export function worldMarketPage(w: World, input: WorldMarketQuery): WorldMarketP
   const q = worldMarketQuerySchema.parse(input);
   if (q.world !== w.id) throw new Error('다른 커리어의 이적시장 요청입니다.');
   const recommended = recommendedIds(w);
-  const feeMultiplier = staffEffects(w).feeMultiplier;
+  const feeMultiplier = askingMultiplier(w);
   const owned = new Set(activePlayers(w).map((p) => p.id));
   const graduates = graduateIds(w);
   const rows: WorldMarketOffer[] = [];
