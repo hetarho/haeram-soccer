@@ -1,5 +1,5 @@
 # WORLD Fictional world and catalogs
-> r6 | Define the browser-demo rules for fictional world and catalogs.
+> r7 | Define the browser-demo rules for fictional world and catalogs.
 
 ## decisions
 - WORLD-1 [o] Playable associations: ENG ESP GER ITA FRA POR NED BEL. Other UEFA associations appear as representative clubs only.
@@ -28,11 +28,18 @@
   - the scope does not require persistent individual lifetimes, own-player training/development or invented match archives for every other NPC. Other-club strength evolution and seasonal match-attribute generation remain →LEAGUE-10 and →PLAYER-1; retained identities do not grant a club-strength bonus.
   - actual playing retirement ends active-player availability while retaining real career facts (→HIST-14); a playing coach remains active only until his deferred retirement date (→STAFF-34). Keep existing lossless career/storage requirements (→SAVE-13/17).
 
+- WORLD-12 [o] A generated person — player, prospect, coach or manager — is named one given name and one surname of his country, each drawn evenly from the catalog's pools of at least 100 given names and 200 surnames per country, written in the country's own spelling with its accents. ← 6–8 of each gave 315 distinct names to 13,178 players and repeated full names inside 2,300 squads (measured 261102); 20,000+ combinations per country keep a repeat rare
+  - the 18 players generated for an NPC club in a season (→WORLD-6) never share a surname, nor do the players of the founding squad. A retained person (→WORLD-11), a vacancy's new person, youth, signings and staff draw freely, so an own squad can still hold two of one surname.
+  - the pools are common names of the country, not real footballers (→WORLD-4).
+  - drawing a name never shifts the draws behind the person's other attributes, so a change of pools renames generated people without changing their play or any match.
+  - a stored name is never redrawn: own players, retained people and recorded facts keep the name they carry (→=SAVE-10).
+
 ## flow
 
 - Person continuity: generated/retained player → qualifying retirement/coaching choice → the same person in staff/manager candidacy → linked actual career facts.
 
 ## chg
+- r7 261102 WORLD-12+ person names: per-country pools 6–8 given × 6–8 surnames→at least 100 × 200 in the country's spelling, no shared surname within a generated NPC or founding squad, name draws never shift other attributes
 - r6 261016 WORLD-11✎ NPC continuity scope open→retain high/very-high coaching prospects and all former own players, actual age/retirement/affiliation and unique cross-role identity; ordinary club-strength model unchanged
 - r5 261016 WORLD-10✎ sequential role continuity→also one shared identity for concurrent player/coach roles
 - r4 261016 WORLD-6✎ seasonal squad identities→cross-role continuity reference; WORLD-10+ cross-club second-career person continuity; WORLD-11+ open NPC continuity/retirement scope

@@ -15,8 +15,12 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| nm62 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T03:30Z | 2026-11-02T03:30Z | - |
 
 ## inbox
+- 261102 decided WORLD-12: how to stop the same names repeating (315 distinct names over 13,178 players) → curated per-country pools of at least 100 given names and 200 surnames in the catalog, drawn evenly (alt: a name library such as faker — its locale bundles weigh megabytes in the browser, carry modern names unfit for 1950s squads and sit outside the fingerprinted catalog | keep the pools and dedupe names per world, which seasonal NPC regeneration cannot hold stable)
+- 261102 decided WORLD-12: whether a squad may hold two of one surname → never inside a generated NPC or founding squad, since the match view labels players by surname; youth, signings and staff draw freely (alt: no surname rule | dedupe every own-squad arrival too, which would rename a signing on arrival)
+- 261102 decided WORLD-12 SAVE-10: spelling and old saves → each country's own spelling with accents (João, Müller); catalog 2026-demo-5, a 2026-demo-4 save of any country moves its pin and only its not-yet-retained generated people get new names (alt: keep ASCII-only names | refuse 2026-demo-4 saves)
 - 261102 decided WEB-112 WEB-74 WEB-59 T644: what a prospect's name opens in 팀's 유소년 list, since the player sheet reads only first-team players → his existing 유소년 승격·방출 검토 on the academy page, asked by a one-shot request the academy place takes (`openAcademyProspect`/`useAcademyReview`); it reads until the owner commits a choice there; coach names open PersonCareer only when a retained person exists, otherwise they are plain text in the same row height (alt: plain-text prospect names | extend the player sheet to prospects, a new inspector). Session of02.
 - 261102 decided WEB-112 WEB-10 WEB-69 WEB-17 T644: how a detailed people page leads back and how six entries fit a phone → 1군 (not its market view), 코치진 and 유소년 lead with one quiet `← 팀 · <list>` text link (`data-ui="team-return"`, no landmark), opening the list that owns them with its search/sort/scroll; the phone bar takes six columns and 6px button padding so every label stays in view at 360px, asserted by the bar not scrolling (alt: repeat 팀's tabs on detailed pages, a second tab bar | a horizontally scrolling bar). Session of02.
 - 261102 decided WEB-112 WEB-90 ARCH-4 T644: where Team's reads and density live → pure rows in `teamRows.ts` (`teamDirectory.ts` collides with `TeamDirectory.tsx` on case-insensitive disks) from read leaves only; rows compose the market's own table/name/rating CSS-module classes so both lists share one density; labels are new `team.*` messages in all 12 packs, phrased without plural forms (`부상 {days}일`, `Injured {days}d`), and the retired `club.section.firstTeam/staff/academy` messages leave every pack with a test; vacancies keep post order and follow every person in the ability/name sorts (alt: copy the market's values into a new module, which drifts | keep the dead section messages). Session of02.
@@ -459,7 +463,7 @@
 | ARCH | 25 | 25 | - | 2 |
 | WEB | 200 | 200 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
-| WORLD | 6 | 6 | - | 0 |
+| WORLD | 7 | 7 | - | 0 |
 | KIT | 6 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
 | CLUB | 48 | 48 | - | 0 |
 | MATCH | 44 | 44 | - | 0 |
@@ -468,7 +472,7 @@
 | ECON | 40 | 40 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 19 | 19 | - | 0 |
-| SAVE | 59 | 59 | - | 0 |
+| SAVE | 60 | 60 | - | 0 |
 | PLAYER | 11 | 11 | - | 0 |
 
 ## review
@@ -484,6 +488,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T645 | Person-name pools and catalog 2026-demo-5 | WORLD SAVE | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -507,8 +512,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- implement-task T645 (nm62)
 
 ## log
+- 261102 create-task WORLD@7 SAVE@60 → T645 person-name pools, squad surnames, catalog 2026-demo-5; nm62.
+- 261102 update-ssot WORLD r7 SAVE r60: person-name pools ≥100 given × ≥200 surnames per country, no shared surname in a generated squad, catalog 2026-demo-5 pin move; nm62.
+- 261102 update-ssot WORLD SAVE start; nm62.
 - 261102 of02 complete: restored original room art and moved Home office work back into the office; Team before the market holds compact first-team/youth/coach lists, with shared four-family position badges. Final main source 0ff2e0b9 passed CI 41345384013 (all nine jobs, including Chromium, Firefox and both WebKit shards) after the test-only manual-progression repair; all 80 captures visually reviewed. Report spec/reports/261101-of02.md; proof .tmp/owner-office-review/261102-of02. Session closed; unrelated pending and inbox preserved.
 - 261102 fix business browser progression: watch real rounds in public manual mode before reading investment/finance results, so a resumed automatic clock cannot open the next match-eve report over the controls. CI 41340021151 passed checks, unit, all three integration shards, Chromium and both WebKit shards; Firefox's investment case alone timed out behind NEXT MATCH on both attempts. No app, financial assertion, timeout or observation rule changed; of02.
 - 261102 fix recovery history journey: verify the new Team list entries between Home and detailed personnel work, including back/forward through the coach list and the earlier first-team list. Full batch passed unit 1955, integration 1272 (4 existing skips), contract 48, catalog/presentation/build and 351/352 Chromium cases; the sole failure expected the pre-Team history. Test-only correction; keep unchanged successes and rerun the complete recovery spec on all three browsers; session of02.
@@ -526,6 +535,3 @@
 - 261102 create-task T640 T641 T642: one-row League/Cup header with a season stepper; Ballon d'Or engine (podium archive, bonus clause, talk premium); records view, player honours, talk premium and news. Numbered from T640 to leave room for of02; session bd02.
 - 261102 update-ssot WEB r199 CLUB r48 HIST r19 PLAYER r11: League/Cup browse every kept season on one page with a one-row ‹ season › header (no previous-league/cup tabs, closed cup seasons open on the winner); 발롱도르 from 1955/56 with podium archive, records view, news, contract premium and bonus clause; session bd02.
 - 261102 update-ssot WEB CLUB HIST PLAYER start (bd02)
-- 261102 T640 done: League/Cup one-row header (country/division with groups as options, one cup select) and a shared ‹ season › stepper; no 이전 컵대회 기록 tab; closed cup seasons open on the winner; web unit 1184 passed, e2e specs updated for the batch gate; session bd02.
-- 261102 T641 done: season-close Ballon d'Or podium archived from 1955/56 (goals, assists, honours, class; 15+ top-flight apps), our winner's bonus clause paid at the close, recent podiums priced into talks and the delegated cap, the star-only bonus clause drawn after the existing four; unit 670, targeted integration (contracts, season equivalence, throughput) and contract tier passed; session bd02.
-- 261102 T642 done: 클럽 기록실 발롱도르 view with the season stepper, winners and most-wins boards; player-sheet honours, contract-talk premium line and one award news item per closed season (ours celebrated); web unit 1189 and news integration passed; session bd02.

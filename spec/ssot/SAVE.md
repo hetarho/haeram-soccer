@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r59 | Define the browser-demo rules for browser persistence and protocol.
+> r60 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -26,7 +26,8 @@
 - SAVE-9 [o] Export/import uses the same envelope; checksum provides corruption detection only. All successful changes remain local.
 
 - SAVE-10 [o] The game is version 0.7.0, a beta before 1.0: the app and its engine rules carry that one version, raised with each release, and a match-model revision (→SAVE-23) ships inside a version. Rules-4.0.0 checkpoints are the same rules line and load as 0.7.0, only their version label rewritten; only 0.7.0 gameplay checkpoints are accepted after that (→SAVE-19). ← one number the player sees and the save checks; 1.0 is kept for the release Earlier gameplay is never converted; the bounded recognized-legacy reset and future/unrecognized-version protection follow →SAVE-19 and →SAVE-11.
-  - A supported world pinned to recognized catalog 2026-demo-1, 2026-demo-2 or 2026-demo-3 whose club is English moves to 2026-demo-4 on writer activation; England's prices, money and football index are unchanged, so recorded facts stay. A career in another country pinned to them is a compatibility failure (→SAVE-11): 2026-demo-4 re-levels its money (→ECON-35), so its recorded amounts would mix two levels.
+  - A supported world pinned to recognized catalog 2026-demo-4 moves to 2026-demo-5 on writer activation whatever its country: 2026-demo-5 changes only the person-name pools (→WORLD-12), so recorded facts and stored names stay and only generated people not yet retained show their new names.
+  - A supported world pinned to recognized catalog 2026-demo-1, 2026-demo-2 or 2026-demo-3 whose club is English moves to 2026-demo-5 on writer activation; England's prices, money and football index are unchanged, so recorded facts stay. A career in another country pinned to them is a compatibility failure (→SAVE-11): 2026-demo-4 re-levelled its money (→ECON-35), so its recorded amounts would mix two levels.
   - Supported writer activation upgrades metadata/world revision through a pure transformation preserving all retained facts and missing optional defaults, committed through →SAVE-3. Failure preserves old disk data and exportable new memory state; read-only views do not perform disk upgrades.
   - Device strategy-library compatibility remains →SAVE-15 and →ECON-22; it grants no legacy-gameplay conversion. Historical rules and transformations are recorded in chg.
 
@@ -93,6 +94,7 @@
   - derived totals and display text are not a second persisted accomplishment database. Retain all source facts losslessly within the existing century and capacity limits (→SAVE-4/13), including repeated/interim appointments and a settled round after the century.
 
 ## chg
+- r60 261102 SAVE-10✎ catalog writer pin target 2026-demo-4→2026-demo-5; +a 2026-demo-4 world of any country moves too (only name pools changed, →WORLD-12)
 - r59 261101 SAVE-17✎ +each owner-held approval's waiting days (→STAFF-48), absent in older saves→counting from 0
 - r58 261101 SAVE-10✎ catalog writer pin 2026-demo-1/2→2026-demo-3 to 2026-demo-1/2/3→2026-demo-4 for English careers only; another country's career pinned to them→a compatibility failure (its money re-levelled, →ECON-35)
 - r57 261028 SAVE-10✎ current engine rules 4.0.0→game version 0.7.0 (beta) shared by the app and the engine rules, raised each release, match-model revisions shipping inside it; 4.0.0 checkpoints load as 0.7.0 with the label rewritten
