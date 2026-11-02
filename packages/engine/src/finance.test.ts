@@ -10,6 +10,7 @@ import {
   catchment,
   clubOf,
   createWorld,
+  credit,
   DISTRIBUTION_CONFIG,
   financialBreakdown,
   footballQuote,
@@ -34,7 +35,8 @@ import {
   simulateSeason,
   sponsorOffers,
 } from './index';
-import { holdRows, sellPlayer } from './testing';
+import { holdRows, sellPlayer, startWork } from './testing';
+import { addEvent } from './events';
 import { advanceEconomy } from './economy';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
@@ -54,7 +56,6 @@ describe('earned, auditable club finances', () => {
     expect(w.cash).toBe((BigInt(share) - BigInt(cost)).toString());
     expect(w.insolvent).toBe(1);
     expect(w.critical).toBeUndefined();
-    expect(w.events.filter((event) => event.kind === 'support')).toEqual([]);
     w.round = 2;
     settleRound(w);
     expect(BigInt(w.cash)).toBeLessThan(BigInt(share) - BigInt(cost));
@@ -154,7 +155,7 @@ describe('earned, auditable club finances', () => {
     const annual = operatingCost(w);
     // A training ground level adds upkeep once its work is done (→ECON-32).
     w.cash = '100000000';
-    operate(w, { type: 'facility', part: 'training' });
+    startWork(w, 'training');
     expect(operatingCost(w)).toBe(annual);
     w.facilityWorks!.training!.day -= 90;
     progressFacilityWorks(w);
@@ -165,20 +166,17 @@ describe('earned, auditable club finances', () => {
     expect(BigInt(operatingCost(w))).toBe(BigInt(beforeSale) - BigInt(player.wage));
   });
 
-  it('shows explicit owner capital separately and does not clear an unresolved deficit', () => {
+  it("names no owner capital: an older save's 추가 출자 falls in the catch-all line", () => {
     const w = world();
-    w.cash = '-999999999';
-    w.critical = '운영자금이 부족합니다.';
-    const before = BigInt(w.cash);
-    operate(w, { type: 'support' });
-    expect(BigInt(w.cash)).toBeGreaterThan(before);
-    expect(BigInt(w.cash)).toBeLessThan(0n);
-    expect(w.critical).toContain('운영자금');
+    // A receipt from the owner's withdrawn capital action, as a career saved before has it: no
+    // current rule produces one, so the ledger keeps it under 이전·기타 장부 (→ECON-10/11).
+    credit(w, '40000');
+    addEvent(w, 'support', '구단주 추가 출자', '운영 매출과 별도', '40000');
     const budget = financialBreakdown(w);
-    expect(budget.ownerInvestment).toBe(w.income);
-    expect(budget.operatingIncome).toBe('0');
-    expect(budget.operatingNet).toBe('0');
-    expect(clubOf(w).reputation).toBe(10);
+    expect(budget.income.some((row) => row.key === 'support')).toBe(false);
+    expect(budget.income.find((row) => row.key === 'older-ledger')?.amount).toBe('40000');
+    expect(budget.net).toBe((BigInt(w.income) - BigInt(w.expense)).toString());
+    expect(isIncomeKind('support')).toBe(false);
   });
 
   it('logs every receipt and expense, sums to the season books, and pays the merit once', () => {
@@ -215,13 +213,14 @@ describe('earned, auditable club finances', () => {
         rows.map((row) => row.key).filter((key) => key !== 'older-ledger');
     expect(keys(budget.income)).toEqual(INCOME_KINDS);
     expect(INCOME_KINDS).toEqual(
-      expect.arrayContaining(['gate', 'sponsor:local', 'sponsor:shirt', 'support']),
+      expect.arrayContaining(['gate', 'sponsor:local', 'sponsor:shirt']),
     );
     for (const kind of INCOME_KINDS) expect(isIncomeKind(kind)).toBe(true);
     expect(keys(budget.expense).length).toBeGreaterThan(0);
     for (const kind of keys(budget.expense)) expect(isIncomeKind(kind)).toBe(false);
-    // Withdrawn owner requests (→CLUB-20) name no line: an older save's entries are catch-all.
-    for (const kind of ['care:friendly', 'care:camp', 'toString', ''])
+    // Withdrawn owner requests (→CLUB-20) and owner capital (→ECON-11) name no line: an older
+    // save's entries are catch-all.
+    for (const kind of ['care:friendly', 'care:camp', 'support', 'toString', ''])
       expect(isIncomeKind(kind)).toBe(false);
   });
 

@@ -166,8 +166,8 @@ describe('club builds', () => {
 
   it('offers thousands of builds where every card is a trade-off', () => {
     expect(BUILD_COMBINATIONS).toBe(5 ** 6);
-    // Every card has a gain and a cost (→ECON-22), except that 구단주 투자 keeps only its cost
-    // while the owner has no capital action (→ECON-11); owner capital is no gain to the club.
+    // Every card has a gain and a cost (→ECON-22), except that 구단주 투자 keeps only its wage
+    // cost: the owner adds no capital to the club (→ECON-11).
     for (const slot of BUILD_SLOTS)
       for (const option of BUILD_OPTIONS[slot]) {
         const { effects } = (BUILD_CARDS[slot] as Record<string, BuildCard>)[option];
@@ -329,8 +329,14 @@ describe('club builds', () => {
     // 지역 상생 speeds the 지역 기반 the rows build (→ECON-34) at a small sponsor cost.
     expect(composeBuild({ fans: 'mutual' })).toMatchObject({ localBaseRate: 1.5, sponsor: 0.95 });
     expect(stacked.wage).toBeCloseTo(0.97);
-    expect(composeBuild({ revenue: 'owner' }).ownerCapital).toBe(5);
-    expect(composeBuild({ revenue: 'members' }).ownerCapital).toBe(2);
+    // 구단주 투자 is its wage cost alone and 회원제 운영 leaves owner money alone (→ECON-22).
+    expect(composeBuild({ revenue: 'owner' })).toEqual({ ...NEUTRAL_BUILD, wage: 1.05 });
+    expect(composeBuild({ revenue: 'members' })).toEqual({
+      ...NEUTRAL_BUILD,
+      gateDemand: 0.05,
+      winFans: 1.2,
+      sponsor: 0.9,
+    });
   });
 
   it('changes the offers and demand it promises and leaves standard clubs exact', () => {

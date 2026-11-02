@@ -222,7 +222,6 @@ const selectContentWorld = worldSelector([
   'income',
   'expense',
   'currency',
-  'support',
   'stadium',
   'trainingGround',
   'academyFacility',

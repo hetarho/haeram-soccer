@@ -29,7 +29,8 @@ import {
   isIncomeKind,
   MARKET_CONFIG,
   marketValueAt,
-  operate,
+  debit,
+  startFacilityWork,
   overall,
   RESPONSIBILITY_KEYS,
   squad,
@@ -178,7 +179,8 @@ function buyFacilities(w: World) {
       .sort((a, b) => a.next!.units - b.next!.units);
     const preview = options[0];
     if (!preview || !preview.affordable || preview.runwayRounds < CASH_WARNING_ROUNDS) return;
-    operate(w, { type: 'facility', part: preview.part });
+    // Its own rule: no command or staff rule starts a work in a career.
+    startFacilityWork(w, preview.part, (fee) => debit(w, fee));
   }
 }
 /** The top flight's transfer values this summer, in pounds, and its players for refits. */
@@ -229,7 +231,7 @@ function playCareer(code: CountryCode, seed: string, level: DifficultyLevel): Ca
     let turnover = 0;
     for (const event of w.events.slice(firstEvent)) {
       if (event.year !== year || !event.amount || !isIncomeKind(event.kind)) continue;
-      if (['transfer-out', 'free-transfer-compensation', 'support'].includes(event.kind)) continue;
+      if (['transfer-out', 'free-transfer-compensation'].includes(event.kind)) continue;
       turnover += pounds(code, year, event.amount);
     }
     // Facts are written as moves complete; the summer window after the close belongs to the next

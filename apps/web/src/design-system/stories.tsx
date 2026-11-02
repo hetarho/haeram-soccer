@@ -891,15 +891,7 @@ export default function StoryRenderer({
                 ),
               )}
             </div>
-            <FacilityParts
-              w={w}
-              blocked={false}
-              act={async () => {
-                await client.command({ type: 'read-inbox' });
-                return true;
-              }}
-              format={(value) => <Money value={value} code="ENG" year={w.year} />}
-            />
+            <FacilityParts w={w} />
           </>
         );
         break;

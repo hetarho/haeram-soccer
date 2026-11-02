@@ -30,16 +30,18 @@ export const FinancialBreakdown = memo(
         </div>
         <div className={s.summary}>
           <div>
-            <span>출자를 제외한 시즌 수지</span>
-            <strong className={BigInt(breakdown.operatingNet) < 0n ? s.negative : undefined}>
-              {format(breakdown.operatingNet)}
+            <span>시즌 수지</span>
+            <strong className={BigInt(breakdown.net) < 0n ? s.negative : undefined}>
+              {format(breakdown.net)}
             </strong>
-            <small>실제 수입에서 추가 출자와 실제 지출을 차감</small>
+            <small>실제 수입에서 실제 지출을 차감</small>
           </div>
           <div>
-            <span>구단주 추가 출자</span>
-            <strong>{format(breakdown.ownerInvestment)}</strong>
-            <small>운영 매출과 별도로 표시</small>
+            <span>보유 현금</span>
+            <strong className={BigInt(w.cash) < 0n ? s.negative : undefined}>
+              {format(w.cash)}
+            </strong>
+            <small>지금 구단 계좌의 잔고</small>
           </div>
           <div>
             <span>다음 라운드 고정 지출</span>
@@ -154,8 +156,7 @@ export const FinancialBreakdown = memo(
         )}
         {BigInt(w.cash) < 0n && (
           <p data-surface="inset" className={s.warning}>
-            자금 부족이 계속되고 있습니다. 자동으로 자금이 보충되지 않습니다. 급여와 투자 규모를
-            줄이고, 매각이나 명시적인 추가 출자를 결정하세요.
+            자금 부족이 계속되고 있습니다. 자동으로 자금이 보충되지 않습니다.
           </p>
         )}
       </section>

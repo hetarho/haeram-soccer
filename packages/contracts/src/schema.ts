@@ -1085,7 +1085,6 @@ const worldSchema: z.ZodType<World> = z.object({
   operatingExpenses: amount.optional(),
   currency: text,
   priceIndex: number,
-  support: z.number().int().nonnegative(),
   stadium: z.number().int().min(0).max(8),
   trainingGround: z.number().int().min(0).max(5),
   academyFacility: z.number().int().min(0).max(5),

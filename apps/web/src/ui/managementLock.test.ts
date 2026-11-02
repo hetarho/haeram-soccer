@@ -104,7 +104,6 @@ function state(): ClientState {
       careers: {},
       coaches: {},
       totalMatches: 0,
-      supportUsed: 0,
       milestones: clubMilestones(world),
       managers: [],
       transfers: transferOffers(world),
@@ -178,20 +177,20 @@ describe('management screen calendar locks', () => {
     expect(details.length).toBeGreaterThan(0);
     expect(details.every((button) => !button.disabled)).toBe(true);
   });
-  it.each(['finance', 'build', 'sponsor'] as const)(
-    'locks %s actions over automatic ticks',
-    (part) => {
-      expectLocked(
-        () =>
-          createElement(BusinessWorkbench, {
-            state: gameStore.getState(),
-            client,
-            part,
-          }),
-        part === 'finance' ? /추가 출자/ : part === 'build' ? /공사 검토/ : / 계약$/,
-      );
-    },
-  );
+  it('locks sponsor signing over automatic ticks', () => {
+    expectLocked(
+      () =>
+        createElement(BusinessWorkbench, { state: gameStore.getState(), client, part: 'sponsor' }),
+      / 계약$/,
+    );
+  });
+  it.each(['finance', 'build'] as const)('reads %s with no owner action to lock', (part) => {
+    // The owner adds no capital and starts no facility work (→ECON-11, ECON-32).
+    const labels = render(
+      createElement(BusinessWorkbench, { state: gameStore.getState(), client, part }),
+    ).map((button) => button.label);
+    expect(labels.filter((label) => /출자|공사/.test(label))).toEqual([]);
+  });
   it('locks youth release decisions while prospect inspection stays available', () => {
     const w = {
       ...world,

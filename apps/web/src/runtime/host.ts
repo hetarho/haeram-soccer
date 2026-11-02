@@ -461,8 +461,6 @@ export class Host {
       },
       totalMatches: w.ownMatches.length,
       tallies: tallies(w),
-      supportUsed: w.events.filter((event) => event.year === w.year && event.kind === 'support')
-        .length,
       milestones: clubMilestones(w),
       managers: managerCandidates(w),
       transfers: transferOffers(w),

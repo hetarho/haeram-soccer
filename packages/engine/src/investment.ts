@@ -13,9 +13,10 @@ export function fixedCostRunway(cash: string, annual: string): number {
 }
 
 /**
- * What starting the next work on a facility part would do (→ECON-12, ECON-32): its cost and the
- * cash and runway after it, the upkeep it adds once open, the seats before, during and after for
- * the stadium, and the days it takes. A part at its top or with a work in progress has none.
+ * What starting the next work on a facility part would do (→ECON-32): its cost and the cash and
+ * runway after it, the upkeep it adds once open, the seats before, during and after for the
+ * stadium, and the days it takes. A part at its top or with a work in progress has none. No career
+ * starts a work; ECON-29's reference club builds by it in the calibration harness.
  */
 export function facilityInvestmentPreview(w: World, part: FacilityPart) {
   const next = nextWork(w, part),

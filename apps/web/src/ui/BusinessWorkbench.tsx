@@ -5,7 +5,6 @@ import type {
   SponsorKind,
 } from '../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../packages/engine/src/player-state';
-import { quote } from '../../../../packages/engine/src/quotes';
 import { financialBreakdown, roundShare } from '../../../../packages/engine/src/finance';
 import {
   SPONSOR_KIND_LABELS,
@@ -200,32 +199,12 @@ function MoneyWorkbench({
         <b>{format(rule === 'results' ? ratio(bonus, 1n, BigInt(games)) : bonus)}</b>
       </div>
     );
-  const supportUsed = state.view!.supportUsed;
-  const supportAmount = quote(club.country, w.year, 150);
   const act = async (command: Command, success: string) => {
     if (blocked) return false;
     const reply = await client.command(command, { background: true });
     setMessage(reply?.ok ? success : client.state.error || '선택을 저장하지 못했어요.');
     return !!reply?.ok;
   };
-  const contribution = (
-    <div data-surface="tile" className={s.contribution}>
-      <div>
-        <b>운영을 이어갈 자금</b>
-        <p>
-          {format(supportAmount)} 추가 출자 · 이번 시즌 {supportUsed}/3회 · 평판 2 감소
-        </p>
-      </div>
-      <button
-        disabled={blocked || supportUsed >= 3}
-        onClick={() =>
-          void act({ type: 'support' }, '추가 출자를 기록했어요. 운영 매출과 별도로 남습니다.')
-        }
-      >
-        추가 출자
-      </button>
-    </div>
-  );
   return (
     <section
       className={s.workbench}
@@ -257,7 +236,6 @@ function MoneyWorkbench({
             자금 여유는 급여·시설 유지비·지역·글로벌 투자·운영 경비 기준이에요. 미래 수입과 경기
             개최비는 별도로 봐요.
           </p>
-          {BigInt(w.cash) < 0n && contribution}
           <div className={s.detailActions}>
             <button
               onClick={(event) => {
@@ -278,15 +256,9 @@ function MoneyWorkbench({
               </button>
             )}
           </div>
-          {BigInt(w.cash) >= 0n && (
-            <details data-surface="panel" className={s.recovery}>
-              <summary>운영을 이어갈 추가 출자</summary>
-              {contribution}
-            </details>
-          )}
         </>
       ) : tab === 'build' ? (
-        <FacilityParts w={w} blocked={blocked} act={act} format={format} />
+        <FacilityParts w={w} />
       ) : tab === 'sponsor' ? (
         <div className={s.sponsorDesk}>
           <header className={s.heading}>

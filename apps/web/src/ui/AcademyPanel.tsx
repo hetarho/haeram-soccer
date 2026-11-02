@@ -237,8 +237,8 @@ export function AcademyPanel({
               onClick={() => openFacility('academy')}
             >
               <span>
-                <b>유소년 시설 {w.academyFacility}단계 · 공사 보기</b>
-                <small>투자 운영비와 별도로 공사비를 내고 완공 후 효과를 받아요</small>
+                <b>유소년 시설 {w.academyFacility}단계 · 시설 보기</b>
+                <small>단계마다 입단 인원·잠재력·성장 효과가 달라요</small>
               </span>
               <span aria-hidden="true">›</span>
             </button>

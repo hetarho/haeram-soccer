@@ -1242,7 +1242,6 @@ export interface World {
   operatingExpenses?: string;
   currency: string;
   priceIndex: number;
-  support: number;
   /** The stadium's step 0–8 (→ECON-32): 2,500 seats at founding, 90,000 at the top. */
   stadium: number;
   /** Training ground level 0–5 (→ECON-32). */
@@ -1361,8 +1360,6 @@ export type Command =
   | { type: 'transfer-stance'; id: string; stance: TransferStance }
   | { type: 'campaign'; kind: string }
   | { type: 'sponsor'; kind: Sponsor['kind'] }
-  | { type: 'facility'; part: FacilityPart }
-  | { type: 'support' }
   /** Applies the owner's design to the own club (→KIT-9); no other club can be named. */
   | { type: 'club-identity'; identity: ClubIdentity }
   /** Pays a designer from operating funds for fresh drafts in the owner's colours. */

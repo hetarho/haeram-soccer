@@ -5,12 +5,11 @@ import {
   facilityInvestmentPreview,
   fixedCostRunway,
   gateProjection,
-  operate,
   operatingCosts,
   recordMatch,
   simulateMatch,
 } from './index';
-import { holdRows, professionalStart } from './testing';
+import { holdRows, professionalStart, startWork } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
@@ -33,6 +32,7 @@ function world() {
 }
 
 describe('shared club investment forecasts', () => {
+  // No career starts a work (→ECON-32); ECON-29's reference club builds by these forecasts.
   it('starts a work at its real cost; seats and upkeep change when it opens (→ECON-32)', () => {
     const w = world(),
       before = canonical(w),
@@ -48,19 +48,19 @@ describe('shared club investment forecasts', () => {
       annualBefore: costs.annual,
     });
     expect(preview.next).toMatchObject({ to: 1, kind: 'expansion', capacity: 5000, days: 180 });
-    operate(w, { type: 'facility', part: 'stadium' });
+    startWork(w, 'stadium');
     expect(w.cash).toBe(preview.cashAfter);
     expect(w.expense).toBe(preview.cost);
     // A stand is being added: the ground holds 10% fewer and upkeep waits for the opening.
     expect(w.stadium).toBe(0);
     expect(gateProjection(w).capacity).toBe(2250);
     expect(operatingCosts(w).maintenance).toBe(costs.maintenance);
-    expect(() => operate(w, { type: 'facility', part: 'stadium' })).toThrow('진행 중');
+    expect(() => startWork(w, 'stadium')).toThrow('진행 중');
     expect(facilityInvestmentPreview(w, 'stadium').eligible).toBe(false);
     // The same work 179 days on; its last day passes here.
     const building = cachedWorld('stadium-work-day-179', () => {
       const w = world();
-      operate(w, { type: 'facility', part: 'stadium' });
+      startWork(w, 'stadium');
       advanceDays(w, 179, undefined, false);
       return w;
     });
@@ -87,7 +87,7 @@ describe('shared club investment forecasts', () => {
     expect(preview.eligible).toBe(true);
     expect(preview.runwayRounds).toBe(0);
     expect(preview.reason).toContain('부족');
-    expect(() => operate(w, { type: 'facility', part: 'training' })).toThrow('부족');
+    expect(() => startWork(w, 'training')).toThrow('부족');
     expect(canonical(w)).toBe(before);
   });
 
@@ -104,7 +104,7 @@ describe('shared club investment forecasts', () => {
     expect(preview.annualAfter).toBe(preview.annualBefore);
     expect(preview.maintenanceIncrease).toBe('0');
     expect(preview.reason).toContain('최고');
-    expect(() => operate(w, { type: 'facility', part: 'stadium' })).toThrow('최고');
+    expect(() => startWork(w, 'stadium')).toThrow('최고');
     expect(canonical(w)).toBe(before);
   });
 
@@ -120,7 +120,7 @@ describe('shared club investment forecasts', () => {
     const w = world();
     w.cash = '90071992547409931';
     const preview = facilityInvestmentPreview(w, 'stadium');
-    operate(w, { type: 'facility', part: 'stadium' });
+    startWork(w, 'stadium');
     expect(w.cash).toBe(preview.cashAfter);
     expect(preview.runwayRounds).toBe(999);
   });

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { createWorld, operate, progressFacilityWorks } from '../../../../packages/engine/src/index';
+import { createWorld, progressFacilityWorks } from '../../../../packages/engine/src/index';
+import { startWork } from '../../../../packages/engine/src/testing';
 import { facilityScene as resolveFacilityScene, type FacilityScene } from './facilityScene';
 import { createLoadedLocale } from '../presentation/locale';
 import { createThemeResolver } from '../presentation/theme';
@@ -77,9 +78,7 @@ describe('facility artwork follows the current club', () => {
     w.stadium = 1;
     w.trainingGround = 2;
     w.academyFacility = 2;
-    operate(w, { type: 'facility', part: 'stadium' });
-    operate(w, { type: 'facility', part: 'training' });
-    operate(w, { type: 'facility', part: 'academy' });
+    for (const part of ['stadium', 'training', 'academy'] as const) startWork(w, part);
     expect(w.facilityWorks?.stadium?.to).toBe(2);
     expect(facilityScene('stadium', w).src).toBe('/art/scenes/heritage/stadium-1.webp');
     expect(facilityScene('locker', w).src).toBe('/art/scenes/heritage/locker-1.webp');

@@ -79,7 +79,8 @@ export function clubMilestones(w: World) {
       'facilities',
       '동네의 작은 구장',
       '관중석을 증축해 5,000석 구장을 열어요.',
-      '방향 › 증축에서 경기장 증축하기',
+      // No career starts a work (→ECON-32): a work under way opens it.
+      '재정·투자에서 경기장 단계 보기',
       w.stadium,
       1,
     ),

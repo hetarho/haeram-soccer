@@ -49,7 +49,6 @@ export function worldMarketFixture(): World {
     expense: '0',
     currency: 'GBP',
     priceIndex: 1,
-    support: 800,
     stadium: 0,
     trainingGround: 0,
     academyFacility: 0,

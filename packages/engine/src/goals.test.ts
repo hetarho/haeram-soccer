@@ -8,11 +8,10 @@ import {
   advanceRound,
   advanceToNextMatch,
   clubMilestones,
-  operate,
   progressFacilityWorks,
   seasonDayOf,
 } from './index';
-import { sellPlayer } from './testing';
+import { sellPlayer, startWork } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { byId, world } from './goals.testkit';
 
@@ -34,8 +33,8 @@ describe('milestones from retained club facts', () => {
 
   it('recognizes actual settled matches, wins and paid investments', () => {
     let w = world(true);
-    // The milestone is the opened stand, not the order: it counts once the work is done.
-    operate(w, { type: 'facility', part: 'stadium' });
+    // The milestone is the opened stand, not the work: a work under way counts once it is done.
+    startWork(w, 'stadium');
     expect(byId(w, 'facilities').done).toBe(false);
     w.facilityWorks!.stadium!.day -= 180;
     progressFacilityWorks(w);
@@ -44,7 +43,7 @@ describe('milestones from retained club facts', () => {
     // The days up to the first match are setup, built once from this very world.
     const played = cachedWorld('first-match', () => {
       const w = world(true);
-      operate(w, { type: 'facility', part: 'stadium' });
+      startWork(w, 'stadium');
       w.facilityWorks!.stadium!.day -= 180;
       progressFacilityWorks(w);
       const start = structuredClone(w);

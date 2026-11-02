@@ -70,10 +70,7 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/europe.ts',
     'packages/engine/src/knockout.ts',
   ],
-  'apps/web/src/ui/FacilityParts.tsx': [
-    'packages/engine/src/finance.ts',
-    'packages/engine/src/investment.ts',
-  ],
+  'apps/web/src/ui/FacilityParts.tsx': ['packages/engine/src/finance.ts'],
   'apps/web/src/ui/FinanceOutlook.tsx': ['packages/engine/src/projection.ts'],
   'apps/web/src/ui/FinancialBreakdown.tsx': ['packages/engine/src/finance.ts'],
   'apps/web/src/ui/LiveSeason.tsx': [

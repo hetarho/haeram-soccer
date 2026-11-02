@@ -147,7 +147,9 @@ describe('bankruptcy', () => {
     settleRound(w);
     expect(w.bankrupt).toMatchObject({ year: w.year, round: BANKRUPTCY_ROUNDS });
     expect(w.events.at(-1)).toMatchObject({ kind: 'bankruptcy' });
-    expect(() => operate(w, { type: 'facility', part: 'stadium' })).toThrow(BANKRUPT_MESSAGE);
+    expect(() => operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 })).toThrow(
+      BANKRUPT_MESSAGE,
+    );
     const before = canonical(w);
     simulateSeason(w);
     expect(canonical(w)).toBe(before);

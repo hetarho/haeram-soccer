@@ -4,6 +4,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { checkpoint } from '../../apps/web/src/adapters/persistence';
 import { currency } from '../../packages/catalogs/src/index';
 import { advanceDays, createWorld, operate, prepareSeason } from '../../packages/engine/src/index';
+import { startWork } from '../../packages/engine/src/testing';
 import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
 import { acknowledgeEvents } from './events';
@@ -288,8 +289,10 @@ test('updates era, training and academy scenes only on actual completion, retain
     },
   });
   advanceDays(w, 63, undefined, false);
-  operate(w, { type: 'facility', part: 'training' });
-  operate(w, { type: 'facility', part: 'academy' });
+  // Works already under way in the saved career: no one starts one now, but these finish on their
+  // day (→ECON-32).
+  startWork(w, 'training');
+  startWork(w, 'academy');
   advanceDays(w, 89, undefined, false);
   expect(w.calendar?.day).toBe(152);
   expect(w.trainingGround).toBe(0);

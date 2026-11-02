@@ -115,7 +115,7 @@ describe('club decisions', () => {
       for (let i = 0; i < 3; i++) advanceRound(w);
       return { revision, w };
     });
-  it('refuses new campaigns, settles one started before and bounds support', () => {
+  it('refuses new campaigns and settles one started before', () => {
     expect(() => operate(world(), { type: 'campaign', kind: 'outreach' })).toThrow(
       '캠페인은 이제 없어요',
     );
@@ -124,8 +124,6 @@ describe('club decisions', () => {
     advanceRound(w);
     expect(w.campaigns).toHaveLength(0);
     expect(w.events.some((e) => e.kind === 'campaign-result')).toBe(true);
-    for (let i = 0; i < 3; i++) operate(w, { type: 'support' });
-    expect(() => operate(w, { type: 'support' })).toThrow('3회');
   });
   it('settles an older campaign by its round and kind, so earlier commands do not change its result', () => {
     const quiet = campaignEve(false),

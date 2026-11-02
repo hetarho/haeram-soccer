@@ -34,7 +34,10 @@ export {
   trainingGroundBase,
 } from './facility-model';
 
-/** Construction on the facility ladders (→ECON-32): starting, timing and opening works. */
+/**
+ * Construction on the facility ladders (→ECON-32): timing and opening works. No career starts one;
+ * a work under way finishes as scheduled.
+ */
 export const WORK_INFO: Record<StadiumWork | 'level', { label: string; days: number }> = {
   expansion: { label: '증축', days: 180 },
   rebuild: { label: '재건축', days: 540 },
@@ -82,7 +85,11 @@ export function nextWork(w: World, part: FacilityPart) {
   };
 }
 
-/** Starts the next work on a part, paying for it now (→ECON-32). */
+/**
+ * Starts the next work on a part, paying for it now (→ECON-32). No command or staff rule reaches it:
+ * only ECON-29's reference club, which builds by its own rule in the calibration harness, and
+ * tests that need a work under way.
+ */
 export function startFacilityWork(w: World, part: FacilityPart, pay: (amount: string) => void) {
   if (!FACILITY_PARTS.includes(part)) throw new Error('시설 부문을 확인하세요.');
   if (w.facilityWorks?.[part])

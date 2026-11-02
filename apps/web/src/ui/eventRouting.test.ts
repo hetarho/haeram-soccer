@@ -80,7 +80,6 @@ describe('a submission answers only its own subject', () => {
     expect(
       answersRequest(w, item({ ref: 'local' }), { type: 'sign-sponsor', slot: 'local', offer: 0 }),
     ).toBe(true);
-    expect(answersRequest(w, item({ kind: 'finance' }), { type: 'support' })).toBe(true);
     expect(answersRequest(w, item(), { type: 'settings', settings: {} } as Command)).toBe(false);
   });
 });

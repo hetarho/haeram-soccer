@@ -49,7 +49,8 @@ import {
   partCostUnits,
   partTop,
   STADIUM_STEPS,
-  operate,
+  debit,
+  startFacilityWork,
   operatingCosts,
   ownLeagueClubs,
   quote,
@@ -101,7 +102,7 @@ const ATTENDANCE: [string, number, number][] = [
 ];
 
 // ---- Ledger ----------------------------------------------------------------------------------
-type Source = 'competition' | 'matchday' | 'commercial' | 'sales' | 'owner' | 'other';
+type Source = 'competition' | 'matchday' | 'commercial' | 'sales' | 'other';
 function sourceOf(kind: string): Source {
   if (
     [
@@ -120,7 +121,6 @@ function sourceOf(kind: string): Source {
   if (kind.startsWith('sponsor:') || kind === 'campaign-result' || kind === 'tour')
     return 'commercial';
   if (kind === 'transfer-out' || kind === 'free-transfer-compensation') return 'sales';
-  if (kind === 'support') return 'owner';
   return 'other';
 }
 /** Ends the run with exit code 1: a measure that cannot be read would skew its band unnoticed. */
@@ -206,7 +206,8 @@ function buyFacilities(w: World) {
       .sort((a, b) => a.next!.units - b.next!.units);
     const preview = options[0];
     if (!preview || !preview.affordable || preview.runwayRounds < CASH_WARNING_ROUNDS) return;
-    operate(w, { type: 'facility', part: preview.part });
+    // Its own rule: no command or staff rule starts a work in a career.
+    startFacilityWork(w, preview.part, (fee) => debit(w, fee));
   }
 }
 
@@ -316,7 +317,6 @@ function playCareer(
       matchday: 0,
       commercial: 0,
       sales: 0,
-      owner: 0,
       other: 0,
     };
     let facilitySpend = 0;

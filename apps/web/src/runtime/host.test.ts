@@ -671,21 +671,6 @@ describe('durable milestone projection', () => {
   });
 });
 
-describe('budget recovery projection', () => {
-  it('retains the true seasonal contribution quota after old receipts leave the noticeboard', async () => {
-    const host = new Host();
-    await host.handle(req('support-found', -1, { type: 'found', input }));
-    const world = host.world!;
-    for (let i = 0; i < 3; i++) operate(world, { type: 'support' });
-    for (let i = 0; i < 160; i++) addEvent(world, 'fixture-note', '추가 기록', '최근 기록');
-    const result = await host.handle(req('support-export', world.revision, { type: 'export' }));
-    expect(result.ok).toBe(true);
-    expect(result.view!.world.events.filter((event) => event.kind === 'support')).toHaveLength(0);
-    expect(result.view!.supportUsed).toBe(3);
-    expect(() => operate(world, { type: 'support' })).toThrow('3회');
-  });
-});
-
 describe('career view projection', () => {
   it('omits lifetime registry in views, preserves canonical export and leaves revision and draws unchanged', async () => {
     const h = new Host();

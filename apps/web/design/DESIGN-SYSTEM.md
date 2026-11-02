@@ -266,7 +266,7 @@ primary 이적시장) carries no art. Training and youth keep their bounded faci
 Facility art appears where its room or facility is worked: the manager's office on the home
 entrance and the office overview, the locker room over 1군's roster, the manager's office and
 the coaching workroom over 코치진's people, the training ground and academy above 훈련 and
-유소년, every facility's stage beside its works in 구단 운영's 재정·투자, and the manager's office
+유소년, every facility's stage (and any work under way) in 구단 운영's 재정·투자, and the manager's office
 (or, for a delegation, the staff room) as the 결재라인 overview's and its confirmation's
 supporting scene. Every scene is a `FacilityArt` slot with an HTML caption, never a hidden or
 disclosure-only thumbnail; a check that inspects a scene behind a dialog scopes it to the dialog,

@@ -160,11 +160,9 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
       return [css.paddingTop, css.paddingRight, css.paddingBottom, css.paddingLeft].map(parseFloat);
     });
     expect(inset.every((value) => value >= 12)).toBe(true);
-    const review = facility.getByRole('button', { name: '경기장 공사 검토', exact: true });
-    await expect(review).not.toHaveAttribute('data-ui', 'primary');
-    const reviewBounds = await review.boundingBox();
-    const facilityBounds = await facility.boundingBox();
-    expect(reviewBounds!.width).toBeLessThan(facilityBounds!.width * 0.8);
+    // Each part reads its stage with its art; nothing here builds (→WEB-14, ECON-32).
+    await expect(facility.locator('[data-facility-art]')).toHaveCount(1);
+    await expect(facility.getByRole('button')).toHaveCount(0);
     await page.screenshot({ path: `.tmp/resource-audit/${theme.id}-facilities.png` });
     await leaveOffice(page);
     await openCups(page);

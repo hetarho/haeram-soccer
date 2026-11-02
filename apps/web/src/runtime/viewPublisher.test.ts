@@ -47,11 +47,11 @@ it('publishes a first view whole and numbers each view it publishes', () => {
 it('sends only the changed, new and dropped values since the base', () => {
   const publisher = new ViewPublisher();
   const before = view(
-    { totalMatches: 1, supportUsed: 0, finance: { cash: '10' } },
+    { totalMatches: 1, finance: { cash: '10' } },
     { year: 1950, round: 3, note: 'x' },
   );
   publisher.publish(before);
-  const after = view({ totalMatches: 2, supportUsed: 0, coefficient: 4 }, { year: 1950, round: 4 });
+  const after = view({ totalMatches: 2, coefficient: 4 }, { year: 1950, round: 4 });
   expect(deltaOf(publisher, before, 1, after)).toEqual({
     base: 1,
     parts: { totalMatches: 2, coefficient: 4 },

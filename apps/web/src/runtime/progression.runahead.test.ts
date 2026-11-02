@@ -943,7 +943,10 @@ describe('the client holds the days computed ahead (WEB-18)', () => {
     await hold(1);
     await hold(2);
     // The lock keeps decisions out while days are held; one that comes is shown where it acted.
-    const decided = internals.rpc({ type: 'command', command: { type: 'support' } });
+    const decided = internals.rpc({
+      type: 'command',
+      command: { type: 'sign-sponsor', slot: 'local', offer: 0 },
+    });
     internals.received({ requestId: posted[2].requestId, ok: true, view: dayView(2), viewSeq: 4 });
     await decided;
     expect(internals.held).toHaveLength(0);

@@ -1,12 +1,8 @@
 import type { Command, World } from '../../contracts/src/types';
-import { addEvent } from './events';
 import { clubOf } from './player-state';
 import { quote } from './quotes';
-import { clamp } from './primitives';
 import { campaignEffectiveness } from './finance';
 import { buildEffects } from './build';
-import { startFacilityWork } from './facilities';
-import { credit, debit } from './transactions';
 import { delegatedSponsors, signSponsor, sponsorEnding } from './sponsors';
 
 export {
@@ -25,11 +21,8 @@ export {
 } from './sponsors';
 export type { SponsorBonus, SponsorOffer, SponsorSlotView } from './sponsors';
 
-/** Sponsors, campaigns, facilities and owner capital. */
-export type CommercialCommand = Extract<
-  Command,
-  { type: 'sponsor' | 'sign-sponsor' | 'campaign' | 'facility' | 'support' }
->;
+/** Sponsors and campaigns; the owner adds no capital and starts no facility work (→ECON-11/32). */
+export type CommercialCommand = Extract<Command, { type: 'sponsor' | 'sign-sponsor' | 'campaign' }>;
 /**
  * Daily business (→ECON-21): with business delegated the commercial staff fill empty sponsor
  * slots; otherwise 1 April tells the owner of contracts in their final season.
@@ -71,7 +64,6 @@ export function campaignOffers(w: World) {
   }));
 }
 export function commercialCommand(w: World, cmd: CommercialCommand) {
-  const code = clubOf(w).country;
   switch (cmd.type) {
     case 'sign-sponsor':
       signSponsor(w, cmd.slot, cmd.offer);
@@ -82,26 +74,5 @@ export function commercialCommand(w: World, cmd: CommercialCommand) {
     case 'campaign':
       // Campaigns became the 지역 and 글로벌 rows (→ECON-7); one started before still settles.
       throw new Error('캠페인은 이제 없어요. 지역·글로벌 투자는 구단 방향을 따라요.');
-    case 'facility':
-      startFacilityWork(w, cmd.part, (fee) => debit(w, fee));
-      break;
-    case 'support': {
-      const limit = buildEffects(w).ownerCapital;
-      if (w.events.filter((e) => e.kind === 'support' && e.year === w.year).length >= limit)
-        throw new Error(`구단주 추가 출자는 시즌당 ${limit}회입니다.`);
-      const amount = quote(code, w.year, 150);
-      credit(w, amount);
-      w.support++;
-      clubOf(w).reputation = clamp(clubOf(w).reputation - 2);
-      if (BigInt(w.cash) >= 0 && w.critical === '운영자금이 부족합니다.') delete w.critical;
-      addEvent(
-        w,
-        'support',
-        '구단주 추가 출자',
-        `운영 매출과 별도 · 시즌당 최대 ${limit}회 · 자금 조달 의존으로 평판 -2`,
-        amount,
-      );
-      break;
-    }
   }
 }

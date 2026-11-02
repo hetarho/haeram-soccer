@@ -3,6 +3,7 @@ import type {
   ClubPolicy,
   Direction,
   DirectionKey,
+  FacilityPart,
   TransferBid,
   World,
 } from '../../contracts/src/types';
@@ -14,6 +15,8 @@ import { assessOperatingExpenses } from './finance';
 import { playerValue, respondBid } from './transfers';
 import { POLICY_KEYS, policyOf } from './policy';
 import { DIRECTION_DEFAULT } from './direction';
+import { startFacilityWork } from './facilities';
+import { debit } from './transactions';
 
 /**
  * Puts direction rows in force on a test world, as a founded or saved club holds them: cards,
@@ -48,6 +51,15 @@ export function holdRows(
     if (Object.keys(next).length) w.direction = next as Direction;
     else delete w.direction;
   }
+  return w;
+}
+
+/**
+ * Starts a part's next work and pays for it now, as a world saved with a work under way holds it
+ * (→ECON-32). No career starts one, so tests that need a work in progress start it here.
+ */
+export function startWork(w: World, part: FacilityPart) {
+  startFacilityWork(w, part, (fee) => debit(w, fee));
   return w;
 }
 

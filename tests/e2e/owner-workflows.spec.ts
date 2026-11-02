@@ -175,9 +175,9 @@ test('recruitment needs open on demand and academy operations open their exact w
   await closeMarketPanel(page, '영입 정보');
   await openPersonnel(page, 'training');
   await openPersonnel(page, 'academy');
-  await page.getByRole('button', { name: /유소년 시설 .*공사 보기/ }).click();
+  await page.getByRole('button', { name: /유소년 시설 .*시설 보기/ }).click();
   await expect(page.getByTestId('facility-academy')).toBeVisible();
-  // 구단 운영 opens on 재정·투자, where facilities are built (→WEB-110).
+  // 구단 운영 opens on 재정·투자, where each facility's stage reads (→WEB-14, WEB-110).
   await expect(page).toHaveURL(/\/club-operations\?view=investment$/);
   await expect(
     operationsTabs(page).getByRole('tab', { name: '재정·투자', exact: true }),

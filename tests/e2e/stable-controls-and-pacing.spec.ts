@@ -85,9 +85,9 @@ test('surveys every management destination during uninterrupted calendar play', 
   await expect(office.getByRole('button', { name: '전체 직접', exact: true })).toBeDisabled();
   await page.keyboard.press('Escape');
   await continues();
+  // 재정·투자 only reads: the owner adds no capital and starts no works (→WEB-14).
   await openOfficeArea(page, '투자');
-  await page.getByText('운영을 이어갈 추가 출자', { exact: true }).click();
-  await expect(page.getByRole('button', { name: '추가 출자', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: /출자|공사/ })).toHaveCount(0);
   await continues();
   await openOfficeArea(page, '구단 디자인');
   // A design commission opens to its colour steps, whose picks stay locked while the clock runs.

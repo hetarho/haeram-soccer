@@ -246,7 +246,7 @@ export const STORIES: Story[] = [
     '구단 운영 · 재정·투자',
     '운영 · 시설',
     ['ClubOperations', 'ClubNavigation', 'FinanceOutlook', 'FinancialBreakdown', 'FacilityParts'],
-    '구단 섹션 메뉴, 재정 현황, 출자, 시설과 투자 방향.',
+    '구단 섹션 메뉴, 재정 현황, 시설 단계와 투자 방향.',
     { page: 'operations', query: 'view=investment' },
   ),
   story(

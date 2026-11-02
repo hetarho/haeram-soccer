@@ -33,8 +33,6 @@ export interface BuildEffects {
   winFans: number;
   /** Strength points at home. */
   homeStrength: number;
-  /** Owner capital injections allowed per season. */
-  ownerCapital: number;
   /** Player wage multiplier. */
   wage: number;
   moraleBaseline: number;
@@ -56,7 +54,6 @@ export const NEUTRAL_BUILD: Readonly<BuildEffects> = Object.freeze({
   gateDemand: 0,
   winFans: 1,
   homeStrength: 0,
-  ownerCapital: 3,
   wage: 1,
   moraleBaseline: 0,
 });
@@ -169,7 +166,7 @@ export const BUILD_CARDS: {
     owner: {
       label: '구단주 투자',
       model: '구단주의 자금으로 버티며 투자하는 구조',
-      effects: { ownerCapital: 2, wage: 1.05 },
+      effects: { wage: 1.05 },
     },
     frugal: {
       label: '긴축 재정',
@@ -179,7 +176,7 @@ export const BUILD_CARDS: {
     members: {
       label: '회원제 운영',
       model: '팬이 주인인 회원제(소시오) 구단',
-      effects: { gateDemand: 0.05, winFans: 1.2, sponsor: 0.9, ownerCapital: -1 },
+      effects: { gateDemand: 0.05, winFans: 1.2, sponsor: 0.9 },
     },
   },
   fans: {

@@ -92,11 +92,6 @@
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
 }
-.primary {
-  background: var(--surface-grain, none) var(--accent-fill);
-  border-color: var(--accent);
-  color: var(--on-accent);
-}
 .panel > button {
   min-height: var(--control-min-height);
   margin-top: 5px;
@@ -205,15 +200,13 @@
 .delegation {
   min-width: 0;
 }
-.detailActions,
-.reviewActions {
+.detailActions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   margin: 10px 0;
 }
 .detailActions button,
-.reviewActions button,
 .close button {
   min-height: var(--control-min-height);
   padding: 6px 12px;
@@ -224,51 +217,6 @@
 .close button {
   grid-column: 1 / -1;
   width: 100%;
-}
-.reviewActions {
-  margin: 0;
-}
-.recovery {
-  border: 1px solid var(--line);
-  border-radius: var(--card-radius);
-  background: var(--surface-grain, none) var(--surface);
-}
-.recovery summary {
-  min-height: 44px;
-  padding: 11px;
-  cursor: pointer;
-  color: var(--text-muted);
-  font-size: 12px;
-  font-family: var(--display);
-}
-.recovery summary:focus-visible {
-  outline: 3px solid var(--focus);
-  outline-offset: 2px;
-}
-.contribution {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-radius: var(--card-radius);
-  background: var(--surface-grain, none) var(--warm-soft);
-}
-.contribution b {
-  font-size: 13px;
-}
-.contribution p {
-  font-size: 12px;
-  margin: 4px 0 0;
-  color: var(--gold);
-  line-height: 1.5;
-  font-family: var(--display);
-}
-.contribution button {
-  min-height: 44px;
-  flex-shrink: 0;
-  font-size: 12px;
-  font-family: var(--display);
 }
 .warning,
 .message {

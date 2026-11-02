@@ -9,6 +9,8 @@ import {
   activeTrainingFocus,
   createWorld,
   nextWork,
+  debit,
+  startFacilityWork,
   simulateSeason,
   advanceRound,
   operate,
@@ -566,7 +568,7 @@ function playSeasons(
         operate(w, { type: 'recruit', candidate: 0, loan: true });
       const stand = nextWork(w, 'stadium');
       if (n % 15 === 0 && stand && !w.facilityWorks?.stadium && available(stand.cost))
-        operate(w, { type: 'facility', part: 'stadium' });
+        startFacilityWork(w, 'stadium', (fee) => debit(w, fee));
       if (n % 10 === 0 && available(quote(code, w.year, 400))) {
         const candidate = managerCandidates(w).find((offer) => offer.source === 'free');
         if (candidate) {

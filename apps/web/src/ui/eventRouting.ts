@@ -56,8 +56,6 @@ export function answersRequest(w: World, item: InboxItem, command: Command): boo
       );
     case 'sign-sponsor':
       return command.slot === item.ref;
-    case 'support':
-      return item.kind === 'finance';
     default:
       return false;
   }

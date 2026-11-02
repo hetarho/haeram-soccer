@@ -171,7 +171,7 @@ function cashWarning(w: World, perRound: string) {
   pushInbox(w, {
     kind: 'finance',
     title: `운영자금이 약 ${weeks}주분 남았어요`,
-    detail: `라운드마다 급여·시설 유지·운영 경비 ${moneyLabel(w, perRound)}가 나가요. 후원 계약, 선수 매각, 선수단·지역·글로벌·유소년 투자 축소나 구단주 출자로 버틸 시간을 늘리세요. 잔고가 바닥난 채 ${BANKRUPTCY_ROUNDS}라운드가 지나면 구단이 파산해요.`,
+    detail: `라운드마다 급여·시설 유지·운영 경비 ${moneyLabel(w, perRound)}가 나가요. 잔고가 바닥난 채 ${BANKRUPTCY_ROUNDS}라운드가 지나면 구단이 파산해요.`,
     // A status, not a stop: the HUD and the warning band show it in red (→ECON-24).
     attention: false,
   });
@@ -264,7 +264,7 @@ export function settleRound(w: World) {
       w,
       'budget-warning',
       '운영자금 경고',
-      '필수 비용으로 잔고가 음수가 되었습니다. 지출 조정, 매각, 명시적인 구단주 출자로 회복할 수 있습니다. 자동 지원금은 없습니다.',
+      '필수 비용으로 잔고가 음수가 되었습니다. 자동 지원금은 없습니다.',
     );
   }
   insolvency(w, cost.annual);
@@ -297,7 +297,7 @@ function insolvency(w: World, annual: string) {
     pushInbox(w, {
       kind: 'finance',
       title: `파산 위기 · ${BANKRUPTCY_ROUNDS}라운드 안에 흑자로 돌아오세요`,
-      detail: `잔고가 ${moneyLabel(w, w.cash)}예요. 적자인 채로 ${BANKRUPTCY_ROUNDS}라운드가 정산되거나 빚이 연간 고정 지출의 절반을 넘으면 구단이 파산해 게임이 끝나요. 선수 매각, 지출 축소, 후원 계약, 구단주 출자로 흑자를 만드세요.`,
+      detail: `잔고가 ${moneyLabel(w, w.cash)}예요. 적자인 채로 ${BANKRUPTCY_ROUNDS}라운드가 정산되거나 빚이 연간 고정 지출의 절반을 넘으면 구단이 파산해 게임이 끝나요.`,
       attention: false,
     });
 }

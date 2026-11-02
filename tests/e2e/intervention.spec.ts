@@ -113,13 +113,13 @@ for (const viewport of [
     await expect(country).toHaveAttribute('data-value', 'FRA');
 
     await openOfficeArea(page, '투자');
-    const review = page.getByRole('button', { name: '경기장 공사 검토', exact: true });
-    await review.click();
-    const plan = page.getByRole('dialog', { name: '경기장 공사 확인' });
-    await expect(plan).toBeVisible();
+    const ledger = page.getByRole('button', { name: '수입·지출 장부', exact: true });
+    await ledger.click();
+    const sheet = page.getByRole('dialog', { name: '클럽 수입·지출 장부' });
+    await expect(sheet).toBeVisible();
     await page.keyboard.press('Escape');
-    await expect(plan).toHaveCount(0);
-    await expect(review).toBeFocused();
+    await expect(sheet).toHaveCount(0);
+    await expect(ledger).toBeFocused();
     await leaveOffice(page);
     await resumeLeague(page);
     await expect(page).toHaveURL(contextUrl);

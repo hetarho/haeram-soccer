@@ -369,31 +369,20 @@ describe('contract talks (→CLUB-26)', () => {
     expect(BigInt(wageBill(past.w))).toBe(
       BigInt(costs.playerWages) + BigInt(costs.managerWage) + BigInt(costs.staffWages),
     );
-    // Owner capital and player trading are not revenue a wage bill rests on.
+    // Player trading is not revenue a wage bill rests on.
     const { w } = talking(80);
     w.income = '100000';
     const before = recentRevenue(w);
-    w.events.push(
-      {
-        year: w.year,
-        round: 3,
-        kind: 'support',
-        title: '',
-        detail: '',
-        amount: '40000',
-        currency: w.currency,
-      },
-      {
-        year: w.year,
-        round: 4,
-        kind: 'transfer-out',
-        title: '',
-        detail: '',
-        amount: '20000',
-        currency: w.currency,
-      },
-    );
-    expect(BigInt(recentRevenue(w))).toBe(BigInt(before) - 120000n);
+    w.events.push({
+      year: w.year,
+      round: 4,
+      kind: 'transfer-out',
+      title: '',
+      detail: '',
+      amount: '20000',
+      currency: w.currency,
+    });
+    expect(BigInt(recentRevenue(w))).toBe(BigInt(before) - 40000n);
   });
 
   it('delegated talks follow 재계약 기조: whom the staff keep and how far they go', () => {

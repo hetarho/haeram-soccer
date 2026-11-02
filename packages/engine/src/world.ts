@@ -450,7 +450,6 @@ export function createBase(input: Founding): World {
     operatingExpenses,
     currency: currency(input.country, year).code,
     priceIndex: priceIndex(input.country, year).value,
-    support: 0,
     stadium: 0,
     trainingGround: 0,
     academyFacility: 0,

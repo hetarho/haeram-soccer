@@ -13,11 +13,13 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-02T16:10Z | T650 |
+| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-02T16:10Z | T651 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261103 decided ECON-10 ECON-30 SAVE-25 T650: an older save's 추가 출자 receipts once no rule produces them → they fall in 이전·기타 장부 and count as turnover like any catch-all income, with no load shim (alt: keep the old kind out of turnover). ot03
+- 261103 decided HIST-10 T650: the 동네의 작은 구장 milestone has no owner path once facility works are withdrawn → kept, completed by a work under way (and, after the takeover, by a club whose stadium already stands past its first step), its hint reading the stadium in 재정·투자 (alt: remove it as T648 removed 우리만의 선발). ot03
 - 261103 decided SAVE-25 STAFF-22 T648: an older save whose applied tactic came from an accepted tactic request → it keeps that tactic until the next manager change, with no load shim (alt: reset a non-interim manager's club to his philosophy on load, a shim that also rewrites worlds tests and tools set by hand). ot03
 - 261103 decided HIST-10 WEB-9 T648: the 우리만의 선발 milestone counted a saved owner XI → removed, 7 milestones remain and an older save no longer shows it (alt: keep it reading older `lineup` events, unreachable for every new career). ot03
 - 261103 decided OWNER-3: how a tier's fortune is sized → 10× (석유 재벌) or 1.3× the median pound price of clubs in its reach in the takeover season (alt: fixed amounts per tier on the price index). ot03
@@ -518,7 +520,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T650 | remove owner capital and owner-started facility works | ECON CLUB WEB HIST | T649 | todo |
 | T651 | remove coaching encouragement and owner-proposed playing coaches | STAFF PLAYER HIST WEB | T650 | todo |
 | T652 | remove dead commands and every unused piece of code | SAVE KIT LEAGUE WEB ARCH | T651 | todo |
 | T653 | owner and takeover foundation: contracts, config, commands and hook points | OWNER ECON SAVE WEB | T652 | todo |
@@ -560,11 +561,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T650 (then T651→T652; then the owner takeover plan, see the next line)
+- implement-task T651 (then T652; then the owner takeover plan, see the next line)
 - after T652: implement-task T653, then in parallel the lanes takeover (T657→T658), owner-economy (T659→T660), traits (T661), start-ui (T662), owner-ui (T663) beside the main-session chain T654→T655→T656; then T664→T665→T666, T667, T668
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261103 T650 done: the owner adds no capital and starts no facility work. The support/facility commands, World.support (dropped on load), the ownerCapital build effect (구단주 투자 keeps only its wage cost) and the ledger's owner capital line are gone; startFacilityWork is reached only by the calibration harness's reference club and tests, and a work under way still opens on its day; 추가 출자, the facility review and 공사 시작 are deleted while 재정·투자 reads each part's stage, art and work under way. Equivalence digests unchanged; unit 222/1913 green; contract 47 green (golden unchanged); e2e edited for the batch.
 - 261103 T649 done: the club keeps the direction it was founded with. The policy/build/direction/ticket commands, setPolicy/setBuild/setDirection, the policy and ticket previews, the 80+ intake odds and the card display lines are gone; founding installs its preset directly (32 founded worlds identical); the 방향 board, composer, department sheets, direction lines and the device strategy library are deleted (its key removed on writer start); 재정·투자 and the staff/academy/market views read the rows, investment, ticket price and bases read-only. Equivalence digests unchanged; unit 222/1911 green; golden regenerated (contract 47 green); e2e edited for the batch.
 - 261103 T648 done: the manager alone picks the tactic and the XI. The tactics/lineup/accept-condition commands, request scoring and history, setLineup/lineupPreset/selectedLineup, Manager.lastRequest/requestHistory/pending/conflicts, World.requested/lineup (dropped on load), the STAFF-14 request modifiers and the 우리만의 선발 milestone are gone; TacticsTalk, TacticalLab, tacticComparison and PlayerPreparationHost are deleted and the next-match report reads the manager's XI and matchday squad with the kit choice in its own 유니폼 section. Equivalence digests unchanged; unit 223/1936 green; golden regenerated (contract 47 green); e2e edited for the batch.
 - 261103 create-task OWNER@1 WEB@204 ECON@42 WORLD@8 LEAGUE@12 MATCH@47 KIT@8 SAVE@62 HIST@21 CLUB@50 ARCH@27 PLAYER@13 → T653–T668 (foundation T653; lanes takeover, owner-economy, traits, start-ui, owner-ui; main-session T654–T656; integration T664–T666; explore T654, T667, T668); ot03

@@ -7,7 +7,8 @@ import {
   progressFacilityWorks,
   settleRound,
 } from '../../../../packages/engine/src/index';
-import { sellPlayer } from '../../../../packages/engine/src/testing';
+import { addEvent } from '../../../../packages/engine/src/events';
+import { sellPlayer, startWork } from '../../../../packages/engine/src/testing';
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { describeOutcome, newEvents } from './outcome';
 
@@ -26,31 +27,26 @@ const after = (w: World, apply: (copy: World) => void) => {
 };
 
 describe('action outcome summaries', () => {
-  it('explains an investment with its recorded cost, level and engine record', () => {
+  it('shows a work under way opening with its new level and record', () => {
+    // No command starts a work (→ECON-32); one under way in a saved world opens as the rounds
+    // pass, and the round's summary names the new level.
     const before = world();
-    // The first training ground level costs more than a founding club's cash (→ECON-32).
     before.cash = '100000000';
-    const command = { type: 'facility', part: 'training' } as const;
-    // Started, then opened 90 days later: the level moves once the work is done (→ECON-32).
+    startWork(before, 'training');
     const next = after(before, (w) => {
-      operate(w, command);
       w.facilityWorks!.training!.day -= 90;
       progressFacilityWorks(w);
     });
-    const outcome = describeOutcome(command, before, next)!;
-    expect(outcome.title).toBe('시설 공사를 시작했어요');
+    const outcome = describeOutcome({ type: 'advance', rounds: 1 }, before, next)!;
+    expect(outcome.title).toBe('한 라운드를 진행했어요');
     expect(outcome.changes.find((c) => c.label === '훈련장')).toMatchObject({
       previous: '0단계',
       value: '1단계',
       trend: 'up',
     });
-    const cash = outcome.changes.find((c) => c.label === '운영 자금')!;
-    expect(cash.trend).toBe('down');
-    expect(cash.value).toContain('(−');
     expect(outcome.events.map((event) => event.title)).toContain(
-      next.events.findLast((event) => event.kind === 'facility')!.title,
+      next.events.findLast((event) => event.kind === 'facility-open')!.title,
     );
-    expect(outcome.note).toContain('유지비');
   });
 
   it('names 선수단 › 스태프 as the home of a coach change', () => {
@@ -93,21 +89,24 @@ describe('action outcome summaries', () => {
   it('finds new records even when the view keeps a bounded event tail', () => {
     const before = world();
     const next = after(before, (w) => {
-      operate(w, { type: 'facility', part: 'stadium' });
-      operate(w, { type: 'support' });
+      operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
+      addEvent(w, 'facility-open', '훈련장 완공 · 1단계', '선수 성장 기반 +0.03');
       w.events = w.events.slice(-2);
     });
-    expect(newEvents(before, next).map((e) => e.kind)).toEqual(['facility', 'support']);
+    expect(newEvents(before, next).map((e) => e.kind)).toEqual(['sponsor-sign', 'facility-open']);
   });
 
   it('leaves routine ledger records to the cash change instead of listing raw units', () => {
     const before = world();
+    const command = { type: 'sign-sponsor', slot: 'local', offer: 0 } as const;
     const next = after(before, (w) => {
       settleRound(w);
-      operate(w, { type: 'support' });
+      operate(w, command);
     });
-    const outcome = describeOutcome({ type: 'support' }, before, next)!;
+    const outcome = describeOutcome(command, before, next)!;
+    const signed = next.events.at(-1)!;
     expect(next.events.some((event) => event.kind === 'operating-cost')).toBe(true);
-    expect(outcome.events.map((event) => event.title)).toEqual(['구단주 추가 출자']);
+    expect(signed.kind).toBe('sponsor-sign');
+    expect(outcome.events.map((event) => event.title)).toEqual([signed.title]);
   });
 });

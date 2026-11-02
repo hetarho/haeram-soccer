@@ -165,8 +165,6 @@ const command = z.discriminatedUnion('type', [
     type: z.literal('sponsor'),
     kind: z.enum(['stable', 'performance', 'exclusive', 'indexed']),
   }),
-  z.object({ type: z.literal('facility'), part: z.enum(['stadium', 'training', 'academy']) }),
-  z.object({ type: z.literal('support') }),
   // Strict: the own club is implied, so a club target is refused rather than stripped (→KIT-9).
   z.strictObject({ type: z.literal('club-identity'), identity: clubIdentitySchema }),
   // The engine's role vocabulary, or null for automatic selection (→KIT-6).
@@ -282,7 +280,6 @@ export interface View {
   careers: Record<string, CareerAssessment>;
   coaches: Partial<Record<StaffRole, ReturnType<typeof staffCandidates>>>;
   totalMatches: number;
-  supportUsed: number;
   milestones: ReturnType<typeof clubMilestones>;
   /** The manager market (→STAFF-17): free agents, then other clubs' managers. */
   managers: ReturnType<typeof managerCandidates>;

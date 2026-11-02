@@ -76,14 +76,14 @@ export function operatingExpensesAt(code: string, year: number, tier: number) {
   return footballQuote(code, year, table[Math.min(tier, table.length - 1)]);
 }
 /**
- * Income lines that are not turnover (→ECON-30): player sales, compensation for players who left
- * and owner capital.
+ * Income lines that are not turnover (→ECON-30): player sales and compensation for players who
+ * left.
  */
-const NOT_TURNOVER = new Set(['transfer-out', 'free-transfer-compensation', 'support']);
+const NOT_TURNOVER = new Set(['transfer-out', 'free-transfer-compensation']);
 /**
  * The club's turnover over its last completed season, in this season's money (→ECON-30): that
- * season's ledger income (→ECON-10) without player sales, compensation for players who left or
- * owner capital. Undefined when no completed season's ledger is kept, as in a club's first season.
+ * season's ledger income (→ECON-10) without player sales or compensation for players who left.
+ * Undefined when no completed season's ledger is kept, as in a club's first season.
  */
 export function lastSeasonTurnover(w: World): string | undefined {
   const season = w.history.at(-1);
@@ -146,9 +146,8 @@ export function wageBill(w: World) {
   ).toString();
 }
 /**
- * This season's turnover so far (→ECON-30): its income without player sales, compensation for
- * players who left or owner capital. Events are only appended, so the scan stops at the first
- * older one.
+ * This season's turnover so far (→ECON-30): its income without player sales or compensation for
+ * players who left. Events are only appended, so the scan stops at the first older one.
  */
 export function seasonTurnover(w: World) {
   let notTurnover = 0n;
@@ -459,7 +458,6 @@ const incomeKinds: Record<string, string> = {
   'cup-honor': '국내 컵 우승 상금',
   'europe-prize': '클럽대항전 수당',
   'europe-honor': '클럽대항전 우승 상금',
-  support: '구단주 추가 출자',
 };
 /** Every income ledger kind (→ECON-10), each sponsor slot's among them. */
 export const INCOME_KINDS: readonly string[] = Object.keys(incomeKinds);
@@ -511,9 +509,6 @@ export function financialBreakdown(w: World) {
   const period = seasonEntries(w, w.year, w.currency);
   const income = ledgerLines(period, incomeKinds, w.income);
   const expense = ledgerLines(period, expenseKinds, w.expense);
-  const ownerInvestment = income.find((row) => row.key === 'support')!.amount;
-  const operatingIncome = (BigInt(w.income) - BigInt(ownerInvestment)).toString();
-  const operatingNet = (BigInt(operatingIncome) - BigInt(w.expense)).toString();
   const recent = period
     .flatMap((event) => {
       const direction = incomeKinds[event.kind]
@@ -532,9 +527,8 @@ export function financialBreakdown(w: World) {
     catchment: catchment(w),
     income,
     expense,
-    operatingIncome,
-    operatingNet,
-    ownerInvestment,
+    /** This season's income less its expense: the owner adds no capital (→ECON-11). */
+    net: (BigInt(w.income) - BigInt(w.expense)).toString(),
     recent,
   };
 }

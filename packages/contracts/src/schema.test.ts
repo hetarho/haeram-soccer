@@ -104,4 +104,21 @@ describe('owner interventions withdrawn (→SAVE-25)', () => {
     expect(older.manager.pending).toBe('possession');
     expect(older.lineup).toHaveLength(11);
   });
+
+  it('drops the removed owner capital count from an older save', () => {
+    const w = world();
+    // A capital receipt and its count, and a stadium work under way, as a career saved before
+    // ECON-11 withdrew the owner's capital and ECON-32 his facility works.
+    addEvent(w, 'support', '구단주 추가 출자', '운영 매출과 별도 · 평판 -2', '1000');
+    w.facilityWorks = { stadium: { to: 1, year: w.year, day: 0 } };
+    const older = { ...structuredClone(w), support: 1 } as World & { support: number };
+    const loaded = validateWorld(older, LOAD_CATALOG);
+    expect(loaded).not.toHaveProperty('support');
+    // Every other fact stays as saved: the receipt among the events, the work to finish on its day.
+    expect(loaded).toEqual(validateWorld(w, LOAD_CATALOG));
+    expect(loaded.events.at(-1)!.kind).toBe('support');
+    expect(loaded.facilityWorks).toEqual({ stadium: { to: 1, year: w.year, day: 0 } });
+    // Reading never writes: the save itself is left for the writer's next checkpoint.
+    expect(older.support).toBe(1);
+  });
 });

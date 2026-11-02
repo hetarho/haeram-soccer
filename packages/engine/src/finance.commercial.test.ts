@@ -33,6 +33,5 @@ describe('earned, auditable club finances', () => {
     expect(sponsored).toBeGreaterThan(0n);
     expect(commercial).toBeGreaterThan(plain);
     expect(commercial).toBeGreaterThan(0n);
-    expect(managed.events.filter((event) => event.kind === 'support')).toEqual([]);
   });
 });

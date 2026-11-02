@@ -44,7 +44,7 @@ describe('calendar edit protection', () => {
     const { client, enqueue } = clientWithQueue();
     client.setClockRunning(true);
     client.state.error = 'existing recovery error';
-    expect(await client.command({ type: 'support' })).toBeUndefined();
+    expect(await client.command({ type: 'sign-sponsor', slot: 'local', offer: 0 })).toBeUndefined();
     expect(enqueue).not.toHaveBeenCalled();
     expect(client.state.pendingActions).toBeUndefined();
     expect(client.state.error).toBe('existing recovery error');
@@ -68,11 +68,11 @@ describe('calendar edit protection', () => {
     client.setClockRunning(true);
     const tick = client.command({ type: 'advance-days', days: 1 }, { automatic: true });
     client.setClockRunning(false);
-    expect(await client.command({ type: 'support' })).toBeUndefined();
+    expect(await client.command({ type: 'sign-sponsor', slot: 'local', offer: 0 })).toBeUndefined();
     expect(enqueue).toHaveBeenCalledOnce();
     finish({ ok: true } as Reply);
     await tick;
-    await client.command({ type: 'support' });
+    await client.command({ type: 'sign-sponsor', slot: 'local', offer: 0 });
     expect(enqueue).toHaveBeenCalledTimes(2);
   });
 

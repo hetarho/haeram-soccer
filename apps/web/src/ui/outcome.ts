@@ -40,8 +40,6 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
   'transfer-stance': '선수의 이적 상태를 바꿨어요',
   campaign: '마케팅 캠페인을 시작했어요',
   sponsor: '후원 계약을 맺었어요',
-  facility: '시설 공사를 시작했어요',
-  support: '구단주 추가 출자를 받았어요',
   'hire-staff': '새 코치를 선임했어요',
   'release-staff': '코치와 계약을 정리했어요',
   'renew-staff': '코치와 재계약했어요',
@@ -67,7 +65,6 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
 };
 const notes: Partial<Record<Command['type'], string>> = {
   campaign: '4라운드 뒤 실제 수입과 신규 팬이 정산돼요.',
-  facility: '완공되는 날부터 효과가 생기고 연간 유지비가 늘어요.',
   'transfer-stance': '제안은 이적시장이 열려 있을 때 들어오고, 수락해야 이적이 성사돼요.',
 };
 const trainingLabel: Record<TrainingFocus, string> = {

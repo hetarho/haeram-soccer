@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
 import { createWorld, advanceRound } from '../../packages/engine/src/index';
-import { facilityInvestmentPreview } from '../../packages/engine/src/investment';
+import { startWork } from '../../packages/engine/src/testing';
 import { sponsorOffers, sponsorAnnual } from '../../packages/engine/src/operations';
 import {
   operatingCosts,
@@ -14,9 +14,8 @@ import {
   leagueMatchFactor,
 } from '../../packages/engine/src/finance';
 import { clubOf, quote } from '../../packages/engine/src/world';
-import { compactMoney } from '../../apps/web/src/ui/format';
 import type { World } from '../../packages/contracts/src/types';
-import { horizontalOverflow, settle } from './layout';
+import { horizontalOverflow } from './layout';
 import { acknowledgeEvents, chooseLevel } from './events';
 import { chooseOption } from './select';
 import { clubhouseTab } from './competition-navigation';
@@ -122,66 +121,54 @@ test('older operations addresses open their 구단 운영 section', async ({ pag
   await expect(page.getByRole('button', { name: '캠페인 시작' })).toHaveCount(0);
 });
 
+/** Loads a career built in Node through the slot import, as a saved game opens. */
+async function importCareer(page: Page, w: World, name: string) {
+  await page.goto('/');
+  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
+  await page
+    .locator('input[type=file]')
+    .last()
+    .setInputFiles({ name, mimeType: 'application/json', buffer: Buffer.from(await encode(w)) });
+  await expect(page.getByTestId('club-hub')).toBeVisible();
+  // The imported career carries unread attention events.
+  await acknowledgeEvents(page);
+}
+
 for (const viewport of [
   { width: 360, height: 740 },
   { width: 390, height: 844 },
 ]) {
-  test(`reviews and starts a stadium expansion at ${viewport.width}x${viewport.height}`, async ({
+  test(`reads each facility's stage and a work under way at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
-    await found(page, `facility-ui-${viewport.width}`);
-    const before = await exportWorld(page);
-    const preview = facilityInvestmentPreview(before, 'stadium');
-    // Every amount reads in the one notation (→WEB-67); the exact value opens on tap or hover.
-    const format = (value: string) => compactMoney(value, clubOf(before).country, before.year);
+    // A career saved with a stand being added: no one starts a work now, but this one finishes on
+    // its day (→ECON-32).
+    const fixture = createWorld({
+      country: 'ENG',
+      name: 'Facility Fixture',
+      color: '#335577',
+      seed: `facility-ui-${viewport.width}`,
+      level: 'easy' as const,
+    });
+    fixture.cash = '100000000';
+    startWork(fixture, 'stadium');
+    await importCareer(page, fixture, 'facility-under-way.json');
     await openBusiness(page, '투자');
-    // Three parts built separately (→ECON-32): the stadium's ladder, the training ground and the
-    // academy facilities.
+    // Three parts read separately with their art (→WEB-14): the stadium's ladder, the training
+    // ground and the academy facilities.
     await expect(page.getByTestId('facility-stadium')).toContainText('동네 구장');
     await expect(page.getByTestId('stadium-step-0')).toHaveAttribute('data-state', 'current');
+    await expect(page.getByTestId('stadium-step-1')).toHaveAttribute('data-state', 'building');
+    await expect(page.getByTestId('facility-work-stadium')).toContainText('완공까지 180일');
     await expect(page.getByTestId('facility-training')).toContainText('0/5단계');
     await expect(page.getByTestId('facility-academy')).toContainText('0/5단계');
-    const review = page.getByRole('button', { name: '경기장 공사 검토', exact: true });
-    // Scrolling must bring the CTA fully above the shared bottom navigation (→WEB-39).
-    await review.evaluate((element) => element.scrollIntoView({ block: 'center' }));
-    await settle(page);
-    const reviewBounds = await review.boundingBox();
-    expect(reviewBounds!.height).toBeGreaterThanOrEqual(44);
-    expect(reviewBounds!.y + reviewBounds!.height).toBeLessThanOrEqual(viewport.height);
-    await review.click();
-    const dialog = page.getByRole('dialog', { name: '경기장 공사 확인' });
-    await expect(dialog).toContainText('증축 · 관중석 증축');
-    await expect(dialog).toContainText(format(preview.cost));
-    await expect(dialog).toContainText(format(preview.cashAfter));
-    // A stand is added: 10% of the ground closes while it is built.
-    await expect(dialog).toContainText('2,500 → 2,250 → 5,000석');
-    await expect(dialog).toContainText('180일');
-    const confirm = dialog.getByRole('button', { name: '공사 시작', exact: true });
-    await settle(page);
-    const bounds = await confirm.boundingBox();
-    expect(bounds!.height).toBeGreaterThanOrEqual(44);
-    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(viewport.height);
-    await dialog.getByRole('button', { name: '취소', exact: true }).click();
-    expect(await exportWorld(page)).toEqual(before);
-    await review.click();
-    await confirm.click();
-    await expect(dialog).toHaveCount(0);
-    const after = await exportWorld(page);
-    expect(after.stadium).toBe(0);
-    expect(after.facilityWorks?.stadium).toMatchObject({ to: 1 });
-    expect(after.cash).toBe(preview.cashAfter);
-    expect(BigInt(after.expense) - BigInt(before.expense)).toBe(BigInt(preview.cost));
-    // Upkeep waits for the opening.
-    expect(operatingCosts(after).maintenance).toBe(preview.maintenanceBefore);
-    await expect(page.getByTestId('facility-work-stadium')).toContainText('완공까지 180일');
-    await expect(page.getByRole('button', { name: '경기장 공사 검토', exact: true })).toHaveCount(
-      1,
-    );
-    await expect(
-      page.getByRole('button', { name: '경기장 공사 검토', exact: true }),
-    ).toBeDisabled();
-    await openBusiness(page, '투자');
+    for (const part of ['stadium', 'training', 'academy'])
+      await expect(page.getByTestId(`facility-${part}`).locator('[data-facility-art]')).toHaveCount(
+        1,
+      );
+    // Nothing here builds: no review, no start (→WEB-14).
+    await expect(page.getByRole('button', { name: /공사 (검토|시작)/ })).toHaveCount(0);
     await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
     await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toContainText('시설 공사');
     await page.getByRole('button', { name: '장부 확인 마치기', exact: true }).click();
@@ -345,7 +332,7 @@ test('reads the ticket price founded with and charges it at an actual home gate'
   );
 });
 
-test('recovers a genuine negative operating balance and enforces the three-contribution limit', async ({
+test('reads a genuine negative operating balance with no owner capital to add', async ({
   page,
 }) => {
   const fixture = createWorld({
@@ -363,39 +350,19 @@ test('recovers a genuine negative operating balance and enforces the three-contr
     advanceRound(fixture, undefined, false);
   expect(BigInt(fixture.cash)).toBeLessThan(0n);
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/');
-  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
-  await page
-    .locator('input[type=file]')
-    .last()
-    .setInputFiles({
-      name: 'synthetic-operating-loss.json',
-      mimeType: 'application/json',
-      buffer: Buffer.from(await encode(fixture)),
-    });
-  await expect(page.getByTestId('club-hub')).toBeVisible();
-  // The imported mid-season career carries unread attention events (e.g. the winter window).
-  await acknowledgeEvents(page);
+  await importCareer(page, fixture, 'synthetic-operating-loss.json');
   await openBusiness(page, '투자');
-  const support = page.getByRole('button', { name: '추가 출자', exact: true });
-  await expect(support).toBeEnabled();
-  await support.click();
-  await expect(
-    page.getByRole('status').filter({ hasText: '추가 출자를 기록했어요.' }),
-  ).toBeVisible();
-  await page.getByText('운영을 이어갈 추가 출자', { exact: true }).click();
-  await support.click();
-  await expect(page.getByRole('region', { name: '클럽 재정' })).toContainText('이번 시즌 2/3회');
-  await support.click();
-  await expect(support).toBeDisabled();
-  const recovered = await exportWorld(page);
-  expect(BigInt(recovered.cash)).toBe(
-    BigInt(fixture.cash) + BigInt(quote(clubOf(fixture).country, fixture.year, 150)) * 3n,
-  );
-  expect(
-    recovered.events.filter((event) => event.kind === 'support' && event.year === fixture.year),
-  ).toHaveLength(3);
-  expect(recovered.critical).toBeUndefined();
+  await expect(page.getByRole('region', { name: '클럽 재정' })).toBeVisible();
+  // The owner adds no capital (→ECON-11): the debt reads, and only the club's income clears it.
+  await expect(page.getByRole('button', { name: /출자/ })).toHaveCount(0);
+  await expect(page.getByText(/추가 출자/)).toHaveCount(0);
+  await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
+  const ledger = page.getByRole('region', { name: '수입과 지출 장부' });
+  await expect(ledger).toContainText('시즌 수지');
+  await expect(ledger).toContainText('보유 현금');
+  await expect(ledger).toContainText('자동으로 자금이 보충되지 않습니다.');
+  await page.getByRole('button', { name: '장부 확인 마치기', exact: true }).click();
+  expect(BigInt((await exportWorld(page)).cash)).toBe(BigInt(fixture.cash));
 });
 
 test('ends a bankrupt career on the game-over page and founds a new club from it', async ({

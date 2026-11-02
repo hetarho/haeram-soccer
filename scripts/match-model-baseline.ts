@@ -48,6 +48,8 @@ import {
   isScoringFixture,
   managerCandidates,
   nextWork,
+  debit,
+  startFacilityWork,
   operate,
   operatingCost,
   OWN_LEAGUE_ENGINE,
@@ -476,7 +478,7 @@ function manage(w: World, season: number) {
     operate(w, { type: 'recruit', candidate: 0, loan: true });
   const stand = nextWork(w, 'stadium');
   if (season % 15 === 0 && stand && !w.facilityWorks?.stadium && available(stand.cost))
-    operate(w, { type: 'facility', part: 'stadium' });
+    startFacilityWork(w, 'stadium', (fee) => debit(w, fee));
   if (season % 10 === 0 && available(quote(code, w.year, 400))) {
     const candidate = managerCandidates(w).find((offer) => offer.source === 'free');
     if (candidate) operate(w, { type: 'hire', id: candidate.id });
