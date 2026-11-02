@@ -2,6 +2,7 @@ import { createElement, isValidElement, type ReactElement, type ReactNode } from
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { WorldMarketOffer, WorldMarketPage } from '../../../../packages/contracts/src/types';
+import { LINES, POSITIONS } from '../../../../packages/contracts/src/player';
 import { worldMarketFixture } from '../../../../packages/engine/src/world-market.testkit';
 import type { ClientState, GameClient } from '../runtime/client';
 import { initialClientState } from '../runtime/store';
@@ -298,7 +299,7 @@ describe('paged whole-world recruitment desk', () => {
     expect(client.state.clockRunning).toBe(true);
     reader.cancel();
   });
-  it('passes filters/sorts to the worker and resets pages on search', () => {
+  it('passes filters to the worker, always by OVR, and resets pages on search', () => {
     choices['world-market-query'] = {
       ...DEFAULT_MARKET_QUERY,
       page: 2,
@@ -311,25 +312,30 @@ describe('paged whole-world recruitment desk', () => {
       direction: 'asc',
     };
     render();
-    expect(reads.query.mock.lastCall?.[3]).toEqual(choices['world-market-query']);
+    // A saved order or fit filter never reaches the worker: the list is by OVR, highest first.
+    expect(reads.query.mock.lastCall?.[3]).toEqual({
+      ...(choices['world-market-query'] as MarketQuery),
+      sort: 'ovr',
+      direction: 'desc',
+      fit: undefined,
+    });
     const input = elements(tree).find((node) => node.type === 'input')!;
     (input.props.onChange as (event: unknown) => void)({ target: { value: 'Ada' } });
-    expect(choices['world-market-query']).toMatchObject({
-      page: 0,
-      name: 'Ada',
-      sort: 'wage',
-      direction: 'asc',
-    });
+    expect(choices['world-market-query']).toMatchObject({ page: 0, name: 'Ada' });
     choices['market-panel'] = 'filters';
     render();
-    expect(
-      elements(control('영입 후보 정렬').props.children as ReactNode).map(
-        (item) => item.props.value,
-      ),
-    ).toEqual(['name', 'age', 'ovr', 'potential', 'fee', 'wage']);
+    expect(elements(tree).some((node) => node.props['aria-label'] === '영입 후보 정렬')).toBe(
+      false,
+    );
     expect(control('영입 리그')).toBeDefined();
     expect(control('영입 구단')).toBeDefined();
-    expect(elements(control('영입 포지션').props.children as ReactNode)).toHaveLength(15);
+    // One position choice: every line, then each outfield position under its line.
+    const positions = elements(control('영입 포지션').props.children as ReactNode)
+      .filter((node) => node.type === 'option')
+      .map((node) => node.props.value);
+    expect(positions).toHaveLength(1 + LINES.length + POSITIONS.length - 1);
+    expect(positions).toEqual(expect.arrayContaining(['all', 'line:GK', 'line:DF', 'CB']));
+    expect(positions).not.toContain('GK');
   });
   it('uses server-clamped pages and retains comparison targets across pages', () => {
     choices['world-market-query'] = { ...DEFAULT_MARKET_QUERY, page: 8 };
@@ -380,7 +386,12 @@ describe('paged whole-world recruitment desk', () => {
       const next = choices['world-market-query'] as MarketQuery;
       expect(next).toEqual({ ...query, page: 0, [field]: undefined });
       render();
-      expect(reads.query.mock.lastCall?.[3]).toEqual(next);
+      expect(reads.query.mock.lastCall?.[3]).toEqual({
+        ...next,
+        sort: 'ovr',
+        direction: 'desc',
+        fit: undefined,
+      });
       expect(control(label).props.value).toBe(all.props.value);
     },
   );

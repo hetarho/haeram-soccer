@@ -1,12 +1,14 @@
 import { openPersonnel } from './personnel-navigation';
 import { openClubhouse, openClubRecords, openLeague } from './competition-navigation';
 import { openOfficeLibrary } from './office';
-import { marketRows, marketFilters, marketInfo, closeMarketPanel } from './market';
+import { marketCandidate, marketInfo, closeMarketPanel } from './market';
 import { finishSeason, advanceOneRound } from './season-progression';
 import { openCurrentClubSeason, openSeasonReview } from './record-navigation';
 import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { decode } from '../../apps/web/src/adapters/persistence';
+import { transferOffers } from '../../packages/engine/src/operations';
 import { horizontalOverflow } from './layout';
 import { openSaveMenu } from './save-menu';
 import { leaveOffice, openOfficeArea } from './office';
@@ -49,21 +51,15 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await leaveOffice(page);
   await openPersonnel(page, 'market');
   await expect(page).toHaveURL(/\/first-team\?view=market$/);
-  const marketFilter = await marketFilters(page);
-  await chooseOption(
-    marketFilter.getByRole('combobox', { name: '영입 후보 정렬', exact: true }),
-    'fee',
-  );
-  await chooseOption(
-    marketFilter.getByRole('combobox', { name: '영입 정렬 방향', exact: true }),
-    'asc',
-  );
-  await closeMarketPanel(page, '영입 필터');
-  await marketRows(page)
-    .filter({ hasText: '자유계약' })
-    .first()
-    .getByRole('button', { name: / 상세 보기$/ })
-    .click();
+  // The market lists by OVR only, so a free agent of the actual save is found by name.
+  const exported = page.waitForEvent('download');
+  const exportMenu = await openSaveMenu(page);
+  await exportMenu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
+  const saved = await exported;
+  await exportMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
+  const { world } = await decode(readFileSync((await saved.path())!, 'utf8'));
+  const free = transferOffers(world).find((offer) => BigInt(offer.fee) === 0n)!;
+  await marketCandidate(page, free.player.id, free.player.name);
   await page.getByRole('button', { name: '자유계약 영입', exact: true }).click();
   await closeMarketPanel(page, '영입 후보 상세');
   await expect(await marketInfo(page)).toContainText('선수단 정원 21/40');

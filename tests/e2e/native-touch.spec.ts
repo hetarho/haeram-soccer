@@ -186,10 +186,10 @@ for (const viewport of [
     await expectTouchControl(marketEntry, viewport);
     await marketEntry.click();
     const filter = await marketFilters(page);
-    const order = filter.getByRole('combobox', { name: '영입 후보 정렬', exact: true });
-    await expectTouchControl(order, viewport);
-    await chooseOption(order, 'potential');
-    await expect(order).toHaveAttribute('data-value', 'potential');
+    const position = filter.getByRole('combobox', { name: '영입 포지션', exact: true });
+    await expectTouchControl(position, viewport);
+    await chooseOption(position, 'line:MF');
+    await expect(position).toHaveAttribute('data-value', 'line:MF');
     await closeMarketPanel(page, '영입 필터');
     await expect(marketRows(page)).toHaveCount(50);
     await openLeague(page);

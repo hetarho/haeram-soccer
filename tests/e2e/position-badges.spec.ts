@@ -5,6 +5,7 @@ import { lineOf } from '../../packages/engine/src/player';
 import { textContrast } from './contrast';
 import { horizontalOverflow, settle } from './layout';
 import { closeMarketPanel, marketFilters, marketRows } from './market';
+import { chooseOption } from './select';
 import { openPersonnel } from './personnel-navigation';
 
 // The theme registry is the sole list of themes (→ARCH-32), so a new pack is checked too.
@@ -44,10 +45,10 @@ for (const themeId of themes)
 
     for (const line of LINES) {
       const filters = await marketFilters(page);
-      await filters
-        .getByRole('group', { name: '영입 포지션 선택', exact: true })
-        .getByRole('button', { name: line, exact: true })
-        .click();
+      await chooseOption(
+        filters.getByRole('combobox', { name: '영입 포지션', exact: true }),
+        `line:${line}`,
+      );
       await closeMarketPanel(page, '영입 필터');
       // The line filter also lists players whose second positions reach the line; the badge
       // follows each player's main position, as the engine classifies it (→WEB-113, →PLAYER-3).

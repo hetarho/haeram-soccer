@@ -181,7 +181,7 @@ for (const viewport of [
     expect(await horizontalOverflow(page)).toBe(0);
   });
 
-test('pages the global market, filters and sorts all scopes, and approaches a non-recommended player by identity', async ({
+test('pages the global market by OVR, filters all scopes, and approaches a non-recommended player by identity', async ({
   page,
   context,
 }) => {
@@ -214,21 +214,15 @@ test('pages the global market, filters and sorts all scopes, and approaches a no
   await expect.poll(ids).toEqual(expected({ page: 1 }).items.map((row) => row.player.id));
   await expect(pages).toContainText('2 /');
   const filters = await marketFilters(page);
-  for (const sort of ['name', 'age', 'ovr', 'potential', 'fee', 'wage']) {
-    await chooseOption(
-      filters.getByRole('combobox', { name: '영입 후보 정렬', exact: true }),
-      sort,
-    );
-    for (const direction of ['asc', 'desc']) {
-      await chooseOption(
-        filters.getByRole('combobox', { name: '영입 정렬 방향', exact: true }),
-        direction,
-      );
-      await expect
-        .poll(ids)
-        .toEqual(expected({ sort, direction }).items.map((row) => row.player.id));
-    }
-  }
+  // The list has one order, OVR highest first; an OVR range narrows it.
+  await expect(filters.getByRole('combobox', { name: '영입 후보 정렬', exact: true })).toHaveCount(
+    0,
+  );
+  await filters.getByRole('spinbutton', { name: 'OVR 최소', exact: true }).fill('60');
+  await filters.getByRole('spinbutton', { name: 'OVR 최대', exact: true }).fill('70');
+  await expect
+    .poll(ids)
+    .toEqual(expected({ ovrMin: 60, ovrMax: 70 }).items.map((row) => row.player.id));
   await filters.getByRole('button', { name: '초기화', exact: true }).click();
   await filters.getByRole('button', { name: '스카우트 추천만', exact: true }).click();
   await expect
@@ -249,10 +243,7 @@ test('pages the global market, filters and sorts all scopes, and approaches a no
   }
   await filters.getByRole('button', { name: '초기화', exact: true }).click();
   await chooseOption(filters.getByRole('combobox', { name: '영입 포지션', exact: true }), 'CM');
-  await filters.getByRole('button', { name: '선발 보강 후보', exact: true }).click();
-  await expect
-    .poll(ids)
-    .toEqual(expected({ position: 'CM', fit: 'improves' }).items.map((row) => row.player.id));
+  await expect.poll(ids).toEqual(expected({ position: 'CM' }).items.map((row) => row.player.id));
   await filters.getByRole('button', { name: '초기화', exact: true }).click();
   await closeMarketPanel(page, '영입 필터');
   const search = page.getByRole('searchbox', { name: '선수 이름 검색', exact: true });
@@ -311,21 +302,14 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   const desk = page.getByRole('region', { name: '선수 영입 데스크' });
   const cards = marketRows(page);
   const filter = await marketFilters(page);
-  const roles = filter.getByRole('group', { name: '영입 포지션 선택' });
+  const position = filter.getByRole('combobox', { name: '영입 포지션', exact: true });
   const ids = async () =>
     cards.evaluateAll((items) => items.map((item) => item.getAttribute('data-candidate-id')!));
   const expected = (patch = {}) =>
     worldMarketPage(before, { world: before.id, ...DEFAULT_MARKET_QUERY, ...patch }).items;
   await expect.poll(ids).toEqual(expected().map((offer) => offer.player.id));
-  await roles.getByRole('button', { name: 'GK', exact: true }).click();
+  await chooseOption(position, 'line:GK');
   await expect.poll(ids).toEqual(expected({ line: 'GK' }).map((offer) => offer.player.id));
-  await chooseOption(
-    filter.getByRole('combobox', { name: '영입 후보 정렬', exact: true }),
-    'potential',
-  );
-  await expect
-    .poll(ids)
-    .toEqual(expected({ line: 'GK', sort: 'potential' }).map((offer) => offer.player.id));
   const sorted = (await ids()).slice(0, 2);
   await closeMarketPanel(page, '영입 필터');
   for (const id of sorted)
@@ -334,7 +318,7 @@ test('filters and compares stable candidates, discloses free wages, and saves re
       .getByRole('button', { name: / 비교$/ })
       .click();
   await marketFilters(page);
-  await roles.getByRole('button', { name: 'MF', exact: true }).click();
+  await chooseOption(position, 'line:MF');
   await closeMarketPanel(page, '영입 필터');
   await desk.getByRole('button', { name: '선택한 2명 비교', exact: true }).click();
   const comparison = page.getByRole('dialog', { name: '영입 후보 비교' });
@@ -352,12 +336,8 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   ).toBeVisible();
   await comparison.getByRole('button', { name: '후보 비교 마치기', exact: true }).click();
   await marketFilters(page);
-  await roles.getByRole('button', { name: '전체', exact: true }).click();
-  await chooseOption(filter.getByRole('combobox', { name: '영입 후보 정렬', exact: true }), 'fee');
-  await chooseOption(filter.getByRole('combobox', { name: '영입 정렬 방향', exact: true }), 'asc');
-  await expect
-    .poll(ids)
-    .toEqual(expected({ sort: 'fee', direction: 'asc' }).map((offer) => offer.player.id));
+  await chooseOption(position, 'all');
+  await expect.poll(ids).toEqual(expected().map((offer) => offer.player.id));
 
   await closeMarketPanel(page, '영입 필터');
   const free = offers.find((offer) => BigInt(offer.fee) === 0n)!;
@@ -598,10 +578,7 @@ test('keeps the clock running while comparing candidates away from home until th
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(1);
   const desk = page.getByRole('region', { name: '선수 영입 데스크' });
   const filter = await marketFilters(page);
-  await filter
-    .getByRole('group', { name: '영입 포지션 선택' })
-    .getByRole('button', { name: 'GK', exact: true })
-    .click();
+  await chooseOption(filter.getByRole('combobox', { name: '영입 포지션', exact: true }), 'line:GK');
   await closeMarketPanel(page, '영입 필터');
   await expect(marketRows(page).first()).toBeVisible();
   await marketRows(page)

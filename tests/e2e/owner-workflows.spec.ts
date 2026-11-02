@@ -58,8 +58,7 @@ test('contextual-sheet-restores-candidate', async ({ page }) => {
   await found(page);
   await openPersonnel(page, 'market');
   const filter = await marketFilters(page);
-  const roles = filter.getByRole('group', { name: '영입 포지션 선택' });
-  await roles.getByRole('button', { name: 'GK', exact: true }).click();
+  await chooseOption(filter.getByRole('combobox', { name: '영입 포지션', exact: true }), 'line:GK');
   await closeMarketPanel(page, '영입 필터');
   await expect(marketRows(page).first()).toBeVisible();
   const selectedPage = await marketRows(page).evaluateAll((rows) =>

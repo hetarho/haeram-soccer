@@ -67,7 +67,7 @@ describe('league picker division options (→WEB-65)', () => {
     expect(parseDivision('0.0')).toEqual({ tier: 0, group: 0 });
   });
 
-  it('lists each regional group as a division option, with no group select or own-league button', () => {
+  it('shows a regional group in short, with no group select, and offers our league elsewhere', () => {
     const html = renderToStaticMarkup(
       createElement(LeaguePicker, {
         league: { code: 'ITA', tier: 2, group: 1 },
@@ -76,9 +76,11 @@ describe('league picker division options (→WEB-65)', () => {
         onSeason: vi.fn(),
       }),
     );
-    expect(html).toContain('3부 B조');
+    // The trigger reads short (→WEB-40); the list names the group in full.
+    expect(html).toContain('>3부B<');
+    expect(html).toContain('>ITA<');
     expect(html).not.toContain('지역 그룹');
-    expect(html).not.toContain('우리 리그로');
+    expect(html).toContain('aria-label="우리 리그 보기"');
     expect(html).toContain('aria-label="이전 시즌"');
   });
 
