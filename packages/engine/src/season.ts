@@ -87,6 +87,8 @@ import { openNpcSeason, settleNpcSeason } from './npc-stats';
 import { ballonDorPodium, payBallonDorBonus } from './ballon-dor-award';
 import { activeMatchModel } from '../../contracts/src/match-model';
 import { recordRecentResult, retainRecentResults } from './recent-results';
+import { careerEnded, ownerClose, ownerDay } from './owner';
+import { fanMoodAfterLeagueMatch, fanMoodClose, fanMoodRound } from './fan-mood';
 import {
   currentDay,
   ROUND_INTERVAL_DAYS,
@@ -287,6 +289,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     const club = clubOf(w);
     club.fans = fansAfterMatch(club.fans, win, buildEffects(w).winFans);
     moraleAfterMatch(w, saved);
+    if (league) fanMoodAfterLeagueMatch(w, saved);
   }
   injuriesFromMatch(w, m);
   settleNpcSeason(w, playback);
@@ -630,6 +633,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   // a won bonus clause is booked in the closing season's ledger (→CLUB-29).
   const ballonDor = ballonDorPodium(w, champions);
   payBallonDorBonus(w, ballonDor);
+  // The season's money is in: the owner's close settles before the archive records the cash.
+  ownerClose(w);
   const valuation = clubValuation(w);
   const europeCoefficients = associationCoefficients(w);
   w.history.push({
@@ -707,6 +712,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
       own.tier < oldTier ? '새로운 무대로' : '다시 올라갈 준비',
       `${oldTier + 1}부 → ${own.tier + 1}부`,
     );
+  // Titles, promotion and relegation are known: the supporters judge the owner's season.
+  fanMoodClose(w);
   addEvent(
     w,
     'season',
@@ -812,7 +819,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
  * step always has, it carries on past a critical alert; the host stops after the round.
  */
 export function advanceRound(w: World, settlement?: Settlement, observe = true) {
-  if (w.round >= SEASON_ROUNDS || w.bankrupt) return undefined;
+  if (w.round >= SEASON_ROUNDS || careerEnded(w)) return undefined;
   beginDays(w);
   const round = w.round;
   let ownPlayback: MatchPlayback | undefined;
@@ -820,7 +827,7 @@ export function advanceRound(w: World, settlement?: Settlement, observe = true) 
     ownPlayback = p;
     settlement?.(world, p);
   };
-  while (w.round === round && !w.bankrupt) stepDay(w, capture, observe);
+  while (w.round === round && !careerEnded(w)) stepDay(w, capture, observe);
   return ownPlayback;
 }
 /**
@@ -897,6 +904,7 @@ function playRound(
   advanceEurope(w, capture, undefined, observe);
   advanceCups(w, capture, undefined, observe);
   settleRound(w);
+  fanMoodRound(w);
   // A manager at the floor of trust may resign once the round is settled (→STAFF-47).
   settleManagerTrust(w);
   snapshotStandings(w);
@@ -961,7 +969,7 @@ export function prepareRound(
   start: (copy: FixtureReadCopy, jobs: readonly RoundJob[]) => void,
   observe = true,
 ) {
-  if (w.critical || w.bankrupt || pendingRounds.has(w)) return false;
+  if (w.critical || careerEnded(w) || pendingRounds.has(w)) return false;
   const day = currentDay(w) + 1;
   if (closingDay(w, day) || !leagueDay(w, day)) return false;
   const { clubs, sequential } = roundFixtures(w, w.round + 1);
@@ -1001,7 +1009,7 @@ export function completeRound(
  * Daily club business outside matches: facility works, academy intake, the transfer market, sponsors, the staff,
  * spring retirement announcements, contract talks, transfer requests and healed injuries. It opens
  * by counting the owner's waiting approvals, once a day on every progression path, the season's
- * close included (→STAFF-48).
+ * close included (→STAFF-48), and closes with the owner's own business (→OWNER-7).
  */
 export function clubDay(w: World) {
   countApprovalWaits(w);
@@ -1017,6 +1025,7 @@ export function clubDay(w: World) {
   contractTalks(w);
   transferRequests(w);
   clearHealed(w);
+  ownerDay(w);
 }
 /** Off days only move the clock. Matches and existing weekly costs settle on their due day. */
 export function advanceDays(
@@ -1027,7 +1036,7 @@ export function advanceDays(
 ) {
   if (!Number.isInteger(days) || days < 1 || days > 366)
     throw new Error('진행할 날짜 범위가 올바르지 않습니다.');
-  if (w.critical || w.bankrupt) return undefined;
+  if (w.critical || careerEnded(w)) return undefined;
   beginDays(w);
   let ownPlayback: MatchPlayback | undefined;
   const capture = (world: World, p: MatchPlayback) => {
@@ -1036,7 +1045,7 @@ export function advanceDays(
   };
   for (let n = 0; n < days; n++) {
     stepDay(w, capture, observe);
-    if (w.critical || w.bankrupt) break;
+    if (w.critical || careerEnded(w)) break;
   }
   return ownPlayback;
 }

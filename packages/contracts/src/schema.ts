@@ -19,6 +19,7 @@ import {
 } from './match-model';
 import { managerHistoryFactsSchema } from './manager-history';
 import { RECENT_RESULT_LIMIT } from './recent-results';
+import { DIVIDEND_SHARES, OWNER_TRAIT_IDS, OWNER_TRAIT_LIMIT, WEALTH_TIER_IDS } from './owner';
 const money = z.string().regex(/^-?\d{1,80}$/);
 /** Money that is never negative: wages asked, contract amounts. */
 const amount = z.string().regex(/^\d{1,80}$/);
@@ -103,6 +104,22 @@ export const clubBuildSchema = z.strictObject({
   culture: z.enum(BUILD_OPTIONS.culture).optional(),
 });
 const policyLevel = z.literal([1, 2, 3, 4, 5]);
+/** A club's books while nobody owns it (→ECON-36): the current and the last closed season. */
+const clubBooks = z.strictObject({
+  seasons: z
+    .array(
+      z.strictObject({
+        year: season,
+        income: amount,
+        wages: amount,
+        costs: amount,
+        result: money,
+      }),
+    )
+    .max(2),
+  cash: amount,
+  debt: amount,
+});
 const club = z.object({
   id,
   name: text,
@@ -119,6 +136,7 @@ const club = z.object({
   project: z.number().finite().min(0).max(60).optional(),
   cohesion: z.number().finite().min(0.3).max(1).optional(),
   identity: clubIdentitySchema.optional(),
+  books: clubBooks.optional(),
 });
 /** Whole percent of the wage (→CLUB-29): a promotion rise, a relegation cut, a Ballon d'Or bonus. */
 const clauses = z.strictObject({
@@ -866,6 +884,49 @@ const transferRecords = z.strictObject({
     )
     .max(100000),
 });
+/** The owner (→OWNER, SAVE-27): tier, traits, money, standing, crises and the takeover's facts. */
+const ownerState = z.strictObject({
+  tier: z.enum(WEALTH_TIER_IDS),
+  traits: z
+    .array(z.enum(OWNER_TRAIT_IDS))
+    .max(OWNER_TRAIT_LIMIT)
+    .refine((traits) => new Set(traits).size === traits.length),
+  fortune: money,
+  stake: z.number().int().min(0).max(100),
+  dividendShare: z.literal(DIVIDEND_SHARES),
+  fanMood: rating,
+  ownerCrisis: z.strictObject({ since: careerDate }).optional(),
+  fanCrisis: z.strictObject({ rounds: z.number().int().min(1).max(100) }).optional(),
+  ffpInjections: z.array(z.strictObject({ season, amount })).max(100),
+  takeover: z.strictObject({
+    year: season,
+    clubId: id,
+    price: amount,
+    debt: amount,
+    fortune: amount,
+    currency: text,
+  }),
+  seasonRecords: z
+    .array(
+      z.strictObject({
+        year: season,
+        currency: text,
+        fortune: money,
+        business: money,
+        living: amount,
+        injected: amount,
+        dividend: amount,
+        fanMood: rating,
+      }),
+    )
+    .max(2200),
+});
+/** The club's debt at the takeover as a loan (→ECON-38). */
+const takeoverLoan = z.strictObject({
+  balance: amount,
+  installment: amount,
+  seasonsLeft: z.number().int().min(0).max(100),
+});
 const worldSchema: z.ZodType<World> = z.object({
   schema: z.literal(1),
   engine: text,
@@ -1113,6 +1174,9 @@ const worldSchema: z.ZodType<World> = z.object({
     .optional(),
   receiptIds: z.array(id).max(200),
   discipline: discipline.optional(),
+  owner: ownerState.optional(),
+  loan: takeoverLoan.optional(),
+  ended: z.enum(['club', 'owner', 'fans']).optional(),
 });
 /** The record's player lines of one side: all of them unless `lineCounts` splits home from away. */
 function sideLines(m: World['ownMatches'][number], side: 0 | 1) {

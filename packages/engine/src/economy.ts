@@ -58,6 +58,16 @@ export function advanceEconomy(w: World, previousYear: number) {
       c.cost = convert(c.cost);
       c.income = convert(c.income);
     }
+    // The owner's fortune and the FFP window's injections, and the takeover loan, go on in the
+    // club's new money (→OWNER-1, ECON-38); the takeover's facts and season records keep theirs.
+    if (w.owner) {
+      w.owner.fortune = convert(w.owner.fortune);
+      for (const injection of w.owner.ffpInjections) injection.amount = convert(injection.amount);
+    }
+    if (w.loan) {
+      w.loan.balance = convert(w.loan.balance);
+      w.loan.installment = convert(w.loan.installment);
+    }
     w.currency = after.code;
     addEvent(
       w,

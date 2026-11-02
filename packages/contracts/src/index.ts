@@ -19,6 +19,13 @@ export function canonical(value: unknown): string {
 export * from './types';
 export * from './recent-results';
 export { ATTRIBUTES, LINES, PLAY_TRAITS, POSITIONS, ROLE_IDS } from './player';
+export {
+  DIVIDEND_SHARES,
+  OWNER_TRAIT_IDS,
+  OWNER_TRAIT_LIMIT,
+  TAKEOVER_DECADES,
+  WEALTH_TIER_IDS,
+} from './owner';
 export * from './build';
 export * from './detail';
 export * from './schema';

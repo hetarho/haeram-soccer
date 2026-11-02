@@ -28,14 +28,14 @@ export interface TransferMove {
 }
 
 /**
- * Keeps one fact for a completed fee move, just before its ledger entry is added. A free move
- * keeps none. The first fact marks where the older career's ledger ends, so no hook at founding
- * or load is needed: a career that never recorded one ranks all its ledger entries.
+ * Keeps one fact for a completed fee move, just before its ledger entry is added, and returns it.
+ * A free move keeps none. The first fact marks where the older career's ledger ends, so no hook at
+ * founding or load is needed: a career that never recorded one ranks all its ledger entries.
  */
-export function recordTransfer(w: World, fact: TransferMove) {
-  if (BigInt(fact.fee) <= 0n) return;
+export function recordTransfer(w: World, fact: TransferMove): TransferFact | undefined {
+  if (BigInt(fact.fee) <= 0n) return undefined;
   const records = (w.transfers ??= { ledgerBefore: w.events.length, facts: [] });
-  records.facts.push({
+  const recorded: TransferFact = {
     direction: fact.direction,
     loan: fact.loan,
     player: fact.player.id,
@@ -46,7 +46,9 @@ export function recordTransfer(w: World, fact: TransferMove) {
     currency: w.currency,
     year: w.year,
     day: currentDay(w),
-  });
+  };
+  records.facts.push(recorded);
+  return recorded;
 }
 
 /** An older career's fee entry: its ledger line and its place in `w.events`. */
