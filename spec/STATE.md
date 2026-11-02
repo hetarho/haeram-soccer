@@ -456,6 +456,7 @@
 | save-storage-and-fast-pace | ready@261026 |
 | match-day-progress | ready@261026 |
 | calibration-pass | open@261026 |
+| owner-wealth-and-takeover | ready@261102 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
@@ -511,9 +512,11 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- create-ssot OWNER (ideation owner-wealth-and-takeover; then WEB WORLD ECON LEAGUE MATCH KIT SAVE)
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261102 ideation owner-wealth-and-takeover ready: difficulty by owner wealth (6 tiers) × traits (0–5 of 8), takeover of any club at its value from a chosen decade 1930–2000, owner fortune with a quarterly 50/50 business stake and living costs, injection at any time, season-close dividends, FFP from 2011/12, 팬 민심 and 구단주 퇴진, crises as a status, amateur level removed
 - 261102 nm62 closed: T645 on main (511e2419, fix 5e42da3d); CI 41390729838 integration passed, remaining checks/unit/e2e failures in ds02's areas, fixed by ds02's 89299cb queued next. Report spec/reports/261102-nm62.md.
 - 261102 fix T645 name-bearing checks: grid-throughput (153 digests) and full-model-throughput re-recorded, every one equal to the source's with names removed; mediation free-agent journey searches a piece of the name shared by more than a page, since full names no longer repeat (3/3 Chromium); nm62.
 - 261102 T645 done: per-country name pools (113–144 given × 204–285 surnames) in catalog 2026-demo-5, surnames distinct inside every generated NPC and founding squad; fresh world 315→~12,670 distinct names, in-squad repeats ~2,300→0; portable goldens re-recorded (names only); nm62.
