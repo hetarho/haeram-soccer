@@ -16,6 +16,7 @@ import { quote } from './quotes';
 import { random, ratio, scaleBy } from './primitives';
 import { moneyLabel, seasonResult } from './finance';
 import { credit, debit } from './transactions';
+import { fanMoodDividend, fanMoodInjection } from './fan-mood';
 
 /** Refusal of an owner command while the career has no owner state. */
 export const OWNER_PENDING_MESSAGE = '구단주 기능은 아직 준비 중입니다';
@@ -165,17 +166,17 @@ export function ownerDay(w: World) {
 
 /**
  * The dividend at the close (→OWNER-11): the dial's share of the season's net result when positive,
- * never more than the club's cash above zero, moves from the club's cash into the fortune. Returns
- * what was taken.
+ * never more than the club's cash above zero, moves from the club's cash into the fortune, and
+ * what is taken lowers 팬 민심 (→OWNER-12).
  */
-function payDividend(w: World): bigint {
+function payDividend(w: World) {
   const owner = w.owner!,
     result = BigInt(seasonResult(w));
-  if (owner.dividendShare === 0 || result <= 0n) return 0n;
+  if (owner.dividendShare === 0 || result <= 0n) return;
   const share = BigInt(ratio(result.toString(), BigInt(owner.dividendShare), 100n)),
     cash = BigInt(w.cash),
     amount = share < cash ? share : cash;
-  if (amount <= 0n) return 0n;
+  if (amount <= 0n) return;
   debit(w, amount.toString(), true);
   owner.fortune = (BigInt(owner.fortune) + amount).toString();
   addEvent(
@@ -185,7 +186,7 @@ function payDividend(w: World): bigint {
     `시즌 순이익 ${moneyLabel(w, result.toString())}의 ${owner.dividendShare}%${amount < share ? ' · 구단 잔고까지만' : ''}`,
     amount.toString(),
   );
-  return amount;
+  fanMoodDividend(w, amount);
 }
 /**
  * The takeover loan's season is paid (→ECON-38): its installments went out with the league rounds,
@@ -291,7 +292,7 @@ function recordFfp(w: World, amount: bigint) {
 
 /**
  * 자금 투입 (→OWNER-9/10): `amount` of the fortune above zero into the club's cash, owner capital
- * on its own ledger line outside turnover, within the FFP room when it applies.
+ * on its own ledger line outside turnover, within the FFP room when it applies; it raises 팬 민심.
  */
 function inject(w: World, raw: string) {
   const owner = w.owner!;
@@ -319,6 +320,8 @@ function inject(w: World, raw: string) {
     amount.toString(),
   );
   recordFfp(w, amount);
+  // Owner money put in raises 팬 민심 (→OWNER-12).
+  fanMoodInjection(w, amount);
 }
 
 /** The owner's commands: the stake, an injection and the dividend dial (→OWNER-7/9/11). */
