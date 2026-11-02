@@ -1,12 +1,12 @@
 # ARCH Web-first game architecture
-> r26 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r27 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
   - Product-contract planning precedes the relevant scaffolding, dependency installation, cloud-resource, and publishing milestones.
   - Web goal: attract interest through observable matches, meaningful statistics, strategic experiments, and a continuing club history.
   - Carry the agreed eight-country scope: England, Spain, Germany, Italy, France, Portugal, Netherlands, Belgium; other European associations provide representative clubs.
-  - Carry founding, initial-capital difficulty, manager personality, recruitment, marketing, sponsors, historical prices/currencies, and historically introduced European competitions.
+  - Carry the takeover start with owner wealth tiers and traits, manager personality, recruitment, marketing, sponsors, historical prices/currencies, and historically introduced European competitions.
   - Product rule details and balance values belong in product SSOTs derived from `ideation/club-history-reboot.md`; architecture does not silently settle their open policies.
 - ARCH-2 [o] Web stack: React + TypeScript in strict mode + Vite, delivered as a static SPA. ← fast browser entry and a deployment artifact without an application server
   - pnpm workspaces; the pnpm release is pinned by `packageManager`; stable dependency versions and the exact active-LTS Node release are pinned at scaffolding; commit the lockfile.
@@ -97,7 +97,7 @@
 - ARCH-14 [o] Storage and longevity must pass an early measurement gate.
   - Per-checkpoint and total localStorage budgets follow →SAVE-4, conservatively accounting for key/value UTF-16 size.
   - Catch actual quota failures even when estimated usage is below budget; do not assume other applications or browser modes leave the full quota available.
-  - Measure representative eight-country worlds at founding, a mid-career checkpoint, and 100 simulated seasons before polishing the complete UI.
+  - Measure representative eight-country worlds at the takeover (after world generation), a mid-career checkpoint, and 100 simulated seasons before polishing the complete UI.
   - A 100-season capacity claim requires a passing recorded benchmark.
   - If the budget fails, optimize encoding within the retention policy (→ARCH-25); do not silently prune agreed history or move checkpoints to cloud storage.
 - ARCH-15 [o] Persist game facts and history, not rendering noise.
@@ -122,7 +122,7 @@
   - React escapes user text; imported names are data, not executable HTML.
 - ARCH-19 [o] Optional hall of fame is an isolated future Supabase adapter.
   - Initial web implementation defines the adapter contract and disabled feature flag; it installs no Supabase SDK and creates no backend resources.
-  - Future submission sends a minimal record: pseudonym, world/rule versions, country, founding year, initial-capital category, seasons, and score/honor summary; no full private save upload by default.
+  - Future submission sends a minimal record: pseudonym, world/rule versions, country, takeover decade, wealth tier, trait count, seasons, and score/honor summary; no full private save upload by default.
   - Supabase Auth identifies the submitter; an Edge Function validates and writes submissions, and RLS protects table access.
   - Publishable client keys may be public; secret/service-role keys remain server-only. [Supabase security](https://supabase.com/docs/guides/database/secure-data)
   - Local client results are self-reported unless a separate replay/verification mechanism is implemented; RLS/checksums alone cannot establish honest gameplay.
@@ -137,7 +137,7 @@
   - Vitest: deterministic engine, calendars, money, contract effects, IDs, and migrations.
   - fast-check: seeded invariants for league/group capacities, fixture settlement, balance conservation, transitions, and save round trips.
   - Portable fixtures: command sequences and canonical expected facts consumed by the web engine now and the Dart engine later.
-  - Playwright: founding → watch/advance → compare metrics → recruit → save/reload → export/import; include quota, corruption, duplicate-tab, and worker-recovery cases.
+  - Playwright: start and takeover → watch/advance → compare metrics → recruit → save/reload → export/import; include quota, corruption, duplicate-tab, and worker-recovery cases.
   - Fixture data is synthetic and explicitly marked; tests do not claim the real catalogs are complete merely because a mock world runs.
   - A fast unit test isolates a function or component with minimal prepared data; whole-world progression, host/codec round trips and multi-match statistical checks belong to the integration tier. Every existing case remains in exactly one of unit, integration or contract.
   - A test simulates only the step it verifies: a world it merely needs in some state (after a season close, some rounds in, a long career) comes from `tests/fixtures/worlds.ts` (`simulatedWorld` for a founding plus seasons and rounds, `cachedWorld` for any other builder), built once per dependency fingerprint and shared across files and runs (`node_modules/.cache/haeram-worlds`, cached in CI). Cache identities include local transitive runtime imports, builder inputs and relevant toolchain/configuration; unrelated UI/assets/tests do not invalidate engine-only worlds. Generic JSON caching and release constants have no simulation imports. UI-only browser journeys may load versioned validated prepared checkpoints; separate live-engine integration cases retain writer coverage. ← after own-league matches played the grid engine a season cost about 10 s and tests rebuilt the same seasons, so the unit suite took 30–40 minutes
@@ -186,7 +186,7 @@
   - Initial entry JavaScript + CSS: at most 250 KiB compressed, excluding lazy engine/catalog chunks; report all first-play transfer sizes separately. Pages visited later (the records room, cup history) load as their own chunks.
   - Reference trace: pinned Chromium, 4x CPU slowdown, Fast 4G for cold loading, desktop and 390x844 mobile viewports.
   - UI feedback after controls: p95 below 100 ms during ordinary simulation; observed pitch rendering targets at least 30 FPS on the reference mobile viewport.
-  - World initialization after a valid founding command: at most 5 seconds on the reference trace; present real generation progress while it runs.
+  - World generation after a valid start: at most 5 seconds for a 1930 takeover and at most 90 seconds for a 2000 takeover on the reference trace; present real generation progress (the season reached) while it runs.
   - Benchmark reports record tool/browser versions, dataset size, world seed, save sizes, match/season throughput, and long-run memory; these are targets to measure, not invented results.
 
 - ARCH-29 [o] Owner-scoped data sits behind profile ports: a device profile now (a random device ID, the game-slot index), an account profile later. ← games should follow the owner once sign-in exists (→ARCH-19) without reshaping local data
@@ -250,6 +250,7 @@
 - Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
 
 ## chg
+- r27 261103 ARCH-1✎ carry founding, initial-capital difficulty→the takeover start with wealth tiers and traits; ARCH-14✎ measure worlds at founding→at the takeover; ARCH-19✎ submission founding year, initial-capital category→takeover decade, wealth tier, trait count; ARCH-21✎ Playwright founding→start and takeover; ARCH-28✎ world initialization 5 s→5 s for 1930 and 90 s for a 2000 takeover with the season reached
 - r26 261102 ARCH-1✎ carry manager personality and tactical requests→manager personality; ARCH-6✎ duplicates never repeat tactics changes→removed from the list; ARCH-8✎ record requested tactics, manager responses and applied tactics separately→removed; ARCH-21✎ Vitest manager-request outcomes and Playwright request tactics→removed; ARCH-24✎ full web loop manager personality/requests→manager personality; ARCH-29✎ device profile holds the strategy library→device ID and game-slot index only
 - r25 261028 ARCH-31✎ throughput gates on absolute budgets (fixture ≤1 ms, season ≤15 s median on a reference machine)→no absolute time budget, throughput compared with the previous release on one machine and reported, capacity stays the gate; ARCH-34+ a speed-up succeeds when faster than its baseline on the measuring machine beyond the noise (paired harness, 95% interval, result-identical hashes)
 - r24 261027 ARCH-6+ helper workers may compute an own match day's other league fixtures from a read-only copy; the engine worker stays the sole writer, records in fixture order and falls back to computing them itself; identical worlds tested

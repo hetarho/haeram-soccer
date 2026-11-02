@@ -1,11 +1,11 @@
 # MATCH Observable match simulation
-> r46 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r47 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
   - added time is the time each half lost to goals, substitutions, injuries, cards and set-piece delays, announced as the half ends; the modern era plays about 6–12 minutes a match in all (EPL 2023-24 11:39, the five seasons before about 7:20).
   - at half-time the sides change ends and the manager may substitute (→MATCH-20).
-- MATCH-2 [o] Outcome factors include the players' attributes at their slots, club/manager quality, fatigue, home advantage, and the actually applied tactical preset. ← the own club must play on the same terms as the clubs it meets
+- MATCH-2 [o] Outcome factors include the players' attributes at their slots, club/manager quality, fatigue, home advantage, and the actually applied tactical preset; the one exception to equal terms is the owner's 승리의 부적 (→OWNER-6). ← the own club must play on the same terms as the clubs it meets
   - every club's strength is its actual starting XI in its formation (→STAFF-22): the average 실효 OVR at the slots (→PLAYER-6) minus (fatigue − 20)/6 for fatigue above 20; an own player's 실효 OVR carries his adaptation multiplier (→PLAYER-10), a player of a club nobody owns his club's 조직력 multiplier (→LEAGUE-12).
   - every club adds (manager ability − 50)/4 for its manager — the own club's hired one, a club nobody owns its named manager (→STAFF-17) — and (morale − 60)/10, a club nobody owns at the neutral 60 since it tracks no morale; the own club also adds its manager style's strength (→STAFF-14) and at home its build's home strength (→ECON-22). ← a manager counts the same for every club, so the own club's edge is only what its manager, morale and build earn
   - this symmetric context plays from match-model revision 3 (→SAVE-23); fixtures on earlier revisions and the pre-feature model keep a flat 4 for a club nobody owns.
@@ -334,6 +334,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r47 261103 MATCH-2✎ same terms→same terms except the owner's 승리의 부적 (→OWNER-6)
 - r46 261103 MATCH-10✎ full post-match league context opens explicitly→the standing after the match shows once it ends, the full league table on request
 - r45 261102 MATCH-8✎ the four tactics are the owner's only tactical control, applied through the manager→the manager's call, no owner tactical control; MATCH-9✎ the pre-match laboratory's tactic fit→any tactic fit shown (→CLUB-14); MATCH-29✎ reason the owner's only tactical control→a manager's tactic
 - r44 261030 MATCH-12✎ none→a first-time shot is struck as he chooses it, never held for whoever wins its second ball. MATCH-35✎ none→a second ball is won clear of the blocker's or keeper's body, never on his spot, and a shot again from it has its own flight and match time

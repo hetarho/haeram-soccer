@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r11 | Define the browser-demo rules for domestic seasons and relegation.
+> r12 | Define the browser-demo rules for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -7,14 +7,12 @@
 - LEAGUE-3 [o] ENG boundaries move 3/3/4 clubs, ESP 3, GER 2 plus upper/lower playoff, ITA 3 then 4 (three group winners plus playoff), FRA 2 plus playoff, POR/NED 2 plus playoff, BEL 2 plus playoff. Complex regional/reserve/licensing exceptions are normalized.
 - LEAGUE-4 [o] Promotion playoffs actually simulate ties and archive the player club ties; no arbitrary ranking promotion when a playoff is specified.
 - LEAGUE-5 [o] Each implemented association runs a single-elimination domestic cup through the season; cup winner qualification is distinct from league qualification. ← cup ties belong between league weekends, not after the last round
-  - entrants: every professional and amateur club of the country, seeded by division then strength; a first round brings the field to a power of two and the top seeds wait for the next round.
+  - entrants: every professional club of the country, seeded by division then strength; a first round brings the field to a power of two and the top seeds wait for the next round.
   - an open draw from the world's stream pairs each round once the previous one is complete; the first club drawn is at home; a level tie goes to extra time and penalties.
   - midweek rounds (league round × 7 − 3 days): the last N of 5, 11, 16, 23, 28, 35, 42, so the final is in late May; the own club's draw is an inbox item (→WEB-42).
   - own prize per tie won by rounds left after it: semi-final 40, quarter-final 20, round of 16 10, earlier 5; the title 150 (1901 units).
   - the season archive keeps each country's final: runner-up, score and a shoot-out.
-- LEAGUE-6 [o] The amateur level swaps places with the last professional division: each of its groups relegates its bottom two of the season just played and as many amateur clubs go up, the own club taking one of those places like any other club. ← one exchange for every club; a promotion never needs an extra place
-  - while the own club plays in the amateur league (→WORLD-9) — a 30-game, 16-club season it was founded in or relegated to, keeping its history and control — that table decides who goes up: every place but the last by rank, the last by a playoff of the next four clubs.
-  - where no amateur league is played, the strongest amateur clubs go up.
+- LEAGUE-6 [x] The amateur level swaps places with the last professional division: each of its groups relegates its bottom two of the season just played and as many amateur clubs go up, the own club taking one of those places like any other club. ← one exchange for every club; a promotion never needs an extra place
 - LEAGUE-7 [o] Global rounds spread shorter schedules across the world season; domestic cup and European ties are played midweek in rounds the other never uses (→LEAGUE-5, →EURO-10). Completed fixtures settle once.
 - LEAGUE-8 [o] Close a season only after its fixtures/cups/Europe and financial settlement; archive standings, renew personnel and fixtures, then advance the season.
 
@@ -27,6 +25,7 @@
   - strengths stay within 15–99, the very best an owner can build ← a cap below the owner's best would leave one club unbeatable
   - a normal summer's luck (sum of three uniforms, sd ≈ 1.5) and, each year, a 1.5% takeover (+4 to +8) or a 1.5% crisis (−4 to −8); reputation follows →LEAGUE-14.
   - measured 261011 (30 seasons, eight countries): 5–9 different champions per country, the most successful club 8–15 titles, champions average 2.15 points per game.
+  - a takeover or project clears the club's debt (→ECON-36).
 - LEAGUE-11 [o] The world season is lived one day at a time in one order, whatever advances it — an automatic day step, manual next-event advance, explicit round or an internal season simulation (public controls →WEB-5) — so every mode records the same facts (→ARCH-5). ← the control that advanced time must not change results
   - a midweek cup or continental tie plays on its own day, league round × 7 − 3 (→LEAGUE-5, →EURO-10), before that round's league matches.
   - a league match day plays the round's matches first, then the round's settlement (training, wages, supporters), then that day's club business — academy intake, market, delegated business, staff, retirement announcements, healed injuries — so a player healed or signed that day plays from his next match.
@@ -39,17 +38,19 @@
   - a new manager (→STAFF-17) takes 30% of the distance to 0.50 when his school differs from his predecessor's, 10% when it is the same.
   - between seasons a takeover or a project (→LEAGUE-10) takes 0.15, a promotion or a relegation 0.10, never below 0.30.
   - a rival's dossier and its league-table OVR show it (→WEB-58).
-- LEAGUE-13 [o] Balance is measured on reference careers with all business responsibilities delegated and 기본 방향 (→ECON-29's runs: 1950–2009, four countries × difficulty level × 5 seeds), and holds these bands; tuning changes the rules and constants for every level alike, never one level's own. ← reaching the top should take long and holding it stay hard, with room for a lucky career
-  | level | first top-flight title | share of top-flight titles after the first | bankrupt | measured 261015 (rules 2.0.0, 40 careers a level: ENG ESP FRA GER × 10 seeds, default direction, 1950–2009) |
-  |---|---|---|---|---|
-  | 쉬움 | most careers; median 35–50 seasons, the fastest within about 25 | 20–35% | none | 60% win; median 51.5, fastest 27; 21.2% after; 1 bankrupt (ESP, 47 amateur seasons) |
-  | 보통 | about a third of careers | 20% or less | none | 62.5% win, outside the band; median 49, fastest 27; 22.4% after; none bankrupt |
-  | 어려움 | 1 in 5 careers or fewer | - | 1 in 20 or fewer | 57.5% win, outside the band; median 49, fastest 24; 20.7% after; 1 bankrupt |
-  | 최상 | half the careers reach the top flight or fewer | - | 1 in 5 or fewer | 37 of 40 reach the top flight and 70% win, outside the band; 1 bankrupt |
-  - the levels do not separate: a level sets only the start (→WEB-3, CLUB-1), and over 60 seasons from the amateur league the start's cash and XI wash out, so every level wins about 60% of careers near season 50; a global constant moves every level alike, so meeting 보통·어려움·최상 needs a lasting level rule.
+- LEAGUE-13 [o] Balance is measured on reference careers per wealth tier: a takeover in 1950 of a club at the tier's reach (→OWNER-3) with no traits and no owner money moved (stake 0%, no injection, dividend 0%), all business responsibilities delegated and 기본 방향, run to 2009 in four countries (ENG ESP FRA GER) × 5 seeds; tuning changes rules and constants for every tier alike, never one tier's own. ← reaching the top should take long and holding it stay hard, with room for a lucky career
+  | tier | first top-flight title | share of top-flight titles after the first | bankrupt |
+  |---|---|---|---|
+  | 석유 재벌 | most careers, median within 10 seasons | 35% or less | none |
+  | 재벌 총수 | about half the careers | 30% or less | none |
+  | 산업 자본가 | about a third of careers | 25% or less | none |
+  | 중견 사업가 | 1 in 5 or fewer; the top flight in most careers | - | 1 in 20 or fewer |
+  | 지역 유지 | the top flight in about half the careers | - | 1 in 10 or fewer |
+  | 자수성가 축구팬 | the top flight in 1 in 4 careers or fewer | - | 1 in 5 or fewer |
+  - careers with five traits are measured beside each tier; the bands hold for no traits.
 
-- LEAGUE-14 [o] Every club's reputation (0–100; a new club 12) follows its standing, the owner's club and clubs nobody owns alike: at each season close it closes 20% of the gap to the level of the division it will play in next, plus its league finish; honours add at once. ← standing is relative: decades in a lower division never make a giant, and a fallen giant's name fades over seasons, not at once
-  - division level: top flight 75, then 15 less per tier (second 60, third 45, fourth 30), at least 8; the amateur league 8.
+- LEAGUE-14 [o] Every club's reputation (0–100) follows its standing, the owner's club and clubs nobody owns alike: at each season close it closes 20% of the gap to the level of the division it will play in next, plus its league finish; honours add at once. ← standing is relative: decades in a lower division never make a giant, and a fallen giant's name fades over seasons, not at once
+  - division level: top flight 75, then 15 less per tier (second 60, third 45, fourth 30), at least 8.
   - league finish: 3 × (1 − 2 × (rank − 1) / (clubs − 1)) in the club's own league or group: champion +3, middle 0, last −3; a club that played no league season adds nothing.
   - honours: a domestic cup won +2 (→LEAGUE-5); each continental match played +0.2, a continental title +8.
   - the same results season after season settle it 5 × the finish term from its level, within ±15 of it (top-flight champion 90, middle 76; third-division middle 46); continental honours lift a top club toward 100.
@@ -60,7 +61,10 @@
   - each club keeps a short list of its unavailable players (who, until when, how many matches banned); it clears when the club's squad is generated for a new season (→WORLD-6), while an unserved ban carries over by person.
   - every league keeps a discipline table: each player's yellow and red cards and current bans by competition.
 
+- LEAGUE-16 [o] The last professional division relegates nobody; its promotion places go up as before, and the division above relegates into it. Finishing last there costs 팬 민심 (→OWNER-12). ← with no amateur level there is nowhere to go down to
+
 ## chg
+- r12 261103 LEAGUE-5✎ entrants professional and amateur→professional only; LEAGUE-6- amateur exchange removed; LEAGUE-10✎ +a takeover or project clears the club's debt; LEAGUE-13✎ reference careers by difficulty level from the amateur league with level bands→per wealth tier from a 1950 takeover with tier bands; LEAGUE-14✎ a new club 12 and the amateur league's level 8→removed; LEAGUE-16+ the last professional division relegates nobody
 - r11 261102 LEAGUE-13✎ reference careers named by the historical intervention level 4→all business responsibilities delegated only (the intervention level is removed)
 - r10 261019 LEAGUE-15+ injuries and suspensions for clubs nobody owns, a retained unavailable list cleared at the seasonal squad generation, league discipline table
 - r9 261016 LEAGUE-10✎ reputation of clubs nobody owns drifts 30% toward its division's→follows LEAGUE-14; LEAGUE-14+ every club's reputation: 20% of the gap to its next division's level (75/60/45/30, amateur 8) + league finish ±3, domestic cup +2, continental match +0.2 and title +8

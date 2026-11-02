@@ -1,5 +1,5 @@
 # KIT Club identity and match kits
-> r7 | Let owners design a recognisable club and see its selected kits in match observation.
+> r8 | Let owners design a recognisable club and see its selected kits in match observation.
 
 ## decisions
 - KIT-1 [o] The editor offers exactly three colour choices: 홈 (home), 어웨이 (away) and 세컨 (third). Each is its named shirt’s base colour.
@@ -33,11 +33,11 @@
   - Distinction concerns the kits actually selected for this fixture, not only the clubs' representative colours.
   - A club without a designed goalkeeper kit, including every opponent, uses automatically chosen distinguishable goalkeeper colours. Automatic colours avoid designed kits.
   - A new draft starts from an automatically chosen colour distinguishable from the club's own three kits.
-- KIT-9 [o] In a career the own club's representative colours, crest and shirt designs change only by adopting a designer draft (→!WEB-108); choosing colours, commissioning, viewing drafts, discarding or redrawing does not change the applied identity.
+- KIT-9 [o] In a career the own club's representative colours, crest and shirt designs change only by adopting a designer draft (→!WEB-108); choosing colours, commissioning, viewing drafts, discarding or redrawing does not change the applied identity. Adopting a draft lowers 팬 민심 (→OWNER-12); the club's name never changes.
   - Read-only viewers may inspect identity and delivered drafts; only the writing owner may commission or adopt under →SAVE-6.
   - Editing another club's identity is not an owner action.
 - KIT-10 [o] Changing any named colour updates the draft’s three-colour palette, corresponding shirt bases, linked pattern/trim regions and home/away crest colours immediately, preserving every chosen pattern and crest component.
-  - The editor exists only before founding (→WEB-86); new founding drafts start with these linked colours.
+  - There is no editor before the takeover (→WEB-86); designer drafts start with these linked colours.
 - KIT-11 [o] Every opponent has a stable crest and home/away/third shirt designs available to automatic match selection.
   - Initial designs are reproducible from that world and club; clubs added later receive their own designs.
   - Editing the own club must not reassign other clubs' existing identities.
@@ -50,9 +50,7 @@
   - These appearance facts follow existing playback retention, not a new archive of every world's historical kit or unretained match action.
 - KIT-13 [o] Choosing colours, crest parts, patterns or a kit changes presentation only; it does not alter player ability, money, reputation, fixture results, random sporting outcomes or the game date.
   - The only exception is a designer commission's fee and half-price redraw (→WEB-108), which move money and nothing else.
-- KIT-14 [o] Founding offers six complete ready-made crests, one for each existing outer shape, and complete editable home/away/third shirt drafts before customisation.
-  - Default editor colours are the three shirt bases (→KIT-1/4). The owner may change only the designs they want; skipping the editor never blocks founding.
-  - Founding uses the previewed selections; the initial drafts are not rerolled after confirmation.
+- KIT-14 [x] Founding offers six complete ready-made crests, one for each existing outer shape, and complete editable home/away/third shirt drafts before customisation.
 - KIT-15 [o] A supported career without the new identity information keeps every club's current visible crest, representative colours and recorded gameplay facts; supply only the missing shirt, shorts and socks designs reproducibly (→KIT-3).
   - Such a career gains a designed goalkeeper kit only when its owner designs one; until then →KIT-8's automatic colours apply.
   - Keep the own club's founding colour. Do not reassign other clubs' existing crests when adding shirts or editing the own club.
@@ -62,7 +60,7 @@
 
 ## flow
 - Crest: home/away colours → ready-made or random composition → optional component composition → preview → explicit use/apply.
-- Founding: club identity draft → home/away/third kits and goalkeeper kit → pitch preview → found with the selected identity.
+- Takeover: the bought club keeps its generated identity → later changes only through the design studio.
 - Match: automatic pairing → goalkeeper kit or fallback colour → optional own-kit override for that fixture → observe the selected kits on the player figures (→MATCH-36).
 - Management: applied identity → edit draft → preview → apply or cancel; effect timing follows →KIT-12.
 
@@ -73,6 +71,7 @@
 - The storage, responsiveness and reference-device budgets remain →SAVE-4/13 and →WEB-19; pattern detail must remain legible at the desktop match scale and in the large previews; at phone widths team colours, facing and large actions must remain legible (→MATCH-36).
 
 ## chg
+- r8 261103 KIT-9✎ +adopting a draft lowers 팬 민심, the name never changes; KIT-10✎ editor before founding→no editor before the takeover, designer drafts start linked; KIT-14- founding crests and drafts removed; flow✎ Founding→Takeover keeps the generated identity
 - r7 261102 KIT-6✎ choice made in match preparation→the kit section of the next-match detailed report; skipping preparation→never opening that section; KIT-8✎ goalkeeper fallback shown in match preparation→in the next-match detailed report
 - r6 261031 KIT-9✎ explicit apply of an edit→adopting a designer draft; KIT-10✎ career editor preserves saved design→editor before founding only; KIT-12✎ applying an edit→adopting a design; KIT-13✎ +commission fee is the only money moved
 - r5 261031 KIT-5✎ eight shirt patterns→fourteen (+pinstripes, quarters, centre stripe, side panels, yoke, diagonal halves)

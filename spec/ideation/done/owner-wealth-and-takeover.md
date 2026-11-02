@@ -1,5 +1,5 @@
 # IDEATION owner-wealth-and-takeover
-> st:ready@261102 | Difficulty is the owner's starting wealth (six tiers) and how many traits he takes (0 hard … 5 easy); he picks the decade, buys any club at its value, stakes his own business at a rate he sets, funds the club from his pocket, takes dividends from it, and can lose by the club's bankruptcy, his own, or 팬 민심 turning on him.
+> st:converted@261103 | Difficulty is the owner's starting wealth (six tiers) and how many traits he takes (0 hard … 5 easy); he picks the decade, buys any club at its value, stakes his own business at a rate he sets, funds the club from his pocket, takes dividends from it, and can lose by the club's bankruptcy, his own, or 팬 민심 turning on him.
 
 ## vision
 - Problem (owner, 261102): difficulty is four levels that only scale starting cash and the starting XI (WEB-3); the owner's money and the club's money are one pot, and 구단주 추가 출자 is free money capped at three a season with reputation −2 (ECON build `ownerCapital`).
@@ -65,8 +65,8 @@
 - [x] Converting older saves ← estimated owner state and a converter kept forever
 - [x] Selling the club as an exit or goal ← owner 261102: not in v1
 - [x] Owners at other clubs (sugar daddies) ← owner 261102: not in v1, as in difficulty-and-adaptation
-- [?] Feasibility: club value and "a valuable club spending heavily" need books for clubs nobody owns, which today carry only strength and stature, and those books must run through the generated decades.
-- [?] Feasibility: generating up to seven decades of world before a 2000 takeover, in the browser, at a bearable wait.
+- [o] Feasibility: clubs nobody owns keep season books settled once a season from the same scales as the owner's club, keeping the current and last season (→ECON-36). ← books per round for every club through seven decades would cost too much time and storage
+- [o] Feasibility: world generation has a budget of 5 s for a 1930 takeover and 90 s for a 2000 takeover with the season reached on screen (→ARCH-28), measured before release. ← a 2000 start runs seventy seasons first
 
 ## shape
 - flow: choose the owner's wealth tier → his traits (0 = hard … 5 = easy) → the takeover decade (1930–2000, each with its line) → "세계를 생성중…" runs the world to that decade → every club priced by its club value (assets less debts); the owner buys one he can afford and takes over its cash and debts → seasons: the owner sets the rate he stakes on his business (slider 0–100%), it succeeds or fails each quarter (50/50, 60% with 성공한 사업가) and he pays his living costs; he puts money in at any time (within FFP from 2011/12) and takes a share of each season's profit at its close; 팬 민심 moves → crises show as a status (구단 파산 위기 8 rounds, 구단주 파산 위기 to the season close, 퇴진 압박 8 rounds) → career ends on club bankruptcy, owner bankruptcy or 구단주 퇴진
@@ -75,15 +75,15 @@
 - not: selling the club; owners at other clubs; borrowing to buy; a random draw or rerolls; converting older saves
 
 ## domains
-- [o] OWNER (new): owner fortune separate from club cash; six wealth tiers and what each reaches; eight traits, 0–5 taken; business stake slider and quarterly 50/50 settlement (60% with 성공한 사업가); quarterly living costs by tier; injection at any time; season-close dividend dial; FFP limit from 2011/12; 팬 민심 and its drivers; 구단주 파산 위기 to the season close and 퇴진 압박 over 8 rounds
-- [o] WEB-2 WEB-3 WEB-15: start flow of tier → traits → decade with its line → generation → priced club list and takeover; the four difficulty levels and starting-XI offsets go
-- [o] WEB-56: crises shown as a status, never a halting modal, for the club's bankruptcy, the owner's and 퇴진 압박
-- [o] ECON: club value (players, stadium, following, league place, less debts); takeover with cash and debts; books for clubs nobody owns; 구단주 추가 출자 and the 구단주 투자/회원제 운영 card effects replaced by owner injection; ECON-24 joined by owner bankruptcy; ECON-29 reference careers rethought
-- [o] WORLD-5 WORLD-8 WORLD-9: the world starts in 1930 and runs to the chosen decade, league football stopped 1939/40–1945/46; the owner's club is an existing club; amateur leagues and the amateur exchange go
-- [o] LEAGUE: the last professional division relegates nobody; LEAGUE-13 balance bands per wealth tier × trait count
-- [o] MATCH-2: 승리의 부적's stated exception
-- [o] KIT: changing an inherited club's name, kits and crest after the takeover, at a 팬 민심 cost
-- [o] SAVE: the new rules start with new careers only
+- [o] OWNER: new domain — owner fortune separate from club cash; six wealth tiers and what each reaches; eight traits, 0–5 taken; business stake slider and quarterly 50/50 settlement (60% with 성공한 사업가); quarterly living costs by tier; injection at any time; season-close dividend dial; FFP limit from 2011/12; 팬 민심 and its drivers; 구단주 파산 위기 to the season close and 퇴진 압박 over 8 rounds →OWNER
+- [o] WEB: WEB-2 WEB-3 WEB-15 start flow of tier → traits → decade with its line → generation → priced club list and takeover; the four difficulty levels and starting-XI offsets go →WEB
+- [o] WEB: WEB-56 crises shown as a status, never a halting modal, for the club's bankruptcy, the owner's and 퇴진 압박 →WEB
+- [o] ECON: club value (players, stadium, following, league place, less debts); takeover with cash and debts; books for clubs nobody owns; 구단주 추가 출자 and the 구단주 투자/회원제 운영 card effects replaced by owner injection; ECON-24 joined by owner bankruptcy; ECON-29 reference careers rethought →ECON
+- [o] WORLD: WORLD-5 WORLD-8 WORLD-9 the world starts in 1930 and runs to the chosen decade, league football stopped 1939/40–1945/46; the owner's club is an existing club; amateur leagues and the amateur exchange go →WORLD
+- [o] LEAGUE: the last professional division relegates nobody; LEAGUE-13 balance bands per wealth tier × trait count →LEAGUE
+- [o] MATCH: MATCH-2 승리의 부적's stated exception →MATCH
+- [o] KIT: changing an inherited club's name, kits and crest after the takeover, at a 팬 민심 cost →KIT
+- [o] SAVE: the new rules start with new careers only →SAVE
 
 ## open
 - -

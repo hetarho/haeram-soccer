@@ -1,12 +1,12 @@
 # HIST Durable metrics and history
-> r20 | Define the browser-demo rules for durable metrics and history.
+> r21 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
 - HIST-2 [o] Always retain all implemented-country season standings/champions/cup outcomes and European standings/honors. NPC past per-frame/per-action traces and full individual match-stat archives are not collected.
 - HIST-3 [o] Complete NPC current-season team/player aggregates from settled fixtures and the reproducible current roster support comparison (→HIST-17). Career/season summaries, not duplicated object graphs, represent older NPC history.
 - HIST-4 [o] Archive compact IDs and numeric aggregates; UI pagination or chart sampling never deletes source records.
-- HIST-5 [o] Founding is the first history entry; promotion, relegation, manager resignation, recruitment, retirement, campaigns, sponsors and currency changes append facts; facts already recorded stay.
+- HIST-5 [o] The takeover is the first history entry of the owner's era; promotion, relegation, manager resignation, recruitment, retirement, campaigns, sponsors and currency changes append facts; facts already recorded stay.
 - HIST-6 [o] Metric scopes separate domestic, European, current season and own career; ratios expose denominators and sample size.
 - HIST-7 [o] Statistical changes after an action are observations with markers, not proof of causality; show relevant period and actual applied changes.
 - HIST-8 [o] No automatic expiry/pruning of retained facts, data uploads or silent loss on save/import; per-match maps and reports follow their defined lifetime (→HIST-16). Capacity errors keep the current save and offer export.
@@ -76,11 +76,14 @@
   - a career whose transfers predate these facts ranks its recorded transfer-in/transfer-out ledger entries by amount, labelled with the entry's recorded text; it never invents a player, club or date link (→SAVE-24).
   - the facts fit →SAVE-4/13's century budgets without pruning.
 
+- HIST-21 [o] The bought club's seasons before the takeover show in its records as its history before the owner — league finishes, cup runs and honours from the season archives (→HIST-2) — kept apart from the owner's era, whose own-club metrics (→HIST-1) start at the takeover; each season close of the owner's era also keeps the owner's record (→OWNER-17). ← fans read a club's past, and judge the owner by his own seasons
+
 ## flow
 
 - Career/mediation outcomes → retained person links and commitments → fact-backed profiles, decisions and derived news.
 
 ## chg
+- r21 261103 HIST-5✎ founding the first entry→the takeover the first entry of the owner's era; HIST-21+ pre-takeover seasons shown as the club's history before the owner, the owner's era from the takeover with the owner's season record
 - r20 261102 HIST-5✎ tactics application/refusal removed from appended facts, facts already recorded stay; HIST-11✎ owner requests removed from club events; HIST-14✎ once-per-player coaching encouragement and response removed
 - r19 261102 HIST-11✎ closed season's honours→+its Ballon d'Or podium, our player's win celebrated; HIST-13✎ +the season keeps the Ballon d'Or podium (identity, name, club, position, goals, assists, appearances, points) and a player's wins/podiums derived on read
 - r18 261027 HIST-18✎ every tenure in summaries→interim tenures without a credited match or outcome left out; HIST-20+ own-club transfer facts (fee signings, sales, loans) with rankings in today's money and ledger fallback for older careers

@@ -1,9 +1,9 @@
 # CLUB Squad and growth
-> r49 | Define the browser-demo rules for squad and growth.
+> r50 | Define the browser-demo rules for squad and growth.
 
 ## decisions
-- CLUB-1 [o] A club starts with 20 players (→CLUB-40), a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating sits at its league's average club XI plus its difficulty level's offset (→WEB-3: 쉬움 0, 보통 −2, 어려움 −4, 최상 −6; ±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
-  - the 20 cover the founding manager's formation (→STAFF-22): every slot has a player at 최상 or 준수 there, with two goalkeepers.
+- CLUB-1 [o] The owner's club starts as it stands at the takeover (→ECON-38): its generated squad becomes its own players, filled to 20 with players generated at its level (→CLUB-40); its manager stays; the other staff posts are filled as a new club's; its facilities stand at the stage its division and stature set (CLUB_TAKEOVER.facilities); its supporters follow its reputation (→ECON-23). ← the owner buys a club, not a blank page
+  - the 20 cover the manager's formation (→STAFF-22): every slot has a player at 최상 or 준수 there, with two goalkeepers.
 - CLUB-2 [o] Every player carries his birth year, wage, contract term and reputation beside the player model (→PLAYER-1).
 - CLUB-3 [o] Players age using the game calendar, develop and decline by attribute (→PLAYER-15, →PLAYER-17) and are replaced by generated youth. On 1 April each veteran decides from his own stream whether the season is his last; announced players play on and retire at the close unless an accepted playing-coach deferral applies (→STAFF-34). At 41 everyone stops playing, including playing coaches.
   - chance by age at the season's end: 33 8%, 34 18%, 35 35%, 36 60%, 37 80%, 38+ 95%; keepers count a year younger; ×0.6 for a starter rated 60+, ×1.4 under 900 season minutes.
@@ -244,7 +244,7 @@
   | POR | first, second | 2013–2017 (estimated) | 27 | aged 22 or under |
   | POR | first, second | 2018– (switch estimated) | 30 | aged 22 or under |
   | BEL | first, second | 2012– (start estimated) | 25 | aged 20 or under |
-  | GER, FRA, NED; any other league before its first row | every division, the amateur league | every season | 40 in all | - |
+  | GER, FRA, NED; any other league before its first row | every division | every season | 40 in all | - |
   - ages are by the season's start year: "aged 21 or under" is born in that year − 21 or later.
   - the 40-player ceiling counts everyone, exempt players included, under every rule. ← about the most a club carried with its reserves: some 30 professionals at an English club in the 1950s, about 35 players at a Ligue 1 club in 2022
   - the rule of the division the club plays in this season applies; a club over it (after a promotion, a new season's rule, or players ageing into the count) keeps its players and adds no counted player — no signing, loan, promotion or call-up — until it is under it.
@@ -302,6 +302,7 @@
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r50 261103 CLUB-1✎ a founded club with 20 players, small facilities, 800 supporters and an XI at the league average plus the level offset→the club as it stands at the takeover, filled to 20, its manager kept, facilities by division and stature, supporters by reputation; CLUB-44✎ every division and the amateur league→every division
 - r49 261102 CLUB-6✎ automatic XI unless a saved manual XI, strongest/rest presets, manual XI in any slot→the manager's automatic XI only, no owner lineup; CLUB-8✎ facility investment with a stated price→facilities act at their level, no owner facility work; CLUB-9✎ rest selection and saved manual lineup slots removed; CLUB-10✎ match preparation tactic/lineup tabs with draft and apply controls→next-match report draws the manager's lineup, no tactic or lineup control; CLUB-13✎ unless an accepted suggestion or forced owner order→the assistant's rules only, the owner neither suggests nor orders, tab states focus and why (who set it removed); CLUB-15✎ automatic versus optional manual-lineup replacement→whether he would start in the automatic selection; CLUB-16✎ 방향 board's 80+ intake chance removed; CLUB-20- owner morale and fitness requests (nine kinds incl. win bonus) removed; CLUB-23✎ automatic and saved XI→the lineup; CLUB-31✎ unless an accepted suggestion or forced owner order→the youth director's rule only; CLUB-45✎ automatic and saved XI→the lineup; CLUB-33✎ an unmet request's trust loss no longer cites the withdrawn interference rule (→STAFF-5)
 - r48 261102 CLUB-26✎ demand market wage × build × agent→× Ballon d'Or premium (×1.20 winner, ×1.10 podium, last three closed seasons), also the improved-contract test and 재계약 기조 caps; CLUB-29✎ promotion/relegation clauses→+Ballon d'Or bonus (80+ or recent podium, 40–90% of contracts, 25–100% of the yearly wage, paid at the close he wins)
 - r47 261101 CLUB-47+ the scout's verdict: grade A–E from the slot gap of CLUB-33's request measure (A ≥10, B ≥5, C ≥2 or a short line or a prospect, D >−5, else E) with up to two reasons for and two against
