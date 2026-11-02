@@ -1,5 +1,5 @@
-import { legacySettings } from './responsibilities';
 import { lineOf } from './player';
+import { staffAuthority } from './testing';
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
 import type { World } from '../../contracts/src/types';
@@ -50,8 +50,7 @@ describe('transfer stance', () => {
 
   it('draws offers near value for listed players, which delegated staff accept', () => {
     const w = world('stance-listed');
-    w.intervention = 4;
-    w.settings = legacySettings(4);
+    w.settings = staffAuthority(4);
     const listed = activePlayers(w).filter(
       (p) => lineOf(p.position) === 'MF' || lineOf(p.position) === 'FW',
     );

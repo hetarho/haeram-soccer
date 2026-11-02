@@ -4,14 +4,8 @@ import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { World } from '../../contracts/src/types';
 import { decode, encode } from '../../../apps/web/src/adapters/persistence';
-import {
-  advanceRound,
-  advanceToNextMatch,
-  clubMilestones,
-  progressFacilityWorks,
-  seasonDayOf,
-} from './index';
-import { sellPlayer, startWork } from './testing';
+import { advanceRound, clubMilestones, progressFacilityWorks, seasonDayOf } from './index';
+import { advanceToNextMatch, sellPlayer, startWork } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { byId, world } from './goals.testkit';
 

@@ -629,7 +629,7 @@ function report(careers: Career[]) {
     cs
       .flatMap((c) => {
         const runs = streaks(c.seasons);
-        return c.seasons.filter((s, i) => runs[i] >= streak);
+        return c.seasons.filter((_, i) => runs[i] >= streak);
       })
       .filter((s) => filter(s) && s.attendance.length)
       .map((s) => average(s.attendance))

@@ -60,7 +60,6 @@ export function createSyntheticPresentation(baseline: {
     messages: {
       ...structuredClone(baseline.locale.messages),
       'navigation.dashboard': 'Resource-only club home',
-      'navigation.short.dashboard': 'Test home',
       'shell.cash': 'Budget de test',
       'shell.cashDetails': 'Budget {amount} · {status} · Details',
       'facility.era.heritage': 'Ère de test',

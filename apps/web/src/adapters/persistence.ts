@@ -11,7 +11,6 @@ import {
   type World,
 } from '../../../../packages/contracts/src/index';
 import { pack, unpack } from './packing';
-import { writeCheckpoint } from './checkpointWriter';
 import { encodePayload, decodePayload } from './compression';
 import {
   assertMatchModelFormat,
@@ -34,14 +33,7 @@ import {
   SUPPORTED_ENGINE_VERSIONS,
   SaveCompatibilityError,
 } from '../../../../packages/contracts/src/versions';
-import {
-  SAVE_CODECS,
-  SaveRepository,
-  type Envelope,
-  type StoragePort,
-  type SaveInspector,
-  type PreviousStore,
-} from './repository';
+import { SAVE_CODECS, type Envelope } from './repository';
 export { CHECKPOINT_LIMIT, TOTAL_LIMIT } from './repository';
 export type { Envelope, StoragePort, SaveInspector, PreviousStore } from './repository';
 async function digest(bytes: Uint8Array) {
@@ -212,21 +204,4 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
 export async function checkpoint(w: World, generation = 1, parentGeneration = 0) {
   const raw = await encode(w, generation, parentGeneration);
   return { raw, envelope: (await decode(raw)).envelope };
-}
-/** Public codec API retained; browser clients inject their worker into lean SaveRepository. */
-export class Saves extends SaveRepository {
-  constructor(
-    storage: StoragePort,
-    inspect: SaveInspector = decode,
-    previous?: PreviousStore,
-    active?: PreviousStore,
-  ) {
-    super(storage, inspect, writeCheckpoint, previous, active);
-  }
-  async save(w: World) {
-    const info = this.generationInfo;
-    const raw = await encode(w, info.generation, info.parentGeneration);
-    await this.commit(raw);
-    return raw;
-  }
 }

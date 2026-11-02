@@ -130,10 +130,6 @@ export function shortLines(w: World): ShortNeed[] {
     ),
   ];
 }
-/** The first short line, if any. */
-export function shortLine(w: World): ShortNeed | undefined {
-  return shortLines(w)[0];
-}
 
 /**
  * 재정 기조's checks on a signing (→ECON-33): the fee within its share of the cash above the

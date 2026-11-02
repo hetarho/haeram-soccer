@@ -267,26 +267,6 @@ export function synergyStates(w: World): SynergyState[] {
   });
 }
 
-/**
- * The synergy the club's strategy aims a manager at (→STAFF-18): of those a manager's school helps
- * light, the one with the most conditions met once a manager of its school is in charge, provided
- * one besides the manager's is met already; ties go to the earlier synergy.
- */
-export function aimedSynergy(
-  w: World,
-): { id: string; label: string; schools: readonly ManagerStyle[] } | undefined {
-  const starters = ownStarters(w);
-  let aimed: SynergyRule | undefined,
-    most = 1;
-  for (const rule of RULES) {
-    if (!rule.schools) continue;
-    const manager = { ...w.manager, style: rule.schools[0], interim: false };
-    const met = rule.conditions({ ...w, manager }, starters).filter((c) => c.met).length;
-    if (met > most) [aimed, most] = [rule, met];
-  }
-  return aimed && { id: aimed.id, label: aimed.label, schools: aimed.schools! };
-}
-
 /** The combined bonus of every active synergy; neutral when none is active. */
 export function synergyEffects(w: World): SynergyEffects {
   const effects: SynergyEffects = { ...NEUTRAL_SYNERGY };

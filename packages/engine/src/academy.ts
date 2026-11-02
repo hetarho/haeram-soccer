@@ -30,8 +30,6 @@ export const ACADEMY_LIMIT = 24;
 export function promotionAge(w: World) {
   return clubOf(w).country === 'ENG' ? 17 : 16;
 }
-/** From this age delegated staff release a prospect whose potential is below the first team. */
-export const RELEASE_AGE = 19;
 /** Academy football ends with U-21: a prospect leaves at the close of the season he turns 21. */
 export const ACADEMY_LEAVE_AGE = 21;
 /** The academy's age groups by age in the season, younger ones growing faster (→CLUB-16). */
@@ -66,8 +64,6 @@ export const YOUTH_FOCUS_INFO: Record<
     growth: { u17: 0.9, u19: 1.15, u21: 1.25 },
   },
 };
-/** A prospect this close to being ready makes the director prepare the older groups. */
-export const FIRST_TEAM_GAP = 5;
 /** The positions intakes cycle through, so every line keeps coming (→CLUB-16). */
 const INTAKE_POSITIONS: readonly Position[] = [
   'CB',

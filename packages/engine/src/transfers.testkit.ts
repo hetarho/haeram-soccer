@@ -1,5 +1,5 @@
-import { legacySettings } from './responsibilities';
 import type { TransferBid, World } from '../../contracts/src/types';
+import { staffAuthority } from './testing';
 import { createWorld, currentDay, seasonDayOf } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
@@ -21,7 +21,7 @@ export function world(seed = 'transfer-market', fresh = false) {
     );
   // Founding costs most of a test that plays no match: each seed is founded once and copied.
   const w = fresh ? found() : cachedWorld(`founded:${seed}`, found);
-  w.settings = legacySettings(2);
+  w.settings = staffAuthority(2);
   w.cash = '999999999999';
   return w;
 }

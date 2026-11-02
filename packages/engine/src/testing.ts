@@ -5,13 +5,16 @@ import type {
   Direction,
   DirectionKey,
   FacilityPart,
+  GameSettings,
+  InboxItem,
+  MatchPlayback,
   TransferBid,
   World,
 } from '../../contracts/src/types';
 import { country } from '../../catalogs/src/index';
 import { clubOf } from './player-state';
-import { prepareSeason } from './season';
-import { currentDay } from './calendar';
+import { advanceDays, prepareSeason } from './season';
+import { currentDay, seasonLength } from './calendar';
 import { assessOperatingExpenses } from './finance';
 import { playerValue, respondBid } from './transfers';
 import { POLICY_KEYS, policyOf } from './policy';
@@ -20,6 +23,9 @@ import { startFacilityWork } from './facilities';
 import { debit } from './transactions';
 import { initializeCoaching } from './coaching-entry';
 import { playingCoachQuote, submitPlayingCoachProposal } from './playing-coach';
+import { defaultSettings, RESPONSIBILITY_KEYS } from './responsibilities';
+import { coachDelegated } from './hiring';
+import { fillDelegatedPost, STAFF_ROLES } from './staff';
 
 /**
  * Puts direction rows in force on a test world, as a founded or saved club holds them: cards,
@@ -124,4 +130,57 @@ export function sellPlayer(w: World, id: string) {
   w.bids = [...(w.bids || []), bid];
   respondBid(w, bid.id, true);
   return bid;
+}
+
+/**
+ * Four shapes of authority tests hand to the staff, from the owner deciding everything to the
+ * staff deciding everything: 1 none; 2 the academy and contract talks; 3 all but recruitment and
+ * sales; 4 all. Match-eve stops stay on through 2 and window stops through 3. A career sets each
+ * responsibility on its own in 결재 설정 (→WEB-45); tests name one of these four.
+ */
+export function staffAuthority(step: 1 | 2 | 3 | 4): GameSettings {
+  const settings = defaultSettings();
+  for (const key of RESPONSIBILITY_KEYS)
+    settings.responsibilities[key] =
+      step === 4 ||
+      (step === 3 && key !== 'recruitment' && key !== 'sales') ||
+      (step === 2 && (key === 'academy' || key === 'contracts'))
+        ? 'delegated'
+        : 'direct';
+  settings.observations = { matchEve: step <= 2, windowOpen: step <= 3 };
+  return settings;
+}
+
+/**
+ * Puts `staffAuthority(step)` in force and lets the staff fill every coaching post now theirs at
+ * once, where a career's staff would fill it on their next daily look (→STAFF-15).
+ */
+export function handTo(w: World, step: 1 | 2 | 3 | 4) {
+  w.settings = staffAuthority(step);
+  for (const role of STAFF_ROLES) if (coachDelegated(w, role)) fillDelegatedPost(w, role);
+  return w;
+}
+
+/** The inbox items still waiting for the owner: attention items not yet read. */
+export function unreadAttention(w: World): InboxItem[] {
+  return (w.inbox || []).filter((item) => item.attention && !item.read);
+}
+
+/**
+ * Lives the days up to and including the own club's next match, settling every day between (the
+ * app's next-match step lives in the host); returns that match's playback.
+ */
+export function advanceToNextMatch(
+  w: World,
+  settlement?: (w: World, p: MatchPlayback) => void,
+  observe = true,
+) {
+  const matchCount = w.ownMatches.length;
+  let playback: MatchPlayback | undefined;
+  for (let n = 0; n < 2 * seasonLength(w) && !w.critical; n++) {
+    const p = advanceDays(w, 1, settlement, observe);
+    if (p) playback = p;
+    if (w.ownMatches.length > matchCount) break;
+  }
+  return playback;
 }

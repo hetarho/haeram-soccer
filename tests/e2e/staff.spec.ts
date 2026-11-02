@@ -1,4 +1,5 @@
 import { settle } from './layout';
+import { staffAuthority } from '../../packages/engine/src/testing';
 import { managerCard, openPersonnel } from './personnel-navigation';
 import { marketInfo } from './market';
 import {
@@ -8,7 +9,6 @@ import {
   operate,
   simulateSeason,
 } from '../../packages/engine/src/index';
-import { legacySettings } from '../../packages/engine/src/responsibilities';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { test, expect, type Locator, type Page } from '@playwright/test';
 import {
@@ -254,7 +254,7 @@ test('an unrenewed firefighter leaves at the close and the alert opens the marke
     seed: 'short-contract',
     level: 'easy',
   });
-  w.settings = legacySettings(2);
+  w.settings = staffAuthority(2);
   const offer = managerOffers(w).find((offer) => offer.style === 'firefighter')!;
   operate(w, { type: 'hire', id: offer.id });
   simulateSeason(w);
@@ -289,8 +289,7 @@ test('with the manager post delegated a resignation is filled at once and the cl
     level: 'easy',
   });
   w.cash = '999999999999';
-  w.intervention = 4;
-  w.settings = legacySettings(4);
+  w.settings = staffAuthority(4);
   const founding = w.manager;
   w.manager = { ...w.manager, trust: 0, trustWarned: true };
   for (let round = 0; round < 20 && w.manager.id === founding.id; round++)

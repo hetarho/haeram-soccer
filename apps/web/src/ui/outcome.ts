@@ -38,14 +38,11 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
   'renew-manager': '감독과 재계약했어요',
   recruit: '선수를 영입했어요',
   'transfer-stance': '선수의 이적 상태를 바꿨어요',
-  campaign: '마케팅 캠페인을 시작했어요',
-  sponsor: '후원 계약을 맺었어요',
   'hire-staff': '새 코치를 선임했어요',
   'release-staff': '코치와 계약을 정리했어요',
   'renew-staff': '코치와 재계약했어요',
   'promote-youth': '유소년을 1군으로 올렸어요',
   'release-youth': '유소년을 내보냈어요',
-  intervention: '개입 수준을 바꿨어요',
   bid: '이적 제안을 보냈어요',
   'respond-bid': '이적 제안에 답했어요',
   'answer-playing-coach': '플레잉 코치 계약안에 답했어요',
@@ -54,7 +51,6 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
   'contract-offer': '선수에게 계약을 제시했어요',
   'contract-decline': '선수의 계약 요구를 거절했어요',
   'sign-sponsor': '후원 계약을 맺었어요',
-  'club-identity': '구단 디자인을 적용했어요',
   'match-kit': '다음 경기 유니폼을 정했어요',
   'design-commission': '디자이너가 시안을 보내왔어요',
   'adopt-design': '구단 디자인을 바꿨어요',
@@ -62,7 +58,6 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
   'redraw-designs': '디자이너가 시안을 다시 그렸어요',
 };
 const notes: Partial<Record<Command['type'], string>> = {
-  campaign: '4라운드 뒤 실제 수입과 신규 팬이 정산돼요.',
   'transfer-stance': '제안은 이적시장이 열려 있을 때 들어오고, 수락해야 이적이 성사돼요.',
 };
 const trainingLabel: Record<TrainingFocus, string> = {

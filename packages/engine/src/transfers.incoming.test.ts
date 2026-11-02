@@ -146,7 +146,6 @@ describe('incoming bids', () => {
     const w = world();
     delete w.bids;
     delete w.inbox;
-    delete w.intervention;
     for (let n = 0; n < 31; n++) advanceDays(w, 1);
     expect(Array.isArray(w.bids) || w.bids === undefined).toBe(true);
     expect(() => respondBid(w, 'missing', true)).toThrow('없는');

@@ -99,10 +99,6 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('renew-staff'), role: staffRole, term: term.optional() }),
   z.object({ type: z.literal('promote-youth'), id: ref }),
   z.object({ type: z.literal('release-youth'), id: ref }),
-  z.object({
-    type: z.literal('intervention'),
-    level: z.literal([1, 2, 3, 4]),
-  }),
   z
     .strictObject({
       type: z.literal('bid'),
@@ -153,12 +149,6 @@ const command = z.discriminatedUnion('type', [
     id: ref,
     stance: z.enum(['listed', 'open', 'untouchable']),
   }),
-  z.object({
-    type: z.literal('sponsor'),
-    kind: z.enum(['stable', 'performance', 'exclusive', 'indexed']),
-  }),
-  // Strict: the own club is implied, so a club target is refused rather than stripped (→KIT-9).
-  z.strictObject({ type: z.literal('club-identity'), identity: clubIdentitySchema }),
   // The engine's role vocabulary, or null for automatic selection (→KIT-6).
   z.strictObject({ type: z.literal('match-kit'), fixtureId: ref, role: kitRoleSchema.nullable() }),
   z.strictObject({

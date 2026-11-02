@@ -45,10 +45,3 @@ export function readRelated(w: World, ref: string): void {
   if (w.inbox?.some((item) => item.ref === ref && !item.read))
     w.inbox = w.inbox.map((item) => (item.ref === ref ? { ...item, read: true } : item));
 }
-export function unreadAttention(w: World): InboxItem[] {
-  return (w.inbox || []).filter(waiting);
-}
-/** Newest first, for the inbox view. */
-export function inboxFeed(w: World): InboxItem[] {
-  return [...(w.inbox || [])].reverse();
-}

@@ -1,4 +1,3 @@
-import { legacySettings } from './responsibilities';
 import { expect } from 'vitest';
 import type { Club, CountryCode, World } from '../../contracts/src/index';
 import { COUNTRIES, country, currency, priceIndex } from '../../catalogs/src/index';
@@ -15,7 +14,7 @@ import {
   prepareSeason,
   ranked,
 } from './index';
-import { professionalStart } from './testing';
+import { professionalStart, staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
@@ -37,7 +36,7 @@ export function founded(year?: number, release: MatchModelRelease = MATCH_MODEL_
     },
     release,
   );
-  w.settings = legacySettings(2);
+  w.settings = staffAuthority(2);
   if (!year) return w;
   w.year = year;
   delete w.people;

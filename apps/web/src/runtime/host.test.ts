@@ -1,8 +1,4 @@
-import {
-  legacySettings,
-  RESPONSIBILITY_KEYS,
-  settingsOf,
-} from '../../../../packages/engine/src/responsibilities';
+import { RESPONSIBILITY_KEYS, settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { signSponsor, sponsorSlots } from '../../../../packages/engine/src/sponsors';
 import { describe, it, expect, vi } from 'vitest';
 import { Host, VIEW_PATCH } from './host';
@@ -18,7 +14,6 @@ import {
   addEvent,
   clubNews,
   advanceRound,
-  createIdentityDraft,
   createWorld,
   identityOf,
   MATCH_MODEL_RELEASE,
@@ -40,8 +35,8 @@ import {
 import { CATALOG_VERSION } from '../../../../packages/catalogs/src/index';
 import { KIT_FIXTURE_CHANGED } from '../../../../packages/engine/src/identity-operations';
 import { legacyCrestMap } from '../../../../packages/engine/src/identity-legacy';
-import { FOUNDING_YEAR, clubOf } from '../../../../packages/engine/src/world';
-import { professionalStart } from '../../../../packages/engine/src/testing';
+import { FOUNDING_YEAR } from '../../../../packages/engine/src/world';
+import { professionalStart, staffAuthority } from '../../../../packages/engine/src/testing';
 import { npcCompetition, trackingBoundary } from '../../../../packages/engine/src/npc-stats';
 import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../../tests/fixtures/releases';
@@ -52,7 +47,7 @@ import {
 } from '../../../../tests/fixtures/worlds';
 import { input, playOn, req } from './host.testkit';
 import { HelperPool, type HelperJob, type HelperPort } from './helperPool';
-import { answer as answerHelper, serve as serveHelper } from './fixtureHelper';
+import { createFixtureHelper, serve as serveHelper } from './fixtureHelper';
 /** A host wired to a codec port that keeps each posted snapshot, cloned as postMessage would. */
 function withCodec() {
   const jobs: CodecJob[] = [];
@@ -76,36 +71,33 @@ describe('worker command protocol', () => {
     expect(stale.ok).toBe(false);
     expect((await h.handle({ ...a, session: 'expired', requestId: 'expired' })).ok).toBe(false);
   });
-  it('accepts the legacy intervention command and validates clock-command boundaries', async () => {
+  it('accepts legacy stop hints on a clock command and refuses a withdrawn command', async () => {
     const h = new Host();
     await h.handle(req('create', -1, { type: 'found', input }));
-    const level = await h.handle(
-      req('level', 0, { type: 'command', command: { type: 'intervention', level: 1 } }),
-    );
-    expect(level.ok).toBe(true);
-    expect(h.world!.intervention).toBe(1);
     // Settle unrelated sponsor decisions before testing an allowed clock command.
     for (const slot of sponsorSlots(h.world!))
       if (slot.offers.length) signSponsor(h.world!, slot.slot, 0);
     // Legacy stop hints remain accepted; live decisions determine actual stops.
     const step = await h.handle(
-      req('step', 1, {
+      req('step', 0, {
         type: 'command',
         command: { type: 'advance-days', days: 1, stop: ['match', 'window-open'] },
       }),
     );
     expect(step.ok).toBe(true);
+    const settings = structuredClone(h.world!.settings);
+    // The intervention level is withdrawn (→WEB-45): only 결재 설정 changes who decides.
     expect(
       (
         await h.handle(
-          req('bad-level', 2, {
+          req('withdrawn', 1, {
             type: 'command',
-            command: { type: 'intervention', level: 5 as never },
+            command: { type: 'intervention', level: 4 } as never,
           }),
         )
       ).ok,
     ).toBe(false);
-    expect(h.world!.intervention).toBe(1);
+    expect(h.world!.settings).toEqual(settings);
   });
   it('validates commands before applying money or revisions and keeps complete archives behind projections', async () => {
     const h = new Host();
@@ -166,7 +158,7 @@ describe('worker command protocol', () => {
     const h = new Host();
     await h.handle(req('create', -1, { type: 'found', input }));
     // Explicit quiet authority fixture: this tests date persistence, not automatic hiring.
-    h.world!.settings = legacySettings(2);
+    h.world!.settings = staffAuthority(2);
     for (const slot of sponsorSlots(h.world!))
       if (slot.offers.length) signSponsor(h.world!, slot.slot, 0);
     const dayRequest = req('days', 0, {
@@ -198,7 +190,7 @@ describe('worker command protocol', () => {
     const founded = await h.handle(req('create', -1, { type: 'found', input }));
     expect(founded.view).toBeDefined();
     expect(founded.viewDelta).toBeUndefined();
-    h.world!.settings = legacySettings(2);
+    h.world!.settings = staffAuthority(2);
     for (const slot of sponsorSlots(h.world!))
       if (slot.offers.length) signSponsor(h.world!, slot.slot, 0);
     const day = await h.handle({
@@ -401,57 +393,6 @@ describe('worker command protocol', () => {
     expect(h.world!.ownMatches.some((m) => m.year === FOUNDING_YEAR && m.players.length > 0)).toBe(
       true,
     );
-  });
-});
-
-describe('own-club design requests (→KIT-9, SAVE-6)', () => {
-  const design = (color: string) =>
-    createIdentityDraft({ country: input.country, seed: input.seed, color });
-  const apply = (id: string, revision: number, color: string) =>
-    req(id, revision, {
-      type: 'command',
-      command: { type: 'club-identity', identity: design(color) },
-    });
-  it('duplicate identity receipt has one effect', async () => {
-    const h = new Host();
-    await h.handle(req('create', -1, { type: 'found', input }));
-    const first = apply('design', 0, '#aa2233');
-    const [applied, duplicate] = await Promise.all([h.handle(first), h.handle(first)]);
-    expect(applied.ok, applied.error).toBe(true);
-    expect(duplicate).toBe(applied);
-    expect(h.world!.revision).toBe(1);
-    expect(h.world!.receiptIds.filter((id) => id === 'design')).toHaveLength(1);
-    const own = (w = h.world!) => w.clubs.find((club) => club.id === w.playerClub)!;
-    expect(own(applied.view!.world as World).identity).toEqual(design('#aa2233'));
-    // After newer work the same request returns its stored answer, never a second effect.
-    expect((await h.handle(apply('newer', 1, '#3355aa'))).ok).toBe(true);
-    expect(await h.handle(first)).toBe(applied);
-    expect(h.world!.revision).toBe(2);
-    expect(clubOf(h.world!).identity).toEqual(design('#3355aa'));
-    expect(clubOf(h.world!).color).toBe('#3355aa');
-    // Reloaded without the answers in memory, the saved receipt still refuses a replay.
-    const restored = new Host();
-    await restored.handle(
-      req('restore', -1, { type: 'inspect', raw: await encode(h.world!), activate: true }),
-    );
-    const replay = await restored.handle(apply('newer', 2, '#3355aa'));
-    expect(replay.ok).toBe(false);
-    expect(replay.error).toContain('이미 처리된 요청');
-    expect(restored.world!.revision).toBe(2);
-    expect(canonical(restored.world)).toBe(canonical(h.world));
-  });
-  it('stale identity request does not overwrite newer work', async () => {
-    const h = new Host();
-    await h.handle(req('create', -1, { type: 'found', input }));
-    expect((await h.handle(apply('newer', 0, '#3355aa'))).ok).toBe(true);
-    const before = canonical(h.world);
-    // Drafted against revision 0, it arrives after the newer design was applied.
-    const stale = await h.handle(apply('stale', 0, '#aa2233'));
-    expect(stale.ok).toBe(false);
-    expect(stale.error).toContain('오래된 요청');
-    expect(canonical(h.world)).toBe(before);
-    expect(clubOf(h.world!).identity).toEqual(design('#3355aa'));
-    expect(h.world!.receiptIds).not.toContain('stale');
   });
 });
 
@@ -1318,7 +1259,7 @@ describe('fixture helpers', () => {
       onmessage: null,
       postMessage(job) {
         held.jobs.push(job);
-        void gate.then(() => held.onmessage?.({ data: answerHelper(job) }));
+        void gate.then(() => held.onmessage?.({ data: createFixtureHelper()(job) }));
       },
     };
     h.helpers = new HelperPool([held]);

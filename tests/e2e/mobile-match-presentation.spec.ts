@@ -1,6 +1,7 @@
 import { watchNext } from './watch';
+import { advanceToNextMatch } from '../../packages/engine/src/testing';
 import { expect, test, type Page } from '@playwright/test';
-import { createWorld, advanceToNextMatch } from '../../packages/engine/src/index';
+import { createWorld } from '../../packages/engine/src/index';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { configureResponsibilities } from './events';
 import { expectBallSideScoreboard, horizontalOverflow } from './layout';

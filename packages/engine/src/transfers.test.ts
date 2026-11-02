@@ -22,9 +22,8 @@ import {
   seasonLength,
   transferOffers,
   transferWindow,
-  unreadAttention,
 } from './index';
-import { holdRows, sellPlayer } from './testing';
+import { holdRows, sellPlayer, unreadAttention } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { CLOSED, incoming, on, world } from './transfers.testkit';
 

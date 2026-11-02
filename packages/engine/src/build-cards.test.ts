@@ -27,7 +27,6 @@ import {
   clubNews,
   readBuildTitle,
   BUILD_CARDS,
-  BUILD_COMBINATIONS,
   BUILD_PRESETS,
   buildOf,
   DIRECTION_DEFAULT,
@@ -164,8 +163,7 @@ describe('club builds', () => {
     validateWorld(after);
   });
 
-  it('offers thousands of builds where every card is a trade-off', () => {
-    expect(BUILD_COMBINATIONS).toBe(5 ** 6);
+  it('makes every card a trade-off', () => {
     // Every card has a gain and a cost (→ECON-22), except that 구단주 투자 keeps only its wage
     // cost: the owner adds no capital to the club (→ECON-11).
     for (const slot of BUILD_SLOTS)

@@ -15,6 +15,7 @@ import { playFixture } from './knockout';
 import { selectMatchKits } from './kit-selection';
 import { automaticKeeper, startingShorts } from './kit-wear';
 import { appearanceForFixture } from './match-appearance';
+import { applyClubIdentity } from './identity-operations';
 import { operate } from './operations';
 import { advanceDays, recordMatch } from './season';
 import { clubOf } from './world';
@@ -77,7 +78,7 @@ describe('settled own-match appearance (→KIT-12, SAVE-22)', () => {
     expect(side.crest).not.toBe(own.crest);
     expect(Object.values(own.kits)).not.toContain(side.shirt);
     const frozen = canonical(saved.appearance);
-    operate(w, { type: 'club-identity', identity: repainted(own) });
+    applyClubIdentity(w, repainted(own));
     for (const club of w.clubs) club.identity!.crest.primary = '#ffffff';
     expect(canonical(saved.appearance)).toBe(frozen);
     expect(canonical(live.record.appearance)).toBe(frozen);
@@ -116,7 +117,7 @@ describe('settled own-match appearance (→KIT-12, SAVE-22)', () => {
     const live = playTo(w, first);
     const frozen = canonical(recorded(w, first.id).appearance);
     // Newer work: a design edit and a choice for the following fixture.
-    operate(w, { type: 'club-identity', identity: repainted(clubOf(w).identity!) });
+    applyClubIdentity(w, repainted(clubOf(w).identity!));
     const following = nextOwnFixture(w)!;
     operate(w, { type: 'match-kit', fixtureId: following.id, role: 'third' });
     const before = canonical(w);
@@ -142,19 +143,16 @@ describe('settled own-match appearance (→KIT-12, SAVE-22)', () => {
       socks: '#f5e663',
       gloves: '#00A6C8',
     };
-    operate(w, {
-      type: 'club-identity',
-      identity: {
-        ...clubOf(w).identity!,
-        version: 2,
-        kits: {
-          home: { pattern: 'plain', primary: '#ffffff', trim: '#0b1f44' },
-          away: { pattern: 'plain', primary: '#0b1f44' },
-          third: { pattern: 'stripes', primary: '#d62828', secondary: '#ffffff' },
-        },
-        parts: { home: { shorts: '#d62828' }, away: { socks: '#ffffff' } },
-        goalkeeper: keeper,
+    applyClubIdentity(w, {
+      ...clubOf(w).identity!,
+      version: 2,
+      kits: {
+        home: { pattern: 'plain', primary: '#ffffff', trim: '#0b1f44' },
+        away: { pattern: 'plain', primary: '#0b1f44' },
+        third: { pattern: 'stripes', primary: '#d62828', secondary: '#ffffff' },
       },
+      parts: { home: { shorts: '#d62828' }, away: { socks: '#ffffff' } },
+      goalkeeper: keeper,
     });
     const own = clubOf(w).identity!;
     const saved = canonical(own);
@@ -206,7 +204,7 @@ describe('settled own-match appearance (→KIT-12, SAVE-22)', () => {
     for (const m of w.ownMatches) delete m.appearance;
     const legacy = new Set(w.ownMatches.map((m) => m.id));
     expect(legacy.size).toBeGreaterThan(0);
-    operate(w, { type: 'club-identity', identity: repainted(clubOf(w).identity!) });
+    applyClubIdentity(w, repainted(clubOf(w).identity!));
     playTo(w, nextOwnFixture(w)!);
     expect(w.ownMatches.length).toBeGreaterThan(legacy.size);
     for (const m of w.ownMatches) expect('appearance' in m, m.id).toBe(!legacy.has(m.id));

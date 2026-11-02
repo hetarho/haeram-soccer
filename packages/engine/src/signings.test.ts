@@ -1,4 +1,3 @@
-import { legacySettings } from './responsibilities';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { lineOf, POSITION_LABEL } from './player';
 import { describe, expect, it } from 'vitest';
@@ -26,14 +25,14 @@ import {
   SEASON_ROUNDS,
   seasonDayOf,
   shortlistOffers,
-  shortLine,
+  shortLines,
   signingRequests,
   signingVerdict,
   staffSignings,
   transferOffers,
   transferWindowDays,
 } from './index';
-import { holdRows } from './testing';
+import { holdRows, staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 
@@ -43,8 +42,7 @@ import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
  */
 function club(finance?: Direction['finance'], seed = 'staff-signings') {
   const w = founded(seed);
-  w.intervention = 4;
-  w.settings = legacySettings(4);
+  w.settings = staffAuthority(4);
   w.cash = '999999999999';
   w.round = 23;
   w.income = '999999999999';
@@ -100,7 +98,7 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
     const free = transferOffers(w)[0];
     expect(free.freeAgent).toBe(true);
     keep(w, lineOf(free.player.position), 1);
-    expect(shortLine(w)).toMatchObject({
+    expect(shortLines(w)[0]).toMatchObject({
       kind: 'short',
       line: lineOf(free.player.position),
       count: 1,
@@ -118,7 +116,7 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
 
   it('bids the asking fee for an upgrade at 표준, none at 신중', () => {
     const w = club();
-    expect(shortLine(w)).toBeUndefined();
+    expect(shortLines(w)[0]).toBeUndefined();
     // The free agent is passed by, so the upgrade goes to a fee-bearing player.
     tried(w, transferOffers(w)[0].player.id);
     staffSignings(w);
@@ -196,12 +194,10 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
   it("leaves the owner's countered bid to the owner", () => {
     for (let seed = 0; seed < 40; seed++) {
       const w = club(undefined, `owner-${seed}`);
-      w.intervention = 3;
-      w.settings = legacySettings(3);
+      w.settings = staffAuthority(3);
       const offers = transferOffers(w);
       placeBid(w, 1, offers[1].fee);
-      w.intervention = 4;
-      w.settings = legacySettings(4);
+      w.settings = staffAuthority(4);
       advanceDays(w, 4);
       const own = (w.bids || []).find((bid) => !bid.staff && bid.direction === 'out')!;
       if (own.status !== 'countered') continue;
@@ -230,8 +226,7 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
 
   it('makes no signings below level 4 or outside windows', () => {
     const below = club();
-    below.intervention = 3;
-    below.settings = legacySettings(3);
+    below.settings = staffAuthority(3);
     staffSignings(below);
     expect(staffBids(below)).toEqual([]);
     const closed = club();
@@ -265,8 +260,7 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
   /** An owner-run club (level 2) on the winter window's opening day. */
   function owned(seed = 'shortlist') {
     const w = club(undefined, seed);
-    w.intervention = 2;
-    w.settings = legacySettings(2);
+    w.settings = staffAuthority(2);
     return w;
   }
 
@@ -460,11 +454,9 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     // The 단장 signing for him at level 4 meets it too.
     expect(
       window((w) => {
-        w.intervention = 4;
-        w.settings = legacySettings(4);
+        w.settings = staffAuthority(4);
         staffSignings(w);
-        w.intervention = 2;
-        w.settings = legacySettings(2);
+        w.settings = staffAuthority(2);
       }).lost,
     ).toBe(0);
     // A new manager is not judged on his predecessor's requests; none asked costs nothing.
@@ -514,8 +506,7 @@ describe('requests by formation slot (→CLUB-33)', () => {
   };
   function owned(seed = 'slot-requests') {
     const w = club(undefined, seed);
-    w.intervention = 2;
-    w.settings = legacySettings(2);
+    w.settings = staffAuthority(2);
     return w;
   }
 

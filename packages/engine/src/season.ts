@@ -61,7 +61,6 @@ import {
   ownFixture,
   readCopy,
   roundJobs,
-  roundSimulator,
   type FixtureReadCopy,
   type RoundJob,
   type RoundJobResult,
@@ -931,7 +930,7 @@ function stepDay(w: World, capture: Settlement, observe: boolean) {
     closeSeason(w);
     w.revision++;
   } else if (leagueDay(w, day)) {
-    const phase = beginRound(w, observe, roundSimulator(w));
+    const phase = beginRound(w, observe);
     playRound(w, phase, phase.collect?.(), capture);
     clubDay(w);
   } else {
@@ -1040,20 +1039,4 @@ export function advanceDays(
     if (w.critical || w.bankrupt) break;
   }
   return ownPlayback;
-}
-
-/** Bypass empty weeks and the off-season, while still settling every intervening day. */
-export function advanceToNextMatch(
-  w: World,
-  settlement?: (w: World, p: MatchPlayback) => void,
-  observe = true,
-) {
-  const matchCount = w.ownMatches.length;
-  let playback: MatchPlayback | undefined;
-  for (let n = 0; n < 2 * seasonLength(w) && !w.critical; n++) {
-    const p = advanceDays(w, 1, settlement, observe);
-    if (p) playback = p;
-    if (w.ownMatches.length > matchCount) break;
-  }
-  return playback;
 }

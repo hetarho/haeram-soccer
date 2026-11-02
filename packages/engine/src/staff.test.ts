@@ -36,6 +36,7 @@ import {
   STYLE_INFO,
 } from './index';
 import { lastRound, world } from './staff.testkit';
+import { handTo } from './testing';
 
 const NEUTRAL = {
   development: Object.fromEntries(ATTRIBUTES.map((a) => [a, 1])) as Record<Attribute, number>,
@@ -106,12 +107,10 @@ describe('coaching staff', () => {
     // Before delegation existed the owner decided everything.
     const basic = cachedWorld('neutral-season:basic', () => {
         const w = world('neutral-season');
-        delete w.intervention;
         return lastRound(w);
       }),
       old = cachedWorld('neutral-season:old', () => {
         const w = world('neutral-season');
-        delete w.intervention;
         delete w.staff;
         return lastRound(w);
       });
@@ -380,8 +379,8 @@ describe('delegated training focus', () => {
     expect(activePlayers(w).every((player) => player.fatigue === 24)).toBe(true);
     // 회복 still grows a little (×0.4, →CLUB-11).
     expect(activePlayers(w).some((player) => (player.developed ?? 0) > 0)).toBe(true);
-    for (const level of [1, 4] as const) {
-      operate(w, { type: 'intervention', level });
+    for (const step of [1, 4] as const) {
+      handTo(w, step);
       expect(activeTrainingFocus(w)).toBe(autoTrainingFocus(w));
     }
   });

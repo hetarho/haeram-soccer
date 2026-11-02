@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { staffAuthority } from './testing';
 import type { StaffTrait, World } from '../../contracts/src/types';
 import {
   createWorld,
@@ -11,7 +12,6 @@ import {
   transferWindowDays,
 } from './index';
 import { staffBidShare } from './director-bidding';
-import { legacySettings } from './responsibilities';
 import { STAFF_INFO, STAFF_TRAIT_INFO } from './staff';
 function world(trait?: StaffTrait) {
   const w = createWorld({
@@ -21,7 +21,7 @@ function world(trait?: StaffTrait) {
     seed: 'director-bids',
     level: 'easy',
   });
-  w.settings = legacySettings(4);
+  w.settings = staffAuthority(4);
   w.staff ??= basicStaff(w);
   const director = w.staff.find((s) => s.role === 'director')!;
   delete director.trait;

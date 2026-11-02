@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { advanceToNextMatch } from './testing';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import {
   advanceDays,
   advanceRound,
-  advanceToNextMatch,
   clubOf,
   currentDay,
   daysUntilNextMatch,

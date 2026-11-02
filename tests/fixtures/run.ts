@@ -2,7 +2,6 @@ import { detectMediations } from '../../packages/engine/src/mediation';
 import { careerDate } from '../../packages/engine/src/person-careers';
 import { transferOffers } from '../../packages/engine/src/index';
 import { lineOf } from '../../packages/engine/src/player';
-import { legacySettings } from '../../packages/engine/src/responsibilities';
 import type { ClubPolicy, Founding, World, Command } from '../../packages/contracts/src/types';
 import {
   createWorld,
@@ -14,7 +13,7 @@ import {
   policyOf,
 } from '../../packages/engine/src/index';
 import { currency, priceIndex } from '../../packages/catalogs/src/index';
-import { stagePlayingCoach } from '../../packages/engine/src/testing';
+import { staffAuthority, stagePlayingCoach } from '../../packages/engine/src/testing';
 import { DISABLED_RELEASE } from './releases';
 export interface FixtureDefinition {
   name: string;
@@ -33,7 +32,7 @@ export function runFixture(definition: FixtureDefinition) {
   // defaults: the pre-feature match model they were recorded on (the released full model of new
   // careers, T286, is not part of portable v1) and, unless asked, the original settings.
   const w = createWorld(definition.input, DISABLED_RELEASE);
-  if (!definition.currentRules) w.settings = legacySettings(2);
+  if (!definition.currentRules) w.settings = staffAuthority(2);
   if (definition.year) {
     // A synthetic start epoch establishes identities there, rather than changing retained births.
     delete w.people;

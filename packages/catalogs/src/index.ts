@@ -163,8 +163,6 @@ export const COUNTRIES: CountryProfile[] = [
     reference: '2026/27: 18/15; senior/reserve/expansion exceptions normalized',
   },
 ];
-export const NORMALIZATION =
-  '현대 리그 수·규모와 승강 형태를 참고한 데모입니다. 리저브·기간 우승·지역 라이선스·세부 UEFA 출전 배정은 간소화했습니다.';
 export const country = (code: string) => {
   const c = COUNTRIES.find((c) => c.code === code);
   if (!c) throw new Error('지원하지 않는 국가입니다.');

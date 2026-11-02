@@ -13,7 +13,7 @@ import type { Fixture, Founding, World } from '../../contracts/src/types';
 import { nextOwnFixture } from './calendar';
 import { identityOf } from './club-identity';
 import { createWorld } from './founding';
-import { KIT_FIXTURE_CHANGED } from './identity-operations';
+import { applyClubIdentity, KIT_FIXTURE_CHANGED } from './identity-operations';
 import { selectMatchKits } from './kit-selection';
 import { BANKRUPT_MESSAGE, operate } from './operations';
 import { advanceDays } from './season';
@@ -52,8 +52,7 @@ const KEEPER: GoalkeeperKit = {
   socks: '#F5E663',
   gloves: '#00a6c8',
 };
-const apply = (w: World, identity: unknown) =>
-  operate(w, { type: 'club-identity', identity: identity as ClubIdentity });
+const apply = (w: World, identity: unknown) => applyClubIdentity(w, identity as ClubIdentity);
 /** The world without what may change: the own identity and colour, and the revision. */
 const untouched = (w: World) =>
   canonical({
@@ -84,7 +83,7 @@ const side = (club: string, crest: AppearanceSide['crest']): AppearanceSide => (
   goalkeeper: '#000000',
 });
 
-describe('the own-club design command (→KIT-9, KIT-13)', () => {
+describe('applying a design to the own club (→KIT-9, KIT-13)', () => {
   it('applies a deep copied identity and primary alias', () => {
     const w = simulatedWorld(FOUNDING);
     const previous = clubOf(w).identity!;
@@ -181,17 +180,14 @@ describe('the own-club design command (→KIT-9, KIT-13)', () => {
       expect(() => apply(w, identity), JSON.stringify(identity)).toThrow('구단 디자인을 확인해');
       expect(canonical(w)).toBe(before);
     }
-    // Bankruptcy keeps its refusal; a world still missing designs is refused before any write.
-    w.bankrupt = { year: w.year, round: w.round, day: 0 };
-    expect(() => apply(w, design())).toThrow(BANKRUPT_MESSAGE);
-    delete w.bankrupt;
+    // A world still missing designs is refused before any write.
     delete w.clubs.find((club) => club.id !== w.playerClub)!.identity;
     const missing = canonical(w);
     expect(() => apply(w, design())).toThrow('구단 디자인 정보를 갱신한 뒤');
     expect(canonical(w)).toBe(missing);
   });
 
-  it('changes only the own identity, colour and revision', () => {
+  it('changes only the own identity and colour', () => {
     const w = simulatedWorld(FOUNDING, { rounds: 2 });
     expect(w.ownMatches.length).toBeGreaterThan(0);
     const match = w.ownMatches.at(-1)!;
@@ -205,13 +201,10 @@ describe('the own-club design command (→KIT-9, KIT-13)', () => {
       warnings: [],
     };
     const recorded = canonical(match.appearance);
-    const rival = w.clubs.find((club) => club.id !== w.playerClub)!;
-    const before = untouched(w),
-      revision = w.revision;
-    // A club target is no part of the command: the own club is edited, never the named one.
-    operate(w, { type: 'club-identity', identity: design(), club: rival.id } as never);
+    const before = untouched(w);
+    // No club is named: the own club is edited, never another one.
+    apply(w, design());
     expect(clubOf(w).identity).toEqual(DESIGN);
-    expect(w.revision).toBe(revision + 1);
     expect(untouched(w)).toBe(before);
     expect(canonical(match.appearance)).toBe(recorded);
   });
@@ -225,7 +218,6 @@ describe('the own-club design command (→KIT-9, KIT-13)', () => {
     for (const w of [base, edited]) advanceDays(w, 7, undefined, false);
     expect(base.ownMatches.length).toBeGreaterThan(0);
     expect(sporting(edited)).toBe(sporting(base));
-    expect(edited.revision).toBe(base.revision + 1);
     expect(clubOf(edited).identity).toEqual(DESIGN);
   });
 });

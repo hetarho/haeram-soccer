@@ -3,6 +3,7 @@ import { canonical } from '../../packages/contracts/src/index';
 import {
   CREST_PALETTE,
   CREST_PRESETS,
+  DESIGN_STUDIOS,
   KIT_ROLES,
   SHIRT_PATTERNS,
   type ClubIdentity,
@@ -250,7 +251,7 @@ export function identityWorkload(resume?: IdentityWorkloadState) {
   }
 
   return {
-    /** Applies season `n`'s design through the `club-identity` command (KIT-9). */
+    /** Applies season `n`'s design by adopting it as a designer's delivered draft (KIT-9). */
     edit(w: World, n: number) {
       verifyApplied(w);
       const identity = seasonIdentity(n);
@@ -260,7 +261,18 @@ export function identityWorkload(resume?: IdentityWorkloadState) {
       const others = canonical(
         w.clubs.filter((club) => club.id !== w.playerClub).map((club) => club.identity),
       );
-      command(w, () => operate(w, { type: 'club-identity', identity }), `season ${n} design edit`);
+      command(
+        w,
+        () => {
+          w.designCommission = {
+            studio: DESIGN_STUDIOS[0],
+            colours: [...identity.colours] as IdentityColours,
+            drafts: [identity],
+          };
+          operate(w, { type: 'adopt-design', draft: 0 });
+        },
+        `season ${n} design edit`,
+      );
       const own = clubOf(w);
       if (canonical(own.identity) !== canonical(identity) || own.color !== identity.colours[0])
         throw new Error(`Season ${n} design was not applied to the own club`);

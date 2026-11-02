@@ -638,43 +638,6 @@ const managerStyle = z.enum([
   'firefighter',
   'headcoach',
 ]);
-/** Each value at most once in a list. */
-const distinct = <T>(values: T[]) => new Set(values).size === values.length;
-const criterion = (max: number) => z.number().int().min(0).max(max);
-/** A wage cap names the going wage of a manager or coach of OVR 50–90 in steps of 5. */
-const wageCapOvr = z.literal([50, 55, 60, 65, 70, 75, 80, 85, 90]);
-/** The manager criteria (→STAFF-18); shared by saves and the hiring command. */
-export const managerCriteriaSchema = z.strictObject({
-  minOvr: criterion(99),
-  schools: z.array(managerStyle).max(8).refine(distinct),
-  minFlexibility: criterion(100),
-  maxPride: criterion(100),
-  minYouth: criterion(100),
-  traits: z
-    .array(z.enum(['none', 'youth', 'rotation', 'stable']))
-    .max(4)
-    .refine(distinct),
-  maxWageOvr: wageCapOvr.optional(),
-  priority: z.enum(['ovr', 'potential', 'wage']),
-  term,
-  poach: z.boolean(),
-  whenNone: z.enum(['wait', 'best']),
-});
-/** One coaching department's criteria (→STAFF-15); the engine checks the department's traits. */
-export const coachCriteriaSchema = z.strictObject({
-  volunteer: z.boolean(),
-  minAbility: criterion(99),
-  trait: staffTrait.optional(),
-  maxWageOvr: wageCapOvr.optional(),
-  priority: z.enum(['ability', 'wage']),
-  term,
-});
-/** The contract-talk rule (→CLUB-26); shared by saves and the talk-rule command. */
-export const talkRuleSchema = z.strictObject({
-  maxPay: z.literal([0.9, 1, 1.1, 1.25, 1.4]),
-  minOvr: criterion(99),
-  maxAge: z.number().int().min(28).max(40).optional(),
-});
 const staff = z.strictObject({
   id,
   person: id.optional(),
@@ -1029,7 +992,6 @@ const worldSchema: z.ZodType<World> = z.object({
   academy: z
     .strictObject({ players: z.array(player).max(60), intakeYear: z.number().int().optional() })
     .optional(),
-  intervention: z.literal([1, 2, 3, 4]).optional(),
   settings: gameSettingsSchema.optional(),
   decisionChoices: z.array(z.string().max(300)).max(10000).optional(),
   approvalWaits: z

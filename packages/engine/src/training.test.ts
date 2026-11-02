@@ -1,5 +1,5 @@
-import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
+import { staffAuthority } from './testing';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { Player, TrainingFocus } from '../../contracts/src/types';
 import { ATTRIBUTES } from '../../contracts/src/player';
@@ -52,7 +52,7 @@ function founded() {
     },
     DISABLED_RELEASE,
   );
-  w.settings = legacySettings(2);
+  w.settings = staffAuthority(2);
   w.cash = '999999999';
   w.manager.youth = 60;
   w.tactic = 'balanced';

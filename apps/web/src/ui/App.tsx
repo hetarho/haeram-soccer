@@ -231,11 +231,10 @@ const selectContentWorld = worldSelector([
   'lower',
   'europe',
   'critical',
-  // Staff, intervention and bid decisions can change only these keys; the direction's cards, dials,
+  // Staff, settings and bid decisions can change only these keys; the direction's cards, dials,
   // ticket price and rows stay as founded (→ECON-16/17/22/25).
   'staff',
   'academy',
-  'intervention',
   'settings',
   'decisionChoices',
   'academyReviews',

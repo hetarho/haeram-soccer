@@ -67,21 +67,6 @@
   margin-left: 6px;
   color: var(--text);
 }
-.roles {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
-  margin: 12px 0;
-  padding: 4px;
-  background: var(--image-detail, var(--surface-2)) var(--image-detail-material) repeat;
-  background-size: var(--image-material-size, 256px);
-}
-.roles button {
-  min-height: 44px;
-  padding: 7px;
-  font-size: 12px;
-  font-family: var(--display);
-}
 .filters {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -107,24 +92,12 @@
   width: 100%;
   max-width: 100%;
 }
-.recommendation {
-  grid-column: 1 / -1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
 .note {
   margin: 9px 0;
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.5;
   font-family: var(--display);
-}
-.cards {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
 }
 /* A candidate fills its dialog: no plate of its own, only its light inner cards. */
 .card {
@@ -485,15 +458,9 @@
   min-height: 48px;
 }
 @media (max-width: 760px) {
-  .cards {
-    grid-template-columns: 1fr;
-  }
   .filters {
     display: grid;
     grid-template-columns: 1fr 1fr;
-  }
-  .recommendation {
-    grid-column: 1 / -1;
   }
   .filters label {
     display: grid;

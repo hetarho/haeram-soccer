@@ -1,5 +1,5 @@
-import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
+import { staffAuthority } from './testing';
 import type { World } from '../../contracts/src/types';
 import {
   advanceDays,
@@ -43,8 +43,7 @@ const localLast = () => cachedWorld('local-last', () => toFinalRound(localSecond
 /** A 1979 amateur club whose delegated staff have lived its first day. */
 function delegatedSponsors() {
   const w = club({ year: 1979 });
-  w.intervention = 4;
-  w.settings = legacySettings(4);
+  w.settings = staffAuthority(4);
   advanceDays(w, 1, undefined, false);
   return w;
 }

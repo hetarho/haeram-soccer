@@ -1,4 +1,3 @@
-import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import type { World } from '../../contracts/src/types';
 import { canonical } from '../../contracts/src/index';
@@ -35,7 +34,7 @@ import {
   simulateSeason,
   sponsorOffers,
 } from './index';
-import { holdRows, sellPlayer, startWork } from './testing';
+import { holdRows, sellPlayer, staffAuthority, startWork } from './testing';
 import { addEvent } from './events';
 import { advanceEconomy } from './economy';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
@@ -229,8 +228,7 @@ describe('earned, auditable club finances', () => {
     const w = cachedWorld('delegated-staff-before-close', () => {
       const w = world();
       w.cash = '999999999';
-      w.intervention = 4;
-      w.settings = legacySettings(4);
+      w.settings = staffAuthority(4);
       // Paid coaches whose contracts end at this close: the ablest one the staff keep (no candidate
       // is 3 better), the other no longer meets 코치 기조 최고 수준 and is replaced.
       w.direction = { coaches: 'elite' };

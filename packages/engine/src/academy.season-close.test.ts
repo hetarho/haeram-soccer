@@ -1,5 +1,5 @@
-import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
+import { staffAuthority } from './testing';
 import { validateWorld } from '../../contracts/src/index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { academyPlayers, simulateSeason, FOUNDING_YEAR } from './index';
@@ -9,12 +9,10 @@ describe('season boundary', () => {
   it('carries prospects across a real season close', () => {
     const { w, first } = cachedWorld('academy-close', () => {
       const w = world('academy-close');
-      w.intervention = 1;
-      w.settings = legacySettings(1);
+      w.settings = staffAuthority(1);
       simulateSeason(w);
       const first = academyPlayers(w).map((player) => player.id);
-      w.intervention = 2;
-      w.settings = legacySettings(2);
+      w.settings = staffAuthority(2);
       return { w: lastRound(w), first };
     });
     expect(first.length).toBe(3);

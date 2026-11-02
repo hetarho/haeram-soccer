@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { staffAuthority } from './testing';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { World } from '../../contracts/src/types';
 import { LOAD_CATALOG } from '../../catalogs/src/index';
@@ -14,7 +15,6 @@ import {
 } from './manager-history-capture';
 import { yearlyStaff } from './ops-staff';
 import { finishCups } from './cups';
-import { legacySettings } from './responsibilities';
 import { careerDate } from './person-careers';
 import { currentDay } from './calendar';
 
@@ -33,8 +33,7 @@ function founded(delegated = false) {
   const w = simulatedWorld(FOUNDING, {}, DISABLED_RELEASE);
   w.cash = '999999999999';
   if (delegated) {
-    w.intervention = 4;
-    w.settings = legacySettings(4);
+    w.settings = staffAuthority(4);
   }
   return w;
 }

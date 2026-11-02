@@ -2,16 +2,16 @@ import { resolveMediation } from './mediation';
 import { answerPlayingCoach } from './playing-coach';
 import type { World, Command } from '../../contracts/src/types';
 import { readInbox } from './inbox';
-import { commercialCommand } from './ops-commercial';
+import { signSponsor } from './sponsors';
 import { squadCommand } from './ops-squad';
 import { staffCommand } from './ops-staff';
 import { advanceToNextEvent } from './next-event';
 import { applySettings } from './settings';
-import { applyClubIdentity, chooseMatchKit } from './identity-operations';
+import { chooseMatchKit } from './identity-operations';
 import { adoptDesign, commissionDesign, discardDesigns, redrawDesigns } from './design-studio';
 
 // Read models and limits the app and other modules import from here.
-export { campaignOffers, sponsorAnnual, sponsorOffers, sponsorSlots } from './ops-commercial';
+export { sponsorAnnual, sponsorOffers, sponsorSlots } from './ops-commercial';
 export { transferOffers } from './ops-squad';
 export { MANAGER_GONE, managerRenewal } from './ops-staff';
 export { BANKRUPTCY_ROUNDS, CASH_WARNING_ROUNDS } from './settlement';
@@ -38,9 +38,6 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
     case 'read-inbox':
       readInbox(w, cmd.id);
       break;
-    case 'club-identity':
-      applyClubIdentity(w, cmd.identity);
-      break;
     case 'match-kit':
       chooseMatchKit(w, cmd.fixtureId, cmd.role);
       break;
@@ -60,17 +57,14 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
     case 'advance-days':
     case 'next-match':
       break;
-    case 'sponsor':
     case 'sign-sponsor':
-    case 'campaign':
-      commercialCommand(w, cmd);
+      signSponsor(w, cmd.slot, cmd.offer);
       break;
     case 'hire':
     case 'renew-manager':
     case 'hire-staff':
     case 'release-staff':
     case 'renew-staff':
-    case 'intervention':
       staffCommand(w, cmd);
       break;
     default:

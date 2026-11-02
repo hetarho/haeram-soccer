@@ -12,7 +12,6 @@ import {
   prepareRound,
   readCopy,
   roundJobs,
-  setRoundSimulator,
   simulateRoundJob,
   type FixtureReadCopy,
   type RoundJob,
@@ -48,7 +47,7 @@ function solveReversed(copy: FixtureReadCopy, jobs: readonly RoundJob[]) {
 }
 
 describe('two-phase league round', () => {
-  it('gives the same world through a simulator, the prepared pair and a failed helper', () => {
+  it('gives the same world through the prepared pair and a failed helper', () => {
     // The reference: every fixture computed on the engine itself.
     const sequential = cachedWorld('round-jobs-sequential', () => {
       const w = founding();
@@ -56,38 +55,25 @@ describe('two-phase league round', () => {
       return { hash: digest(w), ownMatches: w.ownMatches.length };
     });
     const helped = founding();
-    let simulated = 0;
-    setRoundSimulator(helped, (copy, jobs) => {
-      simulated++;
-      expect(
-        Object.keys(copy).every((k) => (FIXTURE_READ_KEYS as readonly string[]).includes(k)),
-      ).toBe(true);
-      const results = solveReversed(copy, jobs);
-      return () => results;
-    });
     let prepared = 0;
     let failed = 0;
-    let pairTurn = false;
     for (let day = 0; day < DAYS; day++) {
       let posted: RoundJobResult[] | undefined;
-      if (
-        pairTurn &&
-        prepareRound(helped, (copy, jobs) => (posted = solveReversed(copy, jobs)), false)
-      ) {
+      const start = (copy: FixtureReadCopy, jobs: readonly RoundJob[]) => {
+        expect(
+          Object.keys(copy).every((k) => (FIXTURE_READ_KEYS as readonly string[]).includes(k)),
+        ).toBe(true);
+        posted = solveReversed(copy, jobs);
+      };
+      if (prepareRound(helped, start, false)) {
         prepared++;
-        pairTurn = false;
         // Every other prepared round loses its helper: the engine computes the jobs itself.
         completeRound(helped, prepared % 2 ? posted : undefined);
         if (!(prepared % 2)) failed++;
-      } else {
-        const before = simulated;
-        advanceDays(helped, 1, undefined, false);
-        if (simulated > before) pairTurn = true;
-      }
+      } else advanceDays(helped, 1, undefined, false);
     }
     expect(sequential.ownMatches).toBeGreaterThanOrEqual(5);
     expect(helped.ownMatches).toHaveLength(sequential.ownMatches);
-    expect(simulated).toBeGreaterThanOrEqual(2);
     expect(prepared).toBeGreaterThanOrEqual(2);
     expect(failed).toBeGreaterThanOrEqual(1);
     expect(digest(helped)).toBe(sequential.hash);
@@ -138,16 +124,10 @@ describe('two-phase league round', () => {
     const w = founding();
     const other = w.fixtures.find((f) => f.round === 1 && !ownFixture(w, f))!;
     w.fixtures.push({ ...other, id: `${other.id}-again`, home: other.away, away: other.home });
-    let simulated = 0;
-    setRoundSimulator(w, () => {
-      simulated++;
-      return () => undefined;
-    });
     while (w.round < 1) {
       expect(prepareRound(w, () => expect.unreachable(), false)).toBe(false);
       advanceDays(w, 1, undefined, false);
     }
-    expect(simulated).toBe(0);
     expect(w.fixtures.filter((f) => f.round === 1).every((f) => f.score)).toBe(true);
     expect(w.ownMatches).toHaveLength(1);
   });

@@ -1,16 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
 import type { InboxItem, World } from '../../contracts/src/types';
-import {
-  createWorld,
-  INBOX_LIMIT,
-  inboxFeed,
-  operate,
-  pushInbox,
-  readInbox,
-  unreadAttention,
-  FOUNDING_YEAR,
-} from './index';
+import { createWorld, INBOX_LIMIT, operate, pushInbox, readInbox, FOUNDING_YEAR } from './index';
+import { unreadAttention } from './testing';
 
 function world() {
   return createWorld({
@@ -53,7 +45,6 @@ describe('owner inbox', () => {
     operate(w, { type: 'read-inbox' });
     expect(unreadAttention(w)).toEqual([]);
     expect(w.inbox!.find((item) => item.id === quiet.id)?.read).toBe(true);
-    expect(inboxFeed(w).map((item) => item.id)).toEqual([other.id, quiet.id, urgent.id]);
   });
 
   it('stays bounded, keeps unanswered attention and never reuses an ID', () => {

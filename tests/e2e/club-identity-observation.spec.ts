@@ -1,15 +1,11 @@
 import { openClubhouse, openClubRecords } from './competition-navigation';
+import { advanceToNextMatch } from '../../packages/engine/src/testing';
 import { expect, test, type Page } from '@playwright/test';
 import { describeShirt } from '../../apps/web/src/ui/kitPainting';
 import { UNRECORDED_LOOK } from '../../apps/web/src/ui/matchAppearance';
 import type { ShirtDesign } from '../../packages/contracts/src/identity';
-import {
-  advanceToNextMatch,
-  createWorld,
-  identityOf,
-  nextOwnFixture,
-  operate,
-} from '../../packages/engine/src/index';
+import { applyClubIdentity } from '../../packages/engine/src/identity-operations';
+import { createWorld, identityOf, nextOwnFixture, operate } from '../../packages/engine/src/index';
 import { colourDistance } from '../../packages/engine/src/identity-legacy';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import { colourArea, torsoShare, wornFigures, type CanvasImage } from '../fixtures/figure-evidence';
@@ -67,7 +63,8 @@ function observedCareer() {
   });
   Object.assign(w.settings!.responsibilities, ALL_DELEGATED);
   const own = identityOf(w, w.playerClub);
-  operate(w, { type: 'club-identity', identity: { ...own, kits: { ...own.kits, home: STRIPES } } });
+  // The own club wears STRIPES at home, applied as an adopted designer draft is (→KIT-9).
+  applyClubIdentity(w, { ...own, kits: { ...own.kits, home: STRIPES } });
   const next = nextOwnFixture(w)!;
   const rival = w.clubs.find((c) => c.id === (next.home === w.playerClub ? next.away : next.home))!;
   rival.identity = {

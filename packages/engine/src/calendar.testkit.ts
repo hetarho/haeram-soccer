@@ -1,6 +1,6 @@
 import { expect } from 'vitest';
+import { staffAuthority } from './testing';
 import { canonical, type World } from '../../contracts/src/index';
-import { legacySettings } from './responsibilities';
 import {
   advanceDays,
   advanceRound,
@@ -26,7 +26,7 @@ export function world(
     },
     release,
   );
-  w.settings = legacySettings(2);
+  w.settings = staffAuthority(2);
   w.cash = '999999999999';
   return w;
 }

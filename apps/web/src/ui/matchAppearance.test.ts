@@ -5,7 +5,7 @@ import type { ClubIdentity, MatchAppearance } from '../../../../packages/contrac
 import type { PlayerMotion, PlayerMotionState } from '../../../../packages/contracts/src/types';
 import { identityOf } from '../../../../packages/engine/src/club-identity';
 import { createWorld, simulateMatch } from '../../../../packages/engine/src/index';
-import { operate } from '../../../../packages/engine/src/operations';
+import { applyClubIdentity } from '../../../../packages/engine/src/identity-operations';
 import {
   keepersBySample,
   matchLook,
@@ -66,7 +66,7 @@ describe('recorded match appearance (→KIT-12, SAVE-22)', () => {
         third: { pattern: 'plain', primary: '#ffd400' },
       },
     };
-    operate(w, { type: 'club-identity', identity: edited });
+    applyClubIdentity(w, edited);
     const after = matchLook(w.ownMatches.find((m) => m.id === record.id)!);
     expect(canonical(after)).toBe(before);
     const side = record.home === w.playerClub ? 0 : 1;
@@ -132,13 +132,10 @@ describe('recorded match appearance (→KIT-12, SAVE-22)', () => {
     // Reading it never upgrades the record, and today's own kit parts stay out of it.
     expect(legacy.appearance.version).toBe(1);
     expect('shorts' in legacy.appearance.sides[0]).toBe(false);
-    operate(w, {
-      type: 'club-identity',
-      identity: {
-        ...identityOf(w, w.playerClub),
-        version: 2,
-        parts: { home: { shorts: '#00e5ff', socks: '#00e5ff' } },
-      },
+    applyClubIdentity(w, {
+      ...identityOf(w, w.playerClub),
+      version: 2,
+      parts: { home: { shorts: '#00e5ff', socks: '#00e5ff' } },
     });
     expect(canonical(matchLook(legacy))).toBe(canonical(look));
   });

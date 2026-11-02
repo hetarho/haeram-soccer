@@ -6,7 +6,7 @@ import { europeanTableOrder } from './europe-coefficients';
 import { addEvent } from './events';
 import { broadcastQuote } from './quotes';
 import { clubOf } from './player-state';
-import { findClub, initialElo } from './world';
+import { initialElo } from './world';
 import { emptyTable } from './season';
 import { credit } from './transactions';
 import { installMissingIdentities } from './club-identity';
@@ -451,7 +451,7 @@ function progressEurope(w: World, t: EuropeTournament) {
   if (last) {
     const index = rounds.length - 1;
     last.ties.forEach((tie, i) => {
-      if (!decideTie(w, tie, legsOf(w, t.fixtures, t.key, index, i), w.year < 2021)) return;
+      if (!decideTie(tie, legsOf(w, t.fixtures, t.key, index, i), w.year < 2021)) return;
       changed = true;
       if (tie.home !== w.playerClub && tie.away !== w.playerClub) return;
       const prize = broadcastQuote(clubOf(w).country, w.year, EUROPE_PRIZE_CONFIG.knockout);
@@ -657,7 +657,6 @@ export function finishEurope(w: World) {
 export function europeFinal(w: World, t: EuropeTournament) {
   return t.rounds?.length ? finalOf(w, t.key, t.rounds, t.fixtures) : undefined;
 }
-export const continentalClub = findClub;
 
 export function europeanCoefficient(w: World) {
   return w.ownMatches

@@ -184,7 +184,7 @@ describe('discipline (→MATCH-19)', () => {
     expect(squad(w, club).slice(xi.length, 18)).toContain(comes);
     expect(lineOf(comes.position)).toBe(lineOf(out.position));
     // Everyone else keeps his place.
-    expect(replaced.filter((p, i) => i !== 5)).toEqual(xi.filter((p, i) => i !== 5));
+    expect(replaced.filter((_, i) => i !== 5)).toEqual(xi.filter((_, i) => i !== 5));
   });
   it('warns a player one yellow short of a league ban', () => {
     const w = world();

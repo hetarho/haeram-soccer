@@ -12,14 +12,6 @@
 .hub > * {
   flex-shrink: 0;
 }
-.srOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
 .resources {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -61,9 +53,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: var(--display);
-}
-.resources .warning {
-  color: var(--warm);
 }
 
 /* The office entrance: the manager-room art fills a reserved slot under a light shade, so loading
@@ -416,14 +405,6 @@ button.resources {
 button.resources:active:not(:disabled) {
   transform: translateY(1px);
   box-shadow: none;
-}
-.more {
-  position: absolute;
-  right: 8px;
-  top: 6px;
-  font-style: normal;
-  font-size: 14px;
-  color: var(--text-faint);
 }
 
 /* The season card: round, rank, record and cups over the season-progress rule (→WEB-11). */

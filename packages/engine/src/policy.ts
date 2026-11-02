@@ -28,13 +28,11 @@ export const POLICY_INFO: Record<
   PolicyKey,
   {
     label: string;
-    question: string;
     levels: { level: PolicyLevel; name: string; summary: string }[];
   }
 > = {
   support: {
     label: '선수단 투자',
-    question: '훈련·의료 환경과 협상에서의 선수 대우에 얼마나 쓸까요?',
     levels: [
       {
         level: 1,
@@ -65,7 +63,6 @@ export const POLICY_INFO: Record<
   },
   recruitment: {
     label: '영입 기조',
-    question: '어떤 선수를 데려올까요?',
     levels: [
       {
         level: 1,
@@ -84,7 +81,6 @@ export const POLICY_INFO: Record<
   },
   academy: {
     label: '유소년 투자',
-    question: '아카데미 코치·스카우트·시설에 얼마나 쓸까요?',
     levels: [
       { level: 1, name: '기본 운영', summary: '추가 비용 없음 · 입단 인원과 잠재력 기본' },
       {
@@ -111,7 +107,6 @@ export const POLICY_INFO: Record<
   },
   localInvest: {
     label: '주변 투자',
-    question: '연고지 경제와 동네에 얼마나 투자할까요?',
     levels: [
       { level: 1, name: '없음', summary: '추가 비용 없음 · 지역 기반 그대로' },
       {
@@ -138,7 +133,6 @@ export const POLICY_INFO: Record<
   },
   grassroots: {
     label: '풀뿌리 유망주 투자',
-    question: '동네 유소년 축구를 얼마나 키울까요?',
     levels: [
       { level: 1, name: '없음', summary: '추가 비용 없음' },
       {
@@ -165,7 +159,6 @@ export const POLICY_INFO: Record<
   },
   globalMarketing: {
     label: '해외 마케팅',
-    question: '구단 이름을 해외에 얼마나 알릴까요?',
     levels: [
       { level: 1, name: '입소문', summary: '추가 비용 없음 · 팬 변화 없음' },
       {
@@ -192,7 +185,6 @@ export const POLICY_INFO: Record<
   },
   globalScouting: {
     label: '해외 스카우트망',
-    question: '해외 선수와 유망주를 얼마나 넓게 찾을까요?',
     levels: [
       { level: 1, name: '없음', summary: '추가 비용 없음' },
       {
@@ -219,7 +211,6 @@ export const POLICY_INFO: Record<
   },
   tour: {
     label: '해외 투어',
-    question: '여름마다 해외 투어를 갈까요?',
     levels: [
       { level: 1, name: '안 함', summary: '투어 없음' },
       {

@@ -567,15 +567,13 @@ export function tolerantBand(range: readonly [number, number]): readonly [number
   return [Math.min(lo, mid * (1 - TARGET_TOLERANCE)), Math.max(hi, mid * (1 + TARGET_TOLERANCE))];
 }
 
-const both = (s: MatchSample, read: (side: Side) => number | undefined) => {
+const both = (read: (side: Side) => number | undefined) => {
   const a = read(0),
     b = read(1);
   return a === undefined || b === undefined ? undefined : a + b;
 };
-const metric = (s: MatchSample, index: number) =>
-  both(s, (side) => s.record.metrics[side]?.[index]);
-const detail = (s: MatchSample, index: number) =>
-  both(s, (side) => s.record.detail?.[side]?.[index]);
+const metric = (s: MatchSample, index: number) => both((side) => s.record.metrics[side]?.[index]);
+const detail = (s: MatchSample, index: number) => both((side) => s.record.detail?.[side]?.[index]);
 const perTeam = (value: number | undefined): Contribution | undefined =>
   value === undefined ? undefined : [value, 2];
 const share = (num: number | undefined, den: number | undefined): Contribution | undefined =>
@@ -688,7 +686,7 @@ export const TARGET_BANDS: readonly TargetBand[] = [
   ),
   band('xgPerShot', 'xG per shot', [0.09, 0.12], 'xg', 'record', (s) =>
     share(
-      both(s, (side) => s.record.xg?.[side]),
+      both((side) => s.record.xg?.[side]),
       metric(s, M.shots),
     ),
   ),
@@ -2436,11 +2434,11 @@ function counterBand(c: AdvancedCounter, range: readonly [number, number]): Targ
         return own === undefined || a === undefined || b === undefined ? undefined : [own, a + b];
       }
       return share(
-        both(s, (side) => counterReading(s, n, side)),
-        both(s, (side) => counterReading(s, d, side)),
+        both((side) => counterReading(s, n, side)),
+        both((side) => counterReading(s, d, side)),
       );
     }
-    return perTeam(both(s, (side) => counterReading(s, metric, side)));
+    return perTeam(both((side) => counterReading(s, metric, side)));
   };
   return {
     id: c.id,

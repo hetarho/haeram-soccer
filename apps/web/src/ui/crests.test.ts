@@ -7,11 +7,9 @@ import {
   CREST_COMBINATIONS,
   CREST_FIELDS,
   CREST_PAIRS,
-  colourDistance,
   contrast,
   crestMap,
   crestOf,
-  kits,
 } from './crests';
 
 const world = (color = '#24664f', seed = 'crests') =>
@@ -67,26 +65,6 @@ describe('club crests', () => {
     const before = crestMap({ ...w, clubs: domestic });
     const after = crestMap(w);
     for (const club of domestic) expect(after.get(club.id)).toEqual(before.get(club.id));
-  });
-
-  it('changes the away kit when the shirts would clash', () => {
-    const red = {
-      primary: '#d62828',
-      secondary: '#ffffff',
-      shape: 'shield',
-      pattern: 'plain',
-      emblem: 'star',
-    } as const;
-    const alsoRed = { ...red, primary: '#c9184a', secondary: '#121212' };
-    expect(kits(red, alsoRed)).toEqual(['#d62828', '#121212']);
-    expect(colourDistance(...kits(red, { ...red, primary: '#1f4fd1' }))).toBeGreaterThan(150);
-  });
-
-  it('keeps a crest without a secondary in its primary instead of generating a colour', () => {
-    const red = { primary: '#d62828', shape: 'shield', pattern: 'plain', emblem: 'star' } as const;
-    expect(kits(red, { ...red, primary: '#c9184a' })).toEqual(['#d62828', '#c9184a']);
-    // A dark shirt on grass has nothing to switch to.
-    expect(kits({ ...red, primary: '#12493a' }, red)).toEqual(['#12493a', '#d62828']);
   });
 
   it('reads applied identities, which a new world installs as the exact legacy crests', () => {

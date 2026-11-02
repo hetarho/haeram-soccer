@@ -101,39 +101,6 @@ export function replaceQuery(update: (params: URLSearchParams) => void) {
   if (address !== taskAddress()) history.replaceState(history.state, '', address);
 }
 
-/**
- * A page's tab bar whose selected tab stays in the address as ?view= (replaced, never a history
- * entry); the first tab keeps none.
- */
-export function PageTabs<T extends string>({
-  tabs,
-  value,
-  onChange,
-  label,
-  idPrefix,
-}: {
-  tabs: readonly (readonly [T, string])[];
-  value: T;
-  onChange: (tab: T) => void;
-  /** The tab list's accessible name. */
-  label: string;
-  /** Tabs are `<idPrefix>-tab-<id>`, controlling `<idPrefix>-panel` (→ TabPanel). */
-  idPrefix: string;
-}) {
-  const first = tabs[0][0];
-  useEffect(
-    () =>
-      replaceQuery((params) => {
-        if (value === first) params.delete('view');
-        else params.set('view', value);
-      }),
-    [value, first],
-  );
-  return (
-    <TabList tabs={tabs} value={value} onChange={onChange} label={label} idPrefix={idPrefix} />
-  );
-}
-
 /** The tab the address asks for under `param`: an older address's, a listed one, else the first. */
 function addressTab<T extends string>(
   param: string,

@@ -18,8 +18,7 @@ import {
   operatingCosts,
   ownLeagueGames,
 } from './index';
-import { legacySettings } from './responsibilities';
-import { professionalStart } from './testing';
+import { professionalStart, staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { finance, world } from './business.testkit';
 
@@ -86,8 +85,7 @@ describe('business delegation and cash warnings', () => {
     advanceDays(owner, 1);
     expect(owner.sponsors).toBeUndefined();
     const delegated = world();
-    delegated.intervention = 4;
-    delegated.settings = legacySettings(4);
+    delegated.settings = staffAuthority(4);
     advanceDays(delegated, 1);
     // A 1950 club in England has only the local slot open (→ECON-8).
     expect(delegated.sponsors).toEqual([

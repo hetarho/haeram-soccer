@@ -219,32 +219,6 @@
   font-size: 13px;
 }
 
-.empty {
-  display: grid;
-  justify-items: start;
-  gap: 6px;
-  padding: 12px 0;
-}
-.empty h3 {
-  margin: 0;
-  font-size: 15px;
-}
-.empty h3:focus {
-  outline: none;
-}
-.empty h3:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
-}
-.empty p {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 13px;
-}
-.empty button {
-  min-height: 44px;
-}
-
 @media (max-width: 760px) {
   .requests li {
     grid-template-columns: minmax(0, 1fr) auto;

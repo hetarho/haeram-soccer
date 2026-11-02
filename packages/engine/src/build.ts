@@ -71,21 +71,18 @@ const MULTIPLIED = new Set<keyof BuildEffects>([
 ]);
 export interface BuildCard {
   label: string;
-  /** The football idea behind the card. */
-  model: string;
   effects: Partial<BuildEffects>;
 }
-export const BUILD_SLOT_INFO: Record<BuildSlot, { label: string; question: string }> = {
-  youth: { label: '유입 방식', question: '아카데미 아이들을 어디서 데려올까' },
-  scouting: { label: '스카우팅', question: '어떤 선수를 찾아 데려올까' },
-  market: { label: '매각 기조', question: '우리 선수를 원하는 구단에 어떻게 응할까' },
-  revenue: { label: '수익 모델', question: '구단 살림은 어디서 벌고 아낄까' },
-  fans: { label: '지역 관계 방식', question: '연고지와 어떻게 지낼까' },
-  culture: { label: '라커룸 문화', question: '선수단은 어떤 분위기로 뭉칠까' },
+export const BUILD_SLOT_INFO: Record<BuildSlot, { label: string }> = {
+  youth: { label: '유입 방식' },
+  scouting: { label: '스카우팅' },
+  market: { label: '매각 기조' },
+  revenue: { label: '수익 모델' },
+  fans: { label: '지역 관계 방식' },
+  culture: { label: '라커룸 문화' },
 };
 const STANDARD: BuildCard = {
   label: '표준',
-  model: '특별한 방향 없이 표준으로 운영',
   effects: {},
 };
 export const BUILD_CARDS: {
@@ -94,144 +91,114 @@ export const BUILD_CARDS: {
   youth: {
     homegrown: {
       label: '성골 유스',
-      model: '아카데미 출신으로 1군 뼈대를 세우는 유스 명가',
       effects: { academyIntake: 1, academyPotential: 3, marketCandidates: -1 },
     },
     partnership: {
       label: '유소년 클럽 제휴',
-      model: '지역 유소년 클럽과 손잡고 많이 데려와 고르는 방식',
       effects: { academyIntake: 2, academyPotential: -2 },
     },
     worldwide: {
       label: '해외 유스 스카우트',
-      model: '적게 뽑되 재능이 확실한 아이만 데려오는 방식',
       effects: { academyIntake: -1, academyPotential: 5 },
     },
     elite: {
       label: '엘리트 선발',
-      model: '아주 적게 뽑아 가장 뛰어난 아이에게만 투자하는 방식',
       effects: { academyIntake: -2, academyPotential: 8 },
     },
   },
   scouting: {
     data: {
       label: '데이터 스카우팅',
-      model: '지표로 저평가된 선수를 찾는 데이터 영입',
       effects: { marketPotential: 3, marketCandidates: 1, marketAbility: -2 },
     },
     proven: {
       label: '즉시 전력',
-      model: '이미 증명한 선수를 사 오는 즉시 전력 영입',
       effects: { marketAbility: 4, wage: 1.05 },
     },
     network: {
       label: '광역 네트워크',
-      model: '여러 나라에 스카우트를 두어 후보를 넓히는 방식',
       effects: { marketCandidates: 3, marketPotential: -1 },
     },
     local: {
       label: '지역 인재 우선',
-      model: '연고지 출신을 먼저 찾아 관중과 가까워지는 영입',
       effects: { gateDemand: 0.02, wage: 0.97, marketCandidates: -1 },
     },
   },
   market: {
     selling: {
       label: '셀링 클럽',
-      model: '싸게 사서 키운 뒤 비싸게 파는 트레이딩 모델',
       effects: { incomingBids: 1.6, saleFee: 1.25, moraleBaseline: -2 },
     },
     showcase: {
       label: '쇼케이스',
-      model: '빅클럽에 선수를 보여 주는 무대가 되는 구단',
       effects: { incomingBids: 1.3, saleFee: 1.1, moraleBaseline: -1 },
     },
     hold: {
       label: '핵심 지키기',
-      model: '주축은 팔지 않는다는 메시지로 라커룸을 지키는 방식',
       effects: { incomingBids: 0.5, moraleBaseline: 2 },
     },
     hardball: {
       label: '강경 협상',
-      model: '제값이 아니면 팔지 않는 협상 태도',
       effects: { saleFee: 1.15, incomingBids: 0.8 },
     },
   },
   revenue: {
     commercial: {
       label: '상업 확장',
-      model: '스폰서와 해외 마케팅으로 수익을 키우는 상업 구단',
       effects: { sponsor: 1.2, marketingFans: 1.2, gateDemand: -0.03 },
     },
     owner: {
       label: '구단주 투자',
-      model: '구단주의 자금으로 버티며 투자하는 구조',
       effects: { wage: 1.05 },
     },
     frugal: {
       label: '긴축 재정',
-      model: '급여 체계를 묶어 오래 버티는 재정 운영',
       effects: { wage: 0.94, moraleBaseline: -2, marketAbility: -2 },
     },
     members: {
       label: '회원제 운영',
-      model: '팬이 주인인 회원제(소시오) 구단',
       effects: { gateDemand: 0.05, winFans: 1.2, sponsor: 0.9 },
     },
   },
   fans: {
     community: {
       label: '지역 밀착',
-      model: '지역 공동체와 함께 홈 경기장을 채우는 구단',
       effects: { gateDemand: 0.06, winFans: 1.4, marketingFans: 0.9 },
     },
     fortress: {
       label: '홈 요새',
-      model: '원정팀이 두려워하는 홈 분위기',
       effects: { homeStrength: 1.5, winFans: 1.1, marketingFans: 0.85 },
     },
     mutual: {
       label: '지역 상생',
-      model: '연고지와 함께 자라 지역의 뿌리가 빨리 깊어지는 구단',
       effects: { localBaseRate: 1.5, sponsor: 0.95 },
     },
     families: {
       label: '가족 관중',
-      model: '가족 단위 관중이 편한 경기장',
       effects: { gateDemand: 0.04, marketingFans: 1.1, homeStrength: -0.5 },
     },
   },
   culture: {
     family: {
       label: '가족 같은 클럽',
-      model: '서로 챙기는 라커룸, 대신 급여 기대치가 높아요',
       effects: { moraleBaseline: 3, wage: 1.03 },
     },
     meritocracy: {
       label: '철저한 경쟁',
-      model: '나이와 이름값 없이 실력으로만 뛰는 팀',
       effects: { youthGrowth: 1.1, moraleBaseline: -1 },
     },
     stars: {
       label: '스타 대우',
-      model: '스타가 오고 싶어 하는 대우',
       effects: { marketAbility: 2, moraleBaseline: 1, wage: 1.1 },
     },
     veterans: {
       label: '베테랑 리더십',
-      model: '고참이 중심을 잡는 라커룸',
       effects: { moraleBaseline: 2, youthGrowth: 0.9 },
     },
   },
 };
 
 export { BUILD_PRESETS, type PresetRows } from './preset-data';
-
-/** Every distinct build: each slot's cards plus its standard card. */
-export const BUILD_COMBINATIONS = BUILD_SLOTS.reduce(
-  (count, slot) => count * (BUILD_OPTIONS[slot].length + 1),
-  1,
-);
 
 export function buildOf(w: Pick<World, 'build'>): ClubBuild {
   return w.build ?? {};

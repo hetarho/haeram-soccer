@@ -1,4 +1,5 @@
 import { openPersonnel } from './personnel-navigation';
+import { advanceToNextMatch } from '../../packages/engine/src/testing';
 import { openClubhouse, openLeague, openCups, openClubRecords } from './competition-navigation';
 import {
   closeMatchDetails,
@@ -10,7 +11,7 @@ import {
 import { delegateSales, reportKit } from './events';
 import { expect, test } from '@playwright/test';
 import { chooseLevel } from './events';
-import { advanceToNextMatch, createWorld } from '../../packages/engine/src/index';
+import { createWorld } from '../../packages/engine/src/index';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
 import {

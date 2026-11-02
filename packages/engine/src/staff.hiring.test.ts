@@ -1,4 +1,3 @@
-import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import { footballIndex } from '../../catalogs/src/index';
@@ -40,7 +39,7 @@ import {
   transferOffers,
   yearlyStaff,
 } from './index';
-import { holdRows } from './testing';
+import { handTo, holdRows, staffAuthority } from './testing';
 import { world } from './staff.testkit';
 
 describe('coach hiring by 코치 기조 (STAFF-15)', () => {
@@ -71,8 +70,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
       until: w.year,
     };
     w.staff = w.staff!.map((member) => (member.role === 'attack' ? veteran : member));
-    w.intervention = 3;
-    w.settings = legacySettings(3);
+    w.settings = staffAuthority(3);
     if (option !== 'standard') w.direction = { coaches: option as never };
     return { w, veteran };
   }
@@ -88,7 +86,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
     coaches(w, 'cheap');
     coaches(w, 'standard');
     expect(coachOf(w, 'attack')!.wage).toBe('0');
-    operate(w, { type: 'intervention', level: 3 });
+    handTo(w, 3);
     expect(coachOf(w, 'attack')).toMatchObject({ id: cheapest.id, until: w.year + 2 });
     expect(coachOf(w, 'attack')!.term).toBeUndefined();
     expect(w.events.some((event) => event.detail.includes('스태프 위임 선임'))).toBe(true);
@@ -100,7 +98,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
     const elite = world(seed);
     coaches(elite, 'elite');
     const ablest = [...staffCandidates(elite, 'attack')].sort((a, b) => b.ability - a.ability)[0];
-    operate(elite, { type: 'intervention', level: 3 });
+    handTo(elite, 3);
     expect(coachOf(elite, 'attack')).toMatchObject({ id: ablest.id, until: elite.year + 3 });
     validateWorld(elite);
   });
@@ -108,7 +106,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
   it('with no match a volunteer holds the post and the staff report it once a season', () => {
     const w = world(seedWhere('criteria-none', (abilities) => abilities.every((a) => a < 65)));
     coaches(w, 'elite');
-    operate(w, { type: 'intervention', level: 3 });
+    handTo(w, 3);
     expect(coachOf(w, 'attack')).toMatchObject({ wage: '0', ability: 50 });
     const reports = () =>
       (w.inbox || []).filter((item) => item.ref?.startsWith('coach-search:attack:'));
@@ -139,7 +137,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
     const broke = world('criteria-broke');
     broke.cash = '0';
     coaches(broke, 'cheap');
-    operate(broke, { type: 'intervention', level: 3 });
+    handTo(broke, 3);
     expect(coachOf(broke, 'fitness')!.wage).toBe('0');
     expect(broke.inbox!.at(-1)!.detail).toMatch(/^자금 여력에 맞는 후보가 없어요 · /);
   });
@@ -206,7 +204,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
   it('코치 기조 자원봉사 keeps volunteers', () => {
     const w = world('criteria-volunteer');
     coaches(w, 'volunteer');
-    operate(w, { type: 'intervention', level: 3 });
+    handTo(w, 3);
     const volunteer = coachOf(w, 'scout')!;
     expect(volunteer.wage).toBe('0');
     // Nothing to report: the owner asked for volunteers.
@@ -228,8 +226,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
     // The known matching seed avoids generating 86 full worlds on a cold test cache.
     const w = world('criteria-change-85');
     expect(staffCandidates(w, 'attack').every((offer) => offer.ability < 65)).toBe(true);
-    w.intervention = 3;
-    w.settings = legacySettings(3);
+    w.settings = staffAuthority(3);
     w.direction = { coaches: 'elite' };
     operate(w, { type: 'hire-staff', role: 'defense', candidate: 0, term: 2 });
     const contracted = coachOf(w, 'defense')!;
@@ -246,12 +243,12 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
     expect(coachPickPreview(w, 'defense').reason).toContain('계약이 끝날 때');
   });
 
-  it('releasing a coach leaves delegation to the level, so the staff refill the post', () => {
+  it('releasing a coach leaves delegation as set, so the staff refill the post', () => {
     const w = world('criteria-release');
-    operate(w, { type: 'intervention', level: 4 });
+    handTo(w, 4);
     const fitness = coachOf(w, 'fitness')!;
     operate(w, { type: 'release-staff', role: 'attack' });
-    expect(w.intervention).toBe(4);
+    expect(w.settings).toEqual(staffAuthority(4));
     // The staff fill the post the owner emptied by its criteria; the other department is as it was.
     dailyStaff(w);
     expect(coachOf(w, 'attack')).toBeDefined();
@@ -398,7 +395,7 @@ describe('contract terms (STAFF-11, STAFF-14)', () => {
     )!;
     const w = world(seed);
     w.direction = { coaches: 'elite' };
-    operate(w, { type: 'intervention', level: 3 });
+    handTo(w, 3);
     const hired = coachOf(w, 'attack');
     expect(hired.until).toBe(w.year + 3);
     expect(hired.term).toBeUndefined();
@@ -435,8 +432,7 @@ describe('delegated manager appointment (STAFF-7, STAFF-18)', () => {
   /** Four free agents of known schools and levels, with the manager post delegated. */
   function seeded(seed: string) {
     const w = world(seed);
-    w.intervention = 4;
-    w.settings = legacySettings(4);
+    w.settings = staffAuthority(4);
     const market = structuredClone(marketOf(w));
     const levels: [ManagerStyle, number][] = [
       ['developer', 70],
@@ -494,8 +490,7 @@ describe('delegated manager appointment (STAFF-7, STAFF-18)', () => {
     validateWorld(w);
     // Without delegation the departure stops the clock for the owner.
     const owner = seeded('owner-resign').w;
-    owner.intervention = 2;
-    owner.settings = legacySettings(2);
+    owner.settings = staffAuthority(2);
     resignAtTrustFloor(owner);
     expect(owner.manager.interim).toBe(true);
     expect(owner.critical).toBe(MANAGER_GONE);
@@ -564,12 +559,12 @@ describe('the 단장 (STAFF-20)', () => {
     expect(staffEffects(w).bidAcceptance).toBe(-0.05);
   });
 
-  it('the staff fill his post by 코치 기조 from level 3, the coaching departments with him', () => {
+  it('the staff fill his post by 코치 기조 once staff are delegated, the coaching departments with him', () => {
     const w = world('director-delegated');
-    expect(w.intervention).toBe(2);
+    expect(w.settings).toEqual(staffAuthority(2));
     dailyStaff(w);
     expect(w.staff![0]).toMatchObject({ role: 'director', wage: '0' });
-    operate(w, { type: 'intervention', level: 3 });
+    handTo(w, 3);
     const director = w.staff![0];
     expect(director.role).toBe('director');
     expect(BigInt(director.wage)).toBeGreaterThan(0n);

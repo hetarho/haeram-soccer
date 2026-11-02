@@ -1,7 +1,7 @@
 import type { MatchPlayback, PlayerMotion, World } from '../../packages/contracts/src/types';
+import { advanceToNextMatch } from '../../packages/engine/src/testing';
 import {
   advanceRound,
-  advanceToNextMatch,
   createWorld,
   fullStatsRead,
   MATCH_MODEL_RELEASE,

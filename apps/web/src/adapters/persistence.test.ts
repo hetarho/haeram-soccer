@@ -10,6 +10,7 @@ import {
   operate,
   simulateSeason,
 } from '../../../../packages/engine/src/index';
+import { applyClubIdentity } from '../../../../packages/engine/src/identity-operations';
 import { currentDay, fixtureDay, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { legacyCrestMap } from '../../../../packages/engine/src/identity-legacy';
 import { appearanceForFixture } from '../../../../packages/engine/src/match-appearance';
@@ -29,14 +30,7 @@ import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
 import { reduceIdentityDraft } from '../ui/clubIdentityDraft';
-import {
-  checkpoint,
-  encode,
-  decode,
-  Saves,
-  type PreviousStore,
-  type StoragePort,
-} from './persistence';
+import { checkpoint, encode, decode, type PreviousStore, type StoragePort } from './persistence';
 import { MANIFEST, SLOT } from './repository';
 import { base64, pack, unpack } from './packing';
 import { denseBytes } from './dense';
@@ -73,7 +67,7 @@ import {
 import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
 import { KIT_ROLES, type ClubIdentity } from '../../../../packages/contracts/src/identity';
 import { clubIdentitySchema } from '../../../../packages/contracts/src/identitySchema';
-import { FOUNDING, legacyIntegers, world } from './persistence.testkit';
+import { FOUNDING, legacyIntegers, Saves, world } from './persistence.testkit';
 class Memory implements StoragePort {
   data = new Map<string, string>();
   fail = '';
@@ -364,7 +358,6 @@ describe('recoverable persistence', () => {
 });
 it('keeps a signed slot contract through a load and never signs that slot twice, so checkpoints still load', async () => {
   const w = world();
-  w.intervention = 4;
   advanceDays(w, 1);
   const loaded = (await decode(await encode(w))).world;
   expect(loaded.sponsors).toEqual(w.sponsors);
@@ -741,9 +734,9 @@ const identityCareer = () =>
       const { pattern, emblem } = own.crest;
       return { ...own, colours: [primary], crest: { shape: 'diamond', pattern, emblem, primary } };
     };
-    operate(w, { type: 'club-identity', identity: design('#AbCdEf') });
+    applyClubIdentity(w, design('#AbCdEf'));
     (['home', 'away', 'third'] as const).forEach((role, i) => {
-      if (i === 1) operate(w, { type: 'club-identity', identity: design('#5A3E8c') });
+      if (i === 1) applyClubIdentity(w, design('#5A3E8c'));
       const next = nextOwnFixture(w)!;
       operate(w, { type: 'match-kit', fixtureId: next.id, role });
       advanceDays(w, fixtureDay(next) - currentDay(w), undefined, false);
@@ -1044,7 +1037,7 @@ describe('club identity continuity fixtures (→KIT-12/15, SAVE-3/20/21/22)', ()
     const worn = frozen.sides[side];
     expect(worn.crest).toEqual(FOUNDED_DESIGN.crest);
     expect(worn.shirt).toEqual(FOUNDED_DESIGN.kits[worn.role]);
-    operate(w, { type: 'club-identity', identity: editedDesign(worn.role) });
+    applyClubIdentity(w, editedDesign(worn.role));
     const restored = (await decode(await encode(w))).world;
     expect(canonical(restored)).toBe(canonical(w));
     const own = restored.clubs.find((club) => club.id === restored.playerClub)!;

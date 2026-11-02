@@ -94,11 +94,10 @@ const financeSummary = (id: string) => {
 };
 
 export const DIRECTION_INFO: Readonly<
-  Record<DirectionKey, { label: string; question: string; options: readonly DirectionOption[] }>
+  Record<DirectionKey, { label: string; options: readonly DirectionOption[] }>
 > = {
   recruitmentSupport: {
     label: '단장·감독 지원',
-    question: '영입 의견이 갈리면 누구의 판단에 더 무게를 둘까',
     options: [
       {
         id: 'director',
@@ -120,7 +119,6 @@ export const DIRECTION_INFO: Readonly<
   },
   renewal: {
     label: '재계약 기조',
-    question: '계약이 끝나 가는 선수를 누구까지, 얼마까지 붙잡을까요?',
     options: [
       { id: 'standard', name: '표준', summary: '모두 붙잡되 시장가의 110%까지 줘요' },
       { id: 'keepAll', name: '모두 붙잡기', summary: '모두 붙잡고 시장가의 140%까지 줘요' },
@@ -139,7 +137,6 @@ export const DIRECTION_INFO: Readonly<
   },
   school: {
     label: '선호 학파',
-    question: '감독은 어떤 축구를 하는 사람이어야 할까요?',
     options: [
       { id: 'any', name: '상관없음', summary: '학파를 가리지 않아요' },
       ...MANAGER_STYLES.map((style) => ({
@@ -151,7 +148,6 @@ export const DIRECTION_INFO: Readonly<
   },
   manager: {
     label: '감독 기조',
-    question: '감독 자리가 비면 어떤 사람을 앉힐까요?',
     options: [
       {
         id: 'standard',
@@ -174,7 +170,6 @@ export const DIRECTION_INFO: Readonly<
   },
   coaches: {
     label: '코치 기조',
-    question: '코치진 자리는 어떤 코치로 채울까요?',
     options: [
       {
         id: 'volunteer',
@@ -192,7 +187,6 @@ export const DIRECTION_INFO: Readonly<
   },
   finance: {
     label: '재정 기조',
-    question: '맡긴 지출을 얼마나 과감하게 할까요?',
     options: [
       { id: 'aggressive', name: '공격적', summary: financeSummary('aggressive') },
       { id: 'bold', name: '적극', summary: financeSummary('bold') },
@@ -203,7 +197,6 @@ export const DIRECTION_INFO: Readonly<
   },
   youthGoal: {
     label: '육성 목표',
-    question: '아카데미는 무엇을 위해 키울까요?',
     options: [
       {
         id: 'standard',
@@ -229,7 +222,6 @@ export const DIRECTION_INFO: Readonly<
   },
   debut: {
     label: '데뷔 시점',
-    question: '유망주를 얼마나 일찍 1군에 올릴까요?',
     options: [
       {
         id: 'standard',

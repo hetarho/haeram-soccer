@@ -159,7 +159,7 @@ export function tieRule(
  * Settles a tie once its legs are played: aggregate goals, then away goals while that rule lasted
  * (two-legged ties before 2021), then a shoot-out after extra time from the world's stream.
  */
-export function decideTie(w: World, tie: KnockoutTie, legs: Fixture[], awayGoals: boolean) {
+export function decideTie(tie: KnockoutTie, legs: Fixture[], awayGoals: boolean) {
   if (tie.winner || !legs.length || legs.some((f) => !f.score)) return false;
   let home = 0,
     away = 0,

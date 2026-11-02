@@ -127,42 +127,19 @@ describe('locale messages', () => {
 
   it('preserves current Korean shell copy', () => {
     const { t } = createLoadedLocale(koreanRegistry, korean);
-    expect(
-      [
-        'dashboard',
-        'season',
-        'league',
-        'europe',
-        'history',
-        'clubRecords',
-        'pastLeague',
-        'pastCup',
-        'people',
-        'training',
-        'business',
-      ].map((key) => t(`navigation.${key}`)),
-    ).toEqual([
+    expect(['dashboard', 'league', 'history'].map((key) => t(`navigation.${key}`))).toEqual([
       '클럽하우스',
-      '시즌',
       '리그',
-      '컵 대회',
       '기록',
-      '클럽 기록실',
-      '이전 리그 기록',
-      '이전 컵대회 기록',
-      '선수단·스태프',
-      '훈련장',
-      '구단주 사무실',
     ]);
-    expect(
-      ['league', 'europe', 'history', 'dashboard', 'people', 'training', 'business'].map((key) =>
-        t(`navigation.short.${key}`),
-      ),
-    ).toEqual(['리그', '컵', '기록', '클럽하우스', '선수단', '훈련장', '구단주 사무실']);
+    expect(['league', 'europe', 'history'].map((key) => t(`navigation.short.${key}`))).toEqual([
+      '리그',
+      '컵',
+      '기록',
+    ]);
     expect(t('shell.menu')).toBe('설정');
     expect(t('shell.readonlyNotice')).toBe('다른 탭이 플레이 중입니다. 이 탭은 읽기 전용입니다.');
     expect(t('shell.loadingView')).toBe('화면을 여는 중…');
-    expect(t('shell.footer')).toBe('HAERAM FOOTBALL · 가상의 클럽, 당신의 역사.');
     expect(t('shell.cashDetails', { amount: '£1,500', status: '안정' })).toBe(
       '운영 자금 £1,500 · 안정 · 자금 상황 보기',
     );
@@ -244,12 +221,12 @@ describe('locale messages', () => {
       { onDiagnostic },
     );
     expect(t('shell.menu')).toBe('Menu');
-    expect(t('navigation.people')).toBe('선수단·스태프');
+    expect(t('navigation.team')).toBe('팀');
     expect(onDiagnostic).toHaveBeenLastCalledWith(
       expect.objectContaining({
         code: 'missing-message',
         locale: 'fr-FR',
-        messageId: 'navigation.people',
+        messageId: 'navigation.team',
       }),
     );
     expect(t('unavailable.message')).toBe('[unavailable.message]');

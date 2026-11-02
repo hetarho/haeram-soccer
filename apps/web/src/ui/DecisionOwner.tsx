@@ -5,7 +5,7 @@ import { openOwnerOffice } from './state';
 import s from './DecisionOwner.module.css';
 
 /**
- * Who takes a decision at the current intervention level (→WEB-45, STAFF-13), shown in its home:
+ * Who takes a decision under the settings in force (→WEB-45, STAFF-13), shown in its home:
  * one line opening the owner office, never a switch of its own
  * (→WEB-71).
  */

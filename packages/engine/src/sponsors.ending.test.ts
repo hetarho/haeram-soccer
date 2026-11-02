@@ -1,5 +1,5 @@
-import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
+import { staffAuthority } from './testing';
 import type { World } from '../../contracts/src/types';
 import { advanceDays, currentDay, operate, seasonDayOf } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
@@ -11,8 +11,7 @@ function endingClubs() {
   operate(owner, { type: 'sign-sponsor', slot: 'local', offer: 0 });
   owner.sponsors![0].until = owner.year + 1;
   const delegated = structuredClone(owner);
-  delegated.intervention = 4;
-  delegated.settings = legacySettings(4);
+  delegated.settings = staffAuthority(4);
   return { owner, delegated };
 }
 

@@ -6,7 +6,6 @@ import {
   THEME_ICON_ROLES,
   THEME_TOKEN_KEYS,
   validateLocalePack,
-  validateMessage,
   validateThemePack,
   type ThemePack,
 } from './contracts';
@@ -134,6 +133,10 @@ describe('presentation registries and resource contracts', () => {
   });
 
   it('shares placeholder and plural checks between locale consumers', () => {
+    /** One message checked as a locale pack checks each of its messages. */
+    const validateMessage = (value: unknown) =>
+      validateLocalePack({ schemaVersion: 1, id: 'en-GB', messages: { 'test.message': value } })
+        .messages['test.message']!;
     const message = validateMessage({
       plural: 'count',
       forms: {

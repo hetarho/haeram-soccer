@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { staffAuthority } from './testing';
 import { advanceDays, advanceRound, simulateSeason } from './index';
-import { legacySettings } from './responsibilities';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { world } from './business.testkit';
 
@@ -8,8 +8,7 @@ describe('business delegation and cash warnings', () => {
   it('signs again once a contract has run its term, valued anew', () => {
     const start = () => {
       const w = world();
-      w.intervention = 4;
-      w.settings = legacySettings(4);
+      w.settings = staffAuthority(4);
       advanceDays(w, 1);
       return w;
     };

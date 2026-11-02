@@ -533,8 +533,6 @@ export function financialBreakdown(w: World) {
   };
 }
 
-export type FinancialReceipt = Event & { amount: string; direction: string };
-
 /** A division as the ledger names it: 1부, 2부 … or the amateur league. */
 export function divisionLabel(code: string, tier: number) {
   return tier >= country(code).groups.length ? '아마추어 리그' : `${tier + 1}부`;

@@ -1,4 +1,3 @@
-import { legacySettings } from './responsibilities';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { currency, footballIndex, priceIndex } from '../../catalogs/src/index';
@@ -26,7 +25,7 @@ import {
   clubOf,
   contractTalks,
   currentDay,
-  delegated,
+  isDelegated,
   divisionFor,
   endAmbition,
   expireContracts,
@@ -66,7 +65,7 @@ import {
   transferWindowDays,
   wageBill,
 } from './index';
-import { holdRows, professionalStart } from './testing';
+import { handTo, holdRows, professionalStart, staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
@@ -83,7 +82,7 @@ const founding = {
 /** The club on the pre-feature path: contracts, not the match model, are the subject. */
 function world(country: 'ENG' | 'ESP' = 'ENG') {
   const w = simulatedWorld({ ...founding, country }, {}, DISABLED_RELEASE);
-  w.settings = legacySettings(2); // This suite explicitly exercises delegated contract policy.
+  w.settings = staffAuthority(2); // This suite explicitly exercises delegated contract policy.
   return w;
 }
 /** A midfielder rated `ability` everywhere, aged `age` in the world's year. */
@@ -320,7 +319,7 @@ describe('contract talks (→CLUB-26)', () => {
       p.agent = 5;
       w.morale = 50;
       holdRows(w, { direction: { renewal: option } });
-      expect(delegated(w, 'contracts')).toBe(true);
+      expect(isDelegated(w, 'contracts')).toBe(true);
       const before = { wage: p.wage, until: p.until, floor: talkTerms(w, p).floor };
       newYear(w);
       expect(p.talk).toBeUndefined();
@@ -448,7 +447,7 @@ describe('contract talks (→CLUB-26)', () => {
 
   it('refuses an owner’s offer below the floor, stating it, and signs one at the floor', () => {
     const { w, p } = talking(80);
-    operate(w, { type: 'intervention', level: 1 });
+    handTo(w, 1);
     newYear(w);
     const talk = p.talk!;
     expect(talk).toMatchObject({ kind: 'renew', year: w.year, day: seasonDayOf(w.year, 1, 1) });
@@ -471,7 +470,7 @@ describe('contract talks (→CLUB-26)', () => {
 
   it('opens talks only when a window opens: the final season at both openings', () => {
     const w = world();
-    operate(w, { type: 'intervention', level: 1 });
+    handTo(w, 1);
     const [final, underpaid] = activePlayers(w);
     final.until = w.year + 1;
     underpaid.wage = ((BigInt(marketWage(w, underpaid)) * 70n) / 100n).toString();
@@ -497,7 +496,7 @@ describe('contract talks (→CLUB-26)', () => {
 
   it('opens an improved-contract talk with at most three seasons left, once a season', () => {
     const w = world();
-    operate(w, { type: 'intervention', level: 1 });
+    handTo(w, 1);
     const [three, four, fair] = activePlayers(w),
       below = (p: Player, percent: bigint) =>
         void (p.wage = ((BigInt(marketWage(w, p)) * percent) / 100n).toString());
@@ -512,13 +511,11 @@ describe('contract talks (→CLUB-26)', () => {
     expect(three.talk).toMatchObject({ kind: 'improve', year: w.year, day: 0 });
     expect(three.improveAsked).toBe(w.year);
     expect([four.talk, fair.talk]).toEqual([undefined, undefined]);
-    // The owner may still answer a pending talk; only the level changes who decides.
-    w.intervention = 2;
-    w.settings = legacySettings(2);
+    // The owner may still answer a pending talk; only the settings change who decides.
+    w.settings = staffAuthority(2);
     operate(w, { type: 'contract-decline', player: three.id });
-    expect(w.intervention).toBe(2);
-    w.intervention = 1;
-    w.settings = legacySettings(1);
+    expect(w.settings).toEqual(staffAuthority(2));
+    w.settings = staffAuthority(1);
     expect(three.talk).toBeUndefined();
     expect(w.events.at(-1)).toMatchObject({ kind: 'contract-decline' });
     expect(w.events.at(-1)!.title).toContain('계약 개선');
@@ -543,7 +540,7 @@ describe('contract talks (→CLUB-26)', () => {
   it('signs whole seasons in the summer and half seasons in winter, ending at a close', () => {
     const offer = (day: number, term: number) => {
       const { w, p } = talking(80);
-      operate(w, { type: 'intervention', level: 1 });
+      handTo(w, 1);
       talksOn(w, day);
       const command = { type: 'contract-offer', player: p.id, wage: p.talk!.floor } as const;
       operate(w, { ...command, term: term as 0 });
@@ -642,7 +639,7 @@ describe('contract talks (→CLUB-26)', () => {
 /** A club on 1 January whose owner answers talks, with `p` unhappy since that day. */
 function unhappy(reason: UnhappyReason = 'renewal-declined') {
   const { w, p } = talking(80);
-  operate(w, { type: 'intervention', level: 1 });
+  handTo(w, 1);
   w.calendar = { day: seasonDayOf(w.year, 1, 1) };
   p.unhappy = { reason, year: w.year, day: currentDay(w) };
   return { w, p };
@@ -676,7 +673,7 @@ describe('unhappy players and expiring contracts (→CLUB-27, CLUB-28)', () => {
 
   it('turns a declined player unhappy unless the manager talks him round, each an inbox item', () => {
     const { w } = talking(80);
-    operate(w, { type: 'intervention', level: 1 });
+    handTo(w, 1);
     for (const p of activePlayers(w)) p.until = w.year + 1;
     newYear(w);
     const players = activePlayers(w),
@@ -808,7 +805,7 @@ describe('unhappy players and expiring contracts (→CLUB-27, CLUB-28)', () => {
 
   it('closes a retiring player’s talk on his announcement and his request when he retires', () => {
     const { w, p } = talking(70, 36);
-    operate(w, { type: 'intervention', level: 1 });
+    handTo(w, 1);
     newYear(w);
     expect(p.talk).toBeDefined();
     p.retiring = w.year;
@@ -1034,7 +1031,7 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
 
   it('settles a talk’s clauses as he asks and signs them unrerolled', () => {
     const { w, p } = talking(80);
-    operate(w, { type: 'intervention', level: 1 });
+    handTo(w, 1);
     newYear(w);
     const clauses = p.talk!.clauses!;
     // Rated 80, he is a star whose contracts may carry the Ballon d'Or bonus (→CLUB-29).
@@ -1160,7 +1157,7 @@ describe('ambition unhappiness (→CLUB-27)', () => {
     // The owner's founding season's 46 rounds are built once; the close is lived here.
     const { season, id } = cachedWorld('owner-season', () => {
       const season = world();
-      operate(season, { type: 'intervention', level: 1 });
+      handTo(season, 1);
       const id = activePlayers(season)[0]!.id;
       while (season.round < 46) advanceRound(season, undefined, false);
       return { season, id };

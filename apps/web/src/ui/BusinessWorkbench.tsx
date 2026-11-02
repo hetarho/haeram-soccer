@@ -209,7 +209,13 @@ function MoneyWorkbench({
     <section
       className={s.workbench}
       aria-label={
-        part === 'finance' ? '클럽 재정' : part === 'marketing' ? '캠페인' : '클럽 투자 계획'
+        part === 'finance'
+          ? '클럽 재정'
+          : part === 'build'
+            ? '시설'
+            : part === 'sponsor'
+              ? '후원'
+              : '캠페인'
       }
     >
       {part === 'finance' ? (

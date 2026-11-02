@@ -53,7 +53,6 @@ export * from './direction';
 export * from './presets';
 export * from './bases';
 export * from './signings';
-export * from './intervention';
 export * from './coach-training';
 export * from './operations';
 export * from './ops-commercial';

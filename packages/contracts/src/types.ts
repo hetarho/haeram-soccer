@@ -88,20 +88,6 @@ export type ManagerStyle =
   | 'developer'
   | 'firefighter'
   | 'headcoach';
-/** One coaching department's hiring and renewal (→STAFF-15). */
-export type CoachDelegationKey = `coach:${StaffRole}`;
-/**
- * A decision the staff can take for the owner (→STAFF-13): `contracts` player contract talks
- * (→CLUB-26), `manager` the manager post (→STAFF-18) and one `coach:<department>` per coaching
- * department. Which of them the staff take is decided by the intervention level alone (→WEB-45).
- */
-export type DelegationKey =
-  'academy' | 'transfers' | 'business' | 'contracts' | 'manager' | CoachDelegationKey;
-/**
- * How much the owner decides himself (→WEB-45): 1 every decision, 2 important decisions only,
- * 3 transfers only, 4 leave it to the staff.
- */
-export type InterventionLevel = 1 | 2 | 3 | 4;
 /** Independent business authority; training always belongs to its coach. */
 export type ResponsibilityKey =
   'manager' | 'staff' | 'contracts' | 'recruitment' | 'sales' | 'academy' | 'sponsors';
@@ -181,11 +167,6 @@ export interface Direction {
   debut?: 'early' | 'ready' | 'late';
 }
 export type DirectionKey = keyof Direction;
-/** What rules before 1.17 kept for the delegated staff's hiring; a load turns it into rows (→SAVE-10). */
-export interface HiringCriteria {
-  manager?: ManagerCriteria;
-  coaches?: Partial<Record<StaffRole, CoachCriteria>>;
-}
 /** Seasons a contract is signed for (→CLUB-26, STAFF-14). */
 export type ContractTerm = 1 | 2 | 3 | 4 | 5;
 /**
@@ -219,18 +200,6 @@ export interface ContractClauses {
 }
 /** Why a player turned unhappy (→CLUB-27): the club declined his renewal or improved contract. */
 export type UnhappyReason = 'renewal-declined' | 'improve-declined' | 'ambition';
-/**
- * Ledger kinds of competition money (→ECON-28), sponsor contracts (→ECON-8), expiring contracts
- * (→CLUB-28) and operating expenses (→ECON-30); `Event.kind` stays a string, so older entries keep
- * theirs.
- */
-export type LedgerKind =
-  | 'league-share'
-  | 'league-merit'
-  | 'parachute'
-  | `sponsor:${SponsorSlot}`
-  | 'free-transfer-compensation'
-  | 'operating-expenses';
 /** A player's standing on the market (→CLUB-22): listed to sell, open to offers, or untouchable. */
 export type TransferStance = 'listed' | 'open' | 'untouchable';
 export type InboxKind =
@@ -1175,11 +1144,6 @@ export interface World {
   /** Coaching staff below the manager. Absent in older saves, whose effects stay neutral. */
   staff?: Staff[];
   academy?: Academy;
-  /**
-   * The intervention level (→WEB-45), which alone decides what the staff take on the owner's
-   * behalf; absent means 1, the owner decides everything.
-   */
-  intervention?: InterventionLevel;
   /** Game-owned authority, progression mode and observation preferences (→WEB-45). */
   settings?: GameSettings;
   /** Explicit optional business decisions; notification reads never resolve these. */
@@ -1332,7 +1296,6 @@ export type Command =
   | { type: 'renew-staff'; role: StaffRole; term?: ContractTerm }
   | { type: 'promote-youth'; id: string }
   | { type: 'release-youth'; id: string }
-  | { type: 'intervention'; level: InterventionLevel }
   /** Exactly one of the legacy index or stable target is required at the boundary. */
   | { type: 'bid'; candidate?: number; target?: WorldMarketTarget; fee: string; loan?: boolean }
   | { type: 'respond-bid'; id: string; accept: boolean }
@@ -1355,10 +1318,6 @@ export type Command =
   | { type: 'recruit'; candidate?: number; target?: WorldMarketTarget; loan?: boolean }
   /** Lists a player, opens him to offers or declares him untouchable. */
   | { type: 'transfer-stance'; id: string; stance: TransferStance }
-  | { type: 'campaign'; kind: string }
-  | { type: 'sponsor'; kind: Sponsor['kind'] }
-  /** Applies the owner's design to the own club (→KIT-9); no other club can be named. */
-  | { type: 'club-identity'; identity: ClubIdentity }
   /** Pays a designer from operating funds for fresh drafts in the owner's colours. */
   | { type: 'design-commission'; studio: DesignStudio; colours: IdentityColours }
   /** Applies one of the commissioned drafts and closes the commission. */

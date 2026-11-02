@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { staffAuthority } from '../../../../packages/engine/src/testing';
 import type { World } from '../../../../packages/contracts/src/types';
 import {
   createWorld,
@@ -76,9 +77,9 @@ describe('스카우트 명단 and 감독 요청 on 이적시장 (→WEB-43, CLUB
     expect(requestStakes(quiet)).toBeUndefined();
   });
 
-  it('names what the 단장 decides at each level', () => {
-    const at = (intervention: 1 | 2 | 3 | 4) =>
-      directorDecisions({ intervention })
+  it('names what the 단장 decides under the settings in force', () => {
+    const at = (step: 1 | 2 | 3 | 4) =>
+      directorDecisions({ settings: staffAuthority(step) })
         .map(({ label, auto }) => `${label} ${auto ? '맡김' : '직접'}`)
         .join(' · ');
     expect(at(1)).toBe('재계약 협상 직접 · 감독 선임 직접 · 선수 영입 직접 · 선수 매각 직접');

@@ -21,7 +21,7 @@ const place = (kit: ReturnType<typeof gridKit>, side: 0 | 1, idx: number, p: Poi
 };
 const tags = (kit: ReturnType<typeof gridKit>, opts?: Parameters<typeof computeTags>[3]) =>
   computeTags(kit.state, 0, 9, opts);
-const slotIndex = (side: 0 | 1, positions: string[]) =>
+const slotIndex = (positions: string[]) =>
   FORMATIONS.balanced.slots
     .map((slot, i) => [slot, i] as const)
     .filter(([slot]) => positions.includes(slot.position))
@@ -44,8 +44,8 @@ describe('grid tags', () => {
   it('detects between the lines and a pocket', () => {
     const kit = scene([60, 30]);
     // Opponent (side 1) lines in side 0's frame: MF line at x 55, DF line at x 75.
-    for (const i of slotIndex(1, ['LM', 'CM', 'RM', 'DM', 'AM'])) place(kit, 1, i, [55, 20]);
-    for (const i of slotIndex(1, ['CB', 'LB', 'RB'])) place(kit, 1, i, [75, 40]);
+    for (const i of slotIndex(['LM', 'CM', 'RM', 'DM', 'AM'])) place(kit, 1, i, [55, 20]);
+    for (const i of slotIndex(['CB', 'LB', 'RB'])) place(kit, 1, i, [75, 40]);
     expect(tags(kit).lane).toBe(2);
     expect(tags(kit).betweenLines).toBe(true);
     expect(tags(kit).pocket).toBe(true);
@@ -69,12 +69,12 @@ describe('grid tags', () => {
 
   it('detects the CB–FB channel', () => {
     const kit = scene([75, 20]);
-    const [cb] = slotIndex(1, ['CB']);
-    const [fb] = slotIndex(1, ['LB', 'RB', 'LWB', 'RWB']);
+    const [cb] = slotIndex(['CB']);
+    const [fb] = slotIndex(['LB', 'RB', 'LWB', 'RWB']);
     // In side 0's frame the opponent CB stands at y 30 and its FB at y 12; the carrier at y 20 sits between.
     place(kit, 1, cb!, [75, 30]);
     place(kit, 1, fb!, [76, 12]);
-    for (const i of slotIndex(1, ['CB', 'LB', 'RB', 'LWB', 'RWB']))
+    for (const i of slotIndex(['CB', 'LB', 'RB', 'LWB', 'RWB']))
       if (i !== cb && i !== fb) place(kit, 1, i, [76, 60]);
     expect(tags(kit).lane).toBe(1);
     expect(tags(kit).channel).toBe(true);

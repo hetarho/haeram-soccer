@@ -30,11 +30,11 @@ describe('knockout ties (→MATCH-6)', () => {
       score: { home: 1, away: 1 },
       shootout: { home: 3, away: 4 },
     };
-    expect(decideTie(w, tie, [leg], false)).toBe(true);
+    expect(decideTie(tie, [leg], false)).toBe(true);
     expect(tie).toEqual({ home: 'A', away: 'B', winner: 'B', decided: 'pens' });
     // A level tie with no shoot-out on record cannot be settled by chance any more.
     const unplayed = { ...leg, shootout: undefined };
-    expect(() => decideTie(w, { home: 'A', away: 'B' }, [unplayed], false)).toThrow();
+    expect(() => decideTie({ home: 'A', away: 'B' }, [unplayed], false)).toThrow();
   });
   it('keeps the shoot-out highlight for the UI', () => {
     const w = world();

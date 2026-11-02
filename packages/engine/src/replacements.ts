@@ -9,7 +9,6 @@ import { lineOf } from './player';
 import { isDelegated } from './responsibilities';
 import { pushInbox } from './inbox';
 import { compareIds } from './primitives';
-export type ReplacementNeed = NonNullable<World['replacementNeeds']>[number];
 export function openNeed(w: World, player: Player, day = currentDay(w)) {
   const window = transferWindow(w, day).kind;
   if (!window) return;

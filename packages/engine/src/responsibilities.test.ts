@@ -1,6 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { gameSettingsSchema } from '../../contracts/src/schema';
-import { createWorld, operate, defaultSettings, isDelegated, RESPONSIBILITY_KEYS } from './index';
+import {
+  coachDelegated,
+  createWorld,
+  defaultSettings,
+  isDelegated,
+  operate,
+  RESPONSIBILITY_KEYS,
+  STAFF_ROLES,
+} from './index';
 
 const world = () =>
   createWorld({
@@ -80,5 +88,23 @@ describe('game-owned responsibility and time settings', () => {
       gameSettingsSchema.safeParse({ ...s, observations: { matchEve: 1, windowOpen: false } })
         .success,
     ).toBe(false);
+  });
+  it.each(RESPONSIBILITY_KEYS)('changes only %s when all other categories stay direct', (key) => {
+    const w = world(),
+      settings = defaultSettings();
+    for (const category of RESPONSIBILITY_KEYS) settings.responsibilities[category] = 'direct';
+    settings.responsibilities[key] = 'delegated';
+    operate(w, { type: 'settings', settings });
+    expect(RESPONSIBILITY_KEYS.filter((category) => isDelegated(w, category))).toEqual([key]);
+  });
+  it('fills delegated staff posts without changing unrelated authority and keeps owner actions independent', () => {
+    const w = world();
+    w.cash = '999999999999';
+    const settings = structuredClone(w.settings!);
+    settings.responsibilities.staff = 'delegated';
+    operate(w, { type: 'settings', settings });
+    expect(STAFF_ROLES.every((role) => coachDelegated(w, role))).toBe(true);
+    operate(w, { type: 'release-staff', role: 'scout' });
+    expect(w.settings).toEqual(settings);
   });
 });

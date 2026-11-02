@@ -1,9 +1,8 @@
-import { legacySettings } from './responsibilities';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import type { World } from '../../contracts/src/types';
 import { currency, priceIndex } from '../../catalogs/src/index';
 import { activePlayers, advanceRound, prepareSeason } from './index';
-import { professionalStart } from './testing';
+import { professionalStart, staffAuthority } from './testing';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
@@ -26,7 +25,7 @@ export function club({
     {},
     DISABLED_RELEASE,
   );
-  w.settings = legacySettings(2);
+  w.settings = staffAuthority(2);
   // The squad stays as founded, so results follow only what a test sets.
   if (year) {
     w.year = year;

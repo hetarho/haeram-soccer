@@ -706,21 +706,10 @@ export class GameClient {
     const task = this.enqueue(async () => {
       const before = this.head?.world;
       let reply: Reply | undefined;
-      const count = command.type === 'season' ? Math.min(100, Math.max(1, command.count)) : 1;
       try {
-        for (let i = 0; i < count; i++) {
-          if (this.cancelled) break;
-          reply = await this.mutate(
-            {
-              type: 'command',
-              command: command.type === 'season' ? { type: 'season', count: 1 } : command,
-            } as Body,
-            options.automatic,
-          );
-          if (reply.cancelled || this.state.view?.world.critical) break;
-        }
+        if (!this.cancelled)
+          reply = await this.mutate({ type: 'command', command } as Body, options.automatic);
       } finally {
-        // Seasons that ran before a failure are saved too.
         if (reply) {
           if (options.automatic) this.autosave();
           else this.saveSoon();

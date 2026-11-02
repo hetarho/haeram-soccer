@@ -8,7 +8,7 @@ import { callUpFor, SQUAD_TARGET } from './squad-target';
 import { closeSeason } from './season';
 import { movePerson } from './npc-continuity';
 import { lineOf } from './player';
-import { shortLine, SIGNING_CONFIG } from './signings';
+import { shortLines, SIGNING_CONFIG } from './signings';
 import { promotionAge } from './academy';
 
 const FOUNDING = {
@@ -134,7 +134,7 @@ describe('twenty-player squad target', () => {
   it('opens a short-squad need with nineteen players', () => {
     const w = world();
     activePlayers(w).at(-1)!.status = 'sold';
-    expect(shortLine(w)?.squad).toBe(19);
+    expect(shortLines(w)[0]?.squad).toBe(19);
     expect(clubOf(w).id).toBe(w.playerClub);
   });
 });

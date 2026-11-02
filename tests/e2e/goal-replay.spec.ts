@@ -1,6 +1,7 @@
 import { closeMatchDetails, openMatchDetails, presentedMinute, watchNext } from './watch';
+import { advanceToNextMatch } from '../../packages/engine/src/testing';
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { advanceToNextMatch, createWorld } from '../../packages/engine/src/index';
+import { createWorld } from '../../packages/engine/src/index';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { horizontalOverflow } from './layout';
 import { committedRaw, openRecordedMatch } from './club-identity-helpers';

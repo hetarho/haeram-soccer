@@ -40,6 +40,6 @@ export const RESPONSIBILITY_DELEGATES: Readonly<
 export function applyResponsibilitySettings(client: GameClient, settings: GameSettings) {
   return client.command({ type: 'settings', settings }, { background: true });
 }
-export function decisionOwner(w: Pick<World, 'intervention' | 'settings'>, key: ResponsibilityKey) {
+export function decisionOwner(w: Pick<World, 'settings'>, key: ResponsibilityKey) {
   return { key, name: RESPONSIBILITY_LABELS[key], auto: isDelegated(w, key) };
 }

@@ -1,15 +1,14 @@
-import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
+import { staffAuthority, unreadAttention } from './testing';
 import type { TransferBid, World } from '../../contracts/src/types';
 import {
   activePlayers,
   advanceDays,
-  delegated,
+  isDelegated,
   lineup,
   ownMultiplier,
   playerValue,
   seasonLength,
-  unreadAttention,
 } from './index';
 import { inBids, world } from './transfers.testkit';
 
@@ -18,9 +17,8 @@ describe('incoming bids', () => {
     // A season whose offers include both answers once the 단장 has signed from the shortlist.
     const w = world('market-1');
     // New clubs answer offers themselves; this scenario hands transfers to the staff.
-    expect(delegated(w, 'transfers')).toBe(false);
-    w.intervention = 4;
-    w.settings = legacySettings(4);
+    expect(isDelegated(w, 'sales')).toBe(false);
+    w.settings = staffAuthority(4);
     const decisions: {
       bid: TransferBid;
       starter: boolean;

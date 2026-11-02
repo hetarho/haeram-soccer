@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { staffAuthority } from './testing';
 import type { World } from '../../contracts/src/types';
 import { advanceRound, simulateSeason } from './index';
-import { legacySettings } from './responsibilities';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { finance, world } from './business.testkit';
 
@@ -24,8 +24,7 @@ describe('business delegation and cash warnings', () => {
     expect(reminders).toEqual([expect.objectContaining({ title: '후원 계약이 비어 있어요' })]);
     expect(reminders[0]!.detail).toMatch(/^지역 후원 자리가 비어 있어요/);
     const delegated = beforeClose('delegated-before-close', (w) => {
-      w.intervention = 4;
-      w.settings = legacySettings(4);
+      w.settings = staffAuthority(4);
     });
     simulateSeason(delegated);
     expect(finance(delegated).every((item) => !item.attention)).toBe(true);

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { advanceToNextMatch } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld, withCandidateModel } from '../../../tests/fixtures/worlds';
@@ -14,7 +15,7 @@ import { OWN_LEAGUE_ENGINE, setOwnLeagueEngine, simulateMatch } from './match';
 import { appearanceForFixture } from './match-appearance';
 import { validateFullMatchRecord } from './match-model';
 import { npcCompetition, playerTotals } from './npc-stats';
-import { advanceDays, advanceRound, advanceToNextMatch, recordMatch, resolveTie } from './season';
+import { advanceDays, advanceRound, recordMatch, resolveTie } from './season';
 import { archiveLastRound, closedSeason, founded } from './season.testkit';
 
 describe('closed season archive', () => {

@@ -76,10 +76,6 @@ export function estimate(values: readonly number[]): Estimate {
   return { value: mean, interval: [mean - half, mean + half] };
 }
 
-/** Whether two estimates' intervals miss each other: a difference beyond the run's noise. */
-export const beyondNoise = (a: Estimate, b: Estimate) =>
-  a.interval[1] < b.interval[0] || b.interval[1] < a.interval[0];
-
 const ratio = (num: number, den: number) => (den > 0 ? (100 * num) / den : 0);
 
 /** LAB-5's side table: each row read from one side's record slots. */

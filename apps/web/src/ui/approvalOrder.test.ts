@@ -16,10 +16,7 @@ import type { ProgressionController } from '../runtime/progression';
 import { ApprovalQueue } from './ApprovalQueue';
 import {
   approvalGroups,
-  matchesFilter,
   orderApprovals,
-  queueFilter,
-  queueFilters,
   requestSubject,
   requestTitle,
   returnFocus,
@@ -107,36 +104,6 @@ describe('approval queue order and filters (→WEB-100)', () => {
       'data-testid="approval-deadline">D-7<',
       'data-testid="approval-deadline">D-7<',
     ]);
-  });
-  it('filters overdue requests and each responsibility a joint request belongs to', () => {
-    const late = (id: string) => id === 'late';
-    const joint = request('joint', 'contracts', { responsibilities: ['contracts', 'staff'] });
-    const sale = request('late', 'sales');
-    expect(matchesFilter(late, joint, 'all')).toBe(true);
-    expect(matchesFilter(late, joint, 'staff')).toBe(true);
-    expect(matchesFilter(late, joint, 'contracts')).toBe(true);
-    expect(matchesFilter(late, joint, 'sales')).toBe(false);
-    expect(matchesFilter(late, sale, 'overdue')).toBe(true);
-    expect(matchesFilter(late, joint, 'overdue')).toBe(false);
-  });
-  it('offers only filters with actual requests, keeping a selected empty one to clear', () => {
-    const items = [request('m', 'manager'), request('s1', 'sales'), request('s2', 'sales')];
-    const none = () => false;
-    expect(queueFilters(none, items, 'all')).toEqual([
-      ['all', '전체 3'],
-      ['manager', '감독 인사 1'],
-      ['sales', '선수 매각 2'],
-    ]);
-    expect(queueFilters((id) => id === 's1', items, 'academy')).toEqual([
-      ['all', '전체 3'],
-      ['overdue', '지연 1'],
-      ['manager', '감독 인사 1'],
-      ['sales', '선수 매각 2'],
-      ['academy', '유소년 승격·방출 0'],
-    ]);
-    expect(queueFilter('sales')).toBe('sales');
-    expect(queueFilter('players')).toBe('all');
-    expect(queueFilter(undefined)).toBe('all');
   });
   it('returns focus to the request still waiting, else the one in its place, else the heading', () => {
     const left = [{ id: 'a' }, { id: 'c' }];

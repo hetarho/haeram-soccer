@@ -141,7 +141,6 @@ describe('club operating policy', () => {
     ]);
     for (const key of POLICY_KEYS) {
       expect(POLICY_INFO[key].label).toBeTruthy();
-      expect(POLICY_INFO[key].question).toBeTruthy();
       expect(POLICY_INFO[key].levels.map((level) => level.level)).toEqual(
         key === 'tour' ? [1, 2, 3] : [1, 2, 3, 4, 5],
       );

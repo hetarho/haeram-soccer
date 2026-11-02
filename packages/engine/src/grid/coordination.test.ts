@@ -170,8 +170,8 @@ describe('grid coordination', () => {
       [],
     );
     // The carrier now sees the show as a combination, not the clearance.
-    expect(combination(s, s.players[0][6]!, 7, attackFrame(0, c))).toBe('show');
-    expect(combination(s, s.players[0][10]!, 7, attackFrame(0, c))).toBeUndefined();
+    expect(combination(s.players[0][6]!, 7, attackFrame(0, c))).toBe('show');
+    expect(combination(s.players[0][10]!, 7, attackFrame(0, c))).toBeUndefined();
     // The rest defence stays home: a centre-back beside the carrier in the opponent's half never shows.
     const r = scene();
     put(r, 1, 7, [64, 35]);
@@ -213,11 +213,11 @@ describe('grid coordination', () => {
       until: s.elapsed + 5,
     });
     const c = attackFrame(0, s.players[0][7]!.pos);
-    expect(combination(s, rb, 7, c)).toBe('waiting');
+    expect(combination(rb, 7, c)).toBe('waiting');
     rb.pos = [72, 60];
-    expect(combination(s, rb, 7, c)).toBe('release');
+    expect(combination(rb, 7, c)).toBe('release');
     // Another carrier is not part of this combination.
-    expect(combination(s, rb, 6, c)).toBeUndefined();
+    expect(combination(rb, 6, c)).toBeUndefined();
   });
 
   it('presses with cover behind', () => {
@@ -318,7 +318,7 @@ describe('grid coordination', () => {
     updateIntentions(s);
     expect(rb.ended).toMatchObject({ kind: 'run', run: 'overlap', reason: 'closed' });
     expect(rb.ended!.end).toBe('infeasible');
-    expect(combination(s, rb, 7, attackFrame(0, s.players[0][7]!.pos))).toBeUndefined();
+    expect(combination(rb, 7, attackFrame(0, s.players[0][7]!.pos))).toBeUndefined();
     // He does not start another run at once.
     for (let k = 1; k * 0.5 < COORDINATION_CONFIG.combination.retry; k++) {
       s.elapsed += 0.5;

@@ -1,4 +1,5 @@
 import { openLeague, returnToMatch } from './competition-navigation';
+import { advanceToNextMatch } from '../../packages/engine/src/testing';
 import {
   closeMatchDetails,
   matchDetails,
@@ -11,7 +12,6 @@ import { configureResponsibilities, reportKit } from './events';
 import { expect, test, type Page } from '@playwright/test';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import {
-  advanceToNextMatch,
   clubOf,
   createWorld,
   lineupSummary,

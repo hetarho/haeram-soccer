@@ -59,11 +59,3 @@ export function designedKeeper(identity: ClubIdentity): GoalkeeperKit | undefine
   const kit = identity.goalkeeper;
   return kit && { ...kit, shirt: { ...kit.shirt } };
 }
-
-/**
- * The goalkeeper kit a club wears where nothing displaces it: its designed kit, else the automatic
- * kit in `colour`. Whether a fixture displaces a designed kit is kit selection's call (KIT-8).
- */
-export function wornKeeper(identity: ClubIdentity, colour: string): WornKeeper {
-  return designedKeeper(identity) ?? automaticKeeper(colour);
-}

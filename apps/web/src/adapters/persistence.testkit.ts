@@ -1,5 +1,13 @@
-import type { Founding } from '../../../../packages/contracts/src/types';
+import type { Founding, World } from '../../../../packages/contracts/src/types';
 import { simulatedWorld } from '../../../../tests/fixtures/worlds';
+import { writeCheckpoint } from './checkpointWriter';
+import { decode, encode } from './persistence';
+import {
+  SaveRepository,
+  type PreviousStore,
+  type SaveInspector,
+  type StoragePort,
+} from './repository';
 
 export const FOUNDING: Founding = {
   country: 'ENG',
@@ -28,4 +36,25 @@ export function legacyIntegers(values: number[], width: number) {
   for (let offset = 0; offset < bytes.length; offset += 32768)
     encoded += String.fromCharCode(...bytes.slice(offset, offset + 32768));
   return btoa(encoded);
+}
+
+/**
+ * The save repository with the codec on the calling thread, as tests drive it; browser clients
+ * hand the codec to their worker (`client.ts`).
+ */
+export class Saves extends SaveRepository {
+  constructor(
+    storage: StoragePort,
+    inspect: SaveInspector = decode,
+    previous?: PreviousStore,
+    active?: PreviousStore,
+  ) {
+    super(storage, inspect, writeCheckpoint, previous, active);
+  }
+  async save(w: World) {
+    const info = this.generationInfo;
+    const raw = await encode(w, info.generation, info.parentGeneration);
+    await this.commit(raw);
+    return raw;
+  }
 }

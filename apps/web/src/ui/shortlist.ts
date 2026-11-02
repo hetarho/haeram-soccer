@@ -72,8 +72,8 @@ export function requestStakes(w: World): string | undefined {
     : `이적시장이 닫힐 때까지 ${roles} 자리에 아무도 오지 않으면 감독 신뢰 −3`;
 }
 
-/** What the 단장 decides at the current level (→STAFF-20), each 맡김 or 직접. */
-export function directorDecisions(w: Pick<World, 'intervention' | 'settings'>) {
+/** What the 단장 decides under the settings in force (→STAFF-20), each 맡김 or 직접. */
+export function directorDecisions(w: Pick<World, 'settings'>) {
   return (
     [
       ['재계약 협상', 'contracts'],

@@ -1,9 +1,4 @@
-import type {
-  GameSettings,
-  InterventionLevel,
-  ResponsibilityKey,
-  World,
-} from '../../contracts/src/types';
+import type { GameSettings, ResponsibilityKey, World } from '../../contracts/src/types';
 
 export const RESPONSIBILITY_KEYS: readonly ResponsibilityKey[] = [
   'manager',
@@ -29,23 +24,20 @@ export function defaultSettings(): GameSettings {
     observations: { matchEve: true, windowOpen: false },
   };
 }
-/** Compatibility only: old careers/commands keep their old authority until the release boundary. */
-export function legacySettings(level: InterventionLevel = 1): GameSettings {
+/**
+ * A world built without settings — every career is founded with them (→SAVE-17), tools and tests
+ * build worlds by hand — leaves every decision to the owner and stops at both observations.
+ */
+function ownerSettings(): GameSettings {
   const settings = defaultSettings();
-  for (const key of RESPONSIBILITY_KEYS)
-    settings.responsibilities[key] =
-      level === 4 ||
-      (level >= 3 && key !== 'recruitment' && key !== 'sales') ||
-      (level === 2 && (key === 'academy' || key === 'contracts'))
-        ? 'delegated'
-        : 'direct';
-  settings.observations = { matchEve: level <= 2, windowOpen: level <= 3 };
+  for (const key of RESPONSIBILITY_KEYS) settings.responsibilities[key] = 'direct';
+  settings.observations = { matchEve: true, windowOpen: true };
   return settings;
 }
-export function settingsOf(w: Pick<World, 'settings' | 'intervention'>): GameSettings {
-  return w.settings ?? legacySettings(w.intervention);
+export function settingsOf(w: Pick<World, 'settings'>): GameSettings {
+  return w.settings ?? ownerSettings();
 }
-export function isDelegated(w: Pick<World, 'settings' | 'intervention'>, key: ResponsibilityKey) {
+export function isDelegated(w: Pick<World, 'settings'>, key: ResponsibilityKey) {
   return settingsOf(w).responsibilities[key] === 'delegated';
 }
 export function changedResponsibilities(w: World, settings: GameSettings) {

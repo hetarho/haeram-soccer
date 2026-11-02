@@ -1,5 +1,4 @@
 import { movePerson } from './npc-continuity';
-import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type { Line, Player, Position, World } from '../../contracts/src/types';
@@ -31,7 +30,7 @@ import {
   youthAdvice,
   FOUNDING_YEAR,
 } from './index';
-import { holdRows } from './testing';
+import { holdRows, staffAuthority } from './testing';
 import { lastRound, world } from './academy.testkit';
 
 /** Runs the intake as the daily club business would on 15 March. */
@@ -305,8 +304,7 @@ describe('season boundary', () => {
 
   it('only recommends when the owner runs the academy, apart from players past academy age', () => {
     const { w, ready, review, aged } = cohort();
-    w.intervention = 1;
-    w.settings = legacySettings(1);
+    w.settings = staffAuthority(1);
     const players = canonical(w.players);
     seasonAcademy(w);
     expect(canonical(w.players)).toBe(players);
@@ -317,8 +315,7 @@ describe('season boundary', () => {
     expect(report.detail).toContain(ready.name);
     expect(report.detail).toContain(review.name);
     const quiet = world();
-    quiet.intervention = 1;
-    quiet.settings = legacySettings(1);
+    quiet.settings = staffAuthority(1);
     prospect(quiet, 'CM', 16, 10);
     seasonAcademy(quiet);
     expect(quiet.inbox).toEqual([]);

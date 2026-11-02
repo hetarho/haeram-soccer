@@ -8,7 +8,8 @@ import {
   FULL_MODEL_CHECKPOINT_SCHEMA,
   MANAGER_HISTORY_CHECKPOINT_SCHEMA,
 } from '../../../../packages/contracts/src/versions';
-import { encode, recognizedLegacy, Saves } from './persistence';
+import { encode, recognizedLegacy } from './persistence';
+import { Saves } from './persistence.testkit';
 import { resetLegacy } from './legacyReset';
 import { ACTIVE_SAVE_KEYS, GameIndexStore, type GameEntry, type ParkedStore } from './games';
 class Memory {

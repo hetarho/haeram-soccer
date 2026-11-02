@@ -30,10 +30,6 @@ export function createFixtureHelper(
     }
   };
 }
-/** Compatibility for a single initial snapshot; incremental channels use their own factory. */
-export function answer(job: HelperJob): HelperReply {
-  return createFixtureHelper()(job);
-}
 /** The helper's end of its channel to the engine worker (a MessagePort in the browser). */
 interface EnginePort {
   onmessage: ((event: { data: HelperJob }) => void) | null;

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { staffAuthority } from './testing';
 import { validateWorld } from '../../contracts/src/index';
 import type { World } from '../../contracts/src/types';
 import {
@@ -9,7 +10,6 @@ import {
   TRUST_FLOOR_CONFIG,
   yearlyStaff,
 } from './index';
-import { legacySettings } from './responsibilities';
 import { world } from './staff.testkit';
 
 const REASON = '구단주와의 신뢰가 무너져 사임했습니다.';
@@ -139,8 +139,7 @@ describe('the floor of trust (→STAFF-47)', () => {
 
   it('a delegated post appoints a successor at once', () => {
     const w = atFloor(world('trust-floor-delegated'), 0);
-    w.intervention = 3;
-    w.settings = legacySettings(3);
+    w.settings = staffAuthority(3);
     const id = w.manager.id,
       [hit] = roundsDrawing(w, 0, TRUST_FLOOR_CONFIG.zeroChance);
     settleAt(w, hit!);

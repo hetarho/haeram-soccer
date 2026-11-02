@@ -6,6 +6,7 @@ import {
   placeBid,
   transferOffers,
 } from '../../../../packages/engine/src/index';
+import { applyClubIdentity } from '../../../../packages/engine/src/identity-operations';
 import { currentDay, fixtureDay, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import type { ClubIdentity } from '../../../../packages/contracts/src/identity';
 import { featureState } from '../../../../tests/fixtures/feature-state';
@@ -117,7 +118,6 @@ describe('lossless career stream compaction', () => {
       debut: 'early',
     };
     w.build = { youth: 'elite' };
-    w.intervention = 4;
     expect(w.managerMarket?.free.length).toBeGreaterThan(0);
     const restored = validateWorld(unpack(JSON.parse(JSON.stringify(pack(w)))));
     expect(canonical(restored)).toBe(canonical(w));
@@ -552,9 +552,9 @@ const identityCareer = () =>
       const { pattern, emblem } = own.crest;
       return { ...own, colours: [primary], crest: { shape: 'diamond', pattern, emblem, primary } };
     };
-    operate(w, { type: 'club-identity', identity: design('#AbCdEf') });
+    applyClubIdentity(w, design('#AbCdEf'));
     (['home', 'away', 'third'] as const).forEach((role, i) => {
-      if (i === 1) operate(w, { type: 'club-identity', identity: design('#5A3E8c') });
+      if (i === 1) applyClubIdentity(w, design('#5A3E8c'));
       const next = nextOwnFixture(w)!;
       operate(w, { type: 'match-kit', fixtureId: next.id, role });
       advanceDays(w, fixtureDay(next) - currentDay(w), undefined, false);

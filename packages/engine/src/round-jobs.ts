@@ -31,16 +31,6 @@ export type RoundSimulator = (
   jobs: readonly RoundJob[],
 ) => () => readonly RoundJobResult[] | undefined;
 
-const simulators = new WeakMap<World, RoundSimulator>();
-/** Injects the world session's simulator; `undefined` (the default) computes every fixture here. */
-export function setRoundSimulator(w: World, simulator: RoundSimulator | undefined) {
-  if (simulator) simulators.set(w, simulator);
-  else simulators.delete(w);
-}
-export function roundSimulator(w: World) {
-  return simulators.get(w);
-}
-
 export function ownFixture(w: World, f: Fixture) {
   return f.home === w.playerClub || f.away === w.playerClub;
 }

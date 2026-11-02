@@ -115,19 +115,6 @@
   line-height: 1.2;
   color: var(--text);
 }
-.possessionBall {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow:
-    0 0 0 1px #21392a,
-    0 0 0 2px var(--gold);
-}
-.possessionWord {
-  font-style: normal;
-  font-family: var(--display);
-}
 /* The GOAL cue over the middle of the pitch, clear of the corner controls. */
 .goalCueSlot {
   position: absolute;

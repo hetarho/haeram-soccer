@@ -31,7 +31,6 @@ export const INTEGRATION_FILES = [
   'apps/web/src/ui/fixtures.test.ts',
   'apps/web/src/ui/fullStatsView.test.ts',
   'apps/web/src/ui/league.test.ts',
-  'apps/web/src/ui/matchAnalysis.test.ts',
   'apps/web/src/ui/matchAppearance.test.ts',
   'apps/web/src/ui/matchCharts.test.ts',
   'apps/web/src/ui/moments.test.ts',

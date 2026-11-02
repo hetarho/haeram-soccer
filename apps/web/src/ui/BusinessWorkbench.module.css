@@ -196,7 +196,7 @@
 .slot > .note {
   margin: 0;
 }
-/* Who signs sponsors at the current intervention level ends 후원 (→ECON-21, WEB-45). */
+/* Who signs sponsors under the settings in force ends 후원 (→ECON-21, WEB-45). */
 .delegation {
   min-width: 0;
 }
@@ -218,7 +218,6 @@
   grid-column: 1 / -1;
   width: 100%;
 }
-.warning,
 .message {
   font-size: 12px;
   margin: 9px 0;

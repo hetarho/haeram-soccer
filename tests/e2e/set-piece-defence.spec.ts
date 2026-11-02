@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
+import { advanceToNextMatch } from '../../packages/engine/src/testing';
 import type { PlayerMotion, World } from '../../packages/contracts/src/types';
-import { advanceToNextMatch, createWorld } from '../../packages/engine/src/index';
+import { createWorld } from '../../packages/engine/src/index';
 import { presentationSamples } from '../../apps/web/src/ui/presentationClock';
 import { withCandidateModel } from '../fixtures/worlds';
 import { horizontalOverflow } from './layout';

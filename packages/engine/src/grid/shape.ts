@@ -1190,10 +1190,3 @@ function cornerScene(s: GridState, side: 0 | 1, taker: number, r: () => number):
 export function holdSetPiece(scene: SetPieceScene, until: number): void {
   for (const { gp, to } of scene.up) gp.run = { kind: 'box', until, target: [to[0], to[1]] };
 }
-
-/** The pre-feature set piece: everyone in `setPieceTargets`' scene stands on his spot at once. */
-export function setPieceShape(s: GridState, side: 0 | 1, taker: number, until: number): void {
-  const scene = setPieceTargets(s, side, taker);
-  for (const { gp, to } of [...scene.up, ...scene.marks]) gp.pos = [to[0], to[1]];
-  holdSetPiece(scene, until);
-}

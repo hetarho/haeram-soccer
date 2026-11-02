@@ -107,7 +107,7 @@ function progress(w: World, cup: DomesticCup) {
   let changed = false;
   round.ties.forEach((tie, t) => {
     const legs = legsOf(w, cup.fixtures, key, index, t);
-    if (!decideTie(w, tie, legs, false)) return;
+    if (!decideTie(tie, legs, false)) return;
     changed = true;
     if (tie.home !== w.playerClub && tie.away !== w.playerClub) return;
     const left = roundsFor(cup.clubs.length) - 1 - index;

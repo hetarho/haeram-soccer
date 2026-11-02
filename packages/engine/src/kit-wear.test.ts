@@ -6,7 +6,6 @@ import {
   designedKeeper,
   startingShorts,
   startingSocks,
-  wornKeeper,
   wornKit,
 } from './kit-wear';
 
@@ -107,8 +106,5 @@ describe('worn kits (→KIT-3, KIT-12)', () => {
     expect(designed).toEqual(KEEPER);
     expect(designed).not.toBe(own.goalkeeper);
     expect(designed.shirt).not.toBe(own.goalkeeper!.shirt);
-    // Worn: the designed kit when there is one, else the automatic kit in the given colour.
-    expect(wornKeeper(own, '#f5e663')).toEqual(KEEPER);
-    expect(wornKeeper(identity(), '#f5e663')).toEqual(automaticKeeper('#f5e663'));
   });
 });

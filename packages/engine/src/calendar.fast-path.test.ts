@@ -1,12 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { advanceToNextMatch } from './testing';
 import { canonical } from '../../contracts/src/index';
-import {
-  advanceRound,
-  advanceToNextMatch,
-  closeSeason,
-  FOUNDING_YEAR,
-  simulateSeason,
-} from './index';
+import { advanceRound, closeSeason, FOUNDING_YEAR, simulateSeason } from './index';
 import { world } from './calendar.testkit';
 
 describe('persistent season calendar', () => {

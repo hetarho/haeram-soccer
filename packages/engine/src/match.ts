@@ -52,20 +52,6 @@ import { buildFrames } from './grid/playback';
 import { buildGridSetup, isLevel, type DecideRule } from './grid/setup';
 export { MATCH_MOTION_CONFIG, teamMotionProfile } from './grid/playback';
 export { matchdayRole, playerTendencies } from './grid/tendencies';
-export const METRICS = [
-  '득점',
-  '도움',
-  '패스 시도',
-  '패스 성공',
-  '슛',
-  '유효슛',
-  '태클',
-  '인터셉트',
-  '드리블',
-  '선방',
-  '출전 분',
-  '점유 분',
-];
 
 type Side = 0 | 1;
 /** Skill offsets in the per-slot effective-skill table. */

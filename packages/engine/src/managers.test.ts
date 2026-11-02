@@ -1,5 +1,5 @@
-import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
+import { staffAuthority } from './testing';
 import { validateWorld } from '../../contracts/src/index';
 import type { Founding, ManagerStyle, World } from '../../contracts/src/types';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
@@ -92,8 +92,7 @@ const ownReminder = (w: World) =>
 
 /** Level 4 with every coaching department kept by volunteers: only the manager post moves money. */
 function managerToStaff(w: World) {
-  w.intervention = 4;
-  w.settings = legacySettings(4);
+  w.settings = staffAuthority(4);
   w.direction = { coaches: 'volunteer' };
 }
 

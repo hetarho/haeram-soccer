@@ -1,5 +1,5 @@
-import { legacySettings } from './responsibilities';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { staffAuthority } from './testing';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import type { Founding, World } from '../../contracts/src/types';
 import { advanceRound, type MatchModelRelease } from './index';
@@ -23,7 +23,7 @@ export function world(
     },
     DISABLED_RELEASE,
   );
-  w.settings = legacySettings(2);
+  w.settings = staffAuthority(2);
   w.cash = '999999999';
   return w;
 }

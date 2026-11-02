@@ -623,7 +623,7 @@ test('the market ends with who answers offers and reads the recruitment level as
 }) => {
   await foundMarket(page, 'offer-switch-journey');
   await marketInfo(page);
-  // Who answers is the intervention level's alone: no switch of its own (→WEB-45, CLUB-18).
+  // Who answers is the sales responsibility's alone: no switch of its own (→WEB-45, CLUB-18).
   const offers = page.getByRole('region', { name: '이적 제안 위임' });
   const owner = offers.getByTestId('decision-owner-sales');
   await expect(offers.getByRole('checkbox')).toHaveCount(0);

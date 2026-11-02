@@ -4,16 +4,6 @@
   z-index: 6;
   background: var(--surface-grain, none) var(--bg);
 }
-.tabs {
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  scrollbar-width: none;
-  margin-bottom: 12px;
-}
-.tabs button {
-  flex: 0 0 auto;
-  white-space: nowrap;
-}
 .card {
   display: grid;
   gap: 12px;

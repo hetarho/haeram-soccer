@@ -1,4 +1,3 @@
-import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import type {
@@ -35,7 +34,7 @@ import {
   STYLE_INFO,
   yearlyStaff,
 } from './index';
-import { holdRows } from './testing';
+import { holdRows, staffAuthority } from './testing';
 import { ratio } from './primitives';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
@@ -230,8 +229,7 @@ const row = (w: World, key: 'manager' | 'school' | 'finance', option: string) =>
 function delegated(seed: string, manager = 'standard', school = 'any') {
   const w = world(seed);
   w.cash = '999999999';
-  w.intervention = 3;
-  w.settings = legacySettings(3);
+  w.settings = staffAuthority(3);
   row(w, 'manager', manager);
   row(w, 'school', school);
   return w;
@@ -358,8 +356,7 @@ describe('선호 학파 and 감독 기조 (STAFF-18)', () => {
     expect(w.inbox!.find((item) => item.id === report.id)!.read).toBe(true);
     // Without delegation an interim the owner kept stays.
     const kept = delegated('criteria-wait-owner');
-    kept.intervention = 2;
-    kept.settings = legacySettings(2);
+    kept.settings = staffAuthority(2);
     resignAtTrustFloor(kept);
     delete kept.critical;
     dailyStaff(kept);

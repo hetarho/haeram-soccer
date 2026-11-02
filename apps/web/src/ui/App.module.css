@@ -258,51 +258,10 @@
   min-width: 0;
   padding: 24px 38px 40px;
 }
-
-.hero {
-  display: flex;
-  justify-content: space-between;
-  gap: 24px;
-  align-items: center;
-  margin-bottom: 28px;
-}
-.eyebrow {
-  font-size: var(--label-size);
-  letter-spacing: 2px;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  margin-bottom: 12px;
-  font-family: var(--display);
-}
-.hero h2 {
-  font-size: 24px;
-  line-height: 1.5;
-  font-weight: 500;
-  letter-spacing: var(--heading-tracking);
-}
-.hero p {
-  margin-top: 12px;
-  color: var(--text-muted);
-  font-size: var(--body-size);
-  font-family: var(--body);
-  line-height: 1.8;
-}
-
-.heroActions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
 .primary {
   background: var(--surface-grain, none) var(--accent) !important;
   color: var(--on-accent) !important;
   border-color: var(--accent) !important;
-}
-.coral {
-  background: var(--surface-grain, none) var(--warm) !important;
-  border-color: var(--warm) !important;
-  color: var(--on-accent) !important;
 }
 .stats {
   display: grid;
@@ -335,12 +294,6 @@
   display: block;
   margin-top: 10px;
   font-family: var(--display);
-}
-.grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr);
-  gap: 14px;
-  align-items: start;
 }
 .panel {
   background: var(--surface-grain, none) var(--surface);
@@ -386,41 +339,6 @@
   border-top: var(--content-divider-width, 1px) solid var(--line);
   color: var(--text-muted);
   font-family: var(--display);
-}
-.stack {
-  display: grid;
-  gap: 22px;
-}
-.fixture {
-  padding: 28px 22px;
-  text-align: center;
-}
-.fixtureTeams {
-  display: flex;
-  justify-content: center;
-  gap: 22px;
-  align-items: center;
-  margin: 22px 0;
-}
-.fixtureTeams > div {
-  width: 40%;
-  font-size: 13px;
-  overflow-wrap: anywhere;
-}
-.fixtureTeams .crest {
-  vertical-align: middle;
-}
-.fixtureTeams b {
-  font-weight: 700;
-  font-size: 22px;
-  color: var(--text-faint);
-}
-.fixture small {
-  font-size: var(--label-size);
-  font-family: var(--display);
-}
-.fixture > button {
-  margin-top: 12px;
 }
 .timeline {
   list-style: none;
@@ -602,18 +520,6 @@
   color: var(--accent-text) !important;
   box-shadow: none;
 }
-
-.footer {
-  margin-top: 30px;
-  font-size: var(--label-size);
-  display: flex;
-  justify-content: space-between;
-  color: var(--text-faint);
-  border-top: 1px solid var(--line);
-  padding-top: 18px;
-  gap: 20px;
-  font-family: var(--display);
-}
 .pitch {
   background: var(--surface-grain, none) var(--surface);
 }
@@ -653,22 +559,6 @@
   aspect-ratio: 1.65;
   display: block;
 }
-.playControls {
-  display: flex;
-  gap: 10px;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px;
-  flex-wrap: wrap;
-}
-.playControls button {
-  font-size: var(--label-size);
-  font-family: var(--display);
-}
-.playControls label {
-  font-size: var(--label-size);
-  font-family: var(--display);
-}
 .matchStats {
   padding: 10px 22px 20px;
 }
@@ -698,20 +588,8 @@
   color: var(--warm);
   margin-right: 8px;
 }
-.competitionGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  margin-bottom: 24px;
-}
 .competition {
   padding: 24px;
-}
-.competition .symbol {
-  font-size: 36px;
-  line-height: 1;
-  color: var(--gold);
-  margin-bottom: 18px;
 }
 .competition h3 {
   font-size: 19px;
@@ -722,9 +600,6 @@
   font-size: var(--label-size);
   margin-top: 10px;
   font-family: var(--display);
-}
-.locked {
-  opacity: 0.72;
 }
 .fileInput {
   position: absolute;
@@ -750,11 +625,6 @@
 .loading {
   padding: 80px;
   text-align: center;
-}
-.twoCols {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 22px;
 }
 .muted {
   color: var(--text-muted);
@@ -868,10 +738,6 @@
     width: 100%;
     margin: auto;
   }
-  .hero h2 {
-    font-size: 24px;
-    line-height: 1.5;
-  }
 }
 @media (max-width: 1100px) {
   .layout {
@@ -891,17 +757,6 @@
   }
   .stat strong {
     font-size: 22px;
-  }
-  .grid {
-    grid-template-columns: 1fr;
-  }
-  .hero h2 {
-    font-size: 24px;
-    line-height: 1.5;
-  }
-
-  .competitionGrid {
-    grid-template-columns: 1fr 1fr;
   }
 }
 @media (max-width: 760px) {
@@ -956,44 +811,18 @@
   .main {
     padding: 20px 16px;
   }
-
-  .hero {
-    display: block;
-  }
-  .hero h2 {
-    font-size: 24px;
-    line-height: 1.5;
-  }
-  .heroActions {
-    margin-top: 22px;
-  }
   .stats {
     grid-template-columns: 1fr 1fr;
   }
   .stat strong {
     font-size: var(--heading-size);
   }
-  .grid,
-  .twoCols {
-    display: block;
-  }
-  .stack {
-    margin-top: 20px;
-  }
   .panel {
     margin-bottom: var(--panel-mobile-margin-bottom, 20px);
   }
 
-  .competitionGrid,
   .cards {
     grid-template-columns: 1fr;
-  }
-  .competitionGrid .panel {
-    margin-bottom: 0;
-  }
-  .footer {
-    font-size: var(--label-size);
-    font-family: var(--display);
   }
   .scoreboard {
     padding: 18px 12px;
@@ -1011,9 +840,6 @@
   }
   .panelBody {
     padding: var(--panel-body-padding, 16px);
-  }
-  .heroActions > button {
-    flex: 1;
   }
   .fileButton {
     font-size: var(--label-size);
@@ -1069,26 +895,6 @@
   font-size: var(--label-size);
   font-family: var(--display);
 }
-.playerTraits {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-top: 12px;
-  font-size: var(--label-size);
-  font-family: var(--display);
-}
-.playerTraits > span {
-  display: grid;
-  gap: 4px;
-}
-.playerTraits progress {
-  width: 100%;
-  height: 6px;
-  accent-color: var(--accent);
-}
-.inspectorToggle {
-  margin: 0 18px 14px;
-}
 .replayScrubber {
   display: flex;
   align-items: center;
@@ -1104,9 +910,6 @@
 }
 
 @media (max-width: 760px) {
-  .playerTraits {
-    grid-template-columns: repeat(2, 1fr);
-  }
   .pitchMeta {
     flex-wrap: wrap;
     font-size: var(--label-size);
@@ -1308,34 +1111,15 @@
   .main {
     padding: 0 16px calc(104px + env(safe-area-inset-bottom));
   }
-
-  .hero {
-    margin-bottom: 20px;
-  }
-  .hero h2 {
-    font-size: 24px;
-    line-height: 1.5;
-  }
-  .hero > button {
-    width: 100%;
-    margin-top: 16px;
-  }
-  .eyebrow,
   .stat .label,
   .panelHead span,
   .panelFoot,
   .timeline p,
   .muted,
-  .playControls button,
-  .playControls label,
   .card p,
   .attributes,
   .fileButton {
     font-size: 13px;
-  }
-  .eyebrow {
-    letter-spacing: 1px;
-    margin-bottom: 8px;
   }
   .panelHead {
     align-items: var(--panel-heading-align, flex-start);
@@ -1402,12 +1186,6 @@
       > :nth-child(2)
   )::after {
     opacity: 1;
-  }
-  .footer {
-    display: grid;
-    gap: 8px;
-    font-size: var(--label-size);
-    font-family: var(--display);
   }
   .loading {
     padding: 48px 16px;
@@ -1644,8 +1422,7 @@
   min-height: 44px;
 }
 @media (max-width: 760px) {
-  .startLayout .sidebar,
-  .startLayout .footer > span:first-child {
+  .startLayout .sidebar {
     display: none;
   }
   .startLayout .main {
@@ -1657,14 +1434,6 @@
   /* Chrome keeps its height; the scroller alone gives way and scrolls (→WEB-63). */
   .startLayout .main > :not(.scroller) {
     flex-shrink: 0;
-  }
-
-  .startLayout .footer {
-    font-size: var(--label-size);
-    margin: 0;
-    margin-top: auto;
-    padding: 8px 0;
-    font-family: var(--display);
   }
 }
 
@@ -1707,12 +1476,6 @@
   border-color: var(--accent-edge) !important;
   box-shadow: none;
 }
-.coral {
-  background: var(--surface-grain, none) var(--surface-2);
-  border-color: var(--accent-edge) !important;
-  color: var(--accent-text) !important;
-  box-shadow: none;
-}
 .brand h1 {
   font-family: var(--score);
   font-weight: 700;
@@ -1739,18 +1502,6 @@
 }
 .nav .active .navIcon {
   color: var(--accent-text);
-}
-.eyebrow {
-  color: var(--accent-text);
-  font-weight: 700;
-  letter-spacing: 1.6px;
-  margin-bottom: 6px;
-}
-.hero h2 {
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: var(--heading-tracking);
-  line-height: 1.5;
 }
 .stat strong {
   font-family: var(--display);
@@ -1945,25 +1696,6 @@
 .hudCashNegative b {
   color: var(--danger);
 }
-
-/* Play and the pace dropdown keep full touch targets. */
-
-.pageHead {
-  display: grid;
-  gap: 6px;
-  margin-bottom: 8px;
-}
-.pageHead h2 {
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 1.2;
-}
-.pageHead p {
-  margin-top: 4px;
-  font-size: var(--body-size);
-  line-height: 1.8;
-  color: var(--text-muted);
-}
 .segments {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 96px), 1fr));
@@ -2141,7 +1873,6 @@
   .playLayout .sidebar {
     display: none;
   }
-  .playLayout .footer,
   .playLayout .main > .actions {
     display: none;
   }
@@ -2301,9 +2032,6 @@
 .views {
   display: contents;
 }
-.startLayout .footer {
-  margin-top: auto;
-}
 @media (max-width: 760px) {
   .main {
     height: calc(100dvh - var(--mobile-nav-clearance));
@@ -2360,27 +2088,6 @@
 .filters input {
   height: 44px;
   min-height: 44px;
-}
-.toggles {
-  display: grid;
-  gap: 6px;
-  margin: 14px 0;
-}
-.toggles label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 48px;
-  padding: 0 12px;
-  border-radius: var(--card-radius);
-  border: 1px solid var(--line);
-  background: var(--surface-grain, none) var(--surface-2);
-  font-weight: 700;
-}
-.toggles input {
-  width: 22px;
-  height: 22px;
-  accent-color: var(--accent);
 }
 
 @media (max-width: 400px) {
@@ -2484,8 +2191,6 @@
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .panel,
-.pageHead,
-.hero,
 .stat,
 .afterMatch,
 .seasonPane:not([hidden]),
@@ -2503,36 +2208,12 @@
 .mobileNav button[aria-current='page'] .navIcon {
   animation: pop 360ms var(--ease);
 }
-.toggles label {
-  animation: rise 260ms var(--ease) both;
-}
-.toggles label:nth-child(2) {
-  animation-delay: 25ms;
-}
-.toggles label:nth-child(3) {
-  animation-delay: 50ms;
-}
-.toggles label:nth-child(4) {
-  animation-delay: 75ms;
-}
-.toggles label:nth-child(5) {
-  animation-delay: 100ms;
-}
-.toggles label:nth-child(6) {
-  animation-delay: 125ms;
-}
-.toggles label:nth-child(7) {
-  animation-delay: 150ms;
-}
 :global(button) {
   transition:
     box-shadow 0.08s,
     background-color 0.18s,
     border-color 0.18s,
     color 0.18s;
-}
-.miniClock {
-  animation: rise 220ms var(--ease) both;
 }
 .cashUp {
   color: var(--positive) !important;
@@ -2555,59 +2236,6 @@
     animation-delay: 0ms !important;
     transition-duration: 1ms !important;
   }
-}
-
-/* Intervention level: one choice sets stops and delegation together (the full sheet). */
-.levels {
-  display: grid;
-  gap: 8px;
-  margin: 12px 0;
-}
-.levels button {
-  display: grid;
-  gap: 4px;
-  min-height: 52px;
-  padding: 10px 12px;
-  text-align: left;
-  animation: rise 260ms var(--ease) both;
-}
-.levels button:nth-child(2) {
-  animation-delay: 40ms;
-}
-.levels button:nth-child(3) {
-  animation-delay: 80ms;
-}
-.levels button:nth-child(4) {
-  animation-delay: 120ms;
-}
-.levels b {
-  font-size: 14px;
-}
-.levels small {
-  font-size: var(--label-size);
-  font-weight: 500;
-  line-height: 1.4;
-  font-family: var(--display);
-}
-.levelOn {
-  border-color: var(--gold) !important;
-  background: var(--surface-grain, none) var(--surface-2);
-}
-.levelOn b {
-  color: var(--gold);
-}
-.levelMeter {
-  display: flex;
-  gap: 3px;
-}
-.levelMeter i {
-  width: 18px;
-  height: 5px;
-  border-radius: var(--radius);
-  background: var(--line);
-}
-.levelMeter .dotOn {
-  background: var(--surface-grain, none) var(--accent-fill);
 }
 /* Roster flags: injury, transfer list, retirement. */
 .playerFlags {
@@ -3256,19 +2884,6 @@
   min-height: var(--control-min-height);
   padding-inline: 4px;
   white-space: nowrap;
-}
-
-.responsibilities {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--label-size);
-  margin-bottom: 16px;
-}
-.responsibilities th,
-.responsibilities td {
-  padding: 8px;
-  text-align: left;
-  border-bottom: 1px solid var(--line);
 }
 
 .playerActions {

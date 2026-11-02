@@ -15,12 +15,12 @@ import { attackFrame, inBox, PITCH, toEngine, type Point } from './pitch';
 import { keeperNarrowing } from './resolve';
 import {
   goalSideMarks,
+  holdSetPiece,
   lineX,
   moveAll,
   offsideLine,
   runContext,
   runPlan,
-  setPieceShape,
   setPieceTargets,
   SHAPE_CONFIG,
   speedOf,
@@ -102,7 +102,10 @@ describe('grid shape and movement', () => {
     const kit = gridKit(undefined, undefined, DISABLED_RELEASE);
     const s = kit.state;
     const taker = 9;
-    setPieceShape(s, 0, taker, s.elapsed + 30);
+    // Everyone in the scene stands on his spot at once and holds it.
+    const scene = setPieceTargets(s, 0, taker);
+    for (const { gp, to } of [...scene.up, ...scene.marks]) gp.pos = [to[0], to[1]];
+    holdSetPiece(scene, s.elapsed + 30);
     const box = (side: 0 | 1) =>
       s.players[side].filter((gp) => onPitch(gp) && gp.slot > 0 && inBox(attackFrame(0, gp.pos)));
     const P = SHAPE_CONFIG.setPiece;

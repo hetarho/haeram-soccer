@@ -574,7 +574,7 @@ export function actionMix(
     mix.cross *= C.trailing.cross;
   }
   // An overlap still arriving: unpressured, he holds the ball for it.
-  if (tags.pressure < 1 && s.players[side].some((gp) => combination(s, gp, idx, c) === 'waiting'))
+  if (tags.pressure < 1 && s.players[side].some((gp) => combination(gp, idx, c) === 'waiting'))
     mix.carry *= C.combination.wait;
   // His first touch on the ball, facing play with room (candidate model, T397).
   const F = C.candidate.firstTouch;
@@ -839,7 +839,6 @@ const beaten = (s: GridState, side: 0 | 1, idx: number) =>
  * to `release` level with or ahead of him, else nothing.
  */
 export function combination(
-  s: GridState,
   gp: GridPlayer,
   idx: number,
   c: Point,
@@ -975,7 +974,7 @@ export function passOptions(
           actionWeight(slotOf(s, gp).role, gp.player.traits, 'key') *
           (beyondLine ? past.through : 1)
         : 0;
-    const combo = combination(s, gp, idx, c);
+    const combo = combination(gp, idx, c);
     // A teammate free on the wing with room ahead (revision 5, T538).
     const wing = judge && onWing(s, side, p) ? judge.wing.find : 0;
     // A free man ahead (revision 6, T542).

@@ -303,9 +303,6 @@ const localeSchema = z.strictObject({
     .refine((messages) => Object.keys(messages).length > 0, 'Messages are empty'),
 });
 
-export function validateMessage(value: unknown): LocaleMessage {
-  return parsePresentation(messageSchema, value, 'Message');
-}
 /** Includes the plural selector even when a form does not display its numeric value. */
 export function getMessageParameters(message: LocaleMessage): string[] {
   return typeof message === 'string'

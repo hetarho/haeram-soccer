@@ -1,5 +1,5 @@
 import type { World } from '../../contracts/src/types';
-import { legacySettings } from './responsibilities';
+import { staffAuthority } from './testing';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
@@ -16,7 +16,7 @@ export function world(country: 'ENG' | 'BEL' = 'ENG', seed = 'business') {
     {},
     DISABLED_RELEASE,
   );
-  w.settings = legacySettings(2);
+  w.settings = staffAuthority(2);
   return w;
 }
 export const finance = (w: World) => (w.inbox || []).filter((item) => item.kind === 'finance');

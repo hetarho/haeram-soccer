@@ -86,7 +86,6 @@ describe('shared club investment forecasts', () => {
     expect(preview.affordable).toBe(false);
     expect(preview.eligible).toBe(true);
     expect(preview.runwayRounds).toBe(0);
-    expect(preview.reason).toContain('부족');
     expect(() => startWork(w, 'training')).toThrow('부족');
     expect(canonical(w)).toBe(before);
   });
@@ -103,7 +102,6 @@ describe('shared club investment forecasts', () => {
     expect(preview.capacityAfter).toBe(90000);
     expect(preview.annualAfter).toBe(preview.annualBefore);
     expect(preview.maintenanceIncrease).toBe('0');
-    expect(preview.reason).toContain('최고');
     expect(() => startWork(w, 'stadium')).toThrow('최고');
     expect(canonical(w)).toBe(before);
   });

@@ -8,7 +8,7 @@ import { CURRENT_CATALOG } from '../../catalogs/src/index';
 import { describe, expect, it } from 'vitest';
 import { canonical } from './index';
 import { validateWorld, type LoadCatalog } from './schema';
-import type { LedgerKind, Sponsor, SponsorContract, TransferFact, World } from './types';
+import type { Sponsor, SponsorContract, TransferFact, World } from './types';
 import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from './detail';
 import { MATCH_MODEL_REVISION, type MatchModelState, type NpcSeasonStats } from './match-model';
 import { createWorld, simulateSeason, type MatchModelRelease } from '../../engine/src/index';
@@ -111,7 +111,6 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
     other.talk = { kind: 'renew', demand: '1000', floor: '1100', year: w.year, day: 153 };
     w.manager.term = 3;
     w.staff![0].term = 1;
-    w.intervention = 4;
     w.sponsors = [
       {
         slot: 'local',
@@ -149,7 +148,8 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
         ref: player.id,
       }),
     );
-    const ledger: LedgerKind[] = [
+    // The ledger kinds the settlement books (→CLUB-28, ECON-30); `Event.kind` stays a string.
+    const ledger = [
       'league-share',
       'league-merit',
       'parachute',
@@ -209,7 +209,6 @@ describe('rules 1.16 contracts (→SAVE-10)', () => {
         Object.assign(c.players[0], { transferRequest: { year: w.year, day: 0, by: 'agent' } }),
       ),
     ).toThrow();
-    expect(load((c) => Object.assign(c, { intervention: 5 }))).toThrow();
     expect(load((c) => Object.assign(c.manager, { term: 6 }))).toThrow();
     expect(load((c) => Object.assign(c.staff![0], { term: 0 }))).toThrow();
     expect(

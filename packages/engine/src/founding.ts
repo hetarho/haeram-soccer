@@ -5,7 +5,6 @@ import { createBase } from './world';
 import { prepareSeason, advanceRound, closeSeason } from './season';
 import { basicStaff } from './staff';
 import { MORALE_START } from './morale';
-import { NEW_CLUB_INTERVENTION } from './intervention';
 import { foundWithPreset } from './presets';
 import { openShortlistWindow } from './signings';
 import { defaultSettings } from './responsibilities';
@@ -32,11 +31,10 @@ export function createWorld(input: Founding, release: MatchModelRelease = MATCH_
   // goalkeeper kit included, is the own club's as confirmed, in its normalised form (→KIT-11, KIT-14).
   installMissingIdentities(w);
   if (input.identity) clubOf(w).identity = normaliseIdentity(input.identity);
-  // New clubs start with unpaid basic coaches at the "important decisions" intervention level:
-  // the staff run training, the academy and contract talks, the owner the rest (→STAFF-13).
+  // New clubs start with unpaid basic coaches and the default responsibilities: the staff run
+  // the coaching posts, the academy and sponsors, the owner the rest (→STAFF-13, WEB-45).
   w.staff = basicStaff(w);
   w.academy = { players: [] };
-  w.intervention = NEW_CLUB_INTERVENTION;
   w.settings = defaultSettings();
   w.bids = [];
   w.inbox = [];

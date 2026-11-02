@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from 'react';
 import { reducedMotion } from '../adapters/motionPreference';
 
 export { reducedMotion };
@@ -61,32 +60,6 @@ export function retarget(value: string, renamed: ReadonlyMap<string, string>) {
   return value.replace(/url\((['"]?)#([^'")]+)\1\)/g, (match, quote: string, id: string) =>
     renamed.has(id) ? `url(${quote}#${renamed.get(id)}${quote})` : match,
   );
-}
-
-/**
- * Keeps content mounted briefly after it disappears so it can animate out.
- * Returns the content to render and whether it is leaving.
- */
-export function usePresence<T>(value: T | undefined, duration = 180) {
-  const [shown, setShown] = useState(value);
-  const [leaving, setLeaving] = useState(false);
-  const timer = useRef<number>(undefined);
-  if (value !== undefined && (value !== shown || leaving)) {
-    setShown(value);
-    setLeaving(false);
-  } else if (value === undefined && shown !== undefined && !leaving) setLeaving(true);
-  useEffect(() => {
-    if (!leaving) return;
-    timer.current = window.setTimeout(
-      () => {
-        setShown(undefined);
-        setLeaving(false);
-      },
-      reducedMotion() ? 0 : duration,
-    );
-    return () => window.clearTimeout(timer.current);
-  }, [leaving, duration]);
-  return { shown, leaving };
 }
 
 /**

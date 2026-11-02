@@ -62,25 +62,14 @@ describe('the worker protocol (→ECON-25, WEB-15)', () => {
   });
 });
 
-it('accepts only a complete own-club design and no club target (→KIT-9)', () => {
+it('refuses the withdrawn design, intervention and sponsor commands (→KIT-9, WEB-45, ECON-8)', () => {
   const identity = createIdentityDraft({ country: 'ENG', seed: 'design', color: '#3A7bC2' });
   const accepts = (command: unknown) =>
     requestSchema.safeParse(request({ type: 'command', command })).success;
-  const body = { type: 'command', command: { type: 'club-identity', identity } };
-  expect(requestSchema.parse(request(body)).body).toEqual(body);
-  for (const target of [{ club: 'ENG:rival' }, { clubId: 'ENG:rival' }, { target: 'ENG:rival' }])
-    expect(accepts({ type: 'club-identity', identity, ...target }), JSON.stringify(target)).toBe(
-      false,
-    );
-  for (const colour of ['red', '#12345', '#1234567', '#12345g', 'url(#x)'])
-    for (const malformed of [
-      { ...identity, colours: [colour] },
-      { ...identity, crest: { ...identity.crest, primary: colour } },
-      { ...identity, kits: { ...identity.kits, away: { pattern: 'plain', primary: colour } } },
-    ])
-      expect(accepts({ type: 'club-identity', identity: malformed }), colour).toBe(false);
-  expect(accepts({ type: 'club-identity', identity: { ...identity, version: 2 } })).toBe(false);
-  expect(accepts({ type: 'club-identity' })).toBe(false);
+  expect(accepts({ type: 'club-identity', identity })).toBe(false);
+  expect(accepts({ type: 'intervention', level: 2 })).toBe(false);
+  expect(accepts({ type: 'sponsor', kind: 'stable' })).toBe(false);
+  expect(accepts({ type: 'campaign', kind: 'outreach' })).toBe(false);
 });
 
 it('takes a next-fixture kit role in the engine vocabulary or null, nothing else (→KIT-6)', () => {

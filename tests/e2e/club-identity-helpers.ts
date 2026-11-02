@@ -242,19 +242,13 @@ interface IdentityProbe {
 }
 type ProbeWindow = typeof window & { identityProbe: IdentityProbe };
 /**
- * Counts the club-identity and design-commission commands the page sends its engine worker, by
+ * Counts the design commands the page sends its engine worker, by
  * type; `refuseNextDesignCommand` makes the next one carry an outdated world revision, which the
  * host refuses before any effect (→SAVE-6).
  */
 export async function watchIdentityCommands(page: Page) {
   await page.addInitScript(() => {
-    const watched = [
-      'club-identity',
-      'design-commission',
-      'adopt-design',
-      'discard-designs',
-      'redraw-designs',
-    ];
+    const watched = ['design-commission', 'adopt-design', 'discard-designs', 'redraw-designs'];
     const probe: IdentityProbe = { sent: {}, stale: 0 };
     (window as ProbeWindow).identityProbe = probe;
     const post = Worker.prototype.postMessage;

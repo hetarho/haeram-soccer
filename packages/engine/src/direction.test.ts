@@ -1,23 +1,17 @@
 import { BUILD_PRESETS } from './build';
 import { directionOf } from './direction';
-import { holdRows } from './testing';
-import { legacySettings } from './responsibilities';
+import { handTo, holdRows, staffAuthority } from './testing';
 import { compareIds } from './primitives';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import type { InterventionLevel } from '../../contracts/src/types';
 import {
   activePlayers,
   affordable,
   COACH_CRITERIA_DEFAULT,
-  COACH_KEYS,
   coachCriteriaOf,
-  coachDelegated,
-  coachKey,
   createWorld,
   dailyStaff,
   dailyMarket,
-  delegated,
   DIRECTION_INFO,
   DIRECTION_KEYS,
   financeStance,
@@ -32,7 +26,6 @@ import {
   saleAllowed,
   saleBar,
   seasonStaff,
-  STAFF_ROLES,
   staffStances,
   TALK_RULE_DEFAULT,
   talkRuleOf,
@@ -179,49 +172,24 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     expect(saleAllowed(w, false, 22, false)).toBe(true);
   });
 
-  it('hands the staff one more group at each level: academy and talks, then sponsors and staff, then transfers', () => {
-    expect(COACH_KEYS).toEqual(STAFF_ROLES.map(coachKey));
+  it('staff given the coaching posts refill vacancies and renew expiring coaches', () => {
     const w = world('direction-ladder');
-    const at = (level: InterventionLevel) => {
-      operate(w, { type: 'intervention', level });
-      return {
-        academy: delegated(w, 'academy'),
-        contracts: delegated(w, 'contracts'),
-        business: delegated(w, 'business'),
-        manager: delegated(w, 'manager'),
-        coaches: STAFF_ROLES.every((role) => coachDelegated(w, role)),
-        anyCoach: STAFF_ROLES.some((role) => coachDelegated(w, role)),
-        transfers: delegated(w, 'transfers'),
-      };
-    };
-    expect(at(1)).toMatchObject({ academy: false, contracts: false, anyCoach: false });
-    expect(at(2)).toMatchObject({
-      academy: true,
-      contracts: true,
-      business: false,
-      manager: false,
-      anyCoach: false,
-      transfers: false,
-    });
-    expect(at(3)).toMatchObject({ business: true, manager: true, coaches: true, transfers: false });
-    expect(at(4)).toMatchObject({ business: true, manager: true, coaches: true, transfers: true });
-
-    // From level 3 the staff refill every vacancy at once; releasing a coach changes no level.
-    operate(w, { type: 'intervention', level: 3 });
+    // Staff given the posts refill every vacancy at once; releasing a coach changes no setting.
+    handTo(w, 3);
     operate(w, { type: 'release-staff', role: 'attack' });
-    expect(w.intervention).toBe(3);
+    expect(w.settings).toEqual(staffAuthority(3));
     w.staff = w.staff!.filter((member) => member.role !== 'scout');
     dailyStaff(w);
     expect(w.staff!.some((member) => member.role === 'scout')).toBe(true);
     expect(w.staff!.some((member) => member.role === 'attack')).toBe(true);
 
-    // The owner is reminded of expiring coaches at level 2; the staff renew them from level 3.
-    const spring = (level: InterventionLevel) => {
+    // The owner deciding the staff is reminded of expiring coaches; delegated staff renew them.
+    const spring = (step: 2 | 3) => {
       const s = world('direction-spring');
       s.cash = '999999999999';
       for (const role of ['attack', 'fitness'] as const)
         operate(s, { type: 'hire-staff', role, candidate: 1, term: 1 });
-      operate(s, { type: 'intervention', level });
+      handTo(s, step);
       s.calendar = { day: renewalDay(s.year) };
       dailyStaff(s);
       return s;
@@ -265,8 +233,7 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     freshBench[2].born = fresh.year - 32;
     holdRows(fresh, { build: { market: 'selling' } });
     holdRows(fresh, { direction: { youthGoal: 'sell' } });
-    fresh.intervention = 4;
-    fresh.settings = legacySettings(4);
+    fresh.settings = staffAuthority(4);
     staffStances(fresh);
     expect(freshBench[0].stance).toBe('listed');
     expect(freshBench[1].stance).toBe('listed');
@@ -276,8 +243,7 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     // 핵심 지키기 marks the three best starters 이적 불가.
     const hold = world('direction-hold');
     holdRows(hold, { build: { market: 'hold' } });
-    hold.intervention = 4;
-    hold.settings = legacySettings(4);
+    hold.settings = staffAuthority(4);
     hold.calendar = { day: transferWindowDays(hold.year).summerOpen };
     dailyMarket(hold);
     const marked = activePlayers(hold).filter((player) => player.stance === 'untouchable');

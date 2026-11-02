@@ -188,14 +188,6 @@ export function saveLabState(state: LabState, store: LabStorage | undefined = st
   }
 }
 
-export function clearLabState(store: LabStorage | undefined = storage()) {
-  try {
-    store?.removeItem(LAB_STORAGE_KEY);
-  } catch {
-    // Nothing kept to clear.
-  }
-}
-
 /** A finished run first, the oldest beyond `KEPT_RUNS` dropped; the baseline goes with its run. */
 export function keepRun(state: LabState, run: KeptRun): LabState {
   const kept = [run, ...state.kept.filter((k) => k.id !== run.id)].slice(0, KEPT_RUNS);

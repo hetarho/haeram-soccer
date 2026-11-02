@@ -147,4 +147,18 @@ describe('owner interventions withdrawn (→SAVE-25)', () => {
     // Reading never writes: the save itself is left for the writer's next checkpoint.
     expect(older.people![player.id]!.intention).toHaveProperty('encouraged');
   });
+
+  it('drops the removed intervention level from an older save', () => {
+    const w = world();
+    // A career founded with its level beside the settings, as saved before the level was
+    // withdrawn: the settings alone say who decides (→WEB-45, SAVE-17).
+    const older = { ...structuredClone(w), intervention: 2 } as World & { intervention: number };
+    const loaded = validateWorld(older, LOAD_CATALOG);
+    expect(loaded).not.toHaveProperty('intervention');
+    expect(loaded.settings).toEqual(w.settings);
+    // Every other fact stays as saved.
+    expect(loaded).toEqual(validateWorld(w, LOAD_CATALOG));
+    // Reading never writes: the save itself is left for the writer's next checkpoint.
+    expect(older.intervention).toBe(2);
+  });
 });

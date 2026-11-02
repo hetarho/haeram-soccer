@@ -1,10 +1,10 @@
-import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
+import { handTo, staffAuthority } from './testing';
 import {
   advanceRound,
   contractSeason,
   createWorld,
-  delegated,
+  isDelegated,
   moneyLabel,
   operate,
   ratio,
@@ -27,16 +27,16 @@ const world = () => {
     },
     DISABLED_RELEASE,
   );
-  w.settings = legacySettings(2);
+  w.settings = staffAuthority(2);
   return w;
 };
 describe('club decisions', () => {
-  it('refuses contract answers without a talk and the old single sponsor', () => {
+  it('refuses contract answers without a talk', () => {
     const w = world();
-    // This compatibility fixture delegates contracts; the legacy command also hands over managers.
-    expect(delegated(w, 'contracts')).toBe(true);
-    operate(w, { type: 'intervention', level: 4 });
-    expect(delegated(w, 'manager')).toBe(true);
+    // This fixture delegates contracts; handing over everything adds the manager post.
+    expect(isDelegated(w, 'contracts')).toBe(true);
+    handTo(w, 4);
+    expect(isDelegated(w, 'manager')).toBe(true);
     const before = structuredClone(w);
     const player = w.players[0].id;
     // Contract answers need a talk the player opened (→CLUB-26).
@@ -44,8 +44,6 @@ describe('club decisions', () => {
       '계약 협상 중인 선수가 아닙니다.',
     );
     expect(() => operate(w, { type: 'contract-decline', player })).toThrow('협상');
-    // The single sponsor of rules before 1.16 is signed by slot now (→ECON-8).
-    expect(() => operate(w, { type: 'sponsor', kind: 'stable' })).toThrow('자리별');
     expect(w).toEqual(before);
   });
   /** Candidate 2 on loan and the local sponsor, each signed once; the second signing is refused. */
@@ -100,14 +98,14 @@ describe('club decisions', () => {
     });
   /**
    * An older campaign three of its four rounds in, with the commands' revision before it started:
-   * the rounds before its settling one only lead there. `busy` read and intervened first.
+   * the rounds before its settling one only lead there. `busy` read and changed settings first.
    */
   const campaignEve = (busy: boolean) =>
     cachedWorld(`campaign-eve:${busy}`, () => {
       const w = world();
       if (busy) {
         operate(w, { type: 'read-inbox' });
-        operate(w, { type: 'intervention', level: 1 });
+        operate(w, { type: 'settings', settings: staffAuthority(1) });
         operate(w, { type: 'read-inbox' });
       }
       const revision = w.revision;
@@ -115,11 +113,7 @@ describe('club decisions', () => {
       for (let i = 0; i < 3; i++) advanceRound(w);
       return { revision, w };
     });
-  it('refuses new campaigns and settles one started before', () => {
-    expect(() => operate(world(), { type: 'campaign', kind: 'outreach' })).toThrow(
-      '캠페인은 이제 없어요',
-    );
-    // A refused command changes nothing, so the campaign starts on a fresh world.
+  it('settles a campaign started before', () => {
     const { w } = campaignEve(false);
     advanceRound(w);
     expect(w.campaigns).toHaveLength(0);

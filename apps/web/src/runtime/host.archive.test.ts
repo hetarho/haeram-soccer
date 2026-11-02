@@ -1,5 +1,5 @@
-import { legacySettings } from '../../../../packages/engine/src/responsibilities';
 import { describe, it, expect } from 'vitest';
+import { staffAuthority } from '../../../../packages/engine/src/testing';
 import { Host } from './host';
 import { canonical } from '../../../../packages/contracts/src/index';
 import type { ManagerHistoryPage } from '../../../../packages/contracts/src/manager-history-view';
@@ -89,7 +89,7 @@ describe('worker command protocol', () => {
       h,
       cachedWorld('legacy-season', () => {
         const w = createWorld(input, DISABLED_RELEASE);
-        w.settings = legacySettings(4);
+        w.settings = staffAuthority(4);
         return simulateSeason(w);
       }),
       DISABLED_RELEASE,

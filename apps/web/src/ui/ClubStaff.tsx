@@ -244,11 +244,11 @@ export function ManagerHireTerm({
 }
 
 /**
- * Who runs the coaching staff (→STAFF-15): every department follows the intervention level
- * together (level 3 and up →WEB-45), all by 코치 기조 while the staff hire.
+ * Who runs the coaching staff (→STAFF-15): every department follows the one 코치진
+ * responsibility together (→WEB-45), all by 코치 기조 while the staff hire.
  */
 export function CoachingPlan({ w }: { w: World }) {
-  // The 단장's post among them; every post follows the same level, so one department speaks.
+  // The 단장's post among them; every post follows the same responsibility, so one department speaks.
   const decision = 'staff' as const,
     auto = coachDelegated(w, 'assistant');
   const expiring = (w.staff || []).filter((member) => isExpiring(w, member));

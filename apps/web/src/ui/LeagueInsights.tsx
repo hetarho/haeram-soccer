@@ -6,7 +6,6 @@ import { kindLabel, seasonName } from './format';
 import {
   archivedTimeline,
   divisionName,
-  divisionRound,
   finalZones,
   formFor,
   leagueFixtures,
@@ -741,27 +740,5 @@ export function RoundResults({
         })}
       </ul>
     </section>
-  );
-}
-
-export function LeagueInsights({ w, ids = ownLeagueIds(w) }: { w: World; ids?: string[] }) {
-  const rules = leagueRules(w, ids);
-  return (
-    <div className={s.insights}>
-      <RankHistoryGraph w={w} ids={ids} />
-      <section data-surface="panel" className={s.panel}>
-        <div className={s.panelHead}>
-          <div>
-            <h3>{rules ? `${rules.cp.name} · ${rules.first.tier + 1}부 순위표` : '리그 순위표'}</h3>
-            <span>{seasonName(w.year)} · 승점이 같으면 골득실로 순위를 가릅니다</span>
-          </div>
-          <span className={s.roundTag}>
-            {divisionRound(leagueRounds(leagueFixtures(w, ids)), w.round)}라운드
-          </span>
-        </div>
-        <Standings w={w} ids={ids} />
-      </section>
-      <RoundResults w={w} ids={ids} />
-    </div>
   );
 }

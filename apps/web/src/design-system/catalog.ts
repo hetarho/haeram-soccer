@@ -319,7 +319,7 @@ export const STORIES: Story[] = [
     'career',
     '통산 기록 · 트로피장',
     '기록 · 시작',
-    ['CareerRecordBook', 'ClubTrends', 'MilestoneCollection'],
+    ['CareerRecordBook', 'ClubTrends'],
     '통산 요약, 선수 리더, 시즌 흐름과 트로피.',
   ),
   story(

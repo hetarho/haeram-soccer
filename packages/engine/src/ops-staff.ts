@@ -12,13 +12,11 @@ import { makeManager, tacticLabel } from './world';
 import { clamp, random, ratio } from './primitives';
 import {
   checkTerm,
-  fillDelegatedPost,
   hireStaff,
   MANAGER_TRAIT_INFO,
   releaseCost,
   releaseStaff,
   renewStaff,
-  STAFF_ROLES,
   staffQuote,
   withTerm,
 } from './staff';
@@ -35,21 +33,16 @@ import {
   type ManagerCandidate,
 } from './managerMarket';
 import { MORALE_START } from './morale';
-import { coachDelegated, managerCriteriaOf } from './hiring';
+import { managerCriteriaOf } from './hiring';
 import { directionLine } from './direction';
 import { debit } from './transactions';
 import { moneyLabel } from './finance';
-import { INTERVENTION_LEVELS } from './intervention';
 import { isDelegated } from './responsibilities';
-import { legacySettings } from './responsibilities';
 
 /** Managers, coaches and delegation. */
 export type StaffCommand = Extract<
   Command,
-  {
-    type:
-      'hire' | 'renew-manager' | 'hire-staff' | 'release-staff' | 'renew-staff' | 'intervention';
-  }
+  { type: 'hire' | 'renew-manager' | 'hire-staff' | 'release-staff' | 'renew-staff' }
 >;
 
 /** "1951/52": the season whose close ends a contract that runs `until` that year. */
@@ -362,7 +355,7 @@ export function staffCommand(w: World, cmd: StaffCommand) {
       hireStaff(w, cmd.role, cmd.candidate, cmd.term, cmd.candidateId);
       break;
     case 'release-staff':
-      // Delegation stays as the level sets it: a delegated department refills the post by 코치
+      // Delegation stays as the settings set it: a delegated department refills the post by 코치
       // 기조 on the daily look (→STAFF-13, STAFF-15).
       releaseStaff(w, cmd.role);
       break;
@@ -371,13 +364,6 @@ export function staffCommand(w: World, cmd: StaffCommand) {
       break;
     case 'renew-manager':
       renewManager(w, cmd.term);
-      break;
-    case 'intervention':
-      if (!INTERVENTION_LEVELS.includes(cmd.level)) throw new Error('개입 수준을 확인하세요.');
-      w.intervention = cmd.level;
-      w.settings = legacySettings(cmd.level);
-      // A department handed to the staff has its vacancy or volunteer's post filled at once.
-      for (const role of STAFF_ROLES) if (coachDelegated(w, role)) fillDelegatedPost(w, role);
       break;
     case 'hire': {
       checkTerm(cmd.term);
