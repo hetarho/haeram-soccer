@@ -1,7 +1,7 @@
 {
   "synthetic": true,
   "engine": "0.7.0",
-  "catalog": "2026-demo-4",
+  "catalog": "2026-demo-5",
   "definitions": [
     {
       "name": "founding-and-commercial-decisions",
@@ -49,7 +49,7 @@
         "tactic": "counter",
         "manager": {
           "id": "coach:1950:0:1198314408",
-          "name": "Henry Hawkins",
+          "name": "Roger Bates",
           "trust": 59,
           "conflicts": 0,
           "interim": false,
@@ -269,25 +269,25 @@
               {
                 "minute": 2,
                 "side": 1,
-                "player": "Thomas Hughes",
+                "player": "Martin Griffin",
                 "action": "골"
               },
               {
                 "minute": 27,
                 "side": 1,
-                "player": "William Hawkins",
+                "player": "Ian Stewart",
                 "action": "골"
               },
               {
                 "minute": 39,
                 "side": 0,
-                "player": "Thomas Brooks",
+                "player": "Matthew Hudson",
                 "action": "골"
               },
               {
                 "minute": 47,
                 "side": 1,
-                "player": "Thomas Hughes",
+                "player": "Martin Griffin",
                 "action": "골"
               }
             ],
@@ -376,7 +376,7 @@
               {
                 "minute": 51,
                 "side": 0,
-                "player": "Edward Brooks",
+                "player": "Gary Porter",
                 "action": "골"
               }
             ],
@@ -543,19 +543,19 @@
               {
                 "minute": 33,
                 "side": 1,
-                "player": "George Watson",
+                "player": "Charles Porter",
                 "action": "골"
               },
               {
                 "minute": 41,
                 "side": 0,
-                "player": "Walter Brooks",
+                "player": "Tony Woods",
                 "action": "골"
               },
               {
                 "minute": 45,
                 "side": 1,
-                "player": "Henry Clarke",
+                "player": "Roy Anderson",
                 "action": "골"
               }
             ],
@@ -642,43 +642,43 @@
               {
                 "minute": 12,
                 "side": 0,
-                "player": "William Watson",
+                "player": "Herbert Davis",
                 "action": "골"
               },
               {
                 "minute": 45,
                 "side": 0,
-                "player": "Walter Bennett",
+                "player": "Timothy Carr",
                 "action": "골"
               },
               {
                 "minute": 50,
                 "side": 1,
-                "player": "Thomas Brooks",
+                "player": "Matthew Hudson",
                 "action": "골"
               },
               {
                 "minute": 67,
                 "side": 0,
-                "player": "William Watson",
+                "player": "Herbert Davis",
                 "action": "골"
               },
               {
                 "minute": 83,
                 "side": 1,
-                "player": "William Watson",
+                "player": "Jamie Lambert",
                 "action": "골"
               },
               {
                 "minute": 85,
                 "side": 1,
-                "player": "Thomas Brooks",
+                "player": "Matthew Hudson",
                 "action": "골"
               },
               {
                 "minute": 90,
                 "side": 1,
-                "player": "Thomas Brooks",
+                "player": "Matthew Hudson",
                 "action": "골"
               }
             ],
@@ -704,12 +704,12 @@
           },
           {
             "kind": "transfer-in",
-            "title": "Henry Turner 임대",
+            "title": "Richard Brooks 임대",
             "amount": "0"
           },
           {
             "kind": "manager-response",
-            "title": "Henry Hawkins의 답변",
+            "title": "Roger Bates의 답변",
             "amount": null
           },
           {
@@ -769,7 +769,7 @@
           },
           {
             "kind": "rival-sacking",
-            "title": "Bristol Ironworks Athletic, Thomas Turner 감독 경질",
+            "title": "Bristol Ironworks Athletic, Oliver Rose 감독 경질",
             "amount": null
           },
           {
@@ -829,7 +829,7 @@
         "tactic": "balanced",
         "manager": {
           "id": "coach:1950:99:3137569884",
-          "name": "Thomas Watson",
+          "name": "Michael Lynch",
           "trust": 65,
           "conflicts": 0,
           "interim": true,
@@ -973,7 +973,7 @@
           },
           {
             "kind": "manager-response",
-            "title": "Henry Hawkins의 답변",
+            "title": "Roger Bates의 답변",
             "amount": null
           },
           {
@@ -983,7 +983,7 @@
           },
           {
             "kind": "manager-departure",
-            "title": "Henry Hawkins 감독의 마지막 날",
+            "title": "Roger Bates 감독의 마지막 날",
             "amount": null
           }
         ],
@@ -1017,7 +1017,7 @@
         "tactic": "possession",
         "manager": {
           "id": "coach:1950:0:1198314408",
-          "name": "Emile Mercier",
+          "name": "Bastien Charles",
           "trust": 62,
           "conflicts": 0,
           "interim": false,
@@ -1251,7 +1251,7 @@
               {
                 "minute": 8,
                 "side": 1,
-                "player": "Louis Laurent",
+                "player": "Nicolas Roger",
                 "action": "골"
               }
             ],
@@ -1346,7 +1346,7 @@
               {
                 "minute": 41,
                 "side": 0,
-                "player": "Louis Dubois",
+                "player": "Philippe Cousin",
                 "action": "골"
               }
             ],
@@ -1439,13 +1439,13 @@
               {
                 "minute": 1,
                 "side": 1,
-                "player": "Emile Dubois",
+                "player": "Corentin Ménard",
                 "action": "골"
               },
               {
                 "minute": 18,
                 "side": 0,
-                "player": "Andre Moreau",
+                "player": "Antoine Lévêque",
                 "action": "골"
               }
             ],
@@ -1538,7 +1538,7 @@
               {
                 "minute": 7,
                 "side": 1,
-                "player": "Louis Mercier",
+                "player": "Daniel Bodin",
                 "action": "골"
               }
             ],
@@ -1633,19 +1633,19 @@
               {
                 "minute": 51,
                 "side": 1,
-                "player": "Andre Moreau",
+                "player": "Antoine Lévêque",
                 "action": "골"
               },
               {
                 "minute": 68,
                 "side": 0,
-                "player": "Emile Mercier",
+                "player": "Victor Roche",
                 "action": "골"
               },
               {
                 "minute": 81,
                 "side": 0,
-                "player": "Emile Mercier",
+                "player": "Victor Roche",
                 "action": "골"
               }
             ],
@@ -1740,13 +1740,13 @@
               {
                 "minute": 26,
                 "side": 0,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               },
               {
                 "minute": 54,
                 "side": 0,
-                "player": "Jean Moreau",
+                "player": "Léon Simon",
                 "action": "골"
               }
             ],
@@ -1839,7 +1839,7 @@
               {
                 "minute": 35,
                 "side": 0,
-                "player": "Emile Petit",
+                "player": "Kévin Guérin",
                 "action": "골"
               }
             ],
@@ -1934,25 +1934,25 @@
               {
                 "minute": 28,
                 "side": 0,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               },
               {
                 "minute": 44,
                 "side": 0,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               },
               {
                 "minute": 51,
                 "side": 1,
-                "player": "Pierre Mercier",
+                "player": "Gérard Adam",
                 "action": "골"
               },
               {
                 "minute": 78,
                 "side": 1,
-                "player": "Louis Mercier",
+                "player": "Daniel Bodin",
                 "action": "골"
               }
             ],
@@ -2043,31 +2043,31 @@
               {
                 "minute": 37,
                 "side": 0,
-                "player": "Louis Dubois",
+                "player": "Claude Bonnet",
                 "action": "골"
               },
               {
                 "minute": 45,
                 "side": 0,
-                "player": "Louis Dubois",
+                "player": "Claude Bonnet",
                 "action": "골"
               },
               {
                 "minute": 47,
                 "side": 0,
-                "player": "Louis Dubois",
+                "player": "Claude Bonnet",
                 "action": "골"
               },
               {
                 "minute": 60,
                 "side": 0,
-                "player": "Andre Garnier",
+                "player": "Benoît Barthélemy",
                 "action": "골"
               },
               {
                 "minute": 88,
                 "side": 0,
-                "player": "Andre Garnier",
+                "player": "Benoît Barthélemy",
                 "action": "골"
               }
             ],
@@ -2163,7 +2163,7 @@
               {
                 "minute": 16,
                 "side": 1,
-                "player": "Andre Mercier",
+                "player": "Jean-Pierre Robin",
                 "action": "골"
               }
             ],
@@ -2344,13 +2344,13 @@
               {
                 "minute": 49,
                 "side": 1,
-                "player": "Jean Mercier",
+                "player": "Léon Girard",
                 "action": "골"
               },
               {
                 "minute": 51,
                 "side": 1,
-                "player": "Pierre Mercier",
+                "player": "Pascal Royer",
                 "action": "골"
               }
             ],
@@ -2441,25 +2441,25 @@
               {
                 "minute": 5,
                 "side": 0,
-                "player": "Pierre Dubois",
+                "player": "Laurent Barbier",
                 "action": "골"
               },
               {
                 "minute": 47,
                 "side": 0,
-                "player": "Pierre Mercier",
+                "player": "David Nicolas",
                 "action": "골"
               },
               {
                 "minute": 63,
                 "side": 0,
-                "player": "Pierre Dubois",
+                "player": "Laurent Barbier",
                 "action": "골"
               },
               {
                 "minute": 85,
                 "side": 0,
-                "player": "Pierre Dubois",
+                "player": "Laurent Barbier",
                 "action": "골"
               }
             ],
@@ -2550,19 +2550,19 @@
               {
                 "minute": 12,
                 "side": 1,
-                "player": "Paul Mercier",
+                "player": "Thibault Delaunay",
                 "action": "골"
               },
               {
                 "minute": 20,
                 "side": 0,
-                "player": "Jean Moreau",
+                "player": "Léon Simon",
                 "action": "골"
               },
               {
                 "minute": 45,
                 "side": 1,
-                "player": "Paul Moreau",
+                "player": "Hubert Marchand",
                 "action": "골"
               }
             ],
@@ -2653,13 +2653,13 @@
               {
                 "minute": 24,
                 "side": 0,
-                "player": "Andre Dubois",
+                "player": "Jean-Pierre Dupuy",
                 "action": "골"
               },
               {
                 "minute": 75,
                 "side": 0,
-                "player": "Andre Dubois",
+                "player": "Jean-Pierre Dupuy",
                 "action": "골"
               }
             ],
@@ -2744,7 +2744,7 @@
               {
                 "minute": 44,
                 "side": 1,
-                "player": "Jean Laurent",
+                "player": "Lionel Brunet",
                 "action": "골"
               }
             ],
@@ -2833,13 +2833,13 @@
               {
                 "minute": 13,
                 "side": 0,
-                "player": "Louis Dubois",
+                "player": "Claude Texier",
                 "action": "골"
               },
               {
                 "minute": 90,
                 "side": 0,
-                "player": "Jean Garnier",
+                "player": "Gaston Le Goff",
                 "action": "골"
               }
             ],
@@ -2930,7 +2930,7 @@
               {
                 "minute": 30,
                 "side": 1,
-                "player": "Jean Garnier",
+                "player": "Jules Duval",
                 "action": "골"
               }
             ],
@@ -3023,13 +3023,13 @@
               {
                 "minute": 17,
                 "side": 0,
-                "player": "Pierre Garnier",
+                "player": "Didier Roger",
                 "action": "골"
               },
               {
                 "minute": 66,
                 "side": 0,
-                "player": "Pierre Garnier",
+                "player": "Didier Roger",
                 "action": "골"
               }
             ],
@@ -3122,13 +3122,13 @@
               {
                 "minute": 6,
                 "side": 1,
-                "player": "Pierre Mercier",
+                "player": "Olivier Rolland",
                 "action": "골"
               },
               {
                 "minute": 68,
                 "side": 1,
-                "player": "Pierre Mercier",
+                "player": "Olivier Rolland",
                 "action": "골"
               }
             ],
@@ -3221,31 +3221,31 @@
               {
                 "minute": 18,
                 "side": 0,
-                "player": "Andre Garnier",
+                "player": "Benoît Schneider",
                 "action": "골"
               },
               {
                 "minute": 28,
                 "side": 0,
-                "player": "Andre Garnier",
+                "player": "Benoît Schneider",
                 "action": "골"
               },
               {
                 "minute": 35,
                 "side": 1,
-                "player": "Andre Moreau",
+                "player": "Antoine Lévêque",
                 "action": "골"
               },
               {
                 "minute": 56,
                 "side": 0,
-                "player": "Andre Laurent",
+                "player": "Arnaud David",
                 "action": "골"
               },
               {
                 "minute": 57,
                 "side": 1,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               }
             ],
@@ -3339,7 +3339,7 @@
               {
                 "minute": 25,
                 "side": 1,
-                "player": "Emile Petit",
+                "player": "Kévin Guérin",
                 "action": "골"
               }
             ],
@@ -3434,7 +3434,7 @@
               {
                 "minute": 57,
                 "side": 0,
-                "player": "Louis Mercier",
+                "player": "Daniel Bodin",
                 "action": "골"
               }
             ],
@@ -3533,13 +3533,13 @@
               {
                 "minute": 4,
                 "side": 0,
-                "player": "Jean Moreau",
+                "player": "Léon Simon",
                 "action": "골"
               },
               {
                 "minute": 57,
                 "side": 0,
-                "player": "Jean Moreau",
+                "player": "Léon Simon",
                 "action": "골"
               }
             ],
@@ -3634,7 +3634,7 @@
               {
                 "minute": 13,
                 "side": 1,
-                "player": "Andre Moreau",
+                "player": "Antoine Lévêque",
                 "action": "골"
               }
             ],
@@ -3723,19 +3723,19 @@
               {
                 "minute": 2,
                 "side": 1,
-                "player": "Pierre Mercier",
+                "player": "David Michel",
                 "action": "골"
               },
               {
                 "minute": 78,
                 "side": 0,
-                "player": "Louis Dubois",
+                "player": "Alain Aubert",
                 "action": "골"
               },
               {
                 "minute": 88,
                 "side": 1,
-                "player": "Paul Moreau",
+                "player": "Jean-François Da Silva",
                 "action": "골"
               }
             ],
@@ -3828,25 +3828,25 @@
               {
                 "minute": 18,
                 "side": 1,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               },
               {
                 "minute": 26,
                 "side": 0,
-                "player": "Pierre Mercier",
+                "player": "Pascal Royer",
                 "action": "골"
               },
               {
                 "minute": 45,
                 "side": 1,
-                "player": "Andre Moreau",
+                "player": "Antoine Lévêque",
                 "action": "골"
               },
               {
                 "minute": 63,
                 "side": 0,
-                "player": "Paul Garnier",
+                "player": "Nathan Bouvier",
                 "action": "골"
               }
             ],
@@ -3931,37 +3931,37 @@
               {
                 "minute": 5,
                 "side": 1,
-                "player": "Emile Moreau",
+                "player": "Quentin Benoît",
                 "action": "골"
               },
               {
                 "minute": 12,
                 "side": 1,
-                "player": "Emile Moreau",
+                "player": "Quentin Benoît",
                 "action": "골"
               },
               {
                 "minute": 28,
                 "side": 1,
-                "player": "Pierre Dubois",
+                "player": "Laurent Barbier",
                 "action": "골"
               },
               {
                 "minute": 37,
                 "side": 1,
-                "player": "Emile Moreau",
+                "player": "Quentin Benoît",
                 "action": "골"
               },
               {
                 "minute": 77,
                 "side": 1,
-                "player": "Pierre Dubois",
+                "player": "Laurent Barbier",
                 "action": "골"
               },
               {
                 "minute": 86,
                 "side": 1,
-                "player": "Emile Moreau",
+                "player": "Quentin Benoît",
                 "action": "골"
               }
             ],
@@ -4054,19 +4054,19 @@
               {
                 "minute": 3,
                 "side": 1,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               },
               {
                 "minute": 6,
                 "side": 0,
-                "player": "Andre Dubois",
+                "player": "Gilbert Petit",
                 "action": "골"
               },
               {
                 "minute": 65,
                 "side": 0,
-                "player": "Paul Mercier",
+                "player": "Thibault Delaunay",
                 "action": "골"
               }
             ],
@@ -4163,7 +4163,7 @@
               {
                 "minute": 30,
                 "side": 1,
-                "player": "Andre Dubois",
+                "player": "Jean-Pierre Dupuy",
                 "action": "골"
               }
             ],
@@ -4254,7 +4254,7 @@
               {
                 "minute": 69,
                 "side": 0,
-                "player": "Emile Garnier",
+                "player": "Corentin Riou",
                 "action": "골"
               }
             ],
@@ -4423,7 +4423,7 @@
           },
           {
             "kind": "suspension",
-            "title": "Pierre Mercier 출장 정지 3경기 (국내 대회) — 심한 반칙 퇴장",
+            "title": "Alexandre Meunier 출장 정지 3경기 (국내 대회) — 심한 반칙 퇴장",
             "amount": null
           },
           {
@@ -4478,7 +4478,7 @@
           },
           {
             "kind": "suspension",
-            "title": "Andre Moreau 출장 정지 3경기 (국내 대회) — 심한 반칙 퇴장",
+            "title": "Antoine Lévêque 출장 정지 3경기 (국내 대회) — 심한 반칙 퇴장",
             "amount": null
           },
           {
@@ -4533,7 +4533,7 @@
           },
           {
             "kind": "rival-sacking",
-            "title": "Tours Atelier Athletic, Louis Mercier 감독 경질",
+            "title": "Tours Atelier Athletic, Claude Boucher 감독 경질",
             "amount": null
           },
           {
@@ -4548,12 +4548,12 @@
           },
           {
             "kind": "injury",
-            "title": "Pierre Mercier 근육 경련",
+            "title": "Alexandre Meunier 근육 경련",
             "amount": null
           },
           {
             "kind": "injury",
-            "title": "Louis Dubois 사타구니 부상",
+            "title": "Alain Aubert 사타구니 부상",
             "amount": null
           },
           {
@@ -4588,7 +4588,7 @@
           },
           {
             "kind": "injury",
-            "title": "Pierre Mercier 가벼운 발목 염좌",
+            "title": "Alexandre Meunier 가벼운 발목 염좌",
             "amount": null
           },
           {
@@ -4628,52 +4628,52 @@
           },
           {
             "kind": "contract",
-            "title": "Jean Moreau 계약 개선 합의",
+            "title": "Léon Simon 계약 개선 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Jean Moreau 계약 개선 합의",
+            "title": "Roland Sanchez 계약 개선 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Jean Garnier 계약 개선 합의",
+            "title": "Yannick Pineau 계약 개선 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Louis Dubois 계약 개선 합의",
+            "title": "Alain Aubert 계약 개선 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Andre Moreau 계약 개선 합의",
+            "title": "Jean-Luc Baron 계약 개선 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Jean Garnier 계약 개선 합의",
+            "title": "Léon Lemercier 계약 개선 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Emile Petit 계약 개선 합의",
+            "title": "Loïc Gay 계약 개선 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Emile Moreau 계약 개선 합의",
+            "title": "Damien Brun 계약 개선 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Louis Garnier 계약 개선 합의",
+            "title": "Georges François 계약 개선 합의",
             "amount": null
           },
           {
             "kind": "suspension",
-            "title": "Jean Moreau 출장 정지 1경기 (리그) — 경고 누적",
+            "title": "Léon Simon 출장 정지 1경기 (리그) — 경고 누적",
             "amount": null
           },
           {
@@ -4698,7 +4698,7 @@
           },
           {
             "kind": "injury",
-            "title": "Pierre Garnier 근육 타박상",
+            "title": "Laurent Bouchet 근육 타박상",
             "amount": null
           },
           {
@@ -4743,7 +4743,7 @@
           },
           {
             "kind": "injury",
-            "title": "Pierre Garnier 가벼운 발목 염좌",
+            "title": "Laurent Bouchet 가벼운 발목 염좌",
             "amount": null
           },
           {
@@ -4753,7 +4753,7 @@
           },
           {
             "kind": "rival-sacking",
-            "title": "Dijon Vallee Athletic, Emile Petit 감독 경질",
+            "title": "Dijon Vallee Athletic, Gabriel Mallet 감독 경질",
             "amount": null
           },
           {
@@ -4793,7 +4793,7 @@
           },
           {
             "kind": "transfer-request",
-            "title": "Andre Mercier 이적 요청",
+            "title": "Arnaud Pelletier 이적 요청",
             "amount": null
           },
           {
@@ -4828,7 +4828,7 @@
           },
           {
             "kind": "suspension",
-            "title": "Jean Moreau 출장 정지 2경기 (리그) — 경고 누적",
+            "title": "Léon Simon 출장 정지 2경기 (리그) — 경고 누적",
             "amount": null
           },
           {
@@ -4843,7 +4843,7 @@
           },
           {
             "kind": "injury",
-            "title": "Pierre Petit 가벼운 발목 염좌",
+            "title": "Frédéric Chevalier 가벼운 발목 염좌",
             "amount": null
           },
           {
@@ -4878,7 +4878,7 @@
           },
           {
             "kind": "rival-sacking",
-            "title": "Reims Chene Athletic, Jean Mercier 감독 경질",
+            "title": "Reims Chene Athletic, Marc Vasseur 감독 경질",
             "amount": null
           },
           {
@@ -4888,7 +4888,7 @@
           },
           {
             "kind": "injury",
-            "title": "Pierre Garnier 햄스트링 부상",
+            "title": "Laurent Bouchet 햄스트링 부상",
             "amount": null
           },
           {
@@ -4918,7 +4918,7 @@
           },
           {
             "kind": "rival-sacking",
-            "title": "Reims Chene Athletic, Louis Laurent 감독 경질",
+            "title": "Reims Chene Athletic, Jacques Boyer 감독 경질",
             "amount": null
           },
           {
@@ -4933,7 +4933,7 @@
           },
           {
             "kind": "contract",
-            "title": "Andre Mercier 언해피 해소",
+            "title": "Arnaud Pelletier 언해피 해소",
             "amount": null
           },
           {
@@ -4948,92 +4948,92 @@
           },
           {
             "kind": "manager-growth",
-            "title": "Emile Mercier 감독 성장",
+            "title": "Bastien Charles 감독 성장",
             "amount": null
           },
           {
             "kind": "youth-promotion",
-            "title": "Paul Mercier 1군 승격",
+            "title": "Noël Carré 1군 승격",
             "amount": null
           },
           {
             "kind": "youth-promotion",
-            "title": "Louis Garnier 1군 승격",
+            "title": "Nicolas Renaud 1군 승격",
             "amount": null
           },
           {
             "kind": "potential-breakthrough",
-            "title": "Paul Mercier 잠재력 폭발",
+            "title": "Noël Carré 잠재력 폭발",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Andre Mercier 재계약 합의",
+            "title": "Arnaud Pelletier 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Andre Garnier 재계약 합의",
+            "title": "Serge Garnier 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Emile Petit 재계약 합의",
+            "title": "Adrien Maillard 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Jean Garnier 계약 개선 합의",
+            "title": "Yannick Pineau 계약 개선 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Pierre Garnier 재계약 합의",
+            "title": "Laurent Bouchet 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Pierre Mercier 재계약 합의",
+            "title": "Alexandre Meunier 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Andre Moreau 재계약 합의",
+            "title": "Antoine Lévêque 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Pierre Petit 재계약 합의",
+            "title": "Frédéric Chevalier 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Andre Moreau 계약 개선 합의",
+            "title": "Jean-Luc Baron 계약 개선 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Emile Moreau 재계약 합의",
+            "title": "Xavier Michel 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Louis Laurent 재계약 합의",
+            "title": "Patrick Dupuis 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Paul Moreau 재계약 합의",
+            "title": "Bertrand Lemoine 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Emile Petit 계약 개선 합의",
+            "title": "Loïc Gay 계약 개선 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Pierre Moreau 재계약 합의",
+            "title": "Didier Perrier 재계약 합의",
             "amount": null
           }
         ],
@@ -5597,7 +5597,7 @@
         "tactic": "possession",
         "manager": {
           "id": "coach:2025:99:685597194",
-          "name": "Pierre Garnier",
+          "name": "Christophe Hubert",
           "trust": 65,
           "conflicts": 0,
           "interim": true,
@@ -5959,19 +5959,19 @@
               {
                 "minute": 46,
                 "side": 0,
-                "player": "Paul Petit",
+                "player": "Aurélien Fabre",
                 "action": "골"
               },
               {
                 "minute": 49,
                 "side": 0,
-                "player": "Jean Petit",
+                "player": "Fernand Laurent",
                 "action": "골"
               },
               {
                 "minute": 84,
                 "side": 0,
-                "player": "Pierre Mercier",
+                "player": "Lucien Garnier",
                 "action": "골"
               }
             ],
@@ -6095,25 +6095,25 @@
               {
                 "minute": 17,
                 "side": 1,
-                "player": "Paul Garnier",
+                "player": "Jean-Paul Lefort",
                 "action": "골"
               },
               {
                 "minute": 33,
                 "side": 0,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               },
               {
                 "minute": 53,
                 "side": 0,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               },
               {
                 "minute": 57,
                 "side": 1,
-                "player": "Jean Petit",
+                "player": "Marc Lacroix",
                 "action": "골"
               }
             ],
@@ -6239,25 +6239,25 @@
               {
                 "minute": 62,
                 "side": 0,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               },
               {
                 "minute": 69,
                 "side": 1,
-                "player": "Andre Mercier",
+                "player": "Jérôme Millet",
                 "action": "골"
               },
               {
                 "minute": 97,
                 "side": 0,
-                "player": "Louis Dubois",
+                "player": "Alain Aubert",
                 "action": "골"
               },
               {
                 "minute": 115,
                 "side": 1,
-                "player": "Paul Garnier",
+                "player": "Timothée Pichon",
                 "action": "골"
               },
               {
@@ -6383,19 +6383,19 @@
               {
                 "minute": 21,
                 "side": 1,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               },
               {
                 "minute": 45,
                 "side": 1,
-                "player": "Andre Moreau",
+                "player": "Antoine Lévêque",
                 "action": "골"
               },
               {
                 "minute": 61,
                 "side": 0,
-                "player": "Louis Dubois",
+                "player": "Philippe Gros",
                 "action": "골"
               }
             ],
@@ -6505,25 +6505,25 @@
               {
                 "minute": 21,
                 "side": 0,
-                "player": "Carlo Ferraro",
+                "player": "Leonardo De Simone",
                 "action": "골"
               },
               {
                 "minute": 34,
                 "side": 0,
-                "player": "Mario Moretti",
+                "player": "Emilio Valentini",
                 "action": "골"
               },
               {
                 "minute": 59,
                 "side": 0,
-                "player": "Giovanni Moretti",
+                "player": "Paolo Bellucci",
                 "action": "골"
               },
               {
                 "minute": 78,
                 "side": 0,
-                "player": "Pietro Ricci",
+                "player": "Flavio Parodi",
                 "action": "골"
               }
             ],
@@ -6645,7 +6645,7 @@
               {
                 "minute": 11,
                 "side": 0,
-                "player": "Andre Moreau",
+                "player": "Antoine Lévêque",
                 "action": "골"
               }
             ],
@@ -6757,7 +6757,7 @@
               {
                 "minute": 47,
                 "side": 0,
-                "player": "Louis Garnier",
+                "player": "Claude Hervé",
                 "action": "골"
               }
             ],
@@ -6873,19 +6873,19 @@
               {
                 "minute": 38,
                 "side": 1,
-                "player": "Pierre Moreau",
+                "player": "Christophe Leroux",
                 "action": "골"
               },
               {
                 "minute": 45,
                 "side": 1,
-                "player": "Paul Moreau",
+                "player": "Hubert Dumont",
                 "action": "골"
               },
               {
                 "minute": 82,
                 "side": 0,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               }
             ],
@@ -7001,13 +7001,13 @@
               {
                 "minute": 79,
                 "side": 0,
-                "player": "Louis Laurent",
+                "player": "Patrick Dupuis",
                 "action": "골"
               },
               {
                 "minute": 89,
                 "side": 0,
-                "player": "Paul Moreau",
+                "player": "Bertrand Lemoine",
                 "action": "골"
               }
             ],
@@ -7121,19 +7121,19 @@
               {
                 "minute": 24,
                 "side": 0,
-                "player": "Louis Garnier",
+                "player": "Paul Muller",
                 "action": "골"
               },
               {
                 "minute": 27,
                 "side": 0,
-                "player": "Louis Garnier",
+                "player": "Paul Muller",
                 "action": "골"
               },
               {
                 "minute": 41,
                 "side": 0,
-                "player": "Louis Garnier",
+                "player": "Paul Muller",
                 "action": "골"
               }
             ],
@@ -7255,7 +7255,7 @@
               {
                 "minute": 33,
                 "side": 0,
-                "player": "Emile Petit",
+                "player": "Adrien Maillard",
                 "action": "골"
               }
             ],
@@ -7371,25 +7371,25 @@
               {
                 "minute": 20,
                 "side": 0,
-                "player": "Enzo Ricci",
+                "player": "Rosario Valente",
                 "action": "골"
               },
               {
                 "minute": 24,
                 "side": 0,
-                "player": "Enzo Ricci",
+                "player": "Rosario Valente",
                 "action": "골"
               },
               {
                 "minute": 30,
                 "side": 0,
-                "player": "Giovanni Romano",
+                "player": "Mario Pagani",
                 "action": "골"
               },
               {
                 "minute": 58,
                 "side": 1,
-                "player": "Jean Moreau",
+                "player": "Léon Simon",
                 "action": "골"
               }
             ],
@@ -7499,13 +7499,13 @@
               {
                 "minute": 60,
                 "side": 1,
-                "player": "Jose Sousa",
+                "player": "Eduardo Teixeira",
                 "action": "골"
               },
               {
                 "minute": 63,
                 "side": 1,
-                "player": "Jose Sousa",
+                "player": "Eduardo Teixeira",
                 "action": "골"
               }
             ],
@@ -7617,7 +7617,7 @@
               {
                 "minute": 34,
                 "side": 1,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               }
             ],
@@ -7737,7 +7737,7 @@
               {
                 "minute": 60,
                 "side": 0,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               }
             ],
@@ -7845,37 +7845,37 @@
               {
                 "minute": 1,
                 "side": 0,
-                "player": "Emil Braun",
+                "player": "Emil Koch",
                 "action": "골"
               },
               {
                 "minute": 2,
                 "side": 0,
-                "player": "Franz Braun",
+                "player": "Kai Hansen",
                 "action": "골"
               },
               {
                 "minute": 15,
                 "side": 0,
-                "player": "Emil Braun",
+                "player": "Emil Koch",
                 "action": "골"
               },
               {
                 "minute": 20,
                 "side": 0,
-                "player": "Otto Schmidt",
+                "player": "Manfred Förster",
                 "action": "골"
               },
               {
                 "minute": 68,
                 "side": 0,
-                "player": "Emil Braun",
+                "player": "Emil Koch",
                 "action": "골"
               },
               {
                 "minute": 83,
                 "side": 0,
-                "player": "Karl Wolf",
+                "player": "Rudi Vogt",
                 "action": "골"
               }
             ],
@@ -7991,19 +7991,19 @@
               {
                 "minute": 31,
                 "side": 0,
-                "player": "Paul Laurent",
+                "player": "Hubert Schmitt",
                 "action": "골"
               },
               {
                 "minute": 36,
                 "side": 0,
-                "player": "Paul Laurent",
+                "player": "Hubert Schmitt",
                 "action": "골"
               },
               {
                 "minute": 55,
                 "side": 0,
-                "player": "Paul Laurent",
+                "player": "Hubert Schmitt",
                 "action": "골"
               }
             ],
@@ -8226,19 +8226,19 @@
               {
                 "minute": 35,
                 "side": 0,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               },
               {
                 "minute": 38,
                 "side": 0,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               },
               {
                 "minute": 58,
                 "side": 1,
-                "player": "Paul Mercier",
+                "player": "Mathis Roger",
                 "action": "골"
               }
             ],
@@ -8356,13 +8356,13 @@
               {
                 "minute": 35,
                 "side": 0,
-                "player": "Louis Mercier",
+                "player": "André Lemercier",
                 "action": "골"
               },
               {
                 "minute": 84,
                 "side": 0,
-                "player": "Louis Petit",
+                "player": "Patrick Lemaître",
                 "action": "골"
               }
             ],
@@ -8486,25 +8486,25 @@
               {
                 "minute": 20,
                 "side": 0,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               },
               {
                 "minute": 27,
                 "side": 1,
-                "player": "Jean Dubois",
+                "player": "Jean-Michel Gautier",
                 "action": "골"
               },
               {
                 "minute": 60,
                 "side": 0,
-                "player": "Jean Moreau",
+                "player": "Léon Simon",
                 "action": "골"
               },
               {
                 "minute": 68,
                 "side": 1,
-                "player": "Paul Petit",
+                "player": "Noé Adam",
                 "action": "골"
               }
             ],
@@ -8739,7 +8739,7 @@
               {
                 "minute": 72,
                 "side": 0,
-                "player": "Pierre Moreau",
+                "player": "Didier Perrier",
                 "action": "골"
               }
             ],
@@ -8845,25 +8845,25 @@
               {
                 "minute": 3,
                 "side": 0,
-                "player": "Karl Schmidt",
+                "player": "Maximilian Kraus",
                 "action": "골"
               },
               {
                 "minute": 45,
                 "side": 0,
-                "player": "Fritz Braun",
+                "player": "Leon Steiner",
                 "action": "골"
               },
               {
                 "minute": 53,
                 "side": 1,
-                "player": "Pierre Mercier",
+                "player": "Alexandre Meunier",
                 "action": "골"
               },
               {
                 "minute": 90,
                 "side": 0,
-                "player": "Emil Schmidt",
+                "player": "Bruno Bergmann",
                 "action": "골"
               }
             ],
@@ -8973,13 +8973,13 @@
               {
                 "minute": 24,
                 "side": 1,
-                "player": "Willem Vos",
+                "player": "Luuk Brink",
                 "action": "골"
               },
               {
                 "minute": 34,
                 "side": 1,
-                "player": "Johan Visser",
+                "player": "Hidde Mol",
                 "action": "골"
               }
             ],
@@ -9097,13 +9097,13 @@
               {
                 "minute": 1,
                 "side": 0,
-                "player": "Paul Garnier",
+                "player": "Jean-Paul Lefort",
                 "action": "골"
               },
               {
                 "minute": 18,
                 "side": 0,
-                "player": "Jean Petit",
+                "player": "Marc Lacroix",
                 "action": "골"
               }
             ],
@@ -9552,7 +9552,7 @@
               {
                 "minute": 90,
                 "side": 0,
-                "player": "Louis Dubois",
+                "player": "Nicolas Gros",
                 "action": "골"
               }
             ],
@@ -9670,19 +9670,19 @@
               {
                 "minute": 28,
                 "side": 1,
-                "player": "Louis Garnier",
+                "player": "Paul Muller",
                 "action": "골"
               },
               {
                 "minute": 31,
                 "side": 1,
-                "player": "Louis Garnier",
+                "player": "Paul Muller",
                 "action": "골"
               },
               {
                 "minute": 79,
                 "side": 1,
-                "player": "Louis Garnier",
+                "player": "André Marty",
                 "action": "골"
               }
             ],
@@ -9798,19 +9798,19 @@
               {
                 "minute": 1,
                 "side": 0,
-                "player": "Paul Mercier",
+                "player": "Nathan Mathieu",
                 "action": "골"
               },
               {
                 "minute": 44,
                 "side": 0,
-                "player": "Jean Moreau",
+                "player": "Marc Guichard",
                 "action": "골"
               },
               {
                 "minute": 83,
                 "side": 0,
-                "player": "Jean Moreau",
+                "player": "Roland Rousseau",
                 "action": "골"
               }
             ],
@@ -9928,7 +9928,7 @@
               {
                 "minute": 49,
                 "side": 0,
-                "player": "Louis Dubois",
+                "player": "Alain Aubert",
                 "action": "골"
               }
             ],
@@ -10050,7 +10050,7 @@
               {
                 "minute": 14,
                 "side": 1,
-                "player": "Louis Dubois",
+                "player": "Alain Aubert",
                 "action": "골"
               }
             ],
@@ -10158,7 +10158,7 @@
               {
                 "minute": 61,
                 "side": 1,
-                "player": "Paul Laurent",
+                "player": "Hubert Schmitt",
                 "action": "골"
               }
             ],
@@ -10280,19 +10280,19 @@
               {
                 "minute": 15,
                 "side": 1,
-                "player": "Andre Moreau",
+                "player": "Antoine Lévêque",
                 "action": "골"
               },
               {
                 "minute": 23,
                 "side": 0,
-                "player": "Paul Mercier",
+                "player": "Mathis Roger",
                 "action": "골"
               },
               {
                 "minute": 46,
                 "side": 0,
-                "player": "Andre Moreau",
+                "player": "Yves Pineau",
                 "action": "골"
               }
             ],
@@ -10412,7 +10412,7 @@
               {
                 "minute": 29,
                 "side": 0,
-                "player": "Louis Dubois",
+                "player": "Alain Aubert",
                 "action": "골"
               }
             ],
@@ -10883,12 +10883,12 @@
           },
           {
             "kind": "transfer-request",
-            "title": "Jean Garnier 이적 요청",
+            "title": "Yannick Pineau 이적 요청",
             "amount": null
           },
           {
             "kind": "suspension",
-            "title": "Andre Moreau 출장 정지 1경기 (국내 대회) — 경고 누적 퇴장",
+            "title": "Antoine Lévêque 출장 정지 1경기 (국내 대회) — 경고 누적 퇴장",
             "amount": null
           },
           {
@@ -10918,7 +10918,7 @@
           },
           {
             "kind": "suspension",
-            "title": "Louis Garnier 출장 정지 1경기 (국내 대회) — 득점 기회 저지 퇴장",
+            "title": "Georges François 출장 정지 1경기 (국내 대회) — 득점 기회 저지 퇴장",
             "amount": null
           },
           {
@@ -10933,7 +10933,7 @@
           },
           {
             "kind": "injury",
-            "title": "Andre Garnier 근육 타박상",
+            "title": "Serge Garnier 근육 타박상",
             "amount": null
           },
           {
@@ -10953,7 +10953,7 @@
           },
           {
             "kind": "rival-sacking",
-            "title": "Tours Chene Amateurs, Jean Dubois 감독 경질",
+            "title": "Tours Chene Amateurs, Franck Carlier 감독 경질",
             "amount": null
           },
           {
@@ -10968,7 +10968,7 @@
           },
           {
             "kind": "injury",
-            "title": "Jean Moreau 가벼운 발목 염좌",
+            "title": "Roland Sanchez 가벼운 발목 염좌",
             "amount": null
           },
           {
@@ -11018,17 +11018,17 @@
           },
           {
             "kind": "injury",
-            "title": "Louis Dubois 근육 경련",
+            "title": "Alain Aubert 근육 경련",
             "amount": null
           },
           {
             "kind": "injury",
-            "title": "Emile Petit 근육 타박상",
+            "title": "Loïc Gay 근육 타박상",
             "amount": null
           },
           {
             "kind": "injury",
-            "title": "Emile Petit 사타구니 부상",
+            "title": "Adrien Maillard 사타구니 부상",
             "amount": null
           },
           {
@@ -11038,12 +11038,12 @@
           },
           {
             "kind": "rival-sacking",
-            "title": "Dijon Vallee Athletic, Andre Mercier 감독 경질",
+            "title": "Dijon Vallee Athletic, Serge Ménard 감독 경질",
             "amount": null
           },
           {
             "kind": "rival-sacking",
-            "title": "Tours Chene Amateurs, Andre Moreau 감독 경질",
+            "title": "Tours Chene Amateurs, Gilbert Noël 감독 경질",
             "amount": null
           },
           {
@@ -11083,7 +11083,7 @@
           },
           {
             "kind": "suspension",
-            "title": "Andre Moreau 출장 정지 1경기 (리그) — 경고 누적",
+            "title": "Antoine Lévêque 출장 정지 1경기 (리그) — 경고 누적",
             "amount": null
           },
           {
@@ -11098,7 +11098,7 @@
           },
           {
             "kind": "injury",
-            "title": "Paul Moreau 가벼운 발목 염좌",
+            "title": "Bertrand Lemoine 가벼운 발목 염좌",
             "amount": null
           },
           {
@@ -11108,7 +11108,7 @@
           },
           {
             "kind": "injury",
-            "title": "Louis Garnier 근육 타박상",
+            "title": "Georges François 근육 타박상",
             "amount": null
           },
           {
@@ -11118,7 +11118,7 @@
           },
           {
             "kind": "rival-sacking",
-            "title": "Dijon Vallee Athletic, Emile Mercier 감독 경질",
+            "title": "Dijon Vallee Athletic, Victor Poirier 감독 경질",
             "amount": null
           },
           {
@@ -11148,7 +11148,7 @@
           },
           {
             "kind": "injury",
-            "title": "Louis Dubois 중족골 골절",
+            "title": "Alain Aubert 중족골 골절",
             "amount": null
           },
           {
@@ -11158,17 +11158,17 @@
           },
           {
             "kind": "rival-sacking",
-            "title": "Dijon Vallee Athletic, Louis Moreau 감독 경질",
+            "title": "Dijon Vallee Athletic, Claude Dumont 감독 경질",
             "amount": null
           },
           {
             "kind": "rival-sacking",
-            "title": "Metz Forges Athletic, Emile Mercier 감독 경질",
+            "title": "Metz Forges Athletic, Bastien Paris 감독 경질",
             "amount": null
           },
           {
             "kind": "rival-sacking",
-            "title": "Dijon Forges Amateurs, Paul Moreau 감독 경질",
+            "title": "Dijon Forges Amateurs, Régis Robin 감독 경질",
             "amount": null
           },
           {
@@ -11188,7 +11188,7 @@
           },
           {
             "kind": "suspension",
-            "title": "Jean Garnier 출장 정지 1경기 (유럽 대회) — 경고 누적",
+            "title": "Léon Lemercier 출장 정지 1경기 (유럽 대회) — 경고 누적",
             "amount": null
           },
           {
@@ -11238,7 +11238,7 @@
           },
           {
             "kind": "rival-sacking",
-            "title": "Nantes Aurore Athletic, Andre Laurent 감독 경질",
+            "title": "Nantes Aurore Athletic, Vincent Bertrand 감독 경질",
             "amount": null
           },
           {
@@ -11263,7 +11263,7 @@
           },
           {
             "kind": "injury",
-            "title": "Louis Laurent 근육 타박상",
+            "title": "Patrick Dupuis 근육 타박상",
             "amount": null
           },
           {
@@ -11283,7 +11283,7 @@
           },
           {
             "kind": "injury",
-            "title": "Pierre Moreau 전방 십자인대 파열",
+            "title": "Didier Perrier 전방 십자인대 파열",
             "amount": null
           },
           {
@@ -11303,7 +11303,7 @@
           },
           {
             "kind": "injury",
-            "title": "Jean Garnier 근육 경련",
+            "title": "Léon Lemercier 근육 경련",
             "amount": null
           },
           {
@@ -11363,7 +11363,7 @@
           },
           {
             "kind": "rival-sacking",
-            "title": "Lille Port Athletic, Jean Mercier 감독 경질",
+            "title": "Lille Port Athletic, Ludovic Charpentier 감독 경질",
             "amount": null
           },
           {
@@ -11378,7 +11378,7 @@
           },
           {
             "kind": "suspension",
-            "title": "Jean Garnier 출장 정지 1경기 (국내 대회) — 경고 누적 퇴장",
+            "title": "Léon Lemercier 출장 정지 1경기 (국내 대회) — 경고 누적 퇴장",
             "amount": null
           },
           {
@@ -11403,7 +11403,7 @@
           },
           {
             "kind": "rival-sacking",
-            "title": "Nantes Aurore Athletic, Louis Mercier 감독 경질",
+            "title": "Nantes Aurore Athletic, Philippe Charles 감독 경질",
             "amount": null
           },
           {
@@ -11423,7 +11423,7 @@
           },
           {
             "kind": "contract",
-            "title": "Jean Garnier 언해피 해소",
+            "title": "Yannick Pineau 언해피 해소",
             "amount": null
           },
           {
@@ -11433,112 +11433,112 @@
           },
           {
             "kind": "manager-departure",
-            "title": "Emile Mercier 감독의 마지막 날",
+            "title": "Bastien Charles 감독의 마지막 날",
             "amount": null
           },
           {
             "kind": "youth-promotion",
-            "title": "Jean Laurent 1군 승격",
+            "title": "Jean-Michel Lambert 1군 승격",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Andre Mercier 재계약 합의",
+            "title": "Arnaud Pelletier 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Andre Garnier 재계약 합의",
+            "title": "Serge Garnier 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Emile Petit 재계약 합의",
+            "title": "Adrien Maillard 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Jean Moreau 재계약 합의",
+            "title": "Léon Simon 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Jean Moreau 재계약 합의",
+            "title": "Roland Sanchez 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Jean Garnier 재계약 합의",
+            "title": "Yannick Pineau 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Louis Dubois 재계약 합의",
+            "title": "Alain Aubert 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Pierre Garnier 재계약 합의",
+            "title": "Laurent Bouchet 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Pierre Mercier 재계약 합의",
+            "title": "Alexandre Meunier 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Andre Moreau 재계약 합의",
+            "title": "Antoine Lévêque 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Pierre Petit 재계약 합의",
+            "title": "Frédéric Chevalier 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Andre Moreau 재계약 합의",
+            "title": "Jean-Luc Baron 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Emile Moreau 재계약 합의",
+            "title": "Xavier Michel 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Louis Laurent 재계약 합의",
+            "title": "Patrick Dupuis 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Jean Garnier 재계약 합의",
+            "title": "Léon Lemercier 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Paul Moreau 재계약 합의",
+            "title": "Bertrand Lemoine 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Emile Petit 재계약 합의",
+            "title": "Loïc Gay 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Emile Moreau 재계약 합의",
+            "title": "Damien Brun 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Pierre Moreau 재계약 합의",
+            "title": "Didier Perrier 재계약 합의",
             "amount": null
           },
           {
             "kind": "contract",
-            "title": "Louis Garnier 재계약 합의",
+            "title": "Georges François 재계약 합의",
             "amount": null
           }
         ],
@@ -14508,7 +14508,7 @@
         "careers": [
           {
             "id": "ENG:club:founder:0",
-            "name": "Albert Brooks",
+            "name": "Leonard Spencer",
             "born": 1928,
             "position": "GK",
             "professionalism": 2,
@@ -14535,7 +14535,7 @@
           },
           {
             "id": "ENG:club:founder:1",
-            "name": "Walter Brooks",
+            "name": "Wayne Willis",
             "born": 1919,
             "position": "LB",
             "professionalism": 3,
@@ -14562,7 +14562,7 @@
           },
           {
             "id": "ENG:club:founder:2",
-            "name": "William Hawkins",
+            "name": "Jimmy Turner",
             "born": 1919,
             "position": "CB",
             "professionalism": 1,
@@ -14589,7 +14589,7 @@
           },
           {
             "id": "ENG:club:founder:3",
-            "name": "Thomas Brooks",
+            "name": "Nicholas Watts",
             "born": 1924,
             "position": "CB",
             "professionalism": 5,
@@ -14616,7 +14616,7 @@
           },
           {
             "id": "ENG:club:founder:4",
-            "name": "George Foster",
+            "name": "Clive Arnold",
             "born": 1923,
             "position": "RB",
             "professionalism": 4,
@@ -14643,7 +14643,7 @@
           },
           {
             "id": "ENG:club:founder:5",
-            "name": "Edward Hawkins",
+            "name": "Geoffrey Moore",
             "born": 1926,
             "position": "DM",
             "professionalism": 1,
@@ -14670,7 +14670,7 @@
           },
           {
             "id": "ENG:club:founder:6",
-            "name": "Walter Watson",
+            "name": "Steven Wells",
             "born": 1927,
             "position": "CM",
             "professionalism": 1,
@@ -14697,7 +14697,7 @@
           },
           {
             "id": "ENG:club:founder:7",
-            "name": "Arthur Brooks",
+            "name": "Arthur Slater",
             "born": 1930,
             "position": "CM",
             "professionalism": 5,
@@ -14724,7 +14724,7 @@
           },
           {
             "id": "ENG:club:founder:8",
-            "name": "Henry Brooks",
+            "name": "Ronald Morgan",
             "born": 1931,
             "position": "LW",
             "professionalism": 3,
@@ -14751,7 +14751,7 @@
           },
           {
             "id": "ENG:club:founder:9",
-            "name": "Thomas Brooks",
+            "name": "Matthew Hudson",
             "born": 1918,
             "position": "ST",
             "professionalism": 2,
@@ -14778,7 +14778,7 @@
           },
           {
             "id": "ENG:club:founder:10",
-            "name": "William Watson",
+            "name": "Jamie Lambert",
             "born": 1927,
             "position": "RW",
             "professionalism": 3,
@@ -14805,7 +14805,7 @@
           },
           {
             "id": "ENG:club:founder:11",
-            "name": "Edward Watson",
+            "name": "Gary Davis",
             "born": 1926,
             "position": "GK",
             "professionalism": 3,
@@ -14832,7 +14832,7 @@
           },
           {
             "id": "ENG:club:founder:12",
-            "name": "Thomas Brooks",
+            "name": "Paul Carr",
             "born": 1926,
             "position": "LB",
             "professionalism": 3,
@@ -14859,7 +14859,7 @@
           },
           {
             "id": "ENG:club:founder:13",
-            "name": "Albert Bennett",
+            "name": "Jonathan Thomson",
             "born": 1928,
             "position": "CB",
             "professionalism": 4,
@@ -14886,7 +14886,7 @@
           },
           {
             "id": "ENG:club:founder:14",
-            "name": "Henry Brooks",
+            "name": "Scott Mitchell",
             "born": 1922,
             "position": "DM",
             "professionalism": 3,
@@ -14913,7 +14913,7 @@
           },
           {
             "id": "ENG:club:founder:15",
-            "name": "Walter Brooks",
+            "name": "Tony Woods",
             "born": 1924,
             "position": "CM",
             "professionalism": 3,
@@ -14940,7 +14940,7 @@
           },
           {
             "id": "ENG:club:founder:16",
-            "name": "Arthur Hawkins",
+            "name": "Alan Nash",
             "born": 1927,
             "position": "CM",
             "professionalism": 4,
@@ -14967,7 +14967,7 @@
           },
           {
             "id": "ENG:club:founder:17",
-            "name": "George Brooks",
+            "name": "Clive Collins",
             "born": 1928,
             "position": "LW",
             "professionalism": 1,
@@ -14994,7 +14994,7 @@
           },
           {
             "id": "ENG:club:founder:18",
-            "name": "Thomas Brooks",
+            "name": "Mason Hawkins",
             "born": 1924,
             "position": "CB",
             "professionalism": 4,
@@ -15021,7 +15021,7 @@
           },
           {
             "id": "ENG:club:founder:19",
-            "name": "Albert Brooks",
+            "name": "Kevin Gallagher",
             "born": 1921,
             "position": "DM",
             "professionalism": 4,
@@ -15059,11 +15059,11 @@
             "window": "summer",
             "manager": {
               "id": "coach:1950:0:1198314408",
-              "name": "Henry Hawkins"
+              "name": "Roger Bates"
             },
             "director": {
               "id": "ENG:club:staff:director:1950:2",
-              "name": "George Foster"
+              "name": "Dennis Collins"
             },
             "target": {
               "line": "FW",
@@ -15073,11 +15073,11 @@
             },
             "candidate": {
               "id": "market:1950:0qys3cr:3",
-              "name": "George Bennett",
+              "name": "Derek Thomas",
               "fee": "25660",
               "wage": "2116"
             },
-            "managerReason": "스트라이커 자리 보강을 요청했어요. 현재 적합 후보는 George Bennett 선수예요.",
+            "managerReason": "스트라이커 자리 보강을 요청했어요. 현재 적합 후보는 Derek Thomas 선수예요.",
             "directorReason": "시즌 말 자금 전망(낮게 잡아 £583)이 13라운드 운영비에 못 미쳐요(재정 기조 표준)",
             "support": "balanced",
             "status": "resolved",
@@ -15098,11 +15098,11 @@
             "mediation": "mediation:1950:0",
             "manager": {
               "id": "coach:1950:0:1198314408",
-              "name": "Henry Hawkins"
+              "name": "Roger Bates"
             },
             "director": {
               "id": "ENG:club:staff:director:1950:2",
-              "name": "George Foster"
+              "name": "Dennis Collins"
             },
             "target": {
               "line": "FW",
@@ -15132,7 +15132,7 @@
         "tactic": "possession",
         "manager": {
           "id": "coach:1950:0:1198314408",
-          "name": "Henry Hawkins",
+          "name": "Roger Bates",
           "trust": 65,
           "conflicts": 0,
           "interim": false,
@@ -15350,13 +15350,13 @@
               {
                 "minute": 33,
                 "side": 1,
-                "player": "Thomas Hughes",
+                "player": "Martin Griffin",
                 "action": "골"
               },
               {
                 "minute": 89,
                 "side": 1,
-                "player": "Thomas Hughes",
+                "player": "Martin Griffin",
                 "action": "골"
               }
             ],
@@ -15377,42 +15377,42 @@
           },
           {
             "kind": "staff-hire",
-            "title": "단장 George Foster 선임",
+            "title": "단장 Dennis Collins 선임",
             "amount": "13559"
           },
           {
             "kind": "staff-hire",
-            "title": "수석코치 George Turner 선임",
+            "title": "수석코치 Daniel Dawson 선임",
             "amount": "10976"
           },
           {
             "kind": "staff-hire",
-            "title": "공격 코치 Edward Hawkins 선임",
+            "title": "공격 코치 George Robertson 선임",
             "amount": "14204"
           },
           {
             "kind": "staff-hire",
-            "title": "수비 코치 Walter Foster 선임",
+            "title": "수비 코치 Victor Foster 선임",
             "amount": "11299"
           },
           {
             "kind": "staff-hire",
-            "title": "골키퍼 코치 Thomas Turner 선임",
+            "title": "골키퍼 코치 Oliver Perry 선임",
             "amount": "9039"
           },
           {
             "kind": "staff-hire",
-            "title": "피지컬 코치 Edward Hawkins 선임",
+            "title": "피지컬 코치 Edward Parry 선임",
             "amount": "9039"
           },
           {
             "kind": "staff-hire",
-            "title": "유스 디렉터 William Brooks 선임",
+            "title": "유스 디렉터 Harry Doyle 선임",
             "amount": "10653"
           },
           {
             "kind": "staff-hire",
-            "title": "수석 스카우트 Edward Clarke 선임",
+            "title": "수석 스카우트 George Ferguson 선임",
             "amount": "9039"
           },
           {
@@ -15498,7 +15498,7 @@
         "careers": [
           {
             "id": "ENG:club:founder:0",
-            "name": "Albert Brooks",
+            "name": "Leonard Spencer",
             "born": 1928,
             "position": "GK",
             "professionalism": 2,
@@ -15525,7 +15525,7 @@
           },
           {
             "id": "ENG:club:founder:1",
-            "name": "Walter Brooks",
+            "name": "Wayne Willis",
             "born": 1919,
             "position": "LB",
             "professionalism": 3,
@@ -15552,7 +15552,7 @@
           },
           {
             "id": "ENG:club:founder:2",
-            "name": "William Hawkins",
+            "name": "Jimmy Turner",
             "born": 1919,
             "position": "CB",
             "professionalism": 1,
@@ -15579,7 +15579,7 @@
           },
           {
             "id": "ENG:club:founder:3",
-            "name": "Thomas Brooks",
+            "name": "Nicholas Watts",
             "born": 1924,
             "position": "CB",
             "professionalism": 5,
@@ -15606,7 +15606,7 @@
           },
           {
             "id": "ENG:club:founder:4",
-            "name": "George Foster",
+            "name": "Clive Arnold",
             "born": 1923,
             "position": "RB",
             "professionalism": 4,
@@ -15633,7 +15633,7 @@
           },
           {
             "id": "ENG:club:founder:5",
-            "name": "Edward Hawkins",
+            "name": "Geoffrey Moore",
             "born": 1926,
             "position": "DM",
             "professionalism": 1,
@@ -15660,7 +15660,7 @@
           },
           {
             "id": "ENG:club:founder:6",
-            "name": "Walter Watson",
+            "name": "Steven Wells",
             "born": 1915,
             "position": "CM",
             "professionalism": 4,
@@ -15694,7 +15694,7 @@
             "mentors": [
               {
                 "manager": "coach:1950:0:1198314408",
-                "name": "Henry Hawkins",
+                "name": "Roger Bates",
                 "club": "ENG:club",
                 "from": {
                   "year": 1950,
@@ -15736,7 +15736,7 @@
           },
           {
             "id": "ENG:club:founder:7",
-            "name": "Arthur Brooks",
+            "name": "Arthur Slater",
             "born": 1930,
             "position": "CM",
             "professionalism": 5,
@@ -15763,7 +15763,7 @@
           },
           {
             "id": "ENG:club:founder:8",
-            "name": "Henry Brooks",
+            "name": "Ronald Morgan",
             "born": 1931,
             "position": "LW",
             "professionalism": 3,
@@ -15790,7 +15790,7 @@
           },
           {
             "id": "ENG:club:founder:9",
-            "name": "Thomas Brooks",
+            "name": "Matthew Hudson",
             "born": 1918,
             "position": "ST",
             "professionalism": 2,
@@ -15817,7 +15817,7 @@
           },
           {
             "id": "ENG:club:founder:10",
-            "name": "William Watson",
+            "name": "Jamie Lambert",
             "born": 1927,
             "position": "RW",
             "professionalism": 3,
@@ -15844,7 +15844,7 @@
           },
           {
             "id": "ENG:club:founder:11",
-            "name": "Edward Watson",
+            "name": "Gary Davis",
             "born": 1926,
             "position": "GK",
             "professionalism": 3,
@@ -15871,7 +15871,7 @@
           },
           {
             "id": "ENG:club:founder:12",
-            "name": "Thomas Brooks",
+            "name": "Paul Carr",
             "born": 1926,
             "position": "LB",
             "professionalism": 3,
@@ -15898,7 +15898,7 @@
           },
           {
             "id": "ENG:club:founder:13",
-            "name": "Albert Bennett",
+            "name": "Jonathan Thomson",
             "born": 1928,
             "position": "CB",
             "professionalism": 4,
@@ -15925,7 +15925,7 @@
           },
           {
             "id": "ENG:club:founder:14",
-            "name": "Henry Brooks",
+            "name": "Scott Mitchell",
             "born": 1922,
             "position": "DM",
             "professionalism": 3,
@@ -15952,7 +15952,7 @@
           },
           {
             "id": "ENG:club:founder:15",
-            "name": "Walter Brooks",
+            "name": "Tony Woods",
             "born": 1924,
             "position": "CM",
             "professionalism": 3,
@@ -15979,7 +15979,7 @@
           },
           {
             "id": "ENG:club:founder:16",
-            "name": "Arthur Hawkins",
+            "name": "Alan Nash",
             "born": 1927,
             "position": "CM",
             "professionalism": 4,
@@ -16006,7 +16006,7 @@
           },
           {
             "id": "ENG:club:founder:17",
-            "name": "George Brooks",
+            "name": "Clive Collins",
             "born": 1928,
             "position": "LW",
             "professionalism": 1,
@@ -16033,7 +16033,7 @@
           },
           {
             "id": "ENG:club:founder:18",
-            "name": "Thomas Brooks",
+            "name": "Mason Hawkins",
             "born": 1924,
             "position": "CB",
             "professionalism": 4,
@@ -16060,7 +16060,7 @@
           },
           {
             "id": "ENG:club:founder:19",
-            "name": "Albert Brooks",
+            "name": "Kevin Gallagher",
             "born": 1921,
             "position": "DM",
             "professionalism": 4,
@@ -16107,7 +16107,7 @@
             "upfront": "7425",
             "replacing": "ENG:club:staff:basic:assistant",
             "status": "accepted",
-            "stamp": "{\"year\":1950,\"player\":{\"born\":1915,\"wage\":\"256\",\"until\":1953,\"retiring\":1950},\"coaching\":{\"role\":\"assistant\",\"ability\":53,\"potential\":73,\"at\":{\"year\":1950,\"day\":0}},\"current\":{\"id\":\"ENG:club:staff:basic:assistant\",\"role\":\"assistant\",\"name\":\"Albert Clarke\",\"ability\":50,\"wage\":\"0\",\"since\":1950,\"until\":1951},\"quote\":{\"person\":\"ENG:club:founder:6\",\"role\":\"assistant\",\"years\":2,\"term\":5,\"playingEnd\":1952,\"playerUntil\":1953,\"coachUntil\":1955,\"playerWage\":\"256\",\"coachWage\":\"29700\",\"totalWage\":\"29956\",\"fee\":\"7425\",\"replacement\":\"0\",\"upfront\":\"7425\",\"replacing\":\"ENG:club:staff:basic:assistant\",\"status\":\"pending\"}}",
+            "stamp": "{\"year\":1950,\"player\":{\"born\":1915,\"wage\":\"256\",\"until\":1953,\"retiring\":1950},\"coaching\":{\"role\":\"assistant\",\"ability\":53,\"potential\":73,\"at\":{\"year\":1950,\"day\":0}},\"current\":{\"id\":\"ENG:club:staff:basic:assistant\",\"role\":\"assistant\",\"name\":\"Lee Fowler\",\"ability\":50,\"wage\":\"0\",\"since\":1950,\"until\":1951},\"quote\":{\"person\":\"ENG:club:founder:6\",\"role\":\"assistant\",\"years\":2,\"term\":5,\"playingEnd\":1952,\"playerUntil\":1953,\"coachUntil\":1955,\"playerWage\":\"256\",\"coachWage\":\"29700\",\"totalWage\":\"29956\",\"fee\":\"7425\",\"replacement\":\"0\",\"upfront\":\"7425\",\"replacing\":\"ENG:club:staff:basic:assistant\",\"status\":\"pending\"}}",
             "settled": {
               "year": 1950,
               "day": 0
@@ -16127,7 +16127,7 @@
         "tactic": "possession",
         "manager": {
           "id": "coach:1950:0:1198314408",
-          "name": "Henry Hawkins",
+          "name": "Roger Bates",
           "trust": 65,
           "conflicts": 0,
           "interim": false,
@@ -16271,22 +16271,22 @@
           },
           {
             "kind": "coaching-encouragement",
-            "title": "Walter Watson 지도자 진로 권유",
+            "title": "Steven Wells 지도자 진로 권유",
             "amount": null
           },
           {
             "kind": "playing-coach-proposal",
-            "title": "Walter Watson 플레잉 코치 제안",
+            "title": "Steven Wells 플레잉 코치 제안",
             "amount": null
           },
           {
             "kind": "staff-release",
-            "title": "수석코치 Albert Clarke 계약 해지",
+            "title": "수석코치 Lee Fowler 계약 해지",
             "amount": null
           },
           {
             "kind": "playing-coach-accept",
-            "title": "Walter Watson 플레잉 코치 합의",
+            "title": "Steven Wells 플레잉 코치 합의",
             "amount": "7425"
           }
         ],
@@ -16332,7 +16332,7 @@
         "careers": [
           {
             "id": "ENG:club:founder:0",
-            "name": "Albert Brooks",
+            "name": "Leonard Spencer",
             "born": 1928,
             "position": "GK",
             "professionalism": 2,
@@ -16359,7 +16359,7 @@
           },
           {
             "id": "ENG:club:founder:1",
-            "name": "Walter Brooks",
+            "name": "Wayne Willis",
             "born": 1919,
             "position": "LB",
             "professionalism": 3,
@@ -16386,7 +16386,7 @@
           },
           {
             "id": "ENG:club:founder:2",
-            "name": "William Hawkins",
+            "name": "Jimmy Turner",
             "born": 1919,
             "position": "CB",
             "professionalism": 1,
@@ -16413,7 +16413,7 @@
           },
           {
             "id": "ENG:club:founder:3",
-            "name": "Thomas Brooks",
+            "name": "Nicholas Watts",
             "born": 1924,
             "position": "CB",
             "professionalism": 5,
@@ -16440,7 +16440,7 @@
           },
           {
             "id": "ENG:club:founder:4",
-            "name": "George Foster",
+            "name": "Clive Arnold",
             "born": 1923,
             "position": "RB",
             "professionalism": 4,
@@ -16467,7 +16467,7 @@
           },
           {
             "id": "ENG:club:founder:5",
-            "name": "Edward Hawkins",
+            "name": "Geoffrey Moore",
             "born": 1926,
             "position": "DM",
             "professionalism": 1,
@@ -16494,7 +16494,7 @@
           },
           {
             "id": "ENG:club:founder:6",
-            "name": "Walter Watson",
+            "name": "Steven Wells",
             "born": 1927,
             "position": "CM",
             "professionalism": 1,
@@ -16521,7 +16521,7 @@
           },
           {
             "id": "ENG:club:founder:7",
-            "name": "Arthur Brooks",
+            "name": "Arthur Slater",
             "born": 1930,
             "position": "CM",
             "professionalism": 5,
@@ -16548,7 +16548,7 @@
           },
           {
             "id": "ENG:club:founder:8",
-            "name": "Henry Brooks",
+            "name": "Ronald Morgan",
             "born": 1931,
             "position": "LW",
             "professionalism": 3,
@@ -16575,7 +16575,7 @@
           },
           {
             "id": "ENG:club:founder:9",
-            "name": "Thomas Brooks",
+            "name": "Matthew Hudson",
             "born": 1918,
             "position": "ST",
             "professionalism": 2,
@@ -16602,7 +16602,7 @@
           },
           {
             "id": "ENG:club:founder:10",
-            "name": "William Watson",
+            "name": "Jamie Lambert",
             "born": 1927,
             "position": "RW",
             "professionalism": 3,
@@ -16629,7 +16629,7 @@
           },
           {
             "id": "ENG:club:founder:11",
-            "name": "Edward Watson",
+            "name": "Gary Davis",
             "born": 1926,
             "position": "GK",
             "professionalism": 3,
@@ -16656,7 +16656,7 @@
           },
           {
             "id": "ENG:club:founder:12",
-            "name": "Thomas Brooks",
+            "name": "Paul Carr",
             "born": 1926,
             "position": "LB",
             "professionalism": 3,
@@ -16683,7 +16683,7 @@
           },
           {
             "id": "ENG:club:founder:13",
-            "name": "Albert Bennett",
+            "name": "Jonathan Thomson",
             "born": 1928,
             "position": "CB",
             "professionalism": 4,
@@ -16710,7 +16710,7 @@
           },
           {
             "id": "ENG:club:founder:14",
-            "name": "Henry Brooks",
+            "name": "Scott Mitchell",
             "born": 1922,
             "position": "DM",
             "professionalism": 3,
@@ -16737,7 +16737,7 @@
           },
           {
             "id": "ENG:club:founder:15",
-            "name": "Walter Brooks",
+            "name": "Tony Woods",
             "born": 1924,
             "position": "CM",
             "professionalism": 3,
@@ -16764,7 +16764,7 @@
           },
           {
             "id": "ENG:club:founder:16",
-            "name": "Arthur Hawkins",
+            "name": "Alan Nash",
             "born": 1927,
             "position": "CM",
             "professionalism": 4,
@@ -16791,7 +16791,7 @@
           },
           {
             "id": "ENG:club:founder:17",
-            "name": "George Brooks",
+            "name": "Clive Collins",
             "born": 1928,
             "position": "LW",
             "professionalism": 1,
@@ -16818,7 +16818,7 @@
           },
           {
             "id": "ENG:club:founder:18",
-            "name": "Thomas Brooks",
+            "name": "Mason Hawkins",
             "born": 1924,
             "position": "CB",
             "professionalism": 4,
@@ -16845,7 +16845,7 @@
           },
           {
             "id": "ENG:club:founder:19",
-            "name": "Albert Brooks",
+            "name": "Kevin Gallagher",
             "born": 1921,
             "position": "DM",
             "professionalism": 4,
@@ -16883,11 +16883,11 @@
             "window": "summer",
             "manager": {
               "id": "coach:1950:0:1198314408",
-              "name": "Henry Hawkins"
+              "name": "Roger Bates"
             },
             "director": {
               "id": "ENG:club:staff:basic:director",
-              "name": "Thomas Hawkins"
+              "name": "Patrick Oliver"
             },
             "target": {
               "kind": "short",
@@ -16896,11 +16896,11 @@
             },
             "candidate": {
               "id": "market:1950:0war363:2",
-              "name": "Arthur Turner",
+              "name": "Bobby Ball",
               "fee": "5566",
               "wage": "1014"
             },
-            "managerReason": "미드필더 보강을 위해 Arthur Turner 선수를 요청했어요.",
+            "managerReason": "미드필더 보강을 위해 Bobby Ball 선수를 요청했어요.",
             "directorReason": "이적료를 내면 운영자금이 13라운드 운영비에 못 미쳐요(재정 기조 표준)",
             "support": "balanced",
             "status": "resolved",
@@ -16921,11 +16921,11 @@
             "mediation": "mediation:1950:0",
             "manager": {
               "id": "coach:1950:0:1198314408",
-              "name": "Henry Hawkins"
+              "name": "Roger Bates"
             },
             "director": {
               "id": "ENG:club:staff:basic:director",
-              "name": "Thomas Hawkins"
+              "name": "Patrick Oliver"
             },
             "target": {
               "kind": "short",
@@ -16954,7 +16954,7 @@
         "tactic": "possession",
         "manager": {
           "id": "coach:1950:0:1198314408",
-          "name": "Henry Hawkins",
+          "name": "Roger Bates",
           "trust": 65,
           "conflicts": 0,
           "interim": false,

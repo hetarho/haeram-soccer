@@ -1,7 +1,32 @@
 import { expect, it } from 'vitest';
 import { COUNTRIES, priceIndex, currency } from './index';
 import { SPONSOR_SLOTS, broadcastingIndex, footballIndex, sponsorSlotOpens } from './index';
-import { footballData } from './index';
+import { footballData, namesData, NAME_POOL_MINIMUM, validateNamePools } from './index';
+it('holds sourced person-name pools for every country', () => {
+  expect(() => validateNamePools(namesData)).not.toThrow();
+  for (const c of COUNTRIES) {
+    expect(c.given.length).toBeGreaterThanOrEqual(NAME_POOL_MINIMUM.given);
+    expect(c.family.length).toBeGreaterThanOrEqual(NAME_POOL_MINIMUM.family);
+  }
+  const pools = (code: string) => COUNTRIES.find((c) => c.code === code)!;
+  expect(pools('POR').given).toContain('João');
+  expect(pools('GER').family).toContain('Müller');
+  expect(pools('NED').family).toContain('van Dijk');
+  const broken = (code: string, kind: 'given' | 'family', pool: string[]) => ({
+    ...namesData,
+    countries: { ...namesData.countries, [code]: { ...namesData.countries.ENG, [kind]: pool } },
+  });
+  const family = namesData.countries.ENG.family;
+  expect(() => validateNamePools({ ...namesData, references: [] })).toThrow('references');
+  expect(() => validateNamePools(broken('ESP', 'family', family.slice(0, 199)))).toThrow('fewer');
+  expect(() => validateNamePools(broken('ESP', 'family', [...family, family[0]]))).toThrow(
+    'repeats',
+  );
+  const given = [...namesData.countries.ENG.given, 'Jean Paul'];
+  expect(() => validateNamePools(broken('FRA', 'given', given))).toThrow('invalid');
+  const decomposed = [...family, 'Müller'];
+  expect(() => validateNamePools(broken('GER', 'family', decomposed))).toThrow('invalid');
+});
 it('contains sourced eight-country group structures and an odd group', () => {
   expect(COUNTRIES).toHaveLength(8);
   expect(COUNTRIES.find((c) => c.code === 'ITA')!.groups[2]).toEqual([20, 20, 20]);

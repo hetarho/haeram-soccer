@@ -18,6 +18,7 @@
 | nm62 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T03:30Z | 2026-11-02T03:30Z | - |
 
 ## inbox
+- 261102 suggest WORLD-1 WORLD-12: representative clubs of the other UEFA associations still draw English names (the `npcSquad` fallback to ENG pools); a later catalog could give them their own pools or a neutral mix
 - 261102 decided WORLD-12: how to stop the same names repeating (315 distinct names over 13,178 players) → curated per-country pools of at least 100 given names and 200 surnames in the catalog, drawn evenly (alt: a name library such as faker — its locale bundles weigh megabytes in the browser, carry modern names unfit for 1950s squads and sit outside the fingerprinted catalog | keep the pools and dedupe names per world, which seasonal NPC regeneration cannot hold stable)
 - 261102 decided WORLD-12: whether a squad may hold two of one surname → never inside a generated NPC or founding squad, since the match view labels players by surname; youth, signings and staff draw freely (alt: no surname rule | dedupe every own-squad arrival too, which would rename a signing on arrival)
 - 261102 decided WORLD-12 SAVE-10: spelling and old saves → each country's own spelling with accents (João, Müller); catalog 2026-demo-5, a 2026-demo-4 save of any country moves its pin and only its not-yet-retained generated people get new names (alt: keep ASCII-only names | refuse 2026-demo-4 saves)
@@ -488,7 +489,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T645 | Person-name pools and catalog 2026-demo-5 | WORLD SAVE | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -512,9 +512,10 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T645 (nm62)
+- verify:batch on main after T645 (integration + e2e, incl. tests/e2e/staff.spec.ts founding-manager name) (nm62)
 
 ## log
+- 261102 T645 done: per-country name pools (113–144 given × 204–285 surnames) in catalog 2026-demo-5, surnames distinct inside every generated NPC and founding squad; fresh world 315→~12,670 distinct names, in-squad repeats ~2,300→0; portable goldens re-recorded (names only); nm62.
 - 261102 create-task WORLD@7 SAVE@60 → T645 person-name pools, squad surnames, catalog 2026-demo-5; nm62.
 - 261102 update-ssot WORLD r7 SAVE r60: person-name pools ≥100 given × ≥200 surnames per country, no shared surname in a generated squad, catalog 2026-demo-5 pin move; nm62.
 - 261102 update-ssot WORLD SAVE start; nm62.
@@ -534,4 +535,3 @@
 - 261102 create-task T637: restore original illustrations; remove the new home bar, team facts and immediate actions from home and compose them once in the office. Preserve the queue, real workflows, focus/load fixes and all game rules; session of02.
 - 261102 create-task T640 T641 T642: one-row League/Cup header with a season stepper; Ballon d'Or engine (podium archive, bonus clause, talk premium); records view, player honours, talk premium and news. Numbered from T640 to leave room for of02; session bd02.
 - 261102 update-ssot WEB r199 CLUB r48 HIST r19 PLAYER r11: League/Cup browse every kept season on one page with a one-row ‹ season › header (no previous-league/cup tabs, closed cup seasons open on the winner); 발롱도르 from 1955/56 with podium archive, records view, news, contract premium and bonus clause; session bd02.
-- 261102 update-ssot WEB CLUB HIST PLAYER start (bd02)

@@ -96,14 +96,29 @@ export const LEVEL_OFFSET: Record<DifficultyLevel, number> = {
 };
 export const DIFFICULTY_LEVELS = Object.keys(LEVEL_CASH) as DifficultyLevel[];
 export { quote, footballQuote, broadcastQuote } from './quotes';
-export function personName(code: string, r: () => number) {
+/**
+ * A name from his country's pools (→WORLD-12). It always takes two draws of `r`, so neither the
+ * pools nor a squad's `surname` shift the draws behind his other attributes.
+ */
+export function personName(code: string, r: () => number, surname?: number) {
   const c = country(code);
-  return `${c.given[integer(r, 0, c.given.length - 1)]} ${c.family[integer(r, 0, c.family.length - 1)]}`;
+  const given = c.given[integer(r, 0, c.given.length - 1)],
+    drawn = integer(r, 0, c.family.length - 1);
+  return `${given} ${c.family[surname === undefined ? drawn : surname % c.family.length]}`;
 }
+/** A prime step through a surname pool; no pool's size is a multiple of it (→WORLD-12). */
+export const SURNAME_STRIDE = 97;
+/**
+ * The surname place of a generated squad's member (→WORLD-12): consecutive keys step by
+ * SURNAME_STRIDE from the club's own start, so any run of keys shorter than the pool is distinct.
+ */
+export const squadSurname = (seed: string, club: string, key: number) =>
+  hash(`${seed}:${club}:surnames`) + key * SURNAME_STRIDE;
 /**
  * A generated player at his market wage (→CLUB-25) in `division`, the tier of the club he plays
  * for; without one, the division his ability suits. His agent (→CLUB-30) is the last draw of his
- * own stream, so it leaves every other attribute as it was.
+ * own stream, so it leaves every other attribute as it was. A generated squad's member takes his
+ * `surname` place (→WORLD-12).
  */
 export function makePlayer(
   code: string,
@@ -115,6 +130,7 @@ export function makePlayer(
   age = integer(random(id), 18, 32),
   division?: number,
   role?: RoleId,
+  surname?: number,
 ): Player {
   const r = random(`${seed}:${id}`);
   // The profile has a stream of its own, so the name, potential and agent stay as they were drawn.
@@ -127,7 +143,7 @@ export function makePlayer(
   );
   const player: Player = {
     id,
-    name: personName(code, r),
+    name: personName(code, r, surname),
     position,
     positions: profile.positions,
     born: year - age,
@@ -372,6 +388,7 @@ export function createBase(input: Founding): World {
         undefined,
         club.tier,
         place.role,
+        squadSurname(input.seed, club.id, i),
       ),
     );
   let base = target;
@@ -515,6 +532,7 @@ export function npcSquad(
   return squadPlaces(style).map((place, i) => {
     const age = 18 + ((year + i) % 18),
       cohort = Math.floor((year + i) / 18);
+    // His join year keeps his surname through his cohort; a season's 18 hold 18 consecutive ones.
     const player = makePlayer(
       code,
       seed,
@@ -525,6 +543,7 @@ export function npcSquad(
       age,
       c.tier,
       place.role,
+      squadSurname(seed, c.id, 18 * cohort - i),
     );
     player.fatigue = fatigue;
     return player;

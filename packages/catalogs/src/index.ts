@@ -1,7 +1,8 @@
-export const CATALOG_VERSION = '2026-demo-4';
+export const CATALOG_VERSION = '2026-demo-5';
 import squadRulesData from '../data/squad-rules.json' with { type: 'json' };
 import priceData from '../data/prices.json' with { type: 'json' };
 import footballData from '../data/football-index.json' with { type: 'json' };
+import namesData from '../data/names.json' with { type: 'json' };
 import type { CountryCode } from '../../contracts/src/types';
 import type { CatalogPin } from '../../contracts/src/versions';
 import type { LoadCatalog } from '../../contracts/src/schema';
@@ -28,6 +29,8 @@ export interface CountryProfile {
   source: string;
   reference: string;
 }
+/** Each country's person-name pools (→WORLD-12), curated with the references the file names. */
+const NAMES: Record<CountryCode, { given: string[]; family: string[] }> = namesData.countries;
 export const COUNTRIES: CountryProfile[] = [
   {
     code: 'ENG',
@@ -39,8 +42,8 @@ export const COUNTRIES: CountryProfile[] = [
     automatic: [2, 2, 3],
     cities: ['York', 'Bristol', 'Oxford', 'Leeds', 'Bath', 'Lancaster', 'Durham', 'Norwich'],
     terms: ['Forge', 'Railway', 'Borough', 'Ironworks', 'Mill', 'Meadow', 'Vale', 'Harbour'],
-    given: ['Arthur', 'George', 'Edward', 'William', 'Albert', 'Thomas', 'Henry', 'Walter'],
-    family: ['Bennett', 'Foster', 'Hughes', 'Turner', 'Hawkins', 'Brooks', 'Watson', 'Clarke'],
+    given: NAMES.ENG.given,
+    family: NAMES.ENG.family,
     scale: 1,
     source: 'https://www.efl.com/documents/efl-handbook.pdf',
     reference: '2026/27: 20/24/24/24',
@@ -55,8 +58,8 @@ export const COUNTRIES: CountryProfile[] = [
     automatic: [2],
     cities: ['Sevilla', 'Bilbao', 'Oviedo', 'Vigo', 'Toledo', 'Malaga', 'Leon', 'Granada'],
     terms: ['Forja', 'Aurora', 'Acero', 'Puerto', 'Sierra', 'Alameda'],
-    given: ['Luis', 'Antonio', 'Manuel', 'Pablo', 'Ramon', 'Javier'],
-    family: ['Vega', 'Moreno', 'Santos', 'Rojas', 'Navarro', 'Ruiz'],
+    given: NAMES.ESP.given,
+    family: NAMES.ESP.family,
     scale: 126.3,
     source: 'https://www.laliga.com/en-GB/transparency/institutional-information',
     reference: 'Modern: 20/22',
@@ -71,8 +74,8 @@ export const COUNTRIES: CountryProfile[] = [
     automatic: [2, 2],
     cities: ['Bremen', 'Kiel', 'Bonn', 'Essen', 'Dresden', 'Mainz', 'Aachen', 'Lubeck'],
     terms: ['Eisen', 'Werk', 'Wald', 'Hafen', 'Adler', 'Kraft'],
-    given: ['Otto', 'Fritz', 'Karl', 'Emil', 'Heinrich', 'Franz'],
-    family: ['Weber', 'Keller', 'Fischer', 'Braun', 'Wolf', 'Schmidt'],
+    given: NAMES.GER.given,
+    family: NAMES.GER.family,
     scale: 111.2,
     source:
       'https://www.bundesliga.com/en/faq/what-are-the-rules-and-regulations-of-soccer/how-does-promotion-and-relegation-work-in-the-bundesliga-10645',
@@ -88,8 +91,8 @@ export const COUNTRIES: CountryProfile[] = [
     automatic: [2, 3],
     cities: ['Torino', 'Parma', 'Modena', 'Bari', 'Pisa', 'Como', 'Lucca', 'Bergamo'],
     terms: ['Ferro', 'Aurora', 'Borgo', 'Olivo', 'Officina', 'Vela'],
-    given: ['Giovanni', 'Luigi', 'Carlo', 'Mario', 'Pietro', 'Enzo'],
-    family: ['Ricci', 'Ferraro', 'Moretti', 'Costa', 'Rossi', 'Romano'],
+    given: NAMES.ITA.given,
+    family: NAMES.ITA.family,
     scale: 1988,
     source: 'https://www.lega-pro.com/com/2526-208L.pdf',
     reference: '2025/26: 20/20/3×20; regional allocation normalized',
@@ -104,8 +107,8 @@ export const COUNTRIES: CountryProfile[] = [
     automatic: [2, 2],
     cities: ['Rouen', 'Tours', 'Dijon', 'Reims', 'Metz', 'Nantes', 'Lille', 'Brest'],
     terms: ['Forges', 'Aurore', 'Port', 'Atelier', 'Vallee', 'Chene'],
-    given: ['Louis', 'Pierre', 'Andre', 'Jean', 'Emile', 'Paul'],
-    family: ['Laurent', 'Moreau', 'Garnier', 'Mercier', 'Petit', 'Dubois'],
+    given: NAMES.FRA.given,
+    family: NAMES.FRA.family,
     scale: 1607,
     source: 'https://ligue1.com/fr/articles/l1_article_5089-',
     reference: '2026/27: 18/18/18',
@@ -120,8 +123,8 @@ export const COUNTRIES: CountryProfile[] = [
     automatic: [2],
     cities: ['Braga', 'Faro', 'Coimbra', 'Aveiro', 'Evora', 'Viseu', 'Setubal', 'Guimaraes'],
     terms: ['Ferro', 'Aurora', 'Mar', 'Oficina', 'Vale', 'Nave'],
-    given: ['Joao', 'Miguel', 'Jose', 'Pedro', 'Nuno', 'Rui'],
-    family: ['Silva', 'Costa', 'Pereira', 'Sousa', 'Lopes', 'Mendes'],
+    given: NAMES.POR.given,
+    family: NAMES.POR.family,
     scale: 60510,
     source: 'https://www.ligaportugal.pt/pages/sobre-a-liga',
     reference: '2025/26: 18/18; reserves normalized to fictional senior clubs',
@@ -136,8 +139,8 @@ export const COUNTRIES: CountryProfile[] = [
     automatic: [2],
     cities: ['Delft', 'Leiden', 'Haarlem', 'Breda', 'Zwolle', 'Alkmaar', 'Gouda', 'Venlo'],
     terms: ['Haven', 'IJzer', 'Weide', 'Spoor', 'Wind', 'Brug'],
-    given: ['Jan', 'Pieter', 'Willem', 'Hendrik', 'Dirk', 'Johan'],
-    family: ['Bakker', 'Visser', 'Smit', 'Jansen', 'Vos', 'Bos'],
+    given: NAMES.NED.given,
+    family: NAMES.NED.family,
     scale: 9.019,
     source: 'https://www.knvb.nl/competities/eredivisie/historie',
     reference: 'Modern: 18/20; period-title qualification normalized',
@@ -152,8 +155,8 @@ export const COUNTRIES: CountryProfile[] = [
     automatic: [2],
     cities: ['Gent', 'Brugge', 'Leuven', 'Namur', 'Mons', 'Mechelen', 'Liege', 'Kortrijk'],
     terms: ['Forge', 'Haven', 'Atelier', 'Val', 'Spoor', 'Union'],
-    given: ['Jules', 'Victor', 'Leon', 'Henri', 'Luc', 'Paul'],
-    family: ['Peeters', 'Janssens', 'Lambert', 'Willems', 'Dubois', 'Maes'],
+    given: NAMES.BEL.given,
+    family: NAMES.BEL.family,
     scale: 154.4,
     source:
       'https://www.proleague.be/nieuws/challenger-pro-league-heeft-nieuw-format-zonder-quota-voor-u23',
@@ -420,7 +423,7 @@ export function currency(code: string, year: number): CurrencyPeriod {
     estimated: code === 'GER' && year < 1948,
   };
 }
-export { priceData, footballData, squadRulesData };
+export { priceData, footballData, squadRulesData, namesData };
 
 import { CATALOG_HASH } from './fingerprint';
 export { CATALOG_HASH };
@@ -534,4 +537,40 @@ export function validateRegistrationCatalog(input: unknown) {
       ranges.set(key, list);
     }
   }
+}
+/** The least each country's pools hold (→WORLD-12). */
+export const NAME_POOL_MINIMUM = { given: 100, family: 200 } as const;
+/**
+ * Build-time name-pool validation (→ARCH-10, →WORLD-12): referenced, every country's pools large
+ * enough, no name twice in a pool, each NFC-normalised, a given name one word.
+ */
+export function validateNamePools(input: unknown) {
+  const data = input as {
+    references?: unknown;
+    countries?: Record<string, { given?: unknown; family?: unknown }>;
+  };
+  if (
+    !Array.isArray(data?.references) ||
+    data.references.length === 0 ||
+    data.references.some((s) => typeof s !== 'string' || !s.startsWith('https://'))
+  )
+    throw new Error('Name pools without references');
+  for (const c of COUNTRIES)
+    for (const kind of ['given', 'family'] as const) {
+      const pool = data.countries?.[c.code]?.[kind];
+      if (!Array.isArray(pool) || pool.length < NAME_POOL_MINIMUM[kind])
+        throw new Error(`Name pool ${c.code} ${kind} holds fewer than ${NAME_POOL_MINIMUM[kind]}`);
+      if (new Set(pool).size !== pool.length)
+        throw new Error(`Name pool ${c.code} ${kind} repeats a name`);
+      for (const name of pool)
+        if (
+          typeof name !== 'string' ||
+          name !== name.normalize('NFC') ||
+          name !== name.trim() ||
+          name === '' ||
+          /\s{2}/.test(name) ||
+          (kind === 'given' && /\s/.test(name))
+        )
+          throw new Error(`Name pool ${c.code} ${kind} holds an invalid name: ${String(name)}`);
+    }
 }

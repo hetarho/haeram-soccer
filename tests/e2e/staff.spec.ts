@@ -303,7 +303,7 @@ test('with the manager post delegated a resignation is filled at once and the cl
   await openPeople(page);
   await openPersonnel(page, 'manager');
   await expect(page.getByTestId('decision-owner-manager')).toContainText('자동');
-  const founding = page.getByRole('heading', { name: 'William Hawkins', exact: true });
+  const founding = page.getByRole('heading', { name: 'Herbert Reid', exact: true });
   await expect(founding).toBeVisible();
   // The tactics request stands beside the 1군 roster (→WEB-43).
   await openPersonnel(page, 'players');

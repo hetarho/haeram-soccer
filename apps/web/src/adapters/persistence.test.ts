@@ -447,7 +447,7 @@ describe('compatible rule upgrades', () => {
     }
   });
 
-  for (const catalog of ['2026-demo-1', '2026-demo-2', '2026-demo-3'])
+  for (const catalog of ['2026-demo-1', '2026-demo-2', '2026-demo-3', '2026-demo-4'])
     it(`loads a ${catalog} save, moves its catalog pin on activation and round-trips`, async () => {
       const legacy = world();
       legacy.revision = 9;
@@ -457,7 +457,7 @@ describe('compatible rule upgrades', () => {
       const decoded = (await decode(await encode(legacy))).world;
       expect(canonical(decoded)).toBe(before);
       expect(decoded.catalog).toBe(catalog);
-      expect(CATALOG_VERSION).toBe('2026-demo-4');
+      expect(CATALOG_VERSION).toBe('2026-demo-5');
       const upgraded = upgradeWorldRules(decoded, CURRENT_CATALOG);
       expect(canonical(upgraded)).toBe(
         canonical({
@@ -474,6 +474,21 @@ describe('compatible rule upgrades', () => {
       const wrong = { ...legacy, catalogHash: 'a'.repeat(64) };
       await expect(decode(await encode(wrong))).rejects.toThrow(SaveCompatibilityError);
     });
+
+  it('moves a 2026-demo-4 career outside England, whose catalog changed only names (→WORLD-12)', async () => {
+    const legacy = {
+      ...simulatedWorld({ ...FOUNDING, country: 'ITA' }),
+      catalog: '2026-demo-4',
+      catalogHash: PRIOR_CATALOG_HASHES['2026-demo-4'],
+    };
+    const decoded = (await decode(await encode(legacy))).world;
+    expect(canonical(decoded)).toBe(canonical(legacy));
+    const upgraded = upgradeWorldRules(decoded, CURRENT_CATALOG);
+    expect(upgraded.catalog).toBe(CATALOG_VERSION);
+    expect(upgraded.catalogHash).toBe(CATALOG_HASH);
+    expect(upgraded.players.map((p) => p.name)).toEqual(legacy.players.map((p) => p.name));
+    expect(canonical((await decode(await encode(upgraded))).world)).toBe(canonical(upgraded));
+  });
 
   it('refuses a career outside England saved before its money was re-levelled (→ECON-35)', async () => {
     const italian = simulatedWorld({ ...FOUNDING, country: 'ITA' });
