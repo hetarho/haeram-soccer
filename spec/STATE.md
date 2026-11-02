@@ -18,6 +18,27 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261103 decided OWNER-3: how a tier's fortune is sized → 10× (석유 재벌) or 1.3× the median pound price of clubs in its reach in the takeover season (alt: fixed amounts per tier on the price index). ot03
+- 261103 decided OWNER-5: 정치력's facility discount has nothing to act on once facility works were withdrawn → operating expenses ×0.9 (alt: keep it latent until works return). ot03
+- 261103 decided OWNER-5: trait effect sizes → +1 OVR strength, −10% demands and fees, +1 candidate and +5 ability, +3 potential and half range, sponsors ×1.15, tuned by T668 (alt: wait for T668 before setting any). ot03
+- 261103 decided OWNER-7: quarterly settlement days → 1 Nov, 1 Feb, 1 May and the season close (alt: calendar quarters through the skipped summer). ot03
+- 261103 decided OWNER-8: living costs → 1% of the tier's starting fortune per settlement, grown with prices (alt: fixed amounts per tier). ot03
+- 261103 decided OWNER-10: FFP scope → top-flight clubs only, €45m to 2014/15 and €30m from 2015/16 per three seasons, no post-2022 squad-cost rule (alt: every division; or sanctions instead of a cap). ot03
+- 261103 decided OWNER-11: dividend base → the season's net result, capped at cash above zero, default 0% (alt: operating result before player sales). ot03
+- 261103 decided OWNER-12: 팬 민심 scale → 0–100, start 60, floor 15, drift 2% to 60 per round, OWNER-12's driver table (alt: no drift). ot03
+- 261103 decided OWNER-12 OWNER-18 KIT-9: identity change → only adopting a designer draft lowers 팬 민심 (−20); renaming the club is not added (alt: add renaming). ot03
+- 261103 decided OWNER-12 ECON-17: ticket price driver → stays, priced against the default preset, though no owner control changes the price now (alt: drop the driver while no ticket control exists). ot03
+- 261103 decided OWNER-4: founding wording in other rules → the takeover is the founding moment; the club's manager keeps his own style; players start at the club's 조직력 (alt: edit every founding mention). ot03
+- 261103 decided ECON-36: NPC books → settled once per season, current and last season kept, no NPC bankruptcy, a takeover or project clears debt (alt: per-round books). ot03
+- 261103 decided ECON-37: club value parts → transfer values, facility stage costs, following, 3 seasons of distribution, cash − debt, floored at one season's distribution (alt: a multiple of turnover). ot03
+- 261103 decided ECON-38: inherited debt → a 5-season loan at 5% repaid as fixed costs, never negative cash at the takeover (alt: negative cash, which would trigger ECON-24 at once). ot03
+- 261103 decided WORLD-14: the war gap → people age, contracts and books stand still, clubs rise or fall once, the owner's business keeps settling (alt: a club pays costs through the war). ot03
+- 261103 decided LEAGUE-13: balance bands per tier → the table in LEAGUE-13, measured by T668 (alt: keep the old level bands). ot03
+- 261103 decided WEB-15 WEB-2: country choice → no separate pick; the club list covers every playable country with filters (alt: pick the country before the decade). ot03
+- 261103 decided WEB-86 KIT-14: the founding identity editor and ready-made crests are removed; the bought club keeps its generated identity (alt: an editor at the takeover). ot03
+- 261103 decided WEB-114: where the owner's levers live → a HUD fortune chip beside cash that opens the 구단주 sheet (alt: a new office section). ot03
+- 261103 decided ARCH-28: generation budget → 5 s for 1930 and 90 s for 2000 on the reference trace (alt: one budget for every decade). ot03
+- 261103 decided ARCH-19 T652: HALL_OF_FAME_ENABLED and HallOfFamePort stay, since ARCH-19 requires the adapter contract and the disabled flag; T652's note to delete them is withdrawn (alt: delete them and amend ARCH-19). ot03
 - 261103 decided CLUB-19 SAVE-25 T647: where the squad's 하드 streak lives once the training orders go, and what an older save keeps of it → its own world field `hardStreak`. An older save kept the streak inside the dropped orders, so it restarts at the next 하드 round, and the morale cost from the third 하드 round in a row can come up to two rounds later (alt: carry it over through a legacy schema key, a load shim worth at most two rounds of one morale point).
 - 261103 suggest WEB-50 WEB-95: after the 6c0d6b12 match view a player's sheet opens only by tapping the canvas (no keyboard path) and the side on the ball shows by scoreboard colour alone (no accessible text); a later accessibility pass could add both.
 - 261102 decided STAFF-26: the standing director/manager support policy is a direction row, so it keeps the value in force with no owner editing; mediation in the 결재함 is unchanged (alt: keep it as the one owner-editable row).
@@ -462,25 +483,25 @@
 | save-storage-and-fast-pace | ready@261026 |
 | match-day-progress | ready@261026 |
 | calibration-pass | open@261026 |
-| owner-wealth-and-takeover | ready@261102 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 26 | 26 | - | 2 |
-| WEB | 203 | 203 | - | 0 |
+| ARCH | 27 | 27 | - | 2 |
+| WEB | 204 | 204 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
-| WORLD | 7 | 7 | - | 0 |
-| KIT | 7 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
-| CLUB | 49 | 49 | - | 0 |
-| MATCH | 46 | 46 | - | 0 |
-| LEAGUE | 11 | 11 | - | 0 |
+| WORLD | 8 | 8 | - | 0 |
+| KIT | 8 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
+| CLUB | 50 | 50 | - | 0 |
+| MATCH | 47 | 47 | - | 0 |
+| LEAGUE | 12 | 12 | - | 0 |
 | STAFF | 38 | 38 | - | 0 |
-| ECON | 41 | 41 | - | 0 |
+| ECON | 42 | 42 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
-| HIST | 20 | 20 | - | 0 |
-| SAVE | 61 | 61 | - | 0 |
-| PLAYER | 12 | 12 | - | 0 |
+| HIST | 21 | 21 | - | 0 |
+| SAVE | 62 | 62 | - | 0 |
+| OWNER | 1 | 1 | - | 0 |
+| PLAYER | 13 | 13 | - | 0 |
 
 ## review
 | id | st |
@@ -500,6 +521,22 @@
 | T650 | remove owner capital and owner-started facility works | ECON CLUB WEB HIST | T649 | todo |
 | T651 | remove coaching encouragement and owner-proposed playing coaches | STAFF PLAYER HIST WEB | T650 | todo |
 | T652 | remove dead commands and every unused piece of code | SAVE KIT LEAGUE WEB ARCH | T651 | todo |
+| T653 | owner and takeover foundation: contracts, config, commands and hook points | OWNER ECON SAVE WEB | T652 | todo |
+| T654 | spike: how the world lives 1930 → decade before anyone owns a club | WORLD ARCH LEAGUE MATCH | T652 T653 | todo |
+| T655 | world from 1930 to the takeover decade, with the wartime stop | WORLD LEAGUE HIST ARCH OWNER | T652 T654 | todo |
+| T656 | season books for every club nobody owns | ECON LEAGUE SAVE CLUB | T652 T655 | todo |
+| T657 | club value, price and the club listing | ECON CLUB OWNER WEB | T652 T653 | todo |
+| T658 | take over a club: the NPC club becomes the owner's | ECON CLUB OWNER WORLD HIST PLAYER LEAGUE STAFF | T652 T657 | todo |
+| T659 | the owner's money: business bet, living costs, injections within FFP, dividends, loan and owner bankruptcy | WORLD OWNER ECON | T652 T653 | todo |
+| T660 | 팬 민심, 퇴진 압박 and the owner's season record | OWNER KIT LEAGUE ECON | T652 T659 | todo |
+| T661 | owner trait effects on matches, talks, candidates, academy, scouting and sponsors | OWNER MATCH CLUB STAFF PLAYER ECON | T652 T653 | todo |
+| T662 | start flow UI: tier, traits, decade, generation, club list and takeover | WEB OWNER WORLD ECON | T652 T653 | todo |
+| T663 | owner UI: HUD fortune, 구단주 sheet, crisis statuses and game-over causes | WEB OWNER | T652 T653 | todo |
+| T664 | switch the start to the takeover (rules 5.0.0) | WEB WORLD ECON OWNER SAVE ARCH | T652 T656 T658 T660 T661 T662 T663 | todo |
+| T665 | remove founding, difficulty levels, the founding editor and the amateur level | WEB KIT WORLD LEAGUE ECON CLUB | T652 T664 | todo |
+| T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T665 | todo |
+| T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T665 | todo |
+| T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T665 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -524,10 +561,14 @@
 
 ## next
 - implement-task T648 (then T649→T652 in order: owner intervention removal and unused-code sweep; illustrations stay)
-- create-ssot OWNER (ideation owner-wealth-and-takeover; then WEB WORLD ECON LEAGUE MATCH KIT SAVE)
+- after T652: implement-task T653, then in parallel the lanes takeover (T657→T658), owner-economy (T659→T660), traits (T661), start-ui (T662), owner-ui (T663) beside the main-session chain T654→T655→T656; then T664→T665→T666, T667, T668
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261103 create-task OWNER@1 WEB@204 ECON@42 WORLD@8 LEAGUE@12 MATCH@47 KIT@8 SAVE@62 HIST@21 CLUB@50 ARCH@27 PLAYER@13 → T653–T668 (foundation T653; lanes takeover, owner-economy, traits, start-ui, owner-ui; main-session T654–T656; integration T664–T666; explore T654, T667, T668); ot03
+- 261103 ideation owner-wealth-and-takeover converted
+- 261103 update-ssot WEB r204 ECON r42 WORLD r8 LEAGUE r12 MATCH r47 KIT r8 SAVE r62 HIST r21 CLUB r50 ARCH r27 PLAYER r13: takeover start, amateur level removed, books and club value, owner bankruptcy and 퇴진, 승리의 부적 exception, rules 5.0.0; ot03
+- 261103 create-ssot OWNER r1: owner fortune, six wealth tiers, eight traits, quarterly business bet, living costs, injections within FFP, dividends, 팬 민심, 퇴진 압박, 구단주 파산 위기; ot03
 - 261103 T647 done: the owner no longer suggests or forces training. The coach-training command, orderTraining (with suggestion odds, strain and resignation), orders.ts, trainingOrders and staff strain/asked are gone; older saves drop them on load, and the squad's 하드 streak is now World.hardStreak. TrainingOrderSheet and every 제안·강행/개별 훈련/이 선수 훈련 entry are deleted. 훈련, 유소년, the player sheet and the market read the coaches' calls. Equivalence digests unchanged; unit 224/1937 green; e2e edited for the batch.
 - 261103 ot03 start (autopilot): finish T647–T652, then plan and build ideation owner-wealth-and-takeover in parallel lanes; illustrations stay
 - 261103 design close 6c0d6b12: tests and SSOT aligned (WEB r203: WEB-39 office opens on the 결재함 without its room scene, 결재라인 from 결재 설정/who-decides links; WEB-100 requests under titles, waiting first, delegates and 직접/위임 + 전체 switches, no filters; WEB-43 이적시장 선수/유소년/코치/감독/단장; WEB-50/95/49 board in the ball side's colours, notable-only commentary log, details and player dialogs, after-match table; WEB-71/72/79 entries; MATCH r46 MATCH-10 after-match standing); unit tests for the titled queue, 1.3% pitch margin and ageMax; kit preview on the shared pitch margin; office/queue and match-view e2e specs migrated for the batch
