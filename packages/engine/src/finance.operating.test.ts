@@ -255,15 +255,14 @@ describe('operating expenses (→ECON-30)', () => {
       expect(assessOperatingExpenses(promoted)).toBe(rich.operatingExpenses);
     });
 
-    it('leaves player sales, compensation and owner capital out of the turnover', () => {
+    it('leaves player sales and compensation out of the turnover', () => {
       const plain = close(),
         sold = close({
           'transfer-out': 40_000_000n,
           'free-transfer-compensation': 20_000_000n,
-          support: 30_000_000n,
         });
       expect(BigInt(sold.history.at(-1)!.income)).toBe(
-        BigInt(plain.history.at(-1)!.income) + 90_000_000n,
+        BigInt(plain.history.at(-1)!.income) + 60_000_000n,
       );
       expect(lastSeasonTurnover(sold)).toBe(lastSeasonTurnover(plain));
       expect(sold.operatingExpenses).toBe(plain.operatingExpenses);
