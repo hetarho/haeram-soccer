@@ -18,6 +18,24 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261103 decided WORLD-13 LEAGUE-11 T654: which runner lives the ownerless world → the existing day loop with `hasOwner` guards (alt: a round-level runner, same speed and results but a second copy of the day order). ot03
+- 261103 decided T654: the spike script → kept out of the repo; the guards ship with T655 (alt: commit scripts/history-spike.ts). ot03
+- 261103 decided HIST-2 WORLD-13 T655: where pre-takeover seasons are archived → in `w.history` with own-club fields empty (alt: a separate list; Europe access, LEAGUE-10 success and Ballon d'Or premiums read `w.history`). ot03
+- 261103 decided HIST-2 LEAGUE-5 T655: brackets an ownerless season keeps → continental brackets only, every country's cup as winner plus final (alt: all eight domestic brackets, ~5 KB more a season). ot03
+- 261103 decided WORLD-14 T655: how contracts stand still → every running season-dated term moves on by the 7 skipped seasons at the jump (alt: another freeze, impossible with one calendar). ot03
+- 261103 decided WORLD-14 T655: development across the war → one annual step at the 1946 restart (alt: seven steps). ot03
+- 261103 decided STAFF-17 WORLD-13 T655: other clubs' managers before the takeover → retire at 70, relegated clubs may sack, first managers dated 1930 (alt: no change for 70 years). ot03
+- 261103 decided ECON-26 WORLD-13 T655: money pricing other clubs' staff before the takeover → their club's, England's outside the playable countries (alt: placeholder world money). ot03
+- 261103 decided WORLD-13 WORLD-14 T655: where 1930/1938/1946 live → `HISTORY_START` in history.ts and `WARTIME` in wartime.ts (alt: owner-config.ts). ot03
+- 261103 decided ECON-36 T656: how unowned clubs use the owner's scales → a view of the world with the club in the owner's place and own settings neutral (alt: a club parameter on every finance function). ot03
+- 261103 decided ECON-36 T656: books in founded careers → none; only ownerless worlds and careers with `w.owner` keep books (alt: always, which would move founded saves). ot03
+- 261103 decided ECON-36 ECON-30 T656: costs a book carries → wages and operating expenses only (alt: also hosting and facility upkeep). ot03
+- 261103 decided ECON-36 T656: starting cash of an unowned club → 0 in 1930 (alt: a seeded balance). ot03
+- 261103 decided ECON-6 T656: when books convert currency → at the close, into the next season's money (alt: at the next close). ot03
+- 261103 decided ECON-8 T656: commercial income of an unowned club → each open slot's stable offer (alt: another offer kind). ot03
+- 261103 decided MATCH-22 WORLD-13 ARCH-28 T669: 2000 generation misses 90 s by 25–45× (fixtures 85%) → fixtures before the takeover take a results-only path (score, scorers/assisters, ties settled; nothing else), measured by T669 (Node) and T667 (browser) (alt: relax ARCH-28's 2000 budget now, or start the world later). ot03
+- 261103 decided SAVE-23 HIST-18 T664: dating a takeover's records → the takeover is the founding moment: manager history coverage `founding` at the takeover in every decade, match-model tracking re-dated to it (alt: `activation` with `knownSince` after 1930). ot03
+- 261103 decided OWNER-12 T664: 팬 민심's injection scale in the first season → keep the bought club's last-season income as `owner.takeover.lastIncome` (alt: the maximum +10 until a season closes). ot03
 - 261103 decided OWNER-5 CLUB-14 T661: where 협상의 달인's asked-fee factor acts → at the seller's fee quotes (`transferOffers`, `clubOffer`/`worldMarketPage`), beside the 단장 negotiator's ×0.9, so list, bid, acceptance and counter read one lowered fee (alt: lower only `askingFee`, leaving the list unlowered). ot03
 - 261103 decided OWNER-5 T661: which fees 협상의 달인 lowers → transfer fees only; loan fees stay as drawn, as with the 단장's negotiator (alt: loan fees too). ot03
 - 261103 decided OWNER-5 CLUB-26 T661: which wage demands → the contract-talk demand and through it the floor, an unhappy player's floor and the 단장's offer; a signing still joins on his market wage (alt: lower signings' wages too). ot03
@@ -560,10 +578,10 @@
 | ARCH | 27 | 27 | - | 2 |
 | WEB | 204 | 204 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
-| WORLD | 8 | 8 | - | 0 |
+| WORLD | 9 | 9 | - | 0 |
 | KIT | 8 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
 | CLUB | 50 | 50 | - | 0 |
-| MATCH | 47 | 47 | - | 0 |
+| MATCH | 48 | 48 | - | 0 |
 | LEAGUE | 12 | 12 | - | 0 |
 | STAFF | 39 | 39 | - | 0 |
 | ECON | 42 | 42 | - | 0 |
@@ -586,6 +604,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T669 | results-only fixtures before the takeover | MATCH WORLD ARCH HIST PLAYER LEAGUE | T656 | todo |
 | T664 | switch the start to the takeover (rules 5.0.0) | WEB WORLD ECON OWNER SAVE ARCH | T652 T656 T658 T660 T661 T662 T663 | todo |
 | T665 | remove founding, difficulty levels, the founding editor and the amateur level | WEB KIT WORLD LEAGUE ECON CLUB | T652 T664 | todo |
 | T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T665 | todo |
@@ -618,6 +637,7 @@
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261103 update-ssot WORLD r9 MATCH r48: fixtures before the takeover take a results-only path; create-task T669 (explore 3h, parallel to T664); T664/T666 notes from the integration; ot03
 - 261103 integrate ot03/history (T654–T656) into ot03/integrate: generated world, wartime and NPC books merged without conflicts; one facility helper (club-value `facilityStage`), takeOver on a generateHistory world opens the manager market and closes the club's NPC coaching jobs, own-club reads skip pre-owner archives (`isOwnSeason`, parachute from the world's standings); unit 2034, contract 47, integration set 44, equivalence digests unchanged; ot03
 - 261103 update-ssot STAFF r39 PLAYER r14: 마당발's candidate and pool counts and 원석 감별사's scout range written where the base rules live (already built by T661, tasked=rev); ot03
 - 261103 integrate ot03 lanes on ot03/integrate: T657–T663 merged over the T653 foundation (helpers renamed startChoices.ts/ownerFigures.ts, trait checks share hasTrait); unit 2020, contract 47, equivalence digests unchanged; ot03

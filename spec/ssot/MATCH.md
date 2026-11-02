@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r47 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r48 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -187,6 +187,7 @@
 - MATCH-21 [o] Injuries happen during the match: the per-match probability of →CLUB-23 strikes at a moment of play, more likely late and under press, and replaces the separate draw after the match; the injured player leaves the pitch (→MATCH-20) and the severity bands of →CLUB-23 apply. Players of clubs nobody owns are injured by the same rule. ← the →CLUB-23 frequency holds, now visible when it happens
 - MATCH-22 [o] Which engine plays a fixture:
   - the own club's matches always play the grid engine.
+  - before the takeover, while nobody owns a club (→WORLD-13), every fixture takes a results-only path: the score from both sides' strength with the aggregate path's home advantage, goal and draw shape, named scorers and assisters, and extra time and shootouts for ties; no other counters, discipline, injuries or substitutions are drawn. ← seven decades of fixtures have to be lived in a bearable wait (→ARCH-28)
   - every fixture without the own club, including fixtures in its league, takes a fast aggregate probabilistic path producing complete results (→MATCH-26/27). It does not run the detailed 22-player spatial simulation or replay a per-minute chance loop. ← a world season settles about 10,000 fixtures
   - the aggregate path may draw one match as at most six consecutive time segments, so the score reached by a segment shapes the later segments' shot volume and risk the way →MATCH-16's score effects shape detailed play; the segments are one joint draw of one match and stay within →ARCH-31's fixture budget. ← without the score state the aggregate's goals follow shots and xG far more tightly than detailed play (shots~goals correlation 0.50 against 0.23, measured 261024)
   - the paths use the same strength factors and intended football targets (→MATCH-2/23/28), including named contributors, discipline, injuries, substitutions, extra time and shootouts. Generated incidents affect availability and subsequent fixtures through the ordinary world rules.
@@ -334,6 +335,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r48 261103 MATCH-22✎ +before the takeover every fixture takes a results-only path (score, scorers and assisters, extra time and shootouts; no other counters, discipline, injuries or substitutions)
 - r47 261103 MATCH-2✎ same terms→same terms except the owner's 승리의 부적 (→OWNER-6)
 - r46 261103 MATCH-10✎ full post-match league context opens explicitly→the standing after the match shows once it ends, the full league table on request
 - r45 261102 MATCH-8✎ the four tactics are the owner's only tactical control, applied through the manager→the manager's call, no owner tactical control; MATCH-9✎ the pre-match laboratory's tactic fit→any tactic fit shown (→CLUB-14); MATCH-29✎ reason the owner's only tactical control→a manager's tactic
