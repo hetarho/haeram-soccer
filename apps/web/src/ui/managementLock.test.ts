@@ -101,7 +101,6 @@ function state(): ClientState {
     clockRunning: true,
     view: {
       world,
-      careers: {},
       coaches: {},
       totalMatches: 0,
       milestones: clubMilestones(world),

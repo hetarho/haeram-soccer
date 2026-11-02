@@ -1095,7 +1095,6 @@ export interface PersonCareer {
     at: CareerDate;
     draw: number;
     willing: boolean;
-    encouraged?: { at: CareerDate; changed: boolean };
   };
   retirement?: { announced: CareerDate; year: number; at?: CareerDate };
   coaching?: {
@@ -1338,9 +1337,7 @@ export type Command =
   | { type: 'bid'; candidate?: number; target?: WorldMarketTarget; fee: string; loan?: boolean }
   | { type: 'respond-bid'; id: string; accept: boolean }
   | { type: 'read-inbox'; id?: string }
-  | { type: 'encourage-coaching'; player: string }
   | { type: 'resolve-mediation'; id: string; support: MediationSupport }
-  | { type: 'propose-playing-coach'; player: string; years: 1 | 2; term: ContractTerm }
   | { type: 'answer-playing-coach'; player: string; accept: boolean }
   /**
    * Hires a manager from the market (→STAFF-17), by id: a free agent or another club's manager.

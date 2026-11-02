@@ -676,7 +676,6 @@ describe('career view projection', () => {
     const h = new Host();
     const found = await h.handle(req('career-found', -1, { type: 'found', input }));
     expect(found.view!.world.people).toBeUndefined();
-    expect(Object.keys(found.view!.careers).length).toBeGreaterThan(0);
     const before = canonical(h.world!),
       revision = h.world!.revision;
     const exported = await h.handle(req('career-export', revision, { type: 'export' }));

@@ -282,10 +282,11 @@ describe('versioned lossless career relationships', () => {
       born: 1915,
       playing: 'retired',
       formerOwn: true,
-      intention: { draw: 0.125, encouraged: { changed: false } },
       coaching: { ability: 55.25, potential: 80.5 },
       management: { ability: 50.125, potential: 77.75, school: 'developer' },
     });
+    // The row's withdrawn coaching encouragement (1950, 243, false) is read and dropped (→SAVE-25).
+    expect(person.intention).toEqual({ at: { year: 1950, day: 243 }, draw: 0.125, willing: true });
     expect(person.employment[0]).toEqual({
       role: 'assistant',
       club: 'legacy:club',

@@ -83,13 +83,13 @@ export function playingCoachQuote(
   });
   return { ...quote, stamp };
 }
-export function proposePlayingCoach(w: World, id: string, years: 1 | 2, term: ContractTerm) {
-  if (!playingCoachDurations(w, id).includes(years) || ![1, 2, 3, 4, 5].includes(term))
-    throw new Error('제안 가능한 플레잉 코치 기간이 없어요.');
-  if (w.playingCoachProposals?.[id]?.status === 'accepted')
-    throw new Error('이미 승인한 계약안이에요.');
-  initializeCoaching(w, w.people![id]);
-  const proposal = playingCoachQuote(w, id, years, term)!;
+/**
+ * Staff filling a post put one combined quote to the club (→STAFF-32): it waits in the 결재함 while
+ * either responsibility is direct and is settled at once when both are delegated. No owner command
+ * proposes one.
+ */
+export function submitPlayingCoachProposal(w: World, proposal: PlayingCoachProposal) {
+  const id = proposal.person;
   (w.playingCoachProposals ??= {})[id] = proposal;
   addEvent(
     w,
@@ -253,7 +253,10 @@ export function considerPlayingCoach(w: World, role: Staff['role']) {
       : BigInt(ordinary.wage) <= BigInt(selected.coachWage))
   )
     return false;
-  proposePlayingCoach(w, selected.person, selected.years, selected.term);
+  submitPlayingCoachProposal(
+    w,
+    playingCoachQuote(w, selected.person, selected.years, selected.term)!,
+  );
   return true;
 }
 

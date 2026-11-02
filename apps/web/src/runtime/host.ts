@@ -7,7 +7,6 @@ import { recentClubResults } from '../../../../packages/engine/src/recent-result
 import { startingSquad } from '../../../../packages/engine/src/world';
 import { staffMarket } from '../../../../packages/engine/src/staff';
 import { clubManager } from '../../../../packages/engine/src/managerMarket';
-import { careerAssessment } from '../../../../packages/engine/src/career-assessment';
 import { nextEventDays } from '../../../../packages/engine/src/next-event';
 import { stoppingReasons } from '../../../../packages/engine/src/stopping';
 import {
@@ -400,11 +399,6 @@ export class Host {
     void _history;
     return {
       coaches: staffMarket(w),
-      careers: Object.fromEntries(
-        [...w.players.filter((p) => p.status === 'active'), ...(w.academy?.players ?? [])].map(
-          (p) => [p.id, careerAssessment(w, p, true)],
-        ),
-      ),
       world: {
         ...projected,
         // Browser projections omit `people`; resolving names there would regenerate old identities.

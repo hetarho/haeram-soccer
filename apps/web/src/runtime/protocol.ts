@@ -8,7 +8,6 @@ import type { mediationPreview } from '../../../../packages/engine/src/mediation
 import type { PersonCareerDetail } from './personCareer';
 import type { StaffRole } from '../../../../packages/contracts/src/types';
 import type { staffCandidates } from '../../../../packages/engine/src/staff';
-import type { CareerAssessment } from '../../../../packages/engine/src/career-assessment';
 import { z } from 'zod';
 z.config({ jitless: true });
 import type {
@@ -118,17 +117,10 @@ const command = z.discriminatedUnion('type', [
     ),
   z.object({ type: z.literal('respond-bid'), id: ref, accept: z.boolean() }),
   z.object({ type: z.literal('read-inbox'), id: ref.optional() }),
-  z.object({ type: z.literal('encourage-coaching'), player: ref }),
   z.object({
     type: z.literal('resolve-mediation'),
     id: ref,
     support: z.enum(['director', 'balanced', 'manager']),
-  }),
-  z.object({
-    type: z.literal('propose-playing-coach'),
-    player: ref,
-    years: z.literal([1, 2]),
-    term,
   }),
   z.object({ type: z.literal('answer-playing-coach'), player: ref, accept: z.boolean() }),
   z.object({ type: z.literal('hire'), id: z.string().min(1).max(100), term: term.optional() }),
@@ -277,7 +269,6 @@ export type ProjectedWorld = Omit<World, 'people' | 'npcSeason' | 'managerHistor
 };
 export interface View {
   world: ProjectedWorld;
-  careers: Record<string, CareerAssessment>;
   coaches: Partial<Record<StaffRole, ReturnType<typeof staffCandidates>>>;
   totalMatches: number;
   milestones: ReturnType<typeof clubMilestones>;

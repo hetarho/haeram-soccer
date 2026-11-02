@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { LOAD_CATALOG } from '../../catalogs/src/index';
 import { createWorld } from '../../engine/src/index';
 import { addEvent } from '../../engine/src/events';
+import { careerDate } from '../../engine/src/person-careers';
 import { validateWorld } from './schema';
 import type { World } from './types';
 
@@ -120,5 +121,30 @@ describe('owner interventions withdrawn (→SAVE-25)', () => {
     expect(loaded.facilityWorks).toEqual({ stadium: { to: 1, year: w.year, day: 0 } });
     // Reading never writes: the save itself is left for the writer's next checkpoint.
     expect(older.support).toBe(1);
+  });
+
+  it('drops the removed coaching encouragement from an older save', () => {
+    const w = world();
+    // A retiring player the owner encouraged toward coaching, as a career saved before STAFF-29
+    // was withdrawn: his intention keeps its draw and willingness (→STAFF-25), the encouragement
+    // goes and none is written again (→HIST-14).
+    const player = w.players[0]!,
+      at = careerDate(w);
+    w.people![player.id]!.intention = { at, draw: 0.55, willing: true };
+    addEvent(
+      w,
+      'coaching-encouragement',
+      `${player.name} 지도자 진로 권유`,
+      '권유를 받아들여 은퇴 뒤 지도자의 길을 준비해요.',
+    );
+    const older = structuredClone(w);
+    Object.assign(older.people![player.id]!.intention!, { encouraged: { at, changed: true } });
+    const loaded = validateWorld(older, LOAD_CATALOG);
+    expect(loaded.people![player.id]!.intention).toEqual({ at, draw: 0.55, willing: true });
+    // Every other fact stays as saved, the recorded encouragement among the club's events.
+    expect(loaded).toEqual(validateWorld(w, LOAD_CATALOG));
+    expect(loaded.events.at(-1)!.kind).toBe('coaching-encouragement');
+    // Reading never writes: the save itself is left for the writer's next checkpoint.
+    expect(older.people![player.id]!.intention).toHaveProperty('encouraged');
   });
 });

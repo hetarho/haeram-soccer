@@ -1,10 +1,9 @@
 import type { Grade } from '../../contracts/src/player';
 import type { Player, World } from '../../contracts/src/types';
 import { coachingGrade, managerialGrade } from './aptitude';
-import { canEncourageCoaching, coachingSpecialty } from './coaching-entry';
+import { coachingSpecialty } from './coaching-entry';
 import { careerDate } from './person-careers';
 import { managerialEntryReady } from './manager-entry';
-import { playingCoachDurations } from './playing-coach';
 import { GRADE_LABEL, personalityRange } from './player';
 import { staffMember } from './staff';
 export function aptitudeLabel(grade: Grade | undefined, own: boolean, scoutAbility?: number) {
@@ -28,15 +27,6 @@ export function careerAssessment(w: World, player: Player, own: boolean) {
             qualities: player.qualities,
           })
         : undefined),
-    encourage: own && canEncourageCoaching(w, player.id),
-    encouragement: own
-      ? person?.intention?.encouraged
-        ? { willing: person.intention.willing, changed: person.intention.encouraged.changed }
-        : undefined
-      : undefined,
-    playingCoachYears: own ? playingCoachDurations(w, player.id) : [],
-    playingCoach: own ? w.playingCoachProposals?.[player.id] : undefined,
     managerQualified: !!person?.management && managerialEntryReady(person, careerDate(w)),
   };
 }
-export type CareerAssessment = ReturnType<typeof careerAssessment>;

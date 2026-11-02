@@ -184,23 +184,24 @@ it('preserves stable retained-coach identities beyond the original candidate slo
   expect(requestSchema.parse(request(body)).body).toEqual(body);
 });
 
-it('validates the two combined playing-coach command boundaries', () => {
-  for (const command of [
-    { type: 'propose-playing-coach', player: 'person:one', years: 2, term: 3 },
-    { type: 'answer-playing-coach', player: 'person:one', accept: true },
-  ])
+it('answers a staff playing-coach proposal and refuses owner encouragement or proposals', () => {
+  // Staff propose a conversion when they fill a post; the owner only answers it (→STAFF-32), and
+  // a player's coaching intention is his own (→STAFF-25).
+  for (const accept of [true, false]) {
+    const command = { type: 'answer-playing-coach', player: 'person:one', accept };
     expect(requestSchema.parse(request({ type: 'command', command })).body).toEqual({
       type: 'command',
       command,
     });
-  expect(
-    requestSchema.safeParse(
-      request({
-        type: 'command',
-        command: { type: 'propose-playing-coach', player: 'person:one', years: 3, term: 3 },
-      }),
-    ).success,
-  ).toBe(false);
+  }
+  for (const command of [
+    { type: 'propose-playing-coach', player: 'person:one', years: 2, term: 3 },
+    { type: 'encourage-coaching', player: 'person:one' },
+  ])
+    expect(
+      requestSchema.safeParse(request({ type: 'command', command })).success,
+      command.type,
+    ).toBe(false);
 });
 
 describe('view patches (→ARCH-6)', () => {

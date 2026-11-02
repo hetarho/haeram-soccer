@@ -44,15 +44,13 @@ describe('qualitative career assessment', () => {
     expect(careerAssessment(w, p, false)).toMatchObject({
       coaching: '매우 낮음~높음',
       managerial: '매우 낮음~높음',
-      encourage: false,
       managerQualified: false,
     });
-    expect(careerAssessment(w, p, true).encourage).toBe(false);
     expect(JSON.stringify(w)).toBe(before);
     expect(person.mentors).toEqual([]);
     expect(person.management).toBeUndefined();
   });
-  it('reports the once-only encouragement and real manager gates without creating candidacy', () => {
+  it('shows aptitude grades only and reports the real manager gates without creating candidacy', () => {
     const w = world(),
       p = w.players[0],
       person = w.people![p.id];
@@ -60,17 +58,15 @@ describe('qualitative career assessment', () => {
     p.personality.professionalism = 4;
     Object.assign(person, { qualities: { ...p.qualities }, professionalism: 4 });
     p.retiring = w.year;
-    expect(careerAssessment(w, p, true).encourage).toBe(true);
-    person.intention = {
-      at: { year: w.year, day: 0 },
-      draw: 0,
-      willing: true,
-      encouraged: { at: { year: w.year, day: 0 }, changed: true },
-    };
-    expect(careerAssessment(w, p, true)).toMatchObject({
-      encourage: false,
-      encouragement: { willing: true, changed: true },
-    });
+    person.intention = { at: { year: w.year, day: 0 }, draw: 0, willing: true };
+    // Grades and specialty, never an exact aptitude, an intention or an owner action (→WEB-78).
+    expect(Object.keys(careerAssessment(w, p, true)).sort()).toEqual([
+      'coaching',
+      'managerQualified',
+      'managerial',
+      'specialty',
+    ]);
+    expect(careerAssessment(w, p, true)).toMatchObject({ coaching: '높음' });
     person.management = {
       ability: 55,
       potential: 75,

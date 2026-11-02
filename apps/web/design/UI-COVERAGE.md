@@ -140,7 +140,7 @@ Every module below was included in the source review; Card is the subsequent sha
 | [PlayerProfile.tsx](../src/ui/PlayerProfile.tsx)               | – / – / –                 | label, attribute-meter                                                                                                                               | profile                                     |
 | [PlayerSheet.tsx](../src/ui/PlayerSheet.tsx)                   | 1 / – / –                 | link                                                                                                                                                 | badges                                      |
 | [PlayerSheetDialog.tsx](../src/ui/PlayerSheetDialog.tsx)       | 3 / – / –                 | sheet, choices                                                                                                                                       | player-sheet                                |
-| [PlayingCoachReview.tsx](../src/ui/PlayingCoachReview.tsx)     | 4 / – / –                 | sheet                                                                                                                                                | academy                                     |
+| [PlayingCoachReview.tsx](../src/ui/PlayingCoachReview.tsx)     | 2 / – / –                 | sheet                                                                                                                                                | office                                      |
 | [PositionBadge.tsx](../src/ui/PositionBadge.tsx)               | – / – / –                 | position-badge (shared family palette, no theme material)                                                                                            | badges, recruitment                         |
 | [PresentationSettings.tsx](../src/ui/PresentationSettings.tsx) | 2 / – / –                 | Composed/default skin                                                                                                                                | settings                                    |
 | [ProgressControls.tsx](../src/ui/ProgressControls.tsx)         | 4 / – / –                 | season-overview, calendar-header, link, icon, season-transport                                                                                       | controller                                  |
@@ -202,9 +202,9 @@ TeamDirectory joined as the `team` preview after this audit (T644). It composes 
 | staff               | Rich, ClubStaff, StyleCard, DecisionOwner                                                        | Pending / pending     |
 | recruitment         | RecruitmentDesk, ScoutShortlist, MediationReview                                                 | Inspected / inspected |
 | training            | TrainingView, FacilityOverview                                                                   | Inspected / inspected |
-| academy             | TrainingView, PlaceActivities, AcademyPanel, PlayingCoachReview                                  | Inspected / inspected |
+| academy             | TrainingView, PlaceActivities, AcademyPanel                                                      | Inspected / inspected |
 | styles              | StyleCard                                                                                        | Inspected / inspected |
-| office              | ApprovalQueue, Operations, FacilityOverview, ClubHub                                             | Pending / pending     |
+| office              | ApprovalQueue, Operations, FacilityOverview, ClubHub, PlayingCoachReview                         | Pending / pending     |
 | investment          | ClubOperations, ClubNavigation, FinanceOutlook, FinancialBreakdown, FacilityParts                | Pending / pending     |
 | sponsors            | ClubOperations, BusinessWorkbench                                                                | Pending / pending     |
 | operations-identity | ClubOperations, ClubDesignView                                                                   | Pending / pending     |

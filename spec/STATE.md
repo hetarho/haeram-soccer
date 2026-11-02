@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-02T16:10Z | T651 |
+| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-02T16:10Z | T652 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
@@ -520,7 +520,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T651 | remove coaching encouragement and owner-proposed playing coaches | STAFF PLAYER HIST WEB | T650 | todo |
 | T652 | remove dead commands and every unused piece of code | SAVE KIT LEAGUE WEB ARCH | T651 | todo |
 | T653 | owner and takeover foundation: contracts, config, commands and hook points | OWNER ECON SAVE WEB | T652 | todo |
 | T654 | spike: how the world lives 1930 → decade before anyone owns a club | WORLD ARCH LEAGUE MATCH | T652 T653 | todo |
@@ -561,11 +560,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T651 (then T652; then the owner takeover plan, see the next line)
+- implement-task T652 (then the owner takeover plan, see the next line)
 - after T652: implement-task T653, then in parallel the lanes takeover (T657→T658), owner-economy (T659→T660), traits (T661), start-ui (T662), owner-ui (T663) beside the main-session chain T654→T655→T656; then T664→T665→T666, T667, T668
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261103 T651 done: a player's coaching intention is his own 50/80% draw and only delegated staff propose a playing coach, the owner answering in the 결재함. The encourage-coaching/propose-playing-coach commands, encourageCoaching (65/95%, its event) and proposePlayingCoach are gone (staff record through submitPlayingCoachProposal, tests stage with testing.ts stagePlayingCoach); intention.encouraged leaves the types and is dropped on load and from packed careers (now four wide, older seven-wide rows read); the view's careers map goes; PlayingCoachReview is the 결재함 approval only and the player sheet reads the aptitude grades. Equivalence digests unchanged; unit 222/1915 green; golden regenerated (contract 47 green); e2e edited for the batch.
 - 261103 T650 done: the owner adds no capital and starts no facility work. The support/facility commands, World.support (dropped on load), the ownerCapital build effect (구단주 투자 keeps only its wage cost) and the ledger's owner capital line are gone; startFacilityWork is reached only by the calibration harness's reference club and tests, and a work under way still opens on its day; 추가 출자, the facility review and 공사 시작 are deleted while 재정·투자 reads each part's stage, art and work under way. Equivalence digests unchanged; unit 222/1913 green; contract 47 green (golden unchanged); e2e edited for the batch.
 - 261103 T649 done: the club keeps the direction it was founded with. The policy/build/direction/ticket commands, setPolicy/setBuild/setDirection, the policy and ticket previews, the 80+ intake odds and the card display lines are gone; founding installs its preset directly (32 founded worlds identical); the 방향 board, composer, department sheets, direction lines and the device strategy library are deleted (its key removed on writer start); 재정·투자 and the staff/academy/market views read the rows, investment, ticket price and bases read-only. Equivalence digests unchanged; unit 222/1911 green; golden regenerated (contract 47 green); e2e edited for the batch.
 - 261103 T648 done: the manager alone picks the tactic and the XI. The tactics/lineup/accept-condition commands, request scoring and history, setLineup/lineupPreset/selectedLineup, Manager.lastRequest/requestHistory/pending/conflicts, World.requested/lineup (dropped on load), the STAFF-14 request modifiers and the 우리만의 선발 milestone are gone; TacticsTalk, TacticalLab, tacticComparison and PlayerPreparationHost are deleted and the next-match report reads the manager's XI and matchday squad with the kit choice in its own 유니폼 section. Equivalence digests unchanged; unit 223/1936 green; golden regenerated (contract 47 green); e2e edited for the batch.

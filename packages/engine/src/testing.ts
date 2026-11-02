@@ -1,6 +1,7 @@
 import type { ClubBuild } from '../../contracts/src/build';
 import type {
   ClubPolicy,
+  ContractTerm,
   Direction,
   DirectionKey,
   FacilityPart,
@@ -17,6 +18,8 @@ import { POLICY_KEYS, policyOf } from './policy';
 import { DIRECTION_DEFAULT } from './direction';
 import { startFacilityWork } from './facilities';
 import { debit } from './transactions';
+import { initializeCoaching } from './coaching-entry';
+import { playingCoachQuote, submitPlayingCoachProposal } from './playing-coach';
 
 /**
  * Puts direction rows in force on a test world, as a founded or saved club holds them: cards,
@@ -61,6 +64,19 @@ export function holdRows(
 export function startWork(w: World, part: FacilityPart) {
   startFacilityWork(w, part, (fee) => debit(w, fee));
   return w;
+}
+
+/**
+ * Puts a combined playing-coach quote to the club as staff filling his department's post do
+ * (→STAFF-32): it waits in the 결재함 while either responsibility is direct and is settled at once
+ * when both are delegated. Staff pick the player, length and term by their own rule when a post
+ * opens and the owner never proposes, so tests that need a given proposal stage it here.
+ */
+export function stagePlayingCoach(w: World, id: string, years: 1 | 2, term: ContractTerm) {
+  initializeCoaching(w, w.people![id]);
+  const quote = playingCoachQuote(w, id, years, term);
+  if (!quote) throw new Error('No playing-coach quote for this player, length and term.');
+  return submitPlayingCoachProposal(w, quote);
 }
 
 /**

@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createWorld, operate, operatingCosts } from './index';
 import {
-  proposePlayingCoach,
   answerPlayingCoach,
   playingCoachDepartureCost,
   endPlayingCoachForDeparture,
@@ -17,6 +16,7 @@ import { releaseStaff, seasonStaff, staffMember } from './staff';
 import { pendingDecisions } from './stopping';
 import { handoverSales, respondBid } from './transfers';
 import type { TransferBid } from '../../contracts/src/types';
+import { stagePlayingCoach } from './testing';
 function world(years: 1 | 2 = 2, term: 1 | 2 | 3 | 4 | 5 = 5) {
   const w = createWorld({
     country: 'ENG',
@@ -43,7 +43,7 @@ function world(years: 1 | 2 = 2, term: 1 | 2 | 3 | 4 | 5 = 5) {
   });
   recordRetirementAnnouncement(w, person);
   const costs = operatingCosts(w);
-  const quote = proposePlayingCoach(w, p.id, years, term);
+  const quote = stagePlayingCoach(w, p.id, years, term);
   answerPlayingCoach(w, p.id, true);
   return { w, id: p.id, quote, costs };
 }

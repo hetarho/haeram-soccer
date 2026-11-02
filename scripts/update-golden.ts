@@ -61,15 +61,11 @@ const definitions: FixtureDefinition[] = [
     ],
   },
   {
-    name: 'once-only-encouragement-and-combined-contract',
+    name: 'staff-proposed-combined-contract',
     input,
     currentRules: true,
-    setup: 'announced-player',
-    commands: [
-      { type: 'encourage-coaching', player: 'ENG:club:founder:6' },
-      { type: 'propose-playing-coach', player: 'ENG:club:founder:6', years: 2, term: 5 },
-      { type: 'answer-playing-coach', player: 'ENG:club:founder:6', accept: true },
-    ],
+    setup: 'staff-playing-coach',
+    commands: [{ type: 'answer-playing-coach', player: 'ENG:club:founder:6', accept: true }],
   },
   {
     name: 'financial-mediation-fixed-reinforcement-promise',

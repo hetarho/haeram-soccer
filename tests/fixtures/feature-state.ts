@@ -16,7 +16,8 @@ import {
 import { movePerson } from '../../packages/engine/src/npc-continuity';
 import { initializeCoaching } from '../../packages/engine/src/coaching-entry';
 import { qualifyManagers } from '../../packages/engine/src/manager-entry';
-import { proposePlayingCoach, answerPlayingCoach } from '../../packages/engine/src/playing-coach';
+import { answerPlayingCoach } from '../../packages/engine/src/playing-coach';
+import { stagePlayingCoach } from '../../packages/engine/src/testing';
 import { transferWindowDays } from '../../packages/engine/src/transfers';
 /** Small, explicitly synthetic canonical facts exercise every optional feature field. */
 export function featureState() {
@@ -60,15 +61,10 @@ export function featureState() {
     born: playing.born,
     professionalism: 4,
     qualities: { ...playing.qualities },
-    intention: {
-      at: { year: w.year, day: 0 },
-      draw: 0.55,
-      willing: true,
-      encouraged: { at: { year: w.year, day: 0 }, changed: true },
-    },
+    intention: { at: { year: w.year, day: 0 }, draw: 0.45, willing: true },
     retirement: { announced: { year: w.year, day: 0 }, year: w.year },
   });
-  proposePlayingCoach(w, playing.id, 1, 5);
+  stagePlayingCoach(w, playing.id, 1, 5);
   answerPlayingCoach(w, playing.id, true);
   const abroad = w.players.find((p) => p.id !== playing.id && p.id !== arrival.id)!,
     other = w.clubs.find((c) => c.id !== w.playerClub)!.id;

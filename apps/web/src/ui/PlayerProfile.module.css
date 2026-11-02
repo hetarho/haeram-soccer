@@ -166,9 +166,6 @@
 .career p {
   overflow-wrap: anywhere;
 }
-.career select {
-  max-width: 100%;
-}
 .career dl {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);

@@ -224,7 +224,6 @@ describe('rooms beside their people (→WEB-43/72)', () => {
       busy: false,
       view: {
         world,
-        careers: {},
         coaches: {},
         totalMatches: 0,
         milestones: clubMilestones(world),

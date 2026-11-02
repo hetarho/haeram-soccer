@@ -10,46 +10,35 @@ test('qualitative-aptitude-visibility', async ({ page }) => {
   await expect(aptitude).toContainText('감독 자질높음');
   await expect(aptitude).not.toContainText('OVR');
   await expect(aptitude).not.toContainText('4');
+  // The sheet reads his aptitude only: the owner neither encourages a coaching career nor drafts
+  // a playing-coach contract (→WEB-78, STAFF-25/32).
+  await expect(page.getByRole('region', { name: '지도자 진로' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: '지도자 진로 권유', exact: true })).toHaveCount(0);
+  await expect(
+    page.getByRole('button', { name: '플레잉 코치 계약안 보기', exact: true }),
+  ).toHaveCount(0);
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
 });
-test('once-only-encouragement', async ({ page }) => {
-  const { player } = await importSecondCareer(page);
-  await expect(page.getByRole('region', { name: '지도자 진로' })).toContainText('채용을 보장하지');
-  await page.getByRole('button', { name: '지도자 진로 권유', exact: true }).click();
-  await expect(page.getByText('진로 권유 사용 완료', { exact: false })).toBeVisible();
-  await expect(page.getByRole('button', { name: '지도자 진로 권유', exact: true })).toHaveCount(0);
-  await page
-    .getByRole('dialog', { name: player.name, exact: true })
-    .getByRole('button', { name: '닫기', exact: true })
-    .last()
-    .click();
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  await page.reload();
-  await page
-    .getByRole('button', { name: `${player.name} 선수 기록`, exact: true })
-    .first()
-    .click();
-  await expect(page.getByText('진로 권유 사용 완료', { exact: false })).toBeVisible();
-});
 test('combined-playing-coach-review', async ({ page }) => {
-  await importSecondCareer(page);
-  await page.getByRole('button', { name: '지도자 진로 권유', exact: true }).click();
-  await page.getByRole('button', { name: '플레잉 코치 계약안 보기', exact: true }).click();
-  const review = page.getByLabel('선수·코치 통합 계약 검토');
+  const { proposedCareerFixture, exportedCareer } = await import('./career-fixtures');
+  const { importResponsibilityCareer } = await import('./responsibility-fixtures');
+  const { w, player } = await proposedCareerFixture();
+  await importResponsibilityCareer(page, w);
+  // Staff put the proposal; the owner answers it once in the 결재함 (→STAFF-32, WEB-45).
+  await reviewInOffice(page, `${player.name} 플레잉 코치 계약 검토`);
+  const review = page.getByRole('region', { name: '선수·코치 통합 계약 검토' });
   await expect(review).toContainText('선수 연봉');
   await expect(review).toContainText('코치 연봉');
   await expect(review).toContainText('합산 연봉');
   await expect(review).toContainText('즉시 지출');
-  await expect(
-    page.getByRole('region', { name: '지도자 진로' }).getByTestId('decision-owner-contracts'),
-  ).toContainText('직접');
-  await expect(
-    page.getByRole('region', { name: '지도자 진로' }).getByTestId('decision-owner-staff'),
-  ).toContainText('직접');
+  await expect(review.getByTestId('decision-owner-contracts')).toContainText('직접');
+  await expect(review.getByTestId('decision-owner-staff')).toContainText('직접');
   await review.getByRole('button', { name: '선수·코치 계약 함께 승인', exact: true }).click();
-  await expect(page.getByText('플레잉 코치 계약 승인 완료', { exact: false })).toBeVisible();
   await expect(review).toHaveCount(0);
+  const saved = await exportedCareer(page);
+  expect(saved.playingCoachProposals![player.id].status).toBe('accepted');
+  expect(saved.staff!.filter((s) => s.person === player.id)).toHaveLength(1);
 });
 
 test('same-person-cross-role-links', async ({ page }) => {
@@ -117,20 +106,14 @@ for (const width of [1280, 390]) {
     browser,
   }) => {
     await page.setViewportSize({ width, height: 844 });
-    const { player } = await importSecondCareer(page);
-    const { exportedCareer } = await import('./career-fixtures');
-    await page.getByRole('button', { name: '지도자 진로 권유', exact: true }).click();
-    await page.getByRole('button', { name: '플레잉 코치 계약안 보기', exact: true }).click();
-    await page
-      .getByLabel('선수·코치 통합 계약 검토')
-      .getByRole('button', { name: '선수·코치 계약 함께 승인', exact: true })
-      .click();
-    await expect(page.getByText('플레잉 코치 계약 승인 완료', { exact: false })).toBeVisible();
-    await page
-      .getByRole('dialog', { name: player.name, exact: true })
-      .getByRole('button', { name: '닫기', exact: true })
-      .last()
-      .click();
+    const { proposedCareerFixture, exportedCareer } = await import('./career-fixtures');
+    const { importResponsibilityCareer } = await import('./responsibility-fixtures');
+    const { w, player } = await proposedCareerFixture();
+    await importResponsibilityCareer(page, w);
+    await reviewInOffice(page, `${player.name} 플레잉 코치 계약 검토`);
+    const review = page.getByRole('region', { name: '선수·코치 통합 계약 검토' });
+    await review.getByRole('button', { name: '선수·코치 계약 함께 승인', exact: true }).click();
+    await expect(review).toHaveCount(0);
     await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     const before = await exportedCareer(page),
       id = player.id,
@@ -138,8 +121,8 @@ for (const width of [1280, 390]) {
     expect(before.playingCoachProposals![id].status).toBe('accepted');
     expect(before.staff!.filter((s) => s.person === id)).toHaveLength(1);
     expect(person.qualities).toEqual(player.qualities);
-    expect(person.intention!.draw).toBe(0.55);
-    expect(person.intention!.encouraged).toBeDefined();
+    expect(person.intention).toMatchObject({ draw: 0.45, willing: true });
+    expect(person.intention).not.toHaveProperty('encouraged');
     await page.reload();
     const after = await exportedCareer(page);
     expect(after.people![id]).toEqual(person);
@@ -200,7 +183,8 @@ for (const contracts of ['direct', 'delegated'] as const)
       test.slow();
       const { secondCareerFixture, exportedCareer } = await import('./career-fixtures');
       const { importResponsibilityCareer } = await import('./responsibility-fixtures');
-      const { operate, advanceRound } = await import('../../packages/engine/src/index');
+      const { advanceRound } = await import('../../packages/engine/src/index');
+      const { stagePlayingCoach } = await import('../../packages/engine/src/testing');
       const { configureResponsibilities } = await import('./events');
       const { w, player } = secondCareerFixture();
       for (let round = 0; round < 35; round++) advanceRound(w, undefined, false);
@@ -209,13 +193,14 @@ for (const contracts of ['direct', 'delegated'] as const)
       Object.assign(w.people![player.id], {
         qualities: { ...player.qualities },
         professionalism: 5,
-        intention: { at: { year: w.year, day: w.calendar!.day }, draw: 0.85, willing: false },
+        // Willing by his own draw: 매우 높음 below 0.8 (→STAFF-25).
+        intention: { at: { year: w.year, day: w.calendar!.day }, draw: 0.75, willing: true },
       });
       w.income = w.cash;
       w.settings!.responsibilities.contracts = contracts;
       w.settings!.responsibilities.staff = staff;
-      operate(w, { type: 'encourage-coaching', player: player.id });
-      operate(w, { type: 'propose-playing-coach', player: player.id, years: 2, term: 5 });
+      // Staff put the conversion as they would on filling his post (→STAFF-32).
+      stagePlayingCoach(w, player.id, 2, 5);
       const automatic = contracts === 'delegated' && staff === 'delegated';
       const proposal = w.playingCoachProposals![player.id];
       expect(proposal.status).toBe(automatic ? 'accepted' : 'pending');

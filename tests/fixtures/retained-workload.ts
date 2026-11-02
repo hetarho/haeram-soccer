@@ -15,6 +15,7 @@ import { retirePerson } from '../../packages/engine/src/careers';
 import { detectMediations, resolveMediation } from '../../packages/engine/src/mediation';
 import { lineOf } from '../../packages/engine/src/player';
 import { RESPONSIBILITY_KEYS } from '../../packages/engine/src/responsibilities';
+import { stagePlayingCoach } from '../../packages/engine/src/testing';
 /** Marked synthetic announced candidates/funding; all subsequent contracts, employment time,
  * qualification and fixed promises use real transitions. The complete NPC registry is retained.
  * `release` founds it (default the switch as it stands). */
@@ -43,14 +44,13 @@ export function retainedWorkload(release: MatchModelRelease = MATCH_MODEL_RELEAS
       born,
       qualities: { ...player.qualities },
       professionalism: 5,
-      intention: { at: careerDate(w), draw: 0.85, willing: false },
+      intention: { at: careerDate(w), draw: 0.75, willing: true },
       retirement: { announced: careerDate(w), year: w.year },
     });
     player.retiring = w.year;
   }
   w.settings!.responsibilities.contracts = w.settings!.responsibilities.staff = 'direct';
-  operate(w, { type: 'encourage-coaching', player: playing.id });
-  operate(w, { type: 'propose-playing-coach', player: playing.id, years: 2, term: 5 });
+  stagePlayingCoach(w, playing.id, 2, 5);
   operate(w, { type: 'answer-playing-coach', player: playing.id, accept: true });
   const person = w.people![former.id];
   person.intention!.willing = true;

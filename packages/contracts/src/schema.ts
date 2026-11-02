@@ -824,6 +824,8 @@ const personCareer = z.strictObject({
       at: careerDate,
       draw: z.number().finite().min(0).lt(1),
       willing: z.boolean(),
+      // SAVE-25 legacy: the owner's withdrawn coaching encouragement (→STAFF-29) was kept with the
+      // intention; read so an older save opens, then dropped by validateWorld.
       encouraged: z.strictObject({ at: careerDate, changed: z.boolean() }).optional(),
     })
     .optional(),
@@ -1270,6 +1272,9 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
     delete legacy.strain;
     delete legacy.asked;
   }
+  // An older save kept the owner's coaching encouragement with a player's intention.
+  for (const person of Object.values(w.people ?? {}))
+    if (person.intention) delete (person.intention as { encouraged?: unknown }).encouraged;
   const ids = new Set(w.clubs.map((c) => c.id));
   for (const [club, results] of Object.entries(w.recentResults ?? {})) {
     const seen = new Set<string>();
@@ -1466,8 +1471,6 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
         if (overlap && !playingCoach) throw new Error('인물 재직 중복 기간 손상');
       }
     if (
-      (person.intention?.encouraged &&
-        dateNumber(person.intention.encouraged.at) < dateNumber(person.intention.at)) ||
       (person.retirement?.at &&
         dateNumber(person.retirement.at) < dateNumber(person.retirement.announced)) ||
       (person.retirement && person.retirement.year < person.retirement.announced.year)
@@ -1475,7 +1478,6 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       throw new Error('인물 경력 순서 손상');
     for (const at of [
       person.intention?.at,
-      person.intention?.encouraged?.at,
       person.retirement?.announced,
       person.retirement?.at,
       person.coaching?.at,

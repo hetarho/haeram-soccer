@@ -46,14 +46,19 @@ const row = z.tuple([
   z.array(job),
   z.array(mentor),
   z
-    .tuple([
-      n,
-      n,
-      z.number().finite(),
-      z.boolean(),
-      optionalNumber,
-      optionalNumber,
-      z.boolean().nullable(),
+    .union([
+      z.tuple([n, n, z.number().finite(), z.boolean()]),
+      // SAVE-25 legacy: an older row also held the owner's withdrawn coaching encouragement
+      // (year, day, changed); it is read and dropped.
+      z.tuple([
+        n,
+        n,
+        z.number().finite(),
+        z.boolean(),
+        optionalNumber,
+        optionalNumber,
+        z.boolean().nullable(),
+      ]),
     ])
     .nullable(),
   z.tuple([n, n, n, optionalNumber, optionalNumber]).nullable(),
@@ -156,15 +161,7 @@ export function packCareerRows(
           m.to?.day ?? null,
         ]),
         p.intention
-          ? [
-              p.intention.at.year,
-              p.intention.at.day,
-              p.intention.draw,
-              p.intention.willing,
-              p.intention.encouraged?.at.year ?? null,
-              p.intention.encouraged?.at.day ?? null,
-              p.intention.encouraged?.changed ?? null,
-            ]
+          ? [p.intention.at.year, p.intention.at.day, p.intention.draw, p.intention.willing]
           : null,
         p.retirement
           ? [
@@ -228,8 +225,6 @@ export function unpackCareers(
   const people: Record<string, PersonCareer> = Object.create(null);
   for (const r of data.people) {
     if (deferred) baseRow.parse([...r.slice(0, 14), ...r.slice(16)]);
-    if (r[16] && (r[16][4] === null) !== (r[16][6] === null))
-      throw new Error('진로 권유 압축 차원 손상');
     const intention = r[16],
       retirement = r[17],
       coaching = r[18],
@@ -273,9 +268,6 @@ export function unpackCareers(
               at: { year: intention[0], day: intention[1] },
               draw: intention[2],
               willing: intention[3],
-              ...(date(intention[4], intention[5])
-                ? { encouraged: { at: date(intention[4], intention[5]), changed: intention[6] } }
-                : {}),
             },
           }
         : {}),

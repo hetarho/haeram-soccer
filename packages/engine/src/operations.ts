@@ -1,6 +1,5 @@
 import { resolveMediation } from './mediation';
-import { proposePlayingCoach, answerPlayingCoach } from './playing-coach';
-import { encourageCoaching } from './coaching-entry';
+import { answerPlayingCoach } from './playing-coach';
 import type { World, Command } from '../../contracts/src/types';
 import { readInbox } from './inbox';
 import { commercialCommand } from './ops-commercial';
@@ -30,17 +29,11 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
     case 'settings':
       applySettings(w, cmd.settings);
       break;
-    case 'propose-playing-coach':
-      proposePlayingCoach(w, cmd.player, cmd.years, cmd.term);
-      break;
     case 'answer-playing-coach':
       answerPlayingCoach(w, cmd.player, cmd.accept);
       break;
     case 'resolve-mediation':
       resolveMediation(w, cmd.id, cmd.support);
-      break;
-    case 'encourage-coaching':
-      encourageCoaching(w, cmd.player);
       break;
     case 'read-inbox':
       readInbox(w, cmd.id);

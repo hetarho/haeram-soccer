@@ -15187,7 +15187,7 @@
       }
     },
     {
-      "name": "once-only-encouragement-and-combined-contract",
+      "name": "staff-proposed-combined-contract",
       "input": {
         "country": "ENG",
         "name": "Synthetic Archives",
@@ -15196,18 +15196,8 @@
         "level": "easy"
       },
       "currentRules": true,
-      "setup": "announced-player",
+      "setup": "staff-playing-coach",
       "commands": [
-        {
-          "type": "encourage-coaching",
-          "player": "ENG:club:founder:6"
-        },
-        {
-          "type": "propose-playing-coach",
-          "player": "ENG:club:founder:6",
-          "years": 2,
-          "term": 5
-        },
         {
           "type": "answer-playing-coach",
           "player": "ENG:club:founder:6",
@@ -15444,15 +15434,8 @@
                 "year": 1950,
                 "day": 0
               },
-              "draw": 0.55,
-              "willing": true,
-              "encouraged": {
-                "at": {
-                  "year": 1950,
-                  "day": 0
-                },
-                "changed": true
-              }
+              "draw": 0.45,
+              "willing": true
             },
             "retirement": {
               "announced": {
@@ -15856,7 +15839,7 @@
         "recruitmentArrivals": [],
         "year": 1950,
         "round": 0,
-        "revision": 3,
+        "revision": 1,
         "cash": "999992574",
         "currency": "GBP-LSD",
         "income": "0",
@@ -16003,11 +15986,6 @@
             "kind": "founding",
             "title": "클럽의 첫 페이지",
             "amount": "666750"
-          },
-          {
-            "kind": "coaching-encouragement",
-            "title": "Steven Wells 지도자 진로 권유",
-            "amount": null
           },
           {
             "kind": "playing-coach-proposal",

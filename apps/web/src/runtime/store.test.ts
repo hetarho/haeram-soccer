@@ -15,7 +15,6 @@ function view(): View {
   });
   return {
     world: { ...world, people: undefined },
-    careers: {},
     coaches: {},
     milestones: clubMilestones(world),
     totalMatches: 0,

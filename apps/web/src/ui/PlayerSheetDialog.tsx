@@ -1,6 +1,5 @@
 import { PersonCareerLink } from './PersonCareer';
 import type { GameClient } from '../runtime/client';
-import { PlayingCoachReview } from './PlayingCoachReview';
 import { useMemo, useState } from 'react';
 import type { Player, World } from '../../../../packages/contracts/src/types';
 import { agentOf, clausesLabel, talkFor } from '../../../../packages/engine/src/contracts';
@@ -90,7 +89,6 @@ export function PlayerSheet({
       )}
       <PlayerProfile w={w} player={player} own={active} />
       <PersonCareerLink id={player.id} name={player.name} client={client} />
-      {active && <PlayingCoachReview w={w} player={player} client={client} />}
       <section data-surface="sheet" className={a.clubCareer} aria-label="우리 클럽 통산">
         <h3>우리 클럽 통산</h3>
         <p className={a.careerLine}>
@@ -248,10 +246,7 @@ function SeasonHeat({ w, player, tally }: { w: World; player: Player; tally?: Pl
 
 const selectPlayerWorld = worldSelector([
   'players',
-  'settings',
   'calendar',
-  'cash',
-  'playingCoachProposals',
   'ownMatches',
   'year',
   'playerClub',

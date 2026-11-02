@@ -14,6 +14,7 @@ import {
   policyOf,
 } from '../../packages/engine/src/index';
 import { currency, priceIndex } from '../../packages/catalogs/src/index';
+import { stagePlayingCoach } from '../../packages/engine/src/testing';
 import { DISABLED_RELEASE } from './releases';
 export interface FixtureDefinition {
   name: string;
@@ -21,7 +22,7 @@ export interface FixtureDefinition {
   year?: number;
   cupQualification?: boolean;
   currentRules?: boolean;
-  setup?: 'announced-player' | 'financial-conflict';
+  setup?: 'staff-playing-coach' | 'financial-conflict';
   /** The dials the club holds as founded (→ECON-16); no command changes them in a career. */
   policy?: Partial<ClubPolicy>;
   commands: Command[];
@@ -57,7 +58,7 @@ export function runFixture(definition: FixtureDefinition) {
     ];
   prepareSeason(w);
   // Explicit synthetic setup is portable input, followed only by normal engine commands.
-  if (definition.setup === 'announced-player') {
+  if (definition.setup === 'staff-playing-coach') {
     const p = w.players[6],
       person = w.people![p.id];
     p.born = w.year - 35;
@@ -68,10 +69,12 @@ export function runFixture(definition: FixtureDefinition) {
       born: p.born,
       qualities: { ...p.qualities },
       professionalism: 4,
-      intention: { at: careerDate(w), draw: 0.55, willing: false },
+      intention: { at: careerDate(w), draw: 0.45, willing: true },
       retirement: { announced: careerDate(w), year: w.year },
     });
     w.cash = '999999999';
+    // The willing announced player is the one staff propose when they fill his post (→STAFF-32).
+    stagePlayingCoach(w, p.id, 2, 5);
   }
   if (definition.setup === 'financial-conflict') {
     w.cash = '0';

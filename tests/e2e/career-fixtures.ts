@@ -25,7 +25,8 @@ export function secondCareerFixture() {
     position: player.position,
     qualities: { ...player.qualities },
     professionalism: 4,
-    intention: { at: careerDate(w), draw: 0.55, willing: false },
+    // Willing by his own draw: 높음 below 0.5 (→STAFF-25).
+    intention: { at: careerDate(w), draw: 0.45, willing: true },
     retirement: { announced: careerDate(w), year: w.year },
   });
   w.settings!.responsibilities.contracts = 'direct';
@@ -106,12 +107,21 @@ export async function exportedCareer(page: Page) {
   });
 }
 
-/** Synthetic accepted agreement is made by the same real commands used by the UI. */
+/**
+ * Staff's combined proposal for the willing veteran, as they put one when they fill his post
+ * (→STAFF-32), waiting in the 결재함 while contracts and staff are direct.
+ */
+export async function proposedCareerFixture() {
+  const { stagePlayingCoach } = await import('../../packages/engine/src/testing');
+  const fixture = secondCareerFixture();
+  const proposal = stagePlayingCoach(fixture.w, fixture.player.id, 2, 5);
+  return { ...fixture, proposal };
+}
+
+/** Synthetic accepted agreement: staff's proposal answered by the same command the 결재함 sends. */
 export async function combinedCareerFixture() {
   const { operate } = await import('../../packages/engine/src/index');
-  const { w, player } = secondCareerFixture();
-  operate(w, { type: 'encourage-coaching', player: player.id });
-  operate(w, { type: 'propose-playing-coach', player: player.id, years: 2, term: 5 });
+  const { w, player } = await proposedCareerFixture();
   operate(w, { type: 'answer-playing-coach', player: player.id, accept: true });
   return {
     w,

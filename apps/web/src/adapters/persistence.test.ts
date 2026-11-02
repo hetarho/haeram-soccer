@@ -1168,7 +1168,6 @@ describe('club identity continuity fixtures (→KIT-12/15, SAVE-3/20/21/22)', ()
 it('feature-state-lossless-roundtrip and continued-career-parity preserve roles, money, draws and promise judgements', async () => {
   const { operate } = await import('../../../../packages/engine/src/index');
   const { judgePromises } = await import('../../../../packages/engine/src/promises');
-  const { encourageCoaching } = await import('../../../../packages/engine/src/coaching-entry');
   const original = features(),
     restored = (await decode(await encode(original))).world;
   expect(canonical(restored)).toBe(canonical(original));
@@ -1177,7 +1176,6 @@ it('feature-state-lossless-roundtrip and continued-career-parity preserve roles,
     const cash = w.cash;
     operate(w, { type: 'answer-playing-coach', player, accept: true });
     expect(w.cash).toBe(cash);
-    expect(() => encourageCoaching(w, player)).toThrow();
     advanceDays(w, 2, undefined, false);
   }
   expect(canonical(restored)).toBe(canonical(original));

@@ -5,8 +5,9 @@ import {
   automaticPlayingCoachFits,
   considerPlayingCoach,
   playingCoachDurations,
-  proposePlayingCoach,
+  playingCoachQuote,
 } from './playing-coach';
+import { stagePlayingCoach } from './testing';
 import { careerDate } from './person-careers';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import { encode, decode } from '../../../apps/web/src/adapters/persistence';
@@ -52,7 +53,7 @@ describe('combined playing-coach agreement', () => {
         const { w, id } = world();
         w.settings!.responsibilities.contracts = contracts;
         w.settings!.responsibilities.staff = staff;
-        const proposal = proposePlayingCoach(w, id, 1, 2);
+        const proposal = stagePlayingCoach(w, id, 1, 2);
         const delegated = contracts === 'delegated' && staff === 'delegated';
         expect(proposal.status).toBe(delegated ? 'accepted' : 'pending');
         expect(
@@ -69,7 +70,7 @@ describe('combined playing-coach agreement', () => {
     const p = w.players.find((p) => p.id === id)!,
       person = w.people![id];
     w.settings!.responsibilities.staff = 'direct';
-    const proposal = proposePlayingCoach(w, id, 2, 3);
+    const proposal = stagePlayingCoach(w, id, 2, 3);
     expect(proposal.playerWage).toBe(p.wage);
     expect(proposal.coachWage).toBe(coachWage(w, person.coaching!.ability));
     expect(BigInt(proposal.totalWage)).toBe(BigInt(p.wage) + BigInt(proposal.coachWage));
@@ -96,18 +97,18 @@ describe('combined playing-coach agreement', () => {
     p.born = w.year - 39;
     w.people![id].born = p.born;
     expect(playingCoachDurations(w, id)).toEqual([1]);
-    expect(() => proposePlayingCoach(w, id, 2, 2)).toThrow();
+    expect(playingCoachQuote(w, id, 2, 2)).toBeUndefined();
     p.born = w.year - 40;
     w.people![id].born = p.born;
     expect(playingCoachDurations(w, id)).toEqual([]);
     p.born = w.year - 36;
     w.people![id].born = p.born;
-    const proposal = proposePlayingCoach(w, id, 1, 2);
+    const proposal = stagePlayingCoach(w, id, 1, 2);
     staffMember(w, proposal.role)!.wage = '12345';
     const stale = JSON.stringify(w);
     expect(() => answerPlayingCoach(w, id, true)).toThrow('조건');
     expect(JSON.stringify(w)).toBe(stale);
-    proposePlayingCoach(w, id, 1, 2);
+    stagePlayingCoach(w, id, 1, 2);
     w.cash = '0';
     const poor = JSON.stringify(w);
     expect(() => answerPlayingCoach(w, id, true)).toThrow('자금');
@@ -116,7 +117,7 @@ describe('combined playing-coach agreement', () => {
   it('deduplicates handover disclosure and retains joint work while another category is direct', () => {
     const { w, id } = world();
     w.settings!.responsibilities.staff = 'direct';
-    const proposal = proposePlayingCoach(w, id, 1, 2);
+    const proposal = stagePlayingCoach(w, id, 1, 2);
     expect(automaticPlayingCoachFits(w, proposal)).toBe(true);
     const one = structuredClone(w.settings!);
     one.responsibilities.contracts = 'delegated';
@@ -134,7 +135,7 @@ describe('combined playing-coach agreement', () => {
     expect(w.playingCoachProposals![id].status).toBe('accepted');
     const original = world();
     original.w.settings!.responsibilities.staff = 'direct';
-    proposePlayingCoach(original.w, original.id, 1, 2);
+    stagePlayingCoach(original.w, original.id, 1, 2);
     const settings = structuredClone(original.w.settings!);
     settings.responsibilities.contracts = settings.responsibilities.staff = 'delegated';
     expect(
@@ -148,7 +149,7 @@ describe('combined playing-coach agreement', () => {
     const { w, id } = world();
     w.settings!.responsibilities.staff = 'direct';
     w.players.find((p) => p.id === id)!.wage = '123456789';
-    return { w, id, proposal: proposePlayingCoach(w, id, 1, 2) };
+    return { w, id, proposal: stagePlayingCoach(w, id, 1, 2) };
   }
   it('the proposal event names wages in the money notation', () => {
     const { w, id, proposal } = directProposal();
@@ -179,7 +180,7 @@ it('offers a playing coach only in ordinary hiring order and never automatically
     role = person.coaching!.role;
   person.coaching!.ability = 55;
   const ordinary = coachMatches(w, role, staffMember(w, role))[0];
-  const quote = proposePlayingCoach(w, id, 1, 2);
+  const quote = stagePlayingCoach(w, id, 1, 2);
   expect(automaticPlayingCoachFits(w, quote)).toBe(true);
   delete w.playingCoachProposals![id];
   expect(considerPlayingCoach(w, role)).toBe(
@@ -189,14 +190,14 @@ it('offers a playing coach only in ordinary hiring order and never automatically
   const member = staffMember(w, role)!;
   member.wage = '100';
   member.until = w.year + 2;
-  const paid = proposePlayingCoach(w, id, 1, 2);
+  const paid = stagePlayingCoach(w, id, 1, 2);
   expect(automaticPlayingCoachFits(w, paid)).toBe(false);
 });
 
 it('preserves the player contract and complete saved career when a playing coach is released', async () => {
   const { w, id } = world({ seed: 'coach-force', fieldPlayer: true, atFounding: true });
   w.settings!.responsibilities.contracts = w.settings!.responsibilities.staff = 'direct';
-  const proposal = proposePlayingCoach(w, id, 1, 2);
+  const proposal = stagePlayingCoach(w, id, 1, 2);
   expect(proposal.role).toBe('youth');
   answerPlayingCoach(w, id, true);
   const person = w.people![id],
