@@ -464,20 +464,20 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 26 | 25 | ARCH-1✎ ARCH-6✎ ARCH-8✎ ARCH-21✎ ARCH-24✎ ARCH-29✎ | 2 |
-| WEB | 202 | 201 | WEB-21- WEB-60- WEB-61- WEB-75- WEB-77- WEB-107- WEB-9✎ WEB-11✎ WEB-14✎ WEB-15✎ WEB-16✎ WEB-35✎ WEB-38✎ WEB-39✎ WEB-42✎ WEB-43✎ WEB-44✎ WEB-45✎ WEB-51✎ WEB-59✎ WEB-70✎ WEB-71✎ WEB-74✎ WEB-78✎ WEB-88✎ WEB-91✎ WEB-97✎ WEB-102✎ WEB-110✎ | 0 |
+| ARCH | 26 | 26 | - | 2 |
+| WEB | 202 | 202 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 7 | 7 | - | 0 |
-| KIT | 7 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ KIT-6✎ KIT-8✎ | 0 |
-| CLUB | 49 | 48 | CLUB-6✎ CLUB-8✎ CLUB-9✎ CLUB-10✎ CLUB-13✎ CLUB-15✎ CLUB-16✎ CLUB-20- CLUB-23✎ CLUB-31✎ CLUB-33✎ CLUB-45✎ | 0 |
-| MATCH | 45 | 44 | MATCH-8✎ MATCH-9✎ MATCH-29✎ | 0 |
-| LEAGUE | 11 | 10 | LEAGUE-13✎ | 0 |
-| STAFF | 38 | 37 | STAFF-2- STAFF-3- STAFF-4- STAFF-5- STAFF-9- STAFF-10- STAFF-19- STAFF-29- STAFF-6✎ STAFF-13✎ STAFF-14✎ STAFF-15✎ STAFF-18✎ STAFF-22✎ STAFF-23✎ STAFF-25✎ STAFF-26✎ STAFF-32✎ STAFF-38✎ STAFF-44✎ STAFF-46✎ STAFF-47✎ | 0 |
-| ECON | 41 | 40 | ECON-10✎ ECON-11✎ ECON-12✎ ECON-13- ECON-16✎ ECON-17✎ ECON-18✎ ECON-19✎ ECON-20✎ ECON-22✎ ECON-25✎ ECON-26✎ ECON-27✎ ECON-32✎ ECON-34✎ | 0 |
+| KIT | 7 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
+| CLUB | 49 | 49 | - | 0 |
+| MATCH | 45 | 45 | - | 0 |
+| LEAGUE | 11 | 11 | - | 0 |
+| STAFF | 38 | 38 | - | 0 |
+| ECON | 41 | 41 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
-| HIST | 20 | 19 | HIST-5✎ HIST-11✎ HIST-14✎ | 0 |
-| SAVE | 61 | 60 | SAVE-10✎ SAVE-15- SAVE-17✎ SAVE-25+ | 0 |
-| PLAYER | 12 | 11 | PLAYER-25✎ | 0 |
+| HIST | 20 | 20 | - | 0 |
+| SAVE | 61 | 61 | - | 0 |
+| PLAYER | 12 | 12 | - | 0 |
 
 ## review
 | id | st |
@@ -492,6 +492,13 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T646 | remove care requests, office quick actions, place requests and cash remedies | CLUB WEB ECON STAFF HIST SAVE | - | todo |
+| T647 | remove training 제안/강행 to coaches | STAFF CLUB WEB ECON SAVE | T646 | todo |
+| T648 | remove tactic requests, owner lineups and the 구단주 제안 card; kit choice section | STAFF MATCH CLUB WEB KIT HIST SAVE ARCH | T647 | todo |
+| T649 | remove the 방향 board, strategy changes, saved strategies, dials and ticket price | ECON WEB SAVE ARCH STAFF CLUB LEAGUE | T648 | todo |
+| T650 | remove owner capital and owner-started facility works | ECON CLUB WEB HIST | T649 | todo |
+| T651 | remove coaching encouragement and owner-proposed playing coaches | STAFF PLAYER HIST WEB | T650 | todo |
+| T652 | remove dead commands and every unused piece of code | SAVE KIT LEAGUE WEB ARCH | T651 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -515,11 +522,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- create-task WEB ECON CLUB STAFF MATCH SAVE ARCH LEAGUE HIST KIT PLAYER (owner intervention removal) + repo-wide unused-code removal; illustrations stay
+- implement-task T646 (then T647→T652 in order: owner intervention removal and unused-code sweep; illustrations stay)
 - create-ssot OWNER (ideation owner-wealth-and-takeover; then WEB WORLD ECON LEAGUE MATCH KIT SAVE)
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261102 create-task owner intervention removal → T646–T652 (sequential; KIT-6/8 tasked in T648, KIT stays tasked 4 for its earlier KIT-5/9/10/12/13 deltas)
 - 261102 update-ssot owner intervention removal: WEB r202 ECON r41 ARCH r26 SAVE r61 LEAGUE r11 CLUB r49 MATCH r45 HIST r20 KIT r7 STAFF r38 PLAYER r12 (WORLD unchanged) — only 직접/위임 and its approvals stay; care, training 제안/강행, tactic requests and owner lineups, the 방향 board, dials, ticket price, owner capital, cash remedies, facility work start, coaching encouragement and owner-proposed playing coaches withdrawn; values stay as founded or saved; older saves drop the removed state (SAVE-25)
 - 261102 update-ssot WEB ECON CLUB STAFF MATCH SAVE ARCH LEAGUE HIST KIT PLAYER WORLD start: owner intervention removal
 - 261102 design ds03 web: market targets 선수/유소년/코치/감독/단장 (youth = world market ≤20, ageMax query); office 결재함 as titles with delegates (단장/감독/유스 디렉터) and 직접/위임 + 전체 switches; match board in the side on the ball, larger titles, 20% pitch margin, matchup beside speeds, notable-only commentary log, 상세 and player sheets as dialogs; season table full width. Committed without verify at the owner's request.
