@@ -229,6 +229,15 @@
     "team.player.open": "{name}の選手記録",
     "team.prospect.open": "{name}のアカデミー審査",
     "team.coach.open": "{name}の経歴",
-    "team.back": "← チーム · {view}"
+    "team.back": "← チーム · {view}",
+    "staff.role.manager": "監督",
+    "staff.role.director": "ディレクター",
+    "staff.role.assistant": "ヘッドコーチ",
+    "staff.role.attack": "攻撃コーチ",
+    "staff.role.defense": "守備コーチ",
+    "staff.role.goalkeeping": "GKコーチ",
+    "staff.role.fitness": "フィジカルコーチ",
+    "staff.role.youth": "育成責任者",
+    "staff.role.scout": "チーフスカウト"
   }
 }

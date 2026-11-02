@@ -32,6 +32,7 @@ import {
   openCupSeason,
   useRecordRequest,
   leaveManagerSeason,
+  managerRecords,
   rememberManagerSeason,
   returnedToManagers,
   RECORD_TABS,
@@ -174,6 +175,18 @@ export function RecordsRoom({ state, client }: Props) {
     if (next === 'seasons') setYear(undefined);
     recordScroll(0);
   };
+  const managerReturn = managerRecords(w.id).opened;
+  const returnToList = () => {
+    setYear(undefined);
+    setTab(managerReturn ? 'managers' : 'seasons');
+    history.pushState(
+      null,
+      '',
+      managerReturn ? '/history?section=club&view=managers' : '/history?section=club',
+    );
+    // ManagerRecords restores its own list; season rows keep their scroll before opening.
+    if (!managerReturn) recordScroll(useTaskMemory.getState().scrolls['record-list'] ?? 0);
+  };
   // A season opens under the records' tabs; its tab, 시즌별 기록, leads back to the list (→WEB-54).
   const seasonOpen = tab === 'seasons' && year !== undefined;
   return (
@@ -190,6 +203,16 @@ export function RecordsRoom({ state, client }: Props) {
       </div>
       {seasonOpen && (
         <div className={s.recordNavigator} data-ui="record-navigator">
+          <button
+            data-ui="link"
+            type="button"
+            className={s.navigatorBack}
+            aria-label={managerReturn ? '감독 이력 목록으로' : '시즌별 기록 목록으로'}
+            onClick={returnToList}
+          >
+            <PixelIcon name="chevronLeft" size={16} />
+            {managerReturn ? '감독 이력' : '시즌별 기록'}
+          </button>
           <h3>
             {seasonName(year)} · 구단 시즌 기록{year === w.year ? ' · 진행 중' : ''}
           </h3>

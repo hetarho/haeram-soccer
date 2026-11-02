@@ -235,6 +235,15 @@
     "team.player.open": "Scheda di {name}",
     "team.prospect.open": "Valutazione giovanile di {name}",
     "team.coach.open": "Carriera di {name}",
-    "team.back": "← Squadra · {view}"
+    "team.back": "← Squadra · {view}",
+    "staff.role.manager": "Allenatore",
+    "staff.role.director": "Direttore sportivo",
+    "staff.role.assistant": "Vice allenatore",
+    "staff.role.attack": "Tecnico offensivo",
+    "staff.role.defense": "Tecnico difensivo",
+    "staff.role.goalkeeping": "Preparatore portieri",
+    "staff.role.fitness": "Preparatore atletico",
+    "staff.role.youth": "Responsabile giovanili",
+    "staff.role.scout": "Capo osservatore"
   }
 }

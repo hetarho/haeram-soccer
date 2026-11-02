@@ -229,6 +229,15 @@
     "team.player.open": "{name} 선수 기록",
     "team.prospect.open": "{name} 유소년 검토",
     "team.coach.open": "{name} 인물 경력",
-    "team.back": "← 팀 · {view}"
+    "team.back": "← 팀 · {view}",
+    "staff.role.manager": "감독",
+    "staff.role.director": "단장",
+    "staff.role.assistant": "수석코치",
+    "staff.role.attack": "공격 코치",
+    "staff.role.defense": "수비 코치",
+    "staff.role.goalkeeping": "골키퍼 코치",
+    "staff.role.fitness": "피지컬 코치",
+    "staff.role.youth": "유스 디렉터",
+    "staff.role.scout": "수석 스카우트"
   }
 }

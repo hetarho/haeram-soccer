@@ -377,8 +377,11 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                 </button>
               </td>
               <td data-label="리그">
-                <span className={t.cellText}>
-                  {divisionName(code, clubOf(w).tier, clubOf(w).group)}
+                <span
+                  className={t.cellText}
+                  title={divisionName(code, clubOf(w).tier, clubOf(w).group)}
+                >
+                  {divisionName(code, clubOf(w).tier, clubOf(w).group, { compact: true })}
                 </span>
               </td>
               <td data-label="승점">{w.tables[w.playerClub]?.points ?? 0}</td>
@@ -414,8 +417,11 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                     )}
                   </td>
                   <td data-label="리그">
-                    <span className={t.cellText}>
-                      {divisionName(code, h.tier, h.group)} {h.rank}위
+                    <span
+                      className={t.cellText}
+                      title={`${divisionName(code, h.tier, h.group)} ${h.rank}위`}
+                    >
+                      {divisionName(code, h.tier, h.group, { compact: true })} {h.rank}위
                     </span>
                   </td>
                   <td data-label="승점">

@@ -55,6 +55,8 @@ export const worldMarketQuerySchema = z.strictObject({
   team: id.optional(),
   position: z.enum(POSITIONS).optional(),
   line: z.enum(LINES).optional(),
+  ovrMin: z.number().int().min(0).max(100).optional(),
+  ovrMax: z.number().int().min(0).max(100).optional(),
   fit: z.enum(['all', 'improves']).optional(),
   sort: z.enum(['name', 'age', 'ovr', 'potential', 'fee', 'wage']).optional(),
   direction: z.enum(['asc', 'desc']).optional(),

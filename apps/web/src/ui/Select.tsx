@@ -21,6 +21,8 @@ type Declaration = {
   label?: string;
   /** A second line shown under the option in the list only, never in the trigger. */
   'data-hint'?: string;
+  /** A shorter name the trigger shows in place of the option's label; the list keeps the label. */
+  'data-short'?: string;
 };
 type Choice = {
   value: string;
@@ -29,6 +31,7 @@ type Choice = {
   disabled?: boolean;
   group?: string;
   hint?: string;
+  short?: string;
 };
 function textOf(children: ReactNode): string {
   return Children.toArray(children)
@@ -49,6 +52,7 @@ function choicesOf(children: ReactNode, group?: string): Choice[] {
           disabled: child.props.disabled,
           group,
           hint: child.props['data-hint'],
+          short: child.props['data-short'],
         },
       ];
     return choicesOf(child.props.children, child.type === 'optgroup' ? child.props.label : group);
@@ -273,7 +277,7 @@ export function Select({
         onClick={() => (open ? close() : show())}
         onKeyDown={key}
       >
-        <span className={s.value}>{current?.label || '선택하세요'}</span>
+        <span className={s.value}>{current?.short || current?.label || '선택하세요'}</span>
         <PixelIcon name="chevronDown" size={12} className={s.chevron} />
       </button>
       {open && !blocked && (

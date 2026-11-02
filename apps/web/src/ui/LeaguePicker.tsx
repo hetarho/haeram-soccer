@@ -5,6 +5,7 @@ import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
 import { selectLeagueWorld } from './liveState';
 import { leagueParam, ownLeague, sameLeague, type LeagueChoice } from './league';
+import { ClubCrest } from './ClubCrest';
 import { Select } from './Select';
 import { SeasonStepper } from './SeasonStepper';
 import s from './App.module.css';
@@ -67,9 +68,11 @@ export function useLeagueFixtures(client: GameClient, w: World, league?: LeagueC
 /**
  * Which league the league views show (→WEB-40, WEB-65): any country, and any division with each of
  * its regional groups as an option of its own, the own league first; then, with `onSeason`, the
- * season stepper in the same row. Choosing the own league again clears the choice, so a promotion
- * or relegation carries the views along. A closed season passes `own`, our league that season, so
- * the league we play in now reads like any other there.
+ * season stepper in the same row. The selects read short (`ENG`, `3부A`) and list full names.
+ * Choosing the own league again clears the choice, so a promotion or relegation carries the views
+ * along; while another league is shown, 우리 리그 in the row's free end clears it in one tap. A
+ * closed season passes `own`, our league that season, so the league we play in now reads like any
+ * other there.
  */
 export const LeaguePicker = memo(function LeaguePicker({
   league,
@@ -99,11 +102,18 @@ export const LeaguePicker = memo(function LeaguePicker({
         <span className={s.srOnly}>국가</span>
         <Select
           aria-label="국가"
+          title={cp.name}
           value={shown.code}
+          hintLayout="inline"
           onValueChange={(code) => choose(code === own.code ? own : { code, tier: 0, group: 0 })}
         >
           {COUNTRIES.map((entry) => (
-            <option key={entry.code} value={entry.code}>
+            <option
+              key={entry.code}
+              value={entry.code}
+              data-short={entry.code}
+              data-hint={entry.code}
+            >
               {entry.name}
             </option>
           ))}
@@ -117,14 +127,23 @@ export const LeaguePicker = memo(function LeaguePicker({
           onValueChange={(value) => choose({ code: shown.code, ...parseDivision(value) })}
         >
           {cp.groups.flatMap((groups, tier) =>
-            groups.map((_, group) => (
-              <option key={`${tier}.${group}`} value={divisionValue({ tier, group })}>
-                {tier + 1}부{groups.length > 1 ? ` ${String.fromCharCode(65 + group)}조` : ''}
-              </option>
-            )),
+            groups.map((_, group) => {
+              const letter = groups.length > 1 ? String.fromCharCode(65 + group) : '';
+              return (
+                <option
+                  key={`${tier}.${group}`}
+                  value={divisionValue({ tier, group })}
+                  data-short={`${tier + 1}부${letter}`}
+                >
+                  {tier + 1}부{letter && ` ${letter}조`}
+                </option>
+              );
+            }),
           )}
           {amateur && shown.code === own.code && (
-            <option value={divisionValue(own)}>아마추어 리그</option>
+            <option value={divisionValue(own)} data-short="아마">
+              아마추어 리그
+            </option>
           )}
         </Select>
       </label>
@@ -135,6 +154,18 @@ export const LeaguePicker = memo(function LeaguePicker({
           current={seasons.current}
           onChange={onSeason}
         />
+      )}
+      {league && !sameLeague(league, own) && (
+        <button
+          type="button"
+          data-ui="link"
+          className={s.ownLeague}
+          aria-label="우리 리그 보기"
+          onClick={() => onLeague(undefined)}
+        >
+          <ClubCrest w={w} id={w.playerClub} size={16} />
+          <b>우리 리그</b>
+        </button>
       )}
     </div>
   );

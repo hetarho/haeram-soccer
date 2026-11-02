@@ -106,6 +106,13 @@ In candidate lists, a player's name opens their record with the `link` role; it 
 the generic framed-button skin. Keep comparison toggles equally quiet and render their checked
 state with the theme's checkbox artwork. Explicit table columns reserve room for identity,
 ratings and money instead of inheriting the shared leading rank column's narrow width.
+Tables whose first column identifies a record, such as a season, also set its alignment
+explicitly: a wide centred label column can look like an empty leading column on phones.
+Season history uses `Amat.` for the amateur division with the full name in its title. Let the
+table and its columns fit their content instead of imposing a minimum width or distributing
+unused container space. Check the actual gaps between season, league and points on phones;
+shortening a label alone does not remove space reserved by fixed columns. Adjust small inter-column
+gaps with cell padding while preserving those intrinsic widths.
 Candidate details follow the report pattern below; comparison actions keep the plain button
 skin, the loan action takes the secondary role and the bid or signing the primary role.
 
@@ -154,6 +161,11 @@ the office's queue, never the home briefing. A page's own sections, such as 구�
 (the clubhouse briefing, Team directory and personnel detail pages, the market, competitions)
 must not grow a copy. Team owns 1군/유소년/코치 and its detailed work has one quiet return to its
 own list. Themes style the shared bars through their tab roles, never per-page selectors.
+
+An opened club season keeps a named back action in its sticky header. Return to the season
+list at its saved scroll position, or to manager history when a tenure opened the season.
+Reuse the quiet link control and chevron resource so the list remains reachable while reading
+the detailed report at phone widths.
 
 ### Detail pages read as reports
 
@@ -361,6 +373,13 @@ roles instead of plain bordered boxes. Keep these meanings separate from venue, 
 rating roles. Outcome labels and accessible names belong in locale packs; keep scores live
 and preserve their team order in right-to-left layouts. The current print artwork and exact
 regeneration prompts are in [Matchday Print result badges](matchday-print/result-badges/README.md).
+
+Staff jobs use `StaffRoleBadge` in the team directory and coaching staff details. Keep all nine
+job labels live and retain the same job colour for occupied and vacant posts. The theme supplies
+the actual filled SVG skin, native dimensions and source cap through `image-art-staff-role-*`,
+with matching `staff-role-*-fill` and `staff-role-*-text` fallback/foreground tokens. These colours
+identify jobs independently of rating tiers and action emphasis. Shared editable artwork and
+regeneration instructions live in [staff role badges](staff-role-badges/README.md).
 
 The [theme contract](../src/presentation/contracts.ts) is the schema, and the
 [theme registry](../public/presentation/themes/index.json) is the available-theme inventory.

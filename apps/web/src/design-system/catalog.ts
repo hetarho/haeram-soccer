@@ -55,6 +55,7 @@ export const STORIES: Story[] = [
       'OvrBadge',
       'HomeAwayBadge',
       'PositionBadge',
+      'StaffRoleBadge',
       'ResultBadge',
       'Money',
       'AnimatedMoney',
@@ -64,7 +65,7 @@ export const STORIES: Story[] = [
       'PersonCareer',
       'Term',
     ],
-    '승·무·패와 점수 배지, 홈·원정 배지, 포지션 계열 4색 배지, 능력치 등급, 잠재력, 금액과 상세 정보 링크.',
+    '승·무·패와 점수 배지, 홈·원정 배지, 포지션 계열 4색 배지, 감독·단장·코치진 직책 배지, 능력치 등급, 잠재력, 금액과 상세 정보 링크.',
   ),
   story(
     'charts',

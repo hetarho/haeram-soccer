@@ -7,12 +7,13 @@ import { PixelIcon } from './PixelIcon';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type {
   Line,
+  Position,
   TransferBid,
   World,
   WorldMarketTarget,
   WorldMarketOffer,
 } from '../../../../packages/contracts/src/types';
-import { POSITIONS } from '../../../../packages/contracts/src/player';
+import { LINES, POSITIONS } from '../../../../packages/contracts/src/player';
 import {
   lineOf,
   POSITION_LABEL,
@@ -67,6 +68,9 @@ const lineNames: Record<Line, string> = {
   MF: '미드필더',
   FW: '공격수',
 };
+/** An OVR range end as typed: blank clears it, anything else is held to 0–100. */
+const ovrBound = (value: string) =>
+  value.trim() === '' ? undefined : Math.min(100, Math.max(0, Math.round(Number(value) || 0)));
 const BID_STATUS: Record<TransferBid['status'], string> = {
   pending: '응답 대기',
   accepted: '수락',
@@ -190,13 +194,17 @@ function CandidateCard({
       data-line={lineOf(player.position)}
     >
       <header className={s.cardHead}>
-        <OvrBadge value={overall(player)} role={player.position} large />
+        {/* OVR keeps its rarity colour; the position wears its family's, as in the list. */}
+        <OvrBadge value={overall(player)} large />
         <div>
           <h3>{player.name}</h3>
-          <span>
-            {player.position} · {POSITION_LABEL[player.position]} · {w.year - player.born}세 ·
-            잠재력 {Math.round(player.potential)}
-            {growth > 0 && <em data-tone="rise"> +{growth}</em>}
+          <span className={s.cardMeta}>
+            <PositionBadge position={player.position} />
+            <span>
+              {POSITION_LABEL[player.position]} · {w.year - player.born}세 · 잠재력{' '}
+              {Math.round(player.potential)}
+              {growth > 0 && <em data-tone="rise"> +{growth}</em>}
+            </span>
           </span>
           <small className={s.positions} data-testid="candidate-positions">
             {positionsLabel(player.positions)}
@@ -454,7 +462,13 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   const registered = squadRegistration(w);
   const blocked = useGameState(gameActionsBlocked) || !!w.critical;
   const recommended = recruitmentLineNeed(w);
-  const market = useMarketPage(client, w.id, w.revision, query);
+  // Always by OVR, highest first; a query saved with another order or the fit filter drops them.
+  const market = useMarketPage(client, w.id, w.revision, {
+    ...query,
+    sort: 'ovr',
+    direction: 'desc',
+    fit: undefined,
+  });
   const page = market.value;
   const selectedComparison = comparison.filter((target) => target.world === w.id).slice(0, 2);
   const detail = useMarketDetail(client, w.id, w.revision, viewing);
@@ -491,7 +505,8 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
     query.team ||
     query.position ||
     query.line ||
-    query.fit === 'improves'
+    query.ovrMin !== undefined ||
+    query.ovrMax !== undefined
   );
   const toggle = (target: WorldMarketTarget) =>
     setComparison((current) => toggleMarketComparison(current, target));
@@ -648,7 +663,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           >
             <PixelIcon name="filter" size={16} />
             필터
-            {(filtered || query.sort !== 'ovr' || query.direction !== 'desc') && (
+            {filtered && (
               <i className={s.activeDot} aria-label="적용 중" />
             )}
           </button>
@@ -888,46 +903,74 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           <p className={s.note}>
             전 세계 현역 선수·자유계약 선수{query.recommendedOnly ? ' · 스카우트 추천만' : ''}
           </p>
-          <div className={s.roles} role="group" aria-label="영입 포지션 선택">
-            {(['all', 'GK', 'DF', 'MF', 'FW'] as const).map((value) => (
-              <button
-                key={value}
-                data-ui={(query.line ?? 'all') === value && !query.position ? 'secondary' : 'link'}
-                aria-pressed={(query.line ?? 'all') === value && !query.position}
-                onClick={() => changeQuery({ line: value === 'all' ? undefined : value })}
-              >
-                {value === 'all' ? '전체' : value}
-              </button>
-            ))}
-          </div>
           <div className={s.filters}>
-            <button
-              data-ui="tertiary"
-              className={s.recommendation}
-              onClick={() => changeQuery({ line: recommended })}
-            >
-              <PixelIcon name="star" size={16} />
-              추천 포지션: {lineNames[recommended]} · {recommended}
-            </button>
-            <label>
+            {/* One position choice: a whole line or one position, the weak line marked. */}
+            <label className={s.wideFilter}>
               포지션
               <Select
                 aria-label="영입 포지션"
-                value={query.position ?? 'all'}
+                value={query.position ?? (query.line ? `line:${query.line}` : 'all')}
                 onValueChange={(value) =>
-                  changeQuery({
-                    position: value === 'all' ? undefined : (value as MarketQuery['position']),
-                  })
+                  changeQuery(
+                    value.startsWith('line:')
+                      ? { line: value.slice(5) as Line }
+                      : { position: value === 'all' ? undefined : (value as Position) },
+                  )
                 }
               >
                 <option value="all">모든 포지션</option>
-                {POSITIONS.map((position) => (
-                  <option key={position} value={position}>
-                    {position} · {POSITION_LABEL[position]}
-                  </option>
-                ))}
+                {LINES.map((line) => {
+                  const mark = line === recommended ? ' · 추천' : '';
+                  const positions = POSITIONS.filter((position) => lineOf(position) === line);
+                  return line === 'GK' ? (
+                    <option key={line} value={`line:${line}`}>
+                      GK · {POSITION_LABEL.GK}
+                      {mark}
+                    </option>
+                  ) : (
+                    <optgroup key={line} label={lineNames[line]}>
+                      <option value={`line:${line}`}>
+                        {lineNames[line]} 전체{mark}
+                      </option>
+                      {positions.map((position) => (
+                        <option key={position} value={position}>
+                          {position} · {POSITION_LABEL[position]}
+                        </option>
+                      ))}
+                    </optgroup>
+                  );
+                })}
               </Select>
             </label>
+            <fieldset className={s.ovrRange}>
+              <legend>OVR 범위</legend>
+              <label>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  max={99}
+                  placeholder="최소"
+                  aria-label="OVR 최소"
+                  value={query.ovrMin ?? ''}
+                  onChange={(event) => changeQuery({ ovrMin: ovrBound(event.target.value) })}
+                />
+                이상
+              </label>
+              <label>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  max={99}
+                  placeholder="최대"
+                  aria-label="OVR 최대"
+                  value={query.ovrMax ?? ''}
+                  onChange={(event) => changeQuery({ ovrMax: ovrBound(event.target.value) })}
+                />
+                이하
+              </label>
+            </fieldset>
             <label>
               리그
               <Select
@@ -965,52 +1008,18 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
                 ))}
               </Select>
             </label>
-            <label>
-              후보 정렬
-              <Select
-                aria-label="영입 후보 정렬"
-                value={query.sort ?? 'ovr'}
-                onValueChange={(value) => changeQuery({ sort: value as MarketQuery['sort'] })}
-              >
-                <option value="name">이름</option>
-                <option value="age">나이</option>
-                <option value="ovr">OVR</option>
-                <option value="potential">잠재력</option>
-                <option value="fee">이적료</option>
-                <option value="wage">연봉</option>
-              </Select>
-            </label>
-            <label>
-              정렬 방향
-              <Select
-                aria-label="영입 정렬 방향"
-                value={query.direction ?? 'desc'}
-                onValueChange={(value) =>
-                  changeQuery({ direction: value as MarketQuery['direction'] })
-                }
-              >
-                <option value="desc">내림차순</option>
-                <option value="asc">오름차순</option>
-              </Select>
-            </label>
             <button
               data-ui={query.recommendedOnly ? 'secondary' : 'tertiary'}
+              className={s.wideFilter}
               aria-pressed={!!query.recommendedOnly}
               onClick={() => changeQuery({ recommendedOnly: !query.recommendedOnly })}
             >
               스카우트 추천만
             </button>
-            <button
-              data-ui={query.fit === 'improves' ? 'secondary' : 'tertiary'}
-              aria-pressed={query.fit === 'improves'}
-              onClick={() => changeQuery({ fit: query.fit === 'improves' ? 'all' : 'improves' })}
-            >
-              {w.lineup ? '수동 교체 보강 후보' : '선발 보강 후보'}
-            </button>
           </div>
           <p className={s.note}>
-            현재 선발의 약한 포지션을 추천해요. 전력·적합도는 선수 구성의 비교이며 경기 승리를
-            보장하지 않습니다.
+            OVR 높은 순으로 보여 줘요. 추천은 현재 선발의 약한 포지션이에요. 전력·적합도는 선수
+            구성의 비교이며 경기 승리를 보장하지 않습니다.
           </p>
         </Dialog>
       )}

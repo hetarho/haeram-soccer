@@ -1,6 +1,7 @@
 import { AreaCriteria } from './DirectionLines';
 import { PersonnelHub } from './PersonnelHubs';
 import { TeamDirectory, TeamReturn } from './TeamDirectory';
+import { StaffRoleBadge } from './StaffRoleBadge';
 import { FacilityOverview } from './FacilityOverview';
 import type { ProgressionController } from '../runtime/progression';
 import { squadRegistration } from './squadRegistration';
@@ -166,7 +167,8 @@ function TraitNote({ trait }: { trait?: ManagerTrait }) {
  * 코치진 leads with the manager under his office and every post's person or vacancy under the
  * coaching workroom, then who appoints them (→WEB-43/72). Each room heads its own people, so
  * neither scene pushes the other's list off a phone's first view. Offers for our players are
- * answered in the market's 이적 협상 (→WEB-71). Each ends with the responsibilities it owns.
+ * answered in the market's 이적 협상 (→WEB-71). Each but the market ends with the responsibilities
+ * it owns.
  */
 function PersonnelPanel({
   tab,
@@ -205,12 +207,15 @@ function PersonnelPanel({
           <CoachingPlan w={w} />
         </>
       )}
-      <WorkResponsibility
-        w={w}
-        client={client}
-        controller={controller}
-        scope={WORK_RESPONSIBILITIES[work]}
-      />
+      {/* The market's responsibility is edited in 결재 설정, not under its list. */}
+      {tab !== 'market' && (
+        <WorkResponsibility
+          w={w}
+          client={client}
+          controller={controller}
+          scope={WORK_RESPONSIBILITIES[work]}
+        />
+      )}
     </>
   );
 }
@@ -300,6 +305,7 @@ function ManagerCard({ state, client, onReplace }: Props & { onReplace: () => vo
         <div className={s.personHead}>
           <OvrBadge value={m.ability} role="감독" potential={m.potential} large />
           <div>
+            <StaffRoleBadge post="manager" />
             <b>{personAge(w, m.born)}</b>
             {m.person && <PersonCareerLink id={m.person} name={m.name} client={client} />}
             <small>

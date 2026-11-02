@@ -181,9 +181,10 @@ for (const [label, viewport] of [
       await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('Haeram');
       await page.goBack();
       await expect(navigator).toBeVisible();
-      await tab('시즌별 기록').click();
+      await navigator.getByRole('button', { name: '시즌별 기록 목록으로', exact: true }).click();
       await expect(navigator).toHaveCount(0);
       await expect(seasons).toBeVisible();
+      await expect(page).toHaveURL(/\/history\?section=club$/);
       await expect(tab('시즌별 기록')).toHaveAttribute('aria-selected', 'true');
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 

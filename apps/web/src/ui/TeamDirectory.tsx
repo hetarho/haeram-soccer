@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
-import { STAFF_INFO } from '../../../../packages/engine/src/staff-info';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import { useLocale } from '../presentation/react';
 import type { ClientState, GameClient } from '../runtime/client';
@@ -10,6 +9,7 @@ import { OvrBadge } from './OvrBadge';
 import { replaceQuery, TabList, TabPanel, useAddressTab } from './PageTabs';
 import { PersonCareer } from './PersonCareer';
 import { PositionBadge } from './PositionBadge';
+import { StaffRoleBadge } from './StaffRoleBadge';
 import { Select } from './Select';
 import { openAcademyProspect, openPersonnel, openTeam, usePlayerSheet } from './state';
 import {
@@ -290,8 +290,7 @@ function CoachList({ w, client }: { w: World; client: GameClient }) {
   const [query, setQuery] = useTaskState(w.id, 'team-coaches-query', '');
   const [sort, setSort] = useTaskState<CoachSort>(w.id, 'team-coaches-sort', 'post');
   const [career, setCareer] = useState<string>();
-  const label = (post: TeamCoachRow['post']) =>
-    post === 'manager' ? t('personnel.manager') : STAFF_INFO[post].label;
+  const label = (post: TeamCoachRow['post']) => t(`staff.role.${post}`);
   const rows = coachRows(w);
   const listed = listCoaches(rows, query, sort, label);
   const club = clubOf(w);
@@ -346,7 +345,7 @@ function CoachList({ w, client }: { w: World; client: GameClient }) {
                   >
                     <span className={market.playerText}>
                       <b>{coach.name}</b>
-                      <small>{label(post)}</small>
+                      <StaffRoleBadge post={post} />
                     </span>
                   </button>
                 ) : (
@@ -355,7 +354,7 @@ function CoachList({ w, client }: { w: World; client: GameClient }) {
                       <b className={coach ? undefined : s.vacant}>
                         {coach ? coach.name : t('team.vacant')}
                       </b>
-                      <small>{label(post)}</small>
+                      <StaffRoleBadge post={post} />
                     </span>
                   </span>
                 )}

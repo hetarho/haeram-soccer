@@ -151,6 +151,13 @@
   color: var(--text-muted);
   font-family: var(--display);
 }
+.cardMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 2px;
+}
 /* The two ways to compare sit under the name, on every width. */
 .compareActions {
   display: flex;
@@ -404,7 +411,10 @@
   margin: 4px 0 calc(-1 * var(--dock-pad));
   padding: 12px 0 var(--dock-pad);
   border-top: 1px solid var(--line);
-  background: var(--surface-grain, none) var(--surface);
+  /* The dialog body's own paper, so the docked actions show no plate of their own. */
+  background: var(--image-quiet, var(--surface))
+    var(--image-quiet-material, var(--surface-grain, none)) repeat;
+  background-size: var(--image-material-size, 384px);
 }
 .transactions:not(:last-child) {
   margin-bottom: 0;
@@ -1021,4 +1031,38 @@
   color: var(--text-muted);
   font-size: 12px;
   font-weight: 800;
+}
+.wideFilter {
+  grid-column: 1 / -1;
+}
+.ovrRange {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.ovrRange legend {
+  margin-bottom: 5px;
+  padding: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--display);
+}
+.filters .ovrRange label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.ovrRange input {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
 }

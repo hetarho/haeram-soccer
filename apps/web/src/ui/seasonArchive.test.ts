@@ -5,7 +5,7 @@ import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { finalZones } from './league';
-import { finalRows, seasonSnapshots } from './seasonArchive';
+import { finalRows, seasonRecords, seasonSnapshots } from './seasonArchive';
 
 // Every season here is played on the pre-feature path: the archived tables, not the match model,
 // are the subject.
@@ -29,6 +29,13 @@ describe('closed season tables', () => {
     const ours = rows.findIndex(([club]) => w.clubs[club].id === w.playerClub);
     expect(ours + 1).toBe(season.rank);
     expect(rows[ours][1]).toBe(season.points);
+    // Won/drawn/lost come back from the round snapshots for every club, ours as archived.
+    const records = seasonRecords(w, season)!;
+    expect(records.get(rows[ours][0])).toEqual([season.won, season.drawn, season.lost]);
+    for (const [club, points] of rows) {
+      const [won, drawn] = records.get(club)!;
+      expect(won * 3 + drawn).toBe(points);
+    }
     // The archived standings leave the amateur clubs out, so they are no table on their own.
     delete w.rankHistory;
     expect(finalRows(w, season, season.standings)).toBeUndefined();
@@ -41,6 +48,7 @@ describe('closed season tables', () => {
       season = w.history[0];
     const kept = finalRows(w, season, season.standings)!;
     expect(kept).toHaveLength(24);
+    expect(seasonRecords(w, season)?.size).toBe(24);
     delete w.rankHistory;
     expect(finalRows(w, season, season.standings)).toEqual(kept);
     expect(finalRows(w, season)).toBeUndefined();

@@ -268,6 +268,7 @@
       "image-table-row-rule": "var(--image-art-content-rule)",
       "table-alt-fill": "#1c2720",
       "table-own-fill": "#2c3c2f",
+      "table-own-tint": "rgb(161 207 155 / 18%)",
       "image-table-own-material": "var(--image-detail-material)",
       "table-row-height": "44px",
       "table-badge-border-width": "1px",
@@ -361,7 +362,25 @@
       "select-option-height": "32px",
       "select-popup-max-height": "280px",
       "select-popup-min-width": "176px",
-      "select-chevron-size": "12px"
+      "select-chevron-size": "12px",
+      "staff-role-manager-fill": "#314c73",
+      "staff-role-manager-text": "#ffffff",
+      "staff-role-director-fill": "#d8b8ee",
+      "staff-role-director-text": "#38204d",
+      "staff-role-assistant-fill": "#a2dbd0",
+      "staff-role-assistant-text": "#123d36",
+      "staff-role-attack-fill": "#ffb0a1",
+      "staff-role-attack-text": "#4a1d14",
+      "staff-role-defense-fill": "#a5cafa",
+      "staff-role-defense-text": "#15365f",
+      "staff-role-goalkeeping-fill": "#f4d477",
+      "staff-role-goalkeeping-text": "#45330a",
+      "staff-role-fitness-fill": "#f4ba83",
+      "staff-role-fitness-text": "#49290e",
+      "staff-role-youth-fill": "#b6dda0",
+      "staff-role-youth-text": "#244017",
+      "staff-role-scout-fill": "#e5bee0",
+      "staff-role-scout-text": "#492043"
     }
   },
   "fonts": [
@@ -773,6 +792,69 @@
         "width": 32,
         "height": 32,
         "mode": "tile"
+      },
+      "image-art-staff-role-manager": {
+        "resource": "../../art/shared/staff-role-badges-v1/frame-manager.svg",
+        "width": 96,
+        "height": 40,
+        "mode": "nine-slice",
+        "slice": 8
+      },
+      "image-art-staff-role-director": {
+        "resource": "../../art/shared/staff-role-badges-v1/frame-director.svg",
+        "width": 96,
+        "height": 40,
+        "mode": "nine-slice",
+        "slice": 8
+      },
+      "image-art-staff-role-assistant": {
+        "resource": "../../art/shared/staff-role-badges-v1/frame-assistant.svg",
+        "width": 96,
+        "height": 40,
+        "mode": "nine-slice",
+        "slice": 8
+      },
+      "image-art-staff-role-attack": {
+        "resource": "../../art/shared/staff-role-badges-v1/frame-attack.svg",
+        "width": 96,
+        "height": 40,
+        "mode": "nine-slice",
+        "slice": 8
+      },
+      "image-art-staff-role-defense": {
+        "resource": "../../art/shared/staff-role-badges-v1/frame-defense.svg",
+        "width": 96,
+        "height": 40,
+        "mode": "nine-slice",
+        "slice": 8
+      },
+      "image-art-staff-role-goalkeeping": {
+        "resource": "../../art/shared/staff-role-badges-v1/frame-goalkeeping.svg",
+        "width": 96,
+        "height": 40,
+        "mode": "nine-slice",
+        "slice": 8
+      },
+      "image-art-staff-role-fitness": {
+        "resource": "../../art/shared/staff-role-badges-v1/frame-fitness.svg",
+        "width": 96,
+        "height": 40,
+        "mode": "nine-slice",
+        "slice": 8
+      },
+      "image-art-staff-role-youth": {
+        "resource": "../../art/shared/staff-role-badges-v1/frame-youth.svg",
+        "width": 96,
+        "height": 40,
+        "mode": "nine-slice",
+        "slice": 8
+      },
+      "image-art-staff-role-scout": {
+        "resource": "../../art/shared/staff-role-badges-v1/frame-scout.svg",
+        "width": 96,
+        "height": 40,
+        "mode": "nine-slice",
+        "slice": 8
       }
     }
   },

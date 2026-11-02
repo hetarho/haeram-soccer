@@ -76,6 +76,47 @@ export function seasonSnapshots(w: World, season: SeasonArchive): StandingSnapsh
     .sort((a, b) => a.round - b.round);
 }
 
+/** A club's won, drawn and lost in a closed season. */
+export type SeasonRecord = [won: number, drawn: number, lost: number];
+
+/**
+ * Every club's won/drawn/lost in our league of a closed season, read from how its points and goals
+ * moved between round snapshots (the archived standings keep points and goals only). Undefined
+ * when a step is not one result or no game, or our total disagrees with the archive, so a gap in
+ * the snapshots never shows a wrong record.
+ */
+export function seasonRecords(
+  w: World,
+  season: SeasonArchive,
+): Map<number, SeasonRecord> | undefined {
+  const totals = new Map<number, { points: number; gf: number; ga: number; record: SeasonRecord }>();
+  for (const snapshot of seasonSnapshots(w, season))
+    for (const [club, points, gf, ga] of snapshot.rows) {
+      const before = totals.get(club) ?? { points: 0, gf: 0, ga: 0, record: [0, 0, 0] },
+        gained = points - before.points,
+        scored = gf - before.gf,
+        conceded = ga - before.ga;
+      const result =
+        gained === 3 && scored > conceded
+          ? 0
+          : gained === 1 && scored === conceded
+            ? 1
+            : gained === 0 && scored < conceded
+              ? 2
+              : gained === 0 && scored === 0 && conceded === 0
+                ? 'idle'
+                : undefined;
+      if (result === undefined) return undefined;
+      const record = [...before.record] as SeasonRecord;
+      if (result !== 'idle') record[result]++;
+      totals.set(club, { points, gf, ga, record });
+    }
+  const own = totals.get(w.clubs.findIndex((club) => club.id === w.playerClub))?.record;
+  if (!own || own[0] !== season.won || own[1] !== season.drawn || own[2] !== season.lost)
+    return undefined;
+  return new Map([...totals].map(([club, total]) => [club, total.record]));
+}
+
 /**
  * Our league's final table of a closed season: its last standings snapshot (kept for ten seasons,
  * and the only record of an amateur league, whose clubs the archived standings leave out), else

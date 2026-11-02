@@ -235,6 +235,15 @@
     "team.player.open": "Ficha de {name}",
     "team.prospect.open": "Revisión de cantera de {name}",
     "team.coach.open": "Trayectoria de {name}",
-    "team.back": "← Equipo · {view}"
+    "team.back": "← Equipo · {view}",
+    "staff.role.manager": "Entrenador",
+    "staff.role.director": "Director deportivo",
+    "staff.role.assistant": "Segundo entrenador",
+    "staff.role.attack": "Técnico de ataque",
+    "staff.role.defense": "Técnico de defensa",
+    "staff.role.goalkeeping": "Entrenador de porteros",
+    "staff.role.fitness": "Preparador físico",
+    "staff.role.youth": "Director de cantera",
+    "staff.role.scout": "Jefe de ojeadores"
   }
 }
