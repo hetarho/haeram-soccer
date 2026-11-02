@@ -1,0 +1,310 @@
+/* The takeover list scrolls in the view's own scroller under a pinned head that keeps the
+   fortune at its top right and the filters in reach (→WEB-15, WEB-63). */
+.listing {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.head {
+  position: sticky;
+  top: -2px;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 8px 10px;
+  padding: 10px 12px;
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface);
+}
+.title {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.title h2 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+.title small,
+.fortune small {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  font-family: var(--display);
+}
+.fortune {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  text-align: right;
+  font-size: 16px;
+  font-weight: 700;
+}
+.filters {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+  gap: 6px 8px;
+  min-width: 0;
+}
+.filters :global([data-select-trigger]) {
+  width: 100%;
+}
+.filters [data-ui='choices'] button {
+  min-height: 44px;
+}
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.rows {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  border-radius: var(--control-radius);
+  text-align: left;
+}
+.name,
+.price {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.name b {
+  font-size: 15px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.price {
+  justify-items: end;
+  text-align: right;
+}
+.price b {
+  font-size: 15px;
+  line-height: 1.4;
+  font-family: var(--display);
+}
+.name small,
+.afford {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+.row[data-affordable='true'] .afford {
+  color: var(--accent-text);
+  font-weight: 700;
+}
+.row[data-affordable='false'] .afford {
+  color: var(--danger);
+  font-weight: 700;
+}
+.facts {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 0.7fr repeat(4, minmax(0, 1fr));
+  gap: 4px;
+}
+.fact {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+}
+.fact small {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.fact b {
+  font-size: 12px;
+  line-height: 1.4;
+  font-family: var(--display);
+  white-space: nowrap;
+}
+.empty {
+  margin: 0;
+  padding: 12px;
+  border-radius: var(--card-radius);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+/* The club's sheet and the confirmation read as reports: the verdict first, then the facts. */
+.sheet {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.verdict {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  border-radius: var(--card-radius);
+}
+.verdictPrice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  font-size: 22px;
+  font-weight: 700;
+}
+.verdictPrice small {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+  font-family: var(--display);
+}
+.verdictLine {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.verdict[data-affordable='false'] .verdictLine {
+  color: var(--danger);
+}
+.books {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+  margin: 0;
+}
+.books div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.books dt {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.books dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: var(--display);
+}
+.note {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.section {
+  display: grid;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.section h4 {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.section h4 small {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+.section p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+.squad,
+.seasons {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.squad li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto 32px;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  font-size: 13px;
+}
+.squad li span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.squad li small {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.squad li b,
+.seasons li b {
+  text-align: right;
+  font-family: var(--display);
+}
+.seasons li {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  gap: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.terms {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.direction {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.direction :global([data-select-trigger]) {
+  width: 100%;
+  font-weight: 400;
+}
+.actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.actions button {
+  min-height: 48px;
+}
+@media (max-width: 380px) {
+  .head {
+    padding: 8px 10px;
+  }
+  .facts {
+    gap: 2px;
+  }
+}
