@@ -19,7 +19,7 @@ import korean from '../../public/presentation/locales/ko-KR.json';
 import { CashAlarm } from './CashAlarm';
 import { GameOver } from './GameOver';
 import { HudCash } from './HudCash';
-import { OwnerSheetBody } from './OwnerSheet.tsx';
+import { OwnerSheetBody } from './OwnerSheet';
 import {
   businessChance,
   careerOver,
@@ -37,7 +37,7 @@ import {
   ownerStatuses,
   stakeAmount,
   stakeOutlook,
-} from './ownerSheet';
+} from './ownerFigures';
 
 vi.mock('../presentation/react', async (original) => ({
   ...(await original<typeof import('../presentation/react')>()),

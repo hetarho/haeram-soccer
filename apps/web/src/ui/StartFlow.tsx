@@ -30,7 +30,7 @@ import {
   WARTIME,
   WORLD_START,
   type ClubSheetFacts,
-} from './startFlow';
+} from './startChoices';
 import presentationStyle from './PresentationSettings.module.css';
 import s from './StartFlow.module.css';
 

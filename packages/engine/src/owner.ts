@@ -4,10 +4,11 @@
  * these hooks; each returns at once in a career without an owner (a founded club), so founding
  * careers live exactly as before.
  */
-import type { CareerDate, Command, OwnerTrait, World } from '../../contracts/src/types';
+import type { CareerDate, Command, World } from '../../contracts/src/types';
 import { DIVIDEND_SHARES } from '../../contracts/src/owner';
 import { COUNTRIES, currency } from '../../catalogs/src/index';
 import { FFP, OWNER_BUSINESS, OWNER_LIVING, OWNER_TRAITS, TAKEOVER_DEBT } from './owner-config';
+import { hasTrait } from './owner-traits';
 import { currentDay, SEASON_END_DAY, seasonDayLabel, seasonDayOf } from './calendar';
 import { addEvent } from './events';
 import { pushInbox } from './inbox';
@@ -44,10 +45,6 @@ export function careerEnded(w: Pick<World, 'bankrupt' | 'ended'>) {
   return w.bankrupt !== undefined || w.ended !== undefined;
 }
 
-/** Whether the owner took this trait at the start (→OWNER-5). */
-function holds(w: World, trait: OwnerTrait) {
-  return w.owner?.traits.includes(trait) ?? false;
-}
 /** 1901 price units a living-cost or exchange-rate quote reads, enough for exact minor units. */
 const PROBE = 100_000;
 
@@ -72,7 +69,7 @@ export function nextSettlement(w: World): CareerDate {
 }
 /** A settlement's chance of success: 50%, or 60% for 성공한 사업가 (→OWNER-7, OWNER-5). */
 export function businessChance(w: World) {
-  return holds(w, 'businessman') ? OWNER_TRAITS.businessman.success : OWNER_BUSINESS.chance;
+  return hasTrait(w, 'businessman') ? OWNER_TRAITS.businessman.success : OWNER_BUSINESS.chance;
 }
 /** What the next settlement wins or loses at today's fortune and stake; nothing below zero. */
 export function stakeAmount(w: World) {

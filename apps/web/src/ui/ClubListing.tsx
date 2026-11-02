@@ -22,7 +22,7 @@ import {
   type ClubSheetFacts,
   type ListingFilter,
   type ListingSort,
-} from './startFlow';
+} from './startChoices';
 import s from './ClubListing.module.css';
 
 /** The fortune's money: the tiers are sized in pounds (→OWNER-3, ECON-35). */

@@ -13,6 +13,7 @@ import type {
 } from '../../contracts/src/types';
 import { country } from '../../catalogs/src/index';
 import { FAN_MOOD } from './owner-config';
+import { hasTrait } from './owner-traits';
 import { careerEnded } from './owner';
 import { addEvent } from './events';
 import { pushInbox } from './inbox';
@@ -33,8 +34,7 @@ function live(w: World) {
  */
 function move(w: World, change: number, why?: { title: string; detail: string }) {
   const owner = w.owner!,
-    scaled =
-      change < 0 && owner.traits.includes('fansFriend') ? change * FAN_MOOD.friendly : change,
+    scaled = change < 0 && hasTrait(w, 'fansFriend') ? change * FAN_MOOD.friendly : change,
     before = owner.fanMood;
   owner.fanMood = Math.round(clamp(before + scaled, FAN_MOOD.min, FAN_MOOD.max) * 100) / 100;
   if (!why) return;

@@ -26,7 +26,7 @@ import {
   ownerStatuses,
   ownMoney,
   stakeOutlook,
-} from './ownerSheet';
+} from './ownerFigures';
 import s from './OwnerSheet.module.css';
 
 /** A change's tone by sign (→DESIGN-SYSTEM: a rise in red, a fall in blue). */

@@ -1,7 +1,7 @@
 import type { World } from '../../../../packages/contracts/src/types';
 import { useLocale } from '../presentation/react';
 import { number } from './format';
-import { gameOverFacts } from './ownerSheet';
+import { gameOverFacts } from './ownerFigures';
 import app from './App.module.css';
 import s from './GameOver.module.css';
 

@@ -73,10 +73,8 @@ import { CareerRecordBook, TrophyCabinet, ClubLeaders } from '../ui/CareerRecord
 import { ClubTrends, SeasonTable } from '../ui/ClubTrends';
 import { SeasonReview } from '../ui/SeasonReview';
 import { ClubFounding } from '../ui/ClubFounding';
-// The component's name differs from its helpers module (`startFlow.ts`) only in case: the
-// extension keeps a case-insensitive file system from resolving one for the other.
-import { StartFlow } from '../ui/StartFlow.tsx';
-import { canAfford, takeoverYear, type ClubSheetFacts } from '../ui/startFlow';
+import { StartFlow } from '../ui/StartFlow';
+import { canAfford, takeoverYear, type ClubSheetFacts } from '../ui/startChoices';
 import type {
   ClubListing,
   StartChoice,

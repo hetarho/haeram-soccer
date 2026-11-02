@@ -8,8 +8,7 @@ import { AnimatedMoney } from './AnimatedMoney';
 import { Card } from './Card';
 import { Dialog } from './Dialog';
 import { DeskStats } from './OfficeDesk';
-// The extension tells the sheet apart from its helpers (`ownerSheet.ts`) on case-insensitive disks.
-import { OwnerSheet } from './OwnerSheet.tsx';
+import { OwnerSheet } from './OwnerSheet';
 import { compactMoney, money } from './format';
 import { cashState, fixedCosts } from './teamState';
 import s from './App.module.css';

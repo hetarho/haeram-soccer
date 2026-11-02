@@ -11,6 +11,7 @@ import { SEASON_ROUNDS } from './calendar';
 import { facilityUpkeep, stadiumCapacity } from './facilities';
 import { catchment, localSupporters } from './fans';
 import { OWNER_TRAITS } from './owner-config';
+import { hasTrait } from './owner-traits';
 
 export const FINANCE_CONFIG = {
   ticketDemandScale: 0.12,
@@ -253,9 +254,7 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
   // force (→ECON-16): a change of level acts from the next settlement, the recorded amount stays.
   // An owner with 정치력 pays less of it (→OWNER-5).
   const seasonExpenses = seasonOperatingExpenses(w),
-    politicianFactor = w.owner?.traits.includes('politician')
-      ? OWNER_TRAITS.politician.operating
-      : 1,
+    politicianFactor = hasTrait(w, 'politician') ? OWNER_TRAITS.politician.operating : 1,
     invested = scaleOperatingExpenses(seasonExpenses, effects.operatingFactor),
     expenses =
       politicianFactor === 1 ? invested : scaleOperatingExpenses(invested, politicianFactor);

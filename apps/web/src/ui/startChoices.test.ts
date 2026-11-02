@@ -24,9 +24,7 @@ import { createLoadedLocale } from '../presentation/locale';
 import { PresentationProvider } from '../presentation/react';
 import { validateRegistry } from '../presentation/registry';
 import { createThemeResolver } from '../presentation/theme';
-// The component file differs from this helpers module only in case: name its extension so a
-// case-insensitive file system cannot resolve it to `startFlow.ts`.
-import { DecadeStep, GenerationProgress, StartFlow, TraitStep } from './StartFlow.tsx';
+import { DecadeStep, GenerationProgress, StartFlow, TraitStep } from './StartFlow';
 import {
   canAfford,
   DECADE_LINES,
@@ -43,7 +41,7 @@ import {
   TRAIT_EFFECTS,
   toggleTrait,
   traitDifficulty,
-} from './startFlow';
+} from './startChoices';
 
 const snapshot: PresentationSnapshot = {
   locale: createLoadedLocale(

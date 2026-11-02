@@ -3,7 +3,7 @@ import { BANKRUPTCY_ROUNDS, CASH_WARNING_ROUNDS } from '../../../../packages/eng
 import { operatingCosts } from '../../../../packages/engine/src/finance';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import { Money } from './Money';
-import { careerOver, ownerStatuses } from './ownerSheet';
+import { careerOver, ownerStatuses } from './ownerFigures';
 import s from './App.module.css';
 
 /**
