@@ -87,7 +87,9 @@ import { openNpcSeason, settleNpcSeason } from './npc-stats';
 import { ballonDorPodium, payBallonDorBonus } from './ballon-dor-award';
 import { activeMatchModel } from '../../contracts/src/match-model';
 import { recordRecentResult, retainRecentResults } from './recent-results';
-import { careerEnded, ownerClose, ownerDay } from './owner';
+import { careerEnded, hasOwner, ownerClose, ownerDay } from './owner';
+import { crossWar, seasonAfter } from './wartime';
+import { booksClose } from './books';
 import { fanMoodAfterLeagueMatch, fanMoodClose, fanMoodRound } from './fan-mood';
 import {
   currentDay,
@@ -178,6 +180,7 @@ export function leagueFinishes(w: World) {
  * render).
  */
 export function ownLeagueClubs(w: World) {
+  if (!hasOwner(w)) return [];
   if (!w.lower) {
     const key = groupKey(clubOf(w));
     return w.clubs.filter((c) => groupKey(c) === key && !c.representative);
@@ -190,6 +193,7 @@ function lowerLeagueClubs(w: World) {
 }
 /** Preserve the league membership at this point, even after promotion or relegation. */
 export function snapshotStandings(w: World) {
+  if (!hasOwner(w)) return;
   const own = clubOf(w);
   const members = ownLeagueClubs(w);
   const snapshots = (w.rankHistory || []).filter(
@@ -571,7 +575,7 @@ function seasonRanks(w: World, tier: number, group: number) {
 }
 /** The brackets of the own country's cup and every continental knockout but the Super Cup. */
 function seasonBrackets(w: World): BracketArchive[] {
-  const cup = w.cups?.find((c) => c.country === clubOf(w).country);
+  const cup = hasOwner(w) ? w.cups?.find((c) => c.country === clubOf(w).country) : undefined;
   const sources = [
     ...(cup
       ? [{ key: 'cup', id: cupKey(cup.country), rounds: cup.rounds, fixtures: cup.fixtures }]
@@ -599,7 +603,50 @@ function seasonRecords(w: World, league: Club[], tier: number, group: number) {
     brackets: seasonBrackets(w),
   };
 }
+/** Every country's champion and cup winner, with its cup final (→HIST-2, LEAGUE-5). */
+function seasonChampions(w: World) {
+  return COUNTRIES.map((c) => {
+    const cup = w.cups?.find((entry) => entry.country === c.code);
+    const cupFinal = cup && finalOf(w, cupKey(c.code), cup.rounds, cup.fixtures);
+    return {
+      country: c.code,
+      club: ranked(
+        w,
+        w.clubs.filter((cl) => cl.country === c.code && cl.tier === 0 && !cl.representative),
+      )[0].id,
+      cup: w.cupWinners[c.code],
+      ...(cupFinal ? { cupFinal } : {}),
+    };
+  });
+}
+/** Every league club's final row: [club index, tier, group, points, goals for, against]. */
+function worldStandings(w: World) {
+  return w.clubs
+    .filter((c) => !c.representative)
+    .map((c) => {
+      const t = w.tables[c.id];
+      return [w.clubs.indexOf(c), c.tier, c.group, t.points, t.gf, t.ga];
+    });
+}
+/** Every continental competition decided this season, with its standings and final. */
+function europeArchive(w: World) {
+  return w.europe
+    .filter((t) => t.winner)
+    .map((t) => {
+      const final = europeFinal(w, t);
+      return {
+        kind: t.key,
+        name: t.name,
+        winner: t.winner!,
+        field: t.field,
+        standings: t.firstStandings,
+        secondStandings: t.secondStandings,
+        ...(final ? { final } : {}),
+      };
+    });
+}
 export function closeSeason(w: World, finishEurope?: (w: World) => void) {
+  if (!hasOwner(w)) return closeWorldSeason(w, finishEurope);
   // Clubs of our league as it was played, to see who went down once the season is closed.
   const leagueTiers = new Map(ownLeagueClubs(w).map((club) => [club.id, club.tier]));
   if (w.round < 46 || w.fixtures.some((f) => !f.score))
@@ -616,19 +663,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   settleLeagueMerit(w, order.findIndex((c) => c.id === own.id) + 1, order.length);
   // An ambitious player's resentment ends with the season (→CLUB-27).
   endAmbition(w);
-  const champions = COUNTRIES.map((c) => {
-    const cup = w.cups?.find((entry) => entry.country === c.code);
-    const cupFinal = cup && finalOf(w, cupKey(c.code), cup.rounds, cup.fixtures);
-    return {
-      country: c.code,
-      club: ranked(
-        w,
-        w.clubs.filter((cl) => cl.country === c.code && cl.tier === 0 && !cl.representative),
-      )[0].id,
-      cup: w.cupWinners[c.code],
-      ...(cupFinal ? { cupFinal } : {}),
-    };
-  });
+  const champions = seasonChampions(w);
   // The Ballon d'Or reads the season as played, before any club or player moves (→PLAYER-27);
   // a won bonus clause is booked in the closing season's ledger (→CLUB-29).
   const ballonDor = ballonDorPodium(w, champions);
@@ -659,28 +694,10 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     metrics: w.ownMatches
       .filter((m) => m.year === w.year)
       .reduce((s, m) => addMetrics(s, m.metrics[m.home === w.playerClub ? 0 : 1]), zeroMetrics()),
-    standings: w.clubs
-      .filter((c) => !c.representative)
-      .map((c) => {
-        const t = w.tables[c.id];
-        return [w.clubs.indexOf(c), c.tier, c.group, t.points, t.gf, t.ga];
-      }),
+    standings: worldStandings(w),
     champions,
     ...(europeCoefficients ? { europeCoefficients } : {}),
-    europe: w.europe
-      .filter((t) => t.winner)
-      .map((t) => {
-        const final = europeFinal(w, t);
-        return {
-          kind: t.key,
-          name: t.name,
-          winner: t.winner!,
-          field: t.field,
-          standings: t.firstStandings,
-          secondStandings: t.secondStandings,
-          ...(final ? { final } : {}),
-        };
-      }),
+    europe: europeArchive(w),
     elo: Math.round(eloOf(own)),
     eloRank: eloRank(w),
     squadValue: squadValue(w),
@@ -690,6 +707,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     ...(ballonDor ? { ballonDor } : {}),
   });
   w.lastChampions = champions.map(({ country, club, cup }) => ({ country, club, cup }));
+  // Other clubs' books close on the season as played; a founded career keeps none (→ECON-36).
+  booksClose(w);
   const startersBeforeDepartures = [...ownStarters(w)];
   const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
   const finishes = leagueFinishes(w);
@@ -720,14 +739,17 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     '시즌의 마지막 페이지',
     `${w.year}/${String(w.year + 1).slice(2)} · ${table.points}점`,
   );
-  w.year++;
+  // The next season opens on 1 August; after 1938/39 the war skips to 1946 (→WORLD-14).
+  const closed = w.year;
+  w.year = seasonAfter(closed);
   w.calendar = { day: 0 };
-  atCareerDate(w, { year: w.year - 1, day: SEASON_END_DAY + 1 }, () => {
+  crossWar(w, closed);
+  atCareerDate(w, { year: closed, day: SEASON_END_DAY + 1 }, () => {
     // The new season's books open before the close pays anything, so its renewals and hires are
     // booked where their events are (→ECON-10).
     w.income = '0';
     w.expense = '0';
-    advanceEconomy(w, w.year - 1);
+    advanceEconomy(w, closed);
     // The new season's operating expenses, in its money and on the division it plays (→ECON-30),
     // before anything this rollover weighs fixed costs.
     w.operatingExpenses = assessOperatingExpenses(w);
@@ -814,6 +836,76 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   sponsorReminder(w);
 }
 /**
+ * The close of a season before anyone owns a club (→WORLD-13): the cups, Europe, the archive of
+ * what HIST-2 keeps, promotion and relegation, retirements, every club's rise or fall (→LEAGUE-10)
+ * and reputation (→LEAGUE-14), then the next season opens on 1 August.
+ */
+function closeWorldSeason(w: World, finishEurope?: (w: World) => void) {
+  if (w.round < 46 || w.fixtures.some((f) => !f.score))
+    throw new Error('아직 정규 시즌이 끝나지 않았습니다.');
+  if (currentDay(w) < SEASON_END_DAY + 1) w.calendar = { day: SEASON_END_DAY + 1 };
+  finishCups(w);
+  (finishEurope || finishContinental)(w);
+  const champions = seasonChampions(w);
+  const ballonDor = ballonDorPodium(w, champions);
+  const europeCoefficients = associationCoefficients(w);
+  w.history.push({
+    year: w.year,
+    tier: 0,
+    group: 0,
+    rank: 0,
+    points: 0,
+    played: 0,
+    won: 0,
+    drawn: 0,
+    lost: 0,
+    gf: 0,
+    ga: 0,
+    cash: '0',
+    currency: w.currency,
+    income: '0',
+    expense: '0',
+    fans: 0,
+    rating: 0,
+    manager: '',
+    metrics: zeroMetrics(),
+    standings: worldStandings(w),
+    champions,
+    ...(europeCoefficients ? { europeCoefficients } : {}),
+    europe: europeArchive(w),
+    brackets: seasonBrackets(w),
+    ...(ballonDor ? { ballonDor } : {}),
+  });
+  w.lastChampions = champions.map(({ country, club, cup }) => ({ country, club, cup }));
+  // The books close on the season as played, before anyone moves division (→ECON-36).
+  booksClose(w);
+  const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
+  const finishes = leagueFinishes(w);
+  promote(w);
+  retainRecentResults(w);
+  retireAtClose(w);
+  evolveClubs(w, tiers);
+  settleReputation(w, finishes);
+  const closed = w.year;
+  w.year = seasonAfter(closed);
+  w.calendar = { day: 0 };
+  crossWar(w, closed);
+  atCareerDate(w, { year: closed, day: SEASON_END_DAY + 1 }, () => {
+    settleNpcCoaching(w, true);
+    refreshCoachingMarket(w);
+    qualifyManagers(w);
+  });
+  w.europe = [];
+  settleNpcCoaching(w);
+  prepareSeason(w);
+  // Relegated clubs may sack their managers; old ones retire (→STAFF-17).
+  refreshManagerMarket(
+    w,
+    new Set(w.clubs.filter((c) => (tiers.get(c.id) ?? c.tier) < c.tier).map((c) => c.id)),
+  );
+  clubDay(w);
+}
+/**
  * One round: the days up to and including its league match day, each lived as a day step lives it
  * (→LEAGUE-11), so midweek ties play on their own day before the league matches. Like the round
  * step always has, it carries on past a critical alert; the host stops after the round.
@@ -898,15 +990,21 @@ function playRound(
       if (ownFixture(w, f)) capture(w, p);
     });
   }
-  settleTraining(w);
-  settleClubRounds(w);
+  // Before the takeover only the clubs nobody owns settle: no own squad, money or staff (→WORLD-13).
+  const owned = hasOwner(w);
+  if (owned) {
+    settleTraining(w);
+    settleClubRounds(w);
+  }
   settleCohesion(w);
   advanceEurope(w, capture, undefined, observe);
   advanceCups(w, capture, undefined, observe);
-  settleRound(w);
-  fanMoodRound(w);
-  // A manager at the floor of trust may resign once the round is settled (→STAFF-47).
-  settleManagerTrust(w);
+  if (owned) {
+    settleRound(w);
+    fanMoodRound(w);
+    // A manager at the floor of trust may resign once the round is settled (→STAFF-47).
+    settleManagerTrust(w);
+  }
   snapshotStandings(w);
   snapshotScorers(w);
   if (w.round % MARKET_REFRESH_ROUNDS === 0) {
@@ -914,7 +1012,7 @@ function playRound(
     refreshCoachingMarket(w);
     qualifyManagers(w);
     // The chief scout redraws his shortlist with the managers' market (→CLUB-33).
-    drawShortlist(w);
+    if (owned) drawShortlist(w);
   }
   w.revision++;
 }
@@ -1012,6 +1110,7 @@ export function completeRound(
  * close included (→STAFF-48), and closes with the owner's own business (→OWNER-7).
  */
 export function clubDay(w: World) {
+  if (!hasOwner(w)) return worldDay(w);
   countApprovalWaits(w);
   settleNpcCoaching(w);
   qualifyManagers(w);
@@ -1026,6 +1125,12 @@ export function clubDay(w: World) {
   transferRequests(w);
   clearHealed(w);
   ownerDay(w);
+}
+/** A day's business before anyone owns a club: other clubs' coaches, managers and retirements. */
+function worldDay(w: World) {
+  settleNpcCoaching(w);
+  qualifyManagers(w);
+  announceRetirements(w);
 }
 /** Off days only move the clock. Matches and existing weekly costs settle on their due day. */
 export function advanceDays(

@@ -98,6 +98,7 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/grid/record.test.ts',
   'packages/engine/src/grid/resolve.test.ts',
   'packages/engine/src/grid/shootout.test.ts',
+  'packages/engine/src/history.test.ts',
   'packages/engine/src/identity-operations.test.ts',
   'packages/engine/src/investment.test.ts',
   'packages/engine/src/kit-selection.test.ts',

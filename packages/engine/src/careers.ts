@@ -1,3 +1,4 @@
+import { hasOwner } from './owner';
 import { decideCoachingIntention, initializeCoaching } from './coaching-entry';
 import {
   careerDate,
@@ -100,6 +101,7 @@ function careerLine(w: World, p: Player) {
 export function announceRetirements(w: World) {
   if (currentDay(w) !== retirementAnnounceDay(w.year)) return;
   announceNpcRetirements(w);
+  if (!hasOwner(w)) return;
   const starters = new Set(ownStarters(w).map((p) => p.id));
   for (const p of activePlayers(w)) {
     if (p.loanUntil || p.retiring !== undefined) continue;
