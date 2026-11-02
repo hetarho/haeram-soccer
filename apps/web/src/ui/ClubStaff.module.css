@@ -602,3 +602,30 @@
 .staff .department {
   margin: 0;
 }
+
+/* The 이적시장's staff candidates: one card per candidate, each with its own 영입 제안. */
+.marketCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.marketCard {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: var(--card-radius);
+}
+.marketCard span {
+  font-size: 13px;
+}
+.marketCard small {
+  font-size: 12px;
+  font-family: var(--display);
+}
+.marketCard button {
+  margin-top: 6px;
+  min-height: var(--control-min-height);
+}

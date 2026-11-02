@@ -38,6 +38,7 @@ import type { GameClient } from '../runtime/client';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { openTraining, useStaffRequest } from './state';
 import { DirectionLines } from './DirectionLines';
+import { Segments } from './Segments';
 import { Dialog } from './Dialog';
 import { DecisionOwner } from './DecisionOwner';
 import { callLine } from './TrainingOrderSheet';
@@ -641,6 +642,149 @@ export function CoachingStaff({
             term={term}
             until={renewed.until}
           />
+        </Dialog>
+      )}
+    </section>
+  );
+}
+
+/**
+ * The 이적시장's staff views: every candidate for the chosen post as a card with its own 영입 제안,
+ * which confirms the seasons and costs before the same hire the post's 선임 sends (→STAFF-15).
+ */
+export function StaffMarket({
+  w,
+  client,
+  roles,
+}: {
+  w: World;
+  client: GameClient;
+  roles: readonly StaffRole[];
+}) {
+  const acting = useActing();
+  const [stored, setRole] = useTaskState<StaffRole>(w.id, `staff-market-${roles[0]}`, roles[0]);
+  const role = roles.includes(stored) ? stored : roles[0];
+  const [pick, setPick] = useTaskState<string | undefined>(w.id, 'staff-market-pick', undefined);
+  const [term, setTerm] = useTaskState<ContractTerm>(w.id, 'staff-market-term', DELEGATED_TERM);
+  const club = clubOf(w);
+  const format = (value: string) => <Money value={value} code={club.country} year={w.year} />,
+    plain = (value: string) => <Money value={value} code={club.country} year={w.year} plain />;
+  const projected = useGameState((state) => state.view?.coaches[role]);
+  const candidates = projected ?? staffCandidates(w, role);
+  const current = w.staff?.find((member) => member.role === role);
+  const chosen = candidates.find((candidate) => candidate.id === pick);
+  const owed = releaseCost(w, current);
+  return (
+    <section data-surface="panel" className={s.staff} aria-label={`${STAFF_INFO[role].label} 영입`}>
+      <header>
+        <h3>{STAFF_INFO[role].label} 후보</h3>
+        <span>
+          지금 {current ? `${current.name} · OVR ${Math.round(current.ability)}` : '공석'}
+        </span>
+      </header>
+      {roles.length > 1 && (
+        <Segments
+          label="영입할 자리"
+          options={roles.map((id) => [id, STAFF_INFO[id].label] as const)}
+          value={role}
+          onChange={(id) => {
+            setRole(id);
+            setPick(undefined);
+          }}
+          wrap
+        />
+      )}
+      <p className={s.note}>{STAFF_INFO[role].duty} · 지금 {staffImpact(w, role)}</p>
+      {candidates.length ? (
+        <div className={s.marketCards}>
+          {candidates.map((candidate) => (
+            <article key={candidate.id} className={s.marketCard} data-surface="inset">
+              <div className={s.candidateHead}>
+                <OvrBadge
+                  value={Math.round(candidate.ability)}
+                  role="OVR"
+                  potential={candidate.potential}
+                />
+                <div>
+                  <b>{candidate.name}</b>
+                  <span>
+                    {coachAge(w, candidate).replace(/^ · /, '')}
+                    {candidate.ability > (current?.ability ?? 0)
+                      ? ` · 지금보다 +${Math.round(candidate.ability - (current?.ability ?? 0))}`
+                      : ''}
+                  </span>
+                </div>
+              </div>
+              <Meter value={candidate.ability} />
+              <small>
+                {candidate.trait
+                  ? `${STAFF_TRAIT_INFO[candidate.trait].label} · ${STAFF_TRAIT_INFO[candidate.trait].effect}`
+                  : '특성 없음'}
+              </small>
+              <small className={s.impact}>영입 시 {hiredImpact(w, role, candidate)}</small>
+              <small>
+                연봉 {plain(candidate.wage)} · 계약금 {plain(candidate.fee)}
+              </small>
+              <button
+                type="button"
+                data-ui="primary"
+                className={s.primary}
+                disabled={acting}
+                onClick={() => {
+                  setPick(candidate.id);
+                  setTerm(DELEGATED_TERM);
+                }}
+              >
+                영입 제안
+              </button>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p className={s.note}>이번 시즌 이 자리에 맞는 후보가 없어요.</p>
+      )}
+      {chosen && (
+        <Dialog
+          label={`${STAFF_INFO[role].label} 영입 제안`}
+          onClose={() => setPick(undefined)}
+          actions={
+            <div className={s.sheetActions}>
+              <button onClick={() => setPick(undefined)}>취소</button>
+              <button
+                data-ui="primary"
+                className={s.primary}
+                disabled={acting}
+                onClick={async () => {
+                  const reply = await client.command({
+                    type: 'hire-staff',
+                    role,
+                    candidate: candidates.findIndex((candidate) => candidate.id === chosen.id),
+                    candidateId: chosen.id,
+                    term,
+                  });
+                  if (reply?.ok) setPick(undefined);
+                }}
+              >
+                {chosen.name} 영입 · {term}시즌
+              </button>
+            </div>
+          }
+        >
+          <p className={s.note}>
+            {chosen.name} (OVR {Math.round(chosen.ability)}) → {STAFF_INFO[role].label} · 현재{' '}
+            {current ? `${current.name} (OVR ${Math.round(current.ability)})` : '공석'}
+          </p>
+          {chosen.person && (
+            <PersonCareerLink id={chosen.person} name={chosen.name} client={client} />
+          )}
+          <TermDial label="코치 계약 기간" value={term} disabled={acting} onChange={setTerm} />
+          <TermCosts w={w} wage={chosen.wage} fee={chosen.fee} term={term} until={w.year + term} />
+          {current && owed !== '0' && (
+            <p className={s.note}>
+              {current.name}은 떠나고 보상금 {format(owed)}을 받아요 (남은{' '}
+              {seasonsLeft(w, current.until)}시즌 × 연봉의 25%)
+            </p>
+          )}
         </Dialog>
       )}
     </section>

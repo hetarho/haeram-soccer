@@ -58,6 +58,8 @@ export function resolvePitchSkin(style: Pick<CSSStyleDeclaration, 'getPropertyVa
 
 /** The existing live geometry: all render treatments use this same projection. */
 export const markerRadius = (width: number) => Math.max(6, width * 0.011);
+/** The grass margin around the lines, as a share of the pitch's width. */
+export const PITCH_PAD = 0.013;
 
 export function paintPitchGround(
   ctx: CanvasRenderingContext2D,
@@ -65,7 +67,7 @@ export function paintPitchGround(
   height: number,
   skin: PitchSkin = DEFAULT_PITCH_SKIN,
 ) {
-  const pad = width * 0.065;
+  const pad = width * PITCH_PAD;
   const fw = width - pad * 2;
   const fh = height - pad * 2;
   const x = (v: number) => pad + (fw * v) / 100;

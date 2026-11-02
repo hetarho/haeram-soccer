@@ -523,6 +523,8 @@ export interface WorldMarketQuery {
   /** An OVR range, both ends included. */
   ovrMin?: number;
   ovrMax?: number;
+  /** The oldest age shown, included: the market's 유소년 view asks for academy ages. */
+  ageMax?: number;
   /** The existing roster-fit filter: improves predicted XI strength or tactical fit. */
   fit?: 'all' | 'improves';
   sort?: 'name' | 'age' | 'ovr' | 'potential' | 'fee' | 'wage';

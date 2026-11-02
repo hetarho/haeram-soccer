@@ -93,8 +93,10 @@ import {
   ManagerHireTerm,
   ManagerPost,
   ManagerRenewal,
+  StaffMarket,
   TalkRulePanel,
 } from './ClubStaff';
+import { Segments } from './Segments';
 import { AcademyPanel } from './AcademyPanel';
 import { TrainingView } from './TrainingView';
 import { WorkResponsibility } from './WorkResponsibility';
@@ -192,7 +194,7 @@ function PersonnelPanel({
           <AreaCriteria w={w} areas={['squad']} />
         </>
       ) : tab === 'market' ? (
-        <RecruitmentDesk state={state} client={client} />
+        <MarketHub state={state} client={client} />
       ) : (
         <>
           <FacilityOverview w={w} kind="manager" title="감독실">
@@ -214,6 +216,42 @@ function PersonnelPanel({
           client={client}
           controller={controller}
           scope={WORK_RESPONSIBILITIES[work]}
+        />
+      )}
+    </>
+  );
+}
+const MARKET_KINDS = [
+  ['players', '선수'],
+  ['youth', '유소년'],
+  ['coaches', '코치'],
+  ['manager', '감독'],
+  ['director', '단장'],
+] as const;
+type MarketKind = (typeof MARKET_KINDS)[number][0];
+const COACH_ROLES = STAFF_ROLES.filter((role) => role !== 'director');
+/**
+ * The 이적시장: whom the owner offers to sign, from players to the staff that run them. Each view
+ * composes its own authoritative desk — players and youth the world market, coaches and 단장 the
+ * staff candidates, 감독 the manager market — so none copies a command.
+ */
+function MarketHub({ state, client }: Props) {
+  const w = state.view!.world;
+  const [stored, setKind] = useTaskState<MarketKind>(w.id, 'market-kind', 'players');
+  const kind = MARKET_KINDS.some(([id]) => id === stored) ? stored : 'players';
+  return (
+    <>
+      <Segments label="영입 대상" options={MARKET_KINDS} value={kind} onChange={setKind} />
+      {kind === 'players' || kind === 'youth' ? (
+        <RecruitmentDesk key={kind} state={state} client={client} youth={kind === 'youth'} />
+      ) : kind === 'manager' ? (
+        <ManagerMarket state={state} client={client} onClose={() => setKind('players')} inline />
+      ) : (
+        <StaffMarket
+          key={kind}
+          w={w}
+          client={client}
+          roles={kind === 'director' ? ['director'] : COACH_ROLES}
         />
       )}
     </>
@@ -449,13 +487,20 @@ function TacticsTalk({ state, client }: Props) {
  * of our league and the division above, who cost compensation to their clubs. The list moves every
  * four rounds; hiring confirms on top of it and closes both.
  */
-function ManagerMarket({
+export function ManagerMarket({
   state,
   client,
   onClose,
   onCancel,
   error,
-}: Props & { onClose: () => void; onCancel?: () => void; error?: string }) {
+  inline = false,
+}: Props & {
+  onClose: () => void;
+  onCancel?: () => void;
+  error?: string;
+  /** The 이적시장's 감독 view: the same lists in the page, without a sheet of their own. */
+  inline?: boolean;
+}) {
   const v = state.view!,
     w = v.world,
     m = w.manager,
@@ -536,9 +581,8 @@ function ManagerMarket({
       </button>
     </article>
   );
-  return (
+  const lists = (
     <>
-      <Dialog label={m.interim ? '감독 선임' : '감독 교체'} wide onClose={onClose}>
         <p className={s.muted}>
           지금 {m.name}
           {m.interim ? ' (임시 감독)' : ''} · OVR {m.ability}
@@ -567,7 +611,19 @@ function ManagerMarket({
             <div className={s.cards}>{others.map(card)}</div>
           </div>
         </Panel>
-      </Dialog>
+    </>
+  );
+  return (
+    <>
+      {inline ? (
+        <div className={s.inlineMarket} aria-label="감독 영입">
+          {lists}
+        </div>
+      ) : (
+        <Dialog label={m.interim ? '감독 선임' : '감독 교체'} wide onClose={onClose}>
+          {lists}
+        </Dialog>
+      )}
       {chosen && (
         <Dialog
           label="감독 선임 확인"
@@ -1248,6 +1304,7 @@ function Business({ state, client, controller }: Props & { controller: Progressi
         key={opened}
         state={state}
         client={client}
+        controller={controller}
         personnel={(_desk, scoped, request, error) => (
           <PersonnelRequest
             key={`${request.world}:${request.item.id}`}

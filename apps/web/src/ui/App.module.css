@@ -3471,3 +3471,10 @@
     margin-block: 0;
   }
 }
+
+/* The 이적시장's 감독 view: the manager market's lists in the page instead of a sheet. */
+.inlineMarket {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}

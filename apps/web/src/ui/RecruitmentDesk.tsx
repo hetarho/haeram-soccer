@@ -415,12 +415,23 @@ function CandidateCard({
   );
 }
 
-export function RecruitmentDesk({ state, client }: { state: ClientState; client: GameClient }) {
+/** The oldest age the market's 유소년 view shows: the academy's U-21 (→CLUB-31). */
+const YOUTH_MARKET_AGE = 20;
+export function RecruitmentDesk({
+  state,
+  client,
+  youth = false,
+}: {
+  state: ClientState;
+  client: GameClient;
+  /** The 유소년 view: the same market held to academy ages, with filters of its own. */
+  youth?: boolean;
+}) {
   const w = state.view!.world,
     club = clubOf(w);
   const [query, setQuery] = useTaskState<MarketQuery>(
     w.id,
-    'world-market-query',
+    youth ? 'youth-market-query' : 'world-market-query',
     DEFAULT_MARKET_QUERY,
   );
   const changeQuery = (patch: Partial<MarketQuery>) =>
@@ -462,12 +473,13 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
   const registered = squadRegistration(w);
   const blocked = useGameState(gameActionsBlocked) || !!w.critical;
   const recommended = recruitmentLineNeed(w);
-  // Always by OVR, highest first; a query saved with another order or the fit filter drops them.
+  // Always by OVR (youth by potential), highest first; a saved order or the fit filter drops.
   const market = useMarketPage(client, w.id, w.revision, {
     ...query,
-    sort: 'ovr',
+    sort: youth ? 'potential' : 'ovr',
     direction: 'desc',
     fit: undefined,
+    ageMax: youth ? YOUTH_MARKET_AGE : undefined,
   });
   const page = market.value;
   const selectedComparison = comparison.filter((target) => target.world === w.id).slice(0, 2);
@@ -623,7 +635,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
       className={s.desk}
       data-ui="recruitment-desk"
       data-surface="sheet"
-      aria-label="선수 영입 데스크"
+      aria-label={youth ? '유소년 영입 데스크' : '선수 영입 데스크'}
     >
       <header className={s.toolbar}>
         <div className={s.heading}>
@@ -631,7 +643,8 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
             <PixelIcon name="people" size={26} />
           </span>
           <h3>
-            영입 후보 <span>{page ? `총 ${page.total}명` : '조회 중'}</span>
+            {youth ? `유소년 후보 · ${YOUTH_MARKET_AGE}세 이하` : '영입 후보'}{' '}
+            <span>{page ? `총 ${page.total}명` : '조회 중'}</span>
           </h3>
         </div>
         <div

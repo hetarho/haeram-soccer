@@ -47,20 +47,31 @@
   right: 50%;
   left: -100vw;
   background: var(--home-kit);
+  transition: background-color 240ms ease-out;
 }
 .kitHalves > strong::after {
   left: 50%;
   right: -100vw;
   background: var(--away-kit);
+  transition: background-color 240ms ease-out;
 }
-/* The names sit on their half's own colour too, so their ink is read against the shirt. */
+/*
+ * The names sit on their half's own colour too, so their ink is read against the shirt. Once a
+ * side has the ball both halves take its shirt: the whole board says who is on the ball.
+ */
 .kitHalves > [data-side='home'] {
   color: var(--home-ink);
   background-color: var(--home-kit);
+  transition:
+    background-color 240ms ease-out,
+    color 240ms ease-out;
 }
 .kitHalves > [data-side='away'] {
   color: var(--away-ink);
   background-color: var(--away-kit);
+  transition:
+    background-color 240ms ease-out,
+    color 240ms ease-out;
 }
 .kitHalves .possession {
   color: inherit;
@@ -246,6 +257,22 @@
   font-size: 12px;
   font-family: var(--display);
 }
+/* Above the pitch: the tactical matchup beside the speed chips. */
+.metaControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.matchup {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: var(--display);
+}
 /* Speed chips replace the old controls row. */
 .speeds {
   display: flex;
@@ -277,6 +304,9 @@
 }
 .stage .canvas {
   aspect-ratio: 1.9;
+}
+.canvas[data-pickable] {
+  cursor: pointer;
 }
 .canvas {
   background-image: var(--pitch-texture, none);
@@ -415,11 +445,55 @@
   font-family: var(--display);
 }
 .latestEvent p {
+  flex: 1;
   min-width: 0;
   line-height: 1.35;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.commentaryToggle {
+  flex-shrink: 0;
+  min-height: 32px;
+  padding: 2px 10px;
+  border-radius: var(--control-radius);
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: none;
+  font-family: var(--display);
+}
+/* Every line of commentary so far, newest first, under the current one. */
+.commentaryLog {
+  display: grid;
+  max-height: 220px;
+  margin: 0;
+  padding: 4px 14px 8px;
+  overflow-y: auto;
+  list-style: none;
+  font-size: 13px;
+  background: var(--surface-grain, none) var(--surface-2);
+  border-top: 1px solid var(--line);
+}
+.commentaryLog li {
+  display: flex;
+  gap: 10px;
+  padding: 4px 0;
+}
+.commentaryLog li + li {
+  border-top: 1px solid var(--line);
+}
+.commentaryLog span {
+  flex-shrink: 0;
+  min-width: 26px;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--display);
+}
+.commentaryLog p {
+  margin: 0;
+  line-height: 1.4;
 }
 
 /* Live charts: possession share, cumulative xG and shots, revealed up to the presented minute. */
@@ -528,12 +602,19 @@
 .ownActions button {
   min-height: 44px;
 }
-.details[hidden] {
-  display: none;
-}
 .details {
-  border-top: 1px solid var(--line);
-  padding-top: 12px;
+  display: grid;
+  gap: 12px;
+}
+/* Tablets and desktops: the scoreboard's names and score read from across the room. */
+@media (min-width: 761px) {
+  .scoreboard .team b {
+    font-size: 20px;
+  }
+  .scoreboard > strong {
+    min-width: 132px;
+    font-size: 48px;
+  }
 }
 @media (max-width: 760px) {
   .scoreboard {

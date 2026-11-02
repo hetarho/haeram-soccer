@@ -1,4 +1,4 @@
-/* The 결재함: a quiet heading, its counts and filters, then the requests themselves (→WEB-39/100). */
+/* The 결재함: a quiet heading and its counts, then every title of the owner's work (→WEB-39/100). */
 .queue {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -25,8 +25,137 @@
   overflow-wrap: anywhere;
   word-break: keep-all;
 }
-.summary button {
+.summary p:focus {
+  outline: none;
+}
+.bulk {
+  display: inline-grid;
+  grid-auto-flow: column;
+  gap: 4px;
+}
+.bulk button {
   min-height: 44px;
+  padding: 2px 14px;
+  font-size: 13px;
+}
+
+/* Each title: its name with the waiting count and 직접/위임, whom it goes to, then its requests. */
+.titles {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.title {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface-2);
+}
+.title[data-waiting] {
+  border-color: var(--accent-edge);
+  border-left-width: 4px;
+}
+.titleHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  min-width: 0;
+}
+.titleHead h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 15px;
+  word-break: keep-all;
+}
+.titleCount {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  color: var(--on-accent);
+  background: var(--accent-fill);
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+}
+.switch {
+  display: inline-grid;
+  grid-auto-flow: column;
+  gap: 4px;
+}
+.switch button {
+  min-height: 36px;
+  min-width: 56px;
+  padding: 2px 12px;
+  font-size: 13px;
+}
+.delegate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  margin: 0;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+.delegateMark {
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.quiet {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  word-break: keep-all;
+}
+.title .requests {
+  margin-top: 4px;
+  border-top: 1px solid var(--line);
+}
+.dialogActions {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 8px;
+}
+.dialogActions button {
+  min-height: 44px;
+}
+.confirm {
+  display: grid;
+  gap: 8px;
+}
+.confirmList {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.confirmList li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  font-size: 13px;
+}
+.confirm p,
+.confirm strong {
+  margin: 0;
+  word-break: keep-all;
 }
 
 .requests {
@@ -42,6 +171,9 @@
   gap: 10px;
   min-height: 56px;
   padding: 6px 0;
+}
+.requests li:not([data-tagged]) {
+  grid-template-columns: minmax(0, 1fr) auto;
 }
 .requests li + li {
   border-top: 1px solid var(--line);

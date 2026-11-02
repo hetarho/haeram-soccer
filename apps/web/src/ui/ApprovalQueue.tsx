@@ -1,27 +1,47 @@
-import { useEffect, useRef } from 'react';
-import type { World } from '../../../../packages/contracts/src/types';
+import { useEffect, useRef, useState } from 'react';
+import type { ResponsibilityKey, World } from '../../../../packages/contracts/src/types';
 import type { StopReason } from '../../../../packages/engine/src/stopping';
-import { approvalStanding, overdueSummary } from '../runtime/progression';
 import {
-  matchesFilter,
-  orderApprovals,
-  queueFilter,
-  queueFilters,
-  QUEUE_FILTER,
+  isDelegated,
+  RESPONSIBILITY_KEYS,
+  settingsOf,
+} from '../../../../packages/engine/src/responsibilities';
+import { STAFF_INFO, staffMember } from '../../../../packages/engine/src/staff-info';
+import type { GameClient } from '../runtime/client';
+import {
+  approvalStanding,
+  overdueSummary,
+  type ProgressionController,
+} from '../runtime/progression';
+import { useGameState } from '../runtime/store';
+import {
+  approvalGroups,
   QUEUE_RETURN,
   requestKeys,
   requestSubject,
   returnFocus,
-  type QueueFilter,
+  type ApprovalTitle,
   type QueueReturn,
 } from './approvalOrder';
+import { Dialog } from './Dialog';
 import { eventDesk } from './eventRouting';
-import { RESPONSIBILITY_LABELS } from './intervention';
+import {
+  RESPONSIBILITY_DELEGATES,
+  RESPONSIBILITY_DETAILS,
+  RESPONSIBILITY_LABELS,
+} from './intervention';
 import { OfficeBar } from './OfficeBar';
-import { Segments } from './Segments';
+import {
+  applyOfficeChange,
+  officeProposal,
+  type OfficeChange,
+  type OfficeProposal,
+} from './officeChanges';
+import { PendingHandover } from './OwnerOfficeView';
+import { modeSwitchBlocked } from './progressMode';
 import { openApprovalRequest } from './state';
 import { TaskReturn } from './TaskReturn';
-import { useTaskMemory, useTaskState } from './taskMemory';
+import { useTaskMemory } from './taskMemory';
 import s from './ApprovalQueue.module.css';
 
 /** The responsibility a waiting request belongs to, as its row's kind. */
@@ -40,10 +60,13 @@ export function ApprovalRows({
   w,
   items,
   onReview,
+  tagged = true,
 }: {
   w: World;
   items: readonly StopReason[];
   onReview?: (item: StopReason, index: number) => void;
+  /** Off under a 결재함 title, which already names the kind. */
+  tagged?: boolean;
 }) {
   return (
     <ul className={s.requests} aria-label="결재 대기 업무">
@@ -51,10 +74,12 @@ export function ApprovalRows({
         const standing = approvalStanding(w, item.id);
         const subject = requestSubject(w, item);
         return (
-          <li key={item.id} data-request-id={item.id}>
-            <span data-ui="label" className={s.tag}>
-              {requestTag(item)}
-            </span>
+          <li key={item.id} data-request-id={item.id} data-tagged={tagged || undefined}>
+            {tagged && (
+              <span data-ui="label" className={s.tag}>
+                {requestTag(item)}
+              </span>
+            )}
             <span className={s.request}>
               <b>{item.title}</b>
               <small className={s.meta}>
@@ -87,29 +112,174 @@ export function ApprovalRows({
   );
 }
 
+const TITLE_LABELS: Record<Exclude<ApprovalTitle, ResponsibilityKey>, string> = {
+  finance: '재정·투자',
+  other: '기타 결재',
+};
+const DELEGATE_LABELS = { director: '단장', manager: '감독', youth: STAFF_INFO.youth.label };
+/** The people a responsibility goes to once delegated: each post with its holder, or 공석. */
+function delegates(w: World, key: ResponsibilityKey) {
+  return RESPONSIBILITY_DELEGATES[key].map((post) => {
+    const name = post === 'manager' ? w.manager.name : staffMember(w, post)?.name;
+    return `${DELEGATE_LABELS[post]} ${name ?? '공석'}`;
+  });
+}
+
+/** One title's 직접/위임: a pressed pair that proposes the other choice. */
+function DelegationSwitch({
+  title,
+  delegated,
+  disabled,
+  onPropose,
+}: {
+  title: ResponsibilityKey;
+  delegated: boolean;
+  disabled: boolean;
+  onPropose: (change: OfficeChange) => void;
+}) {
+  return (
+    <div
+      className={s.switch}
+      role="group"
+      aria-label={`${RESPONSIBILITY_LABELS[title]} 결재 방식`}
+      data-ui="choices"
+    >
+      {([false, true] as const).map((value) => (
+        <button
+          key={String(value)}
+          type="button"
+          data-ui={delegated === value ? 'secondary' : undefined}
+          aria-pressed={delegated === value}
+          disabled={disabled}
+          onClick={() => {
+            if (delegated !== value)
+              onPropose({ responsibilities: { [title]: value ? 'delegated' : 'direct' } });
+          }}
+        >
+          {value ? '위임' : '직접'}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 /**
- * The owner office (→WEB-39/100): a quiet 결재함 heading over every actual waiting request, in
- * deadline order with its filters, and nothing else to do there. The filter and the place a review
- * left from belong to this world's task memory; the content region keeps the scroll (→WEB-74).
+ * The 결재함's 직접/위임 confirmation (→WEB-79): the same guarded proposal the 결재라인 overview
+ * confirms, naming whom each title goes to and the waiting requests that move with it.
+ */
+function DelegationConfirm({
+  w,
+  proposal,
+  client,
+  controller,
+  onDone,
+}: {
+  w: World;
+  proposal: OfficeProposal;
+  client: GameClient;
+  controller: ProgressionController;
+  onDone: () => void;
+}) {
+  const blocked = useGameState(modeSwitchBlocked);
+  const [applying, setApplying] = useState(false);
+  const [message, setMessage] = useState('');
+  const changed = RESPONSIBILITY_KEYS.filter(
+    (key) => proposal.change.responsibilities?.[key] !== undefined,
+  );
+  const next = proposal.change.responsibilities?.[changed[0]] === 'delegated';
+  const one = changed.length === 1 ? delegates(w, changed[0]).join(' · ') : undefined;
+  const close = () => {
+    if (!applying) onDone();
+  };
+  const apply = async () => {
+    setApplying(true);
+    setMessage('');
+    try {
+      await applyOfficeChange(client, controller, proposal);
+      onDone();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : '변경하지 못했어요. 다시 시도해 주세요.');
+    } finally {
+      setApplying(false);
+    }
+  };
+  return (
+    <Dialog
+      label={next ? '위임하겠습니다.' : '직접 결재하겠습니다.'}
+      onClose={close}
+      actions={
+        <div className={s.dialogActions}>
+          <button type="button" disabled={applying} onClick={close}>
+            취소
+          </button>
+          <button
+            type="button"
+            data-ui="primary"
+            disabled={blocked || applying || w.id !== proposal.id}
+            onClick={() => void apply()}
+          >
+            {next ? (one ? `${one}에게 위임` : `${changed.length}개 업무 위임`) : '직접 결재하기'}
+          </button>
+        </div>
+      }
+    >
+      <div className={s.confirm} aria-busy={applying}>
+        <ul className={s.confirmList}>
+          {changed.map((key) => (
+            <li key={key}>
+              <b>{RESPONSIBILITY_LABELS[key]}</b>
+              <span>
+                {next ? `→ ${delegates(w, key).join(' · ')}` : RESPONSIBILITY_DETAILS[key]}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <strong>
+          {next
+            ? '담당자에게 판단과 실행을 맡기고 결과를 보고받아요.'
+            : '필요한 사안은 구단주가 직접 승인해요.'}
+        </strong>
+        <PendingHandover proposal={proposal} />
+        {message && <p role="alert">{message}</p>}
+      </div>
+    </Dialog>
+  );
+}
+
+/**
+ * The owner office (→WEB-39/100): the 결재함 as every title of the owner's work with its waiting
+ * requests below it, the titles that wait first, each naming whom it is delegated to with its
+ * 직접/위임 right there, and 전체 직접/위임 over them all. The place a review left from belongs to this world's task memory; the
+ * content region keeps the scroll (→WEB-74).
  */
 export function ApprovalQueue({
   w,
   pending,
-  onOverview,
+  client,
+  controller,
 }: {
   w: World;
   pending: readonly StopReason[];
-  onOverview: () => void;
+  client: GameClient;
+  controller: ProgressionController;
 }) {
-  const [stored, setFilter] = useTaskState<QueueFilter>(w.id, QUEUE_FILTER, 'all');
-  const filter = queueFilter(stored);
-  const overdue = (id: string) => approvalStanding(w, id).overdue;
-  const ordered = orderApprovals(w, pending);
-  const rows = ordered.filter((item) => matchesFilter(overdue, item, filter));
+  const blocked = useGameState(modeSwitchBlocked);
+  const [proposal, setProposal] = useState<OfficeProposal>();
+  const propose = (change: OfficeChange) => {
+    if (!blocked) setProposal(officeProposal(w, change));
+  };
+  const settings = settingsOf(w).responsibilities;
+  const delegatedCount = RESPONSIBILITY_KEYS.filter((key) => settings[key] === 'delegated').length;
+  const bulk = (value: 'direct' | 'delegated') => {
+    const changed = RESPONSIBILITY_KEYS.filter((key) => settings[key] !== value);
+    if (changed.length)
+      propose({ responsibilities: Object.fromEntries(changed.map((key) => [key, value])) });
+  };
+  const groups = approvalGroups(w, pending);
   const late = overdueSummary(w, pending);
-  const empty = useRef<HTMLHeadingElement>(null);
-  const shown = useRef(rows);
-  shown.current = rows;
+  const empty = useRef<HTMLParagraphElement>(null);
+  const shown = useRef(groups.flatMap((group) => group.items));
+  shown.current = groups.flatMap((group) => group.items);
   // Back from a review, focus moves to the request still waiting there or the one in its place.
   useEffect(() => {
     const memory = useTaskMemory.getState();
@@ -127,58 +297,119 @@ export function ApprovalQueue({
     target?.focus({ preventScroll: true });
     target?.scrollIntoView?.({ block: 'nearest' });
   }, [w.id]);
-  const review = (item: StopReason, index: number) => {
+  const review = (item: StopReason) => {
     const memory = useTaskMemory.getState();
     useTaskMemory.setState({
-      values: { ...memory.values, [QUEUE_RETURN]: { id: item.id, index } satisfies QueueReturn },
+      values: {
+        ...memory.values,
+        [QUEUE_RETURN]: {
+          id: item.id,
+          index: shown.current.indexOf(item),
+        } satisfies QueueReturn,
+      },
     });
   };
-  const named = (value: QueueFilter) =>
-    value === 'overdue' ? '지연' : value === 'all' ? '전체' : RESPONSIBILITY_LABELS[value];
   return (
     <section className={s.queue} aria-label="결재함" data-testid="approval-queue">
       <TaskReturn />
       <OfficeBar title="결재함" />
       <div className={s.summary}>
-        <p data-testid="approval-counts">
-          대기 <b>{pending.length}</b>건
-          {late.overdue > 0 && (
-            <b className={s.overdue}>
-              {` · 지연 ${late.overdue}건 · 라운드마다 분위기 −${late.morale}`}
-            </b>
+        <p data-testid="approval-counts" ref={empty} tabIndex={-1}>
+          {pending.length ? (
+            <>
+              대기 <b>{pending.length}</b>건
+              {late.overdue > 0 && (
+                <b className={s.overdue}>
+                  {` · 지연 ${late.overdue}건 · 라운드마다 분위기 −${late.morale}`}
+                </b>
+              )}
+            </>
+          ) : (
+            '지금 결재할 업무가 없어요'
           )}
         </p>
-        <button type="button" data-ui="link" aria-haspopup="dialog" onClick={onOverview}>
-          결재라인 모아보기
-        </button>
-      </div>
-      {(pending.length > 0 || filter !== 'all') && (
-        <Segments
-          label="결재함 보기"
-          options={queueFilters(overdue, ordered, filter)}
-          value={filter}
-          onChange={setFilter}
-          wrap
-        />
-      )}
-      {rows.length ? (
-        <ApprovalRows w={w} items={rows} onReview={review} />
-      ) : (
-        <div className={s.empty} data-testid="approval-empty">
-          <h3 ref={empty} tabIndex={-1}>
-            {pending.length ? `${named(filter)} 결재가 없어요` : '지금 결재할 업무가 없어요'}
-          </h3>
-          <p>
-            {pending.length
-              ? `다른 결재 ${pending.length}건이 기다리고 있어요.`
-              : '새 요청이 오면 결재 기한과 함께 여기에 쌓여요.'}
-          </p>
-          {filter !== 'all' && (
-            <button type="button" onClick={() => setFilter('all')}>
-              전체 보기
-            </button>
-          )}
+        <div className={s.bulk} role="group" aria-label="전체 결재 방식" data-ui="choices">
+          {(['direct', 'delegated'] as const).map((value) => {
+            const all =
+              value === 'delegated'
+                ? delegatedCount === RESPONSIBILITY_KEYS.length
+                : delegatedCount === 0;
+            return (
+              <button
+                key={value}
+                type="button"
+                data-ui={all ? 'secondary' : undefined}
+                aria-pressed={all}
+                disabled={blocked}
+                onClick={() => bulk(value)}
+              >
+                {value === 'delegated' ? '전체 위임' : '전체 직접'}
+              </button>
+            );
+          })}
         </div>
+      </div>
+      <ol className={s.titles} aria-label="결재 항목">
+        {groups.map(({ title, items }) => {
+          const responsibility = title !== 'finance' && title !== 'other' ? title : undefined;
+          const delegated = responsibility && isDelegated(w, responsibility);
+          return (
+            <li
+              key={title}
+              className={s.title}
+              data-title={title}
+              data-waiting={items.length > 0 || undefined}
+            >
+              <header className={s.titleHead}>
+                <h3>
+                  {responsibility ? RESPONSIBILITY_LABELS[responsibility] : TITLE_LABELS[title as 'finance' | 'other']}
+                  {items.length > 0 && (
+                    <span data-ui="count" className={s.titleCount}>
+                      {items.length}
+                    </span>
+                  )}
+                </h3>
+                {responsibility && (
+                  <DelegationSwitch
+                    title={responsibility}
+                    delegated={!!delegated}
+                    disabled={blocked}
+                    onPropose={propose}
+                  />
+                )}
+              </header>
+              <p className={s.delegate}>
+                {responsibility ? (
+                  <>
+                    <span className={s.delegateMark}>{delegated ? '위임 중' : '위임 대상'}</span>
+                    {delegates(w, responsibility).join(' · ')}
+                  </>
+                ) : (
+                  <>
+                    <span className={s.delegateMark}>결재</span>구단주 직접
+                  </>
+                )}
+              </p>
+              {items.length ? (
+                <ApprovalRows w={w} items={items} onReview={review} tagged={false} />
+              ) : (
+                <p className={s.quiet}>
+                  {responsibility && RESPONSIBILITY_DETAILS[responsibility]} ·{' '}
+                  {delegated ? '위임받은 담당자가 처리하고 결과를 보고해요' : '대기 없음'}
+                </p>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+      {proposal && (
+        <DelegationConfirm
+          w={w}
+          proposal={proposal}
+          client={client}
+          controller={controller}
+          onDone={() => setProposal(undefined)}
+        />
       )}
     </section>
   );

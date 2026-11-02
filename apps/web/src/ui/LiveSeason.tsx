@@ -238,8 +238,7 @@ const MatchPane = memo(function MatchPane({
           />
         </Suspense>
       </section>
-      {presentation.details &&
-        finished &&
+      {finished &&
         finishedWorld &&
         completed.current === playback?.record.id && (
           <div className={s.afterMatch}>

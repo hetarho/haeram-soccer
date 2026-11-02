@@ -194,12 +194,13 @@ export function MatchCharts({
         </div>
         <button
           className={t.detailToggle}
+          aria-haspopup="dialog"
           aria-expanded={details}
-          aria-controls={detailsId}
+          aria-controls={details ? detailsId : undefined}
           aria-label="경기 상세"
           onClick={onDetails}
         >
-          상세 {details ? '▴' : '▾'}
+          상세
         </button>
       </header>
       <ul className={t.legend}>

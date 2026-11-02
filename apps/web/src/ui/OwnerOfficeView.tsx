@@ -13,7 +13,7 @@ import { Dialog } from './Dialog';
 import { Select } from './Select';
 import { FacilityArt } from './FacilityArt';
 import { modeSwitchBlocked } from './progressMode';
-import { RESPONSIBILITY_LABELS } from './intervention';
+import { RESPONSIBILITY_DETAILS as DETAILS, RESPONSIBILITY_LABELS } from './intervention';
 import {
   applyOfficeChange,
   officeBulkChange,
@@ -23,15 +23,6 @@ import {
 } from './officeChanges';
 import { delegationCounts } from './officeSummary';
 import s from './OwnerOffice.module.css';
-const DETAILS: Record<ResponsibilityKey, string> = {
-  manager: '감독 선임·재계약',
-  staff: '단장·스카우트·코치진의 선임·재계약',
-  contracts: '선수 재계약·계약 개선',
-  recruitment: '선수 영입·영입 협상',
-  sales: '우리 선수에게 온 제안·매각 방침',
-  academy: '유소년 승격과 방출',
-  sponsors: '자리별 스폰서 계약',
-};
 const OBSERVATIONS = [
   ['matchEve', '경기 전날 보고', '위임하면 스태프가 경기를 치르고 결과를 전달해요.'],
   ['windowOpen', '이적시장 개장 보고', '위임하면 개장 보고 확인을 기다리지 않고 업무를 계속해요.'],

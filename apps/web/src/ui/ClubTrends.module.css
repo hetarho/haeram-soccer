@@ -1,6 +1,7 @@
+/* Fills the panel on wide screens; on narrow ones keeps its columns and scrolls in its wrap. */
 .seasonHistory {
-  width: max-content;
-  min-width: 0;
+  width: 100%;
+  min-width: max-content;
   table-layout: auto;
 }
 .seasonHistory th,

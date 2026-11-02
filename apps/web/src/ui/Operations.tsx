@@ -4,6 +4,7 @@ import { ApprovalRequestHost } from './ApprovalRequestHost';
 import { approvalRequests } from '../runtime/progression';
 import { eventDesk, type ApprovalRequest } from './eventRouting';
 import type { ClientState, GameClient } from '../runtime/client';
+import type { ProgressionController } from '../runtime/progression';
 import { BusinessWorkbench } from './BusinessWorkbench';
 import {
   BUSINESS_TABS,
@@ -19,11 +20,10 @@ import {
 import { OfficeBar } from './OfficeBar';
 import { ApprovalQueue } from './ApprovalQueue';
 import { DeskBody, OfficeOverview } from './OfficeDesk';
-import { FacilityOverview } from './FacilityOverview';
 import { OfficeTeam } from './ClubHub';
 
 /**
- * The owner office (→WEB-39): under its manager-room scene the live 결재함 leads, then the club
+ * The owner office (→WEB-39): the live 결재함 leads the moment it opens, then the club
  * summary and the owner's quick actions; a selected request's review composes the authoritative
  * form of its work. Proactive work lives in the club's sections (→WEB-110), so a desk opened
  * without a request leaves for them.
@@ -31,10 +31,12 @@ import { OfficeTeam } from './ClubHub';
 export function OperationsView({
   state,
   client,
+  controller,
   personnel,
 }: {
   state: ClientState;
   client: GameClient;
+  controller: ProgressionController;
   personnel: (
     desk: 'players' | 'staff',
     client: GameClient,
@@ -73,8 +75,12 @@ export function OperationsView({
   if (!area)
     return (
       <OfficeOverview>
-        <FacilityOverview w={w} kind="manager" title="구단주 사무실" />
-        <ApprovalQueue w={w} pending={approvalRequests(w)} onOverview={openOwnerOffice} />
+        <ApprovalQueue
+          w={w}
+          pending={approvalRequests(w)}
+          client={client}
+          controller={controller}
+        />
         <OfficeTeam w={w} client={client} />
       </OfficeOverview>
     );

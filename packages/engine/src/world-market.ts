@@ -128,6 +128,7 @@ export function worldMarketPage(w: World, input: WorldMarketQuery): WorldMarketP
       return;
     if (q.ovrMin !== undefined && overall(p) < q.ovrMin) return;
     if (q.ovrMax !== undefined && overall(p) > q.ovrMax) return;
+    if (q.ageMax !== undefined && w.year - p.born > q.ageMax) return;
     if (q.position && (p.positions[q.position] ?? 0) < 2) return;
     if (
       q.line &&
