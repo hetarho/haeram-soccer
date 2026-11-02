@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-03T00:00Z | T664 on wip/ot03 |
+| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-03T00:00Z | T665 next on wip/ot03 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
@@ -563,7 +563,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- continue branch `wip/ot03` (owner takeover plan T653–T663, T654–T656 merged; T664 in progress — see its task file there): finish T664, merge `wip/ot03-t669` (T669 done), then T665 → T666, T667, T668; batch gate once, then merge into main and push. Report spec/reports/261103-ot03.md
+- continue branch `wip/ot03` (dda53874: owner takeover T653–T664 and T669 done, main merged; its STATE is current): implement-task T665, then T666, T667, T668; batch gate once (Chromium), then merge into main and push. Report spec/reports/261103-ot03.md
 - read main CI after 1928053c (fix for 41524887826: position-badges, analysis, mobile-match-presentation)
 
 ## log
