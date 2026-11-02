@@ -8,8 +8,11 @@ import type {
 import { currentDay } from './calendar';
 import { compareIds } from './primitives';
 import { clubOf } from './player-state';
+import { hasOwner } from './owner';
 
+/** The own league's key; none before the takeover, so no fixture is a scoring one (→WORLD-13). */
 function competitionKey(w: World) {
+  if (!hasOwner(w)) return '';
   const club = clubOf(w);
   return w.lower ? 'lower' : `${club.country}:${club.tier}:${club.group}`;
 }

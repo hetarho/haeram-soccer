@@ -1,0 +1,115 @@
+/**
+ * The world before the takeover (→WORLD-13): made in 1930 and lived by the day loop (→LEAGUE-11)
+ * season by season to the chosen decade's first season, with nobody owning a club. Every fixture
+ * plays the path clubs nobody owns use (→MATCH-22) and each close archives what HIST-2 keeps; the
+ * war skips 1939/40–1945/46 (→WORLD-14). The same seed and decade make the same world.
+ */
+import type { World } from '../../contracts/src/types';
+import { TAKEOVER_DECADES, type TakeoverDecade } from '../../contracts/src/owner';
+import { CATALOG_HASH, CATALOG_VERSION, currency, priceIndex } from '../../catalogs/src/index';
+import { advanceDays, prepareSeason } from './season';
+import { currentDay, SEASON_END_DAY } from './calendar';
+import { ENGINE_VERSION, generateClubs, makeManager } from './world';
+import { hash } from './primitives';
+import { installMissingIdentities } from './club-identity';
+import { activateMatchModel, MATCH_MODEL_RELEASE, type MatchModelRelease } from './match-model';
+import { seasonFrom } from './wartime';
+import { DEFAULT_TICKET } from './presets';
+
+/** Every world is made in 1930, the first takeover decade (→WORLD-13). */
+export const HISTORY_START = TAKEOVER_DECADES[0];
+
+/**
+ * 1 August 1930: every professional club of the playable countries (→WORLD-15), nobody's, on
+ * the 1930/31 season's first day. The own-club fields wait for the takeover (→ECON-38): no
+ * players, no money, and a placeholder manager who manages nothing. `release` is the internal
+ * switch, which only tests and measurements pass (as for `createWorld`).
+ */
+export function historyWorld(
+  seed: string,
+  release: MatchModelRelease = MATCH_MODEL_RELEASE,
+): World {
+  if (!seed.trim() || seed.length > 80) throw new Error('시드를 확인해 주세요.');
+  const year = HISTORY_START;
+  const clubs = generateClubs(seed, false);
+  const code = clubs[0]!.country;
+  const manager = makeManager(code, seed, year);
+  const w: World = {
+    schema: 1,
+    engine: ENGINE_VERSION,
+    catalog: CATALOG_VERSION,
+    catalogHash: CATALOG_HASH,
+    id: `world:${hash(`${seed}:history`)}`,
+    seed,
+    year,
+    round: 0,
+    revision: 0,
+    playerClub: '',
+    level: 'normal',
+    clubs,
+    players: [],
+    manager,
+    tactic: manager.philosophy,
+    fixtures: [],
+    tables: {},
+    ownMatches: [],
+    history: [],
+    events: [],
+    cash: '0',
+    income: '0',
+    expense: '0',
+    currency: currency(code, year).code,
+    priceIndex: priceIndex(code, year).value,
+    stadium: 0,
+    trainingGround: 0,
+    academyFacility: 0,
+    ticket: DEFAULT_TICKET,
+    campaigns: [],
+    cupWinners: {},
+    europe: [],
+    lastChampions: [],
+    lower: false,
+    receiptIds: [],
+  };
+  prepareSeason(w);
+  // Each club's first manager starts with the world (→STAFF-17), not with a founding; the other
+  // associations' clubs, which the season's preparation adds, included.
+  w.managerMarket = {
+    year,
+    round: 0,
+    free: [],
+    clubs: Object.fromEntries(w.clubs.map((club) => [club.id, [0, year]])),
+    serial: 0,
+  };
+  installMissingIdentities(w);
+  // Every fixture plays the released model's path for clubs nobody owns (→MATCH-22, SAVE-23).
+  activateMatchModel(w, release);
+  return w;
+}
+
+/**
+ * The ownerless world on the first day of `decade`'s first season — the 1946/47 restart for the
+ * 1940s (→WORLD-14) — with every season before it played and archived. `onProgress` hears each
+ * season reached, once a season.
+ */
+export function generateHistory(
+  seed: string,
+  decade: TakeoverDecade,
+  onProgress?: (season: number) => void,
+): World {
+  if (!TAKEOVER_DECADES.includes(decade)) throw new Error('인수 시대를 확인해 주세요.');
+  return liveHistory(historyWorld(seed), seasonFrom(decade), onProgress);
+}
+/**
+ * Lives an ownerless world season by season, each to its close by the day loop, until `first`
+ * is the season in play (its first day); `onProgress` hears each season reached.
+ */
+export function liveHistory(w: World, first: number, onProgress?: (season: number) => void) {
+  while (w.year < first) {
+    const season = w.year;
+    // Exactly to the close: the day after the final round opens the next season (→LEAGUE-9).
+    while (w.year === season) advanceDays(w, SEASON_END_DAY + 1 - currentDay(w), undefined, false);
+    onProgress?.(w.year);
+  }
+  return w;
+}

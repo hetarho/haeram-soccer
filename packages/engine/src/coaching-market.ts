@@ -10,8 +10,10 @@ import {
 } from './person-careers';
 import { coachingEntryReady } from './coaching-entry';
 import { compareIds, random } from './primitives';
-import { coachWage } from './staff';
+import { coachWage, moneyCountry } from './staff';
 import { coachSeason } from './coaching';
+import { hasOwner } from './owner';
+import { currency } from '../../catalogs/src/index';
 
 /** Exact contract endings are processed on days and after skipped summer, without inventing wages paid. */
 export function settleNpcCoaching(w: World, grow = false) {
@@ -90,8 +92,10 @@ export function refreshCoachingMarket(
     if (!club) continue;
     const job = openEmployment(w, person.id, coaching.role, club.id, at);
     job.contractUntil = addCareerYears(at, 2);
-    job.wage = coachWage(w, coaching.ability);
-    job.currency = w.currency;
+    // Before the takeover a coach is paid in his club's money (→WORLD-13).
+    const code = hasOwner(w) ? undefined : moneyCountry(club);
+    job.wage = code ? coachWage(w, coaching.ability, code) : coachWage(w, coaching.ability);
+    job.currency = code ? currency(code, w.year).code : w.currency;
     job.grownThrough = w.year;
     occupied.add(`${club.id}:${coaching.role}`);
     available.next++;

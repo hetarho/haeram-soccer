@@ -1,3 +1,4 @@
+import { clearDebt } from './books';
 import { cohesionAfterSummer } from './adaptation';
 import type { Club, World } from '../../contracts/src/types';
 import { country } from '../../catalogs/src/index';
@@ -95,6 +96,8 @@ export function evolveClubs(w: World, tiers: ReadonlyMap<string, number>) {
     c.strength = Math.round(clamp(next, 15, e.ceiling));
     // New money buys players, not a team: the squad's 조직력 starts again (→LEAGUE-12).
     cohesionAfterSummer(c, { investment: project || takeover, move: c.tier !== before });
+    // ...and pays what the club owes (→ECON-36).
+    if (project || takeover) clearDebt(c);
   }
 }
 /** A rival project in the owner's country and within a division of us makes the club news. */

@@ -1,5 +1,5 @@
+import { hasOwner } from './owner';
 import { cancelPromises } from './promises';
-import { COUNTRIES } from '../../catalogs/src/index';
 import { closeEmployment, openEmployment, peopleOf, syncMentorExposures } from './person-careers';
 import { cohesionAfterManager } from './adaptation';
 import type {
@@ -19,6 +19,7 @@ import {
   MANAGER_RENEWAL_MARGIN,
   MANAGER_TRAIT_INFO,
   managerTrait,
+  moneyCountry,
   staffQuote,
   releaseCost,
 } from './staff';
@@ -115,15 +116,10 @@ export function clubManager(w: World, club: Club): MarketManager {
   const hit = cache.get(cached);
   if (hit) return hit;
   const r = random(key);
+  const code = moneyCountry(club);
   const style = MANAGER_STYLES[integer(r, 0, MANAGER_STYLES.length - 1)],
     info = STYLE_INFO[style],
-    drawn = makeManager(
-      COUNTRIES.some((c) => c.code === club.country) ? club.country : 'ENG',
-      key,
-      since,
-      1,
-      style,
-    );
+    drawn = makeManager(code, key, since, 1, style);
   const level = clamp(Math.round(club.strength + integer(r, -8, 8)), 30, 95),
     potential = clamp(
       Math.max(level, (drawn.potential ?? level) + level - drawn.ability),
@@ -136,7 +132,8 @@ export function clubManager(w: World, club: Club): MarketManager {
     philosophy: info.tactic ?? drawn.philosophy,
     ability: level,
     potential,
-    wage: staffQuote(w, 120 + level),
+    // Before the takeover nobody's country prices him: his club's does (→WORLD-13).
+    wage: hasOwner(w) ? staffQuote(w, 120 + level) : staffQuote(w, 120 + level, code),
     since,
     until: w.year + info.term,
   };
@@ -503,6 +500,11 @@ function lastFive(w: World, ids: Set<string>) {
  * free agents fill it. Its own stream keeps every other draw where it was.
  */
 export function refreshManagerMarket(w: World, relegated?: Set<string>) {
+  // The market is the owner's: before the takeover only the close changes managers (→WORLD-13).
+  if (!hasOwner(w)) {
+    if (relegated) renewWorldManagers(w, relegated);
+    return;
+  }
   const m = market(w);
   const r = random(
     `${w.seed}:manager-market:${w.year}:${w.round}:${relegated ? 'close' : 'round'}`,
@@ -561,6 +563,26 @@ export function refreshManagerMarket(w: World, relegated?: Set<string>) {
   syncMentorExposures(w);
 }
 
+/**
+ * The close's changes of manager before anyone owns a club (→WORLD-13): every club's manager
+ * retires at RETIREMENT_AGE and a relegated club sacks his as an own league's does at the close;
+ * a club's new manager is drawn as its managers always are and its squad starts to learn him
+ * (→LEAGUE-12). Nobody hires from a market, so no free agent is kept.
+ */
+function renewWorldManagers(w: World, relegated: ReadonlySet<string>) {
+  const m = (w.managerMarket ??= { year: w.year, round: w.round, free: [], clubs: {}, serial: 0 });
+  const r = random(`${w.seed}:manager-market:${w.year}:${w.round}:close`);
+  for (const club of w.clubs) {
+    const manager = clubManager(w, club);
+    const sacked = relegated.has(club.id) && r() < SACKING.relegated;
+    if (!sacked && age(w, manager) < RETIREMENT_AGE) continue;
+    const [count] = m.clubs[club.id] ?? [0, FOUNDING_YEAR];
+    m.clubs[club.id] = [count + 1, w.year];
+    cohesionAfterManager(club, manager.style === clubManager(w, club).style);
+  }
+  m.year = w.year;
+  m.round = w.round;
+}
 /** Rounds until the market next moves, for the candidates tab. */
 export function roundsUntilRefresh(w: World) {
   return MARKET_REFRESH_ROUNDS - (w.round % MARKET_REFRESH_ROUNDS);

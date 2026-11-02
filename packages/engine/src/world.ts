@@ -279,29 +279,24 @@ const colorOf = (r: () => number) =>
   Math.floor(r() * 0xffffff)
     .toString(16)
     .padStart(6, '0');
-export function createBase(input: Founding): World {
-  if (
-    !input.name.trim() ||
-    input.name.length > 60 ||
-    !/^#[0-9a-fA-F]{6}$/.test(input.color) ||
-    input.seed.length > 80 ||
-    !DIFFICULTY_LEVELS.includes(input.level)
-  )
-    throw new Error('창단 정보를 확인해 주세요.');
-  const year = FOUNDING_YEAR;
-  const selected = country(input.country);
+/**
+ * Every generated club of the playable countries (→WORLD-15): each professional club at its
+ * division's level (tier t: 77 − 11t) + its stature (→LEAGUE-10) ± 3, within 15–92, and with
+ * `amateur` the amateur clubs below each pyramid (the founding start's level).
+ */
+export function generateClubs(seed: string, amateur = true): Club[] {
   const clubs: Club[] = [];
   for (const c of COUNTRIES)
     for (let tier = 0; tier < c.groups.length; tier++)
       for (let group = 0; group < c.groups[tier].length; group++)
         for (let n = 0; n < c.groups[tier][group]; n++) {
           const id = `${c.code}:${tier}:${group}:${n}`,
-            r = random(`${input.seed}:${id}`);
+            r = random(`${seed}:${id}`);
           const city = c.cities[integer(r, 0, c.cities.length - 1)],
             term = c.terms[integer(r, 0, c.terms.length - 1)];
           // Clubs start near their division's level, giants above it and small clubs below.
           const strength = clamp(
-            Math.round(tierLevel(tier) + stature(input.seed, id) + integer(r, -3, 3)),
+            Math.round(tierLevel(tier) + stature(seed, id) + integer(r, -3, 3)),
             15,
             92,
           );
@@ -319,14 +314,15 @@ export function createBase(input: Founding): World {
             elo: initialElo(strength),
           });
         }
+  if (!amateur) return clubs;
   // Amateur clubs below each professional pyramid: the owner's league and the pool that swaps
   // places with clubs relegated out of the professional game.
   for (const c of COUNTRIES)
     for (let i = 0; i < AMATEUR_CLUBS; i++) {
       const id = `${c.code}:reserve:${i}`,
-        r = random(`${input.seed}:${id}`);
+        r = random(`${seed}:${id}`);
       const strength = clamp(
-        Math.round(tierLevel(c.groups.length, true) + stature(input.seed, id) + integer(r, -3, 3)),
+        Math.round(tierLevel(c.groups.length, true) + stature(seed, id) + integer(r, -3, 3)),
         15,
         92,
       );
@@ -345,6 +341,20 @@ export function createBase(input: Founding): World {
         elo: initialElo(strength),
       });
     }
+  return clubs;
+}
+export function createBase(input: Founding): World {
+  if (
+    !input.name.trim() ||
+    input.name.length > 60 ||
+    !/^#[0-9a-fA-F]{6}$/.test(input.color) ||
+    input.seed.length > 80 ||
+    !DIFFICULTY_LEVELS.includes(input.level)
+  )
+    throw new Error('창단 정보를 확인해 주세요.');
+  const year = FOUNDING_YEAR;
+  const selected = country(input.country);
+  const clubs = generateClubs(input.seed);
   // The new club starts as an amateur club, one league below the professional game (→WEB-2).
   const club: Club = {
     id: `${input.country}:club`,

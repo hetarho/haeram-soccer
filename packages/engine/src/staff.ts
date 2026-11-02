@@ -9,6 +9,7 @@ import { ATTRIBUTES, type Attribute } from '../../contracts/src/player';
 import { ATTRIBUTE_LABEL } from './player';
 import { moraleOf } from './morale';
 import type {
+  Club,
   CoachCriteria,
   ContractTerm,
   ManagerStyle,
@@ -20,7 +21,7 @@ import type {
   TrainingFocus,
   World,
 } from '../../contracts/src/types';
-import { footballIndex } from '../../catalogs/src/index';
+import { COUNTRIES, footballIndex } from '../../catalogs/src/index';
 import { addEvent } from './events';
 import { clubOf } from './player-state';
 import { ownStarters, personName } from './world';
@@ -264,14 +265,21 @@ export function basicStaff(w: World): Staff[] {
 export function staffWageTotal(w: World): bigint {
   return (w.staff || []).reduce((sum, member) => sum + BigInt(member.wage), 0n);
 }
+/**
+ * The country whose money prices a club's manager and coaches before anyone owns a club
+ * (→WORLD-13): its own, or the first playable country's for a club from outside them.
+ */
+export function moneyCountry(club: Pick<Club, 'country'>) {
+  return COUNTRIES.some((c) => c.code === club.country) ? club.country : COUNTRIES[0]!.code;
+}
 /** A price-indexed amount carried onto the football index of the club's country (→ECON-26). */
-export function footballScaled(w: World, amount: string) {
-  const real = footballIndex(clubOf(w).country, w.year).real;
+export function footballScaled(w: World, amount: string, code = clubOf(w).country) {
+  const real = footballIndex(code, w.year).real;
   return scaleBy(amount, real, 1_000_000n);
 }
 /** What a manager or coach asks this season: the price quote on the football index (→ECON-26). */
-export function staffQuote(w: World, units: number) {
-  return footballScaled(w, quote(clubOf(w).country, w.year, units));
+export function staffQuote(w: World, units: number, code = clubOf(w).country) {
+  return footballScaled(w, quote(code, w.year, units), code);
 }
 export function checkTerm(term: ContractTerm | undefined) {
   if (term !== undefined && !CONTRACT_TERMS.includes(term))
@@ -287,8 +295,8 @@ export function withTerm<T extends { term?: ContractTerm }>(person: T, term?: Co
  * A coach's going wage: it follows his current ability (→STAFF-16). A coach wage cap names this
  * wage for an ability of 50–90 (→STAFF-15).
  */
-export function coachWage(w: World, ability: number) {
-  return staffQuote(w, Math.max(0, (ability - 30) * 1.5));
+export function coachWage(w: World, ability: number, code = clubOf(w).country) {
+  return staffQuote(w, Math.max(0, (ability - 30) * 1.5), code);
 }
 type StaffCandidate = Staff & { fee: string };
 /** The season's draws per club and department; delegated staff look at them every day. */
