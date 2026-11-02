@@ -28,6 +28,10 @@ New theme-owned artwork uses the theme-first source path above. Runtime resource
 use theme-owned directories; this does not imply that every legacy source directory has
 been migrated. Shared preparation code remains in `scripts/`.
 
+[Staff role badges](staff-role-badges/README.md) are shared native SVG resources with a stable
+job palette across themes. Their editable source and build recipe live together; deployed
+skins are in `public/art/shared/staff-role-badges-v1/` and registered by every theme pack.
+
 ## Localization status
 
 The project has a working locale registry, message packs, fallback and formatting services.

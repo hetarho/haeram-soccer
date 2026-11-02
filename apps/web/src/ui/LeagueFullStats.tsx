@@ -147,7 +147,11 @@ function FullClubTable({
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.club} className={row.club === w.playerClub ? s.own : ''}>
+              <tr
+                key={row.club}
+                data-own={row.club === w.playerClub || undefined}
+                className={row.club === w.playerClub ? s.own : ''}
+              >
                 <th scope="row" className={s.club}>
                   <ClubLink w={w} id={row.club} crest={14} />
                 </th>

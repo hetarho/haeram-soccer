@@ -461,6 +461,32 @@
   color: var(--gold);
   font-weight: 700;
 }
+.points {
+  font-weight: 700;
+}
+/* With won/drawn/lost the closed table is as wide as the live one: on a phone it scrolls sideways
+   with rank and club pinned, its cells painting their own paper. */
+.tableScroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+@media (max-width: 760px) {
+  .full :is(th, td):first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    box-sizing: border-box;
+    width: 30px;
+    min-width: 30px;
+    max-width: 30px;
+  }
+  .full :is(th, td):nth-child(2) {
+    position: sticky;
+    left: 30px;
+    z-index: 1;
+    min-width: 132px;
+  }
+}
 .tableMeta {
   margin: -2px 0 4px;
   font-size: 12px;

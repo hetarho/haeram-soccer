@@ -235,6 +235,15 @@
     "team.player.open": "Ficha de {name}",
     "team.prospect.open": "Avaliação de base de {name}",
     "team.coach.open": "Carreira de {name}",
-    "team.back": "← Time · {view}"
+    "team.back": "← Time · {view}",
+    "staff.role.manager": "Treinador",
+    "staff.role.director": "Diretor de futebol",
+    "staff.role.assistant": "Auxiliar técnico",
+    "staff.role.attack": "Técnico de ataque",
+    "staff.role.defense": "Técnico de defesa",
+    "staff.role.goalkeeping": "Treinador de goleiros",
+    "staff.role.fitness": "Preparador físico",
+    "staff.role.youth": "Diretor da base",
+    "staff.role.scout": "Chefe de olheiros"
   }
 }

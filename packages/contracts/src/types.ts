@@ -520,6 +520,9 @@ export interface WorldMarketQuery {
   team?: string;
   position?: Position;
   line?: Line;
+  /** An OVR range, both ends included. */
+  ovrMin?: number;
+  ovrMax?: number;
   /** The existing roster-fit filter: improves predicted XI strength or tactical fit. */
   fit?: 'all' | 'improves';
   sort?: 'name' | 'age' | 'ovr' | 'potential' | 'fee' | 'wage';

@@ -19,9 +19,11 @@ import { selectReviewWorld } from './liveState';
 import {
   finalRows,
   leagueRows,
+  seasonRecords,
   seasonSnapshots,
   useSeasonFiles,
   type FinalRow,
+  type SeasonRecord,
 } from './seasonArchive';
 import s from './App.module.css';
 import t from './LiveSeason.module.css';
@@ -55,12 +57,15 @@ function FinalTable({
   rows,
   read,
   league,
+  records,
 }: {
   w: World;
   season: SeasonArchive;
   rows?: FinalRow[];
   read: Read;
   league?: LeagueChoice;
+  /** Every club's won/drawn/lost, where the season's snapshots give them back. */
+  records?: Map<number, SeasonRecord>;
 }) {
   if (!rows)
     return read?.files ? (
@@ -79,49 +84,70 @@ function FinalTable({
         {seasonName(season.year)} · {league && `${country(code).name} `}
         {divisionName(code, tier, group)} · {rows.length}팀
       </p>
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">클럽</th>
-            <th scope="col">승점</th>
-            <th scope="col">득</th>
-            <th scope="col">실</th>
-            <th scope="col">득실</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map(([club, points, gf, ga], i) => {
-            const id = w.clubs[club]?.id,
-              zone = zones[i];
-            return (
-              <tr
-                key={club}
-                className={`${id === w.playerClub ? r.own : ''} ${zone ? l[zone] : ''}`}
-              >
-                <td>{i + 1}</td>
-                <td>
-                  {id ? <ClubLink w={w} id={id} crest={14} /> : '—'}
-                  {i === 0 && <span className={r.champion}>우승</span>}
-                  {id === w.playerClub && (
-                    <small className={r.record}>
-                      {season.won}승 {season.drawn}무 {season.lost}패
-                    </small>
+      <div className={r.tableScroll}>
+        <table className={records ? r.full : undefined}>
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">클럽</th>
+              <th scope="col">승점</th>
+              {records && (
+                <>
+                  <th scope="col">경기</th>
+                  <th scope="col">승</th>
+                  <th scope="col">무</th>
+                  <th scope="col">패</th>
+                </>
+              )}
+              <th scope="col">득</th>
+              <th scope="col">실</th>
+              <th scope="col">득실</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(([club, points, gf, ga], i) => {
+              const id = w.clubs[club]?.id,
+                zone = zones[i],
+                record = records?.get(club);
+              return (
+                <tr
+                  key={club}
+                  data-own={id === w.playerClub || undefined}
+                  className={`${id === w.playerClub ? r.own : ''} ${zone ? l[zone] : ''}`}
+                >
+                  <td>{i + 1}</td>
+                  <td>
+                    {id ? <ClubLink w={w} id={id} crest={14} /> : '—'}
+                    {i === 0 && <span className={r.champion}>우승</span>}
+                    {!records && id === w.playerClub && (
+                      <small className={r.record}>
+                        {season.won}승 {season.drawn}무 {season.lost}패
+                      </small>
+                    )}
+                  </td>
+                  <td className={r.points}>{points}</td>
+                  {records && (
+                    <>
+                      <td>{record ? record[0] + record[1] + record[2] : '—'}</td>
+                      <td>{record?.[0] ?? '—'}</td>
+                      <td>{record?.[1] ?? '—'}</td>
+                      <td>{record?.[2] ?? '—'}</td>
+                    </>
                   )}
-                </td>
-                <td>{points}</td>
-                <td>{gf}</td>
-                <td>{ga}</td>
-                <td>{signed(gf - ga)}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                  <td>{gf}</td>
+                  <td>{ga}</td>
+                  <td>{signed(gf - ga)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
       <ZoneLegend zones={zones} lower={lower} closed className={r.zones} />
       <p className={r.footnote}>
-        구역은 그 시즌 디비전의 승강 규칙이에요. 승·무·패는 우리 팀만 기록돼요. 다른 클럽은 승점과
-        득실만 남아 있어요.
+        구역은 그 시즌 디비전의 승강 규칙이에요.
+        {!records &&
+          ' 이 리그의 지난 시즌은 승점과 득실만 남아 있어요. 승·무·패는 우리 리그만 볼 수 있어요.'}
       </p>
     </section>
   );
@@ -438,6 +464,10 @@ export const ClosedSeason = memo(function ClosedSeason({
     [w, season],
   );
   const other = ownThen && league && !sameLeague(league, ownThen) ? league : undefined;
+  const records = useMemo(
+    () => (season && !other ? seasonRecords(w, season) : undefined),
+    [w, season, other],
+  );
   const tableRows = other ? leagueRows(w, read?.files?.season?.standings, other) : rows;
   if (!season)
     return (
@@ -484,7 +514,14 @@ export const ClosedSeason = memo(function ClosedSeason({
       >
         {tab === 'table' ? (
           <>
-            <FinalTable w={w} season={season} rows={tableRows} read={read} league={other} />
+            <FinalTable
+              w={w}
+              season={season}
+              rows={tableRows}
+              read={read}
+              league={other}
+              records={records}
+            />
             <button type="button" className={r.clubSeason} onClick={() => openClubSeason(year)}>
               우리 구단 시즌 기록
             </button>

@@ -1,5 +1,74 @@
 /* Reusable skins for semantic controls and surfaces. Layout stays with each view. */
 html[data-theme] {
+  [data-ui='staff-role-badge'] {
+    --staff-role-frame: var(--image-art-staff-role-manager);
+    --staff-role-slice: var(--image-art-staff-role-manager-slice);
+    --staff-role-fill: var(--staff-role-manager-fill, #314c73);
+    --staff-role-ink: var(--staff-role-manager-text, #ffffff);
+    border: 1px solid transparent;
+    border-image: var(--staff-role-frame) var(--staff-role-slice) fill / 4px stretch;
+    border-radius: 0;
+    background: var(--staff-role-fill) content-box;
+    color: var(--staff-role-ink);
+    box-shadow: none;
+  }
+
+  [data-ui='staff-role-badge'][data-post='director'] {
+    --staff-role-frame: var(--image-art-staff-role-director);
+    --staff-role-slice: var(--image-art-staff-role-director-slice);
+    --staff-role-fill: var(--staff-role-director-fill);
+    --staff-role-ink: var(--staff-role-director-text);
+  }
+
+  [data-ui='staff-role-badge'][data-post='assistant'] {
+    --staff-role-frame: var(--image-art-staff-role-assistant);
+    --staff-role-slice: var(--image-art-staff-role-assistant-slice);
+    --staff-role-fill: var(--staff-role-assistant-fill);
+    --staff-role-ink: var(--staff-role-assistant-text);
+  }
+
+  [data-ui='staff-role-badge'][data-post='attack'] {
+    --staff-role-frame: var(--image-art-staff-role-attack);
+    --staff-role-slice: var(--image-art-staff-role-attack-slice);
+    --staff-role-fill: var(--staff-role-attack-fill);
+    --staff-role-ink: var(--staff-role-attack-text);
+  }
+
+  [data-ui='staff-role-badge'][data-post='defense'] {
+    --staff-role-frame: var(--image-art-staff-role-defense);
+    --staff-role-slice: var(--image-art-staff-role-defense-slice);
+    --staff-role-fill: var(--staff-role-defense-fill);
+    --staff-role-ink: var(--staff-role-defense-text);
+  }
+
+  [data-ui='staff-role-badge'][data-post='goalkeeping'] {
+    --staff-role-frame: var(--image-art-staff-role-goalkeeping);
+    --staff-role-slice: var(--image-art-staff-role-goalkeeping-slice);
+    --staff-role-fill: var(--staff-role-goalkeeping-fill);
+    --staff-role-ink: var(--staff-role-goalkeeping-text);
+  }
+
+  [data-ui='staff-role-badge'][data-post='fitness'] {
+    --staff-role-frame: var(--image-art-staff-role-fitness);
+    --staff-role-slice: var(--image-art-staff-role-fitness-slice);
+    --staff-role-fill: var(--staff-role-fitness-fill);
+    --staff-role-ink: var(--staff-role-fitness-text);
+  }
+
+  [data-ui='staff-role-badge'][data-post='youth'] {
+    --staff-role-frame: var(--image-art-staff-role-youth);
+    --staff-role-slice: var(--image-art-staff-role-youth-slice);
+    --staff-role-fill: var(--staff-role-youth-fill);
+    --staff-role-ink: var(--staff-role-youth-text);
+  }
+
+  [data-ui='staff-role-badge'][data-post='scout'] {
+    --staff-role-frame: var(--image-art-staff-role-scout);
+    --staff-role-slice: var(--image-art-staff-role-scout-slice);
+    --staff-role-fill: var(--staff-role-scout-fill);
+    --staff-role-ink: var(--staff-role-scout-text);
+  }
+
   [data-ui='result-badge'] {
     --result-badge-frame: var(--result-draw-badge-frame);
     --result-badge-slice: var(--result-draw-badge-slice);
@@ -1088,13 +1157,17 @@ html[data-theme] {
     background-blend-mode: multiply;
   }
 
+  /* Our club's row: its own paper under a translucent tint, so the row reads apart from the rest
+     even where the paper's material is opaque. */
   table tbody tr[data-own='true'] > :is(th, td) {
     background:
       var(--image-table-row-rule, none) left bottom / 100% 1px no-repeat,
+      linear-gradient(var(--table-own-tint, transparent), var(--table-own-tint, transparent)),
       var(--table-own-fill, var(--image-canvas))
         var(--image-table-own-material, var(--image-canvas-material)) repeat;
     background-size:
       100% 1px,
+      auto,
       var(--image-material-size, 512px);
   }
 

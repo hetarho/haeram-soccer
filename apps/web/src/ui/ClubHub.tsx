@@ -28,10 +28,11 @@ export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => voi
   return (
     <section className={s.fixture} aria-label="다음 경기" data-home-part="fixture">
       <div className={s.fixtureInfo}>
-        {/* The competition sits beside the title; opponent, venue and report share one row. */}
+        {/* The competition and venue sit beside the title; opponent and report share one row. */}
         <div className={s.fixtureHead}>
           <h2 className={s.fixtureTitle}>NEXT MATCH</h2>
           {next && <span className={s.fixtureTag}>{competitionLabel(w, next)}</span>}
+          {next && <HomeAwayBadge side={next.home === w.playerClub ? 'home' : 'away'} />}
         </div>
         <div className={s.fixtureRow}>
           <h3>
@@ -43,7 +44,6 @@ export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => voi
               <span>다음 시즌을 준비해요</span>
             )}
           </h3>
-          {next && <HomeAwayBadge side={next.home === w.playerClub ? 'home' : 'away'} />}
           <button
             className={s.prepare}
             data-ui="primary"

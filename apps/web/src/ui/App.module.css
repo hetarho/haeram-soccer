@@ -3394,11 +3394,74 @@
   flex: 1 1 0;
   min-width: 0;
 }
-.competitionScope .leaguePicker > label {
-  flex: 1 1 60px;
+/* Country and division read short (`ENG`, `4부`) and take only their width; the list names them. */
+.competitionScope .leaguePicker {
+  container: league-picker / inline-size;
 }
-.competitionScope .leaguePicker > label:first-child {
-  flex-basis: 80px;
+.competitionScope .leaguePicker > label {
+  flex: none;
+}
+/* Above the theme's trigger padding, which would otherwise win on load order. */
+.competitionScope .leaguePicker > label :global([data-select-trigger][role='combobox']) {
+  gap: 4px;
+  padding-inline: 8px;
+}
+/* 우리 리그 appears in the row's free end while another league is shown, so nothing else moves;
+   its face matches the selects' and its 44px target stays whole. */
+.ownLeague.ownLeague {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  margin-left: auto;
+  padding: 0 8px;
+  border: 0;
+  border-image: none;
+  background: none;
+  box-shadow: none;
+  color: var(--text);
+  font-size: var(--select-font-size, 13px);
+  white-space: nowrap;
+  animation: ownLeagueIn 220ms var(--ease) both;
+}
+.ownLeague::before {
+  content: '';
+  position: absolute;
+  inset: 6px 0;
+  z-index: -1;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--surface-grain, none) var(--surface-deep);
+  box-shadow: var(--popover-shadow);
+  pointer-events: none;
+}
+.ownLeague:hover::before {
+  background: var(--surface-grain, none) var(--surface-2);
+}
+.ownLeague:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -3px;
+}
+@keyframes ownLeagueIn {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+}
+/* The crest joins the words where the row has room; a 360px phone also drops the selects'
+   chevrons, as the season select already does, so 우리 리그 fits beside them in every theme. */
+@container league-picker (max-width: 479px) {
+  .ownLeague > :first-child {
+    display: none;
+  }
+}
+@container league-picker (max-width: 374px) {
+  .leaguePicker > label :global([data-select-trigger][role='combobox']) > :global([data-pixel-icon]) {
+    display: none;
+  }
 }
 @media (max-width: 760px) {
   .competitionScope {

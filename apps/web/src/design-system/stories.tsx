@@ -14,6 +14,8 @@ import { TrophyIcon, type TrophyKind } from '../ui/TrophyIcon';
 import { OvrBadge } from '../ui/OvrBadge';
 import { HomeAwayBadge } from '../ui/HomeAwayBadge';
 import { PositionBadge } from '../ui/PositionBadge';
+import { StaffRoleBadge } from '../ui/StaffRoleBadge';
+import { STAFF_ROLES } from '../../../../packages/engine/src/staff-info';
 import { POSITIONS } from '../../../../packages/contracts/src/player';
 import { ResultBadge } from '../ui/ResultBadge';
 import { Money } from '../ui/Money';
@@ -397,6 +399,13 @@ function Badges({ runtime }: { runtime: Runtime }) {
         <div className="ds-row">
           {POSITIONS.map((position) => (
             <PositionBadge key={position} position={position} />
+          ))}
+        </div>
+      </Section>
+      <Section title="StaffRoleBadge · 감독 · 단장 · 코치진">
+        <div className="ds-row">
+          {(['manager', ...STAFF_ROLES] as const).map((post) => (
+            <StaffRoleBadge key={post} post={post} />
           ))}
         </div>
       </Section>

@@ -17,11 +17,17 @@ export const kindLabel: Record<string, string> = {
 
 /**
  * A division of a country as the tables and records name it: "2부", "3부 B조" where the division
- * plays in regional groups, "아마추어 리그" below the professional game.
+ * plays in regional groups, "아마추어 리그" below the professional game. Compact tables may
+ * request "Amat." while keeping the complete name in their title.
  */
-export function divisionName(code: string, tier: number, group?: number) {
+export function divisionName(
+  code: string,
+  tier: number,
+  group?: number,
+  { compact = false }: { compact?: boolean } = {},
+) {
   const groups = COUNTRIES.find((c) => c.code === code)?.groups[tier];
-  if (!groups) return '아마추어 리그';
+  if (!groups) return compact ? 'Amat.' : '아마추어 리그';
   const region =
     group !== undefined && groups.length > 1 ? ` ${String.fromCharCode(65 + group)}조` : '';
   return `${tier + 1}부${region}`;

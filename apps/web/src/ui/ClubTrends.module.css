@@ -1,14 +1,13 @@
 .seasonHistory {
-  width: 100%;
-  min-width: 820px;
-  table-layout: fixed;
+  width: max-content;
+  min-width: 0;
+  table-layout: auto;
 }
 .seasonHistory th,
 .seasonHistory td {
-  padding: 8px 10px;
-  white-space: normal;
+  padding: 8px 12px;
+  white-space: nowrap;
   vertical-align: middle;
-  overflow-wrap: anywhere;
 }
 .seasonHistory tbody tr {
   height: 44px;
@@ -17,23 +16,11 @@
   padding-block: 2px;
   white-space: nowrap;
 }
-.seasonHistory th:nth-child(1) {
-  width: 20%;
-}
-.seasonHistory th:nth-child(2) {
-  width: 18%;
-}
-.seasonHistory th:nth-child(3) {
-  width: 14%;
-}
-.seasonHistory th:nth-child(4) {
-  width: 17%;
-}
-.seasonHistory th:nth-child(5) {
-  width: 13%;
-}
-.seasonHistory th:nth-child(6) {
-  width: 18%;
+/* Seasons are row labels, so do not inherit the shared rank column's centred alignment. */
+.seasonHistory th:first-child,
+.seasonHistory td:first-child {
+  width: auto;
+  text-align: start;
 }
 .cellText {
   display: block;
@@ -50,7 +37,7 @@
 @media (max-width: 760px) {
   .seasonHistory th,
   .seasonHistory td {
-    padding: 8px 4px;
+    padding: 8px 6px;
     font: 12px/1.4 var(--display);
   }
   .seasonHistory td {

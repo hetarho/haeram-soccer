@@ -232,6 +232,15 @@
     "team.player.open": "Spielerakte {name}",
     "team.prospect.open": "Nachwuchsprüfung {name}",
     "team.coach.open": "Laufbahn {name}",
-    "team.back": "← Team · {view}"
+    "team.back": "← Team · {view}",
+    "staff.role.manager": "Trainer",
+    "staff.role.director": "Sportdirektor",
+    "staff.role.assistant": "Co-Trainer",
+    "staff.role.attack": "Angriffstrainer",
+    "staff.role.defense": "Defensivtrainer",
+    "staff.role.goalkeeping": "Torwarttrainer",
+    "staff.role.fitness": "Fitnesstrainer",
+    "staff.role.youth": "Jugendleiter",
+    "staff.role.scout": "Chefscout"
   }
 }

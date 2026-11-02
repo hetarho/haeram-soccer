@@ -244,6 +244,15 @@
     "team.player.open": "سجل اللاعب {name}",
     "team.prospect.open": "مراجعة الأكاديمية لـ{name}",
     "team.coach.open": "المسيرة المهنية لـ{name}",
-    "team.back": "→ الفريق · {view}"
+    "team.back": "→ الفريق · {view}",
+    "staff.role.manager": "المدرب",
+    "staff.role.director": "المدير الرياضي",
+    "staff.role.assistant": "مساعد المدرب",
+    "staff.role.attack": "مدرب الهجوم",
+    "staff.role.defense": "مدرب الدفاع",
+    "staff.role.goalkeeping": "مدرب الحراس",
+    "staff.role.fitness": "مدرب اللياقة",
+    "staff.role.youth": "مدير الناشئين",
+    "staff.role.scout": "رئيس الكشافين"
   }
 }

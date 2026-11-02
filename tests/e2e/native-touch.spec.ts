@@ -12,6 +12,7 @@ async function expectTouchControl(
   control: Locator,
   viewport: { width: number; height: number },
   min = 44,
+  minWidth = min,
 ) {
   await control.scrollIntoViewIfNeeded();
   await settle(control.page());
@@ -30,7 +31,7 @@ async function expectTouchControl(
     };
   });
   const measured = JSON.stringify(geometry);
-  expect(geometry.width, measured).toBeGreaterThanOrEqual(min);
+  expect(geometry.width, measured).toBeGreaterThanOrEqual(minWidth);
   expect(geometry.height, measured).toBeGreaterThanOrEqual(min);
   expect(geometry.x, measured).toBeGreaterThanOrEqual(0);
   expect(geometry.y, measured).toBeGreaterThanOrEqual(0);
@@ -203,8 +204,14 @@ for (const viewport of [
     // A regional group is a division option of its own (→WEB-40).
     await chooseOption(tier, `${regionalTier}.1`);
     await expect(tier).toHaveAttribute('data-value', `${regionalTier}.1`);
+    // The season stepper's bare arrows are 44px tall and 32px wide (→WEB-40).
     for (const step of ['이전 시즌', '다음 시즌'])
-      await expectTouchControl(page.getByRole('button', { name: step, exact: true }), viewport);
+      await expectTouchControl(
+        page.getByRole('button', { name: step, exact: true }),
+        viewport,
+        44,
+        32,
+      );
     await expect(page.getByRole('table', { name: '리그 순위표' }).getByRole('row')).not.toHaveCount(
       1,
     );

@@ -232,6 +232,15 @@
     "team.player.open": "Spelersdossier {name}",
     "team.prospect.open": "Jeugdbeoordeling {name}",
     "team.coach.open": "Loopbaan {name}",
-    "team.back": "← Team · {view}"
+    "team.back": "← Team · {view}",
+    "staff.role.manager": "Trainer",
+    "staff.role.director": "Technisch directeur",
+    "staff.role.assistant": "Assistent-trainer",
+    "staff.role.attack": "Aanvalstrainer",
+    "staff.role.defense": "Verdedigingstrainer",
+    "staff.role.goalkeeping": "Keeperstrainer",
+    "staff.role.fitness": "Conditietrainer",
+    "staff.role.youth": "Hoofd jeugdopleiding",
+    "staff.role.scout": "Hoofdscout"
   }
 }

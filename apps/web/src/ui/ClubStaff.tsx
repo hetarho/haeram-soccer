@@ -42,6 +42,7 @@ import { Dialog } from './Dialog';
 import { DecisionOwner } from './DecisionOwner';
 import { callLine } from './TrainingOrderSheet';
 import { OvrBadge } from './OvrBadge';
+import { StaffRoleBadge } from './StaffRoleBadge';
 import { compactMoney, contractLine } from './format';
 import { directorDecisions } from './shortlist';
 import { Money } from './Money';
@@ -391,7 +392,7 @@ export function CoachingStaff({
                   <span className={s.vacantChip}>공석</span>
                 )}
                 <div>
-                  <b>{STAFF_INFO[id].label}</b>
+                  <StaffRoleBadge post={id} />
                 </div>
               </div>
               {member ? (

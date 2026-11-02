@@ -126,6 +126,8 @@ export function worldMarketPage(w: World, input: WorldMarketQuery): WorldMarketP
         offer.source.group !== q.league.group)
     )
       return;
+    if (q.ovrMin !== undefined && overall(p) < q.ovrMin) return;
+    if (q.ovrMax !== undefined && overall(p) > q.ovrMax) return;
     if (q.position && (p.positions[q.position] ?? 0) < 2) return;
     if (
       q.line &&

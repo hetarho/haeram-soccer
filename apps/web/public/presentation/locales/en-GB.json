@@ -232,6 +232,15 @@
     "team.player.open": "{name} player record",
     "team.prospect.open": "{name} academy review",
     "team.coach.open": "{name} career",
-    "team.back": "← Team · {view}"
+    "team.back": "← Team · {view}",
+    "staff.role.manager": "Manager",
+    "staff.role.director": "Director",
+    "staff.role.assistant": "Assistant manager",
+    "staff.role.attack": "Attacking coach",
+    "staff.role.defense": "Defensive coach",
+    "staff.role.goalkeeping": "Goalkeeping coach",
+    "staff.role.fitness": "Fitness coach",
+    "staff.role.youth": "Youth director",
+    "staff.role.scout": "Chief scout"
   }
 }

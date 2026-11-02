@@ -232,6 +232,15 @@
     "team.player.open": "{name} oyuncu kaydı",
     "team.prospect.open": "{name} altyapı değerlendirmesi",
     "team.coach.open": "{name} kariyeri",
-    "team.back": "← Takım · {view}"
+    "team.back": "← Takım · {view}",
+    "staff.role.manager": "Teknik direktör",
+    "staff.role.director": "Sportif direktör",
+    "staff.role.assistant": "Yardımcı antrenör",
+    "staff.role.attack": "Hücum antrenörü",
+    "staff.role.defense": "Savunma antrenörü",
+    "staff.role.goalkeeping": "Kaleci antrenörü",
+    "staff.role.fitness": "Kondisyon antrenörü",
+    "staff.role.youth": "Altyapı direktörü",
+    "staff.role.scout": "Baş gözlemci"
   }
 }

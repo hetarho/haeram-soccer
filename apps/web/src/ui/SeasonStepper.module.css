@@ -1,16 +1,17 @@
-/* ‹ season › keeps its arrows' touch targets and gives way only to the selects beside it. */
+/* ‹ season › keeps its size and gives way only to the selects beside it; its bare arrows are
+   44px tall and 32px wide, so they sit close to the season. */
 .stepper {
   display: flex;
   flex: none;
   align-items: center;
-  gap: 2px;
+  gap: 0;
 }
 .step {
   flex: none;
   display: grid;
   place-items: center;
-  width: 44px;
-  min-width: 44px;
+  width: 32px;
+  min-width: 32px;
   height: 44px;
   min-height: 44px;
   padding: 0;
@@ -24,6 +25,18 @@
   stroke-width: 2.6;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+/* Bare chevrons: the arrows keep their touch targets but drop every theme frame and fill, so the
+   season between them carries the row. */
+.stepper .step.step {
+  border: 0;
+  border-image: none;
+  background: none;
+  box-shadow: none;
+  color: var(--text);
+}
+.stepper .step.step:hover:not(:disabled) {
+  color: var(--accent);
 }
 /* Theme button skins restyle disabled controls; an end of the seasons must still read as one. */
 .stepper .step.step:disabled {

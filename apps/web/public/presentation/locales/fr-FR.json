@@ -235,6 +235,15 @@
     "team.player.open": "Fiche de {name}",
     "team.prospect.open": "Évaluation de formation de {name}",
     "team.coach.open": "Carrière de {name}",
-    "team.back": "← Équipe · {view}"
+    "team.back": "← Équipe · {view}",
+    "staff.role.manager": "Entraîneur",
+    "staff.role.director": "Directeur sportif",
+    "staff.role.assistant": "Entraîneur adjoint",
+    "staff.role.attack": "Entraîneur offensif",
+    "staff.role.defense": "Entraîneur défensif",
+    "staff.role.goalkeeping": "Entraîneur des gardiens",
+    "staff.role.fitness": "Préparateur physique",
+    "staff.role.youth": "Directeur de formation",
+    "staff.role.scout": "Responsable du recrutement"
   }
 }

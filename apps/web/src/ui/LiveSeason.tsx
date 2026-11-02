@@ -600,9 +600,23 @@ export const LiveSeason = memo(function LiveSeason({
     }
   }, [archive, reviewYear, currentYear]);
   const reviewing = archive && reviewYear !== undefined;
-  // This season is the live league; a closed one opens its archive in the same league and tab.
+  // The league on screen, ours (this season's, or the closed season's) when none is chosen.
+  const shownLeague = (): LeagueChoice | undefined => {
+    if (league) return league;
+    const w = gameStore.getSnapshot().view?.world;
+    if (!w) return undefined;
+    const season = archive ? w.history.find((h) => h.year === reviewYear) : undefined;
+    return season
+      ? { code: clubOf(w).country, tier: season.tier, group: season.group }
+      : ownLeague(w);
+  };
+  // This season is the live league; a closed one opens its archive in the same tab. Stepping keeps
+  // the league on screen, ours included, so a season never moves the division; 우리 리그 is the
+  // way back to wherever we played that season.
   const pickSeason = (year: number) => {
+    const kept = shownLeague();
     if (archive) {
+      setLeague(kept);
       setReviewYear(year);
       return;
     }
@@ -612,7 +626,7 @@ export const LiveSeason = memo(function LiveSeason({
       season: String(year),
       view: leagueTab,
     });
-    const chosen = leagueParam(league);
+    const chosen = leagueParam(kept);
     if (chosen) params.set('league', chosen);
     useTaskMemory.setState((memory) => ({
       addresses: { ...memory.addresses, leagueHistory: `/history?${params}` },

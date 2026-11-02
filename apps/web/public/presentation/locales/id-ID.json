@@ -229,6 +229,15 @@
     "team.player.open": "Catatan pemain {name}",
     "team.prospect.open": "Tinjauan akademi {name}",
     "team.coach.open": "Karier {name}",
-    "team.back": "← Tim · {view}"
+    "team.back": "← Tim · {view}",
+    "staff.role.manager": "Manajer",
+    "staff.role.director": "Direktur olahraga",
+    "staff.role.assistant": "Asisten manajer",
+    "staff.role.attack": "Pelatih serangan",
+    "staff.role.defense": "Pelatih pertahanan",
+    "staff.role.goalkeeping": "Pelatih kiper",
+    "staff.role.fitness": "Pelatih fisik",
+    "staff.role.youth": "Direktur akademi",
+    "staff.role.scout": "Kepala pemandu bakat"
   }
 }
