@@ -618,7 +618,7 @@ test('keeps the clock running while comparing candidates away from home until th
   );
 });
 
-test('the market ends with who answers offers and names the recruitment level, opening the board', async ({
+test('the market ends with who answers offers and reads the recruitment level as founded', async ({
   page,
 }) => {
   await foundMarket(page, 'offer-switch-journey');
@@ -649,13 +649,10 @@ test('the market ends with who answers offers and names the recruitment level, o
   await page.keyboard.press('Escape');
   await expect(page).toHaveURL(/\/first-team\?view=market$/);
   expect(await horizontalOverflow(page)).toBe(0);
-  // The recruitment level is a line that opens its home on the 방향 board (→WEB-71).
-  await page.getByRole('button', { name: /^영입 기조 · 균형/ }).click();
-  await expect(page.getByRole('dialog', { name: '영입 업무 기준', exact: true })).toBeVisible();
-  await expect(
-    page
-      .getByRole('dialog', { name: '영입 업무 기준', exact: true })
-      .getByRole('radio', { name: '영입 기조 균형', exact: true }),
-  ).toHaveAttribute('aria-checked', 'true');
+  // The recruitment level reads as founded; no line opens an editor (→ECON-16, WEB-71).
+  const info = page.getByRole('dialog', { name: '영입 정보', exact: true });
+  await expect(info.locator('[data-row="recruitment"]')).toContainText('균형');
+  await expect(page.getByRole('button', { name: /^영입 기조 · / })).toHaveCount(0);
+  await expect(page.getByRole('dialog', { name: '영입 업무 기준', exact: true })).toHaveCount(0);
   await expect(page).toHaveURL(/\/first-team\?view=market$/);
 });

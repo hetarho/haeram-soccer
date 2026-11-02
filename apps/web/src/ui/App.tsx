@@ -26,7 +26,6 @@ import { GameClient, type ClientState } from '../runtime/client';
 import { BOTTOM_ORDER, NAV, TABS, type NavEntry } from './navigationTabs';
 import { personnelRoute } from './personnelNavigation';
 import { HudCash } from './HudCash';
-import { DepartmentPolicySheet } from './DepartmentPolicySheet';
 import { taskAddress, useTaskMemory } from './taskMemory';
 import { ClubCrest } from './ClubCrest';
 import { number, seasonName } from './format';
@@ -228,14 +227,13 @@ const selectContentWorld = worldSelector([
   'trainingGround',
   'academyFacility',
   'facilityWorks',
-  'ticket',
   'campaigns',
   'sponsors',
   'lower',
   'europe',
   'critical',
-  // Staff, policy, intervention and bid decisions can change only these keys.
-  'policy',
+  // Staff, intervention and bid decisions can change only these keys; the direction's cards, dials,
+  // ticket price and rows stay as founded (→ECON-16/17/22/25).
   'staff',
   'academy',
   'intervention',
@@ -245,8 +243,6 @@ const selectContentWorld = worldSelector([
   'bids',
   'morale',
   'inbox',
-  'build',
-  'direction',
   'managerMarket',
   // Discarding the designer's drafts changes only the commission (→WEB-108).
   'designCommission',
@@ -1176,7 +1172,6 @@ export function App() {
       <GlossaryHost />
       {client && playing && <TeamSheetHost client={client} />}
       {playing && client && <PlayerSheetHost client={client} />}
-      {playing && client && <DepartmentPolicySheet client={client} />}
       {playing && client && controller && (
         <OfficeOverviewHost client={client} controller={controller} />
       )}

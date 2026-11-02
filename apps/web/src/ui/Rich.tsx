@@ -1,4 +1,4 @@
-import { AreaCriteria } from './DirectionLines';
+import { DirectionAreas } from './DirectionFacts';
 import { PersonnelHub } from './PersonnelHubs';
 import { TeamDirectory, TeamReturn } from './TeamDirectory';
 import { StaffRoleBadge } from './StaffRoleBadge';
@@ -182,7 +182,7 @@ function PersonnelPanel({
             {coach}
           </FacilityOverview>
           <Roster state={state} client={client} />
-          <AreaCriteria w={w} areas={['squad']} />
+          <DirectionAreas w={w} areas={['squad']} />
         </>
       ) : tab === 'market' ? (
         <MarketHub state={state} client={client} />

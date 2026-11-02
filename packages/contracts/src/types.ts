@@ -1322,7 +1322,6 @@ export type Command =
   | { type: 'advance-days'; days: number; stop?: InboxKind[] }
   | { type: 'next-match' }
   | { type: 'season'; count: number }
-  | { type: 'policy'; key: PolicyKey; level: PolicyLevel }
   /** `term`: the seasons the owner chooses (→STAFF-15); absent keeps the earlier rule. */
   | {
       type: 'hire-staff';
@@ -1351,8 +1350,6 @@ export type Command =
   | { type: 'hire'; id: string; term?: ContractTerm }
   /** Renews the manager whose contract ends at this season's close; `term` as for `hire`. */
   | { type: 'renew-manager'; term?: ContractTerm }
-  /** Sets one direction row; `standard` (or `any` for the school) is its default (→ECON-25). */
-  | { type: 'direction'; key: DirectionKey; option: string }
   /** Answers a player's contract talk (→CLUB-26) with a wage fixed for `term` seasons. */
   | { type: 'contract-offer'; player: string; wage: string; term: TalkTerm }
   /** Declines a player's contract talk (→CLUB-27). */
@@ -1365,13 +1362,7 @@ export type Command =
   | { type: 'campaign'; kind: string }
   | { type: 'sponsor'; kind: Sponsor['kind'] }
   | { type: 'facility'; part: FacilityPart }
-  | { type: 'ticket'; price: number }
   | { type: 'support' }
-  /**
-   * Applies a strategy at once (→ECON-22); `name` labels an owner's saved strategy in the club's
-   * history (→WEB-61).
-   */
-  | { type: 'build'; build: ClubBuild; name?: string }
   /** Applies the owner's design to the own club (→KIT-9); no other club can be named. */
   | { type: 'club-identity'; identity: ClubIdentity }
   /** Pays a designer from operating funds for fresh drafts in the owner's colours. */

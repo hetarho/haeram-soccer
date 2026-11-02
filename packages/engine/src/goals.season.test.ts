@@ -4,6 +4,7 @@ import { canonical } from '../../contracts/src/index';
 import type { World } from '../../contracts/src/types';
 import { decode, encode } from '../../../apps/web/src/adapters/persistence';
 import { advanceRound, clubMilestones, clubOf, operate, simulateSeason } from './index';
+import { holdRows } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { byId, world } from './goals.testkit';
 
@@ -15,7 +16,7 @@ describe('milestones from retained club facts', () => {
         const w = world(true);
         operate(w, { type: 'facility', part: 'stadium' });
         for (const key of ['localInvest', 'globalMarketing'] as const)
-          operate(w, { type: 'policy', key, level: 5 });
+          holdRows(w, { policy: { [key]: 5 } });
         while (w.round < 46) advanceRound(w, undefined, false);
         return w;
       });

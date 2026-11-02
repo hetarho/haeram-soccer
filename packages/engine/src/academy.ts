@@ -127,28 +127,6 @@ export function academyPotentialBonus(w: World) {
     baseEffects(w).intakePotential
   );
 }
-/** Potential a prospect needs to be called a golden prospect. */
-export const GOLDEN_POTENTIAL = 80;
-/**
- * The exact chance that the next intake brings at least one prospect of golden potential,
- * from the same uniform draws the intake uses (→CLUB-16).
- */
-export function academyIntakeOutlook(w: World) {
-  const size = academyIntakeSize(w),
-    quality = staffEffects(w).academyQuality,
-    bonus = academyPotentialBonus(w),
-    lift = academyFacilityTerms(w).potential + Math.round(quality / 4);
-  let hits = 0,
-    cases = 0;
-  for (let first = 25; first <= 36; first++)
-    for (let second = 22; second <= 48; second++) {
-      const base = clamp(first + lift, 20, 45);
-      cases++;
-      if (clamp(base + second + quality + bonus, 40, 99) >= GOLDEN_POTENTIAL) hits++;
-    }
-  const each = hits / cases;
-  return { size, each, golden: 1 - (1 - each) ** size };
-}
 /** Runs once per season on the intake day. */
 export function runAcademyIntake(w: World): void {
   if (currentDay(w) < academyIntakeDay(w) || w.academy?.intakeYear === w.year) return;

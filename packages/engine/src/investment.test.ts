@@ -9,9 +9,8 @@ import {
   operatingCosts,
   recordMatch,
   simulateMatch,
-  ticketInvestmentPreview,
 } from './index';
-import { professionalStart } from './testing';
+import { holdRows, professionalStart } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
@@ -127,44 +126,28 @@ describe('shared club investment forecasts', () => {
   });
 
   it.each([0.01, 0.05, 0.12, 0.5])(
-    'uses the same real applied gate and hosting-cost range for a %s ticket draft',
+    'settles a home gate within the projected range at a %s ticket price',
     (price) => {
-      const w = world(),
-        before = canonical(w),
-        preview = ticketInvestmentPreview(w, price);
-      expect(canonical(w)).toBe(before);
-      expect(preview.before).toEqual(gateProjection(w));
-      const applied = structuredClone(w);
-      operate(applied, { type: 'ticket', price });
-      expect(gateProjection(applied)).toEqual(preview.after);
-      const fixture = applied.fixtures.find((match) => match.home === applied.playerClub)!,
-        match = simulateMatch(applied, fixture, false, true);
-      recordMatch(applied, match);
-      const income = applied.events.find((event) => event.kind === 'gate')!,
-        cost = applied.events.find((event) => event.kind === 'match-cost')!,
+      // The price is held as founded or saved (→ECON-17); the projection and the settlement
+      // share one gate model (→ECON-19).
+      const w = holdRows(world(), { ticket: price }),
+        projection = gateProjection(w);
+      const fixture = w.fixtures.find((match) => match.home === w.playerClub)!,
+        match = simulateMatch(w, fixture, false, true);
+      recordMatch(w, match);
+      const income = w.events.find((event) => event.kind === 'gate')!,
+        cost = w.events.find((event) => event.kind === 'match-cost')!,
         net = BigInt(income.amount!) - BigInt(cost.amount!);
-      expect(net).toBeGreaterThanOrEqual(BigInt(preview.netLow));
-      expect(net).toBeLessThanOrEqual(BigInt(preview.netHigh));
-      expect(BigInt(preview.after.incomeLow) - BigInt(preview.after.costLow)).toBe(
-        BigInt(preview.netLow),
-      );
-      expect(BigInt(preview.after.incomeHigh) - BigInt(preview.after.costHigh)).toBe(
-        BigInt(preview.netHigh),
-      );
+      expect(net).toBeGreaterThanOrEqual(BigInt(projection.incomeLow) - BigInt(projection.costLow));
+      expect(net).toBeLessThanOrEqual(BigInt(projection.incomeHigh) - BigInt(projection.costHigh));
     },
   );
 
-  it('reveals lower demand and possible gate losses without applying a draft', () => {
+  it('projects lower demand and possible gate losses at a dear ticket price', () => {
     const w = professionalStart(world()),
-      before = canonical(w),
-      cheap = ticketInvestmentPreview(w, 0.01),
-      expensive = ticketInvestmentPreview(w, 0.5);
-    expect(expensive.after.attendanceHigh).toBeLessThan(cheap.after.attendanceLow);
-    expect(BigInt(expensive.netHigh)).toBeLessThan(0n);
-    expect(ticketInvestmentPreview(w, 0.5)).toEqual(expensive);
-    expect(canonical(w)).toBe(before);
-    for (const price of [0, -1, 0.5001, Infinity, NaN])
-      expect(() => ticketInvestmentPreview(w, price)).toThrow('티켓');
-    expect(canonical(w)).toBe(before);
+      cheap = gateProjection(holdRows(structuredClone(w), { ticket: 0.01 })),
+      dear = gateProjection(holdRows(structuredClone(w), { ticket: 0.5 }));
+    expect(dear.attendanceHigh).toBeLessThan(cheap.attendanceLow);
+    expect(BigInt(dear.incomeHigh) - BigInt(dear.costHigh)).toBeLessThan(0n);
   });
 });

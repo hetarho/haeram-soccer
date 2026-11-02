@@ -66,7 +66,7 @@ import {
   transferWindowDays,
   wageBill,
 } from './index';
-import { professionalStart } from './testing';
+import { holdRows, professionalStart } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
@@ -217,7 +217,7 @@ describe('market values (→CLUB-25)', () => {
     expect(divisionFor(code, 80)).toBeLessThan(divisionFor(code, 50));
     expect(divisionFor(code, 99)).toBe(0);
     expect(divisionFor(code, 10)).toBe(clubOf(w).tier);
-    operate(w, { type: 'policy', key: 'recruitment', level: 5 });
+    holdRows(w, { policy: { recruitment: 5 } });
     for (const { player, fee } of transferOffers(w).slice(1)) {
       const value = marketValueAt(code, w.year, divisionFor(code, overall(player)), player);
       expect(amount(fee)).toBeCloseTo(amount(value) * 1.3, -1);
@@ -272,7 +272,7 @@ describe('contract talks (→CLUB-26)', () => {
       return terms.goodwill.percent;
     };
     const support = (level: PolicyLevel) => (w: World) =>
-      operate(w, { type: 'policy', key: 'support', level });
+      holdRows(w, { policy: { support: level } });
     const build = (cards: World['build']) => (w: World) => void (w.build = cards);
     // The default squad investment (3) gives +5 at the starting morale of 60.
     expect(goodwill(() => {})).toBe(5);
@@ -319,7 +319,7 @@ describe('contract talks (→CLUB-26)', () => {
       // A strong agent and a slightly low 분위기 put his floor just above his market wage.
       p.agent = 5;
       w.morale = 50;
-      operate(w, { type: 'direction', key: 'renewal', option });
+      holdRows(w, { direction: { renewal: option } });
       expect(delegated(w, 'contracts')).toBe(true);
       const before = { wage: p.wage, until: p.until, floor: talkTerms(w, p).floor };
       newYear(w);
@@ -347,7 +347,7 @@ describe('contract talks (→CLUB-26)', () => {
     /** Half a founding season played with `income` booked, so its year reads as twice that. */
     const verdict = (income: (bill: bigint, raise: bigint) => bigint) => {
       const { w, p } = talking(80);
-      operate(w, { type: 'direction', key: 'renewal', option: 'keepAll' });
+      holdRows(w, { direction: { renewal: 'keepAll' } });
       const raise = BigInt(talkTerms(w, p).floor) - BigInt(p.wage),
         bill = BigInt(wageBill(w));
       w.income = income(bill, raise).toString();
@@ -404,7 +404,7 @@ describe('contract talks (→CLUB-26)', () => {
       // (→CLUB-30), within 표준's 110%.
       p.agent = 5;
       w.morale = 50;
-      operate(w, { type: 'direction', key: 'renewal', option });
+      holdRows(w, { direction: { renewal: option } });
       const floor = talkTerms(w, p).floor,
         market = marketWage(w, p);
       newYear(w);
@@ -448,7 +448,7 @@ describe('contract talks (→CLUB-26)', () => {
     expect(summer.p.until).toBe(summer.w.year + 2);
 
     const broke = talking(80);
-    operate(broke.w, { type: 'direction', key: 'renewal', option: 'keepAll' });
+    holdRows(broke.w, { direction: { renewal: 'keepAll' } });
     // Twelve rounds of today's costs: short of the 13-round runway even before the raise.
     broke.w.cash = ((BigInt(operatingCosts(broke.w).annual) / 46n) * 12n).toString();
     const until = broke.p.until;
@@ -582,7 +582,7 @@ describe('contract talks (→CLUB-26)', () => {
     /** A club at the summer opening whose season loses money, `p` in his final season. */
     const losing = () => {
       const { w, p } = talking(80);
-      operate(w, { type: 'direction', key: 'renewal', option: 'keepAll' });
+      holdRows(w, { direction: { renewal: 'keepAll' } });
       w.calendar = { day: 0 };
       // A manager paid far beyond the club's income makes the season a loss.
       w.manager.wage = (BigInt(operatingCosts(w).annual) * 4n).toString();
@@ -615,7 +615,7 @@ describe('contract talks (→CLUB-26)', () => {
     /** A delegated club whose 33-year-old has three seasons left, 30% below his market wage. */
     const improving = (day: number) => {
       const { w, p } = talking(70, 33);
-      operate(w, { type: 'direction', key: 'renewal', option: 'keepAll' });
+      holdRows(w, { direction: { renewal: 'keepAll' } });
       p.until = w.year + 3;
       p.wage = ((BigInt(marketWage(w, p)) * 70n) / 100n).toString();
       talksOn(w, day);
@@ -989,7 +989,7 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     kept.p.agent = 5;
     kept.w.morale = 50;
     podium(kept.w, kept.p.id, 0);
-    operate(kept.w, { type: 'direction', key: 'renewal', option: 'standard' });
+    holdRows(kept.w, { direction: { renewal: 'standard' } });
     expect(BigInt(talkTerms(kept.w, kept.p).floor)).toBeGreaterThan(
       (BigInt(marketWage(kept.w, kept.p)) * 11n) / 10n,
     );

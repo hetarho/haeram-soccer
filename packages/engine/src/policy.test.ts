@@ -1,9 +1,8 @@
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import type { ClubPolicy, PolicyKey, PolicyLevel, World } from '../../contracts/src/types';
+import type { ClubPolicy, World } from '../../contracts/src/types';
 import { decode, encode } from '../../../apps/web/src/adapters/persistence';
-import { requestSchema } from '../../../apps/web/src/runtime/protocol';
 import {
   advanceRound,
   clubOf,
@@ -19,10 +18,8 @@ import {
   POLICY_KEYS,
   policyEffects,
   policyOf,
-  policyPreview,
   settleRound,
   settleTraining,
-  setPolicy,
   SUPPORT_EXPENSES,
   trainingSummary,
   transferOffers,
@@ -178,7 +175,6 @@ describe('club operating policy', () => {
       expect(policyEffects({ ...POLICY_DEFAULTS, support })).not.toHaveProperty('payCeiling');
       expect(POLICY_INFO.support.levels[support - 1].summary).not.toContain('연봉 상한');
     }
-    expect(policyPreview(world(), 'support', 5)).not.toHaveProperty('payCeiling');
   });
 
   it('the support effects table includes the operating-expense factor', () => {
@@ -188,7 +184,6 @@ describe('club operating policy', () => {
       const factor = SUPPORT_EXPENSES[support - 1],
         { summary } = POLICY_INFO.support.levels[support - 1];
       expect(policyEffects({ ...POLICY_DEFAULTS, support }).operatingFactor).toBe(factor);
-      expect(policyPreview(world(), 'support', support).operatingFactor).toBe(factor);
       expect(summary).toContain(factor === 1 ? '운영 경비 기본' : `운영 경비 ×${factor}`);
     }
     // Only squad investment moves the factor.
@@ -343,78 +338,7 @@ describe('club operating policy', () => {
     validateWorld(loudSeason);
   });
 
-  it('records a validated choice once and refuses unknown policies', () => {
-    const w = world(),
-      events = w.events.length,
-      revision = w.revision;
-    expect(() => setPolicy(w, 'scouting' as PolicyKey, 3)).toThrow('운영 방침');
-    for (const level of [0, 6, 2.5, Number.NaN])
-      expect(() => setPolicy(w, 'support', level as PolicyLevel)).toThrow('단계를 확인');
-    expect(() => setPolicy(w, 'tour', 4)).toThrow('해외 투어 단계를 확인');
-    setPolicy(w, 'support', 3);
-    expect(w.policy).toBeUndefined();
-    expect(w.events).toHaveLength(events);
-
-    operate(w, { type: 'policy', key: 'support', level: 5 });
-    expect(w.policy).toEqual({ ...POLICY_DEFAULTS, support: 5 });
-    expect(w.revision).toBe(revision + 1);
-    expect(w.events.at(-1)).toMatchObject({
-      kind: 'policy',
-      title: `${POLICY_INFO.support.label} · ${POLICY_INFO.support.levels[4].name}`,
-      detail: POLICY_INFO.support.levels[4].summary,
-    });
-    expect(w.events.at(-1)!.amount).toBeUndefined();
-    setPolicy(w, 'support', 5);
-    expect(w.events).toHaveLength(events + 1);
-    setPolicy(w, 'globalMarketing', 4);
-    expect(w.policy).toEqual({ ...POLICY_DEFAULTS, support: 5, globalMarketing: 4 });
-    expect(w.events).toHaveLength(events + 2);
-  });
-
-  it('previews the annual cost change and effects without changing the club', () => {
-    const w = world(),
-      before = canonical(w);
-    // Squad investment changes the fixed costs through the operating expenses it scales.
-    const season = operatingCosts(w).seasonExpenses;
-    for (const level of [1, 3, 5] as const) {
-      const scaled = BigInt(operatingCosts(world({ support: level })).expenses);
-      expect(BigInt(policyPreview(w, 'support', level).annualCostChange)).toBe(
-        scaled - BigInt(season),
-      );
-    }
-    expect(policyPreview(w, 'support', 3)).toMatchObject({
-      annualCostChange: '0',
-      nextRoundChange: '0',
-    });
-    expect(BigInt(policyPreview(w, 'support', 5).annualCostChange)).toBeGreaterThan(0n);
-    expect(BigInt(policyPreview(w, 'support', 5).nextRoundChange)).toBeGreaterThan(0n);
-    expect(BigInt(policyPreview(w, 'support', 1).annualCostChange)).toBeLessThan(0n);
-    expect(policyPreview(w, 'recruitment', 5).annualCostChange).toBe('0');
-    expect(policyPreview(w, 'recruitment', 1)).toMatchObject({
-      offerAge: [17, 21],
-      offerAbility: [35, 65],
-      fansPerRound: 0,
-    });
-    expect(policyPreview(w, 'support', 5)).toMatchObject({
-      goodwill: 15,
-      developmentMultiplier: 1.25,
-      recoveryBonus: 2,
-      fansPerRound: 0,
-    });
-    const loud = policyPreview(w, 'globalMarketing', 5);
-    expect(loud.fansPerRound).toBe(marketingFanGain(clubOf(w).fans, 0.02));
-    expect(canonical(w)).toBe(before);
-
-    const annual = BigInt(operatingCosts(w).annual);
-    operate(w, { type: 'policy', key: 'globalMarketing', level: 5 });
-    expect(BigInt(operatingCosts(w).annual) - annual).toBe(BigInt(loud.annualCostChange));
-    expect(BigInt(policyPreview(w, 'globalMarketing', 1).annualCostChange)).toBe(
-      -BigInt(loud.annualCostChange),
-    );
-    expect(() => policyPreview(w, 'globalMarketing', 9 as PolicyLevel)).toThrow('단계를 확인');
-  });
-
-  it('validates, saves and transports the policy while older saves still load', async () => {
+  it('validates and saves the policy while older saves still load', async () => {
     const w = world({ support: 4, recruitment: 2, globalMarketing: 3, tour: 2 });
     validateWorld(w);
     const restored = (await decode(await encode(w, 1, 0))).world;
@@ -438,21 +362,6 @@ describe('club operating policy', () => {
       { support: 3, recruitment: 3, globalScouting: 0 },
     ])
       expect(() => validateWorld({ ...w, policy })).toThrow();
-    const request = (command: unknown) =>
-      requestSchema.safeParse({
-        protocol: 1,
-        session: 's',
-        requestId: 'r',
-        expectedRevision: 0,
-        generation: 1,
-        parentGeneration: 0,
-        body: { type: 'command', command },
-      }).success;
-    expect(request({ type: 'policy', key: 'globalMarketing', level: 5 })).toBe(true);
-    expect(request({ type: 'policy', key: 'globalMarketing', level: 6 })).toBe(false);
-    expect(request({ type: 'policy', key: 'marketing', level: 2 })).toBe(false);
-    expect(request({ type: 'policy', key: 'scouting', level: 2 })).toBe(false);
-    expect(request({ type: 'policy', key: 'academy', level: 4 })).toBe(true);
   });
 
   it('buys bigger, better academy intakes and growth with academy investment', () => {
@@ -467,6 +376,5 @@ describe('club operating policy', () => {
       academyPotential: 11,
       academyGrowth: 1.45,
     });
-    expect(BigInt(policyPreview(base, 'academy', 3).annualCostChange)).toBeGreaterThan(0n);
   });
 });

@@ -1,4 +1,4 @@
-import { lazy, Suspense, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import type { SponsorSlotView } from '../../../../packages/engine/src/sponsors';
 import { clubOf } from '../../../../packages/engine/src/player-state';
@@ -8,7 +8,7 @@ import type { ClientState, GameClient } from '../runtime/client';
 import { useLocale } from '../presentation/react';
 import { BusinessWorkbench } from './BusinessWorkbench';
 import { FinanceOutlook } from './FinanceOutlook';
-import { AreaCriteria } from './DirectionLines';
+import { DirectionAreas } from './DirectionFacts';
 import { DeskBody, DeskSettings, DeskStats, type DeskStat } from './OfficeDesk';
 import { DESK_AREAS, DESK_RESPONSIBILITIES } from './officeDesks';
 import { OwnerOffice } from './OwnerOfficeView';
@@ -18,11 +18,6 @@ import { openOperations } from './state';
 import { TaskReturn } from './TaskReturn';
 import { compactMoney, seasonName } from './format';
 import { cashState } from './teamState';
-
-/** The direction board and its composer load on first visit (→ARCH-28). */
-const StrategyBoard = lazy(() =>
-  import('./StrategyBoard').then((module) => ({ default: module.StrategyBoard })),
-);
 
 /** The applied facts a section's controls change, read from the live world only. */
 function OperationsFacts({
@@ -131,7 +126,7 @@ export function ClubOperations({
                   scope={responsibilities}
                 />
               )}
-              <AreaCriteria w={w} areas={DESK_AREAS[view]} />
+              <DirectionAreas w={w} areas={DESK_AREAS[view]} />
             </DeskSettings>
           )}
           {view === 'investment' ? (
@@ -142,12 +137,6 @@ export function ClubOperations({
               {w.campaigns.length > 0 && (
                 <BusinessWorkbench state={state} client={client} part="marketing" legacy={legacy} />
               )}
-              <details data-ui="disclosure" data-testid="office-library">
-                <summary>구단 전체 방향·저장 설정</summary>
-                <Suspense fallback={<p role="status">방향을 여는 중…</p>}>
-                  <StrategyBoard w={w} client={client} />
-                </Suspense>
-              </details>
             </>
           ) : (
             <BusinessWorkbench state={state} client={client} part={view} legacy={legacy} />

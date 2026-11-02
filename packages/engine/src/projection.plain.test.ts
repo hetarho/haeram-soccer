@@ -4,39 +4,32 @@ import {
   financeProjection,
   leagueMerit,
   leagueShare,
-  operate,
   operatingCosts,
   policyOf,
-  policyPreview,
   ratio,
   settleLeagueMerit,
 } from './index';
+import { holdRows } from './testing';
 import { eventsTotal, lineOf, played, setups, world } from './projection.testkit';
 
 describe('finance projection', () => {
-  it('the projection and a support preview carry the operating-expense factor', () => {
+  it('the projection carries the operating-expense factor of the squad investment in force', () => {
     let w = played('plain', 10);
     const standard = operatingCosts(w),
       base = financeProjection(w),
-      preview = policyPreview(w, 'support', 5),
-      previewed = financeProjection({ ...w, policy: { ...policyOf(w), support: 5 } });
-    operate(w, { type: 'policy', key: 'support', level: 5 });
+      held = financeProjection({ ...w, policy: { ...policyOf(w), support: 5 } });
+    holdRows(w, { policy: { support: 5 } });
     const costs = operatingCosts(w),
       projection = financeProjection(w),
       unpaid = (part: string) => BigInt(part) - BigInt(ratio(part, 10n, 46n));
     expect(costs.seasonExpenses).toBe(standard.seasonExpenses);
     expect(costs.expenses).toBe(ratio(costs.seasonExpenses, 120n, 100n));
-    // The preview is the level's change to fixed costs and the next round's bill (→ECON-12)…
-    expect(preview.operatingFactor).toBe(1.2);
-    expect(BigInt(preview.annualCostChange)).toBe(BigInt(costs.annual) - BigInt(standard.annual));
-    expect(BigInt(preview.annualCostChange)).toBe(
+    // The level changes the fixed costs only through the operating expenses it scales…
+    expect(BigInt(costs.annual) - BigInt(standard.annual)).toBe(
       BigInt(costs.expenses) - BigInt(standard.expenses),
     );
-    expect(BigInt(preview.nextRoundChange)).toBe(
-      BigInt(costs.nextRound) - BigInt(standard.nextRound),
-    );
-    // …and the projection at that level is the one the club then has (→ECON-18).
-    expect(projection).toEqual(previewed);
+    // …and the projection reads the level the club holds (→ECON-18).
+    expect(projection).toEqual(held);
     expect(lineOf(projection.lines, 'expenses').amount).toBe(`-${costs.expenses}`);
     expect(BigInt(lineOf(projection.seasonLines, 'expenses').amount)).toBe(-unpaid(costs.expenses));
     expect(lineOf(projection.seasonLines, 'operating')).toEqual(
@@ -46,7 +39,7 @@ describe('finance projection', () => {
     expect(extra).toBeGreaterThan(0n);
     expect(BigInt(base.seasonEnd.low) - BigInt(projection.seasonEnd.low)).toBe(extra);
     expect(BigInt(base.nextYear.high) - BigInt(projection.nextYear.high)).toBe(
-      BigInt(preview.annualCostChange),
+      BigInt(costs.annual) - BigInt(standard.annual),
     );
     // The rounds then charge exactly what the projection carried.
     const before = eventsTotal(w, 'operating-expenses');

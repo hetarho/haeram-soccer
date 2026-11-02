@@ -203,29 +203,13 @@ test.describe('사람 at 360x740', () => {
     );
     await expect(post.getByTestId('manager-pick')).toBeHidden();
     await post.getByText('감독 선임 기준·추천 후보', { exact: true }).click();
-    await expect(post.getByRole('button', { name: /^선호 학파 · 상관없음/ })).toBeVisible();
+    // 선호 학파 and 감독 기조 read as founded; no line opens an editor (→STAFF-18).
+    await expect(post.locator('[data-row="school"]')).toContainText('상관없음');
+    await expect(post.locator('[data-row="manager"]')).toContainText('표준');
+    await expect(post.getByRole('button', { name: /^(선호 학파|감독 기조) · / })).toHaveCount(0);
     const pick = post.getByTestId('manager-pick');
+    // Whom the staff would appoint today under the rows in force (→WEB-43).
     await expect(pick).toContainText('지금 방향이면');
-    // The rows are chosen on the 방향 board's 스태프 area.
-    await post.getByRole('button', { name: /^감독 기조 · 표준/ }).click();
-    const staffArea = page
-      .getByTestId('department-policy-board')
-      .getByRole('region', { name: '스태프', exact: true });
-    await staffArea.getByRole('radio', { name: '선호 학파 게겐프레싱', exact: true }).click();
-    await staffArea.getByRole('radio', { name: '감독 기조 젊은 감독', exact: true }).click();
-    const draft = page.getByTestId('strategy-draft');
-    await expect(draft).toContainText('선호 학파 상관없음 → 게겐프레싱');
-    await expect(draft).toContainText('감독 기조 표준 → 젊은 감독');
-    expect(await horizontalOverflow(page)).toBe(0);
-    await draft.getByRole('button', { name: '적용', exact: true }).click();
-    await expect(draft).toHaveCount(0);
-    await closeOutcome(page, '방향을 바꿨어요');
-    await openPeople(page);
-    await openPersonnel(page, 'manager');
-    await post.getByText('감독 선임 기준·추천 후보', { exact: true }).click();
-    await expect(post.getByRole('button', { name: /^선호 학파 · 게겐프레싱/ })).toBeVisible();
-    // Whom the staff would appoint today: a gegenpress manager, or why nobody.
-    await expect(pick).toContainText(/게겐프레싱|감독 기조에 맞는 감독이 없어/);
     expect(await horizontalOverflow(page)).toBe(0);
   });
 

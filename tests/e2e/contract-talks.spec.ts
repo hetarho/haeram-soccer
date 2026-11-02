@@ -1,3 +1,4 @@
+import { chooseOption } from './select';
 import { openPersonnel } from './personnel-navigation';
 import { advanceOneRound } from './season-progression';
 import { expect, test, type Page } from '@playwright/test';
@@ -167,13 +168,18 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   ).toBeVisible();
 });
 
-test('the talk rule shows under 선수 and applies', async ({ page, browserName }) => {
+test('the talk rule shows under 선수 as the club was founded', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium', 'One browser covers the journey.');
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill('talk-rule-journey');
   await page.getByRole('button', { name: '쉬움' }).click();
+  // 알뜰 생존 founds 재계약 기조 at 짠물 and 재정 기조 at 안정적 (→ECON-22).
+  await chooseOption(
+    page.getByTestId('club-founding').getByRole('combobox', { name: '구단 운영' }),
+    'shoestring',
+  );
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await openPersonnel(page, 'players');
@@ -181,28 +187,13 @@ test('the talk rule shows under 선수 and applies', async ({ page, browserName 
   const talks = page.getByRole('region', { name: '계약 협상 위임' });
   await expect(talks.getByRole('checkbox')).toHaveCount(0);
   await expect(talks.getByTestId('decision-owner-contracts')).toContainText('직접');
-  await expect(talks.getByRole('button', { name: /^재정 기조 · 표준/ })).toBeVisible();
-  await expect(talks).toContainText('시장가의 110%까지');
+  // The rows read as founded; no line opens an editor (→STAFF-26, ECON-25).
+  await expect(talks.locator('[data-row="renewal"]')).toContainText('짠물');
+  await expect(talks.locator('[data-row="finance"]')).toContainText('안정적');
+  await expect(talks.getByRole('button', { name: /^재계약 기조/ })).toHaveCount(0);
+  await expect(talks).toContainText('시장가까지만');
   await expect(talks).toContainText('32세부터 1시즌');
-  await expect(talks).toContainText('13라운드 운영비');
+  await expect(talks).toContainText('30라운드 운영비');
   await expect(talks).toContainText('언해피');
-  // The row is chosen on the 방향 board, its area unfolded by the line.
-  await talks.getByRole('button', { name: /^재계약 기조 · 표준/ }).click();
-  const squad = page
-    .getByRole('dialog', { name: '재정 업무 기준', exact: true })
-    .getByRole('region', { name: '재정', exact: true });
-  await squad.getByRole('radio', { name: '재계약 기조 짠물', exact: true }).click();
-  const draft = page.getByTestId('strategy-draft');
-  await expect(draft).toContainText('재계약 기조 표준 → 짠물');
-  await draft.getByRole('button', { name: '적용', exact: true }).click();
-  await expect(draft).toHaveCount(0);
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  await page.reload();
-  await openPersonnel(page, 'players');
-  await expect(
-    page
-      .getByRole('region', { name: '계약 협상 위임' })
-      .getByRole('button', { name: /^재계약 기조 · 짠물/ }),
-  ).toBeVisible();
-  await expect(page.getByRole('region', { name: '계약 협상 위임' })).toContainText('시장가까지만');
+  await expect(page.getByRole('dialog', { name: '재정 업무 기준', exact: true })).toHaveCount(0);
 });

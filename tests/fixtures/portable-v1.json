@@ -12,16 +12,14 @@
         "seed": "portable-release-1",
         "level": "easy"
       },
+      "policy": {
+        "localInvest": 3
+      },
       "commands": [
         {
           "type": "sign-sponsor",
           "slot": "local",
           "offer": 0
-        },
-        {
-          "type": "policy",
-          "key": "localInvest",
-          "level": 3
         },
         {
           "type": "recruit",
@@ -36,7 +34,7 @@
       "expected": {
         "year": 1950,
         "round": 5,
-        "revision": 38,
+        "revision": 37,
         "cash": "697352",
         "currency": "GBP-LSD",
         "income": "97684",
@@ -639,11 +637,6 @@
           {
             "kind": "sponsor-sign",
             "title": "지역 후원 계약",
-            "amount": null
-          },
-          {
-            "kind": "policy",
-            "title": "주변 투자 · 지역 상권 투자",
             "amount": null
           },
           {

@@ -314,11 +314,11 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   const delegation = page.getByRole('region', { name: '유소년 위임' });
   await expect(delegation.getByRole('checkbox')).toHaveCount(0);
   await expect(delegation.getByTestId('decision-owner-academy')).toContainText('자동');
-  // The director follows 육성 목표 and 데뷔 시점, named as lines to the 방향 board (→CLUB-32).
+  // The director follows 육성 목표 and 데뷔 시점, read as founded (→CLUB-32).
   await expect(delegation).toContainText(
     '19세에 잠재력이 같은 포지션 1군 최하위에 못 미치는 아이를 내보내요',
   );
-  await expect(delegation.getByRole('button', { name: /^육성 목표 · 표준/ })).toBeVisible();
+  await expect(delegation.locator('[data-row="youthGoal"]')).toContainText('표준');
   const academy = page.getByRole('region', { name: '유소년 아카데미' });
   await expect(page.getByTestId('academy-intake')).toContainText('3월 15일');
   await expect(academy.getByRole('listitem')).toHaveCount(1);
@@ -343,14 +343,14 @@ test('promotes a prospect from 유소년', async ({ page }) => {
   const roster = page.locator('[class*="rosterCards"] article');
   await expect(roster).toHaveCount(squad + 1);
   await expect(roster.filter({ hasText: prospect.name })).toHaveCount(1);
-  // The focused youth editor keeps this academy task and route in place.
+  // The academy's rows and investment read as founded; none opens an editor (→ECON-25).
   await openPersonnel(page, 'training');
   await openPersonnel(page, 'academy');
-  await expect(page.getByRole('button', { name: /^육성 목표 · 표준/ })).toBeVisible();
-  await expect(page.getByRole('button', { name: /^데뷔 시점 · 표준/ })).toBeVisible();
-  await page.getByRole('button', { name: /^유소년 투자 · 유입 방식은 업무 기준에서/ }).click();
-  await expect(page.getByRole('dialog', { name: '유소년 업무 기준', exact: true })).toBeVisible();
-  await expect(page.getByTestId('department-policy-board')).toContainText('유소년 투자');
+  await expect(page.locator('[data-row="youthGoal"]')).toContainText('표준');
+  await expect(page.locator('[data-row="debut"]')).toContainText('표준');
+  await expect(page.getByTestId('academy-direction')).toContainText('기본 운영');
+  await expect(page.getByRole('button', { name: /^(육성 목표|데뷔 시점) · / })).toHaveCount(0);
+  await expect(page.getByRole('dialog', { name: '유소년 업무 기준', exact: true })).toHaveCount(0);
   await expect(page).toHaveURL(/\/academy$/);
 });
 

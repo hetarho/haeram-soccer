@@ -14,7 +14,7 @@ export type BuildSlot = keyof typeof BUILD_OPTIONS;
 export const BUILD_SLOTS = Object.keys(BUILD_OPTIONS) as BuildSlot[];
 export type ClubBuild = { -readonly [S in BuildSlot]?: (typeof BUILD_OPTIONS)[S][number] };
 
-/** Saved strategy names are the owner's own words, kept short for news and history lines. */
+/** The longest direction name a pending build of rules 1.13–1.15 carries (→SAVE-10). */
 export const STRATEGY_NAME_LIMIT = 20;
 
 /** The six club visions of rules 1.6–1.7 and the cards each loads as (→ECON-22). */

@@ -1,7 +1,4 @@
 import type { ClubPolicy, PolicyKey, PolicyLevel, World } from '../../contracts/src/types';
-import { operatingCosts } from './finance';
-import { addEvent } from './events';
-import { clubOf } from './player-state';
 
 /** Display and decision order. */
 export const POLICY_KEYS: readonly PolicyKey[] = [
@@ -14,14 +11,6 @@ export const POLICY_KEYS: readonly PolicyKey[] = [
   'globalScouting',
   'tour',
 ];
-
-/** The 지역 and 글로벌 rows that spend each round, in board order (→ECON-16). */
-export const INVESTMENT_ROWS = [
-  'localInvest',
-  'grassroots',
-  'globalMarketing',
-  'globalScouting',
-] as const satisfies readonly PolicyKey[];
 
 /** Absent or partial policies resolve to these values, which reproduce the pre-policy club. */
 export const POLICY_DEFAULTS: ClubPolicy = Object.freeze({
@@ -310,13 +299,6 @@ const OFFERS: PolicyEffects['offer'][] = [
   { ability: [60, 92], age: [26, 33], potentialBonus: 0, feeMultiplier: 1.3 },
 ];
 
-function validate(key: PolicyKey, level: PolicyLevel) {
-  if (typeof key !== 'string' || !Object.hasOwn(POLICY_INFO, key))
-    throw new Error('운영 방침 항목을 확인하세요.');
-  if (!Number.isInteger(level) || level < 1 || level > (key === 'tour' ? 3 : 5))
-    throw new Error(`${POLICY_INFO[key].label} 단계를 확인하세요.`);
-}
-
 export function policyOf(w: World): ClubPolicy {
   return { ...POLICY_DEFAULTS, ...w.policy };
 }
@@ -364,41 +346,4 @@ export function policyEffects(policy: ClubPolicy): PolicyEffects {
 export function marketingFanGain(fans: number, fanGrowth: number) {
   if (fanGrowth <= 0) return 0;
   return Math.round(fans * fanGrowth * Math.max(0.2, 1 - fans / 1000000));
-}
-
-export function setPolicy(w: World, key: PolicyKey, level: PolicyLevel) {
-  validate(key, level);
-  const current = policyOf(w);
-  if (current[key] === level) return;
-  w.policy = { ...current, [key]: level };
-  const info = POLICY_INFO[key],
-    chosen = info.levels[level - 1];
-  addEvent(w, 'policy', `${info.label} · ${chosen.name}`, chosen.summary);
-}
-
-/**
- * Pure read model of choosing `level` for `key`; nothing is spent or changed. Cost changes are the
- * fixed costs at that level against today's (→ECON-12): squad investment's through the operating
- * expenses it scales, the academy's and the investment rows' through their spend.
- */
-export function policyPreview(w: World, key: PolicyKey, level: PolicyLevel) {
-  validate(key, level);
-  const next: ClubPolicy = { ...policyOf(w), [key]: level },
-    effects = policyEffects(next),
-    before = operatingCosts(w),
-    after = operatingCosts({ ...w, policy: next });
-  return {
-    /** Yearly fixed costs at this level minus today's. */
-    annualCostChange: (BigInt(after.annual) - BigInt(before.annual)).toString(),
-    /** The next round's bill at this level minus today's (zero once the season's rounds are paid). */
-    nextRoundChange: (BigInt(after.nextRound) - BigInt(before.nextRound)).toString(),
-    fansPerRound:
-      key === 'globalMarketing' ? marketingFanGain(clubOf(w).fans, effects.fanGrowth) : 0,
-    goodwill: effects.goodwill,
-    developmentMultiplier: effects.developmentMultiplier,
-    recoveryBonus: effects.recoveryBonus,
-    operatingFactor: effects.operatingFactor,
-    offerAge: effects.offer.age,
-    offerAbility: effects.offer.ability,
-  };
 }

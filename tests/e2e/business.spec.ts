@@ -1,13 +1,9 @@
-import { openOfficeLibrary } from './office';
 import { watchNext } from './watch';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
-import { createWorld, advanceRound, operate } from '../../packages/engine/src/index';
-import {
-  facilityInvestmentPreview,
-  ticketInvestmentPreview,
-} from '../../packages/engine/src/investment';
+import { createWorld, advanceRound } from '../../packages/engine/src/index';
+import { facilityInvestmentPreview } from '../../packages/engine/src/investment';
 import { sponsorOffers, sponsorAnnual } from '../../packages/engine/src/operations';
 import {
   operatingCosts,
@@ -18,10 +14,11 @@ import {
   leagueMatchFactor,
 } from '../../packages/engine/src/finance';
 import { clubOf, quote } from '../../packages/engine/src/world';
-import { compactMoney, number } from '../../apps/web/src/ui/format';
+import { compactMoney } from '../../apps/web/src/ui/format';
 import type { World } from '../../packages/contracts/src/types';
 import { horizontalOverflow, settle } from './layout';
 import { acknowledgeEvents, chooseLevel } from './events';
+import { chooseOption } from './select';
 import { clubhouseTab } from './competition-navigation';
 import {
   aroundOffice,
@@ -30,6 +27,7 @@ import {
   LOBBY,
   officeBar,
   officeTitle,
+  openDirectionInForce,
   openOfficeArea,
   operationsTabs,
   outsideOffice,
@@ -48,8 +46,13 @@ const exportWorld = (page: Page): Promise<World> =>
     return (await decode(raw)).world;
   });
 
-async function found(page: Page, seed: string) {
+async function found(page: Page, seed: string, preset?: string) {
   await page.goto('/');
+  if (preset)
+    await chooseOption(
+      page.getByTestId('club-founding').getByRole('combobox', { name: '구단 운영' }),
+      preset,
+    );
   await page.getByText('고급 설정', { exact: true }).click();
   await page.getByLabel('세계 생성 시드').fill(seed);
   await page.getByRole('button', { name: '쉬움' }).click();
@@ -57,9 +60,9 @@ async function found(page: Page, seed: string) {
   await expect(page.getByTestId('club-hub')).toBeVisible();
 }
 
-/** The owner office's area `area`, 업무 기준 unless named, from home's entrance (→WEB-39). */
+/** The owner office's area `area`, the direction in force unless named (→WEB-39, WEB-110). */
 const openBusiness = (page: Page, area?: string) =>
-  area ? openOfficeArea(page, area) : openOfficeLibrary(page);
+  area ? openOfficeArea(page, area) : openDirectionInForce(page);
 
 async function playNext(page: Page) {
   await outsideOffice(page);
@@ -274,103 +277,61 @@ test("at level 4 the commercial staff sign an empty slot's best offer", async ({
   await expect(page.getByTestId('decision-owner-sponsors')).toContainText('자동');
 });
 
-test('drafts a 지역 investment row with its spend and builds 지역 기반 over real rounds', async ({
+test('builds 지역 기반 over real rounds from the 지역 investment founded with', async ({
   page,
 }) => {
   // Founds a club and plays real rounds through the owner's event cards; slow CI browsers need longer.
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
-  await found(page, 'local-base-ui');
+  // 유스 순혈주의 founds 주변 투자 at 지역 상권 투자 (→ECON-22); no control changes it later.
+  await found(page, 'local-base-ui', 'local-pride');
   await openBusiness(page);
-  // 주변 투자 is a row of the 지역 area, whose header names 지역 기반 (→ECON-34, →WEB-60).
-  const board = page.getByTestId('strategy-board');
-  const local = board.getByRole('region', { name: '지역', exact: true });
-  await expect(local.getByTestId('area-base-local')).toHaveText('지역 기반 0');
-  await local.locator('button[aria-controls^="board-area-body-"]').click();
-  await local.getByRole('radio', { name: '주변 투자 지역 상권 투자', exact: true }).click();
-  const row = page.locator('[data-row="localInvest"]');
-  await expect(row).toContainText('관중 수요 +4% · 지역 기반 목표 40 (지금 0)');
-  await expect(row).toContainText('투자비 연');
-  const draft = board.getByTestId('strategy-draft');
-  await expect(draft).toContainText('주변 투자 없음 → 지역 상권 투자');
-  await expect(draft).toContainText('라운드마다 +');
-  await draft.getByRole('button', { name: '적용', exact: true }).click();
-  await expect(draft).toHaveCount(0);
-  const applied = await exportWorld(page);
-  expect(applied.policy?.localInvest).toBe(3);
-  expect(BigInt(operatingCosts(applied).investment)).toBeGreaterThan(0n);
+  // 주변 투자 is a row of the 지역 area, read beside the 지역 기반 it builds (→ECON-34, WEB-14).
+  const local = page
+    .getByTestId('direction-areas')
+    .getByRole('region', { name: '지역', exact: true });
+  await expect(local).toContainText('지역 기반 0');
+  await expect(local.locator('[data-row="localInvest"]')).toContainText('지역 상권 투자');
+  await expect(local.getByRole('radio')).toHaveCount(0);
+  const founded = await exportWorld(page);
+  expect(founded.policy?.localInvest).toBe(3);
+  expect(BigInt(operatingCosts(founded).investment)).toBeGreaterThan(0n);
   // The base grows each settled league round toward the target the row sets.
   for (let passed = 0; passed < 2;) {
     await playNext(page);
-    passed = (await exportWorld(page)).round - applied.round;
+    passed = (await exportWorld(page)).round - founded.round;
   }
   const grown = await exportWorld(page);
   expect(grown.localBase).toBeGreaterThan(0);
   expect(grown.localBase).toBeLessThan(40);
+  expect(grown.policy).toEqual(founded.policy);
   await openBusiness(page);
-  await expect(page.getByTestId('area-base-local')).toHaveText(
-    `지역 기반 ${Math.round(grown.localBase!)}`,
-  );
+  await expect(local).toContainText(`지역 기반 ${Math.round(grown.localBase!)}`);
 });
 
-test('keeps ticket drafts out of the save and applies their price to an actual home gate', async ({
+test('reads the ticket price founded with and charges it at an actual home gate', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await found(page, 'ticket-draft-ui');
+  // 상업 제국 founds the ticket at 비싸게 (→ECON-17); no control changes it later (→WEB-14).
+  await found(page, 'ticket-draft-ui', 'commercial');
   const before = await exportWorld(page);
-  const price = 0.12;
-  const preview = ticketInvestmentPreview(before, price);
-  const format = (value: string) => compactMoney(value, clubOf(before).country, before.year);
+  expect(before.ticket).toBe(0.08);
   await openBusiness(page);
-  // The ticket price is a row of the 지역 area on the 방향 board, beside its card row.
-  const board = page.getByTestId('strategy-board');
-  const fans = board.getByRole('region', { name: '지역', exact: true });
-  await fans.locator('button[aria-controls^="board-area-body-"]').click();
-  const dial = fans.getByRole('radiogroup', { name: '티켓 가격', exact: true });
-  const premium = dial.getByRole('radio', { name: '티켓 가격 프리미엄', exact: true });
-  await expect(dial.getByRole('radio', { name: '티켓 가격 보통', exact: true })).toHaveAttribute(
-    'aria-checked',
-    'true',
-  );
-  await premium.click();
-  const ticket = page.locator('[data-row="ticket"]');
-  await expect(ticket).toContainText(
-    `홈 관중 ${number(preview.after.attendanceLow)}–${number(preview.after.attendanceHigh)}명`,
-  );
-  await expect(ticket).toContainText(
-    `경기당 입장 수입 ${format(preview.after.incomeLow)}–${format(preview.after.incomeHigh)}`,
-  );
-  expect(preview.after.attendanceHigh).toBeLessThan(preview.before.attendanceHigh);
-  // The pinned draft bar carries the gate projection; drafting writes nothing to the save.
-  const draft = board.getByTestId('strategy-draft');
-  await expect(draft).toContainText('티켓 가격 보통 → 프리미엄');
-  await expect(draft).toContainText(
-    `경기당 입장 수입 ${format(preview.after.incomeLow)}–${format(preview.after.incomeHigh)}`,
-  );
-  await expect(premium).toHaveAttribute('aria-checked', 'false');
-  expect(await exportWorld(page)).toEqual(before);
-  await draft.getByRole('button', { name: '적용', exact: true }).click();
-  await expect(draft).toHaveCount(0);
-  await expect(premium).toHaveAttribute('aria-checked', 'true');
-  await expect(page.getByTestId('action-outcome')).toContainText('티켓 가격을 바꿨어요');
-  const applied = await exportWorld(page);
-  expect(applied.ticket).toBe(price);
-  expect(applied.cash).toBe(before.cash);
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  await page.reload();
-  await openOfficeLibrary(page);
-  await fans.locator('button[aria-controls^="board-area-body-"]').click();
-  await expect(premium).toHaveAttribute('aria-checked', 'true');
+  const ticket = page.getByTestId('direction-areas').locator('[data-row="ticket"]');
+  await expect(ticket).toContainText('티켓 가격');
+  await expect(ticket).toContainText('비싸게');
+  await expect(page.getByRole('radiogroup', { name: '티켓 가격' })).toHaveCount(0);
   await playNext(page);
   const settled = await exportWorld(page);
+  expect(settled.ticket).toBe(0.08);
   const match = settled.ownMatches.at(-1)!;
   expect(match.home).toBe(settled.playerClub);
   const gate = settled.events.findLast((event) => event.kind === 'gate')!;
   const attendance = Number(gate.detail.match(/관중 (\d+)명/)?.[1]);
   expect(attendance).toBeGreaterThan(0);
   const perFan = gateProjection(settled, match.id).perFan;
-  // League gates are sized for a 46-game season (the 30-game amateur league pays ×46/30).
+  // League gates are sized for a 46-game season (→ECON-19).
   const factor = isLeagueMatch(match.kind) ? leagueMatchFactor(settled) : 1;
   expect(gate.amount).toBe(
     quote(clubOf(settled).country, settled.year, attendance * perFan * factor),
@@ -394,7 +355,8 @@ test('recovers a genuine negative operating balance and enforces the three-contr
     seed: 'business-budget-recovery',
     level: 'hard' as const,
   });
-  operate(fixture, { type: 'ticket', price: 0.01 });
+  // A price off the presets, as an older save keeps it (→ECON-17).
+  fixture.ticket = 0.01;
   // Real costs, not an edited balance, take the club below zero within a round or two.
   fixture.cash = '1';
   for (let i = 0; i < 46 && BigInt(fixture.cash) >= 0n; i++)

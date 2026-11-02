@@ -41,9 +41,7 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
   campaign: '마케팅 캠페인을 시작했어요',
   sponsor: '후원 계약을 맺었어요',
   facility: '시설 공사를 시작했어요',
-  ticket: '티켓 가격을 바꿨어요',
   support: '구단주 추가 출자를 받았어요',
-  policy: '방향의 투자 줄을 바꿨어요',
   'hire-staff': '새 코치를 선임했어요',
   'release-staff': '코치와 계약을 정리했어요',
   'renew-staff': '코치와 재계약했어요',
@@ -57,8 +55,6 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
   'resolve-mediation': '영입 중재 방침을 결정했어요',
   'encourage-coaching': '지도자 진로를 권유했어요',
   'read-inbox': '소식을 확인했어요',
-  build: '방향을 정했어요',
-  direction: '방향을 바꿨어요',
   'contract-offer': '선수에게 계약을 제시했어요',
   'contract-decline': '선수의 계약 요구를 거절했어요',
   'sign-sponsor': '후원 계약을 맺었어요',
@@ -72,9 +68,6 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
 const notes: Partial<Record<Command['type'], string>> = {
   campaign: '4라운드 뒤 실제 수입과 신규 팬이 정산돼요.',
   facility: '완공되는 날부터 효과가 생기고 연간 유지비가 늘어요.',
-  ticket: '다음 홈 경기 관중과 입장 수입부터 반영돼요.',
-  policy: '다음 라운드 정산부터 비용과 효과가 반영돼요.',
-  build: '바로 적용했어요. 카드와 다이얼은 언제든 다시 바꿀 수 있어요.',
   'transfer-stance': '제안은 이적시장이 열려 있을 때 들어오고, 수락해야 이적이 성사돼요.',
 };
 const trainingLabel: Record<TrainingFocus, string> = {
@@ -229,7 +222,6 @@ export function describeOutcome(
   else compare(changes, '감독', before.manager.name, after.manager.name);
   compare(changes, '클럽 평판', Math.round(previous.reputation), Math.round(club.reputation));
   compare(changes, '팀 분위기', before.morale, after.morale);
-  compare(changes, '티켓 기본가', before.ticket, after.ticket, (n) => `${n} (1901년 기준)`);
   const records = newEvents(before, after).filter((event) => !ROUTINE_EVENTS.has(event.kind));
   const shown = records.slice(-limit).reverse();
   let note = notes[command.type];
@@ -241,8 +233,6 @@ export function describeOutcome(
   // Coaches are hired, renewed and delegated per department in 선수단 › 스태프 (→WEB-43, WEB-71).
   if (command.type === 'hire-staff' || command.type === 'renew-staff')
     note = '다음 라운드부터 반영돼요. 계약과 자동 결정은 선수단 › 스태프에서 관리해요.';
-  if (command.type === 'direction')
-    note = '스태프가 맡은 결정에서 이 방향으로 골라요. 해당 업무를 위임할 때 사용해요.';
   return {
     title: titles[command.type],
     changes,

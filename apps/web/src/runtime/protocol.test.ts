@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { BUILD_PRESETS } from '../../../../packages/engine/src/build';
 import { KIT_ROLES } from '../../../../packages/contracts/src/identity';
 import { createIdentityDraft } from '../../../../packages/engine/src/club-identity';
-import { DIRECTION_INFO, DIRECTION_KEYS } from '../../../../packages/engine/src/direction';
 import { MATCH_MODEL_REVISION } from '../../../../packages/contracts/src/match-model';
 import type { World } from '../../../../packages/contracts/src/types';
 import { isSaveCompatibilityError } from '../../../../packages/contracts/src/versions';
@@ -28,20 +27,18 @@ const request = (body: unknown) => ({
 });
 
 describe('the worker protocol (→ECON-25, WEB-15)', () => {
-  it('accepts a command for every direction row and option the board can draft', () => {
-    for (const key of DIRECTION_KEYS)
-      for (const option of DIRECTION_INFO[key].options)
-        expect(
-          requestSchema.safeParse(
-            request({ type: 'command', command: { type: 'direction', key, option: option.id } }),
-          ).success,
-          `${key}:${option.id}`,
-        ).toBe(true);
-    expect(
-      requestSchema.safeParse(
-        request({ type: 'command', command: { type: 'direction', key: 'mood', option: 'x' } }),
-      ).success,
-    ).toBe(false);
+  it('refuses every command that would change the direction after founding', () => {
+    // Cards, dials, the ticket price and direction rows stay as founded (→ECON-16/17/22/25).
+    for (const command of [
+      { type: 'build', build: { youth: 'elite' } },
+      { type: 'policy', key: 'globalMarketing', level: 5 },
+      { type: 'ticket', price: 0.05 },
+      { type: 'direction', key: 'finance', option: 'careful' },
+    ])
+      expect(
+        requestSchema.safeParse(request({ type: 'command', command })).success,
+        command.type,
+      ).toBe(false);
   });
 
   it('founds with any preset as the direction, or none', () => {

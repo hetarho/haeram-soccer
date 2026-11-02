@@ -97,12 +97,6 @@
   align-items: baseline;
   gap: 4px 8px;
 }
-.policy button {
-  flex: none;
-  min-height: 44px;
-  padding: 4px 10px;
-  font-size: 12px;
-}
 .supportChoices {
   min-width: 0;
   margin: 0;

@@ -1,10 +1,55 @@
-import type { TransferBid, World } from '../../contracts/src/types';
+import type { ClubBuild } from '../../contracts/src/build';
+import type {
+  ClubPolicy,
+  Direction,
+  DirectionKey,
+  TransferBid,
+  World,
+} from '../../contracts/src/types';
 import { country } from '../../catalogs/src/index';
 import { clubOf } from './player-state';
 import { prepareSeason } from './season';
 import { currentDay } from './calendar';
 import { assessOperatingExpenses } from './finance';
 import { playerValue, respondBid } from './transfers';
+import { POLICY_KEYS, policyOf } from './policy';
+import { DIRECTION_DEFAULT } from './direction';
+
+/**
+ * Puts direction rows in force on a test world, as a founded or saved club holds them: cards,
+ * dials, the ticket price and direction rows (→ECON-16/17/22/25). No owner action or staff rule
+ * changes them in a career, so tests set them directly. A row left out keeps its value; a dial or
+ * direction row at its default is stored as the engine stores it, absent.
+ */
+export function holdRows(
+  w: World,
+  rows: {
+    build?: ClubBuild;
+    policy?: Partial<ClubPolicy>;
+    ticket?: number;
+    direction?: Partial<Record<DirectionKey, string>>;
+  },
+) {
+  if (rows.build) {
+    if (Object.keys(rows.build).length) w.build = { ...rows.build };
+    else delete w.build;
+  }
+  if (rows.policy) {
+    const current = policyOf(w),
+      next = { ...current, ...rows.policy };
+    if (POLICY_KEYS.some((key) => next[key] !== current[key])) w.policy = next;
+  }
+  if (rows.ticket !== undefined) w.ticket = rows.ticket;
+  if (rows.direction) {
+    const next: Record<string, string> = { ...w.direction };
+    for (const [key, option] of Object.entries(rows.direction) as [DirectionKey, string][])
+      if (option === DIRECTION_DEFAULT[key]) delete next[key];
+      else next[key] = option;
+    if (Object.keys(next).length) w.direction = next as Direction;
+    else delete w.direction;
+  }
+  return w;
+}
 
 /**
  * Tests and benchmarks that exercise professional-league rules start the own club in the lowest

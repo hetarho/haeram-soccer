@@ -7,6 +7,7 @@ import {
   managerPayoff,
   dailyStaff,
 } from './index';
+import { holdRows } from './testing';
 import { closeEmployment, openEmployment, careerDate } from './person-careers';
 import { managerHireCost } from './managerMarket';
 import { releaseCost } from './staff';
@@ -108,7 +109,7 @@ describe('career manager appointments', () => {
   it('keeps compensated coaches out of nonpoaching delegated searches', () => {
     const { w, person } = fixture('club');
     expect(managerMatches(w).some((c) => c.id === person.id)).toBe(false);
-    operate(w, { type: 'direction', key: 'manager', option: 'proven' });
+    holdRows(w, { direction: { manager: 'proven' } });
     expect(managerMatches(w).some((c) => c.id === person.id)).toBe(true);
   });
 });

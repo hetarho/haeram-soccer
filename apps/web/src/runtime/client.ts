@@ -354,10 +354,14 @@ export class GameClient {
   private async load() {
     await this.whenSaved();
     if (!this.state.readonly) {
-      const [{ resetLegacy }, { IndexedDbParkedStore }] = await Promise.all([
-        import('../adapters/legacyReset'),
-        import('../adapters/games'),
-      ]);
+      const [{ resetLegacy }, { IndexedDbParkedStore }, { removeStrategyLibrary }] =
+        await Promise.all([
+          import('../adapters/legacyReset'),
+          import('../adapters/games'),
+          import('../adapters/profile'),
+        ]);
+      // The strategy library of earlier versions is no longer read (→SAVE-25).
+      removeStrategyLibrary(localStorage);
       const cleared = await resetLegacy(
         localStorage,
         IndexedDbParkedStore.available() ? new IndexedDbParkedStore() : undefined,

@@ -1,15 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
-import {
-  BUILD_PRESETS,
-  createWorld,
-  operate,
-  fatigueCost,
-  ownStarters,
-  recordMatch,
-  simulateMatch,
-  TACTICS,
-} from './index';
+import { fatigueCost, ownStarters, recordMatch, simulateMatch, TACTICS } from './index';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { baseline, sample, scenario } from './build.testkit';
 
@@ -80,45 +71,5 @@ describe('tactical roster tradeoffs', () => {
     });
     simulateMatch(w, { ...fixture, id: 'later-build' }, false, true);
     expect(canonical(w.ownMatches[0])).toBe(saved);
-  });
-});
-
-describe('the operating strategy applied at once (→ECON-22)', () => {
-  const club = (day: number) => {
-    const w = createWorld(
-      {
-        country: 'ENG',
-        name: 'Strategy Lockers',
-        color: '#445566',
-        seed: 'strategy-locks',
-        level: 'normal' as const,
-      },
-      DISABLED_RELEASE,
-    );
-    w.calendar = { day };
-    return w;
-  };
-
-  it('applies a strategy at once, and the next one too: cards change at any time', () => {
-    const w = club(10);
-    operate(w, { type: 'build', build: { youth: 'homegrown', fans: 'community' } });
-    expect(w.build).toEqual({ youth: 'homegrown', fans: 'community' });
-    expect(w.events.at(-1)).toMatchObject({
-      kind: 'build',
-      title: '방향 · 맞춤 방향',
-      detail: '성골 유스 · 지역 밀착',
-    });
-    // The very next day a preset replaces every card it names; no slot waits.
-    w.calendar = { day: 11 };
-    const preset = BUILD_PRESETS.find((p) => p.id === 'commercial')!;
-    operate(w, { type: 'build', build: preset.build });
-    expect(w.build).toEqual(preset.build);
-    operate(w, { type: 'build', build: {} });
-    expect(w.build).toBeUndefined();
-    expect('buildChanged' in w).toBe(false);
-    // Re-sending the strategy in force is no change.
-    const before = canonical({ ...w, revision: 0 });
-    operate(w, { type: 'build', build: {} });
-    expect(canonical({ ...w, revision: 0 })).toBe(before);
   });
 });

@@ -13,7 +13,6 @@ import { requestLabel } from '../../../../packages/engine/src/player';
 import { isDelegated } from '../../../../packages/engine/src/responsibilities';
 import { Dialog } from './Dialog';
 import { Money } from './Money';
-import { openDirection } from './state';
 import s from './MediationReview.module.css';
 const date = (at: CareerDate) =>
   new Date(Date.UTC(at.year, 7, 1) + at.day * 86400000).toISOString().slice(0, 10);
@@ -148,9 +147,6 @@ export function MediationReview({
                 <small>평소 지원 방침</small>
                 <b>{directionOption(w, 'recruitmentSupport').name}</b>
               </span>
-              <button aria-label="영입 지원 방침 편집" onClick={() => openDirection('scouting')}>
-                방침 편집
-              </button>
             </div>
             <fieldset className={s.supportChoices} disabled={disabled}>
               <legend>이번 중재 선택</legend>

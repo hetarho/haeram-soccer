@@ -9,7 +9,7 @@ import { currentDay, DESIGNERS, designFee, redrawFee } from '../../packages/engi
 import { delegatedCareer } from '../fixtures/club-identity';
 import { continueSlot } from './slots';
 import { openSaveMenu } from './save-menu';
-import { leaveOffice, openOfficeArea, openOfficeLibrary } from './office';
+import { leaveOffice, openDirectionInForce, openOfficeArea } from './office';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import {
   adoptButton,
@@ -222,21 +222,13 @@ test('navigation detours and passing days keep the drafts beside the policy draf
   view = await openDesign(page);
   await expectDrafts(view);
   expect((await savedWorld(page)).designCommission?.drafts).toEqual(drafts);
-  // A policy-board draft is a separate department draft (→WEB-60/77).
-  await openOfficeLibrary(page);
-  await expect(page.getByTestId('view-scroller').getByTestId('strategy-board')).toBeVisible();
-  const finance = page.getByRole('region', { name: '재정', exact: true });
-  await finance.getByRole('button', { name: /어디서 벌고/ }).click();
-  await finance.getByRole('radio', { name: '재정 기조 신중', exact: true }).click();
-  await expect(page.getByTestId('strategy-draft')).toBeVisible();
+  // A detour through 재정·투자, which only reads the direction, leaves the drafts as delivered.
+  await openDirectionInForce(page);
   view = await openDesign(page);
   await expectDrafts(view);
   await adoptDraft(view, 0);
   expect(await identityCommands(page)).toEqual({ 'design-commission': 1, 'adopt-design': 1 });
   expect(await ownIdentity(page)).toEqual(drafts[0]);
-  // Adopting the design left the policy draft unapplied and in place.
-  await openOfficeLibrary(page);
-  await expect(page.getByTestId('strategy-draft')).toBeVisible();
 });
 
 test('another game never sees the commission, which waits in its own game', async ({ page }) => {

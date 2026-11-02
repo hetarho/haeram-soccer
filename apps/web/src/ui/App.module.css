@@ -3324,10 +3324,6 @@
   line-height: var(--body-line-height);
 }
 
-/* The mounted policy draft owns the bottom edge. */
-.newsLayout:has([data-testid='strategy-draft']) .scroller {
-  padding-bottom: 0;
-}
 /* Appearance pickers stay small and centered over a light dim on every width, so the page
    behind visibly takes each theme or language change. */
 .modalBackdrop.picker {

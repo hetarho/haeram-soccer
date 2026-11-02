@@ -33,6 +33,7 @@ import {
   transferOffers,
   transferWindowDays,
 } from './index';
+import { holdRows } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 
@@ -318,7 +319,7 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
       true,
     );
     // Another recruitment row draws another list: none of the shortlist is on it.
-    operate(w, { type: 'policy', key: 'recruitment', level: 5 });
+    holdRows(w, { policy: { recruitment: 5 } });
     expect(shortlistOffers(w)).toEqual([]);
     // Last season's shortlist reads as empty.
     const old = owned();
@@ -368,7 +369,7 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     // 젊은 선수 위주 lists players aged 18–25, so young and older forwards meet on the list.
     const pick = (setup?: (w: World) => void, seed = 'staff-signings') => {
       const w = owned(seed);
-      operate(w, { type: 'policy', key: 'recruitment', level: 2 });
+      holdRows(w, { policy: { recruitment: 2 } });
       keep(w, 'FW', 2);
       setup?.(w);
       drawShortlist(w);

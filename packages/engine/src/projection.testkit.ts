@@ -1,5 +1,6 @@
 import type { World } from '../../contracts/src/types';
 import { advanceRound, createWorld, operate, operatingCosts } from './index';
+import { holdRows } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 
@@ -28,7 +29,7 @@ export const setups = {
   },
   academy: () => {
     const w = world();
-    operate(w, { type: 'policy', key: 'academy', level: 3 });
+    holdRows(w, { policy: { academy: 3 } });
     return w;
   },
   recorded: () => {
@@ -45,7 +46,7 @@ export const setups = {
   },
   support: () => {
     const w = played('plain', 10);
-    operate(w, { type: 'policy', key: 'support', level: 5 });
+    holdRows(w, { policy: { support: 5 } });
     return w;
   },
 };

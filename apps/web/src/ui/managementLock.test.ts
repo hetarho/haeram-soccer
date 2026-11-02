@@ -18,7 +18,6 @@ import { ProgressControls } from './ProgressControls';
 import { ProgressModeSwitch } from './ProgressModeSwitch';
 import { RecruitmentDesk } from './RecruitmentDesk';
 import Rich from './Rich';
-import { StrategyBoard } from './StrategyBoard';
 
 vi.mock('../presentation/react', async (original) => ({
   ...(await original<typeof import('../presentation/react')>()),
@@ -232,13 +231,6 @@ describe('management screen calendar locks', () => {
       expect(entries.some((button) => button.label === '결재라인 모아보기')).toBe(false);
     }
     expectLocked(office, /^(직접|위임|전체 직접|전체 위임)$/);
-  });
-  it('locks policy application while leaving preset drafts and reset usable', () => {
-    drafts['board-draft'] = { policy: { support: 5 } };
-    expectLocked(() => createElement(StrategyBoard, { w: world, client }), /^적용$/);
-    const entries = render(createElement(StrategyBoard, { w: world, client }));
-    expect(entries.find((button) => button.label === '되돌리기')?.disabled).toBe(false);
-    expect(entries.filter((button) => !button.disabled).length).toBeGreaterThan(2);
   });
   it("locks adopting or discarding the designer's drafts while the calendar runs", () => {
     const entry = identityOf(world, world.playerClub);

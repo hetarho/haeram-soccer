@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { operate, simulateSeason } from './index';
+import { holdRows } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
@@ -11,7 +12,7 @@ describe('earned, auditable club finances', () => {
     const managed = cachedWorld('commercial-season', () => {
       const w = world();
       operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
-      operate(w, { type: 'ticket', price: 0.12 });
+      holdRows(w, { ticket: 0.12 });
       simulateSeason(w);
       return w;
     });

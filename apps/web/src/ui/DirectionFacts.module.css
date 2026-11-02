@@ -1,0 +1,67 @@
+/* The direction rows in force (→ECON-25): read-only lines, each a row's name and its option. */
+.lines {
+  display: grid;
+  gap: 2px;
+  margin: 8px 0;
+}
+.line {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 2px 12px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+.line dt {
+  min-width: 0;
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 500;
+}
+.line dd {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 700;
+}
+/* A section's areas: one card, each area a heading with the base it builds, then its rows. */
+.areas {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding-bottom: 6px;
+}
+.head h3 {
+  margin: 0;
+  font-size: 16px;
+}
+.head small,
+.area h4 small {
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: 12px;
+}
+.area {
+  min-width: 0;
+}
+.area h4 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin: 0;
+  font-size: 14px;
+}
+.area .lines {
+  margin: 4px 0 0;
+}

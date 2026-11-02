@@ -24,10 +24,10 @@ export const BASE_CONFIG = {
   tourFatigue: [0, 10, 20],
 };
 
-export function localBaseOf(w: Pick<World, 'localBase'>) {
+function localBaseOf(w: Pick<World, 'localBase'>) {
   return w.localBase ?? 0;
 }
-export function globalReachOf(w: Pick<World, 'globalReach'>) {
+function globalReachOf(w: Pick<World, 'globalReach'>) {
   return w.globalReach ?? 0;
 }
 const clampBase = (value: number) => Math.max(0, Math.min(100, Math.round(value * 100) / 100));
@@ -73,7 +73,7 @@ export function baseEffects(w: Pick<World, 'localBase' | 'globalReach' | 'build'
 }
 
 /** What a tour at `tour` (0 none, 1 short, 2 long) pays and does as a season starts (→ECON-16). */
-export function tourTerms(w: World, tour: number) {
+function tourTerms(w: World, tour: number) {
   const club = clubOf(w);
   return {
     income: tour

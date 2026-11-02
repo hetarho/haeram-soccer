@@ -70,11 +70,8 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
     case 'sponsor':
     case 'sign-sponsor':
     case 'campaign':
-    case 'ticket':
     case 'facility':
     case 'support':
-    case 'policy':
-    case 'build':
       commercialCommand(w, cmd);
       break;
     case 'hire':
@@ -83,7 +80,6 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
     case 'release-staff':
     case 'renew-staff':
     case 'intervention':
-    case 'direction':
       staffCommand(w, cmd);
       break;
     default:

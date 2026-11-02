@@ -1,6 +1,6 @@
 import { openPersonnel } from './personnel-navigation';
 import { openClubhouse, openClubRecords, openLeague } from './competition-navigation';
-import { openOfficeLibrary } from './office';
+import { openDirectionInForce } from './office';
 import { marketCandidate, marketInfo, closeMarketPanel } from './market';
 import { finishSeason, advanceOneRound } from './season-progression';
 import { openCurrentClubSeason, openSeasonReview } from './record-navigation';
@@ -36,15 +36,14 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await localSponsor.getByRole('button', { name: '지역 후원 계약', exact: true }).first().click();
   await expect(localSponsor.getByTestId('sponsor-contract-local')).toBeVisible();
   await expect(page.getByRole('button', { name: '지역 후원 계약', exact: true })).toHaveCount(0);
-  // Campaigns are no more: the owner spends on the town or abroad through the board's rows.
-  await openOfficeLibrary(page);
-  const global = page.getByRole('region', { name: '글로벌', exact: true });
-  await global.locator('button[aria-controls^="board-area-body-"]').click();
-  await global.getByRole('radio', { name: '해외 마케팅 해외 홍보', exact: true }).click();
-  const draft = page.getByTestId('strategy-draft');
-  await draft.getByRole('button', { name: '적용', exact: true }).click();
-  await expect(draft).toHaveCount(0);
-  await expect(page.getByTestId('area-summary-global')).toHaveText('해외 홍보 · 없음 · 안 함');
+  // Campaigns are no more: the club spends on the town or abroad by the rows it was founded with,
+  // read in 재정·투자 (→ECON-16, WEB-14).
+  await openDirectionInForce(page);
+  const global = page
+    .getByTestId('direction-areas')
+    .getByRole('region', { name: '글로벌', exact: true });
+  await expect(global.locator('[data-row="globalMarketing"]')).toContainText('입소문');
+  await expect(global.getByRole('radio')).toHaveCount(0);
   // The market is a primary entry, a view of the first team (→WEB-10).
   await leaveOffice(page);
   await openPersonnel(page, 'market');

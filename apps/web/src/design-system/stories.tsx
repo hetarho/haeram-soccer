@@ -6,7 +6,6 @@ import { Select } from '../ui/Select';
 import { Segments } from '../ui/Segments';
 import { TabList, TabPanel } from '../ui/PageTabs';
 import { Attributes } from '../ui/Attributes';
-import { DirectionRow } from '../ui/DirectionRow';
 import { OfficeBar } from '../ui/OfficeBar';
 import { TermDial } from '../ui/ClubStaff';
 import { PixelIcon } from '../ui/PixelIcon';
@@ -65,7 +64,7 @@ import { STYLE_INFO } from '../../../../packages/engine/src/styles';
 import { ClubIdentityEditor } from '../ui/ClubIdentityEditor';
 import { ClubDesignView } from '../ui/ClubDesignView';
 import { createIdentityDraft } from '../../../../packages/engine/src/club-identity';
-import { StrategyBoard } from '../ui/StrategyBoard';
+import { DirectionAreas } from '../ui/DirectionFacts';
 import { FacilityOverview } from '../ui/FacilityOverview';
 import { FacilityParts } from '../ui/FacilityParts';
 import { FinancialBreakdown } from '../ui/FinancialBreakdown';
@@ -85,7 +84,6 @@ import { OwnerOffice } from '../ui/OwnerOfficeView';
 import { GlossaryHost } from '../ui/Glossary';
 import { useGlossary } from '../ui/metricGlossary';
 import { PlayGuide } from '../ui/PlayGuide';
-import { DepartmentPolicySheet } from '../ui/DepartmentPolicySheet';
 import { ownLeagueIds } from '../ui/league';
 import { useTheme } from '../presentation/react';
 import app from '../ui/App.module.css';
@@ -112,7 +110,6 @@ const noop = () => {};
 function Controls() {
   const [selected, setSelected] = useState('balanced');
   const [term, setTerm] = useState<1 | 2 | 3 | 4 | 5>(3);
-  const [direction, setDirection] = useState(1);
   return (
     <>
       <Section title="버튼 · Primary / Secondary / Tertiary">
@@ -216,18 +213,8 @@ function Controls() {
           onChange={setSelected}
         />
       </Section>
-      <Section title="TermDial · DirectionRow">
+      <Section title="TermDial">
         <TermDial label="계약 기간" value={term} onChange={setTerm} />
-        <DirectionRow
-          label="투자 방향"
-          question="어떤 성장에 집중할까요?"
-          options={['현재 전력', '균형', '유소년']}
-          inForce={1}
-          drafted={direction}
-          row="preview"
-          onPick={setDirection}
-          detail={<p>선택한 방향의 이점과 비용이 표시되는 자리입니다.</p>}
-        />
       </Section>
     </>
   );
@@ -885,7 +872,12 @@ export default function StoryRenderer({
         content = <ClubDesignView state={state} client={client} />;
         break;
       case 'policy':
-        content = <StrategyBoard w={w} client={client} />;
+        content = (
+          <DirectionAreas
+            w={w}
+            areas={['squad', 'scouting', 'market', 'youth', 'staff', 'finance', 'local', 'global']}
+          />
+        );
         break;
       case 'facilities':
         content = (
@@ -977,7 +969,6 @@ export default function StoryRenderer({
       <PlayerSheetHost client={client} />
       <TeamSheetHost client={client} />
       <GlossaryHost />
-      <DepartmentPolicySheet client={client} />
     </>
   );
 }

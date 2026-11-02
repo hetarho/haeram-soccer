@@ -9,7 +9,7 @@ import {
   clubSections,
   enterOffice,
   leaveOffice,
-  openOfficeLibrary,
+  openDirectionInForce,
   openOperations,
   operationsTabs,
 } from './office';
@@ -87,23 +87,19 @@ for (const width of [360, 390, 1280]) {
     await expect(sections).toHaveCount(1);
     await leaveOffice(page);
     await expect(sections).toHaveCount(0);
-    // 재정·투자: every facility and the scoped spending criteria (→WEB-14/110).
+    // 재정·투자: every facility and the spending direction in force, read-only (→WEB-14/110).
     await openOperations(page, '재정·투자');
     for (const part of ['stadium', 'training', 'academy'])
       await expect(page.getByTestId(`facility-${part}`)).toBeVisible();
-    await page.getByRole('button', { name: /^재정 ·/ }).click();
-    const financial = page.getByRole('dialog', { name: '재정 업무 기준', exact: true });
-    await expect(
-      financial.getByRole('radiogroup', { name: '재계약 기조', exact: true }),
-    ).toBeVisible();
-    await expect(
-      financial.getByRole('radiogroup', { name: '선수단 투자', exact: true }),
-    ).toBeVisible();
-    // Read-only synergy conditions may mention culture; its editable row belongs to the manager.
-    await expect(financial.locator('[data-row="culture"]')).toHaveCount(0);
-    await page.keyboard.press('Escape');
+    const areas = page.getByTestId('direction-areas');
+    const financial = areas.getByRole('region', { name: '재정', exact: true });
+    await expect(financial.locator('[data-row="renewal"]')).toContainText('표준');
+    await expect(financial.locator('[data-row="support"]')).toContainText('표준');
+    // Culture belongs to the squad, read on the 1군 page.
+    await expect(areas.locator('[data-row="culture"]')).toHaveCount(0);
     for (const name of ['재정', '유소년', '지역', '글로벌'])
-      await expect(page.getByRole('button', { name: new RegExp('^' + name + ' ·') })).toBeVisible();
+      await expect(areas.getByRole('region', { name, exact: true })).toBeVisible();
+    await expect(areas.getByRole('button')).toHaveCount(0);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
     // 후원: the actual slots with the sponsorship responsibility beside them (→WEB-79/110).
     await openOperations(page, '후원');
@@ -125,24 +121,12 @@ for (const width of [360, 390, 1280]) {
     ).toHaveAttribute('aria-selected', 'true');
     await page.goForward();
     await expect(page).toHaveURL(/\/club-operations\?view=identity$/);
-    // Reading an export during operations work keeps the open library and unapplied draft.
-    await openOfficeLibrary(page);
-    const board = page.getByTestId('strategy-board');
-    const finance = board.getByRole('region', { name: '재정', exact: true });
-    const financeHeader = finance.locator(':scope > button[aria-expanded]');
-    if ((await financeHeader.getAttribute('aria-expanded')) === 'false')
-      await financeHeader.click();
-    await finance.getByRole('radio', { name: '선수단 투자 후한 지원', exact: true }).click();
-    const draft = page.getByTestId('strategy-draft');
-    await expect(draft).toContainText('선수단 투자 표준 → 후한 지원');
+    // Reading an export during operations work keeps the section and changes nothing.
+    await openDirectionInForce(page);
     const saved = await exportedCareer(page);
     expect(saved.settings).toEqual(before);
     expect(saved.policy?.support ?? 3).toBe(w.policy?.support ?? 3);
     await expect(page).toHaveURL(/\/club-operations\?view=investment$/);
-    await expect(page.getByTestId('office-library')).toHaveAttribute('open', '');
-    await expect(draft).toContainText('선수단 투자 표준 → 후한 지원');
-    await draft.getByRole('button', { name: '되돌리기', exact: true }).click();
-    await expect(draft).toHaveCount(0);
-    expect((await exportedCareer(page)).settings).toEqual(before);
+    await expect(page.getByTestId('direction-areas')).toBeVisible();
   });
 }

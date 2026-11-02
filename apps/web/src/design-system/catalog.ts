@@ -23,7 +23,7 @@ export const STORIES: Story[] = [
     'controls',
     '버튼 · 입력 · 선택',
     '기본 UI',
-    ['Select', 'Segments', 'DirectionRow', 'ClubStaff'],
+    ['Select', 'Segments', 'ClubStaff'],
     'Primary·Secondary·Tertiary 버튼과 비활성 상태, 입력 필드, 체크박스, 드롭다운, 세그먼트와 계약 기간 다이얼.',
   ),
   story(
@@ -281,10 +281,10 @@ export const STORIES: Story[] = [
   ),
   story(
     'policy',
-    '운영 전략 · 방향',
+    '구단 방향',
     '운영 · 시설',
-    ['StrategyBoard', 'StrategyComposer', 'DirectionLines', 'PolicyBoard', 'PolicyContext'],
-    '전략 프리셋, 적용 전 변경 비교와 방향 다이얼.',
+    ['DirectionFacts'],
+    '창단 때 정한 카드·투자·티켓 가격·스태프 기준과 지역 기반·글로벌 인지도, 읽기 전용.',
   ),
   story(
     'facilities',

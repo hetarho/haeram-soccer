@@ -411,7 +411,7 @@ function MoneyWorkbench({
           {/* Campaigns are no more (→ECON-7): one started before settles here, read-only. */}
           <div className={s.panelHeading}>
             <h3>진행 중인 캠페인</h3>
-            <span>새 캠페인은 없어요 · 방향의 지역·글로벌에서 투자해요</span>
+            <span>새 캠페인은 없어요 · 지역·글로벌 투자는 구단 방향을 따라요</span>
           </div>
           <div className={s.cards}>
             {w.campaigns.map((campaign) => (

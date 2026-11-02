@@ -1,8 +1,7 @@
 import { openPersonnel } from './personnel-navigation';
-import { openOfficeLibrary } from './office';
-import { marketInfo, closeMarketPanel } from './market';
+import { openDirectionInForce } from './office';
+import { closeMarketPanel } from './market';
 import { openOffice } from './events';
-import { closeOutcome } from './events';
 import { test, expect, type Page } from '@playwright/test';
 import { combinedCareerFixture, exportedCareer } from './career-fixtures';
 import { importResponsibilityCareer } from './responsibility-fixtures';
@@ -10,13 +9,13 @@ import { transferOffers } from '../../packages/engine/src/index';
 import { detectMediations } from '../../packages/engine/src/mediation';
 import { lineOf } from '../../packages/engine/src/player';
 import { leaveOffice } from './office';
-/** 구단 운영 › 재정·투자's whole-club configuration, entered through the club sections (→WEB-110). */
+/** 구단 운영 › 재정·투자's direction in force, entered through the club sections (→WEB-110). */
 async function operations(page: Page) {
-  await openOfficeLibrary(page);
-  await expect(page.getByTestId('strategy-board')).toBeVisible();
+  await openDirectionInForce(page);
+  await expect(page.getByTestId('direction-areas').getByRole('radio')).toHaveCount(0);
 }
 
-test('rules three retains a joint career and promise through scoped drafts, handover and portable reload', async ({
+test('rules three retains a joint career and promise through handover and portable reload', async ({
   page,
   browser,
 }) => {
@@ -34,23 +33,12 @@ test('rules three retains a joint career and promise through scoped drafts, hand
   expect(detectMediations(w)).toHaveLength(1);
   await page.setViewportSize({ width: 390, height: 844 });
   await importResponsibilityCareer(page, w);
+  // The direction reads as saved; nothing in the career edits it (→ECON-25).
   await operations(page);
-  const finance = page.getByRole('region', { name: '재정', exact: true });
-  await finance.getByRole('button', { name: /어디서 벌고/ }).click();
-  await finance.getByRole('radio', { name: '재정 기조 신중', exact: true }).click();
+  await expect(
+    page.getByTestId('direction-areas').locator('[data-row="finance"]').first(),
+  ).toContainText('표준');
   await leaveOffice(page);
-  await openPersonnel(page, 'market');
-  await marketInfo(page);
-  await page.getByRole('button', { name: /^영입 기조/ }).click();
-  const sheet = page.getByRole('dialog', { name: '영입 업무 기준', exact: true });
-  await sheet.getByRole('radio', { name: '스카우팅 데이터 스카우팅', exact: true }).click();
-  await sheet
-    .getByTestId('strategy-draft')
-    .getByRole('button', { name: '적용', exact: true })
-    .click();
-  await expect(sheet).toHaveCount(0);
-  await closeMarketPanel(page, '영입 정보');
-  await closeOutcome(page, '방향을 정했어요');
   const office = await openOffice(page);
   await office
     .getByRole('group', { name: '선수 영입', exact: true })
@@ -65,9 +53,6 @@ test('rules three retains a joint career and promise through scoped drafts, hand
   await expect(settings).toHaveCount(0);
   await expect(page.getByTestId('action-outcome')).toHaveCount(0);
   await operations(page);
-  const draft = page.getByTestId('strategy-draft');
-  await draft.getByRole('button', { name: /건 변경/ }).click();
-  await expect(draft).toContainText('재정 기조 표준 → 신중');
   const saved = await exportedCareer(page);
   expect(saved.direction?.finance ?? 'standard').toBe('standard');
   expect(saved.playingCoachProposals![player.id].status).toBe('accepted');
@@ -89,7 +74,7 @@ test('rules three retains a joint career and promise through scoped drafts, hand
     expect(portable.promises).toEqual(saved.promises);
     expect(portable.cash).toBe(saved.cash);
     await operations(imported);
-    await expect(imported.getByTestId('strategy-draft')).toHaveCount(0);
+    expect(portable.direction).toEqual(saved.direction);
   } finally {
     await context.close();
   }

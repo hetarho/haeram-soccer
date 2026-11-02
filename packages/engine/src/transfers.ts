@@ -69,7 +69,7 @@ export {
 } from './transfer-window';
 
 /** Daily chance that another club bids for one of our players while a window is open. */
-export const INCOMING_BID_CHANCE = 0.06;
+const INCOMING_BID_CHANCE = 0.06;
 const MAX_PENDING_INCOMING = 3;
 const INCOMING_RESPONSE_DAYS = 5;
 const SQUAD_MINIMUM = 14;

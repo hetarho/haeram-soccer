@@ -100,28 +100,14 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(page.getByTestId('coach-pick-attack')).toBeVisible();
     await expect(page.getByTestId('coach-pick-attack')).toContainText('코치 기조로 뽑는다면');
     await page.getByText('스태프 선임 기준', { exact: true }).click();
-    // The 코치 기조 line opens its area on the 방향 board, where it is chosen like any row.
-    await page.getByRole('button', { name: /^코치 기조 · 표준/ }).click();
-    const staffArea = page
-      .getByRole('dialog', { name: '스태프 업무 기준', exact: true })
-      .getByRole('region', { name: '스태프', exact: true });
-    await expect(staffArea.locator('button[aria-controls^="sheet-area-body-"]')).toHaveAttribute(
-      'aria-expanded',
-      'true',
-    );
-    await staffArea.getByRole('radio', { name: '코치 기조 최고 수준', exact: true }).click();
-    const draft = page.getByTestId('strategy-draft');
-    await expect(draft).toContainText('코치 기조 표준 → 최고 수준');
-    await draft.getByRole('button', { name: '적용', exact: true }).click();
-    await expect(draft).toHaveCount(0);
+    // 코치 기조 reads as founded beside 재정 기조; no line opens an editor (→STAFF-15).
+    const criteria = page.getByText('스태프 선임 기준', { exact: true }).locator('xpath=..');
+    await expect(criteria.locator('[data-row="coaches"]')).toContainText('표준');
+    await expect(criteria.locator('[data-row="finance"]')).toContainText('표준');
+    await expect(page.getByRole('button', { name: /^코치 기조 · / })).toHaveCount(0);
     await expect(page.getByRole('dialog', { name: '스태프 업무 기준', exact: true })).toHaveCount(
       0,
     );
-    await closeOutcome(page, '방향을 바꿨어요');
-    await openPersonnel(page, 'players');
-    await openPersonnel(page, 'coaches');
-    await page.getByText('스태프 선임 기준', { exact: true }).click();
-    await expect(page.getByRole('button', { name: /^코치 기조 · 최고 수준/ })).toBeVisible();
     // Level 3 hands every department to the staff at once. The settings leave a club section for
     // the clubhouse, so the journey walks back to 코치진 to read it.
     await chooseLevel(page, 3);

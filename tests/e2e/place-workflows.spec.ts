@@ -47,11 +47,13 @@ for (const viewport of [
     await expect(page.getByRole('region', { name: '감독에게 요청', exact: true })).toHaveCount(0);
 
     await openPersonnel(page, 'players');
-    await page.getByRole('button', { name: /^선수단 ·/ }).click();
-    const culture = page.getByRole('dialog', { name: '선수단 업무 기준', exact: true });
+    // The squad's culture reads as founded beside the roster; nothing opens an editor (→ECON-25).
+    const culture = page
+      .getByTestId('direction-areas')
+      .getByRole('region', { name: '선수단', exact: true });
     await expect(culture).toContainText('라커룸 문화');
     await expect(culture).not.toContainText('재계약 기조');
-    await page.keyboard.press('Escape');
+    await expect(page.getByRole('button', { name: /^선수단 ·/ })).toHaveCount(0);
     await openPersonnel(page, 'coaches');
     await expect(page.getByTestId('place-activities-coaching')).toHaveCount(0);
     await expect(page.getByRole('region', { name: '스태프에게 요청', exact: true })).toHaveCount(0);

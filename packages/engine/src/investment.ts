@@ -67,17 +67,3 @@ export function facilityInvestmentPreview(w: World, part: FacilityPart) {
           : `공사비를 바로 지출하고 ${next.days}일 뒤 완공되면 연간 유지비가 늘어요.`,
   };
 }
-
-/** Ticket drafts share the settlement gate model and never change the canonical ticket price. */
-export function ticketInvestmentPreview(w: World, price: number) {
-  if (!Number.isFinite(price) || price < 0.01 || price > 0.5)
-    throw new Error('티켓 기본가격은 0.01–0.5입니다.');
-  const before = gateProjection(w),
-    after = gateProjection({ ...w, ticket: price });
-  return {
-    before,
-    after,
-    netLow: (BigInt(after.incomeLow) - BigInt(after.costLow)).toString(),
-    netHigh: (BigInt(after.incomeHigh) - BigInt(after.costHigh)).toString(),
-  };
-}

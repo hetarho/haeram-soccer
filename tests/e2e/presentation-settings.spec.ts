@@ -18,7 +18,7 @@ import { continueSlot, seedSlot } from './slots';
 import { committedRaw, savedWorld } from './club-identity-helpers';
 import { expectHomeBounds, settle } from './layout';
 import { textContrast } from './contrast';
-import { enterOffice, leaveOffice, openOfficeLibrary } from './office';
+import { enterOffice, leaveOffice, openDirectionInForce } from './office';
 import { openSaveMenu } from './save-menu';
 
 const PREFERENCE_KEY = 'haeram-soccor:presentation';
@@ -659,7 +659,7 @@ test('a failed theme selection retains the usable pack and retries without losin
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBeNull();
 });
 
-test('unseen routed locale and theme change actual resources while game facts, draft and Korean prose stay exact', async ({
+test('unseen routed locale and theme change actual resources while game facts, the section and Korean prose stay exact', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -670,14 +670,13 @@ test('unseen routed locale and theme change actual resources while game facts, d
   const world = (await decode(raw)).world;
   const date = await page.getByTestId('calendar').innerText();
   const sent = await commands(page);
-  await openOfficeLibrary(page);
-  const finance = page.getByRole('region', { name: '재정', exact: true });
-  await finance.getByRole('button', { name: /어디서 벌고/ }).click();
-  await finance.getByRole('radio', { name: '재정 기조 신중', exact: true }).click();
-  const draft = page.getByTestId('strategy-draft');
-  await expect(draft).toContainText('신중');
+  await openDirectionInForce(page);
+  const finance = page
+    .getByTestId('direction-areas')
+    .getByRole('region', { name: '재정', exact: true });
+  await expect(finance.locator('[data-row="finance"]')).toContainText('재정 기조');
   const address = page.url();
-  // The unapplied policy draft remains available across a settings detour (→WEB-39).
+  // The section and its Korean direction remain across a settings detour (→WEB-39).
   await leaveOffice(page);
   await openSettings(page, 'locale');
   await chooseOption(page.getByTestId('presentation-locale'), fixture.locale.id);
@@ -689,9 +688,9 @@ test('unseen routed locale and theme change actual resources while game facts, d
   await closeSettings(page);
   await expect(page.getByTestId('calendar')).toHaveText(date, { useInnerText: true });
   await expect(page.getByTestId('hud-cash')).toContainText('Budget de test');
-  await openOfficeLibrary(page);
+  await openDirectionInForce(page);
   expect(page.url()).toBe(address);
-  await expect(draft).toContainText('신중');
+  await expect(finance.locator('[data-row="finance"]')).toContainText('재정 기조');
   expect(await commands(page)).toBe(sent);
   expect(await committedRaw(page)).toBe(raw);
   await leaveOffice(page);

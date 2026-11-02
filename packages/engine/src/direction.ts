@@ -1,6 +1,5 @@
-import type { Direction, DirectionKey, ManagerStyle, World } from '../../contracts/src/types';
+import type { DirectionKey, ManagerStyle, World } from '../../contracts/src/types';
 import { MANAGER_STYLES, STYLE_INFO } from './styles';
-import { addEvent } from './events';
 
 /**
  * The direction rows the delegated staff follow (→ECON-25): 재계약 기조 (→CLUB-26), 선호 학파 and
@@ -305,23 +304,4 @@ export function directionLine(w: Pick<World, 'direction'>, key: DirectionKey) {
 /** 재정 기조 in force (→ECON-33). */
 export function financeStance(w: Pick<World, 'direction'>): FinanceStance {
   return FINANCE_STANCES[directionOf(w, 'finance')];
-}
-
-/**
- * Sets one direction row (→ECON-25) like a dial: an unknown row or option is refused, an
- * unchanged one records nothing, the default is not stored, and the change is recorded as a
- * policy event naming the option.
- */
-export function setDirection(w: World, key: DirectionKey, option: string) {
-  const info = DIRECTION_INFO[key as DirectionKey];
-  if (!info || !DIRECTION_KEYS.includes(key)) throw new Error('방향 줄을 확인하세요.');
-  const chosen = info.options.find((item) => item.id === option);
-  if (!chosen) throw new Error(`${info.label}의 선택지를 확인하세요.`);
-  if (directionOf(w, key) === option) return;
-  const next: Direction = { ...w.direction };
-  if (option === DIRECTION_DEFAULT[key]) delete next[key];
-  else (next as Record<string, string>)[key] = option;
-  if (Object.keys(next).length) w.direction = next;
-  else delete w.direction;
-  addEvent(w, 'policy', `${info.label} · ${chosen.name}`, chosen.summary);
 }

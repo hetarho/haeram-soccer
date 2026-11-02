@@ -121,10 +121,8 @@ export function ClubFounding({
               value={preset}
               onValueChange={(value) => setPreset(value)}
             >
-              <option
-                value="default"
-                data-hint="모든 줄이 표준 · 창단 뒤 업무 기준에서 언제든 바꿔요"
-              >
+              {/* The club keeps the direction chosen here for the career (→WEB-15). */}
+              <option value="default" data-hint="모든 줄이 표준 · 창단 뒤에는 바꾸지 않아요">
                 기본 방향
               </option>
               {BUILD_PRESETS.map((item) => (

@@ -4,8 +4,7 @@ import { clubOf } from './player-state';
 import { quote } from './quotes';
 import { clamp } from './primitives';
 import { campaignEffectiveness } from './finance';
-import { setPolicy } from './policy';
-import { buildEffects, setBuild } from './build';
+import { buildEffects } from './build';
 import { startFacilityWork } from './facilities';
 import { credit, debit } from './transactions';
 import { delegatedSponsors, signSponsor, sponsorEnding } from './sponsors';
@@ -26,20 +25,10 @@ export {
 } from './sponsors';
 export type { SponsorBonus, SponsorOffer, SponsorSlotView } from './sponsors';
 
-/** Sponsors, campaigns, tickets, facilities, owner capital, the operating dials and strategy. */
+/** Sponsors, campaigns, facilities and owner capital. */
 export type CommercialCommand = Extract<
   Command,
-  {
-    type:
-      | 'sponsor'
-      | 'sign-sponsor'
-      | 'campaign'
-      | 'ticket'
-      | 'facility'
-      | 'support'
-      | 'policy'
-      | 'build';
-  }
+  { type: 'sponsor' | 'sign-sponsor' | 'campaign' | 'facility' | 'support' }
 >;
 /**
  * Daily business (→ECON-21): with business delegated the commercial staff fill empty sponsor
@@ -90,25 +79,12 @@ export function commercialCommand(w: World, cmd: CommercialCommand) {
     case 'sponsor':
       // The single sponsor of rules before 1.16 is signed by slot now (→ECON-8).
       throw new Error('후원은 자리별로 계약해요. 후원 탭에서 자리와 제안을 고르세요.');
-    case 'policy':
-      setPolicy(w, cmd.key, cmd.level);
-      break;
-    case 'build':
-      setBuild(w, cmd.build, cmd.name);
-      break;
     case 'campaign':
       // Campaigns became the 지역 and 글로벌 rows (→ECON-7); one started before still settles.
-      throw new Error('캠페인은 이제 없어요. 방향의 지역·글로벌 부문에서 투자해 주세요.');
+      throw new Error('캠페인은 이제 없어요. 지역·글로벌 투자는 구단 방향을 따라요.');
     case 'facility':
       startFacilityWork(w, cmd.part, (fee) => debit(w, fee));
       break;
-    case 'ticket': {
-      if (!Number.isFinite(cmd.price) || cmd.price < 0.01 || cmd.price > 0.5)
-        throw new Error('티켓 기본가격은 0.01–0.5입니다.');
-      w.ticket = cmd.price;
-      addEvent(w, 'ticket', '티켓 가격 조정', `1901년 기준 기본가격 ${cmd.price} · 현재 물가 반영`);
-      break;
-    }
     case 'support': {
       const limit = buildEffects(w).ownerCapital;
       if (w.events.filter((e) => e.kind === 'support' && e.year === w.year).length >= limit)

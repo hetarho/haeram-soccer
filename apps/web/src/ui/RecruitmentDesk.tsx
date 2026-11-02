@@ -39,8 +39,7 @@ import { OvrBadge } from './OvrBadge';
 import { PositionBadge } from './PositionBadge';
 import { OfferAnswers } from './ClubStaff';
 import { RecruitmentNeeds, ScoutShortlist } from './ScoutShortlist';
-import { openDirection } from './state';
-import { currentStepName } from './board';
+import { DirectionFacts } from './DirectionFacts';
 import { clubDivision } from './league';
 import {
   DEFAULT_MARKET_QUERY,
@@ -1132,18 +1131,8 @@ export function RecruitmentDesk({
               setPanel(undefined);
             }}
           />
-          {/* The recruitment level lives on the operating board (→WEB-71); here it is a line to it. */}
-          <button
-            data-ui="tertiary"
-            type="button"
-            className={s.policyLine}
-            onClick={() => openDirection('scouting')}
-          >
-            <span>
-              영입 기조 · <b>{currentStepName(w, 'recruitment')}</b>
-            </span>
-            <small>업무 기준에서 바꿔요</small>
-          </button>
+          {/* The 영입 area of the club's direction as founded (→ECON-25); it only reads. */}
+          <DirectionFacts w={w} rows={['scouting', 'recruitment', 'recruitmentSupport']} />
           <div data-surface="sheet" className={s.summary}>
             <span>
               선수단 정원 <b>{registered.value}</b>

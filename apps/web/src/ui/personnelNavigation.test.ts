@@ -126,7 +126,6 @@ describe('personnel actions and task continuity', () => {
       values: {
         'market-role': 'DF',
         'market-viewingId': 'candidate-1',
-        'board-draft': { youth: 2 },
       },
     });
     openTraining('academy');
@@ -140,7 +139,6 @@ describe('personnel actions and task continuity', () => {
     expect(useTaskMemory.getState().values).toMatchObject({
       'market-role': 'DF',
       'market-viewingId': 'candidate-1',
-      'board-draft': { youth: 2 },
     });
     expect(useTaskMemory.getState().scrolls['/first-team?view=market']).toBe(76);
     useTaskMemory.getState().activate('another-game');

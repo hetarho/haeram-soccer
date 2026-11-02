@@ -15,9 +15,9 @@ const definitions: FixtureDefinition[] = [
   {
     name: 'founding-and-commercial-decisions',
     input,
+    policy: { localInvest: 3 },
     commands: [
       { type: 'sign-sponsor', slot: 'local', offer: 0 },
-      { type: 'policy', key: 'localInvest', level: 3 },
       { type: 'recruit', candidate: 0, loan: true },
       { type: 'advance', rounds: 5 },
     ],

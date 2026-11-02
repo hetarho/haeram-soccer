@@ -24,7 +24,7 @@ import {
   transferWindow,
   unreadAttention,
 } from './index';
-import { sellPlayer } from './testing';
+import { holdRows, sellPlayer } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { CLOSED, incoming, on, world } from './transfers.testkit';
 
@@ -453,10 +453,10 @@ describe('market identity', () => {
     const balanced = transferOffers(w),
       before = ids(w);
     for (const id of before) expect(id).toMatch(/^market:\d{4}:[0-9a-z]{7}:f?\d+$/);
-    operate(w, { type: 'policy', key: 'recruitment', level: 1 });
+    holdRows(w, { policy: { recruitment: 1 } });
     const prospects = ids(w);
     expect(prospects.filter((id) => before.includes(id))).toEqual([]);
-    operate(w, { type: 'policy', key: 'recruitment', level: 3 });
+    holdRows(w, { policy: { recruitment: 3 } });
     expect(transferOffers(w)).toEqual(balanced);
     w.build = { scouting: 'data' };
     expect(ids(w).filter((id) => [...before, ...prospects].includes(id))).toEqual([]);
@@ -469,7 +469,7 @@ describe('market identity', () => {
     placeBid(w, 2, fee);
     const [bid] = outBids(w);
     expect(bid.offer).toEqual({ player: offer.player, fee: offer.fee, loanFee: offer.loanFee });
-    operate(w, { type: 'policy', key: 'recruitment', level: 5 });
+    holdRows(w, { policy: { recruitment: 5 } });
     expect(ids(w)).not.toContain(offer.player.id);
     expect(bidBoard(w)[0]).toMatchObject({ player: offer.player, asking: offer.fee });
     const cash = BigInt(w.cash);

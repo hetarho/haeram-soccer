@@ -1,18 +1,15 @@
 import { openPersonnel } from './personnel-navigation';
 import { clubhouseTab, openClubRecords, openCups, openLeague } from './competition-navigation';
-import { enterOffice, openOfficeLibrary } from './office';
-import { gameHud } from './layout';
+import { enterOffice, openDirectionInForce } from './office';
 import { marketRows, marketFilters, marketInfo, closeMarketPanel } from './market';
 import { advanceOneRound } from './season-progression';
 import { chooseOption } from './select';
 
 import { expect, test, type Page } from '@playwright/test';
 import { createWorld, simulateSeason } from '../../packages/engine/src/index';
-import { settle } from './layout';
 import { continueSlot, seedSlot } from './slots';
 import {
   clubSections,
-  leaveOffice,
   officeBar,
   operationsTabs,
   TEAM_WORK,
@@ -48,13 +45,13 @@ async function expectSection(page: Page, section: string) {
   await expect(clubhouseTab(page)).toHaveAttribute('aria-current', 'page');
   await expect(officeBar(page)).toHaveCount(0);
 }
-/** 구단 운영 › 재정·투자's whole-club configuration, entered through the club sections (→WEB-110). */
+/** 구단 운영 › 재정·투자's direction in force, entered through the club sections (→WEB-110). */
 async function openOperations(page: Page) {
-  await openOfficeLibrary(page);
-  await expect(page.getByTestId('view-scroller').getByTestId('strategy-board')).toBeVisible();
+  await openDirectionInForce(page);
+  await expect(page.getByTestId('view-scroller').getByTestId('direction-areas')).toBeVisible();
 }
 
-test('contextual-sheet-restores-candidate', async ({ page }) => {
+test('market info reads the 영입 direction and restores the candidate work', async ({ page }) => {
   await found(page);
   await openPersonnel(page, 'market');
   const filter = await marketFilters(page);
@@ -67,18 +64,20 @@ test('contextual-sheet-restores-candidate', async ({ page }) => {
   for (const row of (await marketRows(page).all()).slice(0, 2))
     await row.getByRole('button', { name: / 비교$/ }).click();
   await expect(page.locator('button[aria-label="선택한 2명 비교"]')).toBeEnabled();
-  await marketInfo(page);
-  const trigger = page.getByRole('button', { name: /^영입 기조/ });
   const url = page.url();
-  await trigger.click();
-  const dialog = page.getByRole('dialog', { name: '영입 업무 기준', exact: true });
-  await expect(dialog.getByRole('region', { name: '영입', exact: true })).toBeVisible();
-  await expect(dialog.getByRole('region', { name: '재정', exact: true })).toHaveCount(0);
+  await marketInfo(page);
+  // The 영입 area of the direction founded with reads here; nothing edits it (→ECON-25, WEB-71).
+  const info = page.getByRole('dialog', { name: '영입 정보', exact: true });
+  for (const [row, value] of [
+    ['scouting', '표준'],
+    ['recruitment', '균형'],
+    ['recruitmentSupport', '균형'],
+  ] as const)
+    await expect(info.locator(`[data-row="${row}"]`)).toContainText(value);
+  await expect(info.getByRole('button', { name: /^영입 기조/ })).toHaveCount(0);
+  await expect(page.getByRole('dialog', { name: '영입 업무 기준', exact: true })).toHaveCount(0);
+  await closeMarketPanel(page, '영입 정보');
   expect(page.url()).toBe(url);
-  await dialog.getByRole('radio', { name: '스카우팅 데이터 스카우팅', exact: true }).click();
-  await page.keyboard.press('Escape');
-  await expect(dialog).toHaveCount(0);
-  await expect(trigger).toBeFocused();
   await expect
     .poll(() =>
       marketRows(page).evaluateAll((rows) =>
@@ -87,125 +86,29 @@ test('contextual-sheet-restores-candidate', async ({ page }) => {
     )
     .toEqual(selectedPage);
   await expect(page.locator('button[aria-label="선택한 2명 비교"]')).toBeEnabled();
-  await trigger.click();
-  await dialog
-    .getByTestId('strategy-draft')
-    .getByRole('button', { name: '적용', exact: true })
-    .click();
-  await expect(dialog).toHaveCount(0);
-  await expect(trigger).toBeFocused();
-  // The applied scouting level redraws the candidate list, so its rows may change; the GK filter
-  // and both compared players, kept as their selection-time snapshots, stay (→WEB-43/77).
-  await expect(marketRows(page).first()).toBeVisible();
-  await closeMarketPanel(page, '영입 정보');
   const retainedFilter = await marketFilters(page);
   await expect(
     retainedFilter.getByRole('combobox', { name: '영입 포지션', exact: true }),
   ).toHaveAttribute('data-value', 'line:GK');
   await closeMarketPanel(page, '영입 필터');
-  await marketInfo(page);
-  await expect(page.locator('button[aria-label="선택한 2명 비교"]')).toBeEnabled();
-  expect(page.url()).toBe(url);
-  await trigger.click();
-  await expect(
-    dialog.getByRole('radio', { name: '스카우팅 데이터 스카우팅', exact: true }),
-  ).toHaveAttribute('aria-checked', 'true');
 });
 
-test('department-sheet-preserves-other-drafts', async ({ page }) => {
-  await found(page);
-  await openOperations(page);
-  const finance = page.getByRole('region', { name: '재정', exact: true });
-  await finance.getByRole('button', { name: /어디서 벌고/ }).click();
-  await finance.getByRole('radio', { name: '재정 기조 신중', exact: true }).click();
-  await expect(page.getByTestId('strategy-draft')).toBeVisible();
-  await leaveOffice(page);
-  await openPersonnel(page, 'market');
-  await marketInfo(page);
-  await page.getByRole('button', { name: /^영입 기조/ }).click();
-  const sheet = page.getByRole('dialog', { name: '영입 업무 기준', exact: true });
-  await sheet.getByRole('radio', { name: '스카우팅 데이터 스카우팅', exact: true }).click();
-  await sheet
-    .getByTestId('strategy-draft')
-    .getByRole('button', { name: '적용', exact: true })
-    .click();
-  await expect(sheet).toHaveCount(0);
-  await closeMarketPanel(page, '영입 정보');
-  await openOperations(page);
-  const draft = page.getByTestId('strategy-draft');
-  await expect(draft).toBeVisible();
-  await draft.getByRole('button', { name: /건 변경/ }).click();
-  await expect(draft).toContainText('재정 기조 표준 → 신중');
-  await expect(finance.getByRole('radio', { name: '재정 기조 표준', exact: true })).toHaveAttribute(
-    'aria-checked',
-    'true',
-  );
-  await expect(page.getByTestId('area-summary-scouting')).toContainText('데이터 스카우팅');
-  await draft.getByRole('button', { name: '되돌리기', exact: true }).click();
-  await expect(draft).toHaveCount(0);
-});
-
-test('retains an unapplied academy investment through a detour and discards it explicitly', async ({
-  page,
-}) => {
+test('the academy reads its investment and 유입 방식 as 재정·투자 does', async ({ page }) => {
   await found(page);
   await openPersonnel(page, 'training');
   await openPersonnel(page, 'academy');
-  await page.getByRole('button', { name: /^유소년 투자 · 유입 방식/ }).click();
-  const youth = page.getByRole('region', { name: '유소년', exact: true });
-  await youth.getByRole('radio', { name: '유소년 투자 육성 강화', exact: true }).click();
-  const sheet = page.getByRole('dialog', { name: '유소년 업무 기준', exact: true });
-  await expect(sheet.getByTestId('strategy-draft')).toContainText(
-    '유소년 투자 기본 운영 → 육성 강화',
-  );
-  await page
-    .getByRole('dialog', { name: '유소년 업무 기준', exact: true })
-    .getByRole('button', { name: '창 닫기', exact: true })
-    .click();
+  const line = page.getByTestId('academy-direction');
+  await expect(line).toContainText('유소년 투자 · 유입 방식');
+  await expect(line).toContainText('기본 운영 · 표준');
+  await expect(page.getByRole('button', { name: /^유소년 투자 · 유입 방식/ })).toHaveCount(0);
   await expect(page.getByRole('dialog', { name: '유소년 업무 기준', exact: true })).toHaveCount(0);
-  await expectSection(page, '유소년');
   await openOperations(page);
-  const draft = page.getByTestId('strategy-board').getByTestId('strategy-draft');
-  await expect(draft).toContainText('유소년 투자 기본 운영 → 육성 강화');
-  await expect(
-    youth.getByRole('radio', { name: '유소년 투자 기본 운영', exact: true }),
-  ).toHaveAttribute('aria-checked', 'true');
-  await draft.getByRole('button', { name: '되돌리기', exact: true }).click();
-  await expect(draft).toHaveCount(0);
-  await leaveOffice(page);
-  await openPersonnel(page, 'training');
-  await openOperations(page);
-  await expect(draft).toHaveCount(0);
-});
-
-test('a different game never inherits the first career policy draft', async ({ page }) => {
-  await found(page);
-  await openOperations(page);
-  const youth = page.getByRole('region', { name: '유소년', exact: true });
-  await youth.getByRole('button', { name: /아카데미 아이들을/ }).click();
-  await youth.getByRole('radio', { name: '유소년 투자 육성 강화', exact: true }).click();
-  await expect(page.getByTestId('strategy-draft')).toBeVisible();
-  await leaveOffice(page);
-  await page.getByRole('button', { name: '설정', exact: true }).click();
-  await page
-    .getByRole('dialog', { name: '설정' })
-    .getByRole('button', { name: '게임 슬롯', exact: true })
-    .click();
-  await page
-    .getByTestId('game-slots')
-    .getByRole('listitem', { name: '슬롯 2 · 빈 슬롯' })
-    .getByRole('button', { name: '새 게임' })
-    .click();
-  await page.getByLabel('클럽 이름').fill('Second Workflow Club');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(gameHud(page)).toContainText('Second Workflow Club', {
-    timeout: 30000,
-  });
-  await openOperations(page);
-  await settle(page);
-  await expect(page.getByTestId('strategy-draft')).toHaveCount(0);
-  await expect(page.getByTestId('area-summary-youth')).toContainText('기본 운영');
-  await expect(page.getByRole('button', { name: /^← 돌아가기/ })).toHaveCount(0);
+  const youth = page
+    .getByTestId('direction-areas')
+    .getByRole('region', { name: '유소년', exact: true });
+  await expect(youth.locator('[data-row="academy"]')).toContainText('기본 운영');
+  await expect(youth.locator('[data-row="youth"]')).toContainText('표준');
+  await expect(youth.getByRole('radio')).toHaveCount(0);
 });
 
 for (const viewport of [
@@ -447,80 +350,4 @@ test('chooses a cup once and keeps its archived season through competition and c
   await expect(season).toHaveAttribute('data-value', '1951');
   await expect(page).toHaveURL(/section=cup.*season=1951/);
   await expect(page.getByTestId('cup-season-winner')).toContainText('1951/52');
-});
-
-test('department sheet is readonly in a second tab and restores its task', async ({
-  page,
-  context,
-}) => {
-  await found(page);
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  const viewer = await context.newPage();
-  try {
-    await viewer.setViewportSize({ width: 390, height: 844 });
-    await viewer.goto('/people?view=market');
-    await expect(viewer.getByRole('region', { name: '선수 영입 데스크' })).toBeVisible();
-    await marketInfo(viewer);
-    const trigger = viewer.getByRole('button', { name: /^영입 기조/ });
-    await trigger.click();
-    const sheet = viewer.getByRole('dialog', { name: '영입 업무 기준', exact: true });
-    await expect(sheet).toContainText('읽기 전용 상태에서는 방침을 적용할 수 없어요.');
-    await expect(sheet.getByRole('radio').first()).toBeDisabled();
-    const bounds = await sheet.evaluate((element) => ({
-      width: element.clientWidth,
-      scroll: element.scrollWidth,
-    }));
-    expect(bounds.scroll).toBeLessThanOrEqual(bounds.width + 1);
-    await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
-    await expect(trigger).toBeFocused();
-  } finally {
-    await viewer.close();
-  }
-});
-
-test('recruitment support round-trips between department sheet and full board', async ({
-  page,
-}) => {
-  await found(page);
-  await openPersonnel(page, 'market');
-  await marketInfo(page);
-  const trigger = page.getByRole('button', { name: /^영입 기조/ });
-  const sheet = page.getByRole('dialog', { name: '영입 업무 기준', exact: true });
-  await trigger.click();
-  await expect(
-    sheet.getByRole('radio', { name: '단장·감독 지원 균형', exact: true }),
-  ).toHaveAttribute('aria-checked', 'true');
-  await sheet.getByRole('radio', { name: '단장·감독 지원 단장 우선', exact: true }).click();
-  await sheet
-    .getByTestId('strategy-draft')
-    .getByRole('button', { name: '적용', exact: true })
-    .click();
-  await expect(sheet).toHaveCount(0);
-  await trigger.click();
-  await expect(
-    sheet.getByRole('radio', { name: '단장·감독 지원 단장 우선', exact: true }),
-  ).toHaveAttribute('aria-checked', 'true');
-  await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
-  await closeMarketPanel(page, '영입 정보');
-  await openOperations(page);
-  const board = page.getByTestId('view-scroller').getByTestId('strategy-board');
-  await expect(
-    board.getByRole('radio', { name: '단장·감독 지원 단장 우선', exact: true }),
-  ).toHaveAttribute('aria-checked', 'true');
-  await board.getByRole('radio', { name: '단장·감독 지원 감독 우선', exact: true }).click();
-  await board
-    .getByTestId('strategy-draft')
-    .getByRole('button', { name: '적용', exact: true })
-    .click();
-  await expect(board.getByTestId('strategy-draft')).toHaveCount(0);
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  await page.reload();
-  await openOfficeLibrary(page);
-  await page
-    .getByRole('region', { name: '영입', exact: true })
-    .getByRole('button', { name: /어떤 선수를/ })
-    .click();
-  await expect(
-    page.getByRole('radio', { name: '단장·감독 지원 감독 우선', exact: true }),
-  ).toHaveAttribute('aria-checked', 'true');
 });

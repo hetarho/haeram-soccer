@@ -1,4 +1,3 @@
-import { areaOf } from './areas';
 import { developmentDestination } from './personnelNavigation';
 import { useTaskState } from './taskMemory';
 import { FacilityOverview } from './FacilityOverview';
@@ -34,7 +33,7 @@ import {
 import type { ClientState, GameClient } from '../runtime/client';
 import { PlaceActivities } from './PlaceActivities';
 import { PlayerLink } from './PlayerSheet';
-import { openHome, openStaff, openDirection, type TrainingTab } from './state';
+import { openHome, openStaff, type TrainingTab } from './state';
 import { callLine, playerCallLine } from './teamState';
 import { multiplierLabel } from './PlayerProfile';
 import { ATTRIBUTES } from '../../../../packages/contracts/src/player';
@@ -306,16 +305,15 @@ const shownTerms = (terms: DevelopmentFactor[]) => {
 const termText = (term: DevelopmentFactor) =>
   `${term.applies === 'u21' ? '21세 이하 ' : ''}${times(term.value)}`;
 
-/** Opens where a term is set (→WEB-71); the focus is shown above, on this tab. */
-function openDriver(home: DevelopmentHome, label: string) {
+/**
+ * Opens where a term is set or read (→WEB-71): the focus above, on this tab; the direction's
+ * investment and cards in 재정·투자, where they read as founded (→WEB-14).
+ */
+function openDriver(home: DevelopmentHome) {
   if (home === 'training/training') {
     document
       .getElementById('training-focus')
       ?.scrollIntoView({ block: 'start', behavior: 'smooth' });
-    return;
-  }
-  if (home === 'business/strategy') {
-    openDirection(label === '선수단 투자' ? areaOf('support').key : 'youth');
     return;
   }
   openHome(developmentDestination(home));
@@ -364,7 +362,7 @@ function DevelopmentDrivers({ outlook: { factors, skills } }: { outlook: Outlook
                 <button
                   type="button"
                   aria-label={`${row.label} ${shown.map(termText).join(' · ')} · ${homeName[row.home]}에서 보기`}
-                  onClick={() => openDriver(row.home, row.label)}
+                  onClick={() => openDriver(row.home)}
                 >
                   <span className={s.driverText}>
                     <b>{row.label}</b>

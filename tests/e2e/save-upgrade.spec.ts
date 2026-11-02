@@ -78,6 +78,8 @@ test('recognized legacy gameplay resets on writer activation and new careers rel
   await expect(page.getByRole('button', { name: '클럽 창단' })).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();
   expect(await page.evaluate(() => localStorage.getItem('unrelated-preference'))).toBe('keep');
+  // The device strategy library of earlier versions goes when the writer starts (→SAVE-25).
+  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:strategies'))).toBeNull();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');

@@ -3,7 +3,7 @@ import { RESPONSIBILITY_KEYS } from '../../../../packages/engine/src/responsibil
 import { DIRECTION_AREAS } from './areas';
 import { DESK_AREAS, DESK_RESPONSIBILITIES, OFFICE_DESKS, resolveOffice } from './officeDesks';
 import { useTaskMemory } from './taskMemory';
-import { openOwnerOffice, openDirection, useDepartmentPolicy } from './state';
+import { openOwnerOffice } from './state';
 describe('work desk coverage', () => {
   it('keeps every saved responsibility independent in exactly one relevant desk', () => {
     expect(OFFICE_DESKS).toHaveLength(5);
@@ -35,17 +35,13 @@ describe('work desk coverage', () => {
   );
   it('opens the overview over retained work and forgets it on world replacement', () => {
     useTaskMemory.getState().activate('office-a');
-    const draft = { policy: { support: 4 } };
-    useTaskMemory.setState({ values: { 'board-draft': draft } });
-    openDirection('scouting');
+    useTaskMemory.setState({ values: { 'market-role': 'DF' } });
     openOwnerOffice();
     expect(useTaskMemory.getState().values).toEqual({
-      'board-draft': draft,
+      'market-role': 'DF',
       'office-overview': true,
     });
-    expect(useDepartmentPolicy.getState().request).toEqual({ area: 'scouting' });
     useTaskMemory.getState().activate('office-b');
     expect(useTaskMemory.getState().values).toEqual({});
-    useDepartmentPolicy.getState().close();
   });
 });

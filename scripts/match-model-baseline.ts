@@ -51,6 +51,7 @@ import {
   operate,
   operatingCost,
   OWN_LEAGUE_ENGINE,
+  policyOf,
   prepareMatch,
   quote,
   rating,
@@ -469,7 +470,8 @@ function manage(w: World, season: number) {
         slot: view.slot,
         offer: season % 4 === 0 ? view.offers.length - 1 : 0,
       });
-  if (season === 0) operate(w, { type: 'policy', key: 'localInvest', level: 2 });
+  // The town's investment row, held from the first season as a founded club holds its rows.
+  if (season === 0) w.policy = { ...policyOf(w), localInvest: 2 };
   if (season % 10 === 0 && w.players.filter((p) => p.status === 'active').length < 26)
     operate(w, { type: 'recruit', candidate: 0, loan: true });
   const stand = nextWork(w, 'stadium');

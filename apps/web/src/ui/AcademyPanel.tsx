@@ -13,14 +13,14 @@ import {
 import { LINE_LABEL, lineOf, POSITION_LABEL } from '../../../../packages/engine/src/player';
 import { buildOf, cardOf } from '../../../../packages/engine/src/build';
 import { currentDay, seasonDayLabel, seasonDayOf } from '../../../../packages/engine/src/calendar';
-import { currentStepName } from './board';
 import type { GameClient } from '../runtime/client';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { DecisionOwner } from './DecisionOwner';
-import { DirectionLines } from './DirectionLines';
+import { DirectionFacts } from './DirectionFacts';
+import { rowInForce } from './areas';
 import { directionOption } from '../../../../packages/engine/src/direction';
 import { OvrBadge } from './OvrBadge';
-import { openDirection, openStaff, openFacility } from './state';
+import { openStaff, openFacility } from './state';
 import s from './TrainingView.module.css';
 
 function useActing() {
@@ -39,7 +39,8 @@ function Meter({ value }: { value: number }) {
  * 유소년 (→WEB-70): the academy's prospects by age group — U-17, U-19, U-21 — grow here until
  * promoted or released (→CLUB-16), by the owner or, when the level delegates it, by the youth
  * director's rule (→STAFF-13); the director sets the academy's training focus (→CLUB-31). The
- * academy investment and 유입 방식 are set in 방향 and only named here (→WEB-71).
+ * academy investment and 유입 방식 are the club's direction, set at founding, and only read here
+ * (→ECON-25).
  */
 export function AcademyPanel({
   w,
@@ -76,7 +77,7 @@ export function AcademyPanel({
     summary.intakeDone || today > summary.intakeDay
       ? seasonDayLabel(w.year + 1, seasonDayOf(w.year + 1, 3, 15))
       : `${seasonDayLabel(w.year, summary.intakeDay)} · D-${summary.intakeDay - today}`;
-  const investment = currentStepName(w, 'academy');
+  const investment = rowInForce(w, 'academy').value;
   return (
     <div className={s.stack}>
       {!selected && arrived && arrivedCall && (
@@ -208,21 +209,15 @@ export function AcademyPanel({
             <header className={s.head}>
               <h3>아카데미 운영</h3>
             </header>
-            <button
-              data-ui="link"
-              type="button"
-              className={s.homeLine}
-              onClick={() => openDirection('youth')}
-            >
+            <div className={s.homeLine} data-testid="academy-direction">
               <span>
-                <b>유소년 투자 · 유입 방식은 업무 기준에서</b>
+                <b>유소년 투자 · 유입 방식</b>
                 <small>
-                  지금 {investment} · {cardOf(buildOf(w), 'youth').label} · 반복 운영비와 다음
-                  입단에 반영
+                  {investment} · {cardOf(buildOf(w), 'youth').label} · 창단 때 정한 방향 · 반복
+                  운영비와 다음 입단에 반영
                 </small>
               </span>
-              <span aria-hidden="true">›</span>
-            </button>
+            </div>
             <button
               data-ui="link"
               type="button"
@@ -263,7 +258,7 @@ export function AcademyPanel({
                 auto="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격과 방출을 정하고 알림·결정에 보고해요."
                 owner="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격 추천과 방출 검토를 보고하고, 결정은 직접 해요."
               />
-              <DirectionLines w={w} rows={['youthGoal', 'debut', 'finance']} />
+              <DirectionFacts w={w} rows={['youthGoal', 'debut', 'finance']} />
               <ul className={s.rule}>
                 <li>
                   <b>승격</b>

@@ -40,14 +40,14 @@ import {
   transferOffers,
   yearlyStaff,
 } from './index';
+import { holdRows } from './testing';
 import { world } from './staff.testkit';
 
 describe('coach hiring by 코치 기조 (STAFF-15)', () => {
   const coachOf = (w: World, role: StaffRole) => w.staff!.find((member) => member.role === role);
   const byWage = (a: { wage: string }, b: { wage: string }) =>
     BigInt(a.wage) < BigInt(b.wage) ? -1 : BigInt(a.wage) > BigInt(b.wage) ? 1 : 0;
-  const coaches = (w: World, option: string) =>
-    operate(w, { type: 'direction', key: 'coaches', option });
+  const coaches = (w: World, option: string) => holdRows(w, { direction: { coaches: option } });
   /** The first test seed whose attack candidates satisfy `fits`, so a case never hangs on luck. */
   const seedWhere = (prefix: string, fits: (abilities: number[]) => boolean) =>
     cachedWorld(`seed:${prefix}:${fits}`, () => {
@@ -84,7 +84,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
       .filter((offer) => offer.ability >= 55)
       .sort(byWage)[0];
     expect(cheapest).toBeDefined();
-    // A row set while the owner runs the departments changes nothing until level 3 hands them over.
+    // A row in force while the owner runs the departments changes nothing until level 3 hands them over.
     coaches(w, 'cheap');
     coaches(w, 'standard');
     expect(coachOf(w, 'attack')!.wage).toBe('0');
@@ -224,7 +224,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
     expect(coachOf(season, 'attack')!.id).not.toBe(veteran.id);
   });
 
-  it("a new 코치 기조 fills a volunteer post at once while a contracted coach waits for his contract's end", () => {
+  it("the daily look fills a volunteer post by 코치 기조 while a contracted coach waits for his contract's end", () => {
     // The known matching seed avoids generating 86 full worlds on a cold test cache.
     const w = world('criteria-change-85');
     expect(staffCandidates(w, 'attack').every((offer) => offer.ability < 65)).toBe(true);
@@ -237,11 +237,11 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
     const cheapest = staffCandidates(w, 'attack')
       .filter((offer) => offer.ability >= 45)
       .sort(byWage)[0];
+    // 코치 기조 is held as founded or saved (→STAFF-15); the staff's next daily look acts on it.
     coaches(w, 'cheap');
+    dailyStaff(w);
     expect(coachOf(w, 'attack')!.id).toBe(cheapest.id);
     // A contracted coach is judged only when his contract ends.
-    coaches(w, 'elite');
-    dailyStaff(w);
     expect(coachOf(w, 'defense')!.id).toBe(contracted.id);
     expect(coachPickPreview(w, 'defense').reason).toContain('계약이 끝날 때');
   });
@@ -516,7 +516,7 @@ describe('delegated manager appointment (STAFF-7, STAFF-18)', () => {
       m.id === firefighter.id ? { ...m, style: 'firefighter' as const } : m,
     );
     // 감독 기조's terms of two or three seasons still sign the firefighter for one.
-    operate(w, { type: 'direction', key: 'manager', option: 'young' });
+    holdRows(w, { direction: { manager: 'young' } });
     w.manager.until = w.year + 1;
     w.year++;
     yearlyStaff(w);

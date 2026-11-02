@@ -34,7 +34,7 @@ import {
   simulateSeason,
   sponsorOffers,
 } from './index';
-import { sellPlayer } from './testing';
+import { holdRows, sellPlayer } from './testing';
 import { advanceEconomy } from './economy';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
@@ -121,7 +121,7 @@ describe('earned, auditable club finances', () => {
     expect(gateProjection(expensive).attendanceHigh).toBeLessThan(initial.attendanceLow);
     expect(BigInt(gateProjection(expensive).incomeHigh)).toBeLessThan(BigInt(initial.incomeLow));
     // 주변 투자 lifts home demand while it is paid with the operating costs (→ECON-34).
-    operate(w, { type: 'policy', key: 'localInvest', level: 3 });
+    holdRows(w, { policy: { localInvest: 3 } });
     expect(gateProjection(w).attendanceLow).toBeGreaterThan(initial.attendanceLow);
     expect(BigInt(operatingCosts(w).investment)).toBeGreaterThan(0n);
     // More local supporters fill more seats, up to the catchment.
@@ -185,7 +185,7 @@ describe('earned, auditable club finances', () => {
     const w = cachedWorld('sponsored-8-rounds', () => {
       const w = world();
       operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
-      operate(w, { type: 'policy', key: 'localInvest', level: 2 });
+      holdRows(w, { policy: { localInvest: 2 } });
       for (let round = 0; round < 8; round++) advanceRound(w, undefined, false);
       return w;
     });

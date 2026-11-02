@@ -20,6 +20,7 @@ import {
   STADIUM_STEPS,
   stature,
 } from './index';
+import { holdRows } from './testing';
 
 const world = (seed = 'fans-and-money') =>
   createWorld({
@@ -63,7 +64,7 @@ describe('supporters follow reputation, not the stadium', () => {
     // A stadium for 90,000, the cheapest tickets and every push on the town.
     w.stadium = 8;
     w.ticket = 0.02;
-    operate(w, { type: 'policy', key: 'localInvest', level: 5 });
+    holdRows(w, { policy: { localInvest: 5 } });
     w.localBase = 100;
     const limit = catchment(w);
     expect(limit).toBeLessThan(20_000);

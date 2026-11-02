@@ -22,14 +22,13 @@ import type {
   Event,
 } from '../../../../packages/contracts/src/types';
 import type { Envelope } from '../adapters/repository';
-import { clubBuildSchema, gameSettingsSchema } from '../../../../packages/contracts/src/schema';
+import { gameSettingsSchema } from '../../../../packages/contracts/src/schema';
 import {
   clubIdentitySchema,
   designStudioSchema,
   identityColoursSchema,
   kitRoleSchema,
 } from '../../../../packages/contracts/src/identitySchema';
-import { STRATEGY_NAME_LIMIT } from '../../../../packages/contracts/src/build';
 import type { SAVE_COMPATIBILITY_CODE } from '../../../../packages/contracts/src/versions';
 import {
   assertMatchModelFormat,
@@ -91,20 +90,6 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('next-match') }),
   z.object({ type: z.literal('season'), count: z.literal(1) }),
   z.object({
-    type: z.literal('policy'),
-    key: z.enum([
-      'support',
-      'recruitment',
-      'academy',
-      'localInvest',
-      'grassroots',
-      'globalMarketing',
-      'globalScouting',
-      'tour',
-    ]),
-    level: z.literal([1, 2, 3, 4, 5]),
-  }),
-  z.object({
     type: z.literal('hire-staff'),
     role: staffRole,
     candidate: z.number().int().nonnegative().max(100000),
@@ -114,11 +99,6 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('release-staff'), role: staffRole }),
   z.object({ type: z.literal('renew-staff'), role: staffRole, term: term.optional() }),
   z.object({ type: z.literal('promote-youth'), id: ref }),
-  z.object({
-    type: z.literal('build'),
-    build: clubBuildSchema,
-    name: z.string().trim().min(1).max(STRATEGY_NAME_LIMIT).optional(),
-  }),
   z.object({ type: z.literal('release-youth'), id: ref }),
   z.object({
     type: z.literal('intervention'),
@@ -154,20 +134,6 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('hire'), id: z.string().min(1).max(100), term: term.optional() }),
   z.object({ type: z.literal('renew-manager'), term: term.optional() }),
   z.object({
-    type: z.literal('direction'),
-    key: z.enum([
-      'recruitmentSupport',
-      'renewal',
-      'school',
-      'manager',
-      'coaches',
-      'finance',
-      'youthGoal',
-      'debut',
-    ]),
-    option: z.string().min(1).max(40),
-  }),
-  z.object({
     type: z.literal('contract-offer'),
     player: ref,
     wage: z.string().regex(/^\d{1,40}$/),
@@ -200,7 +166,6 @@ const command = z.discriminatedUnion('type', [
     kind: z.enum(['stable', 'performance', 'exclusive', 'indexed']),
   }),
   z.object({ type: z.literal('facility'), part: z.enum(['stadium', 'training', 'academy']) }),
-  z.object({ type: z.literal('ticket'), price: z.number().min(0.01).max(0.5) }),
   z.object({ type: z.literal('support') }),
   // Strict: the own club is implied, so a club target is refused rather than stripped (→KIT-9).
   z.strictObject({ type: z.literal('club-identity'), identity: clubIdentitySchema }),

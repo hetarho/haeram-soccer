@@ -166,10 +166,10 @@ describe('controller approval overview', () => {
         expect(markup).toMatch(/<button[^>]*disabled=""[^>]*>다음 이벤트/);
       }
       useTaskMemory.getState().activate('overview-test');
-      useTaskMemory.setState({ values: { 'board-draft': { support: 4 } } });
+      useTaskMemory.setState({ values: { 'market-role': 'DF' } });
       openOwnerOffice();
       expect(useTaskMemory.getState().values).toEqual({
-        'board-draft': { support: 4 },
+        'market-role': 'DF',
         'office-overview': true,
       });
       expect(controller.store.getState().running).toBe(true);

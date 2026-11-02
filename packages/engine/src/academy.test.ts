@@ -31,6 +31,7 @@ import {
   youthAdvice,
   FOUNDING_YEAR,
 } from './index';
+import { holdRows } from './testing';
 import { lastRound, world } from './academy.testkit';
 
 /** Runs the intake as the daily club business would on 15 March. */
@@ -361,7 +362,7 @@ describe('육성 목표 and 데뷔 시점 (→CLUB-32)', () => {
   const state = (w: World, player: Player) =>
     academySummary(w).players.find((one) => one.player.id === player.id)!.readiness;
   const row = (w: World, key: 'youthGoal' | 'debut', option: string) =>
-    operate(w, { type: 'direction', key, option });
+    holdRows(w, { direction: { [key]: option } });
 
   it("데뷔 시점 sets readiness and the coaches' focus rules", () => {
     const w = world('debut-rows');

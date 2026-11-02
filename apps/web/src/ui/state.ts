@@ -21,8 +21,6 @@ import { create } from 'zustand';
 import { eventDesk, type ApprovalRequest } from './eventRouting';
 import { QUEUE_RETURN, type QueueReturn } from './approvalOrder';
 import type { StopReason } from '../../../../packages/engine/src/stopping';
-import type { BoardRequest } from './board';
-import type { AreaKey } from './areas';
 import type { StaffRole } from '../../../../packages/contracts/src/types';
 import type { PlayerScope } from './playerAnalysis';
 import type {
@@ -213,20 +211,6 @@ export function openOfficeLobby() {
 export function openOwnerOffice() {
   const memory = useTaskMemory.getState();
   useTaskMemory.setState({ values: { ...memory.values, 'office-overview': true } });
-}
-/** A dial change suggested from elsewhere, for the operating board to open as a draft. */
-export const useBoardRequest = oneShot<BoardRequest>();
-/** A department editor overlays the task without changing its route or return stack. */
-export const useDepartmentPolicy = create<{
-  request?: BoardRequest;
-  open: (request: BoardRequest) => void;
-  close: () => void;
-}>((set) => ({
-  open: (request) => set({ request }),
-  close: () => set({ request: undefined }),
-}));
-export function openDirection(area: AreaKey) {
-  useDepartmentPolicy.getState().open({ area });
 }
 
 /** Explicit action links select their canonical workflow, never the last unrelated subview. */

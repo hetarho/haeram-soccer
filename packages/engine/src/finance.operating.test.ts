@@ -14,7 +14,6 @@ import {
   lastSeasonTurnover,
   leagueShare,
   moneyLabel,
-  operate,
   operatingCost,
   operatingCosts,
   operatingExpensesAt,
@@ -26,7 +25,7 @@ import {
   settleRound,
   SUPPORT_EXPENSES,
 } from './index';
-import { professionalStart } from './testing';
+import { holdRows, professionalStart } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
@@ -151,14 +150,14 @@ describe('operating expenses (→ECON-30)', () => {
 
     // Each round books its share at the factor in force at that settlement; a change acts from the
     // next one and leaves the recorded season amount as it is.
-    operate(w, { type: 'policy', key: 'support', level: 5 });
+    holdRows(w, { policy: { support: 5 } });
     advanceRound(w, undefined, false);
     const first = roundShare(operatingCosts(at(5)).expenses, 1);
     expect(entries(w)).toHaveLength(1);
     expect(entries(w)[0].amount).toBe(first);
     expect(BigInt(first)).toBeGreaterThan(BigInt(roundShare(season, 1)));
     expect(entries(w)[0].detail).toContain('선수단 투자 ×1.2');
-    operate(w, { type: 'policy', key: 'support', level: 1 });
+    holdRows(w, { policy: { support: 1 } });
     advanceRound(w, undefined, false);
     const second = roundShare(operatingCosts(at(1)).expenses, 2);
     expect(entries(w)[0].amount).toBe((BigInt(first) + BigInt(second)).toString());

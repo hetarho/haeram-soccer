@@ -2,7 +2,6 @@ import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import {
-  academyIntakeOutlook,
   activePlayers,
   advanceRound,
   candidateStyles,
@@ -17,7 +16,6 @@ import {
   ownTacticalProfile,
   sponsorOffers,
   startingSquad,
-  staffMember,
   STYLE_INFO,
   synergyEffects,
   synergyStates,
@@ -31,21 +29,24 @@ import {
   BUILD_CARDS,
   BUILD_COMBINATIONS,
   BUILD_PRESETS,
-  applyBoard,
-  matchingPreset,
+  buildOf,
+  DIRECTION_DEFAULT,
+  DIRECTION_KEYS,
+  directionOf,
   POLICY_DEFAULTS,
   POLICY_KEYS,
+  policyOf,
   presetBoard,
-  cardLines,
   composeBuild,
-  effectLines,
   NEUTRAL_BUILD,
 } from './index';
 import { BUILD_OPTIONS, BUILD_SLOTS } from '../../contracts/src/build';
+import type { BuildCard, BuildEffects } from './build';
 import { clubBuildSchema } from '../../contracts/src/schema';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import { holdRows } from './testing';
 
 /** The club on the pre-feature path: strategy cards, not the match model, are the subject. */
 const world = (seed = 'build-cards') =>
@@ -58,6 +59,32 @@ const world = (seed = 'build-cards') =>
       level: 'easy' as const,
     },
     {},
+    DISABLED_RELEASE,
+  );
+/** Which way each card effect helps the club; owner capital is no gain to it (→ECON-22). */
+const HELPS: Partial<Record<keyof BuildEffects, 1 | -1>> = {
+  academyIntake: 1,
+  academyPotential: 1,
+  youthGrowth: 1,
+  marketCandidates: 1,
+  marketPotential: 1,
+  marketAbility: 1,
+  incomingBids: 1,
+  saleFee: 1,
+  sponsor: 1,
+  campaignIncome: 1,
+  marketingFans: 1,
+  localBaseRate: 1,
+  gateDemand: 1,
+  winFans: 1,
+  homeStrength: 1,
+  wage: -1,
+  moraleBaseline: 1,
+};
+/** A club founded with a direction preset (→WEB-15), on the founding day. */
+const founded = (preset: string, seed = `preset-${preset}`) =>
+  createWorld(
+    { country: 'ENG', name: 'Build FC', color: '#2a4d3c', seed, level: 'easy' as const, preset },
     DISABLED_RELEASE,
   );
 
@@ -124,64 +151,44 @@ describe('manager styles', () => {
 });
 
 describe('club builds', () => {
-  it('applies a build at once and records it', () => {
-    const w = world();
-    operate(w, { type: 'build', build: { fans: 'community', culture: 'family' } });
-    expect(w.build).toEqual({ fans: 'community', culture: 'family' });
-    expect(w.events.at(-1)).toMatchObject({
-      kind: 'build',
-      title: '방향 · 맞춤 방향',
-      detail: '지역 밀착 · 가족 같은 클럽',
-    });
-    // The next change applies at once too: there are no locks (→ECON-22).
-    operate(w, { type: 'build', build: { revenue: 'commercial' } });
-    expect(w.build).toEqual({ revenue: 'commercial' });
-    operate(w, { type: 'build', build: { fans: 'community', culture: 'family' } });
-    // Re-sending the same build is not a change.
-    operate(w, { type: 'build', build: { culture: 'family', fans: 'community' } });
-    expect(() => operate(w, { type: 'build', build: { fans: 'nowhere' } as never })).toThrow(
-      '방향 카드',
-    );
-    // The season then plays with that build: the same changes, then 46 rounds, built once.
+  it('plays a season with the build it holds', () => {
+    // The build is held as founded or saved (→ECON-22); 46 rounds are built once.
     const { before, after } = cachedWorld('build-season', () => {
-      const w = world();
-      operate(w, { type: 'build', build: { fans: 'community', culture: 'family' } });
-      operate(w, { type: 'build', build: { revenue: 'commercial' } });
-      operate(w, { type: 'build', build: { fans: 'community', culture: 'family' } });
-      operate(w, { type: 'build', build: { culture: 'family', fans: 'community' } });
-      try {
-        operate(w, { type: 'build', build: { fans: 'nowhere' } as never });
-      } catch {
-        // Refused, as above.
-      }
+      const w = holdRows(world(), { build: { fans: 'community', culture: 'family' } });
       const before = structuredClone(w);
       for (let round = 0; round < 46; round++) advanceRound(w, undefined, false);
       return { before, after: w };
     });
-    expect(canonical(before)).toBe(canonical(w));
+    expect(before.build).toEqual({ fans: 'community', culture: 'family' });
+    expect(after.build).toEqual(before.build);
     validateWorld(after);
   });
 
   it('offers thousands of builds where every card is a trade-off', () => {
     expect(BUILD_COMBINATIONS).toBe(5 ** 6);
+    // Every card has a gain and a cost (→ECON-22), except that 구단주 투자 keeps only its cost
+    // while the owner has no capital action (→ECON-11); owner capital is no gain to the club.
     for (const slot of BUILD_SLOTS)
       for (const option of BUILD_OPTIONS[slot]) {
-        const lines = cardLines((BUILD_CARDS[slot] as Record<string, never>)[option]);
-        expect(lines.pros.length, `${slot}:${option}`).toBeGreaterThan(0);
-        expect(lines.cons.length, `${slot}:${option}`).toBeGreaterThan(0);
+        const { effects } = (BUILD_CARDS[slot] as Record<string, BuildCard>)[option];
+        const signs = (Object.entries(effects) as [keyof BuildEffects, number][]).flatMap(
+          ([name, value]) => {
+            const helps = HELPS[name];
+            if (!helps) return [];
+            return [Math.sign(NEUTRAL_BUILD[name] === 1 ? value - 1 : value) * helps];
+          },
+        );
+        if (slot !== 'revenue' || option !== 'owner')
+          expect(signs, `${slot}:${option}`).toContain(1);
+        expect(signs, `${slot}:${option}`).toContain(-1);
       }
     for (const preset of BUILD_PRESETS)
       expect(clubBuildSchema.parse(preset.build)).toEqual(preset.build);
     expect(new Set(BUILD_PRESETS.map((preset) => JSON.stringify(preset.build))).size).toBe(7);
   });
 
-  it('names the strategy in the history: a saved name, a preset, the standard club or a mix', () => {
-    const saved = world();
-    operate(saved, { type: 'build', build: { youth: 'elite' }, name: '  우리 방식  ' });
-    expect(saved.events.at(-1)!.title).toBe('방향 · 우리 방식');
-    const preset = world();
-    operate(preset, { type: 'build', build: BUILD_PRESETS[0].build });
-    expect(preset.events.at(-1)!.title).toBe(`방향 · ${BUILD_PRESETS[0].label}`);
+  it('names the direction: a preset, the standard club or a mix', () => {
+    expect(buildLabel(BUILD_PRESETS[0].build)).toBe(BUILD_PRESETS[0].label);
     expect(buildLabel({})).toBe('기본 방향');
     expect(buildLabel({ youth: 'elite' })).toBe('맞춤 방향');
   });
@@ -227,7 +234,7 @@ describe('club builds', () => {
     expect(shoestring.wage).toBeCloseTo(0.97 * 0.94);
   });
 
-  it('fills every row with a preset: the rows it names, every other row at its default', () => {
+  it('fills every row with a preset at founding: the rows it names, every other row at its default', () => {
     expect(BUILD_PRESETS.map((preset) => preset.id)).toEqual([
       'local-pride',
       'youth-academy',
@@ -245,11 +252,16 @@ describe('club builds', () => {
           preset.rows.policy?.[key] ?? POLICY_DEFAULTS[key],
         );
       expect(board.ticket).toBe(preset.rows.ticket ?? 0.05);
-      // A world holding the board validates and reads back as the preset.
-      const w = world(`preset-${preset.id}`);
-      applyBoard(w, board, preset.label);
+      // A club founded with it holds the whole board, each row as the engine reads it.
+      const w = founded(preset.id);
       validateWorld(w);
-      expect(matchingPreset(w)?.id).toBe(preset.id);
+      expect(buildOf(w)).toEqual(board.build);
+      expect(policyOf(w)).toEqual(board.policy);
+      expect(w.ticket).toBe(board.ticket);
+      for (const key of DIRECTION_KEYS)
+        expect(directionOf(w, key), `${preset.id}:${key}`).toBe(
+          board.direction[key] ?? DIRECTION_DEFAULT[key],
+        );
     }
     const youth = presetBoard(BUILD_PRESETS.find((preset) => preset.id === 'youth-academy')!);
     expect(youth.policy.academy).toBe(4);
@@ -258,11 +270,6 @@ describe('club builds', () => {
       manager: 'developer',
       coaches: 'elite',
     });
-    // A world off any preset's board matches none.
-    const w = world('preset-none');
-    expect(matchingPreset(w)).toBeUndefined();
-    operate(w, { type: 'build', build: BUILD_PRESETS[2].build });
-    expect(matchingPreset(w)).toBeUndefined();
   });
 
   it('lights 글로벌 스카우팅 with all three conditions and not with two', () => {
@@ -284,24 +291,19 @@ describe('club builds', () => {
 
   it('founds with a preset as its direction; absent stays 기본 방향, unknown is refused', () => {
     const plain = world('founding-direction');
-    const founded = createWorld(
-      {
-        country: 'ENG',
-        name: 'Build FC',
-        color: '#2a4d3c',
-        seed: 'founding-direction',
-        level: 'easy' as const,
-        preset: 'youth-academy',
-      },
-      DISABLED_RELEASE,
-    );
-    expect(matchingPreset(founded)?.id).toBe('youth-academy');
+    const youth = founded('youth-academy', 'founding-direction');
+    expect(buildLabel(buildOf(youth))).toBe('유스 명가');
     // One direction event after the founding facts, none for the rows it implies.
-    const added = founded.events.slice(plain.events.length);
+    const added = youth.events.slice(plain.events.length);
     expect(added.map((event) => event.kind)).toEqual(['build']);
-    expect(added[0].title).toBe('방향 · 유스 명가');
-    validateWorld(founded);
+    expect(added[0]).toMatchObject({
+      title: '방향 · 유스 명가',
+      detail: '엘리트 선발 · 철저한 경쟁',
+    });
+    validateWorld(youth);
     expect(plain.build).toBeUndefined();
+    expect(plain.policy).toBeUndefined();
+    expect(plain.ticket).toBe(0.05);
     expect(plain.direction).toBeUndefined();
     expect(() =>
       createWorld(
@@ -327,9 +329,6 @@ describe('club builds', () => {
     // 지역 상생 speeds the 지역 기반 the rows build (→ECON-34) at a small sponsor cost.
     expect(composeBuild({ fans: 'mutual' })).toMatchObject({ localBaseRate: 1.5, sponsor: 0.95 });
     expect(stacked.wage).toBeCloseTo(0.97);
-    // Opposite cards that cancel out are not listed as a change.
-    const lines = effectLines(composeBuild({ scouting: 'local', culture: 'family' }));
-    expect([...lines.pros, ...lines.cons].some((line) => line.startsWith('선수 급여'))).toBe(false);
     expect(composeBuild({ revenue: 'owner' }).ownerCapital).toBe(5);
     expect(composeBuild({ revenue: 'members' }).ownerCapital).toBe(2);
   });
@@ -386,17 +385,5 @@ describe('build synergies and odds', () => {
     );
     w.direction = { debut: 'early' };
     expect(synergyStates(w).find((synergy) => synergy.id === 'trading-machine')!.active).toBe(true);
-  });
-
-  it('states the exact odds of a golden prospect and raises them with academy investment', () => {
-    const w = world();
-    const base = academyIntakeOutlook(w);
-    expect(base.golden).toBeGreaterThanOrEqual(0);
-    expect(base.golden).toBeLessThanOrEqual(1);
-    w.policy = { support: 3, recruitment: 3, academy: 5 };
-    const elite = academyIntakeOutlook(w);
-    expect(elite.size).toBe(base.size + 2);
-    expect(elite.golden).toBeGreaterThan(base.golden);
-    expect(staffMember(w, 'youth')).toBeDefined();
   });
 });

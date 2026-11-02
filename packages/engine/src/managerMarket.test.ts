@@ -35,6 +35,7 @@ import {
   STYLE_INFO,
   yearlyStaff,
 } from './index';
+import { holdRows } from './testing';
 import { ratio } from './primitives';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
@@ -224,7 +225,7 @@ function resignAtTrustFloor(w: World) {
 }
 /** Sets one direction row (→ECON-25). */
 const row = (w: World, key: 'manager' | 'school' | 'finance', option: string) =>
-  operate(w, { type: 'direction', key, option });
+  holdRows(w, { direction: { [key]: option } });
 /** A rich club with the manager post delegated (level 3) under 감독 기조 and 선호 학파. */
 function delegated(seed: string, manager = 'standard', school = 'any') {
   const w = world(seed);

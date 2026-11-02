@@ -15,6 +15,7 @@ import {
   quote,
   clubOf,
   operatingCost,
+  policyOf,
   FOUNDING_YEAR,
   managerCandidates,
   managerHireCost,
@@ -558,8 +559,9 @@ function playSeasons(
             slot: view.slot,
             offer: n % 4 === 0 ? view.offers.length - 1 : 0,
           });
-      // The town's investment row in place of the outreach campaigns (→ECON-7).
-      if (n === 0) operate(w, { type: 'policy', key: 'localInvest', level: 2 });
+      // The town's investment row in place of the outreach campaigns (→ECON-7), held from the
+      // first season on as a founded club holds its rows: no command changes them (→ECON-16).
+      if (n === 0) w.policy = { ...policyOf(w), localInvest: 2 };
       if (n % 10 === 0 && w.players.filter((p) => p.status === 'active').length < 26)
         operate(w, { type: 'recruit', candidate: 0, loan: true });
       const stand = nextWork(w, 'stadium');

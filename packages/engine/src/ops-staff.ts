@@ -36,25 +36,19 @@ import {
 } from './managerMarket';
 import { MORALE_START } from './morale';
 import { coachDelegated, managerCriteriaOf } from './hiring';
-import { directionLine, setDirection } from './direction';
+import { directionLine } from './direction';
 import { debit } from './transactions';
 import { moneyLabel } from './finance';
 import { INTERVENTION_LEVELS } from './intervention';
 import { isDelegated } from './responsibilities';
 import { legacySettings } from './responsibilities';
 
-/** Managers, coaches, delegation and the staff's criteria. */
+/** Managers, coaches and delegation. */
 export type StaffCommand = Extract<
   Command,
   {
     type:
-      | 'hire'
-      | 'renew-manager'
-      | 'hire-staff'
-      | 'release-staff'
-      | 'renew-staff'
-      | 'intervention'
-      | 'direction';
+      'hire' | 'renew-manager' | 'hire-staff' | 'release-staff' | 'renew-staff' | 'intervention';
   }
 >;
 
@@ -371,12 +365,6 @@ export function staffCommand(w: World, cmd: StaffCommand) {
       // Delegation stays as the level sets it: a delegated department refills the post by 코치
       // 기조 on the daily look (→STAFF-13, STAFF-15).
       releaseStaff(w, cmd.role);
-      break;
-    case 'direction':
-      setDirection(w, cmd.key, cmd.option);
-      // A new 코치 기조 acts at once on a vacancy or a volunteer's post (→STAFF-15).
-      if (cmd.key === 'coaches')
-        for (const role of STAFF_ROLES) if (coachDelegated(w, role)) fillDelegatedPost(w, role);
       break;
     case 'renew-staff':
       renewStaff(w, cmd.role, cmd.term);

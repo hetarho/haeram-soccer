@@ -60,9 +60,6 @@ describe('action outcome summaries', () => {
     expect(describeOutcome({ type: 'renew-staff', role }, before, next)!.note).toContain(
       '선수단 › 스태프',
     );
-    expect(
-      describeOutcome({ type: 'direction', key: 'manager', option: 'young' }, before, next)!.note,
-    ).toContain('이 방향으로');
   });
 
   it('lists only facts that changed and the squad size after a sale', () => {

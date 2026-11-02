@@ -112,8 +112,14 @@ describe('worker command protocol', () => {
     const founded = await h.handle(req('create', -1, { type: 'found', input }));
     const cash = h.world!.cash;
     expect(
-      (await h.handle(req('bad', 0, { type: 'command', command: { type: 'ticket', price: -1 } })))
-        .ok,
+      (
+        await h.handle(
+          req('bad', 0, {
+            type: 'command',
+            command: { type: 'sign-sponsor', slot: 'local', offer: -1 },
+          }),
+        )
+      ).ok,
     ).toBe(false);
     expect(h.world!.cash).toBe(cash);
     expect(h.world!.revision).toBe(0);

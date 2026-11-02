@@ -1,12 +1,10 @@
 import {
   BUILD_OPTIONS,
   BUILD_SLOTS,
-  STRATEGY_NAME_LIMIT,
   type BuildSlot,
   type ClubBuild,
 } from '../../contracts/src/build';
 import type { World } from '../../contracts/src/types';
-import { addEvent } from './events';
 import { BUILD_PRESETS } from './preset-data';
 
 /** Everything the club build changes, as additions or multipliers (→ECON-22). */
@@ -74,28 +72,6 @@ const MULTIPLIED = new Set<keyof BuildEffects>([
   'winFans',
   'wage',
 ]);
-/** How each effect reads on a card, and which direction helps the club. */
-const EFFECT_TEXT: Record<keyof BuildEffects, { label: string; unit?: string; good: 1 | -1 }> = {
-  academyIntake: { label: '유스 입단', unit: '명', good: 1 },
-  academyPotential: { label: '유스 입단 잠재력', good: 1 },
-  youthGrowth: { label: '21세 이하 성장', good: 1 },
-  marketCandidates: { label: '이적시장 후보', unit: '명', good: 1 },
-  marketPotential: { label: '영입 후보 잠재력', good: 1 },
-  marketAbility: { label: '영입 후보 능력', good: 1 },
-  incomingBids: { label: '다른 구단 제안', good: 1 },
-  saleFee: { label: '매각 이적료', good: 1 },
-  sponsor: { label: '새 후원 계약 금액', good: 1 },
-  campaignIncome: { label: '캠페인 수입', good: 1 },
-  marketingFans: { label: '해외 마케팅 팬 증가', good: 1 },
-  localBaseRate: { label: '지역 기반 성장 속도', good: 1 },
-  gateDemand: { label: '홈 관중 수요', good: 1 },
-  winFans: { label: '승리 시 팬 증가', good: 1 },
-  homeStrength: { label: '홈 경기 전력', good: 1 },
-  ownerCapital: { label: '구단주 출자 시즌', unit: '회', good: 1 },
-  wage: { label: '선수 급여', good: -1 },
-  moraleBaseline: { label: '분위기 기준점', good: 1 },
-};
-
 export interface BuildCard {
   label: string;
   /** The football idea behind the card. */
@@ -330,62 +306,3 @@ export function buildEffects(
 }
 /** What 데뷔 시점 빠른 데뷔 adds to the build's effects (→CLUB-32). */
 export const EARLY_DEBUT = { youthGrowth: 1.2, moraleBaseline: -1 } as const;
-
-/** Card lines in the owner's terms: ▲ what it helps, ▼ what it costs. */
-export function effectLines(effects: Partial<BuildEffects>) {
-  const pros: string[] = [],
-    cons: string[] = [];
-  for (const [name, value] of Object.entries(effects) as [keyof BuildEffects, number][]) {
-    const text = EFFECT_TEXT[name],
-      multiplied = MULTIPLIED.has(name),
-      change = multiplied
-        ? value - 1
-        : name === 'ownerCapital'
-          ? value - NEUTRAL_BUILD.ownerCapital
-          : value;
-    // Changes that round away (0.97 × 1.03) read as no change at all.
-    if (Math.abs(change) < (multiplied || name === 'gateDemand' ? 0.005 : 0.05)) continue;
-    const amount = multiplied
-      ? `×${Math.round(value * 100) / 100}`
-      : name === 'gateDemand'
-        ? `${change > 0 ? '+' : '−'}${Math.round(Math.abs(change) * 100)}%`
-        : `${change > 0 ? '+' : '−'}${Math.round(Math.abs(change) * 10) / 10}${text.unit ?? ''}`;
-    (change * text.good > 0 ? pros : cons).push(`${text.label} ${amount}`);
-  }
-  return { pros, cons };
-}
-/** A single card's lines: its effects are changes from neutral. */
-export function cardLines(card: BuildCard) {
-  const effects: Partial<BuildEffects> = { ...card.effects };
-  if (effects.ownerCapital !== undefined)
-    effects.ownerCapital = NEUTRAL_BUILD.ownerCapital + effects.ownerCapital;
-  return effectLines(effects);
-}
-
-/** Valid cards only, standard slots left out. */
-function normalize(build: ClubBuild): ClubBuild {
-  const clean: ClubBuild = {};
-  for (const [slot, option] of Object.entries(build) as [BuildSlot, string | undefined][]) {
-    if (!Object.hasOwn(BUILD_OPTIONS, slot)) throw new Error('방향 부문을 확인하세요.');
-    if (option === undefined) continue;
-    if (!(BUILD_OPTIONS[slot] as readonly string[]).includes(option))
-      throw new Error('방향 카드를 확인하세요.');
-    (clean as Record<string, string>)[slot] = option;
-  }
-  return clean;
-}
-
-/**
- * Applies a direction at once (→ECON-22): cards change at any time, like the dials. `name` is the
- * owner's saved direction (→WEB-61); without it the history names the preset or the mix.
- */
-export function setBuild(w: World, build: ClubBuild, name?: string) {
-  const next = normalize(build);
-  const current = buildOf(w);
-  if (sameBuild(next, current)) return;
-  if (Object.keys(next).length) w.build = next;
-  else delete w.build;
-  const cards = BUILD_SLOTS.filter((slot) => next[slot]).map((slot) => cardOf(next, slot).label);
-  const label = name?.trim().slice(0, STRATEGY_NAME_LIMIT) || buildLabel(next);
-  addEvent(w, 'build', `방향 · ${label}`, cards.join(' · ') || '모든 부문 표준');
-}

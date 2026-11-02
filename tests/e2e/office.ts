@@ -390,13 +390,10 @@ export async function openOfficeArea(page: Page, area: string, options: { timeou
   await officeLobby(page);
 }
 
-/** Whole-club configuration is a secondary disclosure within 구단 운영's investment. */
-export async function openOfficeLibrary(page: Page) {
+/** The direction the club holds, read in 구단 운영's 재정·투자 (→WEB-14, WEB-110). */
+export async function openDirectionInForce(page: Page) {
   await openOperations(page, '재정·투자');
-  const library = page.getByTestId('office-library');
-  if ((await library.getAttribute('open')) === null)
-    await library.locator(':scope > summary').click();
-  await expect(page.getByTestId('strategy-board')).toBeVisible();
+  await expect(page.getByTestId('direction-areas')).toBeVisible();
 }
 
 /** Leaves through a contextual return or the shared primary navigation. */

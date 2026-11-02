@@ -3,7 +3,7 @@ import { careerDate } from '../../packages/engine/src/person-careers';
 import { transferOffers } from '../../packages/engine/src/index';
 import { lineOf } from '../../packages/engine/src/player';
 import { legacySettings } from '../../packages/engine/src/responsibilities';
-import type { Founding, World, Command } from '../../packages/contracts/src/types';
+import type { ClubPolicy, Founding, World, Command } from '../../packages/contracts/src/types';
 import {
   createWorld,
   prepareSeason,
@@ -11,6 +11,7 @@ import {
   simulateSeason,
   operate,
   clubOf,
+  policyOf,
 } from '../../packages/engine/src/index';
 import { currency, priceIndex } from '../../packages/catalogs/src/index';
 import { DISABLED_RELEASE } from './releases';
@@ -21,6 +22,8 @@ export interface FixtureDefinition {
   cupQualification?: boolean;
   currentRules?: boolean;
   setup?: 'announced-player' | 'financial-conflict';
+  /** The dials the club holds as founded (→ECON-16); no command changes them in a career. */
+  policy?: Partial<ClubPolicy>;
   commands: Command[];
   expected?: unknown;
 }
@@ -81,6 +84,7 @@ export function runFixture(definition: FixtureDefinition) {
     };
     detectMediations(w);
   }
+  if (definition.policy) w.policy = { ...policyOf(w), ...definition.policy };
   for (const command of definition.commands) {
     if (command.type === 'advance') for (let i = 0; i < command.rounds; i++) advanceRound(w);
     else if (command.type === 'season') for (let i = 0; i < command.count; i++) simulateSeason(w);

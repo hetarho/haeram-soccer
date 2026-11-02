@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-02T16:10Z | T649 |
+| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-02T16:10Z | T650 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
@@ -518,7 +518,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T649 | remove the 방향 board, strategy changes, saved strategies, dials and ticket price | ECON WEB SAVE ARCH STAFF CLUB LEAGUE | T648 | todo |
 | T650 | remove owner capital and owner-started facility works | ECON CLUB WEB HIST | T649 | todo |
 | T651 | remove coaching encouragement and owner-proposed playing coaches | STAFF PLAYER HIST WEB | T650 | todo |
 | T652 | remove dead commands and every unused piece of code | SAVE KIT LEAGUE WEB ARCH | T651 | todo |
@@ -561,11 +560,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T649 (then T650→T652 in order; then the owner takeover plan, see the next line)
+- implement-task T650 (then T651→T652; then the owner takeover plan, see the next line)
 - after T652: implement-task T653, then in parallel the lanes takeover (T657→T658), owner-economy (T659→T660), traits (T661), start-ui (T662), owner-ui (T663) beside the main-session chain T654→T655→T656; then T664→T665→T666, T667, T668
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261103 T649 done: the club keeps the direction it was founded with. The policy/build/direction/ticket commands, setPolicy/setBuild/setDirection, the policy and ticket previews, the 80+ intake odds and the card display lines are gone; founding installs its preset directly (32 founded worlds identical); the 방향 board, composer, department sheets, direction lines and the device strategy library are deleted (its key removed on writer start); 재정·투자 and the staff/academy/market views read the rows, investment, ticket price and bases read-only. Equivalence digests unchanged; unit 222/1911 green; golden regenerated (contract 47 green); e2e edited for the batch.
 - 261103 T648 done: the manager alone picks the tactic and the XI. The tactics/lineup/accept-condition commands, request scoring and history, setLineup/lineupPreset/selectedLineup, Manager.lastRequest/requestHistory/pending/conflicts, World.requested/lineup (dropped on load), the STAFF-14 request modifiers and the 우리만의 선발 milestone are gone; TacticsTalk, TacticalLab, tacticComparison and PlayerPreparationHost are deleted and the next-match report reads the manager's XI and matchday squad with the kit choice in its own 유니폼 section. Equivalence digests unchanged; unit 223/1936 green; golden regenerated (contract 47 green); e2e edited for the batch.
 - 261103 create-task OWNER@1 WEB@204 ECON@42 WORLD@8 LEAGUE@12 MATCH@47 KIT@8 SAVE@62 HIST@21 CLUB@50 ARCH@27 PLAYER@13 → T653–T668 (foundation T653; lanes takeover, owner-economy, traits, start-ui, owner-ui; main-session T654–T656; integration T664–T666; explore T654, T667, T668); ot03
 - 261103 ideation owner-wealth-and-takeover converted

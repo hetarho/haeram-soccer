@@ -1,4 +1,4 @@
-import { openOfficeLibrary } from './office';
+import { openDirectionInForce } from './office';
 import { watchNext } from './watch';
 import { delegateSales } from './events';
 import { chooseOption, selectOptions } from './select';
@@ -264,9 +264,12 @@ test('founds with a preset as its direction', async ({ page }) => {
   expect(w.build).toEqual({ youth: 'elite', culture: 'meritocracy' });
   expect(w.policy).toMatchObject({ academy: 4, recruitment: 1 });
   expect(w.direction).toMatchObject({ debut: 'early', coaches: 'elite' });
-  // The applied direction remains available in investment's secondary configuration.
-  await openOfficeLibrary(page);
-  await expect(page.getByTestId('current-strategy')).toHaveText('유스 명가');
+  // The club keeps it: 재정·투자 reads it, with no control to change it (→WEB-14, WEB-15).
+  await openDirectionInForce(page);
+  const areas = page.getByTestId('direction-areas');
+  await expect(areas.getByRole('heading', { level: 3 })).toHaveText('구단 방향 · 유스 명가');
+  await expect(areas.locator('[data-row="academy"]')).toContainText('엘리트 아카데미');
+  await expect(areas.getByRole('button')).toHaveCount(0);
 });
 
 test('starts with generous capital and shows a fact-aware guide without changing the save', async ({
@@ -293,7 +296,7 @@ test('starts with generous capital and shows a fact-aware guide without changing
   await expect(
     guide.getByRole('heading', { name: '한 번 눌러 경기로', exact: true }),
   ).toBeVisible();
-  await expect(guide).toContainText('비용과 효과를 먼저 보여주고');
+  await expect(guide).toContainText('창단 때 정한 구단 방향을 따르고');
   await expect(guide.getByText('완료 ✓', { exact: true })).toHaveCount(0);
   const close = guide.getByRole('button', { name: '가이드 확인 마치기', exact: true });
   await settle(page);
