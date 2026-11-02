@@ -76,11 +76,11 @@ describe('milestones from retained club facts', () => {
     validateWorld(w);
   });
 
-  it('requires earned growth instead of a focus change and retains it after a player leaves', () => {
+  it('requires earned growth and retains it after a player leaves', () => {
     const prospectOf = (w: World) => w.players.find((player) => lineOf(player.position) === 'MF')!;
-    // A round of 회복 grows him a little (×0.4), short of the milestone's whole point.
-    const recovered = () =>
-      cachedWorld('growth:recovery', () => {
+    // A round grows him a little, short of the milestone's whole point.
+    const firstRound = () =>
+      cachedWorld('growth:first-round', () => {
         const w = world(),
           prospect = prospectOf(w);
         for (const player of w.players) {
@@ -91,18 +91,15 @@ describe('milestones from retained club facts', () => {
         }
         prospect.born = w.year - 20;
         w.people![prospect.id].born = prospect.born;
-        operate(w, { type: 'coach-training', coach: 'assistant', focus: 'recovery', force: true });
         advanceRound(w, undefined, false);
         return w;
       });
-    let w = recovered();
+    let w = firstRound();
     expect(byId(w, 'player-growth').current).toBeLessThan(1);
-    operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
     expect(byId(w, 'player-growth').done).toBe(false);
-    // The twenty rounds of hard training are setup, the same world built once.
-    w = cachedWorld('growth:hard', () => {
-      const w = recovered();
-      operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
+    // The twenty rounds of the assistant's training are setup, the same world built once.
+    w = cachedWorld('growth:rounds', () => {
+      const w = firstRound();
       for (let round = 0; round < 20; round++) advanceRound(w, undefined, false);
       return w;
     });

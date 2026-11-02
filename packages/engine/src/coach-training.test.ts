@@ -12,22 +12,16 @@ import {
   activePlayers,
   activeTrainingFocus,
   ageGroupOf,
-  advanceRound,
   autoTrainingAdvice,
   createWorld,
   developAcademy,
   focusFor,
-  forceRisk,
   makePlayer,
   operate,
   overall,
-  playerSuggestionWait,
   playerTrainingCall,
   promotionAge,
   staffMember,
-  strainOf,
-  suggestionChance,
-  suggestionWait,
   trainingCall,
   youthAdvice,
   youthFocus,
@@ -58,7 +52,7 @@ function prospect(
   w.academy = { ...w.academy, players: [...academyPlayers(w), player] };
   return player;
 }
-/** A paid assistant: only paid coaches carry strain and can resign. */
+/** A paid assistant, whose departure closes a retained person's employment. */
 function withPaidAssistant(seed: string) {
   const w = world(seed);
   w.cash = '999999999999';
@@ -67,171 +61,44 @@ function withPaidAssistant(seed: string) {
   return w;
 }
 
-describe('the coaches set training; the owner suggests or forces (→CLUB-13, CLUB-31, STAFF-19)', () => {
-  it('follows the rule until a suggestion is accepted, which holds four settled rounds', () => {
+describe('the coaches set training by their own rules (→CLUB-13, CLUB-31)', () => {
+  it("the assistant's squad call is his rule, and a player's is the squad's unless he is tired", () => {
     const w = world();
     const rule = autoTrainingAdvice(w);
-    expect(trainingCall(w, 'assistant')).toMatchObject({ focus: rule.focus, by: 'rule' });
-    // A volunteer (ability 50) accepts what his rule picks 85% of the time, anything else 55%.
-    expect(suggestionChance(w, 'assistant', rule.focus)).toBe(0.85);
-    const other = rule.focus === 'hard' ? 'balanced' : 'hard';
-    expect(suggestionChance(w, 'assistant', other)).toBe(rule.focus === 'recovery' ? 0.3 : 0.55);
-    // Find a round whose draw accepts: the outcome is the world's own, the chance as stated.
-    let accepted = false;
-    for (let attempt = 0; attempt < 20 && !accepted; attempt++) {
-      expect(suggestionWait(w, 'assistant')).toBe(0);
-      operate(w, { type: 'coach-training', coach: 'assistant', focus: other });
-      accepted = w.trainingOrders?.assistant?.focus === other;
-      expect(() =>
-        operate(w, { type: 'coach-training', coach: 'assistant', focus: other }),
-      ).toThrow('라운드 뒤에 다시 제안');
-      if (!accepted) for (let r = 0; r < 2; r++) advanceRound(w, undefined, false);
-    }
-    expect(accepted).toBe(true);
-    expect(trainingCall(w, 'assistant')).toMatchObject({
-      focus: other,
-      by: 'suggestion',
-      rounds: 4,
-    });
-    for (let round = 0; round < 3; round++) {
-      advanceRound(w, undefined, false);
-      expect(activeTrainingFocus(w)).toBe(other);
-    }
-    advanceRound(w, undefined, false);
-    expect(w.trainingOrders?.assistant).toBeUndefined();
-    expect(trainingCall(w, 'assistant').by).toBe('rule');
-    validateWorld(w);
-  });
-
-  it('a forced order holds at once; each one strains a paid coach until he may resign', () => {
-    const w = withPaidAssistant('coach-force');
-    const name = staffMember(w, 'assistant')!.name;
-    const risks: number[] = [];
-    for (let order = 0; order < 8 && staffMember(w, 'assistant'); order++) {
-      risks.push(forceRisk(w, 'assistant'));
-      operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
-      expect(trainingCall(w, 'assistant')).toMatchObject({ focus: 'hard', by: 'order' });
-      if (staffMember(w, 'assistant')) expect(strainOf(w, 'assistant')).toBe(order + 1);
-    }
-    expect(risks).toEqual([0.15, 0.3, 0.45, 0.6, 0.6, 0.6, 0.6, 0.6].slice(0, risks.length));
-    // He left: the post is vacant, the owner is told, and nothing can be suggested to nobody.
-    expect(staffMember(w, 'assistant')).toBeUndefined();
-    expect(w.inbox!.at(-1)).toMatchObject({ kind: 'staff-renewal', attention: true });
-    expect(w.inbox!.at(-1)!.title).toContain(name);
-    expect(() =>
-      operate(w, { type: 'coach-training', coach: 'assistant', focus: 'balanced' }),
-    ).toThrow('비어 있어요');
-    validateWorld(w);
-  });
-
-  it('a volunteer takes every order and never resigns; strain clears with a new season', () => {
-    const w = world('coach-volunteer');
-    for (let order = 0; order < 6; order++) {
-      expect(forceRisk(w, 'assistant')).toBe(0);
-      operate(w, { type: 'coach-training', coach: 'assistant', focus: 'recovery', force: true });
-    }
-    expect(staffMember(w, 'assistant')).toBeDefined();
-    expect(strainOf(w, 'assistant')).toBe(0);
-    const paid = withPaidAssistant('coach-season');
-    operate(paid, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
-    if (staffMember(paid, 'assistant')) {
-      expect(strainOf(paid, 'assistant')).toBe(1);
-      paid.year++;
-      expect(strainOf(paid, 'assistant')).toBe(0);
-      expect(forceRisk(paid, 'assistant')).toBe(0.15);
-    }
-  });
-
-  it('refuses a focus the coach does not set and a coach who sets none', () => {
-    const w = world('coach-refuse');
-    expect(() =>
-      operate(w, { type: 'coach-training', coach: 'assistant', focus: 'firstTeam' }),
-    ).toThrow('훈련 방향');
-    expect(() => operate(w, { type: 'coach-training', coach: 'youth', focus: 'recovery' })).toThrow(
-      '훈련 방향',
-    );
-    expect(() =>
-      operate(w, { type: 'coach-training', coach: 'scout' as never, focus: 'balanced' }),
-    ).toThrow('코치');
-  });
-});
-
-describe('a single player trains on his own focus (→CLUB-11, STAFF-19)', () => {
-  it('suggest for one player', () => {
-    const w = world('coach-player');
-    const [p, other] = activePlayers(w);
-    p!.fatigue = 0;
+    expect(trainingCall(w, 'assistant')).toEqual(rule);
+    expect(activeTrainingFocus(w)).toBe(rule.focus);
+    const p = activePlayers(w)[0]!;
+    p.fatigue = 0;
     const squad = activeTrainingFocus(w);
-    expect(playerTrainingCall(w, p!)).toMatchObject({ focus: squad, by: 'squad' });
-    // Measured against the assistant's call for him: his squad's focus, or 회복 once he is tired.
-    expect(suggestionChance(w, 'assistant', squad, p)).toBe(0.85);
-    p!.fatigue = 45;
-    expect(playerTrainingCall(w, p!)).toMatchObject({ focus: 'recovery', by: 'rule' });
-    expect(suggestionChance(w, 'assistant', 'hard', p)).toBe(0.3);
-    p!.fatigue = 0;
-    const focus = squad === 'hard' ? 'balanced' : 'hard';
-    let accepted = false;
-    for (let attempt = 0; attempt < 20 && !accepted; attempt++) {
-      expect(playerSuggestionWait(w, p!.id)).toBe(0);
-      operate(w, { type: 'coach-training', coach: 'assistant', focus, player: p!.id });
-      accepted = w.trainingOrders?.players?.[p!.id]?.focus === focus;
-      // His wait is his own: the squad and his team-mates can still be suggested to.
-      expect(playerSuggestionWait(w, p!.id)).toBe(2);
-      expect(playerSuggestionWait(w, other!.id)).toBe(0);
-      expect(suggestionWait(w, 'assistant')).toBe(0);
-      expect(() =>
-        operate(w, { type: 'coach-training', coach: 'assistant', focus, player: p!.id }),
-      ).toThrow('라운드 뒤에 다시 제안');
-      if (!accepted) for (let r = 0; r < 2; r++) advanceRound(w, undefined, false);
-    }
-    expect(accepted).toBe(true);
-    expect(w.trainingOrders?.assistant).toBeUndefined();
-    expect(playerTrainingCall(w, p!)).toMatchObject({ focus, by: 'suggestion', rounds: 4 });
-    for (let round = 0; round < 3; round++) {
-      advanceRound(w, undefined, false);
-      expect(focusFor(w, p!)).toBe(focus);
-    }
-    advanceRound(w, undefined, false);
-    expect(w.trainingOrders?.players).toBeUndefined();
-    validateWorld(w);
-    expect(() =>
-      operate(w, { type: 'coach-training', coach: 'youth', focus: 'fundamentals', player: p!.id }),
-    ).toThrow('수석코치');
-    expect(() =>
-      operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', player: 'nobody' }),
-    ).toThrow('1군 선수');
+    expect(playerTrainingCall(w, p)).toMatchObject({ focus: squad, own: false });
+    expect(focusFor(w, p)).toBe(squad);
+    // At 40 he rests whatever the squad does (→CLUB-13's player rule).
+    p.fatigue = 45;
+    expect(playerTrainingCall(w, p)).toMatchObject({ focus: 'recovery', own: true });
+    expect(playerTrainingCall(w, p).reason).toContain('피로도 45');
+    expect(focusFor(w, p)).toBe('recovery');
   });
 
-  it('player order raises strain', () => {
-    const w = withPaidAssistant('coach-player-force');
-    const p = activePlayers(w)[2]!;
-    operate(w, {
-      type: 'coach-training',
-      coach: 'assistant',
-      focus: 'hard',
-      force: true,
-      player: p.id,
-    });
-    expect(w.trainingOrders?.players?.[p.id]).toEqual({ focus: 'hard', rounds: 4, forced: true });
-    expect(w.trainingOrders?.assistant).toBeUndefined();
-    expect(playerTrainingCall(w, p)).toMatchObject({ focus: 'hard', by: 'order' });
-    if (staffMember(w, 'assistant')) expect(strainOf(w, 'assistant')).toBe(1);
-    validateWorld(w);
+  it("the youth director's call is his rule", () => {
+    const w = world('youth-call');
+    expect(trainingCall(w, 'youth')).toEqual(youthAdvice(w));
+    expect(youthFocus(w)).toBe(youthAdvice(w).focus);
   });
 });
 
 describe('the academy by age group (→CLUB-16, CLUB-31)', () => {
   it('groups prospects U-17, U-19 and U-21 and grows the younger faster', () => {
     const w = world('academy-groups');
-    const young = prospect(w, 'CM', 15, 40),
-      middle = prospect(w, 'CM', 17, 40),
-      old = prospect(w, 'CM', 19, 40);
+    const young = prospect(w, 'CM', 15, 10),
+      middle = prospect(w, 'CM', 17, 10),
+      old = prospect(w, 'CM', 19, 10);
     expect([young, middle, old].map((player) => ageGroupOf(w, player))).toEqual([
       'u17',
       'u19',
       'u21',
     ]);
-    w.trainingOrders = { youth: { focus: 'balanced', rounds: 4, forced: true } };
+    // One prospect in each group, all far from the first team: the director trains them 균형.
+    expect(youthFocus(w)).toBe('balanced');
     developAcademy(w);
     const gained = [young, middle, old].map((player) => player.developed || 0);
     expect(gained[0]).toBeGreaterThan(gained[1]);
@@ -274,7 +141,7 @@ describe('the academy by age group (→CLUB-16, CLUB-31)', () => {
   });
 });
 
-it('closes retained coach employment and mentor exposure on resignation before a delegated replacement', () => {
+it('closes retained coach employment and mentor exposure on release before a delegated replacement', () => {
   const w = withPaidAssistant('coach-force'),
     member = staffMember(w, 'assistant')!;
   const source = makePlayer('ENG', w.seed, 'synthetic:retained-resignation', w.year, 55, 'CM', 50);
@@ -296,16 +163,11 @@ it('closes retained coach employment and mentor exposure on resignation before a
   const job = openEmployment(w, person.id, 'assistant', w.playerClub),
     learned = member.ability,
     potential = member.potential;
-  const cash = w.cash,
-    trust = w.manager.trust;
-  for (let i = 0; i < 8 && staffMember(w, 'assistant'); i++)
-    operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
+  operate(w, { type: 'release-staff', role: 'assistant' });
   expect(staffMember(w, 'assistant')).toBeUndefined();
   expect(job.to).toEqual(at);
   expect(person.mentors.at(-1)!.to).toEqual(at);
   expect(person.coaching).toMatchObject({ ability: learned, potential });
-  expect(w.cash).toBe(cash);
-  expect(w.manager.trust).toBe(trust);
   validateWorld(w);
   w.settings!.responsibilities.staff = 'delegated';
   expect(() => dailyStaff(w)).not.toThrow();

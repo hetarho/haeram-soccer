@@ -1,14 +1,23 @@
 import { squadRegistration } from './squadRegistration';
 import { registrationRoom } from '../../../../packages/engine/src/registration';
-import type { World } from '../../../../packages/contracts/src/types';
+import type {
+  Player,
+  TrainingCoach,
+  TrainingFocus,
+  World,
+} from '../../../../packages/contracts/src/types';
 import { lineupSummary } from '../../../../packages/engine/src/strategy';
 import { activePlayers, clubOf, isInjured } from '../../../../packages/engine/src/player-state';
 import { rating, startingSquad } from '../../../../packages/engine/src/world';
 import { MORALE_LABEL, moraleOf, moraleState } from '../../../../packages/engine/src/morale';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import { operatingCosts } from '../../../../packages/engine/src/finance';
-import { academySummary, YOUTH_FOCUS_INFO } from '../../../../packages/engine/src/academy';
-import { trainingCall } from '../../../../packages/engine/src/coach-training';
+import { academySummary } from '../../../../packages/engine/src/academy';
+import {
+  focusLabel,
+  playerTrainingCall,
+  trainingCall,
+} from '../../../../packages/engine/src/coach-training';
 import { marketWage } from '../../../../packages/engine/src/market-prices';
 import { staffMember, STAFF_INFO } from '../../../../packages/engine/src/staff-info';
 import { ownLeagueIds } from './league';
@@ -48,15 +57,32 @@ export function placeAcademy(w: World) {
   };
 }
 
+/**
+ * A coach's own call for his group, read only (→CLUB-13, CLUB-31): the focus he sets by his rule,
+ * that he decides it and why.
+ */
+export function callLine(w: World, coach: TrainingCoach) {
+  const call = trainingCall(w, coach);
+  return { focus: focusLabel(coach, call.focus), by: '코치 판단', reason: call.reason };
+}
+/**
+ * One first-team player's focus, read only (→CLUB-11, CLUB-13): the squad's, or his own when the
+ * assistant's player rule takes him off it; `squad` is the squad's focus when already known.
+ */
+export function playerCallLine(w: World, player: Player, squad?: TrainingFocus) {
+  const call = playerTrainingCall(w, player, squad);
+  return {
+    focus: focusLabel('assistant', call.focus),
+    own: call.own,
+    by: call.own ? '코치 판단' : '팀 훈련',
+    reason: call.reason,
+  };
+}
+
 /** The youth director's own call as the academy place reads it (→WEB-102): who, focus and why. */
 export function youthCall(w: World) {
-  const call = trainingCall(w, 'youth'),
-    role = STAFF_INFO.youth.label;
-  const focus = YOUTH_FOCUS_INFO[call.focus as keyof typeof YOUTH_FOCUS_INFO].label;
-  return {
-    role,
-    fact: `${role} ${staffMember(w, 'youth')?.name ?? '공석'} · ${focus} · ${call.reason}`,
-  };
+  const call = callLine(w, 'youth');
+  return `${STAFF_INFO.youth.label} ${staffMember(w, 'youth')?.name ?? '공석'} · ${call.focus} · ${call.reason}`;
 }
 
 /**

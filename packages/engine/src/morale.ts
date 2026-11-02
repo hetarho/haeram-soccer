@@ -96,7 +96,7 @@ export function settleMorale(w: World) {
   const fatigue = starters.length
     ? starters.reduce((sum, player) => sum + player.fatigue, 0) / starters.length
     : 0;
-  const hard = (w.trainingOrders?.hardStreak ?? 0) >= HARD_STREAK.from ? HARD_STREAK.cost : 0;
+  const hard = (w.hardStreak ?? 0) >= HARD_STREAK.from ? HARD_STREAK.cost : 0;
   const drift =
     (moraleBaseline(w) - w.morale) * 0.15 -
     (fatigue >= 40 ? 2 : 0) -

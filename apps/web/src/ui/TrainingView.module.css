@@ -430,7 +430,7 @@
   white-space: normal;
   text-align: right;
 }
-/* 개별 훈련 and 적응: one row per first-team player. */
+/* 선수별 육성 and 적응: one row per first-team player. */
 .players {
   display: grid;
   gap: 6px;

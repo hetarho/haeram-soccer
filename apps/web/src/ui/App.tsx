@@ -215,7 +215,6 @@ const selectContentWorld = worldSelector([
   'rankHistory',
   'scorerSeason',
   'players',
-  'trainingOrders',
   'manager',
   'lineup',
   'tactic',

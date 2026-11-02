@@ -36,7 +36,6 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
   season: '시즌 끝까지 진행했어요',
   tactics: '감독에게 전술을 요청했어요',
   lineup: '다음 경기 선발을 정했어요',
-  'coach-training': '코치에게 훈련 방향을 전했어요',
   hire: '새 감독을 선임했어요',
   'renew-manager': '감독과 재계약했어요',
   recruit: '선수를 영입했어요',
@@ -75,7 +74,6 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
 };
 const notes: Partial<Record<Command['type'], string>> = {
   lineup: '다음 경기부터 바꿀 때까지 이 선발을 씁니다.',
-  'coach-training': '받아들이거나 지시한 방향은 다음 라운드 정산부터 4라운드 동안 반영돼요.',
   campaign: '4라운드 뒤 실제 수입과 신규 팬이 정산돼요.',
   facility: '완공되는 날부터 효과가 생기고 연간 유지비가 늘어요.',
   ticket: '다음 홈 경기 관중과 입장 수입부터 반영돼요.',

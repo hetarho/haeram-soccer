@@ -225,11 +225,10 @@ describe('place command guard units', () => {
     }
   });
 
-  it('forwards training and academy commands through the existing client unchanged', async () => {
+  it('forwards academy commands through the existing client unchanged', async () => {
     const f = fixture();
     const scoped = placeActivityClient(f.client, f.world, () => true, vi.fn());
     const commands = [
-      { type: 'coach-training', coach: 'youth', focus: 'firstTeam', force: false },
       { type: 'promote-youth', id: 'ready' },
       { type: 'release-youth', id: 'young' },
     ] as const;

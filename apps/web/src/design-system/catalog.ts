@@ -214,8 +214,8 @@ export const STORIES: Story[] = [
     'training',
     '훈련',
     '사람 · 훈련',
-    ['TrainingView', 'TrainingOrderSheet', 'FacilityOverview'],
-    '팀 훈련, 선수별 성장과 구단주 제안.',
+    ['TrainingView', 'FacilityOverview'],
+    '코치가 정한 팀 훈련과 선수별 성장.',
     { page: 'training' },
   ),
   story(

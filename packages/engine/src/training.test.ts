@@ -1,7 +1,7 @@
 import { legacySettings } from './responsibilities';
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import type { Player, TrainingFocus, World } from '../../contracts/src/types';
+import type { Player, TrainingFocus } from '../../contracts/src/types';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { mainOvr, TRAINING_GAIN, weightsFor } from './player';
 import { settleRate } from './adaptation';
@@ -19,7 +19,6 @@ import {
   developmentOutlook,
   focusFor,
   marketWage,
-  operate,
   overall,
   policyOf,
   settleTraining,
@@ -28,12 +27,21 @@ import {
   FOUNDING_YEAR,
 } from './index';
 
+/**
+ * Each focus's fatigue: the assistant's rule trains this young squad in good spirits 하드 below 15,
+ * 회복 from 30 and 균형 between (→CLUB-13), short of the 40 at which he rests a player alone.
+ */
+const TIRED: Record<TrainingFocus, number> = { hard: 10, balanced: 20, recovery: 35 };
+
+/** The founded club, tired as far as makes the assistant train it `focus`. */
 function world(focus: TrainingFocus = 'balanced') {
-  return cachedWorld(`world:${focus}`, () => founded(focus));
+  const w = cachedWorld('world', founded);
+  for (const player of w.players) player.fatigue = TIRED[focus];
+  return w;
 }
 
 /** The club on the pre-feature path: training, not the match model, is the subject. */
-function founded(focus: TrainingFocus) {
+function founded() {
   const w = createWorld(
     {
       country: 'ENG',
@@ -53,19 +61,15 @@ function founded(focus: TrainingFocus) {
     w.people![player.id].born = player.born;
     player.potential = 85;
     for (const a of ATTRIBUTES) player.attrs[a] = 40;
-    // Tired, but short of the 40 at which the assistant rests a player whatever the squad does.
-    player.fatigue = 30;
     player.personality = { ...player.personality, professionalism: 3 };
     w.people![player.id].professionalism = 3;
     // Paid as the market rates them now, so nobody asks for a raise (→CLUB-26).
     player.wage = marketWage(w, player);
   }
-  // The owner holds the focus with an order; the assistant's rule would rest this tired squad.
-  w.trainingOrders = { assistant: { focus, rounds: 4, forced: true } };
   return w;
 }
 
-/** The hard-training world after its first round. */
+/** A fresh world after its first round. */
 const firstRound = () =>
   cachedWorld('hard:round-1', () => {
     const w = world('hard');
@@ -86,65 +90,58 @@ describe('earned player growth and training choices', () => {
     expect(trainingFocusInfo.hard).toMatchObject({ recovery: 6, developmentMultiplier: 1.6 });
   });
 
-  it('settles faster hard development against stronger recovery on the same seeded rounds', () => {
-    /** One round of each world, the owner renewing the order and the fatigue summed after it. */
-    const play = (worlds: World[], sums: number[]) =>
+  it('settles faster hard development against stronger recovery over the same rounds', () => {
+    const focuses = ['balanced', 'hard', 'recovery'] as const,
+      worlds = focuses.map((focus) => world(focus)),
+      recovered = [0, 0, 0];
+    // Six settled rounds, each squad as tired before every one: the same focus all along.
+    for (let round = 1; round <= 6; round++)
       worlds.forEach((w, i) => {
-        // An order holds four rounds; the owner renews it every round here.
-        w.trainingOrders = { assistant: { ...w.trainingOrders!.assistant!, rounds: 4 } };
-        advanceRound(w, undefined, false);
-        sums[i] += fatigue(w);
+        for (const player of w.players) player.fatigue = TIRED[focuses[i]];
+        const before = fatigue(w);
+        w.round = round;
+        settleTraining(w);
+        recovered[i] += before - fatigue(w);
       });
-    // The first five rounds are cached; the sixth is played here.
-    const { worlds, sums } = cachedWorld('six-rounds', () => {
-      const worlds = [world(), world('hard'), world('recovery')],
-        sums = [0, 0, 0];
-      for (let round = 0; round < 5; round++) play(worlds, sums);
-      return { worlds, sums };
-    });
-    play(worlds, sums);
     const [balanced, youth, recovery] = worlds;
-    const fatigueOverRounds = new Map(worlds.map((w, i) => [w, sums[i]]));
     expect(development(youth)).toBeGreaterThan(development(balanced));
     expect(development(balanced)).toBeGreaterThan(0);
     expect(development(recovery)).toBeGreaterThan(0);
     expect(development(balanced)).toBeGreaterThan(development(recovery));
-    expect(fatigue(youth)).toBeGreaterThan(fatigue(balanced));
-    expect(fatigueOverRounds.get(youth)).toBeGreaterThan(fatigueOverRounds.get(balanced)!);
-    expect(fatigueOverRounds.get(balanced)).toBeGreaterThan(fatigueOverRounds.get(recovery)!);
-    for (const w of [balanced, youth, recovery]) validateWorld(w);
+    // 하드 recovers 6 a round, 균형 11 and 회복 16 (→CLUB-11).
+    expect(recovered[0]).toBeGreaterThan(recovered[1]);
+    expect(recovered[2]).toBeGreaterThan(recovered[0]);
+    // Rounds were set by hand; back on the calendar's round the worlds validate.
+    for (const w of [balanced, youth, recovery]) {
+      w.round = 0;
+      validateWorld(w);
+    }
   });
 
-  it('makes summaries, repeated focus changes and idle days grant no player growth or recovery', () => {
+  it('makes summaries, settling before the first round and idle days grant no growth or recovery', () => {
     const w = world(),
       before = canonical(w.players);
     const readBefore = canonical(w);
     expect(trainingSummary(w).focus).toBe('balanced');
     expect(trainingSummary(w).players[0].nextGain).toBeGreaterThan(0);
     expect(canonical(w)).toBe(readBefore);
-    for (const focus of ['hard', 'recovery', 'balanced', 'hard'] as const) {
-      operate(w, { type: 'coach-training', coach: 'assistant', focus, force: true });
-      settleTraining(w);
-    }
+    settleTraining(w);
     advanceDays(w, 6, undefined, false);
     expect(w.round).toBe(0);
     expect(canonical(w.players)).toBe(before);
     expect(w.trainingAt).toBeUndefined();
-    expect(w.events.filter((event) => event.kind === 'training-focus')).toHaveLength(4);
   });
 
-  it('prevents a focus change or duplicate boundary from awarding extra growth or recovery', () => {
+  it('prevents a duplicate boundary from awarding extra growth or recovery', () => {
     const w = firstRound();
     const before = canonical(w.players);
     settleTraining(w);
-    expect(canonical(w.players)).toBe(before);
-    operate(w, { type: 'coach-training', coach: 'assistant', focus: 'recovery', force: true });
     settleTraining(w);
     expect(canonical(w.players)).toBe(before);
     expect(w.trainingAt).toBe(`${FOUNDING_YEAR}:1`);
     advanceRound(w, undefined, false);
     expect(development(w)).toBeGreaterThan(0);
-    // The forced 회복 round still grows a little (×0.4, →CLUB-11).
+    // The next round grows them again, whatever the assistant chose for it (→CLUB-11).
     expect(development(w)).toBeGreaterThan(
       JSON.parse(before).reduce(
         (sum: number, player: { developed?: number }) => sum + (player.developed || 0),
@@ -169,9 +166,9 @@ describe('earned player growth and training choices', () => {
 
   it('accepts older saves without fields and lets the assistant pick at the next round', async () => {
     const old = world();
-    delete old.trainingOrders;
+    delete old.hardStreak;
     for (const player of old.players) player.fatigue = 0;
-    expect(old.trainingOrders).toBeUndefined();
+    expect(old.hardStreak).toBeUndefined();
     expect(old.trainingAt).toBeUndefined();
     expect(old.players.every((player) => player.developed === undefined)).toBe(true);
     const restored = (await decode(await encode(old, 1, 0))).world;
@@ -286,9 +283,7 @@ describe('earned player growth and training choices', () => {
       for (const value of [...ATTRIBUTES.map((a) => player.attrs[a]), player.developed || 0])
         expect(value * 100).toBeCloseTo(Math.round(value * 100), 8);
     }
-    expect(
-      w.events.filter((event) => event.kind !== 'founding' && event.kind !== 'training-focus'),
-    ).toEqual([]);
+    expect(w.events.filter((event) => event.kind !== 'founding')).toEqual([]);
   });
 
   it('developmentOutlook multiplies the same terms a settled round uses', () => {
@@ -389,7 +384,8 @@ describe('earned player growth and training choices', () => {
     expect(new Set(growing.map((entry) => entry.gap)).size).toBeGreaterThan(2);
   });
 
-  it('validates the saved training command at the worker boundary and rejects invalid plans', () => {
+  it('rejects the withdrawn training command at the worker boundary and invalid growth', () => {
+    // The owner no longer suggests or forces a focus (→STAFF-19 withdrawn, →CLUB-13).
     const input = {
       protocol: 1,
       session: 'training',
@@ -402,16 +398,7 @@ describe('earned player growth and training choices', () => {
         command: { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true },
       },
     };
-    expect(requestSchema.parse(input).body).toEqual(input.body);
-    expect(() =>
-      requestSchema.parse({
-        ...input,
-        body: {
-          type: 'command',
-          command: { type: 'coach-training', coach: 'assistant', focus: 'instant' },
-        },
-      }),
-    ).toThrow();
+    expect(() => requestSchema.parse(input)).toThrow();
     const w = world();
     w.players[0].developed = 501;
     expect(() => validateWorld(w)).toThrow();
@@ -423,54 +410,23 @@ describe('training per player, its costs and growth (→CLUB-11, CLUB-23, PLAYER
   const twins = (focus: TrainingFocus = 'balanced') => [world(focus), world(focus)] as const;
   const cm = (w: ReturnType<typeof world>) => w.players.find((p) => p.position === 'CM')!;
 
-  it("own focus beats the squad's", () => {
-    const [w, same] = twins();
-    const p = cm(w);
-    w.trainingOrders!.players = { [p.id]: { focus: 'hard', rounds: 4, forced: true } };
-    expect(focusFor(w, p)).toBe('hard');
-    expect(
-      focusFor(
-        w,
-        w.players.find((other) => other.id !== p.id)!,
-      ),
-    ).toBe('balanced');
-    for (const one of [w, same]) {
-      one.round = 1;
-      settleTraining(one);
-    }
-    const twin = cm(same);
-    // 하드 recovers 6 a round against 균형's 11, and grows ×1.6.
-    expect(p.fatigue - twin.fatigue).toBe(5);
-    expect(p.developed!).toBeGreaterThan(twin.developed!);
-    expect(w.trainingOrders!.players![p.id]!.rounds).toBe(3);
-    // Rounds were set by hand; back on the calendar's round the saved orders validate.
-    w.round = 0;
-    validateWorld(w);
-  });
-
   it('player rule rests the tired', () => {
     const w = world('hard'),
       p = cm(w),
       fresh = w.players.find((other) => other.id !== p.id)!;
     p.fatigue = 45;
-    // The owner forced 하드 on the squad; the assistant still rests a player at 40+.
+    // The squad trains 하드; the assistant still rests a player at 40+.
     expect(focusFor(w, p)).toBe('recovery');
     expect(focusFor(w, fresh)).toBe('hard');
     w.round = 1;
     settleTraining(w);
     expect(p.fatigue).toBe(45 - 16);
-    expect(fresh.fatigue).toBe(30 - 6);
+    expect(fresh.fatigue).toBe(TIRED.hard - 6);
+    // 회복 grows him less than his team-mates' 하드 (×0.4 against ×1.6).
+    expect(p.developed!).toBeLessThan(fresh.developed!);
     // The summary names him as resting by the assistant's rule.
     p.fatigue = 45;
-    expect(trainingSummary(w).own).toEqual([
-      { player: p, focus: 'recovery', by: 'rule', rounds: 0 },
-    ]);
-    // An order for him outranks the rule.
-    w.trainingOrders = { players: { [p.id]: { focus: 'balanced', rounds: 4 } } };
-    expect(focusFor(w, p)).toBe('balanced');
-    expect(trainingSummary(w).own).toMatchObject([
-      { focus: 'balanced', by: 'suggestion', rounds: 4 },
-    ]);
+    expect(trainingSummary(w).own).toEqual([{ player: p, focus: 'recovery' }]);
   });
 
   it('hard training injures', () => {
@@ -479,11 +435,7 @@ describe('training per player, its costs and growth (→CLUB-11, CLUB-23, PLAYER
     const [hard, balanced] = [world('hard'), world('balanced')];
     for (const w of [hard, balanced])
       for (let round = 1; round <= 60; round++) {
-        w.trainingOrders = {
-          ...w.trainingOrders,
-          assistant: { focus: w === hard ? 'hard' : 'balanced', rounds: 4, forced: true },
-        };
-        for (const p of w.players) p.fatigue = 30;
+        for (const p of w.players) p.fatigue = TIRED[w === hard ? 'hard' : 'balanced'];
         w.round = round;
         settleTraining(w);
       }
@@ -546,7 +498,6 @@ describe('training per player, its costs and growth (→CLUB-11, CLUB-23, PLAYER
     cm(twin).adaptation = 0.85;
     for (const one of [w, twin])
       for (let round = 1; round <= 8; round++) {
-        one.trainingOrders = { assistant: { focus: 'hard', rounds: 4, forced: true } };
         one.round = round;
         settleTraining(one);
       }

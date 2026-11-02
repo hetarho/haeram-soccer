@@ -42,7 +42,6 @@ import { debit } from './transactions';
 import { moneyLabel } from './finance';
 import { INTERVENTION_LEVELS } from './intervention';
 import { isDelegated } from './responsibilities';
-import { orderTraining } from './coach-training';
 import { legacySettings } from './responsibilities';
 
 /** Managers and their tactical requests, coaches, delegation and the staff's criteria. */
@@ -58,7 +57,6 @@ export type StaffCommand = Extract<
       | 'release-staff'
       | 'renew-staff'
       | 'intervention'
-      | 'coach-training'
       | 'direction';
   }
 >;
@@ -464,9 +462,6 @@ export function staffCommand(w: World, cmd: StaffCommand) {
       break;
     case 'renew-manager':
       renewManager(w, cmd.term);
-      break;
-    case 'coach-training':
-      orderTraining(w, cmd.coach, cmd.focus, !!cmd.force, cmd.player);
       break;
     case 'intervention':
       if (!INTERVENTION_LEVELS.includes(cmd.level)) throw new Error('개입 수준을 확인하세요.');

@@ -57,8 +57,9 @@ describe('adaptation moves with starts, managers and stays (→PLAYER-4, PLAYER-
   it('bench gains nothing', () => {
     const w = world('bench');
     at(w, 0.6);
-    // The squad trains 균형 by order, so the round's training gain is known for everyone.
-    w.trainingOrders = { assistant: { focus: 'balanced', rounds: 4, forced: true } };
+    // From 10, the match leaves the XI past the assistant's 하드 line and short of his 회복 one:
+    // the squad trains 균형, so the round's training gain is known for everyone.
+    for (const p of activePlayers(w)) p.fatigue = 10;
     advanceRound(w, undefined, false);
     const played = new Set(w.ownMatches.at(-1)!.players.map((p) => p.id));
     expect(played.size).toBe(11);

@@ -1,5 +1,5 @@
 import { Money } from './Money';
-import { placeAcademy } from './teamState';
+import { callLine, placeAcademy, playerCallLine } from './teamState';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import { registrationRoom } from '../../../../packages/engine/src/registration';
 import { useTaskState } from './taskMemory';
@@ -20,14 +20,7 @@ import { DecisionOwner } from './DecisionOwner';
 import { DirectionLines } from './DirectionLines';
 import { directionOption } from '../../../../packages/engine/src/direction';
 import { OvrBadge } from './OvrBadge';
-import {
-  openDirection,
-  openCoachSheet,
-  openStaff,
-  openFacility,
-  usePlayerPreparation,
-} from './state';
-import { callLine } from './TrainingOrderSheet';
+import { openDirection, openStaff, openFacility, usePlayerPreparation } from './state';
 import s from './TrainingView.module.css';
 
 function useActing() {
@@ -66,6 +59,7 @@ export function AcademyPanel({
     undefined,
   );
   const arrived = w.players.find((person) => person.id === promoted && person.status === 'active');
+  const arrivedCall = arrived && playerCallLine(w, arrived);
   const summary = placeAcademy(w);
   const club = clubOf(w);
   const groups = selected
@@ -85,17 +79,14 @@ export function AcademyPanel({
   const investment = currentStepName(w, 'academy');
   return (
     <div className={s.stack}>
-      {!selected && arrived && (
+      {!selected && arrived && arrivedCall && (
         <section data-surface="panel" className={s.card} aria-label="승격한 선수 관리">
           <h3>1군에 합류했어요</h3>
           <PlayerLink id={arrived.id} name={arrived.name} />
+          <p className={s.timing} data-testid="arrived-training">
+            1군 훈련 {arrivedCall.focus} · {arrivedCall.by}
+          </p>
           <div className={s.filters}>
-            <button
-              type="button"
-              onClick={() => openCoachSheet('assistant', undefined, arrived.id)}
-            >
-              이 선수 훈련 보기
-            </button>
             <button type="button" onClick={() => usePlayerPreparation.getState().open(arrived.id)}>
               다음 경기 선발·전술 준비
             </button>
@@ -309,9 +300,8 @@ export function AcademyPanel({
 }
 
 /**
- * The academy's training focus the youth director sets (→CLUB-31): who set it and why, each
- * focus's effect by age group read only, and a line opening his card to suggest or force
- * (→STAFF-19).
+ * The academy's training focus the youth director sets by his rule (→CLUB-31), read only: why,
+ * the 데뷔 시점 and 육성 목표 he works to, and each focus's effect by age group.
  */
 function YouthTraining({ w }: { w: World }) {
   const call = callLine(w, 'youth'),
@@ -327,22 +317,10 @@ function YouthTraining({ w }: { w: World }) {
       <p data-surface="inset" className={s.advice}>
         {call.reason}
       </p>
-      <button
-        data-ui="link"
-        type="button"
-        className={s.homeLine}
-        onClick={() => openCoachSheet('youth')}
-      >
-        <span>
-          <b>유스 디렉터에게 훈련 제안·강행</b>
-          <small>받아들이면 4라운드 · 강행하면 사임 위험이 있어요</small>
-        </span>
-        <span className={s.chevron} aria-hidden="true">
-          ›
-        </span>
-      </button>
       <p className={s.timing}>
-        다음 라운드 정산부터 반영해요. 입단 예정일과 유입 방침은 아카데미 운영에서 확인하세요.
+        라운드 정산마다 유스 디렉터가 데뷔 시점 {directionOption(w, 'debut').name} · 육성 목표{' '}
+        {directionOption(w, 'youthGoal').name}에 맞춰 다시 정해요. 입단 예정일과 유입 방침은
+        아카데미 운영에서 확인하세요.
       </p>
       <details data-ui="disclosure" className={s.reference}>
         <summary>유소년 훈련 효과·판단 기준</summary>

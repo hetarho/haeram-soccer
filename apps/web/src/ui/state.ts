@@ -23,12 +23,7 @@ import { QUEUE_RETURN, type QueueReturn } from './approvalOrder';
 import type { StopReason } from '../../../../packages/engine/src/stopping';
 import type { BoardRequest } from './board';
 import type { AreaKey } from './areas';
-import type {
-  StaffRole,
-  TrainingCoach,
-  TrainingFocus,
-  YouthFocus,
-} from '../../../../packages/contracts/src/types';
+import type { StaffRole } from '../../../../packages/contracts/src/types';
 import type { PlayerScope } from './playerAnalysis';
 import type {
   ManagerHistoryPage,
@@ -210,16 +205,6 @@ export const usePeopleView = oneShot<'candidates'>();
 if (arrival?.market) usePeopleView.getState().open('candidates');
 /** An office view asked for while the office is showing; from elsewhere the address carries it. */
 export const useBusinessView = oneShot<OfficeView>();
-/**
- * A coach's training sheet asked for from elsewhere (훈련's own rows, the academy, a player),
- * for 훈련 to open with the focus ready to suggest (→STAFF-19): the squad's, the academy's or one
- * player's.
- */
-export const useCoachRequest = oneShot<{
-  coach: TrainingCoach;
-  focus?: TrainingFocus | YouthFocus;
-  player?: string;
-}>();
 /** The entry to the owner office's 결재함 (→WEB-10/39): the clubhouse entrance and the controller. */
 export function openOfficeLobby() {
   openBusiness('lobby');
@@ -228,17 +213,6 @@ export function openOfficeLobby() {
 export function openOwnerOffice() {
   const memory = useTaskMemory.getState();
   useTaskMemory.setState({ values: { ...memory.values, 'office-overview': true } });
-}
-/** Opens 훈련 (유소년 for the youth director) on a coach's training sheet (→WEB-70). */
-export function openCoachSheet(
-  coach: TrainingCoach,
-  focus?: TrainingFocus | YouthFocus,
-  player?: string,
-) {
-  const destination = personnelHome(coach === 'youth' ? 'academy' : 'training');
-  beginTaskDetour(destination.page, personnelAddress(destination));
-  useCoachRequest.getState().open({ coach, focus, player });
-  openTraining(coach === 'youth' ? 'academy' : 'training');
 }
 /** A dial change suggested from elsewhere, for the operating board to open as a draft. */
 export const useBoardRequest = oneShot<BoardRequest>();
@@ -340,7 +314,6 @@ export function activateTaskWorld(world: string) {
     useNavigation.getState().replacePage('dashboard');
   if (previous && previous !== world) {
     usePeopleView.getState().take();
-    useCoachRequest.getState().take();
     useStaffRequest.getState().take();
     useContractTalk.getState().close();
     useCupRequest.getState().take();

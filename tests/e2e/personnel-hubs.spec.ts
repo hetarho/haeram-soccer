@@ -103,9 +103,10 @@ for (const viewport of [
     await openPersonnel(page, 'training');
     await expect(page).toHaveURL(/training$/);
     await expect(page.getByTestId('training-focus')).toBeVisible();
-    // 훈련 opens on its own workflow: the focus and the coach's suggestion, no office-return bar.
+    // 훈련 opens on its own read: the assistant's focus, no office-return bar and no owner action.
     await expect(page.locator('[data-ui="office-bar"]')).toHaveCount(0);
-    await expect(page.getByRole('button', { name: /수석코치에게 훈련 제안·강행/ })).toBeVisible();
+    await expect(page.getByTestId('training-advice')).toBeVisible();
+    await expect(page.getByRole('button', { name: /훈련 제안·강행/ })).toHaveCount(0);
     // From the market a section opens through the office, entered by the clubhouse's illustrated
     // entrance, so browser back returns to the office's queue; it has no room doors (→WEB-10/39).
     await page.goBack();

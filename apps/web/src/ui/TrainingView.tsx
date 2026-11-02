@@ -1,14 +1,8 @@
 import { areaOf } from './areas';
 import { developmentDestination } from './personnelNavigation';
 import { useTaskState } from './taskMemory';
-import { useEffect } from 'react';
 import { FacilityOverview } from './FacilityOverview';
-import type {
-  TrainingCoach,
-  TrainingFocus,
-  World,
-  YouthFocus,
-} from '../../../../packages/contracts/src/types';
+import type { TrainingFocus, World } from '../../../../packages/contracts/src/types';
 import {
   activeTrainingFocus,
   developmentOutlook,
@@ -23,7 +17,6 @@ import {
   AUTO_PLAYER_RECOVERY,
   AUTO_RECOVERY_FATIGUE,
 } from '../../../../packages/engine/src/staff-info';
-import { playerSuggestionWait } from '../../../../packages/engine/src/coach-training';
 import { settleRate } from '../../../../packages/engine/src/adaptation';
 import { TRAINING_INJURY } from '../../../../packages/engine/src/careers';
 import { HARD_STREAK } from '../../../../packages/engine/src/morale';
@@ -41,8 +34,8 @@ import {
 import type { ClientState, GameClient } from '../runtime/client';
 import { PlaceActivities } from './PlaceActivities';
 import { PlayerLink } from './PlayerSheet';
-import { openHome, openStaff, openDirection, useCoachRequest, type TrainingTab } from './state';
-import { callLine, playerCallLine, TrainingOrderSheet } from './TrainingOrderSheet';
+import { openHome, openStaff, openDirection, type TrainingTab } from './state';
+import { callLine, playerCallLine } from './teamState';
 import { multiplierLabel } from './PlayerProfile';
 import { ATTRIBUTES } from '../../../../packages/contracts/src/player';
 import s from './TrainingView.module.css';
@@ -69,56 +62,17 @@ function focusEffect(focus: TrainingFocus, recoveryBonus: number) {
   };
 }
 
-/** A coach's training sheet: for the squad, the academy, or one first-team player. */
-type Sheet = { coach: TrainingCoach; focus?: TrainingFocus | YouthFocus; player?: string };
-
-/** Independently composed training bodies retain one training-sheet host. */
+/** 훈련 or 유소년: the coaches' training read where it happens (→WEB-70). */
 export function TrainingView({ state, client, view }: Props & { view: TrainingTab }) {
-  const w = state.view!.world;
-  // A coach's sheet asked for from elsewhere opens once, in its own view.
-  const coachRequest = useCoachRequest((view) => view.request);
-  const [sheet, setSheet] = useTaskState<Sheet | undefined>(
-    w.id,
-    `training-sheet-${view}`,
-    undefined,
-  );
-  useEffect(() => {
-    if (!coachRequest || (coachRequest.coach === 'youth') !== (view === 'academy')) return;
-    setSheet(coachRequest);
-    useCoachRequest.getState().take();
-  }, [coachRequest, setSheet, view]);
-  const sheetPlayer = sheet?.player
-    ? activePlayers(w).find((player) => player.id === sheet.player)
-    : undefined;
-  return (
-    <>
-      {view === 'training' ? (
-        <FirstTeamTraining state={state} onSheet={setSheet} />
-      ) : (
-        <AcademyTraining state={state} client={client} />
-      )}
-      {sheet && (!sheet.player || sheetPlayer) && (
-        <TrainingOrderSheet
-          w={w}
-          client={client}
-          coach={sheet.coach}
-          ready={sheet.focus}
-          player={sheetPlayer}
-          onClose={() => setSheet(undefined)}
-        />
-      )}
-    </>
+  return view === 'training' ? (
+    <FirstTeamTraining state={state} />
+  ) : (
+    <AcademyTraining state={state} client={client} />
   );
 }
 
 /** First-team training and academy can compose independently without copying their actions. */
-export function FirstTeamTraining({
-  state,
-  onSheet,
-}: {
-  state: ClientState;
-  onSheet: (sheet: Sheet) => void;
-}) {
+export function FirstTeamTraining({ state }: { state: ClientState }) {
   const w = state.view!.world;
   const outlook = developmentOutlook(w);
   return (
@@ -132,9 +86,9 @@ export function FirstTeamTraining({
         {w.staff?.find((person) => person.role === 'assistant')?.name ?? '공석'}
       </FacilityOverview>
       <div className={`${s.stack} ${s.pair}`}>
-        <TrainingFocusPanel w={w} outlook={outlook} onSheet={onSheet} />
+        <TrainingFocusPanel w={w} outlook={outlook} />
         <DevelopmentDrivers outlook={outlook} />
-        <PlayerTraining w={w} onSheet={onSheet} />
+        <PlayerTraining w={w} />
       </div>
     </>
   );
@@ -157,19 +111,10 @@ const adaptationGain = (focus: TrainingFocus) => `적응 +${TRAINING_GAIN[focus]
 const injuryChance = `부상 ${(TRAINING_INJURY * 100).toFixed(1)}%~/라운드`;
 
 /**
- * The first team's focus in force (→CLUB-13): who set it — the assistant's rule, a suggestion he
- * accepted or the owner's order, with the rounds left — and why; each focus's growth, recovery,
- * adaptation and costs; the assistant's rules; and the sheet to suggest or force (→STAFF-19).
+ * The first team's focus in force (→CLUB-13), read only: the assistant sets it by his rule each
+ * settled round, and why; each focus's growth, recovery, adaptation and costs; and his rules.
  */
-function TrainingFocusPanel({
-  w,
-  outlook: { focus },
-  onSheet,
-}: {
-  w: World;
-  outlook: Outlook;
-  onSheet: (sheet: Sheet) => void;
-}) {
+function TrainingFocusPanel({ w, outlook: { focus } }: { w: World; outlook: Outlook }) {
   const call = callLine(w, 'assistant');
   return (
     <section data-surface="panel" className={s.card} id="training-focus" aria-label="훈련 방향">
@@ -177,23 +122,8 @@ function TrainingFocusPanel({
         <h3>훈련 방향</h3>
         <span data-testid="training-focus">
           지금 {focusName(focus.focus)} · {call.by}
-          {focus.rounds ? ` · ${focus.rounds}라운드 남음` : ''}
         </span>
       </header>
-      <button
-        data-ui="link"
-        type="button"
-        className={s.homeLine}
-        onClick={() => onSheet({ coach: 'assistant' })}
-      >
-        <span>
-          <b>수석코치에게 훈련 제안·강행</b>
-          <small>다음 라운드부터 4라운드 · 강행 시 사임 위험</small>
-        </span>
-        <span className={s.chevron} aria-hidden="true">
-          ›
-        </span>
-      </button>
       <p data-surface="tile" className={s.advice} data-testid="training-advice">
         {call.reason}
       </p>
@@ -261,10 +191,10 @@ function TrainingFocusPanel({
 }
 
 /**
- * 개별 훈련 (→CLUB-11, STAFF-19): who trains on a focus of his own and who set it, then every
- * first-team player with his focus this round and the sheet to suggest or force one for him.
+ * 선수별 육성 (→CLUB-11, CLUB-13), read only: how many the assistant's player rule takes off the
+ * squad's focus, then every first-team player with his focus this round and his growth.
  */
-function PlayerTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => void }) {
+function PlayerTraining({ w }: { w: World }) {
   const [filter, setFilter] = useTaskState<'all' | 'attention' | 'growth'>(
     w.id,
     'development-filter',
@@ -283,9 +213,9 @@ function PlayerTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => v
         ? w.year - player.born < 27 && player.potential > overall(player)
         : true,
   );
-  const own = all.filter((player) => playerCallLine(w, player, squadFocus).by !== '팀 훈련').length;
+  const own = all.filter((player) => playerCallLine(w, player, squadFocus).own).length;
   return (
-    <section data-surface="panel" className={`${s.card} ${s.wide}`} aria-label="개별 훈련">
+    <section data-surface="panel" className={`${s.card} ${s.wide}`} aria-label="선수별 육성">
       <header className={s.head}>
         <h3>선수별 육성</h3>
         <span data-testid="own-focus-count">따로 훈련 {own}명</span>
@@ -305,10 +235,9 @@ function PlayerTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => v
       </div>
       <ul className={s.players} data-testid="adaptation-list">
         {squad.map((player) => {
-          const call = playerCallLine(w, player, squadFocus),
-            wait = playerSuggestionWait(w, player.id);
+          const call = playerCallLine(w, player, squadFocus);
           return (
-            <li key={player.id} data-own={call.by !== '팀 훈련' || undefined}>
+            <li key={player.id} data-own={call.own || undefined}>
               <span className={s.playerName}>
                 <PlayerLink id={player.id} name={player.name} />
                 <small>
@@ -321,11 +250,7 @@ function PlayerTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => v
               </span>
               <span className={s.playerFocus} data-testid={`player-focus-${player.id}`}>
                 <b>{focusName(focusFor(w, player, squadFocus))}</b>
-                <small>
-                  {call.by}
-                  {call.rounds ? ` · ${call.rounds}라운드 남음` : ''}
-                  {wait > 0 ? ` · 제안 ${wait}라운드 뒤` : ''}
-                </small>
+                <small>{call.by}</small>
                 <small>
                   적응 {player.adaptation.toFixed(2)} · {multiplierLabel(ownMultiplier(player))}
                 </small>
@@ -334,13 +259,6 @@ function PlayerTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => v
                   {player.unsettled !== undefined && ' · 적응 실패'}
                 </small>
               </span>
-              <button
-                type="button"
-                aria-label={`${player.name} 개별 훈련`}
-                onClick={() => onSheet({ coach: 'assistant', player: player.id })}
-              >
-                개별 훈련
-              </button>
             </li>
           );
         })}
@@ -353,11 +271,7 @@ function PlayerTraining({ w, onSheet }: { w: World; onSheet: (sheet: Sheet) => v
         </p>
       )}
       <details data-ui="disclosure" className={s.reference}>
-        <summary>개별 훈련·적응·성장 설명</summary>
-        <p className={s.note}>
-          제안은 선수마다 2라운드에 한 번이고, 강행은 수석코치의 사임 위험을 올려요. 받아들인 변경은
-          4라운드 동안 적용해요.
-        </p>
+        <summary>선수별 훈련·적응·성장 설명</summary>
         <p className={s.note}>
           적응도 {ADAPTATION_NEUTRAL.toFixed(2)}에서 능력 그대로 뛰어요. 선발 출전은 경기당 +
           {MATCH_GAIN.start.toFixed(3)} × 그 자리 숙련도, 훈련은 라운드마다 +

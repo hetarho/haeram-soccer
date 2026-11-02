@@ -19,7 +19,6 @@ import { ProgressModeSwitch } from './ProgressModeSwitch';
 import { RecruitmentDesk } from './RecruitmentDesk';
 import Rich from './Rich';
 import { StrategyBoard } from './StrategyBoard';
-import { TrainingOrderSheet } from './TrainingOrderSheet';
 
 vi.mock('../presentation/react', async (original) => ({
   ...(await original<typeof import('../presentation/react')>()),
@@ -194,18 +193,6 @@ describe('management screen calendar locks', () => {
       );
     },
   );
-  it('locks training suggestions and orders while their costs and probabilities remain visible', () => {
-    expectLocked(
-      () =>
-        createElement(TrainingOrderSheet, {
-          w: world,
-          client,
-          coach: 'assistant',
-          onClose: vi.fn(),
-        }),
-      /제안|강행/,
-    );
-  });
   it('locks youth release decisions while prospect inspection stays available', () => {
     const w = {
       ...world,

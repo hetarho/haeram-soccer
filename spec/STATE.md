@@ -13,11 +13,12 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-02T16:10Z | T647 |
+| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-02T16:10Z | T648 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261103 decided CLUB-19 SAVE-25 T647: where the squad's 하드 streak lives once the training orders go, and what an older save keeps of it → its own world field `hardStreak`. An older save kept the streak inside the dropped orders, so it restarts at the next 하드 round, and the morale cost from the third 하드 round in a row can come up to two rounds later (alt: carry it over through a legacy schema key, a load shim worth at most two rounds of one morale point).
 - 261103 suggest WEB-50 WEB-95: after the 6c0d6b12 match view a player's sheet opens only by tapping the canvas (no keyboard path) and the side on the ball shows by scoreboard colour alone (no accessible text); a later accessibility pass could add both.
 - 261102 decided STAFF-26: the standing director/manager support policy is a direction row, so it keeps the value in force with no owner editing; mediation in the 결재함 is unchanged (alt: keep it as the one owner-editable row).
 - 261102 decided STAFF-32: a playing-coach conversion is now proposed only by delegated staff filling a post, so an owner who keeps staff appointments direct receives none until the intervention redesign (alt: let the owner propose one, which this removal withdraws).
@@ -494,7 +495,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T647 | remove training 제안/강행 to coaches | STAFF CLUB WEB ECON SAVE | T646 | todo |
 | T648 | remove tactic requests, owner lineups and the 구단주 제안 card; kit choice section | STAFF MATCH CLUB WEB KIT HIST SAVE ARCH | T647 | todo |
 | T649 | remove the 방향 board, strategy changes, saved strategies, dials and ticket price | ECON WEB SAVE ARCH STAFF CLUB LEAGUE | T648 | todo |
 | T650 | remove owner capital and owner-started facility works | ECON CLUB WEB HIST | T649 | todo |
@@ -523,11 +523,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T647 (then T648→T652 in order: owner intervention removal and unused-code sweep; illustrations stay)
+- implement-task T648 (then T649→T652 in order: owner intervention removal and unused-code sweep; illustrations stay)
 - create-ssot OWNER (ideation owner-wealth-and-takeover; then WEB WORLD ECON LEAGUE MATCH KIT SAVE)
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261103 T647 done: the owner no longer suggests or forces training. The coach-training command, orderTraining (with suggestion odds, strain and resignation), orders.ts, trainingOrders and staff strain/asked are gone; older saves drop them on load, and the squad's 하드 streak is now World.hardStreak. TrainingOrderSheet and every 제안·강행/개별 훈련/이 선수 훈련 entry are deleted. 훈련, 유소년, the player sheet and the market read the coaches' calls. Equivalence digests unchanged; unit 224/1937 green; e2e edited for the batch.
 - 261103 ot03 start (autopilot): finish T647–T652, then plan and build ideation owner-wealth-and-takeover in parallel lanes; illustrations stay
 - 261103 design close 6c0d6b12: tests and SSOT aligned (WEB r203: WEB-39 office opens on the 결재함 without its room scene, 결재라인 from 결재 설정/who-decides links; WEB-100 requests under titles, waiting first, delegates and 직접/위임 + 전체 switches, no filters; WEB-43 이적시장 선수/유소년/코치/감독/단장; WEB-50/95/49 board in the ball side's colours, notable-only commentary log, details and player dialogs, after-match table; WEB-71/72/79 entries; MATCH r46 MATCH-10 after-match standing); unit tests for the titled queue, 1.3% pitch margin and ageMax; kit preview on the shared pitch margin; office/queue and match-view e2e specs migrated for the batch
 - 261103 T646 done: care command, CareKind, winBonus (dropped on load), care.ts, win-bonus settlement, care news/ledger lines and the motivator's meeting bonus removed; office shows 결재함 + read-only 클럽 현황, HUD cash sheet explains cash/fixed costs/runway only, places read with 유소년 keeping 승격·방출; equivalence digests unchanged; 2 typecheck + 8 unit failures predate it (ds03 6c0d6b12 vs WEB-39), e2e edited for the batch

@@ -238,7 +238,6 @@ async function measure(w: World, label: string) {
     pendingPromises: w.promises?.filter((p) => p.status === 'pending').length ?? 0,
     trainingFocus: activeTrainingFocus(w),
     trainingAt: w.trainingAt,
-    trainingFocusEvents: w.events.filter((event) => event.kind === 'training-focus').length,
     managerTenures: w.managerHistory?.tenures.length ?? 0,
     managerOutcomes: w.managerHistory?.outcomes.length ?? 0,
     container: JSON.parse(raw).schema,
@@ -511,7 +510,6 @@ async function managerEvidence(variant: Variant, w: World, restored: World) {
 interface ProfileData {
   variant: Variant;
   seed: string;
-  trainingSelections: number;
   simulationMs: number;
   ownedMatches: number;
   identityEdits: number;
@@ -525,7 +523,6 @@ interface ProfileData {
 }
 /** What a profile's first half hands its second, with the world it left. */
 interface HalfData {
-  trainingSelections: number;
   simulationMs: number;
   sameDayReappointments: number;
   ownerHires: number;
@@ -546,8 +543,8 @@ function playSeasons(
 ) {
   for (let n = from; n < to; n++) {
     const before = retainedFacts(w);
-    // Before the season's business and training; its recorded-appearance checks stay out of the
-    // engine time below.
+    // Before the season's business; its recorded-appearance checks stay out of the engine time
+    // below.
     identity?.edit(w, n);
     const seasonStart = performance.now();
     if (variant === 'active-management') {
@@ -577,11 +574,8 @@ function playSeasons(
       }
       // T308: a repeated appointment, three tenures on one day, four times a century.
       if (n % 25 === 5 && reappointSameDay(w)) tally.sameDayReappointments++;
-      operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
-      tally.trainingSelections++;
+      // Half the season round by round, the rest at once; the coaches set training.
       for (let round = 0; round < 23; round++) advanceRound(w, undefined, false);
-      operate(w, { type: 'coach-training', coach: 'assistant', focus: 'recovery', force: true });
-      tally.trainingSelections++;
     }
     simulateSeason(w);
     tally.simulationMs += performance.now() - seasonStart;
@@ -593,8 +587,6 @@ function playSeasons(
       );
     if (n === MID_SEASON) {
       const mid = structuredClone(w);
-      if (variant === 'active-management')
-        operate(mid, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
       for (let i = 0; i < 23; i++) advanceRound(mid, undefined, false);
       saveWorld(`${variant}-mid`, mid);
     }
@@ -604,12 +596,11 @@ function playSeasons(
 const workloadFor = (variant: Variant, state?: IdentityWorkloadState) =>
   // The owner's own design at each active-management season's start and a shirt for the fixture
   // after the century checkpoint, through the real club-identity and match-kit commands. Cosmetic
-  // only (KIT-13); it adds to the business and training actions, never replaces them.
+  // only (KIT-13); it adds to the business actions, never replaces them.
   variant === 'active-management' ? identityWorkload(state) : undefined;
 /** A profile's founding checkpoint and its first half, the world kept for the second. */
 async function firstHalf(variant: Variant): Promise<HalfData> {
   const tally: HalfData = {
-    trainingSelections: 0,
     simulationMs: 0,
     sameDayReappointments: 0,
     ownerHires: 0,
@@ -631,7 +622,7 @@ async function secondHalf(variant: Variant): Promise<ProfileData> {
   const identity = workloadFor(variant, state);
   const w = loadWorld(`${variant}-half`);
   playSeasons(variant, w, HALF, SEASONS, tally, identity);
-  const { trainingSelections, simulationMs, sameDayReappointments, ownerHires } = tally;
+  const { simulationMs, sameDayReappointments, ownerHires } = tally;
   const leagueTiers = (index: number) =>
     COUNTRIES.find((country) => country.code === w.clubs[index].country)!.groups.length;
   const leagueClubs = w.clubs.filter(
@@ -655,14 +646,9 @@ async function secondHalf(variant: Variant): Promise<ProfileData> {
   saveWorld(`${variant}-century`, w);
   // The season after the century, settled to round 23 (T308 adds it to the baseline as well).
   const before = retainedFacts(w);
-  if (identity) {
-    // The 101st season starts like the others: the season's design first.
-    identity.edit(w, SEASONS);
-    operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
-    for (let round = 0; round < 12; round++) advanceRound(w, undefined, false);
-    operate(w, { type: 'coach-training', coach: 'assistant', focus: 'recovery', force: true });
-    for (let round = 12; round < 23; round++) advanceRound(w, undefined, false);
-  } else for (let round = 0; round < 23; round++) advanceRound(w, undefined, false);
+  // The 101st season starts like the others: the season's design first.
+  identity?.edit(w, SEASONS);
+  for (let round = 0; round < 23; round++) advanceRound(w, undefined, false);
   assertRetained(w, before);
   if (
     w.history.length !== SEASONS ||
@@ -677,7 +663,6 @@ async function secondHalf(variant: Variant): Promise<ProfileData> {
   return {
     variant,
     seed: w.seed,
-    trainingSelections,
     simulationMs: Math.round(simulationMs),
     ownedMatches: w.ownMatches.length,
     identityEdits: identity?.evidence().edits ?? 0,
@@ -936,13 +921,7 @@ function report() {
       seed: played.data.seed,
       completedSeasons: SEASONS,
       careerDomesticRoundSettlements: SEASONS * 46 + 23,
-      completeSeasonTrainingSelections: played.data.trainingSelections,
       identityEdits: played.data.identityEdits,
-      centuryActiveCheckpointTrainingSelections: variant === 'active-management' ? 2 : 0,
-      trainingCycle:
-        variant === 'active-management'
-          ? '23 youth rounds then 23 recovery rounds each season; century checkpoint adds 12 youth and 11 recovery rounds'
-          : 'balanced; century checkpoint adds 23 rounds',
       ownerManagerHires: played.data.ownerHires,
       sameDayReappointments: played.data.sameDayReappointments,
       elapsedMs,

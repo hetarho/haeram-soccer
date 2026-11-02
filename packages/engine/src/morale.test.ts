@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { World } from '../../contracts/src/types';
-import { createWorld, advanceRound, simulateMatch, nextOwnFixture, settleTraining } from './index';
+import {
+  activeTrainingFocus,
+  createWorld,
+  advanceRound,
+  simulateMatch,
+  nextOwnFixture,
+  settleTraining,
+} from './index';
 import {
   HARD_STREAK,
   LEADER_MORALE,
@@ -95,33 +102,32 @@ describe('squad morale', () => {
       for (const p of one.players) p.fatigue = 0;
       one.morale = 50;
     }
-    w.trainingOrders = { hardStreak: HARD_STREAK.from - 1 };
+    w.hardStreak = HARD_STREAK.from - 1;
     settleMorale(w);
     settleMorale(twin);
     expect(w.morale).toBe(twin.morale);
     w.morale = twin.morale = 50;
-    w.trainingOrders = { hardStreak: HARD_STREAK.from };
+    w.hardStreak = HARD_STREAK.from;
     settleMorale(w);
     settleMorale(twin);
     expect(w.morale).toBe(twin.morale! - HARD_STREAK.cost);
-    // The streak counts the squad's settled 하드 rounds and ends with any other focus.
+    // The streak counts the squad's settled 하드 rounds and ends with any other focus: a fresh,
+    // young squad in good spirits trains hard by the assistant's rule, a tired one recovers.
     const run = world();
+    run.morale = 60;
+    for (const p of run.players) p.born = run.year - 20;
     for (let round = 1; round <= 3; round++) {
-      run.trainingOrders = {
-        ...run.trainingOrders,
-        assistant: { focus: 'hard', rounds: 4, forced: true },
-      };
+      for (const p of run.players) p.fatigue = 0;
+      expect(activeTrainingFocus(run)).toBe('hard');
       run.round = round;
       settleTraining(run);
     }
-    expect(run.trainingOrders?.hardStreak).toBe(3);
-    run.trainingOrders = {
-      ...run.trainingOrders,
-      assistant: { focus: 'balanced', rounds: 4, forced: true },
-    };
+    expect(run.hardStreak).toBe(3);
+    for (const p of run.players) p.fatigue = 35;
+    expect(activeTrainingFocus(run)).toBe('recovery');
     run.round = 4;
     settleTraining(run);
-    expect(run.trainingOrders?.hardStreak).toBeUndefined();
+    expect(run.hardStreak).toBeUndefined();
   });
 
   it('leaders lift the baseline', () => {

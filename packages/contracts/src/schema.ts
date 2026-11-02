@@ -705,6 +705,8 @@ const staff = z.strictObject({
   born: z.number().int().optional(),
   potential: rating.optional(),
   term: term.optional(),
+  // SAVE-25 legacy: the owner's withdrawn training orders strained a coach and timed suggestions
+  // to him; read so an older save opens, then dropped by validateWorld.
   strain: z.strictObject({ year: season, count: z.number().int().min(1).max(40) }).optional(),
   asked: z.strictObject({ year: season, round: z.number().int().min(0).max(46) }).optional(),
 });
@@ -1020,38 +1022,7 @@ const worldSchema: z.ZodType<World> = z.object({
   clubs: z.array(club).min(10).max(1000),
   players: z.array(player).max(20000),
   lineup: z.array(id).length(11).optional(),
-  trainingOrders: z
-    .strictObject({
-      assistant: z
-        .strictObject({
-          focus: z.enum(['balanced', 'recovery', 'hard']),
-          rounds: z.number().int().min(1).max(4),
-          forced: z.literal(true).optional(),
-        })
-        .optional(),
-      players: z
-        .record(
-          id,
-          z.strictObject({
-            focus: z.enum(['balanced', 'recovery', 'hard']),
-            rounds: z.number().int().min(1).max(4),
-            forced: z.literal(true).optional(),
-          }),
-        )
-        .optional(),
-      asked: z
-        .record(id, z.strictObject({ year: season, round: z.number().int().min(0).max(100) }))
-        .optional(),
-      hardStreak: z.number().int().nonnegative().optional(),
-      youth: z
-        .strictObject({
-          focus: z.enum(['balanced', 'fundamentals', 'firstTeam']),
-          rounds: z.number().int().min(1).max(4),
-          forced: z.literal(true).optional(),
-        })
-        .optional(),
-    })
-    .optional(),
+  hardStreak: z.number().int().nonnegative().optional(),
   trainingAt: z
     .string()
     .regex(/^\d{4}:\d{1,3}$/)
@@ -1311,6 +1282,12 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   assertIdentityFormatVersions(input);
   assertMatchModelFormat(input);
   const w = worldSchema.parse(input);
+  // SAVE-25: an older save's coaches kept the strain and suggestion timing of withdrawn orders.
+  for (const member of w.staff ?? []) {
+    const legacy = member as typeof member & { strain?: unknown; asked?: unknown };
+    delete legacy.strain;
+    delete legacy.asked;
+  }
   const ids = new Set(w.clubs.map((c) => c.id));
   for (const [club, results] of Object.entries(w.recentResults ?? {})) {
     const seen = new Set<string>();

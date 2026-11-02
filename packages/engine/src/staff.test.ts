@@ -49,16 +49,18 @@ const NEUTRAL = {
   bidAcceptance: 0,
 };
 
-/** Young equal players under an ordered balanced focus, so growth is directly comparable. */
+/**
+ * Young equal players the assistant trains 균형, so growth is directly comparable: tired past his
+ * 하드 line, short of his 회복 one.
+ */
 function trainingWorld() {
   const w = world();
-  w.trainingOrders = { assistant: { focus: 'balanced', rounds: 4, forced: true } };
   w.manager.youth = 60;
   for (const player of w.players) {
     player.born = w.year - 20;
     player.potential = 85;
     for (const a of ATTRIBUTES) player.attrs[a] = 40;
-    player.fatigue = 30;
+    player.fatigue = 20;
   }
   return w;
 }
@@ -370,7 +372,7 @@ describe('delegated training focus', () => {
     expect(autoTrainingAdvice(w).reason).toContain('21세 이하 선발 3명');
   });
 
-  it("applies the assistant's choice at every level until the owner forces another", () => {
+  it("applies the assistant's choice at every level", () => {
     const w = rested();
     for (const player of w.players) player.fatigue = 40;
     expect(activeTrainingFocus(w)).toBe('recovery');
@@ -382,8 +384,6 @@ describe('delegated training focus', () => {
       operate(w, { type: 'intervention', level });
       expect(activeTrainingFocus(w)).toBe(autoTrainingFocus(w));
     }
-    operate(w, { type: 'coach-training', coach: 'assistant', focus: 'balanced', force: true });
-    expect(activeTrainingFocus(w)).toBe('balanced');
   });
 
   it('decides the focus once per round even as earlier players recover', () => {

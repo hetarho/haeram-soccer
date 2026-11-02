@@ -479,9 +479,8 @@ function manage(w: World, season: number) {
     const candidate = managerCandidates(w).find((offer) => offer.source === 'free');
     if (candidate) operate(w, { type: 'hire', id: candidate.id });
   }
-  operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
+  // Half the season round by round, the rest at once; the coaches set training.
   for (let round = 0; round < 23; round++) advanceRound(w, undefined, false);
-  operate(w, { type: 'coach-training', coach: 'assistant', focus: 'recovery', force: true });
 }
 const seasons: Record<string, unknown>[] = [];
 for (const [profile, seed] of Object.entries(PERFORMANCE_CONFIG.profiles)) {

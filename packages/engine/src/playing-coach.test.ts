@@ -193,7 +193,7 @@ it('offers a playing coach only in ordinary hiring order and never automatically
   expect(automaticPlayingCoachFits(w, paid)).toBe(false);
 });
 
-it('preserves the player contract and complete saved career when a playing coach resigns', async () => {
+it('preserves the player contract and complete saved career when a playing coach is released', async () => {
   const { w, id } = world({ seed: 'coach-force', fieldPlayer: true, atFounding: true });
   w.settings!.responsibilities.contracts = w.settings!.responsibilities.staff = 'direct';
   const proposal = proposePlayingCoach(w, id, 1, 2);
@@ -207,17 +207,14 @@ it('preserves the player contract and complete saved career when a playing coach
     totals = structuredClone(person.ownCareer);
   const learned = member.ability,
     at = careerDate(w),
-    cash = w.cash,
     trust = w.manager.trust;
-  for (let i = 0; i < 8 && staffMember(w, 'youth'); i++)
-    operate(w, { type: 'coach-training', coach: 'youth', focus: 'balanced', force: true });
+  operate(w, { type: 'release-staff', role: 'youth' });
   expect(staffMember(w, 'youth')).toBeUndefined();
   expect(person.employment.find((j) => j.role === 'youth')!.to).toEqual(at);
   expect(person.employment.find((j) => j.role === 'player' && !j.to)).toEqual(playing);
   expect(w.players.find((p) => p.id === id)).toEqual(player);
   expect(person.ownCareer).toEqual(totals);
   expect(person.coaching!.ability).toBe(learned);
-  expect(w.cash).toBe(cash);
   expect(w.manager.trust).toBe(trust);
   validateWorld(w);
   expect(canonical((await decode(await encode(w))).world)).toBe(canonical(w));

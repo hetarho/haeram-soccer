@@ -54,7 +54,6 @@ export * from './presets';
 export * from './bases';
 export * from './signings';
 export * from './intervention';
-export * from './orders';
 export * from './coach-training';
 export * from './operations';
 export * from './ops-commercial';

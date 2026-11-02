@@ -74,12 +74,9 @@ test('surveys every management destination during uninterrupted calendar play', 
     if (view === 'market')
       await expect(page.getByRole('button', { name: '영입 필터', exact: true })).toBeEnabled();
   }
+  // 훈련 only reads the coaches' calls: there is no training action to lock (→WEB-70).
   await openPersonnel(page, 'training');
-  await page.getByRole('button', { name: /^수석코치에게 훈련 제안·강행/ }).click();
-  const training = page.getByRole('dialog', { name: '수석코치 훈련 제안', exact: true });
-  for (const action of await training.getByRole('button', { name: /제안 ·|강행 ·/ }).all())
-    await expect(action).toBeDisabled();
-  await training.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await expect(page.getByRole('button', { name: /훈련 제안·강행/ })).toHaveCount(0);
   // The owner office shares the running-calendar lock and keeps stop available (→WEB-39/97).
   await openClubhouse(page);
   await continues();

@@ -12,11 +12,9 @@ import {
   openPeople,
   openTraining,
   openStaff,
-  openCoachSheet,
   returnToTask,
   useNavigation,
   useStaffRequest,
-  useCoachRequest,
   usePeopleView,
   useContractTalk,
   openContractTalk,
@@ -64,7 +62,6 @@ afterEach(() => {
   useTaskMemory.getState().activate('clean');
   usePeopleView.getState().take();
   useStaffRequest.getState().take();
-  useCoachRequest.getState().take();
 });
 describe('personnel actions and task continuity', () => {
   it("opens the first team's door on the team after the market entry (→WEB-10)", () => {
@@ -79,18 +76,14 @@ describe('personnel actions and task continuity', () => {
   it('returns between subviews of one hub and clears one-shot actions for another game', () => {
     browser();
     openPeople('players');
-    openCoachSheet('assistant', 'recovery', 'player-1');
-    expect(location.pathname + location.search).toBe('/training');
+    openStaff('assistant');
+    expect(location.pathname + location.search).toBe('/staff?view=coaches');
     expect(useTaskMemory.getState().returning).toMatchObject({
       address: '/first-team?view=players',
       label: '선수 목록',
-      target: 'training',
+      target: 'staff',
     });
-    expect(useCoachRequest.getState().request).toEqual({
-      coach: 'assistant',
-      focus: 'recovery',
-      player: 'player-1',
-    });
+    expect(useStaffRequest.getState().request).toBe('assistant');
     returnToTask();
     expect(location.pathname + location.search).toBe('/first-team?view=players');
     openTraining('training');
@@ -102,7 +95,7 @@ describe('personnel actions and task continuity', () => {
     expect(useContractTalk.getState().id).toBe('player-1');
     activateTaskWorld('new-game');
     expect(useContractTalk.getState().id).toBeUndefined();
-    expect(useCoachRequest.getState().request).toBeUndefined();
+    expect(useStaffRequest.getState().request).toBeUndefined();
     expect(useTaskMemory.getState().returning).toBeUndefined();
   });
 
@@ -167,9 +160,8 @@ describe('personnel actions and task continuity', () => {
     });
     returnToTask();
     expect(location.pathname + location.search).toBe('/training');
-    openCoachSheet('youth');
+    openTraining('academy');
     expect(location.pathname).toBe('/academy');
-    expect(useCoachRequest.getState().request).toEqual({ coach: 'youth' });
     beginTaskDetour('business');
     expect(useTaskMemory.getState().returning).toMatchObject({ page: 'academy', label: '유소년' });
   });

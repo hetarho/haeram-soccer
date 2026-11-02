@@ -37,11 +37,11 @@ import { clubOf } from '../../../../packages/engine/src/player-state';
 import type { GameClient } from '../runtime/client';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
 import { openTraining, useStaffRequest } from './state';
+import { callLine } from './teamState';
 import { DirectionLines } from './DirectionLines';
 import { Segments } from './Segments';
 import { Dialog } from './Dialog';
 import { DecisionOwner } from './DecisionOwner';
-import { callLine } from './TrainingOrderSheet';
 import { OvrBadge } from './OvrBadge';
 import { StaffRoleBadge } from './StaffRoleBadge';
 import { compactMoney, contractLine } from './format';
@@ -292,7 +292,7 @@ function DirectorDecides({ w }: { w: World }) {
   );
 }
 
-/** The departments whose head sets a training focus the owner can suggest or force (→STAFF-19). */
+/** The departments whose head sets a training focus by his own rule (→CLUB-13, CLUB-31). */
 const TRAINING_COACHES: readonly StaffRole[] = ['assistant', 'youth'];
 
 /** Coaching departments, their effect on the squad and replacements. */
@@ -455,7 +455,7 @@ export function CoachingStaff({
                   </button>
                 )}
                 {member && TRAINING_COACHES.includes(id) && (
-                  // The focus is set in 훈련; the card only names it (→WEB-43, STAFF-19).
+                  // The coach sets the focus by his rule; 훈련 reads it in full (→WEB-43, WEB-70).
                   <button onClick={() => openTraining(id === 'youth' ? 'academy' : 'training')}>
                     훈련에서 보기
                   </button>

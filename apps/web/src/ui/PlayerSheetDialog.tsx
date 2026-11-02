@@ -26,7 +26,8 @@ import {
 import { PlayerPerformance } from './PlayerPerformance';
 import { PlayerProfile } from './PlayerProfile';
 import { ballonDorLine } from './ballonDorText';
-import { openCoachSheet, openContractTalk, usePlayerPreparation, usePlayerSheet } from './state';
+import { openContractTalk, usePlayerPreparation, usePlayerSheet } from './state';
+import { playerCallLine } from './teamState';
 import a from './Analysis.module.css';
 import s from './App.module.css';
 
@@ -52,6 +53,8 @@ export function PlayerSheet({
   tally?: PlayerTally;
 }) {
   const active = player.status === 'active';
+  // His focus as the assistant sets it, read only (→CLUB-13).
+  const training = active ? playerCallLine(w, player) : undefined;
   const [chosen, setChosen] = useState<PlayerScope>(initial);
   const scope = active ? chosen : 'career';
   const career = player.career,
@@ -61,15 +64,6 @@ export function PlayerSheet({
     <Dialog label={player.name} onClose={onClose}>
       {active && (
         <div className={s.playerActions} aria-label="이 선수 관리">
-          <button
-            type="button"
-            onClick={() => {
-              onClose();
-              openCoachSheet('assistant', undefined, player.id);
-            }}
-          >
-            이 선수 훈련 변경
-          </button>
           {talkFor(w, player) && (
             <button
               type="button"
@@ -97,6 +91,11 @@ export function PlayerSheet({
         {agentOf(w, player)}등급
       </p>
       {active && !player.loanUntil && <p>계약 조항: {clausesLabel(player.clauses)}</p>}
+      {training && (
+        <p data-testid="player-training">
+          훈련 {training.focus} · {training.by} · {training.reason}
+        </p>
+      )}
       {ballonDorLine(w.history, player.id) && (
         <p data-testid="ballon-dor-honours">{ballonDorLine(w.history, player.id)}</p>
       )}

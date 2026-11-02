@@ -213,18 +213,17 @@ for (const viewport of [
   { width: 390, height: 844 },
   { width: 1280, height: 900 },
 ])
-  test(`training exposes the team action first and opens its named responsible coach at ${viewport.width}x${viewport.height}`, async ({
+  test(`training reads the team's call first and opens its named responsible coach at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
     await found(page);
     await page.setViewportSize(viewport);
     await openPersonnel(page, 'training');
     const focus = page.getByRole('region', { name: '훈련 방향', exact: true });
-    const action = focus.getByRole('button', { name: /^수석코치에게 훈련 제안·강행/ });
-    await expect(action).toBeInViewport({ ratio: 1 });
-    const target = await action.boundingBox();
-    expect(target!.height).toBeGreaterThanOrEqual(44);
-    expect(target!.width).toBeGreaterThanOrEqual(44);
+    // The assistant's call in force reads first; the owner has no training action (→WEB-70).
+    await expect(focus.getByTestId('training-focus')).toBeInViewport({ ratio: 1 });
+    await expect(focus.getByTestId('training-focus')).toContainText('· 코치 판단');
+    await expect(page.getByRole('button', { name: /훈련 제안·강행/ })).toHaveCount(0);
     await expect(page.getByRole('list', { name: '훈련 방향별 효과' })).toHaveCount(0);
     await focus.getByRole('button', { name: / · 보기$/ }).click();
     const staff = page.getByRole('dialog', { name: '수석코치 선임', exact: true });
@@ -236,9 +235,7 @@ for (const viewport of [
     await expect(page.getByTestId('training-focus')).toBeVisible();
   });
 
-test('a player profile leads to that player training and keeps the squad search', async ({
-  page,
-}) => {
+test('a player profile reads his training and keeps the squad search', async ({ page }) => {
   await found(page);
   await openPersonnel(page, 'players');
   const playerLink = page
@@ -248,14 +245,15 @@ test('a player profile leads to that player training and keeps the squad search'
   const name = (await playerLink.getAttribute('aria-label'))!.replace(/ 선수 기록$/, '');
   await page.getByRole('textbox', { name: '선수 찾기' }).fill(name);
   await playerLink.click();
-  await page
-    .getByRole('dialog', { name, exact: true })
-    .getByRole('button', { name: '이 선수 훈련 변경', exact: true })
-    .click();
-  const sheet = page.getByRole('dialog', { name: `${name} 개별 훈련`, exact: true });
-  await expect(sheet).toBeVisible();
+  const sheet = page.getByRole('dialog', { name, exact: true });
+  // The assistant's call for him reads; the owner changes nothing (→CLUB-13).
+  await expect(sheet.getByTestId('player-training')).toContainText('코치 판단');
+  await expect(sheet.getByRole('button', { name: '이 선수 훈련 변경', exact: true })).toHaveCount(
+    0,
+  );
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
-  // The sheet opens in 훈련; the squad, entered again, keeps its search (→WEB-74).
+  // 훈련 reads the same; the squad, entered again, keeps its search (→WEB-74).
+  await openPersonnel(page, 'training');
   await expectSection(page, '훈련');
   await openPersonnel(page, 'players');
   await expect(page.getByRole('textbox', { name: '선수 찾기' })).toHaveValue(name);

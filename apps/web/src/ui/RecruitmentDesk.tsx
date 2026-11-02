@@ -23,7 +23,7 @@ import {
 import { releaseCost } from '../../../../packages/engine/src/staff-info';
 import { positionsLabel } from './FormationPitch';
 import { bestRoles, PlayerProfile } from './PlayerProfile';
-import { runwayText } from './teamState';
+import { playerCallLine, runwayText } from './teamState';
 import type { ScoutVerdict } from '../../../../packages/engine/src/scout-verdict';
 import { bidBoard } from '../../../../packages/engine/src/transfers';
 import { transferWindow } from '../../../../packages/engine/src/transfer-window';
@@ -39,7 +39,7 @@ import { OvrBadge } from './OvrBadge';
 import { PositionBadge } from './PositionBadge';
 import { OfferAnswers } from './ClubStaff';
 import { RecruitmentNeeds, ScoutShortlist } from './ScoutShortlist';
-import { openCoachSheet, openDirection } from './state';
+import { openDirection } from './state';
 import { currentStepName } from './board';
 import { clubDivision } from './league';
 import {
@@ -186,6 +186,11 @@ function CandidateCard({
       ? '스카우트 추천'
       : '직접 발굴';
   const free = BigInt(offer.fee) === 0n;
+  // Signed and with us: his first-team training as the assistant sets it (→CLUB-13).
+  const joined = bid
+    ? undefined
+    : w.players.find((person) => person.id === player.id && person.status === 'active');
+  const joinedCall = joined && playerCallLine(w, joined);
   return (
     <article
       className={s.card}
@@ -402,15 +407,14 @@ function CandidateCard({
             </div>
           </div>
         ))}
-      {!bid &&
-        w.players.some((person) => person.id === player.id && person.status === 'active') && (
-          <div className={s.joined} aria-label="합류한 선수 관리">
-            <PlayerLink id={player.id} name={player.name} />
-            <button type="button" onClick={() => openCoachSheet('assistant', undefined, player.id)}>
-              합류 선수 훈련 보기
-            </button>
-          </div>
-        )}
+      {joined && joinedCall && (
+        <div className={s.joined} aria-label="합류한 선수 관리">
+          <PlayerLink id={joined.id} name={joined.name} />
+          <small data-testid="joined-training">
+            1군 훈련 {joinedCall.focus} · {joinedCall.by}
+          </small>
+        </div>
+      )}
     </article>
   );
 }

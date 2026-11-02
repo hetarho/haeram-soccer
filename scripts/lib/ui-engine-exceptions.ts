@@ -133,14 +133,8 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/strategy.ts',
     'packages/engine/src/world.ts',
   ],
-  'apps/web/src/ui/TrainingOrderSheet.tsx': [
-    'packages/engine/src/academy.ts',
-    'packages/engine/src/coach-training.ts',
-    'packages/engine/src/training.ts',
-  ],
   'apps/web/src/ui/TrainingView.tsx': [
     'packages/engine/src/careers.ts',
-    'packages/engine/src/coach-training.ts',
     'packages/engine/src/morale.ts',
     'packages/engine/src/training.ts',
   ],

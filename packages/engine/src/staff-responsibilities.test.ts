@@ -6,7 +6,6 @@ import {
   dailyStaff,
   seasonAcademy,
   activePlayers,
-  operate,
   staffMember,
   STAFF_ROLES,
   RESPONSIBILITY_KEYS,
@@ -68,13 +67,4 @@ describe('staff, manager, academy and sponsor responsibility', () => {
       expect(activePlayers(w).some((p) => p.id === prospect.id)).toBe(academy === 'delegated');
     });
   }
-  it('does not spread a forced coach resignation to manager trust', () => {
-    const w = world();
-    operate(w, { type: 'hire-staff', role: 'assistant', candidate: 0 });
-    const trust = w.manager.trust;
-    for (let attempt = 0; attempt < 20 && staffMember(w, 'assistant'); attempt++)
-      operate(w, { type: 'coach-training', coach: 'assistant', focus: 'hard', force: true });
-    expect(staffMember(w, 'assistant')).toBeUndefined();
-    expect(w.manager.trust).toBe(trust);
-  });
 });

@@ -29,7 +29,6 @@ import { developAcademy } from './academy';
 import { settleMorale } from './morale';
 import { managerStyleEffects, STYLE_INFO } from './styles';
 import { buildEffects, buildOf, cardOf } from './build';
-import { countDownOrder, countDownPlayerOrders, tidyOrders } from './orders';
 import { trainingGroundBase } from './facilities';
 
 export const trainingFocusInfo: Record<
@@ -120,19 +119,15 @@ export function recordDevelopment(player: Player, gain: number) {
   player.developed = hundredths(Math.min(500, (player.developed || 0) + gain));
 }
 
-/**
- * The first team's focus in force: an order or accepted suggestion the assistant holds, else his
- * rule (→CLUB-13, STAFF-19).
- */
+/** The first team's focus in force: the assistant's rule (→CLUB-13). */
 export function activeTrainingFocus(w: World): TrainingFocus {
-  return w.trainingOrders?.assistant?.focus ?? autoTrainingFocus(w);
+  return autoTrainingFocus(w);
 }
 /**
- * A player's focus this round (→CLUB-11, CLUB-13): an order or accepted suggestion for him, else
- * the assistant's player rule, else the squad's.
+ * A player's focus this round (→CLUB-11, CLUB-13): the assistant's player rule, else the squad's.
  */
 export function focusFor(w: World, p: Player, squad = activeTrainingFocus(w)): TrainingFocus {
-  return w.trainingOrders?.players?.[p.id]?.focus ?? autoPlayerFocus(w, p) ?? squad;
+  return autoPlayerFocus(w, p) ?? squad;
 }
 
 /** The manager's youth work and the training ground, the base a round's growth multiplies (→CLUB-12). */
@@ -206,14 +201,10 @@ export function settleTraining(w: World) {
     w,
     activePlayers(w).filter((player) => focuses.get(player.id) === 'hard'),
   );
-  const orders = (w.trainingOrders ||= {});
-  if (squad === 'hard') orders.hardStreak = (orders.hardStreak ?? 0) + 1;
-  else delete orders.hardStreak;
-  countDownOrder(w, 'assistant');
-  countDownPlayerOrders(w);
+  if (squad === 'hard') w.hardStreak = (w.hardStreak ?? 0) + 1;
+  else delete w.hardStreak;
   developAcademy(w);
   settleMorale(w);
-  tidyOrders(w);
   w.trainingAt = at;
 }
 
@@ -313,20 +304,10 @@ export function trainingSummary(w: World) {
         nextGain: actualRoundGain(w, player),
         focus: focusFor(w, player, focus),
       })),
-    /** Players on a focus of their own this round, and who set it (→CLUB-11, CLUB-13). */
+    /** Players the assistant's player rule takes off the squad's focus this round (→CLUB-13). */
     own: active.flatMap((player) => {
-      const order = w.trainingOrders?.players?.[player.id],
-        own = focusFor(w, player, focus);
-      if (!order && own === focus) return [];
-      const by = order ? (order.forced ? 'order' : 'suggestion') : 'rule';
-      return [
-        {
-          player,
-          focus: own,
-          by: by as 'order' | 'suggestion' | 'rule',
-          rounds: order?.rounds ?? 0,
-        },
-      ];
+      const own = focusFor(w, player, focus);
+      return own === focus ? [] : [{ player, focus: own }];
     }),
   };
 }
@@ -369,8 +350,6 @@ export const GROWING_AGE = 23;
 export function developmentOutlook(w: World) {
   const focus = activeTrainingFocus(w),
     info = trainingFocusInfo[focus],
-    order = w.trainingOrders?.assistant,
-    by = order ? (order.forced ? ('order' as const) : ('suggestion' as const)) : ('rule' as const),
     policy = policyOf(w),
     effects = policyEffects(policy),
     staff = staffEffects(w),
@@ -392,7 +371,7 @@ export function developmentOutlook(w: World) {
       value: info.developmentMultiplier,
       applies: 'all',
       home: 'training/training',
-      detail: `${info.label} · ${by === 'rule' ? '수석코치가 정함' : by === 'order' ? '구단주 지시' : '구단주 제안'}`,
+      detail: `${info.label} · 수석코치가 정함`,
     },
     {
       key: 'investment',
@@ -478,9 +457,6 @@ export function developmentOutlook(w: World) {
     focus: {
       focus,
       label: info.label,
-      /** Who set it (→STAFF-19) and how many settled rounds an order or suggestion still holds. */
-      by,
-      rounds: order?.rounds ?? 0,
       developmentMultiplier: info.developmentMultiplier,
       /** Fatigue recovered at the next settled round, staff and policy bonuses included. */
       recovery: Math.max(0, info.recovery + effects.recoveryBonus + staff.recoveryBonus),

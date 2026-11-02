@@ -34,4 +34,40 @@ describe('owner interventions withdrawn (→SAVE-25)', () => {
     // Reading never writes: the save itself is left for the writer's next checkpoint.
     expect(older.winBonus).toEqual({ matches: 3 });
   });
+
+  it('drops removed training orders from an older save', () => {
+    const w = world();
+    // Orders the owner had the coaches take and the strain they left, as a career saved before
+    // STAFF-19 was withdrawn: the coaches' own calls decide from here (→CLUB-13, CLUB-31).
+    const older = structuredClone(w) as World & {
+      trainingOrders: unknown;
+      staff: (NonNullable<World['staff']>[number] & { strain?: unknown; asked?: unknown })[];
+    };
+    const player = w.players[0]!.id;
+    older.trainingOrders = {
+      assistant: { focus: 'hard', rounds: 3, forced: true },
+      youth: { focus: 'firstTeam', rounds: 2 },
+      players: { [player]: { focus: 'recovery', rounds: 4 } },
+      asked: { [player]: { year: w.year, round: 0 } },
+      hardStreak: 2,
+    };
+    older.staff[0] = {
+      ...older.staff[0]!,
+      strain: { year: w.year, count: 2 },
+      asked: { year: w.year, round: 0 },
+    };
+    const loaded = validateWorld(older, LOAD_CATALOG);
+    expect(loaded).not.toHaveProperty('trainingOrders');
+    // The squad's 하드 streak was kept among the orders: it restarts with the next 하드 round.
+    expect(loaded.hardStreak).toBeUndefined();
+    for (const member of loaded.staff!) {
+      expect(member).not.toHaveProperty('strain');
+      expect(member).not.toHaveProperty('asked');
+    }
+    // Every other fact stays as saved.
+    expect(loaded).toEqual(validateWorld(w, LOAD_CATALOG));
+    // Reading never writes: the save itself is left for the writer's next checkpoint.
+    expect(older.staff[0]!.strain).toEqual({ year: w.year, count: 2 });
+    expect(older.trainingOrders).toBeDefined();
+  });
 });

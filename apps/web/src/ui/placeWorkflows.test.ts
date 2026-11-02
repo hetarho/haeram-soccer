@@ -154,12 +154,12 @@ describe('live place composition', () => {
     // No request panel follows the people: the owner asks the manager and the staff nothing.
     for (const removed of ['place-activities', '감독에게 요청', '스태프에게 요청', '검토</button>'])
       expect(html, removed).not.toContain(removed);
-    // Training choices live in 훈련, never in the staff directory (→WEB-71).
+    // The coaches set training by their own rules: no training choice anywhere (→WEB-70).
     expect(html).not.toContain('훈련 제안·강행');
   });
 
   it.each(['training', 'academy'] as const)(
-    'keeps one authoritative %s workflow; only the academy is a place with decisions',
+    "reads the coaches' %s calls; only the academy is a place with decisions",
     (view) => {
       const f = fixture();
       const html = renderToStaticMarkup(
@@ -169,23 +169,19 @@ describe('live place composition', () => {
         // The training ground only reads (→WEB-102): no request panel of its own.
         expect(html).not.toContain('place-activities');
         expect(html).not.toContain('훈련장에서 할 일');
-        expect(html.match(/수석코치에게 훈련 제안·강행/g)).toHaveLength(1);
+        // The assistant's call reads; the owner has no training action (→STAFF-19 withdrawn).
+        expect(html).not.toContain('훈련 제안·강행');
+        expect(html).not.toContain('개별 훈련</button>');
         // Composition order only; physical viewport/target/focus checks belong to the browser gate.
         const focus = html.indexOf('id="training-focus"');
-        const action = html.indexOf('수석코치에게 훈련 제안·강행');
         const advice = html.indexOf('data-testid="training-advice"');
         const coach = html.indexOf('담당 수석코치');
         const reference = html.indexOf('훈련 효과·자동 판단 기준');
         expect(focus).toBeGreaterThan(html.indexOf('</figure>'));
         const panel = html.slice(focus, html.indexOf('</section>', focus));
-        expect(panel.match(/<button\b[^>]*>/g)?.[0]).toContain('type="button"');
-        expect(panel.indexOf('수석코치에게 훈련 제안·강행')).toBeLessThan(
-          panel.indexOf('</button>'),
-        );
-        expect(action).toBeLessThan(advice);
+        expect(focus).toBeLessThan(advice);
         expect(advice).toBeLessThan(coach);
         expect(coach).toBeLessThan(reference);
-        expect(panel).toContain('다음 라운드부터 4라운드 · 강행 시 사임 위험');
         expect(panel).toContain('Synthetic Assistant · 보기');
         expect(panel).toContain('지금 균형 · 코치 판단');
         expect(panel).not.toContain('<details open');
@@ -193,7 +189,10 @@ describe('live place composition', () => {
       } else {
         expect(html).toContain('place-activities-academy');
         expect(html.match(/aria-label="유소년 아카데미"/g)).toHaveLength(1);
-        expect(html.match(/유스 디렉터에게 훈련 제안·강행/g)).toHaveLength(1);
+        // The youth director's call reads, with the 데뷔 시점 and 육성 목표 he works to.
+        expect(html).not.toContain('훈련 제안·강행');
+        expect(html).toContain('data-testid="youth-focus"');
+        expect(html).toMatch(/유스 디렉터가 데뷔 시점 .+ · 육성 목표 .+에 맞춰 다시 정해요/);
         expect(html).toContain('아직 아카데미 선수가 없어요');
       }
       expect(f.command).not.toHaveBeenCalled();

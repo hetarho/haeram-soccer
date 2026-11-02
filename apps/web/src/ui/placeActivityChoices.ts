@@ -9,8 +9,7 @@ import { placeAcademy, youthCall } from './teamState';
  * decisions, promotion and release. Reading it does not draw or settle anything.
  */
 export function placeActivities(w: World) {
-  const academy = placeAcademy(w),
-    youth = youthCall(w);
+  const academy = placeAcademy(w);
   const facts = [
     `유소년 ${academy.players.length}/${academy.capacity}명 · 1군 자리 ${academy.room.total}개`,
     ...academy.groups.map(
@@ -21,14 +20,10 @@ export function placeActivities(w: World) {
         ? seasonDayLabel(w.year + 1, seasonDayOf(w.year + 1, 3, 15))
         : seasonDayLabel(w.year, academy.intakeDay)
     }`,
-    youth.fact,
+    youthCall(w),
   ];
   const records = w.events
-    .filter(
-      (event) =>
-        ['youth-promotion', 'youth-release', 'youth-intake'].includes(event.kind) ||
-        (event.kind === 'training-focus' && event.title.includes(youth.role)),
-    )
+    .filter((event) => ['youth-promotion', 'youth-release', 'youth-intake'].includes(event.kind))
     .slice(-3)
     .reverse();
   return { facts, records, academy };

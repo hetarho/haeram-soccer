@@ -48,15 +48,8 @@ export type DifficultyLevel = 'easy' | 'normal' | 'hard' | 'extreme';
 export type FacilityPart = 'stadium' | 'training' | 'academy';
 /** The academy's training focus, set by the youth director (→CLUB-31). */
 export type YouthFocus = 'balanced' | 'fundamentals' | 'firstTeam';
-/** The coaches who set a training focus (→STAFF-19). */
+/** The coaches who set a training focus by their own rules (→CLUB-13, CLUB-31). */
 export type TrainingCoach = 'assistant' | 'youth';
-/** A focus the owner had a coach take: accepted when suggested, or forced (→STAFF-19). */
-export interface TrainingOrder<F> {
-  focus: F;
-  /** Settled rounds it still holds. */
-  rounds: number;
-  forced?: true;
-}
 /**
  * The board's dials (→ECON-16): squad investment, recruitment, academy investment and, from rules
  * 1.19, the 지역 and 글로벌 rows (주변 투자, 풀뿌리 유망주 투자, 해외 마케팅, 해외 스카우트망 and
@@ -484,10 +477,6 @@ export interface Staff {
   potential?: number;
   /** Seasons the owner chose at his last hiring or renewal (→STAFF-15); absent before rules 1.16. */
   term?: ContractTerm;
-  /** Orders the owner forced on him this season (→STAFF-19). */
-  strain?: { year: number; count: number };
-  /** The settled round of the owner's last suggestion to him (→STAFF-19). */
-  asked?: { year: number; round: number };
 }
 export interface Academy {
   /** Academy prospects are not first-team players until promoted. */
@@ -1185,20 +1174,8 @@ export interface World {
   players: Player[];
   /** Preferred starting XI, one player per slot of the applied tactic's formation (→STAFF-22). */
   lineup?: string[];
-  /**
-   * Focuses the owner had the coaches take (→STAFF-19); without one the coaches set it by rule
-   * (→CLUB-13, CLUB-31).
-   */
-  trainingOrders?: {
-    assistant?: TrainingOrder<TrainingFocus>;
-    youth?: TrainingOrder<YouthFocus>;
-    /** A first-team player's own focus, by player id (→CLUB-11). */
-    players?: Record<string, TrainingOrder<TrainingFocus>>;
-    /** The settled round of the owner's last suggestion for each player (→STAFF-19). */
-    asked?: Record<string, { year: number; round: number }>;
-    /** The squad's settled rounds in a row under 하드 (→CLUB-19). */
-    hardStreak?: number;
-  };
+  /** The squad's settled rounds in a row under 하드 (→CLUB-19). */
+  hardStreak?: number;
   /** Last settled training boundary, preventing repeated development/recovery. */
   trainingAt?: string;
   /** Club operating policy; absent means POLICY_DEFAULTS. */
@@ -1355,15 +1332,6 @@ export type Command =
   | { type: 'season'; count: number }
   | { type: 'tactics'; tactic: Tactic; tone: string }
   | { type: 'lineup'; ids: string[] | null }
-  /** A training focus suggested to a coach, or forced on him (→STAFF-19). */
-  | {
-      type: 'coach-training';
-      coach: TrainingCoach;
-      focus: TrainingFocus | YouthFocus;
-      force?: boolean;
-      /** One first-team player's own focus instead of the squad's (→CLUB-11). */
-      player?: string;
-    }
   | { type: 'policy'; key: PolicyKey; level: PolicyLevel }
   /** `term`: the seasons the owner chooses (→STAFF-15); absent keeps the earlier rule. */
   | {

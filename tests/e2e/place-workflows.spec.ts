@@ -55,19 +55,13 @@ for (const viewport of [
     await openPersonnel(page, 'coaches');
     await expect(page.getByTestId('place-activities-coaching')).toHaveCount(0);
     await expect(page.getByRole('region', { name: '스태프에게 요청', exact: true })).toHaveCount(0);
-    // Training is suggested in 훈련, never from the staff directory (→WEB-71).
+    // The coaches set training by their own rules: no training choice anywhere (→WEB-70).
     await expect(page.getByRole('button', { name: '훈련 조건 검토', exact: true })).toHaveCount(0);
     await openPersonnel(page, 'training');
-    await page.getByRole('button', { name: /^수석코치에게 훈련 제안·강행/ }).click();
-    await expect(
-      page.getByRole('dialog', { name: '수석코치 훈련 제안', exact: true }),
-    ).toContainText('사임');
-    await page.keyboard.press('Escape');
+    await expect(page.getByTestId('training-focus')).toContainText('· 코치 판단');
     // The training ground reads its state; it has no request panel of its own.
     await expect(page.getByTestId('place-activities-training')).toHaveCount(0);
-    await expect(
-      page.getByRole('button', { name: '수석코치에게 훈련 제안·강행', exact: false }),
-    ).toHaveCount(1);
+    await expect(page.getByRole('button', { name: /훈련 제안·강행/ })).toHaveCount(0);
     await openPersonnel(page, 'academy');
     const academy = page.getByTestId('place-activities-academy');
     await expect(academy.getByRole('region', { name: '유소년 아카데미', exact: true })).toHaveCount(
@@ -80,9 +74,8 @@ for (const viewport of [
     await expect(youth).toContainText('승격 후 연봉');
     await expect(youth).toContainText('남은 성장 기회를 포기');
     await youth.getByRole('button', { name: '취소', exact: true }).click();
-    await academy
-      .getByRole('button', { name: /^유스 디렉터에게 훈련 제안·강행/ })
-      .scrollIntoViewIfNeeded();
+    await expect(academy.getByRole('button', { name: /훈련 제안·강행/ })).toHaveCount(0);
+    await academy.getByTestId('youth-focus').scrollIntoViewIfNeeded();
     expect(await horizontalOverflow(page)).toBe(0);
     const geometry = await viewGeometry(page);
     expect(geometry.documentHeight).toBeLessThanOrEqual(viewport.height);

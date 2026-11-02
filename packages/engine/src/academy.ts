@@ -18,7 +18,6 @@ import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
 import { isDelegated } from './responsibilities';
 import { debutRule, directionOf, directionOption, financeStance, releaseRule } from './direction';
-import { countDownOrder } from './orders';
 import { academyFacilityTerms } from './facilities';
 
 /** First-team squad limit shared with signings. */
@@ -221,7 +220,6 @@ export function developAcademy(w: World): void {
     if (gain <= 0) continue;
     recordDevelopment(player, growAttributes(player, gain));
   }
-  countDownOrder(w, 'youth');
 }
 /** An age group's growth factor, with U-21's lift under 데뷔 시점 늦게 (→CLUB-32). */
 export function ageGroupGrowth(w: World, group: AgeGroup) {
@@ -279,9 +277,9 @@ export function youthAdvice(w: World): { focus: YouthFocus; reason: string } {
     return { focus: 'fundamentals', reason: `U-17이 ${young}명으로 가장 많아 기본기부터 다져요.` };
   return { focus: 'balanced', reason: '연령대를 고르게 키워요.' };
 }
-/** The academy's focus this round: the owner's order or accepted suggestion, else the rule. */
+/** The academy's focus this round: the youth director's rule (→CLUB-31). */
 export function youthFocus(w: World): YouthFocus {
-  return w.trainingOrders?.youth?.focus ?? youthAdvice(w).focus;
+  return youthAdvice(w).focus;
 }
 
 /** Average OVR of the automatic starters in each line, ignoring fatigue (→CLUB-32). */
