@@ -53,7 +53,7 @@ export type BoardDraft = {
   direction?: Partial<Record<DirectionKey, string>>;
   name?: string;
 };
-/** A dial change asked for from elsewhere, such as a cash remedy (→WEB-44); T071's store. */
+/** A dial change asked for from elsewhere; T071's store. */
 export type BoardRequest = {
   policy?: { key: PolicyKey; level: PolicyLevel };
   ticket?: number;

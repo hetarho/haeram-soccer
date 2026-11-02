@@ -1304,22 +1304,6 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
         ...(event.kind === 'build' ? { detail: event.detail } : {}),
       };
     }
-    case 'care:backing':
-      return {
-        ...base,
-        tag: '구단',
-        tone: 'neutral',
-        weight: 'notable',
-        title: '구단주, 감독 재신임 발표',
-      };
-    case 'care:win-bonus':
-      return {
-        ...base,
-        tag: '구단',
-        tone: 'neutral',
-        weight: 'minor',
-        title: '구단주, 다음 5경기 승리 수당 걸었다',
-      };
     case 'promotion':
       return {
         ...base,

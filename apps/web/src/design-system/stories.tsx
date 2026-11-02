@@ -763,7 +763,7 @@ export default function StoryRenderer({
           <>
             <Section title="HUD / ProgressControls">
               <div className="ds-row">
-                <HudCash client={client} />
+                <HudCash />
                 <ProgressModeSwitch client={client} controller={controller} />
                 <button onClick={() => setMenu(true)}>게임 메뉴 열기</button>
               </div>

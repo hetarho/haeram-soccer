@@ -7,7 +7,6 @@ import {
   advanceDays,
   advanceRound,
   broadcastQuote,
-  careOffer,
   catchment,
   clubOf,
   createWorld,
@@ -210,59 +209,19 @@ describe('earned, auditable club finances', () => {
     expect(bottom.income).toBe('0');
   });
 
-  it('names owner requests and win bonuses in the season ledger, leaving no catch-all line', () => {
-    const w = cachedWorld('owner-requests', () => {
-      const w = world();
-      operate(w, { type: 'care', kind: 'meeting' });
-      operate(w, { type: 'care', kind: 'camp' });
-      operate(w, { type: 'care', kind: 'friendly' });
-      while (!w.events.some((event) => event.kind === 'win-bonus') && w.round < 46) {
-        if (careOffer(w, 'win-bonus').available) operate(w, { type: 'care', kind: 'win-bonus' });
-        advanceRound(w, undefined, false);
-      }
-      return w;
-    });
-    const total = (kind: string) =>
-      w.events
-        .filter((event) => event.kind === kind)
-        .reduce((sum, event) => sum + BigInt(event.amount ?? '0'), 0n)
-        .toString();
-    expect(BigInt(total('care:camp'))).toBeGreaterThan(0n);
-    expect(BigInt(total('care:friendly'))).toBeGreaterThan(0n);
-    expect(BigInt(total('win-bonus'))).toBeGreaterThan(0n);
-    const budget = financialBreakdown(w);
-    const line = (rows: typeof budget.income, key: string) =>
-      rows.find((row) => row.key === key)?.amount;
-    expect(line(budget.expense, 'care')).toBe(total('care:camp'));
-    expect(line(budget.income, 'care:friendly')).toBe(total('care:friendly'));
-    expect(line(budget.expense, 'win-bonus')).toBe(total('win-bonus'));
-    expect(budget.income.some((row) => row.key === 'older-ledger')).toBe(false);
-    expect(budget.expense.some((row) => row.key === 'older-ledger')).toBe(false);
-    expect(budget.income.reduce((sum, row) => sum + BigInt(row.amount), 0n)).toBe(BigInt(w.income));
-    expect(budget.expense.reduce((sum, row) => sum + BigInt(row.amount), 0n)).toBe(
-      BigInt(w.expense),
-    );
-  });
-
   it('isIncomeKind accepts every income kind and no expense kind', () => {
     const budget = financialBreakdown(world()),
       keys = (rows: typeof budget.income) =>
         rows.map((row) => row.key).filter((key) => key !== 'older-ledger');
     expect(keys(budget.income)).toEqual(INCOME_KINDS);
     expect(INCOME_KINDS).toEqual(
-      expect.arrayContaining([
-        'gate',
-        'sponsor:local',
-        'sponsor:shirt',
-        'care:friendly',
-        'support',
-      ]),
+      expect.arrayContaining(['gate', 'sponsor:local', 'sponsor:shirt', 'support']),
     );
     for (const kind of INCOME_KINDS) expect(isIncomeKind(kind)).toBe(true);
     expect(keys(budget.expense).length).toBeGreaterThan(0);
     for (const kind of keys(budget.expense)) expect(isIncomeKind(kind)).toBe(false);
-    // Paid owner requests book to the expense line `care`; only the friendly earns.
-    for (const kind of ['care:meeting', 'care:camp', 'toString', ''])
+    // Withdrawn owner requests (→CLUB-20) name no line: an older save's entries are catch-all.
+    for (const kind of ['care:friendly', 'care:camp', 'toString', ''])
       expect(isIncomeKind(kind)).toBe(false);
   });
 

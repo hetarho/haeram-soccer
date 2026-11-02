@@ -460,7 +460,6 @@ const incomeKinds: Record<string, string> = {
   'europe-prize': '클럽대항전 수당',
   'europe-honor': '클럽대항전 우승 상금',
   support: '구단주 추가 출자',
-  'care:friendly': '친선 경기',
 };
 /** Every income ledger kind (→ECON-10), each sponsor slot's among them. */
 export const INCOME_KINDS: readonly string[] = Object.keys(incomeKinds);
@@ -480,16 +479,9 @@ const expenseKinds: Record<string, string> = {
   'staff-renew': '코치 재계약',
   training: '훈련 지원',
   facility: '시설 공사',
-  /** Every paid owner request (`care:<kind>`, →CLUB-20); the friendly earns instead. */
-  care: '구단주 요청',
-  'win-bonus': '승리 수당',
   // A won award's contract bonus (→CLUB-29).
   'ballon-dor-bonus': '발롱도르 보너스',
 };
-/** The ledger line an entry belongs to: paid owner requests share one line. */
-const ledgerKey = (kind: string) =>
-  kind.startsWith('care:') && !incomeKinds[kind] ? 'care' : kind;
-
 /** A season's money entries in the currency its books were kept in. */
 function seasonEntries(w: World, year: number, money: string) {
   return w.events.filter(
@@ -505,7 +497,7 @@ function ledgerLines(period: Event[], kinds: Record<string, string>, total: stri
     key,
     label,
     amount: period
-      .filter((event) => ledgerKey(event.kind) === key)
+      .filter((event) => event.kind === key)
       .reduce((sum, event) => sum + BigInt(event.amount!), 0n)
       .toString(),
   }));
@@ -524,8 +516,11 @@ export function financialBreakdown(w: World) {
   const operatingNet = (BigInt(operatingIncome) - BigInt(w.expense)).toString();
   const recent = period
     .flatMap((event) => {
-      const key = ledgerKey(event.kind);
-      const direction = incomeKinds[key] ? 'income' : expenseKinds[key] ? 'expense' : undefined;
+      const direction = incomeKinds[event.kind]
+        ? 'income'
+        : expenseKinds[event.kind]
+          ? 'expense'
+          : undefined;
       return direction ? [{ ...event, amount: event.amount!, direction }] : [];
     })
     .slice(-10)

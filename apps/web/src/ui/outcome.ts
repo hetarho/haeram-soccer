@@ -7,9 +7,7 @@ import type {
 import { activeTrainingFocus } from '../../../../packages/engine/src/training';
 import { seasonDate } from '../../../../packages/engine/src/calendar';
 import { activePlayers, clubOf } from '../../../../packages/engine/src/player-state';
-import { startingSquad } from '../../../../packages/engine/src/world';
 import { tacticLabel } from '../../../../packages/engine/src/tactics';
-import { lineupSummary } from '../../../../packages/engine/src/strategy';
 import { compactMoney, number } from './format';
 import { orderIds, ownLeagueIds } from './league';
 import { STADIUM_STEPS } from '../../../../packages/engine/src/facilities';
@@ -63,7 +61,6 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
   'resolve-mediation': '영입 중재 방침을 결정했어요',
   'encourage-coaching': '지도자 진로를 권유했어요',
   'read-inbox': '소식을 확인했어요',
-  care: '구단주 요청을 전했어요',
   build: '방향을 정했어요',
   direction: '방향을 바꿨어요',
   'contract-offer': '선수에게 계약을 제시했어요',
@@ -238,13 +235,6 @@ export function describeOutcome(
   else compare(changes, '감독', before.manager.name, after.manager.name);
   compare(changes, '클럽 평판', Math.round(previous.reputation), Math.round(club.reputation));
   compare(changes, '팀 분위기', before.morale, after.morale);
-  if (command.type === 'care')
-    compare(
-      changes,
-      '선발 평균 피로',
-      lineupSummary(startingSquad(before, clubOf(before)), before.tactic).fatigue,
-      lineupSummary(startingSquad(after, clubOf(after)), after.tactic).fatigue,
-    );
   compare(changes, '티켓 기본가', before.ticket, after.ticket, (n) => `${n} (1901년 기준)`);
   const records = newEvents(before, after).filter((event) => !ROUTINE_EVENTS.has(event.kind));
   const shown = records.slice(-limit).reverse();

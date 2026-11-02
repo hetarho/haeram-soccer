@@ -1,48 +1,35 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { CareKind } from '../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import type { ClientState, GameClient } from '../runtime/client';
 import { AcademyPanel } from './AcademyPanel';
 import { Dialog } from './Dialog';
 import { Money } from './Money';
-import {
-  activityUnavailable,
-  placeActivities,
-  placeActivityClient,
-  type ActivityPlace,
-} from './placeActivityChoices';
+import { activityUnavailable, placeActivities, placeActivityClient } from './placeActivityChoices';
 import { useAcademyReview } from './state';
 import s from './PlaceActivities.module.css';
 
 export interface PlaceActivitiesProps {
-  place: ActivityPlace;
   state: ClientState;
   client: GameClient;
 }
 
-type Inspection =
-  { type: 'care'; kind: CareKind; revision: number } | { type: 'academy'; player: string };
-
-/** Each section's owner choices by who carries them out; 코치진 holds two of them (→WEB-102). */
-const PLACE_LABEL: Record<ActivityPlace, string> = {
-  manager: '감독에게 요청',
-  coaching: '스태프에게 요청',
-  training: '훈련장에서 할 일',
-  academy: '유소년에서 할 일',
-};
-
+/**
+ * 유소년's working place (→WEB-102): its current state, the prospects with their promotion and
+ * release decisions at actual costs and risks, and its real records. The other places only read
+ * and have no panel of owner choices.
+ */
 export function PlaceActivities(props: PlaceActivitiesProps) {
   const world = props.state.view?.world;
-  return world ? <Activities key={`${world.id}:${props.place}`} {...props} /> : null;
+  return world ? <Activities key={world.id} {...props} /> : null;
 }
 
-function Activities({ place, state, client }: PlaceActivitiesProps) {
+function Activities({ state, client }: PlaceActivitiesProps) {
   const w = state.view!.world;
-  const model = placeActivities(w, place);
+  const model = placeActivities(w);
   const club = clubOf(w);
-  const [inspection, setInspection] = useState<Inspection>();
+  /** The prospect under review. */
+  const [inspection, setInspection] = useState<string>();
   const [error, setError] = useState('');
-  const [sending, setSending] = useState(false);
   const mounted = useRef(true);
   const inspectionSerial = useRef(0);
   useEffect(() => {
@@ -65,93 +52,36 @@ function Activities({ place, state, client }: PlaceActivitiesProps) {
     setInspection(undefined);
     setError('');
   };
-  const inspect = (next: Inspection) => {
+  const inspect = (next: string) => {
     inspectionSerial.current++;
     setError('');
     setInspection(next);
   };
   // A prospect named in 팀's academy list opens his review here, as its own row would (→WEB-112).
-  const asked = useAcademyReview((store) => (place === 'academy' ? store.request : undefined));
+  const asked = useAcademyReview((store) => store.request);
   useEffect(() => {
     if (!asked) return;
     useAcademyReview.getState().take();
-    if (model.academy?.players.some(({ player }) => player.id === asked))
-      inspect({ type: 'academy', player: asked });
+    if (model.academy.players.some(({ player }) => player.id === asked)) inspect(asked);
   }, [asked]);
-  const care =
-    inspection?.type === 'care'
-      ? model.choices.find((choice) => choice.id === inspection.kind)
-      : undefined;
-  const lockReason = activityUnavailable(state, w);
-  const reason =
-    inspection?.type === 'care'
-      ? activityUnavailable(state, { id: w.id, revision: inspection.revision })
-      : lockReason;
-  const reviewed =
-    inspection?.type === 'academy'
-      ? model.academy?.players.find(({ player }) => player.id === inspection.player)
-      : undefined;
-  const reviewedGroup = model.academy?.groups.find((group) => group.key === reviewed?.group);
-  const submitCare = async () => {
-    if (!care?.command || care.unavailable || reason || sending) return;
-    setSending(true);
-    try {
-      const reply = await scoped.command(care.command);
-      if (reply?.ok && mounted.current) close();
-    } finally {
-      if (mounted.current) setSending(false);
-    }
-  };
+  const reason = activityUnavailable(state, w);
+  const reviewed = inspection
+    ? model.academy.players.find(({ player }) => player.id === inspection)
+    : undefined;
+  const reviewedGroup = model.academy.groups.find((group) => group.key === reviewed?.group);
   return (
     <section
       className={s.panel}
-      aria-label={PLACE_LABEL[place]}
-      data-testid={`place-activities-${place}`}
+      aria-label="유소년에서 할 일"
+      data-testid="place-activities-academy"
     >
       <ul className={s.facts} aria-label="현재 상태">
         {model.facts.map((fact) => (
           <li key={fact}>{fact}</li>
         ))}
       </ul>
-      {lockReason && <p className={s.note}>{lockReason}</p>}
-      <ul className={s.choices}>
-        {model.choices.map((choice) => (
-          <li key={choice.id}>
-            <div>
-              <b>{choice.label}</b>
-              <small>
-                {choice.by} 실행 · 비용 {choice.cost}
-              </small>
-              <p>{choice.effect}</p>
-              {choice.chances && (
-                <ul className={s.chances} aria-label={`${choice.label} 결과 확률`}>
-                  {choice.chances.map((chance) => (
-                    <li key={chance.text}>
-                      {chance.chance}% · {chance.text}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {choice.unavailable && <p className={s.note}>{choice.unavailable}</p>}
-            </div>
-            <button
-              type="button"
-              onClick={() =>
-                inspect({ type: 'care', kind: choice.care!.kind, revision: w.revision })
-              }
-            >
-              {choice.label} 검토
-            </button>
-          </li>
-        ))}
-      </ul>
-      {model.academy && (
-        <AcademyPanel
-          w={w}
-          client={scoped}
-          onReview={(player) => inspect({ type: 'academy', player })}
-        />
-      )}
+      {reason && <p className={s.note}>{reason}</p>}
+      <AcademyPanel w={w} client={scoped} onReview={inspect} />
       {error && (
         <p role="alert" className={s.note}>
           {error}
@@ -172,60 +102,10 @@ function Activities({ place, state, client }: PlaceActivitiesProps) {
             </p>
           ))
         ) : (
-          <p>아직 이 장소의 요청 기록이 없어요.</p>
+          <p>아직 이 장소의 기록이 없어요.</p>
         )}
       </div>
-      {care?.care && (
-        <Dialog label={`${care.label} 검토`} onClose={close}>
-          <p>
-            {care.by} 실행 · {care.effect}
-          </p>
-          {care.chances?.map((chance) => (
-            <p key={chance.text}>
-              {chance.chance}% · {chance.text}
-            </p>
-          ))}
-          <p>
-            즉시 비용 <Money value={care.care.cost} code={club.country} year={w.year} />
-          </p>
-          {BigInt(care.care.perWin) > 0n && (
-            <p>
-              승리마다 지급 <Money value={care.care.perWin} code={club.country} year={w.year} /> ·
-              자금 부족이어도 지급 의무가 남아요.
-            </p>
-          )}
-          {BigInt(care.care.income) > 0n && (
-            <p>
-              수입 <Money value={care.care.income} code={club.country} year={w.year} />
-            </p>
-          )}
-          {(care.unavailable || reason || error) && (
-            <p role="status">{care.unavailable || reason || error}</p>
-          )}
-          <div className={s.actions}>
-            <button type="button" onClick={close}>
-              취소
-            </button>
-            {inspection?.type === 'care' && inspection.revision !== w.revision && (
-              <button
-                type="button"
-                onClick={() => inspect({ ...inspection, revision: w.revision })}
-              >
-                최신 조건 다시 보기
-              </button>
-            )}
-            <button
-              type="button"
-              data-ui="primary"
-              disabled={sending || !!reason || !!care.unavailable}
-              onClick={() => void submitCare()}
-            >
-              요청하기
-            </button>
-          </div>
-        </Dialog>
-      )}
-      {inspection?.type === 'academy' && (
+      {inspection && (
         <Dialog label="유소년 승격·방출 검토" onClose={close}>
           {reviewed ? (
             <>

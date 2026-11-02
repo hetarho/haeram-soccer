@@ -128,11 +128,10 @@ function fail(message: string): never {
   console.error(message);
   process.exit(1);
 }
-// Every engine income kind has its source; only the friendly's takings count as other turnover.
-// Any other `sponsor:` kind is commercial, so the table's kinds are all there is to check.
+// Every engine income kind has its source. Any other `sponsor:` kind is commercial, so the
+// table's kinds are all there is to check.
 for (const kind of INCOME_KINDS)
-  if (sourceOf(kind) === 'other' && kind !== 'care:friendly')
-    fail(`income kind ${kind} has no source in sourceOf`);
+  if (sourceOf(kind) === 'other') fail(`income kind ${kind} has no source in sourceOf`);
 
 interface Season {
   year: number;

@@ -362,7 +362,9 @@ export function ApprovalQueue({
             >
               <header className={s.titleHead}>
                 <h3>
-                  {responsibility ? RESPONSIBILITY_LABELS[responsibility] : TITLE_LABELS[title as 'finance' | 'other']}
+                  {responsibility
+                    ? RESPONSIBILITY_LABELS[responsibility]
+                    : TITLE_LABELS[title as 'finance' | 'other']}
                   {items.length > 0 && (
                     <span data-ui="count" className={s.titleCount}>
                       {items.length}

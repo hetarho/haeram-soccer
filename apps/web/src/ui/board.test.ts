@@ -128,7 +128,7 @@ describe('operating board draft', () => {
     expect(draftChanges(w, cardsOnly).every((change) => change.kind === 'card')).toBe(true);
   });
 
-  it('a remedy request becomes a one-dial draft', () => {
+  it('a dial request becomes a one-dial draft', () => {
     const w = world();
     const draft = draftFromRequest(w, { policy: { key: 'support', level: 2 } });
     expect(draft).toEqual({ policy: { support: 2 } });

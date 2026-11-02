@@ -1,6 +1,5 @@
-import { PlaceActivities } from './PlaceActivities';
 import { useEffect, type ReactNode } from 'react';
-import type { ClientState, GameClient } from '../runtime/client';
+import type { ClientState } from '../runtime/client';
 import { FIRST_TEAM_TABS, STAFF_TABS } from './personnelNavigation';
 import { openPersonnel, usePeopleView, type PeopleTab } from './state';
 import { useTaskState } from './taskMemory';
@@ -11,21 +10,18 @@ import { TeamReturn } from './TeamDirectory';
  * 1군 and 코치진 (→WEB-43): each opens on its actual people under their rooms' illustrations,
  * which the panel places beside them, with no room menu or office-return bar; a quiet link leads
  * back to the 팀 list that owns them (→WEB-112). 1군 is the roster, its market view the primary
- * 이적시장 entry. 코치진 is the manager with his staff, the manager's replacement market over it,
- * and after them the requests the manager and the coaches take from the owner (→WEB-102). Both
- * compose the same authoritative panels the office's request reviews use; neither copies a
- * command.
+ * 이적시장 entry. 코치진 is the manager with his staff and the manager's replacement market over
+ * it; the manager's office and the coaching room only read (→WEB-102). Both compose the same
+ * authoritative panels the office's request reviews use; neither copies a command.
  */
 export function PersonnelHub({
   page,
   state,
-  client,
   panel,
   market,
 }: {
   page: 'firstTeam' | 'staff';
   state: ClientState;
-  client: GameClient;
   panel: (tab: PeopleTab, replace: () => void) => ReactNode;
   market: (close: () => void) => ReactNode;
 }) {
@@ -63,12 +59,6 @@ export function PersonnelHub({
     <>
       {tab !== 'market' && <TeamReturn page={page} />}
       {panel(tab as PeopleTab, replace)}
-      {page === 'staff' && (
-        <>
-          <PlaceActivities place="manager" state={state} client={client} />
-          <PlaceActivities place="coaching" state={state} client={client} />
-        </>
-      )}
       {page === 'staff' && showMarket && market(closeMarket)}
     </>
   );

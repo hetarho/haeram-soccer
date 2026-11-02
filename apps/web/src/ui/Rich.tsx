@@ -583,34 +583,34 @@ export function ManagerMarket({
   );
   const lists = (
     <>
-        <p className={s.muted}>
-          지금 {m.name}
-          {m.interim ? ' (임시 감독)' : ''} · OVR {m.ability}
-        </p>
-        <Panel title="자유계약 감독" note="FREE AGENTS">
-          <div className={s.panelBody}>
-            <p className={s.muted}>
-              감독 시장은 {roundsUntilRefresh(w)}라운드 뒤에 다시 움직여요. 다른 구단에서 경질된
-              감독이 들어오고, 자리를 찾은 감독은 빠져요. 즉시 지출에는 지금 감독 보상(남은 시즌마다
-              연봉의 25%)이 포함돼요.
-            </p>
-            {free.length ? (
-              <div className={s.cards}>{free.map(card)}</div>
-            ) : (
-              <p className={s.muted}>지금은 자유계약 감독이 없어요.</p>
-            )}
-          </div>
-        </Panel>
-        <Panel title="다른 구단 감독 · 보상금 필요" note="POACH">
-          <div className={s.panelBody}>
-            <p className={s.muted}>
-              우리 리그와 바로 위 디비전 감독 중 지도력 상위 {others.length}명이에요. 데려오려면
-              계약금에 더해 그 구단에 연봉의 1.5배를 보상금으로 내요. 감독 선임을 맡기면 기준이
-              허락할 때만 스태프가 다른 구단 감독을 데려와요.
-            </p>
-            <div className={s.cards}>{others.map(card)}</div>
-          </div>
-        </Panel>
+      <p className={s.muted}>
+        지금 {m.name}
+        {m.interim ? ' (임시 감독)' : ''} · OVR {m.ability}
+      </p>
+      <Panel title="자유계약 감독" note="FREE AGENTS">
+        <div className={s.panelBody}>
+          <p className={s.muted}>
+            감독 시장은 {roundsUntilRefresh(w)}라운드 뒤에 다시 움직여요. 다른 구단에서 경질된
+            감독이 들어오고, 자리를 찾은 감독은 빠져요. 즉시 지출에는 지금 감독 보상(남은 시즌마다
+            연봉의 25%)이 포함돼요.
+          </p>
+          {free.length ? (
+            <div className={s.cards}>{free.map(card)}</div>
+          ) : (
+            <p className={s.muted}>지금은 자유계약 감독이 없어요.</p>
+          )}
+        </div>
+      </Panel>
+      <Panel title="다른 구단 감독 · 보상금 필요" note="POACH">
+        <div className={s.panelBody}>
+          <p className={s.muted}>
+            우리 리그와 바로 위 디비전 감독 중 지도력 상위 {others.length}명이에요. 데려오려면
+            계약금에 더해 그 구단에 연봉의 1.5배를 보상금으로 내요. 감독 선임을 맡기면 기준이 허락할
+            때만 스태프가 다른 구단 감독을 데려와요.
+          </p>
+          <div className={s.cards}>{others.map(card)}</div>
+        </div>
+      </Panel>
     </>
   );
   return (
@@ -1334,7 +1334,6 @@ export default function Rich({
         key={`${state.view!.world.id}:${page}`}
         page={page}
         state={state}
-        client={client}
         panel={(tab, replace) => (
           <PersonnelPanel
             tab={tab}

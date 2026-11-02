@@ -35,7 +35,6 @@ export * from './inbox';
 export * from './transfers';
 export * from './projection';
 export * from './morale';
-export * from './care';
 export * from './styles';
 export * from './build';
 export * from './synergy';

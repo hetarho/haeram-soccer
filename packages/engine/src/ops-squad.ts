@@ -22,14 +22,13 @@ import { staffEffects } from './staff';
 import { promoteYouth, releaseYouth } from './academy';
 import { placeBid, respondBid, setTransferStance } from './transfers';
 import { assertTransferWindow } from './transfer-window';
-import { careOffer, outcomeText, resolveCare } from './care';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
-import { credit, debit } from './transactions';
+import { debit } from './transactions';
 import { noteSigning } from './signings';
 
-/** Bids, offers, stances, lineup, training, the academy, owner requests and contract talks. */
+/** Bids, offers, stances, lineup, training, the academy and contract talks. */
 export type SquadCommand = Extract<
   Command,
   {
@@ -41,7 +40,6 @@ export type SquadCommand = Extract<
       | 'lineup'
       | 'promote-youth'
       | 'release-youth'
-      | 'care'
       | 'contract-offer'
       | 'contract-decline';
   }
@@ -169,21 +167,6 @@ export function squadCommand(w: World, cmd: SquadCommand) {
     case 'lineup':
       setLineup(w, cmd.ids);
       break;
-    case 'care': {
-      const offer = careOffer(w, cmd.kind);
-      if (!offer.available) throw new Error(`${offer.label} · ${offer.reason}`);
-      if (BigInt(offer.cost) > 0n) debit(w, offer.cost);
-      if (BigInt(offer.income) > 0n) credit(w, offer.income);
-      const outcome = resolveCare(w, cmd.kind);
-      addEvent(
-        w,
-        `care:${cmd.kind}`,
-        offer.label,
-        `${offer.by} · ${outcomeText(outcome)}${offer.outcomes.length > 1 ? ` (${outcome.chance}% 결과)` : ''} · ${offer.cooldown}라운드 뒤 다시 가능`,
-        BigInt(offer.cost) > 0n ? offer.cost : BigInt(offer.income) > 0n ? offer.income : undefined,
-      );
-      break;
-    }
     case 'recruit': {
       if ((cmd.candidate === undefined) === (cmd.target === undefined))
         throw new Error('영입 대상을 확인하세요.');

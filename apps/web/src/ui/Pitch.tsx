@@ -209,7 +209,12 @@ export function notableEvent(event: MatchEvent, frame: number) {
  * The notable events the presentation has reached, newest first, each with its minute's label;
  * `limit` stops early, so the current line reads only its latest.
  */
-export function commentaryLog(frames: MatchFrame[], index: number, within: number, limit = Infinity) {
+export function commentaryLog(
+  frames: MatchFrame[],
+  index: number,
+  within: number,
+  limit = Infinity,
+) {
   const log: { key: string; label: string; text: string }[] = [];
   for (let i = Math.min(index, frames.length - 1); i >= 0 && log.length < limit; i--) {
     const events = frames[i]!.events ?? [];

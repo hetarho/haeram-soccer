@@ -372,12 +372,10 @@ const ConnectedRich = memo(function ConnectedRich({
 const GameHud = memo(function GameHud({
   onMenu,
   playing,
-  client,
 }: {
   onMenu: () => void;
   /** Founding, even beside a parked game, shows the start HUD: no club, menu, inbox or cash. */
   playing: boolean;
-  client?: GameClient;
 }) {
   const { t } = useLocale();
   const own = useGameState((state) =>
@@ -432,7 +430,7 @@ const GameHud = memo(function GameHud({
       )}
       <ReadonlyBadge />
       {!playing && <PresentationSettingsTrigger />}
-      {playing && <HudCash client={client} />}
+      {playing && <HudCash />}
       {playing && <CommunicationsButton className={s.hudNotifications} />}
     </header>
   );
@@ -1016,7 +1014,7 @@ export function App() {
         )}
       </aside>
       <main className={s.main}>
-        {screen === 'game' && <GameHud onMenu={openMenu} playing={playing} client={client} />}
+        {screen === 'game' && <GameHud onMenu={openMenu} playing={playing} />}
         {!client && localError && (
           <FeedbackOverlay>
             <div data-surface="inset" className={s.error} role="alert">

@@ -75,7 +75,7 @@ type Sheet = { coach: TrainingCoach; focus?: TrainingFocus | YouthFocus; player?
 /** Independently composed training bodies retain one training-sheet host. */
 export function TrainingView({ state, client, view }: Props & { view: TrainingTab }) {
   const w = state.view!.world;
-  // A coach's sheet asked for from a remedy or the academy's line opens once (→WEB-44).
+  // A coach's sheet asked for from elsewhere opens once, in its own view.
   const coachRequest = useCoachRequest((view) => view.request);
   const [sheet, setSheet] = useTaskState<Sheet | undefined>(
     w.id,
@@ -93,7 +93,7 @@ export function TrainingView({ state, client, view }: Props & { view: TrainingTa
   return (
     <>
       {view === 'training' ? (
-        <FirstTeamTraining state={state} client={client} onSheet={setSheet} />
+        <FirstTeamTraining state={state} onSheet={setSheet} />
       ) : (
         <AcademyTraining state={state} client={client} />
       )}
@@ -114,9 +114,11 @@ export function TrainingView({ state, client, view }: Props & { view: TrainingTa
 /** First-team training and academy can compose independently without copying their actions. */
 export function FirstTeamTraining({
   state,
-  client,
   onSheet,
-}: Props & { onSheet: (sheet: Sheet) => void }) {
+}: {
+  state: ClientState;
+  onSheet: (sheet: Sheet) => void;
+}) {
   const w = state.view!.world;
   const outlook = developmentOutlook(w);
   return (
@@ -132,9 +134,6 @@ export function FirstTeamTraining({
       <div className={`${s.stack} ${s.pair}`}>
         <TrainingFocusPanel w={w} outlook={outlook} onSheet={onSheet} />
         <DevelopmentDrivers outlook={outlook} />
-        <div className={s.wide}>
-          <PlaceActivities place="training" state={state} client={client} />
-        </div>
         <PlayerTraining w={w} onSheet={onSheet} />
       </div>
     </>
@@ -148,7 +147,7 @@ export function AcademyTraining({ state, client }: Props) {
         {w.academyFacility ? `${w.academyFacility}단계 유소년 시설` : '기본 유소년 시설'} · 유소년
         총괄 {w.staff?.find((person) => person.role === 'youth')?.name ?? '공석'}
       </FacilityOverview>
-      <PlaceActivities place="academy" state={state} client={client} />
+      <PlaceActivities state={state} client={client} />
     </>
   );
 }

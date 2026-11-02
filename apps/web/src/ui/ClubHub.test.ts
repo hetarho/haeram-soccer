@@ -48,10 +48,6 @@ vi.mock('./teamState', async (importOriginal) => ({
 vi.mock('./FacilityArt', () => ({
   FacilityArt: ({ kind }: { kind: string }) => createElement('span', { 'data-facility-art': kind }),
 }));
-// The quick actions' own sheets and commands are their module's; here only where they stand.
-vi.mock('./QuickActions', () => ({
-  QuickActions: () => createElement('section', { 'data-testid': 'quick-actions' }),
-}));
 // The approval read model is the queue's own; the entrance only states its counts.
 vi.mock('../runtime/progression', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../runtime/progression')>()),
@@ -292,8 +288,7 @@ describe('home office entrance (→WEB-11/72)', () => {
     expect(markup).toMatch(/결재 대기 <b data-ui="count"[^>]*>3<\/b>건/);
     expect(markup).toContain('지연 1건');
     expect(markup).toContain('>들어가기</button>');
-    // The office holds the team summary and the quick actions, not its entrance.
-    expect(markup).not.toContain('quick-actions');
+    // The office holds the team summary, not its entrance.
     expect(markup).not.toContain('club-situation');
   });
 
@@ -326,22 +321,20 @@ describe('the home briefing and the office team content (→WEB-11/39)', () => {
     expect(season).toBeLessThan(fixture);
     expect(fixture).toBeLessThan(office);
     expect(markup).toContain('data-facility-art="manager"');
-    // No section bar, team summary or quick-action tiles stay on home.
-    for (const moved of ['club-situation', 'quick-actions', 'role="tablist"', '팀 전력'])
+    // No section bar or team summary stays on home.
+    for (const moved of ['club-situation', 'role="tablist"', '팀 전력'])
       expect(markup, moved).not.toContain(moved);
   });
 
-  it('places the summary, then the quick actions in the compact office band, once each', () => {
+  it('places the read-only summary once, with no owner action beside it (→WEB-39/44)', () => {
     vi.mocked(clubSituation).mockReturnValue(facts);
-    const markup = renderToStaticMarkup(createElement(OfficeTeam, { w: world(), client }));
+    const markup = renderToStaticMarkup(createElement(OfficeTeam, { w: world() }));
     expect(markup).toContain('aria-label="팀 현황"');
     expect(markup.match(/data-testid="club-situation"/g)).toHaveLength(1);
-    expect(markup.match(/data-testid="quick-actions"/g)).toHaveLength(1);
-    expect(markup.indexOf('club-situation')).toBeLessThan(markup.indexOf('quick-actions'));
-    // The band names the office so the themes keep its compact icon-free tiles (→WEB-91).
-    expect(markup).toMatch(/data-home-part="office"><section data-testid="quick-actions"/);
-    // The summary reads; the quick actions are the only controls.
+    // The summary only reads: no control, tile band or remedy sits in the office's team content.
     expect(markup).not.toContain('<button');
+    expect(markup).not.toContain('quick-actions');
+    expect(markup).not.toContain('data-home-part="office"');
     expect(markup).not.toContain('data-facility-art');
   });
 });

@@ -4,7 +4,6 @@ import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { orderIds, ownDivisionRound, ownLeague, ownLeagueIds, ownLeagueProgress } from './league';
 import { leagueName } from './LeaguePicker';
 import { competitionLabel } from './format';
-import { QuickActions } from './QuickActions';
 import { clubSituation } from './teamState';
 import type { GameClient } from '../runtime/client';
 import { useGameState } from '../runtime/store';
@@ -65,7 +64,7 @@ export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => voi
 /**
  * The clubhouse's illustrated way into the owner office (→WEB-11/72): the manager-room art in its
  * reserved slot under a light shade, with the approvals that actually wait, the overdue ones among
- * them and 들어가기 as live text on top. The office holds the club summary and quick actions.
+ * them and 들어가기 as live text on top. The office holds the club summary.
  */
 export function OfficeEntrance({ w }: { w: World }) {
   const requests = approvalRequests(w);
@@ -208,8 +207,8 @@ export function SeasonCard({ w, active }: { w: World; active: boolean }) {
 /**
  * Where the club stands now (→WEB-44), beside the office's owner work and quieter than it:
  * strength and its place in our division, who can play, fatigue, 분위기 and the manager's
- * standing, with warnings in plain words. It only reads — no tile redirects anywhere; the quick
- * actions beside it answer it and the club sections hold the real workflows.
+ * standing, with warnings in plain words. It only reads — no tile redirects or remedies anything;
+ * the club sections hold the real workflows.
  */
 export function ClubSituation({ w }: { w: World }) {
   return (
@@ -244,17 +243,13 @@ export function ClubSituation({ w }: { w: World }) {
 }
 
 /**
- * The office's supporting team content under its 결재함 (→WEB-39/44/107): the club summary, then
- * the owner's three quick actions in the office's compact band, so neither replaces the queue.
+ * The office's supporting team content under its 결재함 (→WEB-39/44): the read-only club summary,
+ * which never replaces the queue and offers no immediate owner action.
  */
-export function OfficeTeam({ w, client }: { w: World; client: GameClient }) {
+export function OfficeTeam({ w }: { w: World }) {
   return (
     <section className={s.team} aria-label="팀 현황" data-office-part="team">
       <ClubSituation w={w} />
-      {/* The band keeps the themes' compact office tiles (→WEB-91). */}
-      <div className={s.officeActions} data-home-part="office">
-        <QuickActions w={w} client={client} />
-      </div>
     </section>
   );
 }

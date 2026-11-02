@@ -362,8 +362,8 @@ const TRUST_COLLAPSE = '구단주와의 신뢰가 무너져 사임했습니다.'
 
 /**
  * Once per settled league round (→STAFF-47): the first round a manager is at the floor warns the
- * owner without a draw, so he can back him first (→CLUB-20); later rounds draw his resignation
- * from a stream of his own, so matches and other draws stay put. Interims never resign this way.
+ * owner without a draw; later rounds draw his resignation from a stream of his own, so matches
+ * and other draws stay put. Interims never resign this way.
  */
 export function settleManagerTrust(w: World) {
   const m = w.manager;
@@ -387,7 +387,6 @@ export function settleManagerTrust(w: World) {
       detail: [
         `구단주와의 신뢰가 ${m.trust}까지 떨어졌어요`,
         '이대로면 어느 라운드에든 사임할 수 있어요',
-        '공개 신임(감독 재신임 발표)이 신뢰를 되살릴 수 있어요',
       ].join(' · '),
       attention: true,
       ref: m.id,

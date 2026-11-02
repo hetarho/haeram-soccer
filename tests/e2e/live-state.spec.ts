@@ -7,14 +7,12 @@ import {
 } from './competition-navigation';
 import { watchNext } from './watch';
 import { test, expect, type Page } from '@playwright/test';
-import { readFile } from 'node:fs/promises';
-import { decode, encode } from '../../apps/web/src/adapters/persistence';
+import { encode } from '../../apps/web/src/adapters/persistence';
 import { createWorld } from '../../packages/engine/src/index';
 import type { World } from '../../packages/contracts/src/types';
 import { configureResponsibilities, matchReport } from './events';
 import { continueSlot } from './slots';
 import { chooseOption } from './select';
-import { openPersonnel } from './personnel-navigation';
 import { enterOffice } from './office';
 
 async function found(page: import('@playwright/test').Page) {
@@ -291,19 +289,7 @@ async function seed(page: Page, w: World) {
   }, raw);
 }
 
-async function exportWorld(page: Page): Promise<World> {
-  await page.getByRole('button', { name: '설정', exact: true }).click();
-  const menu = page.getByRole('dialog', { name: '설정' });
-  const downloading = page.waitForEvent('download');
-  await menu.getByRole('button', { name: '기록 내보내기', exact: true }).click();
-  const raw = await readFile((await (await downloading).path())!, 'utf8');
-  await menu.getByRole('button', { name: '창 닫기', exact: true }).click();
-  return (await decode(raw)).world;
-}
-
-test("the fatigue remedy opens the assistant's training sheet with 회복 ready, and an order sets it", async ({
-  page,
-}) => {
+test('the office summary flags tired starters and offers no remedy (→WEB-44)', async ({ page }) => {
   const w = createWorld({
     country: 'ENG',
     name: 'Haeram Athletic',
@@ -312,65 +298,16 @@ test("the fatigue remedy opens the assistant's training sheet with 회복 ready,
     level: 'easy' as const,
   });
   for (const player of w.players) player.fatigue = 55;
-  // The owner forced 하드 트레이닝; left to his rule the assistant would rest them (→CLUB-13).
-  w.trainingOrders = { assistant: { focus: 'hard', rounds: 4, forced: true } };
   await seed(page, w);
   await page.goto('/');
   await continueSlot(page);
-  // Home reads no team state; the office's summary reads the tired starters and its 피로 quick
-  // action answers them (→WEB-11/44/107).
+  // Home reads no team state; the office's summary reads the tired starters (→WEB-11/44).
   const hub = page.getByTestId('club-hub');
   await expect(hub).toBeVisible();
   await expect(hub.getByTestId('situation-warning-fatigue')).toHaveCount(0);
   await enterOffice(page);
-  const queue = page.getByTestId('approval-queue');
   await expect(page.getByTestId('situation-warning-fatigue')).toBeVisible();
-  const sheet = page.getByRole('dialog', { name: '피로 관리' });
-  const training = page.getByRole('dialog', { name: '수석코치 훈련 제안' });
-  const openAssistant = async () => {
-    await page
-      .getByTestId('quick-actions')
-      .getByRole('button', { name: /^피로 .* · 주의 · 바로 할 수 있는 일/ })
-      .click();
-    await sheet
-      .getByRole('listitem')
-      .filter({ hasText: '수석코치에게 회복 훈련 제안' })
-      .getByRole('button', { name: '검토', exact: true })
-      .click();
-  };
-  // Leaving the office takes the assistant's sheet it opened with it, committing nothing.
-  await openAssistant();
-  await expect(training).toBeVisible();
-  await expect(page).toHaveURL(/\/direction$/);
-  await page.goBack();
-  await expect(hub).toBeVisible();
-  await expect(training).toHaveCount(0);
-  await expect(sheet).toHaveCount(0);
-  await enterOffice(page);
-  await page
-    .getByTestId('quick-actions')
-    .getByRole('button', { name: /^피로 .* · 주의 · 바로 할 수 있는 일/ })
-    .click();
-  const rest = sheet.getByRole('listitem').filter({ hasText: '휴식일 부여 요청' });
-  await expect(rest).toContainText('분위기 −2');
-  await expect(rest).toContainText('전원 피로 −6');
-  await expect(rest).toContainText('즉시 반영 · 재요청 4라운드 후');
-  await sheet
-    .getByRole('listitem')
-    .filter({ hasText: '수석코치에게 회복 훈련 제안' })
-    .getByRole('button', { name: '검토', exact: true })
-    .click();
-  // The sheet closes and the assistant's sheet opens over the office with 회복 first; nothing
-  // has changed yet and no page changes (→WEB-107, STAFF-19).
-  await expect(sheet).toBeHidden();
-  await expect(page).toHaveURL(/\/direction$/);
-  await expect(queue).toBeVisible();
-  await expect(training.getByRole('listitem').first()).toContainText('회복 훈련');
-  await expect(training.getByTestId('training-call-assistant')).toContainText('하드 트레이닝');
-  await training.getByRole('button', { name: /^회복 훈련 강행/ }).click();
-  await expect(training).toBeHidden();
-  await openPersonnel(page, 'training');
-  await expect(page.getByTestId('training-focus')).toContainText('지금 회복 · 구단주 지시');
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  expect((await exportWorld(page)).trainingOrders?.assistant?.focus).toBe('recovery');
+  // The summary only reads: no quick action, remedy sheet or control answers it.
+  await expect(page.getByTestId('club-situation').getByRole('button')).toHaveCount(0);
+  await expect(page.getByTestId('quick-actions')).toHaveCount(0);
 });

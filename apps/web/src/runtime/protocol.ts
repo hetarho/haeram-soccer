@@ -131,20 +131,6 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('renew-staff'), role: staffRole, term: term.optional() }),
   z.object({ type: z.literal('promote-youth'), id: ref }),
   z.object({
-    type: z.literal('care'),
-    kind: z.enum([
-      'rest-day',
-      'recovery',
-      'meeting',
-      'bonding',
-      'camp',
-      'backing',
-      'win-bonus',
-      'owner-visit',
-      'friendly',
-    ]),
-  }),
-  z.object({
     type: z.literal('build'),
     build: clubBuildSchema,
     name: z.string().trim().min(1).max(STRATEGY_NAME_LIMIT).optional(),

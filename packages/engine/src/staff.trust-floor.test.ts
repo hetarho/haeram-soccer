@@ -50,7 +50,8 @@ describe('the floor of trust (→STAFF-47)', () => {
     const notice = w.inbox!.at(-1)!;
     expect(notice).toMatchObject({ kind: 'staff-report', ref: id, attention: true });
     expect(notice.title).toContain('사임을 고민');
-    expect(notice.detail).toContain('공개 신임');
+    // The notice states the relationship only: no owner action answers it any more (→CLUB-20).
+    expect(notice.detail).not.toContain('재신임');
     // Rounds that miss the draw keep him without a second warning.
     for (const r of roundsDrawing(w, TRUST_FLOOR_CONFIG.chance, 1).slice(0, 5)) settleAt(w, r);
     expect(w.manager.id).toBe(id);

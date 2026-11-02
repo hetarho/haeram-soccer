@@ -211,7 +211,7 @@ if (arrival?.market) usePeopleView.getState().open('candidates');
 /** An office view asked for while the office is showing; from elsewhere the address carries it. */
 export const useBusinessView = oneShot<OfficeView>();
 /**
- * A coach's training sheet asked for from elsewhere (a fatigue remedy →WEB-44, 훈련's own rows),
+ * A coach's training sheet asked for from elsewhere (훈련's own rows, the academy, a player),
  * for 훈련 to open with the focus ready to suggest (→STAFF-19): the squad's, the academy's or one
  * player's.
  */
@@ -240,10 +240,7 @@ export function openCoachSheet(
   useCoachRequest.getState().open({ coach, focus, player });
   openTraining(coach === 'youth' ? 'academy' : 'training');
 }
-/**
- * A dial change suggested from elsewhere (a cash remedy, →WEB-44), for the operating board to
- * open as a draft.
- */
+/** A dial change suggested from elsewhere, for the operating board to open as a draft. */
 export const useBoardRequest = oneShot<BoardRequest>();
 /** A department editor overlays the task without changing its route or return stack. */
 export const useDepartmentPolicy = create<{

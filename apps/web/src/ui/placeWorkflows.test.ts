@@ -120,7 +120,6 @@ describe('live place composition', () => {
       createElement(PersonnelHub, {
         page,
         state: f.state,
-        client: f.client,
         panel: () => createElement('section', { 'aria-label': 'authoritative personnel' }),
         market: () => null,
       }),
@@ -146,34 +145,30 @@ describe('live place composition', () => {
       expect(html).not.toContain(scaffold);
   });
 
-  it("opens 코치진 on its people, then the manager's and the staff's guarded requests", () => {
+  it('opens 코치진 on its people, whose manager office and coaching room only read (→WEB-102)', () => {
     const html = hub('staff', 'coaches');
     // The actual manager and posts lead after the way back to 팀; no room menu stands before them.
     expect(html).toMatch(leadsBackToTeam);
     expect(html).not.toContain('<figure');
     expect(html).not.toContain('data-ui="office-bar"');
-    const people = html.indexOf('authoritative personnel'),
-      manager = html.indexOf('place-activities-manager'),
-      coaching = html.indexOf('place-activities-coaching');
-    expect(people).toBeLessThan(manager);
-    expect(manager).toBeLessThan(coaching);
-    expect(html).toContain('감독 재신임 발표 검토');
-    expect(html).toContain('회복 집중 지원 검토');
-    expect(html).toContain('aria-label="감독에게 요청"');
-    expect(html).toContain('aria-label="스태프에게 요청"');
+    // No request panel follows the people: the owner asks the manager and the staff nothing.
+    for (const removed of ['place-activities', '감독에게 요청', '스태프에게 요청', '검토</button>'])
+      expect(html, removed).not.toContain(removed);
     // Training choices live in 훈련, never in the staff directory (→WEB-71).
     expect(html).not.toContain('훈련 제안·강행');
   });
 
   it.each(['training', 'academy'] as const)(
-    'keeps one authoritative %s workflow and a live place',
+    'keeps one authoritative %s workflow; only the academy is a place with decisions',
     (view) => {
       const f = fixture();
       const html = renderToStaticMarkup(
         createElement(TrainingView, { state: f.state, client: f.client, view }),
       );
-      expect(html).toContain(`place-activities-${view}`);
       if (view === 'training') {
+        // The training ground only reads (→WEB-102): no request panel of its own.
+        expect(html).not.toContain('place-activities');
+        expect(html).not.toContain('훈련장에서 할 일');
         expect(html.match(/수석코치에게 훈련 제안·강행/g)).toHaveLength(1);
         // Composition order only; physical viewport/target/focus checks belong to the browser gate.
         const focus = html.indexOf('id="training-focus"');
@@ -181,9 +176,7 @@ describe('live place composition', () => {
         const advice = html.indexOf('data-testid="training-advice"');
         const coach = html.indexOf('담당 수석코치');
         const reference = html.indexOf('훈련 효과·자동 판단 기준');
-        const activities = html.indexOf('place-activities-training');
         expect(focus).toBeGreaterThan(html.indexOf('</figure>'));
-        expect(html.indexOf('data-testid="training-focus"')).toBeLessThan(activities);
         const panel = html.slice(focus, html.indexOf('</section>', focus));
         expect(panel.match(/<button\b[^>]*>/g)?.[0]).toContain('type="button"');
         expect(panel.indexOf('수석코치에게 훈련 제안·강행')).toBeLessThan(
@@ -192,15 +185,13 @@ describe('live place composition', () => {
         expect(action).toBeLessThan(advice);
         expect(advice).toBeLessThan(coach);
         expect(coach).toBeLessThan(reference);
-        expect(reference).toBeLessThan(activities);
         expect(panel).toContain('다음 라운드부터 4라운드 · 강행 시 사임 위험');
         expect(panel).toContain('Synthetic Assistant · 보기');
         expect(panel).toContain('지금 균형 · 코치 판단');
         expect(panel).not.toContain('<details open');
-        expect(activities).toBeLessThan(html.indexOf('data-testid="adaptation-list"'));
-        expect(html).toContain('휴식일 부여 요청 검토');
-        expect(html).toContain('분위기 −2');
+        expect(reference).toBeLessThan(html.indexOf('data-testid="adaptation-list"'));
       } else {
+        expect(html).toContain('place-activities-academy');
         expect(html.match(/aria-label="유소년 아카데미"/g)).toHaveLength(1);
         expect(html.match(/유스 디렉터에게 훈련 제안·강행/g)).toHaveLength(1);
         expect(html).toContain('아직 아카데미 선수가 없어요');

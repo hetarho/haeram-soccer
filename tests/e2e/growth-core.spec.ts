@@ -28,7 +28,7 @@ for (const viewport of [
   { width: 360, height: 740 },
   { width: 390, height: 844 },
 ]) {
-  test(`19-player warning opens from its office quick action at ${viewport.width}x${viewport.height}`, async ({
+  test(`19-player warning reads in the office summary at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
@@ -49,11 +49,10 @@ for (const viewport of [
     // Home keeps only its briefing and the office entrance (→WEB-11).
     const hub = page.getByTestId('club-hub');
     await expect(hub).toBeVisible();
-    for (const moved of ['quick-actions', 'club-situation', 'quick-warning-development'])
-      await expect(hub.getByTestId(moved)).toHaveCount(0);
-    // The office's 훈련·육성 quick actions answer the thin squad; its state reads beside them.
+    await expect(hub.getByTestId('club-situation')).toHaveCount(0);
+    // The office reads the thin squad in its summary and offers no quick action (→WEB-39/44).
     await enterOffice(page);
-    await expect(page.getByTestId('quick-warning-development')).toBeVisible();
+    await expect(page.getByTestId('quick-actions')).toHaveCount(0);
     await expect(alert).toHaveCount(0);
     await expectHomeBounds(page);
     // The current-club summary reads the thin squad in plain words; it has nothing to press.
@@ -64,24 +63,7 @@ for (const viewport of [
     await expect(situation.getByRole('button')).toHaveCount(0);
     await expect(alert).toHaveCount(0);
     await expect(situation).not.toContainText('선수 19명');
-    // Its advice comes on request, from the quick action that answers it (→WEB-44/107).
-    const button = page
-      .getByTestId('quick-actions')
-      .getByRole('button', { name: /^훈련·육성 .* · 주의 · 바로 할 수 있는 일/ });
-    await expectTouchSize(button);
-    await button.click();
-    const remedies = page.getByRole('dialog', { name: '훈련·육성', exact: true });
-    await expect(remedies).toBeVisible();
-    await expect(remedies).toContainText('선수 19명');
-    await expect(remedies).toContainText('선발을 채우기 어려워요.');
-    await page.keyboard.press('Escape');
-    await expect(remedies).toHaveCount(0);
-    await expect(button).toBeFocused();
-    await button.press('Enter');
-    await expect(remedies).toBeVisible();
-    await remedies.getByRole('button', { name: '창 닫기', exact: true }).click();
-    await expect(button).toBeFocused();
-    // The progress timeline lives on Home; the office advice above stays in the office.
+    // The progress timeline lives on Home; the office summary above stays in the office.
     await clubhouseTab(page).click();
     await expect(hub).toBeVisible();
     await chooseOption(page.getByRole('combobox', { name: '자동 진행 배속', exact: true }), 'x10');
@@ -131,8 +113,7 @@ for (const viewport of [
     for (const figure of ['라운드', '리그 순위', '승점 0'])
       await expect(season.getByText(figure, { exact: true })).toBeVisible();
     await expect(page.getByTestId('hub-record')).toHaveText('0-0-0');
-    // The club's situation and the quick actions moved into the office (→WEB-11/39).
-    await expect(hub.getByTestId('quick-actions')).toHaveCount(0);
+    // The club's situation lives in the office (→WEB-11/39).
     await expect(hub.getByRole('region', { name: '클럽 현황', exact: true })).toHaveCount(0);
 
     const reportButton = hub.getByRole('button', { name: '상세 리포트', exact: true });
@@ -160,12 +141,9 @@ for (const viewport of [
     expect((await viewGeometry(page)).scroll).toBe(opened);
     expect(await page.evaluate(() => scrollY)).toBe(0);
 
-    // The office groups the owner's quick actions by topic beside the club's situation, below its
-    // 결재함 (→WEB-39/44/107).
+    // The office reads the club's situation below its 결재함, with no quick actions (→WEB-39/44).
     await enterOffice(page);
-    const quick = page.getByTestId('quick-actions');
-    for (const group of ['분위기', '피로', '훈련·육성'])
-      await expect(quick.getByText(group, { exact: true })).toBeVisible();
+    await expect(page.getByTestId('quick-actions')).toHaveCount(0);
     const situation = page.getByRole('region', { name: '클럽 현황', exact: true });
     // Strength changes with the lineup, fatigue and morale, so it leads the summary (→WEB-44).
     await expect(situation.locator('dt')).toHaveText([

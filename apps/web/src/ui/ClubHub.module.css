@@ -131,25 +131,12 @@
   text-shadow: none;
 }
 
-/* The office's team content under its queue: the summary, then the quick actions' band. */
+/* The office's team content under its queue: the read-only club summary. */
 .team {
   display: grid;
   gap: 8px;
   min-width: 0;
 }
-.officeActions {
-  display: grid;
-  min-width: 0;
-  padding: 8px 10px;
-  border: 1px solid var(--line);
-  border-radius: var(--card-radius);
-  background: var(--surface-grain, none) var(--surface-deep);
-}
-.officeActions .state {
-  padding: 0;
-  border: 0;
-}
-
 /* The current-club summary (→WEB-44): five quiet facts, read-only, beside the office's work.
    Wide screens hold one row; phones put strength and availability over the three moods. */
 .situation {
@@ -414,139 +401,6 @@
   color: inherit;
 }
 
-/* Each condition opens its own explanation and remedies. */
-.state {
-  padding: 10px 0;
-  border-radius: var(--card-radius);
-  border: 1px solid var(--line);
-  background: transparent;
-}
-.state header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-.state h3 {
-  font-size: 14px;
-}
-.state header button {
-  min-height: 36px;
-  padding: 2px 12px;
-  font-size: 12px;
-  font-family: var(--display);
-}
-.state ul {
-  list-style: none;
-  margin: 6px 0 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(108px, 1.2fr);
-  gap: 5px;
-}
-.state li {
-  display: grid;
-  padding: 0;
-  border-radius: var(--card-radius);
-  border: 1px solid var(--line);
-  background: var(--team-state-fill, rgba(0, 0, 0, 0.22));
-  transition:
-    border-color 300ms,
-    background 300ms;
-}
-.state li button {
-  display: grid;
-  justify-items: center;
-  gap: 0;
-  width: 100%;
-  min-height: 44px;
-  padding: 5px 2px;
-  border: 0;
-  border-radius: inherit;
-  background: transparent;
-  box-shadow: none;
-  color: inherit;
-}
-.state li button:active:not(:disabled) {
-  transform: translateY(1px);
-  box-shadow: none;
-}
-.state li span {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--text-faint);
-  font-family: var(--display);
-}
-.stateLabel {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  max-width: 100%;
-  gap: 4px;
-}
-.state li .warningBadge {
-  display: inline-grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--danger);
-  color: var(--bg);
-  font-size: 12px;
-  font-weight: 900;
-  line-height: 1;
-}
-.state li b {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.2;
-  font-variant-numeric: tabular-nums;
-}
-.state li b i {
-  font-style: normal;
-}
-.state li small {
-  font-size: 12px;
-  font-weight: 400;
-  font-family: var(--display);
-  white-space: nowrap;
-}
-.state li small strong {
-  color: var(--text);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-.good small {
-  color: var(--positive);
-}
-.ok small {
-  color: var(--text-muted);
-}
-.warn {
-  border-color: var(--warning-line, #6f6346) !important;
-}
-.warn small,
-.warn b {
-  color: var(--gold);
-}
-.bad {
-  border-color: var(--critical-line, #75433d) !important;
-  background: rgba(120, 30, 20, 0.25) !important;
-}
-.bad small,
-.bad b {
-  color: var(--danger);
-}
-@media (max-width: 760px) and (max-height: 780px) {
-  .state {
-    padding: 8px 10px;
-  }
-  .state li button {
-    padding: 3px 2px;
-  }
-}
 /* The stats row opens the season detail. */
 button.resources {
   position: relative;
@@ -572,103 +426,6 @@ button.resources:active:not(:disabled) {
   color: var(--text-faint);
 }
 
-/* Remedy sheet: every choice states its effect and cost before commit. */
-/* The remedy sheet reads like the next-match report: the state on the ticket, then choices. */
-.remedyReport p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.6;
-  overflow-wrap: anywhere;
-  word-break: keep-all;
-}
-.remedyTitle {
-  margin: 16px 0 10px;
-  font-size: 15px;
-  font-family: var(--display);
-}
-.remedyActions {
-  display: grid;
-}
-.remedyActions button {
-  min-height: 48px;
-  font-size: 12px;
-  font-family: var(--display);
-}
-.remedies {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-@media (max-width: 760px) {
-  .remedies {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-.remedies > li {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: var(--card-radius);
-  border: 1px solid var(--line);
-  background: var(--surface-grain, none) var(--surface-2);
-  animation: rise 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-.remedies li:nth-child(2) {
-  animation-delay: 40ms;
-}
-.remedies li:nth-child(3) {
-  animation-delay: 80ms;
-}
-.remedies li:nth-child(4) {
-  animation-delay: 120ms;
-}
-.remedies li:nth-child(5) {
-  animation-delay: 160ms;
-}
-.remedies li:nth-child(6) {
-  animation-delay: 200ms;
-}
-.remedies li > div {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-}
-.remedies b {
-  font-size: 14px;
-}
-.remedies > li > div > b {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-}
-.remedies small {
-  font-size: 12px;
-  line-height: 1.4;
-  color: var(--text-muted);
-  font-family: var(--display);
-}
-.remedies em {
-  font-style: normal;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--gold);
-  font-family: var(--display);
-}
-.remedies button {
-  min-width: 64px;
-  min-height: 44px;
-  padding: 4px 12px;
-  font-size: 13px;
-}
-.remedyOff em {
-  color: var(--text-faint);
-}
 /* The season card: round, rank, record and cups over the season-progress rule (→WEB-11). */
 .seasonCard {
   grid-area: header;
@@ -756,59 +513,6 @@ button.resources:active:not(:disabled) {
     font-size: 16px;
   }
 }
-@media (max-width: 760px) {
-  .state {
-    padding: 6px 8px;
-  }
-  .state ul {
-    margin-top: 0;
-    gap: 4px;
-  }
-  .state li button {
-    min-height: 44px;
-    padding: 3px 2px;
-  }
-  .state li b {
-    font-size: 15px;
-    line-height: 1.15;
-  }
-}
-/* Requests name who carries them out and list each possible result with its chance. */
-.remedies b .remedyBy {
-  margin: 0;
-  padding: 1px 6px;
-  border-radius: var(--badge-radius);
-  background: var(--surface-grain, none) var(--surface-3);
-  color: var(--text-muted);
-  font-size: 12px;
-  font-weight: 700;
-  font-family: var(--display);
-}
-.chances {
-  display: grid;
-  gap: 1px;
-  margin: 4px 0 2px;
-  padding: 0;
-  list-style: none;
-}
-.remedies .chances li {
-  display: block;
-  padding: 0;
-  border: 0;
-  background: none;
-  animation: none;
-  font-size: 12px;
-  color: var(--text-muted);
-  font-family: var(--display);
-}
-.remedies .chances b {
-  display: inline-block;
-  min-width: 36px;
-  font-size: 12px;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-  font-family: var(--display);
-}
 
 .seasonMeter {
   display: grid;
@@ -867,8 +571,4 @@ button.resources:active:not(:disabled) {
 .competitions strong {
   color: var(--accent-text);
   font-size: 15px;
-}
-/* The owner's quick actions: one row of three topics on every width. */
-.state.quick ul {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
 }

@@ -65,7 +65,6 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/calibration.grid-favourite.test.ts',
   'packages/engine/src/calibration.grid-giant.test.ts',
   'packages/engine/src/calibration.test.ts',
-  'packages/engine/src/care.test.ts',
   'packages/engine/src/club-identity.test.ts',
   'packages/engine/src/coach-training.test.ts',
   'packages/engine/src/coaching-service.test.ts',

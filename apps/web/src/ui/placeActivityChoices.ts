@@ -1,67 +1,37 @@
-import type { CareKind, World } from '../../../../packages/contracts/src/types';
-import { activePlayers } from '../../../../packages/engine/src/player-state';
+import type { World } from '../../../../packages/contracts/src/types';
 import { currentDay, seasonDayLabel, seasonDayOf } from '../../../../packages/engine/src/calendar';
 import type { ClientState, GameClient } from '../runtime/client';
 import { gameActionsBlocked } from '../runtime/store';
-import { careRequest, placeAcademy, placeTraining } from './teamState';
-import { squadRegistration } from './squadRegistration';
+import { placeAcademy, youthCall } from './teamState';
 
-export type ActivityPlace = 'manager' | 'coaching' | 'training' | 'academy';
-
-const REQUESTS: Record<ActivityPlace, readonly CareKind[]> = {
-  manager: ['backing', 'meeting', 'owner-visit', 'win-bonus'],
-  coaching: ['recovery', 'bonding'],
-  training: ['rest-day', 'camp', 'friendly'],
-  academy: [],
-};
-
-/** Bounded live facts and genuine requests; reading a place does not draw or settle anything. */
-export function placeActivities(w: World, place: ActivityPlace) {
-  const choices = REQUESTS[place].map((kind) => careRequest(w, kind));
-  const training = place === 'academy' ? placeTraining(w, 'youth') : placeTraining(w, 'assistant');
-  const academy = place === 'academy' ? placeAcademy(w) : undefined;
-  const players = activePlayers(w);
-  const fatigue = Math.round(
-    players.reduce((sum, player) => sum + player.fatigue, 0) / Math.max(1, players.length),
-  );
-  const facts =
-    place === 'manager'
-      ? [
-          `감독 ${w.manager.name}${w.manager.interim ? ' · 대행' : ''}`,
-          `감독 신뢰 ${Math.round(w.manager.trust)} · 분위기 ${w.morale ?? '기록 없음'}`,
-        ]
-      : academy
-        ? [
-            `유소년 ${academy.players.length}/${academy.capacity}명 · 1군 자리 ${academy.room.total}개`,
-            ...academy.groups.map(
-              (group) => `${group.label} ${group.players.length}명 · 성장 ×${group.factor}`,
-            ),
-            `다음 입단 ${
-              academy.intakeDone || currentDay(w) > academy.intakeDay
-                ? seasonDayLabel(w.year + 1, seasonDayOf(w.year + 1, 3, 15))
-                : seasonDayLabel(w.year, academy.intakeDay)
-            }`,
-          ]
-        : [
-            `선수단 ${squadRegistration(w).value}명 · 평균 피로 ${fatigue} · 분위기 ${w.morale ?? '기록 없음'}`,
-          ];
-  if (place !== 'manager')
-    facts.push(`${training.role} ${training.member} · ${training.focus} · ${training.call.reason}`);
-  const kinds = new Set(REQUESTS[place].map((kind) => `care:${kind}`));
+/**
+ * The academy place's bounded live facts and real records (→WEB-102): the only place with owner
+ * decisions, promotion and release. Reading it does not draw or settle anything.
+ */
+export function placeActivities(w: World) {
+  const academy = placeAcademy(w),
+    youth = youthCall(w);
+  const facts = [
+    `유소년 ${academy.players.length}/${academy.capacity}명 · 1군 자리 ${academy.room.total}개`,
+    ...academy.groups.map(
+      (group) => `${group.label} ${group.players.length}명 · 성장 ×${group.factor}`,
+    ),
+    `다음 입단 ${
+      academy.intakeDone || currentDay(w) > academy.intakeDay
+        ? seasonDayLabel(w.year + 1, seasonDayOf(w.year + 1, 3, 15))
+        : seasonDayLabel(w.year, academy.intakeDay)
+    }`,
+    youth.fact,
+  ];
   const records = w.events
     .filter(
       (event) =>
-        kinds.has(event.kind) ||
-        (place === 'manager' && event.kind === 'win-bonus') ||
-        (place === 'academy' &&
-          ['youth-promotion', 'youth-release', 'youth-intake'].includes(event.kind)) ||
-        (place !== 'manager' &&
-          event.kind === 'training-focus' &&
-          event.title.includes(training.role)),
+        ['youth-promotion', 'youth-release', 'youth-intake'].includes(event.kind) ||
+        (event.kind === 'training-focus' && event.title.includes(youth.role)),
     )
     .slice(-3)
     .reverse();
-  return { choices, facts, records, training, academy };
+  return { facts, records, academy };
 }
 
 /** One lock with the shared client guard, plus critical and replaced/stale preview protections. */

@@ -238,19 +238,17 @@ const MatchPane = memo(function MatchPane({
           />
         </Suspense>
       </section>
-      {finished &&
-        finishedWorld &&
-        completed.current === playback?.record.id && (
-          <div className={s.afterMatch}>
-            <LeagueOverview w={finishedWorld} onOpenLeague={() => setPage('league')} />
-            <section data-surface="panel" className={s.panel}>
-              <div className={s.panelHead}>
-                <h3>경기 뒤의 순위표</h3>
-              </div>
-              <Standings w={finishedWorld} ids={ownLeagueIds(finishedWorld)} limit={6} />
-            </section>
-          </div>
-        )}
+      {finished && finishedWorld && completed.current === playback?.record.id && (
+        <div className={s.afterMatch}>
+          <LeagueOverview w={finishedWorld} onOpenLeague={() => setPage('league')} />
+          <section data-surface="panel" className={s.panel}>
+            <div className={s.panelHead}>
+              <h3>경기 뒤의 순위표</h3>
+            </div>
+            <Standings w={finishedWorld} ids={ownLeagueIds(finishedWorld)} limit={6} />
+          </section>
+        </div>
+      )}
     </div>
   );
 });

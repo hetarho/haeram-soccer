@@ -21,7 +21,6 @@ import {
 import { isDelegated } from '../../../../packages/engine/src/responsibilities';
 import { synergyStates } from '../../../../packages/engine/src/synergy';
 import { academyIntakeOutlook } from '../../../../packages/engine/src/academy';
-import { careOffer } from '../../../../packages/engine/src/care';
 import { INCOMING_BID_CHANCE } from '../../../../packages/engine/src/transfers';
 import { policyOf } from '../../../../packages/engine/src/policy';
 import type { SavedRows, SavedStrategy } from '../adapters/profile';
@@ -73,11 +72,9 @@ const pct = (value: number) => `${Math.round(value * 100)}%`;
 /** The odds a strategy sets, stated as football outcomes the owner can watch for. */
 function strategyOdds(w: World) {
   const intake = academyIntakeOutlook(w),
-    meeting = careOffer(w, 'meeting').outcomes[0].chance,
     offers = 1 - (1 - INCOMING_BID_CHANCE * buildEffects(w).incomingBids) ** 30;
   return [
     { label: '다음 유스 입단에서 잠재력 80+ 유망주', value: pct(intake.golden) },
-    { label: '감독 주재 선수단 미팅이 분위기를 바꿀 확률', value: `${meeting}%` },
     { label: '이적시장 한 달 동안 다른 구단 제안이 올 확률', value: pct(offers) },
   ];
 }
@@ -150,8 +147,8 @@ export function StrategyBoard({
       return next;
     });
 
-  // A dial change asked for elsewhere (a cash remedy) opens as the draft, its area in view; a line
-  // naming a row elsewhere (사람's decision panels) only unfolds its area.
+  // A dial change asked for elsewhere opens as the draft, its area in view; a line naming a row
+  // elsewhere (사람's decision panels) only unfolds its area.
   const request = useBoardRequest((store) => store.request);
   useEffect(() => {
     if (!request) return;

@@ -66,8 +66,8 @@ for (const viewport of [
     const entranceBox = (await hub
       .getByRole('region', { name: '구단주 사무실', exact: true })
       .boundingBox())!;
-    // NEXT MATCH follows the season card, ahead of the illustrated office entrance; the quick
-    // actions are the office's (→WEB-11/107).
+    // NEXT MATCH follows the season card, ahead of the illustrated office entrance; home holds no
+    // quick actions (→WEB-11).
     expect(progressBox.y + progressBox.height).toBeLessThanOrEqual(cardBox.y);
     expect(cardBox.y + cardBox.height).toBeLessThanOrEqual(entranceBox.y);
     await expect(hub.getByTestId('quick-actions')).toHaveCount(0);

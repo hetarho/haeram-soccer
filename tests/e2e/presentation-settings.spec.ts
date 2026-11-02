@@ -253,20 +253,17 @@ for (const width of [390, 1380])
       const stats = page.getByRole('region', { name: '이번 시즌', exact: true });
       await expect(stats).toBeVisible();
       await expect(stats.locator('[data-pixel-icon="play"]')).toHaveCount(0);
-      // The quick actions are the office's (→WEB-107); entering it neither stops nor sends play.
+      // The office only reads (→WEB-39); entering it neither stops nor sends play.
       await enterOffice(page);
-      await page.getByTestId('quick-actions').getByRole('button', { name: /^피로/ }).click();
-      const remedies = page.getByRole('dialog', { name: '피로 관리', exact: true });
-      await expect(remedies).toBeVisible();
+      await expect(page.getByTestId('club-situation')).toBeVisible();
+      await expect(page.getByTestId('quick-actions')).toHaveCount(0);
+      // The HUD cash sheet explains cash in the theme's dialog, with no remedy rows (→WEB-44).
+      await page.getByTestId('hud-cash').click();
+      const cash = page.getByRole('dialog', { name: '운영 자금', exact: true });
+      await expect(cash).toBeVisible();
       await settle(page);
-      const choices = remedies.locator('li[data-surface="tile"]');
-      expect(await choices.count()).toBeGreaterThan(0);
-      expect(
-        await choices.first().evaluate((row) => getComputedStyle(row).backgroundImage),
-      ).toContain(assetPath);
-      for (const copy of await remedies.locator('li[data-surface="tile"] > div > small, em').all())
-        expect((await copy.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);
-      await remedies.getByRole('button', { name: '창 닫기', exact: true }).click();
+      await expect(cash.locator('li[data-surface="tile"]')).toHaveCount(0);
+      await cash.getByRole('button', { name: '창 닫기', exact: true }).click();
 
       await openLeague(page);
       await page.getByRole('tab', { name: '순위표', exact: true }).click();

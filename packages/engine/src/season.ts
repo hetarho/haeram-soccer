@@ -73,7 +73,6 @@ import { runAcademyIntake, seasonAcademy } from './academy';
 import { progressFacilityWorks } from './facilities';
 import { dailyMarket } from './transfers';
 import { moraleAfterMatch } from './morale';
-import { settleWinBonus } from './care';
 import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
 import { buildEffects } from './build';
@@ -289,7 +288,6 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     const club = clubOf(w);
     club.fans = fansAfterMatch(club.fans, win, buildEffects(w).winFans);
     moraleAfterMatch(w, saved);
-    settleWinBonus(w, saved);
   }
   injuriesFromMatch(w, m);
   settleNpcSeason(w, playback);

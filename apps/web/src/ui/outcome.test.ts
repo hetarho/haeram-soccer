@@ -8,8 +8,6 @@ import {
   settleRound,
 } from '../../../../packages/engine/src/index';
 import { sellPlayer } from '../../../../packages/engine/src/testing';
-import { makePlayer } from '../../../../packages/engine/src/world';
-import { resolveCare } from '../../../../packages/engine/src/care';
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { describeOutcome, newEvents } from './outcome';
 
@@ -67,25 +65,6 @@ describe('action outcome summaries', () => {
     ).toContain('이 방향으로');
   });
 
-  it('summarizes a care action with its fatigue and morale change', () => {
-    const before = world();
-    for (const player of before.players) player.fatigue = 40;
-    const next = after(before, (w) => operate(w, { type: 'care', kind: 'rest-day' }));
-    const outcome = describeOutcome({ type: 'care', kind: 'rest-day' }, before, next)!;
-    expect(outcome.title).toBe('구단주 요청을 전했어요');
-    expect(outcome.changes.find((c) => c.label === '선발 평균 피로')).toMatchObject({
-      previous: '40',
-      value: '34',
-      trend: 'down',
-    });
-    expect(outcome.changes.find((c) => c.label === '팀 분위기')).toMatchObject({
-      previous: '60',
-      value: '58',
-      trend: 'down',
-    });
-    expect(outcome.events[0].title).toBe('휴식일 부여 요청');
-  });
-
   it('lists only facts that changed and the squad size after a sale', () => {
     const before = world();
     const id = before.players.find((p) => lineOf(p.position) === 'MF' && p.status === 'active')!.id;
@@ -134,44 +113,4 @@ describe('action outcome summaries', () => {
     expect(next.events.some((event) => event.kind === 'operating-cost')).toBe(true);
     expect(outcome.events.map((event) => event.title)).toEqual(['구단주 추가 출자']);
   });
-});
-
-describe('care outcome units', () => {
-  it.each(['backing', 'rest-day'] as const)(
-    'reports the actual gain and morale loss for %s on one synthetic player',
-    (kind) => {
-      const player = makePlayer('ENG', 'care-summary', 'only-player', 1950, 40, 'CM', 25);
-      player.fatigue = 40;
-      const before = {
-        id: 'care-summary',
-        seed: 'care-summary',
-        year: 1950,
-        round: 0,
-        revision: 0,
-        playerClub: 'own',
-        clubs: [{ id: 'own', country: 'ENG', tier: 0, fans: 800 }],
-        players: [player],
-        manager: { trust: 50, name: 'Synthetic manager' },
-        cash: '1000',
-        morale: 60,
-        tables: {},
-        stadium: 0,
-        tactic: 'balanced',
-        events: [],
-      } as unknown as World;
-      const next = structuredClone(before);
-      resolveCare(next, kind);
-      const outcome = describeOutcome({ type: 'care', kind }, before, next)!;
-      expect(outcome.changes.find((one) => one.label === '팀 분위기')).toMatchObject({
-        previous: '60',
-        value: '58',
-        trend: 'down',
-      });
-      expect(
-        outcome.changes.find(
-          (one) => one.label === (kind === 'backing' ? '감독 신뢰' : '선발 평균 피로'),
-        ),
-      ).toMatchObject({ trend: kind === 'backing' ? 'up' : 'down' });
-    },
-  );
 });

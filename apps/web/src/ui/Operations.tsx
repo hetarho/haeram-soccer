@@ -23,8 +23,8 @@ import { DeskBody, OfficeOverview } from './OfficeDesk';
 import { OfficeTeam } from './ClubHub';
 
 /**
- * The owner office (→WEB-39): the live 결재함 leads the moment it opens, then the club
- * summary and the owner's quick actions; a selected request's review composes the authoritative
+ * The owner office (→WEB-39): the live 결재함 leads the moment it opens, then the read-only club
+ * summary (→WEB-44); a selected request's review composes the authoritative
  * form of its work. Proactive work lives in the club's sections (→WEB-110), so a desk opened
  * without a request leaves for them.
  */
@@ -81,7 +81,7 @@ export function OperationsView({
           client={client}
           controller={controller}
         />
-        <OfficeTeam w={w} client={client} />
+        <OfficeTeam w={w} />
       </OfficeOverview>
     );
   if (!requestId) return null;

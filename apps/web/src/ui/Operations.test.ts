@@ -49,8 +49,8 @@ describe('owner-office overview navigation', () => {
   });
 });
 
-describe('owner-office overview (→WEB-39/44/107)', () => {
-  it('heads the live queue with the manager room, then one club summary and quick actions', () => {
+describe('owner-office overview (→WEB-39/44)', () => {
+  it('heads the live queue with the manager room, then one read-only club summary', () => {
     vi.stubGlobal('location', { search: '' });
     const html = office();
     expect(html.match(/<figure[^>]*>/g)).toEqual([
@@ -59,23 +59,18 @@ describe('owner-office overview (→WEB-39/44/107)', () => {
     const scene = html.indexOf('data-scene="manager"'),
       queue = html.indexOf('data-testid="approval-queue"'),
       team = html.indexOf('aria-label="팀 현황"'),
-      situation = html.indexOf('data-testid="club-situation"'),
-      quick = html.indexOf('data-testid="quick-actions"');
+      situation = html.indexOf('data-testid="club-situation"');
     // An illustrated header, the queue first, then the supporting team content.
     expect(scene).toBeGreaterThan(-1);
     expect(scene).toBeLessThan(queue);
     expect(queue).toBeLessThan(team);
     expect(team).toBeLessThan(situation);
-    expect(situation).toBeLessThan(quick);
-    for (const id of ['approval-queue', 'club-situation', 'quick-actions'])
+    for (const id of ['approval-queue', 'club-situation'])
       expect(html.match(new RegExp(`data-testid="${id}"`, 'g')), id).toHaveLength(1);
-    // The actual world's facts and the three topic controls, not a copy of desk launchers.
+    // The actual world's facts, with no quick-action tiles and no copy of desk launchers.
     expect(html).toContain('data-fact="strength"');
-    expect(html.match(/data-quick="[^"]+"/g)).toEqual([
-      'data-quick="morale"',
-      'data-quick="fatigue"',
-      'data-quick="development"',
-    ]);
+    expect(html).not.toContain('quick-actions');
+    expect(html).not.toContain('data-quick');
     expect(html).not.toContain('data-desk-icon');
   });
 });

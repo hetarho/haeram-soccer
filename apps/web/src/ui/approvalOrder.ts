@@ -95,7 +95,11 @@ export function returnFocus(rows: readonly { id: string }[], from: QueueReturn) 
  * a request sits under its first responsibility, or the work its kind belongs to.
  */
 export type ApprovalTitle = ResponsibilityKey | 'finance' | 'other';
-export const APPROVAL_TITLES: readonly ApprovalTitle[] = [...RESPONSIBILITY_KEYS, 'finance', 'other'];
+export const APPROVAL_TITLES: readonly ApprovalTitle[] = [
+  ...RESPONSIBILITY_KEYS,
+  'finance',
+  'other',
+];
 const KIND_TITLES: Partial<Record<StopReason['kind'], ResponsibilityKey>> = {
   'contract-talk': 'contracts',
   unhappy: 'contracts',
@@ -125,7 +129,9 @@ export function approvalGroups<T extends StopReason>(
   const groups = APPROVAL_TITLES.map((title) => ({
     title,
     items: ordered.filter((item) => requestTitle(item) === title),
-  })).filter((group) => group.items.length || (group.title !== 'finance' && group.title !== 'other'));
+  })).filter(
+    (group) => group.items.length || (group.title !== 'finance' && group.title !== 'other'),
+  );
   const first = (group: (typeof groups)[number]) =>
     group.items.length ? ordered.indexOf(group.items[0]) : ordered.length;
   return groups.sort((a, b) => first(a) - first(b));

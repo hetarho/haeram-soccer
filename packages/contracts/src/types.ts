@@ -240,17 +240,6 @@ export type LedgerKind =
   | 'operating-expenses';
 /** A player's standing on the market (→CLUB-22): listed to sell, open to offers, or untouchable. */
 export type TransferStance = 'listed' | 'open' | 'untouchable';
-/** Owner requests to the manager and staff (→CLUB-20). */
-export type CareKind =
-  | 'rest-day'
-  | 'recovery'
-  | 'meeting'
-  | 'bonding'
-  | 'camp'
-  | 'backing'
-  | 'win-bonus'
-  | 'owner-visit'
-  | 'friendly';
 export type InboxKind =
   | 'match'
   | 'window-open'
@@ -1248,8 +1237,6 @@ export interface World {
   managerMarket?: ManagerMarket;
   /** The chief scout's shortlist and the manager's requests (→CLUB-33); absent until first drawn. */
   shortlist?: Shortlist;
-  /** Win bonus promised for the next own matches: pays per win until `matches` run out. */
-  winBonus?: { matches: number };
   manager: Manager;
   tactic: Tactic;
   requested?: Tactic;
@@ -1423,7 +1410,6 @@ export type Command =
   | { type: 'ticket'; price: number }
   | { type: 'support' }
   | { type: 'accept-condition' }
-  | { type: 'care'; kind: CareKind }
   /**
    * Applies a strategy at once (→ECON-22); `name` labels an owner's saved strategy in the club's
    * history (→WEB-61).

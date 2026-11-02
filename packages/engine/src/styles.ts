@@ -26,8 +26,6 @@ export interface StyleEffects {
   /** Request acceptance score; chance a selling club accepts our bid (0–1). */
   requestBonus: number;
   bidAcceptance: number;
-  /** Chance that a squad meeting the owner asks for works (0–1). */
-  meeting: number;
   /** Automatic selection favours players aged 21 or younger. */
   youthSelection: boolean;
 }
@@ -48,7 +46,6 @@ export const NEUTRAL_STYLE: Readonly<StyleEffects> = Object.freeze({
   youthGrowth: 1,
   requestBonus: 0,
   bidAcceptance: 0,
-  meeting: 0,
   youthSelection: false,
 });
 
@@ -152,8 +149,8 @@ export const STYLE_INFO: Record<
   motivator: {
     label: '동기부여형',
     school: '라커룸을 장악하고 선수들의 마음을 움직이는 관리형 지도자',
-    effects: { moraleBaseline: 6, defeatCushion: 2, meeting: 0.2 },
-    pros: ['분위기 기준점 +6', '패배 후 분위기 하락 −2', '선수단 미팅 성공 확률 +20%p'],
+    effects: { moraleBaseline: 6, defeatCushion: 2 },
+    pros: ['분위기 기준점 +6', '패배 후 분위기 하락 −2'],
     cons: ['전술적 보정 없음'],
     term: 3,
     bands: { youth: [45, 75], flexibility: [50, 85], pride: [35, 70] },

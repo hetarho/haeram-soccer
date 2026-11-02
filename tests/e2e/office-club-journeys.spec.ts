@@ -180,20 +180,19 @@ for (const theme of themeRegistry.entries) {
       ids,
     );
     // The office carries the one section bar with 사무실 selected; its manager room heads the
-    // queue as an illustrated header, the club summary and quick actions follow the queue once
-    // each, and its first request is reachable above the bottom controls on the phone's first
-    // view (→WEB-10/39/44/107).
+    // queue as an illustrated header, the club summary follows the queue once, and its first
+    // request is reachable above the bottom controls on the phone's first view (→WEB-10/39/44).
     await expect(clubSections(page)).toHaveCount(1);
     await expect(
       clubSections(page).getByRole('tab', { name: '사무실', exact: true }),
     ).toHaveAttribute('aria-selected', 'true');
     const queueBox = (await page.getByTestId('approval-queue').boundingBox())!;
-    for (const id of ['club-situation', 'quick-actions']) {
-      await expect(page.getByTestId(id)).toHaveCount(1);
-      expect((await page.getByTestId(id).boundingBox())!.y).toBeGreaterThanOrEqual(
-        queueBox.y + queueBox.height,
-      );
-    }
+    await expect(page.getByTestId('club-situation')).toHaveCount(1);
+    expect((await page.getByTestId('club-situation').boundingBox())!.y).toBeGreaterThanOrEqual(
+      queueBox.y + queueBox.height,
+    );
+    // The office offers no immediate owner action (→WEB-39).
+    await expect(page.getByTestId('quick-actions')).toHaveCount(0);
     const first = reviewButton(page, ids[0]!);
     await expectTarget(first);
     const firstBox = (await first.boundingBox())!;
@@ -239,8 +238,7 @@ for (const theme of themeRegistry.entries) {
     const hub = page.getByTestId('club-hub');
     await expect(page.getByTestId('office-waiting')).toContainText(`결재 대기 ${ids.length - 1}건`);
     await expect(clubSections(page)).toHaveCount(0);
-    for (const id of ['club-situation', 'quick-actions'])
-      await expect(page.getByTestId(id)).toHaveCount(0);
+    await expect(page.getByTestId('club-situation')).toHaveCount(0);
     await expectScenes(page, theme, ['manager']);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
     const phoneEntrance = officeEntrance(page);
@@ -289,8 +287,7 @@ for (const theme of themeRegistry.entries) {
     await expect(rows).toHaveCount(ids.length - 1);
     await expect(reviewButton(page, ids[1]!)).toBeInViewport();
     await expect(clubSections(page)).toHaveCount(1);
-    for (const id of ['club-situation', 'quick-actions'])
-      await expect(page.getByTestId(id)).toHaveCount(1);
+    await expect(page.getByTestId('club-situation')).toHaveCount(1);
     await expectScenes(page, theme, ['manager']);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
     // Back in 1군 through 팀, the roster under its room keeps its search (→WEB-74).

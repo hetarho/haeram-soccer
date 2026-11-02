@@ -1,19 +1,17 @@
 import { expect, test } from '@playwright/test';
 import { createWorld, makePlayer } from '../../packages/engine/src/index';
-import { careOffer, effectText } from '../../packages/engine/src/care';
 import { retainPerson, openEmployment } from '../../packages/engine/src/person-careers';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { exportedCareer } from './career-fixtures';
 import { openPersonnel } from './personnel-navigation';
-import { closeOutcome } from './events';
-import { horizontalOverflow, settle, viewGeometry } from './layout';
+import { horizontalOverflow, viewGeometry } from './layout';
 
 for (const viewport of [
   { width: 360, height: 740 },
   { width: 390, height: 844 },
   { width: 1280, height: 900 },
 ]) {
-  test(`place requests disclose trade-offs, cancel without mutation, and retain engine results at ${viewport.width}`, async ({
+  test(`places only read, and the academy reviews promotion and release without mutation at ${viewport.width}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
@@ -42,38 +40,11 @@ for (const viewport of [
     retainPerson(world, prospect, world.playerClub, true);
     openEmployment(world, prospect.id, 'player', world.playerClub);
     await importResponsibilityCareer(page, world);
+    // The manager's office and the coaching room only read (→WEB-102): no requests to send.
     await openPersonnel(page, 'manager');
-    const activities = page.getByTestId('place-activities-manager');
     const before = await exportedCareer(page);
-    const offer = careOffer(before, 'backing');
-    const trigger = activities.getByRole('button', { name: `${offer.label} 검토`, exact: true });
-    await trigger.focus();
-    await page.keyboard.press('Enter');
-    const review = page.getByRole('dialog', { name: `${offer.label} 검토`, exact: true });
-    for (const outcome of offer.outcomes) await expect(review).toContainText(effectText(outcome));
-    await expect(review).toContainText('분위기 −2');
-    await page.keyboard.press('Escape');
-    await expect(trigger).toBeFocused();
-    expect(await exportedCareer(page)).toEqual(before);
-    await trigger.click();
-    const submit = review.getByRole('button', { name: '요청하기', exact: true });
-    await submit.scrollIntoViewIfNeeded();
-    await settle(page);
-    const target = await submit.boundingBox();
-    expect(target!.height).toBeGreaterThanOrEqual(44);
-    expect(target!.y + target!.height).toBeLessThanOrEqual(viewport.height);
-    await submit.click();
-    await expect(review).toHaveCount(0);
-    await closeOutcome(page, '구단주 요청을 전했어요');
-    await expect(activities.getByLabel('이 장소의 실제 기록')).toContainText(offer.label);
-    const backed = await exportedCareer(page);
-    expect(backed.manager.trust).toBe(before.manager.trust + 8);
-    expect(backed.morale).toBe(before.morale! - 2);
-    expect(backed.cash).toBe(before.cash);
-    await trigger.click();
-    await expect(review).toContainText('라운드 뒤 다시 가능');
-    await expect(submit).toBeDisabled();
-    await page.keyboard.press('Escape');
+    await expect(page.getByTestId('place-activities-manager')).toHaveCount(0);
+    await expect(page.getByRole('region', { name: '감독에게 요청', exact: true })).toHaveCount(0);
 
     await openPersonnel(page, 'players');
     await page.getByRole('button', { name: /^선수단 ·/ }).click();
@@ -82,26 +53,18 @@ for (const viewport of [
     await expect(culture).not.toContainText('재계약 기조');
     await page.keyboard.press('Escape');
     await openPersonnel(page, 'coaches');
-    const coaching = page.getByTestId('place-activities-coaching');
-    await expect(coaching).toContainText('회복 집중 지원');
-    await expect(coaching).toContainText('팀 빌딩 데이');
+    await expect(page.getByTestId('place-activities-coaching')).toHaveCount(0);
+    await expect(page.getByRole('region', { name: '스태프에게 요청', exact: true })).toHaveCount(0);
     // Training is suggested in 훈련, never from the staff directory (→WEB-71).
-    await expect(coaching.getByRole('button', { name: '훈련 조건 검토', exact: true })).toHaveCount(
-      0,
-    );
+    await expect(page.getByRole('button', { name: '훈련 조건 검토', exact: true })).toHaveCount(0);
     await openPersonnel(page, 'training');
     await page.getByRole('button', { name: /^수석코치에게 훈련 제안·강행/ }).click();
     await expect(
       page.getByRole('dialog', { name: '수석코치 훈련 제안', exact: true }),
     ).toContainText('사임');
     await page.keyboard.press('Escape');
-    const training = page.getByTestId('place-activities-training');
-    const rest = careOffer(backed, 'rest-day');
-    await training.getByRole('button', { name: `${rest.label} 검토`, exact: true }).click();
-    const restReview = page.getByRole('dialog', { name: `${rest.label} 검토`, exact: true });
-    await expect(restReview).toContainText('피로 −6');
-    await expect(restReview).toContainText('분위기 −2');
-    await restReview.getByRole('button', { name: '취소', exact: true }).click();
+    // The training ground reads its state; it has no request panel of its own.
+    await expect(page.getByTestId('place-activities-training')).toHaveCount(0);
     await expect(
       page.getByRole('button', { name: '수석코치에게 훈련 제안·강행', exact: false }),
     ).toHaveCount(1);
@@ -123,6 +86,6 @@ for (const viewport of [
     expect(await horizontalOverflow(page)).toBe(0);
     const geometry = await viewGeometry(page);
     expect(geometry.documentHeight).toBeLessThanOrEqual(viewport.height);
-    expect(await exportedCareer(page)).toEqual(backed);
+    expect(await exportedCareer(page)).toEqual(before);
   });
 }

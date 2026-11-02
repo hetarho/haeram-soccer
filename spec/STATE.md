@@ -492,7 +492,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T646 | remove care requests, office quick actions, place requests and cash remedies | CLUB WEB ECON STAFF HIST SAVE | - | todo |
 | T647 | remove training 제안/강행 to coaches | STAFF CLUB WEB ECON SAVE | T646 | todo |
 | T648 | remove tactic requests, owner lineups and the 구단주 제안 card; kit choice section | STAFF MATCH CLUB WEB KIT HIST SAVE ARCH | T647 | todo |
 | T649 | remove the 방향 board, strategy changes, saved strategies, dials and ticket price | ECON WEB SAVE ARCH STAFF CLUB LEAGUE | T648 | todo |
@@ -522,11 +521,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T646 (then T647→T652 in order: owner intervention removal and unused-code sweep; illustrations stay)
+- implement-task T647 (then T648→T652 in order: owner intervention removal and unused-code sweep; illustrations stay)
 - create-ssot OWNER (ideation owner-wealth-and-takeover; then WEB WORLD ECON LEAGUE MATCH KIT SAVE)
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261103 T646 done: care command, CareKind, winBonus (dropped on load), care.ts, win-bonus settlement, care news/ledger lines and the motivator's meeting bonus removed; office shows 결재함 + read-only 클럽 현황, HUD cash sheet explains cash/fixed costs/runway only, places read with 유소년 keeping 승격·방출; equivalence digests unchanged; 2 typecheck + 8 unit failures predate it (ds03 6c0d6b12 vs WEB-39), e2e edited for the batch
 - 261102 create-task owner intervention removal → T646–T652 (sequential; KIT-6/8 tasked in T648, KIT stays tasked 4 for its earlier KIT-5/9/10/12/13 deltas)
 - 261102 update-ssot owner intervention removal: WEB r202 ECON r41 ARCH r26 SAVE r61 LEAGUE r11 CLUB r49 MATCH r45 HIST r20 KIT r7 STAFF r38 PLAYER r12 (WORLD unchanged) — only 직접/위임 and its approvals stay; care, training 제안/강행, tactic requests and owner lineups, the 방향 board, dials, ticket price, owner capital, cash remedies, facility work start, coaching encouragement and owner-proposed playing coaches withdrawn; values stay as founded or saved; older saves drop the removed state (SAVE-25)
 - 261102 update-ssot WEB ECON CLUB STAFF MATCH SAVE ARCH LEAGUE HIST KIT PLAYER WORLD start: owner intervention removal

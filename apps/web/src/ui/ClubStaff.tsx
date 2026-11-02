@@ -694,7 +694,9 @@ export function StaffMarket({
           wrap
         />
       )}
-      <p className={s.note}>{STAFF_INFO[role].duty} · 지금 {staffImpact(w, role)}</p>
+      <p className={s.note}>
+        {STAFF_INFO[role].duty} · 지금 {staffImpact(w, role)}
+      </p>
       {candidates.length ? (
         <div className={s.marketCards}>
           {candidates.map((candidate) => (

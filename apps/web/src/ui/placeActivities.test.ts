@@ -1,13 +1,7 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
-import type { CareKind, World } from '../../../../packages/contracts/src/types';
-import {
-  careOffer,
-  CARE_KINDS,
-  effectText,
-  resolveCare,
-} from '../../../../packages/engine/src/care';
+import type { World } from '../../../../packages/contracts/src/types';
 import { makePlayer } from '../../../../packages/engine/src/world';
 import { promoteYouth } from '../../../../packages/engine/src/academy';
 import type { GameClient } from '../runtime/client';
@@ -15,7 +9,6 @@ import type { Reply, View } from '../runtime/protocol';
 import { initialClientState } from '../runtime/store';
 import { PlaceActivities } from './PlaceActivities';
 import { Money } from './Money';
-import { careRequest } from './teamState';
 import { activityUnavailable, placeActivities, placeActivityClient } from './placeActivityChoices';
 
 /** A few synthetic players and staff, one club; no world generation, matches or calendar steps. */
@@ -81,86 +74,6 @@ function fixture() {
   return { world, state, command, client };
 }
 
-describe('care disclosure units', () => {
-  it.each(CARE_KINDS)(
-    'shows authoritative gains, disadvantages, chances and cooldown for %s',
-    (kind) => {
-      const { world } = fixture();
-      const before = structuredClone(world);
-      const offer = careOffer(world, kind);
-      const choice = careRequest(world, kind);
-      expect(world).toEqual(before);
-      expect(choice.care).toEqual(offer);
-      expect(choice.by).toBe(offer.by);
-      expect(choice.effect).toContain(`재요청 ${offer.cooldown}라운드 후`);
-      const text = [
-        choice.effect,
-        choice.cost,
-        ...(choice.chances?.map((one) => one.text) ?? []),
-      ].join(' ');
-      for (const outcome of offer.outcomes) expect(text).toContain(effectText(outcome));
-      if (offer.outcomes.length > 1)
-        expect(choice.chances?.map((one) => one.chance)).toEqual(
-          offer.outcomes.map((one) => one.chance),
-        );
-      if (BigInt(offer.cost) > 0n) expect(choice.cost).not.toBe('무료');
-      else if (BigInt(offer.perWin) > 0n) expect(text).toContain('자금이 부족해도 지급');
-      else expect(text).toMatch(/분위기 −|감독 신뢰 −|피로 \+/);
-    },
-  );
-
-  it.each(['backing', 'rest-day'] as const)(
-    'shows and settles the morale trade-off for %s',
-    (kind) => {
-      const { world } = fixture();
-      const outcome = resolveCare(world, kind);
-      expect(careRequest(world, kind).effect).toContain('분위기 −2');
-      expect(world.morale).toBe(58);
-      expect(outcome).toMatchObject({
-        morale: -2,
-        trust: kind === 'backing' ? 8 : 0,
-        fatigue: kind === 'rest-day' ? -6 : 0,
-      });
-      expect(world.manager.trust).toBe(kind === 'backing' ? 58 : 50);
-      expect(world.players[0].fatigue).toBe(kind === 'rest-day' ? 34 : 40);
-      expect(world.players[1].fatigue).toBe(40);
-    },
-  );
-
-  it('does not consume draws on inspection and reads cooldowns from recorded settled rounds', () => {
-    const { world } = fixture();
-    const clone = structuredClone(world);
-    for (let i = 0; i < 5; i++) placeActivities(world, 'manager');
-    expect(resolveCare(world, 'meeting')).toEqual(resolveCare(clone, 'meeting'));
-    expect(world).toEqual(clone);
-    world.events.push({
-      year: world.year,
-      round: world.round,
-      kind: 'care:meeting',
-      title: 'recorded',
-      detail: '',
-    });
-    expect(careRequest(world, 'meeting').unavailable).toBe('4라운드 뒤 다시 가능');
-    world.round += 3;
-    expect(careRequest(world, 'meeting').unavailable).toBe('1라운드 뒤 다시 가능');
-    world.round++;
-    expect(careRequest(world, 'meeting').unavailable).toBeUndefined();
-  });
-
-  it('explains actual cash, backing and existing bonus guards', () => {
-    const { world } = fixture();
-    world.cash = '0';
-    expect(careRequest(world, 'recovery').unavailable).toBe('자금 부족');
-    world.manager.trust = 85;
-    expect(careRequest(world, 'backing').unavailable).toContain('이미 굳건');
-    world.manager.trust = 50;
-    world.manager.interim = true;
-    expect(careRequest(world, 'backing').unavailable).toContain('임시 감독');
-    world.winBonus = { matches: 3 };
-    expect(careRequest(world, 'win-bonus').unavailable).toContain('남은 3경기');
-  });
-});
-
 describe('place activity units', () => {
   it.each([
     { country: 'ENG', year: 1950, tier: 0, age: 18 },
@@ -176,7 +89,7 @@ describe('place activity units', () => {
       world.academy!.players = world.academy!.players.filter((one) => one.id === 'ready');
       world.academy!.players[0].born = year - age;
       const before = structuredClone(world);
-      const preview = placeActivities(world, 'academy').academy!.players.find(
+      const preview = placeActivities(world).academy.players.find(
         (one) => one.player.id === 'ready',
       )!;
       expect(world).toEqual(before);
@@ -186,9 +99,7 @@ describe('place activity units', () => {
       expect(BigInt(contract.wage)).toBeGreaterThan(0n);
       expect(contract.wage).not.toBe(preview.player.wage);
       expect(preview).toMatchObject({ promotionWage: contract.wage });
-      const html = renderToStaticMarkup(
-        createElement(PlaceActivities, { place: 'academy', state, client }),
-      );
+      const html = renderToStaticMarkup(createElement(PlaceActivities, { state, client }));
       const wage = renderToStaticMarkup(
         createElement(Money, { value: contract.wage, code: country, year }),
       );
@@ -199,48 +110,29 @@ describe('place activity units', () => {
     },
   );
 
-  it('groups every care kind into a small set of real requests without changing facts', () => {
+  it('reads the academy place without changing facts or offering any request', () => {
     const { world } = fixture();
     const before = structuredClone(world);
-    const kinds: string[] = [];
-    for (const place of ['manager', 'coaching', 'training', 'academy'] as const) {
-      const model = placeActivities(world, place);
-      expect(model.choices.length).toBeLessThanOrEqual(4);
-      expect(model.facts.length).toBeGreaterThan(0);
-      kinds.push(...model.choices.map((one) => one.id));
-    }
-    expect(kinds.sort()).toEqual([...CARE_KINDS].sort());
-    expect(placeActivities(world, 'manager').choices.map((one) => one.id)).toEqual([
-      'backing',
-      'meeting',
-      'owner-visit',
-      'win-bonus',
-    ]);
+    const model = placeActivities(world);
+    expect(Object.keys(model).sort()).toEqual(['academy', 'facts', 'records']);
+    expect(model.facts[0]).toMatch(/^유소년 2\/\d+명 · 1군 자리 \d+개$/);
+    // The youth director's own call, read-only (→WEB-102).
+    expect(model.facts.at(-1)).toMatch(/^유스 디렉터 Synthetic Youth Director · /);
+    world.staff = [];
+    expect(placeActivities(world).facts.at(-1)).toMatch(/^유스 디렉터 공석 · /);
+    world.staff = before.staff;
     expect(world).toEqual(before);
   });
 
-  it('uses youth focus multipliers, duration, staff risk and promotion eligibility', () => {
+  it('states promotion eligibility from the age and the registration rules', () => {
     const { world } = fixture();
-    world.staff!.find((one) => one.role === 'youth')!.wage = '100';
-    world.staff!.find((one) => one.role === 'youth')!.asked = {
-      year: world.year,
-      round: world.round,
-    };
-    const academy = placeActivities(world, 'academy');
-    expect(academy.training).toMatchObject({ duration: 4, wait: 2, risk: 0.15 });
-    expect(academy.training.youthFocuses.fundamentals.growth).toEqual({
-      u17: 1.3,
-      u19: 0.9,
-      u21: 0.9,
-    });
+    const academy = placeActivities(world).academy;
     expect(
-      academy.academy!.players.find((one) => one.player.id === 'young')!.promotionUnavailable,
+      academy.players.find((one) => one.player.id === 'young')!.promotionUnavailable,
     ).toContain('17세');
     expect(
-      academy.academy!.players.find((one) => one.player.id === 'ready')!.promotionUnavailable,
+      academy.players.find((one) => one.player.id === 'ready')!.promotionUnavailable,
     ).toBeUndefined();
-    world.staff = [];
-    expect(placeActivities(world, 'academy').training.unavailable).toContain('자리가 비어');
     // Counted registration cap at a modern top-flight club, with only the candidate under 21.
     world.year = 2011;
     world.players = Array.from({ length: 25 }, (_, i) => ({
@@ -251,7 +143,7 @@ describe('place activity units', () => {
     world.academy!.players[0].born = 1994;
     // Exempt ENG prospect still fits: a full counted list must not hide an eligible promotion.
     expect(
-      placeActivities(world, 'academy').academy!.players.find((one) => one.player.id === 'young')!
+      placeActivities(world).academy.players.find((one) => one.player.id === 'young')!
         .promotionUnavailable,
     ).toBeUndefined();
   });
@@ -259,44 +151,41 @@ describe('place activity units', () => {
   it('keeps only relevant real records, newest first and bounded', () => {
     const { world } = fixture();
     world.events = [
-      'care:rest-day',
+      'youth-intake',
       'care:meeting',
-      'care:backing',
-      'care:owner-visit',
-      'care:win-bonus',
+      'youth-promotion',
+      'youth-release',
+      'youth-promotion',
       'unrelated',
-    ].map((kind) => ({ kind, year: 1950, round: 7, title: kind, detail: 'actual engine detail' }));
-    expect(placeActivities(world, 'manager').records.map((one) => one.kind)).toEqual([
-      'care:win-bonus',
-      'care:owner-visit',
-      'care:backing',
+    ].map((kind, i) => ({
+      kind,
+      year: 1950,
+      round: 7,
+      title: `${kind} ${i}`,
+      detail: 'actual engine detail',
+    }));
+    expect(placeActivities(world).records.map((one) => one.title)).toEqual([
+      'youth-promotion 4',
+      'youth-release 3',
+      'youth-promotion 2',
     ]);
-    expect(placeActivities(world, 'training').records.map((one) => one.kind)).toEqual([
-      'care:rest-day',
-    ]);
-    expect(placeActivities(world, 'academy').records).toEqual([]);
   });
 
-  it.each(['manager', 'coaching', 'training', 'academy'] as const)(
-    'renders inspectable %s choices in read-only mode without submitting',
-    (place) => {
-      const { world, state, client, command } = fixture();
-      state.readonly = true;
-      const html = renderToStaticMarkup(createElement(PlaceActivities, { place, state, client }));
-      expect(html).toContain(`place-activities-${place}`);
-      expect(html).toContain('읽기 전용');
-      if (place === 'academy') {
-        expect(html).toContain('시장 급여');
-        expect(html).toContain('육성 기회를 잃어요');
-        expect(html).toContain('U-17 ×1.3');
-        expect(html.match(/aria-label="유소년 아카데미"/g)).toHaveLength(1);
-        expect(html).toContain('승격·방출 검토');
-        expect(html).not.toContain('>1군 승격</button>');
-      }
-      expect(command).not.toHaveBeenCalled();
-      expect(world.revision).toBe(0);
-    },
-  );
+  it('renders the inspectable academy in read-only mode without submitting', () => {
+    const { world, state, client, command } = fixture();
+    state.readonly = true;
+    const html = renderToStaticMarkup(createElement(PlaceActivities, { state, client }));
+    expect(html).toContain('place-activities-academy');
+    expect(html).toContain('읽기 전용');
+    expect(html).toContain('시장 급여');
+    expect(html).toContain('육성 기회를 잃어요');
+    expect(html).toContain('U-17 ×1.3');
+    expect(html.match(/aria-label="유소년 아카데미"/g)).toHaveLength(1);
+    expect(html).toContain('승격·방출 검토');
+    expect(html).not.toContain('>1군 승격</button>');
+    expect(command).not.toHaveBeenCalled();
+    expect(world.revision).toBe(0);
+  });
 });
 
 describe('place command guard units', () => {
@@ -312,8 +201,8 @@ describe('place command guard units', () => {
     Object.assign(f.state, lock);
     expect(activityUnavailable(f.state, f.world)).toBeTruthy();
     await placeActivityClient(f.client, f.world, () => true, vi.fn()).command({
-      type: 'care',
-      kind: 'meeting',
+      type: 'promote-youth',
+      id: 'ready',
     });
     expect(f.command).not.toHaveBeenCalled();
   });
@@ -336,11 +225,10 @@ describe('place command guard units', () => {
     }
   });
 
-  it('forwards care, training and academy commands through the existing client unchanged', async () => {
+  it('forwards training and academy commands through the existing client unchanged', async () => {
     const f = fixture();
     const scoped = placeActivityClient(f.client, f.world, () => true, vi.fn());
     const commands = [
-      { type: 'care', kind: 'rest-day' },
       { type: 'coach-training', coach: 'youth', focus: 'firstTeam', force: false },
       { type: 'promote-youth', id: 'ready' },
       { type: 'release-youth', id: 'young' },
@@ -364,8 +252,8 @@ describe('place command guard units', () => {
         );
         const failed = vi.fn();
         const scoped = placeActivityClient(f.client, { ...f.world }, () => current, failed);
-        const first = scoped.command({ type: 'care', kind: 'meeting' });
-        await scoped.command({ type: 'care', kind: 'meeting' });
+        const first = scoped.command({ type: 'promote-youth', id: 'ready' });
+        await scoped.command({ type: 'promote-youth', id: 'ready' });
         expect(f.command).toHaveBeenCalledOnce();
         if (replace) f.world.id = 'other';
         else current = false;
@@ -381,7 +269,7 @@ describe('place command guard units', () => {
     const failed = vi.fn();
     const scoped = placeActivityClient(f.client, f.world, () => true, failed);
     f.command.mockRejectedValueOnce(new Error('actual failure'));
-    const command = { type: 'care', kind: 'meeting' as CareKind } as const;
+    const command = { type: 'release-youth', id: 'young' } as const;
     expect(await scoped.command(command)).toBeUndefined();
     expect(failed).toHaveBeenLastCalledWith('actual failure');
     expect(await scoped.command(command)).toMatchObject({ ok: true });

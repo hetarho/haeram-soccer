@@ -1111,7 +1111,6 @@ const worldSchema: z.ZodType<World> = z.object({
       serial: z.number().int().min(0),
     })
     .optional(),
-  winBonus: z.strictObject({ matches: z.number().int().min(1).max(10) }).optional(),
   inbox: z.array(inboxItem).max(200).optional(),
   manager,
   tactic,

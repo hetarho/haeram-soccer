@@ -139,10 +139,8 @@ for (const viewport of [
     expect(officeBox.y + officeBox.height).toBeLessThanOrEqual(managerBox.y);
     expect(managerBox.y + managerBox.height).toBeLessThanOrEqual(workroomBox.y);
     expect(workroomBox.y + workroomBox.height).toBeLessThanOrEqual(directorBox.y);
-    // The owner's requests to the manager and the staff follow the people, never precede them.
-    const requests = (await page.getByTestId('place-activities-manager').boundingBox())!;
-    expect(directorBox.y).toBeLessThan(requests.y);
-    await expect(page.getByTestId('place-activities-coaching')).toBeAttached();
+    // The manager's office and the coaching room only read: no owner request panel follows them.
+    await expect(page.locator('[data-testid^="place-activities-"]')).toHaveCount(0);
     await openPersonnel(page, 'players');
     await expect(search).toHaveValue('Retained work');
     await openPersonnel(page, 'coaches');

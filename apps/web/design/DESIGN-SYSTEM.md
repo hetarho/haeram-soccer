@@ -244,16 +244,14 @@ work, never in its place. Its current-club summary (`ClubSituation`, →WEB-44) 
 on wide screens and, on phones, strength and availability over the three moods in a six-column
 grid, so no tile drops below 12px text. Tone colours the value and note, and a warning is also
 written as a word (주의, 위험) beside the note; a summary tile never becomes a button or a
-redirect. The three quick actions (→WEB-107) sit in a compact band below it that keeps the
-`data-home-part="office"` hook, so the themes' compact icon-free tile rules still apply without
-per-theme edits; their sheets and the coach's training sheet open over the office and leave with
-it.
+redirect. The office offers no immediate owner action beside it (→WEB-39), and the HUD cash
+sheet only explains cash, fixed costs and runway (→WEB-44).
 
 The clubhouse's home briefing keeps the season card, NEXT MATCH and the illustrated office
 entrance only (→WEB-11): the manager-room art fills a reserved slot (168–280px) under a light top
 shade, with one live caption line over its top edge — 구단주 사무실, 결재 대기 n건 · 지연 n건 and a
 44px 들어가기. Caption text stays light over the shaded art in every theme. Home has no section
-bar, club summary or quick actions.
+bar or club summary.
 
 People sections lead with their people under their own rooms: 1군 opens on the current locker
 room (it follows the completed stadium) over the roster's availability line and cards, then the

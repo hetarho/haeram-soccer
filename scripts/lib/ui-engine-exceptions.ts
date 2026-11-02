@@ -117,7 +117,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
   'apps/web/src/ui/ScoutShortlist.tsx': ['packages/engine/src/signings.ts'],
   'apps/web/src/ui/StrategyBoard.tsx': [
     'packages/engine/src/academy.ts',
-    'packages/engine/src/care.ts',
     'packages/engine/src/policy.ts',
     'packages/engine/src/presets.ts',
     'packages/engine/src/synergy.ts',
@@ -157,24 +156,17 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
   'apps/web/src/ui/cupRoute.ts': ['packages/engine/src/stages.ts'],
   'apps/web/src/ui/discipline.ts': ['packages/engine/src/world.ts'],
   'apps/web/src/ui/officeChanges.ts': ['packages/engine/src/pending-work-preview.ts'],
-  'apps/web/src/ui/outcome.ts': [
-    'packages/engine/src/strategy.ts',
-    'packages/engine/src/training.ts',
-    'packages/engine/src/world.ts',
-  ],
+  'apps/web/src/ui/outcome.ts': ['packages/engine/src/training.ts'],
   'apps/web/src/ui/scouting.ts': ['packages/engine/src/career-assessment.ts'],
   'apps/web/src/ui/strategies.ts': ['packages/engine/src/presets.ts'],
   'apps/web/src/ui/tacticComparison.ts': ['packages/engine/src/strategy.ts'],
   'apps/web/src/ui/teamState.ts': [
     'packages/engine/src/academy.ts',
-    'packages/engine/src/care.ts',
     'packages/engine/src/coach-training.ts',
     'packages/engine/src/finance.ts',
     'packages/engine/src/investment.ts',
     'packages/engine/src/morale.ts',
-    'packages/engine/src/policy.ts',
     'packages/engine/src/strategy.ts',
-    'packages/engine/src/training.ts',
     'packages/engine/src/world.ts',
   ],
 };

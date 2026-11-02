@@ -1,175 +1,35 @@
 import { squadRegistration } from './squadRegistration';
 import { registrationRoom } from '../../../../packages/engine/src/registration';
-import type {
-  CareKind,
-  Command,
-  PolicyKey,
-  PolicyLevel,
-  TrainingCoach,
-  TrainingFocus,
-  World,
-  YouthFocus,
-} from '../../../../packages/contracts/src/types';
-import { lineupPreset, lineupSummary } from '../../../../packages/engine/src/strategy';
+import type { World } from '../../../../packages/contracts/src/types';
+import { lineupSummary } from '../../../../packages/engine/src/strategy';
 import { activePlayers, clubOf, isInjured } from '../../../../packages/engine/src/player-state';
 import { rating, startingSquad } from '../../../../packages/engine/src/world';
-import { quote } from '../../../../packages/engine/src/quotes';
-import { activeTrainingFocus, trainingFocusInfo } from '../../../../packages/engine/src/training';
-import {
-  forceRisk,
-  suggestionChance,
-  suggestionWait,
-  trainingCall,
-} from '../../../../packages/engine/src/coach-training';
-import { ORDER_ROUNDS } from '../../../../packages/engine/src/orders';
 import { MORALE_LABEL, moraleOf, moraleState } from '../../../../packages/engine/src/morale';
-import { INVESTMENT_ROWS, POLICY_INFO, policyOf } from '../../../../packages/engine/src/policy';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
 import { operatingCosts } from '../../../../packages/engine/src/finance';
-import { careOffer, effectText, outcomeText } from '../../../../packages/engine/src/care';
 import { academySummary, YOUTH_FOCUS_INFO } from '../../../../packages/engine/src/academy';
+import { trainingCall } from '../../../../packages/engine/src/coach-training';
 import { marketWage } from '../../../../packages/engine/src/market-prices';
 import { staffMember, STAFF_INFO } from '../../../../packages/engine/src/staff-info';
-import { buildEffects } from '../../../../packages/engine/src/build';
-import { compactMoney } from './format';
-import { nextTicketLevel } from './ticketLevels';
-import type { Page, PeopleRequest, TrainingTab } from './state';
 import { ownLeagueIds } from './league';
 
 export type Tone = 'good' | 'ok' | 'warn' | 'bad';
 export type StateKey = 'strength' | 'fatigue' | 'morale' | 'manager' | 'squad' | 'cash';
-export interface StateAction {
-  label: string;
-  command?: Command;
-  page?: Page;
-  /** The tab of 사람 or 훈련 to open, `candidates` for 감독 with the manager market. */
-  tab?: PeopleRequest | TrainingTab;
-  /** Opens the tactic and lineup preparation sheet. */
-  prepare?: boolean;
-  /**
-   * This coach's training sheet with the focus ready to suggest (→WEB-44): over 훈련 from a
-   * remedy, in place from the clubhouse's quick actions.
-   */
-  coach?: { coach: TrainingCoach; focus?: TrainingFocus | YouthFocus };
-  /**
-   * Opens 방향 with this dial change as the board's draft, ready to apply there; the remedy
-   * itself changes nothing (→WEB-44, WEB-71).
-   */
-  board?: { policy?: { key: PolicyKey; level: PolicyLevel }; ticket?: number };
-}
-/** One choice of a remedy sheet: what it costs and does, stated before commit (→WEB-44). */
-export interface Remedy extends StateAction {
-  id: string;
-  effect: string;
-  cost?: string;
-  /** Who carries a request out, for owner requests. */
-  by?: string;
-  /** Each possible result with its chance, for requests that can go differently. */
-  chances?: { chance: number; text: string }[];
-  /** Why it cannot be chosen now (cooldown, cash, already applied). */
-  unavailable?: string;
-  /** Authoritative request facts also consumed by working-place panels. */
-  care?: ReturnType<typeof careOffer>;
-}
 export interface TeamStateItem {
   key: StateKey;
   label: string;
   value: string;
   status: string;
   tone: Tone;
-  /** Why the state matters and what the owner can do about it now. */
-  advice?: { text: string; actions: StateAction[] };
-  /** What a state without advice means, leading its sheet. */
-  detail?: string;
+  /** The state needs the owner's attention (→WEB-44); strength is a comparison and never does. */
+  attention?: boolean;
 }
-
-const rank: Record<Tone, number> = { bad: 0, warn: 1, ok: 2, good: 3 };
-export const STATE_TITLES: Record<StateKey, string> = {
-  strength: '팀 전력 끌어올리기',
-  fatigue: '피로 관리',
-  morale: '분위기 끌어올리기',
-  manager: '감독과의 관계',
-  squad: '선수단 채우기',
-  cash: '자금 확보',
-};
 
 /** Weeks of fixed costs as football finance pages say it: weeks when short, months otherwise. */
 export function runwayText(rounds: number) {
   if (rounds >= 999) return '1년 이상';
   if (rounds < 13) return `약 ${Math.max(0, rounds)}주`;
   return `약 ${Math.round(rounds / 4.35)}개월`;
-}
-
-/** A level name with 로 or 으로, as its last syllable asks (로 after a vowel or ㄹ). */
-function toward(name: string) {
-  const code = name.charCodeAt(name.length - 1) - 0xac00;
-  if (code < 0 || code > 11171) return `${name}(으)로`;
-  const last = code % 28;
-  return `${name}${last === 0 || last === 8 ? '로' : '으로'}`;
-}
-
-export function careRequest(w: World, kind: CareKind): Remedy {
-  const offer = careOffer(w, kind),
-    club = clubOf(w);
-  // A choice states its cost and effect as one sentence, in the app's notation (→WEB-67).
-  const format = (value: string) => compactMoney(value, club.country, w.year);
-  const single = offer.outcomes.length === 1;
-  const effect = [
-    offer.summary,
-    single ? effectText(offer.outcomes[0]) : '',
-    BigInt(offer.income) > 0n ? `수입 +${format(offer.income)}` : '',
-    kind === 'win-bonus'
-      ? `이길 때마다 ${format(offer.perWin)} 지급 의무 · 자금이 부족해도 지급 · 승리 후 분위기 +2`
-      : '',
-    `즉시 반영 · 재요청 ${offer.cooldown}라운드 후`,
-  ]
-    .filter(Boolean)
-    .join(' · ');
-  return {
-    id: kind,
-    label: offer.label,
-    by: offer.by,
-    effect,
-    ...(single
-      ? {}
-      : {
-          chances: offer.outcomes.map((outcome) => ({
-            chance: outcome.chance,
-            text: outcomeText(outcome),
-          })),
-        }),
-    cost:
-      kind === 'win-bonus'
-        ? `승리할 때마다 ${format(offer.perWin)}`
-        : BigInt(offer.cost) > 0n
-          ? format(offer.cost)
-          : '무료',
-    unavailable: offer.reason,
-    command: { type: 'care', kind },
-    care: offer,
-  };
-}
-
-/** Shared coach preview; the existing training sheet owns suggestion/order submission. */
-export function placeTraining(w: World, coach: TrainingCoach) {
-  const call = trainingCall(w, coach);
-  const member = staffMember(w, coach);
-  return {
-    coach,
-    member: member?.name ?? '공석',
-    role: STAFF_INFO[coach].label,
-    call,
-    focus:
-      coach === 'youth'
-        ? YOUTH_FOCUS_INFO[call.focus as keyof typeof YOUTH_FOCUS_INFO].label
-        : trainingFocusInfo[call.focus as TrainingFocus].label,
-    wait: suggestionWait(w, coach),
-    risk: forceRisk(w, coach),
-    duration: ORDER_ROUNDS,
-    // Focus comparisons use the academy's actual age-group multipliers.
-    youthFocuses: YOUTH_FOCUS_INFO,
-    unavailable: member ? undefined : `${STAFF_INFO[coach].label} 자리가 비어 있어요`,
-  };
 }
 
 /** The same prospect/readiness/registration preview as the authoritative academy workflow. */
@@ -188,6 +48,17 @@ export function placeAcademy(w: World) {
   };
 }
 
+/** The youth director's own call as the academy place reads it (→WEB-102): who, focus and why. */
+export function youthCall(w: World) {
+  const call = trainingCall(w, 'youth'),
+    role = STAFF_INFO.youth.label;
+  const focus = YOUTH_FOCUS_INFO[call.focus as keyof typeof YOUTH_FOCUS_INFO].label;
+  return {
+    role,
+    fact: `${role} ${staffMember(w, 'youth')?.name ?? '공석'} · ${focus} · ${call.reason}`,
+  };
+}
+
 /**
  * Our place among the division's strengths (→WEB-44): equal ratings share a place, the top third
  * reads good and the bottom third a warning; a field under three clubs has no bottom third.
@@ -200,218 +71,27 @@ export function strengthPlace(ratings: readonly number[], own: number) {
   return { place, of, tone };
 }
 
-/** Every choice for one state, available or not, in the order the sheet lists them. */
-export function remedies(w: World, key: StateKey): Remedy[] {
-  const club = clubOf(w),
-    policy = policyOf(w),
-    format = (value: string) => compactMoney(value, club.country, w.year);
-  switch (key) {
-    case 'strength':
-      return [
-        {
-          id: 'prepare',
-          label: '상세 리포트',
-          effect: '감독의 경기 준비 보고를 보고 선발과 전술을 제안해요',
-          prepare: true,
-        },
-        {
-          id: 'market',
-          label: '이적시장',
-          effect: '부족한 자리에 더 강한 선수를 찾아요',
-          page: 'firstTeam',
-          tab: 'market',
-        },
-        {
-          id: 'training',
-          label: '1군 훈련',
-          effect: '코치의 훈련 방향을 보고 선수 성장을 이끌어요',
-          page: 'firstTeam',
-          tab: 'training',
-        },
-        {
-          id: 'academy',
-          label: '유소년 보기',
-          effect: '1군에 올릴 만한 유망주를 살펴요',
-          page: 'academy',
-          tab: 'academy',
-        },
-      ];
-    case 'fatigue': {
-      const current = lineupSummary(startingSquad(w, club), w.tactic).fatigue;
-      const rest = lineupPreset(w, 'rest');
-      const restFatigue = Math.round(
-        rest.reduce((sum, id) => sum + (w.players.find((p) => p.id === id)?.fatigue || 0), 0) /
-          Math.max(1, rest.length),
-      );
-      return [
-        {
-          id: 'recovery-training',
-          label: '수석코치에게 회복 훈련 제안',
-          effect: `수락 확률 ${Math.round(suggestionChance(w, 'assistant', 'recovery') * 100)}% · 받아들이면 ${ORDER_ROUNDS}라운드 동안 회복이 커지고 성장 기회는 줄어요`,
-          cost: '무료',
-          unavailable: activeTrainingFocus(w) === 'recovery' ? '이미 회복 훈련 중' : undefined,
-          coach: { coach: 'assistant', focus: 'recovery' },
-          page: 'firstTeam',
-        },
-        {
-          id: 'rest-lineup',
-          label: '쉬게 할 선발',
-          effect: `선발 평균 피로 ${current} → ${restFatigue} · 즉시 전력은 조금 낮아져요`,
-          cost: '무료',
-          unavailable: restFatigue >= current ? '이미 가장 덜 지친 선발' : undefined,
-          command: { type: 'lineup', ids: rest },
-        },
-        careRequest(w, 'rest-day'),
-        careRequest(w, 'recovery'),
-        careRequest(w, 'camp'),
-        {
-          id: 'prepare',
-          label: '상세 리포트에서 제안하기',
-          effect: '전방 압박은 피로가 더 쌓여요. 선발과 전술을 비교해 보세요',
-          prepare: true,
-        },
-      ];
-    }
-    case 'morale':
-      return [
-        careRequest(w, 'meeting'),
-        careRequest(w, 'bonding'),
-        careRequest(w, 'win-bonus'),
-        careRequest(w, 'owner-visit'),
-        careRequest(w, 'camp'),
-        careRequest(w, 'rest-day'),
-      ];
-    case 'manager':
-      return [
-        careRequest(w, 'backing'),
-        {
-          id: 'office',
-          label: '감독과 전술 이야기하기',
-          effect: '코치진 › 감독에서 감독의 철학과 신뢰를 보고 전술을 제안하거나 조건을 받아들여요',
-          page: 'staff',
-          tab: 'manager',
-        },
-        {
-          id: 'candidates',
-          label: '다른 감독 후보 살펴보기',
-          effect: '코치진 › 감독의 감독 시장에서 후보의 스타일과 선임 비용을 비교해요',
-          page: 'staff',
-          tab: 'candidates',
-        },
-      ];
-    case 'cash': {
-      // Setting remedies open the operating board with the change as its draft (→WEB-71).
-      // The 지역 or 글로벌 row that spends most, one step lower (→ECON-16, →ECON-34).
-      const invest = INVESTMENT_ROWS.reduce((most, key) =>
-          policy[key] > policy[most] ? key : most,
-        ),
-        investStep = POLICY_INFO[invest].levels[policy[invest] - 2];
-      const support = POLICY_INFO.support.levels[policy.support - 2];
-      const ticket = nextTicketLevel(w.ticket);
-      const seasonSupport = w.events.filter(
-        (event) => event.kind === 'support' && event.year === w.year,
-      ).length;
-      const limit = buildEffects(w).ownerCapital;
-      // What one step less squad investment saves on this season's operating expenses (→ECON-16).
-      const saving = support
-        ? (
-            BigInt(operatingCosts(w).expenses) -
-            BigInt(operatingCosts({ ...w, policy: { ...policy, support: support.level } }).expenses)
-          ).toString()
-        : '0';
-      return [
-        {
-          id: 'investment-down',
-          label: '지역·글로벌 투자 줄이기',
-          effect: investStep
-            ? `업무 기준에서 ${POLICY_INFO[invest].label} 단계를 ${toward(investStep.name)} 낮춰 적용해요 · ${investStep.summary}`
-            : '이미 추가 지출이 없어요',
-          unavailable: investStep ? undefined : '투자하는 줄이 없어요',
-          page: 'operations',
-          board: investStep ? { policy: { key: invest, level: investStep.level } } : undefined,
-        },
-        // Squad investment scales operating expenses (→ECON-16); offered while it can go down.
-        ...(support
-          ? [
-              {
-                id: 'support-down',
-                label: '선수단 투자 낮추기',
-                effect: `업무 기준에서 ${toward(support.name)} 낮춰 적용해요 · 운영 경비 연 ${format(saving)} 절감 · 라운드 성장과 피로 회복이 줄어요`,
-                page: 'operations' as const,
-                board: { policy: { key: 'support' as const, level: support.level } },
-              },
-            ]
-          : []),
-        {
-          id: 'ticket-up',
-          label: '티켓 가격 올리기',
-          effect: ticket
-            ? `업무 기준에서 ${toward(ticket.name)} 올려 적용해요 · 홈 경기 입장 수입이 늘고 관중 수요는 줄어요`
-            : '이미 가장 비싼 가격이에요',
-          unavailable: ticket ? undefined : '티켓 가격 상한',
-          page: 'operations',
-          board: ticket ? { ticket: ticket.price } : undefined,
-        },
-        careRequest(w, 'friendly'),
-        {
-          id: 'owner-capital',
-          label: '구단주 추가 출자',
-          effect: `+${format(quote(club.country, w.year, 150))} · 클럽 평판 −2 · 시즌 ${limit}회까지`,
-          cost: '무료',
-          unavailable: seasonSupport >= limit ? `이번 시즌 ${limit}회 모두 사용` : undefined,
-          command: { type: 'support' },
-        },
-        {
-          id: 'market',
-          label: '선수 매각 살펴보기',
-          effect: '이적시장에서 제안과 매각 가능 선수를 확인해요',
-          page: 'firstTeam',
-          tab: 'market',
-        },
-      ];
-    }
-    case 'squad': {
-      const academy = academySummary(w);
-      const best = academy.players[0];
-      return [
-        {
-          id: 'market',
-          label: '이적시장',
-          effect: `자유계약 선수는 언제든, 이적료 선수는 이적시장 기간에 영입해요 · ${squadRegistration(w).detail}`,
-          page: 'firstTeam',
-          tab: 'market',
-        },
-        {
-          id: 'academy',
-          label: '유소년 보기',
-          effect: `유소년 · 아카데미 ${academy.players.length}명 · 1군 자리 ${academy.room.total}개`,
-          page: 'academy',
-          tab: 'academy',
-        },
-        {
-          id: 'promote',
-          label: best ? `${best.player.name} 승격` : '승격할 유망주 없음',
-          effect: best
-            ? `${best.player.position} · ${best.age}세 · 능력 ${best.overall} · 잠재력 ${best.potential}`
-            : '3월 15일 유소년 입단을 기다려요',
-          unavailable: !best
-            ? '아카데미가 비어 있어요'
-            : registrationRoom(w, { ...best.player, graduate: true, joined: w.year }),
-          command: best ? { type: 'promote-youth', id: best.player.id } : undefined,
-        },
-      ];
-    }
-  }
+/**
+ * The HUD cash sheet's facts (→WEB-44): the next round's fixed costs and a year's by kind, the
+ * players' wages always and the other kinds only while they cost anything.
+ */
+export function fixedCosts(w: World) {
+  const costs = operatingCosts(w);
+  const kinds = (
+    [
+      ['선수 급여', costs.playerWages],
+      ['감독 급여', costs.managerWage],
+      ['스태프 급여', costs.staffWages],
+      ['시설 유지', costs.maintenance],
+      ['지역·글로벌 투자', costs.investment],
+      ['유소년 투자', costs.academy],
+      ['운영 경비', costs.expenses],
+    ] as const
+  ).filter(([label, amount]) => label === '선수 급여' || BigInt(amount) !== 0n);
+  return { nextRound: costs.nextRound, annual: costs.annual, kinds };
 }
 
-/** The first choices that can be used right now, for the urgent card's two quick buttons. */
-function quick(w: World, key: StateKey) {
-  return remedies(w, key)
-    .filter((remedy) => !remedy.unavailable && !remedy.prepare)
-    .slice(0, 2);
-}
-
-/** Cash is shown in the HUD; it joins the state card only when it needs the owner. */
+/** Cash is shown in the HUD, whose sheet explains it (→WEB-44); it has no summary tile. */
 export function cashState(w: World): TeamStateItem {
   const runway = fixedCostRunway(w.cash, operatingCosts(w).annual);
   const deficit = BigInt(w.cash) < 0n;
@@ -429,15 +109,7 @@ export function cashState(w: World): TeamStateItem {
             ? '주의'
             : '위험',
     tone: deficit || runway < 5 ? 'bad' : runway < 12 ? 'warn' : runway < 30 ? 'ok' : 'good',
-    advice:
-      deficit || runway < 12
-        ? {
-            text: deficit
-              ? '운영 자금이 바닥났어요. 지출을 줄이거나 자금을 마련해야 경기를 이어갈 수 있어요.'
-              : `급여·운영비 기준으로 ${runwayText(runway)}분 자금만 남았어요.`,
-            actions: quick(w, 'cash'),
-          }
-        : undefined,
+    attention: deficit || runway < 12,
   };
 }
 
@@ -454,7 +126,7 @@ export function squadAvailability(w: World) {
   return { total: active.length, available: active.length - out, injured, suspended, out };
 }
 
-/** Current club condition (not season statistics), each with actions when it needs care. */
+/** Current club condition (not season statistics), each marked when it needs the owner. */
 export function teamStates(w: World): TeamStateItem[] {
   const fatigue = lineupSummary(startingSquad(w, clubOf(w)), w.tactic).fatigue;
   const morale = moraleOf(w),
@@ -478,9 +150,8 @@ export function teamStates(w: World): TeamStateItem[] {
       label: '팀 전력',
       value: String(strength),
       status: `리그 ${place.place}/${place.of}위`,
+      // A comparison, not a condition to repair: it never needs the owner.
       tone: place.tone,
-      // A comparison, not a condition to repair: it never carries advice or its badge.
-      detail: `선발 11명의 평균 능력 ${strength} · 우리 리그 ${place.of}개 클럽 중 ${place.place}번째예요.`,
     },
     {
       key: 'fatigue',
@@ -488,15 +159,7 @@ export function teamStates(w: World): TeamStateItem[] {
       value: String(fatigue),
       status: fatigue < 20 ? '상쾌' : fatigue < 40 ? '양호' : fatigue < 60 ? '지침' : '탈진',
       tone: fatigue < 20 ? 'good' : fatigue < 40 ? 'ok' : fatigue < 60 ? 'warn' : 'bad',
-      advice:
-        fatigue >= 40
-          ? {
-              text: `선발 평균 피로 ${fatigue} · 경기력이 떨어지고 분위기도 가라앉아요.${
-                activeTrainingFocus(w) === 'recovery' ? ' 지금 회복 훈련 중이에요.' : ''
-              }`,
-              actions: quick(w, 'fatigue'),
-            }
-          : undefined,
+      attention: fatigue >= 40,
     },
     {
       key: 'morale',
@@ -511,13 +174,7 @@ export function teamStates(w: World): TeamStateItem[] {
             : mood === 'low'
               ? 'warn'
               : 'bad',
-      advice:
-        mood === 'low' || mood === 'crisis'
-          ? {
-              text: `분위기 ${morale} · 경기 전력이 떨어져요. 감독에게 선수단 미팅을 요청하거나 분위기를 바꿀 계기를 만들어 주세요.`,
-              actions: quick(w, 'morale'),
-            }
-          : undefined,
+      attention: mood === 'low' || mood === 'crisis',
     },
     {
       key: 'manager',
@@ -541,17 +198,7 @@ export function teamStates(w: World): TeamStateItem[] {
             : trust >= 35
               ? 'warn'
               : 'bad',
-      advice: interim
-        ? {
-            text: '감독대행이 팀을 이끌고 있어요. 새 감독을 선임해야 전술과 성장이 제자리를 찾아요.',
-            actions: [{ label: '감독 후보 보기', page: 'staff', tab: 'candidates' }],
-          }
-        : trust < 55
-          ? {
-              text: `감독 신뢰 ${trust} · 신뢰가 낮으면 전술 요청을 거절하고 분위기 기준점도 내려가요. 자존심 강한 감독은 떠날 수 있어요.`,
-              actions: quick(w, 'manager'),
-            }
-          : undefined,
+      attention: interim || trust < 55,
     },
     {
       key: 'squad',
@@ -559,26 +206,10 @@ export function teamStates(w: World): TeamStateItem[] {
       value: registered.value,
       status: squad < 20 ? '부족' : registered.full ? '가득' : missing || '여유',
       tone: fit < 14 || squad < 16 ? 'bad' : squad < 20 || out >= 3 ? 'warn' : 'good',
-      advice:
-        squad < 20 || fit < 14 || out >= 3
-          ? {
-              text: `선수 ${squad}명${out ? ` · 부상 ${injured}명 · 출장 정지 ${suspended}명` : ''} · ${registered.detail} · 부상·출장 정지나 피로가 겹치면 선발을 채우기 어려워요.`,
-              actions: quick(w, 'squad'),
-            }
-          : undefined,
+      attention: squad < 20 || fit < 14 || out >= 3,
     },
   ];
 }
-/**
- * The most urgent state that has advice, if any. Cash competes even though it has no tile, and
- * wins ties: a club out of money cannot play on.
- */
-export function urgentState(states: TeamStateItem[], cash?: TeamStateItem) {
-  return [...(cash ? [cash] : []), ...states]
-    .filter((state) => state.advice)
-    .sort((a, b) => rank[a.tone] - rank[b.tone])[0];
-}
-
 /** One fact of the clubhouse's current-club summary (→WEB-44). */
 export interface SituationFact {
   key: Exclude<StateKey, 'cash'>;
@@ -593,14 +224,14 @@ export interface SituationFact {
 /**
  * The clubhouse's current-club summary (→WEB-44): strength with its place in our division, who
  * can play of the whole first team with the injured and the suspended, the starters' fatigue,
- * 분위기 and the manager's standing. It only reads; the quick actions answer it (→WEB-107).
+ * 분위기 and the manager's standing. It only reads and offers no remedy (→WEB-44).
  */
 export function clubSituation(w: World): SituationFact[] {
   const states = teamStates(w);
   const state = (key: StateKey) => states.find((item) => item.key === key)!;
   const squad = squadAvailability(w);
   const warning = (item: TeamStateItem) =>
-    item.advice ? (item.tone === 'bad' ? ('위험' as const) : ('주의' as const)) : undefined;
+    item.attention ? (item.tone === 'bad' ? ('위험' as const) : ('주의' as const)) : undefined;
   const fact = (key: SituationFact['key'], label: string): SituationFact => {
     const item = state(key);
     return {
