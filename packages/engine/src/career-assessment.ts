@@ -6,18 +6,25 @@ import { careerDate } from './person-careers';
 import { managerialEntryReady } from './manager-entry';
 import { GRADE_LABEL, personalityRange } from './player';
 import { staffMember } from './staff';
-export function aptitudeLabel(grade: Grade | undefined, own: boolean, scoutAbility?: number) {
+import { scoutRangeScale } from './owner-traits';
+export function aptitudeLabel(
+  grade: Grade | undefined,
+  own: boolean,
+  scoutAbility?: number,
+  scale = 1,
+) {
   if (grade === undefined) return undefined;
-  const [low, high] = own ? [grade, grade] : personalityRange(grade, scoutAbility);
+  const [low, high] = own ? [grade, grade] : personalityRange(grade, scoutAbility, scale);
   return low === high ? GRADE_LABEL[low] : `${GRADE_LABEL[low]}~${GRADE_LABEL[high]}`;
 }
 /** Display-safe current assessment; true eligibility never uses the displayed range. */
 export function careerAssessment(w: World, player: Player, own: boolean) {
   const person = w.people?.[player.id],
-    scout = staffMember(w, 'scout')?.ability;
+    scout = staffMember(w, 'scout')?.ability,
+    scale = scoutRangeScale(w);
   return {
-    coaching: aptitudeLabel(coachingGrade(player), own, scout),
-    managerial: aptitudeLabel(managerialGrade(player), own, scout),
+    coaching: aptitudeLabel(coachingGrade(player), own, scout, scale),
+    managerial: aptitudeLabel(managerialGrade(player), own, scout, scale),
     specialty:
       person?.coaching?.role ??
       (player.qualities

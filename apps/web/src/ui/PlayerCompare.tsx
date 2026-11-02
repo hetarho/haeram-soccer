@@ -10,6 +10,7 @@ import {
 } from '../../../../packages/engine/src/player';
 import { clubOf, overall } from '../../../../packages/engine/src/player-state';
 import { staffMember } from '../../../../packages/engine/src/staff-info';
+import { scoutRangeScale } from '../../../../packages/engine/src/owner-traits';
 import { positionsLabel } from './FormationPitch';
 import { Money } from './Money';
 import { OvrBadge } from './OvrBadge';
@@ -60,6 +61,7 @@ export function PlayerCompare({
 }) {
   const club = clubOf(w);
   const scout = staffMember(w, 'scout')?.ability;
+  const range = scoutRangeScale(w);
   const cash = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   const both = (read: (side: CompareSide) => Cell): readonly [Cell, Cell] => [
     read(sides[0]),
@@ -180,7 +182,7 @@ export function PlayerCompare({
       ...(Object.keys(PERSONALITY_LABEL) as (keyof Personality)[]).map((key) => ({
         label: PERSONALITY_LABEL[key],
         cells: both((side) => ({
-          text: gradeLabel(side.player.personality[key], side.own, scout),
+          text: gradeLabel(side.player.personality[key], side.own, scout, range),
         })),
       })),
     ],

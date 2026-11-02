@@ -38,6 +38,7 @@ import { npcTactic, ownTacticalProfile, tacticalProfile, type TacticalProfile } 
 import { managerStyleEffects, type StyleEffects } from './styles';
 import { synergyEffects, type SynergyEffects } from './synergy';
 import { buildEffects } from './build';
+import { talismanStrength } from './owner-traits';
 import { injuryChance } from './careers';
 import { HOST_MATH, type MatchMath } from './portable-math';
 import {
@@ -305,11 +306,13 @@ export function prepareMatch(
         : undefined;
   const style = ownSide === undefined ? undefined : managerStyleEffects(w);
   const synergy = ownSide === undefined ? undefined : synergyEffects(w);
+  // 승리의 부적 lifts the own club alone, the one exception to equal terms (→OWNER-6).
   const ownStrength = (side: 0 | 1) =>
     (w.manager.ability - 50) / 4 +
     moraleStrength(w) +
     style!.strength +
-    (side === 0 ? buildEffects(w).homeStrength : 0);
+    (side === 0 ? buildEffects(w).homeStrength : 0) +
+    talismanStrength(w);
   // From revision 3 a club nobody owns adds its named manager on the own club's formula, its
   // morale at the neutral 60 adding nothing; earlier revisions and the pre-feature model keep a
   // flat 4 (→MATCH-2, T466). Styles stay the own club's (→STAFF-14).

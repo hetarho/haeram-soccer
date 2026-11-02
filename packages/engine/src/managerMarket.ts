@@ -28,6 +28,7 @@ import { FOUNDING_YEAR, makeManager } from './world';
 import { ownLeagueClubs } from './season';
 import { managerCriteriaOf } from './hiring';
 import { moneyLabel } from './finance';
+import { networkCandidates, networkedCandidate } from './owner-traits';
 
 /** The market moves every four league rounds and at the season close (→STAFF-17). */
 export const MARKET_REFRESH_ROUNDS = 4;
@@ -53,19 +54,25 @@ export interface ManagerCandidate extends MarketManager {
   compensation?: string;
 }
 
+/** The free agents the market holds: 4–8, and 마당발's more (→STAFF-17, OWNER-5). */
+function freeAgentRange(w: World) {
+  const more = networkCandidates(w);
+  return { min: FREE_AGENTS.min + more, max: FREE_AGENTS.max + more };
+}
+
 /**
- * The season's four seeded candidates, one school each (→STAFF-14); they open the market. Wages
- * and fees follow the football index (→ECON-26).
+ * The season's four seeded candidates, one school each (→STAFF-14), and 마당발's more, abler
+ * (→OWNER-5); they open the market. Wages and fees follow the football index (→ECON-26).
  */
 export function managerOffers(w: World) {
   const code = clubOf(w).country,
     styles = candidateStyles(w.seed, w.year);
-  return Array.from({ length: 4 }, (_, i) => {
+  return Array.from({ length: 4 + networkCandidates(w) }, (_, i) => {
     const style = styles[i],
       info = STYLE_INFO[style],
       manager = makeManager(code, w.seed, w.year, i + 1, style),
       trait = managerTrait(w, i + 1, style);
-    return {
+    return networkedCandidate(w, {
       ...manager,
       ...(trait ? { trait } : {}),
       style,
@@ -74,7 +81,7 @@ export function managerOffers(w: World) {
       wage: footballScaled(w, manager.wage),
       until: w.year + info.term,
       fee: staffQuote(w, 60 + i * 40),
-    };
+    });
   });
 }
 
@@ -145,14 +152,14 @@ function freeAgent(w: World, serial: number): MarketManager {
     info = STYLE_INFO[style],
     drawn = makeManager(code, `${w.seed}:free-manager:${serial}`, w.year, 1, style),
     trait = managerTrait({ ...w, seed: `${w.seed}:free-manager:${serial}` }, 1, style);
-  return {
+  return networkedCandidate(w, {
     ...drawn,
     ...(trait ? { trait } : {}),
     style,
     philosophy: info.tactic ?? drawn.philosophy,
     wage: staffQuote(w, 120 + drawn.ability),
     until: w.year + info.term,
-  };
+  });
 }
 const signingFee = (w: World, m: Manager) => staffQuote(w, 40 + m.ability);
 
@@ -444,7 +451,7 @@ export function takeManager(w: World, candidate: ManagerCandidate, replaced: Man
         trust: 65,
         wage: staffQuote(w, 120 + rest.ability),
       },
-    ].slice(-FREE_AGENTS.max);
+    ].slice(-freeAgentRange(w).max);
   }
   if (replaced.person) {
     const person = w.people?.[replaced.person];
@@ -545,9 +552,10 @@ export function refreshManagerMarket(w: World, relegated?: Set<string>) {
       `${STYLE_INFO[manager.style].label} · OVR ${manager.ability} · 자유계약 감독 명단에 올랐어요`,
     );
   }
-  while (m.free.length < FREE_AGENTS.min || (m.free.length < FREE_AGENTS.max && r() < 0.3))
+  const { min, max } = freeAgentRange(w);
+  while (m.free.length < min || (m.free.length < max && r() < 0.3))
     m.free.push(freeAgent(w, m.serial++));
-  m.free = m.free.slice(-FREE_AGENTS.max);
+  m.free = m.free.slice(-max);
   m.year = w.year;
   m.round = w.round;
   syncMentorExposures(w);

@@ -30,6 +30,7 @@ import { ownStarters, tierLevel } from './world';
 import { policyEffects, policyOf } from './policy';
 import { talkRuleOf } from './hiring';
 import { buildEffects } from './build';
+import { wageDemandFactor } from './owner-traits';
 import { moraleOf, UNHAPPY_MORALE } from './morale';
 import { pushInbox } from './inbox';
 import { moneyLabel, operatingCosts, recentRevenue, wageBill } from './finance';
@@ -279,11 +280,12 @@ export function playerWorth(w: World, p: Player) {
   return factor === 1 ? marketWage(w, p) : scaleBy(marketWage(w, p), factor, 1000n);
 }
 /**
- * What a player asks now: his worth times the build's player-wage effects (→ECON-22) and his
- * agent's premium (→CLUB-30), and the floor he accepts, demand × (1 − goodwill).
+ * What a player asks now: his worth times the build's player-wage effects (→ECON-22), his agent's
+ * premium (→CLUB-30) and 협상의 달인's factor (→OWNER-5), and the floor he accepts, demand ×
+ * (1 − goodwill).
  */
 export function talkTerms(w: World, p: Player) {
-  const multiplier = buildEffects(w).wage * agentPremium(agentOf(w, p)),
+  const multiplier = buildEffects(w).wage * agentPremium(agentOf(w, p)) * wageDemandFactor(w),
     demand = scaleBy(playerWorth(w, p), multiplier, 1000n),
     goodwill = talkGoodwill(w, p);
   return {

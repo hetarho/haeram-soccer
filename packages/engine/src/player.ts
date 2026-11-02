@@ -549,10 +549,14 @@ export const FORMATIONS: Record<Tactic, { name: string; slots: readonly Slot[] }
 export const slotLine = (tactic: Tactic, index: number) =>
   lineOf(FORMATIONS[tactic].slots[index]!.position);
 
-/** The grades another club's player shows, as wide as the chief scout's ability allows (→PLAYER-18). */
-export function personalityRange(grade: Grade, scoutAbility?: number): [Grade, Grade] {
-  const spread =
-    scoutAbility === undefined ? 2 : scoutAbility >= 80 ? 0 : scoutAbility >= 60 ? 1 : 2;
+/**
+ * The grades another club's player shows, as wide as the chief scout's ability allows (→PLAYER-18);
+ * `scale` narrows it on whole grades, 원석 감별사's half (→OWNER-5) making ±2 read ±1 and ±1 exact.
+ */
+export function personalityRange(grade: Grade, scoutAbility?: number, scale = 1): [Grade, Grade] {
+  const spread = Math.floor(
+    (scoutAbility === undefined ? 2 : scoutAbility >= 80 ? 0 : scoutAbility >= 60 ? 1 : 2) * scale,
+  );
   const at = (g: number) => Math.min(5, Math.max(1, g)) as Grade;
   return [at(grade - spread), at(grade + spread)];
 }
