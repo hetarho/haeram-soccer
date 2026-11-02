@@ -13,11 +13,16 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-02T16:10Z | - |
+| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-03T00:00Z | T665 next on wip/ot03 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261103 decided MATCH-22 WORLD-13 T669: which worlds take the results-only path → every world with `playerClub` empty, whatever its match model, checked first in `simulateMatch` (alt: only worlds on the released model). ot03
+- 261103 decided MATCH-22 T669: results-only score model → per-side Poisson fitted to the full path by strength gap and mean strength (draws 22.3% vs 22.2%); penalty 7.5% / header 17% / outside 12%; 80% of non-penalty goals assisted (alt: a gap-only fit, ~0.24 goals low for strong equal sides). ot03
+- 261103 decided MATCH-26 HIST-3 T669: results-only record → no model, incidents or highlights; eleven lines a side with goals/assists/minutes, detail and xG zero (alt: a full record with zeroed counters, which MATCH-27's check rejects). ot03
+- 261103 decided PLAYER-27 HIST-3 T669: ownerless season stats before 1955/56 → not kept; only from 1955/56 when the close awards the Ballon d'Or (alt: keep every season; nothing reads them). ot03
+- 261103 decided ARCH-28 T669: further generation cuts → only outcome-preserving ones proven by digests; 2000 reached 30.9 s Node (≈124 s reference) from 773.9 s; weekly people business for unowned worlds would be an update-ssot (alt: change WORLD-13's day order now). ot03
 - 261103 decided SAVE-10 SAVE-26 T664: "rules 5.0.0" against SAVE-10's one game version → `CURRENT_ENGINE_VERSION` and every package 0.8.0, the beta's next version starting the rules-5.0.0 line; 0.7.0 and its 4.0.0 label join the earlier-rules list (alt: a literal 5.0.0, which drops the BETA mark and splits app and rules versions). ot03
 - 261103 suggest SAVE-10 T664: SAVE-10 still says the game is 0.7.0 continuing the 4.0.0 line; it should name 0.8.0 on the rules-5.0.0 line of SAVE-26 (update-ssot). ot03
 - 261103 decided SAVE-26 WEB-62 T664: founded 0.7.0/4.0.0 careers → cleared once on writer activation by the existing release reset (now recognizing that line in the match-model and manager-history containers) with one notice; their exported files stay and are refused on import naming their rules (alt: keep them as 이전 규칙 slots with export and delete only). ot03
@@ -615,7 +620,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T669 | results-only fixtures before the takeover | MATCH WORLD ARCH HIST PLAYER LEAGUE | T656 | todo |
 | T665 | remove founding, difficulty levels, the founding editor and the amateur level | WEB KIT WORLD LEAGUE ECON CLUB | T652 T664 | todo |
 | T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T665 | todo |
 | T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T665 | todo |
@@ -643,10 +647,11 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- after T652: implement-task T653, then in parallel the lanes takeover (T657→T658), owner-economy (T659→T660), traits (T661), start-ui (T662), owner-ui (T663) beside the main-session chain T654→T655→T656; then T664→T665→T666, T667, T668
-- read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
+- on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (remove founding, difficulty levels, the founding editor and the amateur level), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
+- read main CI after 1928053c/fa1ed566 (fix for 41524887826)
 
 ## log
+- 261103 T669 done (merged 1c218442): results-only fixtures before the takeover; generateHistory 2000 773.9 s → 30.9 s Node (≈124 s reference, ARCH-28 90 s needs ~27% more); ot03
 - 261103 T664 done: a new game is tier → traits → decade → generated world → club list → takeover on game version 0.8.0 (rules 5.0.0); worker generate/club-sheet/take-over, careerEnded routing, OwnerSheet/GameOver stories, founded 0.7.0 careers reset; e2e on tests/e2e/start.ts; ot03
 - 261103 update-ssot WORLD r9 MATCH r48: fixtures before the takeover take a results-only path; create-task T669 (explore 3h, parallel to T664); T664/T666 notes from the integration; ot03
 - 261103 integrate ot03/history (T654–T656) into ot03/integrate: generated world, wartime and NPC books merged without conflicts; one facility helper (club-value `facilityStage`), takeOver on a generateHistory world opens the manager market and closes the club's NPC coaching jobs, own-club reads skip pre-owner archives (`isOwnSeason`, parachute from the world's standings); unit 2034, contract 47, integration set 44, equivalence digests unchanged; ot03
@@ -660,6 +665,9 @@
 - 261103 T658 done: takeOver turns an unowned club into the owner's with its cash, debts as a loan and squad; ot03
 - 261103 T657 done: club value, price, reach bands and the club listing; ot03
 - 261103 T653 done: the owner and takeover shape the lanes build on — contracts `owner.ts` (tiers, traits, OwnerState, TakeoverLoan, ClubBooks, StartChoice, ClubListing, EndCause) on `World.owner/loan/ended` and `Club.books` in types and schema, every OWNER/ECON-36–38/CLUB-1 number named in engine `owner-config.ts`, commands owner-stake/inject/dividend refused by `ownerCommand` until T659, no-op hooks `ownerDay`/`ownerClose`/`ownerSettleGap` (`owner.ts`) and `fanMoodAfterLeagueMatch`/`fanMoodRound`/`fanMoodClose`/`fanMoodTransfer`/`fanMoodIdentity` (`fan-mood.ts`) at their day-loop sites, the engine halting on `careerEnded` (bankrupt or `ended`), fortune and loan converted at a currency change, `withOwner` test helper; equivalence digests unchanged.
+- 261103 ot03 hand-off: main pushed with CI fix 1928053c and report; owner takeover work on wip/ot03 and wip/ot03-t669 for another session
+- 261103 fix CI 41524887826: position badges scroll a family's first market row up the list (random seed put it below the 360px fold), the goal-cue check reads the cue the page recorded inside its 1 s hold (and the ball-side scoreboard check waits out the page entrance WebKit resampled), and formation slots centre with `translate` so a pressed slot no longer jumps off the mouseup in Firefox (app fix, unit test)
+- 261103 ot03 batch gate passed on 8887ace7 (typecheck, lint, format, unit, integration 147 files, contract 47, catalogs, presentation, build, Chromium 346/346); pushed main with T646–T652, the design close and the gate fixes
 - 261103 fix e2e gate: the ot03 Chromium batch's 12 failures follow the removals (7 milestones, a rested player's line reads 팀 훈련) and the closed match design (경기 상세 opened past the first sample, a closing sheet's fading copy is not open), plus two app fixes — the 결재함 names the playing-coach player in the browser projection without people, and on phones the speed chips stay on screen beside the matchup
 - 261103 fix operating-expense test: owner capital no longer exists (T650), so the turnover case checks player sales and compensation only; found by the ot03 batch gate (integration 1 of 1187)
 - 261103 T652 done: nothing unused is left beside what the reasons in T652's result keep. `intervention` (no supported save lacks settings, so no level mapping), `campaign`, `sponsor` and `club-identity` leave Command/protocol/engine/outcome, `World.intervention` is dropped on load; engine `intervention.ts` and `MilestoneCollection` deleted, 69 exports removed (sprite painter, queue filters, criteria schemas, round-simulator injection among them), 3 test conveniences moved to test helpers, 56 CSS classes, 28 messages ×12 packs, 7 unused locals; tests set authority through `testing.ts` `staffAuthority`/`handTo`. Equivalence digests unchanged; unit 222/1900 green; contract 47 green (golden unchanged); e2e edited for the batch.

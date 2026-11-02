@@ -91,6 +91,17 @@ for (const themeId of themes)
 
         const badge = row.locator('[data-ui="position-badge"]');
         await expect(badge, measured).toBeVisible();
+        // The founding seed is random, so a family's first row can sit below a short phone's fold
+        // (CI 41524887826: a midfielder under forwards and defenders at 360×740). Scroll the list
+        // vertically only: a badge pushed out sideways still fails the viewport check.
+        await row.evaluate((element) => {
+          for (let parent = element.parentElement; parent; parent = parent.parentElement)
+            if (['auto', 'scroll'].includes(getComputedStyle(parent).overflowY)) {
+              const row = element.getBoundingClientRect();
+              const top = row.top - parent.getBoundingClientRect().top;
+              parent.scrollTop += top - (parent.clientHeight - row.height) / 2;
+            }
+        });
         await expect(badge, measured).toBeInViewport();
         const paint = await badge.evaluate((element) => {
           const css = getComputedStyle(element);

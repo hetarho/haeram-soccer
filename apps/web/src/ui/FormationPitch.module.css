@@ -28,9 +28,11 @@
   fill: var(--analysis-pitch-line, var(--line));
   stroke: none;
 }
+/* Centred by `translate`, not `transform`: a pressed button drops its transform (App.module.css),
+   and a slot that jumped half its size on press took Firefox's mouseup, so the click, away. */
 .slot {
   position: absolute;
-  transform: translate(-50%, -50%);
+  translate: -50% -50%;
   width: 48px;
   min-width: 44px;
   min-height: 50px;
