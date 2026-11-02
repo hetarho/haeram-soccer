@@ -567,6 +567,7 @@
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261103 fix CI 41524887826: position badges scroll a family's first market row up the list (random seed put it below the 360px fold), the goal-cue check reads the cue the page recorded inside its 1 s hold (and the ball-side scoreboard check waits out the page entrance WebKit resampled), and formation slots centre with `translate` so a pressed slot no longer jumps off the mouseup in Firefox (app fix, unit test)
 - 261103 ot03 batch gate passed on 8887ace7 (typecheck, lint, format, unit, integration 147 files, contract 47, catalogs, presentation, build, Chromium 346/346); pushed main with T646–T652, the design close and the gate fixes
 - 261103 fix e2e gate: the ot03 Chromium batch's 12 failures follow the removals (7 milestones, a rested player's line reads 팀 훈련) and the closed match design (경기 상세 opened past the first sample, a closing sheet's fading copy is not open), plus two app fixes — the 결재함 names the playing-coach player in the browser projection without people, and on phones the speed chips stay on screen beside the matchup
 - 261103 fix operating-expense test: owner capital no longer exists (T650), so the turnover case checks player sales and compensation only; found by the ot03 batch gate (integration 1 of 1187)

@@ -184,22 +184,61 @@ function goalWorld() {
   return world;
 }
 
+type Box = { x: number; y: number; width: number; height: number };
+/** A GOAL cue as the page read it once its entrance settled, still inside the hold. */
+type CueLook = {
+  text: string;
+  shown: boolean;
+  box: Box;
+  canvas?: Box;
+  emphasis?: string;
+  pulse?: string;
+};
+
 /**
  * Counts every GOAL cue the page mounts, so a rerender that repeated one would show, and records
  * the presented minute each cue opened on and any change of it while a cue still shows. The goal
- * hold is one real second, shorter than a few test steps, so only the page itself can watch it.
+ * hold is one real second, shorter than a few test steps, so only the page itself can watch it:
+ * it also reads each cue once its entrance settles, with the pitch and the scoreboard's emphasis.
  */
 async function countCues(page: Page) {
   await page.evaluate(() => {
     const cues: string[] = [];
+    const looks: CueLook[] = [];
     const held: string[] = [];
     const moved: string[] = [];
     let minute: string | undefined;
+    const box = (element: Element) => {
+      const { x, y, width, height } = element.getBoundingClientRect();
+      return { x, y, width, height };
+    };
+    const look = (cue: HTMLElement) => {
+      const emphasis = document.querySelector<HTMLElement>(
+        '[data-testid="match-score"] [data-testid="goal-score"]',
+      );
+      const canvas = document.querySelector(
+        'canvas[aria-label="22명의 선수와 공으로 표현하는 경기"]',
+      );
+      looks.push({
+        text: cue.textContent ?? '',
+        shown: cue.isConnected,
+        box: box(cue),
+        canvas: canvas ? box(canvas) : undefined,
+        emphasis: emphasis?.textContent ?? undefined,
+        pulse: emphasis ? getComputedStyle(emphasis).animationName : undefined,
+      });
+    };
     new MutationObserver((records) => {
       for (const record of records)
         for (const added of record.addedNodes)
-          if (added instanceof HTMLElement && added.dataset.testid === 'goal-cue')
+          if (added instanceof HTMLElement && added.dataset.testid === 'goal-cue') {
             cues.push(added.textContent ?? '');
+            // A cue removed before its entrance ends cancels it and leaves no look.
+            void Promise.all(added.getAnimations().map((animation) => animation.finished)).then(
+              () => look(added),
+              () => undefined,
+            );
+          }
       // The presented minute from the meta line (`3′ · …`), whatever the commentary last called.
       const shown = (
         document.querySelector('[data-ui="match-meta"] > span')?.textContent ?? ''
@@ -208,10 +247,12 @@ async function countCues(page: Page) {
       else if (minute === undefined) held.push((minute = shown));
       else if (shown !== minute) moved.push(`${minute} → ${shown}`);
     }).observe(document.body, { childList: true, subtree: true, characterData: true });
-    Object.assign(window, { goalCues: cues, goalCueMinutes: { held, moved } });
+    Object.assign(window, { goalCues: cues, goalCueLooks: looks, goalCueMinutes: { held, moved } });
   });
   return {
     cues: () => page.evaluate(() => (window as unknown as { goalCues: string[] }).goalCues),
+    looks: () =>
+      page.evaluate(() => (window as unknown as { goalCueLooks: CueLook[] }).goalCueLooks),
     minutes: () =>
       page.evaluate(
         () =>
@@ -282,25 +323,28 @@ for (const viewport of [
     await expect(cue).toBeVisible({
       timeout: (openingGoal!.minute * WATCH_MINUTE_MS) / WATCH_DEFAULT_SPEED + 3000,
     });
-    await expect(cue).toContainText('GOAL');
-    await expect(cue).toContainText('득점');
+    // The hold lasts one real second, less than the steps below take on a slow runner (CI
+    // 41524887826 measured a cue already gone): read the opening goal's cue as the page saw it.
+    await expect.poll(async () => (await cues.looks()).length).toBeGreaterThan(0);
+    const [opening] = await cues.looks();
+    expect(opening!.shown).toBe(true);
+    expect(opening!.text).toContain('GOAL');
+    expect(opening!.text).toContain('득점');
     const score = page.getByTestId('match-score').locator('strong');
     await expect(score).toHaveText('1 : 0');
-    const emphasis = page.getByTestId('match-score').getByTestId('goal-score');
-    await expect(emphasis).toHaveText('1');
+    expect(opening!.emphasis).toBe('1');
     // Reduced motion keeps the same hold with a still emphasis.
-    const pulse = await emphasis.evaluate((node) => getComputedStyle(node).animationName);
-    if (viewport.width === 390) expect(pulse).toBe('none');
-    else expect(pulse).toMatch(/goal-pulse/);
+    if (viewport.width === 390) expect(opening!.pulse).toBe('none');
+    else expect(opening!.pulse).toMatch(/goal-pulse/);
     // The cue clears the corner controls.
-    const cueBox = (await cue.boundingBox())!;
-    const canvasBox = (await page.getByLabel('22명의 선수와 공으로 표현하는 경기').boundingBox())!;
-    expect(cueBox.x).toBeGreaterThanOrEqual(canvasBox.x);
-    expect(cueBox.x + cueBox.width).toBeLessThanOrEqual(canvasBox.x + canvasBox.width);
-    expect(cueBox.y).toBeGreaterThanOrEqual(canvasBox.y);
-    expect(cueBox.y + cueBox.height).toBeLessThanOrEqual(canvasBox.y + canvasBox.height);
+    const { box: cueBox, canvas: pitch } = opening!;
+    expect(cueBox.x).toBeGreaterThanOrEqual(pitch!.x);
+    expect(cueBox.x + cueBox.width).toBeLessThanOrEqual(pitch!.x + pitch!.width);
+    expect(cueBox.y).toBeGreaterThanOrEqual(pitch!.y);
+    expect(cueBox.y + cueBox.height).toBeLessThanOrEqual(pitch!.y + pitch!.height);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
     await expect(cue).toHaveCount(0, { timeout: 3000 });
+    const canvasBox = (await page.getByLabel('22명의 선수와 공으로 표현하는 경기').boundingBox())!;
     // The presented goal can be replayed from a pitch corner (→WEB-105); the tactics matchup sits
     // beside the speeds above the pitch, clear of it.
     const replay = page.getByTestId('goal-replay-open');

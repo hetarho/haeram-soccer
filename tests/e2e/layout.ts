@@ -140,6 +140,24 @@ export async function expectViewFits(page: Page) {
  * ball both halves wear one colour, and recolouring the board never moves it or the pitch.
  */
 export async function expectBallSideScoreboard(page: Page) {
+  // Read a still board and pitch: WebKit resamples a page's entrance still sliding them in when
+  // the recolour restyles, so the two reads below differed by 0.05 px at 1280 px.
+  await page.getByTestId('match-score').evaluate((scoreboard) => {
+    const canvas = scoreboard.parentElement!.querySelector('canvas')!;
+    return Promise.all(
+      document
+        .getAnimations()
+        .filter((animation) => {
+          const target = (animation.effect as KeyframeEffect | null)?.target;
+          return (
+            (target?.contains(scoreboard) || target?.contains(canvas)) &&
+            animation.playState === 'running' &&
+            animation.effect!.getComputedTiming().endTime !== Infinity
+          );
+        })
+        .map((animation) => animation.finished.catch(() => undefined)),
+    );
+  });
   const board = await page.getByTestId('match-score').evaluate((scoreboard) => {
     const canvas = scoreboard.parentElement!.querySelector('canvas')!;
     const behind = (side: string) =>
