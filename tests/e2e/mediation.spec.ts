@@ -343,17 +343,29 @@ for (const arrival of ['none', 'loan', 'free'] as const)
           o.freeAgent,
       )!;
       expect(free).toBeDefined();
-      const matches = worldMarketPage(w, {
-        world: w.id,
-        ...DEFAULT_MARKET_QUERY,
-        name: free.player.name,
-      });
-      // The intended free agent is behind a full page of other players with this same name.
-      expect(matches.total).toBeGreaterThan(matches.pageSize);
-      expect(matches.items.map((offer) => offer.player.id)).not.toContain(free.player.id);
-      await expect(
-        marketCandidate(page, `${free.player.id}:absent`, free.player.name),
-      ).rejects.toThrow(`Market player ${free.player.id}:absent (${free.player.name}) absent:`);
+      // Full names rarely repeat (→WORLD-12), so the search is a piece of his name that more than
+      // a page of other players share: the intended free agent is behind a full page of them.
+      const name = free.player.name;
+      const pieces = new Set(
+        Array.from(name, (_, i) => [2, 3, 4].map((n) => name.slice(i, i + n))).flat(),
+      );
+      const search = [...pieces]
+        .filter((piece) => piece.length >= 2 && piece.trim() === piece)
+        .map((piece) => ({
+          piece,
+          matches: worldMarketPage(w, { world: w.id, ...DEFAULT_MARKET_QUERY, name: piece }),
+        }))
+        .find(
+          ({ matches }) =>
+            matches.total > matches.pageSize &&
+            matches.total <= 3 * matches.pageSize &&
+            !matches.items.some((offer) => offer.player.id === free!.player.id),
+        );
+      expect(search, `a piece of ${name} shared by more than a page`).toBeDefined();
+      const { piece } = search!;
+      await expect(marketCandidate(page, `${free.player.id}:absent`, piece)).rejects.toThrow(
+        `Market player ${free.player.id}:absent (${piece}) absent:`,
+      );
       await expect(
         page
           .getByRole('navigation', { name: '영입 목록 페이지', exact: true })
@@ -362,7 +374,7 @@ for (const arrival of ['none', 'loan', 'free'] as const)
       await expect(page.getByRole('dialog', { name: '영입 후보 상세', exact: true })).toHaveCount(
         0,
       );
-      const card = await marketCandidate(page, free.player.id, free.player.name);
+      const card = await marketCandidate(page, free.player.id, piece);
       await card
         .getByRole('button', {
           name: '자유계약 영입',

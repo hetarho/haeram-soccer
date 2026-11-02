@@ -145,10 +145,13 @@ const facts = (w: World) => ({
  * plays no grid pass); 7e65349668e35e13 before. T596's match-model revision 10, with T599's
  * goal-side marks and T600's pass read again at the kick, changed the aggregate records' label and
  * the candidate rounds' label and football; 593d6d509d01b4b2 and 5f44410b73d9e99e before.
+ * T645's person-name pools changed both by their names only: with every name removed they digest
+ * e2a038cc28b4e66d and 0cb5b46b9f17cb32 before and after; 2c29fb75f9446f68 and b9827562f0e62916
+ * before.
  */
 const BEFORE = {
-  aggregateRecords: '2c29fb75f9446f68',
-  candidateRounds: 'b9827562f0e62916',
+  aggregateRecords: '4eb52d8d3132ffc5',
+  candidateRounds: '09f27c83b64a3831',
 };
 
 describe('complete-result throughput (T285)', () => {

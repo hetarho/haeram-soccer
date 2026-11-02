@@ -11,7 +11,8 @@
  * host (`${process.platform}-${process.arch}`): a host with a value asserts it, another logs what it
  * got for a session there to paste in. A candidate behaviour change re-records the candidate's
  * digests with its calibration evidence, never alone; a presentation-only change (T359's kick
- * snapshot) re-records positions alone. On every host each fixture replays bit for bit, the observed
+ * snapshot) re-records positions alone; a person-name change (T645) re-records every digest that
+ * carries a name, each equal to the source's once the names are removed. On every host each fixture replays bit for bit, the observed
  * league fixture's facts equal the unobserved one's (→MATCH-2, MATCH-7) and a one-bit change shows in
  * either digest. No wall-clock assertion here; the timings live in scripts/match-model-baseline.ts
  * and artifacts/benchmarks/full-model-throughput.json.
@@ -381,27 +382,27 @@ interface CandidateDigests {
 const CANDIDATE: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: '08d14e3ce15a4c97',
-      extraTime: '097e8b50dcce04c0',
-      shootout: '3568dfc2d0e37975',
+      league: '55a640340a449804',
+      extraTime: '5adc54d34a338cb4',
+      shootout: '2ed654de3d4b1755',
     },
-    positions: { observed: '734915f27ce1c464', shootout: 'c8cca332fc10761f' },
+    positions: { observed: '8d102f050ef12e75', shootout: '522c527021d8098b' },
   },
   1995: {
     facts: {
-      league: 'da1e983956ef8e1f',
-      extraTime: '2ce85f20a5708515',
-      shootout: '2096d733a42f56a5',
+      league: 'b7b082825910c0bf',
+      extraTime: 'fa56b71c6f1ff90c',
+      shootout: 'e25b501cf3ad4adb',
     },
-    positions: { observed: 'eb0ea6cfe0ce1acc', shootout: '4d5a5ed69a6c2b14' },
+    positions: { observed: '66004efe6b526042', shootout: '2da06f552668e346' },
   },
   2024: {
     facts: {
-      league: '3d77353eef11f2a9',
-      extraTime: 'e0ed63e62ba0663e',
-      shootout: '90bdd7c4e4e8923f',
+      league: '637429079261795c',
+      extraTime: '22cf2501a3a9137d',
+      shootout: '456a169b91b5a261',
     },
-    positions: { observed: '4e42b702c2b47914', shootout: '604e3b6f8af6e943' },
+    positions: { observed: '4effce0e949c8c93', shootout: 'dc6435198a747a88' },
   },
 };
 
@@ -418,27 +419,27 @@ const REVISION_9_CASES = {
 const REVISION_9: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: 'a5047cf8a78bdcf9',
-      extraTime: '3a7049536a90c26e',
-      shootout: '4d5e9bc03f24c3c1',
+      league: '805712faeeecda8b',
+      extraTime: '01163f42175ffeeb',
+      shootout: 'e5cf4e3197c33c65',
     },
-    positions: { observed: '8db34a5b5d572191', shootout: 'fd896964dbc950d3' },
+    positions: { observed: 'da61914ef332ee51', shootout: '58dbfb8425da13f7' },
   },
   1995: {
     facts: {
-      league: 'b13785fa3a71f44f',
-      extraTime: '30f15f0983d4a13d',
-      shootout: '2a1768abc74faef4',
+      league: 'f0fb53a1253f8f7e',
+      extraTime: 'f5f9c5993d14c309',
+      shootout: '3fbf8c54a97b91d8',
     },
-    positions: { observed: 'b4eba82f7e630e39', shootout: '99006e5ba3a705f0' },
+    positions: { observed: '1476778111fbdb5e', shootout: '7ebe2dc4d41daef7' },
   },
   2024: {
     facts: {
-      league: 'c7717ad8cd651a85',
-      extraTime: '0aae29b4f2468eb6',
-      shootout: 'ecb1e967a0dfd82b',
+      league: '9187e7156caef246',
+      extraTime: '215aafe3aa924a04',
+      shootout: '4244bf8de2504ebb',
     },
-    positions: { observed: '6f2bc29635f10d26', shootout: 'c1ba0fc81cc7a2be' },
+    positions: { observed: '25c076394d700c27', shootout: '6a83781d5720d5a8' },
   },
 };
 
@@ -455,27 +456,27 @@ const REVISION_8_CASES = {
 const REVISION_8: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: '5237e7f0a7c4bca2',
-      extraTime: '456cbf0207faaa85',
+      league: '93335a325a67f000',
+      extraTime: '3019eeb9fec270b4',
       shootout: '565b3feaeedfd913',
     },
-    positions: { observed: '2a405a51c141f857', shootout: '17490d94bad986f3' },
+    positions: { observed: 'c01bca5778bcf457', shootout: 'f74c0938fe232412' },
   },
   1995: {
     facts: {
-      league: '9dc78d13d99d7cf0',
-      extraTime: '1a237482a96e4fa4',
-      shootout: '017033d11d02f0d0',
+      league: '38ecb0ac586c10f6',
+      extraTime: '7d57da6eea4c593a',
+      shootout: '386b291083338d55',
     },
-    positions: { observed: 'aaaf17ebebfdc88c', shootout: '815f104f6ac63582' },
+    positions: { observed: '532c93497c807e95', shootout: 'a2b81acc13633b6a' },
   },
   2024: {
     facts: {
-      league: '9d14197ce3c5605a',
-      extraTime: '9910152d1932e258',
-      shootout: '6c821deda83c7564',
+      league: '7f03a280a15e70ce',
+      extraTime: '42a5589767bb6674',
+      shootout: '1498a805110a337a',
     },
-    positions: { observed: '509101b98b565062', shootout: '76d2d8c60a522eab' },
+    positions: { observed: 'dcbb84128a11e783', shootout: 'e9fd6009c2514ba7' },
   },
 };
 
@@ -492,27 +493,27 @@ const REVISION_7_CASES = {
 const REVISION_7: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: '7fe0bca65d1163cb',
-      extraTime: 'cd501ed4ac55d78c',
-      shootout: 'd527c229a4aff52f',
+      league: '9d726ee55850c493',
+      extraTime: '7fe89f2ac90e494c',
+      shootout: 'c316aed4998c3e31',
     },
-    positions: { observed: '5ff3cee154b47952', shootout: '528448c4e0942336' },
+    positions: { observed: '37edb4372d24d07e', shootout: '1950c5bfca0b6926' },
   },
   1995: {
     facts: {
-      league: '09c2603a39ee6ae2',
-      extraTime: '6469abcfdda624f4',
-      shootout: '11ecc6b6c2440ec3',
+      league: 'ba7c5d1f089abade',
+      extraTime: '11599b41a0b89564',
+      shootout: 'ab6a44274ed91bef',
     },
-    positions: { observed: 'bb4839841b6a47db', shootout: '8fe45aacf635eec4' },
+    positions: { observed: '8f4b8c26c59ccfdb', shootout: 'de3d7b4c07f896ad' },
   },
   2024: {
     facts: {
-      league: 'ee178cb439a14a38',
-      extraTime: '464848b045d17fc8',
-      shootout: '105ca033c60bf519',
+      league: 'ba077b32fdcf7822',
+      extraTime: '4f9bf808386b798b',
+      shootout: '4649fb2f6b1de25f',
     },
-    positions: { observed: '829a27004417c86b', shootout: '07a1f68cecd6be77' },
+    positions: { observed: '7e12dcd44f661417', shootout: '615e1dfb3a56555f' },
   },
 };
 
@@ -529,27 +530,27 @@ const REVISION_6_CASES = {
 const REVISION_6: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: '526a52ec99908b8d',
-      extraTime: '83eeedc8ac37884b',
-      shootout: '196e08d9231ea4a8',
+      league: '9a9f75c9f8fb454a',
+      extraTime: 'b55f5f2230674bd5',
+      shootout: '9fb196a4e6a46fc9',
     },
-    positions: { observed: 'eda0b0fe52316ed0', shootout: '1ac727ef2315eb47' },
+    positions: { observed: '972d9d61e8b29c1e', shootout: '44b3b0bc4138b907' },
   },
   1995: {
     facts: {
-      league: '82b9aa6e0e54987c',
-      extraTime: 'a07a3626576891fe',
-      shootout: '9c9ae1780fc3cb23',
+      league: '4031d4b9665b502e',
+      extraTime: 'b609052dbcf7f815',
+      shootout: '65e24c62ba6974f2',
     },
-    positions: { observed: 'cf2aa0248f68f1ee', shootout: '36cf4e547e8938a1' },
+    positions: { observed: '894936a309aeeee9', shootout: '2cb2beaae8379d49' },
   },
   2024: {
     facts: {
-      league: '88b2271c8defc4ed',
-      extraTime: 'c1a476dd31b735f2',
-      shootout: 'ea16324d5a414cd8',
+      league: '30bbe7eaca9e8b61',
+      extraTime: '429eaa8d0f2388f6',
+      shootout: 'c29200683f6666e4',
     },
-    positions: { observed: '68d2cf6e309b37f1', shootout: 'dcc5f9f366e9fba0' },
+    positions: { observed: '199c48d97b63ff61', shootout: '55d6319515eb097c' },
   },
 };
 
@@ -566,27 +567,27 @@ const REVISION_5_CASES = {
 const REVISION_5: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: 'cf67feb0f94fdc25',
-      extraTime: '157a608e4c0d386b',
-      shootout: '4b2b91cdda330183',
+      league: '94274d801b228d1e',
+      extraTime: 'e4310cef648bf1b3',
+      shootout: '62b197dc0c93ffa8',
     },
-    positions: { observed: 'e39d98b368141362', shootout: '7967c5d6035ec169' },
+    positions: { observed: '0ce6f410d7ebb1f4', shootout: 'aba54ca3b272c882' },
   },
   1995: {
     facts: {
-      league: '239c2ac6596002ac',
-      extraTime: 'b88a80ac24efe660',
-      shootout: '06a2c079863c26ee',
+      league: 'be567c2c0c891a83',
+      extraTime: 'ae8f059bd28a9fc7',
+      shootout: '6a8c92af88135eee',
     },
-    positions: { observed: '782759b9346aa90a', shootout: '3484dd02c9de2c1c' },
+    positions: { observed: '0b1b81d958bbc4ab', shootout: 'ba7ea81d1f53e0be' },
   },
   2024: {
     facts: {
-      league: '418cc04276ff1627',
-      extraTime: '9589dc069dfe996e',
-      shootout: '252166ebede7efee',
+      league: '7e6bff3f75580dae',
+      extraTime: '1a7fd07df3464a0a',
+      shootout: 'ceca0dba1331a4db',
     },
-    positions: { observed: '927f4d152c8ea939', shootout: '11ca6e224af987ce' },
+    positions: { observed: 'c8b91e2313cf9050', shootout: '2aca4234983387af' },
   },
 };
 
@@ -603,27 +604,27 @@ const REVISION_4_CASES = {
 const REVISION_4: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: 'ff3ee324036397fb',
-      extraTime: '9123874a456d7917',
-      shootout: 'c036d50bc978b2c4',
+      league: '12a3e555d324f6b5',
+      extraTime: '3065f85738de5422',
+      shootout: 'b21f331b91e4b747',
     },
-    positions: { observed: 'b28fe938e12833f0', shootout: 'aa89273dd9ca390b' },
+    positions: { observed: '1de81d3ab2bdf163', shootout: '8d8de54ff7944afe' },
   },
   1995: {
     facts: {
-      league: '6beeda0cca168bbf',
-      extraTime: 'b3260a6423ff14ed',
-      shootout: 'de436ce27ba0ad83',
+      league: 'c86061708cb3c8e8',
+      extraTime: '29ddfeed12edf5e2',
+      shootout: 'de746e2d75cad743',
     },
-    positions: { observed: '8664d10d9934599f', shootout: 'aae043fdf68570b6' },
+    positions: { observed: '18cf2940cccafcaf', shootout: '277d5d48bdb2ee06' },
   },
   2024: {
     facts: {
-      league: 'eb70938375c3edca',
-      extraTime: '2792f74cd4b0c753',
-      shootout: '42be4633359152e7',
+      league: '0b465b6a76f19202',
+      extraTime: '333f9eaaafb2c818',
+      shootout: '9f4fbb6bc97bca02',
     },
-    positions: { observed: '0c9b482e7c77a6fe', shootout: 'a8991d6383faf80b' },
+    positions: { observed: 'f79116e21ab300b0', shootout: '50e165a4dff4c103' },
   },
 };
 
@@ -640,27 +641,27 @@ const REVISION_3_CASES = {
 const REVISION_3: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: '72876a33da257df1',
-      extraTime: '086a1810c411e442',
+      league: 'b9cb6105558dfbae',
+      extraTime: 'e24a849be864c559',
       shootout: 'b1ed4b997d8479e7',
     },
-    positions: { observed: '120524806f37c7e8', shootout: 'f5aac51a8915b7a6' },
+    positions: { observed: '16e5ace7a5949dc0', shootout: '7bfe434f8acadd5d' },
   },
   1995: {
     facts: {
       league: 'fb3d3e85d084c617',
-      extraTime: '696fbe7ef4736ce9',
-      shootout: '0f3bc5b875ddb3c7',
+      extraTime: '8d3836d10b13682a',
+      shootout: '916d04a25d82f932',
     },
-    positions: { observed: '4a9619d12297577c', shootout: '68c6b9a21c766cb0' },
+    positions: { observed: '1aeaffb5e79d81ed', shootout: 'c83383b14752e364' },
   },
   2024: {
     facts: {
-      league: 'd2be53d1757cb9df',
-      extraTime: '22a1209ed63b73c5',
-      shootout: '324328c61352294c',
+      league: '9ce1de2c01a2452d',
+      extraTime: '8cd64c991f160038',
+      shootout: '71d0958af8008111',
     },
-    positions: { observed: 'e5a9ea9ab8a76c2f', shootout: '08ac5fe20a57c569' },
+    positions: { observed: '3e0f1ce11aa4958a', shootout: '43eec9ffa4a1cbf6' },
   },
 };
 
@@ -677,27 +678,27 @@ const REVISION_2_CASES = {
 const REVISION_2: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: 'a137966f0f7f3010',
-      extraTime: '96ff5a32e01d4bf8',
-      shootout: '7521661b980cdeff',
+      league: 'f750d214810336f0',
+      extraTime: 'e4fd8df760cd9712',
+      shootout: '19524aba45f7a6df',
     },
-    positions: { observed: '1efa78ca0207e30c', shootout: 'e1a3ee7e0e66c998' },
+    positions: { observed: 'ea34535fccbee393', shootout: 'cb3c44d1f8994bd8' },
   },
   1995: {
     facts: {
-      league: 'fdcd4f79e274b98d',
-      extraTime: '9127b370c79b51e2',
-      shootout: '2245959519f7889b',
+      league: '5a17f56fc14b7d0f',
+      extraTime: '682106626877baa6',
+      shootout: '9a3b89ef4c0a5783',
     },
-    positions: { observed: '7334880372388967', shootout: 'f81841f663ff75ac' },
+    positions: { observed: '011eaafdd94dc2ba', shootout: 'c9d233d0b225da6a' },
   },
   2024: {
     facts: {
-      league: 'cc6c044d76f22789',
-      extraTime: '30e249776a77fcb4',
-      shootout: '64b50a8346f097fd',
+      league: 'e43c1909f78780bf',
+      extraTime: 'f504fea825bbed6b',
+      shootout: 'dac22694d498c706',
     },
-    positions: { observed: '581c0cc9978143bf', shootout: '5d463b96222a6328' },
+    positions: { observed: 'c14f19c55399883e', shootout: 'f975a38322eecece' },
   },
 };
 
@@ -715,35 +716,35 @@ const REVISION_1_CASES = {
 const REVISION_1: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: 'a29eb278c768540c',
-      extraTime: 'a74abb8cfd489a58',
-      shootout: 'cb404e2c025fb3f4',
+      league: 'b35c16ba2aec7c82',
+      extraTime: 'eff8ac9cfa2f07a3',
+      shootout: '7eebc174279dbb79',
     },
-    positions: { observed: '1df5ff92bacc5a24', shootout: 'd1731fb51fdef0c0' },
+    positions: { observed: '43ed729830e58876', shootout: 'e0f06030db156a2c' },
   },
   1995: {
     facts: {
-      league: '7f87afd0e25ba811',
-      extraTime: 'dad4ff2e8fdfcf1a',
-      shootout: 'd84decf0069941c7',
+      league: '073a9ce844560b51',
+      extraTime: '019a6480988a934e',
+      shootout: 'ecea6363b2969d2a',
     },
-    positions: { observed: 'cac36dfc7e17b7b9', shootout: '58e79b9ad461176c' },
+    positions: { observed: '9c1db5edee222d69', shootout: 'ebba0ef20671b225' },
   },
   2024: {
     facts: {
-      league: '350be78318430d71',
-      extraTime: '7a6282dbe15f7b44',
-      shootout: 'e9132add2a2297e4',
+      league: 'd66339ff035e9130',
+      extraTime: '3f4f9783a7b8b6b4',
+      shootout: 'baef9ffddd7b0218',
     },
-    positions: { observed: '114edcda180b1939', shootout: 'be13fb3a982cd7ba' },
+    positions: { observed: '4c9ed89ebcb8f6c5', shootout: '1beb42fb0eb743fe' },
   },
 };
 
 /** The pre-feature league fixture's facts by host; it plays the host's `Math.*`. */
 const PRE_FEATURE: Partial<Record<string, Record<Year, string>>> = {
-  'darwin-arm64': { 1975: 'a2e559aea64a91e7', 1995: '0c7e06efbc8fd981', 2024: 'a0e4479b22d2cfa6' },
+  'darwin-arm64': { 1975: 'aa0b073c293f3c6d', 1995: '18c4473b43df5c75', 2024: '479eec28d863eebf' },
   // CI run 39829693762 (Node 24.22.1).
-  'linux-x64': { 1975: 'a2e559aea64a91e7', 1995: '0c7e06efbc8fd981', 2024: 'a0e4479b22d2cfa6' },
+  'linux-x64': { 1975: 'aa0b073c293f3c6d', 1995: '18c4473b43df5c75', 2024: '479eec28d863eebf' },
 };
 
 describe('detailed engine throughput (T325)', () => {

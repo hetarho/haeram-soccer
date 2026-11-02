@@ -515,6 +515,7 @@
 - verify:batch on main after T645 (integration + e2e, incl. tests/e2e/staff.spec.ts founding-manager name) (nm62)
 
 ## log
+- 261102 fix T645 name-bearing checks: grid-throughput (153 digests) and full-model-throughput re-recorded, every one equal to the source's with names removed; mediation free-agent journey searches a piece of the name shared by more than a page, since full names no longer repeat (3/3 Chromium); nm62.
 - 261102 T645 done: per-country name pools (113–144 given × 204–285 surnames) in catalog 2026-demo-5, surnames distinct inside every generated NPC and founding squad; fresh world 315→~12,670 distinct names, in-squad repeats ~2,300→0; portable goldens re-recorded (names only); nm62.
 - 261102 create-task WORLD@7 SAVE@60 → T645 person-name pools, squad surnames, catalog 2026-demo-5; nm62.
 - 261102 update-ssot WORLD r7 SAVE r60: person-name pools ≥100 given × ≥200 surnames per country, no shared surname in a generated squad, catalog 2026-demo-5 pin move; nm62.
@@ -534,4 +535,3 @@
 - 261102 T637 done: home keeps the season card, NEXT MATCH and the illustrated manager-room entrance with actual counts; the office heads its unchanged 결재함 with the manager room, then ClubSituation and the three quick actions once; the section bar starts with 사무실 and lives only on the office and its working pages; 1군 shows the locker room, 코치진 감독실 and 스태프 사무실 over their own people. Typecheck/lint/format, unit 28 files / 291 tests and build passed; browser journeys updated and left to the host gate; session of02.
 - 261102 create-task T637: restore original illustrations; remove the new home bar, team facts and immediate actions from home and compose them once in the office. Preserve the queue, real workflows, focus/load fixes and all game rules; session of02.
 - 261102 create-task T640 T641 T642: one-row League/Cup header with a season stepper; Ballon d'Or engine (podium archive, bonus clause, talk premium); records view, player honours, talk premium and news. Numbered from T640 to leave room for of02; session bd02.
-- 261102 update-ssot WEB r199 CLUB r48 HIST r19 PLAYER r11: League/Cup browse every kept season on one page with a one-row ‹ season › header (no previous-league/cup tabs, closed cup seasons open on the winner); 발롱도르 from 1955/56 with podium archive, records view, news, contract premium and bonus clause; session bd02.
