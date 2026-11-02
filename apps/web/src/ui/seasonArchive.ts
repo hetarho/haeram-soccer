@@ -89,7 +89,10 @@ export function seasonRecords(
   w: World,
   season: SeasonArchive,
 ): Map<number, SeasonRecord> | undefined {
-  const totals = new Map<number, { points: number; gf: number; ga: number; record: SeasonRecord }>();
+  const totals = new Map<
+    number,
+    { points: number; gf: number; ga: number; record: SeasonRecord }
+  >();
   for (const snapshot of seasonSnapshots(w, season))
     for (const [club, points, gf, ga] of snapshot.rows) {
       const before = totals.get(club) ?? { points: 0, gf: 0, ga: 0, record: [0, 0, 0] },

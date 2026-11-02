@@ -3459,7 +3459,10 @@
   }
 }
 @container league-picker (max-width: 374px) {
-  .leaguePicker > label :global([data-select-trigger][role='combobox']) > :global([data-pixel-icon]) {
+  .leaguePicker
+    > label
+    :global([data-select-trigger][role='combobox'])
+    > :global([data-pixel-icon]) {
     display: none;
   }
 }

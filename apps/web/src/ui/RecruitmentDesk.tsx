@@ -663,9 +663,7 @@ export function RecruitmentDesk({ state, client }: { state: ClientState; client:
           >
             <PixelIcon name="filter" size={16} />
             필터
-            {filtered && (
-              <i className={s.activeDot} aria-label="적용 중" />
-            )}
+            {filtered && <i className={s.activeDot} aria-label="적용 중" />}
           </button>
           <button
             data-ui="tertiary"
