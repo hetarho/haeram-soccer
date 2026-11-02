@@ -11,6 +11,10 @@ import {
   simulateSeason,
 } from '../../../../packages/engine/src/index';
 import { applyClubIdentity } from '../../../../packages/engine/src/identity-operations';
+import { historyWorld, liveHistory } from '../../../../packages/engine/src/history';
+import { pricedClubs, tierFortune } from '../../../../packages/engine/src/club-value';
+import { pays } from '../../../../packages/engine/src/listing';
+import { takeOver } from '../../../../packages/engine/src/takeover';
 import { currentDay, fixtureDay, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { legacyCrestMap } from '../../../../packages/engine/src/identity-legacy';
 import { appearanceForFixture } from '../../../../packages/engine/src/match-appearance';
@@ -407,31 +411,30 @@ describe('compatible rule upgrades', () => {
     expect(isEarlierEngine('3.0.0')).toBe(true);
     expect(isEarlierEngine('1.9.9')).toBe(false);
     expect(isEarlierEngine(CURRENT_ENGINE_VERSION)).toBe(false);
-    expect(isEarlierEngine('4.0.0')).toBe(false);
+    expect(isEarlierEngine('4.0.0')).toBe(true);
+    expect(isEarlierEngine('0.7.0')).toBe(true);
     expect(isEarlierEngine('9.0.0')).toBe(false);
     expect(isEarlierEngine('x.y.z')).toBe(false);
   });
 
-  it('a rules-4.0.0 checkpoint loads and is written as 0.7.0, its facts unchanged (→SAVE-10)', async () => {
-    const current = world();
-    const stored = { ...structuredClone(current), engine: '4.0.0' };
-    const raw = await encode(stored);
-    expect(envelopeEngine(raw)).toBe('4.0.0');
-    // Reading never rewrites it: the career loads exactly as stored.
-    const loaded = (await decode(raw)).world;
-    expect(canonical(loaded)).toBe(canonical(stored));
-    // Writer activation rewrites the label alone, through the shared rules step.
-    const upgraded = upgradeWorldRules(loaded, CURRENT_CATALOG);
-    expect(canonical(upgraded)).toBe(
-      canonical({ ...current, engine: CURRENT_ENGINE_VERSION, revision: current.revision + 1 }),
-    );
-    const written = await decode(await encode(upgraded, 2, 1));
-    expect(written.envelope.engine).toBe('0.7.0');
-    expect(canonical(written.world)).toBe(canonical(upgraded));
+  it('a founded rules-4.0.0-line checkpoint, 0.7.0 or its 4.0.0 label, is earlier rules (→SAVE-26)', async () => {
+    for (const engine of ['0.7.0', '4.0.0']) {
+      const raw = await encode({ ...structuredClone(world()), engine });
+      expect(envelopeEngine(raw)).toBe(engine);
+      const failure = await decode(raw).catch((error: unknown) => error);
+      expect(failure).toBeInstanceOf(SaveCompatibilityError);
+      expect((failure as SaveCompatibilityError).engine).toBe(engine);
+      expect((failure as Error).message).toBe(
+        `이 저장은 규칙 ${engine} 커리어입니다 — 게임 버전 ${CURRENT_ENGINE_VERSION} 커리어만 열 수 있습니다. 새 커리어를 시작하세요`,
+      );
+      expect(() => upgradeWorldRules({ ...world(), engine }, CURRENT_CATALOG)).toThrow(
+        SaveCompatibilityError,
+      );
+    }
   });
 
   it('an unknown engine version is refused as from a newer game (→SAVE-11)', async () => {
-    for (const engine of ['9.0.0', '0.8.0', '1.9.9']) {
+    for (const engine of ['9.0.0', '0.9.0', '5.0.0', '1.9.9']) {
       const failure = await decode(await encode({ ...world(), engine })).catch(
         (error: unknown) => error,
       );
@@ -618,7 +621,7 @@ describe('checkpoint container schema 2', () => {
       FULL_MODEL_CHECKPOINT_SCHEMA,
       MANAGER_HISTORY_CHECKPOINT_SCHEMA,
     ]);
-    expect(SUPPORTED_ENGINE_VERSIONS).toEqual([CURRENT_ENGINE_VERSION, '4.0.0']);
+    expect(SUPPORTED_ENGINE_VERSIONS).toEqual([CURRENT_ENGINE_VERSION]);
     // A career saved before the full model and manager history, which a new founding tracks
     // (→SAVE-23/24).
     const w = withoutManagerHistory(withIdentity(unmodelled(1), IDENTITY));
@@ -1234,4 +1237,42 @@ it('rejects malformed compact optional shapes and expanded person facts on the f
     });
     await expect(decode(raw)).rejects.toThrow();
   }
+});
+
+describe('a taken-over career (→SAVE-27)', () => {
+  it('round-trips the owner, the takeover loan, every club’s books and the seasons before the owner', async () => {
+    // The world after its 1930/31 season, nobody's yet: every league club keeps books and the
+    // season is archived (→ECON-36, HIST-2).
+    const generated = cachedWorld('ownerless-1931', () =>
+      liveHistory(historyWorld('persist-takeover'), 1931),
+    );
+    const w = structuredClone(generated);
+    const fortune = tierFortune(w, 'oil');
+    const indebted = pricedClubs(w).find(
+      (priced) => BigInt(priced.club.books?.debt ?? '0') > 0n && pays(w, priced, fortune),
+    )!;
+    expect(indebted).toBeDefined();
+    takeOver(w, indebted.club.id, { tier: 'oil', traits: ['politician', 'marketer'] });
+    expect(w.owner?.takeover).toMatchObject({ year: 1931, clubId: indebted.club.id });
+    expect(w.owner?.takeover.lastIncome).toBeDefined();
+    expect(w.loan?.seasonsLeft).toBe(5);
+    expect(w.history.map((season) => season.year)).toEqual([1930]);
+    // The model the world ran since 1930 is tracked from the takeover (→SAVE-23, OWNER-4).
+    expect(generated.matchModel?.activated.year).toBe(1930);
+    expect(w.matchModel).toMatchObject({
+      activated: { year: 1931, day: 0 },
+      trackedFrom: { year: 1931, day: 1, round: 1 },
+      coverage: 'founding',
+    });
+    expect(w.npcSeason?.trackedFrom).toEqual(w.matchModel!.trackedFrom);
+    expect(w.managerHistory?.coverage).toBe('founding');
+    const books = w.clubs.filter((club) => club.books);
+    expect(books.length).toBeGreaterThan(100);
+    expect(indebted.club.books).toBeUndefined();
+    const loaded = (await decode(await encode(w))).world;
+    expect(canonical(loaded)).toBe(canonical(w));
+    expect(loaded.owner).toEqual(w.owner);
+    expect(loaded.loan).toEqual(w.loan);
+    expect(loaded.clubs.filter((club) => club.books)).toEqual(books);
+  });
 });

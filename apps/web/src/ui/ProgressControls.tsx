@@ -1,4 +1,5 @@
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
+import { careerEnded } from '../../../../packages/contracts/src/owner';
 import { Select } from './Select';
 import { PixelIcon } from './PixelIcon';
 import { currentDay, seasonLength } from '../../../../packages/engine/src/calendar';
@@ -108,7 +109,7 @@ export const ProgressControls = memo(function ProgressControls({
   const w = state.view!.world;
   const mode = settingsOf(w).mode;
   const manual = mode === 'manual';
-  const blocked = !!(state.readonly || state.error || w.critical || w.bankrupt);
+  const blocked = !!(state.readonly || state.error || w.critical || careerEnded(w));
   // Approvals never stop the clock, so the 결재함 stays in sight in both modes (→WEB-18/42).
   const requests = approvalRequests(w),
     approvals = requests.length,

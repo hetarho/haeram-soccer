@@ -2,6 +2,7 @@ import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
 import { gameStore } from '../runtime/store';
 import { daysUntilNextMatch } from '../../../../packages/engine/src/calendar';
+import { careerEnded } from '../../../../packages/contracts/src/owner';
 
 /** A new observed fixture is admitted only from the match-eve dialog (→WEB-50). */
 export async function watchNextMatch(
@@ -20,7 +21,7 @@ export async function watchNextMatch(
     state.readonly ||
     state.error ||
     state.view?.world.critical ||
-    state.view?.world.bankrupt ||
+    (state.view && careerEnded(state.view.world)) ||
     state.view?.world.id !== worldId ||
     daysUntilNextMatch(state.view.world) !== 1
   ) {

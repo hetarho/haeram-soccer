@@ -4,6 +4,7 @@ import { delegateSales } from './events';
 import { chooseOption } from './select';
 import { expect, test } from '@playwright/test';
 import { horizontalOverflow } from './layout';
+import { startCareer } from './start';
 
 test.use({ viewport: { width: 390, height: 844 } });
 
@@ -11,8 +12,7 @@ test('opens an own match material from its report and from the fixture notebook'
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page);
   await delegateSales(page);
   await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();

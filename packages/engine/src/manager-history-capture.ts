@@ -39,13 +39,18 @@ const identityOf = (m: Manager, since?: number): ManagerHistoryIdentity => ({
  * The world's facts, created when absent: tracked from the founding when the world stands on its
  * founding day with nothing settled (the founding manager appointed then), else from today as an
  * activation, keeping the manager's known first season without presenting today as his
- * appointment. The boundary names the world's current revision; callers own any revision move.
+ * appointment. A takeover is the founding moment whatever the world archived before it
+ * (→OWNER-4, SAVE-23): `takeover` tracks from it as a founding. The boundary names the world's
+ * current revision; callers own any revision move.
  */
-export function ensureManagerHistory(w: World): ManagerHistoryFacts {
+export function ensureManagerHistory(w: World, takeover = false): ManagerHistoryFacts {
   if (w.managerHistory) return w.managerHistory;
   const at = careerDate(w);
   const founding =
-    w.history.length === 0 && w.ownMatches.length === 0 && w.round === 0 && at.day === 0;
+    (takeover || w.history.length === 0) &&
+    w.ownMatches.length === 0 &&
+    w.round === 0 &&
+    at.day === 0;
   // A service year after today is no known earlier year: it is left out, never moved.
   const since = w.manager.since <= at.year ? w.manager.since : undefined;
   return (w.managerHistory = createManagerHistoryFacts({

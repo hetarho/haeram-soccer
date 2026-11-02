@@ -22,7 +22,7 @@ import type { MatchModelRelease } from './match-model-release';
 
 /**
  * Whether `activateMatchModel` would record `release` on `w`: the release is on, the world plays
- * the current version (0.7.0, →SAVE-10/19; earlier rules never activate, and a rules-4.0.0 label is
+ * the current version (→SAVE-10/19/26; earlier rules never activate, and a supported label is
  * rewritten by the writer's rules upgrade first) and either carries no model data yet or records an
  * earlier revision than the release's (→SAVE-23's later revision).
  */

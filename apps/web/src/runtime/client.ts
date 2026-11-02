@@ -1,5 +1,6 @@
 import type { WorldMarketQuery, WorldMarketTarget } from '../../../../packages/contracts/src/types';
 import type { Command, Founding, World } from '../../../../packages/contracts/src/types';
+import type { ClubListing, StartChoice } from '../../../../packages/contracts/src/owner';
 import type { FullStatsScope } from '../../../../packages/contracts/src/match-model';
 import { SaveRepository, type SaveWorldMetadata } from '../adapters/repository';
 import { IndexedDbCheckpointKey } from '../adapters/previousStore';
@@ -26,12 +27,33 @@ import { HELPER_CONFIG } from './helperPool';
 const CHECKPOINT_TIMEOUT_MS = 60000;
 // Large lossless careers compress in the separate codec worker; engine RPC stays bounded below.
 const CODEC_TIMEOUT_MS = 600000;
+/**
+ * How long a world's generation may go without reaching its next season (→WORLD-13, ARCH-28):
+ * each season it reaches is a progress message that restarts the watchdog.
+ */
+const GENERATION_STEP_MS = 600000;
 /** Automatic progress waits at most this long for its background save (→SAVE-8). */
 export const AUTOSAVE_MS = 30000;
 /** The writer's notice once an activated career's updated save data is committed (→WEB-66). */
 export const SAVE_DATA_UPDATED = '기존 기록을 보존하고 저장 데이터를 현재 형식으로 갱신했어요.';
+/**
+ * A new game on its way (→WEB-2, WEB-15): the start's choices, the season the world's generation
+ * has reached, then every club on sale with the tier's fortune, or why the generation failed.
+ */
+export interface StartState {
+  choice: StartChoice;
+  /** Whether it replaces the game in play once a club is taken over (→WEB-62). */
+  replace: boolean;
+  season?: number;
+  listings?: ClubListing[];
+  /** The tier's fortune in pounds, minor units (→OWNER-3). */
+  fortune?: string;
+  error?: string;
+}
 export interface ClientState {
   view?: View;
+  /** The new game being generated or chosen from, until its takeover (→WORLD-13). */
+  start?: StartState;
   busy: boolean;
   /** Commands remain serialized even when background simulation leaves the UI available. */
   processing: boolean;
@@ -117,6 +139,8 @@ export class GameClient {
       resolve: (r: Reply) => void;
       reject: (e: Error) => void;
       timer: number;
+      /** The watchdog each message restarts. */
+      timeout: number;
       publishView: boolean;
       /** How its view is taken (`take`). */
       taking?: Taking;
@@ -217,9 +241,11 @@ export class GameClient {
     const pending = this.waiters.get(r.requestId);
     if (!pending) return;
     clearTimeout(pending.timer);
-    pending.timer = window.setTimeout(() => this.failWorker(), 15000);
+    pending.timer = window.setTimeout(() => this.failWorker(), pending.timeout);
     if (r.progress !== undefined) {
-      if (this.state.activity === 'foreground') {
+      if (r.season !== undefined && this.state.start)
+        this.state.start = { ...this.state.start, season: r.season };
+      if (this.state.activity === 'foreground' || r.season !== undefined) {
         this.state.progress = r.progress;
         this.emit();
       }
@@ -369,7 +395,7 @@ export class GameClient {
       );
       if (cleared > 0)
         notificationStore.add(
-          `이전 규칙 커리어 ${cleared}개를 정리했어요. 새 경기 엔진(게임 버전 ${CURRENT_ENGINE_VERSION})으로 새 커리어를 시작하세요.`,
+          `이전 규칙 커리어 ${cleared}개를 정리했어요. 게임 버전 ${CURRENT_ENGINE_VERSION}에서는 구단을 인수해 새 커리어를 시작해요.`,
         );
     }
     const result = await this.saves.load();
@@ -494,8 +520,10 @@ export class GameClient {
         resolve,
         reject,
         timer: window.setTimeout(() => this.failWorker(), timeout),
+        timeout,
         publishView:
           body.type === 'found' ||
+          body.type === 'take-over' ||
           body.type === 'command' ||
           body.type === 'ack-critical' ||
           (body.type === 'inspect' && !!body.activate),
@@ -552,12 +580,14 @@ export class GameClient {
       throw new SaveCompatibilityError(
         '호환되지 않는 기록을 내보낸 뒤 명시적으로 새 세계로 교체하세요.',
       );
-    if (body.type === 'found') {
+    // A new career's first world, founded or taken over, is saved whole (→SAVE-3).
+    const starts = body.type === 'found' || body.type === 'take-over';
+    if (starts) {
       this.state.savedRevision = -1;
       this.state.playback = undefined;
     }
     const reply = await this.rpc(body, undefined, undefined, automatic);
-    if (body.type === 'found' && body.replace && this.saves.incompatibleCheckpoint)
+    if (starts && body.replace && this.saves.incompatibleCheckpoint)
       this.replacingIncompatible = true;
     if (reply.playback) this.state.playback = reply.playback;
     this.emit();
@@ -677,6 +707,65 @@ export class GameClient {
     clearTimeout(build.timer);
     this.builds.delete(result.id);
     build.resolve(result);
+  }
+  /**
+   * Generates a new game's world to the chosen decade (→WEB-2, WORLD-13): the worker reports each
+   * season it reaches, then lists every club on sale with the tier's fortune. Nothing is saved or
+   * replaced until a club is taken over; a failure stays with the start, which offers a retry.
+   */
+  generate(choice: StartChoice, replace = false) {
+    return this.enqueue(async () => {
+      this.state.start = { choice, replace };
+      this.state.progress = 0;
+      this.emit();
+      try {
+        if (this.state.readonly) throw new Error('이 탭은 읽기 전용입니다.');
+        if (this.saves.incompatibleCheckpoint && !replace)
+          throw new SaveCompatibilityError(
+            '호환되지 않는 기록을 내보낸 뒤 명시적으로 새 세계로 교체하세요.',
+          );
+        const reply = await this.rpc(
+          { type: 'generate', choice, replace },
+          undefined,
+          GENERATION_STEP_MS,
+        );
+        if (!reply.start) throw new Error('구단 목록 응답이 없습니다.');
+        this.state.start = { ...this.state.start!, ...reply.start };
+        return reply;
+      } catch (error) {
+        this.state.start = { ...this.state.start!, error: String(error) };
+        return undefined;
+      }
+    });
+  }
+  /**
+   * Takes a club of the generated world over with the chosen direction (→ECON-38, WEB-15): the
+   * career's first world, saved at once like a founding.
+   */
+  takeOver(clubId: string, preset?: string) {
+    return this.enqueue(async () => {
+      const replace = !!this.state.start?.replace;
+      const reply = await this.mutate({
+        type: 'take-over',
+        clubId,
+        ...(preset ? { preset } : {}),
+        ...(replace ? { replace } : {}),
+      });
+      delete this.state.start;
+      this.saveSoon();
+      return reply;
+    });
+  }
+  /** A club's sheet in the generated world, read outside the command queue (→WEB-15). */
+  async clubSheet(clubId: string) {
+    const reply = await this.rpc({ type: 'club-sheet', clubId });
+    return reply.clubSheet;
+  }
+  /** Leaves a new game before its takeover; the worker drops its world with the next start. */
+  leaveStart() {
+    if (!this.state.start) return;
+    delete this.state.start;
+    this.emit();
   }
   found(input: Founding, replace = false) {
     return this.enqueue(async () => {
@@ -941,6 +1030,7 @@ export class GameClient {
       await this.saves.clearPrevious().catch(() => {});
       // Nothing left in this page — the slot index on leaving, a save — may bring it back either.
       this.state.view = undefined;
+      delete this.state.start;
       this.held = [];
       this.views.clear();
       this.state.playback = undefined;

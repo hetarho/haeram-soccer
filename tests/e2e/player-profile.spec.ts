@@ -3,6 +3,7 @@ import { openClubhouse } from './competition-navigation';
 import { marketRows, closeMarketPanel } from './market';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { horizontalOverflow } from './layout';
+import { startCareer } from './start';
 
 /**
  * How far a dialog's content runs past its own width: any block that shows its overflow (a
@@ -35,8 +36,7 @@ for (const viewport of [
     test.slow();
     await page.setViewportSize(viewport);
     await page.goto('/');
-    await page.getByRole('button', { name: '클럽 창단' }).click();
-    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await startCareer(page);
 
     // The roster: each card shows adaptation; a name opens the sheet with the full profile.
     await people(page);

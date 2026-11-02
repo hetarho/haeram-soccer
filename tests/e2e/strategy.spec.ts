@@ -1,15 +1,13 @@
 import { expect, test } from '@playwright/test';
 import { horizontalOverflow } from './layout';
 import { openDirectionInForce } from './office';
-import { chooseOption } from './select';
+import { startCareer } from './start';
 
-test('reads the direction founded with, every row named and none editable', async ({ page }) => {
+test('reads the direction taken over with, every row named and none editable', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  const founding = page.getByTestId('club-founding');
-  await chooseOption(founding.getByRole('combobox', { name: '구단 운영' }), 'local-pride');
-  await founding.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  // The direction is chosen at the takeover's confirmation (→WEB-15).
+  await startCareer(page, { preset: 'local-pride' });
   await openDirectionInForce(page);
   const areas = page.getByTestId('direction-areas');
   // The owner reads a direction, never a "build" (빌드업 is the football phase of play).
@@ -60,7 +58,8 @@ test('reads the direction founded with, every row named and none editable', asyn
     for (const [label, value] of lines)
       await expect(area.locator('[data-row]').filter({ hasText: label })).toContainText(value);
   }
-  // 지역 and 글로벌 name the base their rows build; a new club has neither yet (→ECON-34).
+  // 지역 and 글로벌 name the base their rows build; the takeover starts the owner's club with
+  // neither (→ECON-34).
   await expect(areas.getByRole('region', { name: '지역', exact: true })).toContainText(
     '지역 기반 0',
   );
@@ -84,8 +83,7 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     await page.goto('/');
-    await page.getByRole('button', { name: '클럽 창단' }).click();
-    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await startCareer(page);
     await openDirectionInForce(page);
     const areas = page.getByTestId('direction-areas');
     await expect(areas.getByRole('heading', { level: 3 })).toHaveText('구단 방향 · 기본 방향');

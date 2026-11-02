@@ -7,13 +7,13 @@ import contracts from '../package.json';
 import { MATCH_MODEL_REVISION } from './match-model';
 import type { World } from './types';
 import {
-  CONTINUED_ENGINE_VERSION,
   CURRENT_ENGINE_VERSION,
   earlierRulesMessage,
   envelopeEngine,
   isEarlierEngine,
   LEGACY_ENGINE_VERSIONS,
   NEWER_GAME_MESSAGE,
+  RULES_FOUR_VERSIONS,
   SaveCompatibilityError,
   SUPPORTED_ENGINE_VERSIONS,
   upgradeWorldRules,
@@ -34,30 +34,40 @@ const career = (engine: string) =>
     matchModel: { revision: MATCH_MODEL_REVISION },
   }) as unknown as World;
 
-describe('game version 0.7.0 (→SAVE-10)', () => {
+describe('game version 0.8.0 (→SAVE-10, SAVE-26)', () => {
   it('is every package version and the rules a world plays', () => {
-    expect(CURRENT_ENGINE_VERSION).toBe('0.7.0');
+    expect(CURRENT_ENGINE_VERSION).toBe('0.8.0');
     for (const pkg of [root, web, contracts, engine, catalogs])
       expect(pkg.version).toBe(CURRENT_ENGINE_VERSION);
-    // Only the current version and the rules-4.0.0 label it continues, no older range.
-    expect(SUPPORTED_ENGINE_VERSIONS).toEqual([CURRENT_ENGINE_VERSION, CONTINUED_ENGINE_VERSION]);
-    expect(CONTINUED_ENGINE_VERSION).toBe('4.0.0');
+    // Only the current version, no older range or label.
+    expect(SUPPORTED_ENGINE_VERSIONS).toEqual([CURRENT_ENGINE_VERSION]);
   });
 
-  it('a rules-4.0.0 checkpoint loads and is written as 0.7.0, its facts unchanged', () => {
-    const stored = career('4.0.0');
+  it('a current checkpoint moves only its catalog pin and revision on activation', () => {
+    const stored = career(CURRENT_ENGINE_VERSION);
     const before = structuredClone(stored);
-    const upgraded = upgradeWorldRules(stored, PIN);
-    expect(upgraded).toEqual({ ...before, engine: '0.7.0', revision: before.revision + 1 });
-    // Every retained fact is carried as stored, and the stored world is not touched.
+    const pin = { catalog: '2026-demo-5', catalogHash: 'g' };
+    const upgraded = upgradeWorldRules(stored, pin);
+    expect(upgraded).toEqual({ ...before, ...pin, revision: before.revision + 1 });
     expect(upgraded.ownMatches).toBe(stored.ownMatches);
-    expect(upgraded.matchModel).toBe(stored.matchModel);
     expect(stored).toEqual(before);
-    // The upgraded career is current: a second activation changes nothing.
-    expect(upgradeWorldRules(upgraded, PIN)).toBe(upgraded);
-    expect(isEarlierEngine('4.0.0')).toBe(false);
-    expect(LEGACY_ENGINE_VERSIONS).not.toContain('4.0.0');
-    expect(envelopeEngine('{"schema":4,"engine":"4.0.0"}')).toBe('4.0.0');
+    expect(upgradeWorldRules(upgraded, pin)).toBe(upgraded);
+  });
+
+  it('the founded rules-4.0.0 line, 0.7.0 and its 4.0.0 label, is earlier rules (→SAVE-26)', () => {
+    expect(RULES_FOUR_VERSIONS).toEqual(['4.0.0', '0.7.0']);
+    for (const engine of RULES_FOUR_VERSIONS) {
+      expect(isEarlierEngine(engine)).toBe(true);
+      expect(LEGACY_ENGINE_VERSIONS).toContain(engine);
+      const stored = career(engine);
+      const before = structuredClone(stored);
+      expect(() => upgradeWorldRules(stored, PIN)).toThrow(SaveCompatibilityError);
+      expect(stored).toEqual(before);
+    }
+    expect(envelopeEngine('{"schema":4,"engine":"0.7.0"}')).toBe('0.7.0');
+    expect(earlierRulesMessage('0.7.0')).toBe(
+      '이 저장은 규칙 0.7.0 커리어입니다 — 게임 버전 0.8.0 커리어만 열 수 있습니다. 새 커리어를 시작하세요',
+    );
   });
 
   it('keeps every released earlier version as earlier rules, refused with its message', () => {
@@ -71,13 +81,22 @@ describe('game version 0.7.0 (→SAVE-10)', () => {
       expect(() => upgradeWorldRules(career(legacy), PIN)).toThrow(SaveCompatibilityError);
     }
     expect(earlierRulesMessage('1.22.0')).toBe(
-      '이 저장은 규칙 1.22.0 커리어입니다 — 게임 버전 0.7.0 커리어만 열 수 있습니다. 새 커리어를 시작하세요',
+      '이 저장은 규칙 1.22.0 커리어입니다 — 게임 버전 0.8.0 커리어만 열 수 있습니다. 새 커리어를 시작하세요',
     );
   });
 
   it('an unknown engine version is refused as from a newer game', () => {
-    // Neither current, the 4.0.0 label nor a released earlier version, whatever its number.
-    for (const unknown of ['9.0.0', '0.8.0', '0.6.0', '4.0.1', '1.9.9', '1.23.0', 'x.y.z']) {
+    // Neither current nor a released earlier version, whatever its number.
+    for (const unknown of [
+      '9.0.0',
+      '0.9.0',
+      '0.6.0',
+      '5.0.0',
+      '4.0.1',
+      '1.9.9',
+      '1.23.0',
+      'x.y.z',
+    ]) {
       expect(isEarlierEngine(unknown)).toBe(false);
       const stored = career(unknown);
       const before = structuredClone(stored);
@@ -85,6 +104,6 @@ describe('game version 0.7.0 (→SAVE-10)', () => {
       expect(stored).toEqual(before);
     }
     expect(NEWER_GAME_MESSAGE).toContain('지원하지 않는 저장');
-    expect(NEWER_GAME_MESSAGE).toContain('게임 버전 0.7.0보다 새로운 게임');
+    expect(NEWER_GAME_MESSAGE).toContain('게임 버전 0.8.0보다 새로운 게임');
   });
 });

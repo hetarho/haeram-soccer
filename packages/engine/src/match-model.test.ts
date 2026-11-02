@@ -121,9 +121,9 @@ describe('the full match record (→MATCH-13, MATCH-27)', () => {
     expect(validateFullMatchRecord(old)).toContain('model revision missing');
     expect(old).toEqual(before);
     // A rules upgrade carries older records as stored: no field gains a value or a placeholder.
-    // The world keeps its rules-4.0.0 label on purpose: that line's records load into 0.7.0.
+    // A catalog pin move is a rules upgrade too: the records stay as stored.
     const world = {
-      engine: '4.0.0',
+      engine: CURRENT_ENGINE_VERSION,
       catalog: '2026-demo-2',
       revision: 4,
       ownMatches: [old],

@@ -7,6 +7,7 @@ import { horizontalOverflow, settle } from './layout';
 import { closeMarketPanel, marketFilters, marketRows } from './market';
 import { chooseOption } from './select';
 import { openPersonnel } from './personnel-navigation';
+import { startCareer } from './start';
 
 // The theme registry is the sole list of themes (→ARCH-32), so a new pack is checked too.
 const themes = (
@@ -28,7 +29,7 @@ for (const themeId of themes)
   test(`${themeId}: market rows show readable position family badges on phones and desktop`, async ({
     page,
   }) => {
-    // Four family filters at three widths after one founding.
+    // Four family filters at three widths after one takeover.
     test.slow();
     await page.setViewportSize({ width: 390, height: 844 });
     await page.addInitScript((themeId) => {
@@ -38,7 +39,7 @@ for (const themeId of themes)
       );
     }, themeId);
     await page.goto('/');
-    await page.getByRole('button', { name: '클럽 창단' }).click();
+    await startCareer(page);
     await openPersonnel(page, 'market');
     const rows = marketRows(page);
     const fills = new Map<Line, string>();

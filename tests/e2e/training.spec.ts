@@ -25,6 +25,9 @@ import {
 } from './events';
 import { continueSlot } from './slots';
 import { retainPerson, openEmployment } from '../../packages/engine/src/person-careers';
+import { generateHistory } from '../../packages/engine/src/history';
+import { takeOver } from '../../packages/engine/src/takeover';
+import { DEFAULT_START, startCareer } from './start';
 
 /** The focuses as 훈련 names them. */
 const FOCUS: Record<TrainingFocus, string> = {
@@ -82,7 +85,7 @@ function abilities(w: World) {
   }));
 }
 
-// Seeds whose first offer from another club comes after the first match eve: new clubs stop for
+// Seeds whose first offer from another club comes after the first match eve: a career stops for
 // offers too (level 2), and an offer card would cover home's controls.
 for (const { seed: worldSeed, ...viewport } of [
   { width: 360, height: 740, seed: 'training-ui-360' },
@@ -91,29 +94,24 @@ for (const { seed: worldSeed, ...viewport } of [
   test(`saves actual training without free growth and keeps home compact at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
-    // Founding, a run of days, a reload and a watched match in one journey.
+    // A takeover, a run of days, a reload and a watched match in one journey.
     test.slow();
-    const founding = {
-      country: 'ENG' as const,
-      name: 'Haeram Athletic',
-      color: '#bf7956',
-      seed: worldSeed,
-      level: 'easy' as const,
-    };
-    const reference = createWorld(founding);
-    // The clock runs for a few days below; it must not reach the first match day.
-    expect(daysUntilNextMatch(reference)).toBeGreaterThan(4);
     await page.setViewportSize(viewport);
     await page.goto('/');
-    await page.getByText('고급 설정', { exact: true }).click();
-    await page.getByLabel('세계 생성 시드').fill(founding.seed);
-    await page.getByRole('button', { name: '쉬움', exact: false }).click();
-    await page.getByRole('button', { name: '클럽 창단' }).click();
+    await startCareer(page, { seed: worldSeed });
     const hub = page.getByTestId('club-hub');
     await expect(hub).toBeVisible();
     await setResponsibility(page, '스태프 인사', 'direct');
     await expectHomeBounds(page);
     const before = await exportWorld(page);
+    // The same takeover made in Node from the start's choices (→WORLD-13).
+    const { tier, decade } = DEFAULT_START;
+    const reference = takeOver(generateHistory(worldSeed, decade), before.playerClub, {
+      tier,
+      traits: [],
+    });
+    // The clock runs for a few days below; it must not reach the first match day.
+    expect(daysUntilNextMatch(reference)).toBeGreaterThan(4);
     expect(abilities(before)).toEqual(abilities(reference));
 
     const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
@@ -130,9 +128,9 @@ for (const { seed: worldSeed, ...viewport } of [
     // Start the shared clock on home; it keeps running on other views until the owner stops it.
     const date = page.getByTestId('game-date');
     await nav.getByRole('button', { name: '클럽하우스', exact: true }).click();
-    await expect(date).toHaveText('1950.08.01');
+    await expect(date).toHaveText('1930.08.01');
     await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-    await expect(date).toHaveText('1950.08.02');
+    await expect(date).toHaveText('1930.08.02');
     await openTraining();
     const mini = page.getByRole('region', { name: '시즌 진행', exact: true });
     // Still running in 훈련. Stopped now, the days computed ahead (three at x1) are shown at the
@@ -177,7 +175,7 @@ for (const { seed: worldSeed, ...viewport } of [
     await expect(mini.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
     const atEve =
       (await date.innerText()) ===
-      `1950.08.${String(daysUntilNextMatch(reference)).padStart(2, '0')}`;
+      `1930.08.${String(daysUntilNextMatch(reference)).padStart(2, '0')}`;
     if (atEve) {
       await expect(matchReport(page)).toBeVisible();
       await dismissMatchReport(page);

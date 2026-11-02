@@ -6,15 +6,18 @@ import { chooseLevel, closeOutcome, setResponsibility } from './events';
 import { chooseOption } from './select';
 import { horizontalOverflow } from './layout';
 import { watchNext } from './watch';
+import { startCareer, type CareerStart } from './start';
 
-async function found(page: import('@playwright/test').Page, seed: string) {
+/** Takes a club over on `seed`; returns its name. */
+async function found(page: import('@playwright/test').Page, seed: string, start?: CareerStart) {
   await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill(seed);
-  await page.getByRole('button', { name: '쉬움' }).click();
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  return startCareer(page, { ...start, seed });
 }
+/**
+ * The cup's 36 seeds (the top flight and the best of the second division) skip its first round,
+ * so the journeys about our first-round tie take over the strongest third-division club.
+ */
+const FIRST_ROUND: CareerStart = { country: 'ENG', division: 2 };
 
 test.describe('cups, transfer stance, coaching and club trends at 390x844', () => {
   test.beforeEach(async ({ page }) => {
@@ -22,14 +25,14 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
   });
 
   test('shows the drawn domestic cup with our tie and the road to Europe', async ({ page }) => {
-    await found(page, 'cups-journey');
+    await found(page, 'cups-journey', FIRST_ROUND);
     await openCups(page);
     await expect(page.getByRole('combobox', { name: '컵 대회', exact: true })).toHaveAttribute(
       'data-value',
       'cup:ENG',
     );
     const cup = page.getByRole('region', { name: '잉글랜드 컵' });
-    // A new amateur club enters the cup in its first round, drawn before the season starts.
+    // A third-division club enters the cup in its first round, drawn before the season starts.
     await expect(cup.getByRole('heading', { name: '1라운드' })).toBeVisible();
     await expect(cup.getByText('우리 팀')).toBeVisible();
     await expect(cup).toContainText('다음');
@@ -147,18 +150,16 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
   test('opens the team sheet of a club in our cup tie and stacks sheets over sheets', async ({
     page,
   }) => {
-    await found(page, 'club-links-journey');
+    const ours = await found(page, 'club-links-journey', FIRST_ROUND);
     await openCups(page);
     const tie = page
       .getByRole('region', { name: '잉글랜드 컵' })
       .getByRole('listitem')
       .filter({ hasText: '우리 팀' })
       .first();
-    // Both clubs of the tie open their sheets; ours is Haeram Athletic.
+    // Both clubs of the tie open their sheets, ours among them.
     await expect(tie.getByRole('button', { name: /팀 정보$/ })).toHaveCount(2);
-    const rival = tie
-      .getByRole('button', { name: /팀 정보$/ })
-      .filter({ hasNotText: 'Haeram Athletic' });
+    const rival = tie.getByRole('button', { name: /팀 정보$/ }).filter({ hasNotText: ours });
     const name = (await rival.textContent())!.trim();
     await expect(rival).toHaveAccessibleName(`${name} 팀 정보`);
     await rival.click();
@@ -179,9 +180,9 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await openLeague(page);
     await page
       .getByRole('table', { name: '리그 순위표' })
-      .getByRole('button', { name: 'Haeram Athletic 팀 정보', exact: true })
+      .getByRole('button', { name: `${ours} 팀 정보`, exact: true })
       .click();
-    const own = page.getByRole('dialog', { name: 'Haeram Athletic', exact: true });
+    const own = page.getByRole('dialog', { name: ours, exact: true });
     const club = own.getByRole('button', { name: /팀 정보$/ }).first();
     const clubName = (await club.getAttribute('aria-label'))!.replace(/ 팀 정보$/, '');
     await club.click();
@@ -244,9 +245,9 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
   }) => {
     // Plays a whole season; slow CI browsers need longer.
     test.slow();
-    await found(page, 'cup-history-journey');
+    await found(page, 'cup-history-journey', FIRST_ROUND);
     await finishSeason(page);
-    await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1951');
+    await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1931');
     await expect(page.getByTestId('game-round')).toHaveText('0');
     await page.keyboard.press('Escape');
     await expect(page.getByRole('dialog', { name: '시즌 진행 도구' })).toHaveCount(0);
@@ -255,15 +256,15 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     const history = page.getByRole('region', { name: '컵 대회 역사' });
     // The header's stepper holds the season; the closed season opens on its winner (→WEB-40).
     const picker = page.getByRole('group', { name: '시즌 넘기기' });
-    await expect(picker.getByRole('combobox', { name: '시즌' })).toHaveText(/1950\/51/);
+    await expect(picker.getByRole('combobox', { name: '시즌' })).toHaveText(/1930\/31/);
     await expect(picker.getByRole('button', { name: '이전 시즌' })).toBeDisabled();
-    await expect(history.getByTestId('cup-season-winner')).toContainText('1950/51');
+    await expect(history.getByTestId('cup-season-winner')).toContainText('1930/31');
     // The closed season's bracket opens as a tree from the last 32 to the final.
     await expect(history.getByRole('group', { name: '대진 보기' })).toBeVisible();
     const tree = history.getByRole('group', { name: '대진표', exact: true });
     await expect(tree.getByRole('heading', { name: '32강', exact: true })).toBeVisible();
     await expect(tree.getByRole('heading', { name: '결승', exact: true })).toBeVisible();
-    // A new amateur club enters in the first round, before the bracket's last 32.
+    // A third-division club enters in the first round, before the bracket's last 32.
     const journey = history.getByRole('region', { name: '우리 클럽의 컵 여정' });
     await expect(journey).toContainText('1라운드');
     await journey
@@ -277,7 +278,7 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     const honours = history.getByRole('table', { name: '클럽별 우승 기록' });
     await expect(honours.locator('tbody tr').first().locator('td').nth(1)).toHaveText('1');
     await expect(
-      history.getByRole('button', { name: '1950/51 대진 보기', exact: true }),
+      history.getByRole('button', { name: '1930/31 대진 보기', exact: true }),
     ).toBeVisible();
     expect(await horizontalOverflow(page)).toBe(0);
   });

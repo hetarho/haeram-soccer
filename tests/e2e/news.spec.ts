@@ -1,21 +1,34 @@
 import { gameHud } from './layout';
 import { advanceOneRound } from './season-progression';
 import { expect, test, type Page } from '@playwright/test';
-import { advanceRound, clubNews, createWorld, operate } from '../../packages/engine/src/index';
+import { advanceRound, clubNews, operate } from '../../packages/engine/src/index';
+import { tierFortune } from '../../packages/engine/src/club-value';
+import { generateHistory } from '../../packages/engine/src/history';
+import { clubListings } from '../../packages/engine/src/listing';
+import { takeOver } from '../../packages/engine/src/takeover';
+import { canAfford, defaultFilter, filterListings } from '../../apps/web/src/ui/startChoices';
 import { chooseLevel, configureResponsibilities } from './events';
 import { horizontalOverflow, settle } from './layout';
+import { DEFAULT_START, startCareer } from './start';
 
-const founding = (seed: string) => ({
-  country: 'ENG' as const,
-  name: 'Haeram Athletic',
-  color: '#bf7956',
-  seed,
-  level: 'easy' as const,
-});
+/**
+ * The career the start flow makes on `seed` with its defaults (→WEB-15): the first row the list
+ * opens on that the fortune pays for, taken over.
+ */
+function takeoverCareer(seed: string) {
+  const { tier, decade } = DEFAULT_START;
+  const world = generateHistory(seed, decade);
+  const listings = clubListings(world, tier),
+    fortune = tierFortune(world, tier);
+  const row = filterListings(listings, defaultFilter(listings, fortune), fortune).find((listing) =>
+    canAfford(listing, fortune),
+  )!;
+  return takeOver(world, row.clubId, { tier, traits: [] });
+}
 /** A seed whose first round brings a celebrated achievement (the club's first win). */
 const seed = (() => {
   for (let i = 0; i < 60; i++) {
-    const w = createWorld(founding(`news-celebrate-${i}`));
+    const w = takeoverCareer(`news-celebrate-${i}`);
     // As the test plays it: the staff run the club at level 4 (→WEB-45).
     operate(w, {
       type: 'settings',
@@ -39,17 +52,15 @@ const seed = (() => {
   throw new Error('No seed in range wins its first round');
 })();
 
+/** Takes the seed's club over at 360 px; returns its name. */
 async function found(page: Page) {
   await page.setViewportSize({ width: 360, height: 740 });
   await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill(seed);
-  await page.getByRole('button', { name: '쉬움', exact: false }).click();
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  const name = await startCareer(page, { seed });
   // Nothing but the test's own steps may stop the clock or open a card: level 4 stops only for
   // money and leaves offers to the staff.
   await chooseLevel(page, 4);
+  return name;
 }
 async function playRound(page: Page) {
   await advanceOneRound(page);
@@ -58,13 +69,10 @@ async function playRound(page: Page) {
 const newsButton = (page: Page) => page.getByTestId('communications-button');
 
 test('keeps the crest, today and compact cash readable in a 360 px HUD', async ({ page }) => {
-  await found(page);
+  const name = await found(page);
   // Phones show the crest alone; the name stays for assistive technology.
   await expect(gameHud(page).locator('[data-ui="hud-club"] > svg')).toBeVisible();
-  await expect(gameHud(page).getByText('Haeram Athletic', { exact: true })).toHaveCSS(
-    'position',
-    'absolute',
-  );
+  await expect(gameHud(page).getByText(name, { exact: true })).toHaveCSS('position', 'absolute');
   await expect(gameHud(page).getByTestId('game-date')).toBeVisible();
   // The money notation on every viewport (→WEB-67); label and title keep the exact amount.
   expect(await page.getByTestId('hud-cash').innerText()).toMatch(/^£[\d,]+$/);

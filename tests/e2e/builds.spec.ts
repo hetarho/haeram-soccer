@@ -1,27 +1,26 @@
 import { openMatchDetails, watchNext } from './watch';
 import { expect, test } from '@playwright/test';
-import {
-  createWorld,
-  nextOwnFixture,
-  npcTactic,
-  tacticLabel,
-} from '../../packages/engine/src/index';
+import { nextOwnFixture, npcTactic, tacticLabel } from '../../packages/engine/src/index';
+import { generateHistory } from '../../packages/engine/src/history';
 import { FORMATIONS } from '../../packages/engine/src/player';
+import { takeOver } from '../../packages/engine/src/takeover';
 import { settle } from './layout';
+import { DEFAULT_START, startCareer } from './start';
 
 test("reports the manager's tactic and the opponent's before an actual seeded match", async ({
   page,
 }) => {
   // Reads the report, then watches and analyses a whole match; slow CI browsers need longer.
   test.slow();
-  const founding = {
-    country: 'ENG' as const,
-    name: 'Haeram Athletic',
-    color: '#bf7956',
-    seed: 'tactical-build-disclosure',
-    level: 'easy' as const,
-  };
-  const reference = createWorld(founding);
+  const seed = 'tactical-build-disclosure';
+  await page.goto('/');
+  const name = await startCareer(page, { seed });
+  // The engine takes the same club over from the same choices (→WORLD-13).
+  const history = generateHistory(seed, DEFAULT_START.decade);
+  const reference = takeOver(history, history.clubs.find((club) => club.name === name)!.id, {
+    tier: DEFAULT_START.tier,
+    traits: [],
+  });
   const next = nextOwnFixture(reference)!;
   const opponent = reference.clubs.find(
     (club) => club.id === (next.home === reference.playerClub ? next.away : next.home),
@@ -29,11 +28,6 @@ test("reports the manager's tactic and the opponent's before an actual seeded ma
   const opponentTactic = npcTactic(opponent);
   const applied = tacticLabel[reference.tactic];
 
-  await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill(founding.seed);
-  await page.getByRole('button', { name: '쉬움' }).click();
-  await page.getByRole('button', { name: '클럽 창단' }).click();
   await page.getByTestId('club-hub').getByRole('button', { name: '상세 리포트' }).click();
   const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
   await expect(dialog).toBeVisible();
@@ -51,7 +45,7 @@ test("reports the manager's tactic and the opponent's before an actual seeded ma
   );
   await expect(dialog.getByRole('region', { name: '경기 전술 준비' })).toHaveCount(0);
   await expect(dialog.getByRole('button', { name: '의견 전달', exact: true })).toHaveCount(0);
-  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1950');
+  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1930');
   await expect(page.getByTestId('game-round')).toHaveText('0');
   await dialog.getByRole('button', { name: '확인하고 홈으로', exact: true }).click();
   await expect(dialog).toHaveCount(0);
@@ -84,10 +78,7 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     await page.goto('/');
-    await page.getByText('고급 설정', { exact: true }).click();
-    await page.getByLabel('세계 생성 시드').fill(`preparation-${viewport.width}`);
-    await page.getByRole('button', { name: '쉬움' }).click();
-    await page.getByRole('button', { name: '클럽 창단' }).click();
+    await startCareer(page, { seed: `preparation-${viewport.width}` });
     const opener = page.getByTestId('club-hub').getByRole('button', { name: '상세 리포트' });
     await opener.click();
     const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });

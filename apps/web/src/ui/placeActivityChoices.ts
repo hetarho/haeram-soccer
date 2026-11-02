@@ -1,4 +1,5 @@
 import type { World } from '../../../../packages/contracts/src/types';
+import { careerEnded } from '../../../../packages/contracts/src/owner';
 import { currentDay, seasonDayLabel, seasonDayOf } from '../../../../packages/engine/src/calendar';
 import type { ClientState, GameClient } from '../runtime/client';
 import { gameActionsBlocked } from '../runtime/store';
@@ -34,7 +35,7 @@ export function activityUnavailable(state: ClientState, expected: Pick<World, 'i
   const w = state.view?.world;
   if (!w || w.id !== expected.id) return '다른 게임으로 바뀌었어요. 현재 장소를 다시 열어 주세요.';
   if (w.revision !== expected.revision) return '조건이 바뀌었어요. 최신 내용을 다시 확인해 주세요.';
-  if (w.bankrupt || w.critical) return '진행을 막는 구단 상황을 먼저 확인해 주세요.';
+  if (careerEnded(w) || w.critical) return '진행을 막는 구단 상황을 먼저 확인해 주세요.';
   if (!gameActionsBlocked(state)) return undefined;
   if (state.readonly) return '읽기 전용 탭에서는 요청할 수 없어요.';
   if (state.clockRunning || state.processing)

@@ -180,7 +180,7 @@ function operatingExpenses(
 }
 
 /** The conversion of an amount from `from`'s money into `to`'s, when the club's currency changes. */
-function currencyChange(code: string, from: number, to: number) {
+export function currencyChange(code: string, from: number, to: number) {
   const before = currency(code, from),
     after = currency(code, to);
   if (before.code === after.code) return undefined;

@@ -12,7 +12,6 @@ import {
   committedRaw,
   exportRaw,
   exportWorld,
-  foundHere,
   newGameIn,
   continueGame,
   notice,
@@ -20,6 +19,7 @@ import {
   closeNotices,
   SAVE_DATA_UPDATED,
   seedCheckpoints,
+  takeOverHere,
 } from './club-identity-helpers';
 import { horizontalOverflow } from './layout';
 import {
@@ -30,6 +30,7 @@ import {
 } from './record-navigation';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { advanceOneRound } from './season-progression';
+import { startFlow } from './start';
 
 /**
  * 감독 이력 in the build (T308; →WEB-92/74/54, HIST-18/19, SAVE-24): real careers imported or seeded
@@ -160,7 +161,7 @@ test('starts tracking an older career at the writer, never in a read-only tab', 
   // Another tab holds the writer lock: this one opens the stored career read-only (→SAVE-6).
   const holder = await context.newPage();
   await holder.goto('/');
-  await expect(holder.getByRole('button', { name: '클럽 창단' })).toBeVisible();
+  await expect(startFlow(holder)).toBeVisible();
   await seedCheckpoints(page, {
     active: raw,
     manifest: JSON.stringify({
@@ -244,7 +245,7 @@ test('starts tracking an older career at the writer, never in a read-only tab', 
   try {
     const other = await elsewhere.newPage();
     await other.goto(new URL('/', page.url()).href);
-    await expect(other.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
+    await expect(startFlow(other)).toBeVisible();
     await other
       .locator('input[type=file]')
       .last()
@@ -274,14 +275,14 @@ test('never shows one game’s manager history in another', async ({ page }) => 
     career.views.flatMap((view) => (view.kind === 'tenure' ? [view.name] : [])),
   );
 
-  // A new game in slot 2: only its founding manager, nothing of the first game's list.
+  // A new game in slot 2: only the manager it took over, nothing of the first game's list.
   await newGameIn(page, 2);
-  await foundHere(page, 'Second Tenure FC', 'manager-history-second');
-  const founding = (await exportWorld(page)).manager.name;
+  await takeOverHere(page, 'manager-history-second');
+  const takenOver = (await exportWorld(page)).manager.name;
   const list = await openManagerHistory(page);
   await expect(list.getByRole('article')).toHaveCount(1);
-  await expect(list.getByRole('article').first()).toContainText(founding);
-  for (const name of names) if (name !== founding) await expect(list).not.toContainText(name);
+  await expect(list.getByRole('article').first()).toContainText(takenOver);
+  for (const name of names) if (name !== takenOver) await expect(list).not.toContainText(name);
 
   // Switched away while its read is in flight, and back: the first game's list, not the second's.
   await page.getByRole('tab', { name: '시즌별 기록', exact: true }).click();
@@ -290,5 +291,5 @@ test('never shows one game’s manager history in another', async ({ page }) => 
   await openManagerHistory(page);
   await expect(list.getByRole('article')).toHaveCount(career.pageSize);
   await expect(tenureCard(page, career.current)).toBeVisible();
-  if (!names.has(founding)) await expect(list).not.toContainText(founding);
+  if (!names.has(takenOver)) await expect(list).not.toContainText(takenOver);
 });

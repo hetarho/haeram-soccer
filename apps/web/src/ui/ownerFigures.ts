@@ -5,14 +5,15 @@
  * an outlook here is the rule applied to today's figures, never a second settlement.
  *
  * Only read leaves are imported (catalogs, calendar, quotes, primitives, owner-config): the UI
- * never reaches the day loop (→ARCH-4), so `careerOver` restates the engine's `careerEnded`.
+ * never reaches the day loop (→ARCH-4); `careerOver` is the contracts' `careerEnded`.
  */
 import { COUNTRIES, country, currency, priceIndex } from '../../../../packages/catalogs/src/index';
-import type {
-  DividendShare,
-  EndCause,
-  OwnerState,
-  OwnerTrait,
+import {
+  careerEnded,
+  type DividendShare,
+  type EndCause,
+  type OwnerState,
+  type OwnerTrait,
 } from '../../../../packages/contracts/src/owner';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import {
@@ -36,10 +37,8 @@ import type { ClientState } from '../runtime/client';
 import { gameActionsBlocked } from '../runtime/store';
 import { compactMoney, number, seasonName, signed } from './format';
 
-/** Whether the career is over (→OWNER-16, ECON-24): the engine's `careerEnded`, read in the UI. */
-export function careerOver(w: Pick<World, 'bankrupt' | 'ended'>) {
-  return w.bankrupt !== undefined || w.ended !== undefined;
-}
+/** Whether the career is over (→OWNER-16, ECON-24): the contracts' `careerEnded`, read in the UI. */
+export const careerOver = careerEnded;
 /** What ended the career: `w.ended`, or the club's bankruptcy a career before the owner recorded. */
 export function endCause(w: Pick<World, 'bankrupt' | 'ended'>): EndCause | undefined {
   return w.ended ?? (w.bankrupt ? 'club' : undefined);
@@ -233,10 +232,15 @@ export function injectionSteps(w: World) {
 const NOT_TURNOVER = new Set(['transfer-out', 'free-transfer-compensation']);
 /**
  * Last season's turnover in today's money, the base of an injection's 팬 민심 (→OWNER-12): its
- * archived income without player sales or compensation. Undefined without a closed season in the
- * money of today.
+ * archived income without player sales or compensation; in the takeover season, the bought club's
+ * last income before it (→ECON-36). Undefined without a closed season in the money of today.
  */
 function lastTurnover(w: World) {
+  const takeover = w.owner?.takeover;
+  if (takeover?.year === w.year)
+    return takeover.lastIncome && BigInt(takeover.lastIncome) > 0n
+      ? takeover.lastIncome
+      : undefined;
   const season = w.history.at(-1);
   if (!season || season.year !== w.year - 1 || season.currency !== w.currency) return undefined;
   const sales = w.events

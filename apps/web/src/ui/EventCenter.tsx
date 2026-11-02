@@ -1,4 +1,5 @@
 import { eventDesk } from './eventRouting';
+import { careerEnded } from '../../../../packages/contracts/src/owner';
 import { PixelIcon } from './PixelIcon';
 import { memo, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import type {
@@ -247,7 +248,7 @@ export const EventCenter = memo(function EventCenter({
               data-ui="primary"
               className={s.primary}
               aria-label="관전 이어보기"
-              disabled={acting || !!w.critical || !!w.bankrupt}
+              disabled={acting || !!w.critical || careerEnded(w)}
               onClick={() => setPage('match')}
             >
               관전 이어보기 <PixelIcon name="play" size={16} />

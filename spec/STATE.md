@@ -18,6 +18,17 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261103 decided SAVE-10 SAVE-26 T664: "rules 5.0.0" against SAVE-10's one game version → `CURRENT_ENGINE_VERSION` and every package 0.8.0, the beta's next version starting the rules-5.0.0 line; 0.7.0 and its 4.0.0 label join the earlier-rules list (alt: a literal 5.0.0, which drops the BETA mark and splits app and rules versions). ot03
+- 261103 suggest SAVE-10 T664: SAVE-10 still says the game is 0.7.0 continuing the 4.0.0 line; it should name 0.8.0 on the rules-5.0.0 line of SAVE-26 (update-ssot). ot03
+- 261103 decided SAVE-26 WEB-62 T664: founded 0.7.0/4.0.0 careers → cleared once on writer activation by the existing release reset (now recognizing that line in the match-model and manager-history containers) with one notice; their exported files stay and are refused on import naming their rules (alt: keep them as 이전 규칙 slots with export and delete only). ot03
+- 261103 decided WORLD-13 SAVE-27 T664: the world before the takeover → held by the worker only, unvalidated and unsaved; `club-sheet` reads it, `take-over` makes the first checkpoint, a reload or leaving the start drops it (alt: save it as a start checkpoint). ot03
+- 261103 decided ARCH-6 ARCH-28 T664: generation progress → one progress message per season reached, the client's watchdog restarted per message at 10 min for `generate` (alt: the 15 s RPC watchdog, which one slow season trips). ot03
+- 261103 decided SAVE-14 T664: a career's world ID → set at the takeover from seed, season, club, tier and traits, so two careers of one seed are two games in the slots (alt: generateHistory's one ID per seed). ot03
+- 261103 decided ECON-6 OWNER-12 T664: `owner.takeover.lastIncome` → the books' last income carried into the takeover season's money (a 1960 French takeover reads new francs), also the base of the first season's operating expenses (alt: stored unconverted). ot03
+- 261103 decided OWNER-4 T664: founding copy a taken-over career reads → "창단 때 정한 방향" becomes "인수 때 정한 방향" (DirectionFacts, AcademyPanel, PlayGuide, the policy story); the founding manager and ticket wording stay for T665 (alt: leave all copy to T665). ot03
+- 261103 decided WEB-15 ARCH-30 T664: e2e careers → one shared helper `tests/e2e/start.ts` (`startCareer`, default 석유 재벌, no trait, 1930, seed e2e-start, the first affordable row) on a 1930 takeover, which plays no season first (alt: a cached 1950 world injected into the worker). ot03
+- 261103 decided KIT-14 T664: `club-identity-founding.spec.ts` → removed: the pre-start identity editor is unreachable after the switch; identity changes after a takeover stay covered by club-identity-management (alt: skip it until T665). ot03
+- 261103 suggest ECON-36 OWNER-3 T668: a 1930 takeover starts with club cash 0 (books open at 0 in 1930): unfunded, the e2e default career (석유 재벌, strongest English club) goes bankrupt at round 8 when the owner decides everything, and an Italian top-flight club at round 16; e2e journeys inject owner money first (`fundClub`). ot03
 - 261103 decided WORLD-13 LEAGUE-11 T654: which runner lives the ownerless world → the existing day loop with `hasOwner` guards (alt: a round-level runner, same speed and results but a second copy of the day order). ot03
 - 261103 decided T654: the spike script → kept out of the repo; the guards ship with T655 (alt: commit scripts/history-spike.ts). ot03
 - 261103 decided HIST-2 WORLD-13 T655: where pre-takeover seasons are archived → in `w.history` with own-club fields empty (alt: a separate list; Europe access, LEAGUE-10 success and Ballon d'Or premiums read `w.history`). ot03
@@ -605,7 +616,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T669 | results-only fixtures before the takeover | MATCH WORLD ARCH HIST PLAYER LEAGUE | T656 | todo |
-| T664 | switch the start to the takeover (rules 5.0.0) | WEB WORLD ECON OWNER SAVE ARCH | T652 T656 T658 T660 T661 T662 T663 | todo |
 | T665 | remove founding, difficulty levels, the founding editor and the amateur level | WEB KIT WORLD LEAGUE ECON CLUB | T652 T664 | todo |
 | T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T665 | todo |
 | T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T665 | todo |
@@ -637,6 +647,7 @@
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261103 T664 done: a new game is tier → traits → decade → generated world → club list → takeover on game version 0.8.0 (rules 5.0.0); worker generate/club-sheet/take-over, careerEnded routing, OwnerSheet/GameOver stories, founded 0.7.0 careers reset; e2e on tests/e2e/start.ts; ot03
 - 261103 update-ssot WORLD r9 MATCH r48: fixtures before the takeover take a results-only path; create-task T669 (explore 3h, parallel to T664); T664/T666 notes from the integration; ot03
 - 261103 integrate ot03/history (T654–T656) into ot03/integrate: generated world, wartime and NPC books merged without conflicts; one facility helper (club-value `facilityStage`), takeOver on a generateHistory world opens the manager market and closes the club's NPC coaching jobs, own-club reads skip pre-owner archives (`isOwnSeason`, parachute from the world's standings); unit 2034, contract 47, integration set 44, equivalence digests unchanged; ot03
 - 261103 update-ssot STAFF r39 PLAYER r14: 마당발's candidate and pool counts and 원석 감별사's scout range written where the base rules live (already built by T661, tasked=rev); ot03

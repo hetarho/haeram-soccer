@@ -20,11 +20,23 @@ import {
   tacticLabel,
 } from '../../packages/engine/src/index';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
+import { generateHistory } from '../../packages/engine/src/history';
+import { takeOver } from '../../packages/engine/src/takeover';
+import type { World } from '../../packages/contracts/src/types';
 import { expectViewFits, horizontalOverflow, settle } from './layout';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
 import { WATCH_DEFAULT_SPEED, WATCH_MINUTE_MS } from '../../apps/web/src/ui/presentationClock';
 import { committedRaw, openRecordedMatch } from './club-identity-helpers';
 import { importResponsibilityCareer } from './responsibility-fixtures';
+import { DEFAULT_START, startCareer } from './start';
+
+/** The career the engine makes from the browser's start: the same seed, club and choices. */
+function takenOver(seed: string, clubId: string): World {
+  return takeOver(generateHistory(seed, DEFAULT_START.decade), clubId, {
+    tier: DEFAULT_START.tier,
+    traits: [],
+  });
+}
 
 async function savedRaw(page: Page) {
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
@@ -108,23 +120,13 @@ for (const viewport of [
   }) => {
     // A whole match watched, replayed and settled: 25–28 s alone since the theatre grew (T225).
     test.slow();
-    const founding = {
-      country: 'ENG' as const,
-      name: 'Haeram Athletic',
-      color: '#bf7956',
-      seed: `match-core-${viewport.width}`,
-      level: 'easy' as const,
-    };
+    const seed = `match-core-${viewport.width}`;
     await page.setViewportSize(viewport);
     await page.goto('/');
-    await page.getByText('고급 설정', { exact: true }).click();
-    await page.getByLabel('세계 생성 시드').fill(founding.seed);
-    await page.getByRole('button', { name: '클럽 창단' }).click();
-    await expect(page.getByTestId('club-hub')).toBeVisible();
-    // Founding sends the design draft made when the screen opened (→KIT-14), so the reference is
-    // founded with the identity the browser confirmed; the match facts use no identity draws.
-    const identity = clubOf((await decode(await savedRaw(page))).world).identity;
-    const reference = createWorld({ ...founding, identity });
+    await startCareer(page, { seed });
+    // The reference takes the same club over from the same seed and choices (→WORLD-13).
+    const clubId = (await decode(await savedRaw(page))).world.playerClub;
+    const reference = takenOver(seed, clubId);
     reference.settings!.responsibilities.sales = 'delegated';
     reference.settings!.responsibilities.recruitment = 'delegated';
     const first = advanceToNextMatch(reference)!;
@@ -211,10 +213,9 @@ for (const viewport of [
     const settled = await savedRaw(page);
     expect((await decode(settled)).world.ownMatches[0]).toEqual(reference.ownMatches[0]);
     // Preparation was skipped: the record wears the automatic selection, captured at settlement.
-    // The pre-match world is founded with the reference's own design, however that was founded.
-    const founded = createWorld({ ...founding, identity: clubOf(reference).identity });
+    const prematch = takenOver(seed, clubId);
     expect(reference.ownMatches[0].appearance).toEqual(
-      appearanceForFixture(founded, nextOwnFixture(founded)!),
+      appearanceForFixture(prematch, nextOwnFixture(prematch)!),
     );
     // The standing after the match shows once it ends, without opening its details (→WEB-50).
     await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toBeVisible();

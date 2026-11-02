@@ -113,7 +113,7 @@ for (const viewport of VIEWPORTS) {
       start.getByTestId('beta-mark'),
       versionLabel(),
     );
-    await expect(start.getByTestId('beta-mark')).toHaveText('v0.7 BETA');
+    await expect(start.getByTestId('beta-mark')).toHaveText('v0.8 BETA');
     await expectTargets([start.getByTestId('presentation-settings-trigger')]);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 

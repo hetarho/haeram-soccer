@@ -1,6 +1,7 @@
 import { createStore } from 'zustand/vanilla';
 import { useStore } from 'zustand';
 import type { Command, World } from '../../../../packages/contracts/src/types';
+import { careerEnded } from '../../../../packages/contracts/src/owner';
 import {
   currentDay,
   dayCountedFrom,
@@ -29,6 +30,14 @@ export const PACE_MS: Record<Pace, number> = { x1: 1000, x2: 500, x5: 200, x10: 
  * day is absorbed by the fast days before it (→WEB-18).
  */
 export const RUN_AHEAD_DAYS: Record<Pace, number> = { x1: 3, x2: 3, x5: 5, x10: 7 };
+/** Why the clock stopped for good (→OWNER-16, ECON-24): the club's or the owner's end. */
+function endedReason(w: Pick<World, 'bankrupt' | 'ended'>) {
+  return w.ended === 'owner'
+    ? '구단주가 파산했어요.'
+    : w.ended === 'fans'
+      ? '구단주가 퇴진했어요.'
+      : '구단이 파산했어요.';
+}
 /** How long the 경기 결과 알림 notice stays once our fixture's day is shown (→WEB-18). */
 export const RESULT_NOTICE_MS = 4000;
 /** Background play (→WEB-64): how far a page that slept or closed catches up on return. */
@@ -298,18 +307,17 @@ export class ProgressionController {
         // A clock this world left running resumes once the game is on screen (→WEB-64).
         this.armed = id ? this.recordToResume(id) : undefined;
       }
-      // A critical alert or bankruptcy stops the clock once its day is shown.
+      // A critical alert or the career's end stops the clock once its day is shown.
       if (
         (this.store.getState().running || this.draining) &&
         (state.error ||
           state.readonly ||
           state.view?.world.critical ||
-          state.view?.world.bankrupt ||
-          state.view?.world.bankrupt)
+          (state.view && careerEnded(state.view.world)))
       ) {
         this.stop(
-          state.view?.world.bankrupt
-            ? '구단이 파산했어요.'
+          state.view && careerEnded(state.view.world)
+            ? endedReason(state.view.world)
             : state.view?.world.critical
               ? '클럽 소식을 확인하면 계속할 수 있습니다.'
               : '진행을 멈췄습니다.',
@@ -459,7 +467,7 @@ export class ProgressionController {
         state.readonly ||
         state.error ||
         w.critical ||
-        w.bankrupt ||
+        careerEnded(w) ||
         daysUntilNextMatch(w) !== 1
       )
         return;
@@ -532,7 +540,7 @@ export class ProgressionController {
       state.readonly ||
       state.error ||
       w.critical ||
-      w.bankrupt ||
+      careerEnded(w) ||
       state.pendingActions
     )
       return;
@@ -562,7 +570,7 @@ export class ProgressionController {
         this.store.setState({
           running: false,
           matchEve: daysUntilNextMatch(world) === 1 ? nextOwnFixture(world)?.id : undefined,
-          reason: world.critical || (world.bankrupt ? '구단이 파산했어요.' : ''),
+          reason: world.critical || (careerEnded(world) ? endedReason(world) : ''),
         });
       }
     } finally {
@@ -663,8 +671,8 @@ export class ProgressionController {
       state.readonly ||
       state.error ||
       state.view?.world.critical ||
-      state.view?.world.bankrupt ||
-      !state.view
+      !state.view ||
+      careerEnded(state.view.world)
     )
       return;
     // Resuming at a match eve means playing that fixture through as a result.
@@ -804,7 +812,7 @@ export class ProgressionController {
       return;
     if (last?.stops) return;
     const head = last?.after ?? shown;
-    if (head.critical || head.bankrupt) return;
+    if (head.critical || careerEnded(head)) return;
     const depth = this.runAhead[this.store.getState().pace];
     if (this.ahead.length >= Math.max(depth, Date.now() >= this.due! ? 1 : 0)) return;
     // The day on screen may itself stop the clock: a start on a match eve.
@@ -872,10 +880,10 @@ export class ProgressionController {
   }
   /**
    * Whether a computed day stops the clock once shown: a new stopping event or pending decision,
-   * a critical alert, bankruptcy or a match eve that stops for observation.
+   * a critical alert, the career's end or a match eve that stops for observation.
    */
   private stopsAt(before: World, after: World) {
-    if (after.critical || after.bankrupt || freshEvent(before, after)) return true;
+    if (after.critical || careerEnded(after) || freshEvent(before, after)) return true;
     const eve = pendingMatchReport(after);
     return !!eve && eve.id !== this.passedMatch;
   }
@@ -911,7 +919,7 @@ export class ProgressionController {
    */
   private shown({ before, after }: Held, paced: boolean) {
     // The client state stops the clock for these (constructor).
-    if (after.critical || after.bankrupt) return;
+    if (after.critical || careerEnded(after)) return;
     const running = this.store.getState().running,
       fresh = freshEvent(before, after);
     if (fresh) {
@@ -950,7 +958,7 @@ export class ProgressionController {
       state.readonly ||
       state.error ||
       state.view.world.critical ||
-      state.view.world.bankrupt
+      careerEnded(state.view.world)
     )
       return;
     // Saving runs in the background (→SAVE-8): an unsaved revision never holds the next step.

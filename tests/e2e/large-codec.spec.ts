@@ -5,6 +5,7 @@ import { LOAD_CATALOG } from '../../packages/catalogs/src/index';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import { largeCodecWorld } from '../fixtures/large-codec';
 import type { CodecResult } from '../../apps/web/src/runtime/protocol';
+import { startCareer } from './start';
 test('large portable codec writes, loads and exports under production CSP', async ({
   page,
   request,
@@ -26,8 +27,7 @@ test('large portable codec writes, loads and exports under production CSP', asyn
     };
   });
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  await startCareer(page);
   const html = await request.get('/');
   const csp = html.headers()['content-security-policy'];
   expect(csp).toContain("script-src 'self'");

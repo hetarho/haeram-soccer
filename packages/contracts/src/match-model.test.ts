@@ -36,9 +36,8 @@ describe('match-model metadata (→SAVE-23)', () => {
     const career = { engine: CURRENT_ENGINE_VERSION, ownMatches: [oldRecord] };
     expect(() => assertMatchModelFormat(career)).not.toThrow();
     expect(activeMatchModel(career as Pick<World, 'matchModel'>)).toBeUndefined();
-    // A supported career, 0.7.0 or its rules-4.0.0 label, with or without the model, is never
-    // resettable legacy data.
-    for (const supported of [CURRENT_ENGINE_VERSION, '4.0.0']) {
+    // A supported career, with or without the model, is never resettable legacy data.
+    for (const supported of [CURRENT_ENGINE_VERSION]) {
       expect(LEGACY_ENGINE_VERSIONS).not.toContain(supported);
       expect(isEarlierEngine(supported)).toBe(false);
     }

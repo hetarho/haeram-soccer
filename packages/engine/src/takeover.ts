@@ -44,7 +44,9 @@ import {
 } from './owner-config';
 import { hasOwner } from './owner';
 import { DEFAULT_TICKET, foundWithPreset, presetById } from './presets';
-import { scaleBy } from './primitives';
+import { hash, scaleBy } from './primitives';
+import { currencyChange } from './books';
+import { trackingBoundary } from './npc-stats';
 import { defaultSettings } from './responsibilities';
 import { prepareSeason } from './season';
 import { openShortlistWindow } from './signings';
@@ -180,6 +182,9 @@ export function takeOver(
     cash = books && BigInt(books.cash) > 0n ? books.cash : '0',
     debt = books && BigInt(books.debt) > 0n ? books.debt : '0',
     last = books?.seasons.find((season) => season.year < year),
+    // Its last season's income in the money of the season taken over (→ECON-6): the turnover
+    // the first season's expenses and 팬 민심 read until the owner's own season closes.
+    lastIncome = last && (currencyChange(code, last.year, year)?.(last.income) ?? last.income),
     roster = squad(w, club).map((p) => structuredClone(p));
 
   w.playerClub = club.id;
@@ -218,7 +223,7 @@ export function takeOver(
   w.expense = '0';
   w.currency = currency(code, year).code;
   w.priceIndex = priceIndex(code, year).value;
-  w.operatingExpenses = takeoverExpenses(w, club, last?.income);
+  w.operatingExpenses = takeoverExpenses(w, club, lastIncome);
   w.stadium = stage.stadium;
   w.trainingGround = stage.trainingGround;
   w.academyFacility = stage.academyFacility;
@@ -245,10 +250,21 @@ export function takeOver(
     dividendShare: OWNER_DIVIDEND.start,
     fanMood: FAN_MOOD.start,
     ffpInjections: [],
-    takeover: { year, clubId: club.id, price, debt, fortune, currency: w.currency },
+    takeover: {
+      year,
+      clubId: club.id,
+      price,
+      debt,
+      fortune,
+      currency: w.currency,
+      ...(lastIncome !== undefined ? { lastIncome } : {}),
+    },
     seasonRecords: [],
   };
   w.owner = owner;
+  // The career is this owner's: the same seed and decade make the same world for any club, so the
+  // career's ID names the season, the club and the start (→SAVE-14's slots tell games apart).
+  w.id = `world:${hash(`${w.seed}:${year}:${club.id}:${choice.tier}:${choice.traits.join(',')}`)}`;
   if (BigInt(debt) > 0n) w.loan = takeoverLoan(debt);
   else delete w.loan;
   // The owner's era starts with the takeover (→HIST-5).
@@ -281,7 +297,19 @@ export function takeOver(
   foundWithPreset(w, preset);
   openShortlistWindow(w);
   activateMatchModel(w, release);
+  // The takeover is the career's founding moment (→OWNER-4, SAVE-23): a model the world before it
+  // ran since 1930 is tracked from today, as at a founding, and so is the manager's history.
+  if (w.matchModel) {
+    const trackedFrom = trackingBoundary(w);
+    w.matchModel = {
+      ...w.matchModel,
+      activated: { year, day: currentDay(w), revision: w.revision },
+      trackedFrom,
+      coverage: 'founding',
+    };
+    if (w.npcSeason) w.npcSeason = { ...w.npcSeason, trackedFrom };
+  }
   delete w.managerHistory;
-  ensureManagerHistory(w);
+  ensureManagerHistory(w, true);
   return w;
 }

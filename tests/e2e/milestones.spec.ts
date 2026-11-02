@@ -8,6 +8,7 @@ import { clubMilestones } from '../../packages/engine/src/goals';
 import type { World } from '../../packages/contracts/src/types';
 import { expectHomeBounds, settle } from './layout';
 import { ownLeagueProgress } from '../../apps/web/src/ui/league';
+import { startCareer } from './start';
 
 async function exportWorld(page: Page): Promise<World> {
   await dismissMatchReport(page);
@@ -33,14 +34,11 @@ for (const viewport of [
   test(`keeps a compact home with calendar progress and retained milestone facts at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
-    // Founding, three menu exports and a full observed match share this journey's budget.
+    // The takeover, three menu exports and a full observed match share this journey's budget.
     test.slow();
     await page.setViewportSize(viewport);
     await page.goto('/');
-    await page.getByText('고급 설정', { exact: true }).click();
-    await page.getByLabel('세계 생성 시드').fill(`milestone-ui-${viewport.width}`);
-    await page.getByRole('button', { name: '쉬움' }).click();
-    await page.getByRole('button', { name: '클럽 창단' }).click();
+    await startCareer(page, { seed: `milestone-ui-${viewport.width}` });
     const hub = page.getByTestId('club-hub');
     await expect(hub).toBeVisible();
     // Measured on arrival: delegating goes through the owner office, whose entrance near the
@@ -107,7 +105,9 @@ for (const viewport of [
     const initial = clubMilestones(before);
     // Seven milestones: 우리만의 선발 (a saved owner XI) left with owner lineups (T648).
     expect(initial.total).toBe(7);
-    expect(initial.completed).toBe(0);
+    // A bought club brings its stadium and its thousand supporters; its first match is still ahead.
+    expect(initial.completed).toBe(2);
+    expect(initial.next?.id).toBe('debut');
     expect(initial.next).toBeDefined();
     expect(before.ownMatches).toHaveLength(0);
     const first = initial.next!;

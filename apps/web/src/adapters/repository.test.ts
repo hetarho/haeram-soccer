@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { CURRENT_ENGINE_VERSION } from '../../../../packages/contracts/src/versions';
 import { PreviousUnavailableError, writeCheckpoint } from './checkpointWriter';
 import {
   CHECKPOINT_LIMIT,
@@ -53,7 +54,7 @@ class MemoryPrevious implements PreviousStore {
 function checkpoint(generation: number, size = 100, worldId = 'w1') {
   const envelope: Envelope = {
     schema: 1,
-    engine: '0.7.0',
+    engine: CURRENT_ENGINE_VERSION,
     catalog: 'c',
     catalogHash: 'h',
     worldId,

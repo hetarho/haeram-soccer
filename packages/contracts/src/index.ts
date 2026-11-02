@@ -20,6 +20,7 @@ export * from './types';
 export * from './recent-results';
 export { ATTRIBUTES, LINES, PLAY_TRAITS, POSITIONS, ROLE_IDS } from './player';
 export {
+  careerEnded,
   DIVIDEND_SHARES,
   OWNER_TRAIT_IDS,
   OWNER_TRAIT_LIMIT,

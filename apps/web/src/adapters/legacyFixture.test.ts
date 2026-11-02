@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
+  CURRENT_ENGINE_VERSION,
   envelopeEngine,
   SaveCompatibilityError,
 } from '../../../../packages/contracts/src/versions';
@@ -29,12 +30,12 @@ describe('legacy rules 3.0.0 fixture', () => {
     expect(packed.format).toBe('compact1');
     expect(packed.world).toMatchObject({ id: envelope.worldId, engine: '3.0.0' });
   });
-  it('is recognized as an earlier career and refused by game version 0.7.0', async () => {
+  it('is recognized as an earlier career and refused by the current game version', async () => {
     expect(await recognizedLegacy(raw)).toBe(true);
     const refusal = decode(raw);
     await expect(refusal).rejects.toBeInstanceOf(SaveCompatibilityError);
     await expect(refusal).rejects.toThrow(
-      '이 저장은 규칙 3.0.0 커리어입니다 — 게임 버전 0.7.0 커리어만',
+      `이 저장은 규칙 3.0.0 커리어입니다 — 게임 버전 ${CURRENT_ENGINE_VERSION} 커리어만`,
     );
   });
 });

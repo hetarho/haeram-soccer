@@ -2,15 +2,7 @@ import { openClubhouse, openClubRecords } from './competition-navigation';
 import { expect, type Locator, type Page, type TestInfo } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode } from '../../apps/web/src/adapters/persistence';
-import { SHIRT_PATTERN_LABELS } from '../../apps/web/src/ui/kitPainting';
-import {
-  KIT_ROLES,
-  type ClubIdentity,
-  type DesignStudio,
-  type KitRole,
-  type KitParts,
-  type GoalkeeperKit,
-} from '../../packages/contracts/src/identity';
+import type { DesignStudio, KitRole } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
 import { DESIGNERS } from '../../packages/engine/src/design-fees';
 import type { CanvasImage } from '../fixtures/figure-evidence';
@@ -18,6 +10,7 @@ import { continueSlot } from './slots';
 import { watchNext } from './watch';
 import { configureResponsibilities, reportKit } from './events';
 import { aroundOffice, openOfficeArea, outsideOffice } from './office';
+import { startCareer, startFlow, type CareerStart } from './start';
 
 /**
  * Browser helpers shared by the club-identity journeys (→KIT, →SAVE-3/20/21/22). Evidence is what
@@ -281,29 +274,12 @@ export const refuseNextDesignCommand = (page: Page) =>
     (window as ProbeWindow).identityProbe.stale = 1;
   });
 
-/** Fills the founding form; `design` runs inside the open 꾸미기 editor before 클럽 창단. */
-export async function foundHere(
-  page: Page,
-  name: string,
-  seed: string,
-  design?: (editor: Locator) => Promise<void>,
-) {
-  const founding = page.getByTestId('club-founding');
-  await founding.getByLabel('클럽 이름').fill(name);
-  await founding.getByText('고급 설정', { exact: true }).click();
-  await founding.getByLabel('세계 생성 시드').fill(seed);
-  if (design) {
-    await founding.getByRole('button', { name: '구단 디자인 꾸미기', exact: true }).click();
-    const editor = page.getByRole('dialog', { name: '구단 디자인' });
-    await expect(editor.getByRole('group', { name: '색상', exact: true })).toBeVisible();
-    await design(editor);
-    await editor.getByRole('button', { name: '이 디자인 사용', exact: true }).click();
-    await expect(editor).toHaveCount(0);
-  }
-  await founding.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-}
+/**
+ * Takes a club over in the start flow on screen (→WEB-15): the seed's first affordable club, or
+ * the one `start` names. Resolves with the club's name once its home is on screen and saved.
+ */
+export const takeOverHere = (page: Page, seed: string, start: CareerStart = {}) =>
+  startCareer(page, { ...start, seed });
 export async function openSlots(page: Page) {
   await outsideOffice(page);
   const menu = await openMenu(page);
@@ -318,75 +294,12 @@ export async function newGameIn(page: Page, slot: number) {
     .getByRole('listitem', { name: `슬롯 ${slot} · 빈 슬롯` })
     .getByRole('button', { name: '새 게임' })
     .click();
-  await expect(page.getByTestId('club-founding')).toContainText(`슬롯 ${slot} · 새 게임`);
+  await expect(startFlow(page)).toContainText(`슬롯 ${slot} · 새 게임`);
 }
 export async function continueGame(page: Page, slot: number) {
   await openSlots(page);
   await continueSlot(page, slot);
   await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
-}
-
-export const colourCode = (scope: Locator, label: string) =>
-  scope.getByLabel(label, { exact: true });
-const roleButton = (editor: Locator, role: KitRole) =>
-  editor
-    .getByRole('group', { name: '편집할 유니폼', exact: true })
-    .getByRole('button', { name: `${KIT_LABEL[role]} 유니폼`, exact: true });
-/** Selects the shirt whose pattern is being edited. */
-export async function editShirt(editor: Locator, role: KitRole) {
-  await roleButton(editor, role).click();
-  return editor.getByRole('group', { name: '색상', exact: true });
-}
-/** Sets a kit's freely chosen parts through the editor's colour controls. */
-export async function editKitParts(editor: Locator, role: KitRole, parts: KitParts) {
-  await editShirt(editor, role);
-  if (parts.shorts !== undefined)
-    await colourCode(editor, `${KIT_LABEL[role]} 하의 색 코드`).fill(parts.shorts);
-  if (parts.socks !== undefined)
-    await colourCode(editor, `${KIT_LABEL[role]} 양말 색 코드`).fill(parts.socks);
-}
-/** Opens the goalkeeper's design without saving an automatic draft. */
-export async function goalkeeperTab(editor: Locator) {
-  const button = editor
-    .getByRole('group', { name: '편집할 유니폼', exact: true })
-    .getByRole('button', { name: '골키퍼 유니폼', exact: true });
-  await button.click();
-  await expect(button).toHaveAttribute('aria-pressed', 'true');
-}
-/** Sets the complete designed keeper, including every visible shirt region and gloves. */
-export async function editGoalkeeper(editor: Locator, kit: GoalkeeperKit) {
-  await goalkeeperTab(editor);
-  await editor
-    .getByRole('group', { name: '골키퍼 유니폼 무늬', exact: true })
-    .getByRole('button', { name: SHIRT_PATTERN_LABELS[kit.shirt.pattern], exact: true })
-    .click();
-  for (const [label, colour] of [
-    ['상의', kit.shirt.primary],
-    ['보조색', kit.shirt.secondary],
-    ['테두리', kit.shirt.trim],
-    ['하의', kit.shorts],
-    ['양말', kit.socks],
-    ['장갑', kit.gloves],
-  ])
-    if (colour !== undefined) await colourCode(editor, `골키퍼 ${label} 색 코드`).fill(colour);
-}
-/** Set the three named colours, ready-made crest and shirt patterns through real controls. */
-export async function designInEditor(editor: Locator, design: ClubIdentity, preset: string) {
-  for (const role of KIT_ROLES)
-    await colourCode(editor, `${KIT_LABEL[role]} 색 코드`).fill(design.kits[role].primary);
-  await editor
-    .getByRole('group', { name: '기본 엠블럼', exact: true })
-    .getByRole('button', { name: preset, exact: true })
-    .click();
-  for (const role of KIT_ROLES) {
-    await editShirt(editor, role);
-    await editor
-      .getByRole('group', { name: `${KIT_LABEL[role]} 유니폼 무늬`, exact: true })
-      .getByRole('button', { name: SHIRT_PATTERN_LABELS[design.kits[role].pattern], exact: true })
-      .click();
-    if (design.parts?.[role]) await editKitParts(editor, role, design.parts[role]);
-  }
-  if (design.goalkeeper) await editGoalkeeper(editor, design.goalkeeper);
 }
 
 /** 구단 운영 › 구단 디자인: the applied design, or the drafts a commission delivered. */

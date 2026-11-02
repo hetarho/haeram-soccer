@@ -4,6 +4,7 @@ import { expect, test, type Locator } from '@playwright/test';
 import { expectCompactStandings, expectHomeBounds, horizontalOverflow, settle } from './layout';
 import { textContrast } from './contrast';
 import { leaveOffice, openOfficeArea } from './office';
+import { startCareer } from './start';
 
 async function surface(locator: Locator) {
   return locator.evaluate((element) => {
@@ -29,7 +30,7 @@ for (const themeId of ['matchday-print', 'sticker-club']) {
       );
     }, themeId);
     await page.goto('/');
-    await page.getByRole('button', { name: '클럽 창단' }).click();
+    await startCareer(page);
     await page.getByRole('button', { name: /진행 방식 변경/ }).click();
     await page.getByRole('button', { name: '수동 모드로 변경', exact: true }).click();
     const next = page.getByRole('button', { name: '다음 이벤트', exact: true });
@@ -64,8 +65,7 @@ for (const themeId of ['standard', 'pixel']) {
       );
     }, themeId);
     await page.goto('/');
-    await page.getByRole('button', { name: '클럽 창단' }).click();
-    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await startCareer(page);
     await expect(
       page.getByTestId('club-hub').getByRole('button', { name: '게임 슬롯', exact: true }),
     ).toHaveCount(0);

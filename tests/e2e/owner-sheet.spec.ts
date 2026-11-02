@@ -5,11 +5,12 @@ import { withOwner } from '../../packages/engine/src/testing';
 import type { World } from '../../packages/contracts/src/types';
 import { acknowledgeEvents } from './events';
 import { horizontalOverflow, settle } from './layout';
+import { startFlow } from './start';
 
 /** Imports a career that has an owner beside its club (→WEB-114) and opens it. */
 async function importCareer(page: Page, w: World) {
   await page.goto('/');
-  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
+  await expect(startFlow(page)).toBeVisible();
   await page
     .locator('input[type=file]')
     .last()

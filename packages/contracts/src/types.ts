@@ -1120,7 +1120,7 @@ export interface TransferRecords {
 
 export interface World {
   schema: 1;
-  /** The game version whose rules it plays (→SAVE-10); `4.0.0` labels the line 0.7.0 continues. */
+  /** The game version whose rules it plays (→SAVE-10, SAVE-26). */
   engine: string;
   catalog: string;
   catalogHash: string;

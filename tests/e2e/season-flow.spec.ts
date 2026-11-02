@@ -4,21 +4,19 @@ import { configureResponsibilities, dismissMatchReport } from './events';
 import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
 import { horizontalOverflow } from './layout';
+import { startCareer } from './start';
 
 test('advances real days at each speed, stops and restores the saved calendar', async ({
   page,
 }) => {
   // The paces are measured against match eves (level 2); this seed brings no offer before them.
   await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill('season-flow');
-  await page.getByRole('button', { name: '쉬움' }).click();
-  await page.getByRole('button', { name: '클럽 창단' }).click();
+  const club = await startCareer(page, { seed: 'season-flow' });
   await configureResponsibilities(page, {
     responsibilities: { recruitment: 'delegated', sales: 'delegated' },
   });
   const date = page.getByTestId('game-date');
-  await expect(date).toHaveText('1950.08.01');
+  await expect(date).toHaveText('1930.08.01');
   const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
   const play = () => page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   // The daily pace is chosen and play starts the clock. The owner's stop first shows the days
@@ -27,7 +25,7 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   // covered by the controller's fake-clock tests.
   await chooseOption(pace, 'x1');
   await play();
-  await expect(date).not.toHaveText('1950.08.01');
+  await expect(date).not.toHaveText('1930.08.01');
   await page.getByRole('button', { name: '자동 진행 정지' }).click();
   await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
   const stopped = await date.innerText();
@@ -43,14 +41,14 @@ test('advances real days at each speed, stops and restores the saved calendar', 
   await play();
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
-  await expect(date).toHaveText('1950.08.07');
+  await expect(date).toHaveText('1930.08.07');
   await expect(page.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
   await expect(page.getByTestId('game-round')).toHaveText('0');
   // Playing the match through as a result keeps going until the following match eve.
   await eve.getByRole('button', { name: '결과만 보고 계속', exact: true }).click();
   await expect(page.getByTestId('game-round')).toHaveText('1');
   await expect(eve).toContainText('내일 경기');
-  await expect(date).not.toHaveText('1950.08.07');
+  await expect(date).not.toHaveText('1930.08.07');
   await expect(page.getByRole('button', { name: '자동 진행 시작' })).toBeVisible();
   await dismissMatchReport(page);
   await openLeague(page);
@@ -63,17 +61,16 @@ test('advances real days at each speed, stops and restores the saved calendar', 
     .getByRole('button', { name: '순위 추이', exact: true })
     .click();
   await expect(page.getByRole('heading', { name: '시즌 순위 추이' })).toBeVisible();
-  await expect(page.getByRole('tabpanel', { name: '팀 기록', exact: true })).toContainText(
-    'Haeram Athletic',
-  );
+  await expect(page.getByRole('tabpanel', { name: '팀 기록', exact: true })).toContainText(club);
   await page.getByRole('tab', { name: '일정·결과', exact: true }).click();
   await expect(page.getByRole('heading', { name: '같은 라운드, 다른 경기' })).toBeVisible();
   await chooseOption(page.getByRole('combobox', { name: '리그 라운드 선택', exact: true }), {
     index: 0,
   });
+  // Our league, the English top flight, plays ten games a round; the German one nine.
   await expect(
     page.getByRole('region', { name: '리그 라운드 결과' }).getByRole('listitem'),
-  ).toHaveCount(8);
+  ).toHaveCount(10);
   await expect(
     page.getByRole('region', { name: '리그 라운드 결과' }).getByLabel('경기 예정'),
   ).toHaveCount(0);
@@ -117,9 +114,7 @@ test('shows independent player decisions and post-match league context', async (
   // Two watched matches on the released model; CI Firefox ran past 30 s twice (40262705063).
   test.slow();
   await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill('motion-observation');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await startCareer(page, { seed: 'motion-observation' });
   // The first match's injury opens a director–manager mediation; the staff settle it here, so
   // the next watch is not held for an owner decision this journey is not about.
   await configureResponsibilities(page, { responsibilities: { recruitment: 'delegated' } });

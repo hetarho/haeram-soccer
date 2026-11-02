@@ -10,9 +10,10 @@ import { configureResponsibilities } from './events';
 import { MANAGER_GONE } from '../../packages/engine/src/operations';
 import { openSaveMenu } from './save-menu';
 import { committedRaw, idbGet, idbPut } from './club-identity-helpers';
+import { startCareer, startFlow } from './start';
 const found = async (page: import('@playwright/test').Page) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await startCareer(page);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r0');
 };
 /** The world revision the save status names. */
@@ -30,7 +31,7 @@ const advanceRound = async (page: import('@playwright/test').Page) => {
   return revision;
 };
 test('one writer, live read-only updates and ownership after reload', async ({ page, context }) => {
-  // A founding, a second tab, a round and a reload: Firefox CI 40077037075 ran past 30 s twice.
+  // A takeover, a second tab, a round and a reload: Firefox CI 40077037075 ran past 30 s twice.
   test.slow();
   await found(page);
   const second = await context.newPage();
@@ -115,7 +116,7 @@ test('recovers prior checkpoint after active corruption without clearing another
 test('quota failure preserves disk save, exports actual memory progress and retries', async ({
   page,
 }) => {
-  // A founding, a round, an export and a retry: 42 s in a local Firefox run against 30 s.
+  // A takeover, a round, an export and a retry: 42 s in a local Firefox run against 30 s.
   test.slow();
   await page.addInitScript(() => {
     const original = Storage.prototype.setItem;
@@ -273,20 +274,19 @@ test('a new game goes into another slot, both careers survive switching and back
     .getByRole('listitem', { name: '슬롯 2 · 빈 슬롯' })
     .getByRole('button', { name: '새 게임' })
     .click();
-  await expect(page.getByTestId('club-founding')).toContainText('슬롯 2 · 새 게임');
-  await page.getByLabel('클럽 이름').fill('New Fictional Club');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  // A new game builds and saves a whole career before the HUD shows it; a loaded WebKit worker
-  // can take longer than 15 s.
-  await expect(page.getByText('New Fictional Club', { exact: true }).first()).toBeVisible({
-    timeout: 30000,
+  await expect(startFlow(page)).toContainText('슬롯 2 · 새 게임');
+  // Another world and a German club, so nothing of it shows in the first career's league.
+  // A new game builds and saves a whole career before the HUD shows it.
+  const club = await startCareer(page, {
+    seed: 'recovery-second-slot',
+    country: 'GER',
+    division: 0,
   });
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await expect(page.getByText(club, { exact: true }).first()).toBeVisible();
   await expect(page).toHaveURL(/\/journal$/);
   // A reload of a tab in a game continues it.
   await page.reload();
-  await expect(page.getByText('New Fictional Club', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText(club, { exact: true }).first()).toBeVisible();
   // The first career waited in its slot and comes back intact.
   await openLeague(page);
   await expect(page).toHaveURL(/\/season\?competition=league/);
@@ -302,14 +302,12 @@ test('a new game goes into another slot, both careers survive switching and back
   await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
   await expect(page).toHaveURL(/\/journal$/);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료 · r0');
-  await expect(page.getByText('New Fictional Club', { exact: true })).toHaveCount(0);
+  await expect(page.getByText(club, { exact: true })).toHaveCount(0);
   // A fresh window opens on the slot screen.
   const second = await page.context().newPage();
   await second.goto('/');
   await expect(second.getByTestId('game-slots')).toBeVisible();
-  await expect(second.getByRole('listitem', { name: '슬롯 2' })).toContainText(
-    'New Fictional Club',
-  );
+  await expect(second.getByRole('listitem', { name: '슬롯 2' })).toContainText(club);
   await second.close();
 });
 test('deleting the game in play stays on the slot screen, even with every slot empty', async ({
@@ -331,11 +329,11 @@ test('deleting the game in play stays on the slot screen, even with every slot e
   await reloaded;
   const empty = slotScreen.getByRole('listitem', { name: '슬롯 1 · 빈 슬롯' });
   await expect(empty).toBeVisible();
-  await expect(page.getByTestId('club-founding')).toHaveCount(0);
+  await expect(startFlow(page)).toHaveCount(0);
   await empty.getByRole('button', { name: '새 게임' }).click();
-  await expect(page.getByTestId('club-founding')).toContainText('슬롯 1 · 새 게임');
+  await expect(startFlow(page)).toContainText('슬롯 1 · 새 게임');
 });
-test('founding beside a parked game shows none of its club, cash or bands', async ({ page }) => {
+test('a new game beside a parked game shows none of its club, cash or bands', async ({ page }) => {
   const fixture = createWorld({
     country: 'ENG',
     name: 'Parked Crisis',
@@ -347,7 +345,7 @@ test('founding beside a parked game shows none of its club, cash or bands', asyn
   fixture.cash = '-1';
   fixture.critical = MANAGER_GONE;
   await page.goto('/');
-  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
+  await expect(startFlow(page)).toBeVisible();
   await page
     .locator('input[type=file]')
     .last()
@@ -366,8 +364,8 @@ test('founding beside a parked game shows none of its club, cash or bands', asyn
     .getByRole('listitem', { name: '슬롯 2 · 빈 슬롯' })
     .getByRole('button', { name: '새 게임' })
     .click();
-  await expect(page.getByTestId('club-founding')).toContainText('슬롯 2 · 새 게임');
-  await expect(page.getByTestId('calendar')).toHaveText('1950 · A NEW BEGINNING');
+  await expect(startFlow(page)).toContainText('슬롯 2 · 새 게임');
+  await expect(page.getByTestId('calendar')).toHaveText('1930 · A NEW OWNER');
   await expect(page.getByTestId('hud-cash')).toHaveCount(0);
   await expect(page.getByText('Parked Crisis')).toHaveCount(0);
   await expect(page.getByTestId('save-status')).toHaveCount(0);

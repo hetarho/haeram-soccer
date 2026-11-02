@@ -40,6 +40,14 @@ import {
   type MatchModelRelease,
 } from '../../../../packages/engine/src/index';
 import { managerHistoryPage } from '../../../../packages/engine/src/manager-achievements';
+import { generateHistory, HISTORY_START } from '../../../../packages/engine/src/history';
+import { seasonAfter, seasonFrom } from '../../../../packages/engine/src/wartime';
+import { takeOver } from '../../../../packages/engine/src/takeover';
+import { clubListings } from '../../../../packages/engine/src/listing';
+import { tierFortune } from '../../../../packages/engine/src/club-value';
+import { careerEnded, ENDED_MESSAGE } from '../../../../packages/engine/src/owner';
+import type { StartChoice, TakeoverDecade } from '../../../../packages/contracts/src/owner';
+import { clubSheetFacts } from './clubSheet';
 import type {
   ManagerHistorySeason,
   ManagerHistorySource,
@@ -246,6 +254,13 @@ function managerHistoryKey(w: World) {
     provisionalPlace(w) ?? 0,
   ].join(':');
 }
+/** Seasons the world plays before a takeover in `decade`, the war's left out (→WORLD-13/14). */
+function seasonsBefore(decade: TakeoverDecade) {
+  let seasons = 0;
+  const first = seasonFrom(decade);
+  for (let year: number = HISTORY_START; year < first; year = seasonAfter(year)) seasons++;
+  return seasons;
+}
 const failure = (input: unknown, request: Request | undefined, error: unknown) => ({
   requestId: request?.requestId ?? ((input as { requestId?: string })?.requestId || 'invalid'),
   ok: false,
@@ -270,6 +285,12 @@ export class Host {
   helpers?: HelperPool;
   /** An own match day waiting for its helpers: the world is mid-day, so reads wait for it. */
   private round?: Promise<void>;
+  /**
+   * A new game's world, generated to the chosen decade and nobody's yet (→WORLD-13): it holds no
+   * own club, so it is neither validated, published nor saved until one of its clubs is taken
+   * over (→ECON-38), whose world is the first checkpoint.
+   */
+  private start?: { world: World; choice: StartChoice };
   /** Whether founding and writer activation record the full match model; only tests set it. */
   private release: MatchModelRelease;
   constructor(
@@ -327,7 +348,8 @@ export class Host {
       type === 'full-stats' ||
       type === 'club-records' ||
       type === 'archive' ||
-      type === 'manager-history'
+      type === 'manager-history' ||
+      type === 'club-sheet'
     )
       return this.round ? this.afterRound(input) : Promise.resolve(this.read(input));
     const task = this.queue.then(() => this.execute(input));
@@ -483,6 +505,12 @@ export class Host {
         w = this.world;
       if (this.session && this.session !== request.session)
         throw new Error('이전 세션의 요청입니다.');
+      if (body.type === 'club-sheet') {
+        if (!this.start) throw new Error('먼저 세계를 생성하세요.');
+        const sheet = clubSheetFacts(this.start.world, body.clubId);
+        if (!sheet) throw new Error('인수할 수 없는 구단입니다.');
+        return { requestId: request.requestId, ok: true, clubSheet: sheet };
+      }
       if (!w) throw new Error('먼저 클럽을 창단하세요.');
       if (body.type === 'world-market')
         return {
@@ -602,6 +630,7 @@ export class Host {
         envelope: Reply['envelope'],
         candidate: World | undefined,
         worldMetadata: Reply['worldMetadata'],
+        start: Reply['start'],
         upgraded = false;
       let changed = false;
       this.cancelled = false;
@@ -635,12 +664,45 @@ export class Host {
           throw new Error('현재 세계가 있습니다. 파일 내보내기 후 새 게임을 시작하세요.');
         this.world = createWorld(r.body.input, this.release);
         changed = true;
+      } else if (r.body.type === 'generate') {
+        if (this.world && !r.body.replace)
+          throw new Error('현재 세계가 있습니다. 파일 내보내기 후 새 게임을 시작하세요.');
+        const { choice } = r.body,
+          total = seasonsBefore(choice.decade);
+        // One generation at a time; a new one drops the world an earlier one left untaken.
+        this.start = undefined;
+        let played = 0;
+        const world = generateHistory(choice.seed, choice.decade, (season) => {
+          played++;
+          this.progress({ requestId: r.requestId, ok: true, progress: played / total, season });
+        });
+        this.start = { world, choice };
+        start = {
+          listings: clubListings(world, choice.tier),
+          fortune: tierFortune(world, choice.tier),
+        };
+      } else if (r.body.type === 'take-over') {
+        if (!this.start) throw new Error('먼저 세계를 생성하세요.');
+        if (this.world && !r.body.replace)
+          throw new Error('현재 세계가 있습니다. 파일 내보내기 후 새 게임을 시작하세요.');
+        // `takeOver` refuses before it changes anything, so a refused club leaves the list open.
+        this.world = takeOver(
+          this.start.world,
+          r.body.clubId,
+          this.start.choice,
+          r.body.preset,
+          this.release,
+        );
+        this.start = undefined;
+        changed = true;
       } else {
         const w = this.world;
         if (!w) throw new Error('먼저 클럽을 창단하세요.');
         if (r.body.type === 'command') {
           const cmd = r.body.command;
-          if (w.bankrupt && cmd.type !== 'read-inbox') throw new Error(BANKRUPT_MESSAGE);
+          // Only the inbox can be read once the career has ended (→OWNER-16, ECON-24).
+          if (careerEnded(w) && cmd.type !== 'read-inbox')
+            throw new Error(w.bankrupt ? BANKRUPT_MESSAGE : ENDED_MESSAGE);
           if (cmd.type === 'next-event') {
             let days = 0;
             for (const day of nextEventDays(w)) {
@@ -664,7 +726,7 @@ export class Host {
               if (p?.frames.length) playback = p;
               if (
                 w.critical ||
-                w.bankrupt ||
+                careerEnded(w) ||
                 (cmd.type === 'next-match' && w.ownMatches.length > matchCount)
               )
                 break;
@@ -698,7 +760,7 @@ export class Host {
               }
               const p = advanceRound(w, undefined, cmd.type !== 'season');
               if (p?.frames.length) playback = p;
-              if (w.bankrupt) break;
+              if (careerEnded(w)) break;
               if (n % 5 === 0) {
                 this.progress({
                   requestId: r.requestId,
@@ -709,7 +771,7 @@ export class Host {
               }
               if (w.critical) break;
             }
-            if (cmd.type === 'season' && w.round === 46 && !w.bankrupt) {
+            if (cmd.type === 'season' && w.round === 46 && !careerEnded(w)) {
               closeSeason(w);
               w.revision++;
             }
@@ -733,6 +795,7 @@ export class Host {
         envelope,
         candidate,
         worldMetadata,
+        start,
         cancelled: this.cancelled,
         upgraded: upgraded || undefined,
       };

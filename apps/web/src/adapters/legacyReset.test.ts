@@ -209,8 +209,6 @@ describe('bounded writer legacy reset', () => {
 it('does not create device metadata while preserving current, future or unclassified corrupt data', async () => {
   for (const raw of [
     await saved(CURRENT_ENGINE_VERSION),
-    // The rules-4.0.0 label of the current line is supported, never legacy (→SAVE-10).
-    await saved('4.0.0'),
     await saved('9.0.0'),
     JSON.stringify({ ...JSON.parse(await saved('2.0.0')), checksum: '0'.repeat(64) }),
   ]) {
@@ -268,6 +266,38 @@ it('unknown envelope never grants legacy reset permission', async () => {
     expect(await resetLegacy(storage, parked, () => true)).toBe(0);
     expect(storage.data).toEqual(before);
     expect(await parked.get('parked')).toBe(raw);
+  }
+});
+
+it('clears a founded rules-4.0.0-line career in its match-model and manager-history containers (→SAVE-26)', async () => {
+  // A 0.7.0 career and one still labelled 4.0.0, as they were written: the full match model and
+  // the managers' history, in the containers only that line wrote among earlier rules.
+  const founded = simulatedWorld({
+    country: 'ENG',
+    name: 'Founded',
+    color: '#123456',
+    seed: 'rules-four',
+    level: 'easy',
+  });
+  for (const engine of ['0.7.0', '4.0.0']) {
+    const raw = await encode({ ...structuredClone(founded), engine });
+    expect(JSON.parse(raw).schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
+    expect(await recognizedLegacy(raw)).toBe(true);
+    const storage = new Memory(),
+      parked = new Parked(),
+      index = new GameIndexStore(storage);
+    storage.setItem(ACTIVE_SAVE_KEYS[1], raw);
+    storage.setItem(ACTIVE_SAVE_KEYS[0], JSON.stringify({ slot: 0 }));
+    index.write({
+      owner: { kind: 'device', id: 'owner' },
+      active: 0,
+      slots: [entry('played', engine), entry('kept', engine), null],
+    });
+    await parked.put('kept', raw);
+    expect(await resetLegacy(storage, parked, () => true)).toBe(2);
+    expect(ACTIVE_SAVE_KEYS.map((key) => storage.getItem(key))).toEqual([null, null, null]);
+    expect(index.read().slots).toEqual([null, null, null]);
+    expect(await parked.get('kept')).toBeUndefined();
   }
 });
 

@@ -4,7 +4,9 @@
  * books every club keeps (→ECON-36) and what the start chooses and lists (→WEB-2, ECON-37).
  * Money is decimal-string minor units (→ECON-1).
  */
-import type { CareerDate, CountryCode } from './types';
+import type { CareerDate, CountryCode, World } from './types';
+import type { CrestDesign } from './identity';
+import type { Position } from './player';
 
 /** The six wealth tiers, richest first (→OWNER-3). */
 export const WEALTH_TIER_IDS = [
@@ -41,6 +43,14 @@ export const TAKEOVER_DECADES = [1930, 1940, 1950, 1960, 1970, 1980, 1990, 2000]
 export type TakeoverDecade = (typeof TAKEOVER_DECADES)[number];
 /** What ended a career (→OWNER-16): the club's bankruptcy, the owner's, or 구단주 퇴진. */
 export type EndCause = 'club' | 'owner' | 'fans';
+/**
+ * Whether the career is over (→OWNER-16, ECON-24): the club's bankruptcy, the owner's or 구단주
+ * 퇴진. Nothing advances after it and only the inbox can be read; the engine, the worker and the
+ * UI all read this one predicate.
+ */
+export function careerEnded(w: Pick<World, 'bankrupt' | 'ended'>) {
+  return w.bankrupt !== undefined || w.ended !== undefined;
+}
 
 /** One owner season at its close (→OWNER-17), in the money of that season. */
 export interface OwnerSeasonRecord {
@@ -73,6 +83,12 @@ export interface TakeoverFacts {
   fortune: string;
   /** The club's currency code at the takeover. */
   currency: string;
+  /**
+   * The club's income in its last season before the takeover (→ECON-36), carried into the
+   * takeover season's money: the turnover 팬 민심 measures an injection by until the owner's
+   * first season closes (→OWNER-12). Absent for a club that kept no books.
+   */
+  lastIncome?: string;
 }
 /** The owner (→OWNER): who he is, his money and his standing with the supporters. */
 export interface OwnerState {
@@ -164,4 +180,23 @@ export interface ClubListing {
   strength: number;
   /** Whether the chosen tier's fortune pays its price. */
   affordable: boolean;
+}
+/**
+ * What a club's sheet opens before buying (→WEB-15): its squad, manager, stadium and history.
+ * The worker reads it from the generated world (runtime `clubSheetFacts`); the list's own numbers
+ * stay on the listing.
+ */
+export interface ClubSheetFacts {
+  crest?: CrestDesign;
+  squad: { id: string; name: string; position: Position; age: number; ovr: number }[];
+  manager?: { name: string; age: number; rating: number; note?: string };
+  stadium: { name?: string; seats: number };
+  history: {
+    /** Honours won before the takeover. */
+    league: number;
+    cup: number;
+    europe: number;
+    /** The last seasons' finishes, newest first. */
+    seasons: { year: number; division: number; place: number }[];
+  };
 }

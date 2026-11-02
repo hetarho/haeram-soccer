@@ -13,14 +13,12 @@ import { horizontalOverflow } from './layout';
 import { openSaveMenu } from './save-menu';
 import { leaveOffice, openOfficeArea } from './office';
 import { matchDetails } from './watch';
+import { fundClub, startCareer } from './start';
 test('operates a club, reads a season and exports/imports the actual save', async ({ page }) => {
   // Simulates a full season with staff, academy and market days; slow CI browsers need longer.
   test.slow();
   await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill('ui-management');
-  await page.getByRole('button', { name: '쉬움' }).click();
-  await page.getByRole('button', { name: '클럽 창단' }).click();
+  const club = await startCareer(page, { seed: 'ui-management' });
   await openPersonnel(page, 'players');
   // First-team work starts on the roster; the manager and his staff have their own club section,
   // and the manager picks the tactic (→WEB-43).
@@ -31,12 +29,12 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await openPersonnel(page, 'players');
   await expect(page.getByRole('button', { name: '감독에게 제안하기' })).toHaveCount(0);
   await openOfficeArea(page, '후원');
-  // A 1950 club has only the local slot open; signing it replaces the offers with the contract.
+  // A 1930 club has only the local slot open; signing it replaces the offers with the contract.
   const localSponsor = page.getByTestId('sponsor-slot-local');
   await localSponsor.getByRole('button', { name: '지역 후원 계약', exact: true }).first().click();
   await expect(localSponsor.getByTestId('sponsor-contract-local')).toBeVisible();
   await expect(page.getByRole('button', { name: '지역 후원 계약', exact: true })).toHaveCount(0);
-  // Campaigns are no more: the club spends on the town or abroad by the rows it was founded with,
+  // Campaigns are no more: the club spends on the town or abroad by the rows its direction set,
   // read in 재정·투자 (→ECON-16, WEB-14).
   await openDirectionInForce(page);
   const global = page
@@ -65,13 +63,13 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await expect(page.getByText('선수단 21/40', { exact: true })).toBeVisible();
   await openClubhouse(page);
   await finishSeason(page);
-  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1951');
+  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1931');
   await expect(page.getByTestId('game-round')).toHaveText('0');
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   // A closed season no longer interrupts: its review waits in the league's season list.
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog', { name: '시즌 진행 도구' })).toHaveCount(0);
-  await openLeague(page, 1950);
+  await openLeague(page, 1930);
   await openSeasonReview(page);
   await expect(page.getByTestId('season-move')).toBeVisible();
   await page.goBack();
@@ -80,24 +78,24 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
     .getByRole('tablist', { name: '지난 시즌 보기' })
     .getByRole('tab', { name: '순위표', exact: true })
     .click();
-  await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('Haeram');
+  await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText(club);
   // Any league's final table that season comes from the archive too.
   await chooseOption(
     page.getByRole('group', { name: '리그 선택' }).getByRole('combobox', { name: '국가' }),
     'GER',
   );
   const german = page.getByRole('region', { name: '최종 순위표' });
-  await expect(german).toContainText('1950/51 · 독일 1부');
+  await expect(german).toContainText('1930/31 · 독일 1부');
   await expect(german.locator('tbody tr')).toHaveCount(18);
   // Our country again returns to our league that season (→WEB-65).
   await chooseOption(
     page.getByRole('group', { name: '리그 선택' }).getByRole('combobox', { name: '국가' }),
     'ENG',
   );
-  await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText('Haeram');
+  await expect(page.getByRole('region', { name: '최종 순위표' })).toContainText(club);
   await openClubRecords(page);
   await openCurrentClubSeason(page);
-  await chooseOption(page.getByRole('combobox', { name: '기록 시즌', exact: true }), '1950');
+  await chooseOption(page.getByRole('combobox', { name: '기록 시즌', exact: true }), '1930');
   await page
     .getByRole('group', { name: '시즌 기록 보기' })
     .getByRole('button', { name: '경기', exact: true })
@@ -130,24 +128,28 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
     .setInputFiles({ name: 'career.json', mimeType: 'application/json', buffer: raw });
   await expect(page.getByRole('dialog', { name: '기록 가져오기 확인' })).toBeVisible();
   await page.getByRole('button', { name: '기록 교체하고 가져오기' }).click();
-  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1951');
+  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1931');
   await expect(page.getByTestId('game-round')).toHaveText('0');
 });
 test('browses every historical regional group and resets filters on country changes', async ({
   page,
 }) => {
   await page.goto('/');
-  await chooseOption(page.getByRole('combobox', { name: '창단 국가', exact: true }), 'ITA');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill('historical-regional-groups');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
+  // An Italian club, so the season's own league is Italy's; a 1930 club has no cash and would go
+  // bankrupt before the close in the red, so the owner funds it first (→ECON-24, OWNER-9).
+  await startCareer(page, {
+    seed: 'historical-regional-groups',
+    country: 'ITA',
+    division: 0,
+  });
+  await fundClub(page);
   await finishSeason(page);
-  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1951');
+  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1931');
   await expect(page.getByTestId('game-round')).toHaveText('0');
   await page.keyboard.press('Escape');
   await page.setViewportSize({ width: 390, height: 844 });
   // Other leagues' past tables live on the league page, never in the records room (→WEB-54).
-  await openLeague(page, 1950);
+  await openLeague(page, 1930);
   await page
     .getByRole('tablist', { name: '지난 시즌 보기' })
     .getByRole('tab', { name: '순위표', exact: true })
@@ -164,14 +166,14 @@ test('browses every historical regional group and resets filters on country chan
     ['2.2', 'C'],
   ]) {
     await chooseOption(division, value);
-    await expect(standings).toContainText(`1950/51 · 이탈리아 3부 ${group}조 · 20팀`);
+    await expect(standings).toContainText(`1930/31 · 이탈리아 3부 ${group}조 · 20팀`);
     await expect(rows).toHaveCount(20);
     firstClubs.push(await rows.first().locator('td:nth-child(2)').innerText());
   }
   expect(new Set(firstClubs).size).toBe(3);
   await chooseOption(picker.getByRole('combobox', { name: '국가', exact: true }), 'ENG');
   await expect(picker.getByRole('combobox', { name: '지역 그룹', exact: true })).toHaveCount(0);
-  await expect(standings).toContainText('1950/51 · 잉글랜드 1부 · 20팀');
+  await expect(standings).toContainText('1930/31 · 잉글랜드 1부 · 20팀');
   await expect(rows).toHaveCount(20);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });

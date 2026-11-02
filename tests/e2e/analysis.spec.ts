@@ -8,6 +8,7 @@ import { chooseOption, selectOptions } from './select';
 import { expect, test } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { expectHomeBounds, horizontalOverflow } from './layout';
+import { startCareer } from './start';
 
 test.use({ viewport: { width: 360, height: 740 } });
 
@@ -15,8 +16,7 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page);
   await delegateSales(page);
   await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
@@ -30,7 +30,7 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   const downloaded = page.waitForEvent('download');
   await button.click();
   const file = await downloaded;
-  expect(file.suggestedFilename()).toBe('haeram-matches-1950.csv');
+  expect(file.suggestedFilename()).toBe('haeram-matches-1930.csv');
   const csv = await readFile((await file.path())!, 'utf8');
   expect(csv.startsWith('\ufeff')).toBe(true);
   expect(csv).toContain('"fixture_id"');
@@ -48,7 +48,7 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
   const playerDownload = page.waitForEvent('download');
   await button.click();
   const players = await playerDownload;
-  expect(players.suggestedFilename()).toBe('haeram-players-career-1950.csv');
+  expect(players.suggestedFilename()).toBe('haeram-players-career-1930.csv');
   expect((await readFile((await players.path())!, 'utf8')).trim().split('\r\n')).toHaveLength(21);
   expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
@@ -56,22 +56,19 @@ test('downloads scoped analysis CSVs and disables empty competition samples on m
 
 test('reproduces earned season records after reload on mobile', async ({ page }) => {
   await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill('record-book-cycle');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  const club = await startCareer(page, { seed: 'record-book-cycle' });
   await delegateSales(page);
   await finishSeason(page);
-  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1951');
+  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1931');
   await expect(page.getByTestId('game-round')).toHaveText('0');
   // A closed season no longer interrupts: its review waits in the league's season list.
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog', { name: '시즌 진행 도구' })).toHaveCount(0);
-  await openLeague(page, 1950);
+  await openLeague(page, 1930);
   await openSeasonReview(page);
   await expect(page.getByTestId('season-move')).toBeVisible();
   // Back to that season's league pages through the league's own season filter.
-  await openLeague(page, 1950);
+  await openLeague(page, 1930);
   // The live tabs belong to the season in progress; a closed season keeps its pages in its own.
   await expect(page.getByRole('tablist', { name: '리그 보기' })).toHaveCount(0);
   const past = page.getByRole('tablist', { name: '지난 시즌 보기' }),
@@ -79,14 +76,15 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await expect(pastTab('순위표')).toHaveAttribute('aria-selected', 'true');
   await pastTab('순위표').click();
   const table = page.getByRole('region', { name: '최종 순위표' });
-  await expect(table).toContainText('Haeram');
-  await expect(table.locator('tbody tr')).toHaveCount(16);
+  await expect(table).toContainText(club);
+  // The English top flight of 1930/31: twenty clubs, each playing 38 league games.
+  await expect(table.locator('tbody tr')).toHaveCount(20);
   // The season filter addresses the closed season with the tab it opened on.
-  await expect(page).toHaveURL(/season=1950&view=table/);
+  await expect(page).toHaveURL(/season=1930&view=table/);
   // A rival from that table opens its sheet with the all-time record against us.
   await table
     .getByRole('button', { name: /팀 정보$/ })
-    .filter({ hasNotText: 'Haeram' })
+    .filter({ hasNotText: club })
     .first()
     .click();
   await expect(
@@ -96,7 +94,7 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await pastTab('일정·결과').click();
   const games = page.getByRole('region', { name: '우리 리그 경기' });
-  await expect(games.getByRole('listitem')).toHaveCount(30);
+  await expect(games.getByRole('listitem')).toHaveCount(38);
   await games
     .getByRole('button', { name: /경기 리포트$/ })
     .first()
@@ -122,8 +120,8 @@ test('reproduces earned season records after reload on mobile', async ({ page })
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   // The league's season filter holds the closed season beside this one, which opens current facts.
   const season = page.getByRole('combobox', { name: '시즌', exact: true });
-  await expect(season).toHaveAttribute('data-value', '1950');
-  expect((await selectOptions(season)).map((option) => option.value)).toEqual(['1951', '1950']);
+  await expect(season).toHaveAttribute('data-value', '1930');
+  expect((await selectOptions(season)).map((option) => option.value)).toEqual(['1931', '1930']);
   await openLeague(page);
   await expect(page.getByRole('tablist', { name: '리그 보기' })).toBeVisible();
   await expect(past).toHaveCount(0);
@@ -174,8 +172,7 @@ test('uses matching archive samples for season splits and competition filters', 
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page);
   await delegateSales(page);
   await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
@@ -198,8 +195,7 @@ test('filters the own-club fixture notebook and reads a settled full-season reco
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page);
   await delegateSales(page);
   await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
@@ -242,8 +238,7 @@ test('compares distinct own players with a shared scope and returns focus withou
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page);
   await delegateSales(page);
   // The tab bar (or the desktop sidebar) reaches every tab; the HUD menu lists only the rest.
   await openPersonnel(page, 'players');
@@ -270,15 +265,14 @@ test('compares distinct own players with a shared scope and returns focus withou
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   await sheet.getByRole('button', { name: '비교 마치기', exact: true }).click();
   await expect(opener).toBeFocused();
-  await expect(page.getByTestId('game-date')).toHaveText('1950.08.01');
+  await expect(page.getByTestId('game-date')).toHaveText('1930.08.01');
 });
 
 test('filters player samples and shows scoped per-90 evidence on a mobile profile', async ({
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page);
   await delegateSales(page);
   await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
@@ -336,8 +330,7 @@ test('jumps between recorded periods without changing the final result or calend
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page);
   await delegateSales(page);
   await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
@@ -365,8 +358,7 @@ test('jumps between recorded periods without changing the final result or calend
 
 test('reveals the recorded match report only after choosing the final result', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page);
   await delegateSales(page);
   await watchNext(page, { manual: true });
   await openMatchDetails(page);
@@ -392,8 +384,7 @@ test("reads the manager's XI and matchday squad while the applied tactic and dat
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page);
   await delegateSales(page);
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await page.getByRole('button', { name: '상세 리포트', exact: true }).click();
@@ -420,15 +411,14 @@ test("reads the manager's XI and matchday squad while the applied tactic and dat
   await expect(squad.getByRole('definition').nth(1)).not.toHaveText('—');
   await expect(squad.getByRole('definition').last()).toHaveText('없음');
   await sheet.getByRole('button', { name: '확인하고 홈으로', exact: true }).click();
-  await expect(page.getByTestId('game-date')).toHaveText('1950.08.01');
+  await expect(page.getByTestId('game-date')).toHaveText('1930.08.01');
 });
 
 test('opens the manager report on the next match without progressing the world', async ({
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page);
   await delegateSales(page);
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await page.getByRole('button', { name: '상세 리포트', exact: true }).click();
@@ -445,6 +435,6 @@ test('opens the manager report on the next match without progressing the world',
   await expect(meetings).toContainText('최근 맞대결 · 0경기');
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   await sheet.getByRole('button', { name: '확인하고 홈으로', exact: true }).click();
-  await expect(page.getByTestId('game-date')).toHaveText('1950.08.01');
+  await expect(page.getByTestId('game-date')).toHaveText('1930.08.01');
   await expectHomeBounds(page);
 });

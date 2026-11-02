@@ -1,14 +1,14 @@
 import { expect, test } from '@playwright/test';
 import { openClubRecords, openCups, openLeague, resumeLeague } from './competition-navigation';
 import { chooseOption } from './select';
+import { startCareer } from './start';
 
 test('competition hubs preserve selectors, legacy addresses, browser history and reloads', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단 →', exact: true }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page);
   const menuEntry = (name: string) =>
     page
       .getByRole('navigation', { name: '모바일 게임 메뉴', exact: true })
@@ -62,9 +62,10 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
   await openClubRecords(page);
   await expect(page.getByRole('table', { name: '시즌별 기록', exact: true })).toBeVisible();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  await page.goto('/leagues?season=1940&league=GER.0.0&view=players&detail=trend');
+  // 1920 is a season before the world's first (1930/31), so nothing of it is recorded.
+  await page.goto('/leagues?season=1920&league=GER.0.0&view=players&detail=trend');
   await expect(page).toHaveURL(
-    /history\?section=league.*season=1940.*league=GER\.0\.0.*view=players.*detail=trend/,
+    /history\?section=league.*season=1920.*league=GER\.0\.0.*view=players.*detail=trend/,
   );
   await expect(page.getByText('선택한 시즌의 기록이 없어요.', { exact: true })).toBeVisible();
   // A closed league season belongs to the league entry.
@@ -72,14 +73,14 @@ test('competition hubs preserve selectors, legacy addresses, browser history and
   await page.reload();
   await expect(page.getByText('선택한 시즌의 기록이 없어요.', { exact: true })).toBeVisible();
   // A legacy explicit current year belongs to Season and keeps its competition and lens.
-  await page.goto('/leagues?season=1950&league=GER.0.0&view=teams');
+  await page.goto('/leagues?season=1930&league=GER.0.0&view=teams');
   await expect(page).toHaveURL(/season\?competition=league.*league=GER\.0\.0.*view=teams/);
   await expect(page.getByRole('tab', { name: '팀 기록', exact: true })).toHaveAttribute(
     'aria-selected',
     'true',
   );
-  await page.goto('/europe?competition=cup&period=history&season=1940&country=GER');
-  await expect(page).toHaveURL(/history\?section=cup.*season=1940.*country=GER.*cup=cup/);
+  await page.goto('/europe?competition=cup&period=history&season=1920&country=GER');
+  await expect(page).toHaveURL(/history\?section=cup.*season=1920.*country=GER.*cup=cup/);
   await expect(page.getByRole('combobox', { name: '컵 대회', exact: true })).toHaveAttribute(
     'data-value',
     'cup:GER',

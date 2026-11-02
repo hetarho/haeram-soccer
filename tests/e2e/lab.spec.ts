@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { closeMatchDetails, openMatchDetails } from './watch';
+import { startFlow } from './start';
 
 /** Runs the current settings and waits for the run to finish. */
 async function simulate(page: Page, count: string) {
@@ -136,6 +137,6 @@ test('the lab generates sides, edits values and compares runs against a baseline
 
   // The game links nowhere near the lab.
   await page.goto('/');
-  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeVisible();
+  await expect(startFlow(page)).toBeVisible();
   await expect(page.locator('a[href*="lab"]')).toHaveCount(0);
 });

@@ -225,20 +225,22 @@ describe('the season close and its record (→OWNER-12, OWNER-17)', () => {
 describe('the owner’s money and 팬 민심 (→OWNER-9/11/12)', () => {
   it('adds 1 per 1% of last season’s turnover an injection, at most 10', () => {
     const w = world();
-    clubOf(w).books = {
-      seasons: [{ year: w.year - 1, income: '1000000', wages: '0', costs: '0', result: '1000000' }],
-      cash: '0',
-      debt: '0',
-    };
+    // In the takeover season the turnover is the bought club's last income (→ECON-36).
+    w.owner!.takeover.lastIncome = '1000000';
     operate(w, { type: 'owner-inject', amount: '30000' });
     expect(mood(w)).toBe(63);
     operate(w, { type: 'owner-inject', amount: '500000' });
     expect(mood(w)).toBe(73);
     expect(fanMoodMovers(w, 1)[0]!.title).toBe('구단주 자금 투입');
-    // With no turnover known yet, an injection counts the most.
+    // With no turnover known yet, an injection counts the most; the takeover's last income
+    // counts only in the takeover season.
     const fresh = world();
     operate(fresh, { type: 'owner-inject', amount: '1' });
     expect(mood(fresh)).toBe(60 + FAN_MOOD.injection.max);
+    const later = world();
+    later.owner!.takeover = { ...later.owner!.takeover, year: later.year - 1, lastIncome: '1' };
+    operate(later, { type: 'owner-inject', amount: '1' });
+    expect(mood(later)).toBe(60 + FAN_MOOD.injection.max);
   });
   it('takes 1 per 1% of the season’s turnover a dividend, 0.7 for 팬들의 친구', () => {
     for (const [traits, expected] of [

@@ -8,6 +8,7 @@ import { chooseOption } from './select';
 import { expect, test, type Page } from '@playwright/test';
 import { createWorld, simulateSeason } from '../../packages/engine/src/index';
 import { continueSlot, seedSlot } from './slots';
+import { startCareer } from './start';
 import {
   clubSections,
   officeBar,
@@ -17,13 +18,11 @@ import {
   teamReturn,
 } from './office';
 
-async function found(page: Page) {
+/** Takes the seed's first listed club over; returns its name. */
+async function takeClubOver(page: Page) {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill('owner-workflow-regression');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  return startCareer(page, { seed: 'owner-workflow-regression' });
 }
 /**
  * An office section is selected in the section bar while the clubhouse entry stays current; our
@@ -52,7 +51,7 @@ async function openOperations(page: Page) {
 }
 
 test('market info reads the 영입 direction and restores the candidate work', async ({ page }) => {
-  await found(page);
+  await takeClubOver(page);
   await openPersonnel(page, 'market');
   const filter = await marketFilters(page);
   await chooseOption(filter.getByRole('combobox', { name: '영입 포지션', exact: true }), 'line:GK');
@@ -66,7 +65,7 @@ test('market info reads the 영입 direction and restores the candidate work', a
   await expect(page.locator('button[aria-label="선택한 2명 비교"]')).toBeEnabled();
   const url = page.url();
   await marketInfo(page);
-  // The 영입 area of the direction founded with reads here; nothing edits it (→ECON-25, WEB-71).
+  // The 영입 area of the direction taken over with reads here; nothing edits it (→ECON-25, WEB-71).
   const info = page.getByRole('dialog', { name: '영입 정보', exact: true });
   for (const [row, value] of [
     ['scouting', '표준'],
@@ -94,7 +93,7 @@ test('market info reads the 영입 direction and restores the candidate work', a
 });
 
 test('the academy reads its investment and 유입 방식 as 재정·투자 does', async ({ page }) => {
-  await found(page);
+  await takeClubOver(page);
   await openPersonnel(page, 'training');
   await openPersonnel(page, 'academy');
   const line = page.getByTestId('academy-direction');
@@ -119,7 +118,7 @@ for (const viewport of [
   test(`training reads the team's call first and opens its named responsible coach at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
-    await found(page);
+    await takeClubOver(page);
     await page.setViewportSize(viewport);
     await openPersonnel(page, 'training');
     const focus = page.getByRole('region', { name: '훈련 방향', exact: true });
@@ -139,7 +138,7 @@ for (const viewport of [
   });
 
 test('a player profile reads his training and keeps the squad search', async ({ page }) => {
-  await found(page);
+  await takeClubOver(page);
   await openPersonnel(page, 'players');
   const playerLink = page
     .locator('[class*="rosterCards"] article')
@@ -169,7 +168,7 @@ test('a player profile reads his training and keeps the squad search', async ({ 
 test('recruitment needs open on demand and academy operations open their exact work', async ({
   page,
 }) => {
-  await found(page);
+  await takeClubOver(page);
   await openPersonnel(page, 'market');
   await expect(marketRows(page).first()).toBeVisible();
   const needs = page.getByRole('region', { name: '감독 영입 요청', exact: true });
@@ -194,7 +193,7 @@ test('recruitment needs open on demand and academy operations open their exact w
 test('opens club seasons in records and retains the detail scope through league and cup visits', async ({
   page,
 }) => {
-  await found(page);
+  await takeClubOver(page);
   await openClubRecords(page);
   const list = page.getByRole('table', { name: '시즌별 기록' });
   await expect(list.locator('tr[aria-current="true"]')).toHaveCount(1);
@@ -228,7 +227,7 @@ test('opens club seasons in records and retains the detail scope through league 
   );
   await expect(page.getByRole('region', { name: '잉글랜드 컵', exact: true })).toBeVisible();
   await openClubRecords(page);
-  await expect(page).toHaveURL(/season=1950.*part=matches.*competition=cup/);
+  await expect(page).toHaveURL(/season=1930.*part=matches.*competition=cup/);
   // The season opens under the records' tabs; 시즌별 기록 leads back to the list (→WEB-54).
   const seasons = page.getByRole('tab', { name: '시즌별 기록', exact: true });
   await seasons.click();
@@ -236,7 +235,7 @@ test('opens club seasons in records and retains the detail scope through league 
   await expect(page).toHaveURL(/\/history\?section=club$/);
   // Explicit undefined must clear a deep-linked initial year as well as an in-session pick.
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  await page.goto('/history?season=1950');
+  await page.goto('/history?season=1930');
   await expect(page.getByRole('combobox', { name: '기록 시즌', exact: true })).toBeVisible();
   await seasons.click();
   await expect(list).toBeVisible();
@@ -246,7 +245,7 @@ test('opens club seasons in records and retains the detail scope through league 
 test('keeps a foreign league selected across all competition lenses without substituting our players', async ({
   page,
 }) => {
-  await found(page);
+  const club = await takeClubOver(page);
   await openLeague(page);
   await chooseOption(page.getByRole('combobox', { name: '국가', exact: true }), 'GER');
   const table = page.getByRole('table', { name: '리그 순위표' });
@@ -259,12 +258,12 @@ test('keeps a foreign league selected across all competition lenses without subs
   const players = page.getByRole('region', { name: '선수 세부 기록', exact: true });
   await expect(players.getByTestId('full-stats-coverage')).toContainText('시즌 전체 기록');
   await expect(page.getByRole('region', { name: '선택 리그 기록 안내' })).toHaveCount(0);
-  await expect(players).not.toContainText('Haeram');
+  await expect(players).not.toContainText(club);
   await expect(page).toHaveURL(/league=GER\.0\.0/);
   await page.getByRole('tab', { name: '팀 기록', exact: true }).click();
   const teams = page.getByRole('table', { name: '리그 팀 기록표' });
   await expect(teams.getByRole('button', { name: firstClub!, exact: true })).toBeVisible();
-  await expect(teams).not.toContainText('Haeram');
+  await expect(teams).not.toContainText(club);
   await page
     .getByRole('group', { name: '팀 기록 보기' })
     .getByRole('button', { name: '순위 추이', exact: true })
@@ -278,7 +277,7 @@ test('keeps a foreign league selected across all competition lenses without subs
 test('keeps the home briefing informational alongside the public clock and opens the current club record', async ({
   page,
 }) => {
-  await found(page);
+  await takeClubOver(page);
   const hub = page.getByTestId('club-hub');
   await expect(hub.getByRole('button', { name: '시즌 진행 도구', exact: true })).toHaveCount(0);
   await expect(hub.getByRole('button', { name: '한 라운드 진행', exact: true })).toHaveCount(0);
@@ -288,10 +287,10 @@ test('keeps the home briefing informational alongside the public clock and opens
   await expect(page.getByRole('button', { name: /클럽 소식/ })).toHaveCount(0);
   // The season in progress opens from the records room's season list (→WEB-54).
   await openClubRecords(page);
-  const row = page.getByRole('button', { name: '1950/51 구단 시즌 기록 보기', exact: true });
+  const row = page.getByRole('button', { name: '1930/31 구단 시즌 기록 보기', exact: true });
   await row.evaluate((element) => element.scrollIntoView({ block: 'center' }));
   await row.click();
-  await expect(page).toHaveURL(/\/history\?section=club&season=1950/);
+  await expect(page).toHaveURL(/\/history\?section=club&season=1930/);
   await clubhouseTab(page).click();
   await advanceOneRound(page);
   await expect(page.getByTestId('game-round')).toHaveText('1');

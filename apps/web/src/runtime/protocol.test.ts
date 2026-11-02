@@ -4,7 +4,10 @@ import { KIT_ROLES } from '../../../../packages/contracts/src/identity';
 import { createIdentityDraft } from '../../../../packages/engine/src/club-identity';
 import { MATCH_MODEL_REVISION } from '../../../../packages/contracts/src/match-model';
 import type { World } from '../../../../packages/contracts/src/types';
-import { isSaveCompatibilityError } from '../../../../packages/contracts/src/versions';
+import {
+  CURRENT_ENGINE_VERSION,
+  isSaveCompatibilityError,
+} from '../../../../packages/contracts/src/versions';
 import {
   applyViewDelta,
   applyViewPatch,
@@ -97,7 +100,13 @@ it('carries supported match-model metadata and refuses a future one, changing no
     coverage: 'activation' as const,
   };
   const world = (extra: object) =>
-    ({ id: 'world', revision: 41, engine: '0.7.0', ownMatches: [], ...extra }) as unknown as World;
+    ({
+      id: 'world',
+      revision: 41,
+      engine: CURRENT_ENGINE_VERSION,
+      ownMatches: [],
+      ...extra,
+    }) as unknown as World;
   expect(worldMetadataOf(world({}))).toEqual({ id: 'world', revision: 41 });
 
   const activated = world({ matchModel });

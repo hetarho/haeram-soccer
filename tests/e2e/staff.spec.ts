@@ -22,15 +22,12 @@ import { horizontalOverflow } from './layout';
 import { chooseOption } from './select';
 import { clubhouseTab } from './competition-navigation';
 import { clubSections, enterOffice, openTeamTab, teamEntry, teamReturn, teamTabs } from './office';
+import { fundClub, startCareer } from './start';
 
-/** The default seed's first season offers a firefighter among the four candidates. */
+/** The default seed's first season offers a firefighter among the four free candidates. */
 async function found(page: Page, seed = 'short-contract') {
   await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill(seed);
-  await page.getByRole('button', { name: '쉬움' }).click();
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page, { seed });
 }
 
 /** A tab of the office's section bar (→WEB-10): 사무실, 훈련 and 운영. */
@@ -66,7 +63,7 @@ async function hireFirefighter(page: Page) {
   const market = page.getByRole('dialog', { name: '감독 교체' });
   await expect(market.getByRole('heading', { name: '다른 구단 감독 · 보상금 필요' })).toBeVisible();
   const card = freeAgents(market).getByRole('article').filter({ hasText: '소방수' });
-  await expect(card).toContainText('계약 이번 시즌(1950/51) 끝까지');
+  await expect(card).toContainText('계약 이번 시즌(1930/31) 끝까지');
   await expect(card).toContainText('선발 성향');
   await expect(card).not.toContainText('야망');
   const name = await card.getByRole('heading').innerText();
@@ -74,7 +71,7 @@ async function hireFirefighter(page: Page) {
   const dialog = page.getByRole('dialog', { name: '감독 선임 확인' });
   await expect(dialog).toContainText('시즌 종료까지 단기 계약');
   await expect(dialog).toContainText(
-    '계약 이번 시즌(1950/51) 끝까지 · 남기려면 4월에 1시즌씩 재계약해요',
+    '계약 이번 시즌(1930/31) 끝까지 · 남기려면 4월에 1시즌씩 재계약해요',
   );
   await dialog.getByRole('button', { name: '선임 확정', exact: true }).click();
   // Hiring closes the confirmation and the market, as a coach's hire closes his list.
@@ -98,6 +95,9 @@ test.describe('사람 at 360x740', () => {
     // Many club-section visits (→WEB-10): past 30 s on a loaded host.
     test.slow();
     await found(page);
+    // A hire pays the fee and the outgoing manager's payoff from the club's cash, which a 1930
+    // club is taken over without.
+    await fundClub(page);
     await chooseLevel(page, 2);
     await setResponsibility(page, '스폰서 계약', 'delegated');
     await openPersonnel(page, 'players');
@@ -177,13 +177,13 @@ test.describe('사람 at 360x740', () => {
     await expect(renewal).toContainText(
       '재계약하지 않으면 시즌이 끝날 때 떠나고 임시 감독이 팀을 맡아요.',
     );
-    await expect(renewal).toContainText('계약 1951/52 시즌 끝까지');
-    await expect(page.getByText(/1950년 부임 · 계약 이번 시즌\(1950\/51\) 끝까지/)).toBeVisible();
+    await expect(renewal).toContainText('계약 1931/32 시즌 끝까지');
+    await expect(page.getByText(/1930년 부임 · 계약 이번 시즌\(1930\/31\) 끝까지/)).toBeVisible();
     expect(await horizontalOverflow(page)).toBe(0);
     await renewal.getByRole('button', { name: '재계약', exact: true }).click();
     await closeOutcome(page, '계약이 한 시즌 늘었어요');
     await expect(renewal).toHaveCount(0);
-    await expect(page.getByText(/1950년 부임 · 계약 1951\/52 시즌 끝까지/)).toBeVisible();
+    await expect(page.getByText(/1930년 부임 · 계약 1931\/32 시즌 끝까지/)).toBeVisible();
 
     // A reload keeps the tab in the address.
     await openPersonnel(page, 'coaches');
@@ -322,6 +322,8 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   // months ran past the slow 90 s budget on CI Firefox (run 40243569140).
   test.setTimeout(180_000);
   await found(page);
+  // The hire is paid from the club's cash, and eight months must not run the club into the red.
+  await fundClub(page);
   await chooseLevel(page, 4);
   await setResponsibility(page, '감독 인사', 'direct');
   await setResponsibility(page, '선수 영입', 'direct');
@@ -344,7 +346,7 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   // office's 결재함. Only an observation stops it on the way: play it through or read it, and
   // run on. Play ignores a tap in the first half second after the clock stops itself.
   await expect(async () => {
-    if ((await date.innerText()) >= '1951.04.01') return;
+    if ((await date.innerText()) >= '1931.04.01') return;
     const through = card.getByRole('button', { name: '결과만 보고 계속', exact: true });
     if (await through.count()) await through.click();
     else if (await cardText()) await acknowledgeEvents(page);
@@ -368,7 +370,7 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
   await expect((await approvalTray(page)).filter({ hasText: renewal })).toHaveCount(0);
   await openPeople(page);
   await openPersonnel(page, 'manager');
-  await expect(page.getByText(/1950년 부임 · 계약 1951\/52 시즌 끝까지/)).toBeVisible();
+  await expect(page.getByText(/1930년 부임 · 계약 1931\/32 시즌 끝까지/)).toBeVisible();
   await expect(page.getByTestId('manager-renewal')).toHaveCount(0);
 });
 
@@ -378,7 +380,7 @@ test('스태프 leads with the 단장 and 이적시장 discloses the scout short
   await page.setViewportSize({ width: 360, height: 740 });
   await found(page, 'director-shortlist');
   await openPeople(page);
-  // The 단장's card comes first, with what he decides at the new club's level 2 (→STAFF-20).
+  // The 단장's card comes first, with what he decides at the career's starting level 2 (→STAFF-20).
   await openPersonnel(page, 'coaches');
   const cards = page.getByRole('region', { name: '스태프', exact: true }).getByRole('listitem');
   await expect(cards.first()).toContainText('단장');
@@ -393,7 +395,7 @@ test('스태프 leads with the 단장 and 이적시장 discloses the scout short
   const shortlist = page.getByRole('region', { name: '스카우트 명단', exact: true });
   await shortlist.scrollIntoViewIfNeeded();
   await expect(shortlist).toContainText('수석 스카우트');
-  await expect(shortlist).toContainText('1950년 8월 1일 작성');
+  await expect(shortlist).toContainText('1930년 8월 1일 작성');
   await expect(
     page.getByRole('region', { name: '감독 영입 요청' }).getByRole('group', { name: '감독 요청' }),
   ).toBeVisible();

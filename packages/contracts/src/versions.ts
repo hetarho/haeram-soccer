@@ -2,15 +2,16 @@ import type { World } from './types';
 
 /**
  * The game's one version (→SAVE-10): every package's `version`, the rules a world plays and what the
- * screens print. 0.7.0 is the beta's first numbered version and continues the rules-4.0.0 line
- * unchanged; a match-model revision ships inside a version (→SAVE-23).
+ * screens print. 0.8.0 starts the rules-5.0.0 line, a career begun by taking a club over
+ * (→SAVE-26); a match-model revision ships inside a version (→SAVE-23).
  */
-export const CURRENT_ENGINE_VERSION = '0.7.0';
+export const CURRENT_ENGINE_VERSION = '0.8.0';
 /**
- * The rules-4.0.0 label of the line 0.7.0 continues: such a world is read like a 0.7.0 one and only
- * its label is rewritten on writer activation (`upgradeWorldRules`, →SAVE-10).
+ * The rules-4.0.0 line: its own label and game version 0.7.0, which continued it. Its careers were
+ * written in the match-model and manager-history containers too (→SAVE-23/24), so the legacy
+ * reset recognizes them there (→SAVE-26).
  */
-export const CONTINUED_ENGINE_VERSION = '4.0.0';
+export const RULES_FOUR_VERSIONS: readonly string[] = ['4.0.0', '0.7.0'];
 /**
  * 1.1.0 added club policy; 1.2.0 staff, academy, transfer windows and the inbox; 1.3.0 closes
  * the season after its final round, opens the summer window there, normalizes league match
@@ -77,16 +78,17 @@ export const CONTINUED_ENGINE_VERSION = '4.0.0';
  * probabilistic path), gives players 16 attributes, adds cards and suspensions, in-match
  * substitutions and injuries, extra time and shoot-outs and post-match material; it starts new
  * careers, and a recognized earlier career is cleared once on writer activation (→SAVE-18, SAVE-19).
- * 0.7.0 numbers the game itself and plays the 4.0.0 rules unchanged (→SAVE-10).
+ * 0.7.0 numbers the game itself and plays the 4.0.0 rules unchanged (→SAVE-10). 0.8.0 starts the
+ * rules-5.0.0 line: a career begins by taking over a club of a world generated from 1930, with the
+ * owner's fortune, traits, books and the seasons before him (→SAVE-26); a 0.7.0 or 4.0.0 career
+ * founded in an amateur league has none of them to convert, so it is cleared once on writer
+ * activation like every earlier line (→SAVE-18, WEB-62), its exported files refused on import.
  */
 /**
- * The current version and the 4.0.0 label it continues, never an open-ended older range: an earlier
- * career is never converted (→SAVE-16, SAVE-19).
+ * The current version only, never an open-ended older range: an earlier career is never converted
+ * (→SAVE-16, SAVE-19, SAVE-26).
  */
-export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [
-  CURRENT_ENGINE_VERSION,
-  CONTINUED_ENGINE_VERSION,
-];
+export const SUPPORTED_ENGINE_VERSIONS: readonly string[] = [CURRENT_ENGINE_VERSION];
 /** A world pins its catalog ID and the fingerprint recorded with it (→ARCH-10). */
 export type CatalogPin = Pick<World, 'catalog' | 'catalogHash'>;
 /**
@@ -117,6 +119,7 @@ export const LEGACY_ENGINE_VERSIONS: readonly string[] = [
   ...Array.from({ length: 23 }, (_, minor) => `1.${minor}.0`),
   '2.0.0',
   '3.0.0',
+  ...RULES_FOUR_VERSIONS,
 ];
 /**
  * The checkpoint container (envelope) schema, separate from `World.schema` and the bridge protocol,
@@ -197,8 +200,8 @@ export function isSaveCompatibilityError(error: unknown): error is SaveCompatibi
 
 /**
  * The writer-activation rules step every load, import and the worker share (→SAVE-3, SAVE-10): only
- * rule metadata — a rules-4.0.0 label becomes the current version — the catalog pin and the
- * revision change; absent optional fields and all prior facts survive.
+ * rule metadata — a supported label becomes the current version — the catalog pin and the revision
+ * change; absent optional fields and all prior facts survive.
  */
 export function upgradeWorldRules(w: World, pin: CatalogPin): World {
   if (w.engine === CURRENT_ENGINE_VERSION && w.catalog === pin.catalog) return w;

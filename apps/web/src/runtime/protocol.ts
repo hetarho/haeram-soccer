@@ -22,7 +22,15 @@ import type {
 } from '../../../../packages/contracts/src/types';
 import type { Envelope } from '../adapters/repository';
 import { gameSettingsSchema } from '../../../../packages/contracts/src/schema';
-import { DIVIDEND_SHARES } from '../../../../packages/contracts/src/owner';
+import {
+  DIVIDEND_SHARES,
+  OWNER_TRAIT_IDS,
+  OWNER_TRAIT_LIMIT,
+  TAKEOVER_DECADES,
+  WEALTH_TIER_IDS,
+  type ClubListing,
+  type ClubSheetFacts,
+} from '../../../../packages/contracts/src/owner';
 import {
   clubIdentitySchema,
   designStudioSchema,
@@ -196,6 +204,30 @@ export const requestSchema = z.object({
         identity: clubIdentitySchema.optional(),
       }),
     }),
+    // A new game (→WEB-2, WORLD-13): the world generated to the chosen decade, held by the worker
+    // unsaved until one of its clubs is taken over; `replace` starts it beside a game in play.
+    z.strictObject({
+      type: z.literal('generate'),
+      replace: z.boolean().optional(),
+      choice: z.strictObject({
+        tier: z.enum(WEALTH_TIER_IDS),
+        traits: z
+          .array(z.enum(OWNER_TRAIT_IDS))
+          .max(OWNER_TRAIT_LIMIT)
+          .refine((traits) => new Set(traits).size === traits.length),
+        decade: z.literal(TAKEOVER_DECADES),
+        seed: z.string().min(1).max(80),
+      }),
+    }),
+    // The takeover of a club of the generated world with the direction chosen (→ECON-38, WEB-15).
+    z.strictObject({
+      type: z.literal('take-over'),
+      replace: z.boolean().optional(),
+      clubId: ref,
+      preset: z.string().min(1).max(40).optional(),
+    }),
+    // A club's sheet in the generated world before the takeover (→WEB-15).
+    z.strictObject({ type: z.literal('club-sheet'), clubId: ref }),
     z.object({ type: z.literal('command'), command }),
     z.object({ type: z.literal('export') }),
     z.object({ type: z.literal('save') }),
@@ -431,6 +463,11 @@ export interface Reply {
   worldMarket?: WorldMarketPage;
   worldMarketDetail?: ReturnType<typeof worldMarketDetail>;
   progress?: number;
+  /** The season a world's generation has reached, with `progress` (→WEB-15, WORLD-13). */
+  season?: number;
+  /** The generated world's clubs on sale and the chosen tier's fortune in pounds (→ECON-37). */
+  start?: { listings: ClubListing[]; fortune: string };
+  clubSheet?: ClubSheetFacts;
   cancelled?: boolean;
   /** A save request handed this world revision to the codec worker; its checkpoint follows there. */
   saving?: { worldId: string; revision: number };

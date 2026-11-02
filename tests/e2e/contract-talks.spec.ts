@@ -1,4 +1,3 @@
-import { chooseOption } from './select';
 import { openPersonnel } from './personnel-navigation';
 import { advanceOneRound } from './season-progression';
 import { expect, test, type Page } from '@playwright/test';
@@ -18,6 +17,7 @@ import { eventCard, reviewInOffice } from './events';
 import { openClubhouse } from './competition-navigation';
 import { continueSlot } from './slots';
 import { savedWorld } from './club-identity-helpers';
+import { startCareer } from './start';
 
 /**
  * A club on 1 January 1951 whose owner answers contract talks: one player in his contract's final
@@ -168,26 +168,18 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   ).toBeVisible();
 });
 
-test('the talk rule shows under 선수 as the club was founded', async ({ page, browserName }) => {
+test('the talk rule shows under 선수 as the club was taken over', async ({ page, browserName }) => {
   test.skip(browserName !== 'chromium', 'One browser covers the journey.');
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill('talk-rule-journey');
-  await page.getByRole('button', { name: '쉬움' }).click();
-  // 알뜰 생존 founds 재계약 기조 at 짠물 and 재정 기조 at 안정적 (→ECON-22).
-  await chooseOption(
-    page.getByTestId('club-founding').getByRole('combobox', { name: '구단 운영' }),
-    'shoestring',
-  );
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  // 알뜰 생존 takes the club over at 재계약 기조 짠물 and 재정 기조 안정적 (→ECON-22).
+  await startCareer(page, { seed: 'talk-rule-journey', preset: 'shoestring' });
   await openPersonnel(page, 'players');
   // The owner holds contracts; the delegated criteria remain visible for a later handover.
   const talks = page.getByRole('region', { name: '계약 협상 위임' });
   await expect(talks.getByRole('checkbox')).toHaveCount(0);
   await expect(talks.getByTestId('decision-owner-contracts')).toContainText('직접');
-  // The rows read as founded; no line opens an editor (→STAFF-26, ECON-25).
+  // The rows read as taken over; no line opens an editor (→STAFF-26, ECON-25).
   await expect(talks.locator('[data-row="renewal"]')).toContainText('짠물');
   await expect(talks.locator('[data-row="finance"]')).toContainText('안정적');
   await expect(talks.getByRole('button', { name: /^재계약 기조/ })).toHaveCount(0);

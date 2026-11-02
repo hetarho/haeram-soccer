@@ -7,18 +7,19 @@ import { chooseOption } from './select';
 import { expect, test } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
 import { clubSections } from './office';
+import { startCareer, startFlow } from './start';
 test('serves a real static application entry', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByTestId('club-founding')).toBeVisible();
-  await expect(page.getByRole('heading', { name: '당신의 클럽, 첫 시즌.' })).toBeVisible();
-  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
+  await expect(startFlow(page)).toBeVisible();
+  await expect(page.getByRole('heading', { name: '어떤 구단주인가요?' })).toBeVisible();
+  await expect(startFlow(page).getByRole('button', { name: '다음 →', exact: true })).toBeEnabled();
 });
 test('creates, computes and reloads through the bundled worker', async ({ page }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByText('Haeram Athletic', { exact: true }).first()).toBeVisible();
+  const club = await startCareer(page);
+  await expect(page.getByText(club, { exact: true }).first()).toBeVisible();
   await advanceOneRound(page);
-  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1950');
+  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1930');
   await expect(page.getByTestId('game-round')).toHaveText('1');
   // A round is lived one day at a time, one revision each (→LEAGUE-11): the page names the
   // revision it reached.
@@ -27,7 +28,7 @@ test('creates, computes and reloads through the bundled worker', async ({ page }
   expect(revision).toBeGreaterThan(0);
   await expect(page.getByTestId('save-status')).toContainText(`저장 완료 · r${revision} ·`);
   await page.reload();
-  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1950');
+  await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1930');
   await expect(page.getByTestId('game-round')).toHaveText('1');
   await expect(page.getByTestId('calendar')).toBeVisible();
 });
@@ -35,8 +36,7 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page);
   await delegateSales(page);
   await watchNext(page, { manual: true });
   await expect(

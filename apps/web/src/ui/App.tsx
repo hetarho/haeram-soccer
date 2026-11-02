@@ -31,9 +31,11 @@ import { ClubCrest } from './ClubCrest';
 import { GameOver } from './GameOver';
 import { ProgressControls } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
-// The clubhouse loads when a game is ready, outside the founding/slot entry.
+// The clubhouse loads when a game is ready, outside the start/slot entry.
 const ClubHub = lazy(() => import('./ClubHub').then((module) => ({ default: module.ClubHub })));
-import { ClubFounding } from './ClubFounding';
+import { StartFlow } from './StartFlow.tsx';
+import { WORLD_START } from './startChoices';
+import { careerOver } from './ownerFigures';
 const PlayGuide = lazy(() =>
   import('./PlayGuide').then((module) => ({ default: module.PlayGuide })),
 );
@@ -276,7 +278,11 @@ function useContentState(): ClientState {
         : undefined,
   };
 }
-const ConnectedFounding = memo(function ConnectedFounding({
+/**
+ * The new game (→WEB-2, WEB-15): the start's choices, the world's generation and the takeover
+ * list, wired to the worker's `generate`, `club-sheet` and `take-over`.
+ */
+const ConnectedStart = memo(function ConnectedStart({
   client,
   replace,
   slot,
@@ -289,21 +295,36 @@ const ConnectedFounding = memo(function ConnectedFounding({
   onBack?: () => void;
   onDone: () => void;
 }) {
-  const state = useGameState((state) => state);
-  if (state.busy && !state.view)
+  const busy = useGameState((state) => state.busy);
+  const readonly = useGameState((state) => state.readonly);
+  const failed = useGameState((state) => !!state.error);
+  const loading = useGameState((state) => state.busy && !state.view && !state.start);
+  const start = useGameState((state) => state.start);
+  if (loading)
     return (
       <div className={s.loading} role="status">
-        클럽을 준비하고 있어요…
+        세계를 준비하고 있어요…
       </div>
     );
   return (
-    <ClubFounding
-      client={client}
-      state={state}
-      replace={replace}
+    <StartFlow
       slot={slot}
       onBack={onBack}
-      onDone={onDone}
+      busy={busy}
+      // A game that failed to load is replaced only explicitly, as at the slot screen (→WEB-62).
+      readonly={readonly || (!replace && failed && !start)}
+      initial={start?.choice}
+      progress={start && !start.listings ? { season: start.season ?? WORLD_START } : undefined}
+      listings={start?.listings}
+      fortune={start?.fortune}
+      error={start?.error}
+      onGenerate={(choice) => void client.generate(choice, replace)}
+      loadClub={(clubId) => client.clubSheet(clubId)}
+      onTakeOver={(clubId, preset) =>
+        void client.takeOver(clubId, preset).then((reply) => {
+          if (reply?.ok) onDone();
+        })
+      }
     />
   );
 });
@@ -360,11 +381,14 @@ const ConnectedRich = memo(function ConnectedRich({
   );
 });
 const GameHud = memo(function GameHud({
+  client,
   onMenu,
   playing,
 }: {
+  /** Sends the 구단주 sheet's stake, injection and dividend (→WEB-114). */
+  client?: GameClient;
   onMenu: () => void;
-  /** Founding, even beside a parked game, shows the start HUD: no club, menu, inbox or cash. */
+  /** A new game, even beside a parked one, shows the start HUD: no club, menu, inbox or cash. */
   playing: boolean;
 }) {
   const { t } = useLocale();
@@ -405,7 +429,7 @@ const GameHud = memo(function GameHud({
           <b className={own ? s.hudClubName : undefined}>{own?.name || 'Haeram Football'}</b>
           {/* Beside the club name in play; beside the game's name with its version elsewhere. */}
           <BetaMark version={!own} />
-          {!own && <small data-testid="calendar">1950 · A NEW BEGINNING</small>}
+          {!own && <small data-testid="calendar">{WORLD_START} · A NEW OWNER</small>}
         </div>
       </div>
       {today && (
@@ -420,7 +444,7 @@ const GameHud = memo(function GameHud({
       )}
       <ReadonlyBadge />
       {!playing && <PresentationSettingsTrigger />}
-      {playing && <HudCash />}
+      {playing && <HudCash client={client} />}
       {playing && <CommunicationsButton className={s.hudNotifications} />}
     </header>
   );
@@ -766,6 +790,8 @@ export function App() {
     controller?.pause(true);
     slots?.sync(gameStore.getSnapshot().view?.world, true);
     slots?.cancel();
+    // A new game not taken over yet is left with its world (→WORLD-13).
+    client?.leaveStart();
     rememberInGame(false);
     setMoreOpen(false);
     setReplacing(false);
@@ -781,7 +807,7 @@ export function App() {
     replacePage('dashboard');
     setScreen('game');
   };
-  /** Readies a slot (parking the game in play) and opens founding for it. */
+  /** Readies a slot (parking the game in play) and opens the new game for it. */
   const startNew = async (slot: number) => {
     await slots!.prepare(slot);
     setTargetSlot(slot);
@@ -926,7 +952,7 @@ export function App() {
         )}
       </aside>
       <main className={s.main}>
-        {screen === 'game' && <GameHud onMenu={openMenu} playing={playing} />}
+        {screen === 'game' && <GameHud client={client} onMenu={openMenu} playing={playing} />}
         {!client && localError && (
           <FeedbackOverlay>
             <div data-surface="inset" className={s.error} role="alert">
@@ -943,7 +969,7 @@ export function App() {
           />
         )}
         <div ref={scroller} className={s.scroller} data-testid="view-scroller">
-          {client && controller && playing && !w.bankrupt && page !== 'match' && (
+          {client && controller && playing && !careerOver(w) && page !== 'match' && (
             <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
           )}
           {client && controller ? (
@@ -964,9 +990,8 @@ export function App() {
                 />
               </Suspense>
             ) : !w || replacing ? (
-              // One founding session per slot: another slot never inherits its design draft
-              // (→WEB-86).
-              <ConnectedFounding
+              // One start session per slot: another slot never inherits its choices.
+              <ConnectedStart
                 key={foundingSlot()}
                 client={client}
                 replace={replacing}
@@ -975,11 +1000,11 @@ export function App() {
                 onDone={() => {
                   setReplacing(false);
                   setTargetSlot(undefined);
-                  // A new career always opens on home, whatever address founding was reached at.
+                  // A new career always opens on home, whatever address the start was reached at.
                   replacePage('dashboard');
                 }}
               />
-            ) : w.bankrupt ? (
+            ) : careerOver(w) ? (
               <GameOver
                 w={w}
                 onExport={() => void download()}
@@ -1035,7 +1060,7 @@ export function App() {
           )}
           {client && screen === 'game' && (!w || replacing) && <StartTools onImport={importFile} />}
         </div>
-        {client && controller && playing && !w.bankrupt && page !== 'match' && (
+        {client && controller && playing && !careerOver(w) && page !== 'match' && (
           <ProgressControls client={client} controller={controller} />
         )}
       </main>

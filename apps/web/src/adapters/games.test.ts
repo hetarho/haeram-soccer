@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { CURRENT_ENGINE_VERSION } from '../../../../packages/contracts/src/versions';
 import { GAMES_KEY, GameIndexStore, type GameEntry, type SlotSummary } from './games';
 
 const memory = (games?: unknown) => {
@@ -22,7 +23,7 @@ const entry = (id: string, crest: unknown): GameEntry => ({
     crest: crest as SlotSummary['crest'],
   },
   playedAt: '2026-10-20T00:00:00.000Z',
-  engine: '0.7.0',
+  engine: CURRENT_ENGINE_VERSION,
 });
 /** A summary as every earlier build wrote it: two colours, both required. */
 const twoColour = {

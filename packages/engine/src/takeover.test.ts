@@ -16,7 +16,7 @@ import { makePlayer, squad } from './world';
 import { formationOf, isOwnSeason, lastOwnSeason, ownSeasons } from './player-state';
 import { lineOf } from './player';
 import { fanFollowing } from './fans';
-import { basicStaff } from './staff';
+import { basicStaff, staffQuote } from './staff';
 import { defaultSettings } from './responsibilities';
 import { presetBoard, presetById } from './presets';
 import {
@@ -174,6 +174,8 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
         debt: '1200000',
         fortune,
         currency: w.currency,
+        // Its last income before the takeover, the first season's turnover (→OWNER-12).
+        lastIncome: '2600000',
       },
       seasonRecords: [],
     });
@@ -199,6 +201,58 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     expect(w.matchModel?.coverage).toBe('founding');
     expect(w.managerHistory?.coverage).toBe('founding');
     expect(() => validateWorld(structuredClone(w))).not.toThrow();
+  });
+
+  it('dates the career from the takeover, a model the world ran before it included (→OWNER-4, SAVE-23)', () => {
+    const w = ownerlessWorld('takeover-dated');
+    const club = atPlace(w, 1, 4);
+    // The world before kept the model since 1930 and archived its seasons (→WORLD-13).
+    w.matchModel = {
+      ...w.matchModel!,
+      activated: { year: 1930, day: 0, revision: 0 },
+      trackedFrom: { year: 1930, day: 1, round: 1 },
+      coverage: 'founding',
+    };
+    w.history = [1948, 1949].map((year) => worldArchive(w, year, (c) => c.tier, club.id));
+    takeOver(w, club.id, choice('oil'));
+    expect(w.matchModel).toMatchObject({
+      activated: { year: w.year, day: 0, revision: w.revision },
+      trackedFrom: { year: w.year, day: 1, round: 1 },
+      coverage: 'founding',
+    });
+    // The manager taken over is tracked from the takeover as at a founding, archives or not.
+    expect(w.managerHistory).toMatchObject({ club: club.id, coverage: 'founding' });
+    expect(w.managerHistory!.trackedFrom).toMatchObject({ year: w.year, day: 0 });
+    expect(() => validateWorld(structuredClone(w))).not.toThrow();
+  });
+
+  it('prices other clubs’ managers in the owner’s money once he owns a club, read before or not', () => {
+    const w = ownerlessWorld('takeover-wages');
+    const foreign = w.clubs.find((c) => c.country === 'ESP' && c.tier === 0 && !c.representative)!;
+    // Read while nobody owns a club: his wage is in his club's money (→WORLD-13).
+    const before = clubManager(w, foreign);
+    expect(before.wage).toBe(staffQuote(w, 120 + before.ability, 'ESP'));
+    takeOver(w, atPlace(w, 1, 2).id, choice('oil'), undefined, DISABLED_RELEASE);
+    const after = clubManager(w, foreign);
+    expect(after.id).toBe(before.id);
+    expect(after.wage).toBe(staffQuote(w, 120 + after.ability));
+    expect(after.wage).not.toBe(before.wage);
+  });
+
+  it('names the career by its season, club and start, so slots tell games of one seed apart', () => {
+    const ids = (['industrial', 'oil'] as const).flatMap((tier) =>
+      [atPlace, atPlace].map((_, place) => {
+        const w = ownerlessWorld('takeover-ids');
+        return takeOver(w, atPlace(w, 1, place + 2).id, choice(tier), undefined, DISABLED_RELEASE)
+          .id;
+      }),
+    );
+    expect(new Set(ids).size).toBe(4);
+    const again = ownerlessWorld('takeover-ids');
+    expect(
+      takeOver(again, atPlace(again, 1, 2).id, choice('industrial'), undefined, DISABLED_RELEASE)
+        .id,
+    ).toBe(ids[0]);
   });
 
   it('refuses what a takeover cannot be', () => {

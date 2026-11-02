@@ -5,12 +5,10 @@ import { expect, test, type Page } from '@playwright/test';
 import { chooseLevel, configureResponsibilities, openOffice } from './events';
 import { horizontalOverflow, settle } from './layout';
 import { approvalQueue, approvalRows, leaveOffice } from './office';
+import { startCareer } from './start';
 async function foundQuiet(page: Page) {
   await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill('intervention-levels');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page, { seed: 'intervention-levels' });
 }
 test('mobile clock keeps actions in one row and advances at the dropdown pace', async ({
   page,
@@ -22,7 +20,7 @@ test('mobile clock keeps actions in one row and advances at the dropdown pace', 
     responsibilities: { recruitment: 'delegated', sales: 'delegated' },
   });
   const date = page.getByTestId('game-date');
-  await expect(date).toHaveText('1950.08.01');
+  await expect(date).toHaveText('1930.08.01');
   const controls = page.getByRole('region', { name: '시즌 진행', exact: true });
   const pace = controls.getByRole('combobox', { name: '자동 진행 배속', exact: true });
   const toggle = controls.getByRole('button', { name: '자동 진행 시작', exact: true }),
@@ -62,16 +60,16 @@ test('mobile clock keeps actions in one row and advances at the dropdown pace', 
   // Selecting a pace only sets the pace (→WEB-18): the date stays until play.
   await chooseOption(pace, 'x1');
   await page.waitForTimeout(1500);
-  await expect(date).toHaveText('1950.08.01');
+  await expect(date).toHaveText('1930.08.01');
   // Play starts the clock. The owner's stop first shows the days computed ahead at the pace, at
   // most three at x1, and management stays locked until they are shown (→WEB-18/97).
   await toggle.click();
   await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toBeDisabled();
-  await expect(date).toHaveText('1950.08.02');
+  await expect(date).toHaveText('1930.08.02');
   await stop.click();
   await expect(page.getByRole('button', { name: /진행 방식 변경/ })).toBeEnabled();
   const stopped = await date.innerText();
-  expect(['1950.08.02', '1950.08.03', '1950.08.04', '1950.08.05']).toContain(stopped);
+  expect(['1930.08.02', '1930.08.03', '1930.08.04', '1930.08.05']).toContain(stopped);
   await page.waitForTimeout(1200);
   await expect(date).toHaveText(stopped);
   // x10 runs on to the eve of our first match, computing nothing past it, and the clock stops
@@ -82,7 +80,7 @@ test('mobile clock keeps actions in one row and advances at the dropdown pace', 
   await toggle.click();
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
-  await expect(date).toHaveText('1950.08.07');
+  await expect(date).toHaveText('1930.08.07');
   await expect(toggle).toBeVisible();
   // The card decides the match only; whether eves stop lives in the intervention dialog (→WEB-71).
   await expect(eve.getByRole('checkbox')).toHaveCount(0);
@@ -190,13 +188,12 @@ test('a hidden tab plays on like an idle game, names the date in its title, and 
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  const club = await startCareer(page);
   // Level 4 stops only for money, so a slow browser that reaches the first match plays it through.
   await chooseLevel(page, 4);
   const date = page.getByTestId('game-date');
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-  await expect(date).toHaveText('1950.08.02');
+  await expect(date).toHaveText('1930.08.02');
   // Headless engines keep pages visible; exercise the real browser listener with its hidden input.
   const setHidden = (hidden: boolean) =>
     page.evaluate((hidden) => {
@@ -207,7 +204,7 @@ test('a hidden tab plays on like an idle game, names the date in its title, and 
   const hidden = await date.textContent();
   // The clock keeps its pace behind other windows and the tab title tells the date (→WEB-64).
   await expect(date).not.toHaveText(hidden!);
-  await expect(page).toHaveTitle(/^▶ 1950년 \d+월 \d+일 · Haeram Athletic$/);
+  await expect(page).toHaveTitle(new RegExp(`^▶ 1930년 \\d+월 \\d+일 · ${club}$`));
   await setHidden(false);
   await expect(page).toHaveTitle('Haeram — Football Archives');
   await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
@@ -248,8 +245,7 @@ test('a page that closed with the clock running plays the time away on return an
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page);
   await chooseLevel(page, 4);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   // The owner left the clock running at x1 and came back ten minutes later; the away limit is
@@ -275,7 +271,7 @@ test('a page that closed with the clock running plays the time away on return an
   await page.reload();
   const summary = page.getByRole('dialog', { name: '자리를 비운 동안' });
   await expect(summary).toBeVisible({ timeout: 30000 });
-  await expect(summary).toContainText('1950년 8월 1일 →');
+  await expect(summary).toContainText('1930년 8월 1일 →');
   await expect(summary).toContainText(/\d+경기 · \d+승 \d+무 \d+패|경기 없음/);
   await expect(summary).toContainText('리그 순위');
   await expect(summary).toContainText('계속 진행 중');

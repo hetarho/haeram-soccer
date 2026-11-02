@@ -17,7 +17,7 @@ import { clubOf, quote } from '../../packages/engine/src/world';
 import type { World } from '../../packages/contracts/src/types';
 import { horizontalOverflow } from './layout';
 import { acknowledgeEvents, chooseLevel } from './events';
-import { chooseOption } from './select';
+import { startCareer, startFlow } from './start';
 import { clubhouseTab } from './competition-navigation';
 import {
   aroundOffice,
@@ -45,18 +45,10 @@ const exportWorld = (page: Page): Promise<World> =>
     return (await decode(raw)).world;
   });
 
+/** Takes the seed's first club over, with `preset` as its direction when named (→WEB-15). */
 async function found(page: Page, seed: string, preset?: string) {
   await page.goto('/');
-  if (preset)
-    await chooseOption(
-      page.getByTestId('club-founding').getByRole('combobox', { name: '구단 운영' }),
-      preset,
-    );
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill(seed);
-  await page.getByRole('button', { name: '쉬움' }).click();
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page, { seed, preset });
 }
 
 /** The owner office's area `area`, the direction in force unless named (→WEB-39, WEB-110). */
@@ -76,7 +68,7 @@ async function playNext(page: Page) {
 }
 
 test('older operations addresses open their 구단 운영 section', async ({ page }) => {
-  // Founds a club, then reloads the app cold for each of eight addresses; slow CI browsers need longer.
+  // Takes a club over, then reloads the app cold for each of eight addresses; slow CI browsers need longer.
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
   await found(page, 'direction-addresses');
@@ -124,7 +116,7 @@ test('older operations addresses open their 구단 운영 section', async ({ pag
 /** Loads a career built in Node through the slot import, as a saved game opens. */
 async function importCareer(page: Page, w: World, name: string) {
   await page.goto('/');
-  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
+  await expect(startFlow(page)).toBeVisible();
   await page
     .locator('input[type=file]')
     .last()
@@ -182,7 +174,7 @@ test('pays sponsor installments only for league games after the actual contract'
   await page.setViewportSize({ width: 390, height: 844 });
   await found(page, 'sponsor-installment-ui');
   const before = await exportWorld(page);
-  // A 1950 club in England has only the local slot open (→ECON-8).
+  // A 1930 club in England has only the local slot open (→ECON-8).
   const offer = sponsorOffers(before, 'local').find((candidate) => candidate.kind === 'stable')!;
   await openBusiness(page, '후원');
   await expect(page.locator('[data-operations-view="sponsor"]')).toContainText(
@@ -264,13 +256,13 @@ test("at level 4 the commercial staff sign an empty slot's best offer", async ({
   await expect(page.getByTestId('decision-owner-sponsors')).toContainText('자동');
 });
 
-test('builds 지역 기반 over real rounds from the 지역 investment founded with', async ({
+test('builds 지역 기반 over real rounds from the 지역 investment taken over with', async ({
   page,
 }) => {
-  // Founds a club and plays real rounds through the owner's event cards; slow CI browsers need longer.
+  // Takes a club over and plays real rounds through the owner's event cards; slow CI browsers need longer.
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
-  // 유스 순혈주의 founds 주변 투자 at 지역 상권 투자 (→ECON-22); no control changes it later.
+  // 유스 순혈주의 sets 주변 투자 at 지역 상권 투자 (→ECON-22); no control changes it later.
   await found(page, 'local-base-ui', 'local-pride');
   await openBusiness(page);
   // 주변 투자 is a row of the 지역 area, read beside the 지역 기반 it builds (→ECON-34, WEB-14).
@@ -296,11 +288,12 @@ test('builds 지역 기반 over real rounds from the 지역 investment founded w
   await expect(local).toContainText(`지역 기반 ${Math.round(grown.localBase!)}`);
 });
 
-test('reads the ticket price founded with and charges it at an actual home gate', async ({
+test('reads the ticket price taken over with and charges it at an actual home gate', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  // 상업 제국 founds the ticket at 비싸게 (→ECON-17); no control changes it later (→WEB-14).
+  // 상업 제국 sets the ticket at 비싸게 (→ECON-17); no control changes it later (→WEB-14).
+  // The seed's club opens its league at home.
   await found(page, 'ticket-draft-ui', 'commercial');
   const before = await exportWorld(page);
   expect(before.ticket).toBe(0.08);
@@ -365,7 +358,7 @@ test('reads a genuine negative operating balance with no owner capital to add', 
   expect(BigInt((await exportWorld(page)).cash)).toBe(BigInt(fixture.cash));
 });
 
-test('ends a bankrupt career on the game-over page and founds a new club from it', async ({
+test('ends a bankrupt career on the game-over page and starts a new game from it', async ({
   page,
 }) => {
   const fixture = createWorld({
@@ -381,7 +374,7 @@ test('ends a bankrupt career on the game-over page and founds a new club from it
   expect(fixture.bankrupt).toBeDefined();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
+  await expect(startFlow(page)).toBeVisible();
   await page
     .locator('input[type=file]')
     .last()
@@ -396,6 +389,6 @@ test('ends a bankrupt career on the game-over page and founds a new club from it
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   await over.getByRole('button', { name: '이 슬롯에서 새 게임', exact: true }).click();
-  await expect(page.getByTestId('club-founding')).toContainText('슬롯 1 · 새 게임');
-  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeVisible();
+  await expect(startFlow(page)).toContainText('슬롯 1 · 새 게임');
+  await expect(startFlow(page).getByTestId('start-tiers')).toBeVisible();
 });

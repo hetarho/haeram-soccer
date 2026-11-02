@@ -1,5 +1,6 @@
 import type { GameSettings, World } from '../../../../packages/contracts/src/types';
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
+import { careerEnded } from '../../../../packages/contracts/src/owner';
 import type { ClientState, GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
 import { gameActionsBlocked, gameStore } from '../runtime/store';
@@ -7,7 +8,7 @@ import { applyResponsibilitySettings } from './intervention';
 
 export function modeSwitchBlocked(state: ClientState) {
   const w = state.view?.world;
-  return !w || !!(gameActionsBlocked(state) || w.critical || w.bankrupt);
+  return !w || !!(gameActionsBlocked(state) || w.critical || careerEnded(w));
 }
 export function settingsForMode(w: World, mode: GameSettings['mode']): GameSettings {
   const settings = settingsOf(w);

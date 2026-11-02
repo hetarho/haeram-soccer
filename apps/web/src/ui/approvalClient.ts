@@ -1,4 +1,5 @@
 import type { GameClient } from '../runtime/client';
+import { careerEnded } from '../../../../packages/contracts/src/owner';
 import { gameActionsBlocked } from '../runtime/store';
 import { approvalRequests } from '../runtime/progression';
 import { answersRequest, type ApprovalRequest } from './eventRouting';
@@ -28,7 +29,7 @@ export function approvalClient(
       !isCurrent() ||
       gameActionsBlocked(client.state) ||
       w.critical ||
-      w.bankrupt
+      careerEnded(w)
     )
       return;
     if (!pending()) {

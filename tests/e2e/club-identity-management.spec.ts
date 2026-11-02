@@ -11,6 +11,7 @@ import { continueSlot } from './slots';
 import { openSaveMenu } from './save-menu';
 import { leaveOffice, openDirectionInForce, openOfficeArea } from './office';
 import { importResponsibilityCareer } from './responsibility-fixtures';
+import { fundClub } from './start';
 import {
   adoptButton,
   adoptDraft,
@@ -28,7 +29,6 @@ import {
   draftsPanel,
   exportRaw,
   exportWorld,
-  foundHere,
   hud,
   identityCommands,
   newGameIn,
@@ -40,6 +40,7 @@ import {
   refuseNextDesignCommand,
   requestButton,
   savedWorld,
+  takeOverHere,
   watchIdentityCommands,
 } from './club-identity-helpers';
 
@@ -51,17 +52,22 @@ import {
  * and the commands the page actually sends its engine worker.
  */
 
-const NAME = 'Identity Works FC';
-/** Commission colours from the designer's palette that no founding design here uses. */
+/** Commission colours from the designer's palette. */
 const ROYAL = '#1f4fd1';
 const GOLD = '#fcbf49';
 const RED = '#d62828';
 const BIG = (value: string) => BigInt(value);
 
-async function found(page: Page, seed: string, name = NAME) {
+/**
+ * Takes the seed's club over and funds it, resolving with its name: a 1930 club is taken over with
+ * no cash, and every designer here is paid from the club's (→OWNER-9).
+ */
+async function found(page: Page, seed: string) {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await foundHere(page, name, seed);
+  const name = await takeOverHere(page, seed);
+  await fundClub(page);
+  return name;
 }
 const ownIdentity = async (page: Page) => ownClub(await exportWorld(page)).identity!;
 /** The designer step's terms: the fee and how many drafts that designer sends. */
@@ -73,7 +79,7 @@ test('a commission changes nothing until a draft is adopted, and the adopted cre
 }) => {
   test.slow();
   await watchIdentityCommands(page);
-  await found(page, 'identity-management-palette');
+  const name = await found(page, 'identity-management-palette');
   const before = await savedWorld(page);
   const view = await openDesign(page);
   await expect(crestFill(view, ownClub(before).identity!.crest.primary)).not.toHaveCount(0);
@@ -114,11 +120,11 @@ test('a commission changes nothing until a draft is adopted, and the adopted cre
   await openLeague(page);
   const own = page
     .getByRole('table', { name: '리그 순위표' })
-    .getByRole('button', { name: `${NAME} 팀 정보`, exact: true })
+    .getByRole('button', { name: `${name} 팀 정보`, exact: true })
     .first();
   await expect(crestFill(own, ROYAL)).not.toHaveCount(0);
   await own.click();
-  const sheet = page.getByRole('dialog', { name: NAME, exact: true });
+  const sheet = page.getByRole('dialog', { name, exact: true });
   await expect(crestFill(sheet, ROYAL)).not.toHaveCount(0);
   await page.keyboard.press('Escape');
   await expect(sheet).toHaveCount(0);
@@ -237,7 +243,7 @@ test('another game never sees the commission, which waits in its own game', asyn
   const view = await openDesign(page);
   const waiting = await commission(page, view, [ROYAL]);
   await newGameIn(page, 2);
-  await foundHere(page, 'Second Design Club', 'identity-management-slot-two');
+  await takeOverHere(page, 'identity-management-slot-two');
   expect('designCommission' in (await savedWorld(page))).toBe(false);
   const second = await openDesign(page);
   await expect(appliedPanel(second)).toBeVisible();

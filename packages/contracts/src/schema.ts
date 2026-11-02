@@ -905,6 +905,7 @@ const ownerState = z.strictObject({
     debt: amount,
     fortune: amount,
     currency: text,
+    lastIncome: amount.optional(),
   }),
   seasonRecords: z
     .array(

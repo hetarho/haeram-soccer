@@ -123,11 +123,14 @@ const cache = new Map<string, MarketManager>();
 export function clubManager(w: World, club: Club): MarketManager {
   const [count, since] = w.managerMarket?.clubs[club.id] ?? [0, FOUNDING_YEAR];
   const key = `${w.seed}:club-manager:${club.id}:${count}`;
-  const cached = `${key}:${since}:${club.strength}:${w.year}`;
+  const code = moneyCountry(club);
+  // Before the takeover nobody's country prices him: his club's does (→WORLD-13); after it, the
+  // owner's club's. The money that prices him is part of who he is in the cache.
+  const priced = hasOwner(w) ? clubOf(w).country : code;
+  const cached = `${key}:${since}:${club.strength}:${w.year}:${priced}`;
   const hit = cache.get(cached);
   if (hit) return hit;
   const r = random(key);
-  const code = moneyCountry(club);
   const style = MANAGER_STYLES[integer(r, 0, MANAGER_STYLES.length - 1)],
     info = STYLE_INFO[style],
     drawn = makeManager(code, key, since, 1, style);
@@ -143,8 +146,7 @@ export function clubManager(w: World, club: Club): MarketManager {
     philosophy: info.tactic ?? drawn.philosophy,
     ability: level,
     potential,
-    // Before the takeover nobody's country prices him: his club's does (→WORLD-13).
-    wage: hasOwner(w) ? staffQuote(w, 120 + level) : staffQuote(w, 120 + level, code),
+    wage: staffQuote(w, 120 + level, priced),
     since,
     until: w.year + info.term,
   };

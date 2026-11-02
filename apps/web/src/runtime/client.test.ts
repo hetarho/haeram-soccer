@@ -832,12 +832,12 @@ describe('full match-model activation (→SAVE-23)', () => {
 });
 
 /**
- * A current career under the rules-4.0.0 label that game version 0.7.0 continues, the game in play
- * at generation 7 (→SAVE-10).
+ * A founded career of the rules-4.0.0 line (game version 0.7.0), the game in play at generation 7,
+ * written as that line wrote it: the full match model and the managers' history.
  */
 async function rules4Checkpoint() {
   const career = simulatedWorld(founding, { rounds: 2 });
-  const raw = await encode({ ...structuredClone(career), engine: '4.0.0' }, 7, 6);
+  const raw = await encode({ ...structuredClone(career), engine: '0.7.0' }, 7, 6);
   storage.setItem('haeram-soccor:slot:a', raw);
   storage.setItem(
     'haeram-soccor:manifest',
@@ -846,32 +846,26 @@ async function rules4Checkpoint() {
   return { career, raw };
 }
 
-describe('rules-4.0.0 checkpoints in game version 0.7.0 (→SAVE-10)', () => {
-  it('a rules-4.0.0 checkpoint loads and is written as 0.7.0, its facts unchanged', async () => {
-    const { career, raw } = await rules4Checkpoint();
+describe('founded rules-4.0.0-line careers in game version 0.8.0 (→SAVE-26)', () => {
+  it('the writer clears a 0.7.0 career once and says so; a new game starts', async () => {
+    await rules4Checkpoint();
     const client = new GameClient(() => {});
     clients.push(client);
     await client.start();
     expect(client.state.error).toBeUndefined();
-    expect(client.state.view!.world.engine).toBe(CURRENT_ENGINE_VERSION);
-    const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
-    expect(manifest).toMatchObject({ worldId: career.id, generation: 8, parentGeneration: 7 });
-    const saved = await decode(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'b' : 'a'}`)!);
-    // Only the version label and the world revision of the activation change.
-    expect(saved.envelope.engine).toBe(CURRENT_ENGINE_VERSION);
-    expect(canonical(saved.world)).toBe(
-      canonical({ ...career, engine: CURRENT_ENGINE_VERSION, revision: career.revision + 1 }),
+    expect(client.state.view).toBeUndefined();
+    expect(ACTIVE_SAVE_KEYS.map((key) => storage.getItem(key))).toEqual([null, null, null]);
+    expect(notifications().map((item) => item.text)).toContain(
+      `이전 규칙 커리어 1개를 정리했어요. 게임 버전 ${CURRENT_ENGINE_VERSION}에서는 구단을 인수해 새 커리어를 시작해요.`,
     );
-    // The career as it was stays the previous copy until a newer save commits.
-    expect(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'a' : 'b'}`)).toBe(raw);
-    // Loading it again changes nothing.
-    const committed = new Map(storage.data);
+    // Nothing left to clear: loading again says nothing more.
+    const said = notifications().length;
     await client.reload();
-    expect(storage.data).toEqual(committed);
+    expect(notifications()).toHaveLength(said);
   });
 
-  it('a read-only view loads a 4.0.0 save without writing it', async () => {
-    const { career } = await rules4Checkpoint();
+  it('a read-only tab leaves a 0.7.0 save as stored and names its rules', async () => {
+    await rules4Checkpoint();
     const stored = new Map(storage.data);
     vi.stubGlobal('navigator', {
       locks: {
@@ -883,10 +877,75 @@ describe('rules-4.0.0 checkpoints in game version 0.7.0 (→SAVE-10)', () => {
     clients.push(reader);
     await reader.start();
     expect(reader.state.readonly).toBe(true);
-    expect(reader.state.error).toBeUndefined();
-    expect(reader.state.view!.world.id).toBe(career.id);
-    expect(reader.state.view!.world.engine).toBe('4.0.0');
+    expect(reader.state.view).toBeUndefined();
+    expect(reader.state.errorCode).toBe('save-compatibility');
+    expect(reader.state.error).toContain('규칙 0.7.0 커리어');
+    expect(reader.earlierRules()).toBe('0.7.0');
     expect(storage.data).toEqual(stored);
+  });
+});
+
+describe('a new game by takeover (→WEB-2, WORLD-13, ECON-38, SAVE-27)', () => {
+  const choice = {
+    tier: 'oil' as const,
+    traits: ['talisman' as const, 'fansFriend' as const],
+    decade: 1930 as const,
+    seed: 'client-takeover',
+  };
+  it('generates the world, reads a club sheet, takes the club over and saves the career whole', async () => {
+    const client = new GameClient(() => {});
+    clients.push(client);
+    await client.start();
+    const generated = await client.generate(choice);
+    expect(generated?.ok).toBe(true);
+    // Nothing is in play or saved until the takeover (→WORLD-13).
+    expect(client.state.view).toBeUndefined();
+    expect(ACTIVE_SAVE_KEYS.map((key) => storage.getItem(key))).toEqual([null, null, null]);
+    const start = client.state.start!;
+    expect(start.choice).toEqual(choice);
+    expect(BigInt(start.fortune!)).toBeGreaterThan(0n);
+    const club = start.listings!.find((listing) => listing.affordable && listing.division === 0)!;
+    expect(club).toBeDefined();
+    const sheet = await client.clubSheet(club.clubId);
+    expect(sheet!.squad.length).toBeGreaterThan(10);
+    expect(sheet!.stadium.seats).toBeGreaterThan(0);
+    await expect(client.clubSheet('nobody')).rejects.toThrow('인수할 수 없는 구단입니다.');
+
+    const reply = await client.takeOver(club.clubId, 'youth-academy');
+    expect(reply?.ok).toBe(true);
+    expect(client.state.start).toBeUndefined();
+    const w = client.state.view!.world;
+    expect(w.playerClub).toBe(club.clubId);
+    expect(w.engine).toBe(CURRENT_ENGINE_VERSION);
+    expect(w.owner).toMatchObject({ tier: 'oil', traits: choice.traits });
+    expect(w.owner!.takeover).toMatchObject({ year: 1930, clubId: club.clubId });
+    await client.whenSaved();
+    expect(client.state.savedRevision).toBe(w.revision);
+
+    // The committed checkpoint is the career as it stands, owner and all (→SAVE-27).
+    const reader = new GameClient(() => {});
+    clients.push(reader);
+    await reader.start();
+    const loaded = reader.state.view!.world;
+    expect(loaded.id).toBe(w.id);
+    expect(loaded.owner).toEqual(w.owner);
+    expect(loaded.loan).toEqual(w.loan);
+    expect(loaded.clubs.map((c) => c.books)).toEqual(w.clubs.map((c) => c.books));
+    expect(loaded.matchModel?.coverage).toBe('founding');
+  });
+
+  it('keeps a failed generation with the start and refuses a takeover before one', async () => {
+    const client = new GameClient(() => {});
+    clients.push(client);
+    await client.start();
+    expect(await client.takeOver('any')).toBeUndefined();
+    expect(client.state.error).toContain('먼저 세계를 생성하세요.');
+    // A seed of spaces alone is no seed (→WORLD-13).
+    await client.generate({ ...choice, seed: '   ' });
+    expect(client.state.start?.error).toContain('시드를 확인해 주세요.');
+    expect(client.state.start?.listings).toBeUndefined();
+    client.leaveStart();
+    expect(client.state.start).toBeUndefined();
   });
 });
 

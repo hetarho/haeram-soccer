@@ -6,6 +6,7 @@ import { test, expect } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
 import { leaveOffice, openOfficeArea } from './office';
 import { savedWorld } from './club-identity-helpers';
+import { startCareer } from './start';
 
 test("reads the manager's XI on the mobile report, plays it and shows earned finances", async ({
   page,
@@ -14,11 +15,7 @@ test("reads the manager's XI on the mobile report, plays it and shows earned fin
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill('lineup-ui-regression');
-  await page.getByRole('button', { name: '쉬움' }).click();
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page, { seed: 'lineup-ui-regression' });
   await delegateSales(page);
   // Before the first match the report opens from home's next-match card.
   const hub = page.getByTestId('club-hub');
@@ -80,8 +77,7 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     await page.goto('/');
-    await page.getByRole('button', { name: '클럽 창단' }).click();
-    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await startCareer(page);
     await delegateSales(page);
     await expect(page.getByTestId('club-hub')).toBeVisible();
     // Level 4 stops only for money, so an incoming offer cannot interrupt the clock here.
@@ -95,7 +91,7 @@ for (const viewport of [
     await clubhouseTab(page).click();
     const date = page.getByTestId('game-date');
     await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-    await expect(date).toHaveText('1950.08.02');
+    await expect(date).toHaveText('1930.08.02');
     const menuButton = page.getByRole('button', { name: '설정', exact: true });
     await menuButton.click();
     const menu = page.getByRole('dialog', { name: '설정' });
@@ -136,8 +132,7 @@ test('opens the next report from the theatre while keeping the recorded score an
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page);
   await delegateSales(page);
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await watchNext(page);

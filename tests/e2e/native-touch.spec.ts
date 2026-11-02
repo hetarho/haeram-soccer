@@ -5,8 +5,9 @@ import { openPlayerSheet, watchNext } from './watch';
 import { chooseOption } from './select';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { COUNTRIES } from '../../packages/catalogs/src/index';
-import { expectHomeBounds, expectViewFits, settle } from './layout';
+import { expectHomeBounds, expectViewFits, horizontalOverflow, settle } from './layout';
 import { chooseLevel, reportKit } from './events';
+import { generateWorld, openClub, startCareer, takeOverClub } from './start';
 
 async function expectTouchControl(
   control: Locator,
@@ -47,32 +48,31 @@ async function expectCompactDocument(page: Page, viewport: { width: number; heig
 
 async function found(page: Page, seed: string) {
   await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill(seed);
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page, { seed });
 }
 
 for (const viewport of [
   { width: 360, height: 740 },
   { width: 390, height: 844 },
 ]) {
-  test(`keeps founding and match preparation selectors touchable at ${viewport.width}x${viewport.height}`, async ({
+  test(`keeps start and match preparation selectors touchable at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {
-    // Founding, preparation and match inspection in one journey; slow CI browsers need longer.
+    // The start, preparation and match inspection in one journey; slow CI browsers need longer.
     test.slow();
     await page.setViewportSize(viewport);
     await page.goto('/');
-    const country = page.getByRole('combobox', { name: '창단 국가', exact: true });
+    const listing = await generateWorld(page, { seed: `native-preparation-${viewport.width}` });
+    // The takeover list's country filter is the start's touch select (→WEB-15).
+    const country = listing.getByRole('combobox', { name: '국가', exact: true });
     await expectTouchControl(country, viewport);
     await chooseOption(country, 'FRA');
     await expect(country).toHaveAttribute('data-value', 'FRA');
-    await expectCompactDocument(page, viewport);
-    await page.getByText('고급 설정', { exact: true }).click();
-    await page.getByLabel('세계 생성 시드').fill(`native-preparation-${viewport.width}`);
-    await page.getByRole('button', { name: '클럽 창단' }).click();
-    await expect(page.getByTestId('club-hub')).toBeVisible();
+    // The list scrolls by design; nothing on it is wider than the phone.
+    expect(page.viewportSize()).toEqual(viewport);
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+    const { name } = await openClub(listing);
+    await takeOverClub(page, name);
     await expectHomeBounds(page);
     // Play below runs the clock briefly in the open window; an offer card must not cover
     // the preparation controls this test measures, so offers go to the staff (level 4).
@@ -181,6 +181,6 @@ for (const viewport of [
       1,
     );
     // Exploring the market and other leagues advanced no day.
-    await expect(await clubhouseDate(page)).toHaveText('1950.08.01');
+    await expect(await clubhouseDate(page)).toHaveText('1930.08.01');
   });
 }

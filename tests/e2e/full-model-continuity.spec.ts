@@ -9,6 +9,7 @@ import { continuityCareer, FAST_MINUTE_MS, FAST_SPEED } from '../fixtures/full-m
 import { exportRaw, exportWorld } from './club-identity-helpers';
 import { horizontalOverflow } from './layout';
 import { importResponsibilityCareer } from './responsibility-fixtures';
+import { startFlow } from './start';
 import {
   closeMatchDetails,
   openMatchDetails,
@@ -246,7 +247,7 @@ for (const viewport of VIEWPORTS)
     try {
       const other = await elsewhere.newPage();
       await other.goto(new URL('/', page.url()).href);
-      await expect(other.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
+      await expect(startFlow(other)).toBeVisible();
       await other
         .locator('input[type=file]')
         .last()

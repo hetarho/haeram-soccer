@@ -5,6 +5,8 @@ import { encode } from '../../apps/web/src/adapters/persistence';
 import { DISABLED_RELEASE } from '../fixtures/releases';
 import { withoutManagerHistory } from '../fixtures/worlds';
 import { openSaveMenu } from './save-menu';
+import { startCareer, startFlow } from './start';
+import { CURRENT_ENGINE_VERSION } from '../../packages/contracts/src/versions';
 
 /**
  * A career of the current rules, one round in, founded before the full match model's release, so
@@ -75,14 +77,12 @@ test('recognized legacy gameplay resets on writer activation and new careers rel
     .getByRole('listitem', { name: '슬롯 1 · 빈 슬롯' })
     .getByRole('button', { name: '새 게임', exact: true })
     .click();
-  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeVisible();
+  await expect(startFlow(page)).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();
   expect(await page.evaluate(() => localStorage.getItem('unrelated-preference'))).toBe('keep');
   // The device strategy library of earlier versions goes when the writer starts (→SAVE-25).
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:strategies'))).toBeNull();
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  await startCareer(page, { seed: 'legacy-reset-takeover' });
   // The new career's checkpoint is in IndexedDB, none in localStorage (→SAVE-3).
   expect(
     JSON.parse((await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest')))!).slot,
@@ -90,50 +90,48 @@ test('recognized legacy gameplay resets on writer activation and new careers rel
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();
   await page.reload();
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  expect(JSON.parse(await exportRaw(page)).engine).toBe('0.7.0');
+  expect(JSON.parse(await exportRaw(page)).engine).toBe(CURRENT_ENGINE_VERSION);
 });
 
-test('a rules-4.0.0 save opens as game version 0.7.0, read-only tabs leaving it as stored', async ({
+test('a founded 0.7.0 career is cleared once by the writer, read-only tabs leaving it as stored (→SAVE-26)', async ({
   page,
   context,
 }) => {
-  // The rules line 0.7.0 continues: only its version label is rewritten (→SAVE-10).
+  // The rules-4.0.0 line, as game version 0.7.0 wrote it: the full match model and the managers'
+  // history in their containers.
   const { world } = await current();
-  const stored = await encode({ ...world, engine: '4.0.0' });
+  const stored = await encode({ ...world, engine: '0.7.0' });
+  expect(JSON.parse(stored).schema).toBeGreaterThanOrEqual(3);
   const holder = await context.newPage();
   await holder.goto('/');
-  await expect(holder.getByRole('button', { name: '클럽 창단' })).toBeVisible();
+  await expect(startFlow(holder)).toBeVisible();
   await seed(page, stored);
-  // A read-only tab shows the career and never writes the upgrade; with another tab playing, its
-  // start screen is the slot list, so it opens the career by a deep link.
-  await page.goto('/journal');
-  await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
-  await expect(page.getByRole('status').filter({ hasText: '읽기 전용' }).first()).toBeVisible();
+  // A read-only tab names the earlier rules and never writes.
+  await page.goto('/');
+  await expect(page.getByRole('alert')).toContainText('규칙 0.7.0');
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBe(stored);
   await holder.close();
-  // Taking over as the writer activates it as 0.7.0 and commits it to IndexedDB, whose first
-  // commit moves the career out of localStorage (→SAVE-3).
+  // The writer clears it once and says so (→WEB-62's release reset); a new game starts.
   await expect
     .poll(() => page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a')))
     .toBeNull();
-  expect(JSON.parse(await exportRaw(page))).toMatchObject({ engine: '0.7.0', worldId: world.id });
   await page.reload();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
-  expect(JSON.parse(await exportRaw(page)).engine).toBe('0.7.0');
+  await expect(startFlow(page)).toBeVisible();
+  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBeNull();
 });
 
 test('earlier rules import refused', async ({ page }) => {
   const { raw } = await current();
   const earlier = JSON.stringify({ ...JSON.parse(raw), engine: '1.22.0' });
   await page.goto('/');
-  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeVisible();
+  await expect(startFlow(page)).toBeVisible();
   await page.getByLabel('기록 파일 가져오기').setInputFiles({
     name: 'earlier.json',
     mimeType: 'application/json',
     buffer: Buffer.from(earlier),
   });
   await expect(page.getByRole('alert')).toContainText(
-    '이 저장은 규칙 1.22.0 커리어입니다 — 게임 버전 0.7.0 커리어만 열 수 있습니다. 새 커리어를 시작하세요',
+    `이 저장은 규칙 1.22.0 커리어입니다 — 게임 버전 ${CURRENT_ENGINE_VERSION} 커리어만 열 수 있습니다. 새 커리어를 시작하세요`,
   );
   // Nothing changed: no career opened and nothing was stored.
   await expect(page.getByTestId('club-hub')).toHaveCount(0);
@@ -165,7 +163,7 @@ test('future selected save stays protected and exports exactly instead of downgr
 test('readonly legacy stays intact until writer handoff', async ({ page, context }) => {
   const holder = await context.newPage();
   await holder.goto('/');
-  await expect(holder.getByRole('button', { name: '클럽 창단' })).toBeVisible();
+  await expect(startFlow(holder)).toBeVisible();
   const world = withoutManagerHistory((await current()).world);
   world.engine = '2.0.0';
   const raw = await encode(world);
@@ -178,6 +176,6 @@ test('readonly legacy stays intact until writer handoff', async ({ page, context
     .getByRole('listitem', { name: '슬롯 1 · 빈 슬롯' })
     .getByRole('button', { name: '새 게임', exact: true })
     .click();
-  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeVisible();
+  await expect(startFlow(page)).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();
 });

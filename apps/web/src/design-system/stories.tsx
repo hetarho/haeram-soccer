@@ -39,6 +39,9 @@ import { ProgressControls, ProgressOverview } from '../ui/ProgressControls';
 import { ControllerBackgrounds } from './ControllerBackgrounds';
 import { ProgressModeSwitch } from '../ui/ProgressModeSwitch';
 import { HudCash } from '../ui/HudCash';
+import { OwnerSheetBody } from '../ui/OwnerSheet.tsx';
+import { GameOver } from '../ui/GameOver';
+import { FAN_MOOD } from '../../../../packages/engine/src/owner-config';
 import { AppMenu } from '../ui/AppMenu';
 import { LeagueOverview, Standings, RoundResults } from '../ui/LeagueInsights';
 import { ScorerStandings } from '../ui/ScorerPanels';
@@ -740,6 +743,125 @@ function StartFlowStory({
   );
 }
 
+/**
+ * The sample club with an owner (→OWNER): a 산업 자본가 with two traits, a quarter of his fortune
+ * staked, the takeover's loan and a 팬 민심 that `fanMood` sets, below the floor for 퇴진 압박.
+ */
+function previewOwner<T extends Pick<World, 'clubs' | 'playerClub' | 'year' | 'currency'>>(
+  w: T,
+  fanMood = 54,
+  fortune = '2400000',
+): T {
+  const own = w.clubs.find((club) => club.id === w.playerClub)!;
+  return {
+    ...w,
+    owner: {
+      tier: 'industrial',
+      traits: ['businessman', 'fansFriend'],
+      fortune,
+      stake: 25,
+      dividendShare: 0,
+      fanMood,
+      ...(fanMood < FAN_MOOD.floor ? { fanCrisis: { rounds: 3 } } : {}),
+      ...(BigInt(fortune) < 0n ? { ownerCrisis: { since: { year: w.year, day: 120 } } } : {}),
+      ffpInjections: [],
+      takeover: {
+        year: w.year,
+        clubId: own.id,
+        price: '3100000',
+        debt: '900000',
+        fortune: '5500000',
+        currency: w.currency,
+        lastIncome: '2600000',
+      },
+      seasonRecords: [],
+    },
+    loan: { balance: '900000', installment: '207880', seasonsLeft: 5 },
+  };
+}
+/** The 구단주 sheet and its statuses on the sample club (→WEB-114, OWNER-14/15). */
+function OwnerStory({ runtime, notify }: { runtime: Runtime; notify: (message: string) => void }) {
+  const { view } = runtime;
+  const [state, setState] = useState<'calm' | 'crisis'>('calm');
+  const w = state === 'calm' ? previewOwner(view.world) : previewOwner(view.world, 18, '-350000');
+  // The HUD chip and the statuses read the store: it holds the chosen state's world meanwhile.
+  useEffect(() => {
+    const world =
+      state === 'calm' ? previewOwner(view.world) : previewOwner(view.world, 18, '-350000');
+    gameStore.setState({ view: { ...view, world } });
+    return () => gameStore.setState({ view });
+  }, [state, view]);
+  return (
+    <>
+      <Segments
+        label="미리보기 상태"
+        options={[
+          ['calm', '평상시'],
+          ['crisis', '파산 위기 · 퇴진 압박'],
+        ]}
+        value={state}
+        onChange={setState}
+      />
+      <Section title="HudCash · 현금과 구단주 자금">
+        <div className="ds-row">
+          <HudCash />
+        </div>
+      </Section>
+      <Section title="CashAlarm · 구단주 위기 상태">
+        <CashAlarm />
+      </Section>
+      <Section title="OwnerSheetBody · 구단주 시트">
+        <OwnerSheetBody
+          key={state}
+          w={w as World}
+          sending={false}
+          message=""
+          onCommand={async (command) => {
+            notify(`${command.type} (미리보기)`);
+            return true;
+          }}
+        />
+      </Section>
+    </>
+  );
+}
+/** The career's last page by each cause (→WEB-56, OWNER-16). */
+function GameOverStory({
+  runtime,
+  notify,
+}: {
+  runtime: Runtime;
+  notify: (message: string) => void;
+}) {
+  const w = runtime.view.world;
+  const [cause, setCause] = useState<'club' | 'owner' | 'fans'>('club');
+  const ended = (
+    cause === 'club'
+      ? { ...w, bankrupt: { year: w.year, round: w.round, day: 200 } }
+      : { ...previewOwner(w, cause === 'fans' ? 9 : 40, '-800000'), ended: cause }
+  ) as World;
+  return (
+    <>
+      <Segments
+        label="끝난 이유"
+        options={[
+          ['club', '구단 파산'],
+          ['owner', '구단주 파산'],
+          ['fans', '구단주 퇴진'],
+        ]}
+        value={cause}
+        onChange={setCause}
+      />
+      <GameOver
+        w={ended}
+        onExport={() => notify('기록 내보내기 (미리보기)')}
+        onNew={() => notify('새 게임 (미리보기)')}
+        onSlots={() => notify('게임 슬롯 (미리보기)')}
+      />
+    </>
+  );
+}
+
 function Alerts({ runtime }: { runtime: Runtime }) {
   const { view, controller } = runtime;
   const w = view.world;
@@ -1091,6 +1213,12 @@ export default function StoryRenderer({
         break;
       case 'start-flow':
         content = <StartFlowStory runtime={runtime} notify={notify} />;
+        break;
+      case 'owner-sheet':
+        content = <OwnerStory runtime={runtime} notify={notify} />;
+        break;
+      case 'game-over':
+        content = <GameOverStory runtime={runtime} notify={notify} />;
         break;
       case 'slots':
         content = <Slots runtime={runtime} />;

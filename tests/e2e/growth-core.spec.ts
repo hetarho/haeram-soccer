@@ -7,6 +7,7 @@ import { importResponsibilityCareer } from './responsibility-fixtures';
 import { chooseOption } from './select';
 import { enterOffice } from './office';
 import { clubhouseTab } from './competition-navigation';
+import { startCareer } from './start';
 
 async function expectTouchSize(target: Locator) {
   // Firefox's protocol subtracts rounded quad coordinates: a 44px target at a fractional y
@@ -77,12 +78,9 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     await page.goto('/');
-    await page.getByText('고급 설정', { exact: true }).click();
-    await page.getByLabel('세계 생성 시드').fill(`growth-core-${viewport.width}`);
-    await page.getByRole('button', { name: '클럽 창단' }).click();
+    // The club's home with its first checkpoint saved.
+    await startCareer(page, { seed: `growth-core-${viewport.width}` });
     const hub = page.getByTestId('club-hub');
-    await expect(hub).toBeVisible();
-    await expect(page.getByTestId('save-status')).toContainText('저장 완료');
     await expectHomeBounds(page);
     const menu = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
     const menuBounds = await menu.boundingBox();

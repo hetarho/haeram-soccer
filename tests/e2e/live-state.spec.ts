@@ -14,14 +14,12 @@ import { configureResponsibilities, matchReport } from './events';
 import { continueSlot } from './slots';
 import { chooseOption } from './select';
 import { enterOffice } from './office';
+import { startCareer } from './start';
 
 async function found(page: import('@playwright/test').Page) {
   await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill('live-tabs-quiet');
-  await page.getByRole('button', { name: '쉬움' }).click();
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('game-date')).toHaveText('1950.08.01');
+  await startCareer(page, { seed: 'live-tabs-quiet' });
+  await expect(page.getByTestId('game-date')).toHaveText('1930.08.01');
 }
 
 async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-first') {
@@ -61,9 +59,9 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
   await chooseOption(pace, 'x2');
   await expect(pace).toHaveAttribute('data-value', 'x2');
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-  // The run has left the founding day. A step that ran late carries the days it owes, so no one
+  // The run has left the takeover day. A step that ran late carries the days it owes, so no one
   // day before the match eve is sure to be on screen.
-  await expect(date).not.toHaveText('1950.08.01');
+  await expect(date).not.toHaveText('1930.08.01');
   // Looking at the league keeps the run going; the selected statistics view is kept.
   // The clubhouse detour can meet the observation before its second click. Dismiss it through
   // its real control, then reopen the unchanged work in the event order this case exercises.
@@ -89,13 +87,13 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
     .poll(
       async () =>
         (await mini.getByRole('button', { name: '자동 진행 정지' }).isVisible()) ||
-        (await eveOn('1950년 8월 7일').isVisible()) ||
-        (await reopenOn('1950년 8월 7일').isVisible()),
+        (await eveOn('1930년 8월 7일').isVisible()) ||
+        (await reopenOn('1930년 8월 7일').isVisible()),
     )
     .toBe(true);
   // An eve met inside the detour's office visit never opens its dialog there (CI WebKit
   // 41226127751): it waits behind its reopen access exactly as a dismissed report does.
-  if (await reopenOn('1950년 8월 7일').isVisible()) dismissedEve = true;
+  if (await reopenOn('1930년 8월 7일').isVisible()) dismissedEve = true;
   await expect(rankTab).toHaveAttribute('aria-selected', 'true');
   const playersTab = page.getByRole('tab', { name: '선수 기록', exact: true });
   // Cover both event orders without racing an observed report's background lock.
@@ -120,14 +118,14 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
     }
   if (dismissedEve && observation === 'interleaved') await page.getByTestId('event-pill').click();
   await expect(eveDialog).toBeVisible();
-  await expect(eveOn('1950년 8월 7일')).toBeVisible();
+  await expect(eveOn('1930년 8월 7일')).toBeVisible();
   if ((await playersTab.getAttribute('aria-selected')) !== 'true') {
     await eveDialog.getByRole('button', { name: '창 닫기', exact: true }).click();
     await playersTab.click();
     await scorerTrend.click();
     // Browsing a dismissed observation leaves its work and the calendar unchanged.
-    await reopenOn('1950년 8월 7일').click();
-    await expect(eveOn('1950년 8월 7일')).toBeVisible();
+    await reopenOn('1930년 8월 7일').click();
+    await expect(eveOn('1930년 8월 7일')).toBeVisible();
   }
   const eve = page.getByTestId('event-card');
   await expect(eve).toContainText('내일 경기');
@@ -135,13 +133,13 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
   // The played-through report leaves as the run starts its match day: the whole dialog, not only
   // its date. League shows no round (→WEB-18); the clubhouse's season card counts the match at the
   // end.
-  await expect(eveOn('1950년 8월 7일')).toHaveCount(0);
+  await expect(eveOn('1930년 8월 7일')).toHaveCount(0);
   await expect(eveDialog).toHaveCount(0);
   // On a slow browser the run reaches the next match eve before this stop lands (CI WebKit
   // 40245403294): that eve, another day's report, has stopped the clock itself and its backdrop
   // takes the click.
   const nextEve = eveDialog.filter({
-    hasNot: page.getByRole('heading', { name: '1950년 8월 7일 · 경기 준비 보고', exact: true }),
+    hasNot: page.getByRole('heading', { name: '1930년 8월 7일 · 경기 준비 보고', exact: true }),
   });
   const stop = mini.getByRole('button', { name: '자동 진행 정지' });
   while (!(await nextEve.isVisible()))
@@ -154,7 +152,7 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
   // Either stop lands once every day it computed ahead is shown, the match day included, and
   // management unlocks then (→WEB-97). The played-through report never comes back meanwhile.
   await expect(mini.getByRole('button', { name: '진행 방식 변경', exact: true })).toBeEnabled();
-  await expect(eveOn('1950년 8월 7일')).toHaveCount(0);
+  await expect(eveOn('1930년 8월 7일')).toHaveCount(0);
   if (await nextEve.isVisible())
     await nextEve.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(eveDialog).toHaveCount(0);

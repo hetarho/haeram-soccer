@@ -1,4 +1,5 @@
 /** Minimal synthetic market: three clubs and their present squads, no world generation/matches. */
+import { CURRENT_ENGINE_VERSION } from '../../contracts/src/versions';
 import type { Club, World } from '../../contracts/src/types';
 import { makeManager, makePlayer, squadPlaces } from './world';
 
@@ -22,7 +23,7 @@ export function worldMarketFixture(): World {
   ];
   return {
     schema: 1,
-    engine: '0.7.0',
+    engine: CURRENT_ENGINE_VERSION,
     catalog: 'synthetic',
     catalogHash: 'synthetic',
     id: 'market-world',

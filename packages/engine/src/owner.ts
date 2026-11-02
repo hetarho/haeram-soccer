@@ -5,7 +5,7 @@
  * careers live exactly as before.
  */
 import type { CareerDate, Command, World } from '../../contracts/src/types';
-import { DIVIDEND_SHARES } from '../../contracts/src/owner';
+import { careerEnded, DIVIDEND_SHARES } from '../../contracts/src/owner';
 import { COUNTRIES, currency } from '../../catalogs/src/index';
 import { FFP, OWNER_BUSINESS, OWNER_LIVING, OWNER_TRAITS, TAKEOVER_DEBT } from './owner-config';
 import { hasTrait } from './owner-traits';
@@ -37,13 +37,8 @@ export type OwnerCommand = Extract<
 export function hasOwner(w: Pick<World, 'playerClub'>) {
   return w.playerClub !== '';
 }
-/**
- * Whether the career is over (→OWNER-16, ECON-24): the club's bankruptcy, the owner's or 구단주
- * 퇴진. Nothing advances after it and only the inbox can be read.
- */
-export function careerEnded(w: Pick<World, 'bankrupt' | 'ended'>) {
-  return w.bankrupt !== undefined || w.ended !== undefined;
-}
+/** Whether the career is over (→OWNER-16, ECON-24); the contracts' one predicate. */
+export { careerEnded };
 
 /** 1901 price units a living-cost or exchange-rate quote reads, enough for exact minor units. */
 const PROBE = 100_000;

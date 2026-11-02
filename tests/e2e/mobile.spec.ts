@@ -5,6 +5,7 @@ import { encode } from '../../apps/web/src/adapters/persistence';
 import { createWorld } from '../../packages/engine/src/index';
 import { MANAGER_GONE } from '../../packages/engine/src/operations';
 import { horizontalOverflow, settle } from './layout';
+import { startCareer, startFlow } from './start';
 
 test.use({ viewport: { width: 390, height: 844 } });
 
@@ -12,9 +13,7 @@ test('uses reachable mobile navigation and traps modal focus without scrolling t
   page,
 }) => {
   await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill('mobile-navigation');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await startCareer(page, { seed: 'mobile-navigation' });
   const nav = page.getByRole('navigation', { name: '모바일 게임 메뉴' });
   await expect(nav).toBeVisible();
   // Six entries share the bar, 팀 just before the market, each a 44 px touch target, all in view
@@ -103,7 +102,7 @@ test('keeps confirmation actions and its close control inside a small mobile vie
 }) => {
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await startCareer(page);
   await page.getByRole('button', { name: '설정', exact: true }).click();
   await page
     .getByRole('dialog', { name: '설정' })
@@ -144,8 +143,8 @@ test('floating warnings leave the HUD and content fixed on low and phone screens
   fixture.cash = '-1';
   fixture.critical = MANAGER_GONE;
   await page.goto('/');
-  // An import before the client is ready is dropped; founding enables once it is (CI 39952590526).
-  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
+  // An import before the client is ready is dropped; the start shows once it is (CI 39952590526).
+  await expect(startFlow(page)).toBeVisible();
   await page
     .locator('input[type=file]')
     .last()

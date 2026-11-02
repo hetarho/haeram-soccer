@@ -205,7 +205,7 @@ export function fanMoodIdentity(w: World) {
  */
 export function fanMoodInjection(w: World, amount: bigint) {
   if (!live(w)) return;
-  const last = lastSeasonTurnover(w) ?? booksIncome(w),
+  const last = lastSeasonTurnover(w) ?? takeoverIncome(w),
     percent = percentOf(amount, last === undefined ? undefined : BigInt(last)),
     { perPercent, max } = FAN_MOOD.injection;
   move(w, percent === undefined ? max : Math.min(max, percent * perPercent), {
@@ -214,9 +214,13 @@ export function fanMoodInjection(w: World, amount: bigint) {
       percent === undefined ? '직전 시즌 매출 없음' : `직전 시즌 매출의 ${percent.toFixed(1)}%`,
   });
 }
-/** Last season's income in the club's books from before the takeover (→ECON-36), if kept. */
-function booksIncome(w: World) {
-  return clubOf(w).books?.seasons.find((season) => season.year === w.year - 1)?.income;
+/**
+ * The bought club's last income before the takeover (→ECON-36), kept with the takeover's facts in
+ * its money: the turnover of the owner's first season, before any season of his has closed.
+ */
+function takeoverIncome(w: World) {
+  const takeover = w.owner?.takeover;
+  return takeover?.year === w.year ? takeover.lastIncome : undefined;
 }
 
 /**

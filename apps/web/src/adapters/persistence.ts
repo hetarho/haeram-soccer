@@ -30,6 +30,7 @@ import {
   PARITY_LEVEL_CATALOGS,
   PRIOR_CATALOG_HASHES,
   RELEVELLED_MONEY_MESSAGE,
+  RULES_FOUR_VERSIONS,
   SUPPORTED_ENGINE_VERSIONS,
   SaveCompatibilityError,
 } from '../../../../packages/contracts/src/versions';
@@ -158,10 +159,12 @@ async function readCheckpoint(
 export async function recognizedLegacy(raw: string): Promise<boolean> {
   try {
     const { json, envelope } = await readEnvelope(raw, LEGACY_ENGINE_VERSIONS);
-    // Earlier rules were never written in the match-model or manager-history container.
+    // Rules before 4.0.0 were never written in the match-model or manager-history container; the
+    // rules-4.0.0 line was (→SAVE-23/24, SAVE-26).
     if (
-      envelope.schema === FULL_MODEL_CHECKPOINT_SCHEMA ||
-      envelope.schema === MANAGER_HISTORY_CHECKPOINT_SCHEMA
+      (envelope.schema === FULL_MODEL_CHECKPOINT_SCHEMA ||
+        envelope.schema === MANAGER_HISTORY_CHECKPOINT_SCHEMA) &&
+      !RULES_FOUR_VERSIONS.includes(envelope.engine)
     )
       return false;
     const packed = json as { format?: unknown; world?: Partial<World> } | null;

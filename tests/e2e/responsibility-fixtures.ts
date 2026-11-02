@@ -3,6 +3,7 @@ import { createWorld, operate, advanceDays, transferOffers } from '../../package
 import type { World } from '../../packages/contracts/src/types';
 import { ratio } from '../../packages/engine/src/primitives';
 import { encode } from '../../apps/web/src/adapters/persistence';
+import { startFlow } from './start';
 
 /** A portable checkpoint built through actual bid and settlement commands, never DOM state edits. */
 export function pendingAcquisitionCareer() {
@@ -36,7 +37,7 @@ export function pendingAcquisitionCareer() {
 }
 export async function importResponsibilityCareer(page: Page, world: World) {
   await page.goto('/');
-  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
+  await expect(startFlow(page)).toBeVisible();
   await page
     .locator('input[type=file]')
     .last()

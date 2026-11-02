@@ -1,7 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
-import { linkedIdentityColours } from '../../apps/web/src/ui/clubIdentityDraft';
 import { canonical } from '../../packages/contracts/src/index';
 import {
   KIT_ROLES,
@@ -19,7 +18,6 @@ import {
   adoptedCareer,
   containerOneCheckpoint,
   delegatedCareer,
-  FOUNDED_DESIGN,
   FUTURE_CHECKPOINTS,
   manifestOf,
   preIdentityCareer,
@@ -33,20 +31,17 @@ import {
   checkpointStorage,
   closeNotices,
   closePreparation,
-  colourCode,
   commission,
   type CommissionColours,
   committedRaw,
   continueGame,
   crestFill,
-  designInEditor,
   draftItems,
   draftsPanel,
   exportRaw,
   exportWorld,
   failableWrites,
   failWrites,
-  foundHere,
   hud,
   idbGet,
   identityCommands,
@@ -69,6 +64,7 @@ import {
   SAVE_DATA_UPDATED,
   savedWorld,
   seedCheckpoints,
+  takeOverHere,
   visiblePitch,
   watchIdentityCommands,
   watchToWhistle,
@@ -76,19 +72,21 @@ import {
 import { ALL_DELEGATED, configureResponsibilities } from './events';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { leaveOffice, operationsTabs } from './office';
+import { fundClub, startFlow } from './start';
 import { closeMatchDetails, openMatchDetails } from './watch';
 
 /**
  * KIT-9/12/15, WEB-86/87/108, SAVE-3/5/6/11/20/21/22: club designs and the kit a match was played
- * in stay exact through founding, settlement, a later adopted commission, export/import, reload,
+ * in stay exact through the takeover, settlement, a later adopted commission, export/import, reload,
  * slot parking, read-only inspection, failed writes and newer data. Evidence is the stored
  * checkpoints and the exported files decoded in Node against literal or delivered designs, beside
  * what the page draws.
  */
 
-/** The ready-made crest `FOUNDED_DESIGN` recolours: french, sash, crown. */
-const PRESET = '프렌치 방패 · 왕관';
-/** Commission colours from the designer's palette that no founded or opposing design uses. */
+/**
+ * Commission colours from the designer's palette that neither the taken-over club nor its first
+ * opponent wears (checked in Node for both seeds below).
+ */
 const COMMISSIONED = ['#ff8fab', '#4fd1a5'] as const satisfies CommissionColours;
 /** A pattern unlike `pattern`, for the wrong-pattern control. */
 const otherPattern = (pattern: ShirtPattern): ShirtPattern =>
@@ -140,7 +138,7 @@ async function expectWorn(canvas: Locator, worn: AppearanceSide, today: ShirtDes
 test.describe(() => {
   test.use({ deviceScaleFactor: 2 });
   for (const viewport of PHONE_VIEWPORTS)
-    test(`founded, worn, edited and moved by file, designs and the earlier kit stay exact at ${viewport.width}x${viewport.height}`, async ({
+    test(`taken over, worn, edited and moved by file, designs and the earlier kit stay exact at ${viewport.width}x${viewport.height}`, async ({
       page,
       browser,
     }, testInfo) => {
@@ -148,39 +146,14 @@ test.describe(() => {
       const size = `${viewport.width}x${viewport.height}`;
       await page.setViewportSize(viewport);
       await page.goto('/');
-      const design = linkedIdentityColours({
-        ...FOUNDED_DESIGN,
-        kits: {
-          ...FOUNDED_DESIGN.kits,
-          away: { ...FOUNDED_DESIGN.kits.away, trim: FOUNDED_DESIGN.kits.home.primary },
-          third: { ...FOUNDED_DESIGN.kits.third, trim: FOUNDED_DESIGN.kits.home.primary },
-        },
-      });
-      // A home/away crest and three patterned shirts, chosen in the editor (→KIT-2/4/5).
-      await foundHere(
-        page,
-        'Continuity Kit FC',
-        `identity-continuity-${viewport.width}`,
-        async (editor) => {
-          const pitch = editor.getByRole('img', { name: '경기장 유니폼 미리보기' });
-          await designInEditor(editor, design, PRESET);
-          // The previews follow the draft before 사용 (→WEB-87): colours are linked and
-          // the pitch preview paints the shirt being edited, the third, chosen last.
-          await expect(colourCode(editor, '무늬색 색 코드')).toHaveCount(0);
-          await expect
-            .poll(() => canvasPixels(pitch, design.kits.third.primary))
-            .toBeGreaterThan(20);
-          await keepScreenshot(
-            testInfo,
-            `founding crest preview ${size}`,
-            editor.getByRole('img', { name: /^엠블럼 미리보기/ }),
-          );
-          await keepScreenshot(testInfo, `founding pitch preview ${size}`, pitch);
-        },
-      );
-      const founded = ownClub(await exportWorld(page));
-      expect(founded.identity).toEqual(design);
-      expect(founded.color).toBe(design.colours[0]);
+      // The club's own crest and kits as it is taken over (→KIT-15, OWNER-4); its first match
+      // dresses it in a plain kit, so the pattern-against-pattern check below has nothing to rule.
+      await takeOverHere(page, `identity-continuity-${viewport.width}`);
+      // The commission below pays its designer from the club's cash: a 1930 club has none.
+      await fundClub(page);
+      const taken = ownClub(await exportWorld(page));
+      const design = taken.identity!;
+      expect(taken.color).toBe(design.colours[0]);
 
       // One match settled in that design; nothing owner-held stops the days before it.
       await configureResponsibilities(page, { responsibilities: ALL_DELEGATED });
@@ -253,7 +226,7 @@ test.describe(() => {
       try {
         const other = await elsewhere.newPage();
         await other.goto(new URL('/', page.url()).href);
-        await expect(other.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
+        await expect(startFlow(other)).toBeVisible();
         await other
           .locator('input[type=file]')
           .last()
@@ -338,7 +311,7 @@ test('a shirt chosen for the next fixture and a waiting commission survive reloa
 
   // A new game in slot 2 parks this one first (→SAVE-14).
   await newGameIn(page, 2);
-  await foundHere(page, 'Other Kit Club', 'identity-continuity-other');
+  await takeOverHere(page, 'identity-continuity-other');
   const index = await page.evaluate(
     () =>
       JSON.parse(localStorage.getItem('haeram-soccor:games')!) as {
@@ -435,7 +408,7 @@ test('a read-only tab installs nothing; taking ownership adopts the designs once
   test.slow();
   const holder = await context.newPage();
   await holder.goto('/');
-  await expect(holder.getByRole('button', { name: '클럽 창단' })).toBeVisible();
+  await expect(startFlow(holder)).toBeVisible();
   const legacy = preIdentityCareer();
   const raw = await containerOneCheckpoint(legacy);
   const manifest = manifestOf(raw);

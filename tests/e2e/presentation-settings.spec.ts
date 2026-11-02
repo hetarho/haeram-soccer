@@ -20,9 +20,13 @@ import { expectHomeBounds, settle } from './layout';
 import { textContrast } from './contrast';
 import { enterOffice, leaveOffice, openDirectionInForce } from './office';
 import { openSaveMenu } from './save-menu';
+import { startCareer, startFlow } from './start';
 
 const PREFERENCE_KEY = 'haeram-soccor:presentation';
 const baseline = readPresentationBaselines();
+/** A start choice in progress: the first tier card, 석유 재벌, picked over the default. */
+const draftTier = (page: Page) =>
+  startFlow(page).getByTestId('start-tiers').getByRole('button').first();
 
 for (const entry of baseline.localeRegistry.entries.filter(
   ({ id }) => id !== baseline.localeRegistry.defaultId,
@@ -37,10 +41,11 @@ for (const entry of baseline.localeRegistry.entries.filter(
     test(`shipped ${entry.id}: selection and reload at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: width === 390 ? 844 : 920 });
       await page.goto('/');
-      const founding = page.getByTestId('club-founding');
-      await expect(founding).toBeVisible();
-      const name = founding.getByLabel('클럽 이름', { exact: true });
-      await name.fill('언어 변경 뒤에도 남을 이름');
+      const start = startFlow(page);
+      await expect(start).toBeVisible();
+      const tier = draftTier(page);
+      await tier.click();
+      await expect(tier).toHaveAttribute('aria-pressed', 'true');
       await openSettings(page, 'locale');
       const control = page.getByTestId('presentation-locale');
       expect(await selectOptions(control)).toEqual(
@@ -59,7 +64,7 @@ for (const entry of baseline.localeRegistry.entries.filter(
         pack.messages['presentation.title'],
       );
       await closeSettings(page);
-      await expect(name).toHaveValue('언어 변경 뒤에도 남을 이름');
+      await expect(tier).toHaveAttribute('aria-pressed', 'true');
       await expect(page.getByTestId('presentation-settings-trigger')).toHaveText(
         pack.messages['presentation.open'],
       );
@@ -68,7 +73,7 @@ for (const entry of baseline.localeRegistry.entries.filter(
       ).toBeLessThanOrEqual(1);
       expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBeNull();
       await page.reload();
-      await expect(founding).toBeVisible();
+      await expect(start).toBeVisible();
       await expect(page.locator('html')).toHaveAttribute('lang', entry.id);
       await expect(page.locator('html')).toHaveAttribute('dir', entry.direction);
       await expect(page.getByTestId('presentation-settings-trigger')).toHaveText(
@@ -80,7 +85,7 @@ for (const entry of baseline.localeRegistry.entries.filter(
 
 type Field = 'theme' | 'locale';
 const pickerRow = { theme: /^테마 변경/, locale: /^언어 변경/ };
-/** Founding and slots open both preferences; the HUD menu hands one to a centered picker. */
+/** The start and slots open both preferences; the HUD menu hands one to a centered picker. */
 async function openSettings(page: Page, field: Field = 'theme') {
   const trigger = page.getByTestId('presentation-settings-trigger');
   if (await trigger.isVisible()) await trigger.click();
@@ -455,7 +460,7 @@ for (const width of [390, 1380])
 
 test('pending theme resources add no feedback row or picker layout shift', async ({ page }) => {
   await page.goto('/');
-  await page.getByTestId('club-founding').waitFor();
+  await startFlow(page).waitFor();
   await openSettings(page);
   const content = page.getByTestId('presentation-settings');
   await settle(page);
@@ -539,14 +544,13 @@ for (const viewport of [
   { width: 360, height: 740 },
   { width: 390, height: 844 },
 ])
-  test(`registry settings before founding, on slots and in the HUD at ${viewport.width}px`, async ({
+  test(`registry settings at the start, on slots and in the HUD at ${viewport.width}px`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
     await page.goto('/');
-    const founding = page.getByTestId('club-founding');
-    await expect(founding).toBeVisible();
-    await founding.getByLabel('클럽 이름', { exact: true }).fill('설정 뒤에도 남을 초안');
+    await expect(startFlow(page)).toBeVisible();
+    await draftTier(page).click();
     const dialog = await openSettings(page);
     await expect(dialog).toHaveAccessibleName('언어·테마 설정');
     await expectRegistryChoices(page);
@@ -559,15 +563,12 @@ for (const viewport of [
     for (const id of ['presentation-locale', 'presentation-theme'])
       expect((await page.getByTestId(id).boundingBox())!.height).toBeGreaterThanOrEqual(44);
     await closeSettings(page);
-    await expect(founding.getByLabel('클럽 이름', { exact: true })).toHaveValue(
-      '설정 뒤에도 남을 초안',
-    );
+    await expect(draftTier(page)).toHaveAttribute('aria-pressed', 'true');
     await expectHomeBounds(page);
     await expect(page.locator('html')).toHaveAttribute('lang', baseline.localeEntry.id);
     await expect(page.locator('html')).toHaveAttribute('dir', baseline.localeEntry.direction);
     expect(await background(page)).toBe(baseline.theme.tokens.palette.bg);
-    await founding.getByRole('button', { name: '클럽 창단' }).click();
-    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await startCareer(page);
     await expectMenuRegistryChoices(page);
     await page.getByRole('button', { name: '설정', exact: true }).click();
     await page
@@ -597,7 +598,7 @@ test('a failed initial default resource offers retry without creating game data'
   await expect(page.getByTestId('presentation-initial-error')).toBeVisible();
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBeNull();
   await page.getByTestId('presentation-retry').click();
-  await expect(page.getByTestId('club-founding')).toBeVisible();
+  await expect(startFlow(page)).toBeVisible();
   expect(attempts).toBeGreaterThanOrEqual(2);
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBeNull();
 });
@@ -619,7 +620,7 @@ test('denied preference storage keeps data-only selections usable for this sessi
     };
   }, PREFERENCE_KEY);
   await page.goto('/');
-  await expect(page.getByTestId('club-founding')).toBeVisible();
+  await expect(startFlow(page)).toBeVisible();
   await openSettings(page);
   await expect(page.getByTestId('presentation-session-only')).toBeVisible();
   await chooseOption(page.getByTestId('presentation-locale'), FIXTURE_LOCALE);
@@ -634,17 +635,18 @@ test('denied preference storage keeps data-only selections usable for this sessi
     }),
   ).toBe('usable');
   await page.reload();
-  await expect(page.getByTestId('club-founding')).toBeVisible();
+  await expect(startFlow(page)).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('lang', baseline.localeEntry.id);
 });
 
-test('a failed theme selection retains the usable pack and retries without losing a founding draft', async ({
+test('a failed theme selection retains the usable pack and retries without losing a start draft', async ({
   page,
 }) => {
   const fixture = await routeSyntheticPresentation(page, { failThemeOnce: true });
   await page.goto('/');
-  const name = page.getByTestId('club-founding').getByLabel('클럽 이름', { exact: true });
-  await name.fill('실패 뒤에도 남을 초안');
+  const tier = draftTier(page);
+  await tier.click();
+  await expect(tier).toHaveAttribute('aria-pressed', 'true');
   await openSettings(page);
   await chooseOption(page.getByTestId('presentation-theme'), FIXTURE_THEME);
   await expect(page.getByTestId('presentation-error')).toBeVisible();
@@ -654,7 +656,7 @@ test('a failed theme selection retains the usable pack and retries without losin
   await expect.poll(() => background(page)).toBe(FIXTURE_BACKGROUND);
   await expect(page.getByTestId('presentation-error')).toHaveCount(0);
   await closeSettings(page);
-  await expect(name).toHaveValue('실패 뒤에도 남을 초안');
+  await expect(tier).toHaveAttribute('aria-pressed', 'true');
   expect(fixture.requests.get(fixture.themeUrl)).toBeGreaterThanOrEqual(2);
   expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBeNull();
 });

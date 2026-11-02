@@ -3,6 +3,7 @@ import { delegateSales } from './events';
 import { expect, test, type Locator } from '@playwright/test';
 import { chooseOption, optionList } from './select';
 import { horizontalOverflow, settle } from './layout';
+import { generateWorld, startCareer } from './start';
 
 async function controlGeometry(control: Locator) {
   return control.evaluate((element) => {
@@ -32,10 +33,12 @@ test('selects by keyboard, exposes selection and dismisses without committing pr
   page,
 }) => {
   await page.goto('/');
-  const country = page.getByRole('combobox', { name: '창단 국가', exact: true });
+  // The takeover list's country filter: 모든 국가, then the countries from 잉글랜드 to 벨기에.
+  const listing = await generateWorld(page);
+  const country = listing.getByRole('combobox', { name: '국가', exact: true });
   await country.focus();
   await country.press('End');
-  const list = page.getByRole('listbox', { name: '창단 국가' });
+  const list = page.getByRole('listbox', { name: '국가', exact: true });
   await expect(list).toBeVisible();
   await expect(list.getByRole('option', { selected: true })).toContainText('잉글랜드');
   await expect(country).toHaveAttribute('data-value', 'ENG');
@@ -50,7 +53,7 @@ test('selects by keyboard, exposes selection and dismisses without committing pr
   await country.press('Enter');
   await expect(country).toHaveAttribute('data-value', 'POR');
   // An open select must follow the same native Tab order as a closed one. macOS WebKit
-  // skips ordinary buttons, so its next target is the advanced-settings summary.
+  // skips ordinary buttons, so its next target is the list's 인수 가능만 checkbox.
   await country.press('Tab');
   await expect(country).not.toBeFocused();
   const nativeNext = await page.evaluateHandle(() => document.activeElement);
@@ -63,10 +66,10 @@ test('selects by keyboard, exposes selection and dismisses without committing pr
     .toBe(true);
   await nativeNext.dispose();
   await country.click();
-  await page.getByRole('heading', { name: '당신의 클럽, 첫 시즌.' }).click();
+  await listing.getByRole('heading', { name: '인수할 구단' }).click();
   await expect(country).toHaveAttribute('aria-expanded', 'false');
   await expect(country).toHaveAttribute('data-value', 'POR');
-  await expect(page.getByTestId('club-founding')).toBeVisible();
+  await expect(listing).toBeVisible();
 });
 
 for (const viewport of [
@@ -78,9 +81,9 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     await page.goto('/');
-    await page.getByRole('button', { name: '클럽 창단' }).click();
+    await startCareer(page);
     await openClubRecords(page);
-    await page.getByRole('button', { name: '1950/51 구단 시즌 기록 보기', exact: true }).click();
+    await page.getByRole('button', { name: '1930/31 구단 시즌 기록 보기', exact: true }).click();
     const season = page.getByRole('combobox', { name: '기록 시즌', exact: true });
     const competition = page.getByRole('combobox', { name: '기록 대회 범위', exact: true });
     await settle(page);
@@ -128,8 +131,7 @@ for (const viewport of [
   }) => {
     await page.setViewportSize(viewport);
     await page.goto('/');
-    await page.getByRole('button', { name: '클럽 창단' }).click();
-    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await startCareer(page);
     await delegateSales(page);
     // Escape closes only the open list, never the dialog around it: the HUD's theme picker.
     await page.getByRole('button', { name: '설정', exact: true }).click();

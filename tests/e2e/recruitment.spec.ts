@@ -28,6 +28,7 @@ import type { World, WorldMarketOffer } from '../../packages/contracts/src/types
 import { horizontalOverflow } from './layout';
 import { chooseLevel, closeOutcome, setResponsibility } from './events';
 import { clubhouseTab, primaryEntry } from './competition-navigation';
+import { fundClub, startCareer, type CareerStart } from './start';
 
 async function exportWorld(page: Page): Promise<World> {
   await page.getByRole('button', { name: '설정', exact: true }).click();
@@ -40,13 +41,16 @@ async function exportWorld(page: Page): Promise<World> {
   return (await decode(raw)).world;
 }
 
-async function foundMarket(page: Page, seed: string, difficulty: '쉬움' | '어려움' = '쉬움') {
+/**
+ * Takes a club over on `seed` and opens the market. A 1930 club is taken over with no cash, so a
+ * journey that pays a fee first puts a quarter of the owner's fortune into the club (`fund`).
+ */
+async function foundMarket(page: Page, seed: string, start: CareerStart & { fund?: boolean } = {}) {
+  const { fund, ...choice } = start;
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill(seed);
-  await page.getByRole('button', { name: difficulty }).click();
-  await page.getByRole('button', { name: '클럽 창단' }).click();
+  await startCareer(page, { ...choice, seed });
+  if (fund) await fundClub(page);
   await openMarket(page);
   await configureResponsibilities(page, {
     mode: 'manual',
@@ -294,7 +298,8 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   page,
 }) => {
   test.slow();
-  await foundMarket(page, 'recruitment-ui');
+  // The loan's fee is paid from the club's cash.
+  await foundMarket(page, 'recruitment-ui', { fund: true });
   // Isolate the loan's annual wage change from unrelated delegated staff appointments.
   await configureResponsibilities(page, { responsibilities: { staff: 'direct' } });
   const before = await exportWorld(page);
@@ -517,7 +522,8 @@ test('reaches the forty-player ceiling with eight loans and prevents any further
 test('disables an unaffordable fee while keeping a cheaper loan available with honest ongoing costs', async ({
   page,
 }) => {
-  await foundMarket(page, 'recruitment-poor-ui', '어려움');
+  // A self-made owner's quarter in the club pays a loan's fee but not a transfer fee.
+  await foundMarket(page, 'recruitment-poor-ui', { tier: 'selfmade', fund: true });
   const before = await exportWorld(page);
   const offer = transferOffers(before).find(
     (candidate) =>
@@ -557,11 +563,7 @@ test('keeps the clock running while comparing candidates away from home until th
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await page.getByText('고급 설정', { exact: true }).click();
-  await page.getByLabel('세계 생성 시드').fill('recruitment-dialog-clock');
-  await page.getByRole('button', { name: '쉬움' }).click();
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page, { seed: 'recruitment-dialog-clock' });
   // This journey exercises an uninterrupted clock, independently of browser speed.
   await chooseLevel(page, 4);
   await setResponsibility(page, '선수 영입', 'direct');
@@ -570,7 +572,7 @@ test('keeps the clock running while comparing candidates away from home until th
   expect(daysUntilNextMatch(before)).toBeGreaterThan(4);
   const date = page.getByTestId('game-date');
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
-  await expect(date).toHaveText('1950.08.02');
+  await expect(date).toHaveText('1930.08.02');
   // The reserved transport remains available and keeps running away from home.
   await openMarket(page);
   const mini = page.getByRole('region', { name: '시즌 진행', exact: true });

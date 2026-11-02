@@ -25,6 +25,7 @@ import {
 } from '../../apps/web/src/ui/presentationClock';
 import { expectCompressedPreparation, longPreparation } from './preparation';
 import { leaveOffice, openOfficeArea } from './office';
+import { startCareer } from './start';
 test.use({ viewport: { width: 390, height: 844 } });
 
 test('surveys every management destination during uninterrupted calendar play', async ({
@@ -107,8 +108,7 @@ test('keeps browsing available and management edits locked over real automatic t
   page,
 }) => {
   await page.goto('/');
-  await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
+  await startCareer(page);
   await delegateSales(page);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   // Keep daily progress uninterrupted: level 4 stops for no match eve or offer.
@@ -150,7 +150,7 @@ test('keeps browsing available and management edits locked over real automatic t
       },
       { timeout: 10000 },
     )
-    .toBeGreaterThanOrEqual(Date.UTC(1950, 7, 4));
+    .toBeGreaterThanOrEqual(Date.UTC(1930, 7, 4));
   await expect(prepare).toBeEnabled();
   await expect(mode).toBeDisabled();
   expect(

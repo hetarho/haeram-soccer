@@ -13,8 +13,6 @@ import {
   type TakeoverDecade,
   type WealthTier,
 } from '../../../../packages/contracts/src/owner';
-import type { CrestDesign } from '../../../../packages/contracts/src/identity';
-import type { Position } from '../../../../packages/contracts/src/player';
 import type { CountryCode } from '../../../../packages/contracts/src/types';
 import { EUROPEAN_CUP_START } from '../../../../packages/engine/src/calendar';
 import { seasonName } from './format';
@@ -202,21 +200,5 @@ export function defaultFilter(listings: readonly ClubListing[], fortune?: string
 /** A division as the list names it: "1부". */
 export const divisionLabel = (division: number) => `${division + 1}부`;
 
-/**
- * What a club's sheet opens before buying (→WEB-15): its squad, manager, stadium and history.
- * The host reads it from the generated world (T664); the list's own numbers stay on the listing.
- */
-export interface ClubSheetFacts {
-  crest?: CrestDesign;
-  squad: { id: string; name: string; position: Position; age: number; ovr: number }[];
-  manager?: { name: string; age: number; rating: number; note?: string };
-  stadium: { name?: string; seats: number };
-  history: {
-    /** Honours won before the takeover. */
-    league: number;
-    cup: number;
-    europe: number;
-    /** The last seasons' finishes, newest first. */
-    seasons: { year: number; division: number; place: number }[];
-  };
-}
+/** What a club's sheet opens before buying (→WEB-15): the contracts' shape, read by the worker. */
+export type { ClubSheetFacts } from '../../../../packages/contracts/src/owner';

@@ -44,13 +44,13 @@ describe('the shared BETA mark (→WEB-101)', () => {
   it('shows an untranslated BETA pill with a localized label for screen readers', () => {
     const markup = render();
     expect(markup).toContain('aria-hidden="true">BETA</span>');
-    expect(markup).toContain('베타 버전 0.7 · 정식 출시 전까지 게임이 바뀔 수 있어요');
+    expect(markup).toContain('베타 버전 0.8 · 정식 출시 전까지 게임이 바뀔 수 있어요');
     // A label, never a control.
     expect(markup).not.toMatch(/<button|<a |tabindex|role="button"/);
   });
 
   it('prints the game version beside it on the start and save-slot screens', () => {
-    expect(render(true)).toContain('aria-hidden="true">v0.7 BETA</span>');
+    expect(render(true)).toContain('aria-hidden="true">v0.8 BETA</span>');
   });
 
   it('leaves BETA to the shared HUD instead of duplicating it in local desk navigation', () => {
