@@ -124,13 +124,15 @@ export function marketValueUnits(
   return years * transferPremium(year) ** reach * scaleUnits(points, division);
 }
 
-/** A player's market wage in `code` and `year` money. */
-export function marketWageAt(code: string, year: number, division: number, p: Player) {
-  return footballQuote(
-    code,
-    year,
-    marketWageUnits(division, overall(p), year - p.born, p.potential),
-  );
+/** A player's market wage in `code` and `year` money; `ovr` is his overall, when already read. */
+export function marketWageAt(
+  code: string,
+  year: number,
+  division: number,
+  p: Player,
+  ovr = overall(p),
+) {
+  return footballQuote(code, year, marketWageUnits(division, ovr, year - p.born, p.potential));
 }
 /** A player's transfer value in `code` and `year` money. */
 export function marketValueAt(code: string, year: number, division: number, p: Player) {

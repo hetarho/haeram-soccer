@@ -5,7 +5,7 @@
  * nobody owns never goes bankrupt, and a takeover or project of LEAGUE-10 clears its debt. The
  * current and the last closed season are kept (→SAVE-27).
  */
-import type { Club, ClubBooks, ClubSeasonBook, World } from '../../contracts/src/types';
+import type { Club, ClubBooks, ClubSeasonBook, Fixture, World } from '../../contracts/src/types';
 import { COUNTRIES, currency, SPONSOR_SLOTS } from '../../catalogs/src/index';
 import {
   DISTRIBUTION_CONFIG,
@@ -42,16 +42,45 @@ export function keepsBooks(w: World, club: Club) {
  */
 export function booksClose(w: World) {
   if (hasOwner(w) && !w.owner) return;
-  for (const club of w.clubs) if (keepsBooks(w, club)) settleNpcBooks(w, club);
+  const season = seasonIndex(w);
+  for (const club of w.clubs) if (keepsBooks(w, club)) settleNpcBooks(w, club, season);
+}
+
+/**
+ * The season as every book reads it, indexed once a close (T669): each club's fixtures and each
+ * league's clubs in their final order, so no book scans every fixture or club of the world.
+ */
+interface SeasonIndex {
+  fixtures: Map<string, Fixture[]>;
+  leagues: Map<string, Club[]>;
+}
+function seasonIndex(w: World): SeasonIndex {
+  const fixtures = new Map<string, Fixture[]>();
+  for (const f of w.fixtures)
+    for (const id of [f.home, f.away]) {
+      const list = fixtures.get(id);
+      if (list) list.push(f);
+      else fixtures.set(id, [f]);
+    }
+  const groups = new Map<string, Club[]>();
+  for (const c of w.clubs) {
+    if (c.representative) continue;
+    const key = groupKey(c);
+    const list = groups.get(key);
+    if (list) list.push(c);
+    else groups.set(key, [c]);
+  }
+  const leagues = new Map([...groups].map(([key, clubs]) => [key, ranked(w, clubs)]));
+  return { fixtures, leagues };
 }
 
 /**
  * One club's season book, settled into its cash and debt, then carried into the money of the
  * season that follows (→ECON-6). The season's amounts are in the money it was played in.
  */
-export function settleNpcBooks(w: World, club: Club) {
+export function settleNpcBooks(w: World, club: Club, season: SeasonIndex = seasonIndex(w)) {
   const books = club.books ?? { seasons: [], cash: '0', debt: '0' };
-  const book = seasonBook(w, club, books);
+  const book = seasonBook(w, club, books, season);
   const balance = BigInt(books.cash) - BigInt(books.debt) + BigInt(book.result);
   const next = currencyChange(club.country, w.year, seasonAfter(w.year));
   const carried = next ? next(balance.toString()) : balance.toString();
@@ -69,12 +98,14 @@ export function clearDebt(club: Club) {
 }
 
 /** The season's income, wages and operating expenses of `club`, in this season's money. */
-function seasonBook(w: World, club: Club, books: ClubBooks): ClubSeasonBook {
-  const view = clubView(w, club);
+function seasonBook(w: World, club: Club, books: ClubBooks, season: SeasonIndex): ClubSeasonBook {
+  const view = clubView(w, club, season.fixtures.get(club.id) ?? []);
   const last = books.seasons[0];
   const tierBefore = last && lastTier(w, club, last.year);
   const income =
-    distribution(w, view, club, tierBefore) + gateIncome(w, view, club) + commercial(view);
+    distribution(view, club, tierBefore, season.leagues.get(groupKey(club))!) +
+    gateIncome(view, club) +
+    commercial(view);
   const wages = squad(w, club).reduce(
     (sum, p) => sum + BigInt(marketWageAt(club.country, w.year, club.tier, p)),
     0n,
@@ -93,12 +124,14 @@ function seasonBook(w: World, club: Club, books: ClubBooks): ClubSeasonBook {
  * The world as one club nobody owns would read it through the owner's scales: that club in the
  * owner's place, at the default ticket price, at its facility stage (→ECON-38, CLUB-1), with no
  * squad, history, campaign, sponsor, policy or build of its own, so every own-club setting is at
- * its neutral default and every number comes from the owner's functions.
+ * its neutral default and every number comes from the owner's functions. Its fixtures are the
+ * club's own, all the owner's functions read of them.
  */
-function clubView(w: World, club: Club): World {
+function clubView(w: World, club: Club, fixtures: Fixture[]): World {
   const { stadium } = facilityStage(w, club);
   return {
     ...w,
+    fixtures,
     playerClub: club.id,
     lower: false,
     ticket: DEFAULT_TICKET,
@@ -125,11 +158,16 @@ function lastTier(w: World, club: Club, year: number) {
 
 /**
  * The league distribution (→ECON-28): the division's equal share, the merit by the final rank
- * in its league and, the season after a relegation, half the share it lost.
+ * in its `league` (its clubs in their final order) and, the season after a relegation, half the
+ * share it lost.
  */
-function distribution(w: World, view: World, club: Club, tierBefore: number | undefined) {
-  const league = w.clubs.filter((c) => !c.representative && groupKey(c) === groupKey(club));
-  const rank = ranked(w, league).indexOf(club) + 1;
+function distribution(
+  view: World,
+  club: Club,
+  tierBefore: number | undefined,
+  league: readonly Club[],
+) {
+  const rank = league.indexOf(club) + 1;
   const parachute =
     tierBefore !== undefined && tierBefore < club.tier
       ? scaleBy(
@@ -144,8 +182,8 @@ function distribution(w: World, view: World, club: Club, tierBefore: number | un
 }
 
 /** Every home league gate of the season at its division and reputation (→ECON-9). */
-function gateIncome(w: World, view: World, club: Club) {
-  const games = w.fixtures.filter((f) => f.kind === 'league' && f.home === club.id).length;
+function gateIncome(view: World, club: Club) {
+  const games = view.fixtures.filter((f) => f.kind === 'league' && f.home === club.id).length;
   const gate = gateProjection(view);
   return ((BigInt(gate.incomeLow) + BigInt(gate.incomeHigh)) * BigInt(games)) / 2n;
 }

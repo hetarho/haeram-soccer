@@ -48,6 +48,8 @@ import {
 } from '../../contracts/src/match-model';
 import { clubManager } from './managerMarket';
 import { simulateAggregate } from './aggregate/engine';
+import { resultsOnlyMatch } from './results-only';
+import { hasOwner } from './owner';
 import { playGrid } from './grid/engine';
 import { buildFrames } from './grid/playback';
 import { buildGridSetup, isLevel, type DecideRule } from './grid/setup';
@@ -280,6 +282,45 @@ export interface LabFixture {
 const labRating = (xi: readonly Player[], tactic: Tactic) =>
   Math.round(xi.reduce((s, p, i) => s + slotOvr(p, FORMATIONS[tactic].slots[i]!), 0) / 11);
 
+/** The home side's ground, in strength points (→MATCH-2). */
+export const HOME_STRENGTH = 3;
+/**
+ * Each side's match strength from what it brings (`base`: its XI and context): the gap beyond what
+ * diminishing returns let count is taken off both sides evenly (`ease`), and the day's `form`
+ * comes on top, so a far stronger side's bad day still shows.
+ */
+export function formedStrength(
+  base: readonly number[],
+  form: readonly number[],
+  math: MatchMath = HOST_MATH,
+) {
+  const gap = base[0]! - base[1]!,
+    ease = (effectiveGap(gap, math) - gap) / 2;
+  return { ease, strength: [base[0]! + ease + form[0]!, base[1]! - ease + form[1]!] };
+}
+/**
+ * Both sides' strength in a fixture between clubs nobody owns, as `prepareMatch` prepares it for
+ * the same XIs (→MATCH-2): their rating, home ground, their managers, then the gap's diminishing
+ * returns and the day's form. The results-only path reads it (→MATCH-22).
+ */
+export function npcStrength(
+  w: World,
+  f: Fixture,
+  teams: readonly [Club, Club],
+  squads: readonly [Player[], Player[]],
+  model: MatchModelRevision | undefined = activeMatchModel(w),
+): number[] {
+  const context = [
+    HOME_STRENGTH + npcMatchContext(w, teams[0], model),
+    npcMatchContext(w, teams[1], model),
+  ];
+  const base = [
+    ratingOf(w, teams[0], squads[0]) + context[0]!,
+    ratingOf(w, teams[1], squads[1]) + context[1]!,
+  ];
+  return formedStrength(base, matchForm(w, f)).strength;
+}
+
 export function prepareMatch(
   w: World,
   f: Fixture,
@@ -319,17 +360,13 @@ export function prepareMatch(
   const sideContext = (side: 0 | 1) =>
     lab ? 0 : side === ownSide ? ownStrength(side) : npcMatchContext(w, teams[side], model);
   // What each side brings beyond its XI: home ground, then the manager and morale terms.
-  const context = [3 + sideContext(0), sideContext(1)];
+  const context = [HOME_STRENGTH + sideContext(0), sideContext(1)];
   const form = matchForm(w, f, math);
   // The XIs just chosen are the ones `rating` would choose again (T450).
   const base = lab
     ? [labRating(squads[0], tactics[0]) + context[0], labRating(squads[1], tactics[1]) + context[1]]
     : [ratingOf(w, home, squads[0]) + context[0], ratingOf(w, away, squads[1]) + context[1]];
-  // The gap beyond what diminishing returns let count is taken off both sides evenly; the day's
-  // form comes on top, so a far stronger side's bad day still shows.
-  const gap = base[0] - base[1],
-    ease = (effectiveGap(gap, math) - gap) / 2;
-  const strength = [base[0] + ease + form[0], base[1] - ease + form[1]];
+  const { ease, strength } = formedStrength(base, form, math);
   const shift = [
     form[0] + (context[0] - context[1]) / 2 + ease,
     form[1] + (context[1] - context[0]) / 2 - ease,
@@ -384,7 +421,8 @@ export function setOwnLeagueEngine(engine: 'grid' | 'summary') {
  * `OWN_LEAGUE_ENGINE` is the grid; every other fixture takes the probabilistic path. A fixture
  * takes the same path observed or not (→MATCH-7, MATCH-22); observing only adds the frames.
  * `decide` is a knockout tie's rule, passed through to the grid engine (extra time →T222).
- * A world on the recognized candidate model dispatches by `candidateMatch` instead.
+ * A world on the recognized candidate model dispatches by `candidateMatch` instead, and a world
+ * nobody owns a club in plays every fixture results-only, whatever its model.
  */
 export function simulateMatch(
   w: World,
@@ -393,6 +431,8 @@ export function simulateMatch(
   keepPlayers = false,
   decide?: DecideRule,
 ): MatchPlayback {
+  // Before the takeover nobody owns a club: every fixture is results-only (→MATCH-22, WORLD-13).
+  if (!hasOwner(w)) return resultsOnlyMatch(w, f, decide);
   const own = f.home === w.playerClub || f.away === w.playerClub;
   if (activeMatchModel(w) !== undefined) return candidateMatch(w, f, own, observe, decide);
   if (own || (keepPlayers && ownLeagueEngine === 'grid')) {

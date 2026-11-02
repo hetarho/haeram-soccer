@@ -85,6 +85,7 @@ import { assertFullMatchRecord } from './match-model';
 import { attributeOwnMatch, captureSeasonClose } from './manager-history-capture';
 import { openNpcSeason, settleNpcSeason } from './npc-stats';
 import { ballonDorPodium, payBallonDorBonus } from './ballon-dor-award';
+import { BALLON_DOR_CONFIG } from './ballon-dor';
 import { activeMatchModel } from '../../contracts/src/match-model';
 import { recordRecentResult, retainRecentResults } from './recent-results';
 import { careerEnded, hasOwner, ownerClose, ownerDay } from './owner';
@@ -296,7 +297,10 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     if (league) fanMoodAfterLeagueMatch(w, saved);
   }
   injuriesFromMatch(w, m);
-  settleNpcSeason(w, playback);
+  // Before the takeover every fixture is results-only (→MATCH-22, WORLD-13) and the season's
+  // aggregates feed only its close's Ballon d'Or (→PLAYER-27), so none are kept before 1955/56.
+  if (hasOwner(w)) settleNpcSeason(w, playback);
+  else if (m.year >= BALLON_DOR_CONFIG.first) settleNpcSeason(w, playback, true);
   recordRecentResult(w, m);
 }
 /** The own substitutes who came on, each with the XI slot of the player he replaced. */

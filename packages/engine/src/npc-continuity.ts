@@ -12,6 +12,24 @@ import {
 } from './person-careers';
 import { invalidateNpcSquads, makePlayer, npcSquad } from './world';
 import { lineOf } from './player';
+import { hasOwner } from './owner';
+
+/**
+ * A club's generated squad of the season (`npcSquad`), drawn once a season in a world nobody owns
+ * a club in (T669): materializing the season's people and every roster after it read the same
+ * draw, each reader its own copies. A career draws it afresh every time, as before.
+ */
+const drawnSquads = new WeakMap<World, { year: number; clubs: Map<string, [string, Player[]]> }>();
+function generatedSquad(w: World, c: Club): Player[] {
+  if (hasOwner(w)) return npcSquad(w.seed, w.year, c);
+  let drawn = drawnSquads.get(w);
+  if (drawn?.year !== w.year) drawnSquads.set(w, (drawn = { year: w.year, clubs: new Map() }));
+  // What the draw reads of the club besides its ID.
+  const key = `${c.country}:${c.tier}:${c.strength}`;
+  let entry = drawn.clubs.get(c.id);
+  if (entry?.[0] !== key) drawn.clubs.set(c.id, (entry = [key, npcSquad(w.seed, w.year, c)]));
+  return entry[1].map((p) => ({ ...p }));
+}
 
 /** Registry enrollment occurs in simulation lifecycle, never from a read-only roster query. */
 export function materializePeople(w: World) {
@@ -27,7 +45,7 @@ export function materializePeople(w: World) {
   );
   for (const c of w.clubs) {
     if (c.id === w.playerClub) continue;
-    const raw = npcSquad(w.seed, w.year, c);
+    const raw = generatedSquad(w, c);
     for (let slot = 0; slot < raw.length; slot++) {
       if (occupiedOrigins.has(`${c.id}:${slot}`)) continue;
       let p = raw[slot];
@@ -69,7 +87,7 @@ function identity(p: Player, person: PersonCareer): Player {
 }
 /** Playing attributes remain the ordinary current club-strength draw; identity grants no bonus. */
 export function continuousSquad(w: World, c: Club): Player[] {
-  const raw = npcSquad(w.seed, w.year, c);
+  const raw = generatedSquad(w, c);
   if (!w.people) return raw;
   const people = playingFor(w, c.id);
   const used = new Set<string>();
