@@ -18,6 +18,60 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261103 decided OWNER-5 CLUB-14 T661: where 협상의 달인's asked-fee factor acts → at the seller's fee quotes (`transferOffers`, `clubOffer`/`worldMarketPage`), beside the 단장 negotiator's ×0.9, so list, bid, acceptance and counter read one lowered fee (alt: lower only `askingFee`, leaving the list unlowered). ot03
+- 261103 decided OWNER-5 T661: which fees 협상의 달인 lowers → transfer fees only; loan fees stay as drawn, as with the 단장's negotiator (alt: loan fees too). ot03
+- 261103 decided OWNER-5 CLUB-26 T661: which wage demands → the contract-talk demand and through it the floor, an unhappy player's floor and the 단장's offer; a signing still joins on his market wage (alt: lower signings' wages too). ot03
+- 261103 decided OWNER-5 STAFF-17 T661: which manager candidates 마당발 lifts → free agents the market draws (seeded list 4+1 and every refresh fill) get +5 ability, potential at least ability, pool 5–9; other clubs' managers, sacked managers and retained career candidates keep their level (alt: +5 on every listed candidate). ot03
+- 261103 decided OWNER-5 STAFF-15 T661: where the coach candidate list lives → staff.ts `drawCandidates`; one more drawn candidate per department in the top band [65, 90], every drawn candidate +5, retained career coaches unchanged (alt: extra candidate in the middle band). ot03
+- 261103 decided OWNER-5 T661: what boosted candidates cost → the wage they were drawn with stays (coach fee wage/4 with it); a free-agent manager's signing fee follows his listed ability (alt: price everything at the boosted level). ot03
+- 261103 decided OWNER-5 PLAYER-18 T661: halving the grade range on whole grades → floor(spread × 0.5): ±2→±1, ±1→exact, at `personalityRange` and its callers; scout-verdict.ts untouched (alt: an asymmetric two-grade window per player). ot03
+- 261103 decided OWNER-6 MATCH-2 T661: where 승리의 부적's point enters → the own side's context in `prepareMatch`, moving half the difference into every player's skills like home/manager/morale points (alt: strength only). ot03
+- 261103 suggest WEB-50: at 360px only ~62px remains beside the speed chips for the minute/action and the matchup, both heavily cut ("90+4′…", "균형…"); a different phone layout is a design call (gate fix 8887ace7). ot03
+- 261103 decided WEB-15 T662: where the club sheet's squad, manager, stadium and history come from → optional `loadClub(clubId) → Promise<ClubSheetFacts>` filled by T664 from the generated world; without it the sheet shows the listing's numbers (alt: widen `ClubListing`). ot03
+- 261103 decided OWNER-2 T662: labels for trait counts 0–5 → 하드, 어려움, 조금 어려움, 조금 쉬움, 쉬움, 이지 (alt: 하드/노멀/이지 with repeats). ot03
+- 261103 decided WEB-15 LEAGUE-13 T662: the flow's opening choices → 중견 사업가, no traits, 1950 (the reference career start), random seed (alt: nothing preselected). ot03
+- 261103 decided OWNER-3 ECON-37 T662: unit of `fortune` and affordability → pounds in minor units of the takeover year, compared with `pricePounds` (alt: fortune in each club's currency). ot03
+- 261103 decided ECON-37 T662: price in list rows → the club's own money with 인수 가능/자금 부족; the pound price in the sheet and confirmation (alt: pounds in the rows). ot03
+- 261103 decided WEB-15 T662: path to a takeover → row → club sheet → 인수 검토 → confirmation with the 구단 방향 Select (기본 방향 + BUILD_PRESETS) → 인수 확정 (alt: a take-over button on every row). ot03
+- 261103 decided WEB-90 T662: copy → literal Korean like the founding screen, reusing `founding.slot`/`founding.backToSlots`; no locale pack edited (alt: new start.* keys in all 12 packs). ot03
+- 261103 decided WORLD-14 T662: the war restart year in the UI before T655 lands → a `WARTIME` constant {last 1938, restart 1946} (alt: wait for T655's wartime module). ot03
+- 261103 decided WEB-15 WEB-63 T662: browser fit check → T664's e2e once the route exists (alt: an e2e on the design-system preview). ot03
+- 261103 decided WEB-56 T663: move GameOver out of App.tsx now → yes, App.tsx swaps its local function for one import (alt: leave the move to T664). ot03
+- 261103 decided WEB-114 OWNER-12 T663: where "what moved 팬 민심 last" comes from → derived from recorded facts (latest own league result, the round drift, this season's injections, the last close's dividend) (alt: an engine-written mover log in OwnerState). ot03
+- 261103 decided OWNER-10 ECON-35 T663: converting the euro FFP cap for a non-euro club → the mean of the game's quote ratio over the playable euro countries for the season (about £20.1m for €30m in 2015) (alt: ECON-35's fixed 1999 rate, or T659's engine helper). ot03
+- 261103 decided OWNER-9 WEB-114 T663: how the owner picks an injection amount → a four-step dial at 25/50/75/100% of what can go in (alt: a free amount field). ot03
+- 261103 decided WEB-114 WEB-17 T663: fortune chip on phones → stacked under the cash in the right-hand column with a short 구단주 mark (alt: side-by-side chips overlapping the date at 360px). ot03
+- 261103 decided WEB-114 T663: theme skin for the chip → `hud-fortune` beside `hud-cash` in image-ui-controls.css and image-ui-shell.css (alt: generic framed-button skin). ot03
+- 261103 decided OWNER-15 T663: naming the club's debt band → 구단 파산 위기 only when an owner exists; founded careers keep 파산 위기 (alt: rename it in every career). ot03
+- 261103 decided WEB-114 T663: HUD wording → `shell.fortune`, `shell.fortuneDetails`, `shell.owner` in all 12 packs; the sheet uses literal Korean like CashSheet (alt: literal Korean in the HUD too). ot03
+- 261103 decided OWNER-3 T657: reach bands, since "local = tiers below third except the lowest" reaches no club in England → local = the third tier down without a country's lowest; selfmade = each country's lowest tier (alt: local including the lowest, which prices selfmade above local). ot03
+- 261103 decided ECON-37 T657: "league place at 3 seasons of its division's distribution" → the division's equal share, no merit (alt: share plus average merit). ot03
+- 261103 decided ECON-37 CLUB-1 T657: following of a club nobody owns → `fanFollowing(reputation)` (alt: stored `club.fans`, never updated for unowned clubs). ot03
+- 261103 decided OWNER-3 T657: "positions of last season" → the last archive's standings, relegated clubs first and promoted last, else strength (alt: strength only). ot03
+- 261103 decided ECON-35 T657: pound rate → ratio of the two countries' price-index quotes (alt: a fixed rate table). ot03
+- 261103 decided OWNER-3 T658: affordability compares the price with the fortune converted into the club's money, the listing's rule (alt: compare in pounds). ot03
+- 261103 decided ECON-38 T658: takeover loan → annuity, balance = debt, 5 seasons (alt: equal principal plus interest). ot03
+- 261103 decided ECON-30 T658: first-season operating expenses → share of the books' last income, at least the division's amount; the division's amount without books or after a relegation (alt: always the division's amount). ot03
+- 261103 decided OWNER-4 T658: generated filler players start at the club's 조직력, 0.80 if absent (alt: PLAYER-11 joining starts). ot03
+- 261103 decided CLUB-29 T658: clauses settled for every player taken over, as for founders (alt: none). ot03
+- 261103 decided LEAGUE-11 T658: `takeOver` redraws the day-0 season with `prepareSeason(w, true, false)` (alt: keep the ownerless draw and add own-league parts). ot03
+- 261103 decided HIST-5 T658: `w.events` restarts with the takeover entry, then the preset's build event (alt: append to the ownerless record). ot03
+- 261103 decided ECON-36 T658: the bought club's books, cohesion and project are deleted (alt: keep the books as a pre-owner record). ot03
+- 261103 decided OWNER-11 T659: the season result the dividend shares → income less expense without the owner's injections and dividends (`seasonResult`) (alt: the ledger net including injections, which an owner could inject and take straight back). ot03
+- 261103 decided OWNER-7 OWNER-14 T659: order at the close → dividend, then the close-day bet and living costs, then the loan's season, then the crisis check (alt: settlement before the dividend). ot03
+- 261103 decided OWNER-10 T659: which injections FFP counts → those from 2011/12 on in any division, pruned once out of the window (alt: also 2009/10–2010/11, or top flight only). ot03
+- 261103 decided OWNER-10 ECON-35 T659: the € cap for a club outside the euro → converted at the game's rates averaged over the euro countries' quotes (alt: one reference euro country). ot03
+- 261103 decided WORLD-14 T659: settlements in a calendar jump → four per skipped season at that season's prices, no dividend or bankruptcy, booked in the season in play (alt: back-dated events). ot03
+- 261103 decided ECON-10 ECON-30 T659: owner money in the ledger → injections an income line kept out of turnover; dividends and loan repayments expense lines (alt: owner capital apart from income and expense). ot03
+- 261103 decided ECON-38 T659: loan balance → updated at each close as balance × (1 + rate) − installment, removed after its last season (alt: per-round balance). ot03
+- 261103 decided OWNER-16 T659: ending at the close → `ownerClose` sets `ended = 'owner'`, the season still archives; `simulateSeason` stops on `careerEnded` (alt: leave founding.ts alone). ot03
+- 261103 decided OWNER-12 T660: titles → +15 for each title won (league, national cup, each continental trophy) (alt: one +15 per season). ot03
+- 261103 decided OWNER-12 T660: big signing → a non-loan fee above the highest earlier fee in today's money; the first fee on record never counts (alt: nominal fees, or the first counts). ot03
+- 261103 decided OWNER-12 T660: ties in a star sale → counts as a star only with fewer than three others at his OVR or above (alt: ties in his favour). ot03
+- 261103 decided OWNER-12 T660: an injection with no known turnover → the maximum +10; turnover is `lastSeasonTurnover`, else the books' last income (alt: no change). ot03
+- 261103 decided OWNER-12 T660: 팬들의 친구 and the drift → only drivers' drops are scaled, never the drift toward 60 (alt: scale the drift too). ot03
+- 261103 decided OWNER-12 WEB-114 T660: what moved 팬 민심 last → a `fan-mood` event per named driver; results, ticket and drift move it silently (alt: an event for every move). ot03
+- 261103 decided ECON-17 T660: ticket steps → `TICKET_PRESETS` in engine presets.ts beside `DEFAULT_TICKET` (alt: a list local to fan-mood). ot03
 - 261103 decided ECON-36 SAVE-27 T653: how `ClubBooks` holds "the current and the last closed season" when books settle once a season → `seasons` newest first, at most two, each with its year, beside `cash` and `debt` (both ≥ 0) in the club's money of the season in play (alt: named `current`/`last` fields, where `current` would hold last season's figures from the close on). ot03
 - 261103 decided ECON-37 T653: `CLUB_VALUE.following` has no SSOT number → 0.05 1901 price units per supporter on the price index, the brand base the season archive's club value already uses; `floor` 1 season of distribution; T668 retunes (alt: a share of commercial income per supporter). ot03
 - 261103 decided CLUB-1 ECON-32 T653: `CLUB_TAKEOVER.facilities` has no SSOT table → an ordinary club's stadium step/training/academy level by division from the top flight 5/3/3, 4/2/2, 3/1/1, 2/0/0, 1/0/0 (the last for every division below); giants (stature ≥ 9) +2 steps/+1 level, big clubs (≥ 4) +1/0, small clubs (≤ −3) −1/−1, within the ladders; T668 retunes (alt: one stage per division whatever the stature). ot03
@@ -535,13 +589,6 @@
 | T654 | spike: how the world lives 1930 → decade before anyone owns a club | WORLD ARCH LEAGUE MATCH | T652 T653 | todo |
 | T655 | world from 1930 to the takeover decade, with the wartime stop | WORLD LEAGUE HIST ARCH OWNER | T652 T654 | todo |
 | T656 | season books for every club nobody owns | ECON LEAGUE SAVE CLUB | T652 T655 | todo |
-| T657 | club value, price and the club listing | ECON CLUB OWNER WEB | T652 T653 | todo |
-| T658 | take over a club: the NPC club becomes the owner's | ECON CLUB OWNER WORLD HIST PLAYER LEAGUE STAFF | T652 T657 | todo |
-| T659 | the owner's money: business bet, living costs, injections within FFP, dividends, loan and owner bankruptcy | WORLD OWNER ECON | T652 T653 | todo |
-| T660 | 팬 민심, 퇴진 압박 and the owner's season record | OWNER KIT LEAGUE ECON | T652 T659 | todo |
-| T661 | owner trait effects on matches, talks, candidates, academy, scouting and sponsors | OWNER MATCH CLUB STAFF PLAYER ECON | T652 T653 | todo |
-| T662 | start flow UI: tier, traits, decade, generation, club list and takeover | WEB OWNER WORLD ECON | T652 T653 | todo |
-| T663 | owner UI: HUD fortune, 구단주 sheet, crisis statuses and game-over causes | WEB OWNER | T652 T653 | todo |
 | T664 | switch the start to the takeover (rules 5.0.0) | WEB WORLD ECON OWNER SAVE ARCH | T652 T656 T658 T660 T661 T662 T663 | todo |
 | T665 | remove founding, difficulty levels, the founding editor and the amateur level | WEB KIT WORLD LEAGUE ECON CLUB | T652 T664 | todo |
 | T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T665 | todo |
@@ -574,6 +621,14 @@
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261103 integrate ot03 lanes on ot03/integrate: T657–T663 merged over the T653 foundation (helpers renamed startChoices.ts/ownerFigures.ts, trait checks share hasTrait); unit 2020, contract 47, equivalence digests unchanged; ot03
+- 261103 T663 done: HUD fortune chip, 구단주 sheet (stake slider, injection and dividend dials, 팬 민심), crisis bands and GameOver causes; wiring in T664; ot03
+- 261103 T662 done: start flow UI — tier, traits, decade, generation progress, club list and takeover confirmation; wiring in T664; ot03
+- 261103 T661 done: owner trait effects (승리의 부적, 협상의 달인, 마당발, 원석 감별사, 마케팅 귀재) on takeover careers; founded careers unchanged; ot03
+- 261103 T660 done: 팬 민심 drivers, 퇴진 압박 and the owner's season record; ot03
+- 261103 T659 done: quarterly business bet, living costs, injections within FFP, dividends, takeover loan and owner bankruptcy; ot03
+- 261103 T658 done: takeOver turns an unowned club into the owner's with its cash, debts as a loan and squad; ot03
+- 261103 T657 done: club value, price, reach bands and the club listing; ot03
 - 261103 T653 done: the owner and takeover shape the lanes build on — contracts `owner.ts` (tiers, traits, OwnerState, TakeoverLoan, ClubBooks, StartChoice, ClubListing, EndCause) on `World.owner/loan/ended` and `Club.books` in types and schema, every OWNER/ECON-36–38/CLUB-1 number named in engine `owner-config.ts`, commands owner-stake/inject/dividend refused by `ownerCommand` until T659, no-op hooks `ownerDay`/`ownerClose`/`ownerSettleGap` (`owner.ts`) and `fanMoodAfterLeagueMatch`/`fanMoodRound`/`fanMoodClose`/`fanMoodTransfer`/`fanMoodIdentity` (`fan-mood.ts`) at their day-loop sites, the engine halting on `careerEnded` (bankrupt or `ended`), fortune and loan converted at a currency change, `withOwner` test helper; equivalence digests unchanged.
 - 261103 fix e2e gate: the ot03 Chromium batch's 12 failures follow the removals (7 milestones, a rested player's line reads 팀 훈련) and the closed match design (경기 상세 opened past the first sample, a closing sheet's fading copy is not open), plus two app fixes — the 결재함 names the playing-coach player in the browser projection without people, and on phones the speed chips stay on screen beside the matchup
 - 261103 fix operating-expense test: owner capital no longer exists (T650), so the turnover case checks player sales and compensation only; found by the ot03 batch gate (integration 1 of 1187)
