@@ -7,6 +7,8 @@ import { addEvent } from './events';
 
 /** The founding ticket price, every preset's default (→ECON-17). */
 export const DEFAULT_TICKET = 0.05;
+/** The five ticket presets, cheapest first, in 1901 base prices (→ECON-17). */
+export const TICKET_PRESETS = [0.02, 0.035, DEFAULT_TICKET, 0.08, 0.12] as const;
 /** Everything a direction sets (→ECON-25): cards, dials, ticket and direction rows. */
 export interface DirectionBoard {
   build: ClubBuild;

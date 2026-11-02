@@ -10,6 +10,7 @@ import { staffWageTotal } from './staff';
 import { SEASON_ROUNDS } from './calendar';
 import { facilityUpkeep, stadiumCapacity } from './facilities';
 import { catchment, localSupporters } from './fans';
+import { OWNER_TRAITS } from './owner-config';
 
 export const FINANCE_CONFIG = {
   ticketDemandScale: 0.12,
@@ -76,10 +77,10 @@ export function operatingExpensesAt(code: string, year: number, tier: number) {
   return footballQuote(code, year, table[Math.min(tier, table.length - 1)]);
 }
 /**
- * Income lines that are not turnover (→ECON-30): player sales and compensation for players who
- * left.
+ * Income lines that are not turnover (→ECON-30): player sales, compensation for players who left
+ * and the owner's injections (→OWNER-9).
  */
-const NOT_TURNOVER = new Set(['transfer-out', 'free-transfer-compensation']);
+const NOT_TURNOVER = new Set(['transfer-out', 'free-transfer-compensation', 'owner-injection']);
 /**
  * The club's turnover over its last completed season, in this season's money (→ECON-30): that
  * season's ledger income (→ECON-10) without player sales or compensation for players who left.
@@ -146,8 +147,9 @@ export function wageBill(w: World) {
   ).toString();
 }
 /**
- * This season's turnover so far (→ECON-30): its income without player sales or compensation for
- * players who left. Events are only appended, so the scan stops at the first older one.
+ * This season's turnover so far (→ECON-30): its income without player sales, compensation for
+ * players who left or the owner's injections. Events are only appended, so the scan stops at the
+ * first older one.
  */
 export function seasonTurnover(w: World) {
   let notTurnover = 0n;
@@ -158,6 +160,22 @@ export function seasonTurnover(w: World) {
       notTurnover += BigInt(e.amount);
   }
   return BigInt(w.income) - notTurnover;
+}
+/**
+ * This season's net result so far (→OWNER-11): its income less its expense without the owner's
+ * money, the injections he put in (→OWNER-9) and any dividend he took. The dividend is a share of
+ * it at the close.
+ */
+export function seasonResult(w: World): string {
+  let owner = 0n;
+  for (let i = w.events.length - 1; i >= 0; i--) {
+    const e = w.events[i];
+    if (e.year < w.year) break;
+    if (e.year !== w.year || e.currency !== w.currency || !e.amount) continue;
+    if (e.kind === 'owner-injection') owner -= BigInt(e.amount);
+    else if (e.kind === 'owner-dividend') owner += BigInt(e.amount);
+  }
+  return (BigInt(w.income) - BigInt(w.expense) + owner).toString();
 }
 /**
  * The club's revenue over the last 12 months, the income a wage bill can rest on (→CLUB-26): this
@@ -233,8 +251,16 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
   const staffWages = staffWageTotal(w).toString();
   // The amount recorded when the season started (→ECON-30), scaled by the squad investment in
   // force (→ECON-16): a change of level acts from the next settlement, the recorded amount stays.
+  // An owner with 정치력 pays less of it (→OWNER-5).
   const seasonExpenses = seasonOperatingExpenses(w),
-    expenses = scaleOperatingExpenses(seasonExpenses, effects.operatingFactor);
+    politicianFactor = w.owner?.traits.includes('politician')
+      ? OWNER_TRAITS.politician.operating
+      : 1,
+    invested = scaleOperatingExpenses(seasonExpenses, effects.operatingFactor),
+    expenses =
+      politicianFactor === 1 ? invested : scaleOperatingExpenses(invested, politicianFactor);
+  // The takeover loan's installment for this season, paid over its league rounds (→ECON-38).
+  const loan = w.loan && w.loan.seasonsLeft > 0 ? w.loan.installment : '0';
   const annual = (
     BigInt(playerWages) +
     BigInt(managerWage) +
@@ -242,7 +268,8 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     BigInt(investment) +
     BigInt(academy) +
     BigInt(staffWages) +
-    BigInt(expenses)
+    BigInt(expenses) +
+    BigInt(loan)
   ).toString();
   /** The investment share appears only while the rows actually spend. */
   const payments: {
@@ -253,6 +280,7 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     academy?: string;
     staffWages?: string;
     expenses: string;
+    loan?: string;
   } = {
     playerWages: roundShare(playerWages, round),
     managerWage: roundShare(managerWage, round),
@@ -261,6 +289,7 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     ...(academy !== '0' ? { academy: roundShare(academy, round) } : {}),
     ...(staffWages !== '0' ? { staffWages: roundShare(staffWages, round) } : {}),
     expenses: roundShare(expenses, round),
+    ...(loan !== '0' ? { loan: roundShare(loan, round) } : {}),
   };
   const nextRound = Object.values(payments)
     .reduce((sum, value) => sum + BigInt(value), 0n)
@@ -281,6 +310,13 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
     seasonExpenses,
     /** The squad investment's factor on operating expenses (→ECON-16). */
     operatingFactor: effects.operatingFactor,
+    /** 정치력's factor on operating expenses, 1 without the trait (→OWNER-5). */
+    politicianFactor,
+    /**
+     * This season's takeover-loan installment, a fixed cost of its league rounds (→ECON-38); '0'
+     * without a loan.
+     */
+    loan,
     annual,
     nextRound,
     payments,
@@ -454,6 +490,8 @@ const incomeKinds: Record<string, string> = {
   'campaign-result': '마케팅 회수금',
   'transfer-out': '선수 매각',
   'free-transfer-compensation': '계약 만료 보상금',
+  // Owner capital, outside turnover (→OWNER-9, ECON-30).
+  'owner-injection': '구단주 자금 투입',
   'cup-prize': '국내 컵 상금',
   'cup-honor': '국내 컵 우승 상금',
   'europe-prize': '클럽대항전 수당',
@@ -479,6 +517,10 @@ const expenseKinds: Record<string, string> = {
   facility: '시설 공사',
   // A won award's contract bonus (→CLUB-29).
   'ballon-dor-bonus': '발롱도르 보너스',
+  // The debt taken over, repaid as a fixed cost of the league rounds (→ECON-38).
+  'loan-repayment': '인수 부채 상환',
+  // The owner's share of the season's profit, taken at the close (→OWNER-11).
+  'owner-dividend': '구단주 배당',
 };
 /** A season's money entries in the currency its books were kept in. */
 function seasonEntries(w: World, year: number, money: string) {
@@ -527,7 +569,10 @@ export function financialBreakdown(w: World) {
     catchment: catchment(w),
     income,
     expense,
-    /** This season's income less its expense: the owner adds no capital (→ECON-11). */
+    /**
+     * This season's income less its expense, the owner's injections and dividends included; the
+     * club's own result without them is `seasonResult` (→OWNER-11).
+     */
     net: (BigInt(w.income) - BigInt(w.expense)).toString(),
     recent,
   };
