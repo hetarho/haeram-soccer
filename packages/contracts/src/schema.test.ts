@@ -3,6 +3,7 @@ import { LOAD_CATALOG } from '../../catalogs/src/index';
 import { createWorld } from '../../engine/src/index';
 import { addEvent } from '../../engine/src/events';
 import { careerDate } from '../../engine/src/person-careers';
+import { withOwner } from '../../engine/src/testing';
 import { validateWorld } from './schema';
 import type { World } from './types';
 
@@ -160,5 +161,74 @@ describe('owner interventions withdrawn (→SAVE-25)', () => {
     expect(loaded).toEqual(validateWorld(w, LOAD_CATALOG));
     // Reading never writes: the save itself is left for the writer's next checkpoint.
     expect(older.intervention).toBe(2);
+  });
+});
+
+describe('owner and takeover (→SAVE-27)', () => {
+  it('accepts and round-trips owner, loan and books', () => {
+    const w = world();
+    withOwner(w, {
+      tier: 'industrial',
+      traits: ['businessman', 'fansFriend', 'politician'],
+      fortune: '-125000',
+      stake: 35,
+      dividendShare: 75,
+      fanMood: 13.6,
+      ownerCrisis: { since: { year: w.year, day: 92 } },
+      fanCrisis: { rounds: 3 },
+      ffpInjections: [{ season: w.year, amount: '40000' }],
+      seasonRecords: [
+        {
+          year: w.year,
+          currency: w.currency,
+          fortune: '-125000',
+          business: '-30000',
+          living: '2000',
+          injected: '40000',
+          dividend: '0',
+          fanMood: 13.6,
+        },
+      ],
+    });
+    w.loan = { balance: '900000', installment: '207000', seasonsLeft: 5 };
+    w.ended = 'owner';
+    const other = w.clubs.find((club) => club.id !== w.playerClub)!;
+    other.books = {
+      seasons: [
+        { year: w.year, income: '500000', wages: '420000', costs: '150000', result: '-70000' },
+        { year: w.year - 1, income: '480000', wages: '400000', costs: '140000', result: '-60000' },
+      ],
+      cash: '0',
+      debt: '130000',
+    };
+    const loaded = validateWorld(structuredClone(w), LOAD_CATALOG);
+    expect(loaded.owner).toEqual(w.owner);
+    expect(loaded.loan).toEqual(w.loan);
+    expect(loaded.ended).toBe('owner');
+    expect(loaded.clubs.find((club) => club.id === other.id)!.books).toEqual(other.books);
+    // A save of it reads back the same world.
+    expect(validateWorld(JSON.parse(JSON.stringify(loaded)), LOAD_CATALOG)).toEqual(loaded);
+    // A founded career and an older save carry none of it and validate as before.
+    const founded = validateWorld(world(), LOAD_CATALOG);
+    for (const key of ['owner', 'loan', 'ended'] as const) expect(founded).not.toHaveProperty(key);
+    expect(founded.clubs.every((club) => club.books === undefined)).toBe(true);
+  });
+
+  it.each([
+    [
+      'six traits',
+      {
+        traits: ['talisman', 'negotiator', 'networker', 'talentSpotter', 'marketer', 'politician'],
+      },
+    ],
+    ['a trait twice', { traits: ['talisman', 'talisman'] }],
+    ['a stake above 100%', { stake: 101 }],
+    ['a stake in part percent', { stake: 12.5 }],
+    ['a dividend off the dial', { dividendShare: 30 }],
+    ['팬 민심 above 100', { fanMood: 100.5 }],
+  ])('refuses an owner with %s', (_, owner) => {
+    const w = world();
+    withOwner(w, owner as never);
+    expect(() => validateWorld(w, LOAD_CATALOG)).toThrow();
   });
 });

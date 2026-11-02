@@ -114,6 +114,7 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/npc-continuity.test.ts',
   'packages/engine/src/npc-stats.test.ts',
   'packages/engine/src/operations.test.ts',
+  'packages/engine/src/owner.ended.test.ts',
   'packages/engine/src/pending-work.test.ts',
   'packages/engine/src/policy.test.ts',
   'packages/engine/src/projection.plain.test.ts',

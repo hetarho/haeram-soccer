@@ -56,6 +56,9 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
   'adopt-design': '구단 디자인을 바꿨어요',
   'discard-designs': '시안을 모두 버렸어요',
   'redraw-designs': '디자이너가 시안을 다시 그렸어요',
+  'owner-stake': '사업 투자 비중을 정했어요',
+  'owner-inject': '구단에 자금을 투입했어요',
+  'owner-dividend': '배당 비율을 정했어요',
 };
 const notes: Partial<Record<Command['type'], string>> = {
   'transfer-stance': '제안은 이적시장이 열려 있을 때 들어오고, 수락해야 이적이 성사돼요.',

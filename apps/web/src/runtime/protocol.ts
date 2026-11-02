@@ -22,6 +22,7 @@ import type {
 } from '../../../../packages/contracts/src/types';
 import type { Envelope } from '../adapters/repository';
 import { gameSettingsSchema } from '../../../../packages/contracts/src/schema';
+import { DIVIDEND_SHARES } from '../../../../packages/contracts/src/owner';
 import {
   clubIdentitySchema,
   designStudioSchema,
@@ -159,6 +160,10 @@ const command = z.discriminatedUnion('type', [
   z.strictObject({ type: z.literal('adopt-design'), draft: z.number().int().min(0).max(3) }),
   z.strictObject({ type: z.literal('discard-designs') }),
   z.strictObject({ type: z.literal('redraw-designs') }),
+  // The owner's own money (→OWNER-7/9/11): a whole-percent stake, an injection, the dividend dial.
+  z.strictObject({ type: z.literal('owner-stake'), percent: z.number().int().min(0).max(100) }),
+  z.strictObject({ type: z.literal('owner-inject'), amount: z.string().regex(/^\d{1,40}$/) }),
+  z.strictObject({ type: z.literal('owner-dividend'), share: z.literal(DIVIDEND_SHARES) }),
 ]);
 export const requestSchema = z.object({
   protocol: z.literal(1),

@@ -9,6 +9,7 @@ import { advanceToNextEvent } from './next-event';
 import { applySettings } from './settings';
 import { chooseMatchKit } from './identity-operations';
 import { adoptDesign, commissionDesign, discardDesigns, redrawDesigns } from './design-studio';
+import { ENDED_MESSAGE, ownerCommand } from './owner';
 
 // Read models and limits the app and other modules import from here.
 export { sponsorAnnual, sponsorOffers, sponsorSlots } from './ops-commercial';
@@ -22,6 +23,7 @@ export const BANKRUPT_MESSAGE = '구단이 파산했어요. 기록을 내보내�
 /** The owner's commands, each handled by the domain that owns it. */
 export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'season' }>) {
   if (w.bankrupt && cmd.type !== 'read-inbox') throw new Error(BANKRUPT_MESSAGE);
+  if (w.ended && cmd.type !== 'read-inbox') throw new Error(ENDED_MESSAGE);
   switch (cmd.type) {
     case 'next-event':
       advanceToNextEvent(w);
@@ -59,6 +61,11 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
       break;
     case 'sign-sponsor':
       signSponsor(w, cmd.slot, cmd.offer);
+      break;
+    case 'owner-stake':
+    case 'owner-inject':
+    case 'owner-dividend':
+      ownerCommand(w, cmd);
       break;
     case 'hire':
     case 'renew-manager':

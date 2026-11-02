@@ -4,6 +4,7 @@ import type { Position } from '../../contracts/src/types';
 import type { Command, World } from '../../contracts/src/types';
 import { addEvent } from './events';
 import { recordTransfer } from './transfer-records';
+import { fanMoodTransfer } from './fan-mood';
 import { clubOf, overall } from './player-state';
 import { makePlayer } from './world';
 import { hash, integer, random, scaleBy } from './primitives';
@@ -186,7 +187,13 @@ export function squadCommand(w: World, cmd: SquadCommand) {
       w.players.push(o.player);
       noteSigning(w, o.player);
       // A free agent costs nothing and keeps no fee fact (→HIST-20).
-      recordTransfer(w, { direction: 'in', loan: !!cmd.loan, player: o.player, fee: cost });
+      const fact = recordTransfer(w, {
+        direction: 'in',
+        loan: !!cmd.loan,
+        player: o.player,
+        fee: cost,
+      });
+      if (fact) fanMoodTransfer(w, fact);
       addEvent(
         w,
         'transfer-in',

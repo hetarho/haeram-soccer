@@ -9,6 +9,7 @@ import type {
   MatchAppearance,
 } from './identity';
 import type { ManagerHistoryFacts } from './manager-history';
+import type { ClubBooks, DividendShare, EndCause, OwnerState, TakeoverLoan } from './owner';
 import type { RecentResults } from './recent-results';
 import type {
   IntentionObservation,
@@ -38,6 +39,21 @@ export type {
   Positions,
   RoleId,
 } from './player';
+export type {
+  ClubBooks,
+  ClubListing,
+  ClubSeasonBook,
+  DividendShare,
+  EndCause,
+  OwnerSeasonRecord,
+  OwnerState,
+  OwnerTrait,
+  StartChoice,
+  TakeoverDecade,
+  TakeoverFacts,
+  TakeoverLoan,
+  WealthTier,
+} from './owner';
 export type CountryCode = 'ENG' | 'ESP' | 'GER' | 'ITA' | 'FRA' | 'POR' | 'NED' | 'BEL';
 export type Tactic = 'balanced' | 'possession' | 'counter' | 'press';
 /** The first team's training focus (→CLUB-11): 균형, 회복 or 하드 트레이닝. */
@@ -313,6 +329,8 @@ export interface Club {
   project?: number;
   /** Crest, representative colours and saved shirts (→KIT-1); absent in older saves. */
   identity?: ClubIdentity;
+  /** Season books while nobody owns it (→ECON-36); absent in a founded career. */
+  books?: ClubBooks;
 }
 export interface Player {
   id: string;
@@ -1241,6 +1259,12 @@ export interface World {
   receiptIds: string[];
   /** Yellow cards, bans and NPC injuries of every club (→MATCH-19, →LEAGUE-15); from rules 4.0.0. */
   discipline?: DisciplineState;
+  /** The owner who took the club over (→OWNER); absent in a founded career. */
+  owner?: OwnerState;
+  /** The club's debt at the takeover, repaid as a loan (→ECON-38); absent once repaid or never owed. */
+  loan?: TakeoverLoan;
+  /** What ended the career (→OWNER-16): nothing advances and only the inbox is read after it. */
+  ended?: EndCause;
 }
 /** The competition a card counts in: the league, one domestic cup, or Europe (→MATCH-19). */
 export type CompetitionKey = 'league' | `cup:${string}` | 'europe';
@@ -1327,4 +1351,10 @@ export type Command =
   /** Pays half the fee for fresh drafts from the same designer in the same colours. */
   | { type: 'redraw-designs' }
   /** Our shirt role for the named next own fixture (→KIT-6); `null` returns it to automatic. */
-  | { type: 'match-kit'; fixtureId: string; role: KitRole | null };
+  | { type: 'match-kit'; fixtureId: string; role: KitRole | null }
+  /** The business stake, whole percent of the fortune, from the next settlement (→OWNER-7). */
+  | { type: 'owner-stake'; percent: number }
+  /** Puts this much of the owner's fortune into the club's cash (자금 투입, →OWNER-9/10). */
+  | { type: 'owner-inject'; amount: string }
+  /** The share of the season's profit the close pays the owner (배당, →OWNER-11). */
+  | { type: 'owner-dividend'; share: DividendShare };

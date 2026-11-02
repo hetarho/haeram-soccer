@@ -8,6 +8,7 @@ import type {
   GameSettings,
   InboxItem,
   MatchPlayback,
+  OwnerState,
   TransferBid,
   World,
 } from '../../contracts/src/types';
@@ -26,6 +27,8 @@ import { playingCoachQuote, submitPlayingCoachProposal } from './playing-coach';
 import { defaultSettings, RESPONSIBILITY_KEYS } from './responsibilities';
 import { coachDelegated } from './hiring';
 import { fillDelegatedPost, STAFF_ROLES } from './staff';
+import { footballQuote } from './quotes';
+import { FAN_MOOD, OWNER_BUSINESS, OWNER_DIVIDEND } from './owner-config';
 
 /**
  * Puts direction rows in force on a test world, as a founded or saved club holds them: cards,
@@ -183,4 +186,34 @@ export function advanceToNextMatch(
     if (w.ownMatches.length > matchCount) break;
   }
   return playback;
+}
+
+/**
+ * Gives a test world an owner as a takeover leaves one (→OWNER, ECON-38): 재벌 총수 with no traits,
+ * a fortune of 100,000 units on the football index, the stake and dividend dial at their defaults,
+ * 팬 민심 at its start and the takeover on this season at no price or debt; `owner` overrides any
+ * of it. Owner rules are tested on it until a takeover builds the career.
+ */
+export function withOwner(w: World, owner: Partial<OwnerState> = {}): OwnerState {
+  const fortune = footballQuote(clubOf(w).country, w.year, 100000);
+  w.owner = {
+    tier: 'chaebol',
+    traits: [],
+    fortune,
+    stake: OWNER_BUSINESS.stake.start,
+    dividendShare: OWNER_DIVIDEND.start,
+    fanMood: FAN_MOOD.start,
+    ffpInjections: [],
+    takeover: {
+      year: w.year,
+      clubId: w.playerClub,
+      price: '0',
+      debt: '0',
+      fortune,
+      currency: w.currency,
+    },
+    seasonRecords: [],
+    ...owner,
+  };
+  return w.owner;
 }

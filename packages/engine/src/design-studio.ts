@@ -15,6 +15,7 @@ import type { World } from '../../contracts/src/types';
 import { DESIGNERS, designFee, redrawFee } from './design-fees';
 import { addEvent } from './events';
 import { applyClubIdentity } from './identity-operations';
+import { fanMoodIdentity } from './fan-mood';
 import { random } from './primitives';
 import { debit } from './transactions';
 
@@ -117,6 +118,8 @@ export function adoptDesign(w: World, draft: number) {
   if (!chosen) throw new Error('시안이 없어요. 디자이너에게 다시 의뢰해 주세요.');
   applyClubIdentity(w, chosen);
   delete w.designCommission;
+  // A new identity costs the owner the supporters' standing (→OWNER-12).
+  fanMoodIdentity(w);
 }
 
 /** Throws the delivered drafts away unused; the fee stays spent. */
