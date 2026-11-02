@@ -4,10 +4,11 @@ import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import type { MatchModelRelease } from './match-model';
 
 /**
- * A world nobody owns a club in, on a season's first day (→WORLD-13), as the takeover finds it.
- * Until the history runner builds one (`generateHistory`), it is a founded 1950 world whose founded
- * club, its players and their careers leave again: every professional club is for sale, no club
- * keeps books and no season is archived.
+ * A world nobody owns a club in, on a season's first day (→WORLD-13), as the takeover finds it,
+ * made fast for unit tests: a founded 1950 world whose founded club, its players and their careers
+ * leave again, so every professional club is for sale, no club keeps books and no season is
+ * archived. A world the history runner made (`generateHistory`) is taken over in
+ * `takeover.season.test.ts`.
  */
 export function ownerlessWorld(
   seed = 'ownerless',

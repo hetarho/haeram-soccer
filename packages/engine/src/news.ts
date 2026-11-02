@@ -1,7 +1,7 @@
 import type { Event, MatchRecord, World } from '../../contracts/src/types';
 import { PD, TD } from '../../contracts/src/detail';
 import { country } from '../../catalogs/src/index';
-import { clubOf } from './player-state';
+import { clubOf, lastOwnSeason } from './player-state';
 import { STYLE_INFO } from './styles';
 import { buildTitleName } from './build';
 
@@ -1118,7 +1118,8 @@ function tableNews(w: World, name: string): NewsItem[] {
 
 /** Trophies of the season that just closed: the league, the domestic cup and continental cups. */
 function honours(w: World): NewsItem[] {
-  const last = w.history.at(-1);
+  // The club's own season only: honours of the world's season before the takeover are not ours.
+  const last = lastOwnSeason(w);
   if (!last || last.year !== w.year - 1) return [];
   const name = clubOf(w).name,
     items: NewsItem[] = [];

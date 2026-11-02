@@ -1,5 +1,5 @@
 /** Pure player/world reads shared by simulation and campaign orchestration. */
-import type { Club, Line, Player, Tactic, World } from '../../contracts/src/types';
+import type { Club, Line, Player, SeasonArchive, Tactic, World } from '../../contracts/src/types';
 import {
   FORMATIONS,
   lineOf,
@@ -20,6 +20,30 @@ export const clubOf = (w: Pick<World, 'clubs' | 'playerClub'>) => {
   ownIndex.set(w.clubs, index);
   return w.clubs[index]!;
 };
+/**
+ * Whether an archived season is the club's own (→HIST-2, WORLD-13): every season of a founded
+ * career, and a taken-over career's from the takeover's season on. The seasons the world lived
+ * before the takeover stay in `w.history` with every own-club field empty (division 0, rank 0, no
+ * money), so no own-club read takes one of them for the club's.
+ */
+export function isOwnSeason(
+  w: Pick<World, 'playerClub' | 'owner'>,
+  season: Pick<SeasonArchive, 'year'>,
+) {
+  return w.playerClub !== '' && (!w.owner || season.year >= w.owner.takeover.year);
+}
+type ArchiveWorld = Pick<World, 'history' | 'playerClub' | 'owner'>;
+/** The club's own archived seasons (→HIST-2), in the archive's order. */
+export function ownSeasons(w: ArchiveWorld) {
+  return w.playerClub !== '' && !w.owner
+    ? w.history
+    : w.history.filter((season) => isOwnSeason(w, season));
+}
+/** The last archived season when it is the club's own; none before its first close. */
+export function lastOwnSeason(w: ArchiveWorld) {
+  const last = w.history.at(-1);
+  return last && isOwnSeason(w, last) ? last : undefined;
+}
 export const activePlayers = (w: World) => w.players.filter((p) => p.status === 'active');
 /** His OVR at his main position in his best role there (→PLAYER-6). */
 export const overall = (p: Player) => Math.round(mainOvr(p));

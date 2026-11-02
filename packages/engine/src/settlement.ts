@@ -11,6 +11,7 @@ import {
   FINANCE_CONFIG,
   gateProjection,
   isLeagueMatch,
+  lastSeasonTier,
   leagueMerit,
   leagueShare,
   matchBonus,
@@ -150,7 +151,7 @@ function settleDistribution(w: World) {
   );
   const parachute = roundShare(parachutePayment(w), w.round);
   if (parachute === '0') return;
-  const from = divisionLabel(c.country, w.history.at(-1)!.tier);
+  const from = divisionLabel(c.country, lastSeasonTier(w)!);
   accrue(
     w,
     'parachute',

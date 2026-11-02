@@ -43,7 +43,7 @@ import type {
 } from '../../contracts/src/types';
 import { COUNTRIES, country } from '../../catalogs/src/index';
 import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives';
-import { activePlayers, clubOf } from './player-state';
+import { activePlayers, clubOf, ownSeasons } from './player-state';
 import { addEvent } from './events';
 import { joinClub, makePlayer, ownStarters, refillPosition, rating } from './world';
 import { lineOf } from './player';
@@ -482,7 +482,7 @@ export function promote(w: World) {
         entry.representative = false;
         if (entry.id === w.playerClub) {
           w.lower = false;
-          const returning = w.history.some((h) => h.tier <= last);
+          const returning = ownSeasons(w).some((h) => h.tier <= last);
           addEvent(
             w,
             'promotion',

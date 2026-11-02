@@ -23,10 +23,15 @@ import { installMissingIdentities } from './club-identity';
 import { pays } from './listing';
 import { activateMatchModel, MATCH_MODEL_RELEASE, type MatchModelRelease } from './match-model';
 import { ensureManagerHistory } from './manager-history-capture';
-import { clubManager } from './managerMarket';
+import { clubManager, openManagerMarket } from './managerMarket';
 import { MORALE_START } from './morale';
 import { invalidateNpcSquads, joinClub, makePlayer, refillPlace, squad } from './world';
-import { openEmployment, retainPerson } from './person-careers';
+import {
+  activeCoachingEmployment,
+  closeEmployment,
+  openEmployment,
+  retainPerson,
+} from './person-careers';
 import { formationOf } from './player-state';
 import { lineOf, type Slot } from './player';
 import {
@@ -199,7 +204,10 @@ export function takeOver(
       retainPerson(w, p, club.id, true);
       openEmployment(w, p.id, 'player', club.id);
     }
-  // The club is the owner's now: its books, 조직력 and project were a club nobody owns's.
+  // The club is the owner's now: its books, 조직력 and project were a club nobody owns's, and
+  // so were its coaches, who leave as the owner's staff starts as a new club's (→OWNER-4).
+  for (const { person, job } of activeCoachingEmployment(w))
+    if (job.club === club.id) closeEmployment(w, person.id, job.role);
   delete club.books;
   delete club.cohesion;
   delete club.project;
@@ -268,6 +276,8 @@ export function takeOver(
   w.bids = [];
   w.inbox = [];
   w.morale = MORALE_START;
+  // The world before kept no free agent: the season's candidates open the market (→STAFF-17).
+  openManagerMarket(w);
   foundWithPreset(w, preset);
   openShortlistWindow(w);
   activateMatchModel(w, release);

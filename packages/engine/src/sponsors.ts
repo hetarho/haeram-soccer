@@ -2,7 +2,7 @@ import { baseEffects } from './bases';
 import type { SponsorContract, SponsorKind, SponsorSlot, World } from '../../contracts/src/types';
 import { SPONSOR_SLOTS, sponsorSlotOpens, type Observation } from '../../catalogs/src/index';
 import { addEvent } from './events';
-import { clubOf } from './player-state';
+import { clubOf, lastOwnSeason } from './player-state';
 import { footballQuote } from './quotes';
 import { ratio } from './primitives';
 import { moneyLabel, SPONSOR_SLOT_LABELS } from './finance';
@@ -136,7 +136,8 @@ export function sponsorAnnual(w: World, contract: SponsorContract) {
 
 /** Last season's finish in its division: ×1.1 for the champion down to ×0.9 for the bottom club. */
 function finishFactor(w: World) {
-  const last = w.history.at(-1);
+  // A season the world archived before the takeover keeps no finish of the club's: neutral.
+  const last = lastOwnSeason(w);
   if (!last || last.year !== w.year - 1) return 1;
   const clubs = last.standings.filter(
     (row) => row[1] === last.tier && row[2] === last.group,
@@ -318,7 +319,7 @@ export function sponsorEnding(w: World) {
  * contract's remaining seasons, and contracts that have run their term end.
  */
 export function yearlySponsor(w: World) {
-  const last = w.history.at(-1),
+  const last = lastOwnSeason(w),
     tier = clubOf(w).tier;
   if (last && last.year === w.year - 1) {
     const promoted = tier < last.tier;

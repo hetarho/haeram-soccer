@@ -1,7 +1,7 @@
 import { baseEffects } from './bases';
 import type { Event, MatchRecord, SponsorSlot, World } from '../../contracts/src/types';
 import { country, currency } from '../../catalogs/src/index';
-import { activePlayers, clubOf } from './player-state';
+import { activePlayers, clubOf, isOwnSeason, lastOwnSeason } from './player-state';
 import { broadcastQuote, footballQuote, quote } from './quotes';
 import { clamp, ratio, scaleBy } from './primitives';
 import { policyEffects, policyOf } from './policy';
@@ -85,10 +85,11 @@ const NOT_TURNOVER = new Set(['transfer-out', 'free-transfer-compensation', 'own
 /**
  * The club's turnover over its last completed season, in this season's money (→ECON-30): that
  * season's ledger income (→ECON-10) without player sales or compensation for players who left.
- * Undefined when no completed season's ledger is kept, as in a club's first season.
+ * Undefined when no completed season's ledger is kept, as in a club's first season (a takeover's
+ * included: the world's season before it kept no ledger of the club's).
  */
 export function lastSeasonTurnover(w: World): string | undefined {
-  const season = w.history.at(-1);
+  const season = lastOwnSeason(w);
   if (!season || season.year !== w.year - 1) return undefined;
   const lines = ledgerLines(
     seasonEntries(w, season.year, season.currency),
@@ -121,8 +122,8 @@ export function lastSeasonTurnover(w: World): string | undefined {
 export function assessOperatingExpenses(w: World): string {
   const club = clubOf(w),
     floor = operatingExpensesAt(club.country, w.year, club.tier),
-    closed = w.history.at(-1);
-  if (closed !== undefined && closed.year === w.year - 1 && closed.tier < club.tier) return floor;
+    before = lastSeasonTier(w);
+  if (before !== undefined && before < club.tier) return floor;
   const turnover = lastSeasonTurnover(w);
   if (turnover === undefined) return floor;
   const share = scaleBy(turnover, EXPENSE_CONFIG.share, 10000n);
@@ -607,14 +608,27 @@ export function leagueMerit(w: World, rank: number, clubs: number): string {
   );
 }
 /**
+ * The division the club played last season (→ECON-28): its own archive's, or, for the season the
+ * world archived before the takeover, the club's row in that season's standings (the archive's
+ * own-club fields are empty then). Undefined when last season is not archived, as in a founded
+ * club's first season.
+ */
+export function lastSeasonTier(w: World): number | undefined {
+  const last = w.history.at(-1);
+  if (!last || last.year !== w.year - 1) return undefined;
+  if (isOwnSeason(w, last)) return last.tier;
+  const index = w.clubs.indexOf(clubOf(w));
+  return last.standings.find((row) => row[0] === index)?.[1];
+}
+/**
  * The season after a relegation a club keeps half the equal share it lost (→ECON-28), paid
  * alongside its new share; any other season pays none.
  */
 export function parachutePayment(w: World): string {
-  const last = w.history.at(-1),
+  const before = lastSeasonTier(w),
     tier = clubOf(w).tier;
-  if (!last || last.year !== w.year - 1 || last.tier >= tier) return '0';
-  const lost = BigInt(leagueShare(w, last.tier)) - BigInt(leagueShare(w, tier));
+  if (before === undefined || before >= tier) return '0';
+  const lost = BigInt(leagueShare(w, before)) - BigInt(leagueShare(w, tier));
   if (lost <= 0n) return '0';
   return scaleBy(lost.toString(), DISTRIBUTION_CONFIG.parachute, 1000n);
 }

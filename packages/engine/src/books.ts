@@ -7,7 +7,6 @@
  */
 import type { Club, ClubBooks, ClubSeasonBook, World } from '../../contracts/src/types';
 import { COUNTRIES, currency, SPONSOR_SLOTS } from '../../catalogs/src/index';
-import { CLUB_TAKEOVER } from './owner-config';
 import {
   DISTRIBUTION_CONFIG,
   EXPENSE_CONFIG,
@@ -20,8 +19,8 @@ import { sponsorOffers, sponsorSlotOpen } from './sponsors';
 import { marketWageAt } from './market-prices';
 import { ranked } from './season';
 import { groupKey } from './league-fixtures';
-import { squad, stature } from './world';
-import { MAX_LEVEL, STADIUM_STEPS } from './facility-model';
+import { squad } from './world';
+import { facilityStage } from './club-value';
 import { DEFAULT_TICKET } from './presets';
 import { ratio, scaleBy } from './primitives';
 import { seasonAfter } from './wartime';
@@ -92,12 +91,12 @@ function seasonBook(w: World, club: Club, books: ClubBooks): ClubSeasonBook {
 
 /**
  * The world as one club nobody owns would read it through the owner's scales: that club in the
- * owner's place, at the default ticket price, in its division's facilities (→ECON-38), with no
+ * owner's place, at the default ticket price, at its facility stage (→ECON-38, CLUB-1), with no
  * squad, history, campaign, sponsor, policy or build of its own, so every own-club setting is at
  * its neutral default and every number comes from the owner's functions.
  */
 function clubView(w: World, club: Club): World {
-  const stadium = takeoverFacilities(w, club).stadium;
+  const { stadium } = facilityStage(w, club);
   return {
     ...w,
     playerClub: club.id,
@@ -115,30 +114,6 @@ function clubView(w: World, club: Club): World {
     direction: undefined,
     localBase: undefined,
     globalReach: undefined,
-  };
-}
-
-/**
- * A club's facilities by its division and stature (→ECON-38, CLUB_TAKEOVER.facilities): the
- * division's stages, raised for a giant or a big club and lowered for a small one.
- */
-export function takeoverFacilities(w: World, club: Club) {
-  const { division, stature: sizes } = CLUB_TAKEOVER.facilities;
-  const base = division[Math.min(club.tier, division.length - 1)]!;
-  const size = stature(w.seed, club.id);
-  const step =
-    size >= sizes.giant.from
-      ? sizes.giant
-      : size >= sizes.big.from
-        ? sizes.big
-        : size <= sizes.small.to
-          ? sizes.small
-          : { stadium: 0, levels: 0 };
-  const level = (n: number) => Math.max(0, Math.min(MAX_LEVEL, n + step.levels));
-  return {
-    stadium: Math.max(0, Math.min(STADIUM_STEPS.length - 1, base.stadium + step.stadium)),
-    training: level(base.training),
-    academy: level(base.academy),
   };
 }
 

@@ -586,9 +586,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T654 | spike: how the world lives 1930 → decade before anyone owns a club | WORLD ARCH LEAGUE MATCH | T652 T653 | todo |
-| T655 | world from 1930 to the takeover decade, with the wartime stop | WORLD LEAGUE HIST ARCH OWNER | T652 T654 | todo |
-| T656 | season books for every club nobody owns | ECON LEAGUE SAVE CLUB | T652 T655 | todo |
 | T664 | switch the start to the takeover (rules 5.0.0) | WEB WORLD ECON OWNER SAVE ARCH | T652 T656 T658 T660 T661 T662 T663 | todo |
 | T665 | remove founding, difficulty levels, the founding editor and the amateur level | WEB KIT WORLD LEAGUE ECON CLUB | T652 T664 | todo |
 | T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T665 | todo |
@@ -621,6 +618,7 @@
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261103 integrate ot03/history (T654–T656) into ot03/integrate: generated world, wartime and NPC books merged without conflicts; one facility helper (club-value `facilityStage`), takeOver on a generateHistory world opens the manager market and closes the club's NPC coaching jobs, own-club reads skip pre-owner archives (`isOwnSeason`, parachute from the world's standings); unit 2034, contract 47, integration set 44, equivalence digests unchanged; ot03
 - 261103 update-ssot STAFF r39 PLAYER r14: 마당발's candidate and pool counts and 원석 감별사's scout range written where the base rules live (already built by T661, tasked=rev); ot03
 - 261103 integrate ot03 lanes on ot03/integrate: T657–T663 merged over the T653 foundation (helpers renamed startChoices.ts/ownerFigures.ts, trait checks share hasTrait); unit 2020, contract 47, equivalence digests unchanged; ot03
 - 261103 T663 done: HUD fortune chip, 구단주 sheet (stake slider, injection and dividend dials, 팬 민심), crisis bands and GameOver causes; wiring in T664; ot03

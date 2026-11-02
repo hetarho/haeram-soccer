@@ -103,6 +103,17 @@ export function marketOf(w: World): ManagerMarket {
 function market(w: World): ManagerMarket {
   return (w.managerMarket ??= seeded(w));
 }
+/**
+ * The market a takeover opens (→STAFF-17, WORLD-13): the world before it kept every club's
+ * managers but no free agent, so the season's seeded candidates become its free agents, as a
+ * founded club's market opens with them.
+ */
+export function openManagerMarket(w: World) {
+  const opened = seeded(w);
+  w.managerMarket = w.managerMarket
+    ? { ...w.managerMarket, year: opened.year, round: opened.round, free: opened.free }
+    : opened;
+}
 
 const cache = new Map<string, MarketManager>();
 /**

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { Club, World } from '../../contracts/src/types';
 import { currency } from '../../catalogs/src/index';
-import { booksClose, clearDebt, keepsBooks, settleNpcBooks, takeoverFacilities } from './books';
+import { booksClose, clearDebt, keepsBooks, settleNpcBooks } from './books';
+import { facilityStage } from './club-value';
 import { historyWorld } from './history';
 import { createWorld } from './founding';
 import { evolveClubs } from './dynamics';
@@ -117,13 +118,13 @@ describe('season books of clubs nobody owns (→ECON-36)', () => {
     expect(founded.clubs.filter((c) => c.books).length).toBeGreaterThan(0);
   });
 
-  it('values a club in its division and stature facilities', () => {
+  it('reads a club nobody owns at its division and stature facility stage (→CLUB-1)', () => {
     const w = world();
     const giant = w.clubs
       .filter((c) => !c.representative && c.tier === 0)
       .sort((a, b) => b.strength - a.strength)[0]!;
-    const facilities = takeoverFacilities(w, giant);
-    expect(facilities.stadium).toBeGreaterThanOrEqual(5);
-    expect(takeoverFacilities(w, club(w, 'ENG', 3)).stadium).toBeLessThan(facilities.stadium);
+    const stage = facilityStage(w, giant);
+    expect(stage.stadium).toBeGreaterThanOrEqual(5);
+    expect(facilityStage(w, club(w, 'ENG', 3)).stadium).toBeLessThan(stage.stadium);
   });
 });

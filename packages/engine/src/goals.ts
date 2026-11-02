@@ -1,5 +1,5 @@
 import type { World } from '../../contracts/src/types';
-import { clubOf } from './player-state';
+import { clubOf, ownSeasons } from './player-state';
 
 export interface ClubGoal {
   id: string;
@@ -37,7 +37,7 @@ function goal(
 /** Retained canonical facts are the only source; reading milestones never awards or writes anything. */
 export function clubMilestones(w: World) {
   const own = clubOf(w),
-    archived = [...w.history].sort((a, b) => a.year - b.year),
+    archived = [...ownSeasons(w)].sort((a, b) => a.year - b.year),
     wins = w.ownMatches.filter((match) =>
       match.home === w.playerClub
         ? match.score.home > match.score.away

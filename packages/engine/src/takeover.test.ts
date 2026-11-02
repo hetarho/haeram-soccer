@@ -11,16 +11,29 @@ import {
   OWNER_DIVIDEND,
   TAKEOVER_DEBT,
 } from './owner-config';
-import { clubManager } from './managerMarket';
+import { clubManager, managerOffers } from './managerMarket';
 import { makePlayer, squad } from './world';
-import { formationOf } from './player-state';
+import { formationOf, isOwnSeason, lastOwnSeason, ownSeasons } from './player-state';
 import { lineOf } from './player';
 import { fanFollowing } from './fans';
 import { basicStaff } from './staff';
 import { defaultSettings } from './responsibilities';
 import { presetBoard, presetById } from './presets';
-import { EXPENSE_CONFIG, operatingExpensesAt } from './finance';
-import { scaleBy } from './primitives';
+import {
+  assessOperatingExpenses,
+  DISTRIBUTION_CONFIG,
+  EXPENSE_CONFIG,
+  lastSeasonTier,
+  lastSeasonTurnover,
+  leagueShare,
+  operatingExpensesAt,
+  parachutePayment,
+  recentRevenue,
+} from './finance';
+import { commercialValue } from './sponsors';
+import { clubNews } from './news';
+import { clubMilestones } from './goals';
+import { scaleBy, zeroMetrics } from './primitives';
 import { ownerlessWorld, withBooks } from './ownerless.testkit';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 
@@ -91,6 +104,29 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     expect(club.identity).toEqual(identity);
     expect(w.managerHistory?.club).toBe(club.id);
     expect(w.shortlist).toBeDefined();
+  });
+
+  it('opens the manager market with the season’s candidates when the world kept none (→STAFF-17)', () => {
+    const { w, club } = setup();
+    // The world before the takeover keeps every club's managers and no free agent.
+    w.managerMarket = {
+      year: w.year,
+      round: 0,
+      free: [],
+      clubs: { [club.id]: [0, 1946] },
+      serial: 2,
+    };
+    takeOver(w, club.id, choice('industrial'), undefined, DISABLED_RELEASE);
+    const offered = managerOffers(w).map(({ fee: _fee, ...manager }) => (void _fee, manager));
+    expect(offered.length).toBeGreaterThanOrEqual(4);
+    expect(w.managerMarket).toEqual({
+      year: w.year,
+      round: 0,
+      free: offered,
+      clubs: { [club.id]: [0, 1946] },
+      serial: 2,
+    });
+    expect(w.manager.since).toBe(1946);
   });
 
   it('puts the direction chosen at the takeover in force', () => {
@@ -237,5 +273,105 @@ describe('formation cover (→CLUB-1)', () => {
     // In slot order the versatile player would take the centre; paired, he takes the flank.
     expect(uncoveredSlots([both, centre], slots)).toEqual([]);
     expect(uncoveredSlots([both, winger], slots)).toEqual([slots[1]]);
+  });
+});
+
+/**
+ * A season the world archived before the takeover (→HIST-2, WORLD-13): every league club's row
+ * [club, division, group, points, gf, ga] at `divisionOf`, the champions, and every own-club field
+ * empty, as the world's close writes it.
+ */
+function worldArchive(
+  w: World,
+  year: number,
+  divisionOf: (club: Club) => number,
+  cup: string,
+): SeasonArchive {
+  const league = w.clubs.filter((c) => !c.representative && !c.id.startsWith('euro:'));
+  return {
+    year,
+    tier: 0,
+    group: 0,
+    rank: 0,
+    points: 0,
+    played: 0,
+    won: 0,
+    drawn: 0,
+    lost: 0,
+    gf: 0,
+    ga: 0,
+    cash: '0',
+    currency: w.currency,
+    income: '0',
+    expense: '0',
+    fans: 0,
+    rating: 0,
+    manager: '',
+    metrics: zeroMetrics(),
+    standings: league.map((c) => [w.clubs.indexOf(c), divisionOf(c), c.group, c.strength, 40, 40]),
+    champions: [{ country: 'ENG', club: atPlace(w, 0, 1).id, cup }],
+    europe: [],
+  };
+}
+
+describe('the world’s seasons before the takeover (→HIST-2, WORLD-13)', () => {
+  /** An English second-tier club taken over with `seasons` of the world archived before it. */
+  function takenOver(seed: string, cameDown: boolean) {
+    const w = ownerlessWorld(seed);
+    const club = atPlace(w, 1, 5);
+    const division = (c: Club) => (c === club && cameDown ? 0 : c.tier);
+    w.history = [1947, 1948, 1949].map((year) => worldArchive(w, year, division, club.id));
+    takeOver(w, club.id, choice('oil'), undefined, DISABLED_RELEASE);
+    return { w, club };
+  }
+
+  it('tells the club’s own seasons from the world’s', () => {
+    const { w } = takenOver('own-seasons', false);
+    expect(w.history.map((season) => isOwnSeason(w, season))).toEqual([false, false, false]);
+    expect(ownSeasons(w)).toEqual([]);
+    expect(lastOwnSeason(w)).toBeUndefined();
+    const own = { ...w.history.at(-1)!, year: w.year };
+    w.history.push(own);
+    expect(ownSeasons(w)).toEqual([own]);
+    expect(lastOwnSeason(w)).toBe(own);
+    // A founded career's seasons are all its own; a world nobody owns has none.
+    const founded = { ...w, owner: undefined };
+    expect(ownSeasons(founded)).toBe(founded.history);
+    expect(ownSeasons({ ...founded, playerClub: '' })).toEqual([]);
+  });
+
+  it('pays a parachute only for a relegation the world’s standings show (→ECON-28)', () => {
+    const { w, club } = takenOver('own-parachute', false);
+    // The archive's own-club division is empty (0): read as the club's, it would pay one.
+    expect(lastSeasonTier(w)).toBe(club.tier);
+    expect(parachutePayment(w)).toBe('0');
+    expect(BigInt(parachutePayment({ ...w, owner: undefined }))).toBeGreaterThan(0n);
+    const relegated = takenOver('own-parachute', true).w;
+    expect(lastSeasonTier(relegated)).toBe(0);
+    expect(parachutePayment(relegated)).toBe(
+      scaleBy(
+        (BigInt(leagueShare(relegated, 0)) - BigInt(leagueShare(relegated))).toString(),
+        DISTRIBUTION_CONFIG.parachute,
+        1000n,
+      ),
+    );
+  });
+
+  it('keeps no turnover, finish, honours or milestones of the world’s season (→ECON-30, ECON-8)', () => {
+    const { w, club } = takenOver('own-reads', false);
+    expect(lastSeasonTurnover(w)).toBeUndefined();
+    expect(recentRevenue(w)).toBe('0');
+    expect(assessOperatingExpenses(w)).toBe(operatingExpensesAt('ENG', w.year, club.tier));
+    // The finish factor stays neutral: the value is the one without any archive.
+    const value = commercialValue(w);
+    expect(commercialValue({ ...w, history: [] })).toBe(value);
+    // The world's archive names the club as last season's cup winner: no honour of the owner's.
+    expect(w.history.at(-1)!.champions[0]!.cup).toBe(club.id);
+    expect(clubNews(w).filter((item) => item.id.includes(':honour:'))).toEqual([]);
+    expect(
+      clubNews({ ...w, owner: undefined }).filter((item) => item.id.includes(':honour:')).length,
+    ).toBeGreaterThan(0);
+    const season = clubMilestones(w).goals.find((goal) => goal.id === 'season')!;
+    expect(season.current).toBe(0);
   });
 });
