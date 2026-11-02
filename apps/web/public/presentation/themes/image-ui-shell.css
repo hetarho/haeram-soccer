@@ -279,23 +279,23 @@ html[data-theme] {
     font-weight: 800;
   }
 
-  [data-testid='hud-cash'] {
+  :is([data-testid='hud-cash'], [data-testid='hud-fortune']) {
     padding: 2px 12px;
     border: 0;
     background: none;
   }
 
-  [data-testid='hud-cash'] small {
+  :is([data-testid='hud-cash'], [data-testid='hud-fortune']) small {
     font-size: 12px;
     color: var(--image-muted);
   }
 
-  [data-testid='hud-cash'] b {
+  :is([data-testid='hud-cash'], [data-testid='hud-fortune']) b {
     font-size: 17px;
     font-weight: 600;
   }
 
-  [data-testid='hud-cash'] [data-ui='currency'] {
+  :is([data-testid='hud-cash'], [data-testid='hud-fortune']) [data-ui='currency'] {
     font-size: 11px;
     font-weight: 800;
   }
@@ -879,6 +879,19 @@ html[data-theme] {
     }
     [data-testid='hud-cash'] [data-ui='currency'] {
       font-size: 9px;
+    }
+    /* The owner's fortune stacks under the cash on phones (→WEB-114). */
+    [data-testid='hud-fortune'] {
+      padding: 0 5px;
+    }
+    [data-testid='hud-fortune'] small {
+      display: none;
+    }
+    [data-testid='hud-fortune'] b {
+      font-size: 11px;
+    }
+    [data-testid='hud-fortune'] [data-ui='currency'] {
+      font-size: 8px;
     }
     [data-testid='view-scroller'] {
       padding-top: 4px;

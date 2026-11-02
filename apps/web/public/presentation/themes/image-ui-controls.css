@@ -270,7 +270,8 @@ html[data-theme] {
       [data-select-trigger],
       [data-ui='formation-player'],
       [data-money],
-      [data-testid='hud-cash']
+      [data-testid='hud-cash'],
+      [data-testid='hud-fortune']
     )
   ) {
     border: 1px solid var(--image-button-edge, transparent);
