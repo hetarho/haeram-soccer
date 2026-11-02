@@ -146,6 +146,7 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/stages.test.ts',
   'packages/engine/src/strategy.test.ts',
   'packages/engine/src/summary.test.ts',
+  'packages/engine/src/takeover.season.test.ts',
   'packages/engine/src/training.test.ts',
   'packages/engine/src/transfer-records.test.ts',
   'packages/engine/src/transfers.delegated.test.ts',
