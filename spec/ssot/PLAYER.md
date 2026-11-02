@@ -1,5 +1,5 @@
 # PLAYER Player model
-> r13 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
+> r14 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
 
 ## decisions
 - PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 16 attributes, positions with levels, personality and play traits, potential. Other clubs' match squads use seasonal generation from club strength (→WORLD-6, →LEAGUE-10); cross-role person continuity and retirement eligibility are →WORLD-10/11. Development, adaptation and attribute ageing below continue to apply to the own club's players and academy; this does not apply own-club development to every NPC squad. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
@@ -151,7 +151,7 @@
   | 시야, 위치선정, 판단력, 침착성 | 32 | 33 | −0.5 |
   | 선방, 공중볼 처리, 발밑 | 30 | 33 | −1 |
   - between growth and decline an attribute holds; every seasonal change carries noise of ±0.5.
-- PLAYER-18 [o] The owner sees his own players' attributes, positions and levels, traits, adaptation, multiplier and 실효 OVR exactly; for any other player attributes, positions and play traits are exact and personality grades show as a range by the chief scout's ability (→STAFF-11): 80+ exact, 60–79 ±1 grade, below 60 or no chief scout ±2. ← the scout earns his place, and a signing's settling is a stated gamble
+- PLAYER-18 [o] The owner sees his own players' attributes, positions and levels, traits, adaptation, multiplier and 실효 OVR exactly; for any other player attributes, positions and play traits are exact and personality grades show as a range by the chief scout's ability (→STAFF-11): 80+ exact, 60–79 ±1 grade, below 60 or no chief scout ±2. With the owner's 원석 감별사 (→OWNER-5) the range is halved on whole grades: ±2 becomes ±1, ±1 becomes exact. ← the scout earns his place, and a signing's settling is a stated gamble
 - PLAYER-19 [o] Match attributes are the 16 of →PLAYER-2; on the pitch 판단력 and 침착성 are the mental attributes, and the personality traits (→PLAYER-7) do not act in a match. Separate coaching aptitude and football understanding (→PLAYER-21) concern the later staff career, not a match modifier: 판단력 is on-pitch decision-making, football understanding the off-pitch reading of the game (→PLAYER-22). Nothing here changes by the start (→OWNER-2).
 
 - PLAYER-20 [o] This model starts with new careers; a save made before it does not open in it, and its export file is kept (→SAVE). The 16 attributes likewise start with the grid engine's new careers (→SAVE-19); no earlier player gains invented 판단력 or 침착성. ← a clean model beats converting five attributes into fourteen guesses
@@ -195,6 +195,7 @@
 - in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; role and play traits shape his choices and runs (PLAYER-5, PLAYER-9); each choice and action reads its attributes (PLAYER-2)
 
 ## chg
+- r14 261103 PLAYER-18✎ scout ranges by the chief scout's ability→+halved on whole grades with 원석 감별사 (±2→±1, ±1→exact)
 - r13 261103 PLAYER-19✎ nothing changes by difficulty level (→WEB-3)→by the start (→OWNER-2)
 - r12 261102 PLAYER-25✎ owner encouragement among what never raises aptitude→removed (no owner encouragement exists)
 - r11 261102 PLAYER-27+ season-close 발롱도르 from 1955/56: podium of three by goals, assists, team honours and class among players with 15+ top-flight league appearances; a fact with contract, news and view effects only

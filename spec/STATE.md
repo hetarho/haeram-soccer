@@ -565,13 +565,13 @@
 | CLUB | 50 | 50 | - | 0 |
 | MATCH | 47 | 47 | - | 0 |
 | LEAGUE | 12 | 12 | - | 0 |
-| STAFF | 38 | 38 | - | 0 |
+| STAFF | 39 | 39 | - | 0 |
 | ECON | 42 | 42 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 21 | 21 | - | 0 |
 | SAVE | 62 | 62 | - | 0 |
 | OWNER | 1 | 1 | - | 0 |
-| PLAYER | 13 | 13 | - | 0 |
+| PLAYER | 14 | 14 | - | 0 |
 
 ## review
 | id | st |
@@ -621,6 +621,7 @@
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261103 update-ssot STAFF r39 PLAYER r14: 마당발's candidate and pool counts and 원석 감별사's scout range written where the base rules live (already built by T661, tasked=rev); ot03
 - 261103 integrate ot03 lanes on ot03/integrate: T657–T663 merged over the T653 foundation (helpers renamed startChoices.ts/ownerFigures.ts, trait checks share hasTrait); unit 2020, contract 47, equivalence digests unchanged; ot03
 - 261103 T663 done: HUD fortune chip, 구단주 sheet (stake slider, injection and dividend dials, 팬 민심), crisis bands and GameOver causes; wiring in T664; ot03
 - 261103 T662 done: start flow UI — tier, traits, decade, generation progress, club list and takeover confirmation; wiring in T664; ot03
