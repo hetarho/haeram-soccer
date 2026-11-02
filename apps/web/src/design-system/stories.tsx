@@ -1,4 +1,4 @@
-import { lazy, useState, type ReactNode } from 'react';
+import { lazy, useEffect, useState, type ReactNode } from 'react';
 import type { Story } from './catalog';
 import type { Sample, previewRuntime } from './client';
 import { Panel, Table } from '../ui/App';
@@ -73,6 +73,17 @@ import { CareerRecordBook, TrophyCabinet, ClubLeaders } from '../ui/CareerRecord
 import { ClubTrends, SeasonTable } from '../ui/ClubTrends';
 import { SeasonReview } from '../ui/SeasonReview';
 import { ClubFounding } from '../ui/ClubFounding';
+// The component's name differs from its helpers module (`startFlow.ts`) only in case: the
+// extension keeps a case-insensitive file system from resolving one for the other.
+import { StartFlow } from '../ui/StartFlow.tsx';
+import { canAfford, takeoverYear, type ClubSheetFacts } from '../ui/startFlow';
+import type {
+  ClubListing,
+  StartChoice,
+  WealthTier,
+} from '../../../../packages/contracts/src/owner';
+import type { World } from '../../../../packages/contracts/src/types';
+import { country, currency } from '../../../../packages/catalogs/src/index';
 import { GameSlotScreen } from '../ui/GameSlotScreen';
 import { GameSlots } from '../runtime/slots';
 import { GameIndexStore } from '../adapters/games';
@@ -571,6 +582,166 @@ function Slots({ runtime }: { runtime: Runtime }) {
   );
 }
 
+/** Preview prices from the sample world's clubs: dearer with strength and over the decades. */
+const previewScale = (year: number) => (year < 1960 ? 1 : year < 1980 ? 4 : year < 2000 ? 20 : 60);
+const previewMinor = (pounds: number, code: string, year: number) =>
+  String(
+    BigInt(Math.round(pounds)) * BigInt(currency(code, year).units) * (code === 'ENG' ? 1n : 10n),
+  );
+/** Where each preview tier's fortune sits among the prices, richest first. */
+const PREVIEW_REACH: Record<WealthTier, number> = {
+  oil: 1,
+  chaebol: 0.9,
+  industrial: 0.75,
+  midsize: 0.5,
+  local: 0.3,
+  selfmade: 0.1,
+};
+function previewStart(w: World, tier: WealthTier, year: number) {
+  const clubs = w.clubs.filter(
+    (club) =>
+      !club.representative &&
+      club.id !== w.playerClub &&
+      club.tier < country(club.country).groups.length,
+  );
+  const pounds = (strength: number) => 1000 * 1.12 ** (strength - 40) * previewScale(year);
+  const prices = clubs.map((club) => pounds(club.strength)).sort((a, b) => a - b);
+  const reach = PREVIEW_REACH[tier];
+  const fortunePounds =
+    reach >= 1 ? prices.at(-1)! * 2 : prices[Math.floor(reach * (prices.length - 1))];
+  const fortune = previewMinor(fortunePounds, 'ENG', year);
+  const listings: ClubListing[] = clubs.map((club, index) => {
+    const price = pounds(club.strength);
+    const amount = (share: number) => previewMinor(price * share, club.country, year);
+    const listing: ClubListing = {
+      clubId: club.id,
+      name: club.name,
+      country: club.country as ClubListing['country'],
+      division: club.tier,
+      currency: currency(club.country, year).code,
+      price: amount(1),
+      pricePounds: previewMinor(price, 'ENG', year),
+      cash: amount(0.1),
+      debt: amount(index % 4 === 0 ? 0.4 : 0),
+      lastIncome: amount(0.3),
+      lastWages: amount(0.18),
+      strength: Math.round(club.strength),
+      affordable: false,
+    };
+    return { ...listing, affordable: canAfford(listing, fortune) };
+  });
+  return { listings, fortune };
+}
+function previewSheet(w: World, clubId: string, year: number): ClubSheetFacts | undefined {
+  const club = w.clubs.find((item) => item.id === clubId);
+  if (!club) return undefined;
+  const strength = Math.round(club.strength);
+  return {
+    crest: club.identity?.crest,
+    squad: w.players.slice(0, 18).map((player, index) => ({
+      id: player.id,
+      name: player.name,
+      position: player.position,
+      age: w.year - player.born,
+      ovr: Math.max(30, strength + 6 - index),
+    })),
+    manager: { name: w.manager.name, age: 51, rating: strength, note: '실리 축구 · 4-4-2' },
+    stadium: { name: `${club.name} Park`, seats: 12_000 + strength * 300 },
+    history: {
+      league: club.tier === 0 ? 2 : 0,
+      cup: 1,
+      europe: 0,
+      seasons: [1, 2, 3, 4, 5].map((back) => ({
+        year: year - back,
+        division: club.tier,
+        place: 1 + ((strength + back * 7) % 18),
+      })),
+    },
+  };
+}
+/** The start flow on preview data: every step, a simulated generation and the takeover list. */
+function StartFlowStory({
+  runtime,
+  notify,
+}: {
+  runtime: Runtime;
+  notify: (message: string) => void;
+}) {
+  const w = runtime.view.world;
+  const [mode, setMode] = useState<'choice' | 'progress' | 'list'>('choice');
+  const [run, setRun] = useState<{ choice: StartChoice; season: number }>();
+  const [listed, setListed] = useState<ReturnType<typeof previewStart>>();
+  useEffect(() => {
+    if (!run || listed) return;
+    const year = takeoverYear(run.choice.decade);
+    const timer = setTimeout(() => {
+      if (run.season >= year) setListed(previewStart(w, run.choice.tier, year));
+      // The war seasons are never played (→WORLD-14).
+      else setRun({ ...run, season: run.season === 1938 ? 1946 : run.season + 1 });
+    }, 90);
+    return () => clearTimeout(timer);
+  }, [run, listed, w]);
+  const takeOver = (clubId: string, preset?: string) =>
+    notify(`${clubId} 인수 · ${preset ?? '기본 방향'} (미리보기)`);
+  const loadClub = (clubId: string) =>
+    new Promise<ClubSheetFacts | undefined>((resolve) =>
+      setTimeout(
+        () => resolve(previewSheet(w, clubId, takeoverYear(run?.choice.decade ?? 1950))),
+        300,
+      ),
+    );
+  return (
+    <>
+      <Segments
+        label="미리보기 상태"
+        options={[
+          ['choice', '처음부터'],
+          ['progress', '생성 중'],
+          ['list', '구단 목록'],
+        ]}
+        value={mode}
+        onChange={(next) => {
+          setMode(next);
+          setRun(undefined);
+          setListed(undefined);
+        }}
+      />
+      {mode === 'choice' && (
+        <StartFlow
+          key="choice"
+          slot={1}
+          onBack={noop}
+          onGenerate={(choice) => setRun({ choice, season: 1930 })}
+          progress={run && !listed ? { season: run.season } : undefined}
+          listings={listed?.listings}
+          fortune={listed?.fortune}
+          loadClub={loadClub}
+          onTakeOver={takeOver}
+        />
+      )}
+      {mode === 'progress' && (
+        <StartFlow
+          key="progress"
+          initial={{ tier: 'oil', traits: ['talisman', 'marketer'], decade: 1960 }}
+          progress={{ season: 1947 }}
+          onGenerate={noop}
+          onTakeOver={takeOver}
+        />
+      )}
+      {mode === 'list' && (
+        <StartFlow
+          key="list"
+          initial={{ tier: 'midsize', decade: 1950 }}
+          {...previewStart(w, 'midsize', 1950)}
+          loadClub={loadClub}
+          onGenerate={noop}
+          onTakeOver={takeOver}
+        />
+      )}
+    </>
+  );
+}
+
 function Alerts({ runtime }: { runtime: Runtime }) {
   const { view, controller } = runtime;
   const w = view.world;
@@ -919,6 +1090,9 @@ export default function StoryRenderer({
         break;
       case 'founding':
         content = <ClubFounding client={client} state={state} onBack={noop} />;
+        break;
+      case 'start-flow':
+        content = <StartFlowStory runtime={runtime} notify={notify} />;
         break;
       case 'slots':
         content = <Slots runtime={runtime} />;
