@@ -1,6 +1,12 @@
 import { openPersonnel } from './personnel-navigation';
 import { openClubhouse, openLeague, openCups, openClubRecords } from './competition-navigation';
-import { watchNext } from './watch';
+import {
+  closeMatchDetails,
+  openMatchDetails,
+  openPlayerSheet,
+  presentedMinute,
+  watchNext,
+} from './watch';
 import { delegateSales, proposeOnReport } from './events';
 import { expect, test } from '@playwright/test';
 import { chooseLevel } from './events';
@@ -246,10 +252,7 @@ test('opens at 2x, one minute per 12 s at 1x, and provides five replay speeds', 
   await expect(page.getByTestId('pitch-theatre')).toContainText('2′', {
     timeout: openingMinuteMs,
   });
-  const minuteNow = async () =>
-    Number(
-      (await page.getByTestId('match-latest-event').locator('span').innerText()).match(/\d+/)![0],
-    );
+  const minuteNow = async () => Number((await presentedMinute(page)).match(/\d+/)![0]);
   for (const value of ['1×', '4×', '8×', '16×']) {
     const speed = speeds.getByRole('radio', { name: value, exact: true });
     // Account for play time spent handling the click, including at the fastest rate.
@@ -299,35 +302,45 @@ test('opens at 2x, one minute per 12 s at 1x, and provides five replay speeds', 
     );
   expect(covered).toBeLessThanOrEqual(Math.ceil(most) + 2);
   await expect(page.getByRole('button', { name: /^(재생|일시정지|다시 보기)$/ })).toHaveCount(0);
-  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-  const timeline = page.getByRole('slider', { name: '경기 시간', exact: true });
-  const beforeTap = Number(await timeline.inputValue());
-  await page.getByLabel('22명의 선수와 공으로 표현하는 경기').click();
-  await expect.poll(async () => Number(await timeline.inputValue())).toBeGreaterThan(beforeTap);
+  // The presented running second, which the pitch writes on every drawn frame (→WEB-32).
+  const canvas = page.getByLabel('22명의 선수와 공으로 표현하는 경기');
+  const seconds = async () => Number(await canvas.getAttribute('data-seconds'));
+  // A tapped player's sheet holds the live match while it is open; closing it plays on (→WEB-50).
+  await speeds.getByRole('radio', { name: '1×', exact: true }).click();
+  const sheet = await openPlayerSheet(page);
+  const held = await seconds();
+  await page.waitForTimeout(350);
+  expect(await seconds()).toBe(held);
+  await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await expect(sheet).toHaveCount(0);
+  await expect.poll(seconds).toBeGreaterThan(held);
   await page.evaluate(() => {
     Object.defineProperty(document, 'hidden', { configurable: true, value: true });
     document.dispatchEvent(new Event('visibilitychange'));
   });
-  // The displayed sample catches up to the stopped animation clock on its next UI update.
+  // The drawn second catches up to the stopped animation clock on its next frame.
   await page.waitForTimeout(200);
-  const hidden = await timeline.inputValue();
+  const hidden = await seconds();
   await page.waitForTimeout(350);
-  await expect(timeline).toHaveValue(hidden);
+  expect(await seconds()).toBe(hidden);
   await page.evaluate(() => {
     Reflect.deleteProperty(document, 'hidden');
     document.dispatchEvent(new Event('visibilitychange'));
   });
-  await expect
-    .poll(async () => Number(await timeline.inputValue()))
-    .toBeGreaterThan(Number(hidden));
+  await expect.poll(seconds).toBeGreaterThan(hidden);
+  // A seek in 경기 상세 holds its instant while the dialog is open; closing it plays on from there.
+  const details = await openMatchDetails(page);
+  const timeline = details.getByRole('slider', { name: '경기 시간', exact: true });
   await timeline.press('Home');
-  const sought = await timeline.inputValue();
+  await expect(timeline).toHaveValue('0');
+  await expect.poll(seconds).toBeLessThan(60);
+  const sought = await seconds();
   await page.waitForTimeout(350);
-  await expect(timeline).toHaveValue(sought);
+  await expect(timeline).toHaveValue('0');
+  expect(await seconds()).toBe(sought);
+  await closeMatchDetails(page);
   await speeds.getByRole('radio', { name: '16×', exact: true }).click();
-  await expect
-    .poll(async () => Number(await timeline.inputValue()))
-    .toBeGreaterThan(Number(sought));
+  await expect.poll(seconds).toBeGreaterThan(sought);
 });
 
 test('draws a set-piece preparation in about 1.5 s with the players travelling', async ({
@@ -340,11 +353,13 @@ test('draws a set-piece preparation in about 1.5 s with the players travelling',
   const preparation = longPreparation(playback);
   await importResponsibilityCareer(page, paceCareer());
   await watchNext(page);
-  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
+  // The result holds the match still, so the details' seek keeps its place once they close.
+  await page.getByRole('button', { name: '결과 보기', exact: true }).click();
+  const details = await openMatchDetails(page);
   // The same match: its sample count matches the reference within the few points Firefox and
   // WebKit may sample apart from Node; the seek itself goes by match time.
   const max = Number(
-    await page.getByRole('slider', { name: '경기 시간', exact: true }).getAttribute('max'),
+    await details.getByRole('slider', { name: '경기 시간', exact: true }).getAttribute('max'),
   );
   expect(
     Math.abs(max - (presentationSamples(playback.frames).samples.length - 1)),

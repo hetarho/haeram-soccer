@@ -9,8 +9,13 @@ import { continuityCareer, FAST_MINUTE_MS, FAST_SPEED } from '../fixtures/full-m
 import { exportRaw, exportWorld } from './club-identity-helpers';
 import { horizontalOverflow } from './layout';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { chooseOption } from './select';
-import { watchNext } from './watch';
+import {
+  closeMatchDetails,
+  openMatchDetails,
+  openPlayerSheet,
+  presentedMinute,
+  watchNext,
+} from './watch';
 
 /**
  * A supported career saved before the full match model's release, imported into the build
@@ -54,10 +59,7 @@ async function seasonMatches(page: Page) {
       .filter({ has: page.getByRole('cell', { name: String(round), exact: true }) })
       .filter({ hasText: `${score.home}–${score.away}` });
 }
-const minuteNow = async (page: Page) =>
-  Number(
-    (await page.getByTestId('match-latest-event').locator('span').innerText()).match(/\d+/)![0],
-  );
+const minuteNow = async (page: Page) => Number((await presentedMinute(page)).match(/\d+/)![0]);
 
 for (const viewport of VIEWPORTS)
   test(`continues a mid-season activated career on ${viewport.name}`, async ({ page, browser }) => {
@@ -126,10 +128,10 @@ for (const viewport of VIEWPORTS)
         ).continuity;
         return { scores: state.scores, cues: state.cues, owners: [...state.owners] };
       });
-    // The side on the ball shows beside the scoreboard without opening details (→WEB-95).
-    const badge = page.getByTestId('match-score').getByTestId('possession-cue');
-    await expect(badge).toHaveCount(1, { timeout: 10_000 });
-    await expect(badge).toHaveAccessibleName('볼 소유');
+    // The side on the ball fills the scoreboard without opening details (→WEB-95).
+    await expect(page.getByTestId('match-score')).toHaveAttribute('data-ball-side', /^[01]$/, {
+      timeout: 10_000,
+    });
 
     // At 16x every running minute lasts 750 ms; only a goal's hold (→WEB-94) takes time out. The
     // whole match at that speed is the slowest part of this journey. The pitch advances its clock
@@ -166,31 +168,34 @@ for (const viewport of VIEWPORTS)
     expect(presented.owners).toEqual(expect.arrayContaining(['carrier:0', 'carrier:1']));
 
     // The newly settled match reports complete records.
-    await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-    const report = page.getByRole('region', { name: '경기 분석 리포트', exact: true });
+    const details = await openMatchDetails(page);
+    const report = details.getByRole('region', { name: '경기 분석 리포트', exact: true });
     await expect(report).toBeVisible();
     await expect(report).toContainText('xG');
     await expect(report).not.toContainText('기록하기 전 규칙');
     // The recorded set-piece shape: six or more defenders on their jobs, a marker with his man.
-    const timeline = page.getByRole('slider', { name: '경기 시간', exact: true });
+    const timeline = details.getByRole('slider', { name: '경기 시간', exact: true });
     await expect(timeline).toHaveAttribute('max', String(next.samples - 1));
+    // The whistle left the match playing on, so closing the details resumes it: the result holds
+    // it still, and a seek made from there keeps its place once the details close.
+    await timeline.fill(String(next.setPiece.index));
+    await closeMatchDetails(page);
+    const action = page.getByTestId('match-next-action');
+    await expect(action).toHaveAccessibleName('결과 보기');
+    await action.click();
+    await openMatchDetails(page);
     await timeline.fill(String(next.setPiece.index));
     await expect(timeline).toHaveValue(String(next.setPiece.index));
-    await expect(page.getByTestId('match-latest-event').locator('span')).toHaveText(
-      `${next.setPiece.label}′`,
-    );
-    await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
-    const { side, index } = next.setPiece.marker;
-    await chooseOption(
-      page.getByRole('combobox', { name: '살펴볼 선수', exact: true }),
-      `${side}:${index}`,
-    );
-    await expect(
-      page.locator('p').filter({ hasText: '점선은 이 선수가 선택한 이동' }).locator('b'),
-    ).toHaveText('상대 마크');
+    await closeMatchDetails(page);
+    await expect.poll(() => presentedMinute(page)).toBe(next.setPiece.label);
+    const sheet = await openPlayerSheet(page, { at: next.setPiece.at });
+    const { index } = next.setPiece.marker;
+    await expect(sheet).toHaveAccessibleName(new RegExp(`^${index + 1}\\. `));
+    await expect(sheet.getByTestId('player-inspector').locator('p > b')).toHaveText('상대 마크');
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
+    await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
+    await expect(sheet).toHaveCount(0);
     // The seek left the match before its end: reveal the result again, then go home.
-    const action = page.getByTestId('match-next-action');
     if ((await action.getAttribute('aria-label')) === '결과 보기') await action.click();
     await expect(action).toHaveAccessibleName('홈으로');
     await action.click();

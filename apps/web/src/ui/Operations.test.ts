@@ -2,13 +2,14 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ClientState, GameClient } from '../runtime/client';
+import type { ProgressionController } from '../runtime/progression';
 import { createWorld } from '../../../../packages/engine/src/index';
 import { OperationsView } from './Operations';
 
 vi.mock('./OfficeBar', () => ({
   OfficeBar: ({ title }: { title: string }) => createElement('h2', null, title),
 }));
-// The artwork adapter resolves theme resources; the office only places its room scene.
+// The artwork adapter resolves theme resources; a room scene would show as a figure here.
 vi.mock('./FacilityOverview', () => ({
   FacilityOverview: ({ kind, title }: { kind: string; title: string }) =>
     createElement('figure', { 'data-scene': kind, 'aria-label': title }),
@@ -28,6 +29,7 @@ const office = () =>
     createElement(OperationsView, {
       state: { view: { world, sponsors: [] } } as unknown as ClientState,
       client: {} as GameClient,
+      controller: {} as ProgressionController,
       personnel: () => null,
     }),
   );
@@ -50,19 +52,16 @@ describe('owner-office overview navigation', () => {
 });
 
 describe('owner-office overview (→WEB-39/44)', () => {
-  it('heads the live queue with the manager room, then one read-only club summary', () => {
+  it('opens on the live queue with no room scene, then one read-only club summary', () => {
     vi.stubGlobal('location', { search: '' });
     const html = office();
-    expect(html.match(/<figure[^>]*>/g)).toEqual([
-      '<figure data-scene="manager" aria-label="구단주 사무실">',
-    ]);
-    const scene = html.indexOf('data-scene="manager"'),
-      queue = html.indexOf('data-testid="approval-queue"'),
+    // The 결재함 leads the office the moment it opens: no manager-room scene heads it.
+    expect(html).not.toMatch(/<figure[^>]*data-scene/);
+    expect(html).not.toContain('구단주 사무실');
+    const queue = html.indexOf('data-testid="approval-queue"'),
       team = html.indexOf('aria-label="팀 현황"'),
       situation = html.indexOf('data-testid="club-situation"');
-    // An illustrated header, the queue first, then the supporting team content.
-    expect(scene).toBeGreaterThan(-1);
-    expect(scene).toBeLessThan(queue);
+    expect(queue).toBeGreaterThan(-1);
     expect(queue).toBeLessThan(team);
     expect(team).toBeLessThan(situation);
     for (const id of ['approval-queue', 'club-situation'])

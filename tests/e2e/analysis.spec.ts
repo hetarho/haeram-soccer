@@ -1,6 +1,6 @@
 import { openPersonnel } from './personnel-navigation';
 import { clubhouseDate, openClubRecords, openLeague } from './competition-navigation';
-import { watchNext } from './watch';
+import { closeMatchDetails, openMatchDetails, watchNext } from './watch';
 import { delegateSales, proposeOnReport } from './events';
 import { finishSeason } from './season-progression';
 import { openCurrentClubSeason, openSeasonReview, showRecordTabs } from './record-navigation';
@@ -343,9 +343,9 @@ test('jumps between recorded periods without changing the final result or calend
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   const date = await page.getByTestId('game-date').innerText();
   const score = await page.getByTestId('match-score').locator('strong').innerText();
-  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-  await page.getByText('주요 장면 탐색', { exact: true }).click();
-  const moments = page.getByRole('region', { name: '주요 장면 탐색', exact: true });
+  const details = await openMatchDetails(page);
+  await details.getByText('주요 장면 탐색', { exact: true }).click();
+  const moments = details.getByRole('region', { name: '주요 장면 탐색', exact: true });
   const half = moments.getByRole('button', { name: '전반 종료 · 45분', exact: true });
   await half.click();
   // Half-time opens the second half's first minute.
@@ -353,7 +353,11 @@ test('jumps between recorded periods without changing the final result or calend
   // A 44 px target can lay out at 43.99997 px; compare whole pixels.
   expect(Math.round((await half.boundingBox())!.height)).toBeGreaterThanOrEqual(44);
   await expect(page.getByRole('button', { name: '재생', exact: true })).toHaveCount(0);
+  // The result held the match still, so it plays on from half-time only at the speed chosen.
+  await closeMatchDetails(page);
   await page.getByRole('radio', { name: '1×', exact: true }).click();
+  await openMatchDetails(page);
+  await details.getByText('주요 장면 탐색', { exact: true }).click();
   await moments.getByRole('button', { name: '경기 종료 · 90분', exact: true }).click();
   await expect(page.getByTestId('match-score').locator('strong')).toHaveText(score);
   await expect(page.getByTestId('game-date')).toHaveText(date);
@@ -365,10 +369,12 @@ test('reveals the recorded match report only after choosing the final result', a
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
   await watchNext(page, { manual: true });
-  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
+  await openMatchDetails(page);
   const report = page.getByRole('region', { name: '경기 분석 리포트', exact: true });
   await expect(report).toHaveCount(0);
+  await closeMatchDetails(page);
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
+  await openMatchDetails(page);
   await expect(report).toBeVisible();
   await expect(report).toContainText('정규 90분 최종 집계');
   // Every own line that played gets a card: the starters and any substitutes, marked as such.

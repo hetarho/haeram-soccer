@@ -1,5 +1,12 @@
 import { openLeague, returnToMatch } from './competition-navigation';
-import { watchNext } from './watch';
+import {
+  closeMatchDetails,
+  matchDetails,
+  openMatchDetails,
+  openPlayerSheet,
+  presentedMinute,
+  watchNext,
+} from './watch';
 import { configureResponsibilities, proposeOnReport } from './events';
 import { expect, test, type Page } from '@playwright/test';
 import { decode } from '../../apps/web/src/adapters/persistence';
@@ -13,7 +20,7 @@ import {
   tacticLabel,
 } from '../../packages/engine/src/index';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
-import { expectViewFits, settle } from './layout';
+import { expectViewFits, horizontalOverflow, settle } from './layout';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
 import { WATCH_DEFAULT_SPEED, WATCH_MINUTE_MS } from '../../apps/web/src/ui/presentationClock';
 import { committedRaw, openRecordedMatch } from './club-identity-helpers';
@@ -44,7 +51,9 @@ async function expectCompactMatch(page: Page, viewport: { width: number; height:
       theatre.querySelector('[data-testid="match-latest-event"]')!,
       theatre.querySelector('[data-testid="match-feedback"]')!,
     ];
-    const controls = [...theatre.querySelectorAll('button,select')].filter(
+    // The theatre's own controls: the standing after the match (→WEB-50) scrolls on below it.
+    const stage = theatre.querySelector('[data-ui="match-theatre"]')!;
+    const controls = [...stage.querySelectorAll('button,select')].filter(
       (element) => element.getClientRects().length,
     );
     // The theatre has no tab bar; the bottom navigation is how the player leaves it.
@@ -68,7 +77,11 @@ async function expectCompactMatch(page: Page, viewport: { width: number; height:
       navigation: navigation.map(measure),
     };
   });
-  await expectViewFits(page);
+  // Once the match ends its standing follows below the theatre (→WEB-50) and the view may scroll
+  // to it; the theatre itself still fits the first screen.
+  if (await page.getByRole('heading', { name: '경기 뒤의 순위표' }).count())
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+  else await expectViewFits(page);
   for (const bounds of geometry.targets) {
     expect(bounds.visible, bounds.label).toBe(true);
     expect(bounds.x, bounds.label).toBeGreaterThanOrEqual(0);
@@ -162,12 +175,7 @@ for (const viewport of [
     ]);
     // Speed changes keep the presented minute, and 16x runs every minute, restarts included, in
     // 750 ms (→WEB-32): four of them cover several minutes without slowing at a dead ball.
-    const minuteNow = async () =>
-      Number(
-        (await page.getByTestId('match-latest-event').locator('span').innerText()).match(
-          /\d+/,
-        )?.[0] ?? 0,
-      );
+    const minuteNow = async () => Number((await presentedMinute(page)).match(/\d+/)?.[0] ?? 0);
     const before = await minuteNow();
     await page.getByRole('radio', { name: '16×', exact: true }).click();
     expect(await minuteNow()).toBeGreaterThanOrEqual(before);
@@ -176,7 +184,8 @@ for (const viewport of [
     expect((await minuteNow()) - before).toBeGreaterThanOrEqual(2);
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
     await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
-    // The scoreboard carries one red mark per player sent off; the event line its minute label.
+    // The scoreboard carries one red mark per player sent off; the commentary ends on the final
+    // whistle, its minute label beside it.
     await expect(page.getByTestId('red-cards-home').locator('i')).toHaveCount(sentOff[0]);
     await expect(page.getByTestId('red-cards-away').locator('i')).toHaveCount(sentOff[1]);
     await expect(page.getByTestId('match-latest-event').locator('span')).toHaveText(
@@ -207,29 +216,24 @@ for (const viewport of [
     expect(reference.ownMatches[0].appearance).toEqual(
       appearanceForFixture(founded, nextOwnFixture(founded)!),
     );
-    await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toHaveCount(0);
-    await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-    await expect(page.getByRole('slider', { name: '경기 시간', exact: true })).toBeVisible();
-    // The scrubber reads the presented frame's label against the last one.
-    await expect(page.getByText(/^(90(\+\d+)?)′ \/ \1′$/)).toBeVisible();
+    // The standing after the match shows once it ends, without opening its details (→WEB-50).
+    await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toBeVisible();
     const actionBounds = await page.getByTestId('match-next-action').boundingBox();
-    const detailBounds = await page
-      .getByRole('slider', { name: '경기 시간', exact: true })
-      .boundingBox();
     const menuBounds = await page
       .getByRole('navigation', { name: '모바일 게임 메뉴' })
       .boundingBox();
     expect(actionBounds!.y + actionBounds!.height).toBeLessThanOrEqual(menuBounds!.y);
-    expect(actionBounds!.y + actionBounds!.height).toBeLessThanOrEqual(detailBounds!.y);
-    await expect(page.getByText('패스 성공', { exact: true })).toBeVisible();
-    await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toBeVisible();
-    await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
-    await expect(page.getByRole('combobox', { name: '살펴볼 선수', exact: true })).toBeVisible();
-    if (sentOff[0] + sentOff[1])
-      await expect(page.getByTestId('match-bench').filter({ hasText: '(퇴장)' })).not.toHaveCount(
-        0,
-      );
-    await page.getByRole('button', { name: '경기 상세', exact: true }).click();
+    const details = await openMatchDetails(page);
+    await expect(details.getByRole('slider', { name: '경기 시간', exact: true })).toBeVisible();
+    // The scrubber reads the presented frame's label against the last one.
+    await expect(details.getByText(/^(90(\+\d+)?)′ \/ \1′$/)).toBeVisible();
+    await expect(details.getByText('패스 성공', { exact: true })).toBeVisible();
+    await closeMatchDetails(page);
+    // A tapped player's decisions open over the still pitch; players sent off show as the
+    // scoreboard's red marks above, since the sheet reads only players on the pitch.
+    const sheet = await openPlayerSheet(page);
+    await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
+    await expect(sheet).toHaveCount(0);
     await expectCompactMatch(page, viewport);
     await openLeague(page);
     const leagueTabs = page.getByRole('tablist', { name: '리그 보기' }).getByRole('tab');
@@ -260,22 +264,23 @@ for (const viewport of [
     // The league is a primary entry, so back leads straight to the retained theatre.
     await returnToMatch(page);
     await expectCompactMatch(page, viewport);
-    await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-    await page.getByText('주요 장면 탐색', { exact: true }).click();
+    const moments = await openMatchDetails(page);
+    await moments.getByText('주요 장면 탐색', { exact: true }).click();
     // Red cards and substitutions join the goals, labelled with their minute (45+n, 90+n).
-    await expect(page.getByTestId('recorded-incident')).toHaveCount(
+    await expect(moments.getByTestId('recorded-incident')).toHaveCount(
       incidents.filter((i) => i.kind === 'red' || i.kind === 'secondYellow' || i.kind === 'sub')
         .length,
     );
     for (const incident of incidents.filter((i) => i.kind === 'sub'))
       await expect(
-        page
+        moments
           .getByTestId('recorded-incident')
           .filter({ hasText: `${incident.minute}${incident.added ? `+${incident.added}` : ''}′` })
           .filter({ hasText: '↔' }),
       ).not.toHaveCount(0);
-    await page.getByRole('button', { name: '킥오프 · 1분', exact: true }).click();
-    await page.getByRole('button', { name: '경기 상세', exact: true }).click();
+    // The result held the match still, so the kick-off seek keeps its place once the dialog closes.
+    await moments.getByRole('button', { name: '킥오프 · 1분', exact: true }).click();
+    await closeMatchDetails(page);
     await expect(page.getByTestId('match-result-summary')).toHaveCount(0);
     await expectCompactMatch(page, viewport);
     expect(await savedRaw(page)).toBe(settled);
@@ -381,9 +386,11 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   await expect(cue).toBeVisible();
   await replay.getByRole('button', { name: '재생', exact: true }).click();
   await expect(cue).toHaveCount(0, { timeout: 3000 });
-  // A seek past both later goals pauses there without celebrating them.
+  // Paused again, a seek in 경기 상세 past both later goals stays there without celebrating them;
+  // the details hold the replay while open and leave it paused, as it was, once closed.
+  await replay.getByRole('button', { name: '일시정지', exact: true }).click();
   await replay.getByRole('button', { name: '경기 상세', exact: true }).click();
-  const scrubber = replay.getByRole('slider', { name: '경기 시간', exact: true });
+  const scrubber = matchDetails(page).getByRole('slider', { name: '경기 시간', exact: true });
   await scrubber.fill('80');
   await expect(score).toHaveText('1 : 2');
   await expect(cue).toHaveCount(0);
@@ -391,6 +398,7 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   // Going back before the 13′ goal lets playback cross it again.
   await scrubber.fill('11');
   await expect(score).toHaveText('1 : 0');
+  await closeMatchDetails(page);
   await replay.getByRole('button', { name: '재생', exact: true }).click();
   await pauseOnCue(replayMinuteMs + 4000);
   await expect(cue).toBeVisible();

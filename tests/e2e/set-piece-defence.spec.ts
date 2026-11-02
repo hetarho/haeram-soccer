@@ -6,8 +6,13 @@ import { withCandidateModel } from '../fixtures/worlds';
 import { horizontalOverflow } from './layout';
 import { expectCompressedPreparation, stoppages } from './preparation';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { chooseOption } from './select';
-import { watchNext } from './watch';
+import {
+  closeMatchDetails,
+  openMatchDetails,
+  openPlayerSheet,
+  presentedMinute,
+  watchNext,
+} from './watch';
 
 /**
  * Both sides through a delivered set piece in observation (→MATCH-12, MATCH-17, MATCH-18, T348),
@@ -143,9 +148,14 @@ function recordedScene(seed: string) {
         side: s,
         index: playback.squads[s].findIndex((p) => p.id === id),
       });
+      /** Where `who` stands at a paused sample, in the pitch's 0–100 units. */
+      const place = (at: Shot, { side: s, index }: Who) =>
+        samples[at.index]!.players![s].find((p) => p.id === playback.squads[s][index]!.id)!
+          .position;
       return {
         playback,
         preparation,
+        place,
         samples: samples.length,
         walk: [...new Set([walk, kick])].map(shot),
         at: at.map(shot),
@@ -189,26 +199,26 @@ for (const viewport of [
     await watchNext(page);
     const canvas = page.getByLabel('22명의 선수와 공으로 표현하는 경기');
     await expect(canvas).toBeVisible();
-    await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-    const timeline = page.getByRole('slider', { name: '경기 시간', exact: true });
+    // The result holds the match still, so a seek in 경기 상세 keeps its place once it closes.
+    await page.getByRole('button', { name: '결과 보기', exact: true }).click();
+    const details = await openMatchDetails(page);
+    const timeline = details.getByRole('slider', { name: '경기 시간', exact: true });
     // The page plays the reference's recorded match: the same samples.
     await expect(timeline).toHaveAttribute('max', String(scene.samples - 1));
-    await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
-    const inspector = page.getByRole('combobox', { name: '살펴볼 선수', exact: true });
-    const state = page
-      .locator('p')
-      .filter({ hasText: '점선은 이 선수가 선택한 이동' })
-      .locator('b');
-    /** Pauses on `shot` and reads each player's state in the inspector. */
+    await closeMatchDetails(page);
+    /** Pauses on `shot` and reads each player's state in the sheet his tapped figure opens. */
     const inspect = async (shot: Shot, states: (readonly [Who, string])[]) => {
+      await openMatchDetails(page);
       await timeline.fill(String(shot.index));
       await expect(timeline).toHaveValue(String(shot.index));
-      await expect(page.getByTestId('match-latest-event').locator('span')).toHaveText(
-        `${shot.label}′`,
-      );
+      await closeMatchDetails(page);
+      await expect.poll(() => presentedMinute(page)).toBe(shot.label);
       for (const [who, label] of states) {
-        await chooseOption(inspector, `${who.side}:${who.index}`);
-        await expect(state).toHaveText(label);
+        const sheet = await openPlayerSheet(page, { at: scene.place(shot, who) });
+        await expect(sheet).toHaveAccessibleName(new RegExp(`^${who.index + 1}\\. `));
+        await expect(sheet.getByTestId('player-inspector').locator('p > b')).toHaveText(label);
+        await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
+        await expect(sheet).toHaveCount(0);
       }
       await expect(canvas).toBeVisible();
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);

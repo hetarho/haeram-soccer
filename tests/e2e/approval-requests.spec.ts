@@ -105,11 +105,11 @@ for (const width of [390, 1280]) {
     await expect(page).toHaveURL(/\/direction$/);
     await expect(review(page, ids[0]!)).toBeFocused();
 
-    // A filter of the actual responsibility stays through a review and its return.
-    const filters = approvalQueue(page).getByRole('group', { name: '결재함 보기', exact: true });
-    const recruitment = filters.getByRole('button', { name: `선수 영입 ${ids.length}` });
-    await recruitment.click();
-    await expect(recruitment).toHaveAttribute('aria-pressed', 'true');
+    // The requests wait under their title, 선수 영입, with its count; there are no filters, and the
+    // title stays through a review and its return (→WEB-100).
+    const recruitment = approvalQueue(page).locator('[data-title="recruitment"]');
+    await expect(recruitment.getByRole('heading')).toHaveText(`선수 영입${ids.length}`);
+    await expect(approvalQueue(page).getByRole('group', { name: '결재함 보기' })).toHaveCount(0);
 
     // Both ways out — the named return and browser back — reach the same unresolved queue.
     for (const exit of ['queue', 'browser'] as const) {
@@ -122,7 +122,7 @@ for (const width of [390, 1280]) {
       await expect(approvalQueue(page)).toBeVisible();
       await expect(page).toHaveURL(/\/direction$/);
       await expect(approvalRows(page)).toHaveCount(ids.length);
-      await expect(recruitment).toHaveAttribute('aria-pressed', 'true');
+      await expect(recruitment.getByRole('listitem')).toHaveCount(ids.length);
       // A named return puts focus back on the request that still waits there.
       if (exit !== 'browser') await expect(review(page, ids[0]!)).toBeFocused();
       expect(
@@ -151,11 +151,11 @@ for (const width of [390, 1280]) {
     await request.getByRole('button', { name: '거절', exact: true }).click();
     await expect(page).toHaveURL(/\/direction$/);
     if (ids.length === 2) {
-      // The filtered view is empty now: it says so, focuses its heading and clears the filter.
-      const empty = approvalQueue(page).getByTestId('approval-empty');
-      await expect(empty.getByRole('heading')).toBeFocused();
-      await empty.getByRole('button', { name: '전체 보기', exact: true }).click();
-      await expect(empty).toContainText('지금 결재할 업무가 없어요');
+      // Nothing waits now: the count line says so and takes focus, over the quiet titles.
+      const counts = approvalQueue(page).getByTestId('approval-counts');
+      await expect(counts).toHaveText('지금 결재할 업무가 없어요');
+      await expect(counts).toBeFocused();
+      await expect(recruitment.getByRole('listitem')).toHaveCount(0);
     }
     const after = await exportedCareer(page);
     expect(pendingDecisions(after)).toHaveLength(ids.length - 2);

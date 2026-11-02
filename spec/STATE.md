@@ -465,12 +465,12 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 26 | 26 | - | 2 |
-| WEB | 202 | 202 | - | 0 |
+| WEB | 203 | 203 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 7 | 7 | - | 0 |
 | KIT | 7 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
 | CLUB | 49 | 49 | - | 0 |
-| MATCH | 45 | 45 | - | 0 |
+| MATCH | 46 | 46 | - | 0 |
 | LEAGUE | 11 | 11 | - | 0 |
 | STAFF | 38 | 38 | - | 0 |
 | ECON | 41 | 41 | - | 0 |
@@ -526,6 +526,7 @@
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261103 design close 6c0d6b12: tests and SSOT aligned (WEB r203: WEB-39 office opens on the 결재함 without its room scene, 결재라인 from 결재 설정/who-decides links; WEB-100 requests under titles, waiting first, delegates and 직접/위임 + 전체 switches, no filters; WEB-43 이적시장 선수/유소년/코치/감독/단장; WEB-50/95/49 board in the ball side's colours, notable-only commentary log, details and player dialogs, after-match table; WEB-71/72/79 entries; MATCH r46 MATCH-10 after-match standing); unit tests for the titled queue, 1.3% pitch margin and ageMax; kit preview on the shared pitch margin; office/queue and match-view e2e specs migrated for the batch
 - 261103 T646 done: care command, CareKind, winBonus (dropped on load), care.ts, win-bonus settlement, care news/ledger lines and the motivator's meeting bonus removed; office shows 결재함 + read-only 클럽 현황, HUD cash sheet explains cash/fixed costs/runway only, places read with 유소년 keeping 승격·방출; equivalence digests unchanged; 2 typecheck + 8 unit failures predate it (ds03 6c0d6b12 vs WEB-39), e2e edited for the batch
 - 261102 create-task owner intervention removal → T646–T652 (sequential; KIT-6/8 tasked in T648, KIT stays tasked 4 for its earlier KIT-5/9/10/12/13 deltas)
 - 261102 update-ssot owner intervention removal: WEB r202 ECON r41 ARCH r26 SAVE r61 LEAGUE r11 CLUB r49 MATCH r45 HIST r20 KIT r7 STAFF r38 PLAYER r12 (WORLD unchanged) — only 직접/위임 and its approvals stay; care, training 제안/강행, tactic requests and owner lineups, the 방향 board, dials, ticket price, owner capital, cash remedies, facility work start, coaching encouragement and owner-proposed playing coaches withdrawn; values stay as founded or saved; older saves drop the removed state (SAVE-25)

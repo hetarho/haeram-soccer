@@ -1,5 +1,5 @@
 import { clubhouseTab, openLeague, resumeLeague } from './competition-navigation';
-import { watchNext } from './watch';
+import { closeMatchDetails, openMatchDetails, watchNext } from './watch';
 import { chooseOption, selectOptions } from './select';
 import { chooseLevel, delegateSales, proposeOnReport } from './events';
 import { test, expect } from '@playwright/test';
@@ -62,18 +62,11 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await dialog.getByRole('button', { name: '준비 마치고 돌아가기' }).click();
   await watchNext(page);
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-  await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
-  const inspector = page.getByRole('combobox', { name: '살펴볼 선수', exact: true });
-  // The keeper chosen above started; the match decides whether he finished it, so he is either
-  // on the inspector's list or on the bench line as injured (the model revision moves which).
-  const keeperOption = (await selectOptions(inspector)).find((option) =>
-    option.label.includes(keeperName),
-  );
-  if (keeperOption) {
-    await chooseOption(inspector, keeperOption.value);
-    await expect(inspector).toContainText(keeperName);
-  } else await expect(page.getByText(`${keeperName} (부상)`)).toBeVisible();
+  // The keeper chosen above played: the details' report lists every own player who took part,
+  // whether or not he finished the match.
+  const details = await openMatchDetails(page);
+  await expect(details.getByRole('region', { name: '경기 분석 리포트' })).toContainText(keeperName);
+  await closeMatchDetails(page);
   await page
     .getByTestId('match-theatre')
     .getByRole('button', { name: '상세 리포트', exact: true })

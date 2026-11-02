@@ -10,6 +10,7 @@ import {
   DEFAULT_PITCH_SKIN,
   markerRadius,
   paintPitchGround,
+  PITCH_PAD,
   type PitchSkin,
 } from './pitchPainting';
 import { usePitchSkin } from './usePitchSkin';
@@ -48,7 +49,7 @@ export function paintKitPreview(
   if (ground) ground.draw(ctx, width, height, dpr, skin);
   else paintPitchGround(ctx, width, height, skin);
   ctx.imageSmoothingEnabled = !skin.pixelSize;
-  const pad = width * 0.065;
+  const pad = width * PITCH_PAD;
   const radius = markerRadius(width);
   const look = matchLook({
     home: appearance.sides[0].club,

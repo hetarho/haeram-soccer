@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+import { closeMatchDetails, matchDetails, openMatchDetails } from './watch';
 import type { MatchPlayback } from '../../packages/contracts/src/types';
 import {
   DEAD_BALL_CONFIG,
@@ -46,7 +47,8 @@ export function longPreparation(playback: MatchPlayback, minSeconds = 20) {
 }
 
 /**
- * Seeks the open match details to a recorded sample at least `LEAD_SECONDS` before `preparation`,
+ * Seeks 경기 상세 to a recorded sample at least `LEAD_SECONDS` before `preparation` and closes it,
+ * the match held still there (it must have been still when the dialog opened, as after 결과 보기),
  * starts recording the presented running second (the pitch canvas's `data-seconds`) on every
  * animation frame while still paused there, resumes at 1x and records until the kick has passed.
  * The stoppage must be drawn in its rush and beat time (`DEAD_BALL_CONFIG`), far quicker than its running
@@ -63,7 +65,9 @@ export async function expectCompressedPreparation(
   const { times } = presentationSamples(playback.frames);
   const before = times.findLastIndex((time) => time <= from - LEAD_SECONDS);
   expect(before).toBeGreaterThanOrEqual(0);
-  const timeline = page.getByRole('slider', { name: '경기 시간', exact: true });
+  const details = matchDetails(page);
+  if (!(await details.isVisible())) await openMatchDetails(page);
+  const timeline = details.getByRole('slider', { name: '경기 시간', exact: true });
   await timeline.fill(String(before));
   await expect(timeline).toHaveValue(String(before));
   const canvas = page.getByLabel('22명의 선수와 공으로 표현하는 경기');
@@ -78,6 +82,10 @@ export async function expectCompressedPreparation(
   }
   const sought = await shown();
   expect(sought, 'the seek lands before the dead ball').toBeLessThanOrEqual(from - 1);
+  // Closing the details leaves the match where the seek held it, as it was still on opening.
+  await closeMatchDetails(page);
+  await page.waitForTimeout(200);
+  expect(await shown(), 'the match stays held after the details close').toBe(sought);
   // The recorder starts on the paused seek, so it holds the clock's place before the dead ball
   // whatever the click costs; selecting a speed then resumes the seek (→WEB-32).
   const recordMs = presentationMs(sought, to, 1, segments) + RECORD_SLACK_MS;

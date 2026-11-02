@@ -135,59 +135,36 @@ export async function expectViewFits(page: Page) {
   expect(geometry.width, measured).toBeLessThanOrEqual(geometry.clientWidth);
 }
 
-/** Possession toggles horizontally beside each team without moving the scoreboard or pitch. */
-export async function expectStablePossessionLayout(page: Page) {
-  const layouts = await page.getByTestId('match-score').evaluate((scoreboard) => {
-    const teams = Array.from(scoreboard.querySelectorAll<HTMLElement>('[data-ui="match-team"]'));
-    const cues = teams.map((team) =>
-      team.querySelector<HTMLElement>('[data-ui="possession-cue"]')!,
-    );
-    const originals = cues.map((cue) => cue.style.visibility);
+/**
+ * The side on the ball fills the whole scoreboard in its shirt (→WEB-95): once a side has had the
+ * ball both halves wear one colour, and recolouring the board never moves it or the pitch.
+ */
+export async function expectBallSideScoreboard(page: Page) {
+  const board = await page.getByTestId('match-score').evaluate((scoreboard) => {
     const canvas = scoreboard.parentElement!.querySelector('canvas')!;
+    const behind = (side: string) =>
+      getComputedStyle(scoreboard.querySelector(`:scope > [data-side="${side}"]`)!).backgroundColor;
     const measure = () => {
       const score = scoreboard.getBoundingClientRect();
       return {
         top: score.top,
         height: score.height,
         pitchTop: canvas.getBoundingClientRect().top,
-        sides: teams.map((team, index) => {
-          const cue = cues[index].getBoundingClientRect();
-          const identity = team
-            .querySelector('[data-ui="match-team-identity"]')!
-            .getBoundingClientRect();
-          return {
-            side: team.dataset.side,
-            cueLeft: cue.left,
-            cueRight: cue.right,
-            identityLeft: identity.left,
-            identityRight: identity.right,
-            overlapsVertically: cue.top < identity.bottom && cue.bottom > identity.top,
-          };
-        }),
       };
     };
+    const style = scoreboard.style;
+    const keys = ['--home-kit', '--home-ink', '--away-kit', '--away-ink'];
+    const original = keys.map((key) => style.getPropertyValue(key));
+    const names = [behind('home'), behind('away')];
+    const before = measure();
     try {
-      return [-1, 0, 1].map((active) => {
-        cues.forEach((cue, index) => {
-          cue.style.visibility = active === index ? 'visible' : 'hidden';
-        });
-        return measure();
-      });
+      // The other side winning the ball: every colour of the board changes at once.
+      keys.forEach((key, i) => style.setProperty(key, i % 2 ? '#ffffff' : '#000000'));
+      return { side: scoreboard.dataset.ballSide, names, before, recoloured: measure() };
     } finally {
-      cues.forEach((cue, index) => {
-        cue.style.visibility = originals[index];
-      });
+      keys.forEach((key, i) => style.setProperty(key, original[i]!));
     }
   });
-  expect(layouts[0].sides).toHaveLength(2);
-  for (const layout of layouts) {
-    expect(layout.height).toBe(layouts[0].height);
-    expect(layout.top).toBe(layouts[0].top);
-    expect(layout.pitchTop).toBe(layouts[0].pitchTop);
-    for (const side of layout.sides) {
-      expect(side.overlapsVertically).toBe(true);
-      if (side.side === 'home') expect(side.cueLeft).toBeGreaterThanOrEqual(side.identityRight);
-      else expect(side.cueRight).toBeLessThanOrEqual(side.identityLeft);
-    }
-  }
+  expect(board.recoloured).toEqual(board.before);
+  if (board.side !== undefined) expect(board.names[0]).toBe(board.names[1]);
 }

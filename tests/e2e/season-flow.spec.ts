@@ -1,5 +1,5 @@
 import { openLeague } from './competition-navigation';
-import { watchNext } from './watch';
+import { closeMatchDetails, openMatchDetails, openPlayerSheet, watchNext } from './watch';
 import { configureResponsibilities, dismissMatchReport } from './events';
 import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
@@ -128,19 +128,22 @@ test('shows independent player decisions and post-match league context', async (
     page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
   ).toBeVisible();
   await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toHaveCount(0);
-  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-  await page.getByRole('button', { name: '선수 판단 보기' }).click();
-  await expect(page.getByRole('combobox', { name: '살펴볼 선수', exact: true })).toBeVisible();
-  await expect(
-    page.getByText('점선은 이 선수가 선택한 이동 목표입니다.', { exact: false }),
-  ).toBeVisible();
-  await chooseOption(page.getByRole('combobox', { name: '살펴볼 선수', exact: true }), '1:4');
+  // A tapped player's decision opens in his own sheet, holding the match until it closes.
+  await page.getByRole('radio', { name: '1×', exact: true }).click();
+  const sheet = await openPlayerSheet(page);
+  await expect(sheet.getByTestId('player-inspector').locator('p > b')).not.toBeEmpty();
+  await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
+  await expect(sheet).toHaveCount(0);
   await page.getByRole('button', { name: '결과 보기' }).click();
   await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
+  // The standing after the match shows once it ends, without opening its details (→WEB-50).
   await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toBeVisible();
   await expect(page.getByRole('table', { name: '리그 순위표' })).toContainText('우리 팀');
-  await page.getByText('주요 장면 탐색', { exact: true }).click();
-  await page.getByRole('button', { name: '킥오프 · 1분', exact: true }).click();
+  // The result held the match still, so the kick-off seek keeps its place once the details close.
+  const details = await openMatchDetails(page);
+  await details.getByText('주요 장면 탐색', { exact: true }).click();
+  await details.getByRole('button', { name: '킥오프 · 1분', exact: true }).click();
+  await closeMatchDetails(page);
   await page.getByRole('radio', { name: '1×', exact: true }).click();
   await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toHaveCount(0);
   // While the replay plays the primary action reveals the result; then it watches the next match.
@@ -151,7 +154,6 @@ test('shows independent player decisions and post-match league context', async (
   await expect(page.getByTestId('game-date')).not.toHaveText(beforeNext);
   await expect(page.getByTestId('match-next-action')).toBeEnabled();
   await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toHaveCount(0);
-  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });

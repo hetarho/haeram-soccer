@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { closeMatchDetails, openMatchDetails } from './watch';
 
 /** Runs the current settings and waits for the run to finish. */
 async function simulate(page: Page, count: string) {
@@ -48,18 +49,24 @@ test('the lab watches a match in the game’s match view and replays it with edi
   await expect(theatre.getByTestId('match-kit-unrecorded')).toHaveCount(0);
   await expect(page.getByText('유니폼 미기록')).toHaveCount(0);
 
-  // Pausing works as in the game's live view: a seek holds the instant, a speed resumes it.
-  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-  const timeline = page.getByRole('slider', { name: '경기 시간', exact: true });
+  // Pausing works as in the game's live view: 경기 상세 holds the instant a seek in it moves to,
+  // and the match plays on from there once it closes, at the speed chosen next.
+  const canvas = theatre.getByLabel('22명의 선수와 공으로 표현하는 경기');
+  const seconds = async () => Number(await canvas.getAttribute('data-seconds'));
+  await expect.poll(seconds).toBeGreaterThan(0);
+  const details = await openMatchDetails(page);
+  const timeline = details.getByRole('slider', { name: '경기 시간', exact: true });
   await expect.poll(async () => Number(await timeline.inputValue())).toBeGreaterThan(0);
   await timeline.press('Home');
   const sought = await timeline.inputValue();
+  await expect.poll(seconds).toBeLessThan(60);
+  const at = await seconds();
   await page.waitForTimeout(350);
   await expect(timeline).toHaveValue(sought);
+  expect(await seconds()).toBe(at);
+  await closeMatchDetails(page);
   await page.getByRole('radio', { name: '16×', exact: true }).click();
-  await expect
-    .poll(async () => Number(await timeline.inputValue()))
-    .toBeGreaterThan(Number(sought));
+  await expect.poll(seconds).toBeGreaterThan(at);
 
   // 다시 보기 plays the same seed again with the edited value: a new playback from the start.
   await setValue(page, 'SHOT_CONFIG.saveShare', '0.9');

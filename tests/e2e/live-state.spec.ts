@@ -5,7 +5,7 @@ import {
   resumeLeague,
   returnToMatch,
 } from './competition-navigation';
-import { watchNext } from './watch';
+import { closeMatchDetails, openMatchDetails, watchNext } from './watch';
 import { test, expect, type Page } from '@playwright/test';
 import { encode } from '../../apps/web/src/adapters/persistence';
 import { createWorld } from '../../packages/engine/src/index';
@@ -236,9 +236,10 @@ test('watching a match pauses the calendar and retains playback across page swit
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await page.waitForTimeout(1500);
   await expect(date).toHaveText(matchDay!);
-  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-  const timeline = page.getByRole('slider', { name: '경기 시간', exact: true });
+  const details = await openMatchDetails(page);
+  const timeline = details.getByRole('slider', { name: '경기 시간', exact: true });
   const before = Number(await timeline.inputValue());
+  await closeMatchDetails(page);
   await page.evaluate(() => {
     (window as typeof window & { liveCanvas?: Element | null }).liveCanvas =
       document.querySelector('canvas');
@@ -252,8 +253,10 @@ test('watching a match pauses the calendar and retains playback across page swit
   // The match has no menu entry; browser back retraces the league entry to it.
   await expect(menu.getByRole('button', { name: '경기', exact: true })).toHaveCount(0);
   await returnToMatch(page);
+  await openMatchDetails(page);
   await expect(timeline).toBeVisible();
   expect(Number(await timeline.inputValue())).toBeGreaterThanOrEqual(before);
+  await closeMatchDetails(page);
   expect(
     await page.evaluate(
       () =>

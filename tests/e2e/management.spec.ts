@@ -12,6 +12,7 @@ import { transferOffers } from '../../packages/engine/src/operations';
 import { horizontalOverflow } from './layout';
 import { openSaveMenu } from './save-menu';
 import { leaveOffice, openOfficeArea } from './office';
+import { matchDetails } from './watch';
 test('operates a club, reads a season and exports/imports the actual save', async ({ page }) => {
   // Simulates a full season with staff, academy and market days; slow CI browsers need longer.
   test.slow();
@@ -109,7 +110,10 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await expect(page.getByRole('dialog', { name: '지난 경기 상세' })).toBeVisible();
   await page.getByRole('button', { name: '결과 보기' }).click();
   await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-  await expect(page.getByRole('dialog').getByText('유효 슈팅', { exact: true })).toBeVisible();
+  await expect(matchDetails(page).getByText('유효 슈팅', { exact: true })).toBeVisible();
+  // Escape closes the details over the replay, then the replay.
+  await page.keyboard.press('Escape');
+  await expect(matchDetails(page)).toHaveCount(0);
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toHaveCount(0);
   const download = page.waitForEvent('download');

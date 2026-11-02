@@ -1,6 +1,7 @@
 import { expect, type Page } from '@playwright/test';
 import type { World } from '../../packages/contracts/src/types';
 import { pendingDecisions } from '../../packages/engine/src/stopping';
+import { requestTitle } from '../../apps/web/src/ui/approvalOrder';
 import { clubhouseTab } from './competition-navigation';
 import { dismissFeedback } from './feedback';
 
@@ -11,8 +12,9 @@ export const officeTitle = (page: Page) => officeBar(page).getByRole('heading');
 export const LOBBY = '결재함';
 /** The clubhouse's one-line office entrance (→WEB-11). */
 export const OFFICE = '구단주 사무실';
-/** The office's queue (→WEB-39/100): every waiting request as a row of its list. */
+/** The office's queue (→WEB-39/100): every waiting request as a row under its title. */
 export const approvalQueue = (page: Page) => page.getByTestId('approval-queue');
+/** Every waiting request's row, title by title in the order the 결재함 shows them. */
 export const approvalRows = (page: Page) =>
   approvalQueue(page)
     .getByRole('list', { name: '결재 대기 업무', exact: true })
@@ -20,12 +22,19 @@ export const approvalRows = (page: Page) =>
 /** A waiting request's 검토 in the queue. */
 export const reviewButton = (page: Page, id: string) =>
   approvalQueue(page).locator(`[data-review-id="${id}"]`);
-/** The 결재함's order (→WEB-100): longest waiting first, so overdue first, then the request ID. */
+/**
+ * The 결재함's row order (→WEB-100): titles with waiting requests first, by their longest wait,
+ * and each title's requests longest waiting first, so overdue first, then the request ID.
+ */
 export function approvalOrder(w: World) {
   const waits = w.approvalWaits ?? {};
-  return pendingDecisions(w)
-    .sort((a, b) => (waits[b.id] ?? 0) - (waits[a.id] ?? 0) || (a.id < b.id ? -1 : 1))
-    .map((item) => item.id);
+  const ordered = pendingDecisions(w).sort(
+    (a, b) => (waits[b.id] ?? 0) - (waits[a.id] ?? 0) || (a.id < b.id ? -1 : 1),
+  );
+  const titles = [...new Set(ordered.map(requestTitle))];
+  return titles.flatMap((title) =>
+    ordered.filter((item) => requestTitle(item) === title).map((item) => item.id),
+  );
 }
 const OFFICE_PATH = /^\/(direction|business)(\/|$)/;
 

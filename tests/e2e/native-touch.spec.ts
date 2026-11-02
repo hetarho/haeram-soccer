@@ -1,7 +1,7 @@
 import { openPersonnel } from './personnel-navigation';
 import { clubhouseDate, openLeague, primaryEntry } from './competition-navigation';
 import { marketFilters, marketRows, closeMarketPanel } from './market';
-import { watchNext } from './watch';
+import { openPlayerSheet, watchNext } from './watch';
 import { chooseOption, selectOptions } from './select';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { COUNTRIES } from '../../packages/catalogs/src/index';
@@ -157,12 +157,10 @@ for (const viewport of [
     await watchNext(page);
     await expect(page.getByTestId('match-theatre')).toBeVisible();
     await expectCompactDocument(page, viewport);
-    await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-    await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
-    const player = page.getByRole('combobox', { name: '살펴볼 선수', exact: true });
-    await expectTouchControl(player, viewport);
-    await chooseOption(player, '1:4');
-    await expect(player).toHaveAttribute('data-value', '1:4');
+    // A player is inspected by tapping his figure on the still pitch; his sheet closes by touch.
+    await page.getByRole('button', { name: '결과 보기', exact: true }).click();
+    const sheet = await openPlayerSheet(page);
+    await expectTouchControl(sheet.getByRole('button', { name: '창 닫기', exact: true }), viewport);
   });
 
   test(`keeps scouting and league exploration selectors touchable at ${viewport.width}x${viewport.height}`, async ({

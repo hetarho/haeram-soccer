@@ -241,18 +241,21 @@ describe('management screen calendar locks', () => {
     );
     expect(entries.find((button) => button.label === '교체')?.disabled).toBe(false);
   });
-  it("keeps the office's queue open to inspection over automatic ticks, with no quick actions", () => {
-    // The office offers no immediate owner action (→WEB-39); reading its queue stays available
-    // while the clock runs.
+  it("locks the 결재함's 직접/위임 over automatic ticks, keeping its titles open, with no quick actions", () => {
+    // The office offers no immediate owner action (→WEB-39); its titles stay readable while the
+    // clock runs, and their delegation switches lock like every management change (→WEB-97).
     vi.stubGlobal('location', { origin: 'https://game.test', pathname: '/business', search: '' });
+    const office = () =>
+      createElement(Rich, { state: gameStore.getState(), client, page: 'business', controller });
     for (const processing of [false, true]) {
       gameStore.setState({ processing });
-      const entries = render(
-        createElement(Rich, { state: gameStore.getState(), client, page: 'business', controller }),
-      );
+      const markup = renderToStaticMarkup(office());
+      expect(markup).toContain('aria-label="결재 항목"');
+      const entries = buttons(markup);
       expect(entries.filter((button) => button.label.includes('바로 할 수 있는 일'))).toEqual([]);
-      expect(entries.find((button) => button.label === '결재라인 모아보기')?.disabled).toBe(false);
+      expect(entries.some((button) => button.label === '결재라인 모아보기')).toBe(false);
     }
+    expectLocked(office, /^(직접|위임|전체 직접|전체 위임)$/);
   });
   it('locks policy application while leaving preset drafts and reset usable', () => {
     drafts['board-draft'] = { policy: { support: 5 } };

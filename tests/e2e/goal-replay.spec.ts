@@ -1,4 +1,4 @@
-import { watchNext } from './watch';
+import { closeMatchDetails, openMatchDetails, presentedMinute, watchNext } from './watch';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { advanceToNextMatch, createWorld } from '../../packages/engine/src/index';
 import { importResponsibilityCareer } from './responsibility-fixtures';
@@ -144,23 +144,8 @@ test('a seen goal replays its build-up and returns to the original viewing', asy
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
   expect(await cues()).toBe(1);
 
-  // The original viewing: a chosen speed, paused at an instant by the existing scrubber.
-  await speed(4).click();
-  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-  const scrubber = page.getByRole('slider', { name: '경기 시간', exact: true });
-  // At 4× the slider can reach the next step between reading and filling it, and a fill to the
-  // value it already holds seeks nothing; read again until a seek takes (CI 41175339655).
-  await expect(async () => {
-    const target = Number(await scrubber.inputValue()) + 1;
-    await scrubber.fill(String(target));
-    await expect.poll(presented, { timeout: 2000 }).toBe(samples[target]!.time.toFixed(2));
-  }).toPass();
-  const original = await presented();
-  await page.waitForTimeout(400);
-  expect(await presented()).toBe(original);
-  expect(Number(original)).toBeLessThan(goals[1]!.seconds);
-
-  // Only the seen goal is offered, with its order, minute, side, scorer and running score.
+  // Only the seen goal is offered, with its order, minute, side, scorer and running score; the
+  // live match plays on behind the picker.
   await open.click();
   await expect(picker).toBeVisible();
   await expect(options).toHaveCount(1);
@@ -170,10 +155,76 @@ test('a seen goal replays its build-up and returns to the original viewing', asy
   for (const later of goals.slice(1))
     if (later.scorer && later.scorer !== goals[0]!.scorer)
       await expect(picker).not.toContainText(later.scorer);
-  // Closing the picker changes nothing.
+  // Closing the picker changes nothing: the match is neither finished nor revealed.
   await page.keyboard.press('Escape');
   await expect(picker).toHaveCount(0);
+  await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('결과 보기');
+
+  // From running play the clip returns to its entry instant, with no catch-up of the clip's time.
+  // The original clock rightly runs on while the picker opens and again once the clip has
+  // returned, a dead-ball beat's rush and still beat faster than running play (→WEB-32), so the
+  // entry and the return are read from the presented instants themselves, not two samples apart.
+  await speed(4).click();
+  const running = await presented();
+  await expect.poll(seconds).toBeGreaterThan(Number(running));
+  await open.click();
+  const trail = await presentedTrail(canvas);
+  await options.first().click();
+  await expect(cue).toBeVisible({ timeout: clipMs });
+  await expect(state).toHaveCount(0, { timeout: GOAL_FEEDBACK_CONFIG.holdMs + 3000 });
+  const shown = await trail();
+  // The clip opens by going back to its build-up: the instant before is the original's entry.
+  const opened = shown.findIndex((value, i) => i > 0 && Number(value) < Number(shown[i - 1]));
+  expect(opened).toBeGreaterThan(0);
+  const entry = shown[opened - 1]!;
+  expect(Number(entry)).toBeGreaterThan(Number(running));
+  expect(Number(shown[opened])).toBeGreaterThanOrEqual(opening.from - 0.01);
+  // It plays up to its goal and holds there, never past it, until it returns.
+  const held = goals[0]!.seconds.toFixed(2);
+  const back = shown.findIndex((value, i) => i > opened && Number(value) > Number(held));
+  expect(back).toBeGreaterThan(opened);
+  expect(shown.slice(opened, back)).toContain(held);
+  // The first instant back is exactly the entry: none of the clip's time is caught up.
+  expect(shown[back]).toBe(entry);
+  // Then the original runs on from there at its own speed.
+  await expect.poll(seconds).toBeGreaterThan(Number(entry));
+  await expect(speed(4)).toHaveAttribute('aria-checked', 'true');
+  expect(await cues()).toBe(2);
+  // The clip neither finished nor revealed the live match.
+  await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('결과 보기');
+  // Presentation only: no save, result or date changes.
+  expect(await savedRaw(page)).toBe(settled);
+  await expect(theatre.getByTestId('game-date')).toHaveText(date);
+
+  // A final-minute goal of the completed match replays without completing it again.
+  await page.getByTestId('match-next-action').click();
+  await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('홈으로');
+  const finished = await savedRaw(page);
+  const finishedDate = await theatre.getByTestId('game-date').innerText();
+  await open.click();
+  await expect(options).toHaveCount(goals.length);
+  await options.last().click();
+  await expect(state).toBeVisible();
+  await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('홈으로');
+  await expect(state).toHaveCount(0, { timeout: clipMs + GOAL_FEEDBACK_CONFIG.holdMs });
+  await expect(score).toHaveText(`${playback.record.score.home} : ${playback.record.score.away}`);
+  await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('홈으로');
+  expect(await savedRaw(page)).toBe(finished);
+  await expect(theatre.getByTestId('game-date')).toHaveText(finishedDate);
+
+  // A paused instant: the result holds the match still, and a seek back in 경기 상세 keeps it
+  // there once the dialog closes (→WEB-50), between the first goal and the second.
+  const details = await openMatchDetails(page);
+  const instant = samples.findIndex((sample) => sample.time > goals[0]!.seconds);
+  expect(samples[instant]!.time).toBeLessThan(goals[1]!.seconds);
+  await details.getByRole('slider', { name: '경기 시간', exact: true }).fill(String(instant));
+  await expect.poll(presented).toBe(samples[instant]!.time.toFixed(2));
+  await closeMatchDetails(page);
+  const original = await presented();
+  await page.waitForTimeout(400);
   expect(await presented()).toBe(original);
+  await expect(score).toHaveText('1 : 0');
+  const cuesBefore = await cues();
 
   // Automatic return: the clip plays its build-up at 1x through the goal and its hold.
   await open.click();
@@ -196,10 +247,9 @@ test('a seen goal replays its build-up and returns to the original viewing', asy
   await expect(speed(4)).toHaveAttribute('aria-checked', 'true');
   await page.waitForTimeout(400);
   expect(await presented()).toBe(original);
-  expect(await cues()).toBe(2);
+  expect(await cues()).toBe(cuesBefore + 1);
   await expect(score).toHaveText('1 : 0');
-  await expect(open).toBeVisible();
-  // The clip neither finished nor revealed the live match.
+  // The seek left the match before its end; the clip did not finish it again.
   await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('결과 보기');
 
   // Manual return before the goal: the same exact instant and no cue.
@@ -210,58 +260,13 @@ test('a seen goal replays its build-up and returns to the original viewing', asy
   await expect(state).toHaveCount(0);
   await expect.poll(presented).toBe(original);
   await expect(speed(4)).toHaveAttribute('aria-checked', 'true');
-  expect(await cues()).toBe(2);
-
-  // From running play the clip returns to its entry instant, with no catch-up of the clip's time.
-  // The original clock rightly runs on while the picker opens and again once the clip has
-  // returned, a dead-ball beat's rush and still beat faster than running play (→WEB-32), so the
-  // entry and the return are read from the presented instants themselves, not two samples apart.
-  await speed(4).click();
-  await expect.poll(seconds).toBeGreaterThan(Number(original));
-  await open.click();
-  const trail = await presentedTrail(canvas);
-  await options.first().click();
-  await expect(cue).toBeVisible({ timeout: clipMs });
-  await expect(state).toHaveCount(0, { timeout: GOAL_FEEDBACK_CONFIG.holdMs + 3000 });
-  const shown = await trail();
-  // The clip opens by going back to its build-up: the instant before is the original's entry.
-  const opened = shown.findIndex((value, i) => i > 0 && Number(value) < Number(shown[i - 1]));
-  expect(opened).toBeGreaterThan(0);
-  const entry = shown[opened - 1]!;
-  expect(Number(entry)).toBeGreaterThan(Number(original));
-  expect(Number(shown[opened])).toBeGreaterThanOrEqual(opening.from - 0.01);
-  // It plays up to its goal and holds there, never past it, until it returns.
-  const held = goals[0]!.seconds.toFixed(2);
-  const back = shown.findIndex((value, i) => i > opened && Number(value) > Number(held));
-  expect(back).toBeGreaterThan(opened);
-  expect(shown.slice(opened, back)).toContain(held);
-  // The first instant back is exactly the entry: none of the clip's time is caught up.
-  expect(shown[back]).toBe(entry);
-  // Then the original runs on from there at its own speed.
-  await expect.poll(seconds).toBeGreaterThan(Number(entry));
-  await expect(speed(4)).toHaveAttribute('aria-checked', 'true');
-  expect(await cues()).toBe(3);
-  // Presentation only: no save, result or date changes.
-  expect(await savedRaw(page)).toBe(settled);
-  await expect(theatre.getByTestId('game-date')).toHaveText(date);
-
-  // A final-minute goal of the completed match replays without completing it again.
-  await page.getByTestId('match-next-action').click();
-  await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('홈으로');
-  const finished = await savedRaw(page);
-  const finishedDate = await theatre.getByTestId('game-date').innerText();
-  await open.click();
-  await expect(options).toHaveCount(goals.length);
-  await options.last().click();
-  await expect(state).toBeVisible();
-  await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('홈으로');
-  await expect(state).toHaveCount(0, { timeout: clipMs + GOAL_FEEDBACK_CONFIG.holdMs });
-  await expect(score).toHaveText(`${playback.record.score.home} : ${playback.record.score.away}`);
-  await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('홈으로');
+  expect(await cues()).toBe(cuesBefore + 1);
   expect(await savedRaw(page)).toBe(finished);
   await expect(theatre.getByTestId('game-date')).toHaveText(finishedDate);
 
   // A minute-only archived record offers its goals by the existing moment navigation.
+  await page.getByTestId('match-next-action').click();
+  await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('홈으로');
   await page.getByTestId('match-next-action').click();
   const record = await openRecordedMatch(page);
   await expect(record).toBeVisible();
@@ -276,9 +281,7 @@ test('a seen goal replays its build-up and returns to the original viewing', asy
   await options.nth(1).click();
   await expect(picker).toHaveCount(0);
   await expect(record.getByTestId('goal-replay-state')).toHaveCount(0);
-  await expect(record.getByTestId('match-latest-event').locator('span')).toHaveText(
-    `${second.minute}′`,
-  );
+  await expect.poll(() => presentedMinute(record)).toBe(String(second.minute));
   // The existing seek pauses there and changes nothing.
   const archived = record.getByLabel('22명의 선수와 공으로 표현하는 경기');
   const at = await archived.getAttribute('data-seconds');

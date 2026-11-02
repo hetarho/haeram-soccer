@@ -136,6 +136,21 @@ describe('bounded whole-world market', () => {
     ).toBe(false);
   });
 
+  it('holds the market to an oldest age, that age included, for its 유소년 view', () => {
+    const w = worldMarketFixture();
+    const [young, limit] = squad(w, w.clubs[1]);
+    young.born = w.year - 17;
+    limit.born = w.year - 20;
+    const all = query(w, { pageSize: 50 });
+    const youth = query(w, { ageMax: 20, pageSize: 50 });
+    const ids = youth.items.map((o) => o.player.id);
+    expect(ids).toContain(young.id);
+    expect(ids).toContain(limit.id);
+    expect(youth.items.every((o) => w.year - o.player.born <= 20)).toBe(true);
+    expect(youth.total).toBe(all.items.filter((o) => w.year - o.player.born <= 20).length);
+    expect(youth.total).toBeLessThan(all.total);
+  });
+
   it.each(['name', 'age', 'ovr', 'potential', 'fee', 'wage'] as const)(
     'orders %s both ways with stable ID ties across pages',
     (sort) => {

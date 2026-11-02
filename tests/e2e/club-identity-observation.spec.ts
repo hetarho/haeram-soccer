@@ -25,7 +25,7 @@ import {
   visiblePitch,
   watchToWhistle,
 } from './club-identity-helpers';
-import { openWatchAction } from './watch';
+import { closeMatchDetails, openMatchDetails, openWatchAction } from './watch';
 import { leaveOffice } from './office';
 
 /**
@@ -125,10 +125,12 @@ test('a design adopted while the match is paused mid-match leaves its recorded s
   await importResponsibilityCareer(page, w);
   await watchToWhistle(page);
   await expect.poll(() => recorded(page, next.id)).toEqual(expected);
-  // Seek back to half-time: seeking pauses (→WEB-23), and the playback is unfinished again.
-  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-  await page.getByText('주요 장면 탐색', { exact: true }).click();
-  await page.getByRole('button', { name: '전반 종료 · 45분', exact: true }).click();
+  // Seek back to half-time: seeking pauses (→WEB-23), and the playback is unfinished again; the
+  // result held the match still, so it stays there once 경기 상세 closes.
+  const details = await openMatchDetails(page);
+  await details.getByText('주요 장면 탐색', { exact: true }).click();
+  await details.getByRole('button', { name: '전반 종료 · 45분', exact: true }).click();
+  await closeMatchDetails(page);
   await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('결과 보기');
   expect(await figures(page, STRIPES)).toBeGreaterThanOrEqual(3);
   // The owner commissions an orange design in 구단 운영 › 구단 디자인 and adopts a draft (→KIT-9).

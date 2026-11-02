@@ -179,9 +179,9 @@ for (const theme of themeRegistry.entries) {
     expect(await rows.evaluateAll((items) => items.map((item) => item.dataset.requestId))).toEqual(
       ids,
     );
-    // The office carries the one section bar with 사무실 selected; its manager room heads the
-    // queue as an illustrated header, the club summary follows the queue once, and its first
-    // request is reachable above the bottom controls on the phone's first view (→WEB-10/39/44).
+    // The office carries the one section bar with 사무실 selected; the queue leads with no room
+    // scene over it, the club summary follows the queue once, and its first request is reachable
+    // above the bottom controls on the phone's first view (→WEB-10/39/44).
     await expect(clubSections(page)).toHaveCount(1);
     await expect(
       clubSections(page).getByRole('tab', { name: '사무실', exact: true }),
@@ -199,9 +199,8 @@ for (const theme of themeRegistry.entries) {
     const transportBox = (await transport.boundingBox())!;
     expect(firstBox.y + firstBox.height).toBeLessThanOrEqual(transportBox.y);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-    const roomBox = (await page.getByTestId('facility-overview').boundingBox())!;
-    expect(roomBox.y + roomBox.height).toBeLessThanOrEqual(queueBox.y);
-    await expectScenes(page, theme, ['manager']);
+    await expect(page.getByTestId('facility-overview')).toHaveCount(0);
+    await expectScenes(page, theme, []);
 
     // Review → decline → the refreshed queue, focused on the request now in its place (→WEB-100).
     await first.click();
@@ -288,7 +287,7 @@ for (const theme of themeRegistry.entries) {
     await expect(reviewButton(page, ids[1]!)).toBeInViewport();
     await expect(clubSections(page)).toHaveCount(1);
     await expect(page.getByTestId('club-situation')).toHaveCount(1);
-    await expectScenes(page, theme, ['manager']);
+    await expectScenes(page, theme, []);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
     // Back in 1군 through 팀, the roster under its room keeps its search (→WEB-74).
     await openSection(page, '1군');

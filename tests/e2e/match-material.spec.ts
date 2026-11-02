@@ -1,5 +1,5 @@
 import { clubhouseDate, openLeague } from './competition-navigation';
-import { watchNext } from './watch';
+import { closeMatchDetails, openMatchDetails, watchNext } from './watch';
 import { delegateSales } from './events';
 import { chooseOption } from './select';
 import { expect, test } from '@playwright/test';
@@ -15,9 +15,9 @@ test('opens an own match material from its report and from the fixture notebook'
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
   await watchNext(page, { manual: true });
-  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-  const report = page.getByRole('region', { name: '경기 분석 리포트', exact: true });
+  const details = await openMatchDetails(page);
+  const report = details.getByRole('region', { name: '경기 분석 리포트', exact: true });
   await expect(report).toBeVisible();
   const date = await page.getByTestId('game-date').innerText();
 
@@ -51,6 +51,7 @@ test('opens an own match material from its report and from the fixture notebook'
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
   // From a completed row of the own fixture notebook.
+  await closeMatchDetails(page);
   await openLeague(page);
   await page.getByRole('tab', { name: '일정·결과', exact: true }).click();
   await page

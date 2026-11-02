@@ -7,6 +7,7 @@ import {
   markerRadius,
   paintPitchBall,
   paintPitchGround,
+  PITCH_PAD,
   resolvePitchSkin,
 } from './pitchPainting';
 
@@ -62,7 +63,9 @@ describe('presentation-only pitch materials', () => {
         .filter((c) => ['strokeRect', 'ellipse', 'moveTo', 'lineTo'].includes(c.op))
         .map(({ op, args }) => ({ op, args }));
     });
-    expect(draws[0][0]).toEqual({ op: 'strokeRect', args: [65, 65, 870, 1000 / 1.9 - 130] });
+    // The grass margin around the lines is 1.3% of the pitch's width.
+    expect(PITCH_PAD).toBe(0.013);
+    expect(draws[0][0]).toEqual({ op: 'strokeRect', args: [13, 13, 974, 1000 / 1.9 - 26] });
     expect(draws[1]).toEqual(draws[0]);
     expect(draws[2]).toEqual(draws[0]);
   });

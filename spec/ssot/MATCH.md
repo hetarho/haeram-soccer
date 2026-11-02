@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r45 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r46 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -34,7 +34,7 @@
 
 - MATCH-9 [o] The midfielders' 패스 affects possession and pass completion; the defenders' 태클, 위치선정 and 공중볼 suppress opposing shot creation; 체력 and fatigue limit press effectiveness. Any tactic fit shown (→CLUB-14) reads the same attributes and tactic behaviour the engine plays, never a separate formula.
 
-- MATCH-10 [o] Mobile observation keeps score, pitch, latest event, pause/speed, live charts and the primary action visible together, including empty, live, finished, replay and new-match states. Stats, timeline, player inspection and full post-match league context open explicitly; presentation choices never reroll settled facts.
+- MATCH-10 [o] Mobile observation keeps score, pitch, latest event, pause/speed, live charts and the primary action visible together, including empty, live, finished, replay and new-match states. Stats, timeline, player inspection and the full league table open explicitly, while the standing after the match shows once it ends (→=WEB-50); presentation choices never reroll settled facts.
 
 - MATCH-11 [o] A duel between named players resolves every action the carrier chooses (→MATCH-16). ← individual players matter on the ball and against it
   - every attribute a duel reads is the player's own (→PLAYER-2) × his level at the slot (→PLAYER-4) × his adaptation or his club's 조직력 multiplier, with in-match fatigue; in-match fatigue grows with minutes, faster for low 체력 and under press.
@@ -334,6 +334,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r46 261103 MATCH-10✎ full post-match league context opens explicitly→the standing after the match shows once it ends, the full league table on request
 - r45 261102 MATCH-8✎ the four tactics are the owner's only tactical control, applied through the manager→the manager's call, no owner tactical control; MATCH-9✎ the pre-match laboratory's tactic fit→any tactic fit shown (→CLUB-14); MATCH-29✎ reason the owner's only tactical control→a manager's tactic
 - r44 261030 MATCH-12✎ none→a first-time shot is struck as he chooses it, never held for whoever wins its second ball. MATCH-35✎ none→a second ball is won clear of the blocker's or keeper's body, never on his spot, and a shot again from it has its own flight and match time
 - r43 261029 MATCH-36✎ torso the marker diameter→85% of it; + the ball drawn as a football (white with dark panels rolling with travel, dark edge, shadow separating with height, pixel theme in its pixel style)

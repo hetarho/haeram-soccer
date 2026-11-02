@@ -80,8 +80,11 @@ export interface ContinuityCareer {
      * second of the match: dead-ball rushes (→WEB-32) run faster than running play.
      */
     fastest: (realMs: number) => number;
-    /** A sample of a delivered set piece where six or more defenders hold set-piece jobs (T348). */
-    setPiece: { index: number; label: string; marker: Who };
+    /**
+     * A sample of a delivered set piece where six or more defenders hold set-piece jobs (T348),
+     * with where its marker stands then, in the pitch's 0–100 units.
+     */
+    setPiece: { index: number; label: string; marker: Who; at: readonly [number, number] };
   };
 }
 
@@ -129,6 +132,7 @@ function setPieceShot(playback: MatchPlayback) {
           index,
           label: playback.frames[samples[index]!.frame]!.label,
           marker: { side, index: playback.squads[side].findIndex((p) => p.id === marker.id) },
+          at: marker.position,
         },
       };
     }

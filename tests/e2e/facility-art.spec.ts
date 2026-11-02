@@ -175,13 +175,13 @@ for (const scenario of [
     await dialog.getByRole('button', { name: '확인하고 홈으로', exact: true }).click();
     await expect(dialog).toHaveCount(0);
     const overview = page.getByTestId('facility-overview');
-    // The office heads its queue with the same manager room (→WEB-39/72).
+    // The office opens on its queue with no room scene over it (→WEB-39); the manager room stays
+    // on the home entrance above and the 결재라인 overview below (→WEB-72).
     await settle(page);
     await enterOffice(page);
-    await expect(overview).toHaveCount(1);
-    await expect(overview).toHaveAccessibleName('구단주 사무실');
+    await expect(overview).toHaveCount(0);
+    await expect(page.locator('[data-facility-art]').filter({ visible: true })).toHaveCount(0);
     await expectHomeBounds(page);
-    await expectArt(page, 'manager', scenario.era, 0);
     // 1군 keeps its current locker room, which follows the completed stadium; 코치진 the
     // manager's office and the coaching workroom, each over its own people (→WEB-43/72).
     for (const [tab, rooms] of [

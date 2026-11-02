@@ -1,4 +1,4 @@
-import { watchNext } from './watch';
+import { openMatchDetails, watchNext } from './watch';
 import { chooseOption } from './select';
 import { expect, test } from '@playwright/test';
 import {
@@ -111,8 +111,8 @@ test('discloses roster and opponent tactical fit before an actual seeded match',
   await expect(match.getByText(matchup, { exact: true })).toBeVisible();
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   await expect(match.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
-  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-  const stats = match.locator('[class*="matchStats"]');
+  const details = await openMatchDetails(page);
+  const stats = details.locator('[class*="matchStats"]');
   await expect(stats.getByText('점유율', { exact: true })).toBeVisible();
   await expect(stats.getByText('기대 득점 (xG)', { exact: true })).toBeVisible();
   await expect(stats.getByText('유효 슈팅', { exact: true })).toBeVisible();

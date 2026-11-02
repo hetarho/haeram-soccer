@@ -1,5 +1,4 @@
-import { openClubRecords } from './competition-navigation';
-import { watchNext } from './watch';
+import { openClubRecords, openLeague } from './competition-navigation';
 import { delegateSales, proposeOnReport } from './events';
 import { expect, test, type Locator } from '@playwright/test';
 import { chooseOption, optionList } from './select';
@@ -140,36 +139,38 @@ for (const viewport of [
     const list = await optionList(tone);
     await tone.press('End');
     await tone.press('Escape');
+    await expect(list).toHaveCount(0);
     await expect(sheet).toBeVisible();
     await expect(tone).toBeFocused();
     await expect(tone).toHaveAttribute('data-value', 'evidence');
     await chooseOption(tone, 'demand');
     await expect(sheet.getByLabel('감독 예상 반응')).toContainText('신뢰 18 감소');
     await sheet.getByRole('button', { name: '준비 마치고 돌아가기' }).click();
-    await watchNext(page);
-    await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-    await page.getByRole('button', { name: '선수 판단 보기', exact: true }).click();
-    const inspector = page.getByRole('combobox', { name: '살펴볼 선수', exact: true });
-    const players = await optionList(inspector);
-    // Both sides on the pitch: 22, fewer after a dismissal in the founded world's random match.
-    await expect.poll(() => players.getByRole('option').count()).toBeGreaterThanOrEqual(20);
+    await expect(sheet).toHaveCount(0);
+    // A long list: every round of our league's season.
+    await openLeague(page);
+    await page.getByRole('tab', { name: '일정·결과', exact: true }).click();
+    const round = page.getByRole('combobox', { name: '리그 라운드 선택', exact: true });
+    const rounds = await optionList(round);
+    await expect.poll(() => rounds.getByRole('option').count()).toBeGreaterThanOrEqual(20);
     await settle(page);
-    const bounds = await players.boundingBox();
+    const bounds = await rounds.boundingBox();
     expect(bounds!.x).toBeGreaterThanOrEqual(0);
     expect(bounds!.y).toBeGreaterThanOrEqual(0);
     expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(viewport.width);
     expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(viewport.height);
     // Phone option rows are the compact 36px of the dropdown design; the closed control is 44px.
     expect(
-      Math.round((await players.getByRole('option').first().boundingBox())!.height),
+      Math.round((await rounds.getByRole('option').first().boundingBox())!.height),
     ).toBeGreaterThanOrEqual(36);
-    await inspector.press('End');
-    const last = players.getByRole('option').last();
+    await round.press('End');
+    const last = rounds.getByRole('option').last();
     await expect(last).toBeInViewport();
-    await inspector.press('Enter');
-    await expect(inspector).toHaveAttribute('data-value', '1:10');
-    await expect(inspector).toBeFocused();
-    await expect(list).toHaveCount(0);
+    const lastRound = (await last.getAttribute('data-value'))!;
+    await round.press('Enter');
+    await expect(round).toHaveAttribute('data-value', lastRound);
+    await expect(round).toBeFocused();
+    await expect(rounds).toHaveCount(0);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   });
 }

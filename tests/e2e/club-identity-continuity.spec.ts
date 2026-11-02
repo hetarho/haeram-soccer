@@ -76,6 +76,7 @@ import {
 import { ALL_DELEGATED, configureResponsibilities } from './events';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { leaveOffice, operationsTabs } from './office';
+import { closeMatchDetails, openMatchDetails } from './watch';
 
 /**
  * KIT-9/12/15, WEB-86/87/108, SAVE-3/5/6/11/20/21/22: club designs and the kit a match was played
@@ -202,11 +203,11 @@ test.describe(() => {
       // kick-off through the theatre's own moment control, frame by frame as the records-room
       // replay below is, and then returns to its result.
       const unworn = design.kits[KIT_ROLES.find((role) => role !== worn.role)!];
-      await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-      await page.getByText('주요 장면 탐색', { exact: true }).click();
-      await page.getByRole('button', { name: '킥오프 · 1분', exact: true }).click();
+      const details = await openMatchDetails(page);
+      await details.getByText('주요 장면 탐색', { exact: true }).click();
+      await details.getByRole('button', { name: '킥오프 · 1분', exact: true }).click();
+      await closeMatchDetails(page);
       await page.getByRole('radio', { name: '2×', exact: true }).click();
-      await page.getByRole('button', { name: '경기 상세', exact: true }).click();
       await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toHaveCount(0);
       await expectWorn(visiblePitch(page), worn, unworn);
       await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('결과 보기');

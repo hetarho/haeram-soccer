@@ -1,6 +1,6 @@
 import { openPersonnel } from './personnel-navigation';
 import { openCups, openLeague } from './competition-navigation';
-import { watchNext } from './watch';
+import { closeMatchDetails, openMatchDetails, watchNext } from './watch';
 import { advanceOneRound } from './season-progression';
 import { delegateSales } from './events';
 import { chooseOption } from './select';
@@ -44,8 +44,9 @@ test('observes event-backed metrics, historical locks and responsive navigation'
   ).toBeVisible();
   await page.getByRole('button', { name: '결과 보기' }).click();
   await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
-  await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-  await expect(page.getByText('유효 슈팅', { exact: true })).toBeVisible();
+  const details = await openMatchDetails(page);
+  await expect(details.getByText('유효 슈팅', { exact: true })).toBeVisible();
+  await closeMatchDetails(page);
   await openCups(page);
   await chooseOption(page.getByRole('combobox', { name: '컵 대회', exact: true }), 'ucl');
   await expect(page.getByText('1955/56 시즌에 창설돼요.', { exact: true })).toBeVisible();

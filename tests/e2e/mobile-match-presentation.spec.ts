@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { createWorld, advanceToNextMatch } from '../../packages/engine/src/index';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { configureResponsibilities } from './events';
-import { expectStablePossessionLayout, horizontalOverflow } from './layout';
+import { expectBallSideScoreboard, horizontalOverflow } from './layout';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
 import {
@@ -199,8 +199,10 @@ async function countCues(page: Page) {
         for (const added of record.addedNodes)
           if (added instanceof HTMLElement && added.dataset.testid === 'goal-cue')
             cues.push(added.textContent ?? '');
-      const shown =
-        document.querySelector('[data-testid="match-latest-event"] span')?.textContent ?? '';
+      // The presented minute from the meta line (`3′ · …`), whatever the commentary last called.
+      const shown = (
+        document.querySelector('[data-ui="match-meta"] > span')?.textContent ?? ''
+      ).split(' · ')[0]!;
       if (!document.querySelector('[data-testid="goal-cue"]')) minute = undefined;
       else if (minute === undefined) held.push((minute = shown));
       else if (shown !== minute) moved.push(`${minute} → ${shown}`);
@@ -267,13 +269,14 @@ for (const viewport of [
       'aria-expanded',
       'false',
     );
-    const badge = page.getByTestId('match-score').getByTestId('possession-cue');
-    await expect(badge).toHaveCount(1, { timeout: 10_000 });
-    await expect(badge).toHaveAccessibleName('볼 소유');
-    await expectStablePossessionLayout(page);
-    const badgeBox = (await badge.boundingBox())!;
-    expect(badgeBox.x).toBeGreaterThanOrEqual(0);
-    expect(badgeBox.x + badgeBox.width).toBeLessThanOrEqual(viewport.width);
+    // The side on the ball fills the scoreboard in its shirt (→WEB-95).
+    await expect(page.getByTestId('match-score')).toHaveAttribute('data-ball-side', /^[01]$/, {
+      timeout: 10_000,
+    });
+    await expectBallSideScoreboard(page);
+    const boardBox = (await page.getByTestId('match-score').boundingBox())!;
+    expect(boardBox.x).toBeGreaterThanOrEqual(0);
+    expect(boardBox.x + boardBox.width).toBeLessThanOrEqual(viewport.width);
     const cue = page.getByTestId('goal-cue');
     await expect(cue).toBeVisible({
       timeout: (openingGoal!.minute * WATCH_MINUTE_MS) / WATCH_DEFAULT_SPEED + 3000,
@@ -297,7 +300,8 @@ for (const viewport of [
     expect(cueBox.y + cueBox.height).toBeLessThanOrEqual(canvasBox.y + canvasBox.height);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
     await expect(cue).toHaveCount(0, { timeout: 3000 });
-    // The presented goal can be replayed from a pitch corner clear of the tactics (→WEB-105).
+    // The presented goal can be replayed from a pitch corner (→WEB-105); the tactics matchup sits
+    // beside the speeds above the pitch, clear of it.
     const replay = page.getByTestId('goal-replay-open');
     await expect(replay).toBeVisible();
     const replayBox = (await replay.boundingBox())!;
@@ -307,7 +311,8 @@ for (const viewport of [
       .boundingBox())!;
     expect(replayBox.height).toBeGreaterThanOrEqual(44);
     expect(replayBox.x).toBeGreaterThanOrEqual(canvasBox.x);
-    expect(replayBox.x + replayBox.width).toBeLessThanOrEqual(tacticsBox.x);
+    expect(replayBox.x + replayBox.width).toBeLessThanOrEqual(canvasBox.x + canvasBox.width);
+    expect(tacticsBox.y + tacticsBox.height).toBeLessThanOrEqual(canvasBox.y);
     expect(replayBox.y + replayBox.height).toBeLessThanOrEqual(canvasBox.y + canvasBox.height);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
     // The presented minute opened on the goal's and stayed put while the cue showed.

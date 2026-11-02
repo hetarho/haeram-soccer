@@ -5,10 +5,10 @@ import { appearanceForFixture } from '../../packages/engine/src/match-appearance
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { savedWorld } from './club-identity-helpers';
 import { textContrast } from './contrast';
-import { expectStablePossessionLayout, horizontalOverflow } from './layout';
+import { expectBallSideScoreboard, horizontalOverflow } from './layout';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { chooseOption } from './select';
-import { watchNext } from './watch';
+import { closeMatchDetails, openMatchDetails, watchNext } from './watch';
 
 /** A `#rrggbb` colour as the browser computes it. */
 const rgb = (hex: string) => {
@@ -55,20 +55,21 @@ for (const width of [360, 1380])
     await importResponsibilityCareer(page, world);
     await watchNext(page, { manual: true });
 
-    // Native range input pauses at a recorded sample through the public observer control.
-    await page.getByRole('button', { name: '경기 상세', exact: true }).click();
-    const scrubber = page.getByRole('slider', {
-      name: '경기 시간',
-      exact: true,
-      includeHidden: true,
-    });
+    // The result holds the match still; the native range input in 경기 상세 then pauses it at a
+    // recorded sample, where it stays once the dialog closes.
+    await page.getByRole('button', { name: '결과 보기', exact: true }).click();
+    const details = await openMatchDetails(page);
+    const scrubber = details.getByRole('slider', { name: '경기 시간', exact: true });
+    await scrubber.press('Home');
     await scrubber.press('ArrowRight');
-    const instant = await scrubber.inputValue();
-    await page.getByRole('button', { name: '경기 상세', exact: true }).click();
+    await expect(scrubber).toHaveValue('1');
+    await closeMatchDetails(page);
+    const canvas = page.getByLabel('22명의 선수와 공으로 표현하는 경기', { exact: true });
+    await expect.poll(() => canvas.getAttribute('data-seconds')).not.toBeNull();
+    const instant = await canvas.getAttribute('data-seconds');
     const date = await page.getByTestId('game-date').innerText();
     const before = canonical(await savedWorld(page));
     const grounds = new Set<string>();
-    const canvas = page.getByLabel('22명의 선수와 공으로 표현하는 경기', { exact: true });
 
     let previousGround: string | undefined;
     for (const { id } of readPresentationBaselines().themeRegistry.entries) {
@@ -104,8 +105,11 @@ for (const width of [360, 1380])
           '/art/',
         );
       }
-      // Each scoreboard half wears its side's shirt in every theme: the colour behind the names and
-      // the strip from the score's centre out to each edge.
+      // The scoreboard wears the shirt of the side on the ball in every theme, both halves of it:
+      // the colour behind the names and the strip from the score's centre out to each edge; before
+      // either side has had the ball each half wears its own side's (→WEB-50/95).
+      const side = await page.getByTestId('match-score').getAttribute('data-ball-side');
+      const fill = side === null ? worn : [worn[Number(side)], worn[Number(side)]];
       const halves = await page.getByTestId('match-score').evaluate((board) => {
         const score = board.querySelector(':scope > strong')!;
         const behind = (side: string) =>
@@ -118,8 +122,8 @@ for (const width of [360, 1380])
           ],
         };
       });
-      expect(halves.names).toEqual(worn);
-      expect(halves.strips).toEqual(worn);
+      expect(halves.names).toEqual(fill);
+      expect(halves.strips).toEqual(fill);
       const back = page.getByTestId('match-score').getByRole('button', { name: '홈', exact: true });
       const bounds = (await back.boundingBox())!;
       // Firefox can report a 44px target as 43.999992 at a fractional layout position.
@@ -139,17 +143,12 @@ for (const width of [360, 1380])
       ]) {
         expect((await text.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);
       }
-      const cue = page.getByTestId('possession-cue');
-      await expectStablePossessionLayout(page);
-      if (await cue.count()) {
-        await expect(cue).toContainText('소유');
-        expect((await cue.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);
-      }
+      await expectBallSideScoreboard(page);
       const ratio = await canvas.evaluate((node) => node.clientWidth / node.clientHeight);
       expect(ratio).toBeCloseTo(1.9, 2);
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
       if (width === 360) await expect(page.getByTestId('match-next-action')).toBeInViewport();
-      await expect(scrubber).toHaveValue(instant);
+      await expect(canvas).toHaveAttribute('data-seconds', instant!);
       await expect(page.getByTestId('game-date')).toHaveText(date);
       expect(canonical(await savedWorld(page))).toBe(before);
     }
