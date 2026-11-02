@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r44 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r45 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -22,7 +22,7 @@
   - each kick is the taker's 슈팅 and 침착성 against the keeper's 선방 (→PLAYER-2); the manager orders the takers best first.
 - MATCH-7 [o] Fast and observed processing use the same match seed and football result path; animation speed, selected view and browser clock cannot reroll results.
 
-- MATCH-8 [o] The four tactics are the owner's only tactical control, applied through the manager (→STAFF-22); each sets real behaviour on the pitch, and their tradeoffs keep: possession uses the midfielders' 패스 and 시야 but fewer direct shots; counter uses the defenders' 위치선정 and the forwards' 속도 and gains against press but sacrifices possession; press uses 체력 and freshness to force chances at higher fatigue cost; balanced retains defensive stability. ← the owner shapes the club through staff
+- MATCH-8 [o] The four tactics are the manager's call (→STAFF-22); the owner has no tactical control. Each sets real behaviour on the pitch, and their tradeoffs keep: possession uses the midfielders' 패스 and 시야 but fewer direct shots; counter uses the defenders' 위치선정 and the forwards' 속도 and gains against press but sacrifices possession; press uses 체력 and freshness to force chances at higher fatigue cost; balanced retains defensive stability. ← the owner shapes play only through the manager he hires
   | tactic | formation | out of possession | in possession |
   |---|---|---|---|
   | possession | 4-3-3 | high line, mid-to-high block, counter-press after a loss | short passing, patient recycling, width held by the wingers, the inverted full-back steps into midfield |
@@ -32,7 +32,7 @@
   - no detailed instructions (line height, width, tempo, pressing intensity) are offered.
   - shared engine profiles expose fit rather than guaranteed win probabilities.
 
-- MATCH-9 [o] The midfielders' 패스 affects possession and pass completion; the defenders' 태클, 위치선정 and 공중볼 suppress opposing shot creation; 체력 and fatigue limit press effectiveness. The pre-match laboratory's tactic fit reads the same attributes and tactic behaviour the engine plays, never a separate formula.
+- MATCH-9 [o] The midfielders' 패스 affects possession and pass completion; the defenders' 태클, 위치선정 and 공중볼 suppress opposing shot creation; 체력 and fatigue limit press effectiveness. Any tactic fit shown (→CLUB-14) reads the same attributes and tactic behaviour the engine plays, never a separate formula.
 
 - MATCH-10 [o] Mobile observation keeps score, pitch, latest event, pause/speed, live charts and the primary action visible together, including empty, live, finished, replay and new-match states. Stats, timeline, player inspection and full post-match league context open explicitly; presentation choices never reroll settled facts.
 
@@ -232,7 +232,7 @@
   - a metric both paths hold at the same value is equivalent by that zero difference and stays listed as constant; a constant reference whose candidate holds another value or leaves the margin is a difference.
   - a metric a condition's own rules make impossible (extra time and shoot-outs outside →MATCH-6 ties, substitutions in →MATCH-20 eras without them) is declared not applicable for that condition, listed, and left out of its verdict. Applicability comes only from these rules, never from measured absence.
   - exact record invariants (→MATCH-27) have no statistical tolerance. Equivalence and the intended targets are measured and reported for the released full model but do not gate its activation (→SAVE-23, →ARCH-31); its residual differences are recorded and calibrated on the released model.
-- MATCH-29 [o] Both engines hold the tactic tradeoffs of →MATCH-8 within these bands for equal top-tier sides, each tactic pairing measured at both venues and pooled under →MATCH-28's seeds and 95% intervals. ← the owner's only tactical control must be a real choice whose fit matters without deciding the match alone
+- MATCH-29 [o] Both engines hold the tactic tradeoffs of →MATCH-8 within these bands for equal top-tier sides, each tactic pairing measured at both venues and pooled under →MATCH-28's seeds and 95% intervals. ← a manager's tactic must be a real choice whose fit matters without deciding the match alone
   | measure (equal strength, venues pooled) | band |
   |---|---|
   | draws in each tactic pairing | 20–30% |
@@ -334,6 +334,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r45 261102 MATCH-8✎ the four tactics are the owner's only tactical control, applied through the manager→the manager's call, no owner tactical control; MATCH-9✎ the pre-match laboratory's tactic fit→any tactic fit shown (→CLUB-14); MATCH-29✎ reason the owner's only tactical control→a manager's tactic
 - r44 261030 MATCH-12✎ none→a first-time shot is struck as he chooses it, never held for whoever wins its second ball. MATCH-35✎ none→a second ball is won clear of the blocker's or keeper's body, never on his spot, and a shot again from it has its own flight and match time
 - r43 261029 MATCH-36✎ torso the marker diameter→85% of it; + the ball drawn as a football (white with dark panels rolling with travel, dark edge, shadow separating with height, pixel theme in its pixel style)
 - r42 261029 MATCH-12✎ shields away from the nearest opponent→from an outfielder only, never turning his back on the keeper; + a shot is struck soon after he chooses it, never run sideways or away first. MATCH-16✎ clear chance: no outfield opponent ahead→or none within 5 m at all; + near the box a receiver with a defender tight on him weighed by how likely he keeps it. MATCH-31✎ + a pass fails where it is reached or at its receiver against the man on him, not by a separate draw. MATCH-35✎ keeper comes out most of the way→about half, never onto the carrier

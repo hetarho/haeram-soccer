@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r10 | Define the browser-demo rules for domestic seasons and relegation.
+> r11 | Define the browser-demo rules for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -39,7 +39,7 @@
   - a new manager (→STAFF-17) takes 30% of the distance to 0.50 when his school differs from his predecessor's, 10% when it is the same.
   - between seasons a takeover or a project (→LEAGUE-10) takes 0.15, a promotion or a relegation 0.10, never below 0.30.
   - a rival's dossier and its league-table OVR show it (→WEB-58).
-- LEAGUE-13 [o] Balance is measured on reference careers with all business responsibilities delegated (the historical intervention level 4) and 기본 방향 (→ECON-29's runs: 1950–2009, four countries × difficulty level × 5 seeds), and holds these bands; tuning changes the rules and constants for every level alike, never one level's own. ← reaching the top should take long and holding it stay hard, with room for a lucky career
+- LEAGUE-13 [o] Balance is measured on reference careers with all business responsibilities delegated and 기본 방향 (→ECON-29's runs: 1950–2009, four countries × difficulty level × 5 seeds), and holds these bands; tuning changes the rules and constants for every level alike, never one level's own. ← reaching the top should take long and holding it stay hard, with room for a lucky career
   | level | first top-flight title | share of top-flight titles after the first | bankrupt | measured 261015 (rules 2.0.0, 40 careers a level: ENG ESP FRA GER × 10 seeds, default direction, 1950–2009) |
   |---|---|---|---|---|
   | 쉬움 | most careers; median 35–50 seasons, the fastest within about 25 | 20–35% | none | 60% win; median 51.5, fastest 27; 21.2% after; 1 bankrupt (ESP, 47 amateur seasons) |
@@ -61,6 +61,7 @@
   - every league keeps a discipline table: each player's yellow and red cards and current bans by competition.
 
 ## chg
+- r11 261102 LEAGUE-13✎ reference careers named by the historical intervention level 4→all business responsibilities delegated only (the intervention level is removed)
 - r10 261019 LEAGUE-15+ injuries and suspensions for clubs nobody owns, a retained unavailable list cleared at the seasonal squad generation, league discipline table
 - r9 261016 LEAGUE-10✎ reputation of clubs nobody owns drifts 30% toward its division's→follows LEAGUE-14; LEAGUE-14+ every club's reputation: 20% of the gap to its next division's level (75/60/45/30, amateur 8) + league finish ±3, domestic cup +2, continental match +0.2 and title +8
 - r8 261016 LEAGUE-11✎ progression examples→+manual next-event advance with identical daily order; LEAGUE-13✎ level 4 reference→equivalent all-delegated reference; balance bands, constants and measurements unchanged

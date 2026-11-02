@@ -1,12 +1,12 @@
 # ARCH Web-first game architecture
-> r25 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r26 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
   - Product-contract planning precedes the relevant scaffolding, dependency installation, cloud-resource, and publishing milestones.
   - Web goal: attract interest through observable matches, meaningful statistics, strategic experiments, and a continuing club history.
   - Carry the agreed eight-country scope: England, Spain, Germany, Italy, France, Portugal, Netherlands, Belgium; other European associations provide representative clubs.
-  - Carry founding, initial-capital difficulty, manager personality and tactical requests, recruitment, marketing, sponsors, historical prices/currencies, and historically introduced European competitions.
+  - Carry founding, initial-capital difficulty, manager personality, recruitment, marketing, sponsors, historical prices/currencies, and historically introduced European competitions.
   - Product rule details and balance values belong in product SSOTs derived from `ideation/club-history-reboot.md`; architecture does not silently settle their open policies.
 - ARCH-2 [o] Web stack: React + TypeScript in strict mode + Vite, delivered as a static SPA. ← fast browser entry and a deployment artifact without an application server
   - pnpm workspaces; the pnpm release is pinned by `packageManager`; stable dependency versions and the exact active-LTS Node release are pinned at scaffolding; commit the lockfile.
@@ -48,7 +48,7 @@
 - ARCH-6 [o] One engine instance in a Web Worker is the sole writer for the active world. ← keep computation off the UI thread and centralize mutations
   - Browser commands are serialized; simulation runs in interruptible bounded batches.
   - Worker messages include protocol version, session ID, request ID, expected world revision, and validated payloads.
-  - Duplicate requests do not repeat recruitment fees, sponsor payments, tactics changes, currency transitions, or fixture settlement.
+  - Duplicate requests do not repeat recruitment fees, sponsor payments, currency transitions, or fixture settlement.
   - Publish bounded UI projections/deltas, not the complete world on every simulation step.
   - On a day with our league fixture, the day's other league fixtures may be computed on helper workers from a read-only copy of what those fixtures read, while the engine worker plays our match; the engine worker stays the sole writer and records every result in fixture order. Without helpers (creation failure or too few cores) it computes them itself. Both paths give identical worlds, checked by a test comparing a season played each way. ← other clubs' fixtures are about 40% of an own match day (measured 261027)
   - Read-only requests (head-to-head) are validated like commands but answered between simulation steps, without the revision check, receipt or view, so a read never waits behind a season command or flickers the busy state.
@@ -63,7 +63,6 @@
 - ARCH-8 [o] Model identity and history with stable IDs and normalized records.
   - Saves and facts reference club/player/manager/competition IDs rather than duplicating live objects.
   - Historical snapshots preserve the values relevant to their time; later transfers, retirement, names, or skills do not rewrite them.
-  - Record requested tactics, manager responses, and actual tactical application separately.
   - Store completed economic transactions and their effective dates; duplicated processing must be harmless.
 - ARCH-9 [o] Use portable numeric and calendar representations.
   - Money: currency-period ID plus decimal-string integer minor units; domain arithmetic uses BigInt and rational conversion factors.
@@ -135,10 +134,10 @@
   - Supabase remains optional hall-of-fame infrastructure, not automatic cloud-save synchronization.
   - Avoid a JavaScript-runtime/WebView dependency as the planned native game engine; mobile store integration belongs to the later Flutter architecture revision.
 - ARCH-21 [o] Testing is required for behavior that protects continuity and correctness.
-  - Vitest: deterministic engine, calendars, money, contract effects, manager-request outcomes, IDs, and migrations.
+  - Vitest: deterministic engine, calendars, money, contract effects, IDs, and migrations.
   - fast-check: seeded invariants for league/group capacities, fixture settlement, balance conservation, transitions, and save round trips.
   - Portable fixtures: command sequences and canonical expected facts consumed by the web engine now and the Dart engine later.
-  - Playwright: founding → watch/advance → compare metrics → recruit/request tactics → save/reload → export/import; include quota, corruption, duplicate-tab, and worker-recovery cases.
+  - Playwright: founding → watch/advance → compare metrics → recruit → save/reload → export/import; include quota, corruption, duplicate-tab, and worker-recovery cases.
   - Fixture data is synthetic and explicitly marked; tests do not claim the real catalogs are complete merely because a mock world runs.
   - A fast unit test isolates a function or component with minimal prepared data; whole-world progression, host/codec round trips and multi-match statistical checks belong to the integration tier. Every existing case remains in exactly one of unit, integration or contract.
   - A test simulates only the step it verifies: a world it merely needs in some state (after a season close, some rounds in, a long career) comes from `tests/fixtures/worlds.ts` (`simulatedWorld` for a founding plus seasons and rounds, `cachedWorld` for any other builder), built once per dependency fingerprint and shared across files and runs (`node_modules/.cache/haeram-worlds`, cached in CI). Cache identities include local transitive runtime imports, builder inputs and relevant toolchain/configuration; unrelated UI/assets/tests do not invalidate engine-only worlds. Generic JSON caching and release constants have no simulation imports. UI-only browser journeys may load versioned validated prepared checkpoints; separate live-engine integration cases retain writer coverage. ← after own-league matches played the grid engine a season cost about 10 s and tests rebuilt the same seasons, so the unit suite took 30–40 minutes
@@ -173,7 +172,7 @@
   | Foundation | Workspace, schemas, pure engine harness, worker bridge, verification scripts | A deterministic fixture produces identical canonical facts in repeated runs |
   | Persistence feasibility | Compact current world/history, codec, active/previous checkpoints (→SAVE-3), migration/export | Eight-country fixtures and 100-season storage benchmark meet →ARCH-14; failures remain blocking for full UI polish/release and record the concrete unresolved limit |
   | Playable observation loop | Seeded founding, domestic fixtures, Canvas observation, statistics, reload | A new club can play a real engine-driven fixture and continue after reloading |
-  | Full agreed web loop | Recruitment, manager personality/requests, business choices, historical economy, European competition eras, meaningful history | Changes affect engine facts; domestic/European schedules and financial records remain consistent |
+  | Full agreed web loop | Recruitment, manager personality, business choices, historical economy, European competition eras, meaningful history | Changes affect engine facts; domestic/European schedules and financial records remain consistent |
   | Release hardening | Browser/recovery checks, responsive entry, versioned data, preview/deployment procedure | Verification reports, storage benchmark, production-build smoke checks, and save-compatible rollback rehearsal |
   | Optional hall of fame | Separate score policy and Supabase adapter | Explicit record trust/score rules and independent failure handling |
   | Flutter commercial release | Dart port, native views/storage, mobile packaging | Portable fixtures and save compatibility pass before store-release work |
@@ -190,7 +189,7 @@
   - World initialization after a valid founding command: at most 5 seconds on the reference trace; present real generation progress while it runs.
   - Benchmark reports record tool/browser versions, dataset size, world seed, save sizes, match/season throughput, and long-run memory; these are targets to measure, not invented results.
 
-- ARCH-29 [o] Owner-scoped data sits behind profile ports: a device profile now (a random device ID, the strategy library, the game-slot index), an account profile later. ← strategies and games should follow the owner once sign-in exists (→ARCH-19) without reshaping local data
+- ARCH-29 [o] Owner-scoped data sits behind profile ports: a device profile now (a random device ID, the game-slot index), an account profile later. ← games should follow the owner once sign-in exists (→ARCH-19) without reshaping local data
   - every record carries its owner, a stable ID and an updated time; an account adapter adopts device records on first sign-in and merges by ID and updated time.
   - no sign-in, upload or sync exists now (→WEB-1, →WEB-6).
 - ARCH-30 [o] Verification runs in three tiers; no task runs the whole suite or any browser spec. ← the serial suite took about 22 minutes, 15½ of them browser tests, while a task's own checks take about a minute; even the covering Chromium specs made each task too slow
@@ -251,6 +250,7 @@
 - Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
 
 ## chg
+- r26 261102 ARCH-1✎ carry manager personality and tactical requests→manager personality; ARCH-6✎ duplicates never repeat tactics changes→removed from the list; ARCH-8✎ record requested tactics, manager responses and applied tactics separately→removed; ARCH-21✎ Vitest manager-request outcomes and Playwright request tactics→removed; ARCH-24✎ full web loop manager personality/requests→manager personality; ARCH-29✎ device profile holds the strategy library→device ID and game-slot index only
 - r25 261028 ARCH-31✎ throughput gates on absolute budgets (fixture ≤1 ms, season ≤15 s median on a reference machine)→no absolute time budget, throughput compared with the previous release on one machine and reported, capacity stays the gate; ARCH-34+ a speed-up succeeds when faster than its baseline on the measuring machine beyond the noise (paired harness, 95% interval, result-identical hashes)
 - r24 261027 ARCH-6+ helper workers may compute an own match day's other league fixtures from a read-only copy; the engine worker stays the sole writer, records in fixture order and falls back to computing them itself; identical worlds tested
 - r23 261027 ARCH-3✎ app/features/rendering/workers path table→the real ui/runtime/adapters/presentation layout, tests/fixtures and scripts, portable fixtures marked planned; ARCH-4✎ no rule for which engine modules the UI names→UI imports engine values only from read leaves, existing orchestration imports a shrink-only list guarded by an architecture test

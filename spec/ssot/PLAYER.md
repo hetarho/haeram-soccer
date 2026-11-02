@@ -1,5 +1,5 @@
 # PLAYER Player model
-> r11 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
+> r12 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
 
 ## decisions
 - PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 16 attributes, positions with levels, personality and play traits, potential. Other clubs' match squads use seasonal generation from club strength (→WORLD-6, →LEAGUE-10); cross-role person continuity and retirement eligibility are →WORLD-10/11. Development, adaptation and attribute ageing below continue to apply to the own club's players and academy; this does not apply own-club development to every NPC squad. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
@@ -176,7 +176,7 @@
   - scouting uncertainty affects the displayed estimate, not the person's true aptitude or eligibility. Retained historical evaluations remain historical facts rather than invented current observations (→HIST-14).
 
 - PLAYER-25 [o] Coaching and managerial aptitude are fixed qualities assigned when the player is generated; they persist with the same person through clubs and roles (→WORLD-10).
-  - match appearances, training, owner encouragement, coaching employment and managerial appointment do not raise or reroll aptitude.
+  - match appearances, training, coaching employment and managerial appointment do not raise or reroll aptitude.
   - actual coach/manager ability develops after employment under the existing staff growth/ageing rules (→STAFF-16). Aptitude and currently learned staff ability are distinct; these rules do not change the existing playing model.
 - PLAYER-26 [o] Every player has four play tendencies shown in the match inspector — 자유도, 규율, 압박 성향, 예측력 — each from his attributes plus a stable personality of his own drawn once from his identity, never rerolled by a fixture, and each drives his movement on the pitch (→MATCH-17). ← a shown number must do what it says, and equal attributes still make different players
   - the 자유도 shown is the freedom his manager gives him (→STAFF-46), not his personality alone.
@@ -195,6 +195,7 @@
 - in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; role and play traits shape his choices and runs (PLAYER-5, PLAYER-9); each choice and action reads its attributes (PLAYER-2)
 
 ## chg
+- r12 261102 PLAYER-25✎ owner encouragement among what never raises aptitude→removed (no owner encouragement exists)
 - r11 261102 PLAYER-27+ season-close 발롱도르 from 1955/56: podium of three by goals, assists, team honours and class among players with 15+ top-flight league appearances; a fact with contract, news and view effects only
 - r10 261025 PLAYER-26+ four inspector tendencies (자유도 from the manager, 규율, 압박 성향, 예측력) from attributes and a stable personality drive movement; not formal attributes
 - r9 261019 PLAYER-1✎ PLAYER-2✎ 14→16 attributes, +정신 판단력 and 침착성 (young players about 5 lower at generation), 몸싸움 +aerial challenges, 크로스 +set-piece deliveries; PLAYER-5✎ +roles set positions, movement and favoured actions; PLAYER-6✎ +판단력/침착성 in every position's weights, 앵커 none→판단력, 딥라잉 시야→시야/판단력, 포처 위치선정→위치선정/침착성; PLAYER-9✎ attempt their action more often→bend decisions and runs; PLAYER-15✎ assistant 패스/시야→+판단력/침착성; PLAYER-17✎ +판단력/침착성 in the 32/33/−0.5 group; PLAYER-19✎ match attributes 14 with personality as the mental model→16 with 판단력/침착성, personality off-pitch; PLAYER-20✎ +the 16 attributes start new careers (→SAVE-19)

@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r48 | Define the browser-demo rules for squad and growth.
+> r49 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] A club starts with 20 players (→CLUB-40), a suitable manager, small facilities, 800 supporters, and a complete starting XI whose rating sits at its league's average club XI plus its difficulty level's offset (→WEB-3: 쉬움 0, 보통 −2, 어려움 −4, 최상 −6; ±1). ← a fixed founding strength left clubs in shallow pyramids 7–12 points below their league
@@ -12,15 +12,14 @@
 
 - CLUB-4 [o] Recruitment offers immediate contributors, prospects, free agents, and short-term loans. Free agents sign instantly at any time; fee-bearing transfers are negotiated bids (→CLUB-18). A player leaves only when another club's offer is accepted (→CLUB-22); there is no instant sale. ← a sale needs a buyer
 - CLUB-5 [o] Transfer price, recurring wage, and term are shown before acceptance. Keep at least 14 players and one goalkeeper; the maximum is the league's registration limit (→CLUB-44).
-- CLUB-6 [o] The automatic starting lineup fills the manager's formation (→STAFF-22) slot by slot with the available player of the highest 실효 OVR there (→PLAYER-6) less his fatigue load and the manager's selection trait (→STAFF-12), unless a saved manual XI is selected. Strongest/rest presets require at most selection plus confirmation; substitutions pick by level at the slot. ← the manager picks the man who plays that slot best, not the best name
-  - a manual XI may put any player in any slot; he plays there at his level (미숙 60%), shown before it is saved.
+- CLUB-6 [o] The starting lineup is always the manager's automatic one: it fills his formation (→STAFF-22) slot by slot with the available player of the highest 실효 OVR there (→PLAYER-6) less his fatigue load and the manager's selection trait (→STAFF-12); the owner sets no lineup. Substitutions pick by level at the slot. ← the manager picks the man who plays that slot best, not the best name
   - the manager also names the substitutes the era allows (→MATCH-20) — a goalkeeper first once three or more may be named, then cover for each line by 실효 OVR — and the set-piece and penalty takers by their attributes (→MATCH-18); injured and suspended players are never named.
 - CLUB-7 [o] Promotion, supporters, facilities, managers, player generations and finance measure growth; history survives transfers and retirement.
-- CLUB-8 [o] Facility investment has a stated price and improves development/reach; actions fail cleanly if cash is insufficient.
+- CLUB-8 [o] Facilities improve development and reach at the level they stand; the owner starts no facility work (→ECON-32).
 
-- CLUB-9 [o] Match fatigue retains a higher cost for pressing than other tactics, modified within bounded ranges by 체력. Rest selection trades immediate strength for lower fatigue; a saved manual lineup keeps its slots, and an unavailable player is replaced by the available player of the highest 실효 OVR at that slot.
+- CLUB-9 [o] Match fatigue retains a higher cost for pressing than other tactics, modified within bounded ranges by 체력.
 
-- CLUB-10 [o] Match preparation separates tactic and lineup tabs, shows real current-versus-draft strength/fatigue, and keeps apply/close controls reachable while optional slot details scroll. The lineup tab draws the formation: each slot with its position and role, its player's level there, adaptation and 실효 OVR.
+- CLUB-10 [o] The next-match report draws the manager's lineup in his formation: each slot with its position and role, its player's level there, adaptation and 실효 OVR, with the side's current strength and fatigue. It holds no tactic or lineup control.
 
 - CLUB-11 [o] The first team's training focus is 균형, 회복 or 하드 트레이닝, for the squad and, as an exception, for single players (→CLUB-13). It applies once at settled domestic round boundaries; selecting a focus, viewing it, or advancing idle days does not grant growth. 하드 trades fatigue, injuries and morale for faster growth and adaptation; 회복 trades growth for fresher players. ← hard work has to cost something a fan recognises
   | focus | growth (→PLAYER-15) | adaptation (→PLAYER-12) | fatigue recovered per round |
@@ -33,8 +32,8 @@
 
 - CLUB-12 [o] How a player develops is PLAYER-15–PLAYER-17. Record bounded cumulative actual positive development on the player, preserve retirement/history, and show current OVR, potential and earned growth.
 
-- CLUB-13 [o] The training focus is always the coaches' call: each settled round the assistant (수석코치) sets the first team's, and any player's own, by his rules, unless a suggestion he accepted or an order the owner forced holds that round for that target (→STAFF-19). Nobody else chooses it and no business-responsibility setting hands it to the owner (→WEB-45). ← how a squad trains is the staff's job; an owner reaches it through them, at a cost
-  - his squad rule: 회복 when the starters' average fatigue is 30 or more; else 하드 when it is under 15 and squad morale is 50 or more, with a developer assistant or three or more starters aged 21 or under (two under 데뷔 시점 빠른 데뷔 →CLUB-32); else 균형; the 훈련 tab (→WEB-70) states the focus in force, who set it and why.
+- CLUB-13 [o] The training focus is always the coaches' call: each settled round the assistant (수석코치) sets the first team's, and any player's own, by his rules. Nobody else chooses it: the owner neither suggests nor orders a focus, and no business-responsibility setting hands it to him (→WEB-45). ← how a squad trains is the staff's job
+  - his squad rule: 회복 when the starters' average fatigue is 30 or more; else 하드 when it is under 15 and squad morale is 50 or more, with a developer assistant or three or more starters aged 21 or under (two under 데뷔 시점 빠른 데뷔 →CLUB-32); else 균형; the 훈련 tab (→WEB-70) states the focus in force and why.
   - his player rule: 회복 for a player whose fatigue is 40 or more; he sets no other exception himself.
 
 - CLUB-14 [o] The market supports position, line and roster-fit filters with stable seeded candidates. Each candidate shows OVR, potential, positions with levels, traits (personality as the chief scout's range →PLAYER-18), his 실효 OVR at the slot he would take on arrival and once settled (→PLAYER-11), effect on the proposed XI/tactic fit, upfront transfer or loan fee, recurring annual wage and contract term before acceptance.
@@ -42,7 +41,7 @@
   - one ID names one player: lists of different settings never share a candidate ID.
   - a bid concerns the player it was made for, on the terms it was made for, until it is answered or lapses (→CLUB-18), whatever the list shows meanwhile.
 
-- CLUB-15 [o] Recruitment previews distinguish automatic starter selection from optional manual-lineup replacement, never promise a win or guaranteed selection, and show post-fee cash and wage-inclusive fixed-cost runway excluding future revenue. Disable unaffordable/full/already-signed offers; free transfers still disclose wages.
+- CLUB-15 [o] Recruitment previews show whether a signing would start in the manager's automatic selection, never promise a win or guaranteed selection, and show post-fee cash and wage-inclusive fixed-cost runway excluding future revenue. Disable unaffordable/full/already-signed offers; free transfers still disclose wages.
 
 - CLUB-16 [o] The youth academy keeps prospects outside the first team in three age groups by their age in the season: U-17 (15–16), U-19 (17–18) and U-21 (19–20). Each season on 15 March 3–5 prospects aged 15–16 join U-17 (more with a strong youth director or academy facilities); they grow every settled round toward potential, faster the younger they are, can be promoted while the first team has room, or released; one who turns 21 unpromoted leaves at the season's close. ← real academies register boys from U-9, but a club's decisions start when he joins its U-16/U-17 group: groundstaff at 15 before 1972, scholars at 16 since
   - prospects carry the player model (→PLAYER-1); academy growth spreads over a prospect's attributes by his main position's weights (→PLAYER-15).
@@ -50,7 +49,6 @@
   - growth per settled round: min(0.3, gap to potential / 150) × the youth director, academy facilities, academy investment, build and synergy factors × the age group's (U-17 ×1.2, U-19 ×1.0, U-21 ×0.8) × the youth focus (→CLUB-31).
   - promotion signs a first professional contract, from 16 (17 in England); a prospect must still be ready to be promoted by the staff (→STAFF-13), so debuts at 16–17 stay rare in strong divisions and commoner in weak ones. ← measured: about 0.3 under-18 debutants per big-five club a season, 2009–2023 (CIES); weaker leagues field more debutants
   - academy investment and 풀뿌리 유망주 투자 (→ECON-16), the bases with the 성골 유스 or 해외 유스 스카우트 card (→ECON-34), the club build (→ECON-22) and the pipeline synergy (→CLUB-21) add prospects, potential and growth.
-  - the 방향 board (→WEB-60) shows the exact chance that the next intake brings a prospect of potential 80+, from the same uniform draws the intake uses.
 - CLUB-17 [o] Fee-bearing purchases, loans and sales happen only in transfer windows: summer from the day the season closes (→LEAGUE-9) to 1 September and winter 1 January–1 February. ← the market opens as the season's review ends, not during its final rounds Free agents sign at any time. The market shows the window state and deadline.
 - CLUB-18 [o] Bids are answered 2–4 days later with accept, reject or a counter; acceptance chance rises with the offered fee against the asking value and the 단장 (→STAFF-20).
   - The fee is paid on completion; unanswered bids lapse at the deadline.
@@ -65,19 +63,7 @@
 
 - CLUB-19 [o] Squad morale (0–100, new clubs 60) moves +6/+1/−6 after own wins/draws/defeats (±2 more for a two-goal margin; a motivator manager takes 2 off a defeat), drifts 15% per settled round toward a baseline of 58 + 4 per squad-investment level above standard + (manager trust − 50)/10 + the manager style, build and synergy terms + 1 for each 리더 in the last starting XI (at most 3, →PLAYER-9), within 30–80, falls 2 more per round while starters average fatigue ≥ 40, 1 more in each settled round from the squad's third 하드 round in a row (→CLUB-11), and 1 more in each settled round for each overdue owner approval, at most 3 (→STAFF-48). Match strength adds (morale − 60)/10; older saves without morale stay exactly unchanged.
 
-- CLUB-20 [o] The owner does not run the dressing room: morale and fitness actions are requests to the manager or the staff, made once per cooldown (settled rounds since the last use). Every request exposes a concrete disadvantage as well as its possible gain: an expense/obligation, fatigue, morale/trust loss, or a real backfire outcome. Requests that depend on people can work, do little or backfire; every chance is stated before the request and drawn from the world's own stream for that request and round. ← a chairman paying random bonuses or treating the squad himself is not how football clubs work
-  | request | by | cost (1901 units) | outcomes | cooldown |
-  |---|---|---|---|---|
-  | squad meeting | manager | free | works: morale +7 · nothing much: +2 · backfires: −3 and trust −2; works 0.5 + 0.2 for a motivator + (trust − 50)/200 + 0.1 when morale < 45 (0.2–0.9) | 4 |
-  | team-building day | staff | 15 | morale +5 (75%) or +2 | 3 |
-  | win bonus for the next 5 matches | owner | 8 per win, owed even when cash is short | morale +3 now, +2 after each win | 8 |
-  | owner's dressing-room visit | owner | free | morale +4 (35%) / +1 (30%) / −3 and trust −3 (35%): an owner addressing the squad tends to undermine the manager | 4 |
-  | public vote of confidence | owner | free | trust +8, morale −2 as discontented players see the manager protected; not while trust ≥ 85 or for an interim | 10 |
-  | short training camp | staff | 60 | morale +5, every active player fatigue −8 | 12 |
-  | rest days | manager | free | every active player fatigue −6, morale −2 from losing shared preparation | 4 |
-  | recovery support | staff | 30 | every active player fatigue −10 | 2 |
-  | friendly match | operations | income 12 + supporters/600 (max 60) | every active player fatigue +8 | 4 |
-  - insufficient cash fails cleanly; older saves without morale start from 60 when a request changes it; no request touches past matches.
+- CLUB-20 [x] Owner morale and fitness requests to the manager, the staff or operations (squad meeting, team-building day, win bonus, dressing-room visit, vote of confidence, training camp, rest days, recovery support, friendly match).
 - CLUB-21 [o] Build synergies light up when the manager, staff, club choices and squad point the same way; each lists its conditions with what is met, and its bonus applies only while all are met. ← builds should be readable as combinations, like cards that work together
   | synergy | conditions | bonus |
   |---|---|---|
@@ -110,7 +96,7 @@
   | 25% | 15–35 | 햄스트링, 종아리 |
   | 12% | 36–90 | 발목 인대, 중족골 골절 |
   | 3% | 120–240 | 전방 십자인대 파열, 아킬레스건 |
-  - injured players are left out of the automatic and saved XI while eleven fit players exist; the medical report is an inbox item and an event; healed injuries clear.
+  - injured players are left out of the lineup while eleven fit players exist; the medical report is an inbox item and an event; healed injuries clear.
 - CLUB-24 [o] With player sales delegated, a bid of 150%+ for an untouchable player is decided by the staff with the manager: the build's market card sets the price (셀링 클럽 150%, 쇼케이스 175%, standard 200%, 강경 협상 225%, 핵심 지키기 never), a runway under the second 재정 기조 step (→ECON-33; 30 rounds at 표준) lowers it 25 points, a starter without a bench player who plays his slot within 3 of his 실효 OVR there raises it 25, and a runway under its first step (13 rounds at 표준) sells. The report states the price and each step. ← the owner's club identity and cash, not a fixed number, decide when a star is let go
 
 - CLUB-25 [o] Every player has a market wage from his OVR (→PLAYER-6), age and potential, his club's division and the football index (→ECON-26); it rises steeply with OVR, so a star earns many times a squad player. ← players are paid what the market says they are worth
@@ -148,7 +134,7 @@
   - the contract talk (→WEB-68) and the player sheet show his clauses.
 - CLUB-30 [o] Every player has an agent rated 1–5, set when the player is created and never changing; better players more often have stronger agents. A stronger agent raises his client's demand by 1% per level above 1 (→CLUB-26) and tilts his contract clauses his way (→CLUB-29); the player sheet and the contract talk show the rating. Agent fees and agents steering transfers are not modelled. ← how well a player is represented decides his terms as much as his ability
   - the premium stays small so 재계약 기조 표준's 110% cap still renews a delegated squad at its market wage (measured 261013: 3% a level left ECON-29's wage bill at 43% of revenue, below its band).
-- CLUB-31 [o] The youth director sets the academy's training focus each settled round by his rule, unless a suggestion he accepted or an order the owner forced holds that round (→STAFF-19). ← each age group needs different work: fundamentals early, first-team readiness late
+- CLUB-31 [o] The youth director sets the academy's training focus each settled round by his rule; the owner neither suggests nor orders it. ← each age group needs different work: fundamentals early, first-team readiness late
   | focus | U-17 | U-19 | U-21 |
   |---|---|---|---|
   | 균형 | ×1.0 | ×1.0 | ×1.0 |
@@ -172,7 +158,7 @@
 - CLUB-33 [o] Signings run through three people: the chief scout keeps a shortlist all season, the manager asks for lines and slots and names his pick from it, and whoever holds player recruitment decides — the owner, or with recruitment delegated (→STAFF-13) the 단장 (→STAFF-20) within 재정 기조 (→ECON-33); the owner's own bids are never the 단장's to answer. ← the list is ready before a window opens, and a manager's wishes cost something when nobody meets them
   - shortlist (스카우트 명단): on a season's first day, on each window's opening day and after every 4th league round, the chief scout lists up to three candidates per line (→PLAYER-3) from the market as 영입's rows shape it (→CLUB-14): free agents first, then by ability, potential and id. A listed player who joins us or leaves the market list drops off; 사람's 이적시장 shows the list, the day it was drawn and the next draw (→WEB-43).
   - requests (감독 요청), drawn with the shortlist: every short line (fewer than 2 GK, 6 DF, 6 MF or 4 FW, or under 20 players →CLUB-40), then the slot of his formation (→STAFF-22) whose starter a shortlisted candidate who plays its position at 준수 or better beats by the most at that slot (OVR there × level, adaptation left out), when by 5 or more; at most three. For each the manager names a pick among the shortlisted who fit it: the ablest, then potential; a 육성형 manager (→STAFF-14) or one with the youth trait (→STAFF-12) the highest potential among those aged 23 or under first. An interim asks for nothing.
-  - at a window's close, a manager whose requests at its opening saw no player join in the window who fits one (of the short line, or playing the requested slot's position at 준수 or better) loses 3 trust (→STAFF-5), whoever held recruitment; a met request gains nothing.
+  - at a window's close, a manager whose requests at its opening saw no player join in the window who fits one (of the short line, or playing the requested slot's position at 준수 or better) loses 3 trust, whoever held recruitment; a met request gains nothing.
   - the close is judged the day after the window's last day, so a deadline-day signing counts; a loan joining counts as joining; a manager appointed after the opening is not judged on his predecessor's requests; a club's founding day is its first summer window's opening.
   - with player recruitment delegated the 단장 looks on the window's opening day and every 7th day after it, and every day while a replacement need is open (→CLUB-42); a look makes at most one move, and none while one of his bids is pending.
   - needs, first met first: a short line, then a replacement (→CLUB-42), then an upgrade: a candidate who beats a slot's starter at that slot (as a request does) by the margin of 재정 기조 (표준 5, 적극 3, 공격적 2), while the squad has 24 players or fewer; 안정적 and 신중 never upgrade. Requests come before the others.
@@ -265,7 +251,7 @@
   - the catalog keeps every row with its source, and a start or switch marked estimated shows as estimated (→ECON-3).
   - every squad count on screen shows counted players against the limit, and exempt players beside it.
 
-- CLUB-45 [o] A suspended player (→MATCH-19) is unavailable for the matches his ban counts: left out of the automatic and saved XI and the bench, like an injured player. A ban is an inbox item and an event; a player one yellow short of a league ban carries a warning on the squad and lineup.
+- CLUB-45 [o] A suspended player (→MATCH-19) is unavailable for the matches his ban counts: left out of the lineup and the bench, like an injured player. A ban is an inbox item and an event; a player one yellow short of a league ban carries a warning on the squad and lineup.
 
 - CLUB-46 [o] A transfer value (→CLUB-25) follows its era's transfer market, not the wage curve alone: the year's transfer premium, on top of the football index (→ECON-26), reaches a value in proportion to how far its market points stand above the wage curve's pivot (70), in full from 10 points above it, so the stars' fees stand where real English football's stood in every era while a lower-division player's fee grows with football's income alone. ← fees grew with football's income until the late 1970s and far faster since at the top (British record £165,000 in 1969, £1.5m in 1979, £15m in 1996, £125m in 2025) but hardly in the lower divisions; on the wage curve and the index alone reference careers valued the top flight's dearest player at about a third of the record in the 1980s and at 0.14–0.24 of it from the late 1990s
   - the premium is a multiple by year, geometric between these anchors, flat before the first and after the last; every country uses it, its own football index and currency carrying the rest:
@@ -316,6 +302,7 @@
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r49 261102 CLUB-6✎ automatic XI unless a saved manual XI, strongest/rest presets, manual XI in any slot→the manager's automatic XI only, no owner lineup; CLUB-8✎ facility investment with a stated price→facilities act at their level, no owner facility work; CLUB-9✎ rest selection and saved manual lineup slots removed; CLUB-10✎ match preparation tactic/lineup tabs with draft and apply controls→next-match report draws the manager's lineup, no tactic or lineup control; CLUB-13✎ unless an accepted suggestion or forced owner order→the assistant's rules only, the owner neither suggests nor orders, tab states focus and why (who set it removed); CLUB-15✎ automatic versus optional manual-lineup replacement→whether he would start in the automatic selection; CLUB-16✎ 방향 board's 80+ intake chance removed; CLUB-20- owner morale and fitness requests (nine kinds incl. win bonus) removed; CLUB-23✎ automatic and saved XI→the lineup; CLUB-31✎ unless an accepted suggestion or forced owner order→the youth director's rule only; CLUB-45✎ automatic and saved XI→the lineup; CLUB-33✎ an unmet request's trust loss no longer cites the withdrawn interference rule (→STAFF-5)
 - r48 261102 CLUB-26✎ demand market wage × build × agent→× Ballon d'Or premium (×1.20 winner, ×1.10 podium, last three closed seasons), also the improved-contract test and 재계약 기조 caps; CLUB-29✎ promotion/relegation clauses→+Ballon d'Or bonus (80+ or recent podium, 40–90% of contracts, 25–100% of the yearly wage, paid at the close he wins)
 - r47 261101 CLUB-47+ the scout's verdict: grade A–E from the slot gap of CLUB-33's request measure (A ≥10, B ≥5, C ≥2 or a short line or a prospect, D >−5, else E) with up to two reasons for and two against
 - r46 261101 CLUB-19✎ +1 more morale lost a settled round per overdue owner approval, at most 3 (→STAFF-48); CLUB-34/38✎ owner-held mediation stops either progression mode→waits in the 결재함

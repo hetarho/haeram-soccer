@@ -17,6 +17,9 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261102 decided STAFF-26: the standing director/manager support policy is a direction row, so it keeps the value in force with no owner editing; mediation in the 결재함 is unchanged (alt: keep it as the one owner-editable row).
+- 261102 decided STAFF-32: a playing-coach conversion is now proposed only by delegated staff filling a post, so an owner who keeps staff appointments direct receives none until the intervention redesign (alt: let the owner propose one, which this removal withdraws).
+- 261102 decided ECON-22: 구단주 투자 keeps only its wage cost now that owner capital is gone, stated as an exception to every card having a gain and a cost; owner money returns with ideation owner-wealth-and-takeover (alt: drop the card from 승격 올인 now).
 - 261102 suggest WORLD-1 WORLD-12: representative clubs of the other UEFA associations still draw English names (the `npcSquad` fallback to ENG pools); a later catalog could give them their own pools or a neutral mix
 - 261102 decided WORLD-12: how to stop the same names repeating (315 distinct names over 13,178 players) → curated per-country pools of at least 100 given names and 200 surnames in the catalog, drawn evenly (alt: a name library such as faker — its locale bundles weigh megabytes in the browser, carry modern names unfit for 1950s squads and sit outside the fingerprinted catalog | keep the pools and dedupe names per world, which seasonal NPC regeneration cannot hold stable)
 - 261102 decided WORLD-12: whether a squad may hold two of one surname → never inside a generated NPC or founding squad, since the match view labels players by surname; youth, signings and staff draw freely (alt: no surname rule | dedupe every own-squad arrival too, which would rename a signing on arrival)
@@ -461,20 +464,20 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 25 | 25 | - | 2 |
-| WEB | 201 | 201 | - | 0 |
+| ARCH | 26 | 25 | ARCH-1✎ ARCH-6✎ ARCH-8✎ ARCH-21✎ ARCH-24✎ ARCH-29✎ | 2 |
+| WEB | 202 | 201 | WEB-21- WEB-60- WEB-61- WEB-75- WEB-77- WEB-107- WEB-9✎ WEB-11✎ WEB-14✎ WEB-15✎ WEB-16✎ WEB-35✎ WEB-38✎ WEB-39✎ WEB-42✎ WEB-43✎ WEB-44✎ WEB-45✎ WEB-51✎ WEB-59✎ WEB-70✎ WEB-71✎ WEB-74✎ WEB-78✎ WEB-88✎ WEB-91✎ WEB-97✎ WEB-102✎ WEB-110✎ | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 7 | 7 | - | 0 |
-| KIT | 6 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
-| CLUB | 48 | 48 | - | 0 |
-| MATCH | 44 | 44 | - | 0 |
-| LEAGUE | 10 | 10 | - | 0 |
-| STAFF | 37 | 37 | - | 0 |
-| ECON | 40 | 40 | - | 0 |
+| KIT | 7 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ KIT-6✎ KIT-8✎ | 0 |
+| CLUB | 49 | 48 | CLUB-6✎ CLUB-8✎ CLUB-9✎ CLUB-10✎ CLUB-13✎ CLUB-15✎ CLUB-16✎ CLUB-20- CLUB-23✎ CLUB-31✎ CLUB-33✎ CLUB-45✎ | 0 |
+| MATCH | 45 | 44 | MATCH-8✎ MATCH-9✎ MATCH-29✎ | 0 |
+| LEAGUE | 11 | 10 | LEAGUE-13✎ | 0 |
+| STAFF | 38 | 37 | STAFF-2- STAFF-3- STAFF-4- STAFF-5- STAFF-9- STAFF-10- STAFF-19- STAFF-29- STAFF-6✎ STAFF-13✎ STAFF-14✎ STAFF-15✎ STAFF-18✎ STAFF-22✎ STAFF-23✎ STAFF-25✎ STAFF-26✎ STAFF-32✎ STAFF-38✎ STAFF-44✎ STAFF-46✎ STAFF-47✎ | 0 |
+| ECON | 41 | 40 | ECON-10✎ ECON-11✎ ECON-12✎ ECON-13- ECON-16✎ ECON-17✎ ECON-18✎ ECON-19✎ ECON-20✎ ECON-22✎ ECON-25✎ ECON-26✎ ECON-27✎ ECON-32✎ ECON-34✎ | 0 |
 | EURO | 4 | 4 | - | 0 |
-| HIST | 19 | 19 | - | 0 |
-| SAVE | 60 | 60 | - | 0 |
-| PLAYER | 11 | 11 | - | 0 |
+| HIST | 20 | 19 | HIST-5✎ HIST-11✎ HIST-14✎ | 0 |
+| SAVE | 61 | 60 | SAVE-10✎ SAVE-15- SAVE-17✎ SAVE-25+ | 0 |
+| PLAYER | 12 | 11 | PLAYER-25✎ | 0 |
 
 ## review
 | id | st |
@@ -512,10 +515,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- create-task WEB ECON CLUB STAFF MATCH SAVE ARCH LEAGUE HIST KIT PLAYER (owner intervention removal) + repo-wide unused-code removal; illustrations stay
 - create-ssot OWNER (ideation owner-wealth-and-takeover; then WEB WORLD ECON LEAGUE MATCH KIT SAVE)
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261102 update-ssot owner intervention removal: WEB r202 ECON r41 ARCH r26 SAVE r61 LEAGUE r11 CLUB r49 MATCH r45 HIST r20 KIT r7 STAFF r38 PLAYER r12 (WORLD unchanged) — only 직접/위임 and its approvals stay; care, training 제안/강행, tactic requests and owner lineups, the 방향 board, dials, ticket price, owner capital, cash remedies, facility work start, coaching encouragement and owner-proposed playing coaches withdrawn; values stay as founded or saved; older saves drop the removed state (SAVE-25)
+- 261102 update-ssot WEB ECON CLUB STAFF MATCH SAVE ARCH LEAGUE HIST KIT PLAYER WORLD start: owner intervention removal
 - 261102 design ds03 web: market targets 선수/유소년/코치/감독/단장 (youth = world market ≤20, ageMax query); office 결재함 as titles with delegates (단장/감독/유스 디렉터) and 직접/위임 + 전체 switches; match board in the side on the ball, larger titles, 20% pitch margin, matchup beside speeds, notable-only commentary log, 상세 and player sheets as dialogs; season table full width. Committed without verify at the owner's request.
 - 261102 ideation owner-wealth-and-takeover ready: difficulty by owner wealth (6 tiers) × traits (0–5 of 8), takeover of any club at its value from a chosen decade 1930–2000, owner fortune with a quarterly 50/50 business stake and living costs, injection at any time, season-close dividends, FFP from 2011/12, 팬 민심 and 구단주 퇴진, crises as a status, amateur level removed
 - 261102 nm62 closed: T645 on main (511e2419, fix 5e42da3d); CI 41390729838 integration passed, remaining checks/unit/e2e failures in ds02's areas, fixed by ds02's 89299cb queued next. Report spec/reports/261102-nm62.md.

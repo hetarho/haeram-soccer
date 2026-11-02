@@ -1,5 +1,5 @@
 # KIT Club identity and match kits
-> r6 | Let owners design a recognisable club and see its selected kits in match observation.
+> r7 | Let owners design a recognisable club and see its selected kits in match observation.
 
 ## decisions
 - KIT-1 [o] The editor offers exactly three colour choices: 홈 (home), 어웨이 (away) and 세컨 (third). Each is its named shirt’s base colour.
@@ -19,8 +19,8 @@
   - Home patterns use away as their second colour; away and third patterns use home. Existing trim, when present, follows that second colour. Plain shirts omit the unused pattern region.
   - The crest uses home for its field and away for its pattern and emblem, with no separately chosen accent. Disclose any fixed neutral outline in the preview.
 - KIT-5 [o] The shirt-pattern catalogue has fourteen choices: solid, vertical stripes, horizontal hoops, halves, chest band, diagonal sash, checks, chevron, pinstripes, quarters, centre stripe, side panels, yoke and diagonal halves.
-- KIT-6 [o] Match kits are selected automatically to avoid clashes, and the owner may change their own shirt choice before the fixture is played.
-  - Automatic selection remains sufficient when the owner skips preparation or disables the match-eve stop; selecting a kit adds no mandatory event acknowledgement.
+- KIT-6 [o] Match kits are selected automatically to avoid clashes, and the owner may change their own shirt choice before the fixture is played, in the kit section of the next-match detailed report (→WEB-88).
+  - Automatic selection remains sufficient when the owner never opens that section or disables the match-eve stop; selecting a kit adds no mandatory event acknowledgement.
   - A manual choice belongs to the named upcoming fixture, not every future fixture or an already settled match.
   - Only the selected home/away/third role changes; a fixture-level choice never edits its saved design.
 - KIT-7 [o] Automatic selection prioritises a distinguishable pairing from both sides' saved shirts, considering the visible pattern regions and grass rather than representative colours alone.
@@ -29,7 +29,7 @@
   - Never silently repaint a shirt, modify a saved palette or invent an unconfigured kit to remove a clash.
   - Pairing is judged on the shirts as they appear on the player figures (→MATCH-36); shorts and socks travel with their kit and are never mixed across kits.
 - KIT-8 [o] The club designs one goalkeeper kit: a shirt in any →KIT-5 pattern with freely chosen base, second and trim colours, plus shorts, socks and gloves colours. ← one designed kit keeps the editor small while the fallback keeps every fixture readable
-  - In a fixture where it is not distinguishable from either side's selected outfield kit or the other goalkeeper, that fixture alone uses an automatically chosen distinguishable goalkeeper colour, shown in match preparation (→WEB-88) without a mandatory stop. The fallback never edits the saved goalkeeper kit.
+  - In a fixture where it is not distinguishable from either side's selected outfield kit or the other goalkeeper, that fixture alone uses an automatically chosen distinguishable goalkeeper colour, shown in the next-match detailed report (→WEB-88) without a mandatory stop. The fallback never edits the saved goalkeeper kit.
   - Distinction concerns the kits actually selected for this fixture, not only the clubs' representative colours.
   - A club without a designed goalkeeper kit, including every opponent, uses automatically chosen distinguishable goalkeeper colours. Automatic colours avoid designed kits.
   - A new draft starts from an automatically chosen colour distinguishable from the club's own three kits.
@@ -73,6 +73,7 @@
 - The storage, responsiveness and reference-device budgets remain →SAVE-4/13 and →WEB-19; pattern detail must remain legible at the desktop match scale and in the large previews; at phone widths team colours, facing and large actions must remain legible (→MATCH-36).
 
 ## chg
+- r7 261102 KIT-6✎ choice made in match preparation→the kit section of the next-match detailed report; skipping preparation→never opening that section; KIT-8✎ goalkeeper fallback shown in match preparation→in the next-match detailed report
 - r6 261031 KIT-9✎ explicit apply of an edit→adopting a designer draft; KIT-10✎ career editor preserves saved design→editor before founding only; KIT-12✎ applying an edit→adopting a design; KIT-13✎ +commission fee is the only money moved
 - r5 261031 KIT-5✎ eight shirt patterns→fourteen (+pinstripes, quarters, centre stripe, side panels, yoke, diagonal halves)
 - r4 261028 KIT-3✎ no shorts/socks/goalkeeper editing→free shorts/socks per kit (start: second/base colour); KIT-4✎ three controls only→plus shorts/socks/goalkeeper controls; KIT-7✎ +judged on figures, kits never mixed; KIT-8✎ automatic goalkeeper colours→one designed goalkeeper kit, per-fixture fallback; KIT-11✎ +opponent shorts/socks; KIT-12✎ shirts→full kits retained; KIT-15✎ missing shirts→missing shirts/shorts/socks; constraints✎ legible at match scale→desktop/previews, phones colours/facing/actions

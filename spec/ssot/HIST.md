@@ -1,12 +1,12 @@
 # HIST Durable metrics and history
-> r19 | Define the browser-demo rules for durable metrics and history.
+> r20 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
 - HIST-2 [o] Always retain all implemented-country season standings/champions/cup outcomes and European standings/honors. NPC past per-frame/per-action traces and full individual match-stat archives are not collected.
 - HIST-3 [o] Complete NPC current-season team/player aggregates from settled fixtures and the reproducible current roster support comparison (→HIST-17). Career/season summaries, not duplicated object graphs, represent older NPC history.
 - HIST-4 [o] Archive compact IDs and numeric aggregates; UI pagination or chart sampling never deletes source records.
-- HIST-5 [o] Founding is the first history entry; promotion, relegation, tactics application/refusal, manager resignation, recruitment, retirement, campaigns, sponsors and currency changes append facts.
+- HIST-5 [o] Founding is the first history entry; promotion, relegation, manager resignation, recruitment, retirement, campaigns, sponsors and currency changes append facts; facts already recorded stay.
 - HIST-6 [o] Metric scopes separate domestic, European, current season and own career; ratios expose denominators and sample size.
 - HIST-7 [o] Statistical changes after an action are observations with markers, not proof of causality; show relevant period and actual applied changes.
 - HIST-8 [o] No automatic expiry/pruning of retained facts, data uploads or silent loss on save/import; per-match maps and reports follow their defined lifetime (→HIST-16). Capacity errors keep the current save and offer export.
@@ -16,7 +16,7 @@
   - every own match yields one result line (comeback, ≥88′ winner or equaliser, a two-goal lead thrown away, rout, heavy defeat, clean win or the plain result, with possession, shots and xG), then at most 4 more items ranked by weight; major items and celebrations always stay.
   - sources: streaks across seasons, home/away runs, the opening five, possession and first-goal splits, xG against the result and finishing gaps, season highs and lows, player braces, hat-tricks, one-man shows, debut and academy first goals, scoring runs, droughts and milestones, keepers' saves, defensive actions and advanced counters;
   - round standings (top of the table, leads, promotion and relegation zones, three-place climbs);
-  - club events (official signings and departures, manager changes, academy, facilities, sponsor, vision, owner requests, cup rounds won and lost, retirement announcements and retirements, injuries, potential breakthroughs and stalls), the closed season's honours and its Ballon d'Or podium (→PLAYER-27).
+  - club events (official signings and departures, manager changes, academy, facilities, sponsor, vision, cup rounds won and lost, retirement announcements and retirements, injuries, potential breakthroughs and stalls), the closed season's honours and its Ballon d'Or podium (→PLAYER-27).
   - a cup won during the season is celebrated on the day of its final; the closed season's honours repeat only cups without that event (older saves).
   - thresholds: unbeaten runs at 5/10/15…, wins at 3/5/7/10, defeats at 3/4/5/7, 5/8/10/15 without a win, a run of 5+ that ends; club records only against a record of at least 5 (unbeaten) or 3 (wins) set before the season; 60%+ possession win rates only at 70%+ or 20%− over 5+ matches; season highs from the fourth match; each finishing or keeping gap level once a season after 8 matches with xG.
   - achievements flagged for celebration: first win, club-record runs (8+ unbeaten, 5+ wins), record margin, hat-trick, an academy graduate's first goal, career goal hundreds, every hundredth club win, first time top of the table in a season, promotion, titles and cups, and our player winning the Ballon d'Or.
@@ -37,7 +37,7 @@
 
 - HIST-14 [o] Retain a person's linked playing, coaching and management career across role changes and clubs.
   - retirement from playing does not delete his playing totals or reset his age/name. Actual staff/manager appointments and coaching experience extend the same person's record.
-  - retain the once-per-player encouragement and actual response (→STAFF-29), and dated coaching employment across clubs for →STAFF-30. Mark overlapping player/coach periods (→STAFF-31) without counting one coaching period twice.
+  - retain dated coaching employment across clubs for →STAFF-30. Mark overlapping player/coach periods (→STAFF-31) without counting one coaching period twice.
   - during tracked coaching employment, retain the actual manager mentor, known school and dated shared service needed for →STAFF-44. Missing or pre-start mentor histories remain unavailable, never fabricated.
   - player profiles and subsequent candidate/staff/manager views can follow those links (→WEB-78); existing own-player totals and own-manager tenures remain available in records.
   - retain actual identity, dates, roles and observed facts; missing historical other-club statistics remain explicitly unavailable. Do not fabricate full NPC match archives or pre-start honours (→HIST-2/3, →WORLD-8).
@@ -81,6 +81,7 @@
 - Career/mediation outcomes → retained person links and commitments → fact-backed profiles, decisions and derived news.
 
 ## chg
+- r20 261102 HIST-5✎ tactics application/refusal removed from appended facts, facts already recorded stay; HIST-11✎ owner requests removed from club events; HIST-14✎ once-per-player coaching encouragement and response removed
 - r19 261102 HIST-11✎ closed season's honours→+its Ballon d'Or podium, our player's win celebrated; HIST-13✎ +the season keeps the Ballon d'Or podium (identity, name, club, position, goals, assists, appearances, points) and a player's wins/podiums derived on read
 - r18 261027 HIST-18✎ every tenure in summaries→interim tenures without a credited match or outcome left out; HIST-20+ own-club transfer facts (fee signings, sales, loans) with rankings in today's money and ledger fallback for older careers
 - r17 261021 HIST-18/19+ stable own-manager tenures, settlement-time accomplishment attribution, factual summaries and explicit tracking coverage

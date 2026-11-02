@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r60 | Define the browser-demo rules for browser persistence and protocol.
+> r61 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -29,7 +29,7 @@
   - A supported world pinned to recognized catalog 2026-demo-4 moves to 2026-demo-5 on writer activation whatever its country: 2026-demo-5 changes only the person-name pools (→WORLD-12), so recorded facts and stored names stay and only generated people not yet retained show their new names.
   - A supported world pinned to recognized catalog 2026-demo-1, 2026-demo-2 or 2026-demo-3 whose club is English moves to 2026-demo-5 on writer activation; England's prices, money and football index are unchanged, so recorded facts stay. A career in another country pinned to them is a compatibility failure (→SAVE-11): 2026-demo-4 re-levelled its money (→ECON-35), so its recorded amounts would mix two levels.
   - Supported writer activation upgrades metadata/world revision through a pure transformation preserving all retained facts and missing optional defaults, committed through →SAVE-3. Failure preserves old disk data and exportable new memory state; read-only views do not perform disk upgrades.
-  - Device strategy-library compatibility remains →SAVE-15 and →ECON-22; it grants no legacy-gameplay conversion. Historical rules and transformations are recorded in chg.
+  - Historical rules and transformations are recorded in chg.
 
 - SAVE-11 [o] Unsupported selected save versions/catalogs are compatibility failures, not corruption-recovery permission. Do not automatically fall back to an older checkpoint and overwrite a newer incompatible career; preserve raw slots/manifest and expose export/import recovery. Actual corrupted compatible checkpoints may recover the validated predecessor.
   - recognized legacy gameplay at the new-career release boundary is the specific reset exception in →SAVE-18. Future or unrecognized incompatible saves retain the protection above.
@@ -47,7 +47,7 @@
   - the index follows the loaded world: a world listed under another slot makes that slot active; an unlisted world takes the active slot.
   - ordinary game deletion removes its parked checkpoint, and for the game in play its active keys, only after confirmation (→WEB-62). The recognized legacy-gameplay release reset is →SAVE-18.
   - IndexedDB unavailable ⇒ saving the game in play follows →SAVE-3's bounded fallback and failure protection; switching and new slots say why they are unavailable.
-- SAVE-15 [o] Device-owned data — the strategy library (→WEB-61), each saved direction keeping its cards and every other row (dials, ticket price, direction rows), an entry saved before holding only cards — lives per browser profile in localStorage (haeram-soccor:strategies) under an owner record { kind: device, id } whose random ID is kept in haeram-soccor:device, with stable item IDs and created/updated times, so an account can later adopt and merge it (→ARCH-29). Malformed entries are skipped, never fatal; nothing leaves the browser.
+- SAVE-15 [x] Device-owned data — the strategy library (→WEB-61), each saved direction keeping its cards and every other row (dials, ticket price, direction rows), an entry saved before holding only cards — lives per browser profile in localStorage (haeram-soccor:strategies) under an owner record { kind: device, id } whose random ID is kept in haeram-soccor:device, with stable item IDs and created/updated times, so an account can later adopt and merge it (→ARCH-29). Malformed entries are skipped, never fatal; nothing leaves the browser.
 
 - SAVE-16 [o] Rules 2.0.0 start new careers; earlier-rule checkpoints, parked games and imports are never converted. ← a clean player model beats converting five attributes into fourteen guesses
   - until the feature boundary in →SAVE-18, earlier rules cause compatibility failure (→SAVE-11): the slot lists 이전 규칙 with export and delete only, imports name the rules they need, and nothing overwrites the career.
@@ -55,7 +55,6 @@
   - the 100-season profiles of SAVE-13 are measured again on the new model and must still fit SAVE-4.
 - SAVE-17 [o] A game's persisted career includes its seven business responsibilities, progression mode and observation triggers; the waiting days of each owner-held approval (→STAFF-48), absent in older saves, which start counting at 0; its standing director/manager support policy; aptitude/person continuity and staff-career facts; and outstanding/resolved mediation promises (→WEB-45/5, →STAFF-26, →HIST-14/15).
   - save/export/import preserve outstanding commitments and the linked person's actual age/history, without duplicate fulfilment, appointments or payments on reload.
-  - unapplied policy drafts remain session UI work (→WEB-74), not applied policy or portable game-save facts.
   - retain existing corruption/compatibility protection and 100-season lossless budgets (→SAVE-4/11/13). Feature activation and compatibility for existing careers require →SAVE-18.
 
 - SAVE-18 [o] The responsibility/progression/second-career/mediation feature set, with the squad rules (→CLUB-40–44, the 단장's closer trait →STAFF-20) and club reputation (→LEAGUE-14), started new careers at an incompatible rules 3.0.0 boundary; the current boundary is →SAVE-19.
@@ -93,7 +92,12 @@
   - persist tenure identities, exact tracking/date precision, match links and unique accomplishment-source attribution in a declared checkpoint container that older readers refuse. Continue reading supported pre-feature containers and preserve full-model metadata and future-version protection (→SAVE-11/23).
   - derived totals and display text are not a second persisted accomplishment database. Retain all source facts losslessly within the existing century and capacity limits (→SAVE-4/13), including repeated/interim appointments and a settled round after the century.
 
+- SAVE-25 [o] A supported career saved before the owner's interventions were removed still opens with every other fact kept. On load it drops the state only those interventions used — the coaches' training orders and their strain, care effects and a pending win bonus, tactic requests with the manager's request history, and an owner-set lineup — so the club plays on the coaches' and manager's own calls; the values they set stay as saved: policy dials, direction rows and cards, the ticket price (→ECON-16/17/22/25). ← removing an owner control must not end a career
+  - the drop is part of the validated writer activation (→SAVE-10); a failure preserves the previous checkpoint and exportable state (→SAVE-3/6).
+  - a strategy library kept on the device by earlier versions (`haeram-soccor:strategies`) is no longer read and is removed when the writer tab starts; the device ID and the game-slot index stay (→ARCH-29, →SAVE-14).
+
 ## chg
+- r61 261102 SAVE-10✎ device strategy-library compatibility line→removed; SAVE-15- device strategy library removed; SAVE-17✎ unapplied policy drafts stay session UI work→removed (no policy drafts); SAVE-25+ a career saved before the owner's interventions were removed opens with their state dropped (training orders and strain, care effects and win bonus, tactic requests and history, owner-set lineup), the values they set kept, the device strategy library removed
 - r60 261102 SAVE-10✎ catalog writer pin target 2026-demo-4→2026-demo-5; +a 2026-demo-4 world of any country moves too (only name pools changed, →WORLD-12)
 - r59 261101 SAVE-17✎ +each owner-held approval's waiting days (→STAFF-48), absent in older saves→counting from 0
 - r58 261101 SAVE-10✎ catalog writer pin 2026-demo-1/2→2026-demo-3 to 2026-demo-1/2/3→2026-demo-4 for English careers only; another country's career pinned to them→a compatibility failure (its money re-levelled, →ECON-35)
