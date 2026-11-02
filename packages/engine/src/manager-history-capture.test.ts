@@ -44,10 +44,10 @@ const hire = (w: World, pick = 0) => {
   operate(w, { type: 'hire', id: candidate.id });
   return candidate;
 };
-/** The proud manager resigns over one more strong demand (→STAFF-5). */
-function resignOverDemand(w: World) {
-  w.manager = { ...w.manager, pride: 90, trust: 20, conflicts: 2 };
-  operate(w, { type: 'tactics', tactic: 'counter', tone: 'demand' });
+/** A manager still at trust 0 resigns at the season boundary (→STAFF-47), here on this day. */
+function resignAtTrustFloor(w: World) {
+  w.manager = { ...w.manager, trust: 0 };
+  yearlyStaff(w);
 }
 /** Every fact of the career apart from the manager-history facts and links. */
 const gameplay = (w: World) => canonical(withoutManagerHistory(structuredClone(w)));
@@ -78,10 +78,9 @@ describe('manager-history capture (→HIST-18/19, SAVE-24)', () => {
   it('records owner hires, same-day changes and renewals as the tenures they are', () => {
     const w = founded();
     const first = facts(w).tenures[0]!;
-    // A renewal and a tactic request continue the tenure.
+    // A renewal continues the tenure.
     w.manager.until = w.year + 1;
     operate(w, { type: 'renew-manager' });
-    operate(w, { type: 'tactics', tactic: 'press', tone: 'respect' });
     expect(facts(w).tenures).toEqual([first]);
     // Two appointments on one day are two tenures in order, the first replaced the same day.
     const today = careerDate(w);
@@ -106,7 +105,7 @@ describe('manager-history capture (→HIST-18/19, SAVE-24)', () => {
   it('keeps a zero-match interim between a resignation and a delegated successor', () => {
     const w = founded(true);
     const today = careerDate(w);
-    resignOverDemand(w);
+    resignAtTrustFloor(w);
     const [left, interim, successor] = facts(w).tenures;
     expect(left).toMatchObject({ ended: today, departure: 'resigned' });
     expect(interim).toMatchObject({ interim: true, trackedFrom: today, ended: today });
@@ -114,7 +113,7 @@ describe('manager-history capture (→HIST-18/19, SAVE-24)', () => {
     expect(successor).toMatchObject({ manager: w.manager.id, interim: false });
     // The owner's resignation path without delegation keeps the interim in charge.
     const owner = founded();
-    resignOverDemand(owner);
+    resignAtTrustFloor(owner);
     expect(facts(owner).tenures.at(-1)).toMatchObject({ interim: true });
     expect(facts(owner).tenures.at(-1)).not.toHaveProperty('ended');
     expect(owner.manager.interim).toBe(true);

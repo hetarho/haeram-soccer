@@ -199,7 +199,6 @@ export function makeManager(
     flexibility: integer(r, ...bands.flexibility),
     pride: integer(r, ...bands.pride),
     trust: 65,
-    conflicts: 0,
     wage: quote(code, year, 120 + index * 30 - (peak - career.ability) * 3),
     since: year,
     until: year + 3,
@@ -606,60 +605,20 @@ export function lineup(
   return chosen.filter((p): p is Player => !!p);
 }
 
-/**
- * The owner's saved XI keeps its slots, anyone in any slot (→CLUB-6); a sold, retired or unfit
- * player's slot takes the best available player there (→CLUB-9).
- */
-export function selectedLineup(
-  players: Player[],
-  preferred: string[] | undefined,
-  tactic: Tactic,
-  manager?: Manager,
-  year?: number,
-  multiplier: (p: Player) => number = ownMultiplier,
-): Player[] {
-  if (!preferred) return lineup(players, tactic, manager, year, multiplier);
-  const slots = formationOf(tactic);
-  const active = players.filter((player) => player.status === 'active');
-  const byId = new Map(active.map((player) => [player.id, player]));
-  const used = new Set<string>();
-  const selected = slots.map((_, i) => {
-    const player = byId.get(preferred[i]!);
-    if (!player || used.has(player.id)) return undefined;
-    used.add(player.id);
-    return player;
-  });
-  return selected.flatMap((player, i) => {
-    const slot = slots[i]!;
-    const replacement =
-      player ||
-      active
-        .filter((candidate) => !used.has(candidate.id))
-        .sort(
-          (a, b) =>
-            selectionValue(b, slot, undefined, undefined, multiplier(b)) -
-              selectionValue(a, slot, undefined, undefined, multiplier(a)) ||
-            compareIds(a.id, b.id),
-        )[0];
-    if (!replacement) return [];
-    used.add(replacement.id);
-    return [replacement];
-  });
-}
 import { isInjured } from './player-state';
 export { injuryDaysLeft, isInjured } from './player-state';
 /**
- * The own club's starting XI: the manager's (or the owner's saved) choice among fit players; an
+ * The own club's starting XI: the manager's automatic choice among fit players (→CLUB-6); an
  * injured player plays only when too few are fit to field eleven. A player banned for the
  * fixture's competition never plays it (→MATCH-19).
  */
 export function ownStarters(w: World, f?: Pick<Fixture, 'kind' | 'groupKey'>) {
   const active = f ? activePlayers(w).filter((p) => !isBanned(w, p.id, f)) : activePlayers(w);
   const fit = active.filter((p) => !isInjured(w, p));
-  const xi = selectedLineup(fit, w.lineup, w.tactic, w.manager, w.year);
+  const xi = lineup(fit, w.tactic, w.manager, w.year, ownMultiplier);
   return xi.length >= 11 || fit.length === active.length
     ? xi
-    : selectedLineup(active, w.lineup, w.tactic, w.manager, w.year);
+    : lineup(active, w.tactic, w.manager, w.year, ownMultiplier);
 }
 /** The tactic a club plays: the own club's applied one, else its style. */
 export const tacticOf = (w: World, c: Club) => (c.id === w.playerClub ? w.tactic : clubStyle(c));

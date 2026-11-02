@@ -19,7 +19,6 @@ export interface FixtureDefinition {
   input: Founding;
   year?: number;
   cupQualification?: boolean;
-  managerConflict?: boolean;
   currentRules?: boolean;
   setup?: 'announced-player' | 'financial-conflict';
   commands: Command[];
@@ -44,13 +43,6 @@ export function runFixture(definition: FixtureDefinition) {
       p.joined = w.year;
       p.until = w.year + 2;
     }
-  }
-  if (definition.managerConflict) {
-    w.manager.philosophy = 'balanced';
-    w.manager.flexibility = 0;
-    w.manager.pride = 90;
-    w.manager.trust = 30;
-    w.tactic = 'balanced';
   }
   if (definition.cupQualification)
     w.lastChampions = [
@@ -121,9 +113,7 @@ function facts(w: World, currentRules = false) {
       id: w.manager.id,
       name: w.manager.name,
       trust: w.manager.trust,
-      conflicts: w.manager.conflicts,
       interim: w.manager.interim,
-      pending: w.manager.pending || null,
     },
     club: { id: w.playerClub, tier: clubOf(w).tier, fans: clubOf(w).fans, lower: w.lower },
     players: w.players.map((p) => ({ id: p.id, status: p.status, wage: p.wage, career: p.career })),

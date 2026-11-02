@@ -13,7 +13,7 @@ import { currentDay } from './calendar';
 import { activePlayers, ownStarters } from './index';
 import { advanceRound } from './season';
 import { founded } from './season.testkit';
-import { lineupPreset, setLineup } from './strategy';
+import { ATTRIBUTES } from '../../contracts/src/player';
 import { withCandidateModel } from '../../../tests/fixtures/worlds';
 
 const digest = (value: unknown) =>
@@ -194,10 +194,10 @@ describe('complete-result throughput (T285)', () => {
     const ids = (r: MatchRecord) => r.players?.map((p) => p.id);
     const first = settled();
 
-    // Lineup: the strongest XI with its last starter swapped for a fit player on the bench.
-    const xi = lineupPreset(w, 'strongest', f);
-    const bench = activePlayers(w).find((p) => !xi.includes(p.id))!;
-    setLineup(w, [...xi.slice(0, 10), bench.id]);
+    // Lineup: a bench player raised to 99 everywhere wins a place in the manager's XI.
+    const xi = ownStarters(w, f);
+    const bench = activePlayers(w).find((p) => !xi.includes(p))!;
+    for (const a of ATTRIBUTES) bench.attrs[a] = 99;
     expect(ownStarters(w, f).map((p) => p.id)).toContain(bench.id);
     const rested = settled();
     expect(rested.squads[side].map((p) => p.id)).not.toEqual(first.squads[side].map((p) => p.id));

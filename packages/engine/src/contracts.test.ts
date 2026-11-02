@@ -710,11 +710,13 @@ describe('unhappy players and expiring contracts (→CLUB-27, CLUB-28)', () => {
 
   it('plays an unhappy starter 3 below his ability and costs squad morale each settled round', () => {
     const w = world();
-    // The owner's saved XI keeps him in the side.
-    w.lineup = ownStarters(w).map((p) => p.id);
+    // A weak bench keeps the manager's XI as it is, unhappy starters included (→CLUB-6).
+    const xi = ownStarters(w);
+    for (const p of activePlayers(w))
+      if (!xi.includes(p)) for (const a of ATTRIBUTES) p.attrs[a] = 10;
     w.morale = 60;
-    const [starter, other] = ownStarters(w),
-      bench = activePlayers(w).find((p) => !w.lineup!.includes(p.id))!,
+    const [starter, other] = xi,
+      bench = activePlayers(w).find((p) => !xi.includes(p))!,
       strength = rating(w, clubOf(w)),
       attributes = { ...starter };
     starter.unhappy = { reason: 'improve-declined', year: w.year, day: 0 };

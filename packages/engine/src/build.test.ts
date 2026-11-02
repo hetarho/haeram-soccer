@@ -5,6 +5,7 @@ import {
   createWorld,
   operate,
   fatigueCost,
+  ownStarters,
   recordMatch,
   simulateMatch,
   TACTICS,
@@ -48,14 +49,16 @@ describe('tactical roster tradeoffs', () => {
     );
   });
 
-  it('keeps seeded football facts identical with observation and manual preparation', () => {
+  it('keeps seeded football facts identical with observation', () => {
     const { w, fixture } = scenario(baseline, 'press', DISABLED_RELEASE);
     for (const tactic of TACTICS) {
       w.tactic = tactic;
       const fast = simulateMatch(w, fixture, false, true);
       const observed = simulateMatch(w, fixture, true);
       expect(canonical(observed.record)).toBe(canonical(fast.record));
-      expect(observed.squads[0].slice(0, 11).map((player) => player.id)).toEqual(w.lineup);
+      expect(observed.squads[0].slice(0, 11).map((player) => player.id)).toEqual(
+        ownStarters(w, fixture).map((player) => player.id),
+      );
       expect(observed.record.tactics).toEqual([tactic, 'press']);
     }
   });

@@ -7,7 +7,7 @@ import {
   presentedMinute,
   watchNext,
 } from './watch';
-import { configureResponsibilities, proposeOnReport } from './events';
+import { configureResponsibilities, reportKit } from './events';
 import { expect, test, type Page } from '@playwright/test';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import {
@@ -299,15 +299,14 @@ for (const viewport of [
     await prepare.click();
     const preparation = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
     await expect(preparation).toBeVisible();
-    await proposeOnReport(preparation);
     // The settled match on screen offers no shirt choice; only the next fixture does (→WEB-88).
     const upcoming = nextOwnFixture(reference)!;
     expect(upcoming.id).not.toBe(first.record.id);
-    await expect(preparation.getByTestId('fixture-kit')).toHaveAttribute(
+    await expect((await reportKit(preparation)).getByTestId('fixture-kit')).toHaveAttribute(
       'data-fixture-id',
       upcoming.id,
     );
-    await preparation.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
+    await preparation.getByRole('button', { name: '확인하고 홈으로', exact: true }).click();
     await expect(preparation).toHaveCount(0);
     await expect(prepare).toBeFocused();
     await expect(result).toContainText(`${ownGoals}–${otherGoals}`);

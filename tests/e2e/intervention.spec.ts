@@ -1,16 +1,16 @@
 import { clubhouseTab, openLeague, resumeLeague } from './competition-navigation';
 import { closeMatchDetails, openMatchDetails, watchNext } from './watch';
-import { chooseOption, selectOptions } from './select';
-import { chooseLevel, delegateSales, proposeOnReport } from './events';
+import { chooseOption } from './select';
+import { chooseLevel, delegateSales } from './events';
 import { test, expect } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
 import { leaveOffice, openOfficeArea } from './office';
 import { savedWorld } from './club-identity-helpers';
 
-test('changes a real starting XI through the mobile preparation sheet, saves it and shows earned finances', async ({
+test("reads the manager's XI on the mobile report, plays it and shows earned finances", async ({
   page,
 }) => {
-  // Prepares and reloads twice, watches a match and visits the office; slow browsers need longer.
+  // Reads the report before and after a watched match and visits the office; slow browsers need longer.
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
@@ -20,49 +20,30 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   await delegateSales(page);
-  // Before the first match the preparation sheet opens from home's next-match card.
+  // Before the first match the report opens from home's next-match card.
   const hub = page.getByTestId('club-hub');
   const prepare = hub.getByRole('button', { name: '상세 리포트', exact: true });
   await prepare.click();
   const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
   await expect(dialog).toBeVisible();
-  await proposeOnReport(dialog);
-  await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();
-  await dialog.getByText('선수별 교체', { exact: true }).click();
-  const keeper = dialog.getByRole('combobox', { name: '선발 1 GK', exact: true });
-  const selected = await keeper.getAttribute('data-value');
-  const other = (await selectOptions(keeper)).find(
-    (option) => option.value && option.value !== selected,
-  )?.value;
-  expect(other).toBeTruthy();
-  await chooseOption(keeper, other!);
-  const keeperName = (await keeper.innerText()).split(' · ')[0];
-  const save = dialog.getByRole('button', { name: '이 선발로 다음 경기 준비' });
+  // The manager picks the XI (→CLUB-6): the report names him and draws his XI, nothing to edit.
+  await expect(dialog.getByRole('region', { name: '감독 보고', exact: true })).toContainText(
+    '선발은 능력과 피로를 보고 제가 고르겠습니다.',
+  );
+  const lineup = dialog.getByRole('region', { name: '감독의 선발', exact: true });
+  const keeper = lineup.getByRole('button', { name: /^선발 1 · GK · / });
+  const keeperName = (await keeper.getAttribute('aria-label'))!.split(' · ')[2]!;
+  expect(keeperName).toBeTruthy();
+  await expect(dialog.getByRole('combobox')).toHaveCount(0);
+  const close = dialog.getByRole('button', { name: '확인하고 홈으로', exact: true });
   await settle(page);
-  const rect = await save.boundingBox();
+  const rect = await close.boundingBox();
   expect(rect!.height).toBeGreaterThanOrEqual(44);
   expect(rect!.y + rect!.height).toBeLessThanOrEqual(844);
-  await save.click();
-  await expect(
-    dialog.getByText('선발 11명을 저장했습니다. 다음 경기부터 변경할 때까지 적용합니다.'),
-  ).toBeVisible();
-  await dialog.getByRole('button', { name: '준비 마치고 돌아가기' }).click();
-  // A decision saves in the background (→SAVE-8); reload once it is on disk.
-  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  await page.reload();
-  await prepare.click();
-  // The manager's report names who picks the XI.
-  await expect(dialog.getByRole('region', { name: '감독 보고', exact: true })).toContainText(
-    '정해 주신 11명',
-  );
-  await proposeOnReport(dialog);
-  await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();
-  await dialog.getByText('선수별 교체', { exact: true }).click();
-  await expect(keeper).toHaveAttribute('data-value', other!);
-  await dialog.getByRole('button', { name: '준비 마치고 돌아가기' }).click();
+  await close.click();
   await watchNext(page);
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-  // The keeper chosen above played: the details' report lists every own player who took part,
+  // The manager's keeper played: the details' report lists every own player who took part,
   // whether or not he finished the match.
   const details = await openMatchDetails(page);
   await expect(details.getByRole('region', { name: '경기 분석 리포트' })).toContainText(keeperName);
@@ -72,18 +53,13 @@ test('changes a real starting XI through the mobile preparation sheet, saves it 
     .getByRole('button', { name: '상세 리포트', exact: true })
     .click();
   await expect(dialog).toBeVisible();
-  await proposeOnReport(dialog);
-  await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();
-  await dialog.getByRole('button', { name: '감독의 자동 선발로 전환', exact: true }).click();
-  await expect(dialog.getByRole('status')).toContainText(
-    '매 경기 능력과 피로에 따라 선발을 자동 구성합니다.',
-  );
-  await dialog.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
+  await expect(lineup.getByTestId('formation-slot-0')).toBeVisible();
+  await dialog.getByRole('button', { name: '확인하고 홈으로', exact: true }).click();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   await clubhouseTab(page).click();
-  // The automatic XI survived the reload: no owner-chosen lineup is saved.
-  expect((await savedWorld(page)).lineup).toBeUndefined();
+  // No owner-chosen lineup is ever saved.
+  expect('lineup' in (await savedWorld(page))).toBe(false);
   await openOfficeArea(page, '투자');
   await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
   await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toBeVisible();
@@ -155,7 +131,7 @@ for (const viewport of [
   });
 }
 
-test('prepares a subsequent match from the theatre while keeping the recorded score and playback context', async ({
+test('opens the next report from the theatre while keeping the recorded score and playback context', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -175,14 +151,8 @@ test('prepares a subsequent match from the theatre while keeping the recorded sc
     .click();
   const preparation = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
   await expect(preparation).toBeVisible();
-  await proposeOnReport(preparation);
-  await preparation.getByRole('tab', { name: '선발 선택' }).click();
-  await preparation.getByRole('button', { name: '피로 회복 우선으로 선택' }).click();
-  await preparation.getByRole('button', { name: '이 선발로 다음 경기 준비' }).click();
-  await expect(preparation.getByRole('status')).toContainText(
-    '선발 11명을 저장했습니다. 다음 경기부터 변경할 때까지 적용합니다.',
-  );
-  await preparation.getByRole('button', { name: '준비 마치고 돌아가기' }).click();
+  await expect(preparation.getByRole('region', { name: '감독의 선발', exact: true })).toBeVisible();
+  await preparation.getByRole('button', { name: '확인하고 홈으로', exact: true }).click();
   await expect(page).toHaveURL(contextUrl);
   await expect(page.getByTestId('match-score').locator('strong')).toHaveText(score);
   await expect(page.getByTestId('game-date')).toHaveText(date);

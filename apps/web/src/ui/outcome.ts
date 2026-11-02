@@ -34,8 +34,6 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
   'next-match': '다음 경기까지 진행했어요',
   'next-event': '다음 이벤트에 도착했어요',
   season: '시즌 끝까지 진행했어요',
-  tactics: '감독에게 전술을 요청했어요',
-  lineup: '다음 경기 선발을 정했어요',
   hire: '새 감독을 선임했어요',
   'renew-manager': '감독과 재계약했어요',
   recruit: '선수를 영입했어요',
@@ -45,7 +43,6 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
   facility: '시설 공사를 시작했어요',
   ticket: '티켓 가격을 바꿨어요',
   support: '구단주 추가 출자를 받았어요',
-  'accept-condition': '훈련을 지원하고 전술을 바꿨어요',
   policy: '방향의 투자 줄을 바꿨어요',
   'hire-staff': '새 코치를 선임했어요',
   'release-staff': '코치와 계약을 정리했어요',
@@ -73,7 +70,6 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
   'redraw-designs': '디자이너가 시안을 다시 그렸어요',
 };
 const notes: Partial<Record<Command['type'], string>> = {
-  lineup: '다음 경기부터 바꿀 때까지 이 선발을 씁니다.',
   campaign: '4라운드 뒤 실제 수입과 신규 팬이 정산돼요.',
   facility: '완공되는 날부터 효과가 생기고 연간 유지비가 늘어요.',
   ticket: '다음 홈 경기 관중과 입장 수입부터 반영돼요.',
@@ -237,8 +233,6 @@ export function describeOutcome(
   const records = newEvents(before, after).filter((event) => !ROUTINE_EVENTS.has(event.kind));
   const shown = records.slice(-limit).reverse();
   let note = notes[command.type];
-  if (command.type === 'lineup' && !command.ids)
-    note = '매 경기 감독이 능력과 피로를 보고 선발을 고릅니다.';
   // The owner chooses how many seasons a renewal adds (→STAFF-14).
   if (command.type === 'renew-manager') {
     const seasons = after.manager.until - before.manager.until;
@@ -249,12 +243,6 @@ export function describeOutcome(
     note = '다음 라운드부터 반영돼요. 계약과 자동 결정은 선수단 › 스태프에서 관리해요.';
   if (command.type === 'direction')
     note = '스태프가 맡은 결정에서 이 방향으로 골라요. 해당 업무를 위임할 때 사용해요.';
-  if (command.type === 'tactics')
-    note = after.manager.pending
-      ? '조건부 수락이에요. 훈련 지원금을 내면 전술이 바뀝니다.'
-      : before.tactic === after.tactic
-        ? '적용 전술은 그대로예요. 감독의 답변을 확인하세요.'
-        : '다음 경기부터 새 전술을 씁니다.';
   return {
     title: titles[command.type],
     changes,

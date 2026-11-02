@@ -86,7 +86,6 @@ import { GlossaryHost } from '../ui/Glossary';
 import { useGlossary } from '../ui/metricGlossary';
 import { PlayGuide } from '../ui/PlayGuide';
 import { DepartmentPolicySheet } from '../ui/DepartmentPolicySheet';
-import { PlayerPreparationHost } from '../ui/PlayerPreparationHost';
 import { ownLeagueIds } from '../ui/league';
 import { useTheme } from '../presentation/react';
 import app from '../ui/App.module.css';
@@ -979,7 +978,6 @@ export default function StoryRenderer({
       <TeamSheetHost client={client} />
       <GlossaryHost />
       <DepartmentPolicySheet client={client} />
-      <PlayerPreparationHost client={client} />
     </>
   );
 }

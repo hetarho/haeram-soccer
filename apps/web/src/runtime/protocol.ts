@@ -91,15 +91,6 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('next-match') }),
   z.object({ type: z.literal('season'), count: z.literal(1) }),
   z.object({
-    type: z.literal('tactics'),
-    tactic: z.enum(['balanced', 'possession', 'counter', 'press']),
-    tone: z.enum(['respect', 'evidence', 'support', 'demand']),
-  }),
-  z.object({
-    type: z.literal('lineup'),
-    ids: z.array(z.string().min(1).max(100)).length(11).nullable(),
-  }),
-  z.object({
     type: z.literal('policy'),
     key: z.enum([
       'support',
@@ -211,7 +202,6 @@ const command = z.discriminatedUnion('type', [
   z.object({ type: z.literal('facility'), part: z.enum(['stadium', 'training', 'academy']) }),
   z.object({ type: z.literal('ticket'), price: z.number().min(0.01).max(0.5) }),
   z.object({ type: z.literal('support') }),
-  z.object({ type: z.literal('accept-condition') }),
   // Strict: the own club is implied, so a club target is refused rather than stripped (→KIT-9).
   z.strictObject({ type: z.literal('club-identity'), identity: clubIdentitySchema }),
   // The engine's role vocabulary, or null for automatic selection (→KIT-6).

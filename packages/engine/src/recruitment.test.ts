@@ -8,7 +8,6 @@ import {
   clubOf,
   createWorld,
   formationOf,
-  lineupPreset,
   slotOvr,
   lineupSummary,
   makePlayer,
@@ -48,7 +47,6 @@ describe('recruitment build and budget previews', () => {
       before = canonical(w),
       preview = recruitmentPreview(w, offer);
     expect(canonical(w)).toBe(before);
-    expect(preview.manual).toBe(false);
     expect(preview.willStart).toBe(true);
     expect(preview.strengthDelta).toBeGreaterThan(0);
     expect(preview.fitDelta).toBeGreaterThan(0);
@@ -70,32 +68,6 @@ describe('recruitment build and budget previews', () => {
     expect(operatingCost(w)).toBe(preview.annualAfter);
     expect(w.players.find((player) => player.id === offer.player.id)?.wage).toBe(preview.wage);
     expect(w.expense).toBe(preview.fee);
-  });
-
-  it('previews optional weakest-role replacement while actual recruitment leaves manual XI intact', () => {
-    const w = world(),
-      ids = lineupPreset(w, 'strongest');
-    operate(w, { type: 'lineup', ids });
-    const weak = w.players.find((player) => player.id === ids[6])!;
-    for (const a of ATTRIBUTES) weak.attrs[a] = 10;
-    weak.fatigue = 80;
-    const offer = transferOffers(w)[2],
-      before = canonical(w),
-      preview = recruitmentPreview(w, offer);
-    expect(preview.manual).toBe(true);
-    expect(preview.willStart).toBe(false);
-    expect(preview.reason).toContain('수동');
-    expect(canonical(w)).toBe(before);
-    operate(w, { type: 'recruit', candidate: 2 });
-    expect(w.lineup).toEqual(ids);
-    expect(startingSquad(w, clubOf(w)).map((player) => player.id)).toEqual(ids);
-    expect(operatingCost(w)).toBe(preview.annualAfter);
-    const optional = [...ids];
-    optional[6] = offer.player.id;
-    operate(w, { type: 'lineup', ids: optional });
-    expect(lineupSummary(startingSquad(w, clubOf(w)), w.tactic).strength).toBe(
-      preview.afterStrength,
-    );
   });
 
   it('discloses wages for a free bench transfer even with zero cash', () => {

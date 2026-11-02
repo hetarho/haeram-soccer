@@ -37,10 +37,8 @@ export const selectReviewWorld = worldSelector([
 export const selectStrategyWorld = worldSelector([
   'cash',
   'players',
-  'lineup',
   'manager',
   'tactic',
-  'requested',
   'fixtures',
   'clubs',
   'playerClub',

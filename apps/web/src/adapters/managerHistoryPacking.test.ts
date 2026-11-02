@@ -13,6 +13,7 @@ import {
   captureSeasonClose,
   managerCandidates,
   operate,
+  yearlyStaff,
   type MatchModelRelease,
 } from '../../../../packages/engine/src/index';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
@@ -45,9 +46,9 @@ function career(release?: MatchModelRelease): World {
   w.cash = '999999999999';
   delete w.ownMatches[0]!.managerTenure;
   operate(w, { type: 'hire', id: managerCandidates(w).find((c) => c.source !== 'club')!.id });
-  w.manager = { ...w.manager, pride: 90, trust: 20, conflicts: 2 };
-  operate(w, { type: 'tactics', tactic: 'counter', tone: 'demand' });
-  // The owner replaces the interim the resignation left in charge.
+  // At trust 0 he resigns (→STAFF-47); the owner replaces the interim left in charge.
+  w.manager = { ...w.manager, trust: 0 };
+  yearlyStaff(w);
   operate(w, { type: 'hire', id: managerCandidates(w).find((c) => c.source !== 'club')!.id });
   captureCupTitle(w, 'cup');
   const club = w.clubs.find((c) => c.id === w.playerClub)!;

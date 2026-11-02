@@ -521,17 +521,21 @@ describe('requests by formation slot (→CLUB-33)', () => {
   it('slot request names the weakest slot', () => {
     const w = owned();
     for (const p of activePlayers(w)) rate(p, 99);
-    // The XI is kept in its slots, so the weakened starter stays where he plays.
-    w.lineup = ownStarters(w).map((p) => p.id);
     drawShortlist(w);
     expect(w.shortlist!.requests).toEqual([]);
     const listed = shortlistOffers(w).map(({ offer }) => offer.player);
     const slots = formationOf(w.tactic);
+    const xi = ownStarters(w);
+    // A slot no other starter plays at his best, so none moves into it once it weakens.
     const k = slots.findIndex(
-      (place, i) => i > 0 && listed.some((p) => (p.positions[place.position] ?? 0) >= 2),
+      (place, i) =>
+        i > 0 &&
+        xi.every((p, j) => j === i || (p.positions[place.position] ?? 0) < 3) &&
+        listed.some((p) => (p.positions[place.position] ?? 0) >= 2),
     );
     expect(k).toBeGreaterThan(0);
-    rate(ownStarters(w)[k]!, 10);
+    // The starter there and the bench weaken alike, so the manager's XI keeps a weak slot.
+    for (const p of activePlayers(w)) if (p === xi[k] || !xi.includes(p)) rate(p, 10);
     drawShortlist(w);
     const position = slots[k]!.position;
     expect(w.shortlist!.requests).toEqual([

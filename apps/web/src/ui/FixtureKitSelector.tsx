@@ -21,10 +21,9 @@ import { worldSelector } from './liveState';
 import s from './FixtureKitSelector.module.css';
 
 /**
- * KIT-6/7/8, WEB-88: our shirt for the named next fixture, chosen in preparation
- * (spec/ssot/KIT.md). Choosing a role only redraws the preview; the one
- * `match-kit` command names the fixture the preview showed, and the selector never touches tactic
- * or lineup drafts.
+ * KIT-6/7/8, WEB-88: our shirt for the named next fixture, chosen in the kit section of the
+ * next-match report (spec/ssot/KIT.md). Choosing a role only redraws the preview; the one
+ * `match-kit` command names the fixture the preview showed.
  */
 
 /** Our side in `fixture`: 0 at home, 1 away. */
@@ -258,7 +257,7 @@ const selectKitWorld = worldSelector([
 ]);
 
 /**
- * WEB-88: mounted by preparation once queued work has settled. It reads the world itself, so a
+ * WEB-88: mounted by the report's kit section once queued work has settled. It reads the world itself, so a
  * stored choice, a newly drawn tie or a played match shows at once; when the next fixture changes
  * under the preview, the draft starts again from that fixture instead of moving to it.
  */

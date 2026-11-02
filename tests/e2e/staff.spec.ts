@@ -2,6 +2,7 @@ import { settle } from './layout';
 import { managerCard, openPersonnel } from './personnel-navigation';
 import { marketInfo } from './market';
 import {
+  advanceRound,
   createWorld,
   managerOffers,
   operate,
@@ -293,38 +294,42 @@ test('an unrenewed firefighter leaves at the close and the alert opens the marke
 test('with the manager post delegated a resignation is filled at once and the clock runs on', async ({
   page,
 }) => {
-  // This seed's founding manager is proud enough to resign over two strong demands (→STAFF-5).
-  await found(page, 'proud-0');
+  // A manager at trust 0 resigns at a settled round (→STAFF-47); the rounds are played in Node
+  // until he does, so the imported career holds the staff's appointment. Level 4 hands the
+  // manager post to the staff and stops only for money, so nothing else explains a stop.
+  const w = createWorld({
+    country: 'ENG',
+    name: 'Trust Floor',
+    color: '#224466',
+    seed: 'proud-0',
+    level: 'easy',
+  });
+  w.cash = '999999999999';
+  w.intervention = 4;
+  w.settings = legacySettings(4);
+  const founding = w.manager;
+  w.manager = { ...w.manager, trust: 0, trustWarned: true };
+  for (let round = 0; round < 20 && w.manager.id === founding.id; round++)
+    advanceRound(w, undefined, false);
+  expect(w.manager.id).not.toBe(founding.id);
+  expect(w.manager.interim).toBe(false);
+  expect(w.critical).toBeUndefined();
+  await importResponsibilityCareer(page, w);
   const date = page.getByTestId('game-date');
-  await expect(date).toHaveText('1950.08.01');
-  // Level 4 hands the manager post to the staff and stops only for money, so nothing else
-  // explains a stop.
-  await chooseLevel(page, 4);
-  await openPeople(page);
+  const today = await date.innerText();
   await openPersonnel(page, 'manager');
   await expect(page.getByTestId('decision-owner-manager')).toContainText('자동');
-  const founding = page.getByRole('heading', { name: 'Herbert Reid', exact: true });
-  await expect(founding).toBeVisible();
-  // The tactics request stands beside the 1군 roster (→WEB-43).
-  await openPersonnel(page, 'players');
-  for (const tactic of ['counter', 'press']) {
-    await chooseOption(page.getByRole('combobox', { name: '요청 전술', exact: true }), tactic);
-    await chooseOption(page.getByRole('combobox', { name: '요청 말투', exact: true }), 'demand');
-    await page.getByRole('button', { name: '감독에게 제안하기', exact: true }).click();
-    await closeOutcome(page, '감독에게 전술을 요청했어요');
-  }
-  await expect(page.locator('blockquote')).toContainText('감독의 사직서');
-  // The staff appointed a free agent at once: no departure alert, no interim in charge.
-  await openPersonnel(page, 'manager');
+  // The staff appointed a successor at once: no departure alert, no interim in charge.
   await expect(managerCard(page)).toBeVisible();
-  await expect(founding).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: founding.name, exact: true })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: w.manager.name, exact: true })).toBeVisible();
   await expect(page.getByText('FIRST TEAM MANAGER', { exact: true })).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: '감독이 떠났어요' })).toHaveCount(0);
   await page
     .getByRole('region', { name: '시즌 진행', exact: true })
     .getByRole('button', { name: '자동 진행 시작' })
     .click();
-  await expect(date).not.toHaveText('1950.08.01');
+  await expect(date).not.toHaveText(today);
   await expect(page.getByRole('status').filter({ hasText: '감독이 떠났어요' })).toHaveCount(0);
 });
 

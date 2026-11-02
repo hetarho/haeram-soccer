@@ -8,6 +8,7 @@ import {
   bidBoard,
   clubOf,
   currentDay,
+  formationOf,
   operate,
   operatingCosts,
   overall,
@@ -160,19 +161,29 @@ describe('cover by slot and ambition (→CLUB-24, CLUB-27)', () => {
   it('slot cover raises the price', () => {
     const w = world('slot-cover');
     w.cash = '999999999999';
-    const xi = ownStarters(w);
-    w.lineup = xi.map((p) => p.id);
-    const starter = xi[2]!;
+    const xi = ownStarters(w),
+      slots = formationOf(w.tactic);
+    // A slot no other slot of the formation shares, played by a starter of its position.
+    const index = slots.findIndex(
+      (place, i) =>
+        slots.filter((other) => other.position === place.position).length === 1 &&
+        xi[i]!.position === place.position,
+    );
+    const starter = xi[index]!,
+      place = slots[index]!;
     const bench = activePlayers(w).filter((p) => !xi.includes(p));
     for (const p of bench)
       for (const a of Object.keys(p.attrs) as (keyof Player['attrs'])[]) p.attrs[a] = 10;
     expect(slotCovered(w, starter)).toBe(false);
-    // A bench player who plays his slot within 3 of him there covers it.
+    // A bench player who plays his slot within 3 of him there covers it; a little more tired, he
+    // stays on the bench of the manager's XI (→CLUB-6).
     const cover = bench[0]!;
     cover.attrs = { ...starter.attrs };
-    cover.positions = { ...starter.positions };
+    cover.position = place.position;
+    cover.positions = { [place.position]: 3 };
     cover.adaptation = starter.adaptation;
-    cover.fatigue = starter.fatigue;
+    cover.fatigue = starter.fatigue + 5;
+    expect(ownStarters(w)).toEqual(xi);
     expect(slotCovered(w, starter)).toBe(true);
     // A player outside the XI is always covered.
     expect(slotCovered(w, cover)).toBe(true);

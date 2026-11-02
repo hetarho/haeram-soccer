@@ -13,11 +13,13 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-02T16:10Z | T648 |
+| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-02T16:10Z | T649 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261103 decided SAVE-25 STAFF-22 T648: an older save whose applied tactic came from an accepted tactic request → it keeps that tactic until the next manager change, with no load shim (alt: reset a non-interim manager's club to his philosophy on load, a shim that also rewrites worlds tests and tools set by hand). ot03
+- 261103 decided HIST-10 WEB-9 T648: the 우리만의 선발 milestone counted a saved owner XI → removed, 7 milestones remain and an older save no longer shows it (alt: keep it reading older `lineup` events, unreachable for every new career). ot03
 - 261103 decided OWNER-3: how a tier's fortune is sized → 10× (석유 재벌) or 1.3× the median pound price of clubs in its reach in the takeover season (alt: fixed amounts per tier on the price index). ot03
 - 261103 decided OWNER-5: 정치력's facility discount has nothing to act on once facility works were withdrawn → operating expenses ×0.9 (alt: keep it latent until works return). ot03
 - 261103 decided OWNER-5: trait effect sizes → +1 OVR strength, −10% demands and fees, +1 candidate and +5 ability, +3 potential and half range, sponsors ×1.15, tuned by T668 (alt: wait for T668 before setting any). ot03
@@ -516,7 +518,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T648 | remove tactic requests, owner lineups and the 구단주 제안 card; kit choice section | STAFF MATCH CLUB WEB KIT HIST SAVE ARCH | T647 | todo |
 | T649 | remove the 방향 board, strategy changes, saved strategies, dials and ticket price | ECON WEB SAVE ARCH STAFF CLUB LEAGUE | T648 | todo |
 | T650 | remove owner capital and owner-started facility works | ECON CLUB WEB HIST | T649 | todo |
 | T651 | remove coaching encouragement and owner-proposed playing coaches | STAFF PLAYER HIST WEB | T650 | todo |
@@ -560,11 +561,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T648 (then T649→T652 in order: owner intervention removal and unused-code sweep; illustrations stay)
+- implement-task T649 (then T650→T652 in order; then the owner takeover plan, see the next line)
 - after T652: implement-task T653, then in parallel the lanes takeover (T657→T658), owner-economy (T659→T660), traits (T661), start-ui (T662), owner-ui (T663) beside the main-session chain T654→T655→T656; then T664→T665→T666, T667, T668
 - read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
 
 ## log
+- 261103 T648 done: the manager alone picks the tactic and the XI. The tactics/lineup/accept-condition commands, request scoring and history, setLineup/lineupPreset/selectedLineup, Manager.lastRequest/requestHistory/pending/conflicts, World.requested/lineup (dropped on load), the STAFF-14 request modifiers and the 우리만의 선발 milestone are gone; TacticsTalk, TacticalLab, tacticComparison and PlayerPreparationHost are deleted and the next-match report reads the manager's XI and matchday squad with the kit choice in its own 유니폼 section. Equivalence digests unchanged; unit 223/1936 green; golden regenerated (contract 47 green); e2e edited for the batch.
 - 261103 create-task OWNER@1 WEB@204 ECON@42 WORLD@8 LEAGUE@12 MATCH@47 KIT@8 SAVE@62 HIST@21 CLUB@50 ARCH@27 PLAYER@13 → T653–T668 (foundation T653; lanes takeover, owner-economy, traits, start-ui, owner-ui; main-session T654–T656; integration T664–T666; explore T654, T667, T668); ot03
 - 261103 ideation owner-wealth-and-takeover converted
 - 261103 update-ssot WEB r204 ECON r42 WORLD r8 LEAGUE r12 MATCH r47 KIT r8 SAVE r62 HIST r21 CLUB r50 ARCH r27 PLAYER r13: takeover start, amateur level removed, books and club value, owner bankruptcy and 퇴진, 승리의 부적 exception, rules 5.0.0; ot03

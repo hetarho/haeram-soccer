@@ -12,7 +12,6 @@ import { canonical } from '../../../../packages/contracts/src/index';
 import { decode, encode } from '../adapters/persistence';
 import { currentDay, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import {
-  lineupPreset,
   operate,
   simulateMatch,
   recordMatch,
@@ -607,7 +606,7 @@ describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
 });
 
 describe('durable milestone projection', () => {
-  it('keeps earlier preparation and a cup win when recent UI records no longer contain either', async () => {
+  it('keeps a cup win when recent UI records no longer contain it', async () => {
     const host = new Host();
     await host.handle(req('milestone-found', -1, { type: 'found', input }));
     // A cup win, then thirty cup matches without one: built once and cached.
@@ -617,8 +616,6 @@ describe('durable milestone projection', () => {
       losses,
     } = cachedWorld('cup-win-then-losses', () => {
       const world = createWorld(input);
-      operate(world, { type: 'lineup', ids: lineupPreset(world, 'strongest') });
-      operate(world, { type: 'lineup', ids: null });
       const fixture = nextOwnFixture(world)!;
       let won = false,
         losses = 0;
@@ -655,7 +652,6 @@ describe('durable milestone projection', () => {
     const reply = await host.handle(req('milestone-export', world.revision, { type: 'export' }));
     expect(reply.ok).toBe(true);
     expect(reply.view!.world.ownMatches).toHaveLength(30);
-    expect(reply.view!.world.events.some((event) => event.kind === 'lineup')).toBe(false);
     expect(
       reply.view!.world.ownMatches.some(
         (match) =>
@@ -664,8 +660,7 @@ describe('durable milestone projection', () => {
             : match.score.away - match.score.home) > 0,
       ),
     ).toBe(false);
-    for (const id of ['preparation', 'first-win'])
-      expect(reply.view!.milestones.goals.find((goal) => goal.id === id)?.done).toBe(true);
+    expect(reply.view!.milestones.goals.find((goal) => goal.id === 'first-win')?.done).toBe(true);
     expect(world.ownMatches).toHaveLength(31);
   });
 });

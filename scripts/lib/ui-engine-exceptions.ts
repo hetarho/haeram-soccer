@@ -129,7 +129,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
   'apps/web/src/ui/StrategyPanel.tsx': [
     'packages/engine/src/discipline.ts',
     'packages/engine/src/grid/setup.ts',
-    'packages/engine/src/ops-staff.ts',
     'packages/engine/src/strategy.ts',
     'packages/engine/src/world.ts',
   ],
@@ -153,7 +152,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
   'apps/web/src/ui/outcome.ts': ['packages/engine/src/training.ts'],
   'apps/web/src/ui/scouting.ts': ['packages/engine/src/career-assessment.ts'],
   'apps/web/src/ui/strategies.ts': ['packages/engine/src/presets.ts'],
-  'apps/web/src/ui/tacticComparison.ts': ['packages/engine/src/strategy.ts'],
   'apps/web/src/ui/teamState.ts': [
     'packages/engine/src/academy.ts',
     'packages/engine/src/coach-training.ts',

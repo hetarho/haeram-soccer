@@ -35,16 +35,13 @@ export function matchReport(page: Page) {
     .filter({ has: page.getByRole('heading', { name: 'NEXT MATCH', exact: true }) });
 }
 /**
- * Opens the owner's proposal on the next-match report: the report reads first, and its tactic and
- * lineup tabs and shirt choice show after 의견 전달. A no-op once the proposal is open.
+ * The next-match report's kit section, once the lazily loaded report shows it: the report's only
+ * owner choice (→WEB-88); the manager's XI, tactic and matchday squad above it only read.
  */
-export async function proposeOnReport(dialog: Locator) {
-  const propose = dialog.getByRole('button', { name: '의견 전달', exact: true });
-  const proposal = dialog.getByRole('region', { name: '구단주 제안', exact: true });
-  // The report is lazily loaded: wait for either state before deciding.
-  await expect(propose.or(proposal).first()).toBeVisible();
-  if (await propose.isVisible()) await propose.click();
-  await expect(proposal).toBeVisible();
+export async function reportKit(dialog: Locator) {
+  const section = dialog.getByRole('region', { name: '유니폼', exact: true });
+  await expect(section).toBeVisible();
+  return section;
 }
 export async function dismissMatchReport(page: Page) {
   const eve = matchReport(page);

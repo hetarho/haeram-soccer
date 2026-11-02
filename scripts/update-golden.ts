@@ -19,17 +19,7 @@ const definitions: FixtureDefinition[] = [
       { type: 'sign-sponsor', slot: 'local', offer: 0 },
       { type: 'policy', key: 'localInvest', level: 3 },
       { type: 'recruit', candidate: 0, loan: true },
-      { type: 'tactics', tactic: 'counter', tone: 'evidence' },
       { type: 'advance', rounds: 5 },
-    ],
-  },
-  {
-    name: 'proud-manager-departure',
-    input,
-    managerConflict: true,
-    commands: [
-      { type: 'tactics', tactic: 'press', tone: 'respect' },
-      { type: 'tactics', tactic: 'press', tone: 'demand' },
     ],
   },
   {

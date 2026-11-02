@@ -16,9 +16,10 @@ import {
  * Browser-journey careers (T308; →WEB-92/74, HIST-18/19, SAVE-24): real careers settled by the
  * engine's own commands, imported into the build. Their marked synthetic shortcuts are named where
  * they are made: a cash reserve so hiring never waits for money, an own squad at 99 in every
- * attribute so the founding manager wins the domestic cup, and a manager pushed to pride 90 /
- * trust 20 / two conflicts so one strong demand makes him resign. What the records room should
- * show is read in Node through the worker host's own read and T305's view labels, never restated.
+ * attribute so the founding manager wins the domestic cup, and a manager pushed to trust 0 so he
+ * resigns at the trust floor (→STAFF-47; snapshots recorded before T648 had one strong tactic
+ * demand make him resign). What the records room should show is read in Node through the worker
+ * host's own read and T305's view labels, never restated.
  */
 
 /** Every page of the worker's manager-history read of `w`, through the host the build runs. */

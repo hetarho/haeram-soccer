@@ -284,7 +284,6 @@ function topCopy() {
   const ability = clubManager(w, club).ability;
   w.players = players;
   w.playerClub = club.id;
-  w.lineup = undefined;
   w.tactic = clubStyle(club);
   w.manager = { ...w.manager, ability, style: undefined };
   w.morale = 60;

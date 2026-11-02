@@ -110,7 +110,6 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/match-model.test.ts',
   'packages/engine/src/material.test.ts',
   'packages/engine/src/morale.test.ts',
-  'packages/engine/src/negotiation.test.ts',
   'packages/engine/src/news.test.ts',
   'packages/engine/src/next-event.test.ts',
   'packages/engine/src/npc-continuity.test.ts',

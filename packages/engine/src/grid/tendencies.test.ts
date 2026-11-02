@@ -52,7 +52,6 @@ const manager: Manager = {
   flexibility: 70,
   pride: 50,
   trust: 50,
-  conflicts: 0,
   wage: '1000',
   since: 1950,
   until: 1953,
@@ -130,14 +129,7 @@ describe('playerTendencies', () => {
   });
 
   it('the owner has no input to freedom', () => {
-    const asked: Manager = {
-      ...manager,
-      trust: 5,
-      conflicts: 4,
-      pending: 'press',
-      lastRequest: 'press:demand',
-      requestHistory: { at: '1951-3', keys: ['press:demand'], trustAwarded: false },
-    };
+    const asked: Manager = { ...manager, trust: 5 };
     for (const role of ['trequartista', 'invertedFullBack', 'anchor'] as const)
       expect(playerTendencies(ten, asked, role)).toEqual(playerTendencies(ten, manager, role));
     // Nothing but the player, his manager and his role reaches it: no world, no owner setting.

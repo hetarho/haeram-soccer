@@ -456,10 +456,10 @@ describe('delegated manager appointment (STAFF-7, STAFF-18)', () => {
     const by = (style: ManagerStyle) => market.free.find((m) => m.style === style)!;
     return { w, by };
   }
-  /** Makes the proud manager resign over one more strong demand (→STAFF-5). */
-  function resignOverDemand(w: World) {
-    w.manager = { ...w.manager, pride: 90, trust: 20, conflicts: 2 };
-    operate(w, { type: 'tactics', tactic: 'counter', tone: 'demand' });
+  /** A manager still at trust 0 resigns at the season boundary (→STAFF-47), here on this day. */
+  function resignAtTrustFloor(w: World) {
+    w.manager = { ...w.manager, trust: 0 };
+    yearlyStaff(w);
   }
 
   it("appoints a successor at once for the criteria's term when a manager resigns", () => {
@@ -469,7 +469,7 @@ describe('delegated manager appointment (STAFF-7, STAFF-18)', () => {
     const best = by('positional'),
       fee = managerCandidates(w).find((c) => c.id === best.id)!.fee;
     const cash = BigInt(w.cash);
-    resignOverDemand(w);
+    resignAtTrustFloor(w);
     expect(w.critical).toBeUndefined();
     expect(w.manager).toMatchObject({
       id: best.id,
@@ -496,7 +496,7 @@ describe('delegated manager appointment (STAFF-7, STAFF-18)', () => {
     const owner = seeded('owner-resign').w;
     owner.intervention = 2;
     owner.settings = legacySettings(2);
-    resignOverDemand(owner);
+    resignAtTrustFloor(owner);
     expect(owner.manager.interim).toBe(true);
     expect(owner.critical).toBe(MANAGER_GONE);
   });

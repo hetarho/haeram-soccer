@@ -1,7 +1,7 @@
 import { openPersonnel } from './personnel-navigation';
 import { clubhouseDate, openClubRecords, openLeague } from './competition-navigation';
 import { closeMatchDetails, openMatchDetails, watchNext } from './watch';
-import { delegateSales, proposeOnReport } from './events';
+import { delegateSales } from './events';
 import { finishSeason } from './season-progression';
 import { openCurrentClubSeason, openSeasonReview, showRecordTabs } from './record-navigation';
 import { chooseOption, selectOptions } from './select';
@@ -388,7 +388,7 @@ test('reveals the recorded match report only after choosing the final result', a
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 
-test('compares tactical rules as previews while the applied tactic and date stay unchanged', async ({
+test("reads the manager's XI and matchday squad while the applied tactic and date stay unchanged", async ({
   page,
 }) => {
   await page.goto('/');
@@ -399,21 +399,19 @@ test('compares tactical rules as previews while the applied tactic and date stay
   await page.getByRole('button', { name: '상세 리포트', exact: true }).click();
   const sheet = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
   await expect(sheet).toBeVisible();
-  await proposeOnReport(sheet);
-  await sheet.getByText('전술 실험실 · 네 가지 비교', { exact: true }).click();
-  const lab = sheet.getByRole('region', { name: '전술 실험실', exact: true });
-  await expect(lab.getByRole('article')).toHaveCount(4);
-  await expect(lab).toContainText('적용 대비 0.0 pp');
-  // Each tactic draws its own formation with the previewed lineup in it (→WEB-21).
-  await expect(lab.getByRole('group', { name: /배치$/ })).toHaveCount(4);
-  await expect(lab.getByRole('group', { name: /4-2-3-1 배치$/ })).toBeVisible();
-  const press = lab.getByRole('button', { name: /압박 실험 미리보기$/ });
-  await press.click();
-  await expect(press).toHaveAttribute('aria-pressed', 'true');
-  expect((await press.boundingBox())!.height).toBeGreaterThanOrEqual(44);
+  // The manager's XI in his formation, slot by slot, with its strength and fatigue (→CLUB-10).
+  const lineup = sheet.getByRole('region', { name: '감독의 선발', exact: true });
+  await expect(lineup.getByRole('group', { name: / 선발 배치$/ })).toBeVisible();
+  await expect(lineup.getByLabel('선발 전력과 피로')).toContainText('선발 전력');
+  await expect(lineup.getByLabel('선발 전력과 피로')).toContainText('평균 피로');
+  const second = lineup.getByRole('button', { name: /^선발 2 · / });
+  await second.click();
+  await expect(second).toHaveAttribute('aria-pressed', 'true');
+  await expect(lineup.getByTestId('formation-slot-1')).toContainText('실효');
+  // Nothing to compare or apply: the manager picks the tactic (→STAFF-22, WEB-21 withdrawn).
+  await expect(sheet.getByRole('region', { name: '전술 실험실', exact: true })).toHaveCount(0);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   // Under the formation: the era's rule, the manager's substitutes, takers and who is out.
-  await sheet.getByRole('tab', { name: '선발 선택', exact: true }).click();
   const squad = sheet.getByRole('region', { name: '감독이 정한 경기 명단', exact: true });
   await expect(squad).toContainText('교체 없음 (1965년 이전)');
   await expect(squad.getByRole('definition').first()).toHaveText('없음');
@@ -421,7 +419,7 @@ test('compares tactical rules as previews while the applied tactic and date stay
     await expect(squad.getByRole('term').filter({ hasText: taker })).toBeVisible();
   await expect(squad.getByRole('definition').nth(1)).not.toHaveText('—');
   await expect(squad.getByRole('definition').last()).toHaveText('없음');
-  await sheet.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
+  await sheet.getByRole('button', { name: '확인하고 홈으로', exact: true }).click();
   await expect(page.getByTestId('game-date')).toHaveText('1950.08.01');
 });
 

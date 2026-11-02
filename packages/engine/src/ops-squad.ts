@@ -17,7 +17,6 @@ import {
   signingClauses,
 } from './contracts';
 import { moneyLabel } from './finance';
-import { setLineup } from './strategy';
 import { staffEffects } from './staff';
 import { promoteYouth, releaseYouth } from './academy';
 import { placeBid, respondBid, setTransferStance } from './transfers';
@@ -28,7 +27,7 @@ import { synergyEffects } from './synergy';
 import { debit } from './transactions';
 import { noteSigning } from './signings';
 
-/** Bids, offers, stances, lineup, training, the academy and contract talks. */
+/** Bids, offers, stances, the academy and contract talks. */
 export type SquadCommand = Extract<
   Command,
   {
@@ -37,7 +36,6 @@ export type SquadCommand = Extract<
       | 'respond-bid'
       | 'recruit'
       | 'transfer-stance'
-      | 'lineup'
       | 'promote-youth'
       | 'release-youth'
       | 'contract-offer'
@@ -163,9 +161,6 @@ export function squadCommand(w: World, cmd: SquadCommand) {
     }
     case 'respond-bid':
       respondBid(w, cmd.id, cmd.accept);
-      break;
-    case 'lineup':
-      setLineup(w, cmd.ids);
       break;
     case 'recruit': {
       if ((cmd.candidate === undefined) === (cmd.target === undefined))

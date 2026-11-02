@@ -8,7 +8,6 @@ import {
   advanceRound,
   advanceToNextMatch,
   clubMilestones,
-  lineupPreset,
   operate,
   progressFacilityWorks,
   seasonDayOf,
@@ -22,7 +21,7 @@ describe('milestones from retained club facts', () => {
     const w = world(),
       before = canonical(w),
       milestones = clubMilestones(w);
-    expect(milestones.total).toBe(8);
+    expect(milestones.total).toBe(7);
     expect(milestones.completed).toBe(0);
     expect(milestones.next?.id).toBe('debut');
     expect(milestones.next?.target).toBe(1);
@@ -33,13 +32,8 @@ describe('milestones from retained club facts', () => {
     expect(canonical(w)).toBe(before);
   });
 
-  it('recognizes actual saved preparation, settled matches, wins and paid investments', () => {
+  it('recognizes actual settled matches, wins and paid investments', () => {
     let w = world(true);
-    operate(w, { type: 'lineup', ids: lineupPreset(w, 'strongest') });
-    expect(byId(w, 'preparation').done).toBe(true);
-    operate(w, { type: 'lineup', ids: null });
-    expect(w.lineup).toBeUndefined();
-    expect(byId(w, 'preparation').done).toBe(true);
     // The milestone is the opened stand, not the order: it counts once the work is done.
     operate(w, { type: 'facility', part: 'stadium' });
     expect(byId(w, 'facilities').done).toBe(false);
@@ -50,8 +44,6 @@ describe('milestones from retained club facts', () => {
     // The days up to the first match are setup, built once from this very world.
     const played = cachedWorld('first-match', () => {
       const w = world(true);
-      operate(w, { type: 'lineup', ids: lineupPreset(w, 'strongest') });
-      operate(w, { type: 'lineup', ids: null });
       operate(w, { type: 'facility', part: 'stadium' });
       w.facilityWorks!.stadium!.day -= 180;
       progressFacilityWorks(w);
@@ -117,12 +109,11 @@ describe('milestones from retained club facts', () => {
     expect(byId(retired, 'player-growth').done).toBe(true);
   });
 
-  it('does not invent growth or preparation for older saves with no such retained facts', async () => {
+  it('does not invent growth for older saves with no such retained facts', async () => {
     const w = world();
     expect(w.players.every((player) => player.developed === undefined)).toBe(true);
     const restored = (await decode(await encode(w, 1, 0))).world;
     expect(byId(restored, 'player-growth').done).toBe(false);
-    expect(byId(restored, 'preparation').done).toBe(false);
     expect(clubMilestones(restored)).toEqual(clubMilestones(w));
     const before = canonical(restored),
       cash = restored.cash;

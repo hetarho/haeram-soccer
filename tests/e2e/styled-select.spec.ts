@@ -1,5 +1,5 @@
 import { openClubRecords, openLeague } from './competition-navigation';
-import { delegateSales, proposeOnReport } from './events';
+import { delegateSales } from './events';
 import { expect, test, type Locator } from '@playwright/test';
 import { chooseOption, optionList } from './select';
 import { horizontalOverflow, settle } from './layout';
@@ -123,7 +123,7 @@ for (const viewport of [
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   });
 
-  test(`keeps long dropdowns within the viewport and Escape inside preparation at ${viewport.width}`, async ({
+  test(`keeps long dropdowns within the viewport and Escape inside a dialog at ${viewport.width}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport);
@@ -131,21 +131,24 @@ for (const viewport of [
     await page.getByRole('button', { name: '클럽 창단' }).click();
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await delegateSales(page);
-    await page.getByTestId('club-hub').getByRole('button', { name: '상세 리포트' }).click();
-    const sheet = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
+    // Escape closes only the open list, never the dialog around it: the HUD's theme picker.
+    await page.getByRole('button', { name: '설정', exact: true }).click();
+    const menu = page.getByRole('dialog', { name: '설정', exact: true });
+    await menu.getByRole('button', { name: /^테마 변경/ }).click();
+    const sheet = page
+      .getByRole('dialog')
+      .filter({ has: page.getByTestId('presentation-settings') });
     await expect(sheet).toBeVisible();
-    await proposeOnReport(sheet);
-    const tone = sheet.getByRole('combobox', { name: '전술 요청 방식', exact: true });
-    const list = await optionList(tone);
-    await tone.press('End');
-    await tone.press('Escape');
+    const theme = sheet.getByRole('combobox');
+    const value = (await theme.getAttribute('data-value'))!;
+    const list = await optionList(theme);
+    await theme.press('End');
+    await theme.press('Escape');
     await expect(list).toHaveCount(0);
     await expect(sheet).toBeVisible();
-    await expect(tone).toBeFocused();
-    await expect(tone).toHaveAttribute('data-value', 'evidence');
-    await chooseOption(tone, 'demand');
-    await expect(sheet.getByLabel('감독 예상 반응')).toContainText('신뢰 18 감소');
-    await sheet.getByRole('button', { name: '준비 마치고 돌아가기' }).click();
+    await expect(theme).toBeFocused();
+    await expect(theme).toHaveAttribute('data-value', value);
+    await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
     await expect(sheet).toHaveCount(0);
     // A long list: every round of our league's season.
     await openLeague(page);

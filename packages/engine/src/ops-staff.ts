@@ -3,13 +3,12 @@ export { MANAGER_GONE } from './staff-info';
 import { cancelPromises } from './promises';
 import { careerDate, closeEmployment, syncMentorExposures } from './person-careers';
 import { onManagerChange } from './adaptation';
-import type { Command, ContractTerm, Manager, Tactic, World } from '../../contracts/src/types';
+import type { Command, ContractTerm, Manager, World } from '../../contracts/src/types';
 import type { ManagerDeparture } from '../../contracts/src/manager-history';
 import { captureManagerChange } from './manager-history-capture';
 import { addEvent } from './events';
 import { clubOf } from './player-state';
-import { makeManager, tacticLabel, TACTICS } from './world';
-import { quote } from './quotes';
+import { makeManager, tacticLabel } from './world';
 import { clamp, random, ratio } from './primitives';
 import {
   checkTerm,
@@ -25,7 +24,7 @@ import {
 } from './staff';
 import { coachSeason, MANAGER_CAREER } from './coaching';
 import { pushInbox, readRelated } from './inbox';
-import { FIREFIGHTER_ARRIVAL_MORALE, managerStyleEffects, managerTerm, STYLE_INFO } from './styles';
+import { FIREFIGHTER_ARRIVAL_MORALE, managerTerm, STYLE_INFO } from './styles';
 import {
   bestFreeAgent,
   managerCandidates,
@@ -44,15 +43,13 @@ import { INTERVENTION_LEVELS } from './intervention';
 import { isDelegated } from './responsibilities';
 import { legacySettings } from './responsibilities';
 
-/** Managers and their tactical requests, coaches, delegation and the staff's criteria. */
+/** Managers, coaches, delegation and the staff's criteria. */
 export type StaffCommand = Extract<
   Command,
   {
     type:
       | 'hire'
       | 'renew-manager'
-      | 'tactics'
-      | 'accept-condition'
       | 'hire-staff'
       | 'release-staff'
       | 'renew-staff'
@@ -151,17 +148,13 @@ function installManager(
   readRelated(w, w.manager.id);
   takeManager(w, candidate, w.manager);
   const before = w.manager;
-  w.manager = withTerm(
-    { ...manager, trust: 65, conflicts: 0, since: w.year, until: w.year + term },
-    chosen,
-  );
+  w.manager = withTerm({ ...manager, trust: 65, since: w.year, until: w.year + term }, chosen);
   // A new tenure; the one he replaces, an interim's included, ends today (→HIST-18).
   captureManagerChange(w, w.manager);
   // The squad starts to learn its new manager (→PLAYER-13).
   onManagerChange(w, before, w.manager);
   syncMentorExposures(w);
   w.tactic = manager.philosophy;
-  delete w.requested;
   delete w.critical;
   // A firefighter's arrival lifts the dressing room at once.
   if (manager.style === 'firefighter')
@@ -283,74 +276,6 @@ function resign(w: World, reason: string, departure: ManagerDeparture) {
   appointDelegatedManager(w);
 }
 
-const requestTones = { respect: 12, evidence: 16, support: 8, demand: -25 } as const;
-
-function validateTacticRequest(tactic: Tactic, tone: string) {
-  if (!TACTICS.includes(tactic) || !Object.hasOwn(requestTones, tone))
-    throw new Error('전술 요청을 확인하세요.');
-}
-
-/** Shared response calculation excludes only the unchanged seeded ±6 noise. */
-function requestScoreBase(w: World, tactic: Tactic, tone: string) {
-  const m = w.manager;
-  return (
-    m.flexibility * 0.45 +
-    m.trust * 0.55 +
-    requestTones[tone as keyof typeof requestTones] -
-    (tactic === m.philosophy ? 0 : 24) -
-    m.pride * (tone === 'demand' ? 0.3 : 0.05) -
-    m.conflicts * 5 +
-    managerStyleEffects(w).requestBonus
-  );
-}
-
-function responseLabel(score: number) {
-  return score >= 65
-    ? '수락'
-    : score >= 50
-      ? '마지못해 수락'
-      : score >= 30
-        ? '조건부 수락'
-        : '거절';
-}
-
-export function tacticRequestOutlook(w: World, tactic: Tactic, tone: string) {
-  validateTacticRequest(tactic, tone);
-  const base = requestScoreBase(w, tactic, tone),
-    min = base - 6,
-    max = base + 6,
-    low = responseLabel(min),
-    high = responseLabel(max),
-    history = w.manager.requestHistory;
-  const trustAfterDemand = clamp(w.manager.trust - (tone === 'demand' ? 18 : 0));
-  const resignationRisk =
-    w.manager.pride >= 75 &&
-    trustAfterDemand <= 25 &&
-    (w.manager.conflicts >= 2 || tone === 'demand');
-  return {
-    label: resignationRisk ? '사직 위험' : low === high ? low : `${low} ~ ${high}`,
-    min,
-    max,
-    trustRisk: tone === 'demand' ? 18 : min < 30 ? 4 : min < 65 && max >= 50 ? 3 : 0,
-    alreadyAnswered:
-      history?.at === `${w.year}:${w.round}` && history.keys.includes(`${tactic}:${tone}`),
-  };
-}
-
-function currentRequestHistory(w: World) {
-  const at = `${w.year}:${w.round}`;
-  if (w.manager.requestHistory?.at !== at)
-    w.manager.requestHistory = { at, keys: [], trustAwarded: false };
-  return w.manager.requestHistory;
-}
-
-function awardRequestTrust(w: World, amount: number) {
-  const history = currentRequestHistory(w);
-  if (history.trustAwarded) return;
-  w.manager.trust = clamp(w.manager.trust + amount);
-  history.trustAwarded = true;
-}
-
 /**
  * The floor of the owner's trust (→STAFF-47): at `warn` or less a manager may resign each settled
  * league round, with `chance`, or `zeroChance` at trust 0.
@@ -436,10 +361,6 @@ export function yearlyStaff(w: World) {
         : '재계약 없이 계약 기간을 마치고 떠났습니다.',
       'expired',
     );
-  delete w.manager.lastRequest;
-  delete w.manager.requestHistory;
-  delete w.manager.pending;
-  delete w.requested;
 }
 export function staffCommand(w: World, cmd: StaffCommand) {
   switch (cmd.type) {
@@ -470,67 +391,6 @@ export function staffCommand(w: World, cmd: StaffCommand) {
       // A department handed to the staff has its vacancy or volunteer's post filled at once.
       for (const role of STAFF_ROLES) if (coachDelegated(w, role)) fillDelegatedPost(w, role);
       break;
-    case 'tactics': {
-      validateTacticRequest(cmd.tactic, cmd.tone);
-      const m = w.manager,
-        key = `${cmd.tactic}:${cmd.tone}`,
-        history = currentRequestHistory(w);
-      if (history.keys.includes(key)) throw new Error('동일한 요청에 이번 라운드 이미 답했습니다.');
-      history.keys.push(key);
-      m.lastRequest = key;
-      w.requested = cmd.tactic;
-      delete m.pending;
-      const noise = random(`${w.seed}:request:${w.year}:${w.round}:${m.id}:${key}`)() * 12 - 6;
-      const score = requestScoreBase(w, cmd.tactic, cmd.tone) + noise;
-      if (cmd.tone === 'demand') {
-        m.trust = clamp(m.trust - 18);
-        m.conflicts++;
-      }
-      if (m.pride >= 75 && m.trust <= 25 && (m.conflicts >= 2 || cmd.tone === 'demand')) {
-        addEvent(
-          w,
-          'manager-response',
-          '감독의 사직서',
-          '제 판단을 존중받을 수 없다면 함께할 수 없습니다.',
-        );
-        resign(w, '구단주의 강한 전술 간섭', 'resigned');
-        break;
-      }
-      let response: string;
-      if (score >= 65) {
-        w.tactic = cmd.tactic;
-        awardRequestTrust(w, 2);
-        response = '수락했습니다. 선수들과 새로운 방향을 준비하겠습니다.';
-      } else if (score >= 50) {
-        w.tactic = cmd.tactic;
-        m.trust = clamp(m.trust - 3);
-        response = '마음에 들지는 않지만 시도하겠습니다. 결과를 함께 봅시다.';
-      } else if (score >= 30) {
-        m.pending = cmd.tactic;
-        response = '조건부 수락입니다. 훈련 지원금이 확보되면 전환하겠습니다.';
-      } else {
-        m.trust = clamp(m.trust - 4);
-        m.conflicts++;
-        response = '거절합니다. 현재 선수단과 제 철학에는 맞지 않습니다.';
-      }
-      addEvent(
-        w,
-        'manager-response',
-        `${m.name}의 답변`,
-        `${tacticLabel[cmd.tactic]} 요청 · ${response}`,
-      );
-      break;
-    }
-    case 'accept-condition': {
-      if (!w.manager.pending) throw new Error('대기 중인 조건이 없습니다.');
-      const cost = quote(clubOf(w).country, w.year, 30);
-      debit(w, cost);
-      w.tactic = w.manager.pending;
-      delete w.manager.pending;
-      awardRequestTrust(w, 3);
-      addEvent(w, 'training', '훈련 지원과 전술 전환', tacticLabel[w.tactic], cost);
-      break;
-    }
     case 'hire': {
       checkTerm(cmd.term);
       const candidate = managerCandidates(w).find((offer) => offer.id === cmd.id);

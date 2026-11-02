@@ -23,8 +23,7 @@ export interface StyleEffects {
   /** Round growth multipliers: everyone, and players aged 21 or younger. */
   growth: number;
   youthGrowth: number;
-  /** Request acceptance score; chance a selling club accepts our bid (0–1). */
-  requestBonus: number;
+  /** Chance a selling club accepts our bid (0–1). */
   bidAcceptance: number;
   /** Automatic selection favours players aged 21 or younger. */
   youthSelection: boolean;
@@ -44,7 +43,6 @@ export const NEUTRAL_STYLE: Readonly<StyleEffects> = Object.freeze({
   defeatCushion: 0,
   growth: 1,
   youthGrowth: 1,
-  requestBonus: 0,
   bidAcceptance: 0,
   youthSelection: false,
 });
@@ -108,9 +106,9 @@ export const STYLE_INFO: Record<
     label: '포지셔널 플레이',
     school: '짧은 패스로 점유를 쥐고 하프스페이스를 공략하는 빌드업 축구',
     tactic: 'possession',
-    effects: { pass: 2, possession: 2, shot: -0.5, lineHigh: 0.01, requestBonus: -6 },
+    effects: { pass: 2, possession: 2, shot: -0.5, lineHigh: 0.01 },
     pros: ['패스 성공률 +2%p', '점유율 +2%p', '볼을 잃자마자 되찾는 압박 +1%p'],
-    cons: ['슈팅 기회 −0.5%p', '철학이 확고해 전술 요청 수락 −6'],
+    cons: ['슈팅 기회 −0.5%p'],
     term: 3,
     bands: { youth: [50, 80], flexibility: [15, 45], pride: [60, 95] },
   },
@@ -192,8 +190,8 @@ export const STYLE_INFO: Record<
   headcoach: {
     label: '데이터 헤드코치',
     school: '스포츠 디렉터 체계 안에서 데이터로 일하는 실무형 헤드코치',
-    effects: { requestBonus: 15, bidAcceptance: 0.05, moraleBaseline: -2 },
-    pros: ['전술 요청 수락 +15', '영입 협상 수락 확률 +5%p'],
+    effects: { bidAcceptance: 0.05, moraleBaseline: -2 },
+    pros: ['영입 협상 수락 확률 +5%p'],
     cons: ['카리스마 부족: 분위기 기준점 −2'],
     term: 3,
     bands: { youth: [50, 80], flexibility: [60, 90], pride: [25, 50], ages: [32, 48] },

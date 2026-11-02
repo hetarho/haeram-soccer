@@ -16,7 +16,7 @@ import { DESIGNERS } from '../../packages/engine/src/design-fees';
 import type { CanvasImage } from '../fixtures/figure-evidence';
 import { continueSlot } from './slots';
 import { watchNext } from './watch';
-import { configureResponsibilities, proposeOnReport } from './events';
+import { configureResponsibilities, reportKit } from './events';
 import { aroundOffice, openOfficeArea, outsideOffice } from './office';
 
 /**
@@ -494,10 +494,9 @@ export async function openKit(page: Page, opener?: Locator) {
   }
   await (opener ?? hubPreparation(page)).click();
   const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
-  // The report reads first; the owner's proposal, with its shirt choice, opens by 의견 전달.
+  // The report reads first; its kit section is its only owner choice (→WEB-88).
   await expect(dialog).toBeVisible();
-  await proposeOnReport(dialog);
-  const kit = dialog.getByTestId('fixture-kit');
+  const kit = (await reportKit(dialog)).getByTestId('fixture-kit');
   await kit.getByTestId('fixture-kit-summary').click();
   await expect(
     kit.getByRole('radiogroup', { name: '이 경기 우리 유니폼', exact: true }),
@@ -507,7 +506,7 @@ export async function openKit(page: Page, opener?: Locator) {
 export const kitRadio = (kit: Locator, role: KitRole) =>
   kit.getByRole('radio', { name: `우리 ${KIT_LABEL[role]} 유니폼`, exact: true });
 export async function closePreparation(page: Page, dialog: Locator, decided: boolean) {
-  await dialog.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
+  await dialog.getByRole('button', { name: '확인하고 홈으로', exact: true }).click();
   await expect(dialog).toHaveCount(0);
   if (!decided) return;
   const outcome = page.getByTestId('action-outcome');

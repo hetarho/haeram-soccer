@@ -239,7 +239,7 @@ function CandidateCard({
           title="우리 팀에서"
           answer={
             <>
-              {buy.slot.position} 자리 · {buy.manual ? '직접 교체 시 전력' : '선발 전력'}{' '}
+              {buy.slot.position} 자리 · 선발 전력{' '}
               <em data-tone={tone(buy.strengthDelta)}>{delta(buy.strengthDelta)}</em>
             </>
           }
@@ -255,14 +255,14 @@ function CandidateCard({
               </dd>
             </div>
             <div>
-              <dt>{buy.manual ? '직접 교체 시 전력' : '자동 선발 전력'}</dt>
+              <dt>자동 선발 전력</dt>
               <dd>
                 {buy.beforeStrength} → {buy.afterStrength}{' '}
                 <small data-tone={tone(buy.strengthDelta)}>({delta(buy.strengthDelta)})</small>
               </dd>
             </div>
             <div>
-              <dt>{buy.manual ? '직접 교체 시 적합도' : '전술 적합도'}</dt>
+              <dt>전술 적합도</dt>
               <dd>
                 {buy.beforeFit} → {buy.afterFit}{' '}
                 <small data-tone={tone(buy.fitDelta)}>({delta(buy.fitDelta)})</small>
@@ -271,11 +271,9 @@ function CandidateCard({
           </dl>
           <p className={s.note}>
             {offer.foreign ? '해외에서 합류' : '국내에서 합류'} · 적응에 시간이 필요해요.{' '}
-            {buy.manual
-              ? '수동 선발 교체 예시예요. 영입 후 선발을 직접 정해야 적용돼요.'
-              : buy.willStart
-                ? '현재 능력과 피로 기준의 자동 선발 후보예요.'
-                : '현재 선발을 유지하며 로테이션 후보로 합류해요.'}
+            {buy.willStart
+              ? '현재 능력과 피로 기준의 자동 선발 후보예요.'
+              : '현재 선발을 유지하며 로테이션 후보로 합류해요.'}
           </p>
         </Section>
       )}

@@ -20,7 +20,7 @@ import { DecisionOwner } from './DecisionOwner';
 import { DirectionLines } from './DirectionLines';
 import { directionOption } from '../../../../packages/engine/src/direction';
 import { OvrBadge } from './OvrBadge';
-import { openDirection, openStaff, openFacility, usePlayerPreparation } from './state';
+import { openDirection, openStaff, openFacility } from './state';
 import s from './TrainingView.module.css';
 
 function useActing() {
@@ -86,14 +86,7 @@ export function AcademyPanel({
           <p className={s.timing} data-testid="arrived-training">
             1군 훈련 {arrivedCall.focus} · {arrivedCall.by}
           </p>
-          <div className={s.filters}>
-            <button type="button" onClick={() => usePlayerPreparation.getState().open(arrived.id)}>
-              다음 경기 선발·전술 준비
-            </button>
-          </div>
-          <p className={s.timing}>
-            감독이 능력과 피로를 보고 선발해요. 직접 선발을 정하는 것은 선택이에요.
-          </p>
+          <p className={s.timing}>감독이 능력과 피로를 보고 선발해요.</p>
         </section>
       )}
       <section data-surface="panel" className={s.card} aria-label="유소년 아카데미">

@@ -7,6 +7,7 @@ import {
   managerTerm,
   operate,
   simulateSeason,
+  yearlyStaff,
 } from '../../packages/engine/src/index';
 import { DISABLED_RELEASE } from './releases';
 import { withoutManagerHistory } from './worlds';
@@ -52,8 +53,9 @@ export function buildManagerJourneyWorld(): World {
     // The first day of 1951: another manager, then the one he replaced again.
     hire(w, freeManager(w, [closer.id])?.id);
     hire(w, closer.id);
-    w.manager = { ...w.manager, pride: 90, trust: 20, conflicts: 2 };
-    operate(w, { type: 'tactics', tactic: 'counter', tone: 'demand' });
+    // At trust 0 he resigns (→STAFF-47), as at a season boundary, on this day.
+    w.manager = { ...w.manager, trust: 0 };
+    yearlyStaff(w);
     if (!w.manager.interim) throw new Error('the reappointed manager did not resign');
     playOwnMatches(w, 2);
     for (let n = 0; n < 21; n++) {

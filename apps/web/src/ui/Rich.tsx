@@ -8,7 +8,6 @@ import { squadRegistration } from './squadRegistration';
 import { PersonCareerLink } from './PersonCareer';
 import { useTaskState } from './taskMemory';
 import { PixelIcon } from './PixelIcon';
-import { Select } from './Select';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import type {
   ContractTalk,
@@ -27,7 +26,6 @@ import {
   UNHAPPY_PENALTY,
 } from '../../../../packages/engine/src/player-state';
 import { tacticLabel } from '../../../../packages/engine/src/tactics';
-import { quote } from '../../../../packages/engine/src/quotes';
 import {
   agentOf,
   agentPremium,
@@ -135,12 +133,6 @@ const RecordsRoom = lazy(() =>
 const ClubOperations = lazy(() =>
   import('./ClubOperations').then((module) => ({ default: module.ClubOperations })),
 );
-const toneLabel = {
-  respect: '정중하게 제안',
-  evidence: '지표를 근거로',
-  support: '지원을 약속하며',
-  demand: '강하게 요구',
-};
 /** The manager's youth attribute speeds every young player's growth; the academy is separate. */
 const YOUTH_HINT = '27세 미만 선수 성장';
 /** "38세", or nothing for someone from an older save without an age. */
@@ -190,7 +182,6 @@ function PersonnelPanel({
             {coach}
           </FacilityOverview>
           <Roster state={state} client={client} />
-          <TacticsTalk state={state} client={client} />
           <AreaCriteria w={w} areas={['squad']} />
         </>
       ) : tab === 'market' ? (
@@ -380,103 +371,9 @@ function ManagerCard({ state, client, onReplace }: Props & { onReplace: () => vo
               ['유연성', m.flexibility],
               ['자존심', m.pride],
               ['신뢰', m.trust],
-              ['불만 누적', m.conflicts],
               ['연봉', <Money value={m.wage} code={c.country} year={w.year} />],
             ]}
           />
-          <p className={s.muted}>
-            {m.pride >= 75
-              ? '자존심이 강한 감독입니다. 신뢰가 낮아진 상태에서 간섭을 계속하면 떠날 수 있습니다.'
-              : m.flexibility >= 65
-                ? '변화를 비교적 열린 마음으로 받아들이는 감독입니다.'
-                : '자신의 철학을 지키려는 성향입니다. 납득할 근거와 지원을 준비하세요.'}
-          </p>
-        </details>
-      </div>
-    </Panel>
-  );
-}
-/**
- * The first team's tactics (→WEB-43): the tactic in force and the owner's request to the
- * manager, who answers by his school, trust and the tone of the request.
- */
-function TacticsTalk({ state, client }: Props) {
-  const w = state.view!.world,
-    m = w.manager,
-    c = w.clubs.find((c) => c.id === w.playerClub)!,
-    [tactic, setTactic] = useTaskState(w.id, 'manager-tactic', w.tactic),
-    [tone, setTone] = useTaskState(w.id, 'manager-tone', 'respect');
-  const disabled = useGameState(gameActionsBlocked);
-  const response = w.events.filter((e) => e.kind === 'manager-response').at(-1);
-  // What a conditional acceptance asks the owner to put into training.
-  const support = quote(c.country, w.year, 30);
-  return (
-    <Panel title="전술 요청" note={`감독 ${m.name}`}>
-      <div className={s.panelBody} data-testid="tactics-talk">
-        <p className={s.muted}>
-          현재 적용 전술: <b>{tacticLabel[w.tactic]}</b>
-          {w.requested && ` · 최근 요청: ${tacticLabel[w.requested]}`}
-        </p>
-        <div className={s.filters} style={{ marginTop: 20 }}>
-          <label>
-            전술{' '}
-            <Select
-              aria-label="요청 전술"
-              value={tactic}
-              onValueChange={(value) => setTactic(value as typeof tactic)}
-            >
-              {Object.entries(tacticLabel).map(([id, label]) => (
-                <option key={id} value={id}>
-                  {label}
-                </option>
-              ))}
-            </Select>
-          </label>
-          <label>
-            말투{' '}
-            <Select aria-label="요청 말투" value={tone} onValueChange={(value) => setTone(value)}>
-              {Object.entries(toneLabel).map(([id, label]) => (
-                <option key={id} value={id}>
-                  {label}
-                </option>
-              ))}
-            </Select>
-          </label>
-        </div>
-        <button
-          data-ui="primary"
-          className={s.primary}
-          disabled={disabled}
-          onClick={() => void client.command({ type: 'tactics', tactic, tone })}
-        >
-          감독에게 제안하기
-        </button>
-        {m.pending && (
-          <div data-surface="inset" className={s.critical} style={{ marginTop: 20 }}>
-            조건 대기: {tacticLabel[m.pending]}
-            <p>
-              훈련 지원 <Money value={support} code={c.country} year={w.year} /> 필요
-            </p>
-            <button
-              disabled={disabled}
-              onClick={() => void client.command({ type: 'accept-condition' })}
-            >
-              훈련 지원하고 수락
-            </button>
-          </div>
-        )}
-        {response && (
-          <blockquote data-surface="inset" className={s.notice} style={{ margin: '20px 0 0' }}>
-            <b>{response.title}</b>
-            <p>{response.detail}</p>
-          </blockquote>
-        )}
-        <details data-ui="disclosure" className={management.reference}>
-          <summary>대화 판단 기준</summary>
-          <p className={s.muted}>
-            요청 결과는 성향·신뢰·말투·이전 갈등을 따릅니다. 동일 요청은 신뢰를 반복해서 높이지
-            않습니다.
-          </p>
         </details>
       </div>
     </Panel>

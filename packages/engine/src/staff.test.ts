@@ -21,10 +21,10 @@ import {
   operate,
   operatingCosts,
   overall,
+  ownMultiplier,
   ratio,
   releaseStaff,
   seasonStaff,
-  selectedLineup,
   settleTraining,
   simulateSeason,
   STAFF_INFO,
@@ -344,7 +344,7 @@ describe('delegated training focus', () => {
     return w;
   }
   const starters = (w: World) =>
-    selectedLineup(activePlayers(w), w.lineup, w.tactic, w.manager, w.year);
+    lineup(activePlayers(w), w.tactic, w.manager, w.year, ownMultiplier);
 
   it('rests a tired XI, nurtures young starters and otherwise trains balanced', () => {
     const w = rested();

@@ -23,24 +23,9 @@
   font-size: 12px;
   font-family: var(--display);
 }
-/* The owner's answer is one card under the manager's report. */
-.proposal {
+/* The kit section is its own card under the manager's report (→WEB-88). */
+.kit {
   margin-top: 12px;
-}
-.tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  margin: 12px 0 0;
-}
-.tabs button {
-  min-height: 44px;
-  font-size: 13px;
-}
-.tabs button[aria-selected='true'] {
-  background: var(--surface-grain, none) var(--accent-fill);
-  border-color: var(--accent);
-  color: var(--on-accent);
 }
 .section {
   padding-top: 12px;
@@ -61,102 +46,11 @@
   color: var(--text-muted);
   font-family: var(--display);
 }
-.tactics {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-.tactics button {
-  display: grid;
-  align-content: start;
-  gap: 5px;
-  text-align: left;
-  padding: 12px;
-  min-width: 0;
-}
-.tactics button[aria-pressed='true'],
-.presets button[aria-pressed='true'] {
-  border-color: var(--accent);
-  background: var(--surface-grain, none) var(--surface-2);
-  box-shadow: none;
-}
-.tactics b {
-  font-size: 13px;
-}
-.tactics span,
-.tactics small {
-  font-size: 12px;
-  line-height: 1.45;
-  font-family: var(--display);
-}
-.tactics small {
-  color: var(--text-muted);
-}
-.fit {
-  display: block;
-  font-weight: normal;
-  color: var(--text);
-  margin-top: 3px;
-}
-.negotiation {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: start;
-  gap: 10px;
-  margin-top: 12px;
-}
-.negotiation label {
-  display: grid;
-  gap: 5px;
-  min-width: 0;
-  font-size: 12px;
-  color: var(--text-muted);
-  font-family: var(--display);
-}
-.negotiation :global([data-select-trigger]) {
-  width: 100%;
-}
-.outlook {
-  display: grid;
-  gap: 4px;
-  font-size: 12px;
-  font-family: var(--display);
-}
-.outlook b {
-  font-size: 13px;
-}
-.outlook span,
-.outlook small {
-  color: var(--text-muted);
-}
-.section .hint {
+.hint {
   margin: 8px 0 0;
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.5;
-  font-family: var(--display);
-}
-.pending {
-  margin-top: 10px;
-  padding: 10px 12px;
-  background: var(--surface-grain, none) var(--warm-soft);
-  border-radius: var(--card-radius);
-}
-.pending p {
-  font-size: 12px;
-  margin: 0;
-  font-family: var(--display);
-}
-.presets {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin: 10px 0;
-}
-.presets button {
-  min-height: 48px;
-  font-size: 12px;
-  padding: 8px;
   font-family: var(--display);
 }
 .preview {
@@ -221,85 +115,20 @@
   padding: 0;
   list-style: none;
 }
-.slots {
-  margin-top: 10px;
-  border: 1px solid var(--line);
-  border-radius: var(--card-radius);
-}
-.slots summary {
-  min-height: 44px;
-  padding: 11px 12px;
-  cursor: pointer;
-  font-size: 12px;
-  font-family: var(--display);
-}
-.slots summary:focus-visible {
-  outline: 3px solid var(--focus);
-  outline-offset: 2px;
-}
-.lineup {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px 14px;
-  padding: 4px 12px 12px;
-}
-.lineup label {
-  display: grid;
-  gap: 5px;
-  min-width: 0;
-  font-size: 12px;
-  color: var(--text-muted);
-  font-family: var(--display);
-}
-.lineup :global([data-select-trigger]) {
-  width: 100%;
-}
 .primary {
   background: var(--surface-grain, none) var(--accent-fill);
   color: var(--on-accent);
   border-color: var(--accent);
 }
-.section .warning {
-  margin: 10px 0 0;
-  font-size: 12px;
-  color: var(--danger);
-  font-family: var(--display);
-}
-.footer {
-  margin: 0;
-  padding: 0;
-}
-.footer .message {
-  padding: 8px 10px;
-  margin: 0 0 8px;
-  max-height: 76px;
-  overflow-y: auto;
-  color: var(--text);
-  background: var(--surface-grain, none) var(--surface-2);
-  border: 1px solid var(--line);
-  border-radius: var(--card-radius);
-  font-size: 12px;
-  line-height: 1.45;
-  font-family: var(--display);
-}
 .actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 8px;
-}
-/* Reading the report ends on going home: the wider button; giving an opinion is the side door. */
-.reportActions {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
 }
 .actions button {
   min-height: 48px;
   padding: 8px 10px;
   font-size: 12px;
   font-family: var(--display);
-}
-.lineupAction,
-.supportAction {
-  grid-column: 1 / -1;
 }
 @media (max-width: 760px) {
   .panel {
@@ -310,39 +139,14 @@
     width: 100%;
     min-height: 44px;
   }
-  .tabs {
-    margin-top: 9px;
-  }
   .section {
     padding-top: 10px;
-  }
-  .tactics {
-    gap: 6px;
-  }
-  .tactics button {
-    padding: 9px;
-    gap: 4px;
-  }
-  .tactics span,
-  .tactics small {
-    font-size: 12px;
-    font-family: var(--display);
-  }
-  .lineup {
-    grid-template-columns: 1fr;
   }
   .preview {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .preview > div {
     padding: 8px 10px;
-  }
-  .negotiation {
-    gap: 8px;
-  }
-  .outlook b {
-    font-size: 12px;
-    font-family: var(--display);
   }
   .actions button {
     font-size: 12px;
@@ -352,7 +156,7 @@
 }
 .panel p,
 .panel small,
-.section .hint {
+.hint {
   color: var(--text);
 }
 

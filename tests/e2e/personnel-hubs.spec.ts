@@ -70,10 +70,8 @@ for (const viewport of [
     // A fixture player is on the roster under his own name.
     await search.fill(active[0].name);
     await expect(page.getByText(active[0].name, { exact: true }).first()).toBeVisible();
-    // The first team's tactics and culture follow the roster on the same page.
-    await expect(
-      page.getByTestId('tactics-talk').getByRole('button', { name: '감독에게 제안하기' }),
-    ).toBeVisible();
+    // The manager picks the tactic: the roster offers no tactics request (→WEB-43).
+    await expect(page.getByTestId('tactics-talk')).toHaveCount(0);
     await search.fill('Retained work');
     const date = await page.getByTestId('game-date').innerText();
     const trigger = page

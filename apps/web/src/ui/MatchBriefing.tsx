@@ -38,7 +38,7 @@ function Results({ w, club, fixtures }: { w: World; club: string; fixtures: Fixt
 
 /**
  * The manager's report to the owner before the next match (→WEB-11): how he means to play, both
- * sides side by side (us left, them right) and our last meetings. The owner proposes from here.
+ * sides side by side (us left, them right) and our last meetings.
  */
 export function MatchBriefing({
   w,
@@ -99,11 +99,8 @@ export function MatchBriefing({
       >
         <p>
           {opponent.name}전({brief.home ? '홈' : '원정'} · {competitionLabel(w, next)})은{' '}
-          {FORMATIONS[w.tactic].name} {tacticLabel[w.tactic]}로 나가겠습니다.{' '}
-          {w.lineup
-            ? '선발은 구단주님이 정해 주신 11명을 그대로 씁니다.'
-            : '선발은 능력과 피로를 보고 제가 고르겠습니다.'}{' '}
-          상대는 {tacticLabel[brief.tactic]} 성향이고,{' '}
+          {FORMATIONS[w.tactic].name} {tacticLabel[w.tactic]}로 나가겠습니다. 선발은 능력과 피로를
+          보고 제가 고르겠습니다. 상대는 {tacticLabel[brief.tactic]} 성향이고,{' '}
           {gap >= 3
             ? `전력은 우리가 ${gap} 앞섭니다.`
             : gap <= -3

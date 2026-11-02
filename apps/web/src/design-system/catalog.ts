@@ -153,10 +153,10 @@ export const STORIES: Story[] = [
   ),
   story(
     'preparation',
-    '전술 · 선발 준비',
+    '다음 경기 상세 리포트',
     '경기 · 선수',
-    ['StrategyPanel', 'FixtureKitSelector', 'TacticalLab', 'MatchBriefing'],
-    '다음 상대 분석, 전술 비교, 선발과 경기 유니폼 선택.',
+    ['StrategyPanel', 'FixtureKitSelector', 'MatchBriefing'],
+    '감독 보고와 다음 상대 분석, 감독의 선발과 경기 명단, 경기 유니폼 선택.',
   ),
   story(
     'profile',
@@ -192,7 +192,7 @@ export const STORIES: Story[] = [
     '1군 · 선수단',
     '사람 · 훈련',
     ['Rich', 'RosterFilters', 'PersonnelHubs'],
-    '출전 가능 인원, 선수 카드, 이적 상태, 상세 지표, 계약 협상, 전술 요청과 라커룸 문화.',
+    '출전 가능 인원, 선수 카드, 이적 상태, 상세 지표, 계약 협상과 라커룸 문화.',
     { page: 'firstTeam', query: 'view=players' },
   ),
   story(

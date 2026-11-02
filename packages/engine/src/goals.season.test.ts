@@ -3,14 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import type { World } from '../../contracts/src/types';
 import { decode, encode } from '../../../apps/web/src/adapters/persistence';
-import {
-  advanceRound,
-  clubMilestones,
-  clubOf,
-  lineupPreset,
-  operate,
-  simulateSeason,
-} from './index';
+import { advanceRound, clubMilestones, clubOf, operate, simulateSeason } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { byId, world } from './goals.testkit';
 
@@ -20,7 +13,6 @@ describe('milestones from retained club facts', () => {
     const promoting = () =>
       cachedWorld('promoting:last-round', () => {
         const w = world(true);
-        operate(w, { type: 'lineup', ids: lineupPreset(w, 'strongest') });
         operate(w, { type: 'facility', part: 'stadium' });
         for (const key of ['localInvest', 'globalMarketing'] as const)
           operate(w, { type: 'policy', key, level: 5 });
@@ -35,7 +27,7 @@ describe('milestones from retained club facts', () => {
     expect(w.history[0].rank).toBe(1);
     expect(promotedTier).toBeLessThan(w.history[0].tier);
     expect(w.history[0].fans).toBeGreaterThanOrEqual(1000);
-    expect(milestones.completed).toBe(8);
+    expect(milestones.completed).toBe(7);
     expect(milestones.next).toBeUndefined();
     for (const item of milestones.goals) {
       expect(item.current).toBeLessThanOrEqual(item.target);
@@ -52,7 +44,6 @@ describe('milestones from retained club facts', () => {
       }
       for (const club of w.clubs) if (club.id !== w.playerClub) club.strength = 95;
       w.manager.ability = 0;
-      operate(w, { type: 'lineup', ids: null });
     };
     losing(restored);
     const declining = cachedWorld('declining:last-round', () => {

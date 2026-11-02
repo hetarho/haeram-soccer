@@ -2,11 +2,11 @@ import { openPersonnel } from './personnel-navigation';
 import { clubhouseDate, openLeague, primaryEntry } from './competition-navigation';
 import { marketFilters, marketRows, closeMarketPanel } from './market';
 import { openPlayerSheet, watchNext } from './watch';
-import { chooseOption, selectOptions } from './select';
+import { chooseOption } from './select';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { COUNTRIES } from '../../packages/catalogs/src/index';
 import { expectHomeBounds, expectViewFits, settle } from './layout';
-import { chooseLevel, proposeOnReport } from './events';
+import { chooseLevel, reportKit } from './events';
 
 async function expectTouchControl(
   control: Locator,
@@ -103,57 +103,24 @@ for (const viewport of [
     await prepare.click();
     const preparation = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
     await expect(preparation).toBeVisible();
-    await proposeOnReport(preparation);
-    const tone = preparation.getByRole('combobox', { name: '전술 요청 방식', exact: true });
-    await expectTouchControl(tone, viewport);
-    await tone.focus();
-    await expect(tone).toBeFocused();
-    await chooseOption(tone, 'demand');
-    await expect(preparation.getByLabel('감독 예상 반응')).toContainText('신뢰 18 감소');
-    await preparation.getByRole('tab', { name: '선발 선택', exact: true }).click();
-    await preparation.getByText('선수별 교체', { exact: true }).click();
-    // Measure the opened rows at rest; mid-animation a 44px row read 43.99994 (CI 41175339655).
+    // The manager's XI only reads; the kit section is the report's one choice (→WEB-88).
+    await expect(
+      preparation.getByRole('region', { name: '감독의 선발', exact: true }),
+    ).toBeVisible();
+    await expect(preparation.getByRole('combobox')).toHaveCount(0);
+    const kit = (await reportKit(preparation)).getByTestId('fixture-kit');
+    const summary = kit.getByTestId('fixture-kit-summary');
+    await expectTouchControl(summary, viewport);
+    await summary.click();
+    // Measure the opened choices at rest; mid-animation a 44px row read 43.99994 (CI 41175339655).
     await settle(page);
-    const selectors = await preparation.getByRole('combobox').evaluateAll((elements) =>
-      elements.map((element) => {
-        const bounds = element.getBoundingClientRect();
-        return {
-          label: element.getAttribute('aria-label'),
-          width: bounds.width,
-          height: bounds.height,
-        };
-      }),
-    );
-    expect(selectors).toHaveLength(11);
-    for (const geometry of selectors) {
-      expect(geometry.width, JSON.stringify(geometry)).toBeGreaterThanOrEqual(44);
-      expect(geometry.height, JSON.stringify(geometry)).toBeGreaterThanOrEqual(44);
-    }
-    const keeper = preparation.getByRole('combobox', { name: '선발 1 GK', exact: true });
-    await expectTouchControl(keeper, viewport);
-    const original = await keeper.getAttribute('data-value');
-    const replacement = (await selectOptions(keeper)).find(
-      (option) => option.value && option.value !== original,
-    )?.value;
-    await chooseOption(keeper, replacement!);
-    const save = preparation.getByRole('button', { name: '이 선발로 다음 경기 준비', exact: true });
-    await expectTouchControl(save, viewport);
-    await save.click();
-    await expect(preparation.getByRole('status')).toContainText('선발 11명을 저장했습니다.');
-    await preparation.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
-    await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-    await page.reload();
-    await expect(page.getByTestId('club-hub')).toBeVisible();
-    await page
-      .getByTestId('club-hub')
-      .getByRole('button', { name: '상세 리포트', exact: true })
-      .click();
-    await expect(preparation).toBeVisible();
-    await proposeOnReport(preparation);
-    await preparation.getByRole('tab', { name: '선발 선택', exact: true }).click();
-    await preparation.getByText('선수별 교체', { exact: true }).click();
-    await expect(keeper).toHaveAttribute('data-value', replacement!);
-    await preparation.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
+    const choices = kit.getByRole('radio');
+    await expect(choices).toHaveCount(3);
+    for (const choice of await choices.all()) await expectTouchControl(choice, viewport);
+    const home = preparation.getByRole('button', { name: '확인하고 홈으로', exact: true });
+    await expectTouchControl(home, viewport);
+    await home.click();
+    await expect(preparation).toHaveCount(0);
     await watchNext(page);
     await expect(page.getByTestId('match-theatre')).toBeVisible();
     await expectCompactDocument(page, viewport);

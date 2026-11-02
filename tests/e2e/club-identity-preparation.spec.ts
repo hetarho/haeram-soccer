@@ -12,7 +12,7 @@ import {
   operate,
 } from '../../packages/engine/src/index';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
-import { ALL_DELEGATED, proposeOnReport } from './events';
+import { ALL_DELEGATED, reportKit } from './events';
 import { savedWorld, canvasPixels } from './club-identity-helpers';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { watchNext } from './watch';
@@ -51,14 +51,13 @@ const recorded = async (page: Page, id: string) =>
 
 const hubPreparation = (page: Page) =>
   page.getByTestId('club-hub').getByRole('button', { name: '상세 리포트', exact: true });
-/** Opens preparation and unfolds its shirt selector once queued work has settled. */
+/** Opens the next-match report and unfolds its kit section once queued work has settled. */
 async function openKit(page: Page, opener: Locator) {
   await opener.click();
   const dialog = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
-  // The report reads first; the owner's proposal, with its shirt choice, opens by 의견 전달.
+  // The report reads first; its kit section is its only owner choice (→WEB-88).
   await expect(dialog).toBeVisible();
-  await proposeOnReport(dialog);
-  const kit = dialog.getByTestId('fixture-kit');
+  const kit = (await reportKit(dialog)).getByTestId('fixture-kit');
   await kit.getByTestId('fixture-kit-summary').click();
   await expect(
     kit.getByRole('radiogroup', { name: '이 경기 우리 유니폼', exact: true }),
@@ -73,7 +72,7 @@ async function openKit(page: Page, opener: Locator) {
 const radio = (kit: Locator, role: KitRole) =>
   kit.getByRole('radio', { name: `우리 ${LABEL[role]} 유니폼`, exact: true });
 async function closePreparation(page: Page, dialog: Locator, decided: boolean) {
-  await dialog.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
+  await dialog.getByRole('button', { name: '확인하고 홈으로', exact: true }).click();
   await expect(dialog).toHaveCount(0);
   if (!decided) return;
   const outcome = page.getByTestId('action-outcome');
@@ -150,14 +149,10 @@ test('our home league shirt is previewed, committed once, kept through reload an
     .poll(async () => (await savedWorld(page)).kitChoice)
     .toEqual({ fixtureId: next.id, role });
   const chosen = await savedWorld(page);
-  // One owner decision: the saved designs, tactic, lineup and date are untouched.
+  // One owner decision: the saved designs, the manager's tactic and the date are untouched.
   expect(chosen.revision).toBe(before.revision + 1);
   expect(canonical(chosen.clubs.map((club) => club.identity))).toBe(designs);
-  expect([chosen.tactic, chosen.lineup, currentDay(chosen)]).toEqual([
-    before.tactic,
-    before.lineup,
-    currentDay(before),
-  ]);
+  expect([chosen.tactic, currentDay(chosen)]).toEqual([before.tactic, currentDay(before)]);
   await closePreparation(page, dialog, true);
 
   await page.reload();
@@ -188,9 +183,7 @@ test('our home league shirt is previewed, committed once, kept through reload an
   await closePreparation(page, after.dialog, false);
 });
 
-test('our away shirt maps to the away side and stays apart from the lineup decision', async ({
-  page,
-}) => {
+test("our away shirt maps to the away side and leaves the manager's XI alone", async ({ page }) => {
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
   const w = career(1);
@@ -211,17 +204,15 @@ test('our away shirt maps to the away side and stays apart from the lineup decis
   await expect
     .poll(async () => (await savedWorld(page)).kitChoice)
     .toEqual({ fixtureId: next.id, role });
-  expect((await savedWorld(page)).lineup).toEqual(before.lineup);
-  // The lineup has its own draft and command; the shirt choice survives it unchanged.
-  await dialog.getByRole('tab', { name: '선발 선택', exact: true }).click();
-  await dialog.getByRole('button', { name: '피로 회복 우선으로 선택', exact: true }).click();
-  await dialog.getByRole('button', { name: '이 선발로 다음 경기 준비', exact: true }).click();
-  await expect(dialog.getByRole('status')).toContainText('선발 11명을 저장했습니다.');
   await expect(kit.getByTestId('fixture-kit-summary')).toHaveText(/· 직접 고름$/);
-  await expect.poll(async () => (await savedWorld(page)).lineup?.length).toBe(11);
+  // The manager's XI and tactic only read in the report; the shirt choice changes neither.
+  const lineup = dialog.getByRole('region', { name: '감독의 선발', exact: true });
+  await expect(lineup.getByTestId('formation-slot-0')).toBeVisible();
+  await expect(dialog.getByRole('combobox')).toHaveCount(0);
   const both = await savedWorld(page);
   expect(both.kitChoice).toEqual({ fixtureId: next.id, role });
   expect(both.tactic).toBe(before.tactic);
+  expect('lineup' in both).toBe(false);
   await closePreparation(page, dialog, true);
 
   await watchToResult(page);

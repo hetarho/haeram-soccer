@@ -7,7 +7,7 @@ import {
   presentedMinute,
   watchNext,
 } from './watch';
-import { delegateSales, proposeOnReport } from './events';
+import { delegateSales, reportKit } from './events';
 import { expect, test } from '@playwright/test';
 import { chooseLevel } from './events';
 import { advanceToNextMatch, createWorld } from '../../packages/engine/src/index';
@@ -66,11 +66,11 @@ test('surveys every management destination during uninterrupted calendar play', 
   for (const view of ['players', 'market', 'manager', 'coaches', 'training', 'academy'] as const) {
     await openPersonnel(page, view);
     await continues();
-    // The tactics request stands beside the 1군 roster, under the same lock (→WEB-43/97).
+    // The manager picks the tactic: the 1군 roster offers no tactics request (→WEB-43).
     if (view === 'players')
       await expect(
         page.getByRole('button', { name: '감독에게 제안하기', exact: true }),
-      ).toBeDisabled();
+      ).toHaveCount(0);
     if (view === 'market')
       await expect(page.getByRole('button', { name: '영입 필터', exact: true })).toBeEnabled();
   }
@@ -166,25 +166,30 @@ test('keeps browsing available and management edits locked over real automatic t
   await prepare.click();
   const sheet = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
   await expect(sheet).toBeVisible();
-  await proposeOnReport(sheet);
-  await expect(
-    sheet.getByRole('button', { name: '감독에게 전술 요청', exact: true }),
-  ).toBeDisabled();
+  // The kit choice is the report's one command, under the running-calendar lock (→WEB-88/97);
+  // its local preview stays open.
+  const kit = (await reportKit(sheet)).getByTestId('fixture-kit');
+  const confirm = kit.getByRole('button', { name: '이 유니폼으로 정하기', exact: true });
+  const previewKit = async () => {
+    await kit.getByTestId('fixture-kit-summary').click();
+    await kit.getByRole('radio', { checked: false }).first().click();
+  };
+  await previewKit();
+  await expect(confirm).toBeDisabled();
   // Inspection and local previews do not pause the clock or permit a management command.
   const date = await page.getByTestId('game-date').innerText();
   await expect(page.getByTestId('game-date')).not.toHaveText(date);
-  await sheet.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
+  await sheet.getByRole('button', { name: '확인하고 홈으로', exact: true }).click();
   await expect(sheet).toHaveCount(0);
   await expect(page.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
   await page.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
   await expect(mode).toBeEnabled();
   await prepare.click();
   await expect(sheet).toBeVisible();
-  await proposeOnReport(sheet);
-  await expect(
-    sheet.getByRole('button', { name: '감독에게 전술 요청', exact: true }),
-  ).toBeEnabled();
-  await sheet.getByRole('button', { name: '준비 마치고 돌아가기', exact: true }).click();
+  await reportKit(sheet);
+  await previewKit();
+  await expect(confirm).toBeEnabled();
+  await sheet.getByRole('button', { name: '확인하고 홈으로', exact: true }).click();
   await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
   await watchNext(page);
   const theatre = page.getByTestId('match-theatre');

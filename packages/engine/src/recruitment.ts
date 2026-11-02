@@ -6,7 +6,6 @@ import { operatingCost } from './transactions';
 import { transferOffers } from './ops-squad';
 import { clubOf, fatigueLoad, formationOf, lineOfPlayer, overall, slotOvr } from './player-state';
 import { startingSquad } from './world';
-import { compareIds } from './primitives';
 import { adaptationMultiplier, adaptationStart, ADAPTATION_NEUTRAL } from './player';
 import { isForeignCandidate } from './ops-squad';
 import { lineupSummary, npcTactic, tacticalProfile } from './strategy';
@@ -46,10 +45,9 @@ export function recruitmentContext(w: World) {
 /** Only selection/fit facts, without registration, financial runway or a full signing preview. */
 export function recruitmentFit(w: World, offer: TransferOffer, context = recruitmentContext(w)) {
   const { before, opponentTactic, beforeStrength, beforeFit } = context;
-  const manual = !!w.lineup,
-    alreadyOwned = w.players.some(
-      (player) => player.id === offer.player.id && player.status === 'active',
-    );
+  const alreadyOwned = w.players.some(
+    (player) => player.id === offer.player.id && player.status === 'active',
+  );
   // He arrives at the adaptation his signing starts him at (→PLAYER-11), not settled.
   const arriving = {
     ...offer.player,
@@ -58,29 +56,13 @@ export function recruitmentFit(w: World, offer: TransferOffer, context = recruit
       (offer.foreign ?? isForeignCandidate(offer.player.id)) ? 'abroad' : 'domestic',
     ),
   };
-  let after = before;
-  if (!alreadyOwned) {
-    if (manual) {
-      const replacement = before
-        .map((player, index) => ({ player, index }))
-        .filter(({ player }) => lineOfPlayer(player) === lineOfPlayer(offer.player))
-        .sort(
-          (a, b) =>
-            overall(a.player) - a.player.fatigue / 5 - (overall(b.player) - b.player.fatigue / 5) ||
-            compareIds(a.player.id, b.player.id),
-        )[0];
-      if (replacement) {
-        after = [...before];
-        after[replacement.index] = arriving;
-      }
-    } else {
-      // A returning player replaces his retained historical row rather than adding a second ID.
-      after = startingSquad(
+  // A returning player replaces his retained historical row rather than adding a second ID.
+  const after = alreadyOwned
+    ? before
+    : startingSquad(
         { ...w, players: [...w.players.filter((p) => p.id !== arriving.id), arriving] },
         clubOf(w),
       );
-    }
-  }
   // The slot he would take (→CLUB-14): where he beats the starter by most at the slot, else the
   // weakest of his main position's; his 실효 OVR there on arrival and once settled (→PLAYER-11).
   const slots = formationOf(w.tactic);
@@ -119,12 +101,11 @@ export function recruitmentFit(w: World, offer: TransferOffer, context = recruit
     beforeFit,
     afterFit,
     fitDelta: afterFit - beforeFit,
-    manual,
-    willStart: !manual && !alreadyOwned && after.some((player) => player.id === offer.player.id),
+    willStart: !alreadyOwned && after.some((player) => player.id === offer.player.id),
   };
 }
 
-/** Pure hypothetical preview. Recruitment never changes a saved manual XI on its own. */
+/** Pure hypothetical preview against the manager's automatic XI (→CLUB-15). */
 export function recruitmentPreview(w: World, offer: TransferOffer, loan = false) {
   const alreadyOwned = w.players.some(
       (player) => player.id === offer.player.id && player.status === 'active',
@@ -151,11 +132,9 @@ export function recruitmentPreview(w: World, offer: TransferOffer, loan = false)
         ? registrationReason!
         : !affordable
           ? '보유 자금이 부족합니다.'
-          : fit.manual
-            ? '수동 선발 교체 시 예상입니다. 영입 후 선발을 직접 정하세요.'
-            : fit.willStart
-              ? '현재 능력과 피로 기준으로 자동 선발 후보입니다.'
-              : '현재 자동 선발은 유지됩니다. 로테이션 후보로 비교하세요.';
+          : fit.willStart
+            ? '현재 능력과 피로 기준으로 자동 선발 후보입니다.'
+            : '현재 자동 선발은 유지됩니다. 로테이션 후보로 비교하세요.';
   return {
     ...fit,
     fee,

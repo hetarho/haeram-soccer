@@ -435,17 +435,13 @@ export function takeManager(w: World, candidate: ManagerCandidate, replaced: Man
     age(w, replaced) < RETIREMENT_AGE
   ) {
     // The term he signed with us goes with his contract; his next club chooses its own.
-    const { lastRequest: _l, requestHistory: _h, pending: _p, term: _t, ...rest } = replaced;
-    void _l;
-    void _h;
-    void _p;
+    const { term: _t, ...rest } = replaced;
     void _t;
     m.free = [
       ...m.free,
       {
         ...rest,
         trust: 65,
-        conflicts: 0,
         wage: staffQuote(w, 120 + rest.ability),
       },
     ].slice(-FREE_AGENTS.max);

@@ -1,16 +1,7 @@
-import type { Fixture, Player, Tactic, World } from '../../contracts/src/types';
-import { isBanned } from './discipline';
-import {
-  activePlayers,
-  fatigueLoad,
-  formationOf,
-  isInjured,
-  ownMultiplier,
-  slotOvr,
-} from './player-state';
-import { addEvent } from './events';
+import type { Player, Tactic, World } from '../../contracts/src/types';
+import { fatigueLoad, formationOf, ownMultiplier, slotOvr } from './player-state';
 import { slotLine } from './player';
-import { clamp, compareIds } from './primitives';
+import { clamp } from './primitives';
 import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
 
@@ -153,62 +144,6 @@ export function fatigueCost(player: { attrs: { stamina: number } }, tactic: Tact
       tactic === 'press' ? 19 : 13,
     ),
   );
-}
-
-export function setLineup(w: World, ids: string[] | null) {
-  if (ids === null) {
-    delete w.lineup;
-    addEvent(
-      w,
-      'lineup',
-      '선발을 감독에게 맡겼습니다',
-      '능력과 피로를 비교해 매 경기 선발을 자동 구성합니다.',
-    );
-    return;
-  }
-  if (!Array.isArray(ids) || ids.length !== 11 || new Set(ids).size !== 11)
-    throw new Error('중복 없이 선발 11명을 선택하세요.');
-  const byId = new Map(activePlayers(w).map((player) => [player.id, player]));
-  // Anyone may play any slot; he plays at his level there (→CLUB-6).
-  if (ids.some((id) => !byId.has(id))) throw new Error('활동 중인 선수로 선발 11명을 선택하세요.');
-  w.lineup = [...ids];
-  addEvent(
-    w,
-    'lineup',
-    '다음 경기 선발을 정했습니다',
-    `선발 11명 · 평균 피로 ${Math.round(ids.reduce((sum, id) => sum + byId.get(id)!.fatigue, 0) / 11)} · 변경할 때까지 유지합니다.`,
-  );
-}
-
-/**
- * The rest preset values recovery more heavily, trading immediate quality for fresher starters;
- * both fill the formation's slots with the best remaining pairing first.
- */
-export function lineupPreset(
-  w: World,
-  preset: 'strongest' | 'rest',
-  f?: Pick<Fixture, 'kind' | 'groupKey'>,
-): string[] {
-  // Injured players, and with a fixture those banned for its competition, are left out.
-  const players = activePlayers(w).filter((p) => !isInjured(w, p) && !(f && isBanned(w, p.id, f)));
-  const slots = formationOf(w.tactic);
-  const penalty = preset === 'rest' ? 0.8 : 0.2;
-  const pairs = players.flatMap((p) =>
-    slots.map((slot, i) => ({
-      p,
-      slot: i,
-      value: slotOvr(p, slot, ownMultiplier(p)) - p.fatigue * penalty,
-    })),
-  );
-  pairs.sort((a, b) => b.value - a.value || a.slot - b.slot || compareIds(a.p.id, b.p.id));
-  const chosen: (string | undefined)[] = Array(slots.length);
-  const used = new Set<string>();
-  for (const pair of pairs) {
-    if (chosen[pair.slot] || used.has(pair.p.id)) continue;
-    chosen[pair.slot] = pair.p.id;
-    used.add(pair.p.id);
-  }
-  return chosen.filter((id): id is string => !!id);
 }
 
 /**

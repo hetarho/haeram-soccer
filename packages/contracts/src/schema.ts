@@ -200,12 +200,10 @@ const manager = z.object({
   flexibility: rating,
   pride: rating,
   trust: rating,
-  conflicts: z.number().int().nonnegative(),
   wage: money,
   since: z.number().int(),
   until: z.number().int(),
   interim: z.boolean(),
-  lastRequest: text.optional(),
   trait: z.enum(['youth', 'rotation', 'stable']).optional(),
   style: z
     .enum([
@@ -219,21 +217,6 @@ const manager = z.object({
       'headcoach',
     ])
     .optional(),
-  requestHistory: z
-    .object({
-      at: z.string().regex(/^\d{4}:\d{1,3}$/),
-      keys: z
-        .array(
-          z
-            .string()
-            .regex(/^(balanced|possession|counter|press):(respect|evidence|support|demand)$/),
-        )
-        .max(16)
-        .refine((keys) => new Set(keys).size === keys.length),
-      trustAwarded: z.boolean(),
-    })
-    .optional(),
-  pending: tactic.optional(),
   born: z.number().int().optional(),
   potential: rating.optional(),
   term: term.optional(),
@@ -1021,7 +1004,6 @@ const worldSchema: z.ZodType<World> = z.object({
   level: z.enum(['easy', 'normal', 'hard', 'extreme']),
   clubs: z.array(club).min(10).max(1000),
   players: z.array(player).max(20000),
-  lineup: z.array(id).length(11).optional(),
   hardStreak: z.number().int().nonnegative().optional(),
   trainingAt: z
     .string()
@@ -1085,7 +1067,6 @@ const worldSchema: z.ZodType<World> = z.object({
   inbox: z.array(inboxItem).max(200).optional(),
   manager,
   tactic,
-  requested: tactic.optional(),
   fixtures: z.array(fixture).max(20000),
   recentResults: z.record(id, z.array(fixture).max(RECENT_RESULT_LIMIT)).optional(),
   tables: z.record(id, table),
@@ -1282,7 +1263,9 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   assertIdentityFormatVersions(input);
   assertMatchModelFormat(input);
   const w = worldSchema.parse(input);
-  // SAVE-25: an older save's coaches kept the strain and suggestion timing of withdrawn orders.
+  // SAVE-25: the parse strips an older save's owner lineup and tactic requests (`lineup`,
+  // `requested`, the manager's `lastRequest`, `requestHistory`, `pending` and `conflicts`).
+  // An older save's coaches kept the strain and suggestion timing of withdrawn orders.
   for (const member of w.staff ?? []) {
     const legacy = member as typeof member & { strain?: unknown; asked?: unknown };
     delete legacy.strain;
@@ -1576,9 +1559,6 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   }
   const playerIds = new Set(w.players.map((p) => p.id));
   if (playerIds.size !== w.players.length) throw new Error('중복 선수 식별자');
-  // Anyone may play any slot (→CLUB-6): the XI needs eleven distinct players of the club.
-  if (w.lineup && (new Set(w.lineup).size !== 11 || w.lineup.some((id) => !playerIds.has(id))))
-    throw new Error('선발 명단의 선수가 올바르지 않습니다.');
   for (const f of [...w.fixtures, ...w.ownMatches, ...w.europe.flatMap((t) => t.fixtures)])
     if (!ids.has(f.home) || !ids.has(f.away) || f.home === f.away)
       throw new Error('경기 참가 클럽을 찾을 수 없습니다.');

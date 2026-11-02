@@ -3,7 +3,6 @@ import { openClubhouse } from './competition-navigation';
 import { marketRows, closeMarketPanel } from './market';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { horizontalOverflow } from './layout';
-import { proposeOnReport } from './events';
 
 /**
  * How far a dialog's content runs past its own width: any block that shows its overflow (a
@@ -97,7 +96,7 @@ for (const viewport of [
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
     await closeMarketPanel(page, '영입 후보 상세');
-    // The lineup tab draws the formation: each slot its position, role, player and 실효 OVR.
+    // The report draws the manager's formation: each slot its position, role, player and 실효 OVR.
     await openClubhouse(page);
     await page
       .getByTestId('club-hub')
@@ -105,16 +104,13 @@ for (const viewport of [
       .click();
     const preparation = page.getByRole('dialog', { name: '다음 경기 상세 리포트' });
     await expect(preparation).toBeVisible();
-    await proposeOnReport(preparation);
-    await preparation.getByRole('tab', { name: '선발 선택', exact: true }).click();
-    const pitch = preparation.getByRole('group', { name: /선발 배치$/ });
+    const lineup = preparation.getByRole('region', { name: '감독의 선발', exact: true });
+    const pitch = lineup.getByRole('group', { name: /선발 배치$/ });
     await expect(pitch).toBeVisible();
     await expect(pitch.getByTestId('formation-slot-0')).toContainText('GK');
     await expect(pitch.getByTestId('formation-slot-0')).toContainText(/실효 \d+/);
     await expect(pitch.locator('[data-testid^="formation-slot-"]')).toHaveCount(11);
-    // The owner's lineup editor; the report's compact pitches above let wide slots overhang.
-    expect(
-      await sideways(preparation.getByRole('region', { name: '구단주 제안', exact: true })),
-    ).toBeLessThanOrEqual(1);
+    // The manager's XI; the report's compact pitches above let wide slots overhang.
+    expect(await sideways(lineup)).toBeLessThanOrEqual(1);
   });
 }

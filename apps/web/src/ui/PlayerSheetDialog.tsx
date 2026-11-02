@@ -26,7 +26,7 @@ import {
 import { PlayerPerformance } from './PlayerPerformance';
 import { PlayerProfile } from './PlayerProfile';
 import { ballonDorLine } from './ballonDorText';
-import { openContractTalk, usePlayerPreparation, usePlayerSheet } from './state';
+import { openContractTalk, usePlayerSheet } from './state';
 import { playerCallLine } from './teamState';
 import a from './Analysis.module.css';
 import s from './App.module.css';
@@ -62,27 +62,16 @@ export function PlayerSheet({
     ranks = clubRanks(w.players, player.id);
   return (
     <Dialog label={player.name} onClose={onClose}>
-      {active && (
+      {active && talkFor(w, player) && (
         <div className={s.playerActions} aria-label="이 선수 관리">
-          {talkFor(w, player) && (
-            <button
-              type="button"
-              onClick={() => {
-                onClose();
-                openContractTalk(player.id);
-              }}
-            >
-              계약 협상
-            </button>
-          )}
           <button
             type="button"
             onClick={() => {
               onClose();
-              usePlayerPreparation.getState().open(player.id);
+              openContractTalk(player.id);
             }}
           >
-            다음 경기 선발·전술 준비
+            계약 협상
           </button>
         </div>
       )}
@@ -267,7 +256,6 @@ const selectPlayerWorld = worldSelector([
   'year',
   'playerClub',
   'tactic',
-  'lineup',
   'manager',
   'staff',
   'history',

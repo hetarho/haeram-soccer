@@ -115,7 +115,6 @@ function untouchedStamp(w: World) {
     income: w.income,
     expense: w.expense,
     tactic: w.tactic,
-    lineup: w.lineup,
     players: w.players.length,
     fixtures: w.fixtures.length,
     history: w.history.length,

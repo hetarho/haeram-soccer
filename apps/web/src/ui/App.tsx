@@ -27,7 +27,6 @@ import { BOTTOM_ORDER, NAV, TABS, type NavEntry } from './navigationTabs';
 import { personnelRoute } from './personnelNavigation';
 import { HudCash } from './HudCash';
 import { DepartmentPolicySheet } from './DepartmentPolicySheet';
-import { PlayerPreparationHost } from './PlayerPreparationHost';
 import { taskAddress, useTaskMemory } from './taskMemory';
 import { ClubCrest } from './ClubCrest';
 import { number, seasonName } from './format';
@@ -216,9 +215,7 @@ const selectContentWorld = worldSelector([
   'scorerSeason',
   'players',
   'manager',
-  'lineup',
   'tactic',
-  'requested',
   'ownMatches',
   'history',
   'events',
@@ -1179,7 +1176,6 @@ export function App() {
       <GlossaryHost />
       {client && playing && <TeamSheetHost client={client} />}
       {playing && client && <PlayerSheetHost client={client} />}
-      {playing && client && <PlayerPreparationHost client={client} />}
       {playing && client && <DepartmentPolicySheet client={client} />}
       {playing && client && controller && (
         <OfficeOverviewHost client={client} controller={controller} />

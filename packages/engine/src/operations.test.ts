@@ -11,6 +11,7 @@ import {
   simulateSeason,
   staffCandidates,
   transferOffers,
+  yearlyStaff,
 } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
@@ -30,30 +31,6 @@ const world = () => {
   return w;
 };
 describe('club decisions', () => {
-  it('refuses or conditions incompatible requests without applying them and resigns under proud conflict', () => {
-    const w = world();
-    w.manager.flexibility = 0;
-    w.manager.trust = 30;
-    w.manager.pride = 90;
-    w.manager.philosophy = 'balanced';
-    w.tactic = 'balanced';
-    operate(w, { type: 'tactics', tactic: 'press', tone: 'respect' });
-    expect(w.tactic).toBe('balanced');
-    operate(w, { type: 'tactics', tactic: 'press', tone: 'demand' });
-    expect(w.manager.interim).toBe(true);
-    expect(w.critical).toContain('감독');
-  });
-  it('accepts flexible requests and blocks identical trust farming', () => {
-    const w = world();
-    w.manager.flexibility = 100;
-    w.manager.trust = 100;
-    w.manager.pride = 0;
-    operate(w, { type: 'tactics', tactic: 'press', tone: 'evidence' });
-    expect(w.tactic).toBe('press');
-    expect(() => operate(w, { type: 'tactics', tactic: 'press', tone: 'evidence' })).toThrow(
-      '동일',
-    );
-  });
   it('refuses contract answers without a talk and the old single sponsor', () => {
     const w = world();
     // This compatibility fixture delegates contracts; the legacy command also hands over managers.
@@ -70,18 +47,6 @@ describe('club decisions', () => {
     // The single sponsor of rules before 1.16 is signed by slot now (→ECON-8).
     expect(() => operate(w, { type: 'sponsor', kind: 'stable' })).toThrow('자리별');
     expect(w).toEqual(before);
-  });
-  it('pays conditional support before switching tactic', () => {
-    const w = world();
-    w.manager.pending = 'counter';
-    w.cash = '0';
-    expect(() => operate(w, { type: 'accept-condition' })).toThrow('부족');
-    expect(w.manager.pending).toBe('counter');
-    operate(w, { type: 'support' });
-    const before = BigInt(w.cash);
-    operate(w, { type: 'accept-condition' });
-    expect(w.tactic).toBe('counter');
-    expect(BigInt(w.cash)).toBeLessThan(before);
   });
   /** Candidate 2 on loan and the local sponsor, each signed once; the second signing is refused. */
   const loanAndSponsor = (w: ReturnType<typeof world>) => {
@@ -198,9 +163,9 @@ describe('club decisions', () => {
     const resigned = (reads: number) => {
       const w = world();
       for (let i = 0; i < reads; i++) operate(w, { type: 'read-inbox' });
-      w.manager.trust = 20;
-      w.manager.pride = 90;
-      operate(w, { type: 'tactics', tactic: 'press', tone: 'demand' });
+      // At trust 0 he resigns (→STAFF-47), as at a season boundary, on this day.
+      w.manager.trust = 0;
+      yearlyStaff(w);
       return w.manager;
     };
     const plain = resigned(0);

@@ -217,10 +217,10 @@ function withAgents(w: World, agents: Agent[]) {
   return market.free;
 }
 const ids = (w: World) => managerMatches(w).map((m) => m.id);
-/** Makes the proud manager resign over one more strong demand (→STAFF-5). */
-function resignOverDemand(w: World) {
-  w.manager = { ...w.manager, pride: 90, trust: 20, conflicts: 2 };
-  operate(w, { type: 'tactics', tactic: 'counter', tone: 'demand' });
+/** A manager still at trust 0 resigns at the season boundary (→STAFF-47), here on this day. */
+function resignAtTrustFloor(w: World) {
+  w.manager = { ...w.manager, trust: 0 };
+  yearlyStaff(w);
 }
 /** Sets one direction row (→ECON-25). */
 const row = (w: World, key: 'manager' | 'school' | 'finance', option: string) =>
@@ -311,7 +311,7 @@ describe('선호 학파 and 감독 기조 (STAFF-18)', () => {
     // Appointed by the staff, he leaves his club, which takes its compensation and names a successor.
     w.cash = '999999999';
     const cash = BigInt(w.cash);
-    resignOverDemand(w);
+    resignAtTrustFloor(w);
     expect(w.manager.id).toBe(target.id);
     expect(w.manager.until).toBe(w.year + 3);
     expect(BigInt(w.cash)).toBe(cash - cost);
@@ -328,7 +328,7 @@ describe('선호 학파 and 감독 기조 (STAFF-18)', () => {
       { style: 'organizer', ovr: 70 },
       { style: 'counter', ovr: 80 },
     ]);
-    resignOverDemand(w);
+    resignAtTrustFloor(w);
     expect(w.manager.interim).toBe(true);
     expect(w.critical).toBeUndefined();
     const waiting = () => w.inbox!.filter((item) => item.ref === w.manager.id);
@@ -359,7 +359,7 @@ describe('선호 학파 and 감독 기조 (STAFF-18)', () => {
     const kept = delegated('criteria-wait-owner');
     kept.intervention = 2;
     kept.settings = legacySettings(2);
-    resignOverDemand(kept);
+    resignAtTrustFloor(kept);
     delete kept.critical;
     dailyStaff(kept);
     expect(kept.manager.interim).toBe(true);
@@ -374,7 +374,7 @@ describe('선호 학파 and 감독 기조 (STAFF-18)', () => {
     ]);
     expect(managerMatches(w)).toEqual([]);
     expect(managerPickPreview(w)).toMatchObject({ pick: { id: 'agent-1' }, fallback: true });
-    resignOverDemand(w);
+    resignAtTrustFloor(w);
     // The cheapest, as 저비용 orders them, though nobody is of the school.
     expect(w.manager).toMatchObject({ id: 'agent-1', interim: false });
     expect(w.critical).toBeUndefined();
@@ -385,7 +385,7 @@ describe('선호 학파 and 감독 기조 (STAFF-18)', () => {
     const broke = delegated('criteria-best-broke', 'proven', 'headcoach');
     withAgents(broke, [{ style: 'organizer', ovr: 72 }]);
     broke.cash = '0';
-    resignOverDemand(broke);
+    resignAtTrustFloor(broke);
     expect(broke.manager.interim).toBe(true);
     expect(broke.critical).toBeUndefined();
     expect(broke.inbox!.at(-1)).toMatchObject({

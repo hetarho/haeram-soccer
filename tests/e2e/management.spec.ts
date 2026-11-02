@@ -22,17 +22,14 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await page.getByRole('button', { name: '쉬움' }).click();
   await page.getByRole('button', { name: '클럽 창단' }).click();
   await openPersonnel(page, 'players');
-  // First-team work starts on the roster, its tactics beside it; the manager and his staff
-  // have their own club section (→WEB-43).
+  // First-team work starts on the roster; the manager and his staff have their own club section,
+  // and the manager picks the tactic (→WEB-43).
   await expect(page).toHaveURL(/\/first-team\?view=players$/);
   await openPersonnel(page, 'coaches');
   await expect(page.getByRole('region', { name: '스태프', exact: true })).toBeVisible();
   await expect(page).toHaveURL(/\/staff\?view=coaches$/);
   await openPersonnel(page, 'players');
-  await chooseOption(page.getByRole('combobox', { name: '요청 전술', exact: true }), 'counter');
-  await chooseOption(page.getByRole('combobox', { name: '요청 말투', exact: true }), 'evidence');
-  await page.getByRole('button', { name: '감독에게 제안하기' }).click();
-  await expect(page.locator('blockquote').getByText(/역습 요청 ·/)).toBeVisible();
+  await expect(page.getByRole('button', { name: '감독에게 제안하기' })).toHaveCount(0);
   await openOfficeArea(page, '후원');
   // A 1950 club has only the local slot open; signing it replaces the offers with the contract.
   const localSponsor = page.getByTestId('sponsor-slot-local');

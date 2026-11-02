@@ -70,4 +70,38 @@ describe('owner interventions withdrawn (→SAVE-25)', () => {
     expect(older.staff[0]!.strain).toEqual({ year: w.year, count: 2 });
     expect(older.trainingOrders).toBeDefined();
   });
+
+  it('drops removed tactic requests and owner lineups from an older save', () => {
+    const w = world();
+    // A request answered this round, one waiting on support and a saved XI, as a career saved
+    // before STAFF-2 was withdrawn: the manager picks the tactic and the XI (→CLUB-6, STAFF-22).
+    addEvent(w, 'manager-response', '감독의 답변', '점유율 요청 · 조건부 수락입니다.');
+    addEvent(w, 'lineup', '다음 경기 선발을 정했습니다', '선발 11명 · 평균 피로 12');
+    const older = {
+      ...structuredClone(w),
+      requested: 'possession',
+      lineup: w.players.slice(0, 11).map((player) => player.id),
+      manager: {
+        ...structuredClone(w.manager),
+        lastRequest: 'possession:evidence',
+        requestHistory: { at: `${w.year}:0`, keys: ['possession:evidence'], trustAwarded: false },
+        pending: 'possession',
+        conflicts: 2,
+      },
+    };
+    const loaded = validateWorld(older, LOAD_CATALOG);
+    expect(loaded).not.toHaveProperty('requested');
+    expect(loaded).not.toHaveProperty('lineup');
+    for (const key of ['lastRequest', 'requestHistory', 'pending', 'conflicts'])
+      expect(loaded.manager).not.toHaveProperty(key);
+    // Every other fact stays as saved, the recorded answer and XI among the club's events.
+    expect(loaded).toEqual(validateWorld(w, LOAD_CATALOG));
+    expect(loaded.events.slice(-2).map((event) => event.kind)).toEqual([
+      'manager-response',
+      'lineup',
+    ]);
+    // Reading never writes: the save itself is left for the writer's next checkpoint.
+    expect(older.manager.pending).toBe('possession');
+    expect(older.lineup).toHaveLength(11);
+  });
 });

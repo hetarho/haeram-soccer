@@ -60,14 +60,6 @@ export function clubMilestones(w: World) {
       1,
     ),
     goal(
-      'preparation',
-      '우리만의 선발',
-      '경기 준비에서 선발을 정하고 저장해요.',
-      '경기 준비에서 선발 확정하기',
-      w.lineup || w.events.some((event) => event.kind === 'lineup') ? 1 : 0,
-      1,
-    ),
-    goal(
       'first-win',
       '첫 승리의 기쁨',
       '공식 경기에서 첫 승리를 기록해요.',

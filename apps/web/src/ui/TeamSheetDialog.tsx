@@ -267,7 +267,6 @@ const selectSheetWorld = worldSelector([
   'lower',
   'playerClub',
   'players',
-  'lineup',
   'manager',
 ]);
 export function OpenSheets({ ids, client }: { ids: string[]; client: GameClient }) {

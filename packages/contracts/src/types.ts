@@ -430,15 +430,10 @@ export interface Manager {
   flexibility: number;
   pride: number;
   trust: number;
-  conflicts: number;
   wage: string;
   since: number;
   until: number;
   interim: boolean;
-  lastRequest?: string;
-  /** Bounded per-round replies and positive-trust guard; absent in older saves. */
-  requestHistory?: { at: string; keys: string[]; trustAwarded: boolean };
-  pending?: Tactic;
   /** Selection habit; absent means the neutral pre-trait selection. */
   trait?: ManagerTrait;
   /** School of football; absent means the neutral founding all-rounder. */
@@ -1172,8 +1167,6 @@ export interface World {
   mediations?: RecruitmentMediation[];
   promises?: ReinforcementPromise[];
   players: Player[];
-  /** Preferred starting XI, one player per slot of the applied tactic's formation (→STAFF-22). */
-  lineup?: string[];
   /** The squad's settled rounds in a row under 하드 (→CLUB-19). */
   hardStreak?: number;
   /** Last settled training boundary, preventing repeated development/recovery. */
@@ -1216,7 +1209,6 @@ export interface World {
   shortlist?: Shortlist;
   manager: Manager;
   tactic: Tactic;
-  requested?: Tactic;
   fixtures: Fixture[];
   tables: Record<string, TableRow>;
   /** Bounded cross-season results for every club; absent in saves made before tracking. */
@@ -1330,8 +1322,6 @@ export type Command =
   | { type: 'advance-days'; days: number; stop?: InboxKind[] }
   | { type: 'next-match' }
   | { type: 'season'; count: number }
-  | { type: 'tactics'; tactic: Tactic; tone: string }
-  | { type: 'lineup'; ids: string[] | null }
   | { type: 'policy'; key: PolicyKey; level: PolicyLevel }
   /** `term`: the seasons the owner chooses (→STAFF-15); absent keeps the earlier rule. */
   | {
@@ -1377,7 +1367,6 @@ export type Command =
   | { type: 'facility'; part: FacilityPart }
   | { type: 'ticket'; price: number }
   | { type: 'support' }
-  | { type: 'accept-condition' }
   /**
    * Applies a strategy at once (→ECON-22); `name` labels an owner's saved strategy in the club's
    * history (→WEB-61).

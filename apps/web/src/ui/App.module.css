@@ -516,13 +516,6 @@
   fill: var(--text-faint);
   font-family: var(--display);
 }
-.notice {
-  padding: 7px 12px !important;
-  margin-bottom: 8px !important;
-  font-size: var(--label-size);
-  font-family: var(--display);
-}
-.notice,
 .error,
 .critical {
   padding: 12px 18px;

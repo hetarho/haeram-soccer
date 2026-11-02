@@ -200,18 +200,7 @@ describe('management screen calendar locks', () => {
     };
     expectLocked(() => createElement(AcademyPanel, { w, client }), / 방출$/);
   });
-  it('locks manager requests while navigation and replacement-market inspection remain available', () => {
-    // The tactics request sits with the first team's roster (→WEB-43).
-    expectLocked(
-      () =>
-        createElement(Rich, {
-          state: gameStore.getState(),
-          client,
-          page: 'firstTeam',
-          controller,
-        }),
-      /감독에게 제안하기/,
-    );
+  it('keeps the manager replacement market open to inspect while the clock runs', () => {
     // The manager heads 코치진; his replacement market stays open to inspect.
     vi.stubGlobal('location', {
       origin: 'https://game.test',

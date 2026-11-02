@@ -5,9 +5,10 @@ import {
   activePlayers,
   advanceDays,
   delegated,
+  lineup,
+  ownMultiplier,
   playerValue,
   seasonLength,
-  selectedLineup,
   unreadAttention,
 } from './index';
 import { inBids, world } from './transfers.testkit';
@@ -37,9 +38,7 @@ describe('incoming bids', () => {
           ...activePlayers(w),
           ...(p.status === 'sold' ? [{ ...p, status: 'active' as const }] : []),
         ];
-        const starters = selectedLineup(squad, w.lineup, w.tactic, w.manager, w.year).map(
-          (x) => x.id,
-        );
+        const starters = lineup(squad, w.tactic, w.manager, w.year, ownMultiplier).map((x) => x.id);
         decisions.push({
           bid,
           report: w.inbox?.find((item) => item.ref === bid.id),

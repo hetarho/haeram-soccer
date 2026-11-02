@@ -658,17 +658,6 @@ export function openStaff(role: StaffRole) {
   useStaffRequest.getState().open(role);
   openPeople('coaches');
 }
-/** Player preparation opens the existing sheet without assigning a lineup. */
-export const usePlayerPreparation = create<{
-  world?: string;
-  id?: string;
-  open: (id: string) => void;
-  close: () => void;
-}>((set) => ({
-  open: (id) => set({ id, world: useTaskMemory.getState().world }),
-  close: () => set({ id: undefined, world: undefined }),
-}));
-
 /**
  * A prospect's review in 유소년 (→WEB-112): Team's academy list names a prospect, and the academy's
  * own place opens his existing review there. Opening it reads; only its actions commit.

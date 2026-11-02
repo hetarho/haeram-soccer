@@ -1,14 +1,11 @@
 import { ATTRIBUTES, POSITIONS } from '../../contracts/src/player';
 import type { Fixture, Tactic, World } from '../../contracts/src/types';
 import {
-  clubOf,
   createWorld,
   MATCH_MODEL_RELEASE,
   type MatchModelRelease,
   npcTactic,
-  setLineup,
   simulateMatch,
-  startingSquad,
 } from './index';
 
 interface Build {
@@ -51,11 +48,6 @@ export function scenario(
     player.attrs.stamina = build.stamina;
     player.fatigue = build.fatigue || 0;
   }
-  // Every preset uses exactly this XI, so comparisons cannot select different players.
-  setLineup(
-    w,
-    startingSquad(w, clubOf(w)).map((player) => player.id),
-  );
   const opponent = w.clubs.find(
     (club) => club.id !== w.playerClub && npcTactic(club) === opponentTactic,
   )!;

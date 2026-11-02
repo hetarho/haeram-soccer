@@ -94,7 +94,6 @@ describe('identity workload stays cosmetic (→KIT-13)', () => {
       'europe',
       'manager',
       'tactic',
-      'lineup',
       'cash',
       'income',
       'expense',
