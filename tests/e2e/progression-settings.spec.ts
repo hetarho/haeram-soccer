@@ -316,10 +316,16 @@ test('approvals waiting in the 결재함 never stop a running clock (→WEB-42)'
   // The controller's 결재함 counts the same work and opens the office's queue (→WEB-18/100).
   const inbox = clock.getByTestId('approval-inbox');
   await expect(inbox).toHaveAttribute('aria-label', /^결재함 · 대기 [1-9]/);
-  const label = (await inbox.getAttribute('aria-label'))!;
   await inbox.click();
   await expect(approvalQueue(page)).toBeVisible();
-  await expect(approvalRows(page)).toHaveCount(Number(/대기 (\d+)/.exec(label)![1]));
+  // A day already in flight when play stopped may still add work, so the count and the rows are
+  // read together.
+  await expect
+    .poll(async () => {
+      const label = (await inbox.getAttribute('aria-label')) ?? '';
+      return Number(/대기 (\d+)/.exec(label)?.[1]) - (await approvalRows(page).count());
+    })
+    .toBe(0);
   await expect(approvalRows(page).first().getByTestId('approval-deadline')).toHaveText(
     /^(D-[1-7]|지연 \d+일)$/,
   );
