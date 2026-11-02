@@ -21,14 +21,14 @@ import {
   type ReactNode,
 } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
-import { country, priceIndex } from '../../../../packages/catalogs/src/index';
+import { priceIndex } from '../../../../packages/catalogs/src/index';
 import { GameClient, type ClientState } from '../runtime/client';
 import { BOTTOM_ORDER, NAV, TABS, type NavEntry } from './navigationTabs';
 import { personnelRoute } from './personnelNavigation';
 import { HudCash } from './HudCash';
 import { taskAddress, useTaskMemory } from './taskMemory';
 import { ClubCrest } from './ClubCrest';
-import { number, seasonName } from './format';
+import { GameOver } from './GameOver';
 import { ProgressControls } from './ProgressControls';
 import { LiveSeason } from './LiveSeason';
 // The clubhouse loads when a game is ready, outside the founding/slot entry.
@@ -441,84 +441,6 @@ function ReadonlyBadge() {
       </button>
       <span className={open ? s.readonlyDetail : s.srOnly}>{text}</span>
     </span>
-  );
-}
-/**
- * The end of a career (→ECON-24): what the club achieved before it went under, its records to
- * keep and a new club to found.
- */
-function GameOver({
-  w,
-  onExport,
-  onNew,
-  onSlots,
-}: {
-  w: World;
-  onExport: () => void;
-  onNew: () => void;
-  onSlots: () => void;
-}) {
-  const { t } = useLocale();
-  const own = w.clubs.find((club) => club.id === w.playerClub)!;
-  const best = w.history.reduce<(typeof w.history)[number] | undefined>(
-    (top, season) =>
-      !top || season.tier < top.tier || (season.tier === top.tier && season.rank < top.rank)
-        ? season
-        : top,
-    undefined,
-  );
-  // Leagues, cups and continental titles recorded season by season (the event tail is bounded).
-  const titles = w.history.reduce(
-    (count, season) =>
-      count +
-      season.champions.filter((title) => title.club === own.id).length +
-      season.europe.filter((tournament) => tournament.winner === own.id).length,
-    0,
-  );
-  const peak = Math.max(own.fans, ...w.history.map((season) => season.fans));
-  return (
-    <section
-      data-surface="sheet"
-      className={s.gameOver}
-      data-testid="game-over"
-      aria-label="게임 오버"
-    >
-      <small>GAME OVER</small>
-      <h2>{own.name} 파산</h2>
-      <p>
-        {seasonName(w.bankrupt!.year)} 시즌, 적자를 {w.insolvent ?? 0}라운드 동안 벗어나지 못해
-        구단이 문을 닫았어요. 남은 건 우리가 쌓은 기록이에요.
-      </p>
-      <ul>
-        <li>
-          <span>함께한 시즌</span>
-          <b>{w.history.length}</b>
-        </li>
-        <li>
-          <span>최고 성적</span>
-          <b>
-            {best
-              ? `${best.tier >= country(own.country).groups.length ? '아마추어' : `${best.tier + 1}부`} ${best.rank}위`
-              : '—'}
-          </b>
-        </li>
-        <li>
-          <span>우승</span>
-          <b>{titles}</b>
-        </li>
-        <li>
-          <span>최다 서포터</span>
-          <b>{number(peak)}</b>
-        </li>
-      </ul>
-      <div className={s.gameOverActions}>
-        <button onClick={onExport}>기록 내보내기</button>
-        <button onClick={onSlots}>{t('slots.title')}</button>
-        <button data-ui="primary" className={s.primary} onClick={onNew}>
-          이 슬롯에서 새 게임
-        </button>
-      </div>
-    </section>
   );
 }
 const RuntimeFeedback = memo(function RuntimeFeedback({

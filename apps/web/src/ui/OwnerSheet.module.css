@@ -1,0 +1,321 @@
+/* The HUD's two pots (→WEB-114): the club's cash pinned top right, the owner's fortune beside it. */
+.hudMoney {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.hudFortune {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 4px 10px 4px 5px;
+  border-radius: var(--card-radius);
+  border: 1px solid transparent;
+  background: transparent;
+  box-shadow: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+.hudFortune > span {
+  display: grid;
+  line-height: 1.15;
+}
+.hudFortune small {
+  font-size: var(--label-size);
+  color: var(--text-faint);
+  letter-spacing: 0.4px;
+  font-family: var(--display);
+}
+.hudFortune b {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  font-variant-numeric: var(--numeric-variant);
+  white-space: nowrap;
+}
+.hudFortune [data-ui='currency'] {
+  display: inline;
+  margin-right: 1px;
+  font-size: 0.6em;
+  font-weight: 800;
+}
+.hudFortune .mark {
+  display: none;
+}
+.hudFortune:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.hudFortuneNegative {
+  border-color: var(--danger-edge);
+}
+.hudFortuneNegative b {
+  color: var(--danger);
+}
+/* Phones: the two pots stack in the cash's own column, so the centred date keeps its room. */
+@media (max-width: 760px) {
+  .hudMoney {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0;
+  }
+  .hudMoney > button {
+    min-height: 22px;
+    padding: 0 4px;
+  }
+  .hudMoney > button small {
+    display: none;
+  }
+  .hudMoney > .hudFortune b {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .hudMoney > .hudFortuneNegative b {
+    color: var(--danger);
+  }
+  /* A short owner mark tells the stacked pots apart; long translations clip, the amount never. */
+  .hudFortune .mark {
+    display: inline-block;
+    max-width: 3.5em;
+    margin-right: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+    color: var(--text-faint);
+    font-family: var(--display);
+    font-size: 9px;
+    font-weight: 700;
+  }
+}
+
+/* The 구단주 sheet: one column of sections under the fortune's ticket. */
+.sheet {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  min-width: 0;
+}
+.fortune {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+}
+.fortune small {
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: var(--label-size);
+}
+.fortune b {
+  font-size: 26px;
+  font-weight: 800;
+  font-variant-numeric: var(--numeric-variant);
+  line-height: 1.15;
+}
+.negative,
+.fortune .negative {
+  color: var(--danger);
+}
+.crisis {
+  margin: 0;
+  padding: 7px 10px;
+  border-radius: var(--card-radius);
+  border: 1px solid var(--danger);
+  background: var(--surface-grain, none) color-mix(in srgb, var(--danger) 14%, var(--surface-deep));
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.crisis b {
+  margin-right: 4px;
+  color: var(--danger);
+}
+.section {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.section h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 10px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+.section h3 span {
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: var(--numeric-variant);
+}
+.slider {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+.slider b {
+  font-size: 15px;
+  font-variant-numeric: var(--numeric-variant);
+}
+.slider input {
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+}
+.outcomes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+.outcomes > div {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface-deep);
+}
+.outcomes dt {
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: var(--label-size);
+  font-weight: 700;
+}
+.outcomes dt small {
+  margin-left: 4px;
+  color: var(--text);
+  font-size: 13px;
+}
+.outcomes dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.outcomes dd:first-of-type {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text);
+}
+.outcomes dd.up {
+  color: var(--danger);
+}
+.outcomes dd.down {
+  color: var(--cool);
+}
+.facts {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+.facts > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 10px;
+  font-size: 13px;
+}
+.facts dt {
+  color: var(--text-muted);
+}
+.facts dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: var(--numeric-variant);
+  overflow-wrap: anywhere;
+}
+.up {
+  color: var(--danger);
+}
+.down {
+  color: var(--cool);
+}
+.note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.actions button {
+  min-height: 44px;
+}
+/* 팬 민심 from 0 to 100, its floor marked where 퇴진 압박 starts counting (→OWNER-13). */
+.meter {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--surface-deep);
+  overflow: hidden;
+}
+.meter > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--mood);
+  border-radius: inherit;
+  background: var(--accent, var(--gold));
+}
+.meter > .meterLow {
+  background: var(--danger);
+}
+.meter::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--floor);
+  width: 2px;
+  background: var(--danger);
+}
+.movers {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.movers li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 12.5px;
+}
+.movers li:last-child {
+  border-bottom: 0;
+}
+.movers span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.movers b {
+  flex-shrink: 0;
+  font-variant-numeric: var(--numeric-variant);
+}
+.lock {
+  margin: 0;
+  padding: 7px 10px;
+  border-radius: var(--card-radius);
+  background: var(--surface-grain, none) var(--surface-deep);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.message {
+  margin: 0;
+  min-height: 1em;
+  font-size: 12.5px;
+}
+.message:empty {
+  display: none;
+}
