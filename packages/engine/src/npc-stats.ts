@@ -133,29 +133,36 @@ function add(into: Metrics, row: Metrics) {
  * is a no-op and the worker serializes commands — so it keeps no outcome list of its own and draws
  * nothing. Each side's club adds the match, its team row and its xG for and against; each line
  * that played adds an appearance — a start, or a substitute appearance when he came on — and his
- * counters to his contribution for that club (→HIST-13). Results of the pre-feature model, of
- * another season or with no open season are not counted: untracked stays absent, never zero
- * (→HIST-17). Every participant is found before anything is added, so a record naming someone
+ * counters to his contribution for that club (→HIST-13). With `resultsOnly` (a world nobody owns
+ * a club in, →MATCH-22) it takes the results-only record instead, which carries no model: the
+ * match, goals, assists, minutes and appearances add, the detail and xG stay zero. Results of the
+ * pre-feature model, of another season or with no open season are not counted: untracked stays
+ * absent, never zero (→HIST-17). Every participant is found before anything is added, so a record naming someone
  * outside the match squads throws with the ledger untouched.
  */
-export function settleNpcSeason(w: World, playback: MatchPlayback): void {
+export function settleNpcSeason(w: World, playback: MatchPlayback, resultsOnly = false): void {
   const r = playback.record;
   const stats = w.npcSeason;
-  if (r.model === undefined || !stats || stats.year !== r.year || stats.model !== r.model) return;
+  if (!stats || stats.year !== r.year) return;
+  // A results-only record (→MATCH-22) carries no model and adds its goals, assists and minutes.
+  if (resultsOnly ? r.model !== undefined : r.model === undefined || stats.model !== r.model)
+    return;
   const full = r as FullMatchRecord;
+  // A results-only record's lines are its squads in order (results-only.ts): no lookup needed.
   const people = new Map<string, Player>();
-  for (const squad of playback.squads) for (const p of squad) people.set(p.id, p);
+  if (!resultsOnly) for (const squad of playback.squads) for (const p of squad) people.set(p.id, p);
   // Own records' rule (playerAnalysis `appearanceCounts`): he came on if a change brought him.
   const came = new Set(full.incidents.flatMap((x) => (x.kind === 'sub' && x.other) || []));
   const played: { side: 0 | 1; line: FullMatchRecord['players'][number]; person: Player }[] = [];
   let at = 0;
   for (const side of [0, 1] as const)
-    for (const end = at + full.lineCounts[side]; at < end; at++) {
+    for (const start = at, end = at + full.lineCounts[side]; at < end; at++) {
       const line = full.players[at]!;
       // An appearance is a line with minutes; a substitute who never came on has none.
       if (!(line.metrics[M.minutes]! > 0)) continue;
-      const person = people.get(line.id);
-      if (!person) throw new Error(`경기 기록의 선수가 경기 명단에 없습니다: ${line.id}`);
+      const person = resultsOnly ? playback.squads[side][at - start] : people.get(line.id);
+      if (person?.id !== line.id)
+        throw new Error(`경기 기록의 선수가 경기 명단에 없습니다: ${line.id}`);
       played.push({ side, line, person });
     }
   let competition = npcCompetition(stats, r);
@@ -175,6 +182,7 @@ export function settleNpcSeason(w: World, playback: MatchPlayback): void {
     }
     row.matches++;
     add(row.metrics, full.metrics[side]);
+    if (resultsOnly) continue;
     add(row.detail, full.detail[side]);
     row.xg += Math.round(full.xg[side] * 100);
     row.xga += Math.round(full.xg[side === 0 ? 1 : 0] * 100);
@@ -201,6 +209,6 @@ export function settleNpcSeason(w: World, playback: MatchPlayback): void {
     part.appearances++;
     if (!came.has(line.id)) part.starts++;
     add(part.metrics, line.metrics);
-    add(part.detail, line.detail);
+    if (line.detail) add(part.detail, line.detail);
   }
 }

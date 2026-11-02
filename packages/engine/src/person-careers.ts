@@ -165,8 +165,11 @@ export function openEmployment(
   )
     throw new Error('재직 날짜를 확인하세요.');
   const job = { role, club, from: { ...from } };
+  // Someone who already coached or had a mentor stays where `coachingPeople` has him (T669).
+  const coached =
+    person.mentors.length > 0 || person.employment.some((held) => isCoachingRole(held.role));
   person.employment.push(job);
-  if (isCoachingRole(role)) coachingIndexesEver.delete(w);
+  if (isCoachingRole(role) && !coached) coachingIndexesEver.delete(w);
   employmentChanged(w, person, job, true);
   syncMentorExposure(w, person, from);
   person.club = club;
@@ -236,23 +239,36 @@ function coachingIntervals(person: PersonCareer, at: CareerDate): Interval[] {
 }
 /** A virtual anniversary advances only by the union of actually employed calendar days. */
 export function coachingService(person: PersonCareer, at: CareerDate) {
-  // Without a coaching job he has no service: what the intervals below give him (T450).
-  if (!person.employment.some((job) => isCoachingRole(job.role)))
-    return { days: 0, qualified: false };
-  const intervals = coachingIntervals(person, at),
-    days = intervals.reduce((sum, [a, b]) => sum + b - a, 0),
-    first = intervals[0]?.[0];
+  const { days, first, anniversary } = serviceOf(person, at);
   if (first === undefined) return { days, qualified: false };
-  const start = new Date(first * DAY_MS),
-    anniversary = Math.floor(
-      Date.UTC(start.getUTCFullYear() + 3, start.getUTCMonth(), start.getUTCDate()) / DAY_MS,
-    );
   return {
     days,
     first: careerDateFromOrdinal(first),
     virtual: careerDateFromOrdinal(first + days),
-    qualified: first + days >= anniversary,
+    qualified: first + days >= anniversary!,
   };
+}
+function serviceOf(person: PersonCareer, at: CareerDate) {
+  // Without a coaching job he has no service: what the intervals below give him (T450).
+  if (!person.employment.some((job) => isCoachingRole(job.role))) return { days: 0 };
+  const intervals = coachingIntervals(person, at),
+    days = intervals.reduce((sum, [a, b]) => sum + b - a, 0),
+    first = intervals[0]?.[0];
+  if (first === undefined) return { days };
+  const start = new Date(first * DAY_MS),
+    anniversary = Math.floor(
+      Date.UTC(start.getUTCFullYear() + 3, start.getUTCMonth(), start.getUTCDate()) / DAY_MS,
+    );
+  return { days, first, anniversary };
+}
+/**
+ * Calendar days of service `person` still lacks at `at` for `coachingService`'s qualification: 0
+ * once qualified, none before any service. Service grows by at most a day a calendar day, so he
+ * cannot qualify sooner than that many days on while no job is opened (T669).
+ */
+export function coachingServiceShort(person: PersonCareer, at: CareerDate): number | undefined {
+  const { days, first, anniversary } = serviceOf(person, at);
+  return first === undefined ? undefined : Math.max(0, anniversary! - (first + days));
 }
 /** A mutation records the currently shared manager; profiles only read these facts. */
 export function syncMentorExposure(w: World, person: PersonCareer, at = careerDate(w)) {
@@ -430,14 +446,15 @@ function employmentChanged(w: World, person: PersonCareer, job: CareerEmployment
   const previous = employmentVersions.get(w) ?? 0;
   employmentVersions.set(w, previous + 1);
   // Another role's job leaves the active coaching jobs as they were: their index stays (T450).
+  // A coaching job that ends leaves the others in their order: the index drops it (T669).
   const coaching = coachingIndexes.get(w);
-  if (
-    coaching &&
-    coaching.people === w.people &&
-    coaching.version === previous &&
-    !isCoachingRole(job.role)
-  )
-    coaching.version = previous + 1;
+  if (coaching && coaching.people === w.people && coaching.version === previous) {
+    if (!isCoachingRole(job.role)) coaching.version = previous + 1;
+    else if (!active) {
+      coaching.active = coaching.active.filter((entry) => entry.job !== job);
+      coaching.version = previous + 1;
+    }
+  }
   const hit = postIndexes.get(w);
   if (!hit || hit.people !== w.people || hit.version !== previous) return;
   if (job.role !== 'player') {

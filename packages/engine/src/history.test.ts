@@ -12,7 +12,12 @@ import { evolveClubs } from './dynamics';
 import { ownerSettleGap } from './owner';
 import { openEmployment } from './person-careers';
 import { founded, toLastRound } from './season.testkit';
-import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { simulateMatch } from './match';
+import { simulateAggregate } from './aggregate/engine';
+import { resultsOnlyMatch } from './results-only';
+import { equalSides } from './results-only.testkit';
+import type { MatchPlayback } from '../../contracts/src/types';
 
 vi.mock('./owner', async (importOriginal) => {
   const actual = await importOriginal<typeof import('./owner')>();
@@ -24,11 +29,12 @@ vi.mock('./dynamics', async (importOriginal) => {
 });
 
 /**
- * An ownerless world on the first day of `year`'s season, on the pre-feature path: these tests
- * are about the seasons lived and archived, not the match model (→SAVE-23).
+ * An ownerless world on the first day of `year`'s season. Every fixture is results-only whatever
+ * the model (→MATCH-22); `release` decides only whether the season's aggregates and with them the
+ * Ballon d'Or are kept (→SAVE-23, PLAYER-27), as `generateHistory`'s released model keeps them.
  */
-function worldFrom(seed: string, year: number = HISTORY_START) {
-  const w = historyWorld(seed, DISABLED_RELEASE);
+function worldFrom(seed: string, year: number = HISTORY_START, release = DISABLED_RELEASE) {
+  const w = historyWorld(seed, release);
   if (year === w.year) return w;
   w.year = year;
   prepareSeason(w);
@@ -69,13 +75,23 @@ describe('the world before the takeover (→WORLD-13)', () => {
 
   it('makes the same world from the same seed, season by season', () => {
     const progress: number[] = [];
-    const a = liveHistory(worldFrom('history-same'), 1931, (season) => progress.push(season));
-    const b = liveHistory(worldFrom('history-same'), 1931);
-    const other = liveHistory(worldFrom('history-other'), 1931);
-    expect(progress).toEqual([1931]);
-    expect([a.year, currentDay(a)]).toEqual([1931, 0]);
+    const a = liveHistory(worldFrom('history-same', 1930, ENABLED_RELEASE), 1932, (season) =>
+      progress.push(season),
+    );
+    const b = liveHistory(worldFrom('history-same', 1930, ENABLED_RELEASE), 1932);
+    const other = liveHistory(worldFrom('history-other', 1930, ENABLED_RELEASE), 1932);
+    expect(progress).toEqual([1931, 1932]);
+    expect([a.year, currentDay(a)]).toEqual([1932, 0]);
     expect(archiveHash(a)).toBe(archiveHash(b));
     expect(archiveHash(other)).not.toBe(archiveHash(a));
+    // Every fixture lived results-only: scored, and its season's goals in the standings.
+    for (const h of a.history) {
+      const rows = h.standings;
+      expect(rows.length).toBeGreaterThan(0);
+      expect(rows.reduce((sum, row) => sum + row[4]!, 0)).toBe(
+        rows.reduce((sum, row) => sum + row[5]!, 0),
+      );
+    }
   });
 
   it('skips the war seasons and ages people through the gap', () => {
@@ -109,7 +125,7 @@ describe('the world before the takeover (→WORLD-13)', () => {
   });
 
   it('archives what HIST-2 keeps for every season played, and nothing of an own club', () => {
-    const w = liveHistory(worldFrom('history-archive', 1954), 1956);
+    const w = liveHistory(worldFrom('history-archive', 1954, ENABLED_RELEASE), 1956);
     const [first, season] = w.history;
     expect([first!.year, season!.year]).toEqual([1954, 1955]);
     for (const h of w.history) {
@@ -132,6 +148,19 @@ describe('the world before the takeover (→WORLD-13)', () => {
     const cup = season!.europe.find((e) => e.kind === 'ucl');
     expect(cup?.winner).toBeTruthy();
     expect(season!.brackets?.some((b) => b.key === 'ucl')).toBe(true);
+    // The first Ballon d'Or (→PLAYER-27): three places from the results-only season's goals,
+    // assists and appearances; none for 1954/55.
+    expect(first!.ballonDor).toBeUndefined();
+    const podium = season!.ballonDor!;
+    expect(podium.map((p) => p.points)).toEqual(
+      [...podium.map((p) => p.points)].sort((x, y) => y - x),
+    );
+    expect(podium).toHaveLength(3);
+    for (const place of podium) {
+      expect(w.clubs.some((club) => club.id === place.club)).toBe(true);
+      expect(place.appearances).toBeGreaterThanOrEqual(15);
+      expect(place.goals + place.assists).toBeGreaterThan(0);
+    }
     expect(w.events.filter((e) => e.kind === 'season')).toEqual([]);
     // Every league club closed both seasons' books; the other associations' clubs keep none.
     for (const c of w.clubs)
@@ -160,5 +189,31 @@ describe('a career that reaches the 1938/39 close', () => {
       { year: WARTIME.last, day: SEASON_END_DAY + 1 },
       { year: WARTIME.restart, day: 0 },
     );
+  });
+});
+
+describe('the results-only path before the takeover (→MATCH-22)', () => {
+  it('plays every fixture of a world nobody owns, whatever its model', () => {
+    for (const release of [ENABLED_RELEASE, DISABLED_RELEASE]) {
+      const w = historyWorld('results-only', release);
+      for (const f of w.fixtures.slice(0, 20))
+        expect(simulateMatch(w, f)).toEqual(resultsOnlyMatch(w, f));
+    }
+  });
+
+  it("holds the aggregate path's means for equal sides, on the same meetings", () => {
+    const w = historyWorld('results-only', ENABLED_RELEASE);
+    const { fixtures } = equalSides(w, 1200);
+    const results = fixtures.map((f) => resultsOnlyMatch(w, f));
+    const aggregate = fixtures.map((f) => simulateAggregate(w, f));
+    const mean = (list: readonly MatchPlayback[], f: (p: MatchPlayback) => number) =>
+      list.reduce((sum, p) => sum + f(p), 0) / list.length;
+    const home = (p: MatchPlayback) => p.record.score.home;
+    const away = (p: MatchPlayback) => p.record.score.away;
+    const draw = (p: MatchPlayback) => (home(p) === away(p) ? 1 : 0);
+    // T669's band: each side's goals within 0.2 and the draw rate within 5 points.
+    expect(Math.abs(mean(results, home) - mean(aggregate, home))).toBeLessThan(0.2);
+    expect(Math.abs(mean(results, away) - mean(aggregate, away))).toBeLessThan(0.2);
+    expect(Math.abs(mean(results, draw) - mean(aggregate, draw))).toBeLessThan(0.05);
   });
 });

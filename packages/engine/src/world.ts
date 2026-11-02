@@ -161,8 +161,10 @@ export function makePlayer(
     career: zeroMetrics(),
     season: zeroMetrics(),
   };
-  player.wage = marketWageAt(code, year, division ?? divisionFor(code, overall(player)), player);
-  player.agent = drawAgent(r, overall(player));
+  // His overall, read once: it moves with his attributes alone (T669).
+  const ovr = overall(player);
+  player.wage = marketWageAt(code, year, division ?? divisionFor(code, ovr), player, ovr);
+  player.agent = drawAgent(r, ovr);
   return player;
 }
 /**

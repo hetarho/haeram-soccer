@@ -1,8 +1,8 @@
 /**
  * The world before the takeover (→WORLD-13): made in 1930 and lived by the day loop (→LEAGUE-11)
  * season by season to the chosen decade's first season, with nobody owning a club. Every fixture
- * plays the path clubs nobody owns use (→MATCH-22) and each close archives what HIST-2 keeps; the
- * war skips 1939/40–1945/46 (→WORLD-14). The same seed and decade make the same world.
+ * is results-only (→MATCH-22, results-only.ts) and each close archives what HIST-2 keeps; the war
+ * skips 1939/40–1945/46 (→WORLD-14). The same seed and decade make the same world.
  */
 import type { World } from '../../contracts/src/types';
 import { TAKEOVER_DECADES, type TakeoverDecade } from '../../contracts/src/owner';
@@ -82,7 +82,8 @@ export function historyWorld(
     serial: 0,
   };
   installMissingIdentities(w);
-  // Every fixture plays the released model's path for clubs nobody owns (→MATCH-22, SAVE-23).
+  // Fixtures are results-only while nobody owns a club (→MATCH-22); the released model keeps the
+  // season's aggregates the Ballon d'Or reads (→SAVE-23, PLAYER-27) and is the takeover's model.
   activateMatchModel(w, release);
   return w;
 }
