@@ -102,6 +102,10 @@ describe('the world before the takeover (→WORLD-13)', () => {
     // Clubs rise or fall once, at the 1938/39 close (→LEAGUE-10).
     expect(evolveClubs).toHaveBeenCalledTimes(1);
     expect(ownerSettleGap).toHaveBeenCalledTimes(1);
+    // Books stand still: the 1938/39 book is the last, nothing settles for the gap (→ECON-36).
+    const books = w.clubs.filter((c) => c.books);
+    expect(books.length).toBe(w.clubs.filter((c) => !c.representative).length);
+    expect(books.every((c) => c.books!.seasons.map((b) => b.year).join() === '1938')).toBe(true);
   });
 
   it('archives what HIST-2 keeps for every season played, and nothing of an own club', () => {
@@ -129,6 +133,11 @@ describe('the world before the takeover (→WORLD-13)', () => {
     expect(cup?.winner).toBeTruthy();
     expect(season!.brackets?.some((b) => b.key === 'ucl')).toBe(true);
     expect(w.events.filter((e) => e.kind === 'season')).toEqual([]);
+    // Every league club closed both seasons' books; the other associations' clubs keep none.
+    for (const c of w.clubs)
+      expect(c.books?.seasons.map((b) => b.year)).toEqual(
+        c.representative ? undefined : [1955, 1954],
+      );
   });
 });
 
