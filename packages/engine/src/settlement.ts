@@ -212,14 +212,18 @@ export function settleRound(w: World) {
     'operating-cost',
     '급여와 시설 유지비',
     `선수 ${money(cost.payments.playerWages)} · 감독 ${money(cost.payments.managerWage)} · 시설 ${money(cost.payments.maintenance)}${cost.payments.investment ? ` · 지역·글로벌 투자 ${money(cost.payments.investment)}` : ''}${cost.payments.academy ? ` · 유소년 ${money(cost.payments.academy)}` : ''}${fansGained ? ` · 해외 마케팅 팬 +${fansGained}명` : ''}`,
-    (BigInt(cost.nextRound) - BigInt(cost.payments.expenses)).toString(),
+    (
+      BigInt(cost.nextRound) -
+      BigInt(cost.payments.expenses) -
+      BigInt(cost.payments.loan ?? '0')
+    ).toString(),
   );
   // Operating expenses keep one ledger line a season, grown each round (→ECON-30, ECON-10); the
   // line says whether last season's turnover or the division's floor set them, and the squad
   // investment's factor this round when it is not the default ×1 (→ECON-16).
   const floor =
       BigInt(cost.seasonExpenses) <= BigInt(operatingExpensesAt(club.country, w.year, club.tier)),
-    factor = cost.operatingFactor === 1 ? '' : ` · 선수단 투자 ×${cost.operatingFactor}`;
+    factor = `${cost.operatingFactor === 1 ? '' : ` · 선수단 투자 ×${cost.operatingFactor}`}${cost.politicianFactor === 1 ? '' : ` · 정치력 ×${cost.politicianFactor}`}`;
   book(
     w,
     'operating-expenses',
@@ -227,6 +231,15 @@ export function settleRound(w: World) {
     `${floor ? `${divisionLabel(club.country, club.tier)} 최저 수준` : `직전 시즌 매출의 ${Math.round(EXPENSE_CONFIG.share * 100)}%`}${factor} · 경기 운영·원정·행정·의료·용품·직원 · ${w.round}/${SEASON_ROUNDS}라운드 분할`,
     cost.payments.expenses,
   );
+  // The takeover loan's installments keep one ledger line a season too (→ECON-38, ECON-10).
+  if (cost.payments.loan)
+    book(
+      w,
+      'loan-repayment',
+      '인수 부채 상환',
+      `시즌 상환액 ${money(cost.loan)} · 남은 ${w.loan!.seasonsLeft}시즌 · ${w.round}/${SEASON_ROUNDS}라운드 분할`,
+      cost.payments.loan,
+    );
   for (const c of w.campaigns) {
     c.remaining--;
     if (c.remaining > 0) continue;
@@ -284,6 +297,8 @@ function insolvency(w: World, annual: string) {
   w.insolvent = (w.insolvent ?? 0) + 1;
   if (w.insolvent >= BANKRUPTCY_ROUNDS || BigInt(w.cash) * 2n < -BigInt(annual)) {
     w.bankrupt = { year: w.year, round: w.round, day: currentDay(w) };
+    // A taken-over club's bankruptcy ends the owner's career by its cause (→OWNER-16).
+    if (w.owner) w.ended = 'club';
     delete w.critical;
     addEvent(
       w,

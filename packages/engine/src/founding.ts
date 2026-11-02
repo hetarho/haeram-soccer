@@ -11,6 +11,7 @@ import { defaultSettings } from './responsibilities';
 import { installMissingIdentities } from './club-identity';
 import { activateMatchModel, MATCH_MODEL_RELEASE, type MatchModelRelease } from './match-model';
 import { ensureManagerHistory } from './manager-history-capture';
+import { careerEnded } from './owner';
 
 /**
  * A new career on the founding day. With `release` on it records the full match model from its
@@ -50,9 +51,10 @@ export function createWorld(input: Founding, release: MatchModelRelease = MATCH_
   return w;
 }
 export function simulateSeason(w: World) {
-  while (w.round < 46 && !w.bankrupt) advanceRound(w, undefined, false);
-  // A bankrupt club's career is over (→ECON-24); its last season never closes.
-  if (w.bankrupt) return w;
+  while (w.round < 46 && !careerEnded(w)) advanceRound(w, undefined, false);
+  // An ended career is over (→ECON-24, OWNER-16): its last season never closes, and a season after
+  // an owner's end at the close never starts.
+  if (careerEnded(w)) return w;
   closeSeason(w);
   w.revision++;
   return w;

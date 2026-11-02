@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
-import { createWorld } from './founding';
+import { createWorld, simulateSeason } from './founding';
 import { operate } from './operations';
 import { advanceDays, advanceRound, prepareRound } from './season';
 import { assertNextEvent } from './next-event';
@@ -36,6 +36,8 @@ describe('an ended career (→OWNER-16)', () => {
       expect(advanceDays(w, 3)).toBeUndefined();
       expect(advanceRound(w)).toBeUndefined();
       expect(prepareRound(w, () => undefined)).toBe(false);
+      // A whole-season loop stops too, whether the career ended mid-season or at a close.
+      expect(simulateSeason(w)).toBe(w);
       expect(() => assertNextEvent(w)).toThrow('중요한 구단 상태를 먼저 확인하세요.');
       expect(() =>
         operate(w, { type: 'transfer-stance', id: w.players[0]!.id, stance: 'listed' }),

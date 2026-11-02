@@ -96,6 +96,7 @@ export const FinancialBreakdown = memo(
                   ['지역·글로벌 투자', costs.investment],
                   ['유소년 투자', costs.academy],
                   ['운영 경비', costs.expenses],
+                  ['인수 부채 상환', costs.loan],
                 ] as const
               )
                 .filter(([label, amount]) => label === '선수 급여' || BigInt(amount) !== 0n)

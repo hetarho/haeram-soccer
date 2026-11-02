@@ -260,7 +260,7 @@ describe('operating expenses (→ECON-30)', () => {
         sold = close({
           'transfer-out': 40_000_000n,
           'free-transfer-compensation': 20_000_000n,
-          support: 30_000_000n,
+          'owner-injection': 30_000_000n,
         });
       expect(BigInt(sold.history.at(-1)!.income)).toBe(
         BigInt(plain.history.at(-1)!.income) + 90_000_000n,
