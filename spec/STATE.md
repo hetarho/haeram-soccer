@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-02T16:10Z | - |
+| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-03T00:00Z | T664 on wip/ot03 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
@@ -563,10 +563,11 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- after T652: implement-task T653, then in parallel the lanes takeover (T657→T658), owner-economy (T659→T660), traits (T661), start-ui (T662), owner-ui (T663) beside the main-session chain T654→T655→T656; then T664→T665→T666, T667, T668
-- read main CI 41391036290 (89299cb) or later for T645 + ds02; report spec/reports/261102-nm62.md (nm62)
+- continue branch `wip/ot03` (owner takeover plan T653–T663, T654–T656 merged; T664 in progress — see its task file there): finish T664, merge `wip/ot03-t669` (T669 done), then T665 → T666, T667, T668; batch gate once, then merge into main and push. Report spec/reports/261103-ot03.md
+- read main CI after 1928053c (fix for 41524887826: position-badges, analysis, mobile-match-presentation)
 
 ## log
+- 261103 ot03 hand-off: main pushed with CI fix 1928053c and report; owner takeover work on wip/ot03 and wip/ot03-t669 for another session
 - 261103 fix CI 41524887826: position badges scroll a family's first market row up the list (random seed put it below the 360px fold), the goal-cue check reads the cue the page recorded inside its 1 s hold (and the ball-side scoreboard check waits out the page entrance WebKit resampled), and formation slots centre with `translate` so a pressed slot no longer jumps off the mouseup in Firefox (app fix, unit test)
 - 261103 ot03 batch gate passed on 8887ace7 (typecheck, lint, format, unit, integration 147 files, contract 47, catalogs, presentation, build, Chromium 346/346); pushed main with T646–T652, the design close and the gate fixes
 - 261103 fix e2e gate: the ot03 Chromium batch's 12 failures follow the removals (7 milestones, a rested player's line reads 팀 훈련) and the closed match design (경기 상세 opened past the first sample, a closing sheet's fading copy is not open), plus two app fixes — the 결재함 names the playing-coach player in the browser projection without people, and on phones the speed chips stay on screen beside the matchup
