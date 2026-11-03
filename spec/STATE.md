@@ -713,7 +713,7 @@
 ## next
 - implement-task T685, then T686, T678 and T679; continue the stopped ot03 takeover handoff on work/cv03-continuation.
 - Deadline 2026-11-03 22:00 Asia/Seoul: leave commits, reports and every unfinished change on the remote next and wip/cv03 branches for another device.
-- Preserve T689 scoring experiments and limits from spec/reports/261103-sc03.md; publish next without a main deployment.
+- Preserve T689 scoring experiments and limits from spec/reports/261103-bl03/scoring.md; publish next without a main deployment.
 
 ## log
 - 261103 cv03 takeover: resume the stopped ot03 handoff on work/cv03-continuation; merge current main, preserving takeover, hr05 performance and bl03 awards/wages.
