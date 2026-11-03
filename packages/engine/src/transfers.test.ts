@@ -175,7 +175,7 @@ describe('player value', () => {
     const own = clubOf(w).tier;
     for (const p of activePlayers(w)) {
       expect(playerValue(w, p)).toBe(marketValue(w, p, own));
-      // The top flight pays more for the same player than the amateur league.
+      // The top flight pays more for the same player than the last division.
       expect(BigInt(playerValue(w, p, 0))).toBeGreaterThan(BigInt(playerValue(w, p)));
     }
     const prospect = structuredClone(activePlayers(w)[3]);

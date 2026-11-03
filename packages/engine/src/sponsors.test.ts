@@ -135,8 +135,9 @@ describe('sponsor contracts by slot', () => {
       squadOf(w, 95);
       return toFinalRound(w);
     });
+    const division = clubOf(w).tier;
     simulateSeason(w);
-    expect(w.lower).toBe(false);
+    expect(clubOf(w).tier).toBe(division - 1);
     expect(paidIn(w, 'shirt', 1979, '메인 스폰서 경기 보너스')).toBeGreaterThan(0n);
     expect(paidIn(w, 'kit', 1980, '용품 후원 승격 보너스')).toBe(BigInt(kit.bonus));
   });

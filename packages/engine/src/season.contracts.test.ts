@@ -47,7 +47,7 @@ describe('closed season archive', () => {
     const w = cachedWorld('expiring-xi-last-round', () => {
       const w = founded(undefined, DISABLED_RELEASE);
       w.settings = staffAuthority(1);
-      // An XI far above the amateur league and the division it goes up to.
+      // An XI far above the last division and the division it goes up to.
       for (const p of w.players) {
         p.until = w.year + 1;
         for (const a of ATTRIBUTES) p.attrs[a] = 90;

@@ -625,16 +625,15 @@ async function secondHalf(variant: Variant): Promise<ProfileData> {
   const leagueClubs = w.clubs.filter(
     (club, index) => !club.representative && club.tier < leagueTiers(index),
   ).length;
-  const ownIndex = w.clubs.findIndex((club) => club.id === w.playerClub);
   if (
     w.history.length !== SEASONS ||
     w.history.some(
       (season, index) =>
         season.year !== CAREER_YEAR + index ||
         season.champions.length !== COUNTRIES.length ||
-        // Every league club once, plus the own club in a season it spent in the amateur league.
+        // Every league club once, and nobody below the last professional division (→LEAGUE-16).
         season.standings.filter((row) => row[1] < leagueTiers(row[0])).length !== leagueClubs ||
-        season.standings.some((row) => row[1] >= leagueTiers(row[0]) && row[0] !== ownIndex),
+        season.standings.some((row) => row[1] >= leagueTiers(row[0])),
     ) ||
     !w.ownMatches.some((match) => match.year === CAREER_YEAR) ||
     !w.events.some((event) => event.kind === 'takeover')

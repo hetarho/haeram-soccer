@@ -195,7 +195,7 @@ describe('academy development', () => {
 
 describe('promotion and release', () => {
   it('promotes into the first team with a small wage and a three-year contract', () => {
-    // An amateur squad earns the minimum wage, so the prospect is a little weaker than it.
+    // A last-division squad earns little, so the prospect is a little weaker than it.
     const w = world(),
       player = prospect(w, 'CM', 17, 25),
       squad = activePlayers(w).length;

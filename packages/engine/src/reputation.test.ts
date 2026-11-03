@@ -1,4 +1,3 @@
-import { country } from '../../catalogs/src/index';
 import { describe, it, expect } from 'vitest';
 import { clubOf, finishCups, finishEurope, advanceRound, closeSeason } from './index';
 import { divisionLevel, finishTerm, settleReputation, awardReputation } from './reputation';
@@ -13,8 +12,8 @@ const world = () =>
   simulatedWorld({ country: 'ENG', seed: 'standing-reputation' }, {}, DISABLED_RELEASE);
 describe('standing-based reputation for every club', () => {
   it('uses next-division levels and symmetric champion/middle/last finish terms', () => {
-    expect([0, 1, 2, 3, 4, 5].map((t) => divisionLevel(t, 4))).toEqual([75, 60, 45, 30, 8, 8]);
-    expect(divisionLevel(3, 3)).toBe(8);
+    expect([0, 1, 2, 3].map((t) => divisionLevel(t))).toEqual([75, 60, 45, 30]);
+    expect(divisionLevel(6)).toBe(8);
     expect([1, 11, 21].map((r) => finishTerm(r, 21))).toEqual([3, 0, -3]);
     expect(finishTerm(1, 1)).toBe(0);
   });
@@ -108,9 +107,7 @@ describe('standing-based reputation for every club', () => {
         0,
         Math.min(
           100,
-          previous +
-            0.2 * (divisionLevel(club.tier, country(club.country).groups.length) - previous) +
-            (finishes.get(club.id) ?? 0),
+          previous + 0.2 * (divisionLevel(club.tier) - previous) + (finishes.get(club.id) ?? 0),
         ),
       );
       expect(club.reputation, club.id).toBeCloseTo(expected, 10);

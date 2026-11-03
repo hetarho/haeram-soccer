@@ -32,7 +32,6 @@ import s from './LeagueInsights.module.css';
 const selectFullStatsWorld = worldSelector([
   'clubs',
   'fixtures',
-  'lower',
   'matchModel',
   'playerClub',
   'players',

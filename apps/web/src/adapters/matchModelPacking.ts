@@ -63,7 +63,8 @@ const MAX_PLAYERS = 100000;
 const MAX_CONTRIBUTIONS = 50;
 /** Total rows of one table, the bit-column stream bound. */
 const MAX_ROWS = 1_000_000;
-const KINDS: readonly Fixture['kind'][] = ['league', 'cup', 'europe', 'playoff', 'lower'];
+/** Stored by position: a code once removed (the amateur league's `lower`, last) shifts none. */
+const KINDS: readonly Fixture['kind'][] = ['league', 'cup', 'europe', 'playoff'];
 const COVERAGES: readonly MatchModelState['coverage'][] = ['founding', 'activation'];
 
 const corrupt = (detail: string) => new Error(`경기 모델 압축 데이터 손상: ${detail}`);

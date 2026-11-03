@@ -137,22 +137,15 @@ describe('contextual home match access', () => {
 });
 
 describe('home season card', () => {
-  // The amateur league reads its field and rounds from its own fixtures.
-  const lower = () => {
+  // A two-club division of England's fourth tier reads its field and rounds from its fixtures.
+  const league = () => {
     const w = world();
-    w.lower = true;
+    w.clubs = w.clubs.map((c) => ({ ...c, country: 'ENG', tier: 3, group: 0 }));
     w.round = 1;
+    const groupKey = 'ENG:3:0';
     w.fixtures = [
-      {
-        id: 'r1',
-        year: 1950,
-        round: 1,
-        kind: 'lower',
-        home: 'own',
-        away: 'opponent',
-        played: true,
-      },
-      { id: 'r2', year: 1950, round: 2, kind: 'lower', home: 'opponent', away: 'own' },
+      { id: 'r1', year: 1950, round: 1, kind: 'league', home: 'own', away: 'opponent', groupKey },
+      { id: 'r2', year: 1950, round: 2, kind: 'league', home: 'opponent', away: 'own', groupKey },
     ] as World['fixtures'];
     w.tables = {
       own: { played: 1, won: 1, drawn: 0, lost: 0, gf: 2, ga: 0, points: 3 },
@@ -161,7 +154,7 @@ describe('home season card', () => {
     return w;
   };
   const render = (active: boolean) =>
-    renderToStaticMarkup(createElement(SeasonCard, { w: lower(), active }));
+    renderToStaticMarkup(createElement(SeasonCard, { w: league(), active }));
 
   it('reads the round, our rank and the record above the progress rule without opening anything', () => {
     const markup = render(true);
@@ -179,7 +172,7 @@ describe('home season card', () => {
 
   it('fills league progress a day at a time from the first to the last league match day', () => {
     const progress = (day: number) => {
-      const w = lower();
+      const w = league();
       w.calendar = { ...w.calendar, day } as World['calendar'];
       return ownLeagueProgress(w);
     };
@@ -195,7 +188,7 @@ describe('home season card', () => {
   });
 
   it('reserves one separate cup slot and counts retained unfinished competitions only', () => {
-    const w = lower();
+    const w = league();
     w.cups = [
       {
         country: 'ENG',

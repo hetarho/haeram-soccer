@@ -114,7 +114,7 @@ function facts(w: World, currentRules = false) {
       trust: w.manager.trust,
       interim: w.manager.interim,
     },
-    club: { id: w.playerClub, tier: clubOf(w).tier, fans: clubOf(w).fans, lower: w.lower },
+    club: { id: w.playerClub, tier: clubOf(w).tier, fans: clubOf(w).fans },
     players: w.players.map((p) => ({ id: p.id, status: p.status, wage: p.wage, career: p.career })),
     matches: w.ownMatches.map((m) => ({
       id: m.id,

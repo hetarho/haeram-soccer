@@ -20,7 +20,6 @@
     "shell.fortune": "Owner's fortune",
     "shell.fortuneDetails": "Owner's fortune {amount} · View owner",
     "shell.owner": "Owner",
-    "shell.amateurLeague": "Amateur league",
     "shell.division": "Division {division}",
     "shell.readonly": "Read only",
     "shell.readonlyNotice": "Another tab is playing. This tab is read only.",

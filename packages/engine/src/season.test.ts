@@ -181,7 +181,6 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
     const cupTie = cup.fixtures.find((f) => !isOwn(w, f))!;
     const others: [Fixture, DecideRule | undefined][] = [
       [w.fixtures.find((f) => f.kind === 'league' && !isOwn(w, f))!, undefined],
-      [w.fixtures.find((f) => f.kind === 'lower' && !isOwn(w, f))!, undefined],
       [cupTie, tieRule(cupTie, cup.fixtures, false)],
       [w.europe[0]!.fixtures[0]!, undefined],
       [playoff(w), { awayGoals: false }],
@@ -232,7 +231,6 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
       'cup',
       'europe',
       'league',
-      'lower',
     ]);
     expect(() => validateWorld(s)).not.toThrow();
     const tie = playoff(s);

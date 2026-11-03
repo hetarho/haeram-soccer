@@ -23,7 +23,7 @@ const resultOf = (f: Fixture, id: string) => {
 };
 /** Where and in what a meeting was played: "1952/53 · 리그 12R · 홈". */
 const meetingLine = (m: Meeting) =>
-  `${seasonName(m.year)} · ${kindLabel[m.kind] ?? m.kind}${m.kind === 'league' || m.kind === 'lower' ? ` ${m.round}R` : ''} · ${m.home ? '홈' : '원정'}`;
+  `${seasonName(m.year)} · ${kindLabel[m.kind] ?? m.kind}${m.kind === 'league' ? ` ${m.round}R` : ''} · ${m.home ? '홈' : '원정'}`;
 
 /**
  * Our all-time record against the club (→WEB-58). The view keeps only our recent matches, so the
@@ -166,7 +166,7 @@ export function TeamSheet({
     involved = (f: Fixture) => !!f.score && (f.home === id || f.away === id),
     recent = (
       ours
-        ? w.fixtures.filter((f) => (f.kind === 'league' || f.kind === 'lower') && involved(f))
+        ? w.fixtures.filter((f) => f.kind === 'league' && involved(f))
         : [
             ...w.europe.flatMap((t) => t.fixtures),
             ...(w.cups || []).flatMap((cup) => cup.fixtures),
@@ -264,7 +264,6 @@ const selectSheetWorld = worldSelector([
   'europe',
   'cups',
   'ownMatches',
-  'lower',
   'playerClub',
   'players',
   'manager',

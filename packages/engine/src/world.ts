@@ -187,15 +187,9 @@ export function makeManager(
 import { initialElo } from './elo';
 export { initialElo } from './elo';
 export { EUROPEAN_CUP_START } from './calendar';
-/** Amateur clubs per country below the professional pyramid; with the owner's club, a league of 16. */
-import { AMATEUR_CLUBS } from './league-fixtures';
-export { AMATEUR_CLUBS } from './league-fixtures';
-/**
- * Generated strength of a club in a pyramid tier: each professional tier is about 11 points below
- * the one above, and the amateur level (tier = professional depth) sits one more step down.
- */
-export function tierStrengthRange(tier: number, amateur = false): [number, number] {
-  return amateur ? [72 - tier * 11, 80 - tier * 11] : [72 - tier * 11, 82 - tier * 11];
+/** Generated strength of a club in a pyramid tier: each tier is about 11 points below the one above. */
+export function tierStrengthRange(tier: number): [number, number] {
+  return [72 - tier * 11, 82 - tier * 11];
 }
 /**
  * Long-run size of each club relative to its division, stable for the career (→LEAGUE-10). Every
@@ -219,8 +213,6 @@ export function stature(seed: string, id: string) {
           for (let n = 0; n < size; n++) ids.push({ id: `${code}:${tier}:${group}:${n}`, tier });
         }),
       );
-      for (let i = 0; i < AMATEUR_CLUBS; i++)
-        ids.push({ id: `${code}:reserve:${i}`, tier: profile.groups.length });
       const draw = (entry: string) => random(`${seed}:stature:${entry}`)();
       const ranked = ids
         .map((entry) => ({ ...entry, key: entry.tier * 0.35 + draw(entry.id) }))
@@ -245,9 +237,9 @@ export function stature(seed: string, id: string) {
     (id.startsWith('euro:') ? Math.round(random(`${seed}:stature:${id}`)() * 12) - 4 : 0)
   );
 }
-/** Where a club of this stature settles in a division (professional, or the amateur level). */
-export function tierLevel(tier: number, amateur = false) {
-  const [low, high] = tierStrengthRange(tier, amateur);
+/** Where a club of this stature settles in a division. */
+export function tierLevel(tier: number) {
+  const [low, high] = tierStrengthRange(tier);
   return (low + high) / 2;
 }
 const colorOf = (r: () => number) =>
@@ -257,10 +249,9 @@ const colorOf = (r: () => number) =>
     .padStart(6, '0');
 /**
  * Every generated club of the playable countries (→WORLD-15): each professional club at its
- * division's level (tier t: 77 − 11t) + its stature (→LEAGUE-10) ± 3, within 15–92, and with
- * `amateur` the amateur clubs below each pyramid (the founding start's level).
+ * division's level (tier t: 77 − 11t) + its stature (→LEAGUE-10) ± 3, within 15–92.
  */
-export function generateClubs(seed: string, amateur = true): Club[] {
+export function generateClubs(seed: string): Club[] {
   const clubs: Club[] = [];
   for (const c of COUNTRIES)
     for (let tier = 0; tier < c.groups.length; tier++)
@@ -290,33 +281,6 @@ export function generateClubs(seed: string, amateur = true): Club[] {
             elo: initialElo(strength),
           });
         }
-  if (!amateur) return clubs;
-  // Amateur clubs below each professional pyramid: the owner's league and the pool that swaps
-  // places with clubs relegated out of the professional game.
-  for (const c of COUNTRIES)
-    for (let i = 0; i < AMATEUR_CLUBS; i++) {
-      const id = `${c.code}:reserve:${i}`,
-        r = random(`${seed}:${id}`);
-      const strength = clamp(
-        Math.round(tierLevel(c.groups.length, true) + stature(seed, id) + integer(r, -3, 3)),
-        15,
-        92,
-      );
-      clubs.push({
-        id,
-        name: `${c.cities[i % c.cities.length]} ${c.terms[(i + 2) % c.terms.length]} ${i < c.cities.length ? 'Athletic' : 'Amateurs'}`,
-        short: `R${i + 1}`,
-        country: c.code,
-        tier: c.groups.length,
-        group: 0,
-        strength,
-        reputation: 8,
-        fans: 500,
-        color: colorOf(r),
-        representative: true,
-        elo: initialElo(strength),
-      });
-    }
   return clubs;
 }
 const npcCaches = new WeakMap<World, { year: number; clubs: Map<string, Player[]> }>();

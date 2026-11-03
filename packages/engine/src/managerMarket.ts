@@ -500,7 +500,7 @@ export function takeManager(w: World, candidate: ManagerCandidate, replaced: Man
 function lastFive(w: World, ids: Set<string>) {
   const form = new Map<string, ('W' | 'D' | 'L')[]>();
   const played = w.fixtures
-    .filter((f) => f.score && (f.kind === 'league' || f.kind === 'lower') && f.year === w.year)
+    .filter((f) => f.score && f.kind === 'league' && f.year === w.year)
     .sort((a, b) => b.round - a.round);
   for (const f of played)
     for (const [club, goals, against] of [

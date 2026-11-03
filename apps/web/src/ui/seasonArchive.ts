@@ -121,9 +121,8 @@ export function seasonRecords(
 }
 
 /**
- * Our league's final table of a closed season: its last standings snapshot (kept for ten seasons,
- * and the only record of an amateur league, whose clubs the archived standings leave out), else
- * the archived standings of the professional division it was played in.
+ * Our league's final table of a closed season: its last standings snapshot (kept for ten seasons),
+ * else the archived standings of the division it was played in.
  */
 export function finalRows(
   w: World,

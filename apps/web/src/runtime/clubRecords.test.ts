@@ -25,9 +25,9 @@ const match = (
 describe('club match records', () => {
   it('finds the widest margins and the most goals from our side, the earlier match keeping a tie', () => {
     const matches = [
-      match(1950, 'lower', US, RIVAL, [4, 0]),
-      match(1950, 'lower', RIVAL, US, [0, 4]),
-      match(1950, 'lower', OTHER, US, [5, 1]),
+      match(1950, 'league', US, RIVAL, [4, 0]),
+      match(1950, 'league', RIVAL, US, [0, 4]),
+      match(1950, 'league', OTHER, US, [5, 1]),
       match(1951, 'cup', US, OTHER, [5, 3]),
       match(1951, 'league', RIVAL, OTHER, [9, 0]),
     ];
@@ -41,10 +41,10 @@ describe('club match records', () => {
 
   it('follows runs across seasons and marks the one still going', () => {
     const matches = [
-      match(1950, 'lower', US, RIVAL, [1, 0]),
-      match(1950, 'lower', US, RIVAL, [2, 0]),
-      match(1950, 'lower', US, RIVAL, [1, 1]),
-      match(1950, 'lower', US, RIVAL, [0, 2]),
+      match(1950, 'league', US, RIVAL, [1, 0]),
+      match(1950, 'league', US, RIVAL, [2, 0]),
+      match(1950, 'league', US, RIVAL, [1, 1]),
+      match(1950, 'league', US, RIVAL, [0, 2]),
       match(1951, 'league', US, RIVAL, [3, 0]),
       match(1951, 'league', US, RIVAL, [2, 0]),
       match(1951, 'league', US, RIVAL, [1, 0]),

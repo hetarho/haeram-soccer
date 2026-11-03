@@ -18,7 +18,6 @@ describe('careerWorld (→WEB-2, ECON-38)', () => {
     expect(careerClub('ENG')).toBe('ENG:3:0:0');
     expect(w.playerClub).toBe('ENG:3:0:0');
     expect(w.year).toBe(CAREER_YEAR);
-    expect(w.lower).toBe(false);
     expect(w.owner).toMatchObject({ tier: 'oil', traits: [] });
     expect(w.build).toBeUndefined();
     expect(BigInt(w.cash)).toBe(careerFunds(w));

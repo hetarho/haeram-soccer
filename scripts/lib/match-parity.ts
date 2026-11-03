@@ -3473,7 +3473,7 @@ export const INVARIANTS: readonly Invariant[] = [
         out: string[] = [];
       const condition = conditionOf(s.condition);
       // A league fixture never has to produce a winner (→MATCH-6).
-      if ((r.kind === 'league' || r.kind === 'lower') && (r.regulation || r.shootout))
+      if (r.kind === 'league' && (r.regulation || r.shootout))
         out.push(`extra time or a shoot-out in a ${r.kind} fixture (MATCH-6)`);
       // A tie that must produce a winner plays extra time exactly when it is level after 90
       // minutes, and a shoot-out exactly when it is still level after extra time (→MATCH-6).

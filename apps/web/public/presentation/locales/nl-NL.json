@@ -20,7 +20,6 @@
     "shell.fortune": "Vermogen van de eigenaar",
     "shell.fortuneDetails": "Vermogen van de eigenaar {amount} · Eigenaar bekijken",
     "shell.owner": "Eigenaar",
-    "shell.amateurLeague": "Amateurcompetitie",
     "shell.division": "Divisie {division}",
     "shell.readonly": "Alleen-lezen",
     "shell.readonlyNotice": "Er wordt in een ander tabblad gespeeld. Dit tabblad is alleen-lezen.",

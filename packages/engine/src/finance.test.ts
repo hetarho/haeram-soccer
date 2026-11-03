@@ -289,8 +289,8 @@ describe('the league distribution', () => {
   it('shares more in higher divisions of every country, priced on the broadcasting index', () => {
     for (const profile of COUNTRIES) {
       const table = DISTRIBUTION_CONFIG.share[profile.code];
-      // Every professional division and the amateur league below them.
-      expect(table).toHaveLength(profile.groups.length + 1);
+      // Every professional division, and nothing below the last (→WORLD-9 [x]).
+      expect(table).toHaveLength(profile.groups.length);
       for (let tier = 1; tier < table.length; tier++)
         expect(table[tier]).toBeLessThan(table[tier - 1]);
     }

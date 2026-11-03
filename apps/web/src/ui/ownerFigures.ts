@@ -7,7 +7,7 @@
  * Only read leaves are imported (catalogs, calendar, quotes, primitives, owner-config): the UI
  * never reaches the day loop (→ARCH-4); `careerOver` is the contracts' `careerEnded`.
  */
-import { COUNTRIES, country, currency, priceIndex } from '../../../../packages/catalogs/src/index';
+import { COUNTRIES, currency, priceIndex } from '../../../../packages/catalogs/src/index';
 import {
   careerEnded,
   type DividendShare,
@@ -15,7 +15,7 @@ import {
   type OwnerState,
   type OwnerTrait,
 } from '../../../../packages/contracts/src/owner';
-import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
+import type { World } from '../../../../packages/contracts/src/types';
 import {
   SEASON_END_DAY,
   currentDay,
@@ -306,7 +306,6 @@ export interface FanMover {
   change?: number;
   direction: 'up' | 'down' | 'none';
 }
-const leagueKinds = new Set<MatchRecord['kind']>(['league', 'lower']);
 /**
  * What moved 팬 민심 last (→OWNER-12), newest first, read from what the world records: the latest
  * own league result, the drift each settled round brings, this season's injections and the last
@@ -318,7 +317,7 @@ export function fanMovers(w: World): FanMover[] {
   const movers: FanMover[] = [];
   const direction = (change: number) => (change > 0 ? 'up' : change < 0 ? 'down' : 'none');
   const match = w.ownMatches
-    .filter((m) => m.year === w.year && leagueKinds.has(m.kind))
+    .filter((m) => m.year === w.year && m.kind === 'league')
     .sort((a, b) => a.round - b.round)
     .at(-1);
   if (match) {
@@ -481,9 +480,7 @@ export function gameOverFacts(w: World): GameOverFacts {
     season,
     line,
     seasons: seasons.length,
-    best: best
-      ? `${best.tier >= country(own.country).groups.length ? '아마추어' : `${best.tier + 1}부`} ${best.rank}위`
-      : '—',
+    best: best ? `${best.tier + 1}부 ${best.rank}위` : '—',
     titles,
     peak,
   };

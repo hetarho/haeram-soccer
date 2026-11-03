@@ -30,9 +30,7 @@ function world(release: MatchModelRelease) {
 const modern = () => withCandidateModel(founded(2024, DISABLED_RELEASE));
 const isOwn = (w: World, f: Fixture) => f.home === w.playerClub || f.away === w.playerClub;
 const ownFixtures = (w: World) =>
-  w.fixtures
-    .filter((f) => (f.kind === 'league' || f.kind === 'lower') && isOwn(w, f))
-    .sort((a, b) => a.round - b.round);
+  w.fixtures.filter((f) => f.kind === 'league' && isOwn(w, f)).sort((a, b) => a.round - b.round);
 /**
  * The fixture played on the grid with `x` among its incidents, and the facts `x` changes so the
  * record still holds (→MATCH-27): a red card counts on its player and his side, and a starter sent

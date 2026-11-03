@@ -166,6 +166,17 @@ describe('owner interventions withdrawn (→SAVE-25)', () => {
     expect(loaded).toEqual(validateWorld(w, LOAD_CATALOG));
     expect(older.level).toBe('easy');
   });
+
+  it('drops the removed amateur-league flag from a checkpoint that still carries it', () => {
+    const w = world();
+    // A 0.8.0 checkpoint written while the world still had an amateur level (→WORLD-9 [x]): a
+    // takeover career always played professionally, and the world schema strips the key.
+    const older = { ...structuredClone(w), lower: false } as World & { lower: boolean };
+    const loaded = validateWorld(older, LOAD_CATALOG);
+    expect(loaded).not.toHaveProperty('lower');
+    expect(loaded).toEqual(validateWorld(w, LOAD_CATALOG));
+    expect(older.lower).toBe(false);
+  });
 });
 
 describe('owner and takeover (→SAVE-27)', () => {

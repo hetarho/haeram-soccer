@@ -20,7 +20,6 @@
     "shell.fortune": "Sahibin serveti",
     "shell.fortuneDetails": "Sahibin serveti {amount} · Sahibi gör",
     "shell.owner": "Sahip",
-    "shell.amateurLeague": "Amatör lig",
     "shell.division": "{division}. lig",
     "shell.readonly": "Salt okunur",
     "shell.readonlyNotice": "Başka bir sekmede oynanıyor. Bu sekme salt okunurdur.",

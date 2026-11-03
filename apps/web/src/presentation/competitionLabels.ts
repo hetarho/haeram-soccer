@@ -9,25 +9,17 @@ import { COUNTRIES } from '../../../../packages/catalogs/src/index';
 
 export const kindLabel: Record<string, string> = {
   league: '리그',
-  lower: '아마추어 리그',
   cup: '국내 컵',
   playoff: '승격 플레이오프',
   europe: '클럽대항전',
 };
 
 /**
- * A division of a country as the tables and records name it: "2부", "3부 B조" where the division
- * plays in regional groups, "아마추어 리그" below the professional game. Compact tables may
- * request "Amat." while keeping the complete name in their title.
+ * A division of a country as the tables and records name it: "2부", and "3부 B조" where the
+ * division plays in regional groups.
  */
-export function divisionName(
-  code: string,
-  tier: number,
-  group?: number,
-  { compact = false }: { compact?: boolean } = {},
-) {
-  const groups = COUNTRIES.find((c) => c.code === code)?.groups[tier];
-  if (!groups) return compact ? 'Amat.' : '아마추어 리그';
+export function divisionName(code: string, tier: number, group?: number) {
+  const groups = COUNTRIES.find((c) => c.code === code)?.groups[tier] ?? [];
   const region =
     group !== undefined && groups.length > 1 ? ` ${String.fromCharCode(65 + group)}조` : '';
   return `${tier + 1}부${region}`;

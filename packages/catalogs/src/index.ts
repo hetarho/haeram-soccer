@@ -458,16 +458,15 @@ export type RegistrationRule = Partial<Pick<RegistrationRow, 'country' | 'tiers'
 export function registrationRule(code: string, tier: number, year: number): RegistrationRule {
   const data = squadRulesData as RegistrationCatalog;
   const profile = COUNTRIES.find((c) => c.code === code);
-  const row =
-    profile && tier < profile.groups.length
-      ? data.rules.find(
-          (r) =>
-            r.country === code &&
-            r.tiers.includes(tier) &&
-            year >= r.from &&
-            (r.to === null || year <= r.to),
-        )
-      : undefined;
+  const row = profile
+    ? data.rules.find(
+        (r) =>
+          r.country === code &&
+          r.tiers.includes(tier) &&
+          year >= r.from &&
+          (r.to === null || year <= r.to),
+      )
+    : undefined;
   return row
     ? { ...row, ceiling: data.ceiling }
     : {

@@ -57,7 +57,6 @@ export function worldMarketFixture(): World {
     cupWinners: {},
     europe: [],
     lastChampions: [],
-    lower: false,
     receiptIds: [],
   };
 }

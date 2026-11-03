@@ -5,14 +5,11 @@ import { divisionName } from './careerRecords';
 import { seasonName } from './format';
 import { ownLeagueIds } from './league';
 
-/**
- * Overall place in the country's pyramid: every club in the divisions above, then the rank; the
- * amateur league sits below the whole professional game (→HIST-12).
- */
+/** Overall place in the country's pyramid: every club in the divisions above, then the rank (→HIST-12). */
 export function pyramidPosition(code: string, h: Pick<SeasonArchive, 'tier' | 'rank'>) {
   const groups = country(code).groups;
   let above = 0;
-  for (let tier = 0; tier < Math.min(h.tier, groups.length); tier++)
+  for (let tier = 0; tier < h.tier; tier++)
     above += groups[tier].reduce((sum, size) => sum + size, 0);
   return above + h.rank;
 }

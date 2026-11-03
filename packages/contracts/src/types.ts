@@ -555,7 +555,7 @@ export interface Fixture {
   id: string;
   year: number;
   round: number;
-  kind: 'league' | 'cup' | 'europe' | 'playoff' | 'lower';
+  kind: 'league' | 'cup' | 'europe' | 'playoff';
   home: string;
   away: string;
   country: string;
@@ -1246,7 +1246,6 @@ export interface World {
   cups?: DomesticCup[];
   europe: EuropeTournament[];
   lastChampions: { country: string; club: string; cup: string }[];
-  lower: boolean;
   critical?: string;
   /** League rounds settled in a row with negative cash (→ECON-24); absent while solvent. */
   insolvent?: number;

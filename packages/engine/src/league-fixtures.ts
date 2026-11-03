@@ -1,9 +1,6 @@
 /** Pure fixture reconstruction shared by season preparation and the save codec. */
 import type { Club, Fixture, TableRow, World } from '../../contracts/src/types';
-import { country } from '../../catalogs/src/index';
-import { clubOf } from './player-state';
 import { compareIds } from './primitives';
-export const AMATEUR_CLUBS = 15;
 
 export function groupKey(c: Club) {
   return `${c.country}:${c.tier}:${c.group}`;
@@ -34,38 +31,16 @@ export function fixturesFor(clubs: Club[], year: number, globalRounds = 46): Fix
   }
   return matches;
 }
-/** The amateur clubs the own club meets in the amateur league. */
-export function amateurOpponents(w: Pick<World, 'clubs' | 'playerClub'>) {
-  const own = clubOf(w);
-  return w.clubs
-    .filter(
-      (c) =>
-        c.country === own.country &&
-        c.representative &&
-        c.tier === country(c.country).groups.length,
-    )
-    .slice(0, AMATEUR_CLUBS);
-}
-
-export function buildSeasonFixtures(
-  w: Pick<World, 'clubs' | 'playerClub' | 'year' | 'lower'>,
-): Fixture[] {
+/** Every professional group's round robin this season (→LEAGUE-1). */
+export function buildSeasonFixtures(w: Pick<World, 'clubs' | 'year'>): Fixture[] {
   const groups = new Map<string, Club[]>();
   for (const c of w.clubs)
-    if (!c.representative && c.tier < country(c.country).groups.length) {
+    if (!c.representative) {
       const k = groupKey(c);
       groups.set(k, [...(groups.get(k) || []), c]);
     }
   const fixtures: Fixture[] = [];
   for (const cs of groups.values()) fixtures.push(...fixturesFor(cs, w.year));
-  if (w.lower)
-    fixtures.push(
-      ...fixturesFor([clubOf(w), ...amateurOpponents(w)], w.year).map((f) => ({
-        ...f,
-        kind: 'lower' as const,
-        groupKey: 'lower',
-      })),
-    );
   return fixtures;
 }
 export const emptyTable = (): TableRow => ({

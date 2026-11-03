@@ -14,7 +14,7 @@ import { hasOwner } from './owner';
 function competitionKey(w: World) {
   if (!hasOwner(w)) return '';
   const club = clubOf(w);
-  return w.lower ? 'lower' : `${club.country}:${club.tier}:${club.group}`;
+  return `${club.country}:${club.tier}:${club.group}`;
 }
 
 export function prepareScorers(w: World) {
@@ -39,9 +39,7 @@ export function ensureScorers(w: World) {
 
 export function isScoringFixture(w: World, fixture: Fixture) {
   return (
-    (fixture.kind === 'league' || fixture.kind === 'lower') &&
-    fixture.year === w.year &&
-    fixture.groupKey === competitionKey(w)
+    fixture.kind === 'league' && fixture.year === w.year && fixture.groupKey === competitionKey(w)
   );
 }
 

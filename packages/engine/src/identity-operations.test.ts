@@ -255,7 +255,6 @@ function earlierTie(w: World, kind: 'cup' | 'europe') {
 
 describe('the next-fixture kit command (→KIT-6, KIT-7)', () => {
   it('chooses for a league/cup/continental next own fixture', () => {
-    // The amateur league's `lower` fixtures are unreachable from a takeover start (→WEB-2).
     const cup = simulatedWorld(CAREER),
       europe = simulatedWorld(CAREER);
     earlierTie(cup, 'cup');

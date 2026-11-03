@@ -149,7 +149,7 @@ export function SeasonCard({ w, active }: { w: World; active: boolean }) {
     <section className={s.seasonCard} data-home-part="season-card" aria-label="이번 시즌">
       <div className={s.seasonSummary}>
         <span className={s.groupTitle} data-home-part="season-group">
-          {leagueName(ownLeague(w), w.lower)}
+          {leagueName(ownLeague(w))}
         </span>
         <span className={s.groupTitle} data-home-part="season-group" aria-hidden="true">
           컵

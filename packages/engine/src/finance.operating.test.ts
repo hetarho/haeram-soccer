@@ -35,11 +35,11 @@ describe('operating expenses (→ECON-30)', () => {
   const entries = (w: World) =>
     w.events.filter((e) => e.year === w.year && e.kind === 'operating-expenses');
 
-  it('floors each division on the football index, the amateur level lowest', () => {
+  it('floors each division on the football index, the last division lowest', () => {
     for (const profile of COUNTRIES) {
       const table = EXPENSE_CONFIG.floor[profile.code];
-      // Every professional division and the amateur league below them.
-      expect(table).toHaveLength(profile.groups.length + 1);
+      // Every professional division, and nothing below the last (→WORLD-9 [x]).
+      expect(table).toHaveLength(profile.groups.length);
       for (let tier = 1; tier < table.length; tier++)
         expect(table[tier]).toBeLessThan(table[tier - 1]);
       for (let tier = 0; tier < table.length; tier++)

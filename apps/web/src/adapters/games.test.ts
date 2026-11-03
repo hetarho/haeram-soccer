@@ -17,7 +17,7 @@ const entry = (id: string, crest: unknown): GameEntry => ({
   summary: {
     club: 'Crest Club',
     country: '잉글랜드',
-    division: '아마추어 리그',
+    division: '4부',
     date: '1950년 8월 1일',
     seasons: 1,
     crest: crest as SlotSummary['crest'],

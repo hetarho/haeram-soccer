@@ -93,7 +93,7 @@ export function financeProjection(w: World): FinanceProjection {
   const league = w.fixtures.filter(
     (f) =>
       f.year === w.year &&
-      (f.kind === 'league' || f.kind === 'lower') &&
+      f.kind === 'league' &&
       (f.home === w.playerClub || f.away === w.playerClub),
   );
   const games = league.length,

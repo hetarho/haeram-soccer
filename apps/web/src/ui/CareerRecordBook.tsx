@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { country } from '../../../../packages/catalogs/src/index';
 import type { Player, SeasonArchive, World } from '../../../../packages/contracts/src/types';
 import { Panel } from './App';
 import {
@@ -163,8 +162,7 @@ function Trophy({
 export function TrophyCabinet({ w }: { w: World }) {
   const cabinet = trophyCabinet(w),
     best = cabinet.best,
-    code = ownCountry(w),
-    professionalTiers = country(code).groups.length;
+    code = ownCountry(w);
   return (
     <Panel title="트로피 진열장" note={`${cabinet.seasons}시즌`}>
       <div className={s.panelBody}>
@@ -178,7 +176,7 @@ export function TrophyCabinet({ w }: { w: World }) {
                     label={`${title.label} 우승`}
                     years={title.years}
                     kind="league"
-                    variant={title.tier >= professionalTiers ? 'amateur' : `tier-${title.tier + 1}`}
+                    variant={`tier-${title.tier + 1}`}
                     tone="gold"
                   />
                 ))

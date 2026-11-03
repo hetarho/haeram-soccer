@@ -230,7 +230,6 @@ const selectContentWorld = worldSelector([
   'facilityWorks',
   'campaigns',
   'sponsors',
-  'lower',
   'europe',
   'critical',
   // Staff, settings and bid decisions can change only these keys; the direction's cards, dials,

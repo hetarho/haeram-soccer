@@ -108,7 +108,7 @@ state with the theme's checkbox artwork. Explicit table columns reserve room for
 ratings and money instead of inheriting the shared leading rank column's narrow width.
 Tables whose first column identifies a record, such as a season, also set its alignment
 explicitly: a wide centred label column can look like an empty leading column on phones.
-Season history uses `Amat.` for the amateur division with the full name in its title. Let the
+Season history names each division in full (`3부 B조`), the same text in its title. Let the
 table and its columns fit their content instead of imposing a minimum width or distributing
 unused container space. Check the actual gaps between season, league and points on phones;
 shortening a label alone does not remove space reserved by fixed columns. Adjust small inter-column

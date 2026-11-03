@@ -170,7 +170,8 @@ it('selects the approved sourced squad registration eras and ceiling-only fallba
   expect(registrationRule('POR', 1, 2018).max).toBe(30);
   expect(registrationRule('BEL', 0, 2012).exempt!.ageAtMost).toBe(20);
   for (const code of ['GER', 'FRA', 'NED']) expect(registrationRule(code, 0, 2025).max).toBe(40);
-  expect(registrationRule('ENG', 4, 2025).max).toBe(40);
+  // A professional division before its first row (England's fourth tier before 2020).
+  expect(registrationRule('ENG', 3, 2019).max).toBe(40);
 });
 it('rejects unsupported registration countries, tiers, ranges, provenance and oversized limits', async () => {
   const { squadRulesData, validateRegistrationCatalog } = await import('./index');

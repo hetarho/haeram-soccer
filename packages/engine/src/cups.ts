@@ -1,6 +1,6 @@
 import { awardReputation, REPUTATION_CONFIG } from './reputation';
 import type { DomesticCup, KnockoutRound, World } from '../../contracts/src/types';
-import { COUNTRIES, country } from '../../catalogs/src/index';
+import { COUNTRIES } from '../../catalogs/src/index';
 import { compareIds } from './primitives';
 import { cupKey, domesticCupName } from './competition-keys';
 export { cupKey, domesticCupName } from './competition-keys';
@@ -42,11 +42,10 @@ export const CUP_PRIZE_CONFIG = {
   honor: 27,
 };
 
-/** Every club of the country down to its amateur level; higher divisions are seeded first. */
+/** Every professional club of the country (→LEAGUE-5); higher divisions are seeded first. */
 function entrants(w: World, code: string) {
-  const depth = country(code).groups.length;
   return w.clubs
-    .filter((c) => c.country === code && c.tier <= depth && !c.id.startsWith('euro:'))
+    .filter((c) => c.country === code && !c.id.startsWith('euro:'))
     .sort((a, b) => a.tier - b.tier || b.strength - a.strength || compareIds(a.id, b.id))
     .map((c) => c.id);
 }

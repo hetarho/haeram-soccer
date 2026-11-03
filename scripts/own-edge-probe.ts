@@ -190,7 +190,7 @@ function withSeed<T>(w: World, seed: number, run: () => T): T {
 function read(label: string, w: World) {
   const own = w.playerClub;
   const ownFixture = (f: Fixture) => f.home === own || f.away === own;
-  const pending = (f: Fixture) => (f.kind === 'league' || f.kind === 'lower') && !f.score;
+  const pending = (f: Fixture) => f.kind === 'league' && !f.score;
   const ownFixtures = w.fixtures.filter((f) => pending(f) && ownFixture(f));
   const groupKey = ownFixtures[0]!.groupKey;
   const others = w.fixtures.filter((f) => pending(f) && !ownFixture(f) && f.groupKey === groupKey);

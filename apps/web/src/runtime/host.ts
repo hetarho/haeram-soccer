@@ -447,10 +447,7 @@ export class Host {
         ],
         ownMatches: w.ownMatches.slice(-30),
         fixtures: w.fixtures.filter(
-          (f) =>
-            f.home === w.playerClub ||
-            f.away === w.playerClub ||
-            (w.lower ? f.kind === 'lower' : f.groupKey === ownGroup),
+          (f) => f.home === w.playerClub || f.away === w.playerClub || f.groupKey === ownGroup,
         ),
         // Brackets and scorer tables come with the archive request; the small rank series and Elo
         // spread stay for the records charts.

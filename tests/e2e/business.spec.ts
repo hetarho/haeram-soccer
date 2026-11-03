@@ -201,7 +201,7 @@ test('pays sponsor installments only for league games after the actual contract'
   const settled = await exportWorld(page);
   const games = settled.fixtures.filter(
     (fixture) =>
-      ['league', 'lower'].includes(fixture.kind) &&
+      fixture.kind === 'league' &&
       (fixture.home === settled.playerClub || fixture.away === settled.playerClub),
   ).length;
   const payments = settled.events.filter((event) => event.kind === 'sponsor:local');

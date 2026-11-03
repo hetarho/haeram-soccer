@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { COUNTRIES, currency, priceIndex } from '../../catalogs/src/index';
 import type { CountryCode, Fixture, KnockoutRound } from '../../contracts/src/types';
-import { AMATEUR_CLUBS, finishCups, finishEurope, prepareSeason } from './index';
+import { finishCups, finishEurope, prepareSeason } from './index';
 import { knockoutStage, type CupStage } from './stages';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
@@ -98,10 +98,10 @@ describe('cup stages from fixture IDs', () => {
     },
   );
 
-  it('opens every domestic cup with 1라운드: no field, with or without our club, is a power of two', () => {
+  it('opens every domestic cup with 1라운드: no field of professional clubs is a power of two', () => {
     for (const c of COUNTRIES) {
-      const field = c.groups.flat().reduce((sum, size) => sum + size, 0) + AMATEUR_CLUBS;
-      for (const n of [field, field + 1]) expect(n & (n - 1), `${c.code} ${n}`).not.toBe(0);
+      const field = c.groups.flat().reduce((sum, size) => sum + size, 0);
+      expect(field & (field - 1), `${c.code} ${field}`).not.toBe(0);
     }
   });
 
@@ -109,7 +109,7 @@ describe('cup stages from fixture IDs', () => {
     for (const id of [
       '1987:ENG:0:0:3:4',
       '1987:barrage:ENG:1',
-      '1987:lower-promotion:0:0',
+      '1987:promotion:ENG:2:0:0',
       '1950:ucl:k0:0',
       '1950:ucl:phase:0',
       '1987:cup:ENG:k1:0:2',

@@ -33,7 +33,7 @@ export function historyWorld(
   year: number = HISTORY_START,
 ): World {
   if (!seed.trim() || seed.length > 80) throw new Error('시드를 확인해 주세요.');
-  const clubs = generateClubs(seed, false);
+  const clubs = generateClubs(seed);
   const code = clubs[0]!.country;
   const manager = makeManager(code, seed, year);
   const w: World = {
@@ -69,7 +69,6 @@ export function historyWorld(
     cupWinners: {},
     europe: [],
     lastChampions: [],
-    lower: false,
     receiptIds: [],
   };
   prepareSeason(w);

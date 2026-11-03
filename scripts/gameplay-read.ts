@@ -63,7 +63,7 @@ function hatTricks(w: World) {
 function readSeason(w: World) {
   const league = w.fixtures.filter(
     (f): f is Fixture & { score: NonNullable<Fixture['score']> } =>
-      (f.kind === 'league' || f.kind === 'lower') && f.score !== undefined,
+      f.kind === 'league' && f.score !== undefined,
   );
   const tiers = new Map<number, typeof league>();
   for (const f of league) {

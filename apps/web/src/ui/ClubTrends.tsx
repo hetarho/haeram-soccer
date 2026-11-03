@@ -111,7 +111,7 @@ function trendSeries(w: World) {
 
 /** Our live Club Elo standing; it moves with every result, so only the clubs' ratings key it. */
 export function useEloStanding(w: World) {
-  return useMemo(() => eloStanding(w), [w.clubs, w.playerClub, w.lower, w.fixtures]);
+  return useMemo(() => eloStanding(w), [w.clubs, w.playerClub]);
 }
 
 /**
@@ -216,10 +216,7 @@ export function ClubTrends({ w }: { w: World }) {
         />
       </div>
       {metric === 'league' && (
-        <Panel
-          title="리그 위치"
-          note={`지금 ${w.lower ? '아마추어 리그' : divisionName(code, club.tier, club.group)}`}
-        >
+        <Panel title="리그 위치" note={`지금 ${divisionName(code, club.tier, club.group)}`}>
           <div className={s.panelBody}>
             <Chart
               label="피라미드 전체 순위"
@@ -381,7 +378,7 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                   className={t.cellText}
                   title={divisionName(code, clubOf(w).tier, clubOf(w).group)}
                 >
-                  {divisionName(code, clubOf(w).tier, clubOf(w).group, { compact: true })}
+                  {divisionName(code, clubOf(w).tier, clubOf(w).group)}
                 </span>
               </td>
               <td data-label="승점">{w.tables[w.playerClub]?.points ?? 0}</td>
@@ -421,7 +418,7 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                       className={t.cellText}
                       title={`${divisionName(code, h.tier, h.group)} ${h.rank}위`}
                     >
-                      {divisionName(code, h.tier, h.group, { compact: true })} {h.rank}위
+                      {divisionName(code, h.tier, h.group)} {h.rank}위
                     </span>
                   </td>
                   <td data-label="승점">

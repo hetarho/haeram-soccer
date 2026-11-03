@@ -18,7 +18,7 @@ describe('season analytics', () => {
   it('measures the league season from recorded matches only', () => {
     const w = careerWorld({ country: 'ENG', seed: 'season-review' });
     for (let round = 0; round < 6; round++) advanceRound(w, undefined, false);
-    const league = w.ownMatches.filter((m) => ['league', 'lower'].includes(m.kind));
+    const league = w.ownMatches.filter((m) => m.kind === 'league');
     const stats = seasonStats(w, w.ownMatches);
     const table = w.tables[w.playerClub];
     expect(stats.played).toBe(league.length);

@@ -12,11 +12,9 @@ import type {
   TransferBid,
   World,
 } from '../../contracts/src/types';
-import { country } from '../../catalogs/src/index';
 import { clubOf } from './player-state';
-import { advanceDays, prepareSeason } from './season';
+import { advanceDays } from './season';
 import { currentDay, seasonLength } from './calendar';
-import { assessOperatingExpenses } from './finance';
 import { playerValue, respondBid } from './transfers';
 import { POLICY_KEYS, policyOf } from './policy';
 import { DIRECTION_DEFAULT } from './direction';
@@ -86,32 +84,6 @@ export function stagePlayingCoach(w: World, id: string, years: 1 | 2, term: Cont
   const quote = playingCoachQuote(w, id, years, term);
   if (!quote) throw new Error('No playing-coach quote for this player, length and term.');
   return submitPlayingCoachProposal(w, quote);
-}
-
-/**
- * Tests and benchmarks that exercise professional-league rules start the own club in the lowest
- * professional division instead of the amateur league: it swaps places with that division's first
- * club, which drops to the amateur level, and the season is drawn again.
- */
-export function professionalStart(w: World) {
-  const own = clubOf(w),
-    last = country(own.country).groups.length - 1;
-  if (!w.lower) return w;
-  const slot = w.clubs.find(
-    (c) => c.country === own.country && c.tier === last && c.group === 0 && !c.representative,
-  )!;
-  slot.tier = last + 1;
-  slot.group = 0;
-  slot.representative = true;
-  own.tier = last;
-  own.group = 0;
-  w.lower = false;
-  delete w.rankHistory;
-  delete w.scorerSeason;
-  prepareSeason(w);
-  // The season starts again in this division, at its floor of operating expenses (→ECON-30).
-  w.operatingExpenses = assessOperatingExpenses(w);
-  return w;
 }
 
 /** Another club's accepted offer for one of our players at his value (window must be open). */

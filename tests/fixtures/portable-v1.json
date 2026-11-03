@@ -46,8 +46,7 @@
         "club": {
           "id": "ENG:3:0:0",
           "tier": 3,
-          "fans": 9236,
-          "lower": false
+          "fans": 9236
         },
         "players": [
           {
@@ -899,8 +898,7 @@
         "club": {
           "id": "FRA:2:0:0",
           "tier": 2,
-          "fans": 31931,
-          "lower": false
+          "fans": 31931
         },
         "players": [
           {
@@ -6218,8 +6216,7 @@
         "club": {
           "id": "FRA:2:0:0",
           "tier": 2,
-          "fans": 33613,
-          "lower": false
+          "fans": 33613
         },
         "players": [
           {
@@ -16306,8 +16303,7 @@
         "club": {
           "id": "ENG:3:0:0",
           "tier": 3,
-          "fans": 9283,
-          "lower": false
+          "fans": 9283
         },
         "players": [
           {
@@ -17295,8 +17291,7 @@
         "club": {
           "id": "ENG:3:0:0",
           "tier": 3,
-          "fans": 9247,
-          "lower": false
+          "fans": 9247
         },
         "players": [
           {
@@ -18116,8 +18111,7 @@
         "club": {
           "id": "ENG:3:0:0",
           "tier": 3,
-          "fans": 9247,
-          "lower": false
+          "fans": 9247
         },
         "players": [
           {

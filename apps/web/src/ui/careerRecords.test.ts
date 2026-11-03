@@ -62,11 +62,11 @@ it('uses denominator-aware season records and retains inactive leaders without m
 });
 
 describe('division names', () => {
-  it('adds the regional group only where the division has groups, and names the amateur league', () => {
+  it('adds the regional group only where the division has groups', () => {
     expect(divisionName('ENG', 1, 0)).toBe('2부');
+    expect(divisionName('ENG', 3, 0)).toBe('4부');
     expect(divisionName('ITA', 2, 1)).toBe('3부 B조');
     expect(divisionName('ITA', 2)).toBe('3부');
-    expect(divisionName('ENG', 4, 0)).toBe('아마추어 리그');
   });
 });
 
@@ -81,12 +81,12 @@ describe('trophy cabinet', () => {
     const w = world();
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     w.history = [
-      // Amateur champions, then up into the fourth division.
-      season(1950, { tier: 4, rank: 1, runs: [] }),
-      season(1951, { tier: 3, rank: 1, runs: [{ key: 'cup', name: 'FA Cup', reached: '결승' }] }),
-      // One season in the third division, down again with the cup and a continental title.
+      // Fourth-division champions, then up into the third.
+      season(1950, { tier: 3, rank: 1, runs: [] }),
+      season(1951, { tier: 2, rank: 1, runs: [{ key: 'cup', name: 'FA Cup', reached: '결승' }] }),
+      // One season in the second division, down again with the cup and a continental title.
       season(1952, {
-        tier: 2,
+        tier: 1,
         rank: 22,
         runs: [{ key: 'cup', name: 'FA Cup', reached: '결승', champion: true }],
         europe: [
@@ -96,18 +96,18 @@ describe('trophy cabinet', () => {
       }),
       // A season closed before cup runs were recorded: its cup counts nowhere.
       season(1953, {
-        tier: 3,
+        tier: 2,
         rank: 1,
         europe: [won(w, 'ucl', 'European Cup'), won(w, 'super', 'UEFA Super Cup')],
       }),
     ];
     // The last archive is compared with the division played now.
-    own.tier = 2;
+    own.tier = 1;
     const cabinet = trophyCabinet(w);
     expect(cabinet.seasons).toBe(4);
     expect(cabinet.league).toEqual([
-      { tier: 3, label: '4부', years: [1951, 1953] },
-      { tier: 4, label: '아마추어 리그', years: [1950] },
+      { tier: 2, label: '3부', years: [1951, 1953] },
+      { tier: 3, label: '4부', years: [1950] },
     ]);
     expect(cabinet.promotions).toEqual([1950, 1951, 1953]);
     expect(cabinet.relegations).toEqual([1952]);
@@ -120,7 +120,7 @@ describe('trophy cabinet', () => {
     ]);
     // The highest division reached beats a better rank lower down.
     expect(cabinet.best?.year).toBe(1952);
-    own.tier = 3;
+    own.tier = 2;
     expect(trophyCabinet(w).promotions).toEqual([1950, 1951]);
   });
 

@@ -49,8 +49,7 @@ export function matchSplit(
 }
 /**
  * The season match by match in playing order (→WEB-54): league points and the goal difference as
- * they built up. Points count only league matches (the amateur league included); the goal
- * difference counts every match given.
+ * they built up. Points count only league matches; the goal difference counts every match given.
  */
 export function seasonProgress(records: MatchRecord[], club: string) {
   let points = 0,
@@ -61,7 +60,7 @@ export function seasonProgress(records: MatchRecord[], club: string) {
     .sort((a, b) => a.year - b.year || fixtureDay(a) - fixtureDay(b) || a.id.localeCompare(b.id))
     .map((record) => {
       const result = resultFor(record, club)!,
-        league = record.kind === 'league' || record.kind === 'lower';
+        league = record.kind === 'league';
       if (league) points += result.own > result.other ? 3 : result.own === result.other ? 1 : 0;
       difference += result.own - result.other;
       return { record, result, league, points, difference };

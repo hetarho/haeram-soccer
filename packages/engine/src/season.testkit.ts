@@ -61,7 +61,7 @@ export function closedSeason(w: World) {
 export function lastRound(code: CountryCode) {
   // Exactly 46 round steps: one stays put once the club is bankrupt, which then never gets here.
   const w = cachedWorld(`professional-last-round-${code}`, () => {
-    const w = careerWorld({ country: code, seed: 'amateur-exchange' }, DISABLED_RELEASE);
+    const w = careerWorld({ country: code, seed: 'lowest-division' }, DISABLED_RELEASE);
     for (let n = 0; n < 46; n++) advanceRound(w, undefined, false);
     return w;
   });
@@ -69,48 +69,48 @@ export function lastRound(code: CountryCode) {
   return w;
 }
 
-/** Closes the season and reads who crossed between the last division and the amateur level. */
-export function exchange(w: World) {
-  const code = clubOf(w).country,
+/**
+ * Puts the own club, of the lowest professional division, last in its group with no points,
+ * closes the season and reads who crossed the last division's boundary (→LEAGUE-16). Every group
+ * of every country keeps its capacity (→LEAGUE-2), nobody moves two levels and nobody leaves the
+ * professional game; `mood` is 팬 민심 before the close.
+ */
+export function closeLowest(w: World) {
+  const own = clubOf(w),
+    code = own.country,
     groups = country(code).groups,
     last = groups.length - 1;
-  const before = structuredClone(w);
+  expect(own.tier).toBe(last);
+  const table = w.tables[own.id]!;
+  w.tables[own.id] = { ...table, won: 0, drawn: 0, lost: table.played, gf: 0, ga: 99, points: 0 };
+  const before = structuredClone(w),
+    mood = w.owner!.fanMood;
   closeSeason(w);
   const was = new Map(before.clubs.map((c) => [c.id, c]));
   const ids = (clubs: Club[]) => clubs.map((c) => c.id).sort();
-  const moved = (from: number, to: number, where: string = code) =>
-    ids(
-      w.clubs.filter((c) => c.country === where && was.get(c.id)!.tier === from && c.tier === to),
-    );
-  // Countries without a played amateur league send up their strongest amateur clubs.
-  for (const cp of COUNTRIES.filter((cp) => !(before.lower && cp.code === code))) {
-    const bottom = cp.groups.length - 1,
-      places = cp.groups[bottom].length * 2;
-    const strongest = before.clubs
-      .filter((c) => c.country === cp.code && c.representative && c.tier === bottom + 1)
-      .sort((a, b) => b.strength - a.strength || (a.id < b.id ? -1 : 1))
-      .slice(0, places);
-    expect(moved(bottom + 1, bottom, cp.code), cp.code).toEqual(ids(strongest));
-    expect(moved(bottom, bottom + 1, cp.code), cp.code).toHaveLength(places);
-  }
-  // Nobody falls or climbs two levels in one close.
-  for (const c of w.clubs)
+  const moved = (from: number, to: number) =>
+    ids(w.clubs.filter((c) => c.country === code && was.get(c.id)!.tier === from && c.tier === to));
+  for (const c of w.clubs) {
     expect(Math.abs(c.tier - was.get(c.id)!.tier), c.id).toBeLessThanOrEqual(1);
-  // Every group keeps its capacity.
-  groups.forEach((sizes, tier) =>
-    sizes.forEach((size, group) =>
-      expect(
-        w.clubs.filter(
-          (c) => c.country === code && c.tier === tier && c.group === group && !c.representative,
-        ),
-        `${code}:${tier}:${group}`,
-      ).toHaveLength(size),
-    ),
-  );
+    if (!c.representative) expect(c.tier, c.id).toBeLessThan(country(c.country).groups.length);
+  }
+  for (const cp of COUNTRIES)
+    cp.groups.forEach((sizes, tier) =>
+      sizes.forEach((size, group) =>
+        expect(
+          w.clubs.filter(
+            (c) =>
+              c.country === cp.code && c.tier === tier && c.group === group && !c.representative,
+          ),
+          `${cp.code}:${tier}:${group}`,
+        ).toHaveLength(size),
+      ),
+    );
   return {
     last,
-    up: moved(last + 1, last),
-    down: moved(last, last + 1),
+    mood,
+    up: moved(last, last - 1),
+    down: moved(last - 1, last),
     // The bottom two of each last-division group in the season just played.
     bottom: ids(
       groups[last].flatMap((_, group) =>

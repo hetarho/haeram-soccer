@@ -287,7 +287,7 @@ describe('container-3 match-model streams (→SAVE-23, HIST-17)', () => {
     const ids = (max: number) =>
       fc.uniqueArray(fc.stringMatching(/^[A-Z]{3}:[a-z0-9:]{1,12}$/), { maxLength: max });
     const competition = fc.record({
-      kind: fc.constantFrom('league', 'cup', 'europe', 'playoff', 'lower' as const),
+      kind: fc.constantFrom('league', 'cup', 'europe', 'playoff' as const),
       groupKey: fc.stringMatching(/^[A-Za-z0-9:-]{1,10}$/),
       clubs: ids(4).chain((clubs) =>
         fc.tuple(

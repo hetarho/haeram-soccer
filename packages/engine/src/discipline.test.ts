@@ -25,11 +25,7 @@ function world() {
 /** The own club's league fixtures of the season, in round order. */
 const leagueFixtures = (w: World) =>
   w.fixtures
-    .filter(
-      (f) =>
-        (f.kind === 'league' || f.kind === 'lower') &&
-        (f.home === w.playerClub || f.away === w.playerClub),
-    )
+    .filter((f) => f.kind === 'league' && (f.home === w.playerClub || f.away === w.playerClub))
     .sort((a, b) => a.round - b.round);
 const ownSide = (w: World, f: Fixture) => (f.home === w.playerClub ? 0 : 1);
 /** A recorded fixture whose only facts are its cards. */

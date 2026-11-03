@@ -33,9 +33,8 @@ export function parseDivision(value: string): Pick<LeagueChoice, 'tier' | 'group
 }
 
 /** A league's name: country and division, its regional group when the division has several. */
-export function leagueName(league: LeagueChoice, amateur = false) {
+export function leagueName(league: LeagueChoice) {
   const cp = country(league.code);
-  if (amateur) return `${cp.name} 아마추어 리그`;
   const groups = cp.groups[league.tier]?.length ?? 1;
   return `${cp.name} ${league.tier + 1}부${groups > 1 ? ` ${String.fromCharCode(65 + league.group)}조` : ''}`;
 }
@@ -91,8 +90,6 @@ export const LeaguePicker = memo(function LeaguePicker({
   const w = useGameState(selectLeagueWorld)!;
   const seasons = useLeagueSeasons();
   const own = base ?? ownLeague(w),
-    // The amateur level sits one tier below the country's professional divisions.
-    amateur = !country(own.code).groups[own.tier],
     shown = league ?? own,
     cp = country(shown.code);
   const choose = (next: LeagueChoice) => onLeague(sameLeague(next, own) ? undefined : next);
@@ -139,11 +136,6 @@ export const LeaguePicker = memo(function LeaguePicker({
                 </option>
               );
             }),
-          )}
-          {amateur && shown.code === own.code && (
-            <option value={divisionValue(own)} data-short="아마">
-              아마추어 리그
-            </option>
           )}
         </Select>
       </label>

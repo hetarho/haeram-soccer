@@ -61,7 +61,6 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     const fielded = squad(w, club).map((p) => p.id);
     takeOver(w, club.id, choice('industrial'), undefined, DISABLED_RELEASE);
     expect(w.playerClub).toBe(club.id);
-    expect(w.lower).toBe(false);
     const ids = w.players.map((p) => p.id);
     expect(ids).toEqual(expect.arrayContaining(fielded));
     expect(w.players.length).toBeGreaterThanOrEqual(CLUB_TAKEOVER.squad);
@@ -262,8 +261,11 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     );
     expect(poor.playerClub).toBe('');
     const { w } = setup();
-    const amateur = w.clubs.find((c) => c.representative)!;
-    expect(() => takeOver(w, amateur.id, choice('oil'))).toThrow('인수할 수 없는 구단입니다.');
+    // A continental representative of another association is no club to buy (→WORLD-1).
+    const representative = w.clubs.find((c) => c.representative)!;
+    expect(() => takeOver(w, representative.id, choice('oil'))).toThrow(
+      '인수할 수 없는 구단입니다.',
+    );
     expect(() => takeOver(w, 'ENG:nowhere', choice('oil'))).toThrow('인수할 수 없는 구단입니다.');
     const club = atPlace(w, 1, 3);
     expect(() => takeOver(w, club.id, choice('oil', ['talisman', 'talisman']))).toThrow(

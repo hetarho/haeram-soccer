@@ -133,7 +133,6 @@ function clubView(w: World, club: Club, fixtures: Fixture[]): World {
     ...w,
     fixtures,
     playerClub: club.id,
-    lower: false,
     ticket: DEFAULT_TICKET,
     stadium,
     facilityWorks: undefined,

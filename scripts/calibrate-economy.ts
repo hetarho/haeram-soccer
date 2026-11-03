@@ -224,8 +224,7 @@ const usualReputation = divisionLevel;
  */
 function establishedCrowd(w: World, tier: number) {
   const code = clubOf(w).country,
-    depth = country(code).groups.length,
-    reputation = usualReputation(tier, depth);
+    reputation = usualReputation(tier);
   const clubs = w.clubs.filter(
     (c) =>
       c.country === code && c.id !== w.playerClub && c.tier === tier && !c.id.startsWith('euro:'),
@@ -325,9 +324,7 @@ function playCareer(
     let facilitySpend = 0;
     const attendance: number[] = [];
     const leagueIds = new Set(
-      w.ownMatches
-        .filter((m) => m.year === year && ['league', 'lower'].includes(m.kind))
-        .map((m) => m.id),
+      w.ownMatches.filter((m) => m.year === year && m.kind === 'league').map((m) => m.id),
     );
     for (const event of w.events.slice(firstEvent)) {
       if (event.year !== year || !event.amount) continue;

@@ -43,10 +43,11 @@ export const MARKET_CONFIG = {
    */
   premiumSpan: 10,
   /**
-   * What a division pays for the same player, as a share of the top flight, by tier from the top
-   * (the amateur league is the tier below the professional ones); the last entry holds below.
-   * The second tier pays 40% (CLUB-25: 35–50%); lower divisions pay far less, so an amateur club
-   * can keep the players its academy grows.
+   * What a division pays for the same player, as a share of the top flight, by depth from the top;
+   * the last entry holds below. The second tier pays 40% (CLUB-25: 35–50%); lower divisions pay
+   * far less, so a small club can keep the players its academy grows. A market player whose
+   * ability falls below a country's last division is priced one step deeper (`divisionFor`), the
+   * fifth entry England's.
    */
   divisions: [1, 0.4, 0.15, 0.07, 0.03],
   /**

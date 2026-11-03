@@ -34,6 +34,9 @@ import {
 const input = { country: 'ENG' as const, seed: 'league-insights' };
 /** Our club taken over in the lowest professional division. */
 const professional = () => cachedWorld('professional', () => careerWorld(input));
+/** Our club taken over in the third division, the lowest that relegates (→LEAGUE-16). */
+const third = () =>
+  cachedWorld('third-division', () => careerWorld({ ...input, club: 'ENG:2:0:0' }));
 /** That career after four observed rounds. */
 const fourRounds = () =>
   cachedWorld('professional-4-rounds', () => {
@@ -131,7 +134,8 @@ describe('league insight facts', () => {
     const regional = w.clubs
       .filter((c) => c.country === 'ITA' && c.tier === 2 && c.group === 0 && !c.representative)
       .map((c) => c.id);
-    expect(leagueRules(w, regional)).toMatchObject({ automatic: 1, playoff: 3, relegation: 2 });
+    // Serie C is the last division: it relegates nobody (→LEAGUE-16).
+    expect(leagueRules(w, regional)).toMatchObject({ automatic: 1, playoff: 3, relegation: 0 });
     const top = w.clubs
       .filter((c) => c.country === 'ITA' && c.tier === 0 && !c.representative)
       .map((c) => c.id);
@@ -141,7 +145,7 @@ describe('league insight facts', () => {
   it("finds any club's own league and names where it plays, whoever opens its sheet", () => {
     const w = simulatedWorld(input),
       club = (id: string) => w.clubs.find((c) => c.id === id)!;
-    // Our league is the clubs in its fixtures.
+    // Our league is the clubs of our division.
     const own = ownLeagueIds(w),
       rival = own.find((id) => id !== w.playerClub)!;
     expect(leagueOf(w, club(w.playerClub))).toEqual(own);
@@ -154,13 +158,11 @@ describe('league insight facts', () => {
     expect(clubDivision(w, german)).toBe('독일 2부');
     const regional = w.clubs.find((c) => c.country === 'ITA' && c.tier === 2 && c.group === 1)!;
     expect(clubDivision(w, regional)).toBe('이탈리아 3부 B조');
-    // Continental representatives and amateurs outside our league play in no league.
+    // Continental representatives play in no league; no playable country has a club outside one.
     const abroad = club('euro:4');
     expect(leagueOf(w, abroad)).toEqual([]);
     expect(clubDivision(w, abroad)).toBe('해외 클럽 · 그리스');
-    const idle = w.clubs.find((c) => c.representative && c.country === 'FRA' && c.tier > 0)!;
-    expect(leagueOf(w, idle)).toEqual([]);
-    expect(clubDivision(w, idle)).toBe('프랑스 아마추어 리그');
+    expect(w.clubs.some((c) => c.representative && !c.id.startsWith('euro:'))).toBe(false);
   });
 });
 
@@ -264,8 +266,8 @@ describe('rank history models', () => {
 
 describe('league overview model', () => {
   /** Our league with our club placed `place` (0-based), every club two points below the last. */
-  function placed(place: number) {
-    const w = professional(),
+  function placed(place: number, start: () => World = third) {
+    const w = start(),
       others = ownLeagueIds(w).filter((id) => id !== w.playerClub),
       order = [...others.slice(0, place), w.playerClub, ...others.slice(place)];
     order.forEach((id, i) => {
@@ -300,6 +302,10 @@ describe('league overview model', () => {
     expect(leading.gap).toBe(
       points(top.w, top.w.playerClub) - points(top.w, top.order[top.rules.automatic]),
     );
+    // The last division relegates nobody, so there is no line to keep above (→LEAGUE-16).
+    const lowest = placed(23, professional);
+    expect(lowest.rules.relegation).toBe(0);
+    expect(leagueOverviewModel(lowest.w).cushion).toBeUndefined();
   });
 
   /** Plays our first league matches with these (own, opponent) scores, in round order. */
@@ -377,7 +383,6 @@ describe('division rounds (WEB-18)', () => {
     return {
       year: 1995,
       round: week,
-      lower: false,
       playerClub: members[0]!.id,
       clubs: members,
       fixtures: fixturesFor(members, 1995),

@@ -18,19 +18,19 @@ import { sponsorFactor } from './owner-traits';
 /**
  * Sponsor contracts by slot (→ECON-8), measured against ECON-29 (spec/ssot/ECON.md).
  * `value`: a club's yearly commercial value by division in 1901 price units before the football
- * index, from the top flight down, the last entry being the amateur league. Every factor below
- * multiplies it; each slot offers its share of the result.
+ * index, from the top flight down. Every factor below multiplies it; each slot offers its share of
+ * the result.
  */
 export const SPONSOR_CONFIG = {
   value: {
-    ENG: [26400, 1900, 950, 550, 400],
-    ESP: [22000, 1600, 360],
-    GER: [22000, 1600, 800, 360],
-    ITA: [22000, 1600, 800, 360],
-    FRA: [18700, 1350, 680, 320],
-    POR: [14300, 1050, 280],
-    NED: [14300, 1050, 280],
-    BEL: [13200, 950, 280],
+    ENG: [26400, 1900, 950, 550],
+    ESP: [22000, 1600],
+    GER: [22000, 1600, 800],
+    ITA: [22000, 1600, 800],
+    FRA: [18700, 1350, 680],
+    POR: [14300, 1050],
+    NED: [14300, 1050],
+    BEL: [13200, 950],
   } as Record<string, readonly number[]>,
   /** Reputation 0–100 reads as ×0.75–1.25. */
   reputation: { base: 0.75, per: 1 / 200 },

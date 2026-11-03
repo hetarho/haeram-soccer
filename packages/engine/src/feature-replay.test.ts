@@ -117,7 +117,7 @@ describe('prospective full-model activation (→SAVE-23, HIST-17)', () => {
     const own = before.fixtures.find(
       (f) => f.home === before.playerClub || f.away === before.playerClub,
     )!;
-    const scope = { kind: own.kind as 'league' | 'lower', groupKey: own.groupKey };
+    const scope = { kind: own.kind as 'league', groupKey: own.groupKey };
     const played = (w: World) =>
       w.fixtures.filter((f) => f.kind === own.kind && f.groupKey === own.groupKey && f.score);
     const earlier = played(before);
