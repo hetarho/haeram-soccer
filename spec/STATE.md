@@ -18,6 +18,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261103 decided WEB-115 T678: how the feats are found → engine `seasonDigest` reads the archives and the clubs' Elo at each season reached and carries only the season's greatest feat; only the European Cup lineage makes the treble and the European feats; a league run is carded at five and afterwards only when it becomes its country's longest; the war is one card on the 1946 restart (alt: the UI derives feats from the digests it received, which a reload mid-generation would cut short | a card for every season a run continues). ot03
 - 261103 decided WEB-115 ARCH-28: the details of the generation history view the owner asked for (real speed, Elo world ranking, feat cards, a relaxed budget) → Club Elo top 10; cards about 3 s, one at a time, greatest feat per season, unshown cards dropped at the next season; feats: war stop/restart, treble, European Cup three-peat, third 발롱도르 in a row, European Cup back-to-back, first European Cup, league run of five; the view may add at most 10% to generation; the later-decade budget 5 s a season played (alt: 6 minutes for 2000 | a closing 1930–2000 summary page before the club list | prepared worlds per decade, deferred). ot03
 - 261103 decided SAVE-29 WEB-62 T677: user explicitly drops beta backward compatibility for old localStorage code → remove checkpoint slots/fallback/migration/reset/strategy cleanup; keep current preferences, notification/read markers, game index and manifest metadata, with no deletion or migration of existing browser keys. hr03
 - 261103 decided SAVE-2 SAVE-4 T676: the 84-season news journal pushes maximum-compression saves to 589 s, while identical-byte gzip is 1.10 s and its 6.11 MB file fits the existing 8 MiB import cap → IndexedDB checkpoints allow 6 MiB UTF-16 and budget-verified gzip; fallback remains 3 MiB / 3.5 MiB total, portable 8 MiB and decompressed 32 MiB unchanged (alt: keep maximum Brotli on every save | drop retained news). hr03
@@ -504,8 +505,8 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 28 | 27 | ARCH-28✎ | 2 |
-| WEB | 206 | 205 | WEB-15✎ WEB-115+ | 0 |
+| ARCH | 28 | 28 | - | 2 |
+| WEB | 206 | 206 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
 | KIT | 9 | 9 | - | 0 |
@@ -552,6 +553,8 @@
 | T670 | engine tests build careers by taking a club over | WEB WORLD ECON CLUB ARCH | T665 | todo |
 | T671 | the founding leaves the engine: fixtures, web tests, e2e and scripts on takeovers | WEB WORLD CLUB SAVE ARCH | T670 | todo |
 | T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | doing@261103.ot03 |
+| T678 | the world's history plays while it is generated | WEB ARCH WORLD HIST PLAYER EURO | T668 | todo |
+| T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -575,6 +578,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- after the ot03 takeover lands on main (T668 last): implement-task T678 (history view while the world is generated, WEB-115), then T679 (explore 1h: generation with the view against ARCH-28)
 - Continue the active ot03 takeover handoff; hr03 read/storage work is complete (spec/reports/261103-hr03.md).
 - continue branch `wip/ot03` (dda53874: owner takeover T653–T664 and T669 done, main merged; its STATE is current): implement-task T665, then T666, T667, T668; batch gate once (Chromium), then merge into main and push. Report spec/reports/261103-ot03.md
 - read main CI after 1928053c (fix for 41524887826: position-badges, analysis, mobile-match-presentation)
@@ -600,4 +604,4 @@
 - 261103 T652 done: nothing unused is left beside what the reasons in T652's result keep. `intervention` (no supported save lacks settings, so no level mapping), `campaign`, `sponsor` and `club-identity` leave Command/protocol/engine/outcome, `World.intervention` is dropped on load; engine `intervention.ts` and `MilestoneCollection` deleted, 69 exports removed (sprite painter, queue filters, criteria schemas, round-simulator injection among them), 3 test conveniences moved to test helpers, 56 CSS classes, 28 messages ×12 packs, 7 unused locals; tests set authority through `testing.ts` `staffAuthority`/`handTo`. Equivalence digests unchanged; unit 222/1900 green; contract 47 green (golden unchanged); e2e edited for the batch.
 - 261103 T651 done: a player's coaching intention is his own 50/80% draw and only delegated staff propose a playing coach, the owner answering in the 결재함. The encourage-coaching/propose-playing-coach commands, encourageCoaching (65/95%, its event) and proposePlayingCoach are gone (staff record through submitPlayingCoachProposal, tests stage with testing.ts stagePlayingCoach); intention.encouraged leaves the types and is dropped on load and from packed careers (now four wide, older seven-wide rows read); the view's careers map goes; PlayingCoachReview is the 결재함 approval only and the player sheet reads the aptitude grades. Equivalence digests unchanged; unit 222/1915 green; golden regenerated (contract 47 green); e2e edited for the batch.
 - 261103 T650 done: the owner adds no capital and starts no facility work. The support/facility commands, World.support (dropped on load), the ownerCapital build effect (구단주 투자 keeps only its wage cost) and the ledger's owner capital line are gone; startFacilityWork is reached only by the calibration harness's reference club and tests, and a work under way still opens on its day; 추가 출자, the facility review and 공사 시작 are deleted while 재정·투자 reads each part's stage, art and work under way. Equivalence digests unchanged; unit 222/1913 green; contract 47 green (golden unchanged); e2e edited for the batch.
-- 261103 T649 done: the club keeps the direction it was founded with. The policy/build/direction/ticket commands, setPolicy/setBuild/setDirection, the policy and ticket previews, the 80+ intake odds and the card display lines are gone; founding installs its preset directly (32 founded worlds identical); the 방향 board, composer, department sheets, direction lines and the device strategy library are deleted (its key removed on writer start); 재정·투자 and the staff/academy/market views read the rows, investment, ticket price and bases read-only. Equivalence digests unchanged; unit 222/1911 green; golden regenerated (contract 47 green); e2e edited for the batch.
+- 261103 create-task WEB@206 ARCH@28 → T678 (history view while the world is generated, dep T668), T679 (explore 1h: its cost and the later-decade budget); ot03
