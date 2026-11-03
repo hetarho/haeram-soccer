@@ -18,6 +18,9 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261103 decided T665 T670 T671 T672: T665 (founding, difficulty, editor and amateur level end to end) cannot finish in one unit — 243 files build worlds with `createWorld`/`simulatedWorld(Founding)` → split into T665 founding screen, `found` message, identity editor and ready-made crests; T670 engine/contracts tests on a takeover test builder; T671 fixtures, web tests, e2e and scripts, then the founding deleted; T672 the amateur level with LEAGUE-16's test; T666–T668 wait on T672 (alt: one unit for all of it, which would stop mid-migration | a renamed founding builder for tests, which keeps the founding in the code). ot03
+- 261103 decided T670 ARCH-21: how tests get a career once the founding goes → `careerWorld`: a fresh 1950 world nobody owns (`historyWorld` with a test-only year) and a takeover of the lowest division's first club by an `oil` owner, funded with two years of fixed costs (alt: a lived world from `generateHistory`, seconds per test | the takeover's own cash 0, bankrupt at round 8). ot03
+- 261103 decided KIT-2 KIT-14 T665: KIT-2 still offered six ready-made crests, 랜덤 and 직접 꾸미기 while KIT-14 removed the founding crests and no editor is left → KIT r9: designers compose crests from the component catalogue; no ready-made crests or owner-side composition (alt: keep the six presets as designer templates, which nothing reads). ot03
 - 261103 decided MATCH-22 WORLD-13 T669: which worlds take the results-only path → every world with `playerClub` empty, whatever its match model, checked first in `simulateMatch` (alt: only worlds on the released model). ot03
 - 261103 decided MATCH-22 T669: results-only score model → per-side Poisson fitted to the full path by strength gap and mean strength (draws 22.3% vs 22.2%); penalty 7.5% / header 17% / outside 12%; 80% of non-penalty goals assisted (alt: a gap-only fit, ~0.24 goals low for strong equal sides). ot03
 - 261103 decided MATCH-26 HIST-3 T669: results-only record → no model, incidents or highlights; eleven lines a side with goals/assists/minutes, detail and xG zero (alt: a full record with zeroed counters, which MATCH-27's check rejects). ot03
@@ -595,7 +598,7 @@
 | WEB | 204 | 204 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
-| KIT | 8 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
+| KIT | 9 | 9 | - | 0 |
 | CLUB | 50 | 50 | - | 0 |
 | MATCH | 48 | 48 | - | 0 |
 | LEAGUE | 12 | 12 | - | 0 |
@@ -620,10 +623,13 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T665 | remove founding, difficulty levels, the founding editor and the amateur level | WEB KIT WORLD LEAGUE ECON CLUB | T652 T664 | todo |
-| T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T665 | todo |
-| T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T665 | todo |
-| T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T665 | todo |
+| T665 | remove the founding screen, the found message, the identity editor and ready-made crests | WEB KIT HIST | T652 T664 | todo |
+| T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T672 | todo |
+| T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T672 | todo |
+| T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T672 | todo |
+| T670 | engine tests build careers by taking a club over | WEB WORLD ECON CLUB ARCH | T665 | todo |
+| T671 | the founding leaves the engine: fixtures, web tests, e2e and scripts on takeovers | WEB WORLD CLUB SAVE ARCH | T670 | todo |
+| T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -647,10 +653,11 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (remove founding, difficulty levels, the founding editor and the amateur level), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
+- on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (founding screen, `found` message, identity editor, ready-made crests), then T670 (engine tests on `careerWorld`), T671 (the founding leaves the engine), T672 (the amateur level, LEAGUE-16), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
 - read main CI after 1928053c/fa1ed566 (fix for 41524887826)
 
 ## log
+- 261103 update-ssot KIT r9 (KIT-2: no ready-made crests, designers compose from the catalogue); create-task: T665 narrowed to the founding UI, T670–T672 split from it (engine tests, fixtures/web/e2e/scripts with the founding's deletion, the amateur level); T666–T668 dep T672; KIT row tasked 4→9 (the 261103 create-task consumed KIT@8, r9 goes to T665); ot03
 - 261103 T669 done (merged 1c218442): results-only fixtures before the takeover; generateHistory 2000 773.9 s → 30.9 s Node (≈124 s reference, ARCH-28 90 s needs ~27% more); ot03
 - 261103 T664 done: a new game is tier → traits → decade → generated world → club list → takeover on game version 0.8.0 (rules 5.0.0); worker generate/club-sheet/take-over, careerEnded routing, OwnerSheet/GameOver stories, founded 0.7.0 careers reset; e2e on tests/e2e/start.ts; ot03
 - 261103 update-ssot WORLD r9 MATCH r48: fixtures before the takeover take a results-only path; create-task T669 (explore 3h, parallel to T664); T664/T666 notes from the integration; ot03
