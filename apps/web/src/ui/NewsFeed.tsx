@@ -175,7 +175,7 @@ export function NewsList({ w, client }: { w: World; client?: GameClient }) {
     }
   };
   const [seenAtOpen] = useState(() => readSeen(w.id));
-  const fresh = freshCount(news, seenAtOpen);
+  const fresh = new Set(recent.slice(0, freshCount(recent, seenAtOpen)).map((item) => item.id));
   const shown = tag === '전체' || client ? news : news.filter((item) => item.tag === tag);
   return (
     <>
@@ -196,7 +196,7 @@ export function NewsList({ w, client }: { w: World; client?: GameClient }) {
       {shown.length ? (
         <ul className={s.feed}>
           {shown.map((item) => (
-            <Headline key={item.id} item={item} fresh={news.indexOf(item) < fresh} />
+            <Headline key={item.id} item={item} fresh={fresh.has(item.id)} />
           ))}
         </ul>
       ) : (
