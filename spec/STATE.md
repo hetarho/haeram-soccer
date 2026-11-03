@@ -475,6 +475,9 @@
 - 261031 decided ARCH-30 T617 T618: owner explicitly accepts the reproduced pre-existing UI e2e failures and requests main push now → publish the completed, unchanged engine source using the recorded backend/three-browser verification; preserve failed-gate evidence and leave assertions/checks unchanged. This owner-authorized publication exception supersedes the earlier hold.
 - 261031 decided ARCH-30 T617 T618: engine implementation and backend/three-browser engine checks complete, but the full app browser gate has existing UI journey failures reproduced on unchanged 8b0032ee → keep completed code/evidence on codex/engine-opt-261030 and wip/ei31, hold main code push/CI until that UI gate is reconciled (alt: bypass the full gate | change owner UI flows inside the engine optimization). Report reports/261031-ei31.md.
 - 261031 decided ARCH-9 ARCH-34 T618: guarded Wasm qualifies locally but deployed CSP restricts compilation → adopt the independently qualifying packed JavaScript phase (final grid CPU ×0.9633, equal records), preserving scalar fallback and security headers; archive Wasm source/bytes/evidence (alt: expand CSP | ship two overlapping numeric backends).
+- 261103 decided T665 T670 T671 T672: T665 (founding, difficulty, editor and amateur level end to end) cannot finish in one unit — 243 files build worlds with `createWorld`/`simulatedWorld(Founding)` → split into T665 founding screen, `found` message, identity editor and ready-made crests; T670 engine/contracts tests on a takeover test builder; T671 fixtures, web tests, e2e and scripts, then the founding deleted; T672 the amateur level with LEAGUE-16's test; T666–T668 wait on T672 (alt: one unit for all of it, which would stop mid-migration | a renamed founding builder for tests, which keeps the founding in the code). ot03
+- 261103 decided T670 ARCH-21: how tests get a career once the founding goes → `careerWorld`: a fresh 1950 world nobody owns (`historyWorld` with a test-only year) and a takeover of the lowest division's first club by an `oil` owner, funded with two years of fixed costs (alt: a lived world from `generateHistory`, seconds per test | the takeover's own cash 0, bankrupt at round 8). ot03
+- 261103 decided KIT-2 KIT-14 T665: KIT-2 still offered six ready-made crests, 랜덤 and 직접 꾸미기 while KIT-14 removed the founding crests and no editor is left → KIT r9: designers compose crests from the component catalogue; no ready-made crests or owner-side composition (alt: keep the six presets as designer templates, which nothing reads). ot03
 
 ## ideation
 | id | st |
@@ -502,7 +505,7 @@
 | WEB | 204 | 204 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 8 | 8 | - | 0 |
-| KIT | 8 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
+| KIT | 9 | 9 | - | 0 |
 | CLUB | 50 | 50 | - | 0 |
 | MATCH | 47 | 47 | - | 0 |
 | LEAGUE | 12 | 12 | - | 0 |
@@ -539,13 +542,16 @@
 | T662 | start flow UI: tier, traits, decade, generation, club list and takeover | WEB OWNER WORLD ECON | T652 T653 | todo |
 | T663 | owner UI: HUD fortune, 구단주 sheet, crisis statuses and game-over causes | WEB OWNER | T652 T653 | todo |
 | T664 | switch the start to the takeover (rules 5.0.0) | WEB WORLD ECON OWNER SAVE ARCH | T652 T656 T658 T660 T661 T662 T663 | todo |
-| T665 | remove founding, difficulty levels, the founding editor and the amateur level | WEB KIT WORLD LEAGUE ECON CLUB | T652 T664 | todo |
-| T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T665 | todo |
-| T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T665 | todo |
-| T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T665 | todo |
+| T665 | remove the founding screen, the found message, the identity editor and ready-made crests | WEB KIT HIST | T652 T664 | todo |
+| T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T672 | todo |
+| T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T672 | todo |
+| T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T672 | todo |
 | T673 | Record news and update record counters when facts settle | HIST SAVE ARCH | - | doing@261103.hr03 |
 | T674 | Serve career statistics and current-season finance from maintained summaries | HIST SAVE ARCH | T673 | doing@261103.hr03 |
 | T675 | Verify long-career scaling and checkpoint continuity of incremental reads | HIST SAVE ARCH | T674 | todo |
+| T670 | engine tests build careers by taking a club over | WEB WORLD ECON CLUB ARCH | T665 | todo |
+| T671 | the founding leaves the engine: fixtures, web tests, e2e and scripts on takeovers | WEB WORLD CLUB SAVE ARCH | T670 | todo |
+| T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -572,6 +578,7 @@
 - implement-task T673, then T674 and T675 (hr03); preserve ot03 takeover handoff below.
 - continue branch `wip/ot03` (dda53874: owner takeover T653–T664 and T669 done, main merged; its STATE is current): implement-task T665, then T666, T667, T668; batch gate once (Chromium), then merge into main and push. Report spec/reports/261103-ot03.md
 - read main CI after 1928053c (fix for 41524887826: position-badges, analysis, mobile-match-presentation)
+- on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (founding screen, `found` message, identity editor, ready-made crests), then T670 (engine tests on `careerWorld`), T671 (the founding leaves the engine), T672 (the amateur level, LEAGUE-16), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
 
 ## log
 - 261103 HIST r22 SAVE r63 tasked: T673–T675 incremental news, statistics/finance reads and performance/continuity verification. hr03
