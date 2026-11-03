@@ -15,7 +15,6 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| hr04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T05:18Z | 2026-11-03T05:18Z | T680 |
 
 ## inbox
 - 261103 decided LEAGUE-13 OWNER-3 T668: which club a reference career takes over → the median-priced club of the tier's reach in that country that its fortune pays for, the dearer of the two middle ones (alt: the club nearest the anchor | a seeded draw from the reach). ot03
@@ -666,7 +665,6 @@
 |---|---|---|---|---|
 | T678 | the world's history plays while it is generated | WEB ARCH WORLD HIST PLAYER EURO | T668 | todo |
 | T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
-| T680 | Measure x10 and experimental x20 automatic-play capacity | WEB ARCH SAVE | - | doing@261103.hr04 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |

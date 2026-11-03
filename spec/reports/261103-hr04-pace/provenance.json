@@ -1,0 +1,42 @@
+{
+  "originalExportSHA256": "765fc15f09360c7b5874ce752bd7c480f64e61ef36a4f9d94a77ebbc8a64589c",
+  "buildSource": "40c5b2d5103b57d76a26f5ab4e3ef2df0b344334",
+  "coordinatorSource": "f383e0f42cdfc769069d45a8f338b0ca57733670",
+  "primaryCheck": {
+    "ok": true,
+    "stale": false,
+    "ms": 858847,
+    "log": ".git/haeram/v1/logs/check-5de65f6b-834a-43cc-b74c-c0254a0deff0.log"
+  },
+  "files": {
+    "analysis.json": "3bc445f744e56e2e5b6cf7e185d63f363c1b851c1ad4528cdbbb3b00e8db44ae",
+    "analyze.mjs": "b858e6eabfda52f266abacdc6d9ab029974903f886144bb75ec30a0ddd252ce4",
+    "early-base-r1.trace.json": "6780c210970c6ad91ae8e5dada8420bacd52938a9288744c26b1a5acc4d84599",
+    "early-base-r2.trace.json": "4002552a0110e248521bcac8096cdd5c927bd403bcf98e892103ea59b864d682",
+    "early-x20-r1.trace.json": "5e9f3c872094c8dbfd7a65fea3ca0dfdc896ea0f1ed258009d67f357df43d5b6",
+    "early-x20-r2.trace.json": "647854f766939f7e911d5d590e23987a8d3d4d90e6b21eb13726a78a14e61430",
+    "fixture-meta.json": "488766b0473cca22706904cabda7adbb1f88e44cf201e19eb2937a9a94505b60",
+    "late-base-r1.trace.json": "7967da288619b23d9b704fc4ff12ebe7457d7cb8553f52a4e38c9bd54e8e4d38",
+    "late-base-r2.trace.json": "732ffa5b11797fbcfba5840245c5941a2f72a2d5d751053a753917fadd9ca653",
+    "late-x20-r1.trace.json": "f77ea4e2c87e78c17b14b9fd9727ca13a74ac684db8d609c25bbf40f33750ad8",
+    "late-x20-r2.trace.json": "6e75559c69ea7ba4405cfe8968ac464ffec42b6cf2c54b3444685a88a746e5fc",
+    "main-thread.cpuprofile.gz": "0d0fd33b82d13a30697aeefe9e6204746a4652cc4295e79bbe9ba53f23f586c1",
+    "metadata.json": "ebddcb9d8ef3eb1dcb64539b765c4a90585fd81302a8062254a0e52a485e217a",
+    "prepare.ts": "441b4481a5b2f639d9952d55b005d32ecf23b4504d63084c745d530d1195db17",
+    "profile-metadata.json": "435dbe7240b366e0b4c21a94c9406af932d97ad98afdbe3b087788d8b8761078",
+    "profile-read.mjs": "01c5779f3ca4b12eb482d468411215576d29eabf53f616e74214bf6006c296ac",
+    "profile-result.json": "938fb1560aeb9f97e588d938b5cab6aa6cf2774327bdad839dbc6857b5955f40",
+    "profile-summary.json": "448b5350ebca489f8cefa20bb5d500c52f3a89dc4e129e0595fce63335656fb5",
+    "profile.mjs": "cf74fb2bcdf4771955fc2f08a5c9ac37a093e9fc08461b84df2b16ea24a00bb6",
+    "results.json": "73765731cdd7b14f1ab5bcbafdba72aff7e2bd4cd9bfc8d2799149579ba3d460",
+    "runner.mjs": "b94995722880626a15cc6bacb7754f5038391a32e382e6b1f076678334d3fb44",
+    "x20.patch": "377b24c630c045841102ea38f47b149cd953602cf4ee4a170049c497a45d230e"
+  },
+  "profileCheck": {
+    "ok": true,
+    "stale": false,
+    "ms": 107601,
+    "log": ".git/haeram/v1/logs/check-3385ad86-e966-43fe-b215-95707ee2a39c.log"
+  },
+  "originalExportUnchanged": true
+}
