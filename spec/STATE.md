@@ -18,6 +18,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261103 decided WEB-115 ARCH-28: the details of the generation history view the owner asked for (real speed, Elo world ranking, feat cards, a relaxed budget) → Club Elo top 10; cards about 3 s, one at a time, greatest feat per season, unshown cards dropped at the next season; feats: war stop/restart, treble, European Cup three-peat, third 발롱도르 in a row, European Cup back-to-back, first European Cup, league run of five; the view may add at most 10% to generation; the later-decade budget 5 s a season played (alt: 6 minutes for 2000 | a closing 1930–2000 summary page before the club list | prepared worlds per decade, deferred). ot03
 - 261103 decided SAVE-29 WEB-62 T677: user explicitly drops beta backward compatibility for old localStorage code → remove checkpoint slots/fallback/migration/reset/strategy cleanup; keep current preferences, notification/read markers, game index and manifest metadata, with no deletion or migration of existing browser keys. hr03
 - 261103 decided SAVE-2 SAVE-4 T676: the 84-season news journal pushes maximum-compression saves to 589 s, while identical-byte gzip is 1.10 s and its 6.11 MB file fits the existing 8 MiB import cap → IndexedDB checkpoints allow 6 MiB UTF-16 and budget-verified gzip; fallback remains 3 MiB / 3.5 MiB total, portable 8 MiB and decompressed 32 MiB unchanged (alt: keep maximum Brotli on every save | drop retained news). hr03
 - 261103 decided T673 T674 T675: headless loop preflight failed because its child cannot resolve GitHub although this session can → implement the three selected tasks in this authorized session, keeping the coordinator gate and task commits (alt: change child permission settings or wait). hr03
@@ -503,8 +504,8 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 27 | 27 | - | 2 |
-| WEB | 205 | 205 | - | 0 |
+| ARCH | 28 | 27 | ARCH-28✎ | 2 |
+| WEB | 206 | 205 | WEB-15✎ WEB-115+ | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
 | KIT | 9 | 9 | - | 0 |
