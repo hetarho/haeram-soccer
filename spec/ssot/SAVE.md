@@ -1,10 +1,11 @@
 # SAVE Browser persistence and protocol
-> r63 | Define the browser-demo rules for browser persistence and protocol.
+> r64 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
 - SAVE-2 [o] Envelope contains schema/engine/catalog/world ID/generation/parentGeneration/codec/checksum/payload; checksum is SHA-256 of uncompressed canonical compact JSON.
-  - Write gzip-cjk14 for compressed payloads at most 1,200,000 bytes; otherwise write brotli-bmp127, quality 11/window 24, using a pinned pure-JavaScript worker implementation.
+  - Write gzip-cjk14 for compressed payloads at most 1,200,000 bytes. For IndexedDB commits and portable exports, also use gzip-cjk14 when the complete candidate fits both the IndexedDB checkpoint budget and the portable-file limit (→!SAVE-4); otherwise write brotli-bmp127, quality 11/window 24, using the pinned pure-JavaScript worker implementation. ← a small fallback-store budget must not force minutes of compression on every IndexedDB autosave
+  - The UI adapter supplies the available checkpoint budget to the workers. The localStorage fallback keeps the compact encoding path and its existing two-copy budget; compression choices never change canonical facts or checksum inputs.
   - brotli-bmp127 uses fixed 64-character base-63198 blocks per 127 bytes, excluding controls/ASCII/surrogates/noncharacters, with an explicit final-byte-count header. Payload is opaque verbatim text; padding/range/length checks precede decompression. The exact byte-to-character mapping and header grammar are defined by `bmpText`/`bmpBytes` in `apps/web/src/adapters/bmp127.ts` and its literal compatibility tests in `bmp127.test.ts`.
   - Continue reading gzip-cjk14 and gzip-base64; never rewrite a file while reading. Existing checkpoint, total, import and decompressed limits remain →SAVE-4.
 - SAVE-3 [o] The game in play keeps its active checkpoint and its previous committed checkpoint in IndexedDB (database haeram-soccor, store checkpoints, keys active and previous); haeram-soccor:manifest in localStorage names the committed generation. ← IndexedDB writes do not block the main thread and its allowance is not localStorage's 5 MiB per origin
@@ -13,7 +14,10 @@
   - a game in play still stored in localStorage (haeram-soccor:slot:a, or slot:a/b of the fallback layout) loads from there; the writer's first successful IndexedDB commit moves it, and its localStorage keys are removed only after the manifest names the IndexedDB generation. Read-only tabs never move it (→SAVE-6).
   - IndexedDB unavailable ⇒ the active and previous checkpoints use localStorage keys slot:a/b while both fit the total budget (→SAVE-4), with the previous copy verified before the active checkpoint is overwritten.
   - if a committed checkpoint exists and no verified previous copy can be kept within the budget, fail before overwriting it: retain the committed checkpoint and manifest, preserve exportable in-memory progress and offer export/retry; never report save success. A first checkpoint without a committed predecessor may still be written within →SAVE-4.
-- SAVE-4 [o] Maximum encoded checkpoint is 3 MiB conservative UTF-16 in every store, for the active and the previous copy alike; total namespaced localStorage use — settings, manifest, slot index, device data and, without IndexedDB, the fallback checkpoints — ≤ 3.5 MiB. Imports cap the file at 8 MiB and decompressed JSON at 32 MiB. ← every checkpoint stays exportable under the import cap and loadable on the localStorage fallback
+- SAVE-4 [o] IndexedDB active and previous checkpoints each allow at most 6 MiB conservative UTF-16, while every portable file stays at most 8 MiB actual UTF-8 and decompressed JSON at most 32 MiB.
+  - The localStorage fallback retains a 3 MiB conservative UTF-16 limit per checkpoint and a 3.5 MiB total across checkpoints, settings, manifest, slot index and device data.
+  - A file made on an IndexedDB-capable device remains importable on a fallback-only device through its compact encoding path; if the compact candidate and verified predecessor cannot fit the fallback budgets, keep the existing committed save and offer export/retry (→!SAVE-3).
+  - Writes verify the actual portable-file byte limit as well as the selected store's UTF-16 budget; imports retain the same 8 MiB file and 32 MiB decompressed limits. ← fast local checkpoints remain portable without paying the small fallback-store compression cost on every autosave
 - SAVE-5 [o] Validate DTO schema and world references before load/import; unsupported versions, wrong checksum, corrupted slots and missing catalogs are actionable errors and cannot overwrite a good save.
   - the explicitly bounded legacy-gameplay reset at the new-career feature release follows →SAVE-18; it is not general permission to clear data on a validation error.
 - SAVE-6 [o] Exclusive Web Lock owns writing; read-only tabs are notified and queue for the lock, so when the writing tab closes a read-only tab reloads the latest checkpoint and becomes the writer. Commands carry session/request/expected revision; duplicates return the stored acknowledgment or fail stale without repeated effects.
@@ -105,6 +109,7 @@
   - export/import and checkpoint replay preserve the journal, record totals and stable IDs; existing generation ordering, recovery, size limits and original-fact retention remain →!SAVE-2/3/4/5.
 
 ## chg
+- r64 261103 SAVE-2✎ gzip threshold only then maximum Brotli→also accept budget-verified gzip for IndexedDB/export; SAVE-4✎ all stores 3 MiB UTF-16→IndexedDB 6 MiB, fallback 3 MiB with unchanged 3.5 MiB total; portable file 8 MiB and decompressed 32 MiB unchanged
 - r63 261103 SAVE-28+ optional versioned news journal and incremental summaries, one-time supported-save reconstruction and existing checkpoint safeguards
 - r62 261103 SAVE-26+ takeover rules 5.0.0 start new careers, earlier careers not converted; SAVE-27+ saved owner state, crisis counts, FFP window, takeover loan and every club's books; pre-takeover seasons as archives only
 - r61 261102 SAVE-10✎ device strategy-library compatibility line→removed; SAVE-15- device strategy library removed; SAVE-17✎ unapplied policy drafts stay session UI work→removed (no policy drafts); SAVE-25+ a career saved before the owner's interventions were removed opens with their state dropped (training orders and strain, care effects and win bonus, tactic requests and history, owner-set lineup), the values they set kept, the device strategy library removed
