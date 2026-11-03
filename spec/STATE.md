@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T03:11Z | T666 |
+| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T03:30Z | T667 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T03:24Z | T675 |
@@ -547,7 +547,7 @@
 | T664 | switch the start to the takeover (rules 5.0.0) | WEB WORLD ECON OWNER SAVE ARCH | T652 T656 T658 T660 T661 T662 T663 | todo |
 | T665 | remove the founding screen, the found message, the identity editor and ready-made crests | WEB KIT HIST | T652 T664 | todo |
 | T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T672 | doing@261103.ot03 |
-| T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T672 | todo |
+| T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T672 | doing@261103.ot03 |
 | T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T672 | todo |
 | T675 | Verify long-career scaling and checkpoint continuity of incremental reads | HIST SAVE ARCH | T674 | doing@261103.hr03 |
 | T670 | engine tests build careers by taking a club over | WEB WORLD ECON CLUB ARCH | T665 | todo |
