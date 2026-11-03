@@ -17,7 +17,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
-
+| cv03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T09:33Z | 2026-11-03T09:33Z | - |
 
 ## inbox
 - 261103 decided ARCH-30 PLAYER-18 PLAYER-27 T685: resume the stopped Claude ot03 handoff at the owner's request; merge main performance and award/wage work before balance, reconcile parallel PLAYER r14 changes as r15 without a new product policy; push next and wip/cv03 for the 22:00 KST handoff, leaving main release to its own gate (alt: restart T653 from main | deploy during the handoff). cv03
