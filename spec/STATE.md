@@ -15,8 +15,8 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T02:56Z | T676 |
-| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T03:11Z | T666 |
+| hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T03:19Z | T677 |
+| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T03:30Z | T667 |
 
 ## inbox
 - 261103 decided HIST-21 OWNER-17 WEB-54 T666: where the two eras show in 클럽 기록실 → 시즌별 기록's list holds the club's own seasons (from the takeover), then 구단주 시즌 (one row per `seasonRecords` entry: fortune, business, living costs, injections, dividend, 팬 민심, in that season's money), then 구단주 이전 (season, league finish, cup runs, honours counted in its note), hidden when the club was bought in the world's first season; pre-owner rows open no club-season review (alt: a separate records tab, against WEB-54's tab list | the owner's table in 구단 성장). ot03
@@ -597,6 +597,7 @@
 - 261103 decided T670 ARCH-21: how tests get a career once the founding goes → `careerWorld`: a fresh 1950 world nobody owns (`historyWorld` with a test-only year) and a takeover of the lowest division's first club by an `oil` owner, funded with two years of fixed costs (alt: a lived world from `generateHistory`, seconds per test | the takeover's own cash 0, bankrupt at round 8). ot03
 - 261103 decided KIT-2 KIT-14 T665: KIT-2 still offered six ready-made crests, 랜덤 and 직접 꾸미기 while KIT-14 removed the founding crests and no editor is left → KIT r9: designers compose crests from the component catalogue; no ready-made crests or owner-side composition (alt: keep the six presets as designer templates, which nothing reads). ot03
 - 261103 decided SAVE-2 SAVE-4 T676: the 84-season news journal pushes maximum-compression saves to 589 s, while identical-byte gzip is 1.10 s and its 6.11 MB file fits the existing 8 MiB import cap → IndexedDB checkpoints allow 6 MiB UTF-16 and budget-verified gzip; fallback remains 3 MiB / 3.5 MiB total, portable 8 MiB and decompressed 32 MiB unchanged (alt: keep maximum Brotli on every save | drop retained news). hr03
+- 261103 decided SAVE-29 WEB-62 T677: user explicitly drops beta backward compatibility for old localStorage code → remove checkpoint slots/fallback/migration/reset/strategy cleanup; keep current preferences, notification/read markers, game index and manifest metadata, with no deletion or migration of existing browser keys. hr03
 
 ## ideation
 | id | st |
@@ -621,7 +622,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 27 | 27 | - | 2 |
-| WEB | 204 | 204 | - | 0 |
+| WEB | 205 | 205 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
 | KIT | 9 | 9 | - | 0 |
@@ -632,7 +633,7 @@
 | ECON | 42 | 42 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 22 | 22 | - | 0 |
-| SAVE | 64 | 64 | - | 0 |
+| SAVE | 65 | 65 | - | 0 |
 | OWNER | 1 | 1 | - | 0 |
 | PLAYER | 14 | 14 | - | 0 |
 
@@ -649,12 +650,13 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T672 | todo |
+| T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T672 | doing@261103.ot03 |
 | T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T672 | todo |
 | T673 | Record news and update record counters when facts settle | HIST SAVE ARCH | - | doing@261103.hr03 |
 | T674 | Serve career statistics and current-season finance from maintained summaries | HIST SAVE ARCH | T673 | doing@261103.hr03 |
 | T675 | Verify long-career scaling and checkpoint continuity of incremental reads | HIST SAVE ARCH | T674 | doing@261103.hr03 |
 | T676 | Fast IndexedDB checkpoints within portable and fallback budgets | SAVE HIST ARCH | T674 | doing@261103.hr03 |
+| T677 | Remove legacy localStorage checkpoint layouts and startup cleanup | SAVE WEB ARCH | T674 | doing@261103.hr03 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -680,6 +682,7 @@
 ## next
 - on branch `wip/ot03` (owner takeover; T653–T666 and T669–T672 done, main fa1ed566 merged): implement-task T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran; T671's result lists the seed-pinned journeys to re-pin, T672's the integration files it edited, the new `season.lowest.test.ts` included, T666's `records.spec.ts` owner-table check) and merge into main + push. Report spec/reports/261103-ot03.md
 - implement-task T673, then T674 and T675 (hr03, on main); preserve the ot03 takeover handoff above.
+- implement-task T677 (hr03), then complete T676 measurements and T675 final gate.
 
 ## log
 - 261103 T666 done: 시즌별 기록 lists the club's own seasons, then 구단주 시즌 (`seasonRecords`) and 구단주 이전 (finish, cup runs, honours from the world's archive via engine `club-past.ts` `seasonsBeforeOwner`, published as `View.preOwner`); record book, cabinet, growth charts, review, CSV, manager-history source, game over, slot season number and the cup page's title count start at the takeover (`ownSeasons`); `records.spec.ts` check awaits the batch; ot03

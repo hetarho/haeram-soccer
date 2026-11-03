@@ -1,25 +1,21 @@
 # SAVE Browser persistence and protocol
-> r64 | Define the browser-demo rules for browser persistence and protocol.
+> r65 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
 - SAVE-2 [o] Envelope contains schema/engine/catalog/world ID/generation/parentGeneration/codec/checksum/payload; checksum is SHA-256 of uncompressed canonical compact JSON.
-  - Write gzip-cjk14 for compressed payloads at most 1,200,000 bytes. For IndexedDB commits and portable exports, also use gzip-cjk14 when the complete candidate fits both the IndexedDB checkpoint budget and the portable-file limit (→!SAVE-4); otherwise write brotli-bmp127, quality 11/window 24, using the pinned pure-JavaScript worker implementation. ← a small fallback-store budget must not force minutes of compression on every IndexedDB autosave
-  - The UI adapter supplies the available checkpoint budget to the workers. The localStorage fallback keeps the compact encoding path and its existing two-copy budget; compression choices never change canonical facts or checksum inputs.
+  - Write gzip-cjk14 for compressed payloads at most 1,200,000 bytes. For IndexedDB commits and portable exports, also use gzip-cjk14 when the complete candidate fits both the IndexedDB checkpoint budget and the portable-file limit (→!SAVE-4); otherwise write brotli-bmp127, quality 11/window 24, using the pinned pure-JavaScript worker implementation. ← IndexedDB autosaves must not pay a discontinued fallback layout's compression cost
+  - All writes use the IndexedDB checkpoint budget; compression choices never change canonical facts or checksum inputs.
   - brotli-bmp127 uses fixed 64-character base-63198 blocks per 127 bytes, excluding controls/ASCII/surrogates/noncharacters, with an explicit final-byte-count header. Payload is opaque verbatim text; padding/range/length checks precede decompression. The exact byte-to-character mapping and header grammar are defined by `bmpText`/`bmpBytes` in `apps/web/src/adapters/bmp127.ts` and its literal compatibility tests in `bmp127.test.ts`.
   - Continue reading gzip-cjk14 and gzip-base64; never rewrite a file while reading. Existing checkpoint, total, import and decompressed limits remain →SAVE-4.
 - SAVE-3 [o] The game in play keeps its active checkpoint and its previous committed checkpoint in IndexedDB (database haeram-soccor, store checkpoints, keys active and previous); haeram-soccor:manifest in localStorage names the committed generation. ← IndexedDB writes do not block the main thread and its allowance is not localStorage's 5 MiB per origin
   - a commit copies the currently committed checkpoint to previous and reads it back equal, then writes the validated candidate to active and reads it back, and only then switches the manifest; a failure at any step, including writes cut short by a closing tab, leaves the committed generation loadable, and a commit is acknowledged only after all three steps complete.
   - load takes the manifest's generation, else the newest valid of active and previous; previous is the recovery predecessor.
-  - a game in play still stored in localStorage (haeram-soccor:slot:a, or slot:a/b of the fallback layout) loads from there; the writer's first successful IndexedDB commit moves it, and its localStorage keys are removed only after the manifest names the IndexedDB generation. Read-only tabs never move it (→SAVE-6).
-  - IndexedDB unavailable ⇒ the active and previous checkpoints use localStorage keys slot:a/b while both fit the total budget (→SAVE-4), with the previous copy verified before the active checkpoint is overwritten.
-  - if a committed checkpoint exists and no verified previous copy can be kept within the budget, fail before overwriting it: retain the committed checkpoint and manifest, preserve exportable in-memory progress and offer export/retry; never report save success. A first checkpoint without a committed predecessor may still be written within →SAVE-4.
+  - IndexedDB is required for game checkpoints. If it is unavailable or a write fails, report the storage error and keep any committed checkpoint and exportable in-memory progress; never write a localStorage checkpoint or acknowledge a failed save.
 - SAVE-4 [o] IndexedDB active and previous checkpoints each allow at most 6 MiB conservative UTF-16, while every portable file stays at most 8 MiB actual UTF-8 and decompressed JSON at most 32 MiB.
-  - The localStorage fallback retains a 3 MiB conservative UTF-16 limit per checkpoint and a 3.5 MiB total across checkpoints, settings, manifest, slot index and device data.
-  - A file made on an IndexedDB-capable device remains importable on a fallback-only device through its compact encoding path; if the compact candidate and verified predecessor cannot fit the fallback budgets, keep the existing committed save and offer export/retry (→!SAVE-3).
-  - Writes verify the actual portable-file byte limit as well as the selected store's UTF-16 budget; imports retain the same 8 MiB file and 32 MiB decompressed limits. ← fast local checkpoints remain portable without paying the small fallback-store compression cost on every autosave
+  - Writes verify both the complete checkpoint's UTF-16 budget and actual portable-file byte limit before modifying storage. There is no localStorage checkpoint budget or two-slot fallback.
 - SAVE-5 [o] Validate DTO schema and world references before load/import; unsupported versions, wrong checksum, corrupted slots and missing catalogs are actionable errors and cannot overwrite a good save.
-  - the explicitly bounded legacy-gameplay reset at the new-career feature release follows →SAVE-18; it is not general permission to clear data on a validation error.
+  - Beta storage compatibility and retired cleanup paths follow →!SAVE-29; validation errors never authorize deleting saved data.
 - SAVE-6 [o] Exclusive Web Lock owns writing; read-only tabs are notified and queue for the lock, so when the writing tab closes a read-only tab reloads the latest checkpoint and becomes the writer. Commands carry session/request/expected revision; duplicates return the stored acknowledgment or fail stale without repeated effects.
 - SAVE-7 [o] Worker initialization, serialized command processing, snapshots, codec and recoverable typed errors use one public bridge contract.
 - SAVE-8 [o] Owner decisions save at once; automatic progression saves in the background every 30 s of running clock and at once when the clock stops, the tab hides or, as far as the browser allows, the page closes. ← saving every day step held x10 to a few days at a time; unsaved automatic days hold no owner decision and replay identically (→ARCH-5)
@@ -29,14 +25,14 @@
   - a background save during automatic play may hold days computed ahead of the shown date (→WEB-18); the save on stopping follows once those days are shown, so it holds the date the clock stopped on.
 - SAVE-9 [o] Export/import uses the same envelope; checksum provides corruption detection only. All successful changes remain local.
 
-- SAVE-10 [o] The game is version 0.7.0, a beta before 1.0: the app and its engine rules carry that one version, raised with each release, and a match-model revision (→SAVE-23) ships inside a version. Rules-4.0.0 checkpoints are the same rules line and load as 0.7.0, only their version label rewritten; only 0.7.0 gameplay checkpoints are accepted after that (→SAVE-19). ← one number the player sees and the save checks; 1.0 is kept for the release Earlier gameplay is never converted; the bounded recognized-legacy reset and future/unrecognized-version protection follow →SAVE-19 and →SAVE-11.
+- SAVE-10 [o] The game is version 0.7.0, a beta before 1.0: the app and its engine rules carry that one version, raised with each release, and a match-model revision (→SAVE-23) ships inside a version. Rules-4.0.0 checkpoints are the same rules line and load as 0.7.0, only their version label rewritten; only 0.7.0 gameplay checkpoints are accepted after that (→SAVE-19). ← one number the player sees and the save checks; 1.0 is kept for the release Earlier gameplay is never converted; unsupported-version protection follows →SAVE-11; retired storage compatibility follows →!SAVE-29.
   - A supported world pinned to recognized catalog 2026-demo-4 moves to 2026-demo-5 on writer activation whatever its country: 2026-demo-5 changes only the person-name pools (→WORLD-12), so recorded facts and stored names stay and only generated people not yet retained show their new names.
   - A supported world pinned to recognized catalog 2026-demo-1, 2026-demo-2 or 2026-demo-3 whose club is English moves to 2026-demo-5 on writer activation; England's prices, money and football index are unchanged, so recorded facts stay. A career in another country pinned to them is a compatibility failure (→SAVE-11): 2026-demo-4 re-levelled its money (→ECON-35), so its recorded amounts would mix two levels.
   - Supported writer activation upgrades metadata/world revision through a pure transformation preserving all retained facts and missing optional defaults, committed through →SAVE-3. Failure preserves old disk data and exportable new memory state; read-only views do not perform disk upgrades.
   - Historical rules and transformations are recorded in chg.
 
 - SAVE-11 [o] Unsupported selected save versions/catalogs are compatibility failures, not corruption-recovery permission. Do not automatically fall back to an older checkpoint and overwrite a newer incompatible career; preserve raw slots/manifest and expose export/import recovery. Actual corrupted compatible checkpoints may recover the validated predecessor.
-  - recognized legacy gameplay at the new-career release boundary is the specific reset exception in →SAVE-18. Future or unrecognized incompatible saves retain the protection above.
+  - No automatic legacy-gameplay reset runs; unsupported careers remain protected under this rule (→!SAVE-29).
 
 - SAVE-12 [o] Browser checkpoint storage uses an injected worker validator; compression and world-schema validation remain in the worker codec path. Existing codec/repository imports preserve their public save API, and compatibility errors remain typed across the bridge.
 
@@ -47,28 +43,26 @@
 - SAVE-14 [o] Three game slots (→WEB-62) are listed in a slot index (localStorage haeram-soccor:games): per slot its game ID, world ID, display summary and last-played time, plus the active slot. The game in play keeps its active checkpoint and previous copy (→SAVE-3); every other occupied slot keeps its latest validated checkpoint envelope, unchanged, in IndexedDB (database haeram-soccor, store games, keyed by game ID). ← only the game in play keeps a recovery predecessor and autosaves; parked games are export envelopes the browser keeps
   - switching parks the game in play first: its committed checkpoint is written to IndexedDB and read back equal before the next game is activated through the import path (→SAVE-5, →SAVE-10), so a failed switch leaves the game in play untouched.
   - only the writer tab (→SAVE-6) switches, starts, imports or deletes games.
-  - a save present without an index (earlier versions) becomes slot 1.
   - the index follows the loaded world: a world listed under another slot makes that slot active; an unlisted world takes the active slot.
-  - ordinary game deletion removes its parked checkpoint, and for the game in play its active keys, only after confirmation (→WEB-62). The recognized legacy-gameplay release reset is →SAVE-18.
-  - IndexedDB unavailable ⇒ saving the game in play follows →SAVE-3's bounded fallback and failure protection; switching and new slots say why they are unavailable.
+  - ordinary game deletion removes its parked checkpoint, and for the game in play its active keys, only after confirmation (→WEB-62). No legacy release cleanup runs (→!SAVE-29).
+  - IndexedDB unavailable ⇒ checkpoint writes and slot switching report that IndexedDB is required (→!SAVE-3); there is no alternate game-storage layout.
 - SAVE-15 [x] Device-owned data — the strategy library (→WEB-61), each saved direction keeping its cards and every other row (dials, ticket price, direction rows), an entry saved before holding only cards — lives per browser profile in localStorage (haeram-soccor:strategies) under an owner record { kind: device, id } whose random ID is kept in haeram-soccor:device, with stable item IDs and created/updated times, so an account can later adopt and merge it (→ARCH-29). Malformed entries are skipped, never fatal; nothing leaves the browser.
 
 - SAVE-16 [o] Rules 2.0.0 start new careers; earlier-rule checkpoints, parked games and imports are never converted. ← a clean player model beats converting five attributes into fourteen guesses
   - until the feature boundary in →SAVE-18, earlier rules cause compatibility failure (→SAVE-11): the slot lists 이전 규칙 with export and delete only, imports name the rules they need, and nothing overwrites the career.
-  - the new-career feature boundary instead permits the recognized legacy-gameplay reset in →SAVE-18.
+  - Historical release-reset behavior is retired (→!SAVE-29).
   - the 100-season profiles of SAVE-13 are measured again on the new model and must still fit SAVE-4.
 - SAVE-17 [o] A game's persisted career includes its seven business responsibilities, progression mode and observation triggers; the waiting days of each owner-held approval (→STAFF-48), absent in older saves, which start counting at 0; its standing director/manager support policy; aptitude/person continuity and staff-career facts; and outstanding/resolved mediation promises (→WEB-45/5, →STAFF-26, →HIST-14/15).
   - save/export/import preserve outstanding commitments and the linked person's actual age/history, without duplicate fulfilment, appointments or payments on reload.
   - retain existing corruption/compatibility protection and 100-season lossless budgets (→SAVE-4/11/13). Feature activation and compatibility for existing careers require →SAVE-18.
 
 - SAVE-18 [o] The responsibility/progression/second-career/mediation feature set, with the squad rules (→CLUB-40–44, the 단장's closer trait →STAFF-20) and club reputation (→LEAGUE-14), started new careers at an incompatible rules 3.0.0 boundary; the current boundary is →SAVE-19.
-  - legacy gameplay data from recognized rules through 2.0.0 may be cleared on writer activation: active/previous checkpoints, parked career envelopes, game-slot entries and their career records. No conversion, archive retention or export-first requirement is imposed for this boundary. Reset cannot depend on a read-only tab performing writes (→SAVE-6).
-  - a legacy file import is refused with its required rules; do not import or convert it into a new-rule career. Future or unrecognized incompatible files/slots still follow →SAVE-5/11 rather than the legacy-reset exception.
+  - Unsupported careers are not converted or automatically reset; current protection follows →!SAVE-11/29.
   - new careers initialize all seven responsibilities, automatic mode, match eve on/window opening off and balanced director/manager support under their owning rules (→WEB-45/5, →STAFF-26). Aptitude and person careers begin from new-career generation; legacy pending decisions and promises are not carried over.
-  - new-rule saves retain normal validation, export/recovery, confirmed deletion/replacement and lossless 100-season budgets (→SAVE-4/5/11/13/14). The legacy release reset does not relax these rules for new-rule careers.
+  - new-rule saves retain normal validation, export/recovery, confirmed deletion/replacement and lossless 100-season budgets (→SAVE-4/5/11/13/14). No automatic legacy reset runs.
 
 - SAVE-19 [o] The grid match engine (→MATCH-1, →MATCH-14–25) with the 16-attribute player model (→PLAYER-2), discipline and unavailability (→MATCH-19, →CLUB-45, →LEAGUE-15) and post-match material (→MATCH-5) starts new careers at an incompatible rules 4.0.0 boundary; active engine rules are 4.0.0. ← one engine to maintain; earlier players have no 판단력 or 침착성 to convert
-  - legacy gameplay data from recognized rules through 3.0.0 may be cleared on writer activation, as →SAVE-18 allows: active/previous checkpoints, parked career envelopes, game-slot entries and their career records. No conversion, archive retention or export-first requirement is imposed. Reset cannot depend on a read-only tab performing writes (→SAVE-6); the reset is announced once as an app notice (→WEB-66).
+  - Historical release cleanup is retired; unsupported careers follow →!SAVE-11/29.
   - a legacy file import is refused with its required rules; future or unrecognized incompatible files/slots still follow →SAVE-5/11.
   - a 4.0.0 career persists the current season's post-match material, the season heat maps, the spatial counter and discipline totals, current bans and every club's unavailable list, within →SAVE-4 and a passing 100-season benchmark (→HIST-9).
 
@@ -98,9 +92,9 @@
 
 - SAVE-25 [o] A supported career saved before the owner's interventions were removed still opens with every other fact kept. On load it drops the state only those interventions used — the coaches' training orders and their strain, care effects and a pending win bonus, tactic requests with the manager's request history, and an owner-set lineup — so the club plays on the coaches' and manager's own calls; the values they set stay as saved: policy dials, direction rows and cards, the ticket price (→ECON-16/17/22/25). ← removing an owner control must not end a career
   - the drop is part of the validated writer activation (→SAVE-10); a failure preserves the previous checkpoint and exportable state (→SAVE-3/6).
-  - a strategy library kept on the device by earlier versions (`haeram-soccor:strategies`) is no longer read and is removed when the writer tab starts; the device ID and the game-slot index stay (→ARCH-29, →SAVE-14).
+  - The retired device strategy library is neither read nor cleaned up at startup (→!SAVE-29); the current device ID and game-slot index remain (→ARCH-29, →SAVE-14).
 
-- SAVE-26 [o] The takeover start (→OWNER, →WORLD-13) begins new careers at an incompatible rules 5.0.0 boundary; earlier-rule careers are never converted, their slots follow →WEB-62's release reset and their export files stay. ← a career founded in an amateur league has no owner fortune, traits, books or pre-takeover past to convert into
+- SAVE-26 [o] The takeover start (→OWNER, →WORLD-13) begins new careers at an incompatible rules 5.0.0 boundary; earlier-rule careers are never converted, unsupported slots follow →!SAVE-11 without conversion or automatic reset and their export files stay. ← a career founded in an amateur league has no owner fortune, traits, books or pre-takeover past to convert into
 - SAVE-27 [o] A career saves the owner's tier, traits, fortune, stake, dividend share, 팬 민심 and both crisis counts, the FFP window's injections, the takeover's facts and loan, and every club's books (→ECON-36) within the storage budget (→SAVE-4); the seasons played before the takeover are kept as season archives (→HIST-2), never as match detail.
 
 - SAVE-28 [o] Persist the fact-backed news journal and incremental read summaries (→!HIST-11/22) as optional, versioned save data.
@@ -108,7 +102,12 @@
   - saved cursors and summary fields are bounded and validated; unsupported summary formats fail explicitly without replacing a committed checkpoint.
   - export/import and checkpoint replay preserve the journal, record totals and stable IDs; existing generation ordering, recovery, size limits and original-fact retention remain →!SAVE-2/3/4/5.
 
+- SAVE-29 [o] This beta does not maintain earlier localStorage game-storage layouts. Remove their slot readers/writers, IndexedDB migration, fallback quotas and startup legacy-reset/strategy-cleanup paths; do not migrate or delete old browser keys.
+  - Current device preferences, notification/read markers, game index and the commit manifest may still use localStorage; they are current metadata, never game-checkpoint payloads.
+  - IndexedDB checkpoints retain generation ordering, verified previous-copy recovery, unsupported-save protection and explicit deletion (→!SAVE-3/5/6/11). This policy supersedes historical release-reset clauses, without changing simulation rules or pruning career facts.
+
 ## chg
+- r65 261103 SAVE-2/3/4/5/10/11/14/16/18/19/25/26✎ retire localStorage checkpoint compatibility, fallback and startup cleanup; SAVE-29+ beta IndexedDB-only checkpoints, current device metadata retained
 - r64 261103 SAVE-2✎ gzip threshold only then maximum Brotli→also accept budget-verified gzip for IndexedDB/export; SAVE-4✎ all stores 3 MiB UTF-16→IndexedDB 6 MiB, fallback 3 MiB with unchanged 3.5 MiB total; portable file 8 MiB and decompressed 32 MiB unchanged
 - r63 261103 SAVE-28+ optional versioned news journal and incremental summaries, one-time supported-save reconstruction and existing checkpoint safeguards
 - r62 261103 SAVE-26+ takeover rules 5.0.0 start new careers, earlier careers not converted; SAVE-27+ saved owner state, crisis counts, FFP window, takeover loan and every club's books; pre-takeover seasons as archives only
