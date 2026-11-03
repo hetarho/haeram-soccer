@@ -8,6 +8,8 @@ import { horizontalOverflow } from './layout';
 test('advances real days at each speed, stops and restores the saved calendar', async ({
   page,
 }) => {
+  // Two match eves, checkpoint reload and both leagues' record panes form one full journey.
+  test.slow();
   // The paces are measured against match eves (level 2); this seed brings no offer before them.
   await page.goto('/');
   await page.getByText('고급 설정', { exact: true }).click();

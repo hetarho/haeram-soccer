@@ -589,6 +589,7 @@
 - on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (founding screen, `found` message, identity editor, ready-made crests), then T670 (engine tests on `careerWorld`), T671 (the founding leaves the engine), T672 (the amateur level, LEAGUE-16), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
 
 ## log
+- 261103 fix browser gate: the complete season-flow journey reaches its final record panes past the local 30 s budget even in isolation; use the adjacent long-journey slow classification, retaining all progression/save/record assertions. hr05
 - 261103 T681 done locally: prepared client views bypass duplicate store sharing; 97 unit cases and fast checks pass, paired component CPU clears noise with equal outputs; actual client/browser coverage deferred to combined T682 gate. hr05
 - 261103 review/automatic-play-hotspots-261103 F1/F2 adopted by the owner and tasked as T681/T682; preserve gameplay and production pace options. hr05
 - 261103 T680 done: 8 x 365 browser days, x20 target unmet (fresh 8.68–9.32/s; retained 3.49–3.55/s), all equal-date facts/commits/reloads pass; main-page shareValue hotspot measured; report spec/reports/261103-hr04.md. hr04
