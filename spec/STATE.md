@@ -711,6 +711,7 @@
 ## next
 - continue branch `wip/ot03` (ot03 hand-off 261103 17:40 KST; T653–T672, T683, T684, T687 done, none on next or main yet): quick batch → push to `next` → release (main merged into next, `pnpm run verify:batch` once, next → main push = deploy, CI) → T685, T686 (balance) → T678, T679. Report spec/reports/261103-ot03.md
 - release (→ARCH-30 r29): only the last session working runs the full suite with browser journeys and pushes main
+- continue branch `wip/ot03` (c033c636, ot03 hand-off 261103 17:40 KST): T653–T672, T683, T684, T687 done there (the T683/T684/T687 rows here read doing@ot03 until the branch lands); quick batch → push it to `next` → release (main merged into next, `pnpm run verify:batch` once, next → main push = deploy, CI) → T685, T686 (balance) → T678, T679. Report on the branch: spec/reports/261103-ot03.md
 
 ## log
 - 261103 ot03 hand-off: loop stopped after T687 for a move to another device; the work is on `wip/ot03`, the release and T685–T679 continue there; ot03
