@@ -554,8 +554,8 @@
 | T671 | the founding leaves the engine: fixtures, web tests, e2e and scripts on takeovers | WEB WORLD CLUB SAVE ARCH | T670 | todo |
 | T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | doing@261103.ot03 |
 | T676 | Fast IndexedDB checkpoints within portable and fallback budgets | SAVE HIST ARCH | T674 | doing@261103.hr03 |
-
 | T677 | Remove legacy localStorage checkpoint layouts and startup cleanup | SAVE WEB ARCH | T674 | todo |
+
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
