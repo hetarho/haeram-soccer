@@ -17,7 +17,6 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
-| nv04 | ihaelam-ui-MacBookPro | autopilot | 2026-11-03T15:42Z | 2026-11-03T15:42Z | - |
 
 ## inbox
 - 261104 decided ECON-36 CLUB-1 T686: the owned club's first season earned 1.9–5.7× its books' last income at the top (6 of 23 within ±25%) because a club nobody owns kept its founding following, never moved, while a buyer takes over the following its reputation commands → the books read that following (`clubFollowing` in books.ts' club view, unit-tested); 30 of 41 reference careers within ±25%, ten of the other eleven having changed division at the 1949 close (alt: move every club's stored following each season, more save data for the same figure | record the gap unaligned). nv04
