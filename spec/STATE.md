@@ -20,6 +20,9 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T07:35Z | 2026-11-03T07:35Z | - |
 
 ## inbox
+- 261103 decided ARCH-21 OWNER-4 T683: cases built on the neutral founding manager (no school, three seasons left) on a takeover career, whose manager keeps his school and may be a firefighter on a one-season term → each case's setup drops his school or gives him three seasons left, as the founding manager stood, and the case says why (alt: seeds whose taken-over manager happens to fit | turn the cases into OWNER-4 checks, losing the neutral-manager rule's coverage). ot03
+- 261103 decided ARCH-21 T683: `tests/fixtures/transferred-scorer.ts` left its striker 15th of the takeover's 24-club division, outside the archived top ten the scorer case reads → seed `transferred-scorer-d` (6th on the pre-feature path), found by a season-per-seed scan in Node as T224 re-pinned it; T684's two web users of the fixture run on it (alt: strengthen the buyer further | read the live scorer table only, dropping the archive check). ot03
+- 261103 suggest ECON-9 ECON-36 T686: a 1950 ENG lowest-division takeover (seed `business`: 9,247 supporters against a 7,040 catchment, 5,000 seats) takes 223,265 at its first home gate against 14,986 of fixed costs a round, about 15 rounds' costs from one gate → T686 reads gate income against wages in the early decades. ot03
 - 261103 decided LEAGUE-13 OWNER-3 T668: which club a reference career takes over → the median-priced club of the tier's reach in that country that its fortune pays for, the dearer of the two middle ones (alt: the club nearest the anchor | a seeded draw from the reach). ot03
 - 261103 decided LEAGUE-13 OWNER-8 T668: how the reference measures the club when every 1.3× owner who moves no money goes bankrupt in 6–10 seasons at 1% → `--purse-apart`: no living costs while a reference career plays, the owner's bankruptcy season at 1/0.5/0.25/0.1/0.05% read from each season's living costs against the fortune left, exact while nothing is moved; the policies pay living costs as the game does (alt: let careers end at the owner's bankruptcy, losing every later sporting season | a dividend in the reference, which moves owner money). ot03
 - 261103 decided LEAGUE-13 ECON-29 T668: scale inside the 4 h box at 40–90 s a season on this host → seed `owner-balance-0` only, the reference to 1979 (30 seasons), five traits to 1969 in ENG GER, the policies in ENG to 1979, 24 jobs in parallel (alt: 4 countries × 5 seeds × 60 seasons, about 90 CPU-hours | fewer tiers at full length). ot03
@@ -673,7 +676,6 @@
 | T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
 | T681 | Reconcile client views once before store publication | ARCH WEB SAVE | T680 | doing@261103.hr05 |
 | T682 | Profile and reduce repeated day-step Worker work | ARCH WEB SAVE | T681 | doing@261103.hr05 |
-| T683 | engine integration tests on takeover careers | ARCH OWNER WORLD HIST SAVE | T668 | doing@261103.ot03 |
 | T684 | web and fixture integration tests on takeover careers | ARCH KIT SAVE HIST LEAGUE | T683 | todo |
 | T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | todo |
 | T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
@@ -701,11 +703,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T683, then T684 and T687 (the takeover's integration and browser fixes), T685 and T686 (balance), T678 and T679 (history view); each loop pushes its work to `next` after the quick batch (ot03)
+- implement-task T684, then T687 (the takeover's integration and browser fixes; T683 re-pinned `tests/fixtures/transferred-scorer.ts` to seed d, which T684's two web users read), T685 and T686 (balance), T678 and T679 (history view); each loop pushes its work to `next` after the quick batch (ot03)
 - release (→ARCH-30 r29): the last session working merges `main` into `next`, runs `pnpm run verify:batch` once (browser journeys only there), merges `next` into `main` and pushes (deploy); hr05 started under push: main and may push main itself, the release merges it in
 - hr05: implement-task T681 then T682 for the owner-approved automatic-play bottlenecks
 
 ## log
+- 261103 T683 done: the 27 engine integration cases pass on takeover careers (18 files, no production change, no takeover or merge bug): setups stand in for the founding's facts (a school-less manager, three seasons left, a small ground and following, nobody retiring), expectations follow the takeover's rules (OWNER-4's schooled manager, CLUB-1's generated fillers, CLUB-27's unhappy player, the own league group and first played round), `transferred-scorer` re-pinned to seed d; ot03
 - 261103 update-ssot ARCH r29 (owner: every session gathers on `next`, only the last one runs the full suite with e2e and pushes main); cfg push and plan main→next; ARCH r29 no-op for code (process only); ot03
 - 261103 create-task T687: the 20 Chromium journeys failing on dfa39857 (324 passed), before the push; T685 dep T684→T687; ot03
 - 261103 fix e2e: one browser run at a time per clone — a Playwright globalSetup (tests/e2e/global-lock.ts) takes a lock in the git common directory, so sessions' journeys, from the batch or by hand, take turns instead of overloading the shared host; CI and E2E_LOCK=off skip it; smoke-tested (a second run waited for the first, a dead run's lock reclaimed); ot03
@@ -725,4 +728,3 @@
 - 261103 T680 planned from user measurement request: compare current x10 and isolated 50 ms/day experiments on fresh and retained careers; ship no pace change. hr04
 - 261103 hr03 CI 41577500074 passed all 9 jobs for published main source af513df9; exact-SHA REST receipt replaces the CLI public-HTML watcher's completed/null parse. No app code changed.
 - 261103 T675 done: unit 1917, integration 1176 (+4 skipped), contract 47; Chromium 349 executed, repaired 9 setup/expectation failures with 22/22 scoped reruns; final coordinator gate fde8c867 passes. hr03
-- 261103 T676 done: clean 84-season checkpoint gzip encode/validate 18.64 s, original facts/news/stats equal, UTF-16 4.08 MB / portable 6.11 MB; fallback portions superseded by user-approved T677. hr03

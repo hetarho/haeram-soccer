@@ -103,6 +103,9 @@ describe('business delegation and cash warnings', () => {
 
   it('warns once a season, as a status that never stops the clock, when cash covers under 13 rounds', () => {
     const w = world();
+    // A small following, the founding's 800 supporters, so the round's own gate leaves cash short:
+    // this taken-over club's first home gate alone brings about 15 rounds of fixed costs.
+    clubOf(w).fans = 800;
     const perRound = BigInt(operatingCosts(w).annual) / 46n;
     w.cash = (perRound * BigInt(CASH_WARNING_ROUNDS - 4)).toString();
     advanceRound(w, undefined, false);

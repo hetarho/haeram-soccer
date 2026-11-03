@@ -419,7 +419,9 @@ describe('manager traits', () => {
     }
     expect(seen).toEqual(new Set(['youth', 'rotation', 'stable', 'none']));
     expect(styles.size).toBe(MANAGER_STYLES.length);
-    expect(world().manager.style).toBeUndefined();
+    // The taken-over manager keeps his own school (→OWNER-4), where the founding manager had none;
+    // a selection trait is still only a hire candidate's draw.
+    expect(MANAGER_STYLES).toContain(world().manager.style);
     expect(world().manager.trait).toBeUndefined();
     expect(canonical(managerOffers(w))).toBe(canonical(managerOffers(structuredClone(w))));
   });

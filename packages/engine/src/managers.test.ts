@@ -272,8 +272,10 @@ describe('the firefighter contract', () => {
     operate(w, { type: 'renew-manager' });
     expect(ownReminder(w)[0].read).toBe(true);
     expect(w.manager.until).toBe(w.year + 2);
-    // A founding manager mid-contract hears nothing.
+    // A manager mid-contract hears nothing: three seasons left, as the founding manager had (the
+    // taken-over one here is a firefighter on his one-season term, →STAFF-14).
     const plain = world('three-seasons-april');
+    plain.manager.until = plain.year + 3;
     april(plain);
     expect((plain.inbox || []).filter((item) => item.kind === 'staff-renewal')).toHaveLength(0);
   });

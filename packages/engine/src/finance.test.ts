@@ -124,10 +124,15 @@ describe('earned, auditable club finances', () => {
     holdRows(w, { policy: { localInvest: 3 } });
     expect(gateProjection(w).attendanceLow).toBeGreaterThan(initial.attendanceLow);
     expect(BigInt(operatingCosts(w).investment)).toBeGreaterThan(0n);
-    // More local supporters fill more seats, up to the catchment.
-    const followed = structuredClone(w);
-    clubOf(followed).fans = Math.min(catchment(w), clubOf(w).fans * 2);
-    expect(gateProjection(followed).attendanceLow).toBeGreaterThan(gateProjection(w).attendanceLow);
+    // More local supporters fill more seats, up to the catchment: from a following of half the
+    // catchment, since a taken-over club's following can already reach it (→CLUB-1).
+    const local = structuredClone(w);
+    clubOf(local).fans = Math.floor(catchment(w) / 2);
+    const followed = structuredClone(local);
+    clubOf(followed).fans = catchment(w);
+    expect(gateProjection(followed).attendanceLow).toBeGreaterThan(
+      gateProjection(local).attendanceLow,
+    );
     // A bigger name than ours draws more, a smaller one fewer.
     const opponent = w.clubs.find(
       (c) => c.id === w.fixtures.find((f) => f.home === w.playerClub)!.away,

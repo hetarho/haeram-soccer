@@ -41,6 +41,9 @@ const world = (seed = 'market') => simulatedWorld(founding(seed), {}, DISABLED_R
 describe('manager market (STAFF-17)', () => {
   it('opens with the season four and drops the man the owner hires', () => {
     const w = world();
+    // The manager in post stands without a school, as the founding all-rounder did: the
+    // taken-over one keeps his own (→OWNER-4).
+    delete w.manager.style;
     const free = managerCandidates(w).filter((c) => c.source === 'free');
     expect(free.map((c) => c.id)).toEqual(managerOffers(w).map((offer) => offer.id));
     const hired = free[1],
@@ -48,7 +51,7 @@ describe('manager market (STAFF-17)', () => {
     operate(w, { type: 'hire', id: hired.id });
     expect(w.manager.id).toBe(hired.id);
     expect(managerCandidates(w).some((c) => c.id === hired.id)).toBe(false);
-    // The founding all-rounder has no school to offer the market; a schooled manager does.
+    // A manager without a school has none to offer the market; a schooled manager does.
     expect(w.managerMarket!.free.some((m) => m.id === founding)).toBe(false);
     const next = managerCandidates(w).find((c) => c.source === 'free')!;
     operate(w, { type: 'hire', id: next.id });
@@ -58,12 +61,15 @@ describe('manager market (STAFF-17)', () => {
 
   it('pays compensation for another club manager and the club names his successor', () => {
     const w = world();
+    // The manager in post has three seasons left, as the founding manager had; the taken-over
+    // one's contract runs his school's term (→STAFF-14).
+    w.manager.until = w.year + 3;
     const target = managerCandidates(w).find((c) => c.source === 'club')!;
     const club = w.clubs.find((c) => c.id === target.club)!;
-    // The founding manager is owed 25% of his wage for each of his three seasons left.
+    // He is owed 25% of his wage for each of his three seasons left.
     const cash = BigInt(w.cash),
       payoff = BigInt(ratio(w.manager.wage, BigInt(w.manager.until - w.year), 4n));
-    expect(w.manager.until - w.year).toBe(3);
+    expect(managerPayoff(w)).toBe(payoff.toString());
     expect(BigInt(target.compensation!)).toBe(
       (BigInt(target.wage) * COMPENSATION[0]) / COMPENSATION[1],
     );

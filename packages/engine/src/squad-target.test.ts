@@ -43,6 +43,9 @@ function thin(w: World) {
     p.until = w.year + 5;
     p.born = w.year - 22;
     w.people![p.id].born = p.born;
+    // Nobody leaves at the close: a taken-over veteran may have announced his retirement in the
+    // spring (→CLUB-3).
+    delete p.retiring;
   }
   return w;
 }
@@ -60,8 +63,11 @@ describe('twenty-player squad target', () => {
     expect(SIGNING_CONFIG.squadMinimum).toBe(20);
     expect(players).toHaveLength(20);
     expect(players.filter((p) => p.position === 'GK')).toHaveLength(2);
-    expect(lineOf(players[18].position)).toBe('DF');
-    expect(lineOf(players[19].position)).toBe('MF');
+    // The club's own eighteen, then players generated at its level for what they leave uncovered
+    // (→CLUB-1), where a founding added its own defender and midfielder.
+    const generated = players.filter((p) => p.id.startsWith(`${w.playerClub}:takeover:`));
+    expect(players.slice(18)).toEqual(generated);
+    expect(generated).toHaveLength(2);
     for (const slot of formationOf(w.tactic))
       expect(players.some((p) => (p.positions[slot.position] ?? 0) >= 2)).toBe(true);
     expect(

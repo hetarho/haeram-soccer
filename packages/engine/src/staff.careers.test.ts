@@ -42,7 +42,16 @@ describe('coach and manager careers', () => {
     }
     const w = cachedWorld('manager-careers', () => {
       const w = world('manager-careers');
-      w.manager = { ...w.manager, ability: 50, potential: 70, born: w.year - 34, interim: false };
+      // Three seasons left, as the founding manager had, so he is still ours after the close:
+      // the taken-over one may be on a firefighter's one-season term (→STAFF-14).
+      w.manager = {
+        ...w.manager,
+        ability: 50,
+        potential: 70,
+        born: w.year - 34,
+        interim: false,
+        until: w.year + 3,
+      };
       return lastRound(w);
     });
     simulateSeason(w);

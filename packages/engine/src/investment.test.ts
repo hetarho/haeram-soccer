@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import {
   advanceDays,
+  clubOf,
   facilityInvestmentPreview,
   fixedCostRunway,
   gateProjection,
@@ -134,8 +135,11 @@ describe('shared club investment forecasts', () => {
   );
 
   it('projects lower demand and possible gate losses at a dear ticket price', () => {
-    const w = world(),
-      cheap = gateProjection(holdRows(structuredClone(w), { ticket: 0.01 })),
+    // A small following, the founding's 800 supporters: a taken-over club's crowd can pay its way
+    // even at a dear ticket, while a small crowd shows the loss the projection warns of.
+    const w = world();
+    clubOf(w).fans = 800;
+    const cheap = gateProjection(holdRows(structuredClone(w), { ticket: 0.01 })),
       dear = gateProjection(holdRows(structuredClone(w), { ticket: 0.5 }));
     expect(dear.attendanceHigh).toBeLessThan(cheap.attendanceLow);
     expect(BigInt(dear.incomeHigh) - BigInt(dear.costHigh)).toBeLessThan(0n);

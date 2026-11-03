@@ -7,7 +7,9 @@ import {
   candidateStyles,
   clubOf,
   gateProjection,
+  managerCandidates,
   managerOffers,
+  openManagerMarket,
   managerStyleEffects,
   MANAGER_STYLES,
   moraleBaseline,
@@ -84,8 +86,11 @@ describe('manager styles', () => {
   });
 
   it('keeps the founding manager and interims exactly neutral', () => {
+    // No career starts with the neutral founder any more: the taken-over manager keeps his school
+    // (→OWNER-4), so a manager without one stands in for the founder STAFF-14 keeps neutral.
     const w = world();
-    expect(w.manager.style).toBeUndefined();
+    expect(w.manager.style).toBeDefined();
+    delete w.manager.style;
     expect(managerStyleEffects(w)).toMatchObject({ pass: 0, defense: 0, strength: 0, growth: 1 });
     const squad = startingSquad(w, clubOf(w));
     expect(canonical(ownTacticalProfile(w, squad, 'balanced'))).toBe(
@@ -98,6 +103,8 @@ describe('manager styles', () => {
 
   it('moves the own profile by the school it hires and states the tradeoff', () => {
     const w = world();
+    // From a manager without a school: the taken-over one brings his own (→OWNER-4).
+    delete w.manager.style;
     const squad = startingSquad(w, clubOf(w));
     const plain = ownTacticalProfile(w, squad, 'possession');
     w.manager.style = 'positional';
@@ -111,14 +118,19 @@ describe('manager styles', () => {
   });
 
   it('brings a firefighter in for one season with an immediate lift', () => {
+    // The takeover stored its season's market (→STAFF-17), so a later season's free agents come
+    // in by opening that season's market, as a season close renews it.
+    const firefighter = (w: ReturnType<typeof world>) =>
+      managerCandidates(w).find(
+        (offer) => offer.source === 'free' && offer.style === 'firefighter',
+      );
     let w = world();
-    let index = managerOffers(w).findIndex((offer) => offer.style === 'firefighter');
-    for (let year = w.year + 1; index < 0; year++) {
+    for (let year = w.year + 1; !firefighter(w); year++) {
       w = { ...world(), year };
-      index = managerOffers(w).findIndex((offer) => offer.style === 'firefighter');
+      openManagerMarket(w);
     }
     w.morale = 50;
-    operate(w, { type: 'hire', id: managerOffers(w)[index].id });
+    operate(w, { type: 'hire', id: firefighter(w)!.id });
     expect(w.manager.style).toBe('firefighter');
     expect(w.manager.until).toBe(w.year + 1);
     expect(w.morale).toBe(60);

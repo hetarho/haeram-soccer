@@ -19,9 +19,14 @@ import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
 import { careerWorld } from './career.testkit';
 
-/** The release-on probe's world: founded in 1950 in ENG's fourth tier (fixtures 1950:ENG:4). */
+/** The release-on probe's world: taken over in 1950 in ENG's lowest professional division. */
 function world(release: MatchModelRelease) {
   return careerWorld({ seed: 'settle-match' }, release);
+}
+/** Every fixture of the own club's league group, its own and the others'. */
+function ownLeague(w: World) {
+  const group = w.fixtures.find((f) => f.kind === 'league' && isOwn(w, f))!.groupKey;
+  return w.fixtures.filter((f) => f.kind === 'league' && f.groupKey === group);
 }
 /**
  * A 2024 world on the model a new career plays, recorded once the year has moved (founded off,
@@ -180,7 +185,7 @@ describe('settling an activated world (→MATCH-13, MATCH-26, MATCH-27)', () => 
     // going to extra time and a shoot-out.
     const w = world(ENABLED_RELEASE);
     const league: MatchRecord[] = [];
-    for (const f of w.fixtures.filter((f) => f.id.startsWith('1950:ENG:4:') && f.round <= 2)) {
+    for (const f of ownLeague(w).filter((f) => f.round <= 2)) {
       const playback = simulateMatch(w, f, false, true);
       f.score = playback.record.score;
       recordMatch(w, playback, true);
@@ -203,7 +208,7 @@ describe('settling an activated world (→MATCH-13, MATCH-26, MATCH-27)', () => 
   it('checks each record once, at settlement, on either path', () => {
     // Neither builder checks its record: recordMatch is the one check, before anything settles.
     const w = world(ENABLED_RELEASE);
-    const round = w.fixtures.filter((f) => f.id.startsWith('1950:ENG:4:') && f.round === 1);
+    const round = ownLeague(w).filter((f) => f.round === 1);
     const saved = w.ownMatches.length;
     for (const f of [round.find((f) => isOwn(w, f))!, round.find((f) => !isOwn(w, f))!]) {
       const playback = simulateMatch(w, f, false, true);
