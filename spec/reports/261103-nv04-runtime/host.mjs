@@ -33,7 +33,7 @@ const save = () => writeFile(path.join(control, 'status.json'), JSON.stringify(s
 const log = (event) => { process.stdout.write(JSON.stringify({ at: new Date().toISOString(), ...event }) + '\n'); };
 const git = async (...args) => (await exec('git', args, { cwd: workspace, maxBuffer: 4 * 1024 * 1024 })).stdout.trim();
 const codeFiles = (files) => files.split('\n').filter(Boolean).filter((f) => !/^(spec\/|docs\/|artifacts\/)|\.md$/i.test(f));
-let snapshotRunning = null, repairCount = 0, repairNoProgress = 0, preflight, stopRequested = false;
+let snapshotRunning = null, repairCount = 0, repairNoProgress = 0, preflight, stopRequested = false, releasePass = null;
 const ciReceipts = new Map();
 
 await mkdir(control, { recursive: true });
@@ -49,12 +49,11 @@ awake.unref();
 async function archiveStatus() {
   await mkdir(attachment, { recursive: true });
   await writeFile(path.join(attachment, 'status.json'), JSON.stringify(state, null, 2) + '\n');
-  await Promise.all(['host.mjs', 'adapter.mjs'].map((f) => copyFile(path.join(control, f), path.join(attachment, f))));
+  await Promise.all(['host.mjs', 'adapter.mjs', 'watchdog.mjs'].map((f) => copyFile(path.join(control, f), path.join(attachment, f))));
 }
 async function checkpoint(message) {
   if (snapshotRunning) { await snapshotRunning; }
   snapshotRunning = (async () => {
-    await archiveStatus();
     const receipt = await vibeCheckpoint({ ...common, message });
     if (receipt.pushed === false || receipt.pushError) throw new Error(receipt.pushError || 'Checkpoint was not pushed');
     // An unchanged snapshot is successful only when its exact commit exists remotely.
@@ -96,7 +95,11 @@ async function repair(failure) {
 }
 const releaseBase = await git('rev-parse', 'origin/main');
 async function check(options, command) {
+  if (releasePass && command === 'pnpm run verify:batch' && !codeFiles(await git('diff', '--name-only', releasePass.commit, 'HEAD')).length) {
+    return { ...releasePass, cached: true, reusedSourceCommit: releasePass.commit };
+  }
   const result = await runVibeCheck({ ...options, diffBase: releaseBase }, command);
+  if (result.ok && command === 'pnpm run verify:batch') releasePass = result;
   if (!result.ok) await repair({ type: 'release-gate', command, ...result, verificationReport: '.tmp/verification/latest.json' });
   return result;
 }
@@ -115,7 +118,7 @@ async function push(options) {
   if (hasCode) {
     const checked = await check({ targetRoot: workspace, tier: 'batch', heavy: true, timeoutMs: Math.min(7200000, Math.max(1, implementationEnd - Date.now())) }, 'pnpm run verify:batch');
     if (!checked.ok) throw new Error(`Release gate failed: ${checked.log}`);
-    verified = await git('rev-parse', 'HEAD');
+    verified = checked.commit;
   }
   const result = await vibePush({ ...options, ...(hasCode ? { verifiedCommit: verified } : {}) });
   if (result.pushed && hasCode) {
@@ -128,6 +131,10 @@ async function push(options) {
 }
 
 try {
+  await archiveStatus();
+  await git('add', '--', 'spec/reports/261103-nv04-runtime');
+  const ownDocs = await git('diff', '--cached', '--name-only', '--', 'spec/reports/261103-nv04-runtime');
+  if (ownDocs) await git('commit', '--quiet', '--only', '-m', 'docs: record overnight release automation and deadline backup', '--', 'spec/reports/261103-nv04-runtime');
   preflight = await vibePreflight({ ...common, probeWorkspace: 'current' });
   await writeFile(path.join(control, 'preflight.json'), JSON.stringify(preflight, null, 2));
   if (!preflight.ok) throw new Error(`Preflight failed: ${JSON.stringify(preflight.checks.filter((x) => !x.ok))}`);
@@ -147,7 +154,7 @@ try {
   state.status = 'failed'; state.error = error.stack; log({ error: error.message });
 } finally {
   state.finished = new Date().toISOString(); await save();
-  try { await checkpoint('final overnight state, including unfinished work and actual verification limits'); }
+  try { await archiveStatus(); await checkpoint('final overnight state, including unfinished work and actual verification limits'); }
   catch (error) { state.finalPushError = error.message; await save(); log({ checkpointError: error.message }); }
   // Fast-forward the user's untouched main checkout after remote publication.
   if (state.lastMainPush) {
