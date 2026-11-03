@@ -13,7 +13,6 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| bl03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T07:35Z | 2026-11-03T07:35Z | T689 |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
@@ -543,7 +542,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | doing@261103.bl03 |
+| T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | todo |
 | T653 | owner and takeover foundation: contracts, config, commands and hook points | OWNER ECON SAVE WEB | T652 | todo |
 | T654 | spike: how the world lives 1930 → decade before anyone owns a club | WORLD ARCH LEAGUE MATCH | T652 T653 | todo |
 | T655 | world from 1930 to the takeover decade, with the wartime stop | WORLD LEAGUE HIST ARCH OWNER | T652 T654 | todo |
@@ -593,7 +592,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- bl03: T688 and T690 complete; finish T689 scoring concentration experiments in the isolated calibration worktree before any scoring commit; preserve hr05/ot03 work.
+- bl03: T688/T690 complete; T689 remains uncommitted and resumable from the detached calibration worktree and scoring report. Investigate the transfer-retention policy before further match tuning; publish the validated work and clean its branch as the owner requested.
 - implement-task T683, then T684 (integration fixes on wip/ot03) and T687 (20 Chromium journeys), the batch gate and the push to main; then T685, T686 (balance), T678, T679
 - hr05: T681/T682 and final post-sync coordinator gate complete; publish verified f48a4447 to main and verify exact-source CI before closing the session.
 - after the ot03 takeover lands on main (T668 last): implement-task T678 (history view while the world is generated, WEB-115), then T679 (explore 1h: generation with the view against ARCH-28)
@@ -603,6 +602,7 @@
 - on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (founding screen, `found` message, identity editor, ready-made crests), then T670 (engine tests on `careerWorld`), T671 (the founding leaves the engine), T672 (the amateur level, LEAGUE-16), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
 
 ## log
+- 261103 bl03 publication: owner explicitly requests immediate push without further tests; retain the post-sync 1176 passing integration cases, four skips and one long-career timeout. T689 remains todo with its experiments detached and backed up; no scoring implementation released.
 - 261103 T690 done: progressive elite wages and repeated award premiums; 144000 sensitivity cases, 576 retention decisions, 40 full-season outcomes, 35 unit and 36 contract integration tests plus fast checks passed. bl03
 - 261103 T689 started: paired baseline/passing/shot-volume/support pilots plus independent standard corpus; T690 follows with star wage sensitivity and career budgets. bl03
 - 261103 T688 done: trophy-led Ballon d Or, bounded production and top-six finish points; 39 unit tests and task checks passed. bl03
