@@ -41,7 +41,9 @@ test('reads stored older news by page and category after saving and reloading', 
   await expect(sheet.getByTestId('news-item')).toHaveCount(50);
   await sheet.getByRole('button', { name: '이전 소식 더 보기' }).click();
   await expect(sheet.getByTestId('news-item')).toHaveCount(80);
-  const first = await sheet.getByTestId('news-item').first().innerText();
+  const first = sheet.getByTestId('news-item').first();
+  const title = await first.locator('strong').innerText();
+  const detail = await first.locator('small').innerText();
   await sheet.getByRole('button', { name: '닫기', exact: true }).click();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
@@ -49,6 +51,8 @@ test('reads stored older news by page and category after saving and reloading', 
   await page.getByTestId('communications-button').click();
   await page.getByRole('tab', { name: /^뉴스/ }).click();
   await expect(page.getByTestId('news-item')).toHaveCount(50);
-  // Read markers may change; the stored title and detail remain.
-  await expect(page.getByTestId('news-item').first()).toContainText(first.replace('NEW', ''));
+  const reloaded = page.getByTestId('news-item').first();
+  await expect(reloaded.locator('strong')).toHaveText(title);
+  await expect(reloaded.locator('small')).toHaveText(detail);
+  await expect(reloaded.locator('em')).toHaveCount(0);
 });
