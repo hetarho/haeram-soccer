@@ -17,7 +17,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | hr05 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T05:50Z | 2026-11-03T06:15Z | T682 |
-| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T07:55Z | - |
+| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T08:13Z | T687 |
 
 ## inbox
 - 261103 decided KIT-9 KIT-13 OWNER-12 ARCH-21 T684: the identity workload's "design edit changed non-cosmetic facts" on a takeover career → adopting a draft truly changes one fact, the owner's 팬 민심 (−20 with one `fan-mood` event), as KIT-9 states, so the workload allows exactly that drop and event and adds the owner's other fields to the facts an edit may not move; the read models were not the cause (alt: strip events and read models from the comparison, which would let any event through | run the workload on a world without an owner, which no career is). ot03
@@ -682,7 +682,7 @@
 | T682 | Profile and reduce repeated day-step Worker work | ARCH WEB SAVE | T681 | doing@261103.hr05 |
 | T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | todo |
 | T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
-| T687 | browser journeys on takeover careers | ARCH WEB OWNER KIT | T684 | todo |
+| T687 | browser journeys on takeover careers | ARCH WEB OWNER KIT | T684 | doing@261103.ot03 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
