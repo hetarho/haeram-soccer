@@ -17,7 +17,6 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
-| cv03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T09:33Z | 2026-11-03T09:33Z | - |
 
 ## inbox
 - 261103 parked T685 ARCH-30: unit Git metadata is read-only: installed vibe check cannot snapshot the source (git add -A: unable to create temporary file, Read-only file system), so no task commit is possible here. The cv03 host must regenerate portable/prepared worlds, finish the task checks and commit the preserved implementation with Git write access before T686; no push or shared report/active lifecycle action was attempted. cv03
