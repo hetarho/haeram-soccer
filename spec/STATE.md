@@ -687,7 +687,7 @@
 |---|---|---|---|---|
 | T678 | the world's history plays while it is generated | WEB ARCH WORLD HIST PLAYER EURO | T686 | todo |
 | T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
-| T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
+| T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | doing@261103.nv04 |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | todo |
 
 ## work
