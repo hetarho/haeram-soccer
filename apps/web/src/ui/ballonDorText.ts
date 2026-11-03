@@ -24,7 +24,7 @@ export function ballonDorLine(history: World['history'], id: string) {
 
 /**
  * The Ballon d'Or premium a contract talk prices in (→CLUB-26, WEB-68): `발롱도르 수상 (1958/59) ·
- * 요구 +20%`, or nothing when no recent podium place raises his worth.
+ * 요구 +100%`, or nothing when no recent podium place raises his worth.
  */
 export function ballonDorPremiumLine(w: Pick<World, 'history' | 'year'>, id: string) {
   const premium = ballonDorPremium(w.history, w.year, id);

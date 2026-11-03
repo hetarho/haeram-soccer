@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
+import { qualifyManagers } from './manager-entry';
 import {
   careerDate,
   activeCoachingEmployment,
@@ -7,10 +8,66 @@ import {
   openEmployment,
   retainPerson,
   resolvePerson,
+  profiledManagers,
+  managementProfiled,
 } from './person-careers';
 import { careerWorld } from './career.testkit';
 const world = () => careerWorld({ seed: 'persons' });
 describe('retained person career registry', () => {
+  it('publishes newly qualified managers after a previous empty profile query', () => {
+    const w = world(),
+      person = retainPerson(w, { ...w.players[0], id: 'qualified:manager' });
+    person.playing = 'retired';
+    person.qualities = { understanding: 5, teaching: 5, judgement: 5 };
+    person.employment = [
+      { role: 'assistant', club: w.playerClub, from: { year: w.year - 4, day: 0 } },
+    ];
+    // Registry replacement models the validated checkpoint this leaf consumes, with its service.
+    w.people = structuredClone(w.people);
+    const retained = w.people![person.id];
+    expect(profiledManagers(w)).toHaveLength(0);
+    qualifyManagers(w);
+    const ready = profiledManagers(w),
+      profile = retained.management;
+    expect(ready).toEqual([retained]);
+    expect(profile).toBeDefined();
+    qualifyManagers(w);
+    expect(profiledManagers(w)).toBe(ready);
+    expect(retained.management).toBe(profile);
+  });
+
+  it('indexes manager profiles in registry order and refreshes on qualification and registry changes', () => {
+    const w = world(),
+      a = retainPerson(w, { ...w.players[0], id: 'profile:a' }),
+      b = retainPerson(w, { ...w.players[0], id: 'profile:b' }),
+      profile: NonNullable<typeof b.management> = {
+        ability: 60,
+        potential: 80,
+        school: 'positional',
+        at: { year: w.year, day: 0 },
+      };
+    const empty = profiledManagers(w);
+    expect(empty).toHaveLength(0);
+    b.management = profile;
+    managementProfiled(w);
+    const one = profiledManagers(w);
+    expect(one).toEqual([b]);
+    b.management.ability = 61;
+    expect(profiledManagers(w)).toBe(one);
+    expect(profiledManagers(w)[0].management!.ability).toBe(61);
+    a.management = { ...b.management };
+    managementProfiled(w);
+    expect(profiledManagers(w)).toEqual([a, b]);
+    expect(one).toEqual([b]);
+    w.people = { [b.id]: structuredClone(b) };
+    expect(profiledManagers(w)).toEqual([w.people[b.id]]);
+    expect(profiledManagers(w)[0]).not.toBe(b);
+    const c = retainPerson(w, { ...w.players[0], id: 'profile:c' });
+    c.management = { ...b.management };
+    managementProfiled(w);
+    expect(profiledManagers(w)).toEqual([w.people[b.id], c]);
+  });
+
   it('keeps hot post checks correct across closure, different roles and registry replacement', () => {
     const w = world();
     const people = ['index:a', 'index:b', 'index:c'].map((id) =>

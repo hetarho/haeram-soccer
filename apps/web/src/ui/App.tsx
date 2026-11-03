@@ -705,7 +705,7 @@ export function App() {
         throw new Error(
           '게임 저장은 HTTPS 또는 localhost에서 이용할 수 있습니다. localhost로 접속하거나 HTTPS 배포를 사용하세요.',
         );
-      const c = new GameClient((state) => gameStore.publish(state));
+      const c = new GameClient((state) => gameStore.publish(state, { viewShared: true }));
       const progression = new ProgressionController(c);
       const library = new GameSlots(c);
       // A hidden tab plays on at its wall-clock pace unless the owner chose to pause it

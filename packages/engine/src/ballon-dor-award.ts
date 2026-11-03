@@ -5,16 +5,18 @@
 import type {
   BallonDorHonour,
   BallonDorPlace,
+  Club,
   Position,
   SeasonArchive,
   World,
 } from '../../contracts/src/types';
-import { BALLON_DOR_CONFIG } from './ballon-dor';
+import { BALLON_DOR_CONFIG, ballonDorProduction } from './ballon-dor';
 import { cupKey } from './competition-keys';
 import { europeFinal } from './europe';
 import { addEvent } from './events';
 import { moneyLabel } from './finance';
 import { M } from './grid/record';
+import { groupKey, ranked as rankedClubs } from './league-fixtures';
 import { overall } from './player-state';
 import { compareIds, ratio } from './primitives';
 import { debit } from './transactions';
@@ -36,6 +38,8 @@ interface Candidate {
   appearances: number;
   /** Top-flight league appearances, the eligibility measure. */
   top: number;
+  /** Top-flight clubs with an actual league contribution, for one best-finish bonus. */
+  leagueClubs: Set<string>;
   /** The club of his last league contribution, else his last contribution. */
   club: string;
   /** `kind|groupKey|club` of every competition he played in for a club. */
@@ -82,6 +86,7 @@ function candidates(w: World): Candidate[] {
             assists: 0,
             appearances: 0,
             top: 0,
+            leagueClubs: new Set(),
             club: '',
             played: new Set(),
           }),
@@ -93,7 +98,10 @@ function candidates(w: World): Candidate[] {
         if (!part.appearances) continue;
         const club = clubs.get(part.club);
         const league = competition.kind === 'league';
-        if (league && club?.tier === 0 && !club.representative) candidate.top += part.appearances;
+        if (league && club?.tier === 0 && !club.representative) {
+          candidate.top += part.appearances;
+          candidate.leagueClubs.add(part.club);
+        }
         if (league || !candidate.club) candidate.club = part.club;
         candidate.played.add(`${competition.kind}|${competition.groupKey}|${part.club}`);
         if (league) candidate.played.add(`league||${part.club}`);
@@ -101,6 +109,25 @@ function candidates(w: World): Candidate[] {
     }
   }
   return [...players.values()];
+}
+
+/** Actual final places before promotion/relegation, using the same ordering as league titles. */
+function leaguePlacePoints(w: World): Map<string, number> {
+  const groups = new Map<string, Club[]>();
+  for (const club of w.clubs) {
+    if (club.tier !== 0 || club.representative) continue;
+    const key = groupKey(club);
+    const clubs = groups.get(key) ?? [];
+    clubs.push(club);
+    groups.set(key, clubs);
+  }
+  const points = new Map<string, number>();
+  for (const clubs of groups.values())
+    rankedClubs(w, clubs).forEach((club, index) => {
+      if ((w.tables[club.id]?.played ?? 0) > 0)
+        points.set(club.id, BALLON_DOR_CONFIG.leaguePlaces[index] ?? 0);
+    });
+  return points;
 }
 
 /** His OVR at the close: our player's, else his club's squad's; none when he is found nowhere. */
@@ -125,6 +152,7 @@ export function ballonDorPodium(
   if (w.year < config.first || !stats || stats.year !== w.year) return undefined;
   if (stats.trackedFrom.day !== 1 || stats.trackedFrom.round !== 1) return undefined;
   const won = seasonHonours(w, champions);
+  const finishes = leaguePlacePoints(w);
   const ranked = candidates(w)
     .filter((candidate) => candidate.top >= config.appearances)
     .map((candidate) => {
@@ -139,9 +167,9 @@ export function ballonDorPodium(
       ];
       const ovr = closingOvr(w, candidate) ?? 0;
       const points =
-        candidate.goals * config.goals +
-        candidate.assists * config.assists +
+        ballonDorProduction(candidate.goals, candidate.assists) +
         Math.max(0, ovr - config.classFrom) * config.classWeight +
+        Math.max(0, ...[...candidate.leagueClubs].map((id) => finishes.get(id) ?? 0)) +
         honours.reduce((sum, honour) => sum + config.honours[honour], 0);
       return { candidate, honours, ovr, points };
     })

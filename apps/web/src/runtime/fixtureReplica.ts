@@ -1,8 +1,9 @@
-import type { Club, PersonCareer } from '../../../../packages/contracts/src/types';
+import type { Club } from '../../../../packages/contracts/src/types';
 import {
   FIXTURE_READ_KEYS,
   fixtureRosterKey,
   type FixtureReadCopy,
+  type FixtureReadPerson,
 } from '../../../../packages/engine/src/fixture-copy';
 import type { RoundJob, RoundJobResult } from '../../../../packages/engine/src/round-jobs';
 
@@ -35,7 +36,7 @@ type Dynamic = Omit<FixtureReadCopy, 'clubs' | 'people'>;
 interface Patch {
   state: Dynamic;
   clubs: Changes<Club>;
-  people: Changes<PersonCareer>;
+  people: Changes<FixtureReadPerson>;
   hasPeople: boolean;
   rosterChanged: boolean;
 }
@@ -225,7 +226,7 @@ export class FixtureReplicaReader {
         )
           throw new Error('Invalid patch identity');
         assertRows<Club>(parsed.clubs);
-        assertRows<PersonCareer>(parsed.people);
+        assertRows<FixtureReadPerson>(parsed.people);
         const patch = parsed as unknown as Patch;
         const copy = this.copy;
         const root = copy as unknown as Record<string, unknown>;

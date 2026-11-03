@@ -54,9 +54,13 @@ export function createGameStore(initial: ClientState = initialClientState) {
   return {
     ...store,
     getSnapshot: store.getState,
-    publish(state: ClientState) {
+    /** GameClient already shares immutable views; other publishers restore their references here. */
+    publish(state: ClientState, options: { viewShared?: boolean } = {}) {
       const previous = store.getState(),
-        next = { ...state, view: shareView(previous.view, state.view) };
+        next = {
+          ...state,
+          view: options.viewShared ? state.view : shareView(previous.view, state.view),
+        };
       const keys = Object.keys(next) as (keyof ClientState)[];
       if (
         keys.length === Object.keys(previous).length &&

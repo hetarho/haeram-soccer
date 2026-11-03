@@ -1,0 +1,423 @@
+{
+  "source": "f0ea7ada0945cd29431dd54694218f7af0306aee",
+  "profileMs": 16970.931,
+  "samples": 13199,
+  "stages": {
+    "own": {
+      "days": 7,
+      "wallMs": 1219.6882761428565,
+      "cpuMs": 1048.0490000000002,
+      "projectionMs": 77.61367214285669,
+      "publisherMs": 97.19629585714314,
+      "cloneMs": 15.832574571428268
+    },
+    "other": {
+      "days": 53,
+      "wallMs": 142.84638762264177,
+      "cpuMs": 134.31035849056602,
+      "projectionMs": 56.904167830188804,
+      "publisherMs": 35.885594792453325,
+      "cloneMs": 1.0410498301887101
+    }
+  },
+  "self": [
+    {
+      "name": "partText",
+      "line": 258989,
+      "ms": 1912.667,
+      "source": "// apps/web/src/runtime/viewPublisher.ts",
+      "snippet": "function partText(value2) {\n  try {\n    return JSON.stringify(value2) ?? \"undefined\";\n  } catch {\n    return void 0;"
+    },
+    {
+      "name": "post",
+      "line": 114,
+      "ms": 860.314
+    },
+    {
+      "name": "staffMarket",
+      "line": 232606,
+      "ms": 710.6540000000014,
+      "source": "// packages/engine/src/staff.ts",
+      "snippet": "function staffMarket(w, roles = STAFF_ROLES) {\n  const code = clubOf(w).country, employed = new Set((w.staff || []).map((member) => member.id)), ready = /* @__PURE__ */ new Map(), quotes = /* @__PURE__ */ new Map();\n  for (const person of profiledCoaches(w)) {\n    const role = person.coaching?.role;\n    if (!role || !roles.includes(role) || !coachingEntryReady(person)) continue;"
+    },
+    {
+      "name": "",
+      "line": 253521,
+      "ms": 692.5700000000005,
+      "source": "// packages/engine/src/managerMarket.ts",
+      "snippet": "  return profiledManagers(w).flatMap((person) => {\n    const profile = person.management;\n    if (!profile || person.employment.some(\n      (job3) => !job3.to && (job3.role === \"manager\" || job3.role === \"player\")\n    ) || w.year - person.born >= RETIREMENT_AGE)"
+    },
+    {
+      "name": "(garbage collector)",
+      "line": -1,
+      "ms": 620.1610000000004
+    },
+    {
+      "name": "view",
+      "line": 259939,
+      "ms": 605.6130000000005,
+      "source": "// apps/web/src/runtime/host.ts",
+      "snippet": "  view(w = this.world) {\n    if (!w) return;\n    const own2 = w.clubs.find((c) => c.id === w.playerClub);\n    const ownGroup = groupKey(own2);\n    const next = nextOwnFixture(w);"
+    },
+    {
+      "name": "careerCandidates",
+      "line": 253519,
+      "ms": 213.87500000000006,
+      "source": "// packages/engine/src/managerMarket.ts",
+      "snippet": "function careerCandidates(w) {\n  const code = clubOf(w).country;\n  return profiledManagers(w).flatMap((person) => {\n    const profile = person.management;\n    if (!profile || person.employment.some("
+    },
+    {
+      "name": "readCopy",
+      "line": 252075,
+      "ms": 208.61399999999998,
+      "source": "// packages/engine/src/fixture-copy.ts",
+      "snippet": "function readCopy(w) {\n  const copy = {};\n  for (const key3 of FIXTURE_READ_KEYS) if (key3 in w && key3 !== \"people\") copy[key3] = w[key3];\n  if (w.people)\n    copy.people = Object.fromEntries("
+    },
+    {
+      "name": "step",
+      "line": 239198,
+      "ms": 200.67100000000005,
+      "source": "// packages/engine/src/grid/movement-kernel.ts",
+      "snippet": "    step(count6, h, t, c, s, acceleration, braking, arrive, length, width, step) {\n      for (let i = 0; i < count6; i++) {\n        const at2 = i * MOVEMENT_KERNEL_STRIDE;\n        let x = data[at2], y = data[at2 + 1], vx = data[at2 + 2], vy = data[at2 + 3];\n        const hold = t + 1e-9 < data[at2 + 9];"
+    },
+    {
+      "name": "publish",
+      "line": 259087,
+      "ms": 177.58199999999997,
+      "source": "// apps/web/src/runtime/viewPublisher.ts",
+      "snippet": "  publish(view, base) {\n    if (!view) return {};\n    const { world, ...rest } = view;\n    const texts = /* @__PURE__ */ new Map();\n    for (const [key3, value2] of Object.entries(rest)) texts.set(key3, partText(value2));"
+    },
+    {
+      "name": "",
+      "line": 232616,
+      "ms": 172.45099999999985,
+      "source": "// packages/engine/src/staff.ts",
+      "snippet": "    roles.map((role) => {\n      const key3 = `${w.seed}|${w.playerClub}|${code}|${w.year}|${role}`;\n      let drawn = candidateCache.get(key3);\n      if (!drawn) {\n        drawn = drawCandidates(w, role, code);"
+    },
+    {
+      "name": "playGrid",
+      "line": 244951,
+      "ms": 166.16699999999994,
+      "source": "// packages/engine/src/grid/engine.ts",
+      "snippet": "function playGrid(setup) {\n  const s = createState(setup);\n  const r = setup.r;\n  const candidate = setup.model !== void 0;\n  const charge = (old, spent) => candidate ? spent : old;"
+    },
+    {
+      "name": "(program)",
+      "line": -1,
+      "ms": 148.80400000000003
+    },
+    {
+      "name": "coachingEntryReady",
+      "line": 254122,
+      "ms": 144.9769999999999,
+      "source": "// packages/engine/src/coaching-entry.ts",
+      "snippet": "function coachingEntryReady(person) {\n  return person.playing === \"retired\" && !!person.intention?.willing && (personCoachingGrade(person) ?? 0) >= 4 && !person.employment.some((job2) => !job2.to && job2.role !== \"player\");\n}\nfunction coachingSpecialty(person) {\n  if (person.position === \"GK\") return \"goalkeeping\";"
+    },
+    {
+      "name": "structuredClone",
+      "line": 112,
+      "ms": 140.77199999999988
+    },
+    {
+      "name": "defend",
+      "line": 241202,
+      "ms": 131.84699999999995,
+      "source": "// packages/engine/src/grid/coordination.ts",
+      "snippet": "function defend(s, side2, carrier, danger, plan, claimed, cache3, box) {\n  const players = s.players[side2].filter(outfield);\n  const places = [];\n  const place = (gp) => places[gp.idx] ??= shapePlace(s, side2, gp.idx, cache3);\n  const reach = pressReach(s, side2);"
+    },
+    {
+      "name": "firstReach",
+      "line": 240969,
+      "ms": 131.19600000000003,
+      "source": "// packages/engine/src/grid/lanes.ts",
+      "snippet": "function firstReach(lo, hi, radius) {\n  const L = LANE_CONFIG;\n  const points = Math.max(1, Math.ceil((hi - lo) / L.step));\n  let found = NaN;\n  let spare = 0;"
+    },
+    {
+      "name": "fixtureRosterKey",
+      "line": 252091,
+      "ms": 129.20999999999998,
+      "source": "// packages/engine/src/fixture-copy.ts",
+      "snippet": "function fixtureRosterKey(copy) {\n  return JSON.stringify([\n    copy.seed,\n    copy.year,\n    copy.clubs.map((c) => [c.id, c.country, c.strength, c.tier]),"
+    },
+    {
+      "name": "",
+      "line": 253524,
+      "ms": 122.731,
+      "source": "// packages/engine/src/managerMarket.ts",
+      "snippet": "      (job3) => !job3.to && (job3.role === \"manager\" || job3.role === \"player\")\n    ) || w.year - person.born >= RETIREMENT_AGE)\n      return [];\n    const job2 = person.employment.find((job3) => !job3.to), internal = job2?.club === w.playerClub, member = internal ? w.staff?.find((member2) => member2.person === person.id) : void 0;\n    if (job2 && !internal && job2.wage === void 0) return [];"
+    },
+    {
+      "name": "encode",
+      "line": 259164,
+      "ms": 121.18399999999993,
+      "source": "// apps/web/src/runtime/fixtureReplica.ts",
+      "snippet": "  encode(copy, revision) {\n    const clubs2 = copy.clubs.map((c) => [c.id, c]);\n    const people = Object.entries(copy.people ?? {});\n    const clubTexts = textsOf(clubs2), peopleTexts = textsOf(people);\n    if (clubTexts.size !== clubs2.length) throw new Error(\"Duplicate fixture-copy club\");"
+    },
+    {
+      "name": "",
+      "line": 259149,
+      "ms": 113.10399999999994,
+      "source": "// apps/web/src/runtime/fixtureReplica.ts",
+      "snippet": "var textsOf = (entries) => new Map(entries.map(([id3, value2]) => [id3, JSON.stringify(value2)]));\nfunction changes(entries, texts, old) {\n  const order = [...texts.keys()];\n  const before = [...old.keys()];\n  return {"
+    },
+    {
+      "name": "carryInStride",
+      "line": 240638,
+      "ms": 109.60399999999996,
+      "source": "// packages/engine/src/grid/movement.ts",
+      "snippet": "function carryInStride(s, gp, aim2, seconds, cell2, reads, pace = 1, straight = false) {\n  const C10 = GRID_MOVEMENT_CONFIG;\n  const vmax = strideSpeed(s, gp) * pace;\n  const speed = s.math.hypot(gp.vel?.[0] ?? 0, gp.vel?.[1] ?? 0);\n  const [dx, dy] = strideHeading(s, gp, aim2, straight);"
+    },
+    {
+      "name": "viewPatch",
+      "line": 259034,
+      "ms": 95.96200000000003,
+      "source": "// apps/web/src/runtime/viewPublisher.ts",
+      "snippet": "function viewPatch(before, now, depth) {\n  if (depth > 0 && Array.isArray(before) && Array.isArray(now)) {\n    const changed = [];\n    now.forEach((item, index5) => {\n      const sub = index5 < before.length ? viewPatch(before[index5], item, depth - 1) : { v: item };"
+    },
+    {
+      "name": "settleNpcSeason",
+      "line": 246733,
+      "ms": 92.83099999999996,
+      "source": "// packages/engine/src/npc-stats.ts",
+      "snippet": "function settleNpcSeason(w, playback) {\n  const r = playback.record;\n  const stats = w.npcSeason;\n  if (r.model === void 0 || !stats || stats.year !== r.year || stats.model !== r.model) return;\n  const full = r;"
+    },
+    {
+      "name": "updateIntentions",
+      "line": 240393,
+      "ms": 91.37999999999998,
+      "source": "// packages/engine/src/grid/intentions.ts",
+      "snippet": "function updateIntentions(s, inFlight = false, defenceOnly = false) {\n  const def = other(s.possession);\n  const danger = !inFlight && inDanger(s, def);\n  const review = (gp) => {\n    const i = gp.intention;"
+    }
+  ],
+  "inclusive": [
+    {
+      "name": "(root)",
+      "line": -1,
+      "ms": 16970.002999999673
+    },
+    {
+      "name": "",
+      "line": 259880,
+      "ms": 7624.667000000021,
+      "source": "// apps/web/src/runtime/host.ts",
+      "snippet": "    const task = this.queue.then(() => this.execute(input2));\n    this.queue = task.then(\n      () => {\n      },\n      () => {"
+    },
+    {
+      "name": "execute",
+      "line": 260152,
+      "ms": 7623.608000000022,
+      "source": "// apps/web/src/runtime/host.ts",
+      "snippet": "  async execute(input2) {\n    let request2;\n    try {\n      request2 = requestSchema.parse(input2);\n      const r = request2;"
+    },
+    {
+      "name": "playDay",
+      "line": 259418,
+      "ms": 7617.194000000021,
+      "source": "// apps/web/src/runtime/helperPool.ts",
+      "snippet": "function playDay(pool2, w, observe, steps) {\n  pool2?.useWorld(w);\n  let results2;\n  if (!pool2?.active || !steps.prepareRound(w, (copy, jobs) => results2 = pool2.run(copy, jobs, w.revision), observe))\n    return steps.advanceDays(w, 1, void 0, observe);"
+    },
+    {
+      "name": "day",
+      "line": 259895,
+      "ms": 7617.194000000021,
+      "source": "// apps/web/src/runtime/host.ts",
+      "snippet": "  async day(w, observe) {\n    const step = playDay(this.helpers, w, observe, DAY_STEPS);\n    if (!(step instanceof Promise)) return step;\n    this.round = step.then(\n      () => {"
+    },
+    {
+      "name": "execute",
+      "line": 260152,
+      "ms": 5972.694000000012,
+      "source": "// apps/web/src/runtime/host.ts",
+      "snippet": "  async execute(input2) {\n    let request2;\n    try {\n      request2 = requestSchema.parse(input2);\n      const r = request2;"
+    },
+    {
+      "name": "publish",
+      "line": 260024,
+      "ms": 5959.743000000013,
+      "source": "// apps/web/src/runtime/host.ts",
+      "snippet": "  publish(base) {\n    return this.views.publish(this.view(), base);\n  }\n  /**\n   * Read-only requests, validated like commands but answered from the live world without a"
+    },
+    {
+      "name": "prepareRound",
+      "line": 253349,
+      "ms": 5230.12600000002,
+      "source": "// packages/engine/src/season.ts",
+      "snippet": "function prepareRound(w, start, observe = true) {\n  if (w.critical || w.bankrupt || pendingRounds.has(w)) return false;\n  const day2 = currentDay(w) + 1;\n  if (closingDay(w, day2) || !leagueDay(w, day2)) return false;\n  const { clubs: clubs2, sequential } = roundFixtures(w, w.round + 1);"
+    },
+    {
+      "name": "beginRound",
+      "line": 253268,
+      "ms": 5224.1050000000205,
+      "source": "// packages/engine/src/season.ts",
+      "snippet": "function beginRound(w, observe, simulator) {\n  w.round++;\n  const { fixtures, sequential } = roundFixtures(w, w.round);\n  const jobs = sequential ? [] : roundJobs(w, fixtures);\n  const phase = { fixtures, sequential, jobs, played: /* @__PURE__ */ new Map(), observe };"
+    },
+    {
+      "name": "candidateMatch",
+      "line": 250458,
+      "ms": 4401.802000000013,
+      "source": "// packages/engine/src/match.ts",
+      "snippet": "function candidateMatch(w, f, own2, observe, decide2) {\n  if (!own2) return simulateAggregate(w, f, decide2);\n  const setup = buildGridSetup(w, f, { observe, recordPlayers: true, ...decide2 && { decide: decide2 } });\n  const result = playGrid(setup);\n  return {"
+    },
+    {
+      "name": "simulateMatch",
+      "line": 250444,
+      "ms": 4401.802000000013,
+      "source": "// packages/engine/src/match.ts",
+      "snippet": "function simulateMatch(w, f, observe = false, keepPlayers = false, decide2) {\n  const own2 = f.home === w.playerClub || f.away === w.playerClub;\n  if (activeMatchModel(w) !== void 0) return candidateMatch(w, f, own2, observe, decide2);\n  if (own2 || keepPlayers && ownLeagueEngine === \"grid\") {\n    const setup = buildGridSetup(w, f, { observe, recordPlayers: true, ...decide2 && { decide: decide2 } });"
+    },
+    {
+      "name": "playFixture2",
+      "line": 253259,
+      "ms": 4401.802000000013,
+      "source": "// packages/engine/src/season.ts",
+      "snippet": "function playFixture2(w, f, observe) {\n  const own2 = ownFixture(w, f);\n  return simulateMatch(w, f, own2 && observe, own2 || isScoringFixture(w, f));\n}\nfunction roundFixtures(w, round) {"
+    },
+    {
+      "name": "playGrid",
+      "line": 244951,
+      "ms": 4323.759000000011,
+      "source": "// packages/engine/src/grid/engine.ts",
+      "snippet": "function playGrid(setup) {\n  const s = createState(setup);\n  const r = setup.r;\n  const candidate = setup.model !== void 0;\n  const charge = (old, spent) => candidate ? spent : old;"
+    },
+    {
+      "name": "host.view",
+      "line": 19,
+      "ms": 3492.5010000000134
+    },
+    {
+      "name": "timed",
+      "line": 18,
+      "ms": 3491.4140000000134
+    },
+    {
+      "name": "",
+      "line": 19,
+      "ms": 3488.1930000000125
+    },
+    {
+      "name": "view",
+      "line": 259939,
+      "ms": 3483.8970000000127,
+      "source": "// apps/web/src/runtime/host.ts",
+      "snippet": "  view(w = this.world) {\n    if (!w) return;\n    const own2 = w.clubs.find((c) => c.id === w.playerClub);\n    const ownGroup = groupKey(own2);\n    const next = nextOwnFixture(w);"
+    },
+    {
+      "name": "timed",
+      "line": 18,
+      "ms": 2467.242000000003
+    },
+    {
+      "name": "host.views.publish",
+      "line": 19,
+      "ms": 2467.242000000003
+    },
+    {
+      "name": "",
+      "line": 19,
+      "ms": 2466.176000000003
+    },
+    {
+      "name": "publish",
+      "line": 259087,
+      "ms": 2413.9330000000023,
+      "source": "// apps/web/src/runtime/viewPublisher.ts",
+      "snippet": "  publish(view, base) {\n    if (!view) return {};\n    const { world, ...rest } = view;\n    const texts = /* @__PURE__ */ new Map();\n    for (const [key3, value2] of Object.entries(rest)) texts.set(key3, partText(value2));"
+    },
+    {
+      "name": "stepDay",
+      "line": 253325,
+      "ms": 2384.4680000000017,
+      "source": "// packages/engine/src/season.ts",
+      "snippet": "function stepDay(w, capture, observe) {\n  const day2 = currentDay(w) + 1;\n  w.calendar = { day: day2 };\n  if (closingDay(w, day2)) {\n    closeSeason(w);"
+    },
+    {
+      "name": "advanceDays",
+      "line": 253392,
+      "ms": 2384.4680000000017,
+      "source": "// packages/engine/src/season.ts",
+      "snippet": "function advanceDays(w, days, settlement, observe = true) {\n  if (!Number.isInteger(days) || days < 1 || days > 366)\n    throw new Error(\"\\uC9C4\\uD589\\uD560 \\uB0A0\\uC9DC \\uBC94\\uC704\\uAC00 \\uC62C\\uBC14\\uB974\\uC9C0 \\uC54A\\uC2B5\\uB2C8\\uB2E4.\");\n  if (w.critical || w.bankrupt) return void 0;\n  beginDays(w);"
+    },
+    {
+      "name": "partText",
+      "line": 258989,
+      "ms": 1912.667,
+      "source": "// apps/web/src/runtime/viewPublisher.ts",
+      "snippet": "function partText(value2) {\n  try {\n    return JSON.stringify(value2) ?? \"undefined\";\n  } catch {\n    return void 0;"
+    },
+    {
+      "name": "completeRound",
+      "line": 253364,
+      "ms": 1489.9990000000023,
+      "source": "// packages/engine/src/season.ts",
+      "snippet": "function completeRound(w, results2, settlement) {\n  const phase = pendingRounds.get(w);\n  if (!phase) throw new Error(\"\\uACB0\\uACFC\\uB97C \\uAE30\\uB2E4\\uB9AC\\uB294 \\uB77C\\uC6B4\\uB4DC\\uAC00 \\uC5C6\\uC2B5\\uB2C8\\uB2E4.\");\n  pendingRounds.delete(w);\n  let ownPlayback;"
+    },
+    {
+      "name": "",
+      "line": 259423,
+      "ms": 1489.9990000000023,
+      "source": "// apps/web/src/runtime/helperPool.ts",
+      "snippet": "  return (results2 ?? Promise.resolve(void 0)).then((r) => steps.completeRound(w, r));\n}\n\n// apps/web/src/runtime/clubRecords.ts\nvar wider = (a, b) => Math.abs(a.own - a.other) - Math.abs(b.own - b.other) || Math.max(a.own, a.other) - Math.max(b.own, b.other);"
+    },
+    {
+      "name": "closeSeason",
+      "line": 253075,
+      "ms": 1335.963000000003,
+      "source": "// packages/engine/src/season.ts",
+      "snippet": "function closeSeason(w, finishEurope2) {\n  const leagueTiers = new Map(ownLeagueClubs(w).map((club2) => [club2.id, club2.tier]));\n  if (w.round < 46 || w.fixtures.some((f) => !f.score))\n    throw new Error(\"\\uC544\\uC9C1 \\uC815\\uADDC \\uC2DC\\uC98C\\uC774 \\uB05D\\uB098\\uC9C0 \\uC54A\\uC558\\uC2B5\\uB2C8\\uB2E4.\");\n  if (currentDay(w) < SEASON_END_DAY + 1) w.calendar = { day: SEASON_END_DAY + 1 };"
+    },
+    {
+      "name": "playRound",
+      "line": 253279,
+      "ms": 1330.9710000000023,
+      "source": "// packages/engine/src/season.ts",
+      "snippet": "function playRound(w, phase, results2, capture) {\n  const { fixtures, observe } = phase;\n  if (phase.sequential)\n    for (const f of fixtures) {\n      const p = playFixture2(w, f, observe);"
+    },
+    {
+      "name": "staffMarket",
+      "line": 232606,
+      "ms": 1230.0860000000016,
+      "source": "// packages/engine/src/staff.ts",
+      "snippet": "function staffMarket(w, roles = STAFF_ROLES) {\n  const code = clubOf(w).country, employed = new Set((w.staff || []).map((member) => member.id)), ready = /* @__PURE__ */ new Map(), quotes = /* @__PURE__ */ new Map();\n  for (const person of profiledCoaches(w)) {\n    const role = person.coaching?.role;\n    if (!role || !roles.includes(role) || !coachingEntryReady(person)) continue;"
+    },
+    {
+      "name": "managerCandidates",
+      "line": 253562,
+      "ms": 1217.1200000000024,
+      "source": "// packages/engine/src/managerMarket.ts",
+      "snippet": "function managerCandidates(w) {\n  return [...freeCandidates(w), ...clubCandidates(w), ...careerCandidates(w)];\n}\nfunction managerCapWage(w, ovr) {\n  return staffQuote(w, 120 + ovr);"
+    },
+    {
+      "name": "careerCandidates",
+      "line": 253519,
+      "ms": 1194.3720000000026,
+      "source": "// packages/engine/src/managerMarket.ts",
+      "snippet": "function careerCandidates(w) {\n  const code = clubOf(w).country;\n  return profiledManagers(w).flatMap((person) => {\n    const profile = person.management;\n    if (!profile || person.employment.some("
+    },
+    {
+      "name": "",
+      "line": 253521,
+      "ms": 962.8880000000012,
+      "source": "// packages/engine/src/managerMarket.ts",
+      "snippet": "  return profiledManagers(w).flatMap((person) => {\n    const profile = person.management;\n    if (!profile || person.employment.some(\n      (job3) => !job3.to && (job3.role === \"manager\" || job3.role === \"player\")\n    ) || w.year - person.born >= RETIREMENT_AGE)"
+    },
+    {
+      "name": "updateIntentions",
+      "line": 240393,
+      "ms": 936.9359999999998,
+      "source": "// packages/engine/src/grid/intentions.ts",
+      "snippet": "function updateIntentions(s, inFlight = false, defenceOnly = false) {\n  const def = other(s.possession);\n  const danger = !inFlight && inDanger(s, def);\n  const review = (gp) => {\n    const i = gp.intention;"
+    },
+    {
+      "name": "inStride",
+      "line": 245297,
+      "ms": 908.9420000000016,
+      "source": "// packages/engine/src/grid/engine.ts",
+      "snippet": "  function inStride(side2, idx, d, jitter) {\n    const gp = s.players[side2][idx];\n    if (slotOf(s, gp).position === \"GK\") return void 0;\n    const aim2 = aimOf(side2, idx, d);\n    if (!aim2) return void 0;"
+    },
+    {
+      "name": "post",
+      "line": 114,
+      "ms": 860.314
+    }
+  ]
+}

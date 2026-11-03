@@ -1,5 +1,5 @@
 # PLAYER Player model
-> r14 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
+> r15 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
 
 ## decisions
 - PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 16 attributes, positions with levels, personality and play traits, potential. Other clubs' match squads use seasonal generation from club strength (→WORLD-6, →LEAGUE-10); cross-role person continuity and retirement eligibility are →WORLD-10/11. Development, adaptation and attribute ageing below continue to apply to the own club's players and academy; this does not apply own-club development to every NPC squad. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
@@ -184,10 +184,11 @@
   - they are not formal attributes: no growth, training, adaptation or OVR weight.
 
 - PLAYER-27 [o] Each season close from 1955/56 awards the 발롱도르 to the world's best player of the season just played, with second and third places. ← the award fans argue about every year, earned by the season rather than by reputation
-  - points come from the season's complete settled aggregates over all competitions (→!HIST-17): goals × 4, assists × 3, and class (his OVR at the close − 70) × 2 when above 70.
-  - team honours add points, each only when he played for the winning club in that competition: the European Cup (and its successor) won +40, lost in its final +15; another continental competition won +15; a top-flight league title +25; a domestic cup +10.
+  - individual production comes from the complete settled aggregates over all competitions (→!HIST-17): raw = goals × 4 + assists × 3; production points = round(120 × raw / (80 + raw)), plus class (his OVR at the close − 70) × 2 when above 70. Production has diminishing returns and cannot exceed 120 points. ← an inflated goal count must not overwhelm the season's team achievements
+  - team honours add points, each only when he played for the winning club in that competition: the European Cup (and its successor) won +180, lost in its final +75; another continental competition won +90; a top-flight league title +120; a domestic cup +45.
+  - the final top-flight league place adds 80/60/45/30/20/10 points for first through sixth, zero below. Use the settled table before promotion/relegation and credit only a club for which he made a top-flight league appearance; after a move, use his best eligible finish once. A club with no settled league appearance gives no finish points.
   - only players with at least 15 top-flight league appearances that season are eligible; nationality is not modelled, so every such player counts. Ties: more points, then higher OVR, then stable ID.
-  - a season not tracked whole from its first day awards nothing; no award is back-filled for seasons before the career or before 1955/56.
+  - a season not tracked whole from its first day awards nothing; no award is back-filled for seasons before the career or before 1955/56. Archived podiums and points remain facts of their original close; revised weights apply only to future closes.
   - the award is a fact of the season, not a rating: it changes no attribute, OVR, morale or match strength. Its effects are the contract premium and bonus clause (→CLUB-26/29), news (→HIST-11) and its views (→WEB-111).
 
 ## flow
@@ -195,7 +196,8 @@
 - in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; role and play traits shape his choices and runs (PLAYER-5, PLAYER-9); each choice and action reads its attributes (PLAYER-2)
 
 ## chg
-- r14 261103 PLAYER-18✎ scout ranges by the chief scout's ability→+halved on whole grades with 원석 감별사 (±2→±1, ±1→exact)
+- r15 261103 PLAYER-18✎ scout ranges by the chief scout's ability→+halved on whole grades with 원석 감별사 (±2→±1, ±1→exact); reconciled with the independent r14 award change
+- r14 261103 PLAYER-27✎ unbounded goals×4+assists×3→production round(120×raw/(80+raw)); honours 40/15/15/25/10→180/75/90/120/45; +top-six league finish 80/60/45/30/20/10; existing podiums retained
 - r13 261103 PLAYER-19✎ nothing changes by difficulty level (→WEB-3)→by the start (→OWNER-2)
 - r12 261102 PLAYER-25✎ owner encouragement among what never raises aptitude→removed (no owner encouragement exists)
 - r11 261102 PLAYER-27+ season-close 발롱도르 from 1955/56: podium of three by goals, assists, team honours and class among players with 15+ top-flight league appearances; a fact with contract, news and view effects only

@@ -34,6 +34,68 @@ const state = (v: View): ClientState => ({
 });
 
 describe('selective simulation snapshots', () => {
+  it('publishes prepared client views and metadata without reading their nested records', () => {
+    let reads = 0;
+    const tables = { club: { points: 3 } },
+      prepared = {
+        world: {
+          id: 'prepared',
+          revision: 1,
+          calendar: { day: 1 },
+          get tables() {
+            reads++;
+            return tables;
+          },
+        },
+      } as unknown as View,
+      store = createGameStore();
+    let changedViews = 0,
+      publications = 0;
+    store.subscribe((next, previous) => {
+      publications++;
+      if (next.view !== previous.view) changedViews++;
+    });
+    store.publish(state(prepared), { viewShared: true });
+    store.publish({ ...state(prepared), processing: true }, { viewShared: true });
+    store.publish({ ...state(prepared), savedRevision: 0 }, { viewShared: true });
+    store.publish({ ...state(prepared), readonly: true }, { viewShared: true });
+    store.publish({ ...state(prepared), readonly: true }, { viewShared: true });
+    expect(reads).toBe(0);
+    expect(changedViews).toBe(1);
+    expect(publications).toBe(4);
+    expect(store.getSnapshot().view).toBe(prepared);
+    expect(store.getSnapshot().readonly).toBe(true);
+  });
+
+  it('preserves prepared snapshots, then reconciles an unprepared publication normally', () => {
+    const first = {
+        world: {
+          id: 'prepared',
+          revision: 1,
+          calendar: { day: 1 },
+          tables: { club: { points: 3 } },
+        },
+      } as unknown as View,
+      second = { ...first, world: { ...first.world, revision: 2, calendar: { day: 2 } } },
+      store = createGameStore(state(first));
+    store.publish(state(second), { viewShared: true });
+    expect(store.getSnapshot().view).toBe(second);
+    expect(store.getSnapshot().view!.world.tables).toBe(first.world.tables);
+    expect(first.world.calendar!.day).toBe(1);
+    const raw = structuredClone(second);
+    raw.world.calendar = { day: 3 };
+    raw.world.revision = 3;
+    store.publish(state(raw));
+    expect(store.getSnapshot().view!.world.tables).toBe(first.world.tables);
+    expect(store.getSnapshot().view!.world.calendar!.day).toBe(3);
+    expect(second.world.calendar!.day).toBe(2);
+    const replacement = structuredClone(raw);
+    replacement.world.id = 'replacement';
+    store.publish(state(replacement), { viewShared: true });
+    expect(store.getSnapshot().view).toBe(replacement);
+    expect(store.getSnapshot().view!.world.tables).not.toBe(first.world.tables);
+  });
+
   it('suppresses cloned equal publications and preserves table/chart records on off days', () => {
     const initial = view(),
       store = createGameStore(state(initial));

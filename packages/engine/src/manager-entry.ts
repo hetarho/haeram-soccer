@@ -7,6 +7,7 @@ import {
   coachingService,
   coachingServiceShort,
   longestMentor,
+  managementProfiled,
 } from './person-careers';
 import { integer, random } from './primitives';
 import { candidateStyles } from './styles';
@@ -68,5 +69,6 @@ export function qualifyManagers(w: World) {
       random(`${w.seed}:managerial-entry:${person.id}`),
       candidateStyles(`${w.seed}:managerial-entry:${person.id}`, at.year)[0],
     );
+    managementProfiled(w);
   }
 }

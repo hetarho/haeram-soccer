@@ -1,0 +1,26 @@
+{
+  "recordedAt": "2026-11-03T09:01:04.180Z",
+  "publishedCommit": "8d0f92b931d6ec6d4ef81d818a66305fd7d8635d",
+  "runUrl": "https://github.com/hetarho/haeram-soccer/actions/runs/41603646066",
+  "lastKnownGlobalState": {
+    "commit": "8d0f92b931d6ec6d4ef81d818a66305fd7d8635d",
+    "runId": 41603646066,
+    "runUrl": "https://github.com/hetarho/haeram-soccer/actions/runs/41603646066",
+    "status": "in_progress",
+    "conclusion": null,
+    "checkedAt": "2026-11-03T09:00:00.836Z",
+    "evidence": "Public GitHub REST; HTML watcher previously returned completed jobs with null conclusions."
+  },
+  "localWatcherStopped": true,
+  "remoteWorkflowCancelled": false,
+  "followUp": "User explicitly ended local waiting; another session will check and fix CI if needed.",
+  "lastConfirmedJobSnapshot": {
+    "at": "2026-11-03T08:57:22.176Z",
+    "passed": 7,
+    "failed": 0,
+    "pending": [
+      "e2e (chromium 1/1)",
+      "e2e (firefox 1/1)"
+    ]
+  }
+}

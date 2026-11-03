@@ -959,7 +959,7 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
       plain = talkTerms(winner.w, winner.p);
     expect(playerWorth(winner.w, winner.p)).toBe(market);
     podium(winner.w, winner.p.id, 0);
-    expect(playerWorth(winner.w, winner.p)).toBe(ratio(market, 1200n, 1000n));
+    expect(playerWorth(winner.w, winner.p)).toBe(ratio(market, 2000n, 1000n));
     const priced = talkTerms(winner.w, winner.p);
     expect(priced.demand).toBe(
       scaleBy(
@@ -968,13 +968,13 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
         1000n,
       ),
     );
-    expect(Number(priced.demand) / Number(plain.demand)).toBeCloseTo(1.2, 4);
+    expect(Number(priced.demand) / Number(plain.demand)).toBeCloseTo(2, 4);
     expect(BigInt(priced.floor)).toBeGreaterThan(BigInt(plain.floor));
-    // A second place three seasons back still counts ×1.10; four back no longer does.
+    // A second place three seasons back still counts ×1.4; four back no longer does.
     const second = talking(80);
     podium(second.w, second.p.id, 1, second.w.year - 3);
     expect(playerWorth(second.w, second.p)).toBe(
-      ratio(marketWage(second.w, second.p), 1100n, 1000n),
+      ratio(marketWage(second.w, second.p), 1400n, 1000n),
     );
     const faded = talking(80);
     podium(faded.w, faded.p.id, 0, faded.w.year - 4);

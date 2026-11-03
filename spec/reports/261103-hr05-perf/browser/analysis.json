@@ -1,0 +1,1086 @@
+{
+  "groups": [
+    {
+      "fixture": "early",
+      "variant": "base",
+      "runs": 2,
+      "interval": 100,
+      "throughput": [
+        7.646510742791604,
+        9.111661405732685
+      ],
+      "aggregateDaysPerSecond": 8.315037726802432,
+      "gaps": {
+        "n": 1318,
+        "mean": 120.26403641881639,
+        "p50": 100.29999923706055,
+        "p95": 216.69999885559082,
+        "p99": 611.5,
+        "max": 1940
+      },
+      "stalls": 84,
+      "over500ms": 22,
+      "over1000ms": 3,
+      "rpcMs": {
+        "n": 1320,
+        "mean": 93.63242426785555,
+        "p50": 17.80000114440918,
+        "p95": 510.8000011444092,
+        "p99": 875.7999992370605,
+        "max": 2270.099998474121
+      },
+      "ownChangedRpcMs": {
+        "n": 134,
+        "mean": 560.4350746211721,
+        "p50": 462,
+        "p95": 1006.5999984741211,
+        "p99": 1399,
+        "max": 2270.099998474121
+      },
+      "longtasks": {
+        "n": 60,
+        "mean": 62.65,
+        "p50": 58,
+        "p95": 86,
+        "p99": 141,
+        "max": 141
+      },
+      "saves": [
+        {
+          "run": "early-base-r1",
+          "automatic": true,
+          "codecMs": 2942.7999992370605,
+          "commitMs": 3014.2999992370605,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-base-r1",
+          "automatic": true,
+          "codecMs": 2607.3999996185303,
+          "commitMs": 2709.7000007629395,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-base-r1",
+          "automatic": false,
+          "codecMs": 1375.7999992370605,
+          "commitMs": 1403.7000007629395,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-base-r2",
+          "automatic": true,
+          "codecMs": 2374.7999992370605,
+          "commitMs": 2402.8999996185303,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-base-r2",
+          "automatic": true,
+          "codecMs": 2796.2999992370605,
+          "commitMs": 2897.3999996185303,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-base-r2",
+          "automatic": false,
+          "codecMs": 1140.2999992370605,
+          "commitMs": 1167.5,
+          "codecOk": true,
+          "committed": true
+        }
+      ],
+      "jumps": [
+        {
+          "run": "early-base-r1",
+          "from": "1951.06.19",
+          "to": "1951.08.01",
+          "difference": 43
+        },
+        {
+          "run": "early-base-r1",
+          "from": "1952.06.18",
+          "to": "1952.08.01",
+          "difference": 44
+        },
+        {
+          "run": "early-base-r2",
+          "from": "1951.06.19",
+          "to": "1951.08.01",
+          "difference": 43
+        },
+        {
+          "run": "early-base-r2",
+          "from": "1952.06.18",
+          "to": "1952.08.01",
+          "difference": 44
+        }
+      ],
+      "shown": [
+        660,
+        660
+      ],
+      "errors": [],
+      "factsHashes": [
+        "2bc646913ec059ad21136248e26f611ea397a805b1bf97e80781a1d85fe03eae",
+        "2bc646913ec059ad21136248e26f611ea397a805b1bf97e80781a1d85fe03eae"
+      ]
+    },
+    {
+      "fixture": "early",
+      "variant": "candidate",
+      "runs": 2,
+      "interval": 100,
+      "throughput": [
+        9.026840811182872,
+        9.58067465987601
+      ],
+      "aggregateDaysPerSecond": 9.29551558379147,
+      "gaps": {
+        "n": 1318,
+        "mean": 107.5787556898612,
+        "p50": 100.0999984741211,
+        "p95": 111.30000114440918,
+        "p99": 357.8000011444092,
+        "max": 1238.5
+      },
+      "stalls": 40,
+      "over500ms": 6,
+      "over1000ms": 1,
+      "rpcMs": {
+        "n": 1320,
+        "mean": 85.89219696594007,
+        "p50": 15.600000381469727,
+        "p95": 478.1000003814697,
+        "p99": 757.3000011444092,
+        "max": 1660.2999992370605
+      },
+      "ownChangedRpcMs": {
+        "n": 134,
+        "mean": 519.1582089324496,
+        "p50": 437.5,
+        "p95": 868.8999996185303,
+        "p99": 1174.3999996185303,
+        "max": 1660.2999992370605
+      },
+      "longtasks": {
+        "n": 5,
+        "mean": 132.8,
+        "p50": 120,
+        "p95": 201,
+        "p99": 201,
+        "max": 201
+      },
+      "saves": [
+        {
+          "run": "early-candidate-r1",
+          "automatic": true,
+          "codecMs": 3012,
+          "commitMs": 3076.099998474121,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-candidate-r1",
+          "automatic": true,
+          "codecMs": 3100.300001144409,
+          "commitMs": 3230.800001144409,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-candidate-r1",
+          "automatic": false,
+          "codecMs": 1120,
+          "commitMs": 1159.1000003814697,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-candidate-r2",
+          "automatic": true,
+          "codecMs": 2473.6000003814697,
+          "commitMs": 2505.2999992370605,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-candidate-r2",
+          "automatic": true,
+          "codecMs": 2764.1000003814697,
+          "commitMs": 2805.7999992370605,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-candidate-r2",
+          "automatic": false,
+          "codecMs": 1047.3000011444092,
+          "commitMs": 1072.2000007629395,
+          "codecOk": true,
+          "committed": true
+        }
+      ],
+      "jumps": [
+        {
+          "run": "early-candidate-r1",
+          "from": "1951.06.19",
+          "to": "1951.08.01",
+          "difference": 43
+        },
+        {
+          "run": "early-candidate-r1",
+          "from": "1952.06.18",
+          "to": "1952.08.01",
+          "difference": 44
+        },
+        {
+          "run": "early-candidate-r2",
+          "from": "1951.06.19",
+          "to": "1951.08.01",
+          "difference": 43
+        },
+        {
+          "run": "early-candidate-r2",
+          "from": "1952.06.18",
+          "to": "1952.08.01",
+          "difference": 44
+        }
+      ],
+      "shown": [
+        660,
+        660
+      ],
+      "errors": [],
+      "factsHashes": [
+        "2bc646913ec059ad21136248e26f611ea397a805b1bf97e80781a1d85fe03eae",
+        "2bc646913ec059ad21136248e26f611ea397a805b1bf97e80781a1d85fe03eae"
+      ]
+    },
+    {
+      "fixture": "early",
+      "variant": "x20",
+      "runs": 2,
+      "interval": 50,
+      "throughput": [
+        8.429783358528628,
+        9.69345728406684
+      ],
+      "aggregateDaysPerSecond": 9.017564409290143,
+      "gaps": {
+        "n": 1318,
+        "mean": 110.89468892174172,
+        "p50": 51.5,
+        "p95": 465.79999923706055,
+        "p99": 741.1999988555908,
+        "max": 1475.2999992370605
+      },
+      "stalls": 233,
+      "over500ms": 58,
+      "over1000ms": 5,
+      "rpcMs": {
+        "n": 1320,
+        "mean": 85.94515151688547,
+        "p50": 17.299999237060547,
+        "p95": 476.79999923706055,
+        "p99": 762.5,
+        "max": 1605.2000007629395
+      },
+      "ownChangedRpcMs": {
+        "n": 134,
+        "mean": 509.72089555370275,
+        "p50": 441.8999996185303,
+        "p95": 895.8999996185303,
+        "p99": 1228.5,
+        "max": 1605.2000007629395
+      },
+      "longtasks": {
+        "n": 72,
+        "mean": 60.333333333333336,
+        "p50": 57,
+        "p95": 78,
+        "p99": 108,
+        "max": 108
+      },
+      "saves": [
+        {
+          "run": "early-x20-r1",
+          "automatic": true,
+          "codecMs": 2930.6000003814697,
+          "commitMs": 2969.300001144409,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-x20-r1",
+          "automatic": true,
+          "codecMs": 2635.699998855591,
+          "commitMs": 2688.699998855591,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-x20-r1",
+          "automatic": false,
+          "codecMs": 1220.5,
+          "commitMs": 1250.1999988555908,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-x20-r2",
+          "automatic": true,
+          "codecMs": 1522.6999988555908,
+          "commitMs": 1537.2999992370605,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-x20-r2",
+          "automatic": true,
+          "codecMs": 2652.7000007629395,
+          "commitMs": 2673.7999992370605,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-x20-r2",
+          "automatic": false,
+          "codecMs": 1035,
+          "commitMs": 1056.7999992370605,
+          "codecOk": true,
+          "committed": true
+        }
+      ],
+      "jumps": [
+        {
+          "run": "early-x20-r1",
+          "from": "1951.06.19",
+          "to": "1951.08.01",
+          "difference": 43
+        },
+        {
+          "run": "early-x20-r1",
+          "from": "1952.06.18",
+          "to": "1952.08.01",
+          "difference": 44
+        },
+        {
+          "run": "early-x20-r2",
+          "from": "1951.06.19",
+          "to": "1951.08.01",
+          "difference": 43
+        },
+        {
+          "run": "early-x20-r2",
+          "from": "1952.06.18",
+          "to": "1952.08.01",
+          "difference": 44
+        }
+      ],
+      "shown": [
+        660,
+        660
+      ],
+      "errors": [],
+      "factsHashes": [
+        "2bc646913ec059ad21136248e26f611ea397a805b1bf97e80781a1d85fe03eae",
+        "2bc646913ec059ad21136248e26f611ea397a805b1bf97e80781a1d85fe03eae"
+      ]
+    },
+    {
+      "fixture": "early",
+      "variant": "candidate20",
+      "runs": 2,
+      "interval": 50,
+      "throughput": [
+        11.690781490443019,
+        12.601804027513483
+      ],
+      "aggregateDaysPerSecond": 12.129210137977765,
+      "gaps": {
+        "n": 1318,
+        "mean": 82.44559939388802,
+        "p50": 50.19999885559082,
+        "p95": 305.5,
+        "p99": 598.1000003814697,
+        "max": 1006.5999984741211
+      },
+      "stalls": 181,
+      "over500ms": 22,
+      "over1000ms": 1,
+      "rpcMs": {
+        "n": 1320,
+        "mean": 78.89393939827428,
+        "p50": 13.700000762939453,
+        "p95": 435,
+        "p99": 710.3000011444092,
+        "max": 1207.5
+      },
+      "ownChangedRpcMs": {
+        "n": 134,
+        "mean": 480.39999990320916,
+        "p50": 413.8999996185303,
+        "p95": 807.5999984741211,
+        "p99": 1124.1000003814697,
+        "max": 1207.5
+      },
+      "longtasks": {
+        "n": 0,
+        "mean": null
+      },
+      "saves": [
+        {
+          "run": "early-candidate20-r1",
+          "automatic": true,
+          "codecMs": 1777.1999988555908,
+          "commitMs": 1805.599998474121,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-candidate20-r1",
+          "automatic": false,
+          "codecMs": 1224,
+          "commitMs": 1243.3999996185303,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-candidate20-r2",
+          "automatic": true,
+          "codecMs": 1903.599998474121,
+          "commitMs": 1923.5,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "early-candidate20-r2",
+          "automatic": false,
+          "codecMs": 1158.900001525879,
+          "commitMs": 1177.6000003814697,
+          "codecOk": true,
+          "committed": true
+        }
+      ],
+      "jumps": [
+        {
+          "run": "early-candidate20-r1",
+          "from": "1951.06.19",
+          "to": "1951.08.01",
+          "difference": 43
+        },
+        {
+          "run": "early-candidate20-r1",
+          "from": "1952.06.18",
+          "to": "1952.08.01",
+          "difference": 44
+        },
+        {
+          "run": "early-candidate20-r2",
+          "from": "1951.06.19",
+          "to": "1951.08.01",
+          "difference": 43
+        },
+        {
+          "run": "early-candidate20-r2",
+          "from": "1952.06.18",
+          "to": "1952.08.01",
+          "difference": 44
+        }
+      ],
+      "shown": [
+        660,
+        660
+      ],
+      "errors": [],
+      "factsHashes": [
+        "2bc646913ec059ad21136248e26f611ea397a805b1bf97e80781a1d85fe03eae",
+        "2bc646913ec059ad21136248e26f611ea397a805b1bf97e80781a1d85fe03eae"
+      ]
+    },
+    {
+      "fixture": "late",
+      "variant": "base",
+      "runs": 2,
+      "interval": 100,
+      "throughput": [
+        3.504363606606303,
+        3.413292523870093
+      ],
+      "aggregateDaysPerSecond": 3.4582285889159934,
+      "gaps": {
+        "n": 728,
+        "mean": 289.1653846148606,
+        "p50": 139.39999961853027,
+        "p95": 1062.3999996185303,
+        "p99": 1520.2000007629395,
+        "max": 2622.800001144409
+      },
+      "stalls": 264,
+      "over500ms": 117,
+      "over1000ms": 57,
+      "rpcMs": {
+        "n": 730,
+        "mean": 225.13136979978378,
+        "p50": 76.39999961853027,
+        "p95": 995.6999988555908,
+        "p99": 1448.2000007629395,
+        "max": 2597.2999992370605
+      },
+      "ownChangedRpcMs": {
+        "n": 112,
+        "mean": 945.4053570713315,
+        "p50": 900.1999988555908,
+        "p95": 1951.1999988555908,
+        "p99": 2542.1000003814697,
+        "max": 2597.2999992370605
+      },
+      "longtasks": {
+        "n": 623,
+        "mean": 70.2728731942215,
+        "p50": 67,
+        "p95": 96,
+        "p99": 120,
+        "max": 166
+      },
+      "saves": [
+        {
+          "run": "late-base-r1",
+          "automatic": true,
+          "codecMs": 19521.79999923706,
+          "commitMs": 19935.39999961853,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-base-r1",
+          "automatic": true,
+          "codecMs": 19016.79999923706,
+          "commitMs": 19277.29999923706,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-base-r1",
+          "automatic": true,
+          "codecMs": 19634.60000038147,
+          "commitMs": 19785.5,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-base-r1",
+          "automatic": false,
+          "codecMs": 15554.10000038147,
+          "commitMs": 15678.89999961853,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-base-r2",
+          "automatic": true,
+          "codecMs": 17756.59999847412,
+          "commitMs": 17956.89999961853,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-base-r2",
+          "automatic": true,
+          "codecMs": 19301,
+          "commitMs": 19492.89999961853,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-base-r2",
+          "automatic": true,
+          "codecMs": 20442,
+          "commitMs": 20636.30000114441,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-base-r2",
+          "automatic": false,
+          "codecMs": 17846.69999885559,
+          "commitMs": 17985.89999961853,
+          "codecOk": true,
+          "committed": true
+        }
+      ],
+      "jumps": [
+        {
+          "run": "late-base-r1",
+          "from": "2035.06.19",
+          "to": "2035.08.01",
+          "difference": 43
+        },
+        {
+          "run": "late-base-r1",
+          "from": "2036.06.18",
+          "to": "2036.08.01",
+          "difference": 44
+        },
+        {
+          "run": "late-base-r2",
+          "from": "2035.06.19",
+          "to": "2035.08.01",
+          "difference": 43
+        },
+        {
+          "run": "late-base-r2",
+          "from": "2036.06.18",
+          "to": "2036.08.01",
+          "difference": 44
+        }
+      ],
+      "shown": [
+        365,
+        365
+      ],
+      "errors": [],
+      "factsHashes": [
+        "c34595760a050beeba6e63a50d1f5fb0f236df7c0585dd43219b94ae92b22ecf",
+        "c34595760a050beeba6e63a50d1f5fb0f236df7c0585dd43219b94ae92b22ecf"
+      ]
+    },
+    {
+      "fixture": "late",
+      "variant": "candidate",
+      "runs": 2,
+      "interval": 100,
+      "throughput": [
+        5.361890803031531,
+        5.335623938278355
+      ],
+      "aggregateDaysPerSecond": 5.348725122595433,
+      "gaps": {
+        "n": 728,
+        "mean": 186.96043955886756,
+        "p50": 100.19999885559082,
+        "p95": 656.5,
+        "p99": 1081,
+        "max": 1654.3000011444092
+      },
+      "stalls": 129,
+      "over500ms": 73,
+      "over1000ms": 10,
+      "rpcMs": {
+        "n": 730,
+        "mean": 181.17602738158342,
+        "p50": 73.69999885559082,
+        "p95": 719.5,
+        "p99": 1108.2999992370605,
+        "max": 1712.2000007629395
+      },
+      "ownChangedRpcMs": {
+        "n": 112,
+        "mean": 694.6312499727521,
+        "p50": 645.5999984741211,
+        "p95": 1056.3000011444092,
+        "p99": 1446.8999996185303,
+        "max": 1712.2000007629395
+      },
+      "longtasks": {
+        "n": 4,
+        "mean": 54.25,
+        "p50": 54,
+        "p95": 59,
+        "p99": 59,
+        "max": 59
+      },
+      "saves": [
+        {
+          "run": "late-candidate-r1",
+          "automatic": true,
+          "codecMs": 19689.70000076294,
+          "commitMs": 19846.5,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-candidate-r1",
+          "automatic": true,
+          "codecMs": 19744.5,
+          "commitMs": 19897.19999885559,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-candidate-r1",
+          "automatic": false,
+          "codecMs": 16655.29999923706,
+          "commitMs": 16773.10000038147,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-candidate-r2",
+          "automatic": true,
+          "codecMs": 19401,
+          "commitMs": 19602.79999923706,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-candidate-r2",
+          "automatic": true,
+          "codecMs": 18620.10000038147,
+          "commitMs": 18757.39999961853,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-candidate-r2",
+          "automatic": false,
+          "codecMs": 16931.30000114441,
+          "commitMs": 17080.89999961853,
+          "codecOk": true,
+          "committed": true
+        }
+      ],
+      "jumps": [
+        {
+          "run": "late-candidate-r1",
+          "from": "2035.06.19",
+          "to": "2035.08.01",
+          "difference": 43
+        },
+        {
+          "run": "late-candidate-r1",
+          "from": "2036.06.18",
+          "to": "2036.08.01",
+          "difference": 44
+        },
+        {
+          "run": "late-candidate-r2",
+          "from": "2035.06.19",
+          "to": "2035.08.01",
+          "difference": 43
+        },
+        {
+          "run": "late-candidate-r2",
+          "from": "2036.06.18",
+          "to": "2036.08.01",
+          "difference": 44
+        }
+      ],
+      "shown": [
+        365,
+        365
+      ],
+      "errors": [],
+      "factsHashes": [
+        "c34595760a050beeba6e63a50d1f5fb0f236df7c0585dd43219b94ae92b22ecf",
+        "c34595760a050beeba6e63a50d1f5fb0f236df7c0585dd43219b94ae92b22ecf"
+      ]
+    },
+    {
+      "fixture": "late",
+      "variant": "x20",
+      "runs": 2,
+      "interval": 50,
+      "throughput": [
+        3.530635048782778,
+        3.5577240730725523
+      ],
+      "aggregateDaysPerSecond": 3.544127798931387,
+      "gaps": {
+        "n": 728,
+        "mean": 282.1568681302961,
+        "p50": 136.10000038146973,
+        "p95": 1047.8999996185303,
+        "p99": 1374.8000011444092,
+        "max": 2533.5
+      },
+      "stalls": 726,
+      "over500ms": 118,
+      "over1000ms": 53,
+      "rpcMs": {
+        "n": 730,
+        "mean": 219.33808221947658,
+        "p50": 73.60000038146973,
+        "p95": 956.7000007629395,
+        "p99": 1309.6000003814697,
+        "max": 2428.199998855591
+      },
+      "ownChangedRpcMs": {
+        "n": 112,
+        "mean": 912.4874999012266,
+        "p50": 897.2000007629395,
+        "p95": 1398.3999996185303,
+        "p99": 2212,
+        "max": 2428.199998855591
+      },
+      "longtasks": {
+        "n": 598,
+        "mean": 69.24414715719064,
+        "p50": 66,
+        "p95": 95,
+        "p99": 115,
+        "max": 132
+      },
+      "saves": [
+        {
+          "run": "late-x20-r1",
+          "automatic": true,
+          "codecMs": 18747.70000076294,
+          "commitMs": 18997.5,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-x20-r1",
+          "automatic": true,
+          "codecMs": 19244.5,
+          "commitMs": 19382.60000038147,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-x20-r1",
+          "automatic": true,
+          "codecMs": 19946,
+          "commitMs": 20108.10000038147,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-x20-r1",
+          "automatic": false,
+          "codecMs": 16604.29999923706,
+          "commitMs": 16726.19999885559,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-x20-r2",
+          "automatic": true,
+          "codecMs": 17978.79999923706,
+          "commitMs": 18161.79999923706,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-x20-r2",
+          "automatic": true,
+          "codecMs": 19824,
+          "commitMs": 20018.29999923706,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-x20-r2",
+          "automatic": true,
+          "codecMs": 20601.19999885559,
+          "commitMs": 20747.19999885559,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-x20-r2",
+          "automatic": false,
+          "codecMs": 16458.39999961853,
+          "commitMs": 16596,
+          "codecOk": true,
+          "committed": true
+        }
+      ],
+      "jumps": [
+        {
+          "run": "late-x20-r1",
+          "from": "2035.06.19",
+          "to": "2035.08.01",
+          "difference": 43
+        },
+        {
+          "run": "late-x20-r1",
+          "from": "2036.06.18",
+          "to": "2036.08.01",
+          "difference": 44
+        },
+        {
+          "run": "late-x20-r2",
+          "from": "2035.06.19",
+          "to": "2035.08.01",
+          "difference": 43
+        },
+        {
+          "run": "late-x20-r2",
+          "from": "2036.06.18",
+          "to": "2036.08.01",
+          "difference": 44
+        }
+      ],
+      "shown": [
+        365,
+        365
+      ],
+      "errors": [],
+      "factsHashes": [
+        "c34595760a050beeba6e63a50d1f5fb0f236df7c0585dd43219b94ae92b22ecf",
+        "c34595760a050beeba6e63a50d1f5fb0f236df7c0585dd43219b94ae92b22ecf"
+      ]
+    },
+    {
+      "fixture": "late",
+      "variant": "candidate20",
+      "runs": 2,
+      "interval": 50,
+      "throughput": [
+        5.544326432977547,
+        5.3649412878224165
+      ],
+      "aggregateDaysPerSecond": 5.45315901208175,
+      "gaps": {
+        "n": 728,
+        "mean": 183.37994505284908,
+        "p50": 74,
+        "p95": 719.7999992370605,
+        "p99": 1148.7999992370605,
+        "max": 1636.1000003814697
+      },
+      "stalls": 353,
+      "over500ms": 108,
+      "over1000ms": 13,
+      "rpcMs": {
+        "n": 730,
+        "mean": 176.36876711126877,
+        "p50": 69.19999885559082,
+        "p95": 694.3000011444092,
+        "p99": 1145.5,
+        "max": 1611.2000007629395
+      },
+      "ownChangedRpcMs": {
+        "n": 112,
+        "mean": 687.42946432318,
+        "p50": 613.3000011444092,
+        "p95": 1092.5,
+        "p99": 1582.5,
+        "max": 1611.2000007629395
+      },
+      "longtasks": {
+        "n": 2,
+        "mean": 60.5,
+        "p50": 61,
+        "p95": 61,
+        "p99": 61,
+        "max": 61
+      },
+      "saves": [
+        {
+          "run": "late-candidate20-r1",
+          "automatic": true,
+          "codecMs": 19556.60000038147,
+          "commitMs": 19705.39999961853,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-candidate20-r1",
+          "automatic": true,
+          "codecMs": 18390.10000038147,
+          "commitMs": 18541.30000114441,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-candidate20-r1",
+          "automatic": false,
+          "codecMs": 15871.29999923706,
+          "commitMs": 16017.39999961853,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-candidate20-r2",
+          "automatic": true,
+          "codecMs": 18640.39999961853,
+          "commitMs": 18775.39999961853,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-candidate20-r2",
+          "automatic": true,
+          "codecMs": 18235.20000076294,
+          "commitMs": 18370.60000038147,
+          "codecOk": true,
+          "committed": true
+        },
+        {
+          "run": "late-candidate20-r2",
+          "automatic": false,
+          "codecMs": 15978.80000114441,
+          "commitMs": 16141,
+          "codecOk": true,
+          "committed": true
+        }
+      ],
+      "jumps": [
+        {
+          "run": "late-candidate20-r1",
+          "from": "2035.06.19",
+          "to": "2035.08.01",
+          "difference": 43
+        },
+        {
+          "run": "late-candidate20-r1",
+          "from": "2036.06.18",
+          "to": "2036.08.01",
+          "difference": 44
+        },
+        {
+          "run": "late-candidate20-r2",
+          "from": "2035.06.19",
+          "to": "2035.08.01",
+          "difference": 43
+        },
+        {
+          "run": "late-candidate20-r2",
+          "from": "2036.06.18",
+          "to": "2036.08.01",
+          "difference": 44
+        }
+      ],
+      "shown": [
+        365,
+        365
+      ],
+      "errors": [],
+      "factsHashes": [
+        "c34595760a050beeba6e63a50d1f5fb0f236df7c0585dd43219b94ae92b22ecf",
+        "c34595760a050beeba6e63a50d1f5fb0f236df7c0585dd43219b94ae92b22ecf"
+      ]
+    }
+  ],
+  "parity": [
+    {
+      "fixture": "early",
+      "runs": 8,
+      "allDatesEqual": true,
+      "allFactsEqual": true,
+      "date": "1952.08.15",
+      "factsHash": "2bc646913ec059ad21136248e26f611ea397a805b1bf97e80781a1d85fe03eae",
+      "differingKeys": [],
+      "allReloadDatesEqual": true
+    },
+    {
+      "fixture": "late",
+      "runs": 8,
+      "allDatesEqual": true,
+      "allFactsEqual": true,
+      "date": "2036.08.07",
+      "factsHash": "c34595760a050beeba6e63a50d1f5fb0f236df7c0585dd43219b94ae92b22ecf",
+      "differingKeys": [],
+      "allReloadDatesEqual": true
+    }
+  ]
+}

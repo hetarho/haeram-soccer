@@ -1,0 +1,537 @@
+{
+  "combinations": 144000,
+  "identity": {
+    "algorithm": "sha256",
+    "sha256": "fb976504af7c3ef0853b0d3536395958f2996d941af75321118d7d50d2146d0d",
+    "files": 170,
+    "entry": "scripts/star-wage-sensitivity.ts",
+    "scope": "runtime dependency closure and declared inputs"
+  },
+  "current": {
+    "star": {
+      "from": 80,
+      "full": 95,
+      "maximum": 2,
+      "globalFrom": 85,
+      "globalFull": 90
+    },
+    "premium": {
+      "winner": 2,
+      "podium": 1.4,
+      "repeatWinner": 0.4
+    }
+  },
+  "note": "Actual pricing and premium functions; ordinary comparator OVR80 age26, agent1. Deterministic parameter coverage is separate from future-career measurement.",
+  "results": [
+    {
+      "variant": "baseline",
+      "monotonic": true,
+      "finite": true,
+      "ordinary80vs60": 7.366234841925614,
+      "ordinarySecondTierShare": 0.4,
+      "examples": [
+        {
+          "ability": 70,
+          "baseVsRegular80": 0.3684488622546731,
+          "winnerVsRegular80": 0.4421386347056077,
+          "repeat3VsRegular80": 0.4421386347056077,
+          "secondTierShare": 0.4,
+          "yearlyGBP2024": "81702524",
+          "winnerYearlyGBP2024": "98043028",
+          "eraGBP": [
+            {
+              "year": 1901,
+              "base": "144879",
+              "winner": "173854"
+            },
+            {
+              "year": 1930,
+              "base": "272435",
+              "winner": "326922"
+            },
+            {
+              "year": 1970,
+              "base": "1150546",
+              "winner": "1380655"
+            },
+            {
+              "year": 1994,
+              "base": "8755837",
+              "winner": "10507004"
+            },
+            {
+              "year": 2024,
+              "base": "81702524",
+              "winner": "98043028"
+            },
+            {
+              "year": 2036,
+              "base": "107562446",
+              "winner": "129074935"
+            }
+          ]
+        },
+        {
+          "ability": 80,
+          "baseVsRegular80": 1,
+          "winnerVsRegular80": 1.2,
+          "repeat3VsRegular80": 1.2,
+          "secondTierShare": 0.4,
+          "yearlyGBP2024": "221747255",
+          "winnerYearlyGBP2024": "266096706",
+          "eraGBP": [
+            {
+              "year": 1901,
+              "base": "393213",
+              "winner": "471855"
+            },
+            {
+              "year": 1930,
+              "base": "739411",
+              "winner": "887293"
+            },
+            {
+              "year": 1970,
+              "base": "3122674",
+              "winner": "3747209"
+            },
+            {
+              "year": 1994,
+              "base": "23764048",
+              "winner": "28516858"
+            },
+            {
+              "year": 2024,
+              "base": "221747255",
+              "winner": "266096706"
+            },
+            {
+              "year": 2036,
+              "base": "291933174",
+              "winner": "350319809"
+            }
+          ]
+        },
+        {
+          "ability": 85,
+          "baseVsRegular80": 1.647446765940625,
+          "winnerVsRegular80": 1.9769361191287498,
+          "repeat3VsRegular80": 1.9769361191287498,
+          "secondTierShare": 0.4,
+          "yearlyGBP2024": "365316798",
+          "winnerYearlyGBP2024": "438380157",
+          "eraGBP": [
+            {
+              "year": 1901,
+              "base": "647797",
+              "winner": "777356"
+            },
+            {
+              "year": 1930,
+              "base": "1218140",
+              "winner": "1461768"
+            },
+            {
+              "year": 1970,
+              "base": "5144439",
+              "winner": "6173327"
+            },
+            {
+              "year": 1994,
+              "base": "39150004",
+              "winner": "46980005"
+            },
+            {
+              "year": 2024,
+              "base": "365316798",
+              "winner": "438380157"
+            },
+            {
+              "year": 2036,
+              "base": "480944363",
+              "winner": "577133236"
+            }
+          ]
+        },
+        {
+          "ability": 90,
+          "baseVsRegular80": 2.714080846608224,
+          "winnerVsRegular80": 3.256897015929869,
+          "repeat3VsRegular80": 3.256897015929869,
+          "secondTierShare": 0.4,
+          "yearlyGBP2024": "601839977",
+          "winnerYearlyGBP2024": "722207972",
+          "eraGBP": [
+            {
+              "year": 1901,
+              "base": "1067211",
+              "winner": "1280653"
+            },
+            {
+              "year": 1930,
+              "base": "2006820",
+              "winner": "2408185"
+            },
+            {
+              "year": 1970,
+              "base": "8475189",
+              "winner": "10170227"
+            },
+            {
+              "year": 1994,
+              "base": "64497548",
+              "winner": "77397058"
+            },
+            {
+              "year": 2024,
+              "base": "601839977",
+              "winner": "722207972"
+            },
+            {
+              "year": 2036,
+              "base": "792330236",
+              "winner": "950796283"
+            }
+          ]
+        },
+        {
+          "ability": 95,
+          "baseVsRegular80": 4.471303713246112,
+          "winnerVsRegular80": 5.365564455895334,
+          "repeat3VsRegular80": 5.365564455895334,
+          "secondTierShare": 0.4,
+          "yearlyGBP2024": "991499323",
+          "winnerYearlyGBP2024": "1189799188",
+          "eraGBP": [
+            {
+              "year": 1901,
+              "base": "1758173",
+              "winner": "2109808"
+            },
+            {
+              "year": 1930,
+              "base": "3306130",
+              "winner": "3967356"
+            },
+            {
+              "year": 1970,
+              "base": "13962423",
+              "winner": "16754908"
+            },
+            {
+              "year": 1994,
+              "base": "106256277",
+              "winner": "127507532"
+            },
+            {
+              "year": 2024,
+              "base": "991499323",
+              "winner": "1189799188"
+            },
+            {
+              "year": 2036,
+              "base": "1305321884",
+              "winner": "1566386261"
+            }
+          ]
+        },
+        {
+          "ability": 99,
+          "baseVsRegular80": 6.666275875045805,
+          "winnerVsRegular80": 7.999531050054967,
+          "repeat3VsRegular80": 7.999531050054967,
+          "secondTierShare": 0.39999999999999997,
+          "yearlyGBP2024": "1478228374",
+          "winnerYearlyGBP2024": "1773874049",
+          "eraGBP": [
+            {
+              "year": 1901,
+              "base": "2621264",
+              "winner": "3145516"
+            },
+            {
+              "year": 1930,
+              "base": "4929116",
+              "winner": "5914939"
+            },
+            {
+              "year": 1970,
+              "base": "20816605",
+              "winner": "24979926"
+            },
+            {
+              "year": 1994,
+              "base": "158417701",
+              "winner": "190101242"
+            },
+            {
+              "year": 2024,
+              "base": "1478228374",
+              "winner": "1773874049"
+            },
+            {
+              "year": 2036,
+              "base": "1946107074",
+              "winner": "2335328489"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "variant": "candidate",
+      "monotonic": true,
+      "finite": true,
+      "ordinary80vs60": 7.366234841925614,
+      "ordinarySecondTierShare": 0.4,
+      "examples": [
+        {
+          "ability": 70,
+          "baseVsRegular80": 0.3684488622546731,
+          "winnerVsRegular80": 0.7368977245093462,
+          "repeat3VsRegular80": 1.0316568143130846,
+          "secondTierShare": 0.4,
+          "yearlyGBP2024": "81702524",
+          "winnerYearlyGBP2024": "163405047",
+          "eraGBP": [
+            {
+              "year": 1901,
+              "base": "144879",
+              "winner": "289757"
+            },
+            {
+              "year": 1930,
+              "base": "272435",
+              "winner": "544870"
+            },
+            {
+              "year": 1970,
+              "base": "1150546",
+              "winner": "2301091"
+            },
+            {
+              "year": 1994,
+              "base": "8755837",
+              "winner": "17511673"
+            },
+            {
+              "year": 2024,
+              "base": "81702524",
+              "winner": "163405047"
+            },
+            {
+              "year": 2036,
+              "base": "107562446",
+              "winner": "215124892"
+            }
+          ]
+        },
+        {
+          "ability": 80,
+          "baseVsRegular80": 1,
+          "winnerVsRegular80": 2,
+          "repeat3VsRegular80": 2.8,
+          "secondTierShare": 0.4,
+          "yearlyGBP2024": "221747255",
+          "winnerYearlyGBP2024": "443494509",
+          "eraGBP": [
+            {
+              "year": 1901,
+              "base": "393213",
+              "winner": "786425"
+            },
+            {
+              "year": 1930,
+              "base": "739411",
+              "winner": "1478821"
+            },
+            {
+              "year": 1970,
+              "base": "3122674",
+              "winner": "6245348"
+            },
+            {
+              "year": 1994,
+              "base": "23764048",
+              "winner": "47528096"
+            },
+            {
+              "year": 2024,
+              "base": "221747255",
+              "winner": "443494509"
+            },
+            {
+              "year": 2036,
+              "base": "291933174",
+              "winner": "583866348"
+            }
+          ]
+        },
+        {
+          "ability": 85,
+          "baseVsRegular80": 1.8304964066006943,
+          "winnerVsRegular80": 3.6609928132013887,
+          "repeat3VsRegular80": 5.125389938481943,
+          "secondTierShare": 0.4,
+          "yearlyGBP2024": "405907553",
+          "winnerYearlyGBP2024": "811815106",
+          "eraGBP": [
+            {
+              "year": 1901,
+              "base": "719774",
+              "winner": "1439548"
+            },
+            {
+              "year": 1930,
+              "base": "1353489",
+              "winner": "2706977"
+            },
+            {
+              "year": 1970,
+              "base": "5716043",
+              "winner": "11432086"
+            },
+            {
+              "year": 1994,
+              "base": "43500005",
+              "winner": "87000010"
+            },
+            {
+              "year": 2024,
+              "base": "405907553",
+              "winner": "811815106"
+            },
+            {
+              "year": 2036,
+              "base": "534382626",
+              "winner": "1068765252"
+            }
+          ]
+        },
+        {
+          "ability": 90,
+          "baseVsRegular80": 3.920339000656324,
+          "winnerVsRegular80": 7.840678001312648,
+          "repeat3VsRegular80": 10.976949201837707,
+          "secondTierShare": 1,
+          "yearlyGBP2024": "869324411",
+          "winnerYearlyGBP2024": "1738648822",
+          "eraGBP": [
+            {
+              "year": 1901,
+              "base": "1541527",
+              "winner": "3083053"
+            },
+            {
+              "year": 1930,
+              "base": "2898741",
+              "winner": "5797481"
+            },
+            {
+              "year": 1970,
+              "base": "12241940",
+              "winner": "24483880"
+            },
+            {
+              "year": 1994,
+              "base": "93163125",
+              "winner": "186326250"
+            },
+            {
+              "year": 2024,
+              "base": "869324411",
+              "winner": "1738648822"
+            },
+            {
+              "year": 2036,
+              "base": "1144477007",
+              "winner": "2288954014"
+            }
+          ]
+        },
+        {
+          "ability": 95,
+          "baseVsRegular80": 8.942607426492224,
+          "winnerVsRegular80": 17.885214852984447,
+          "repeat3VsRegular80": 25.039300794178224,
+          "secondTierShare": 1,
+          "yearlyGBP2024": "1982998647",
+          "winnerYearlyGBP2024": "3965997293",
+          "eraGBP": [
+            {
+              "year": 1901,
+              "base": "3516346",
+              "winner": "7032692"
+            },
+            {
+              "year": 1930,
+              "base": "6612260",
+              "winner": "13224520"
+            },
+            {
+              "year": 1970,
+              "base": "27924846",
+              "winner": "55849692"
+            },
+            {
+              "year": 1994,
+              "base": "212512554",
+              "winner": "425025108"
+            },
+            {
+              "year": 2024,
+              "base": "1982998647",
+              "winner": "3965997293"
+            },
+            {
+              "year": 2036,
+              "base": "2610643769",
+              "winner": "5221287538"
+            }
+          ]
+        },
+        {
+          "ability": 99,
+          "baseVsRegular80": 13.33255175009161,
+          "winnerVsRegular80": 26.66510350018322,
+          "repeat3VsRegular80": 37.331144900256504,
+          "secondTierShare": 1,
+          "yearlyGBP2024": "2956456749",
+          "winnerYearlyGBP2024": "5912913497",
+          "eraGBP": [
+            {
+              "year": 1901,
+              "base": "5242527",
+              "winner": "10485055"
+            },
+            {
+              "year": 1930,
+              "base": "9858232",
+              "winner": "19716463"
+            },
+            {
+              "year": 1970,
+              "base": "41633210",
+              "winner": "83266421"
+            },
+            {
+              "year": 1994,
+              "base": "316835403",
+              "winner": "633670806"
+            },
+            {
+              "year": 2024,
+              "base": "2956456749",
+              "winner": "5912913497"
+            },
+            {
+              "year": 2036,
+              "base": "3892214149",
+              "winner": "7784428297"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -343,6 +343,24 @@ export function profiledCoaches(w: World): readonly PersonCareer[] {
 export function coachingProfiled(w: World) {
   profiledIndexes.delete(w);
 }
+const managementIndexes = new WeakMap<
+  World,
+  { people: readonly PersonCareer[]; profiled: PersonCareer[] }
+>();
+/** Manager profiles in registry order; employment and eligibility are still read live. */
+export function profiledManagers(w: World): readonly PersonCareer[] {
+  const people = peopleOf(w);
+  let hit = managementIndexes.get(w);
+  if (!hit || hit.people !== people) {
+    hit = { people, profiled: people.filter((person) => person.management) };
+    managementIndexes.set(w, hit);
+  }
+  return hit.profiled;
+}
+/** The dated qualification writer calls this whenever it creates a manager profile. */
+export function managementProfiled(w: World) {
+  managementIndexes.delete(w);
+}
 export function syncMentorExposures(w: World) {
   // The date each sync would read for itself: nothing in a sync moves it (T450).
   const at = careerDate(w);

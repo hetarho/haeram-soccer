@@ -17,6 +17,7 @@ import {
 } from './index';
 import { M } from './grid/record';
 import { careerWorld } from './career.testkit';
+import { ballonDorProduction } from './ballon-dor';
 
 /** A world in 1960 whose season aggregates are filled in by each case. */
 function season() {
@@ -71,20 +72,27 @@ const champions = (club: string, cup?: string): SeasonArchive['champions'] => [
   { country: 'ENG', club, cup: cup ?? '' },
 ];
 
+/** A finished top-flight table with an explicit order, independent of the generated club IDs. */
+function finish(w: World, order: World['clubs']) {
+  order.forEach((club, index) =>
+    Object.assign(w.tables[club.id], { played: 38, points: 100 - index, gf: 70, ga: 30 }),
+  );
+}
+
 describe('the Ballon d’Or podium (→PLAYER-27)', () => {
-  it('ranks by goals ×4, assists ×3, class and team honours, winner first', () => {
+  it('ranks bounded individual production, class and substantial team honours, winner first', () => {
     const { w, top } = season();
     const [a, b, c] = [rated(w, 0, 70), rated(w, 1, 70), rated(w, 2, 80)];
     played(w, LEAGUE, a, top[0]!.id, 38, 30, 5);
     played(w, LEAGUE, b, top[1]!.id, 38, 25, 10);
     played(w, LEAGUE, c, top[2]!.id, 38, 10, 4);
     const podium = ballonDorPodium(w, champions(top[1]!.id))!;
-    // a 30×4 + 5×3 = 135; b 25×4 + 10×3 + title 25 = 155; c 10×4 + 4×3 + (80 − 70) × 2 = 72.
+    // Production a=75, b=74, c=47; b's title adds 120, c's class adds 20.
     expect(overall(c)).toBe(80);
     expect(podium.map((place) => [place.id, place.points])).toEqual([
-      [b.id, 155],
-      [a.id, 135],
-      [c.id, 72],
+      [b.id, 194],
+      [a.id, 75],
+      [c.id, 67],
     ]);
     expect(podium[0]).toMatchObject({
       club: top[1]!.id,
@@ -106,7 +114,68 @@ describe('the Ballon d’Or podium (→PLAYER-27)', () => {
     const of = (id: string) => podium.find((place) => place.id === id)!;
     expect(of(cup.id).honours).toEqual(['cup']);
     expect(of(league.id).honours).toEqual([]);
-    expect(of(cup.id).points - of(league.id).points).toBe(2 * 4 + BALLON_DOR_CONFIG.honours.cup);
+    expect(of(cup.id).points - of(league.id).points).toBe(5 + BALLON_DOR_CONFIG.honours.cup);
+  });
+
+  it('an extreme mid-table scorer cannot overwhelm a title winner with unlimited goals', () => {
+    const { w, top } = season();
+    const [scorer, winner] = [rated(w, 0, 90), rated(w, 1, 90)];
+    finish(w, top);
+    played(w, LEAGUE, scorer, top[13]!.id, 38, 1000, 30);
+    played(w, LEAGUE, winner, top[0]!.id, 38, 25, 10);
+    const podium = ballonDorPodium(w, champions(top[0]!.id))!;
+    expect(podium[0]!.id).toBe(winner.id);
+    expect(podium[0]!.points).toBe(314);
+    expect(podium[1]!.points).toBeLessThanOrEqual(BALLON_DOR_CONFIG.production.maximum + 40);
+    expect(ballonDorProduction(0, 0)).toBe(0);
+    expect(ballonDorProduction(1000, 30)).toBeGreaterThan(ballonDorProduction(80, 10));
+    expect(ballonDorProduction(1_000_000, 0)).toBeLessThanOrEqual(
+      BALLON_DOR_CONFIG.production.maximum,
+    );
+  });
+
+  it('credits the final top-six league place even without a trophy', () => {
+    const { w, top } = season();
+    const [first, second, seventh] = [rated(w, 0, 70), rated(w, 1, 70), rated(w, 2, 70)];
+    finish(w, top);
+    played(w, LEAGUE, first, top[0]!.id, 38, 10);
+    played(w, LEAGUE, second, top[1]!.id, 38, 10);
+    played(w, LEAGUE, seventh, top[6]!.id, 38, 10);
+    expect(ballonDorPodium(w, [])!.map((place) => [place.id, place.points])).toEqual([
+      [first.id, 120],
+      [second.id, 100],
+      [seventh.id, 40],
+    ]);
+  });
+
+  it('uses a transferred player’s best contributed league finish once', () => {
+    const { w, top } = season();
+    const player = rated(w, 0, 70);
+    finish(w, top);
+    played(w, LEAGUE, player, top[1]!.id, 15, 5);
+    // The same stable identity has contributions at two clubs after a move.
+    w.npcSeason!.competitions[0]!.players[0]!.clubs.push({
+      club: top[0]!.id,
+      appearances: 15,
+      starts: 15,
+      metrics: zeroMetrics(),
+      detail: zeroMetrics(),
+    });
+    const podium = ballonDorPodium(w, [])!;
+    expect(podium[0]!.points).toBe(24 + BALLON_DOR_CONFIG.leaguePlaces[0]!);
+    expect(podium[0]!.appearances).toBe(30);
+  });
+
+  it('does not award an unplayed league place or a cup-only club’s league finish', () => {
+    const { w, top } = season();
+    const player = rated(w, 0, 70);
+    played(w, LEAGUE, player, top[8]!.id, 38, 10);
+    played(w, CUP, player, top[0]!.id, 1);
+    finish(w, top);
+    expect(ballonDorPodium(w, [])![0]!.points).toBe(40);
+    w.tables[top[8]!.id]!.played = 0;
+    w.tables[top[8]!.id]!.points = 150;
+    expect(ballonDorPodium(w, [])![0]!.points).toBe(40);
   });
 
   it('needs 15 top-flight league appearances, whatever else he scored', () => {
@@ -166,14 +235,29 @@ describe('Ballon d’Or records and the contract premium (→HIST-13, CLUB-26)',
     expect(ballonDorRecord(history, 'nobody')).toEqual({ wins: [], podiums: [] });
   });
 
-  it('prices a win ×1.20 and a podium ×1.10 for the three closed seasons before', () => {
-    expect(ballonDorPremium(history, 1961, 'p')).toEqual({ factor: 1.2, place: 1, year: 1959 });
-    expect(ballonDorPremium(history, 1963, 'p')).toEqual({ factor: 1.1, place: 3, year: 1960 });
+  it('prices a win ×2 and a podium ×1.4 for the three closed seasons before', () => {
+    expect(ballonDorPremium(history, 1961, 'p')).toEqual({ factor: 2, place: 1, year: 1959 });
+    expect(ballonDorPremium(history, 1963, 'p')).toEqual({ factor: 1.4, place: 3, year: 1960 });
     expect(ballonDorPremium(history, 1964, 'p')).toEqual({ factor: 1 });
-    expect(ballonDorPremium(history, 1959, 'p')).toEqual({ factor: 1.2, place: 1, year: 1956 });
-    expect(ballonDorPremium(history, 1960, 'y')).toEqual({ factor: 1.1, place: 3, year: 1959 });
-    expect(ballonDorPremium(history, 1961, 'z')).toEqual({ factor: 1.1, place: 3, year: 1958 });
+    expect(ballonDorPremium(history, 1959, 'p')).toEqual({ factor: 2, place: 1, year: 1956 });
+    expect(ballonDorPremium(history, 1960, 'y')).toEqual({ factor: 1.4, place: 3, year: 1959 });
+    expect(ballonDorPremium(history, 1961, 'z')).toEqual({ factor: 1.4, place: 3, year: 1958 });
   });
+});
+
+it('raises repeated recent winners progressively, independent of archive order', () => {
+  const recent = [
+    { year: 1958, ballonDor: [place('p')] },
+    { year: 1959, ballonDor: [place('p')] },
+    { year: 1960, ballonDor: [place('p')] },
+  ];
+  expect(ballonDorPremium(recent, 1961, 'p')).toEqual({ factor: 2.8, place: 1, year: 1960 });
+  expect(ballonDorPremium([...recent].reverse(), 1961, 'p')).toEqual(
+    ballonDorPremium(recent, 1961, 'p'),
+  );
+  expect(ballonDorPremium(recent, 1962, 'p').factor).toBe(2.4);
+  expect(ballonDorPremium(recent, 1963, 'p').factor).toBe(2);
+  expect(ballonDorPremium(recent, 1964, 'p').factor).toBe(1);
 });
 
 describe('the Ballon d’Or bonus clause (→CLUB-29)', () => {

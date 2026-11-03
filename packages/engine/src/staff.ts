@@ -4,7 +4,7 @@ import {
   expirePlayingCoachProposals,
 } from './playing-coach';
 import { coachingEntryReady } from './coaching-entry';
-import { closeEmployment, openEmployment, peopleOf } from './person-careers';
+import { closeEmployment, openEmployment, profiledCoaches } from './person-careers';
 import { ATTRIBUTES, type Attribute } from '../../contracts/src/player';
 import { ATTRIBUTE_LABEL } from './player';
 import { moraleOf } from './morale';
@@ -316,8 +316,9 @@ export function staffMarket(
 ): Partial<Record<StaffRole, StaffCandidate[]>> {
   const code = clubOf(w).country,
     employed = new Set((w.staff || []).map((member) => member.id)),
-    ready = new Map<StaffRole, PersonCareer[]>();
-  for (const person of peopleOf(w)) {
+    ready = new Map<StaffRole, PersonCareer[]>(),
+    quotes = new Map<number, { wage: string; fee: string }>();
+  for (const person of profiledCoaches(w)) {
     const role = person.coaching?.role;
     if (!role || !roles.includes(role) || !coachingEntryReady(person)) continue;
     const same = ready.get(role);
@@ -337,7 +338,12 @@ export function staffMarket(
         .sort((a, b) => compareIds(a.id, b.id))
         .map((person) => {
           const coaching = person.coaching!;
-          const wage = coachWage(w, coaching.ability);
+          let quote = quotes.get(coaching.ability);
+          if (!quote) {
+            const wage = coachWage(w, coaching.ability);
+            quote = { wage, fee: ratio(wage, 1n, 4n) };
+            quotes.set(coaching.ability, quote);
+          }
           return {
             id: person.id,
             person: person.id,
@@ -346,10 +352,10 @@ export function staffMarket(
             role,
             ability: coaching.ability,
             potential: coaching.potential,
-            wage,
+            wage: quote.wage,
             since: w.year,
             until: w.year + 3,
-            fee: ratio(wage, 1n, 4n),
+            fee: quote.fee,
           };
         });
       return [

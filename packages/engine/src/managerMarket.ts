@@ -1,6 +1,11 @@
 import { hasOwner } from './owner';
 import { cancelPromises } from './promises';
-import { closeEmployment, openEmployment, peopleOf, syncMentorExposures } from './person-careers';
+import {
+  closeEmployment,
+  openEmployment,
+  profiledManagers,
+  syncMentorExposures,
+} from './person-careers';
 import { cohesionAfterManager } from './adaptation';
 import type {
   Club,
@@ -224,7 +229,7 @@ const careerDraws = new Map<string, Manager>();
 /** Retained career profiles add places without replacing the ordinary market. */
 function careerCandidates(w: World): ManagerCandidate[] {
   const code = clubOf(w).country;
-  return peopleOf(w).flatMap((person) => {
+  return profiledManagers(w).flatMap((person) => {
     const profile = person.management;
     if (
       !profile ||
