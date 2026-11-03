@@ -1,9 +1,11 @@
 {
   "tag": "nv04",
   "started": "2026-11-03T14:58:56.465Z",
+  "resumed": "2026-11-03T23:08:19.534Z",
   "workspace": "/Users/ihaelam/project/haeram-soccer/.tmp/nv04",
   "deadline": "2026-11-04T09:30:00+09:00",
   "intermediatePublished": true,
+  "lastMainPush": "420ea7a5ac4b587e2642a514eef992cb16eb99b4",
   "epochs": [
     {
       "schemaVersion": 1,
@@ -365,6 +367,17 @@
       "pushed": true,
       "pushError": null,
       "remoteConfirmed": true
+    },
+    {
+      "at": "2026-11-03T21:46:01.116Z",
+      "schemaVersion": 1,
+      "changed": true,
+      "commit": "cc6e18c1d156354318d53777a0d8ea6886e40c92",
+      "tree": "4df8a54e8b6cf9fcce414e5f99a7cadbe0da6f16",
+      "branch": "wip/nv04",
+      "pushed": true,
+      "pushError": null,
+      "remoteConfirmed": true
     }
   ],
   "repairs": [
@@ -560,7 +573,5 @@
       ]
     }
   ],
-  "status": "stopped",
-  "lastMainPush": "420ea7a5ac4b587e2642a514eef992cb16eb99b4",
-  "finished": "2026-11-03T21:45:57.995Z"
+  "status": "starting"
 }
