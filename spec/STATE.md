@@ -15,7 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T02:20Z | T674 |
+| hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T02:27Z | T675 |
 
 ## inbox
 - 261103 suggest ARCH-21 T671: ARCH-21 still names `simulatedWorld` "for a founding plus seasons and rounds"; it now builds a takeover career (`careerWorld`) plus seasons and rounds (update-ssot wording only). ot03
@@ -642,7 +642,7 @@
 | T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T672 | todo |
 | T673 | Record news and update record counters when facts settle | HIST SAVE ARCH | - | doing@261103.hr03 |
 | T674 | Serve career statistics and current-season finance from maintained summaries | HIST SAVE ARCH | T673 | doing@261103.hr03 |
-| T675 | Verify long-career scaling and checkpoint continuity of incremental reads | HIST SAVE ARCH | T674 | todo |
+| T675 | Verify long-career scaling and checkpoint continuity of incremental reads | HIST SAVE ARCH | T674 | doing@261103.hr03 |
 | T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | todo |
 
 ## work
