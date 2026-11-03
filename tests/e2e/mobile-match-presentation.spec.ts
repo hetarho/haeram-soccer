@@ -157,11 +157,11 @@ test('mobile result-only continuation preserves the exiting card position', asyn
 
 /** An early home goal for presentation checks; later goals follow the current model. */
 function goalWorld() {
-  // On match-model revision 10 (T596, T599, T600) goal-feedback-2's first match opens 1′ home,
-  // then 65′ and 67′ home, 72′ away, 88′ home and 90′ away (goal-feedback-28 on revision 9 with
-  // T580's pass side, opening 4′ home; goal-feedback-15 on revision 8, T561; goal-feedback-14 on
-  // revision 7, T548; goal-feedback-8 on revision 6, T542; T579).
-  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-2' });
+  // On match-model revision 10 the club taken over from goal-feedback-25 opens 4′ home, then 16′
+  // away and 22′ home (T687: the takeover moved goal-feedback-2's opener, 1′ home on a founded
+  // career, to 40′ away; goal-feedback-28 on revision 9 with T580's pass side; goal-feedback-15 on
+  // revision 8, T561; goal-feedback-14 on revision 7, T548; goal-feedback-8 on revision 6, T542).
+  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-25' });
   world.settings!.responsibilities.sales = 'delegated';
   return world;
 }

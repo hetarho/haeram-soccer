@@ -7,7 +7,7 @@ import { heatMap, MATERIAL_LAYOUT, ownSideOf } from '../../../../packages/engine
  * read models. Nothing here changes the world.
  */
 
-type Matches = Pick<World, 'ownMatches' | 'year'>;
+type Matches = Pick<World, 'ownMatches' | 'year' | 'careerReads'>;
 /**
  * One pass over the own matches, kept while the season and the number of own matches stay: they are
  * only ever appended to (and lose their material at the close, when the season turns), so the world's
@@ -36,6 +36,18 @@ const card = (kind: Incident['kind']) =>
 /** Season and career cards of every player booked in an own match, either side. */
 export const cardCounts = perOwnMatches((w: Matches) => {
   const counts = new Map<string, { season: Cards; career: Cards }>();
+  if (w.careerReads) {
+    for (const [id, p] of Object.entries(w.careerReads.players))
+      if (p.yellow[1] || p.red[1])
+        counts.set(id, {
+          season: {
+            yellow: p.year === w.year ? p.yellow[0] : 0,
+            red: p.year === w.year ? p.red[0] : 0,
+          },
+          career: { yellow: p.yellow[1], red: p.red[1] },
+        });
+    return counts;
+  }
   for (const m of w.ownMatches)
     for (const incident of m.incidents ?? []) {
       const [yellow, red] = card(incident.kind) ?? [];
@@ -59,6 +71,11 @@ export const cardCounts = perOwnMatches((w: Matches) => {
 /** Red cards of this season's league matches by player, either side of every own match. */
 export const leagueReds = perOwnMatches((w: Matches) => {
   const reds: Record<string, number> = {};
+  if (w.careerReads) {
+    for (const [id, p] of Object.entries(w.careerReads.players))
+      if (p.year === w.year && p.leagueReds) reds[id] = p.leagueReds;
+    return reds;
+  }
   for (const m of w.ownMatches)
     if (m.year === w.year && m.kind === 'league')
       for (const incident of m.incidents ?? [])
@@ -79,6 +96,17 @@ export interface Appearances {
  */
 export const appearanceCounts = perOwnMatches((w: Matches) => {
   const counts = new Map<string, Appearances>();
+  if (w.careerReads) {
+    for (const [id, p] of Object.entries(w.careerReads.players))
+      if (p.apps[1])
+        counts.set(id, {
+          season: p.year === w.year ? p.apps[0] : 0,
+          career: p.apps[1],
+          seasonSub: p.year === w.year ? p.sub[0] : 0,
+          careerSub: p.sub[1],
+        });
+    return counts;
+  }
   for (const m of w.ownMatches) {
     const subs = new Set(m.incidents?.flatMap((x) => (x.kind === 'sub' && x.other) || []));
     const season = m.year === w.year ? 1 : 0;
@@ -116,7 +144,23 @@ export interface Tallies {
   leagueReds: Record<string, number>;
 }
 export const tallies = perOwnMatches(
-  (w: Pick<World, 'ownMatches' | 'year' | 'players' | 'playerClub'>): Tallies => {
+  (w: Pick<World, 'ownMatches' | 'year' | 'players' | 'playerClub' | 'careerReads'>): Tallies => {
+    if (w.careerReads) {
+      const players: Record<string, PlayerTally> = {};
+      for (const player of w.players) {
+        const p = w.careerReads.players[player.id];
+        if (!p) continue;
+        const season = p.year === w.year;
+        players[player.id] = {
+          apps: [season ? p.apps[0] : 0, p.apps[1]],
+          sub: [season ? p.sub[0] : 0, p.sub[1]],
+          yellow: [season ? p.yellow[0] : 0, p.yellow[1]],
+          red: [season ? p.red[0] : 0, p.red[1]],
+          ...(season && p.heat ? { heat: p.heat } : {}),
+        };
+      }
+      return { players, leagueReds: leagueReds(w) };
+    }
     const apps = appearanceCounts(w),
       cards = cardCounts(w);
     const heat: Record<string, number[]> = {};

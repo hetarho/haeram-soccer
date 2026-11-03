@@ -1,0 +1,9 @@
+diff --git a/apps/web/src/runtime/progression.ts b/apps/web/src/runtime/progression.ts
+index c20d5667..6f3572bb 100644
+--- a/apps/web/src/runtime/progression.ts
++++ b/apps/web/src/runtime/progression.ts
+@@ -25,3 +25,3 @@ export type Pace = 'x1' | 'x2' | 'x5' | 'x10';
+ /** Real milliseconds per game day: x1 is one day a second, x10 one day every 0.1 s. */
+-export const PACE_MS: Record<Pace, number> = { x1: 1000, x2: 500, x5: 200, x10: 100 };
++export const PACE_MS: Record<Pace, number> = { x1: 1000, x2: 500, x5: 200, x10: 50 };
+ /**

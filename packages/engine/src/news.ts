@@ -1,3 +1,4 @@
+import { eventsInSeason } from './season-index';
 import type { Event, MatchRecord, World } from '../../contracts/src/types';
 import { PD, TD } from '../../contracts/src/detail';
 import { country } from '../../catalogs/src/index';
@@ -7,27 +8,20 @@ import { buildTitleName } from './build';
 
 /**
  * Club news (→HIST-11): headlines derived from recorded facts only, the way football media write
- * them, from streaks and records to possession and xG splits. Nothing is stored: the same career
- * always produces the same feed, and a fact never claims a cause.
+ * them, from streaks and records to possession and xG splits. A maintained journal records each
+ * source once; legacy pure reads support reconstruction. A fact never claims a cause.
  */
-export type NewsTag = '경기' | '기록' | '선수' | '순위' | '분석' | '구단' | '이적' | '유스';
-export type NewsTone = 'good' | 'neutral' | 'bad';
-export type NewsWeight = 'major' | 'notable' | 'minor';
-export interface NewsItem {
-  /** Stable across reloads: season, source and kind. */
-  id: string;
-  year: number;
-  round: number;
-  /** Higher is newer within the feed. */
-  order: number;
-  tag: NewsTag;
-  tone: NewsTone;
-  weight: NewsWeight;
-  title: string;
-  detail?: string;
-  /** Achievements the club celebrates (→WEB-52). */
-  celebrate?: boolean;
-}
+export type { NewsItem } from '../../contracts/src/news';
+import {
+  NEWS_LIMITS,
+  type NewsItem,
+  type NewsState,
+  type NewsResult,
+  type NewsJournal,
+} from '../../contracts/src/news';
+export type NewsTag = NewsItem['tag'];
+export type NewsTone = NewsItem['tone'];
+export type NewsWeight = NewsItem['weight'];
 
 /** Items one match may add besides its result line; majors and celebrations always stay. */
 export const NEWS_PER_MATCH = 4;
@@ -110,8 +104,8 @@ function zones(w: World) {
 type Candidate = Omit<NewsItem, 'id' | 'year' | 'round' | 'order'> & { kind: string };
 type Line = MatchRecord['players'][number];
 
-const record = (games: Played[]) => {
-  const count = (r: Played['result']) => games.filter((g) => g.result === r).length;
+const record = (games: NewsResult[]) => {
+  const count = (r: NewsResult) => games.filter((g) => g === r).length;
   return `${games.length}전 ${count('W')}승 ${count('D')}무 ${count('L')}패`;
 };
 
@@ -123,7 +117,7 @@ interface NewsContext {
   w: World;
   name: string;
   who: (id: string) => string;
-  season: Played[];
+  season: NewsResult[];
   /** Records before this season; a record needs history to be broken. */
   hasHistory: boolean;
   unbeatenRecord: number;
@@ -146,9 +140,9 @@ interface NewsContext {
   seasonGoals: Map<string, number>;
   seasonBest: Map<string, number>;
   crossed: Set<string>;
-  possessionGames: Played[];
-  ahead: Played[];
-  scoredFirst: Played[];
+  possessionGames: NewsResult[];
+  ahead: NewsResult[];
+  scoredFirst: NewsResult[];
   homePossessionRun: number;
   homeUnbeaten: number;
   awayUnbeaten: number;
@@ -199,7 +193,7 @@ function newsContext(w: World): NewsContext {
     w,
     name: clubOf(w).name,
     who: (id) => people.get(id) ?? '선수',
-    season: w.ownMatches.filter((m) => m.year === w.year).map((m) => played(w, m, clubNames)),
+    season: [],
     hasHistory: earlier.length > 0,
     unbeatenRecord: 0,
     winsRecord: 0,
@@ -282,14 +276,19 @@ const MATCH_BUILDERS = [
   playerNews,
 ];
 
-export function clubNews(w: World): NewsItem[] {
+export function deriveClubNews(w: World): NewsItem[] {
   const ctx = newsContext(w),
     news: NewsItem[] = [];
-  ctx.season.forEach((p, index) => {
-    const m = matchNews(p, index);
-    for (const build of MATCH_BUILDERS) build(ctx, m);
-    news.push(...keptNews(ctx, m));
-  });
+  const clubNames = new Map(w.clubs.map((c) => [c.id, c.name]));
+  w.ownMatches
+    .filter((m) => m.year === w.year)
+    .map((m) => played(w, m, clubNames))
+    .forEach((p, index) => {
+      ctx.season.push(p.result);
+      const m = matchNews(p, index);
+      for (const build of MATCH_BUILDERS) build(ctx, m);
+      news.push(...keptNews(ctx, m));
+    });
   news.push(...tableNews(w, ctx.name));
   w.events.forEach((event, index) => {
     const item = eventNews(w, ctx.name, event, index);
@@ -509,7 +508,7 @@ function runNews(ctx: NewsContext, { p, index, score, versus, add }: MatchNews) 
     );
   if (index === 4) {
     const opening = ctx.season.slice(0, 5);
-    if (opening.every((g) => g.result !== 'L'))
+    if (opening.every((g) => g !== 'L'))
       add(
         'opening-unbeaten',
         '기록',
@@ -518,7 +517,7 @@ function runNews(ctx: NewsContext, { p, index, score, versus, add }: MatchNews) 
         `${name}, 개막 5경기 무패 순항`,
         record(opening),
       );
-    else if (opening.every((g) => g.result !== 'W'))
+    else if (opening.every((g) => g !== 'W'))
       add(
         'opening-winless',
         '기록',
@@ -585,8 +584,8 @@ function possessionNews(ctx: NewsContext, { p, score, versus, story, add }: Matc
       );
   }
   if (p.possession >= 0.6) {
-    possessionGames.push(p);
-    const won = possessionGames.filter((g) => g.result === 'W').length,
+    possessionGames.push(p.result);
+    const won = possessionGames.filter((g) => g === 'W').length,
       rate = won / possessionGames.length;
     // A coin flip is not news: only a strong pattern either way is.
     if ([5, 10, 15, 20].includes(possessionGames.length) && (rate >= 0.7 || rate <= 0.2))
@@ -600,9 +599,9 @@ function possessionNews(ctx: NewsContext, { p, score, versus, story, add }: Matc
       );
   }
   if (p.possession > 0.5) {
-    ahead.push(p);
+    ahead.push(p.result);
     if ([10, 20, 30].includes(ahead.length)) {
-      const won = ahead.filter((g) => g.result === 'W').length;
+      const won = ahead.filter((g) => g === 'W').length;
       add(
         `possession-ahead-${ahead.length}`,
         '분석',
@@ -632,9 +631,9 @@ function possessionNews(ctx: NewsContext, { p, score, versus, story, add }: Matc
       `${versus} ${score}`,
     );
   if (story.first === 'us') {
-    scoredFirst.push(p);
+    scoredFirst.push(p.result);
     if ([5, 10, 15, 20].includes(scoredFirst.length)) {
-      const dropped = scoredFirst.filter((g) => g.result !== 'W').length;
+      const dropped = scoredFirst.filter((g) => g !== 'W').length;
       add(
         `scored-first-${scoredFirst.length}`,
         '분석',
@@ -1143,8 +1142,7 @@ function honours(w: World): NewsItem[] {
     });
   // Cups decided in May are celebrated on the day of the final (their events); older seasons
   // without those events are celebrated here at the close.
-  const won = (kind: string) =>
-    w.events.some((event) => event.year === last.year && event.kind === kind);
+  const won = (kind: string) => eventsInSeason(w, last.year).some((event) => event.kind === kind);
   const cup = last.champions.find((c) => c.cup === w.playerClub);
   if (cup && !won('cup-honor'))
     items.push({ ...base('cup'), title: `${name}, ${country(cup.country).name} 컵 우승!` });
@@ -1410,4 +1408,287 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
     default:
       return undefined;
   }
+}
+
+/** Persisted map/set rows are changed in place, so a new result never copies career totals. */
+class JournalMap extends Map<string, number> {
+  private indices = new Map<string, number>();
+  constructor(readonly rows: [string, number][]) {
+    super();
+    rows.forEach(([key, value], index) => {
+      Map.prototype.set.call(this, key, value);
+      this.indices.set(key, index);
+    });
+  }
+  override set(key: string, value: number): this {
+    const index = this.indices.get(key);
+    if (index === undefined) {
+      this.indices.set(key, this.rows.length);
+      this.rows.push([key, value]);
+    } else this.rows[index][1] = value;
+    return super.set(key, value);
+  }
+}
+class JournalSet extends Set<string> {
+  constructor(readonly rows: string[]) {
+    super();
+    for (const key of rows) Set.prototype.add.call(this, key);
+  }
+  override add(key: string): this {
+    if (!this.has(key)) this.rows.push(key);
+    return super.add(key);
+  }
+}
+const mapRows = (map: Map<string, number>) => (map instanceof JournalMap ? map.rows : [...map]);
+const setRows = (set: Set<string>) => (set instanceof JournalSet ? set.rows : [...set]);
+
+/** Snapshot the counters, without World references, names, closures or match graphs. */
+function newsState(ctx: NewsContext): NewsState {
+  const {
+    w: _w,
+    name: _name,
+    who: _who,
+    appeared,
+    careerGoals,
+    scorerRun,
+    drought,
+    seasonGoals,
+    seasonBest,
+    crossed,
+    ...values
+  } = ctx;
+  void _w;
+  void _name;
+  void _who;
+  return {
+    ...values,
+    appeared: setRows(appeared),
+    careerGoals: mapRows(careerGoals),
+    scorerRun: mapRows(scorerRun),
+    drought: mapRows(drought),
+    seasonGoals: mapRows(seasonGoals),
+    seasonBest: mapRows(seasonBest),
+    crossed: setRows(crossed),
+  };
+}
+function journalContext(w: World, state: NewsState): NewsContext {
+  const names = new Map(w.players.map((p) => [p.id, p.name]));
+  return {
+    ...state,
+    w,
+    name: clubOf(w).name,
+    who: (id) => names.get(id) ?? '선수',
+    appeared: new JournalSet(state.appeared),
+    careerGoals: new JournalMap(state.careerGoals),
+    scorerRun: new JournalMap(state.scorerRun),
+    drought: new JournalMap(state.drought),
+    seasonGoals: new JournalMap(state.seasonGoals),
+    seasonBest: new JournalMap(state.seasonBest),
+    crossed: new JournalSet(state.crossed),
+  };
+}
+const journalContexts = new WeakMap<NewsJournal, NewsContext>();
+const bucketIds = new WeakMap<NewsItem[], Set<string>>();
+const journalSources = new WeakMap<NewsJournal, { table: string; honour: number | undefined }>();
+/** Older journal representations keep their text while acquiring stable unread ordinals once. */
+function numberJournal(j: NewsJournal) {
+  if (j.count !== undefined) return;
+  let count = 0;
+  for (const year of j.years)
+    for (let index = j.seasons[year].length - 1; index >= 0; index--)
+      j.seasons[year][index].sequence = ++count;
+  j.count = count;
+}
+export function newsTotal(w: World): number {
+  const j = w.newsJournal;
+  return j
+    ? (j.count ?? j.years.reduce((n, year) => n + j.seasons[year].length, 0))
+    : deriveClubNews(w).length;
+}
+function appendHeadline(j: NewsJournal, item: NewsItem) {
+  let bucket = j.seasons[item.year];
+  if (!bucket) {
+    bucket = j.seasons[item.year] = [];
+    j.years.push(item.year);
+    j.years.sort((a, b) => a - b);
+  }
+  let ids = bucketIds.get(bucket);
+  if (!ids) {
+    ids = new Set(bucket.map((entry) => entry.id));
+    bucketIds.set(bucket, ids);
+  }
+  if (ids.has(item.id)) return;
+  if (bucket.length >= NEWS_LIMITS.perSeason)
+    throw new Error('시즌 뉴스 용량 한도에 도달했습니다.');
+  numberJournal(j);
+  ids.add(item.id);
+  bucket.push({ ...item, sequence: ++j.count! });
+  // Only the affected season is sorted, never the complete career.
+  bucket.sort((a, b) => b.order - a.order);
+}
+function resetNewsSeason(w: World, j: NewsJournal, year: number, ctx: NewsContext) {
+  // Season-scoped comparisons restart against the completed career's records.
+  const empty = newsContext({ ...w, ownMatches: [] });
+  const next: NewsContext = {
+    ...empty,
+    hasHistory: j.matches > 0,
+    unbeatenRecord: j.peakUnbeaten,
+    winsRecord: j.peakWinning,
+    unbeaten: ctx.unbeaten,
+    winning: ctx.winning,
+    winless: ctx.winless,
+    losing: ctx.losing,
+    scoring: ctx.scoring,
+    clean: ctx.clean,
+    totalWins: ctx.totalWins,
+    biggestMargin: ctx.biggestMargin,
+    appeared: ctx.appeared,
+    careerGoals: ctx.careerGoals,
+  };
+  j.year = year;
+  j.state = newsState(next);
+  const restored = journalContext(w, j.state);
+  journalContexts.set(j, restored);
+  return restored;
+}
+/** Explicit writer initialization. Legacy pure reads never create save data. */
+export function initializeNewsJournal(w: World) {
+  if (w.newsJournal) {
+    numberJournal(w.newsJournal);
+    return;
+  }
+  const firstYear = w.ownMatches[0]?.year ?? w.year;
+  const ctx = newsContext({ ...w, ownMatches: [] });
+  w.newsJournal = {
+    format: 1,
+    year: firstYear,
+    matches: 0,
+    events: 0,
+    count: 0,
+    peakUnbeaten: 0,
+    peakWinning: 0,
+    state: newsState(ctx),
+    years: [],
+    seasons: {},
+  };
+  journalContexts.set(w.newsJournal, journalContext(w, w.newsJournal.state));
+  refreshNewsJournal(w);
+}
+/** Process only new facts; callers use this at canonical settlement boundaries, never on read. */
+export function refreshNewsJournal(w: World) {
+  const j = w.newsJournal;
+  if (!j) return;
+  const table = `${w.year}:${w.round}:${w.rankHistory?.length ?? 0}`;
+  const honour = w.history.at(-1)?.year;
+  const sources = journalSources.get(j);
+  if (
+    j.matches === w.ownMatches.length &&
+    j.events === w.events.length &&
+    j.year === w.year &&
+    sources?.table === table &&
+    sources.honour === honour
+  )
+    return;
+  let ctx = journalContexts.get(j) ?? journalContext(w, j.state);
+  ctx.w = w;
+  ctx.name = clubOf(w).name;
+  // Resolve names again after a signing; already recorded text stays frozen.
+  const names = new Map(w.players.map((p) => [p.id, p.name]));
+  ctx.who = (id) => names.get(id) ?? '선수';
+  const clubNames = new Map(w.clubs.map((c) => [c.id, c.name]));
+  while (j.matches < w.ownMatches.length) {
+    const m = w.ownMatches[j.matches];
+    if (m.year !== j.year) ctx = resetNewsSeason(w, j, m.year, ctx);
+    const p = played(w, m, clubNames),
+      index = ctx.season.length;
+    ctx.w = m.year === w.year ? w : { ...w, year: m.year };
+    ctx.season.push(p.result);
+    const match = matchNews(p, index);
+    for (const build of MATCH_BUILDERS) build(ctx, match);
+    for (const item of keptNews(ctx, match)) appendHeadline(j, item);
+    j.peakUnbeaten = Math.max(j.peakUnbeaten, ctx.unbeaten);
+    j.peakWinning = Math.max(j.peakWinning, ctx.winning);
+    j.matches++;
+  }
+  if (j.year !== w.year) ctx = resetNewsSeason(w, j, w.year, ctx);
+  ctx.w = w;
+  while (j.events < w.events.length) {
+    const index = j.events++,
+      event = w.events[index];
+    const item = eventNews(
+      event.year === w.year ? w : { ...w, year: event.year },
+      ctx.name,
+      event,
+      index,
+    );
+    if (item) appendHeadline(j, item);
+  }
+  // These reads are bounded to the retained round window and the last season's honour row.
+  if (sources?.table !== table) for (const item of tableNews(w, ctx.name)) appendHeadline(j, item);
+  if (!sources || sources.honour !== honour) for (const item of honours(w)) appendHeadline(j, item);
+  journalSources.set(j, { table, honour });
+  journalContexts.set(j, ctx);
+  j.state = newsState(ctx);
+}
+/** Journal pages read at most their requested rows; routine publication never traverses old facts. */
+export function newsPage(w: World, offset = 0, limit: number = NEWS_LIMITS.page): NewsItem[] {
+  if (
+    !Number.isSafeInteger(offset) ||
+    offset < 0 ||
+    !Number.isSafeInteger(limit) ||
+    limit < 1 ||
+    limit > NEWS_LIMITS.page
+  )
+    throw new Error('뉴스 조회 범위가 올바르지 않습니다.');
+  const j = w.newsJournal;
+  if (!j) return deriveClubNews(w).slice(offset, offset + limit);
+  const out: NewsItem[] = [];
+  for (let i = j.years.length - 1; i >= 0; i--) {
+    const bucket = j.seasons[j.years[i]];
+    if (offset >= bucket.length) {
+      offset -= bucket.length;
+      continue;
+    }
+    const take = bucket.slice(offset, offset + limit - out.length);
+    out.push(...take);
+    offset = 0;
+    if (out.length === limit) break;
+  }
+  return out;
+}
+export function clubNews(w: World): NewsItem[] {
+  return w.newsJournal ? newsPage(w, 0, NEWS_LIMITS.recent) : deriveClubNews(w);
+}
+
+/** A source-ID cursor stays stable when newer headlines arrive between archive requests. */
+export function newsBefore(w: World, before?: string, tag?: NewsTag): NewsItem[] {
+  const j = w.newsJournal;
+  if (!j) {
+    const all = deriveClubNews(w);
+    const at = before ? all.findIndex((item) => item.id === before) : -1;
+    if (before && at < 0) throw new Error('뉴스 위치를 찾지 못했습니다.');
+    return all
+      .slice(at + 1)
+      .filter((item) => !tag || item.tag === tag)
+      .slice(0, NEWS_LIMITS.page);
+  }
+  let index = j.years.length - 1,
+    offset = 0;
+  if (before) {
+    const year = Number(before.split(':')[0]);
+    index = j.years.indexOf(year);
+    const at = j.seasons[year]?.findIndex((item) => item.id === before) ?? -1;
+    if (index < 0 || at < 0) throw new Error('뉴스 위치를 찾지 못했습니다.');
+    offset = at + 1;
+  }
+  const result: NewsItem[] = [];
+  for (; index >= 0 && result.length < NEWS_LIMITS.page; index--) {
+    const bucket = j.seasons[j.years[index]];
+    for (; offset < bucket.length && result.length < NEWS_LIMITS.page; offset++) {
+      const item = bucket[offset];
+      if (!tag || item.tag === tag) result.push(item);
+    }
+    offset = 0;
+  }
+  return result;
 }

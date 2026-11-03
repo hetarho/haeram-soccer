@@ -32,10 +32,11 @@ import type { ManagerHistoryPage } from '../packages/contracts/src/manager-histo
 import {
   encode,
   decode,
-  CHECKPOINT_LIMIT,
-  TOTAL_LIMIT,
+  INDEXED_CHECKPOINT_LIMIT,
+  PORTABLE_FILE_LIMIT,
 } from '../apps/web/src/adapters/persistence';
 import { Host } from '../apps/web/src/runtime/host';
+import { ACTIVE } from '../apps/web/src/adapters/repository';
 import { retainedWorkload } from '../tests/fixtures/retained-workload';
 import {
   appearanceSummary,
@@ -210,9 +211,8 @@ async function measure(w: World, label: string) {
     restored = (await decode(raw)).world,
     decodingMs = performance.now() - t - encodingMs;
   if (canonical(restored) !== worldCanonical) throw new Error('Lossless checkpoint failed');
-  // Only the active copy lives in localStorage; its previous copy is in IndexedDB (→SAVE-3).
-  const checkpointBytes = 2 * (raw.length + 'haeram-soccor:slot:a'.length),
-    totalBytes = checkpointBytes + 512;
+  // Both checkpoint copies live in IndexedDB (→SAVE-3).
+  const checkpointBytes = 2 * (raw.length + ACTIVE.length);
   const heapBytes = process.memoryUsage().heapUsed;
   peakObservedHeapBytes = Math.max(peakObservedHeapBytes, heapBytes);
   const result = {
@@ -245,11 +245,13 @@ async function measure(w: World, label: string) {
     container: JSON.parse(raw).schema,
     compressedPayloadBytes: payloadBytes(JSON.parse(raw).codec, JSON.parse(raw).payload).length,
     checkpointBytes,
-    totalBytes,
+    fileBytes: Buffer.byteLength(raw, 'utf8'),
     heapBytes,
     encodingMs: Math.round(encodingMs),
     decodingMs: Math.round(decodingMs),
-    passed: checkpointBytes <= CHECKPOINT_LIMIT && totalBytes <= TOTAL_LIMIT,
+    passed:
+      checkpointBytes <= INDEXED_CHECKPOINT_LIMIT &&
+      Buffer.byteLength(raw, 'utf8') <= PORTABLE_FILE_LIMIT,
   };
   measurements.push(result);
   console.error(
@@ -976,8 +978,8 @@ function report() {
     engine: era.engine,
     catalog: era.catalog,
     catalogHash: era.catalogHash,
-    checkpointLimit: CHECKPOINT_LIMIT,
-    totalLimit: TOTAL_LIMIT,
+    checkpointLimit: INDEXED_CHECKPOINT_LIMIT,
+    portableFileLimit: PORTABLE_FILE_LIMIT,
     measurements: all.flatMap((result) => result.measurements),
     worstCheckpoint: {
       label: worstPhase.worst.label,

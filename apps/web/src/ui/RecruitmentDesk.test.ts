@@ -8,7 +8,7 @@ import type { ClientState, GameClient } from '../runtime/client';
 import { initialClientState } from '../runtime/store';
 import korean from '../../public/presentation/locales/ko-KR.json';
 import { PositionBadge } from './PositionBadge';
-import { RecruitmentDesk } from './RecruitmentDesk';
+import { candidateSide, RecruitmentDesk } from './RecruitmentDesk';
 import {
   DEFAULT_MARKET_QUERY,
   createMarketReader,
@@ -478,6 +478,20 @@ describe('paged whole-world recruitment desk', () => {
     expect(markup).not.toContain('<span>우리 팀에서</span>');
     expect(markup).toMatch(/<button[^>]*disabled=""[^>]*>계약 완료<\/button>/);
     expect(markup).toContain('<small data-tone="block">이미 계약한 선수입니다.</small>');
+  });
+  it('compares one of our players picked from the market without market terms', () => {
+    // A taken-over strong club's keepers rank among the market's best, so the comparison can
+    // hold one of ours: he reads as ours, with no fee, loan or cash after a signing (T687).
+    const candidate = detail();
+    expect(candidateSide(candidate, '후보 A')).toMatchObject({
+      own: false,
+      terms: { fee: offer.fee, loanFee: offer.loanFee, cashAfter: preview.cashAfter },
+    });
+    const ours = { ...candidate, offer: { ...offer, own: true, available: false } };
+    const side = candidateSide(ours, '후보 B');
+    expect(side.own).toBe(true);
+    expect(side.terms).toBeUndefined();
+    expect(side.player).toBe(ours.offer.player);
   });
   it('selects a player by identity and signs a selected free agent through the existing command', () => {
     render();

@@ -53,6 +53,7 @@ import {
   settleMorale,
   staffTerm,
   suitorFor,
+  TALK_CONFIG,
   TALK_RULE_DEFAULT,
   talkFor,
   talkRoundChance,
@@ -573,8 +574,13 @@ describe('contract talks (→CLUB-26)', () => {
       const { w, p } = talking(80);
       holdRows(w, { direction: { renewal: 'keepAll' } });
       w.calendar = { day: 0 };
-      // A manager paid far beyond the club's income makes the season a loss.
-      w.manager.wage = (BigInt(operatingCosts(w).annual) * 4n).toString();
+      // A manager paid far beyond the club's income makes the season a loss: four times its costs
+      // and its projected surplus, since a taken-over club's books can earn more than they cost.
+      const surplus = BigInt(seasonEndWithWage(w, p, p.wage)) - BigInt(w.cash);
+      w.manager.wage = (
+        (BigInt(operatingCosts(w).annual) + (surplus > 0n ? surplus : 0n)) *
+        4n
+      ).toString();
       const floor = talkTerms(w, p).floor,
         perRound = (BigInt(operatingCosts(w).annual) + BigInt(floor) - BigInt(p.wage)) / BigInt(46),
         runway = perRound * 13n,
@@ -1133,8 +1139,12 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     w.tables[w.playerClub].points = 0;
     const tier = clubOf(w).tier,
       [cut, kept] = activePlayers(w).filter((p) => p.until > w.year + 1 && !p.retiring);
-    Object.assign(cut, { wage: '10000', clauses: { relegation: -40 } });
-    Object.assign(kept, { wage: '10000', clauses: { promotion: 40 } });
+    // Four seasons left after the close, so neither asks for an improved contract at the summer
+    // opening that follows it (→CLUB-26): a taken-over club's market wages put a cut wage of
+    // 6,000 more than 25% below his worth.
+    const until = w.year + 1 + TALK_CONFIG.improveSeasons + 1;
+    Object.assign(cut, { wage: '10000', until, clauses: { relegation: -40 } });
+    Object.assign(kept, { wage: '10000', until, clauses: { promotion: 40 } });
     closeSeason(w);
     expect(clubOf(w).tier).toBe(tier + 1);
     expect([cut.wage, kept.wage]).toEqual(['6000', '10000']);

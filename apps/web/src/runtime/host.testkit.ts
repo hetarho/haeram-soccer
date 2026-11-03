@@ -1,3 +1,4 @@
+import { initializeReadModels } from '../../../../packages/engine/src/read-models';
 import { expect } from 'vitest';
 import { Host } from './host';
 import type { Body } from './protocol';
@@ -70,9 +71,12 @@ export function startedWorld(
  * as if simulated in place: same world, same receipts.
  */
 export function playOn(h: Host, played: World, release: MatchModelRelease = MATCH_MODEL_RELEASE) {
-  expect(canonical({ ...h.world!, receiptIds: [] })).toBe(
+  const { newsJournal: _journal, careerReads: _reads, ...baseline } = h.world!;
+  void [_journal, _reads];
+  expect(canonical({ ...baseline, receiptIds: [] })).toBe(
     canonical(startedWorld(START.seed, {}, release)),
   );
   played.receiptIds = h.world!.receiptIds;
+  initializeReadModels(played);
   h.world = played;
 }

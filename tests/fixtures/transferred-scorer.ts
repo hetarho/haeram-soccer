@@ -18,8 +18,10 @@ export function transferredScorerWorld(
   prepare?: (w: World) => unknown,
   release: MatchModelRelease = MATCH_MODEL_RELEASE,
 ) {
-  // A seed where the summary-path own league (T224) still leaves him a top-ten scorer.
-  const w = careerWorld({ country: 'ENG', seed: 'transferred-scorer-c' }, release);
+  // A seed where the summary-path own league (T224) still leaves him a top-ten scorer of the
+  // takeover's 24-club division: 6th with seed d on the pre-feature path (T683), where c left him
+  // 15th once careers became takeovers.
+  const w = careerWorld({ country: 'ENG', seed: 'transferred-scorer-d' }, release);
   prepare?.(w);
   w.cash = '999999999999';
   const player = activePlayers(w).find((p) => p.position === 'ST')!;

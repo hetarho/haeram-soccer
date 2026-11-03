@@ -121,13 +121,18 @@ describe('two-phase league round', () => {
 
   it('plays a round naming a club twice on the sequential path', () => {
     const w = founding();
-    const other = w.fixtures.find((f) => f.round === 1 && !ownFixture(w, f))!;
+    // The own club's first league round: its division of fifteen gives one club a bye each round,
+    // and a round without our match never asks helpers anyway (→ARCH-6).
+    const round = Math.min(
+      ...w.fixtures.filter((f) => f.kind === 'league' && ownFixture(w, f)).map((f) => f.round),
+    );
+    const other = w.fixtures.find((f) => f.round === round && !ownFixture(w, f))!;
     w.fixtures.push({ ...other, id: `${other.id}-again`, home: other.away, away: other.home });
-    while (w.round < 1) {
+    while (w.round < round) {
       expect(prepareRound(w, () => expect.unreachable(), false)).toBe(false);
       advanceDays(w, 1, undefined, false);
     }
-    expect(w.fixtures.filter((f) => f.round === 1).every((f) => f.score)).toBe(true);
+    expect(w.fixtures.filter((f) => f.round === round).every((f) => f.score)).toBe(true);
     expect(w.ownMatches).toHaveLength(1);
   });
 });

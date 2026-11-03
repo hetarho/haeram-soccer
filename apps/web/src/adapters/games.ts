@@ -1,5 +1,5 @@
 import { deviceOwner, ownerOf, type Owner } from './profile';
-import type { StoragePort } from './repository';
+import { MANIFEST, type StoragePort } from './repository';
 
 /**
  * Game slots (→SAVE-14, →WEB-62). The index lists what each slot holds and which one is in play;
@@ -8,16 +8,6 @@ import type { StoragePort } from './repository';
  */
 export const GAMES_KEY = 'haeram-soccor:games';
 export const SLOT_COUNT = 3;
-/**
- * The localStorage keys of the game in play (→SAVE-3): its manifest and the slot:a/b checkpoints of
- * the fallback and earlier layouts. Its IndexedDB copies are the repository's to clear.
- */
-export const ACTIVE_SAVE_KEYS = [
-  'haeram-soccor:manifest',
-  'haeram-soccor:slot:a',
-  'haeram-soccor:slot:b',
-] as const;
-
 /** What a slot card shows without loading its game. */
 export interface SlotSummary {
   club: string;
@@ -99,12 +89,9 @@ export class GameIndexStore {
   write(index: GameIndex) {
     this.storage.setItem(GAMES_KEY, JSON.stringify({ v: 1, ...index }));
   }
-  /** Whether any game exists on this browser, including a save from before slots. */
+  /** Whether a current slot or the game in play's commit manifest exists. */
   hasGames() {
-    return (
-      this.read().slots.some(Boolean) ||
-      ACTIVE_SAVE_KEYS.some((key) => this.storage.getItem(key) !== null)
-    );
+    return this.read().slots.some(Boolean) || this.storage.getItem(MANIFEST) !== null;
   }
 }
 

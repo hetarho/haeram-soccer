@@ -1,3 +1,4 @@
+import { PORTABLE_FILE_LIMIT } from '../adapters/repository';
 import { ClubNavigation } from './ClubNavigation';
 import { OfficeOverviewHost } from './OfficeOverviewHost';
 import { CashAlarm } from './CashAlarm';
@@ -902,7 +903,7 @@ export function App() {
   };
   const importFile = async (file?: File) => {
     if (!file || gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
-    if (file.size > 8 * 1024 * 1024) {
+    if (file.size > PORTABLE_FILE_LIMIT) {
       setLocalError(t('save.fileTooLarge'));
       return;
     }

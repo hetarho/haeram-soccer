@@ -15,12 +15,17 @@ import { activePlayers, advanceRound, clubNews, ownStarters } from './index';
 import { FORMATIONS, MATCH_GAIN, TRAINING_GAIN } from './player';
 import { careerWorld } from './career.testkit';
 
+/**
+ * A career whose manager has no school, so the school factor is 1 unless a case sets one: the
+ * taken-over manager keeps his own school (→OWNER-4), which would bend every gain these cases count.
+ */
 function world(seed = 'adaptation') {
   const w = careerWorld({ seed });
   w.cash = '999999999';
+  delete w.manager.style;
   return w;
 }
-/** Everyone at `a`, with an average 적응력, under the founding (neutral) manager. */
+/** Everyone at `a`, with an average 적응력, under a manager without a school (neutral). */
 function at(w: World, a: number) {
   for (const p of activePlayers(w)) {
     p.adaptation = a;

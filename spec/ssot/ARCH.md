@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r27 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r29 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -184,22 +184,24 @@
   - Production repository: https://github.com/hetarho/haeram-soccer.git.
 - ARCH-28 [o] Browser interest and responsiveness have measured release budgets.
   - Initial entry JavaScript + CSS: at most 250 KiB compressed, excluding lazy engine/catalog chunks; report all first-play transfer sizes separately. Pages visited later (the records room, cup history) load as their own chunks.
-  - Reference trace: pinned Chromium, 4x CPU slowdown, Fast 4G for cold loading, desktop and 390x844 mobile viewports.
+  - Reference trace: pinned Chromium, 4x CPU slowdown of the whole renderer including the engine worker (DevTools throttling skips workers), Fast 4G for cold loading, desktop and 390x844 mobile viewports.
   - UI feedback after controls: p95 below 100 ms during ordinary simulation; observed pitch rendering targets at least 30 FPS on the reference mobile viewport.
-  - World generation after a valid start: at most 5 seconds for a 1930 takeover and at most 90 seconds for a 2000 takeover on the reference trace; present real generation progress (the season reached) while it runs.
+  - World generation after a valid start: at most 5 seconds for a 1930 takeover; a later decade at most 5 seconds a season played before the takeover on the reference trace (2000: 63 seasons, about 5¼ minutes), with the history view (→!WEB-115) showing the season reached throughout; the history view adds at most 10% to the generation time. ← the wait for a later decade is spent watching its history, and 90 seconds for 2000 would need a world 3.6× faster
+    - measured 261103 (preview build, process-wide 4x, a shared host under load): 1930 3.8 s, 1970 131.9 s, 2000 322.0 s (5.1 s a season); without the slowdown 1.9 / 33.0 / 68.2 s.
   - Benchmark reports record tool/browser versions, dataset size, world seed, save sizes, match/season throughput, and long-run memory; these are targets to measure, not invented results.
 
 - ARCH-29 [o] Owner-scoped data sits behind profile ports: a device profile now (a random device ID, the game-slot index), an account profile later. ← games should follow the owner once sign-in exists (→ARCH-19) without reshaping local data
   - every record carries its owner, a stable ID and an updated time; an account adapter adopts device records on first sign-in and merges by ID and updated time.
   - no sign-in, upload or sync exists now (→WEB-1, →WEB-6).
-- ARCH-30 [o] Verification runs in three tiers; no task runs the whole suite or any browser spec. ← the serial suite took about 22 minutes, 15½ of them browser tests, while a task's own checks take about a minute; even the covering Chromium specs made each task too slow
+- ARCH-30 [o] Verification runs in tiers; no task runs the whole suite or any browser spec. ← the serial suite took about 22 minutes, 15½ of them browser tests, while a task's own checks take about a minute; even the covering Chromium specs made each task too slow
   - task, before each task's done commit: `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check`, `pnpm exec vitest run --project unit --changed "$HAERAM_DIFF_BASE" --passWithNoTests`.
   - a task never runs browser specs (`playwright`, `tests/e2e`), not even for a UI, browser-journey, storage or worker change; such a task runs `pnpm run build` beside the task checks.
-  - an acceptance item naming `tests/e2e` specs is confirmed by the batch run, not by the task session: the task writes or updates those specs, checks the item `- [v]` once the build passes, lists only the commands it ran in `- verified:` and names the specs left to the batch run in `- limits:`.
+  - an acceptance item naming `tests/e2e` specs is confirmed by the release run, not by the task session: the task writes or updates those specs, checks the item `- [v]` once the build passes, lists only the commands it ran in `- verified:` and names the specs left to the release run in `- limits:`.
   - `HAERAM_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.
-  - batch, once right before a push to main that carries code (a work-group unit's `work integrate --verify`, which pushes the unit to main; a standalone session's push): `pnpm run test:unit`, `pnpm run test:integration`, `pnpm run test:contract`, `pnpm run validate:catalogs`, `pnpm run build`, then every journey on Chromium with `PREVIEW_BUILD=1 pnpm exec playwright test --project=chromium`.
-  - browser specs run only in that batch run; a failing spec there stops the push until it is fixed.
-  - CI, after a push that carries code: ARCH-23 runs every browser. One waiting command reads the result once per push, never repeated model polling; a failure becomes a fix task. A push touching only `spec/`, `artifacts/` or Markdown starts no CI and needs no wait.
+  - batch, before a session pushes code to `next`, the branch every session's work gathers on: `pnpm run test:unit`, `pnpm run test:contract`, `pnpm run build`.
+  - release, once, by the last session still working (no other live session with a task in progress): merge `main` into `next`, run `pnpm run verify:batch` (unit, integration, contract, catalogs, presentation, build and every journey on Chromium) through `vibe check --tier batch`, fix what fails, then merge `next` into `main` and push `main`, which deploys. Every other session only gathers its work on `next`. ← sessions running full suites and browser journeys side by side overloaded the shared host; one gate before each deploy is enough
+  - browser specs run only in the release run; a failing spec there stops the release until it is fixed.
+  - CI, after a push to `main` (pushes to `next` start none): ARCH-23 runs every browser. One waiting command reads the result once per push, never repeated model polling; a failure becomes a fix task. A push touching only `spec/`, `artifacts/` or Markdown starts no CI and needs no wait.
   - a work group collecting local commits maps task → `--task-verify`, quick checks → `--verify`, and the complete batch → `--group-verify`; task commits and WIP checkpoints do not trigger the batch. A group explicitly pushing each integration runs the batch before that push. Reuse successful verification of identical source, command and scope.
   - `pnpm run verify` is the one-go local equivalent of CI, every browser spec included, so no task runs it: it stands in for the batch run when CI is unavailable, and a storage or release gate task that needs local raw reports alongside the benchmarks takes the browser-spec reports from that batch run (→ARCH-22).
 
@@ -237,7 +239,7 @@
 - Presentation: locale/theme registry → selected validated JSON pack → shared presentation consumers; a preference change loads resources without issuing a game command.
 - Save: safe game boundary → background candidate envelope/codec/checksum → validated checkpoint commit (→SAVE-3) → committed acknowledgment.
 - Recovery: startup → capability check → save validation → load(current|previous compatible|export/recovery) → worker initialization.
-- Verification: task checks per task → batch checks before a code push → CI on every browser after it (→ARCH-30).
+- Verification: task checks per task → quick batch before a session's push to `next` → the last session's release gate on `next` → `main` push (deploy) → CI on every browser (→ARCH-30).
 - Release: locked install → verification → static build → preview smoke checks → stable production deployment → compatible rollback path.
 - Future mobile: portable contracts/catalogs/fixtures → Dart engine parity → Flutter views/persistence → commercial-release validation.
 
@@ -250,6 +252,8 @@
 - Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
 
 ## chg
+- r29 261103 ARCH-30✎ batch before a push to main (full suite and Chromium)→quick batch before a session's push to `next` (unit, contract, build); +release: the last session working merges main into next, runs verify:batch once, merges next into main and pushes (deploy); CI after main pushes only
+- r28 261103 ARCH-28✎ world generation 2000 at most 90 s→a later decade at most 5 s a season played with the history view (→WEB-115) adding at most 10%; reference trace 4x CPU→4x of the whole renderer including the engine worker
 - r27 261103 ARCH-1✎ carry founding, initial-capital difficulty→the takeover start with wealth tiers and traits; ARCH-14✎ measure worlds at founding→at the takeover; ARCH-19✎ submission founding year, initial-capital category→takeover decade, wealth tier, trait count; ARCH-21✎ Playwright founding→start and takeover; ARCH-28✎ world initialization 5 s→5 s for 1930 and 90 s for a 2000 takeover with the season reached
 - r26 261102 ARCH-1✎ carry manager personality and tactical requests→manager personality; ARCH-6✎ duplicates never repeat tactics changes→removed from the list; ARCH-8✎ record requested tactics, manager responses and applied tactics separately→removed; ARCH-21✎ Vitest manager-request outcomes and Playwright request tactics→removed; ARCH-24✎ full web loop manager personality/requests→manager personality; ARCH-29✎ device profile holds the strategy library→device ID and game-slot index only
 - r25 261028 ARCH-31✎ throughput gates on absolute budgets (fixture ≤1 ms, season ≤15 s median on a reference machine)→no absolute time budget, throughput compared with the previous release on one machine and reported, capacity stays the gate; ARCH-34+ a speed-up succeeds when faster than its baseline on the measuring machine beyond the noise (paired harness, 95% interval, result-identical hashes)

@@ -1,12 +1,19 @@
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
-import { clubMilestones } from './index';
+import { clubMilestones, clubOf } from './index';
 import { careerWorld } from './career.testkit';
 
-/** The milestone club on the pre-feature path: club goals, not the match model, are the subject. */
+/**
+ * The milestone club on the pre-feature path: club goals, not the match model, are the subject. A
+ * taken-over club arrives with its ground and following (→CLUB-1), so this one is given a small
+ * club's facts, the founding's 2,500 ground and 800 supporters, leaving the facility and supporter
+ * milestones open to earn.
+ */
 export function world(strong = false) {
   const w = careerWorld({ seed: 'milestone-career' }, DISABLED_RELEASE);
   w.cash = '999999999999';
+  w.stadium = 0;
+  clubOf(w).fans = 800;
   if (strong) {
     w.manager.ability = 100;
     w.tactic = 'balanced';

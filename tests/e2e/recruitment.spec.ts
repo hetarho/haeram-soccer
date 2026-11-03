@@ -151,7 +151,9 @@ for (const viewport of [
   test(`compact market exposes rows before optional panels at ${viewport.width}`, async ({
     page,
   }) => {
-    await foundMarket(page, `compact-market-${viewport.width}`);
+    // Funded, the club shows no money band above the market: a 1930 club is taken over with no
+    // cash, and the band's two lines pushed the fourth row below 360x740 (→WEB-56).
+    await foundMarket(page, `compact-market-${viewport.width}`, { fund: true });
     await page.setViewportSize(viewport);
     const rows = marketRows(page);
     await expect(rows).toHaveCount(DEFAULT_MARKET_QUERY.pageSize!);
@@ -304,7 +306,15 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   await expect.poll(ids).toEqual(expected().map((offer) => offer.player.id));
   await chooseOption(position, 'line:GK');
   await expect.poll(ids).toEqual(expected({ line: 'GK' }).map((offer) => offer.player.id));
-  const sorted = (await ids()).slice(0, 2);
+  // The market lists our own players too (→WEB-43), and the strongest English club taken over
+  // has keepers among the best: the comparison is of two candidates, so ours are passed over.
+  const ours = new Set(
+    expected({ line: 'GK' })
+      .filter((offer) => offer.own)
+      .map((offer) => offer.player.id),
+  );
+  const sorted = (await ids()).filter((id) => !ours.has(id)).slice(0, 2);
+  expect(sorted).toHaveLength(2);
   await closeMarketPanel(page, '영입 필터');
   for (const id of sorted)
     await desk

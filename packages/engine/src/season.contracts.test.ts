@@ -19,22 +19,29 @@ describe('closed season archive', () => {
       return { w: toLastRound(w), year, contracts };
     });
     const before = new Map(contracts);
+    // A player unhappy since a bigger club's move fell through opens no talk (→CLUB-26, CLUB-27):
+    // a taken-over professional squad draws such bids.
+    const unhappy = new Set(w.players.filter((p) => p.unhappy).map((p) => p.id));
     closedSeason(w);
     const founders = w.players.filter((p) => before.has(p.id)),
       left = founders.filter((p) => p.status === 'sold');
-    // Each asked to renew on 1 January instead, and left unrenewed; one who announced his
-    // retirement in spring needed no renewal.
+    // Each other one asked to renew on 1 January instead, and left unrenewed; one who announced
+    // his retirement in spring needed no renewal.
     const asked = new Set(
       (w.inbox || []).filter((item) => item.kind === 'contract-talk').map((item) => item.ref),
     );
     expect(left.length).toBeGreaterThan(0);
     for (const p of founders) {
-      expect(asked.has(p.id)).toBe(true);
+      expect(asked.has(p.id)).toBe(!unhappy.has(p.id));
       expect(p.status === 'sold' || p.retiring === year).toBe(true);
       expect({ wage: p.wage, until: p.until }).toEqual(before.get(p.id));
       expect(p.talk).toBeUndefined();
     }
-    expect(w.events.some((e) => e.kind === 'contract')).toBe(false);
+    // No contract was agreed: the only contract news is each unhappy player's unhappiness ending
+    // at the close (→CLUB-27).
+    expect(w.events.filter((e) => e.kind === 'contract').map((e) => e.title)).toEqual(
+      w.players.filter((p) => unhappy.has(p.id)).map((p) => `${p.name} 언해피 해소`),
+    );
     // Before 1996 every departure brings his new club's compensation; youth fill the squad.
     const paid = w.events.filter(
       (e) => e.year === year + 1 && e.kind === 'free-transfer-compensation',

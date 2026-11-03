@@ -15,9 +15,11 @@ import {
   clubOf,
   lineupSummary,
   nextOwnFixture,
+  operate,
   startingSquad,
   tacticLabel,
 } from '../../packages/engine/src/index';
+import { injectionSteps } from '../../apps/web/src/ui/ownerFigures';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import { generateHistory } from '../../packages/engine/src/history';
@@ -28,7 +30,7 @@ import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
 import { WATCH_DEFAULT_SPEED, WATCH_MINUTE_MS } from '../../apps/web/src/ui/presentationClock';
 import { committedRaw, openRecordedMatch } from './club-identity-helpers';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { DEFAULT_START, startCareer } from './start';
+import { DEFAULT_START, fundClub, startCareer } from './start';
 
 /** The career the engine makes from the browser's start: the same seed, club and choices. */
 function takenOver(seed: string, clubId: string): World {
@@ -124,9 +126,14 @@ for (const viewport of [
     await page.setViewportSize(viewport);
     await page.goto('/');
     await startCareer(page, { seed });
-    // The reference takes the same club over from the same seed and choices (→WORLD-13).
+    // A 1930 club is taken over with no cash; funded, it shows no money band, whose two lines
+    // left the theatre 66 px short of 360x740 (→WEB-17, WEB-56). The first 자금 투입 step.
+    await fundClub(page);
+    // The reference takes the same club over from the same seed and choices (→WORLD-13), and the
+    // owner puts the same step in.
     const clubId = (await decode(await savedRaw(page))).world.playerClub;
     const reference = takenOver(seed, clubId);
+    operate(reference, { type: 'owner-inject', amount: injectionSteps(reference)[0]! });
     reference.settings!.responsibilities.sales = 'delegated';
     reference.settings!.responsibilities.recruitment = 'delegated';
     const first = advanceToNextMatch(reference)!;
@@ -345,14 +352,16 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.setViewportSize({ width: 390, height: 844 });
   // A settled revision-1 match keeps its recorded facts after a writer upgrades the career.
-  // The archived replay exercises those historical goals, independent of the current model.
+  // The archived replay exercises those historical goals, independent of the current model. The
+  // club taken over from goal-feedback-207 scores at 2′, then concedes at 4′ and 40′ (T687, found
+  // by a scan in Node: goal-feedback-221's founded career had the same shape at 2′, 13′ and 32′).
   const world = careerWorld(
-    { country: 'ENG', seed: 'goal-feedback-221' },
+    { country: 'ENG', seed: 'goal-feedback-207' },
     { revision: 'continuous-aggregate-1', enabled: true },
   );
   world.settings!.responsibilities.sales = 'delegated';
   const played = advanceToNextMatch(world)!.record;
-  expect(played.highlights.map((goal) => goal.minute)).toEqual([2, 13, 32]);
+  expect(played.highlights.map((goal) => goal.minute)).toEqual([2, 4, 40]);
   await importResponsibilityCareer(page, world);
   const replay = await openRecordedMatch(page);
   const cue = replay.getByTestId('goal-cue');
@@ -389,8 +398,9 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   await expect(score).toHaveText('1 : 2');
   await expect(cue).toHaveCount(0);
   await expect(replay.getByRole('button', { name: '재생', exact: true })).toBeVisible();
-  // Going back before the 13′ goal lets playback cross it again.
-  await scrubber.fill('11');
+  // Going back before the 4′ goal lets playback cross it again: one sample a minute, the one
+  // before its minute's (as 11 stood before a 13′ goal).
+  await scrubber.fill('2');
   await expect(score).toHaveText('1 : 0');
   await closeMatchDetails(page);
   await replay.getByRole('button', { name: '재생', exact: true }).click();

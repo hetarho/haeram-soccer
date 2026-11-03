@@ -47,13 +47,29 @@ describe('knockout tree', () => {
     (code) => {
       const w = finished(code, 'cups');
       const rounds = w.cups!.find((cup) => cup.country === code)!.rounds;
-      // A mass first round (8 ties and 56 byes in Germany) and the round of 64 stay off the tree.
-      expect(rounds.map((round) => round.label).slice(0, 3)).toEqual(['1라운드', '64강', '32강']);
-      for (const drawn of [1, 2]) {
+      // Every professional club enters (→LEAGUE-5) and the first round brings the field to the
+      // power of two below it: 64 from England's four divisions, 32 from the three of Germany and
+      // France. That first round, and a round of 64, stay off the tree.
+      const [first] = rounds,
+        entered = first.ties.length * 2 + (first.byes?.length ?? 0),
+        field = first.ties.length + (first.byes?.length ?? 0);
+      expect(entered).toBe(
+        w.clubs.filter((club) => club.country === code && !club.id.startsWith('euro:')).length,
+      );
+      expect(field & (field - 1)).toBe(0);
+      expect(field).toBeLessThan(entered);
+      expect(field).toBeGreaterThanOrEqual(32);
+      const halvings = Array.from({ length: Math.log2(field) }, (_, i) => field / 2 ** i);
+      expect(rounds.map((round) => round.label)).toEqual([
+        '1라운드',
+        ...halvings.map((clubs) => (clubs === 2 ? '결승' : `${clubs}강`)),
+      ]);
+      const last32 = rounds.findIndex((round) => round.label === '32강');
+      for (let drawn = 1; drawn <= last32; drawn++) {
         expect(treeColumns(rounds.slice(0, drawn))).toBeUndefined();
         expect(treeStart(rounds.slice(0, drawn))).toBe(-1);
       }
-      expect(shape(treeColumns(rounds.slice(0, 3)))).toEqual([
+      expect(shape(treeColumns(rounds.slice(0, last32 + 1)))).toEqual([
         { label: '32강', ties: 16, byes: 0, open: 0 },
         { label: '16강', ties: 0, byes: 0, open: 8 },
         { label: '8강', ties: 0, byes: 0, open: 4 },

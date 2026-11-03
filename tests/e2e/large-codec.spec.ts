@@ -1,3 +1,6 @@
+import { initializeReadModels } from '../../packages/engine/src/read-models';
+import { seedRawCheckpoint } from './checkpoint-storage';
+import { INDEXED_CHECKPOINT_LIMIT } from '../../apps/web/src/adapters/repository';
 import { test, expect } from '@playwright/test';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { canonical, validateWorld } from '../../packages/contracts/src/index';
@@ -33,6 +36,7 @@ test('large portable codec writes, loads and exports under production CSP', asyn
   expect(csp).toContain("script-src 'self'");
   expect(csp).not.toContain('unsafe-eval');
   const world = validateWorld(largeCodecWorld(), LOAD_CATALOG);
+  initializeReadModels(world);
   expect(Object.keys(world.people!).filter((id) => id.startsWith('synthetic:codec:'))).toHaveLength(
     12000,
   );
@@ -82,7 +86,7 @@ test('large portable codec writes, loads and exports under production CSP', asyn
         retainedPeople: Object.keys(world.people!).length,
         syntheticRetiredPeople: 12000,
         codec: result.envelope.codec,
-        checkpointUtf16Bytes: 2 * (result.raw.length + 'haeram-soccor:slot:a'.length),
+        checkpointUtf16Bytes: 2 * (result.raw.length + 'active'.length),
       },
       null,
       2,
@@ -91,20 +95,10 @@ test('large portable codec writes, loads and exports under production CSP', asyn
   await test
     .info()
     .attach('large-codec-metrics', { path: metricsPath, contentType: 'application/json' });
-  expect(result.envelope.codec).toBe('brotli-bmp127');
+  expect(['gzip-cjk14', 'brotli-bmp127']).toContain(result.envelope.codec);
+  expect(2 * (result.raw.length + 'active'.length)).toBeLessThanOrEqual(INDEXED_CHECKPOINT_LIMIT);
   expect(canonical((await decode(result.raw)).world)).toBe(canonical(world));
-  await page.evaluate(({ raw, envelope }) => {
-    localStorage.setItem('haeram-soccor:slot:a', raw);
-    localStorage.setItem(
-      'haeram-soccor:manifest',
-      JSON.stringify({
-        slot: 0,
-        worldId: envelope.worldId,
-        generation: envelope.generation,
-        parentGeneration: envelope.parentGeneration,
-      }),
-    );
-  }, result);
+  await seedRawCheckpoint(page, result.raw);
   await page.goto('/journal');
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   const downloaded = page.waitForEvent('download');

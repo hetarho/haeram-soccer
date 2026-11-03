@@ -1,3 +1,4 @@
+import { eventsInSeason, matchesInSeason } from './season-index';
 import { baseEffects } from './bases';
 import type { Event, MatchRecord, SponsorSlot, World } from '../../contracts/src/types';
 import { currency } from '../../catalogs/src/index';
@@ -323,7 +324,9 @@ export function operatingCosts(w: World, round = w.round >= 46 ? 0 : w.round + 1
 }
 
 function recentForm(w: World, excluding?: string) {
-  const matches = w.ownMatches.filter((m) => m.year === w.year && m.id !== excluding).slice(-5);
+  const matches = matchesInSeason(w, w.year)
+    .filter((m) => m.id !== excluding)
+    .slice(-5);
   if (!matches.length) return 0.5;
   const points = matches.reduce((sum, m) => {
     const own = m.home === w.playerClub ? m.score.home : m.score.away;
@@ -522,8 +525,8 @@ const expenseKinds: Record<string, string> = {
 };
 /** A season's money entries in the currency its books were kept in. */
 function seasonEntries(w: World, year: number, money: string) {
-  return w.events.filter(
-    (event) => event.year === year && event.currency === money && event.amount !== undefined,
+  return eventsInSeason(w, year).filter(
+    (event) => event.currency === money && event.amount !== undefined,
   );
 }
 /**

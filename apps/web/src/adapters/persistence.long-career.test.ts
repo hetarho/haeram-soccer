@@ -5,7 +5,7 @@ import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { checkpoint, decode } from './persistence';
 import { world } from './persistence.testkit';
 
-it('builds a codec checkpoint of a 10-season career that decodes to the same world', async () => {
+it('builds an IndexedDB codec checkpoint of a 10-season career that decodes to the same world', async () => {
   const w = cachedWorld('ten rich seasons', () => {
     const w = world();
     for (let season = 0; season < 10; season++) {

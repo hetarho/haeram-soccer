@@ -14,12 +14,16 @@ import { watchNext } from './watch';
 
 /**
  * KIT-6/7/8, WEB-88, SAVE-20: our shirt for the named next fixture, chosen in preparation. Careers
- * are marked synthetic worlds reached through real seeded play (`kit-prep-a`: a home league match,
- * then an away one, then an away cup tie) and enter through the ordinary file import.
+ * are marked synthetic worlds reached through real seeded play and enter through the ordinary file
+ * import. `kit-prep-a`'s taken-over club opens with a home league match, then an away one, and
+ * meets its first cup tie, at home, after four league matches (a founded career met an away tie
+ * after two).
  */
 
 const LABEL: Record<KitRole, string> = { home: '홈', away: '어웨이', third: '세컨' };
 const ownSide = (w: World, f: Fixture) => (f.home === w.playerClub ? 0 : 1);
+/** The club taken over keeps its own name (→OWNER-4); a founding once named it Kit Town. */
+const ownName = (w: World) => w.clubs.find((club) => club.id === w.playerClub)!.name;
 
 /** A new career with every business decision delegated, after `matches` own matches. */
 function career(matches: number) {
@@ -92,7 +96,7 @@ test('our home league shirt is previewed, committed once, kept through reload an
   const before = await savedWorld(page);
   const { dialog, kit } = await openKit(page, hubPreparation(page));
   await expect(kit).toHaveAttribute('data-fixture-id', next.id);
-  await expect(kit.getByTestId('fixture-kit-context')).toContainText('Kit Town 대 ');
+  await expect(kit.getByTestId('fixture-kit-context')).toContainText(`${ownName(w)} 대 `);
   await expect(kit.getByTestId('fixture-kit-context')).toContainText('우리 홈 경기');
   await expect(kit.getByTestId('fixture-kit-summary')).toHaveText(/· 자동$/);
   await expect(kit.getByTestId('fixture-kit-recommendation')).toContainText(
@@ -100,13 +104,13 @@ test('our home league shirt is previewed, committed once, kept through reload an
   );
   // Both sides' shirts and automatic keepers are named before anything is chosen.
   const caption = kit.locator('figcaption');
-  await expect(caption).toContainText(`홈 Kit Town: ${LABEL[automatic]} 유니폼`);
+  await expect(caption).toContainText(`홈 ${ownName(w)}: ${LABEL[automatic]} 유니폼`);
   await expect(caption).toContainText('골키퍼 착용:');
   await expect(kit.getByRole('radio', { checked: true })).toHaveCount(0);
   // Choosing redraws only the preview: our side stays at home and nothing is saved.
   await radio(kit, role).click();
   await expect(radio(kit, role)).toHaveAttribute('aria-checked', 'true');
-  await expect(caption).toContainText(`홈 Kit Town: ${LABEL[role]} 유니폼`);
+  await expect(caption).toContainText(`홈 ${ownName(w)}: ${LABEL[role]} 유니폼`);
   await expect(kit.getByTestId('fixture-kit-state')).toContainText(
     `미리보기: ${LABEL[role]} 유니폼 · 아직 정하지 않았어요.`,
   );
@@ -185,10 +189,12 @@ test("our away shirt maps to the away side and leaves the manager's XI alone", a
   const { dialog, kit } = await openKit(page, hubPreparation(page));
   await expect(kit).toHaveAttribute('data-fixture-id', next.id);
   await expect(kit.getByTestId('fixture-kit-context')).toContainText(
-    ' 대 Kit Town · 우리 원정 경기',
+    ` 대 ${ownName(w)} · 우리 원정 경기`,
   );
   await radio(kit, role).click();
-  await expect(kit.locator('figcaption')).toContainText(`원정 Kit Town: ${LABEL[role]} 유니폼`);
+  await expect(kit.locator('figcaption')).toContainText(
+    `원정 ${ownName(w)}: ${LABEL[role]} 유니폼`,
+  );
   await kit.getByRole('button', { name: '이 유니폼으로 정하기', exact: true }).click();
   await expect
     .poll(async () => (await savedWorld(page)).kitChoice)
@@ -218,7 +224,7 @@ test('a warned cup-tie clash can be confirmed, reads read-only elsewhere and ret
 }) => {
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
-  const w = career(3);
+  const w = career(4);
   const next = nextOwnFixture(w)!;
   expect(next.kind).toBe('cup');
   const own = ownSide(w, next);

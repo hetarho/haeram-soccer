@@ -1,3 +1,4 @@
+import { refreshReadModels } from './read-models';
 import { openNeed } from './replacements';
 import { callUpFor } from './squad-target';
 import { SQUAD_TARGET } from './squad-size';
@@ -251,6 +252,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     // The manager in charge is frozen on the kept record as it settles (→HIST-18).
     const saved = attributeOwnMatch(w, { ...m, players, ...(lineCounts ? { lineCounts } : {}) });
     w.ownMatches.push(saved);
+    refreshReadModels(w);
     gate(w, m);
     // Every starter settles a little by the slot he played, a substitute by the slot of the
     // player he replaced (→PLAYER-12).
@@ -645,6 +647,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   promote(w);
   // Seed any untracked clubs in an older save before this season's fixture lists are discarded.
   retainRecentResults(w);
+  refreshReadModels(w);
   // The season's own match material, the playoff's included, becomes one heat map per own player
   // (→MATCH-5).
   reduceSeasonMaterial(w, w.history[w.history.length - 1]!);
@@ -668,6 +671,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     '시즌의 마지막 페이지',
     `${w.year}/${String(w.year + 1).slice(2)} · ${table.points}점`,
   );
+  refreshReadModels(w);
   // The next season opens on 1 August; after 1938/39 the war skips to 1946 (→WORLD-14).
   const closed = w.year;
   w.year = seasonAfter(closed);
@@ -763,6 +767,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   // The new season's first day of club business opens the summer window.
   clubDay(w);
   sponsorReminder(w);
+  refreshReadModels(w);
 }
 /**
  * The close of a season before anyone owns a club (→WORLD-13): the cups, Europe, the archive of
@@ -1064,6 +1069,7 @@ export function clubDay(w: World) {
   transferRequests(w);
   clearHealed(w);
   ownerDay(w);
+  refreshReadModels(w);
 }
 /** A day's business before anyone owns a club: other clubs' coaches, managers and retirements. */
 function worldDay(w: World) {

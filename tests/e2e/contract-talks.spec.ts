@@ -1,3 +1,4 @@
+import { seedRawCheckpoint } from './checkpoint-storage';
 import { openPersonnel } from './personnel-navigation';
 import { advanceOneRound } from './season-progression';
 import { expect, test, type Page } from '@playwright/test';
@@ -71,19 +72,7 @@ async function talking() {
   };
 }
 async function seed(page: Page, raw: string) {
-  await page.addInitScript((raw) => {
-    const envelope = JSON.parse(raw);
-    localStorage.setItem('haeram-soccor:slot:a', raw);
-    localStorage.setItem(
-      'haeram-soccor:manifest',
-      JSON.stringify({
-        slot: 0,
-        worldId: envelope.worldId,
-        generation: envelope.generation,
-        parentGeneration: envelope.parentGeneration,
-      }),
-    );
-  }, raw);
+  await seedRawCheckpoint(page, raw);
 }
 
 test('declines a contract talk: the badge, then the transfer request', async ({
@@ -91,8 +80,11 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   browserName,
 }) => {
   test.skip(browserName !== 'chromium', 'One browser covers the journey.');
-  // Six weeks of real match events are played in the browser.
-  test.slow();
+  // Six weeks of real match events are played in the browser, after the taken-over club's first
+  // half season (a 24-club division, all own matches on the grid engine) is lived in Node to reach
+  // 1 January. On the takeover the journey reached its last check as the slow 90 s ran out
+  // (dfa39857's Chromium run), so it has the 180 s of the other journeys that live a season first.
+  test.setTimeout(180_000);
   const { raw, name, dueDay } = await talking();
   await seed(page, raw);
   await page.goto('/');

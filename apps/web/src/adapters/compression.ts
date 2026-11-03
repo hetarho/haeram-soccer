@@ -28,12 +28,18 @@ async function gzip(bytes: Uint8Array, compress: boolean) {
   }
   return result;
 }
+export interface EncodedPayload {
+  codec: SaveCodec;
+  payload: string;
+}
 export async function encodePayload(
   bytes: Uint8Array,
-): Promise<{ codec: SaveCodec; payload: string }> {
+  acceptsFast?: (candidate: EncodedPayload) => boolean,
+): Promise<EncodedPayload> {
   if (bytes.length > LIMIT) throw new Error('저장 파일의 압축 해제 한도를 초과했습니다.');
   const fast = await gzip(bytes, true);
-  if (fast.length <= 1_200_000) return { codec: 'gzip-cjk14', payload: denseText(fast) };
+  const candidate: EncodedPayload = { codec: 'gzip-cjk14', payload: denseText(fast) };
+  if (fast.length <= 1_200_000 || acceptsFast?.(candidate)) return candidate;
   const { compress } = await import('brotli/compress');
   const packed = await compress(bytes, { quality: 11, lgwin: 24 });
   if (!packed) throw new Error('저장 압축에 실패했습니다.');

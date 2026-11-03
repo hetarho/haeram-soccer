@@ -11,3 +11,6 @@ packages/catalogs/data
 tests/fixtures/legacy-rules3.haeram-save.json
 # byte-identical copy of artifacts/benchmarks/match-baselines-40.json (T204)
 packages/engine/src/grid/baselines.json
+
+# Portable game exports are user data, not source files.
+*.haeram-save.json

@@ -549,8 +549,7 @@ function startReport(careers: Career[]) {
     const divisions = new Map<number, number>();
     for (const c of group)
       divisions.set(c.start.division + 1, (divisions.get(c.start.division + 1) ?? 0) + 1);
-    const living = (c: Career) =>
-      c.start.fortune * SSOT_LIVING * (OWNER_BUSINESS.dates.length + 1);
+    const living = (c: Career) => c.start.fortune * SSOT_LIVING * (OWNER_BUSINESS.dates.length + 1);
     console.log(
       `| ${tier} | ${group.length} | ${[...divisions]
         .sort((a, b) => a[0] - b[0])
@@ -685,7 +684,7 @@ function reachReport(seed: string) {
     priced = pricedClubs(w);
   console.log(`\n### Reach and books in ${TAKEOVER_YEAR}, seed ${seed}\n`);
   console.log(
-    '| tier | country | clubs in reach | affordable | in debt | debt / last income (median of those in debt) | debt above a season\'s income | price / last income (median) |',
+    "| tier | country | clubs in reach | affordable | in debt | debt / last income (median of those in debt) | debt above a season's income | price / last income (median) |",
   );
   console.log('|---|---|---:|---:|---:|---:|---:|---:|');
   for (const tier of TIERS) {
@@ -737,7 +736,9 @@ console.log(
     OWNER_TIERS,
   )
     .map((t) => t.multiple)
-    .join('/')}, living ${SSOT_LIVING * 100}% a settlement${PURSE_APART ? ', reference purse apart' : ''})`,
+    .join(
+      '/',
+    )}, living ${SSOT_LIVING * 100}% a settlement${PURSE_APART ? ', reference purse apart' : ''})`,
 );
 balanceReport(careers);
 livingReport(careers);

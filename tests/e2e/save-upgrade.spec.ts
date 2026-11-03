@@ -1,3 +1,4 @@
+import { idbGet, seedRawCheckpoint } from './checkpoint-storage';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { advanceRound } from '../../packages/engine/src/index';
@@ -19,27 +20,7 @@ async function current() {
   return { world, raw: await encode(world, 1, 0) };
 }
 async function seed(page: Page, raw: string, other?: string) {
-  await page.addInitScript(
-    ({ raw, other }) => {
-      // Seeded once per tab: a reload after deleting must not bring the save back.
-      if (sessionStorage.getItem('seeded')) return;
-      sessionStorage.setItem('seeded', '1');
-      localStorage.setItem('haeram-soccor:slot:a', raw);
-      const active = other || raw,
-        envelope = JSON.parse(active);
-      if (other) localStorage.setItem('haeram-soccor:slot:b', other);
-      localStorage.setItem(
-        'haeram-soccor:manifest',
-        JSON.stringify({
-          slot: other ? 1 : 0,
-          worldId: envelope.worldId,
-          generation: envelope.generation,
-          parentGeneration: envelope.parentGeneration,
-        }),
-      );
-    },
-    { raw, other },
-  );
+  await seedRawCheckpoint(page, other || raw, other ? raw : undefined);
 }
 async function exportRaw(page: Page, recovery = false) {
   const menu = recovery ? undefined : await openSaveMenu(page);
@@ -52,40 +33,42 @@ async function exportRaw(page: Page, recovery = false) {
   return await readFile((await file.path())!, 'utf8');
 }
 
-test('recognized legacy gameplay resets on writer activation and new careers reload', async ({
+test('old localStorage saves and retired strategies are ignored and left untouched', async ({
   page,
 }) => {
-  // Earlier rules never tracked manager history, so they wrote only the older containers.
-  const world = withoutManagerHistory((await current()).world);
-  world.engine = '2.0.0';
-  const earlier = await encode(world);
-  await seed(page, earlier);
-  await page.addInitScript(() => {
-    localStorage.setItem('unrelated-preference', 'keep');
-    localStorage.setItem('haeram-soccor:strategies', '[]');
-  });
+  const oldKeys = ['haeram-soccor:slot:a', 'haeram-soccor:slot:b', 'haeram-soccor:strategies'];
+  await page.addInitScript((keys) => {
+    for (const key of keys) localStorage.setItem(key, 'retired bytes');
+  }, oldKeys);
   await page.goto('/');
-  await page
-    .getByRole('listitem', { name: '슬롯 1 · 빈 슬롯' })
-    .getByRole('button', { name: '새 게임', exact: true })
-    .click();
   await expect(startFlow(page)).toBeVisible();
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();
-  expect(await page.evaluate(() => localStorage.getItem('unrelated-preference'))).toBe('keep');
-  // The device strategy library of earlier versions goes when the writer starts (→SAVE-25).
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:strategies'))).toBeNull();
-  await startCareer(page, { seed: 'legacy-reset-takeover' });
-  // The new career's checkpoint is in IndexedDB, none in localStorage (→SAVE-3).
+  await startCareer(page, { seed: 'retired-keys-takeover' });
+  await expect(page.getByTestId('save-status')).toContainText('저장 완료');
+  expect(await idbGet(page, 'checkpoints', 'active')).not.toBeNull();
   expect(
-    JSON.parse((await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest')))!).slot,
-  ).toBe(3);
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();
+    await page.evaluate((keys) => keys.map((key) => localStorage.getItem(key)), oldKeys),
+  ).toEqual(oldKeys.map(() => 'retired bytes'));
   await page.reload();
   await expect(page.getByTestId('club-hub')).toBeVisible();
   expect(JSON.parse(await exportRaw(page)).engine).toBe(CURRENT_ENGINE_VERSION);
 });
 
-test('a founded 0.7.0 career is cleared once by the writer, read-only tabs leaving it as stored (→SAVE-26)', async ({
+test('missing IndexedDB reports a storage error without writing localStorage checkpoints', async ({
+  page,
+}) => {
+  await page.addInitScript(() => Object.defineProperty(window, 'indexedDB', { value: undefined }));
+  await page.goto('/');
+  await expect(page.getByRole('alert')).toContainText('IndexedDB');
+  expect(
+    await page.evaluate(() =>
+      ['haeram-soccor:slot:a', 'haeram-soccor:slot:b', 'haeram-soccor:manifest'].map((key) =>
+        localStorage.getItem(key),
+      ),
+    ),
+  ).toEqual([null, null, null]);
+});
+
+test('a founded 0.7.0 career stays as stored in every tab and names its rules (→SAVE-26/29)', async ({
   page,
   context,
 }) => {
@@ -101,15 +84,14 @@ test('a founded 0.7.0 career is cleared once by the writer, read-only tabs leavi
   // A read-only tab names the earlier rules and never writes.
   await page.goto('/');
   await expect(page.getByRole('alert')).toContainText('규칙 0.7.0');
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBe(stored);
+  expect(await idbGet(page, 'checkpoints', 'active')).toBe(stored);
   await holder.close();
-  // The writer clears it once and says so (→WEB-62's release reset); a new game starts.
-  await expect
-    .poll(() => page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a')))
-    .toBeNull();
+  // The writer keeps it as stored too: no conversion, no reset (→SAVE-26/29).
   await page.reload();
-  await expect(startFlow(page)).toBeVisible();
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest'))).toBeNull();
+  await expect(page.getByRole('alert')).toContainText('규칙 0.7.0');
+  expect(await idbGet(page, 'checkpoints', 'active')).toBe(stored);
+  const slot = page.getByRole('listitem', { name: '슬롯 1 · 이전 규칙' });
+  await expect(slot.getByRole('button', { name: '삭제', exact: true })).toBeEnabled();
 });
 
 test('earlier rules import refused', async ({ page }) => {
@@ -127,8 +109,8 @@ test('earlier rules import refused', async ({ page }) => {
   );
   // Nothing changed: no career opened and nothing was stored.
   await expect(page.getByTestId('club-hub')).toHaveCount(0);
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:b'))).toBeNull();
+  expect(await idbGet(page, 'checkpoints', 'active')).toBeNull();
+  expect(await idbGet(page, 'checkpoints', 'previous')).toBeNull();
 });
 
 test('future selected save stays protected and exports exactly instead of downgrading its predecessor', async ({
@@ -143,8 +125,8 @@ test('future selected save stays protected and exports exactly instead of downgr
   await expect(page.getByTestId('club-hub')).toHaveCount(0);
   const backup = await exportRaw(page, true);
   expect(backup).toBe(future);
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBe(raw);
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:b'))).toBe(future);
+  expect(await idbGet(page, 'checkpoints', 'previous')).toBe(raw);
+  expect(await idbGet(page, 'checkpoints', 'active')).toBe(future);
   expect(
     await page.evaluate(
       () => JSON.parse(localStorage.getItem('haeram-soccor:manifest')!).generation,
@@ -152,7 +134,10 @@ test('future selected save stays protected and exports exactly instead of downgr
   ).toBe(2);
 });
 
-test('readonly legacy stays intact until writer handoff', async ({ page, context }) => {
+test('unsupported indexed career stays protected after writer handoff', async ({
+  page,
+  context,
+}) => {
   const holder = await context.newPage();
   await holder.goto('/');
   await expect(startFlow(holder)).toBeVisible();
@@ -162,12 +147,13 @@ test('readonly legacy stays intact until writer handoff', async ({ page, context
   await seed(page, raw);
   await page.goto('/');
   await expect(page.getByRole('alert')).toContainText('규칙 2.0.0');
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBe(raw);
+  expect(await idbGet(page, 'checkpoints', 'active')).toBe(raw);
   await holder.close();
-  await page
-    .getByRole('listitem', { name: '슬롯 1 · 빈 슬롯' })
-    .getByRole('button', { name: '새 게임', exact: true })
-    .click();
-  await expect(startFlow(page)).toBeVisible();
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();
+  await expect(page.getByRole('alert')).toContainText('규칙 2.0.0');
+  expect(await idbGet(page, 'checkpoints', 'active')).toBe(raw);
+  const slot = page.getByRole('listitem', { name: '슬롯 1 · 이전 규칙' });
+  await expect(slot.getByRole('button', { name: '삭제', exact: true })).toBeEnabled();
+  const downloading = page.waitForEvent('download');
+  await slot.getByRole('button', { name: '내보내기', exact: true }).click();
+  expect(await readFile((await (await downloading).path())!, 'utf8')).toBe(raw);
 });

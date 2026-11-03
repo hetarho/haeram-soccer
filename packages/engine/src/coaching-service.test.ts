@@ -68,6 +68,9 @@ describe('actual coaching service and mentors', () => {
   });
   it('records actual manager transitions, unknown school and tactic changes without fabricated mentor history', () => {
     const { w, p } = person();
+    // The first mentor's school is unknown: the taken-over manager keeps his own (→OWNER-4), so
+    // he stands here without one, as the founding manager stood.
+    delete w.manager.style;
     w.calendar = { day: 10 };
     openEmployment(w, p.id, 'assistant', w.playerClub);
     expect(p.mentors).toHaveLength(1);

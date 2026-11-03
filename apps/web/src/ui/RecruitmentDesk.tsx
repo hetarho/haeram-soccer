@@ -56,6 +56,31 @@ import { PlayerCompare, type CompareSide } from './PlayerCompare';
 import s from './RecruitmentDesk.module.css';
 
 type Candidate = MarketDetail;
+/**
+ * A market row as one side of a comparison (→WEB-43). The market lists our own players too; one
+ * of ours has no market terms (→WEB-109), so no fee, loan or cash after a signing shows for him.
+ */
+export function candidateSide(
+  candidate: Candidate,
+  label: string,
+  onOpen?: () => void,
+): CompareSide {
+  return {
+    label,
+    player: candidate.offer.player,
+    own: candidate.offer.own,
+    terms: candidate.offer.own
+      ? undefined
+      : {
+          fee: candidate.offer.fee,
+          loanFee: candidate.offer.loanFee,
+          freeAgent: candidate.offer.freeAgent,
+          cashAfter: candidate.buy.cashAfter,
+          annualAfter: candidate.buy.annualAfter,
+        },
+    action: onOpen && <button onClick={onOpen}>상세 · 제안</button>,
+  };
+}
 function sourceLabel(w: World, offer: WorldMarketOffer) {
   if (!offer.source) return offer.freeAgent ? '자유계약 선수' : '스카우트 후보';
   const source = w.clubs.find((club) => club.id === offer.source!.club);
@@ -609,23 +634,6 @@ export function RecruitmentDesk({
           overall(b) - overall(a),
       );
   };
-  const candidateSide = (
-    candidate: Candidate,
-    label: string,
-    onOpen?: () => void,
-  ): CompareSide => ({
-    label,
-    player: candidate.offer.player,
-    own: candidate.offer.own,
-    terms: {
-      fee: candidate.offer.fee,
-      loanFee: candidate.offer.loanFee,
-      freeAgent: candidate.offer.freeAgent,
-      cashAfter: candidate.buy.cashAfter,
-      annualAfter: candidate.buy.annualAfter,
-    },
-    action: onOpen && <button onClick={onOpen}>상세 · 제안</button>,
-  });
   const board = bidBoard(w),
     shownBids = visibleBids(board, expanded);
   const outgoing = bids.filter(

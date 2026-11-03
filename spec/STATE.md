@@ -8,17 +8,38 @@
 - level: mid
 - lang: ko   # user's language — interviews, confirmations, reports
 - docs: en  # doc language
-- push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
+- push: next   # every session gathers its work on next; only the last session working releases next into main (→ARCH-30)
+- plan: next   # planning is numbered and published on next too
 
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T03:19Z | T677 |
-| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T04:09Z | T668 |
+| hr05 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T05:50Z | 2026-11-03T06:15Z | T682 |
+| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T08:13Z | - |
 
 ## inbox
+- 261103 decided WEB-17 WEB-56 ARCH-21 T687: the 360x740 overflow in match-core, native-touch and the compact market (≈66 px) is the money band of a 1930 takeover's cash 0, not a takeover screen → those journeys fund the club first with the HUD's first 자금 투입 step, match-core's engine reference putting in the same step (alt: compress the theatre to fit beside the band, a design change | drop the band from the theatre, against WEB-56's every view). ot03
+- 261103 suggest WEB-17 WEB-56 T685: the match theatre at 360x740 still overflows by about 66 px whenever the money band shows (two lines at 12.5 px), and every 1930 takeover opens with it until T685's books bring cash → a design pass: a one-line band on phones, or the theatre yielding that room. ot03
+- 261103 decided CLUB-26 STAFF-32 T687: the joint-authority journeys' veteran, made 35 on a takeover squad, kept a younger man's wage above 재계약 기조 표준's 110% cap, so delegated staff rightly refused the playing-coach conversion → the journey pays him his market wage before the proposal (alt: 재계약 기조 모두 붙잡기, changing the club's direction | a younger veteran, no longer retiring). ot03
+- 261103 decided WEB-43 WEB-109 T687: the market's two-candidate comparison gave one of our own players market terms (fee, loan fee, cash after a signing) → `candidateSide` leaves terms out for ours, with a unit regression test; the journey compares two candidates that are not ours (alt: hide the compare toggle on our rows | keep the terms). ot03
+- 261103 decided ARCH-21 T687: seeds and clubs re-pinned by engine scans in Node rather than checks relaxed → revision 10 `goal-feedback-25` (4′ home, 16′ away, 22′ home), revision 1 `goal-feedback-207` (2′ home, 4′ and 40′ away; the archived scrubber's return 11 → 2), `kit-prep-a` `career(4)` for its first cup tie, the deficit journey on `ENG:0:0:0` (the lowest division's first club earns about twice its costs); contract-talks 180 s like the other season-living journeys (alt: derive goal minutes and scrubber values from each record at run time | edit wages for a lower-division deficit). ot03
+- 261103 decided KIT-9 KIT-13 OWNER-12 ARCH-21 T684: the identity workload's "design edit changed non-cosmetic facts" on a takeover career → adopting a draft truly changes one fact, the owner's 팬 민심 (−20 with one `fan-mood` event), as KIT-9 states, so the workload allows exactly that drop and event and adds the owner's other fields to the facts an edit may not move; the read models were not the cause (alt: strip events and read models from the comparison, which would let any event through | run the workload on a world without an owner, which no career is). ot03
+- 261103 decided ARCH-21 T684: helper-pool cases started a second client on the first one's saved game → each `withCores` call is another device with empty storage (alt: pass `replace` to take the first device's game over). ot03
+- 261103 decided LEAGUE-5 ARCH-21 T684: GER/FRA cups draw 32강 after the first round since the amateur clubs left them → the expected rounds derive from the first round's entrants and the power of two after it, checked equal to the country's professional clubs (alt: pin GER/FRA to 32 and ENG to 64 by hand). ot03
+- 261103 suggest OWNER-12 SAVE-4 T684: `scripts/benchmark.ts`'s active-management century adopts a design every season, now −20 팬 민심 each time (season starts settle near 43 → 23, above the 15 퇴진 floor, but a losing run or a relegation could cross it) → the next storage benchmark checks the century still reaches its end without 구단주 퇴진, or adopts a design less often. ot03
+- 261103 decided ARCH-21 OWNER-4 T683: cases built on the neutral founding manager (no school, three seasons left) on a takeover career, whose manager keeps his school and may be a firefighter on a one-season term → each case's setup drops his school or gives him three seasons left, as the founding manager stood, and the case says why (alt: seeds whose taken-over manager happens to fit | turn the cases into OWNER-4 checks, losing the neutral-manager rule's coverage). ot03
+- 261103 decided ARCH-21 T683: `tests/fixtures/transferred-scorer.ts` left its striker 15th of the takeover's 24-club division, outside the archived top ten the scorer case reads → seed `transferred-scorer-d` (6th on the pre-feature path), found by a season-per-seed scan in Node as T224 re-pinned it; T684's two web users of the fixture run on it (alt: strengthen the buyer further | read the live scorer table only, dropping the archive check). ot03
+- 261103 suggest ECON-9 ECON-36 T686: a 1950 ENG lowest-division takeover (seed `business`: 9,247 supporters against a 7,040 catchment, 5,000 seats) takes 223,265 at its first home gate against 14,986 of fixed costs a round, about 15 rounds' costs from one gate → T686 reads gate income against wages in the early decades. ot03
+- 261103 decided LEAGUE-13 OWNER-3 T668: which club a reference career takes over → the median-priced club of the tier's reach in that country that its fortune pays for, the dearer of the two middle ones (alt: the club nearest the anchor | a seeded draw from the reach). ot03
+- 261103 decided LEAGUE-13 OWNER-8 T668: how the reference measures the club when every 1.3× owner who moves no money goes bankrupt in 6–10 seasons at 1% → `--purse-apart`: no living costs while a reference career plays, the owner's bankruptcy season at 1/0.5/0.25/0.1/0.05% read from each season's living costs against the fortune left, exact while nothing is moved; the policies pay living costs as the game does (alt: let careers end at the owner's bankruptcy, losing every later sporting season | a dividend in the reference, which moves owner money). ot03
+- 261103 decided LEAGUE-13 ECON-29 T668: scale inside the 4 h box at 40–90 s a season on this host → seed `owner-balance-0` only, the reference to 1979 (30 seasons), five traits to 1969 in ENG GER, the policies in ENG to 1979, 24 jobs in parallel (alt: 4 countries × 5 seeds × 60 seasons, about 90 CPU-hours | fewer tiers at full length). ot03
+- 261103 decided OWNER-5 T668: the five traits beside the reference → 승리의 부적, 협상의 달인, 마당발, 마케팅 귀재, 정치력, the ones acting on a delegated career that moves no money (alt: 원석 감별사 for 마당발 | 팬들의 친구 for 정치력). ot03
+- 261103 decided OWNER-8 OWNER-12 ECON-38 T668: change `owner-config.ts` now? → no: the failed bands come from ECON-36's books (top clubs' debt, lower clubs' cash), OWNER-3's reach and OWNER-12's driver shapes, so the old→new values are proposed in T668's result for an update-ssot and SSOT and code stay equal (alt: apply `OWNER_LIVING.rate` 1% → 0.25% now, ahead of its update-ssot). ot03
+- 261103 suggest LEAGUE-13 OWNER-8 OWNER-12 T668: update-ssot from T668's result — `OWNER_LIVING.rate` 0.01 → 0.0025; `FAN_MOOD.dividend.perPercent` −1 → −0.5; `FAN_MOOD.starSale.change` −8 → −4 with at most one star-sale drop a window (a delegated 단장's winter sales took 팬 민심 53 → 13 and forced 퇴진 in a career that moved no money); LEAGUE-13's bankrupt column = the club's bankruptcy, the owner's purse measured on a 50% 배당 policy; then re-measure with `scripts/owner-balance.ts`. ot03
+- 261103 suggest ECON-36 ECON-38 LEAGUE-13 T668: 38 of 40 top-five clubs in 1950 carry debt of 3.8–15× a season's books income, so 석유 재벌 (3 of 4) and 재벌 총수 (1 of 4) references go bankrupt in 1950 under ECON-38's 5-season loan, while lower clubs come with about four seasons' turnover in cash (77–88% of their price) and every surviving lower reference reaches the top flight → update-ssot ECON-36 to put the books on the owned club's income scale (the owned club earns 1.1–2.4× its books' last income), then retune `CLUB_VALUE` and `TAKEOVER_DEBT`. ot03
+- 261103 suggest OWNER-3 CLUB-18 T668: 지역 유지 reaches clubs in England only of ENG ESP FRA GER (three professional divisions elsewhere, the third the lowest), and there 중견 사업가's reach takes in the lowest division 자수성가 buys from (GER's two references are one club) → update-ssot OWNER-3's reach for three-division countries; CLUB-18's delegated sales might weigh 팬 민심. ot03
 - 261103 decided ARCH-28 T667: how the reference trace's 4x CPU slowdown reaches the engine worker, which DevTools throttling does not (worker targets refuse `Emulation.setCPUThrottlingRate`; page-only 4x took a 1950 generation 9.5 → 12.1 s) → `scripts/generation-budget.ts` stops and continues the whole renderer 15 ms of each 20 ms (4.0–4.7× the unslowed run) and reports the unslowed run beside it (alt: report Node × 4 without a browser figure | the page-only throttle first-play uses, which leaves generation unslowed). ot03
 - 261103 decided ARCH-28 T667: tune generation within the 50-line allowance? → no: the T669 commit's engine measures the same here (1970 39.8 vs 38.1 s bundled Node), so nothing regressed, and the profile spreads as T669's split with no single hotspot (alt: the people-business indexes T669 listed, several hundred lines and ≈ 10% of Node time). ot03
 - 261103 suggest ARCH-28 WORLD-13 T667: 2000 generation is 322 s on the reference trace against 90 s (68 s unslowed; this host ran the same code ~3× slower than T669 recorded, so a quiet host may give ≈ 111 s) → re-measure with `scripts/generation-budget.ts` on a quiet machine, then update-ssot ARCH-28's later-decade budget from it (e.g. 1.5 s a season lived, or 6 min for 2000), or WORLD-13 cheaper pre-takeover business, or prepared worlds per decade (T667 limits). ot03
@@ -141,6 +162,11 @@
 - 261103 decided OWNER-11 OWNER-17 T653: where the close hooks sit in `closeSeason` → `ownerClose` once the season's money is in (after league merit and the Ballon d'Or bonus) and before the archive, so the archived cash is after the dividend; `fanMoodClose` after promotion and relegation are known, last, so the OWNER-17 record sees the whole close (alt: both after the archive). ot03
 - 261103 decided OWNER-8 ECON-6 T653: what the takeover keeps and what converts → the takeover facts keep the tier's starting fortune (the living-cost base) and the currency, historical and unconverted like the season records; the fortune, the FFP window's injections and the loan convert in `advanceEconomy` (alt: recompute the starting fortune at each settlement, which the world's later prices would move). ot03
 - 261103 decided WORLD-13 T653: what `hasOwner(w)` means → any club is the player's (`w.playerClub` non-empty), so founded careers keep every own-club branch and only the ownerless world before the takeover skips them; owner-state rules test `w.owner` (alt: `w.owner` present, which would skip own-club branches in founded careers until T664). ot03
+- 261103 decided WEB-115 T678: how the feats are found → engine `seasonDigest` reads the archives and the clubs' Elo at each season reached and carries only the season's greatest feat; only the European Cup lineage makes the treble and the European feats; a league run is carded at five and afterwards only when it becomes its country's longest; the war is one card on the 1946 restart (alt: the UI derives feats from the digests it received, which a reload mid-generation would cut short | a card for every season a run continues). ot03
+- 261103 decided WEB-115 ARCH-28: the details of the generation history view the owner asked for (real speed, Elo world ranking, feat cards, a relaxed budget) → Club Elo top 10; cards about 3 s, one at a time, greatest feat per season, unshown cards dropped at the next season; feats: war stop/restart, treble, European Cup three-peat, third 발롱도르 in a row, European Cup back-to-back, first European Cup, league run of five; the view may add at most 10% to generation; the later-decade budget 5 s a season played (alt: 6 minutes for 2000 | a closing 1930–2000 summary page before the club list | prepared worlds per decade, deferred). ot03
+- 261103 decided SAVE-29 WEB-62 T677: user explicitly drops beta backward compatibility for old localStorage code → remove checkpoint slots/fallback/migration/reset/strategy cleanup; keep current preferences, notification/read markers, game index and manifest metadata, with no deletion or migration of existing browser keys. hr03
+- 261103 decided SAVE-2 SAVE-4 T676: the 84-season news journal pushes maximum-compression saves to 589 s, while identical-byte gzip is 1.10 s and its 6.11 MB file fits the existing 8 MiB import cap → IndexedDB checkpoints allow 6 MiB UTF-16 and budget-verified gzip; fallback remains 3 MiB / 3.5 MiB total, portable 8 MiB and decompressed 32 MiB unchanged (alt: keep maximum Brotli on every save | drop retained news). hr03
+- 261103 decided T673 T674 T675: headless loop preflight failed because its child cannot resolve GitHub although this session can → implement the three selected tasks in this authorized session, keeping the coordinator gate and task commits (alt: change child permission settings or wait). hr03
 - 261103 decided HIST-11 HIST-22 SAVE-28 T673 T674 T675: how to avoid repeating historical news/statistics work → persist incremental source-linked news/record summaries, index current-season finance and page retained news (alt: replace IndexedDB or recompute every read); preserve all original facts and current rules. hr03
 - 261103 decided ARCH-30 T673 T674 T675: scope with takeover work active on another device → independent main-based news/read improvements only, reserve its T669–T672 IDs and retain its handoff; no takeover implementation. hr03
 - 261103 decided SAVE-17 WEB-45 T652: can a supported save lack `settings` → no: every rules-4.0.0/0.7.0 career is founded with them (written at founding since 261016, before 4.0.0), so the intervention level, its level→settings mapping and `World.intervention` go and an older save's level is dropped on load; a hand-built world without settings reads as the owner deciding everything (alt: keep a read-only level→settings mapping). ot03
@@ -600,8 +626,8 @@
 - 261103 decided T665 T670 T671 T672: T665 (founding, difficulty, editor and amateur level end to end) cannot finish in one unit — 243 files build worlds with `createWorld`/`simulatedWorld(Founding)` → split into T665 founding screen, `found` message, identity editor and ready-made crests; T670 engine/contracts tests on a takeover test builder; T671 fixtures, web tests, e2e and scripts, then the founding deleted; T672 the amateur level with LEAGUE-16's test; T666–T668 wait on T672 (alt: one unit for all of it, which would stop mid-migration | a renamed founding builder for tests, which keeps the founding in the code). ot03
 - 261103 decided T670 ARCH-21: how tests get a career once the founding goes → `careerWorld`: a fresh 1950 world nobody owns (`historyWorld` with a test-only year) and a takeover of the lowest division's first club by an `oil` owner, funded with two years of fixed costs (alt: a lived world from `generateHistory`, seconds per test | the takeover's own cash 0, bankrupt at round 8). ot03
 - 261103 decided KIT-2 KIT-14 T665: KIT-2 still offered six ready-made crests, 랜덤 and 직접 꾸미기 while KIT-14 removed the founding crests and no editor is left → KIT r9: designers compose crests from the component catalogue; no ready-made crests or owner-side composition (alt: keep the six presets as designer templates, which nothing reads). ot03
-- 261103 decided SAVE-2 SAVE-4 T676: the 84-season news journal pushes maximum-compression saves to 589 s, while identical-byte gzip is 1.10 s and its 6.11 MB file fits the existing 8 MiB import cap → IndexedDB checkpoints allow 6 MiB UTF-16 and budget-verified gzip; fallback remains 3 MiB / 3.5 MiB total, portable 8 MiB and decompressed 32 MiB unchanged (alt: keep maximum Brotli on every save | drop retained news). hr03
-- 261103 decided SAVE-29 WEB-62 T677: user explicitly drops beta backward compatibility for old localStorage code → remove checkpoint slots/fallback/migration/reset/strategy cleanup; keep current preferences, notification/read markers, game index and manifest metadata, with no deletion or migration of existing browser keys. hr03
+- 261103 decided OWNER-3 ECON-36 ECON-38 T685: the owner asked to fix the balance as far as possible, a 석유 재벌 free to buy any club below his reach → reach by price-rank bands (dearest 8%, 8–20, 20–35, 35–55, 55–80, cheapest 20%) so three-division countries hold every tier, living costs 0.25%, dividend −0.5 per 1%, star sale −4 once a window (T668's proposals), books opening with half a season of income, cash kept to one season and debt to 1.5 seasons of income, takeover loan 10 seasons (alt: keep division reaches and add 지역 유지 rules per country | recalibrate the books' income scale only and leave them unbounded | pay the inherited debt at the takeover from the owner's fortune). ot03
+- 261103 decided ARCH-30 T683 T684: 39 integration failures on dfa39857 (the takeover's migrated tests, never run, plus the merge with hr03's read models) → two fix tasks run before the push, engine files and web/fixture files, each case kept protecting what it protects (alt: one task for all 24 files | push and fix on main). ot03
 
 ## ideation
 | id | st |
@@ -625,25 +651,26 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 27 | 27 | - | 2 |
-| WEB | 205 | 205 | - | 0 |
+| ARCH | 29 | 29 | - | 2 |
+| WEB | 206 | 206 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
 | KIT | 9 | 9 | - | 0 |
 | CLUB | 50 | 50 | - | 0 |
 | MATCH | 48 | 48 | - | 0 |
-| LEAGUE | 12 | 12 | - | 0 |
+| LEAGUE | 13 | 13 | - | 0 |
 | STAFF | 39 | 39 | - | 0 |
-| ECON | 42 | 42 | - | 0 |
+| ECON | 43 | 43 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 22 | 22 | - | 0 |
 | SAVE | 65 | 65 | - | 0 |
-| OWNER | 1 | 1 | - | 0 |
+| OWNER | 2 | 2 | - | 0 |
 | PLAYER | 14 | 14 | - | 0 |
 
 ## review
 | id | st |
 |---|---|
+| automatic-play-hotspots-261103 | converted@261103 |
 | outside-t216-t255-261019 | converted@261019 |
 | recent-code-quality-261023 | converted@261023 |
 | development-feedback-261026 | converted@261026 |
@@ -654,12 +681,12 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T672 | doing@261103.ot03 |
-| T673 | Record news and update record counters when facts settle | HIST SAVE ARCH | - | doing@261103.hr03 |
-| T674 | Serve career statistics and current-season finance from maintained summaries | HIST SAVE ARCH | T673 | doing@261103.hr03 |
-| T675 | Verify long-career scaling and checkpoint continuity of incremental reads | HIST SAVE ARCH | T674 | doing@261103.hr03 |
-| T676 | Fast IndexedDB checkpoints within portable and fallback budgets | SAVE HIST ARCH | T674 | doing@261103.hr03 |
-| T677 | Remove legacy localStorage checkpoint layouts and startup cleanup | SAVE WEB ARCH | T674 | doing@261103.hr03 |
+| T678 | the world's history plays while it is generated | WEB ARCH WORLD HIST PLAYER EURO | T686 | todo |
+| T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
+| T681 | Reconcile client views once before store publication | ARCH WEB SAVE | T680 | doing@261103.hr05 |
+| T682 | Profile and reduce repeated day-step Worker work | ARCH WEB SAVE | T681 | doing@261103.hr05 |
+| T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | todo |
+| T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -683,11 +710,22 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- on branch `wip/ot03` (owner takeover; T653–T667 and T669–T672 done, main fa1ed566 merged): implement-task T668 (balance per tier); T667's 2000 generation misses ARCH-28 (322 s vs 90 s, inbox suggest: re-measure quiet, then update-ssot); then the batch gate once (Chromium; ~35 migrated e2e specs never ran; T671's result lists the seed-pinned journeys to re-pin, T672's the integration files it edited, the new `season.lowest.test.ts` included, T666's `records.spec.ts` owner-table check) and merge into main + push. Report spec/reports/261103-ot03.md
-- implement-task T673, then T674 and T675 (hr03, on main); preserve the ot03 takeover handoff above.
-- implement-task T677 (hr03), then complete T676 measurements and T675 final gate.
+- implement-task T685 and T686 (balance), then T678 and T679 (history view); T687's 10 journey specs wait for the release run's Chromium; each loop pushes its work to `next` after the quick batch (ot03)
+- release (→ARCH-30 r29): the last session working merges `main` into `next`, runs `pnpm run verify:batch` once (browser journeys only there), merges `next` into `main` and pushes (deploy); hr05 started under push: main and may push main itself, the release merges it in
+- hr05: implement-task T681 then T682 for the owner-approved automatic-play bottlenecks
 
 ## log
+- 261103 T687 done: the 20 Chromium journeys failing on dfa39857 fixed in 10 specs, none loosened: the club taken over's own name, `kit-prep-a`'s first cup tie after four league matches, re-pinned goal seeds (revision 10 `goal-feedback-25`, revision 1 `goal-feedback-207`), the 1930 cash-0 money band funded away where 360x740 is measured, the market comparison passing our own keepers over, the 35-year-old veteran on his market wage for 재계약 기조 표준, a top-flight club for the genuine deficit, contract-talks at 180 s, the hover read with pointer and focus away; app fix: the comparison shows no market terms for our own player (unit test); the specs await the release run; ot03
+- 261103 T684 done: the 12 web and fixture integration cases pass on takeover careers (4 files, no production change, no behaviour bug): the identity workload expects an adoption's stated 팬 민심 drop and its one event (→KIT-9, OWNER-12) and still holds every other fact, the read models unmoved; the helper cases start each device with empty storage; the cup rounds derive from the professional entrants (64 after England's first round, 32 after Germany's and France's); persistence.history passes on T683's seed d; ot03
+- 261103 T683 done: the 27 engine integration cases pass on takeover careers (18 files, no production change, no takeover or merge bug): setups stand in for the founding's facts (a school-less manager, three seasons left, a small ground and following, nobody retiring), expectations follow the takeover's rules (OWNER-4's schooled manager, CLUB-1's generated fillers, CLUB-27's unhappy player, the own league group and first played round), `transferred-scorer` re-pinned to seed d; ot03
+- 261103 update-ssot ARCH r29 (owner: every session gathers on `next`, only the last one runs the full suite with e2e and pushes main); cfg push and plan main→next; ARCH r29 no-op for code (process only); ot03
+- 261103 create-task T687: the 20 Chromium journeys failing on dfa39857 (324 passed), before the push; T685 dep T684→T687; ot03
+- 261103 fix e2e: one browser run at a time per clone — a Playwright globalSetup (tests/e2e/global-lock.ts) takes a lock in the git common directory, so sessions' journeys, from the batch or by hand, take turns instead of overloading the shared host; CI and E2E_LOCK=off skip it; smoke-tested (a second run waited for the first, a dead run's lock reclaimed); ot03
+- 261103 update-ssot OWNER r2 ECON r43 LEAGUE r13 (balance: price-band reach with every cheaper club buyable, living costs 0.25%, fan mood drops halved, bounded books, a 10-season takeover loan); create-task T683 T684 (integration fixes), T685 T686 (balance); T678 dep T668→T686; ot03
+- 261103 review/automatic-play-hotspots-261103 F1/F2 adopted by the owner and tasked as T681/T682; preserve gameplay and production pace options. hr05
+- 261103 T680 done: 8 x 365 browser days, x20 target unmet (fresh 8.68–9.32/s; retained 3.49–3.55/s), all equal-date facts/commits/reloads pass; main-page shareValue hotspot measured; report spec/reports/261103-hr04.md. hr04
+- 261103 merge main into the takeover (hr03 news journal, career reads, IndexedDB-only saves; hr04 T680 plan): career reads and the first-season goal count only the owner's seasons (→HIST-21); a founded 0.7.0 career stays protected in every tab, never cleared (→SAVE-26/29); ot03
+- 261103 T668 done: `scripts/owner-balance.ts` (generated 1950 worlds, a takeover per tier and country at its reach, delegated, `--traits`, `--policies`, `--purse-apart`, `--reach`, `--moods`); one seed, 30 seasons: no top-flight title in any reference career, 석유 재벌 3 of 4 and 재벌 총수 1 of 4 club-bankrupt in 1950 on inherited debt, every surviving lower career in the top flight, every reference owner bankrupt at 1% living costs (median seasons 6–17), 퇴진 from delegated star sales and 50% dividends; no constant changed, old→new proposed (inbox suggests); `artifacts/benchmarks/T668/`; ot03
 - 261103 T667 done: browser generation on the reference trace (whole renderer slowed 4x, since DevTools throttling skips workers) 1930 3.8 s, 1970 131.9 s, 2000 322.0 s against 90 s (unslowed 1.9 / 33.0 / 68.2 s); 2000 peaks 0.7–0.9 GiB renderer, 233–257 MiB worker heap; first checkpoint after a 2000 takeover 949,712 B UTF-16 / 1.42 MB file; `scripts/generation-budget.ts`, `artifacts/benchmarks/T667-generation.json`; rule change proposed in its limits; ot03
 - 261103 T666 done: 시즌별 기록 lists the club's own seasons, then 구단주 시즌 (`seasonRecords`) and 구단주 이전 (finish, cup runs, honours from the world's archive via engine `club-past.ts` `seasonsBeforeOwner`, published as `View.preOwner`); record book, cabinet, growth charts, review, CSV, manager-history source, game over, slot season number and the cup page's title count start at the takeover (`ownSeasons`); `records.spec.ts` check awaits the batch; ot03
 - 261103 T672 done: the amateur level leaves generation, fixtures, the close, money tables, records and the UI (`World.lower`, kind `lower`, `AMATEUR_CLUBS`, reserve ids, `amateurOpponents`, `amateurEntrants`, the exchange loop, `professionalStart`, `shell.amateurLeague` ×12); the last division relegates nobody (LEAGUE-16, `season.lowest.test.ts`); professional values unchanged, no digest re-recorded, golden lost `club.lower`; integration and e2e edits await the batch; ot03
@@ -696,15 +734,4 @@
 - 261103 T670 done: `careerWorld` (career.testkit.ts) takes a club over in a fresh world for every engine/contracts test; `historyWorld` takes a test-only year; `ownerlessWorld` and the lab world are fresh ownerless worlds; full-model-throughput and grid-throughput digests re-recorded for the start; founding-subject tests left on `createWorld` for T671; integration and contract edits await the batch; ot03
 - 261103 T665 done: protocol `found`, the founding screen, the identity editor, its draft reducer and the ready-made crests deleted; runtime tests start by `generate`+`take-over` (`startedHost`, `startedWorld`), client tests by `generate`/`takeOver`; founding wording reads for a takeover; integration and e2e edits await the batch; ot03
 - 261103 update-ssot KIT r9 (KIT-2: no ready-made crests, designers compose from the catalogue); create-task: T665 narrowed to the founding UI, T670–T672 split from it (engine tests, fixtures/web/e2e/scripts with the founding's deletion, the amateur level); T666–T668 dep T672; KIT row tasked 4→9 (the 261103 create-task consumed KIT@8, r9 goes to T665); ot03
-- 261103 T669 done (merged 1c218442): results-only fixtures before the takeover; generateHistory 2000 773.9 s → 30.9 s Node (≈124 s reference, ARCH-28 90 s needs ~27% more); ot03
-- 261103 T664 done: a new game is tier → traits → decade → generated world → club list → takeover on game version 0.8.0 (rules 5.0.0); worker generate/club-sheet/take-over, careerEnded routing, OwnerSheet/GameOver stories, founded 0.7.0 careers reset; e2e on tests/e2e/start.ts; ot03
-- 261103 update-ssot WORLD r9 MATCH r48: fixtures before the takeover take a results-only path; create-task T669 (explore 3h, parallel to T664); T664/T666 notes from the integration; ot03
-- 261103 integrate ot03/history (T654–T656) into ot03/integrate: generated world, wartime and NPC books merged without conflicts; one facility helper (club-value `facilityStage`), takeOver on a generateHistory world opens the manager market and closes the club's NPC coaching jobs, own-club reads skip pre-owner archives (`isOwnSeason`, parachute from the world's standings); unit 2034, contract 47, integration set 44, equivalence digests unchanged; ot03
-- 261103 update-ssot STAFF r39 PLAYER r14: 마당발's candidate and pool counts and 원석 감별사's scout range written where the base rules live (already built by T661, tasked=rev); ot03
-- 261103 integrate ot03 lanes on ot03/integrate: T657–T663 merged over the T653 foundation (helpers renamed startChoices.ts/ownerFigures.ts, trait checks share hasTrait); unit 2020, contract 47, equivalence digests unchanged; ot03
-- 261103 T663 done: HUD fortune chip, 구단주 sheet (stake slider, injection and dividend dials, 팬 민심), crisis bands and GameOver causes; wiring in T664; ot03
-- 261103 T662 done: start flow UI — tier, traits, decade, generation progress, club list and takeover confirmation; wiring in T664; ot03
-- 261103 T661 done: owner trait effects (승리의 부적, 협상의 달인, 마당발, 원석 감별사, 마케팅 귀재) on takeover careers; founded careers unchanged; ot03
-- 261103 T660 done: 팬 민심 drivers, 퇴진 압박 and the owner's season record; ot03
-- 261103 T659 done: quarterly business bet, living costs, injections within FFP, dividends, takeover loan and owner bankruptcy; ot03
-- 261103 T658 done: takeOver turns an unowned club into the owner's with its cash, debts as a loan and squad; ot03
+- 261103 T680 planned from user measurement request: compare current x10 and isolated 50 ms/day experiments on fresh and retained careers; ship no pace change. hr04

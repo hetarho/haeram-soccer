@@ -1,0 +1,3753 @@
+{
+  "file": ".tmp/hr04-profile-results/late-x20-r1.cpuprofile",
+  "totalMs": 33348.004,
+  "samples": 30717,
+  "groupedSelf": [
+    {
+      "frame": {
+        "functionName": "(idle)",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 24117.29499999819
+    },
+    {
+      "frame": {
+        "functionName": "n",
+        "scriptId": "19",
+        "url": "http://127.0.0.1:35573/assets/store-C5EWv8eQ.js",
+        "lineNumber": 0,
+        "columnNumber": 66
+      },
+      "ms": 5042.5830000000005
+    },
+    {
+      "frame": {
+        "functionName": "(program)",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 2760.6189999999933
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "4",
+        "url": "",
+        "lineNumber": 3,
+        "columnNumber": 716
+      },
+      "ms": 119.57800000000007
+    },
+    {
+      "frame": {
+        "functionName": "(garbage collector)",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 115.98999999999997
+    },
+    {
+      "frame": {
+        "functionName": "decimal",
+        "scriptId": "24",
+        "url": "http://127.0.0.1:35573/assets/controller-C8SOmyMm.js",
+        "lineNumber": 0,
+        "columnNumber": 1548
+      },
+      "ms": 99.61800000000001
+    },
+    {
+      "frame": {
+        "functionName": "Lr",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 18720
+      },
+      "ms": 86.94399999999997
+    },
+    {
+      "frame": {
+        "functionName": "o",
+        "scriptId": "62",
+        "url": "http://127.0.0.1:35573/assets/Pitch-Clf-jOT5.js",
+        "lineNumber": 1,
+        "columnNumber": 21231
+      },
+      "ms": 42.42799999999999
+    },
+    {
+      "frame": {
+        "functionName": "Rr",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 18989
+      },
+      "ms": 36.671
+    },
+    {
+      "frame": {
+        "functionName": "requestAnimationFrame",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 28.774
+    },
+    {
+      "frame": {
+        "functionName": "postMessage",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 25.088
+    },
+    {
+      "frame": {
+        "functionName": "c",
+        "scriptId": "21",
+        "url": "http://127.0.0.1:35573/assets/league-B_gBMh4d.js",
+        "lineNumber": 0,
+        "columnNumber": 262
+      },
+      "ms": 23.386
+    },
+    {
+      "frame": {
+        "functionName": "numberParts",
+        "scriptId": "24",
+        "url": "http://127.0.0.1:35573/assets/controller-C8SOmyMm.js",
+        "lineNumber": 0,
+        "columnNumber": 1610
+      },
+      "ms": 20.817000000000004
+    },
+    {
+      "frame": {
+        "functionName": "closest",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 19.951
+    },
+    {
+      "frame": {
+        "functionName": "_l",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 82165
+      },
+      "ms": 15.956000000000001
+    },
+    {
+      "frame": {
+        "functionName": "Wi",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 28877
+      },
+      "ms": 15.250000000000002
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 79830
+      },
+      "ms": 14.264
+    },
+    {
+      "frame": {
+        "functionName": "is",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 49059
+      },
+      "ms": 13.143
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "21",
+        "url": "http://127.0.0.1:35573/assets/league-B_gBMh4d.js",
+        "lineNumber": 0,
+        "columnNumber": 1817
+      },
+      "ms": 13.094000000000001
+    },
+    {
+      "frame": {
+        "functionName": "ip",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 7943
+      },
+      "ms": 13.042999999999997
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 12.746
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "22",
+        "url": "http://127.0.0.1:35573/assets/liveState-oul_KP1l.js",
+        "lineNumber": 0,
+        "columnNumber": 86
+      },
+      "ms": 12.530000000000001
+    },
+    {
+      "frame": {
+        "functionName": "ei",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 38057
+      },
+      "ms": 11.987
+    },
+    {
+      "frame": {
+        "functionName": "De",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 53383
+      },
+      "ms": 10.949
+    },
+    {
+      "frame": {
+        "functionName": "$",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 70
+      },
+      "ms": 10.372
+    },
+    {
+      "frame": {
+        "functionName": "number",
+        "scriptId": "24",
+        "url": "http://127.0.0.1:35573/assets/controller-C8SOmyMm.js",
+        "lineNumber": 0,
+        "columnNumber": 1492
+      },
+      "ms": 9.793000000000001
+    },
+    {
+      "frame": {
+        "functionName": "fs",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 50251
+      },
+      "ms": 9.711
+    },
+    {
+      "frame": {
+        "functionName": "xu",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 112045
+      },
+      "ms": 9.665
+    },
+    {
+      "frame": {
+        "functionName": "S",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 53531
+      },
+      "ms": 9.253
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "21",
+        "url": "http://127.0.0.1:35573/assets/league-B_gBMh4d.js",
+        "lineNumber": 0,
+        "columnNumber": 420
+      },
+      "ms": 8.949
+    },
+    {
+      "frame": {
+        "functionName": "b",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 1,
+        "columnNumber": 2140
+      },
+      "ms": 8.78
+    },
+    {
+      "frame": {
+        "functionName": "queueMicrotask",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 8.725999999999999
+    },
+    {
+      "frame": {
+        "functionName": "o",
+        "scriptId": "16",
+        "url": "http://127.0.0.1:35573/assets/metricGlossary-BbNsVvGp.js",
+        "lineNumber": 0,
+        "columnNumber": 391
+      },
+      "ms": 8.577
+    },
+    {
+      "frame": {
+        "functionName": "Yr",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 36584
+      },
+      "ms": 8.537999999999998
+    },
+    {
+      "frame": {
+        "functionName": "_",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 43382
+      },
+      "ms": 8.367
+    },
+    {
+      "frame": {
+        "functionName": "Mu",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 109199
+      },
+      "ms": 8.196
+    },
+    {
+      "frame": {
+        "functionName": "Ts",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 53821
+      },
+      "ms": 7.636999999999999
+    },
+    {
+      "frame": {
+        "functionName": "Um",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 63,
+        "columnNumber": 64877
+      },
+      "ms": 7.5760000000000005
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 154503
+      },
+      "ms": 7.4990000000000006
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "24",
+        "url": "http://127.0.0.1:35573/assets/controller-C8SOmyMm.js",
+        "lineNumber": 0,
+        "columnNumber": 246
+      },
+      "ms": 6.5200000000000005
+    },
+    {
+      "frame": {
+        "functionName": "jn",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 80556
+      },
+      "ms": 6.5169999999999995
+    },
+    {
+      "frame": {
+        "functionName": "ri",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 23542
+      },
+      "ms": 6.439000000000001
+    },
+    {
+      "frame": {
+        "functionName": "setAttribute",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 5.92
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 161829
+      },
+      "ms": 5.639
+    },
+    {
+      "frame": {
+        "functionName": "setItem",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 5.609
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 64921
+      },
+      "ms": 5.6080000000000005
+    },
+    {
+      "frame": {
+        "functionName": "format",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 43985
+      },
+      "ms": 5.539
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "16",
+        "url": "http://127.0.0.1:35573/assets/metricGlossary-BbNsVvGp.js",
+        "lineNumber": 0,
+        "columnNumber": 454
+      },
+      "ms": 5.484999999999999
+    },
+    {
+      "frame": {
+        "functionName": "Cn",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 9322
+      },
+      "ms": 5.449000000000001
+    },
+    {
+      "frame": {
+        "functionName": "de",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 51684
+      },
+      "ms": 5.444
+    },
+    {
+      "frame": {
+        "functionName": "Xn",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 6948
+      },
+      "ms": 5.41
+    },
+    {
+      "frame": {
+        "functionName": "Rl",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 96942
+      },
+      "ms": 5.382
+    },
+    {
+      "frame": {
+        "functionName": "Au",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 108717
+      },
+      "ms": 5.364
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 140014
+      },
+      "ms": 5.361
+    },
+    {
+      "frame": {
+        "functionName": "Cl",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 87334
+      },
+      "ms": 5.335
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 39935
+      },
+      "ms": 4.853
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 154533
+      },
+      "ms": 4.4239999999999995
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 159280
+      },
+      "ms": 4.417
+    },
+    {
+      "frame": {
+        "functionName": "getRootNode",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 4.372000000000001
+    },
+    {
+      "frame": {
+        "functionName": "Re",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 1,
+        "columnNumber": 13342
+      },
+      "ms": 4.36
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 63,
+        "columnNumber": 65825
+      },
+      "ms": 4.344
+    },
+    {
+      "frame": {
+        "functionName": "S",
+        "scriptId": "21",
+        "url": "http://127.0.0.1:35573/assets/league-B_gBMh4d.js",
+        "lineNumber": 0,
+        "columnNumber": 2109
+      },
+      "ms": 4.311
+    },
+    {
+      "frame": {
+        "functionName": "yu",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 111509
+      },
+      "ms": 4.3
+    },
+    {
+      "frame": {
+        "functionName": "h",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 42044
+      },
+      "ms": 4.295
+    },
+    {
+      "frame": {
+        "functionName": "ii",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 23846
+      },
+      "ms": 4.295
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 108018
+      },
+      "ms": 4.291
+    },
+    {
+      "frame": {
+        "functionName": "Nt",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 3836
+      },
+      "ms": 4.279
+    },
+    {
+      "frame": {
+        "functionName": "En",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 10659
+      },
+      "ms": 4.266
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "10",
+        "url": "",
+        "lineNumber": 0,
+        "columnNumber": 1
+      },
+      "ms": 4.062
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 26807
+      },
+      "ms": 3.666
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "21",
+        "url": "http://127.0.0.1:35573/assets/league-B_gBMh4d.js",
+        "lineNumber": 0,
+        "columnNumber": 1139
+      },
+      "ms": 3.519
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 112104
+      },
+      "ms": 3.449
+    },
+    {
+      "frame": {
+        "functionName": "yi",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 43339
+      },
+      "ms": 3.392
+    },
+    {
+      "frame": {
+        "functionName": "_s",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 141067
+      },
+      "ms": 3.3409999999999997
+    },
+    {
+      "frame": {
+        "functionName": "gn",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 79810
+      },
+      "ms": 3.29
+    },
+    {
+      "frame": {
+        "functionName": "kt",
+        "scriptId": "18",
+        "url": "http://127.0.0.1:35573/assets/Segments-BlLH917-.js",
+        "lineNumber": 0,
+        "columnNumber": 21888
+      },
+      "ms": 3.2880000000000003
+    },
+    {
+      "frame": {
+        "functionName": "dp",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 11822
+      },
+      "ms": 3.2860000000000005
+    },
+    {
+      "frame": {
+        "functionName": "l",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 39968
+      },
+      "ms": 3.2859999999999996
+    },
+    {
+      "frame": {
+        "functionName": "Ht",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 73972
+      },
+      "ms": 3.257
+    },
+    {
+      "frame": {
+        "functionName": "innerSerialize",
+        "scriptId": "5",
+        "url": "",
+        "lineNumber": 185,
+        "columnNumber": 23
+      },
+      "ms": 3.2430000000000003
+    },
+    {
+      "frame": {
+        "functionName": "A",
+        "scriptId": "13",
+        "url": "http://127.0.0.1:35573/assets/jsx-runtime-D3jfb0Ew.js",
+        "lineNumber": 0,
+        "columnNumber": 2358
+      },
+      "ms": 3.237
+    },
+    {
+      "frame": {
+        "functionName": "In",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 80972
+      },
+      "ms": 3.233
+    },
+    {
+      "frame": {
+        "functionName": "c",
+        "scriptId": "19",
+        "url": "http://127.0.0.1:35573/assets/store-C5EWv8eQ.js",
+        "lineNumber": 0,
+        "columnNumber": 1175
+      },
+      "ms": 3.224
+    },
+    {
+      "frame": {
+        "functionName": "k",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 22929
+      },
+      "ms": 3.2159999999999997
+    },
+    {
+      "frame": {
+        "functionName": "Jd",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 126554
+      },
+      "ms": 3.2139999999999995
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "60",
+        "url": "http://127.0.0.1:35573/assets/ClubHub-DyGHY23j.js",
+        "lineNumber": 0,
+        "columnNumber": 4082
+      },
+      "ms": 3.212
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "13",
+        "url": "http://127.0.0.1:35573/assets/jsx-runtime-D3jfb0Ew.js",
+        "lineNumber": 0,
+        "columnNumber": 493
+      },
+      "ms": 3.2100000000000004
+    },
+    {
+      "frame": {
+        "functionName": "Xu",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 120956
+      },
+      "ms": 3.21
+    },
+    {
+      "frame": {
+        "functionName": "ge",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 52226
+      },
+      "ms": 3.207
+    },
+    {
+      "frame": {
+        "functionName": "fe",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 51787
+      },
+      "ms": 3.202
+    },
+    {
+      "frame": {
+        "functionName": "now",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 3.202
+    },
+    {
+      "frame": {
+        "functionName": "tf",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 128759
+      },
+      "ms": 3.1980000000000004
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "21",
+        "url": "http://127.0.0.1:35573/assets/league-B_gBMh4d.js",
+        "lineNumber": 0,
+        "columnNumber": 285
+      },
+      "ms": 3.198
+    },
+    {
+      "frame": {
+        "functionName": "e",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 59592
+      },
+      "ms": 3.1950000000000003
+    },
+    {
+      "frame": {
+        "functionName": "Fi",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 27655
+      },
+      "ms": 3.1849999999999996
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "24",
+        "url": "http://127.0.0.1:35573/assets/controller-C8SOmyMm.js",
+        "lineNumber": 0,
+        "columnNumber": 1206
+      },
+      "ms": 3.159
+    },
+    {
+      "frame": {
+        "functionName": "Fi",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 45279
+      },
+      "ms": 3.1500000000000004
+    },
+    {
+      "frame": {
+        "functionName": "querySelector",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 3.144
+    },
+    {
+      "frame": {
+        "functionName": "clearTimeout",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 3.144
+    },
+    {
+      "frame": {
+        "functionName": "hn",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 79633
+      },
+      "ms": 3.0980000000000003
+    },
+    {
+      "frame": {
+        "functionName": "f",
+        "scriptId": "64",
+        "url": "http://127.0.0.1:35573/assets/KitSwatch-C9hHIhJL.js",
+        "lineNumber": 0,
+        "columnNumber": 194
+      },
+      "ms": 2.282
+    },
+    {
+      "frame": {
+        "functionName": "Dn",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 11022
+      },
+      "ms": 2.279
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 7026
+      },
+      "ms": 2.278
+    },
+    {
+      "frame": {
+        "functionName": "Pi",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 27400
+      },
+      "ms": 2.276
+    },
+    {
+      "frame": {
+        "functionName": "r",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 149421
+      },
+      "ms": 2.242
+    },
+    {
+      "frame": {
+        "functionName": "gu",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 102306
+      },
+      "ms": 2.223
+    },
+    {
+      "frame": {
+        "functionName": "reveal",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 57190
+      },
+      "ms": 2.205
+    },
+    {
+      "frame": {
+        "functionName": "zc",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 68343
+      },
+      "ms": 2.2030000000000003
+    },
+    {
+      "frame": {
+        "functionName": "ml",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 80766
+      },
+      "ms": 2.193
+    },
+    {
+      "frame": {
+        "functionName": "vu",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 111473
+      },
+      "ms": 2.192
+    },
+    {
+      "frame": {
+        "functionName": "w",
+        "scriptId": "64",
+        "url": "http://127.0.0.1:35573/assets/KitSwatch-C9hHIhJL.js",
+        "lineNumber": 0,
+        "columnNumber": 1857
+      },
+      "ms": 2.184
+    },
+    {
+      "frame": {
+        "functionName": "vs",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 51506
+      },
+      "ms": 2.182
+    },
+    {
+      "frame": {
+        "functionName": "p",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 41058
+      },
+      "ms": 2.181
+    },
+    {
+      "frame": {
+        "functionName": "z",
+        "scriptId": "60",
+        "url": "http://127.0.0.1:35573/assets/ClubHub-DyGHY23j.js",
+        "lineNumber": 0,
+        "columnNumber": 6515
+      },
+      "ms": 2.18
+    },
+    {
+      "frame": {
+        "functionName": "PerformanceObserver.observe.type",
+        "scriptId": "4",
+        "url": "",
+        "lineNumber": 5,
+        "columnNumber": 25
+      },
+      "ms": 2.175
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "101",
+        "url": "",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "ms": 2.174
+    },
+    {
+      "frame": {
+        "functionName": "wt",
+        "scriptId": "62",
+        "url": "http://127.0.0.1:35573/assets/Pitch-Clf-jOT5.js",
+        "lineNumber": 1,
+        "columnNumber": 16708
+      },
+      "ms": 2.174
+    },
+    {
+      "frame": {
+        "functionName": "m",
+        "scriptId": "24",
+        "url": "http://127.0.0.1:35573/assets/controller-C8SOmyMm.js",
+        "lineNumber": 0,
+        "columnNumber": 4985
+      },
+      "ms": 2.168
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 44772
+      },
+      "ms": 2.1660000000000004
+    },
+    {
+      "frame": {
+        "functionName": "jf",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 134907
+      },
+      "ms": 2.165
+    },
+    {
+      "frame": {
+        "functionName": "pe",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 51886
+      },
+      "ms": 2.165
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 53734
+      },
+      "ms": 2.164
+    },
+    {
+      "frame": {
+        "functionName": "sn",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 5593
+      },
+      "ms": 2.1639999999999997
+    },
+    {
+      "frame": {
+        "functionName": "tick",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 55375
+      },
+      "ms": 2.162
+    },
+    {
+      "frame": {
+        "functionName": "hl",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 81174
+      },
+      "ms": 2.162
+    },
+    {
+      "frame": {
+        "functionName": "Fd",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 122985
+      },
+      "ms": 2.161
+    },
+    {
+      "frame": {
+        "functionName": "_",
+        "scriptId": "26",
+        "url": "http://127.0.0.1:35573/assets/registry-DDYBdWHj.js",
+        "lineNumber": 0,
+        "columnNumber": 859
+      },
+      "ms": 2.159
+    },
+    {
+      "frame": {
+        "functionName": "lc",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 158957
+      },
+      "ms": 2.158
+    },
+    {
+      "frame": {
+        "functionName": "elementsFromPoint",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 2.157
+    },
+    {
+      "frame": {
+        "functionName": "Yc",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 71653
+      },
+      "ms": 2.1550000000000002
+    },
+    {
+      "frame": {
+        "functionName": "y",
+        "scriptId": "21",
+        "url": "http://127.0.0.1:35573/assets/league-B_gBMh4d.js",
+        "lineNumber": 0,
+        "columnNumber": 1916
+      },
+      "ms": 2.152
+    },
+    {
+      "frame": {
+        "functionName": "Ve",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 1,
+        "columnNumber": 13802
+      },
+      "ms": 2.152
+    },
+    {
+      "frame": {
+        "functionName": "e.useSyncExternalStore",
+        "scriptId": "13",
+        "url": "http://127.0.0.1:35573/assets/jsx-runtime-D3jfb0Ew.js",
+        "lineNumber": 0,
+        "columnNumber": 8338
+      },
+      "ms": 2.151
+    },
+    {
+      "frame": {
+        "functionName": "Nf",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 136012
+      },
+      "ms": 2.149
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "22",
+        "url": "http://127.0.0.1:35573/assets/liveState-oul_KP1l.js",
+        "lineNumber": 0,
+        "columnNumber": 27
+      },
+      "ms": 2.148
+    },
+    {
+      "frame": {
+        "functionName": "Ue",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 60528
+      },
+      "ms": 2.1479999999999997
+    },
+    {
+      "frame": {
+        "functionName": "yh",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 42506
+      },
+      "ms": 2.1470000000000002
+    },
+    {
+      "frame": {
+        "functionName": "serialize",
+        "scriptId": "5",
+        "url": "",
+        "lineNumber": 174,
+        "columnNumber": 18
+      },
+      "ms": 2.146
+    },
+    {
+      "frame": {
+        "functionName": "zm",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 63,
+        "columnNumber": 64400
+      },
+      "ms": 2.145
+    },
+    {
+      "frame": {
+        "functionName": "evaluate",
+        "scriptId": "5",
+        "url": "",
+        "lineNumber": 304,
+        "columnNumber": 10
+      },
+      "ms": 2.145
+    },
+    {
+      "frame": {
+        "functionName": "v",
+        "scriptId": "21",
+        "url": "http://127.0.0.1:35573/assets/league-B_gBMh4d.js",
+        "lineNumber": 0,
+        "columnNumber": 1769
+      },
+      "ms": 2.143
+    },
+    {
+      "frame": {
+        "functionName": "zn",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 81523
+      },
+      "ms": 2.143
+    },
+    {
+      "frame": {
+        "functionName": "URL",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 2.1420000000000003
+    },
+    {
+      "frame": {
+        "functionName": "we",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 53146
+      },
+      "ms": 2.141
+    },
+    {
+      "frame": {
+        "functionName": "s",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 1,
+        "columnNumber": 8649
+      },
+      "ms": 2.141
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "18",
+        "url": "http://127.0.0.1:35573/assets/Segments-BlLH917-.js",
+        "lineNumber": 0,
+        "columnNumber": 2646
+      },
+      "ms": 2.138
+    },
+    {
+      "frame": {
+        "functionName": "getItem",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 2.138
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 43439
+      },
+      "ms": 2.137
+    },
+    {
+      "frame": {
+        "functionName": "Ri",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 27868
+      },
+      "ms": 2.137
+    },
+    {
+      "frame": {
+        "functionName": "$i",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 61773
+      },
+      "ms": 2.135
+    },
+    {
+      "frame": {
+        "functionName": "rs",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 48946
+      },
+      "ms": 2.135
+    },
+    {
+      "frame": {
+        "functionName": "zn",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 15308
+      },
+      "ms": 2.1340000000000003
+    },
+    {
+      "frame": {
+        "functionName": "Lu",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 115649
+      },
+      "ms": 2.1340000000000003
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 82768
+      },
+      "ms": 2.133
+    },
+    {
+      "frame": {
+        "functionName": "vs",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 141571
+      },
+      "ms": 2.133
+    },
+    {
+      "frame": {
+        "functionName": "Ws",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 56905
+      },
+      "ms": 2.1319999999999997
+    },
+    {
+      "frame": {
+        "functionName": "publish",
+        "scriptId": "19",
+        "url": "http://127.0.0.1:35573/assets/store-C5EWv8eQ.js",
+        "lineNumber": 0,
+        "columnNumber": 866
+      },
+      "ms": 2.1319999999999997
+    },
+    {
+      "frame": {
+        "functionName": "k",
+        "scriptId": "25",
+        "url": "http://127.0.0.1:35573/assets/contracts-D4nCYO7S.js",
+        "lineNumber": 0,
+        "columnNumber": 2558
+      },
+      "ms": 2.1310000000000002
+    },
+    {
+      "frame": {
+        "functionName": "Rn",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 15131
+      },
+      "ms": 2.1310000000000002
+    },
+    {
+      "frame": {
+        "functionName": "e.unstable_now",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 1,
+        "columnNumber": 1501
+      },
+      "ms": 2.13
+    },
+    {
+      "frame": {
+        "functionName": "El",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 94850
+      },
+      "ms": 2.129
+    },
+    {
+      "frame": {
+        "functionName": "pp",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 12039
+      },
+      "ms": 2.129
+    },
+    {
+      "frame": {
+        "functionName": "f",
+        "scriptId": "21",
+        "url": "http://127.0.0.1:35573/assets/league-B_gBMh4d.js",
+        "lineNumber": 0,
+        "columnNumber": 1115
+      },
+      "ms": 2.128
+    },
+    {
+      "frame": {
+        "functionName": "It",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 73587
+      },
+      "ms": 2.127
+    },
+    {
+      "frame": {
+        "functionName": "r",
+        "scriptId": "16",
+        "url": "http://127.0.0.1:35573/assets/metricGlossary-BbNsVvGp.js",
+        "lineNumber": 0,
+        "columnNumber": 92
+      },
+      "ms": 2.127
+    },
+    {
+      "frame": {
+        "functionName": "received",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 22173
+      },
+      "ms": 2.127
+    },
+    {
+      "frame": {
+        "functionName": "postMessage",
+        "scriptId": "4",
+        "url": "",
+        "lineNumber": 3,
+        "columnNumber": 312
+      },
+      "ms": 2.112
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "18",
+        "url": "http://127.0.0.1:35573/assets/Segments-BlLH917-.js",
+        "lineNumber": 0,
+        "columnNumber": 2888
+      },
+      "ms": 2.1079999999999997
+    },
+    {
+      "frame": {
+        "functionName": "Pt",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 73207
+      },
+      "ms": 2.094
+    },
+    {
+      "frame": {
+        "functionName": "kc",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 96632
+      },
+      "ms": 2.084
+    },
+    {
+      "frame": {
+        "functionName": "s",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 36936
+      },
+      "ms": 2.065
+    },
+    {
+      "frame": {
+        "functionName": "I",
+        "scriptId": "60",
+        "url": "http://127.0.0.1:35573/assets/ClubHub-DyGHY23j.js",
+        "lineNumber": 0,
+        "columnNumber": 3930
+      },
+      "ms": 1.996
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 82967
+      },
+      "ms": 1.603
+    },
+    {
+      "frame": {
+        "functionName": "ys",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 51541
+      },
+      "ms": 1.4829999999999999
+    },
+    {
+      "frame": {
+        "functionName": "c",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 39865
+      },
+      "ms": 1.4749999999999999
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 108046
+      },
+      "ms": 1.308
+    },
+    {
+      "frame": {
+        "functionName": "Oc",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 96442
+      },
+      "ms": 1.2890000000000001
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 79746
+      },
+      "ms": 1.21
+    },
+    {
+      "frame": {
+        "functionName": "onClick",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 65848
+      },
+      "ms": 1.202
+    },
+    {
+      "frame": {
+        "functionName": "p",
+        "scriptId": "61",
+        "url": "http://127.0.0.1:35573/assets/FacilityArt-CYcCcWTy.js",
+        "lineNumber": 0,
+        "columnNumber": 539
+      },
+      "ms": 1.202
+    },
+    {
+      "frame": {
+        "functionName": "Vs",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 56547
+      },
+      "ms": 1.187
+    },
+    {
+      "frame": {
+        "functionName": "oe",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 1,
+        "columnNumber": 2089
+      },
+      "ms": 1.186
+    },
+    {
+      "frame": {
+        "functionName": "Hc",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 69052
+      },
+      "ms": 1.184
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "18",
+        "url": "http://127.0.0.1:35573/assets/Segments-BlLH917-.js",
+        "lineNumber": 0,
+        "columnNumber": 2819
+      },
+      "ms": 1.159
+    },
+    {
+      "frame": {
+        "functionName": "Os",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 88519
+      },
+      "ms": 1.154
+    },
+    {
+      "frame": {
+        "functionName": "ct",
+        "scriptId": "62",
+        "url": "http://127.0.0.1:35573/assets/Pitch-Clf-jOT5.js",
+        "lineNumber": 1,
+        "columnNumber": 15052
+      },
+      "ms": 1.148
+    },
+    {
+      "frame": {
+        "functionName": "qm",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 37381
+      },
+      "ms": 1.137
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 104158
+      },
+      "ms": 1.12
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 145259
+      },
+      "ms": 1.118
+    },
+    {
+      "frame": {
+        "functionName": "setTimeout",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 1.11
+    },
+    {
+      "frame": {
+        "functionName": "mi",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 40415
+      },
+      "ms": 1.109
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 61000
+      },
+      "ms": 1.109
+    },
+    {
+      "frame": {
+        "functionName": "uf",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 131513
+      },
+      "ms": 1.109
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 52160
+      },
+      "ms": 1.108
+    },
+    {
+      "frame": {
+        "functionName": "C",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 53796
+      },
+      "ms": 1.101
+    },
+    {
+      "frame": {
+        "functionName": "Fm",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 63,
+        "columnNumber": 64260
+      },
+      "ms": 1.099
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 135335
+      },
+      "ms": 1.099
+    },
+    {
+      "frame": {
+        "functionName": "si",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 39317
+      },
+      "ms": 1.098
+    },
+    {
+      "frame": {
+        "functionName": "Kl",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 107102
+      },
+      "ms": 1.097
+    },
+    {
+      "frame": {
+        "functionName": "Nu",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 113483
+      },
+      "ms": 1.096
+    },
+    {
+      "frame": {
+        "functionName": "mc",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 161024
+      },
+      "ms": 1.096
+    },
+    {
+      "frame": {
+        "functionName": "N",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 35030
+      },
+      "ms": 1.094
+    },
+    {
+      "frame": {
+        "functionName": "Uo",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 48261
+      },
+      "ms": 1.094
+    },
+    {
+      "frame": {
+        "functionName": "At",
+        "scriptId": "18",
+        "url": "http://127.0.0.1:35573/assets/Segments-BlLH917-.js",
+        "lineNumber": 0,
+        "columnNumber": 22237
+      },
+      "ms": 1.094
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 136074
+      },
+      "ms": 1.091
+    },
+    {
+      "frame": {
+        "functionName": "Ne",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 1,
+        "columnNumber": 13183
+      },
+      "ms": 1.087
+    },
+    {
+      "frame": {
+        "functionName": "query",
+        "scriptId": "31",
+        "url": "",
+        "lineNumber": 5718,
+        "columnNumber": 20
+      },
+      "ms": 1.086
+    },
+    {
+      "frame": {
+        "functionName": "a",
+        "scriptId": "16",
+        "url": "http://127.0.0.1:35573/assets/metricGlossary-BbNsVvGp.js",
+        "lineNumber": 0,
+        "columnNumber": 376
+      },
+      "ms": 1.083
+    },
+    {
+      "frame": {
+        "functionName": "isDate",
+        "scriptId": "5",
+        "url": "",
+        "lineNumber": 42,
+        "columnNumber": 15
+      },
+      "ms": 1.082
+    },
+    {
+      "frame": {
+        "functionName": "pr",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 26471
+      },
+      "ms": 1.081
+    },
+    {
+      "frame": {
+        "functionName": "Vm",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 63,
+        "columnNumber": 64557
+      },
+      "ms": 1.081
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 30469
+      },
+      "ms": 1.08
+    },
+    {
+      "frame": {
+        "functionName": "r",
+        "scriptId": "13",
+        "url": "http://127.0.0.1:35573/assets/jsx-runtime-D3jfb0Ew.js",
+        "lineNumber": 0,
+        "columnNumber": 8590
+      },
+      "ms": 1.08
+    },
+    {
+      "frame": {
+        "functionName": "start",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 53357
+      },
+      "ms": 1.079
+    },
+    {
+      "frame": {
+        "functionName": "mc",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 59941
+      },
+      "ms": 1.079
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "18",
+        "url": "http://127.0.0.1:35573/assets/Segments-BlLH917-.js",
+        "lineNumber": 0,
+        "columnNumber": 2754
+      },
+      "ms": 1.079
+    },
+    {
+      "frame": {
+        "functionName": "Af",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 134662
+      },
+      "ms": 1.078
+    },
+    {
+      "frame": {
+        "functionName": "af",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 129414
+      },
+      "ms": 1.078
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 63,
+        "columnNumber": 64587
+      },
+      "ms": 1.078
+    },
+    {
+      "frame": {
+        "functionName": "Tn",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 10407
+      },
+      "ms": 1.078
+    },
+    {
+      "frame": {
+        "functionName": "e.useRef",
+        "scriptId": "13",
+        "url": "http://127.0.0.1:35573/assets/jsx-runtime-D3jfb0Ew.js",
+        "lineNumber": 0,
+        "columnNumber": 8234
+      },
+      "ms": 1.077
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 53638
+      },
+      "ms": 1.077
+    },
+    {
+      "frame": {
+        "functionName": "Hd",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 125755
+      },
+      "ms": 1.077
+    },
+    {
+      "frame": {
+        "functionName": "lf",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 131324
+      },
+      "ms": 1.076
+    },
+    {
+      "frame": {
+        "functionName": "isTypedArray",
+        "scriptId": "5",
+        "url": "",
+        "lineNumber": 64,
+        "columnNumber": 21
+      },
+      "ms": 1.076
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "25",
+        "url": "http://127.0.0.1:35573/assets/contracts-D4nCYO7S.js",
+        "lineNumber": 0,
+        "columnNumber": 1826
+      },
+      "ms": 1.076
+    },
+    {
+      "frame": {
+        "functionName": "yt",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 705
+      },
+      "ms": 1.076
+    },
+    {
+      "frame": {
+        "functionName": "We",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 61048
+      },
+      "ms": 1.076
+    },
+    {
+      "frame": {
+        "functionName": "ff",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 132386
+      },
+      "ms": 1.075
+    },
+    {
+      "frame": {
+        "functionName": "Uu",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 118002
+      },
+      "ms": 1.075
+    },
+    {
+      "frame": {
+        "functionName": "gl",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 81253
+      },
+      "ms": 1.075
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 27326
+      },
+      "ms": 1.075
+    },
+    {
+      "frame": {
+        "functionName": "query",
+        "scriptId": "31",
+        "url": "",
+        "lineNumber": 5412,
+        "columnNumber": 16
+      },
+      "ms": 1.074
+    },
+    {
+      "frame": {
+        "functionName": "vu",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 104388
+      },
+      "ms": 1.074
+    },
+    {
+      "frame": {
+        "functionName": "Da",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 34019
+      },
+      "ms": 1.074
+    },
+    {
+      "frame": {
+        "functionName": "useState",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 63565
+      },
+      "ms": 1.074
+    },
+    {
+      "frame": {
+        "functionName": "k",
+        "scriptId": "13",
+        "url": "http://127.0.0.1:35573/assets/jsx-runtime-D3jfb0Ew.js",
+        "lineNumber": 0,
+        "columnNumber": 2297
+      },
+      "ms": 1.073
+    },
+    {
+      "frame": {
+        "functionName": "MutationObserver.observe.subtree",
+        "scriptId": "4",
+        "url": "",
+        "lineNumber": 6,
+        "columnNumber": 31
+      },
+      "ms": 1.072
+    },
+    {
+      "frame": {
+        "functionName": "rf",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 129185
+      },
+      "ms": 1.072
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 107896
+      },
+      "ms": 1.072
+    },
+    {
+      "frame": {
+        "functionName": "e.useEffect",
+        "scriptId": "13",
+        "url": "http://127.0.0.1:35573/assets/jsx-runtime-D3jfb0Ew.js",
+        "lineNumber": 0,
+        "columnNumber": 7704
+      },
+      "ms": 1.072
+    },
+    {
+      "frame": {
+        "functionName": "us",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 82913
+      },
+      "ms": 1.072
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "62",
+        "url": "http://127.0.0.1:35573/assets/Pitch-Clf-jOT5.js",
+        "lineNumber": 1,
+        "columnNumber": 19194
+      },
+      "ms": 1.072
+    },
+    {
+      "frame": {
+        "functionName": "n",
+        "scriptId": "16",
+        "url": "http://127.0.0.1:35573/assets/metricGlossary-BbNsVvGp.js",
+        "lineNumber": 0,
+        "columnNumber": 581
+      },
+      "ms": 1.072
+    },
+    {
+      "frame": {
+        "functionName": "e.useContext",
+        "scriptId": "13",
+        "url": "http://127.0.0.1:35573/assets/jsx-runtime-D3jfb0Ew.js",
+        "lineNumber": 0,
+        "columnNumber": 7558
+      },
+      "ms": 1.071
+    },
+    {
+      "frame": {
+        "functionName": "_promiseAwareJsonValueNoThrow",
+        "scriptId": "5",
+        "url": "",
+        "lineNumber": 326,
+        "columnNumber": 31
+      },
+      "ms": 1.071
+    },
+    {
+      "frame": {
+        "functionName": "belongsToDisplayNoneOrAriaHiddenOrNonSlotted",
+        "scriptId": "31",
+        "url": "",
+        "lineNumber": 3564,
+        "columnNumber": 53
+      },
+      "ms": 1.07
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 96691
+      },
+      "ms": 1.07
+    },
+    {
+      "frame": {
+        "functionName": "Id",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 123163
+      },
+      "ms": 1.069
+    },
+    {
+      "frame": {
+        "functionName": "Se",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 53014
+      },
+      "ms": 1.069
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 154463
+      },
+      "ms": 1.069
+    },
+    {
+      "frame": {
+        "functionName": "get suspended",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 46227
+      },
+      "ms": 1.069
+    },
+    {
+      "frame": {
+        "functionName": "df",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 132286
+      },
+      "ms": 1.068
+    },
+    {
+      "frame": {
+        "functionName": "uc",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 59493
+      },
+      "ms": 1.068
+    },
+    {
+      "frame": {
+        "functionName": "Te",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 53218
+      },
+      "ms": 1.067
+    },
+    {
+      "frame": {
+        "functionName": "requestId",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 26616
+      },
+      "ms": 1.067
+    },
+    {
+      "frame": {
+        "functionName": "Nn",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 14260
+      },
+      "ms": 1.067
+    },
+    {
+      "frame": {
+        "functionName": "ps",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 50633
+      },
+      "ms": 1.067
+    },
+    {
+      "frame": {
+        "functionName": "D",
+        "scriptId": "15",
+        "url": "http://127.0.0.1:35573/assets/src-DZLD7xZG.js",
+        "lineNumber": 0,
+        "columnNumber": 58528
+      },
+      "ms": 1.066
+    },
+    {
+      "frame": {
+        "functionName": "Mf",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 135683
+      },
+      "ms": 1.066
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "62",
+        "url": "http://127.0.0.1:35573/assets/Pitch-Clf-jOT5.js",
+        "lineNumber": 1,
+        "columnNumber": 19153
+      },
+      "ms": 1.066
+    },
+    {
+      "frame": {
+        "functionName": "pf",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 132468
+      },
+      "ms": 1.066
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 157555
+      },
+      "ms": 1.066
+    },
+    {
+      "frame": {
+        "functionName": "n",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 1,
+        "columnNumber": 980
+      },
+      "ms": 1.066
+    },
+    {
+      "frame": {
+        "functionName": "Cs",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 53707
+      },
+      "ms": 1.066
+    },
+    {
+      "frame": {
+        "functionName": "i",
+        "scriptId": "18",
+        "url": "http://127.0.0.1:35573/assets/Segments-BlLH917-.js",
+        "lineNumber": 0,
+        "columnNumber": 2595
+      },
+      "ms": 1.065
+    },
+    {
+      "frame": {
+        "functionName": "Li",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 27820
+      },
+      "ms": 1.065
+    },
+    {
+      "frame": {
+        "functionName": "ts",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 130743
+      },
+      "ms": 1.065
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 107133
+      },
+      "ms": 1.065
+    },
+    {
+      "frame": {
+        "functionName": "p",
+        "scriptId": "21",
+        "url": "http://127.0.0.1:35573/assets/league-B_gBMh4d.js",
+        "lineNumber": 0,
+        "columnNumber": 1263
+      },
+      "ms": 1.065
+    },
+    {
+      "frame": {
+        "functionName": "r",
+        "scriptId": "19",
+        "url": "http://127.0.0.1:35573/assets/store-C5EWv8eQ.js",
+        "lineNumber": 0,
+        "columnNumber": 648
+      },
+      "ms": 1.065
+    },
+    {
+      "frame": {
+        "functionName": "xs",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 53146
+      },
+      "ms": 1.065
+    },
+    {
+      "frame": {
+        "functionName": "zi",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 28246
+      },
+      "ms": 1.064
+    },
+    {
+      "frame": {
+        "functionName": "Ee",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 53344
+      },
+      "ms": 1.064
+    },
+    {
+      "frame": {
+        "functionName": "bm",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 9,
+        "columnNumber": 30033
+      },
+      "ms": 1.064
+    },
+    {
+      "frame": {
+        "functionName": "summarize",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 49557
+      },
+      "ms": 1.063
+    },
+    {
+      "frame": {
+        "functionName": "Ii",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 27774
+      },
+      "ms": 1.063
+    },
+    {
+      "frame": {
+        "functionName": "ws",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 143870
+      },
+      "ms": 1.063
+    },
+    {
+      "frame": {
+        "functionName": "createElement",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 1.062
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "20",
+        "url": "http://127.0.0.1:35573/assets/settlement-DhrUOD_v.js",
+        "lineNumber": 0,
+        "columnNumber": 96750
+      },
+      "ms": 1.062
+    },
+    {
+      "frame": {
+        "functionName": "da",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 31821
+      },
+      "ms": 1.062
+    },
+    {
+      "frame": {
+        "functionName": "Gt",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 4236
+      },
+      "ms": 1.06
+    },
+    {
+      "frame": {
+        "functionName": "isElementHiddenForAria",
+        "scriptId": "31",
+        "url": "",
+        "lineNumber": 3545,
+        "columnNumber": 31
+      },
+      "ms": 1.059
+    },
+    {
+      "frame": {
+        "functionName": "removeChild",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 1.059
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "41",
+        "url": "",
+        "lineNumber": 0,
+        "columnNumber": 0
+      },
+      "ms": 1.057
+    },
+    {
+      "frame": {
+        "functionName": "St",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 1766
+      },
+      "ms": 1.057
+    },
+    {
+      "frame": {
+        "functionName": "Df",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 134154
+      },
+      "ms": 1.053
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "21",
+        "url": "http://127.0.0.1:35573/assets/league-B_gBMh4d.js",
+        "lineNumber": 0,
+        "columnNumber": 1286
+      },
+      "ms": 1.052
+    },
+    {
+      "frame": {
+        "functionName": "compute",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 55941
+      },
+      "ms": 1.043
+    },
+    {
+      "frame": {
+        "functionName": "matchMedia",
+        "scriptId": "0",
+        "url": "",
+        "lineNumber": -1,
+        "columnNumber": -1
+      },
+      "ms": 1.018
+    },
+    {
+      "frame": {
+        "functionName": "t",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 1,
+        "columnNumber": 861
+      },
+      "ms": 0.991
+    },
+    {
+      "frame": {
+        "functionName": "Hf",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 138331
+      },
+      "ms": 0.977
+    },
+    {
+      "frame": {
+        "functionName": "Qd",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 127939
+      },
+      "ms": 0.837
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "12",
+        "url": "http://127.0.0.1:35573/assets/main-Co9k51VY.js",
+        "lineNumber": 1,
+        "columnNumber": 141037
+      },
+      "ms": 0.821
+    },
+    {
+      "frame": {
+        "functionName": "Hm",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 63,
+        "columnNumber": 64633
+      },
+      "ms": 0.591
+    },
+    {
+      "frame": {
+        "functionName": "m",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 41536
+      },
+      "ms": 0.544
+    },
+    {
+      "frame": {
+        "functionName": "r",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 1,
+        "columnNumber": 1024
+      },
+      "ms": 0.339
+    },
+    {
+      "frame": {
+        "functionName": "",
+        "scriptId": "21",
+        "url": "http://127.0.0.1:35573/assets/league-B_gBMh4d.js",
+        "lineNumber": 0,
+        "columnNumber": 505
+      },
+      "ms": 0.328
+    },
+    {
+      "frame": {
+        "functionName": "b",
+        "scriptId": "25",
+        "url": "http://127.0.0.1:35573/assets/contracts-D4nCYO7S.js",
+        "lineNumber": 0,
+        "columnNumber": 1296
+      },
+      "ms": 0.21
+    },
+    {
+      "frame": {
+        "functionName": "n",
+        "scriptId": "17",
+        "url": "http://127.0.0.1:35573/assets/startPresentation-BS_RoUQn.js",
+        "lineNumber": 8,
+        "columnNumber": 39411
+      },
+      "ms": 0.039
+    }
+  ],
+  "self": [
+    {
+      "id": 13,
+      "name": "(idle)",
+      "script": "",
+      "line": -1,
+      "column": -1,
+      "ms": 24117.29499999819,
+      "pct": 72.32005549716915
+    },
+    {
+      "id": 2,
+      "name": "(program)",
+      "script": "",
+      "line": -1,
+      "column": -1,
+      "ms": 2760.6189999999933,
+      "pct": 8.27821359263359
+    },
+    {
+      "id": 225,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 858.3110000000003,
+      "pct": 2.5738002190475933,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 224,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 721.439000000001,
+      "pct": 2.1633648598578823,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 204,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 531.6269999999998,
+      "pct": 1.5941793697757738,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 234,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 453.983,
+      "pct": 1.3613498427072277,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 203,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 387.95200000000017,
+      "pct": 1.1633439890435426,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 233,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 367.681,
+      "pct": 1.1025577422864647,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 302,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 238.94100000000014,
+      "pct": 0.7165076506527951,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 223,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 227.625,
+      "pct": 0.6825745852735294,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 301,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 210.25199999999998,
+      "pct": 0.6304785137965078,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 329,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 142.034,
+      "pct": 0.4259145464897989,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 284,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 135.208,
+      "pct": 0.4054455553022004,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 202,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 124.77200000000002,
+      "pct": 0.37415132851729305,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 273,
+      "name": "",
+      "script": "",
+      "line": 3,
+      "column": 716,
+      "ms": 119.57800000000007,
+      "pct": 0.3585761834501401
+    },
+    {
+      "id": 232,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 119.37699999999994,
+      "pct": 0.3579734487257466,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 274,
+      "name": "(garbage collector)",
+      "script": "",
+      "line": -1,
+      "column": -1,
+      "ms": 115.98999999999997,
+      "pct": 0.34781691881768984
+    },
+    {
+      "id": 283,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 100.11399999999998,
+      "pct": 0.3002098716312976,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 328,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 99.87300000000003,
+      "pct": 0.29948718969807014,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 308,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 75.26099999999998,
+      "pct": 0.2256836721022343,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 191,
+      "name": "Lr",
+      "script": "main-Co9k51VY.js",
+      "line": 1,
+      "column": 18720,
+      "ms": 68.48799999999997,
+      "pct": 0.2053736109663414,
+      "snippet": "(e,t,n=Ir){if(`v`in t)return n(e,t.v);if(!(`o`in t)&&!(`a`in t))return;if(`o`in t){let r={...e};for(let[e,i]of Object.entries(t.o))r[e]=Lr(r[e],i,n);for(let e of t.d??[])delete r[e];return r}let r=e.slice(0,t.n);for(let[e,i]of t.a)r[e]=Lr(r[e],i,n);return r}function Rr(e,t,n=Ir){let r=t.patches??(t.patchText?JSON.parse(t.patchText):{});if(n!==Ir&&!t.dropped.length&&!Object.keys(t.parts).length&&!Object.keys(t.world).length&&!Object.keys(r).length"
+    },
+    {
+      "id": 687,
+      "name": "decimal",
+      "script": "controller-C8SOmyMm.js",
+      "line": 0,
+      "column": 1548,
+      "ms": 44.277,
+      "pct": 0.1327725641390711,
+      "snippet": "(t,r)=>(r?new Intl.NumberFormat(e,r):n).format(t),numberParts:(t,r)=>(r?new Intl.NumberFormat(e,r):n).formatToParts(t),gameDate:(t,n)=>(n?new Intl.DateTimeFormat(e,{...n,timeZone:`UTC`,calendar:`gregory`}):r).format(t)})}function m(e){for(let t of Object.values(e.messages))typeof t!=`string`&&(Object.freeze(t.forms),Object.freeze(t));return Object.freeze(e.messages),Object.freeze(e)}function h(t,n,r=n,a={}){let o=s(t,`locale`),c=e(r);if(c.id!==o."
+    },
+    {
+      "id": 56,
+      "name": "o",
+      "script": "Pitch-Clf-jOT5.js",
+      "line": 1,
+      "column": 21231,
+      "ms": 42.42799999999999,
+      "pct": 0.12722800441069873,
+      "snippet": "s=>{let c=x(s,me.current);me.current=s;let u=Math.max(0,W.length-1);if(e){let e=H.current;A.current=qe(A.current,e?tt(G,e):G,{elapsedMs:c,speed:Ie,length:Ft,running:!L&&!document.hidden,preparations:It}),e&&nt(A.current,e)?$t():e||Qt(A.current),Ee(A.current.cue?.goal),ke(te(It,A.current.seconds)),Ae(Ye(A.current))}let d=A.current.seconds,f=Math.min(u,le(U.times,d,U.sampleBreak)),p=Math.min(u,Math.floor(f+1e-6)),m=W[p],h=m&&d-m.frame*60>60?Math.mi"
+    },
+    {
+      "id": 276,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 42.337,
+      "pct": 0.12695512451060043,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 189,
+      "name": "Rr",
+      "script": "main-Co9k51VY.js",
+      "line": 1,
+      "column": 18989,
+      "ms": 36.671,
+      "pct": 0.10996460237920086,
+      "snippet": "(e,t,n=Ir){let r=t.patches??(t.patchText?JSON.parse(t.patchText):{});if(n!==Ir&&!t.dropped.length&&!Object.keys(t.parts).length&&!Object.keys(t.world).length&&!Object.keys(r).length)return e;let i={...e,world:{...e.world}},a=i,o=i.world;for(let[r,i]of Object.entries(t.parts))a[r]=n(e[r],i);for(let[r,i]of Object.entries(t.world))o[r]=n(e.world[r],i);for(let e of t.dropped)e.startsWith(`world.`)?delete o[e.slice(6)]:delete a[e];for(let[t,i]of Objec"
+    },
+    {
+      "id": 372,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 36.594,
+      "pct": 0.10973370400219455,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 312,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 32.431000000000004,
+      "pct": 0.09725019824274941,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 272,
+      "name": "requestAnimationFrame",
+      "script": "",
+      "line": -1,
+      "column": -1,
+      "ms": 28.774,
+      "pct": 0.08628402467506001
+    },
+    {
+      "id": 327,
+      "name": "decimal",
+      "script": "controller-C8SOmyMm.js",
+      "line": 0,
+      "column": 1548,
+      "ms": 28.047000000000004,
+      "pct": 0.08410398415449392,
+      "snippet": "(t,r)=>(r?new Intl.NumberFormat(e,r):n).format(t),numberParts:(t,r)=>(r?new Intl.NumberFormat(e,r):n).formatToParts(t),gameDate:(t,n)=>(n?new Intl.DateTimeFormat(e,{...n,timeZone:`UTC`,calendar:`gregory`}):r).format(t)})}function m(e){for(let t of Object.values(e.messages))typeof t!=`string`&&(Object.freeze(t.forms),Object.freeze(t));return Object.freeze(e.messages),Object.freeze(e)}function h(t,n,r=n,a={}){let o=s(t,`locale`),c=e(r);if(c.id!==o."
+    },
+    {
+      "id": 278,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 22.325000000000006,
+      "pct": 0.06694553593072618,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    }
+  ],
+  "inclusive": [
+    {
+      "id": 1,
+      "name": "(root)",
+      "script": "",
+      "line": -1,
+      "column": -1,
+      "ms": 33347.58899999761,
+      "pct": 99.9987555477012
+    },
+    {
+      "id": 13,
+      "name": "(idle)",
+      "script": "",
+      "line": -1,
+      "column": -1,
+      "ms": 24117.29499999819,
+      "pct": 72.32005549716915
+    },
+    {
+      "id": 2,
+      "name": "(program)",
+      "script": "",
+      "line": -1,
+      "column": -1,
+      "ms": 2760.6189999999933,
+      "pct": 8.27821359263359
+    },
+    {
+      "id": 54,
+      "name": "",
+      "script": "main-Co9k51VY.js",
+      "line": 1,
+      "column": 27326,
+      "ms": 2430.1350000000107,
+      "pct": 7.287197758522551,
+      "snippet": "async()=>{this.state.processing=!0,this.state.busy=!t.background,this.state.activity=t.background?`background`:`foreground`,delete this.state.error,delete this.state.errorCode,this.state.progress=0,this.emit();try{return await e()}catch(e){this.state.error=String(e),this.state.errorCode=Re(e)?e.code:void 0;return}finally{this.state.busy=!1,this.state.processing=!1,this.state.activity=`idle`,this.emit()}});return this.queue=n.then(()=>{}),n}async "
+    },
+    {
+      "id": 58,
+      "name": "",
+      "script": "main-Co9k51VY.js",
+      "line": 1,
+      "column": 161829,
+      "ms": 2416.8070000000102,
+      "pct": 7.247231348538912,
+      "snippet": "e=>B.publish(e)),t=new Vi(e),n=new Ms(e),r=()=>{t.setHidden(document.hidden),document.hidden&&(n.sync(B.getSnapshot().view?.world,!0),e.saveSoon())},i=()=>{t.writeClock(!0),n.sync(B.getSnapshot().view?.world,!0),e.saveSoon()};return document.addEventListener(`visibilitychange`,r),window.addEventListener(`pagehide`,i),r(),o(e),c(t),y(n),e.start(),()=>{document.removeEventListener(`visibilitychange`,r),window.removeEventListener(`pagehide`,i),t.dis"
+    },
+    {
+      "id": 57,
+      "name": "emit",
+      "script": "main-Co9k51VY.js",
+      "line": 1,
+      "column": 23788,
+      "ms": 2416.8070000000102,
+      "pct": 7.247231348538912,
+      "snippet": "(){this.notify({...this.state})}async start(){!globalThis.CompressionStream||!globalThis.DecompressionStream||!crypto.subtle?(this.state.busy=!1,this.state.processing=!1,this.state.activity=`idle`,this.state.error=`이 브라우저는 저장 압축을 지원하지 않습니다. 최신 Chrome, Firefox 또는 Safari에서 기록을 가져오세요.`,this.emit()):navigator.locks?await new Promise(e=>{navigator.locks.request(`haeram-soccor:writer`,{ifAvailable:!0},async t=>{this.state.readonly=!t,t||(this.state.not"
+    },
+    {
+      "id": 59,
+      "name": "publish",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 866,
+      "ms": 2412.2320000000104,
+      "pct": 7.233512386528472,
+      "snippet": "(e){let t=n.getState(),i={...e,view:r(t.view,e.view)},a=Object.keys(i);a.length===Object.keys(t).length&&a.every(e=>Object.is(t[e],i[e]))||n.setState(i,!0)}}}var o=a();function s(e,t){return!!(!t?.preview&&(e.clockRunning||e.processing)||e.busy||e.pendingActions||e.readonly||e.error&&!t?.recovery)}function c(e){return t(o,e)}var l=`haeram-soccor:notifications`,u=5;function d(e){let t=e;return t&&typeof t==`object`&&typeof t.id==`string`&&typeof t"
+    },
+    {
+      "id": 223,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 2352.297000000008,
+      "pct": 7.05378648749115,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 222,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 2352.297000000008,
+      "pct": 7.05378648749115,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 221,
+      "name": "r",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 648,
+      "ms": 2352.297000000008,
+      "pct": 7.05378648749115,
+      "snippet": "(e,t){return!e||!t||e.world.id!==t.world.id?t:n(e,t)}var i={busy:!0,processing:!0,activity:`foreground`,readonly:!0,savedRevision:-1,progress:0};function a(t=i){let n=e(()=>t);return{...n,getSnapshot:n.getState,publish(e){let t=n.getState(),i={...e,view:r(t.view,e.view)},a=Object.keys(i);a.length===Object.keys(t).length&&a.every(e=>Object.is(t[e],i[e]))||n.setState(i,!0)}}}var o=a();function s(e,t){return!!(!t?.preview&&(e.clockRunning||e.process"
+    },
+    {
+      "id": 224,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 2124.6720000000046,
+      "pct": 6.37121190221761,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 225,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 1403.2330000000013,
+      "pct": 4.20784704235972,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 67,
+      "name": "step",
+      "script": "main-Co9k51VY.js",
+      "line": 1,
+      "column": 56288,
+      "ms": 1395.2249999999995,
+      "pct": 4.183833611151059,
+      "snippet": "(e){let t=await this.send(e,1);if(this.disposed)return;let n=t?.ok?t.view?.world:void 0,r=this.store.getState();n?n.id!==this.worldId||this.mode!==`automatic`||D(n).mode!==`automatic`?(this.flush(),this.draining=!1,this.store.setState({running:!1}),this.lock()):this.hidden||!r.running&&!this.draining?(this.flush(),r.running||this.client.saveSoon()):this.tick():r.running?this.stop():this.drained(),this.summarize()}async send(e,t){let n={ms:G[this."
+    },
+    {
+      "id": 68,
+      "name": "tick",
+      "script": "main-Co9k51VY.js",
+      "line": 1,
+      "column": 55375,
+      "ms": 1394.1619999999996,
+      "pct": 4.180646014076284,
+      "snippet": "(){clearTimeout(this.timer),this.timer=void 0;let e=this.store.getState();if(this.disposed||this.mode!==`automatic`||!e.running&&!this.draining||e.watching||this.suspended)this.stepAt=void 0,this.due=void 0;else{if(this.hidden||this.returning||this.stepAt!==void 0&&Date.now()-this.stepAt>12e4)return this.flush(),this.store.getState().running?(this.wake(G[e.pace]),this.catchUp()):this.drained();this.due??=this.firstBeat(),this.ahead.length&&Date.n"
+    },
+    {
+      "id": 195,
+      "name": "reveal",
+      "script": "main-Co9k51VY.js",
+      "line": 1,
+      "column": 57190,
+      "ms": 1368.9589999999998,
+      "pct": 4.105070276469919,
+      "snippet": "(e){let t=this.ahead.splice(0,e?this.ahead.length:1);if(!t.length||!this.client.reveal(e))return this.postReads();if(!e){let e=Date.now(),n=this.interval(),r=this.due??e,i=t[0].at>r||e-r>=n/2;this.stepAt=e,this.due=(i?e:r)+n}for(let n of t)this.shown(n,!e);this.writeClock(),this.postReads()}flush(){this.reveal(!0)}shown({before:e,after:t},n){if(t.critical||t.bankrupt)return;let r=this.store.getState().running,i=Bi(e,t);i?(r?(this.stop(i.title),th"
+    },
+    {
+      "id": 198,
+      "name": "",
+      "script": "main-Co9k51VY.js",
+      "line": 1,
+      "column": 161829,
+      "ms": 1354.164,
+      "pct": 4.060704802602278,
+      "snippet": "e=>B.publish(e)),t=new Vi(e),n=new Ms(e),r=()=>{t.setHidden(document.hidden),document.hidden&&(n.sync(B.getSnapshot().view?.world,!0),e.saveSoon())},i=()=>{t.writeClock(!0),n.sync(B.getSnapshot().view?.world,!0),e.saveSoon()};return document.addEventListener(`visibilitychange`,r),window.addEventListener(`pagehide`,i),r(),o(e),c(t),y(n),e.start(),()=>{document.removeEventListener(`visibilitychange`,r),window.removeEventListener(`pagehide`,i),t.dis"
+    },
+    {
+      "id": 197,
+      "name": "emit",
+      "script": "main-Co9k51VY.js",
+      "line": 1,
+      "column": 23788,
+      "ms": 1354.164,
+      "pct": 4.060704802602278,
+      "snippet": "(){this.notify({...this.state})}async start(){!globalThis.CompressionStream||!globalThis.DecompressionStream||!crypto.subtle?(this.state.busy=!1,this.state.processing=!1,this.state.activity=`idle`,this.state.error=`이 브라우저는 저장 압축을 지원하지 않습니다. 최신 Chrome, Firefox 또는 Safari에서 기록을 가져오세요.`,this.emit()):navigator.locks?await new Promise(e=>{navigator.locks.request(`haeram-soccor:writer`,{ifAvailable:!0},async t=>{this.state.readonly=!t,t||(this.state.not"
+    },
+    {
+      "id": 196,
+      "name": "reveal",
+      "script": "main-Co9k51VY.js",
+      "line": 1,
+      "column": 26487,
+      "ms": 1354.164,
+      "pct": 4.060704802602278,
+      "snippet": "(e=!1){let t=this.held.splice(0,e?this.held.length:1);return t.length?(this.state.view=t.at(-1),this.emit(),t.length):0}requestId(){return`${this.session.slice(0,8)}:${++this.serial}`}rpc(e,t=this.requestId(),n=15e3,r=!1){return this.failed?Promise.reject(Error(`Worker를 다시 불러오세요. 마지막 저장은 파일로 보관할 수 있습니다.`)):new Promise((i,a)=>{this.waiters.set(t,{resolve:i,reject:a,timer:window.setTimeout(()=>this.failWorker(),n),publishView:e.type===`found`||e.ty"
+    },
+    {
+      "id": 199,
+      "name": "publish",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 866,
+      "ms": 1353.1,
+      "pct": 4.057514206847283,
+      "snippet": "(e){let t=n.getState(),i={...e,view:r(t.view,e.view)},a=Object.keys(i);a.length===Object.keys(t).length&&a.every(e=>Object.is(t[e],i[e]))||n.setState(i,!0)}}}var o=a();function s(e,t){return!!(!t?.preview&&(e.clockRunning||e.processing)||e.busy||e.pendingActions||e.readonly||e.error&&!t?.recovery)}function c(e){return t(o,e)}var l=`haeram-soccor:notifications`,u=5;function d(e){let t=e;return t&&typeof t==`object`&&typeof t.id==`string`&&typeof t"
+    },
+    {
+      "id": 201,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 1320.704,
+      "pct": 3.9603689624122627,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 200,
+      "name": "r",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 648,
+      "ms": 1320.704,
+      "pct": 3.9603689624122627,
+      "snippet": "(e,t){return!e||!t||e.world.id!==t.world.id?t:n(e,t)}var i={busy:!0,processing:!0,activity:`foreground`,readonly:!0,savedRevision:-1,progress:0};function a(t=i){let n=e(()=>t);return{...n,getSnapshot:n.getState,publish(e){let t=n.getState(),i={...e,view:r(t.view,e.view)},a=Object.keys(i);a.length===Object.keys(t).length&&a.every(e=>Object.is(t[e],i[e]))||n.setState(i,!0)}}}var o=a();function s(e,t){return!!(!t?.preview&&(e.clockRunning||e.process"
+    },
+    {
+      "id": 202,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 1319.615,
+      "pct": 3.957103399651745,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 230,
+      "name": "r",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 648,
+      "ms": 1229.184,
+      "pct": 3.6859297485990465,
+      "snippet": "(e,t){return!e||!t||e.world.id!==t.world.id?t:n(e,t)}var i={busy:!0,processing:!0,activity:`foreground`,readonly:!0,savedRevision:-1,progress:0};function a(t=i){let n=e(()=>t);return{...n,getSnapshot:n.getState,publish(e){let t=n.getState(),i={...e,view:r(t.view,e.view)},a=Object.keys(i);a.length===Object.keys(t).length&&a.every(e=>Object.is(t[e],i[e]))||n.setState(i,!0)}}}var o=a();function s(e,t){return!!(!t?.preview&&(e.clockRunning||e.process"
+    },
+    {
+      "id": 229,
+      "name": "publish",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 866,
+      "ms": 1229.184,
+      "pct": 3.6859297485990465,
+      "snippet": "(e){let t=n.getState(),i={...e,view:r(t.view,e.view)},a=Object.keys(i);a.length===Object.keys(t).length&&a.every(e=>Object.is(t[e],i[e]))||n.setState(i,!0)}}}var o=a();function s(e,t){return!!(!t?.preview&&(e.clockRunning||e.processing)||e.busy||e.pendingActions||e.readonly||e.error&&!t?.recovery)}function c(e){return t(o,e)}var l=`haeram-soccor:notifications`,u=5;function d(e){let t=e;return t&&typeof t==`object`&&typeof t.id==`string`&&typeof t"
+    },
+    {
+      "id": 228,
+      "name": "",
+      "script": "main-Co9k51VY.js",
+      "line": 1,
+      "column": 161829,
+      "ms": 1229.184,
+      "pct": 3.6859297485990465,
+      "snippet": "e=>B.publish(e)),t=new Vi(e),n=new Ms(e),r=()=>{t.setHidden(document.hidden),document.hidden&&(n.sync(B.getSnapshot().view?.world,!0),e.saveSoon())},i=()=>{t.writeClock(!0),n.sync(B.getSnapshot().view?.world,!0),e.saveSoon()};return document.addEventListener(`visibilitychange`,r),window.addEventListener(`pagehide`,i),r(),o(e),c(t),y(n),e.start(),()=>{document.removeEventListener(`visibilitychange`,r),window.removeEventListener(`pagehide`,i),t.dis"
+    },
+    {
+      "id": 227,
+      "name": "emit",
+      "script": "main-Co9k51VY.js",
+      "line": 1,
+      "column": 23788,
+      "ms": 1229.184,
+      "pct": 3.6859297485990465,
+      "snippet": "(){this.notify({...this.state})}async start(){!globalThis.CompressionStream||!globalThis.DecompressionStream||!crypto.subtle?(this.state.busy=!1,this.state.processing=!1,this.state.activity=`idle`,this.state.error=`이 브라우저는 저장 압축을 지원하지 않습니다. 최신 Chrome, Firefox 또는 Safari에서 기록을 가져오세요.`,this.emit()):navigator.locks?await new Promise(e=>{navigator.locks.request(`haeram-soccor:writer`,{ifAvailable:!0},async t=>{this.state.readonly=!t,t||(this.state.not"
+    },
+    {
+      "id": 226,
+      "name": "mutate",
+      "script": "main-Co9k51VY.js",
+      "line": 1,
+      "column": 27782,
+      "ms": 1229.184,
+      "pct": 3.6859297485990465,
+      "snippet": "(e,t=!1){if(this.state.readonly)throw Error(`이 탭은 읽기 전용입니다.`);if(e.type===`found`&&this.saves.incompatibleCheckpoint&&!e.replace)throw new N(`호환되지 않는 기록을 내보낸 뒤 명시적으로 새 세계로 교체하세요.`);e.type===`found`&&(this.state.savedRevision=-1,this.state.playback=void 0);let n=await this.rpc(e,void 0,void 0,t);return e.type===`found`&&e.replace&&this.saves.incompatibleCheckpoint&&(this.replacingIncompatible=!0),n.playback&&(this.state.playback=n.playback),this.e"
+    },
+    {
+      "id": 232,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 1228.119,
+      "pct": 3.682736154163829,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 231,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 1228.119,
+      "pct": 3.682736154163829,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 203,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 1194.843000000001,
+      "pct": 3.5829520711344554,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 233,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 1108.7420000000004,
+      "pct": 3.3247627054380837,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 204,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 806.8910000000012,
+      "pct": 2.419608082090914,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 234,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 741.0610000000004,
+      "pct": 2.2222049631516185,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 301,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 544.9220000000006,
+      "pct": 1.6340468233121257,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 36,
+      "name": "",
+      "script": "startPresentation-BS_RoUQn.js",
+      "line": 8,
+      "column": 136074,
+      "ms": 531.3120000000005,
+      "pct": 1.5932347855062043,
+      "snippet": "(){W&6?Xe(nt,kf):Af()})}function Ff(){if(Ef===0){var e=Ga;e===0&&(e=gt,gt<<=1,!(gt&261888)&&(gt=256)),Ef=e}return Ef}function If(e){return e==null||typeof e==`symbol`||typeof e==`boolean`?null:typeof e==`function`?e:An(e)}function Lf(e,t,n,r,i){if(t===`submit`&&n&&n.stateNode===i){var a=If((i[Lt]||null).action),o=r.submitter;o&&(t=(t=o[Lt]||null)?If(t.formAction):o.getAttribute(`formAction`),t!==null&&(a=t,o=null));var s=new Qn(`action`,`action`,"
+    },
+    {
+      "id": 37,
+      "name": "Af",
+      "script": "startPresentation-BS_RoUQn.js",
+      "line": 8,
+      "column": 134662,
+      "ms": 529.1420000000005,
+      "pct": 1.5867276494269356,
+      "snippet": "(){wf=Cf=!1;var e=0;Ef!==0&&hp()&&(e=Ef);for(var t=et(),n=null,r=xf;r!==null;){var i=r.next,a=jf(r,t);a===0?(r.next=null,n===null?xf=i:n.next=i,i===null&&(Sf=n)):(n=r,(e!==0||a&3)&&(wf=!0)),r=i}xd!==0&&xd!==5||Of(e,!1),Ef!==0&&(Ef=0)}function jf(e,t){for(var n=e.suspendedLanes,r=e.pingedLanes,i=e.expirationTimes,a=e.pendingLanes&-62914561;0<a;){var o=31-ft(a),s=1<<o,c=i[o];c===-1?((s&n)===0||(s&r)!==0)&&(i[o]=Ct(s,t)):c<=t&&(e.expiredLanes|=s),a&"
+    },
+    {
+      "id": 39,
+      "name": "Nf",
+      "script": "startPresentation-BS_RoUQn.js",
+      "line": 8,
+      "column": 136012,
+      "ms": 508.56800000000015,
+      "pct": 1.5250328025629365,
+      "snippet": "(e,t){if(ff())return null;Id(e,t,!0)}function Pf(){bp(function(){W&6?Xe(nt,kf):Af()})}function Ff(){if(Ef===0){var e=Ga;e===0&&(e=gt,gt<<=1,!(gt&261888)&&(gt=256)),Ef=e}return Ef}function If(e){return e==null||typeof e==`symbol`||typeof e==`boolean`?null:typeof e==`function`?e:An(e)}function Lf(e,t,n,r,i){if(t===`submit`&&n&&n.stateNode===i){var a=If((i[Lt]||null).action),o=r.submitter;o&&(t=(t=o[Lt]||null)?If(t.formAction):o.getAttribute(`formAc"
+    },
+    {
+      "id": 38,
+      "name": "Of",
+      "script": "startPresentation-BS_RoUQn.js",
+      "line": 8,
+      "column": 134248,
+      "ms": 508.56800000000015,
+      "pct": 1.5250328025629365,
+      "snippet": "(e,t){if(!Tf&&wf){Tf=!0;do for(var n=!1,r=xf;r!==null;){if(!t){if(e!==0){var i=r.pendingLanes;if(i===0)var a=0;else{var o=r.suspendedLanes,s=r.pingedLanes;a=(1<<31-ft(42|e)+1)-1,a&=i&~(o&~s),a=a&201326741?a&201326741|1:a?a|2:0}a!==0&&(n=!0,Nf(r,a))}else a=q,a=bt(r,r===G?a:0,r.cancelPendingCommit!==null||r.timeoutHandle!==-1),!(a&3)||xt(r,a)||(n=!0,Nf(r,a))}r=r.next}while(n);Tf=!1}}function kf(){Af()}function Af(){wf=Cf=!1;var e=0;Ef!==0&&hp()&&(e"
+    },
+    {
+      "id": 40,
+      "name": "Id",
+      "script": "startPresentation-BS_RoUQn.js",
+      "line": 8,
+      "column": 123163,
+      "ms": 505.3530000000002,
+      "pct": 1.5153920456528678,
+      "snippet": "(e,t,n){if(W&6)throw Error(a(327));var r=!n&&!(t&127)&&(t&e.expiredLanes)===0||xt(e,t),i=r?Xd(e,t):Jd(e,t,!0),o=r;do{if(i===0){id&&!r&&zd(e,t,0,!1);break}if(n=e.current.alternate,o&&!Rd(n))i=Jd(e,t,!1),o=!1;else{if(i===2){if(o=t,e.errorRecoveryDisabledLanes&o)var s=0;else s=e.pendingLanes&-536870913,s=s===0?s&536870912?536870912:0:s;if(s!==0){t=s;a:{var c=e;i=pd;var l=c.current.memoizedState.isDehydrated;if(l&&(Hd(c,s).flags|=256),s=Jd(c,s,!1),s!"
+    },
+    {
+      "id": 41,
+      "name": "Jd",
+      "script": "startPresentation-BS_RoUQn.js",
+      "line": 8,
+      "column": 126554,
+      "ms": 407.2060000000002,
+      "pct": 1.2210805780160041,
+      "snippet": "(e,t,n){var r=W;W|=2;var i=Gd(),a=Kd();(G!==e||q!==t)&&(yd=null,Hd(e,t)),t=!1;var o=sd;a:do try{if(J!==0&&K!==null){var s=K,c=nd;switch(J){case 8:Vd(),o=6;break a;case 3:case 2:case 9:case 6:Lo.current===null&&(t=!0);var l=J;if(J=0,nd=null,ef(e,s,c,l),n&&id){o=0;break a}break;default:l=J,J=0,nd=null,ef(e,s,c,l)}}Yd(),o=sd;break}catch(t){Ud(e,t)}while(1);return t&&e.shellSuspendCounter++,Ta=wa=null,W=r,S.H=i,S.A=a,K===null&&(G=null,q=0,Pi()),o}fun"
+    },
+    {
+      "id": 42,
+      "name": "Yd",
+      "script": "startPresentation-BS_RoUQn.js",
+      "line": 8,
+      "column": 127012,
+      "ms": 405.07000000000016,
+      "pct": 1.2146753970642445,
+      "snippet": "(){for(;K!==null;)Qd(K)}function Xd(e,t){var n=W;W|=2;var r=Gd(),i=Kd();G!==e||q!==t?(yd=null,vd=et()+500,Hd(e,t)):id=xt(e,t);a:do try{if(J!==0&&K!==null){t=K;var o=nd;b:switch(J){case 1:J=0,nd=null,ef(e,t,o,1);break;case 2:case 9:if(ao(o)){J=0,nd=null,$d(t);break}t=function(){J!==2&&J!==9||G!==e||(J=7),Df(e)},o.then(t,t);break a;case 3:J=7;break a;case 4:J=5;break a;case 7:ao(o)?(J=0,nd=null,$d(t)):(J=0,nd=null,ef(e,t,o,7));break;case 5:var s=nu"
+    },
+    {
+      "id": 302,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 334.66999999999973,
+      "pct": 1.0035683095156152,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 328,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 287.07800000000003,
+      "pct": 0.86085512044439,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 283,
+      "name": "n",
+      "script": "store-C5EWv8eQ.js",
+      "line": 0,
+      "column": 66,
+      "ms": 275.2640000000002,
+      "pct": 0.8254287123151365,
+      "snippet": "(e,t){if(Object.is(e,t))return e;if(!e||!t||typeof e!=`object`||typeof t!=`object`)return t;if(Array.isArray(e)&&Array.isArray(t)){let r;e.length!==t.length&&(r=t.slice());for(let i=0;i<t.length;i++){let a=n(e[i],t[i]);Object.is(a,e[i])||(r||=e.slice()),r&&(r[i]=a)}return r||e}if(Array.isArray(e)||Array.isArray(t))return t;let r=e,i=t,a=Object.keys(i),o=Object.keys(r),s;o.length!==a.length&&(s={...i});for(let e of a){let t=n(r[e],i[e]);(!Object.h"
+    },
+    {
+      "id": 187,
+      "name": "received",
+      "script": "main-Co9k51VY.js",
+      "line": 1,
+      "column": 22173,
+      "ms": 251.606,
+      "pct": 0.7544859356500017,
+      "snippet": "(e){let t=this.waiters.get(e.requestId);if(!t)return;if(clearTimeout(t.timer),t.timer=window.setTimeout(()=>this.failWorker(),15e3),e.progress!==void 0){this.state.activity===`foreground`&&(this.state.progress=e.progress,this.emit());return}clearTimeout(t.timer),this.waiters.delete(e.requestId);let{view:n,shared:r}=this.viewOf(e,t.publishView),i=t.taking===`hold`&&!e.ok?`head`:t.taking,a=n&&t.publishView?this.take(r?n:wt(this.head,n),i):void 0;if"
+    }
+  ]
+}

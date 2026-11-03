@@ -267,13 +267,16 @@ describe('earned player growth and training choices', () => {
     const w = world('hard');
     w.round = 1;
     w.players[0].developed = 499.99;
+    // The career opens with its takeover event, where a founded one opened with its founding.
+    const events = structuredClone(w.events);
+    expect(events.map((event) => event.kind)).toEqual(['takeover']);
     settleTraining(w);
     expect(w.players[0].developed).toBe(500);
     for (const player of activePlayers(w)) {
       for (const value of [...ATTRIBUTES.map((a) => player.attrs[a]), player.developed || 0])
         expect(value * 100).toBeCloseTo(Math.round(value * 100), 8);
     }
-    expect(w.events.filter((event) => event.kind !== 'founding')).toEqual([]);
+    expect(w.events).toEqual(events);
   });
 
   it('developmentOutlook multiplies the same terms a settled round uses', () => {

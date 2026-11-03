@@ -1,3 +1,6 @@
+import { newsBefore, newsTotal } from '../../../../packages/engine/src/news';
+import { NEWS_LIMITS } from '../../../../packages/contracts/src/news';
+import { initializeReadModels, needsReadModels } from '../../../../packages/engine/src/read-models';
 import { worldMarketPage, worldMarketDetail } from '../../../../packages/engine/src/world-market';
 import { mediationPreview } from '../../../../packages/engine/src/mediation';
 import { fullStatsRead } from '../../../../packages/engine/src/npc-stats';
@@ -342,6 +345,7 @@ export class Host {
     // command, its watchdog would run out while only the command reports progress.
     const type = (input as { body?: { type?: unknown } } | null)?.body?.type;
     if (
+      type === 'news-page' ||
       type === 'world-market' ||
       type === 'world-market-detail' ||
       type === 'head-to-head' ||
@@ -395,6 +399,8 @@ export class Host {
       w.events.length,
       w.rankHistory?.length,
       w.history.length,
+      w.newsJournal?.events,
+      w.newsJournal?.matches,
     ].join(':');
     if (this.newsCache?.key !== key) this.newsCache = { key, news: clubNews(w) };
     return this.newsCache.news;
@@ -435,10 +441,19 @@ export class Host {
     const briefingClubs = new Set(next ? [next.home, next.away] : [w.playerClub]);
     // The season's complete statistics are read on request (`full-stats`), not sent every day, and
     // so are the manager-history facts.
-    const { people: _people, npcSeason: _season, managerHistory: _history, ...projected } = w;
+    const {
+      people: _people,
+      npcSeason: _season,
+      managerHistory: _history,
+      newsJournal: _news,
+      careerReads: _reads,
+      ...projected
+    } = w;
     void _people;
     void _season;
     void _history;
+    void _news;
+    void _reads;
     return {
       coaches: staffMarket(w),
       world: {
@@ -502,6 +517,7 @@ export class Host {
       coefficient: europeanCoefficient(w),
       finance: financialBreakdown(w),
       news: this.news(w),
+      newsTotal: newsTotal(w),
       managerHistoryKey: managerHistoryKey(w),
       transferLedger: this.transferLedger(w),
       ...(w.owner ? { preOwner: this.preOwner(w) } : {}),
@@ -530,6 +546,19 @@ export class Host {
         return { requestId: request.requestId, ok: true, clubSheet: sheet };
       }
       if (!w) throw new Error('먼저 구단을 인수하세요.');
+      if (body.type === 'news-page') {
+        if (body.world !== w.id) throw new Error('다른 커리어의 뉴스 요청입니다.');
+        const items = newsBefore(w, body.before, body.tag);
+        return {
+          requestId: request.requestId,
+          ok: true,
+          newsPage: {
+            world: w.id,
+            items,
+            ...(items.length === NEWS_LIMITS.page ? { next: items.at(-1)!.id } : {}),
+          },
+        };
+      }
       if (body.type === 'world-market')
         return {
           requestId: request.requestId,
@@ -668,9 +697,15 @@ export class Host {
         const modelled = writer
           ? this.adoptModel(identified, identified !== result.world)
           : identified;
-        const activated = writer
+        let activated = writer
           ? this.adoptManagerHistory(modelled, modelled !== result.world)
           : modelled;
+        if (writer && needsReadModels(activated) && !settledAhead(this.world, activated)) {
+          const journalled = structuredClone(activated);
+          initializeReadModels(journalled);
+          if (activated === result.world) journalled.revision++;
+          activated = journalled;
+        }
         upgraded = activated !== result.world;
         if (r.body.metadataOnly) worldMetadata = worldMetadataOf(activated);
         else if (!r.body.activate) candidate = structuredClone(activated);
@@ -706,6 +741,7 @@ export class Host {
           r.body.preset,
           this.release,
         );
+        initializeReadModels(this.world);
         this.start = undefined;
         changed = true;
       } else {
