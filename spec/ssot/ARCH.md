@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r29 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r30 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -188,6 +188,7 @@
   - UI feedback after controls: p95 below 100 ms during ordinary simulation; observed pitch rendering targets at least 30 FPS on the reference mobile viewport.
   - World generation after a valid start: at most 5 seconds for a 1930 takeover; a later decade at most 5 seconds a season played before the takeover on the reference trace (2000: 63 seasons, about 5¼ minutes), with the history view (→!WEB-115) showing the season reached throughout; the history view adds at most 10% to the generation time. ← the wait for a later decade is spent watching its history, and 90 seconds for 2000 would need a world 3.6× faster
     - measured 261103 (preview build, process-wide 4x, a shared host under load): 1930 3.8 s, 1970 131.9 s, 2000 322.0 s (5.1 s a season); without the slowdown 1.9 / 33.0 / 68.2 s.
+    - measured 261104 (preview build with the history view, process-wide 4x on a 10-core M1 Max at load 2.8–4.1, which slowed the worker 5.3–5.4×): 1970 61.1 s (1.85 s a season), 2000 129.8 s (2.06 s a season); without the slowdown 15.5 / 28.1 s. The view adds about 0.1% in the worker (Node 1970 A/B +0.6% wall, pairs −0.2 to +1.6%) and the club list's 3.2–3.5 s hold behind its last card, at most 5.6% on the reference trace.
   - Benchmark reports record tool/browser versions, dataset size, world seed, save sizes, match/season throughput, and long-run memory; these are targets to measure, not invented results.
 
 - ARCH-29 [o] Owner-scoped data sits behind profile ports: a device profile now (a random device ID, the game-slot index), an account profile later. ← games should follow the owner once sign-in exists (→ARCH-19) without reshaping local data
@@ -252,6 +253,7 @@
 - Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
 
 ## chg
+- r30 261104 ARCH-28✎ measured 261103 without the view only→also measured 261104 with the history view: 2000 129.8 s (2.06 s a season), 1970 61.1 s, the view at most 5.6% of generation
 - r29 261103 ARCH-30✎ batch before a push to main (full suite and Chromium)→quick batch before a session's push to `next` (unit, contract, build); +release: the last session working merges main into next, runs verify:batch once, merges next into main and pushes (deploy); CI after main pushes only
 - r28 261103 ARCH-28✎ world generation 2000 at most 90 s→a later decade at most 5 s a season played with the history view (→WEB-115) adding at most 10%; reference trace 4x CPU→4x of the whole renderer including the engine worker
 - r27 261103 ARCH-1✎ carry founding, initial-capital difficulty→the takeover start with wealth tiers and traits; ARCH-14✎ measure worlds at founding→at the takeover; ARCH-19✎ submission founding year, initial-capital category→takeover decade, wealth tier, trait count; ARCH-21✎ Playwright founding→start and takeover; ARCH-28✎ world initialization 5 s→5 s for 1930 and 90 s for a 2000 takeover with the season reached

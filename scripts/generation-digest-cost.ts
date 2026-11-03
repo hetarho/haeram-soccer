@@ -60,7 +60,13 @@ function child(side: Side) {
       digestMs += performance.now() - at;
     }
     const at = performance.now();
-    structuredClone({ requestId: 'r', ok: true, progress: seasons, season, ...(digest ? { digest } : {}) });
+    structuredClone({
+      requestId: 'r',
+      ok: true,
+      progress: seasons,
+      season,
+      ...(digest ? { digest } : {}),
+    });
     cloneMs += performance.now() - at;
   });
   const wallMs = performance.now() - started;
@@ -122,14 +128,21 @@ function driver() {
     with: side(withRuns),
     without: side(withoutRuns),
     /** Mean with ÷ mean without − 1, and each back-to-back pair's, in %. */
-    wallAddedPct: pct(mean(withRuns.map((r) => r.wallMs)) / mean(withoutRuns.map((r) => r.wallMs)) - 1),
-    cpuAddedPct: pct(mean(withRuns.map((r) => r.cpuMs)) / mean(withoutRuns.map((r) => r.cpuMs)) - 1),
+    wallAddedPct: pct(
+      mean(withRuns.map((r) => r.wallMs)) / mean(withoutRuns.map((r) => r.wallMs)) - 1,
+    ),
+    cpuAddedPct: pct(
+      mean(withRuns.map((r) => r.cpuMs)) / mean(withoutRuns.map((r) => r.cpuMs)) - 1,
+    ),
     pairWallAddedPct: pairs.map((pair) => pct(pair.wall)),
     pairCpuAddedPct: pairs.map((pair) => pct(pair.cpu)),
     /** The digest's own time against its run's wall time, in % (the direct measure). */
     digestSharePct: withRuns.map((run) => pct(run.digestMs / run.wallMs)),
     digestMsPerSeason: withRuns.map((run) => ms(run.digestMs / run.seasons)),
-    cloneMsPerSeason: { with: withRuns.map((run) => ms(run.cloneMs / run.seasons)), without: withoutRuns.map((run) => ms(run.cloneMs / run.seasons)) },
+    cloneMsPerSeason: {
+      with: withRuns.map((run) => ms(run.cloneMs / run.seasons)),
+      without: withoutRuns.map((run) => ms(run.cloneMs / run.seasons)),
+    },
     sameWorld: hashes.size === 1,
   };
   const report = {
@@ -145,7 +158,12 @@ function driver() {
       platform: `${os.platform()} ${os.release()}`,
       memoryGiB: Math.round(os.totalmem() / 1024 ** 3),
     },
-    workload: { decade, seed, order: order.join(' '), clone: 'structuredClone of the progress reply' },
+    workload: {
+      decade,
+      seed,
+      order: order.join(' '),
+      clone: 'structuredClone of the progress reply',
+    },
     runs: results,
     summary,
   };

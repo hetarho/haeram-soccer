@@ -20,13 +20,15 @@
 | nv04 | ihaelam-ui-MacBookPro | autopilot | 2026-11-03T19:13Z | 2026-11-03T19:13Z | - |
 
 ## inbox
+- 261104 decided OWNER-3 OWNER-8 LEAGUE-13 ECON-29 ARCH-28 T686 T679: how T686's tuned values and T679's measurement enter the SSOTs, with the code already holding them → OWNER r3 states 1.6× and 0.2% with T686's measured reasons and makes T686's must-hold (no owner who moves no money bankrupt within 15 seasons) OWNER-8's stated bound; LEAGUE-13, ECON-29 and ARCH-28 gain measured 261104 lines beside the earlier ones; each domain's tasked moves with its rev since no code changes, so no task (alt: leave the bound in the done task only, which leaves 0.2% without the target it was tuned to | replace the 261103 ARCH-28 line, losing the measurement without the view | open a confirming task with nothing to implement). nv04
+- 261104 decided ARCH-28 ARCH-34 T679: how the view's cost is read → Node `generateHistory` 1970 in a process per run, order with/without/without/with/with/without so a drifting host load falls on both sides, both sides cloning the progress reply as postMessage does, the digest's own time beside it; in the browser the click-to-list time beyond the worker's span counted whole as the view's (the list's hold behind its last card) (alt: one process alternating, whose heap and JIT carry from run to run | a browser run with the view switched off, a product flag the view does not have). nv04
 - 261104 decided WEB-115 EURO-2 HIST-13 T678: which continental winners the history view lists → the European Cup lineage, Cup Winners' Cup, UEFA Cup lineage and Conference League, in that order, without the Super Cup, a summarised single tie as HIST-13's brackets leave it out; the war feat is read as the gap between the last archive and the season reached, so the digest stays a read leaf without the wartime module (alt: list the Super Cup too | import WARTIME, whose module reaches the owner's settlement). nv04
 - 261104 decided WEB-115 T678: does the club list wait for the last season's card when it was still waiting behind an open one → yes: the list follows once no card is open or waiting, so the 1946 restart's war card of a 1940 takeover is never lost to the list, at most two cards (about 6 s) after the last season (alt: drop the waiting card when the list is ready, which loses the final season's greatest feat). nv04
 - 261104 decided WEB-90 WEB-115 T678: the view's new labels and card templates are locale messages in all 12 packs (`start.history.*`, `start.feat.*`, phrased without plural forms); the generation view's existing literal Korean (세계를 생성중…, the season line, summary) stays as T662 left it (alt: move the whole start flow into the packs now, beyond this task). nv04
 - 261104 decided ECON-36 CLUB-1 T686: the owned club's first season earned 1.9–5.7× its books' last income at the top (6 of 23 within ±25%) because a club nobody owns kept its founding following, never moved, while a buyer takes over the following its reputation commands → the books read that following (`clubFollowing` in books.ts' club view, unit-tested); 30 of 41 reference careers within ±25%, ten of the other eleven having changed division at the 1949 close (alt: move every club's stored following each season, more save data for the same figure | record the gap unaligned). nv04
 - 261104 decided OWNER-3 OWNER-8 LEAGUE-13 T686: no passive owner may be bankrupt within 15 seasons, but at 1.3× and 0.25% 14 of 38 were, the earliest in his 3rd season (a country's band median costs up to 1.28× the anchor) → `OWNER_TIERS` multiples 1.3 → 1.6 and `OWNER_LIVING.rate` 0.25% → 0.2%: none before the 17th, while a passive owner still uses 41–87% of his fortune in 20 seasons; `CLUB_BOOKS`, `TAKEOVER_DEBT`, `CLUB_VALUE` and `FAN_MOOD` unchanged as none reaches a missed band, one tuning pass (alt: 1.7× alone | 1.5× and 0.15% | the rate alone, which cannot save an owner left 2–3% of his fortune). nv04
 - 261104 decided LEAGUE-13 T686: the reference club when a country's band median costs more than the tier's fortune, or the band holds no club of the country → the dearest club of the band below the median; else the nearest band, the cheaper of two equally near (alt: the median of the affordable clubs | the country's cheapest club). nv04
-- 261104 suggest OWNER-3 OWNER-8 LEAGUE-13 ECON-29 ECON-30 ECON-36 CLUB-25 OWNER-12 T686: update-ssot from T686's limits — record 1.6× (OWNER-3) and 0.2% (OWNER-8) with LEAGUE-13's and ECON-29's measured lines; make the top of CLUB-25's wage curve payable by a giant (the strongest clubs pay 1.8–3.3× their 1950 income in wages, so 석유 재벌's reference is bankrupt in its first rounds in 6 of 8 careers); recalibrate ECON-30's operating share on the as-played reference (+18.9% of revenue with nothing to build, so every lower tier reaches the top flight in 3–8 seasons); give OWNER-12 a band for dividend 퇴진 (50%: 5 of 23, 25%: 1 of 19); leave division changers out of ECON-36's ±25% check; then re-read LEAGUE-13's title columns on 60 seasons. nv04
+- 261104 suggest LEAGUE-13 ECON-29 ECON-30 ECON-36 CLUB-25 OWNER-12 OWNER-3 T686: update-ssot from T686's limits (its 1.6×, 0.2% and measured lines are recorded in OWNER r3, LEAGUE r14, ECON r44) — make the top of CLUB-25's wage curve payable by a giant (the strongest clubs pay 1.8–3.3× their 1950 income in wages, so 석유 재벌's reference is bankrupt in its first rounds in 6 of 8 careers); recalibrate ECON-30's operating share on the as-played reference (+18.9% of revenue with nothing to build, so every lower tier reaches the top flight in 3–8 seasons); give OWNER-12 a band for dividend 퇴진 (50%: 5 of 23, 25%: 1 of 19); leave division changers out of ECON-36's ±25% check; 자수성가 축구팬 can pay for no Spanish club in 1950 (OWNER-3's reach); then re-read LEAGUE-13's title columns on 60 seasons. nv04
 - 261103 decided ARCH-30 T685 T686 T678 T679: owner authorizes autopilot continuation, an intermediate main push after the release gate passes, and preservation of all work remotely before 2026-11-04 09:30 Asia/Seoul. Resume the latest cv03 checkpoint rather than restart completed takeover tasks; unfinished or unverified work goes to wip/nv04 at the deadline, with actual validation limits retained (alt: restart from main or publish an unverified release). nv04
 - 261103 decided T685 ARCH-30: the cv03 read-only Git blocker is resolved in the recovered nv04 worktree using the verified acceptEdits runner and scoped Git allowlist; restore the preserved task to todo and finish artifact regeneration and validation before T686 (alt: restart the completed implementation). nv04
 - 261103 decided ARCH-30 PLAYER-18 PLAYER-27 T685: resume the stopped Claude ot03 handoff at the owner's request; merge main performance and award/wage work before balance, reconcile parallel PLAYER r14 changes as r15 without a new product policy; push next and wip/cv03 for the 22:00 KST handoff, leaving main release to its own gate (alt: restart T653 from main | deploy during the handoff). cv03
@@ -662,20 +664,20 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 29 | 29 | - | 2 |
+| ARCH | 30 | 30 | - | 2 |
 | WEB | 206 | 206 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
 | KIT | 9 | 9 | - | 0 |
 | CLUB | 51 | 51 | - | 0 |
 | MATCH | 48 | 48 | - | 0 |
-| LEAGUE | 13 | 13 | - | 0 |
+| LEAGUE | 14 | 14 | - | 0 |
 | STAFF | 39 | 39 | - | 0 |
-| ECON | 43 | 43 | - | 0 |
+| ECON | 44 | 44 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 22 | 22 | - | 0 |
 | SAVE | 65 | 65 | - | 0 |
-| OWNER | 2 | 2 | - | 0 |
+| OWNER | 3 | 3 | - | 0 |
 | PLAYER | 15 | 15 | - | 0 |
 
 ## review
@@ -692,7 +694,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | todo |
 
 ## work
@@ -717,11 +718,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T679 (generation with the history view against ARCH-28); repair any release-gate failures before the intermediate main push (T678's host.generation integration test and 1950 start journeys await the batch). T686's tuned values (OWNER-3 1.6×, OWNER-8 0.2%) await their update-ssot record (inbox suggest).
+- repair any release-gate failures before the intermediate main push (T678's host.generation integration test and 1950 start journeys await the batch). T686's remaining balance proposals (CLUB-25 wage top, ECON-30 share, OWNER-12 퇴진 band, ECON-36 check) stay an inbox suggest.
 - Deadline: 2026-11-04 09:30 Asia/Seoul; preserve all incomplete work on wip/nv04 before the deadline.
 - T689 scoring research follows only after the takeover release work, with its existing measurement and publication requirements.
 
 ## log
+- 261104 update-ssot OWNER r3 LEAGUE r14 ECON r44 ARCH r30: T686's 1.6× tier multiple and 0.2% living costs with the passive-owner bound, T686's measured lines in LEAGUE-13 and ECON-29, T679's measured note in ARCH-28; the code already holds every value, so no task (tasked = rev). T689 cites none of them. nv04
+- 261104 T679 done: with the history view on, the preview generates 2000 in 129.8 s at process-wide 4x (2.06 s a season, budget 5 s; 1970 1.85 s) on an M1 Max; the view adds about 0.1% in the worker (Node A/B +0.6%, inside the spread) and a 3.2–3.5 s list hold behind its last card (at most 5.6%); `generation-budget.ts` records load, per-season time, digests and cards, `generation-digest-cost.ts` is the A/B; fast checks pass. nv04
 - 261104 T678 done: the start plays the world's history while a later decade is generated — engine `seasonDigest` (Elo top 10, champions, European winners, 발롱도르, greatest feat) on every progress reply, a self-closing one-at-a-time feat card schedule and 22 messages in all 12 packs; 129 affected unit files (1153 tests), validate:presentation, typecheck, lint, format and build pass; host.generation integration test and the 1950 start journeys left to the host batch. nv04
 - 261104 T686 done: books read the following a club's reputation commands (ECON-36: 30 of 41 first owned seasons within ±25%, was 6 of 23); tier multiples 1.3 → 1.6 and living 0.25% → 0.2% (no passive owner bankrupt before season 17); 석유 재벌's giants still bankrupt (wages 1.8–3.3× income) and lower tiers reach the top flight in every career — update-ssot proposed; golden and prepared worlds regenerated, 994 affected unit tests and fast checks pass. nv04
 - 261104 fix release gate (4651893a, 2 of 344 Chromium failed): match-core 360x740 — the finished 홈으로 hint wrapped to two lines and pushed 상세 리포트 5 px under the bottom menu, now "다음 일정과 구단을 확인해요" with the 결과 보기 hint's glyph count; recruitment poor-ui — 1930 takeovers open on bounded books' cash that pays every fee, so the journey imports a 1950 self-made careerWorld (two years of fixed costs) whose dearest fee is too dear and its loan is not. All assertions kept; fast checks pass; both journeys left to the host gate. nv04
@@ -740,5 +743,3 @@
 - 261103 fix browser gate: the complete season-flow journey reaches its final record panes past the local 30 s budget even in isolation; use the adjacent long-journey slow classification, retaining all progression/save/record assertions. hr05
 - 261103 T681 done locally: prepared client views bypass duplicate store sharing; 97 unit cases and fast checks pass, paired component CPU clears noise with equal outputs; actual client/browser coverage deferred to combined T682 gate. hr05
 - 261103 review/automatic-play-hotspots-261103 F1/F2 adopted by the owner and tasked as T681/T682; preserve gameplay and production pace options. hr05
-- 261103 T680 done: 8 x 365 browser days, x20 target unmet (fresh 8.68–9.32/s; retained 3.49–3.55/s), all equal-date facts/commits/reloads pass; main-page shareValue hotspot measured; report spec/reports/261103-hr04.md. hr04
-- 261103 T680 planned from user measurement request: compare current x10 and isolated 50 ms/day experiments on fresh and retained careers; ship no pace change. hr04
