@@ -1,0 +1,41 @@
+{
+  "source": "f383e0f42cdfc769069d45a8f338b0ca57733670",
+  "node": "v24.22.1",
+  "pnpm": "10.34.6",
+  "browser": "153.0.8010.12",
+  "machine": {
+    "hostname": "hq-dev1-pve2-vm2",
+    "cpus": [
+      "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+      "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz"
+    ],
+    "memory": 33577496576,
+    "platform": "linux",
+    "release": "5.15.0-164-generic"
+  },
+  "steps": 365,
+  "reps": 2,
+  "variants": [
+    "base",
+    "x20"
+  ],
+  "fixtures": [
+    "early",
+    "late"
+  ],
+  "buildHashes": {
+    "base": "bfa77947e797a39c38f3bda25263e04311d6964830a0273ccc3accbf05daaa48",
+    "x20": "49c30a0b8e4acb6e5f80636b25cdce30915ee4669c7fc3d0d43014de74fa384a"
+  },
+  "runnerHash": "b94995722880626a15cc6bacb7754f5038391a32e382e6b1f076678334d3fb44"
+}
