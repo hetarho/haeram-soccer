@@ -515,8 +515,14 @@ test('reaches the forty-player ceiling with eight loans and prevents any further
 test('disables an unaffordable fee while keeping a cheaper loan available with honest ongoing costs', async ({
   page,
 }) => {
-  // A self-made owner's quarter in the club pays a loan's fee but not a transfer fee.
-  await foundMarket(page, 'recruitment-poor-ui', { tier: 'selfmade', fund: true });
+  // A 1930 takeover opens on its books' cash (→ECON-36), which pays every fee of its market; a
+  // self-made owner's career on two years of fixed costs pays a loan's fee but not the dearest fee.
+  await page.setViewportSize({ width: 390, height: 844 });
+  const world = careerWorld({ country: 'ENG', seed: 'recruitment-poor-ui', tier: 'selfmade' });
+  world.settings!.mode = 'manual';
+  world.settings!.observations = { matchEve: false, windowOpen: false };
+  await importResponsibilityCareer(page, world);
+  await openMarket(page);
   const before = await exportWorld(page);
   const offer = transferOffers(before).find(
     (candidate) =>

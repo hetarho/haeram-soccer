@@ -716,6 +716,7 @@
 - T689 scoring research follows only after the takeover release work, with its existing measurement and publication requirements.
 
 ## log
+- 261104 fix release gate (4651893a, 2 of 344 Chromium failed): match-core 360x740 — the finished 홈으로 hint wrapped to two lines and pushed 상세 리포트 5 px under the bottom menu, now "다음 일정과 구단을 확인해요" with the 결과 보기 hint's glyph count; recruitment poor-ui — 1930 takeovers open on bounded books' cash that pays every fee, so the journey imports a 1950 self-made careerWorld (two years of fixed costs) whose dearest fee is too dear and its loan is not. All assertions kept; fast checks pass; both journeys left to the host gate. nv04
 - 261104 T685 done: price-rank reach, 0.25% living costs, halved fan-mood drops, bounded NPC books, 10-season takeover loan (code in cv03 checkpoint 3d9bdffd); golden and prepared worlds regenerated, 1125 affected unit tests and fast checks pass; contract/integration/e2e left to the host gate. nv04
 - 261103 cv03 takeover: resume the stopped ot03 handoff on work/cv03-continuation; merge current main, preserving takeover, hr05 performance and bl03 awards/wages.
 - 261103 bl03 publication: owner explicitly requests immediate push without further tests; retain the post-sync 1176 passing integration cases, four skips and one long-career timeout. T689 remains todo with its experiments detached and backed up; no scoring implementation released.

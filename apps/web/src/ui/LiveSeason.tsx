@@ -115,8 +115,10 @@ function NextMatchAction({ controls }: { controls: PitchControls }) {
         {reveal ? '결과 보기' : '홈으로'}{' '}
         <PixelIcon name={reveal ? 'chevronRight' : 'home'} size={16} />
       </b>
+      {/* Both hints keep one line in a 360px half-width cell, so revealing the result never
+          grows the action row under the bottom menu. */}
       <small id="match-next-hint">
-        {reveal ? '종료 휘슬까지 바로 넘어가요' : '다음 일정과 구단 상태를 확인해요'}
+        {reveal ? '종료 휘슬까지 바로 넘어가요' : '다음 일정과 구단을 확인해요'}
       </small>
     </button>
   );
