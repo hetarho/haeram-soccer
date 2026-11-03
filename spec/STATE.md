@@ -16,7 +16,7 @@
 | ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-03T00:00Z | T665 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T02:20Z | T674 |
+| hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T02:27Z | T675 |
 
 ## inbox
 - 261103 decided HIST-11 HIST-22 SAVE-28 T673 T674 T675: how to avoid repeating historical news/statistics work → persist incremental source-linked news/record summaries, index current-season finance and page retained news (alt: replace IndexedDB or recompute every read); preserve all original facts and current rules. hr03
@@ -548,7 +548,7 @@
 | T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T672 | todo |
 | T673 | Record news and update record counters when facts settle | HIST SAVE ARCH | - | doing@261103.hr03 |
 | T674 | Serve career statistics and current-season finance from maintained summaries | HIST SAVE ARCH | T673 | doing@261103.hr03 |
-| T675 | Verify long-career scaling and checkpoint continuity of incremental reads | HIST SAVE ARCH | T674 | todo |
+| T675 | Verify long-career scaling and checkpoint continuity of incremental reads | HIST SAVE ARCH | T674 | doing@261103.hr03 |
 | T670 | engine tests build careers by taking a club over | WEB WORLD ECON CLUB ARCH | T665 | todo |
 | T671 | the founding leaves the engine: fixtures, web tests, e2e and scripts on takeovers | WEB WORLD CLUB SAVE ARCH | T670 | todo |
 | T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | todo |
