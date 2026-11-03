@@ -1,16 +1,10 @@
-import type { Founding } from '../../contracts/src/types';
+import type { CareerInput } from './career.testkit';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
-export const FOUNDING: Founding = {
-  country: 'ENG',
-  name: 'Budget Athletic',
-  color: '#335544',
-  seed: 'finance',
-  level: 'easy',
-};
+export const CAREER: CareerInput = { country: 'ENG', seed: 'finance' };
 
-/** The finance club founded on the pre-feature path: money, not the match model, is the subject. */
+/** The finance club taken over on the pre-feature path: money, not the match model, is the subject. */
 export function world() {
-  return simulatedWorld(FOUNDING, {}, DISABLED_RELEASE);
+  return simulatedWorld(CAREER, {}, DISABLED_RELEASE);
 }

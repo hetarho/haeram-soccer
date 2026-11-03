@@ -127,8 +127,6 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/scoring.test.ts',
   'packages/engine/src/season.brackets.test.ts',
   'packages/engine/src/season.contracts.test.ts',
-  'packages/engine/src/season.exchange.test.ts',
-  'packages/engine/src/season.groups.test.ts',
   'packages/engine/src/season.professional.test.ts',
   'packages/engine/src/season.settle.test.ts',
   'packages/engine/src/season.test.ts',

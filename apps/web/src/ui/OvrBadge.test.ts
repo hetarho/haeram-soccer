@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { clubOvr, cohesionLine, ovrTier } from './OvrBadge';
 
 describe('overall presentation tiers', () => {
@@ -21,13 +21,7 @@ describe('overall presentation tiers', () => {
 
 describe("a rival's XI at its 조직력 (→LEAGUE-12, WEB-58)", () => {
   it('rates a rival by its strength at its 조직력 and names it', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Cohesion Town',
-      color: '#335577',
-      seed: 'cohesion-ui',
-      level: 'normal' as const,
-    });
+    const w = careerWorld({ country: 'ENG', seed: 'cohesion-ui' });
     const rival = w.clubs.find((club) => club.id !== w.playerClub && club.strength > 40)!;
     // A new rival stands at 0.80: exactly its strength.
     expect(clubOvr(w, rival)).toBe(rival.strength);

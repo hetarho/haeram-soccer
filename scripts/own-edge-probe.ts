@@ -25,7 +25,7 @@ import { activeMatchModel } from '../packages/contracts/src/match-model';
 import type { Fixture, World } from '../packages/contracts/src/types';
 import { simulateAggregate } from '../packages/engine/src/aggregate/engine';
 import { buildEffects } from '../packages/engine/src/build';
-import { createWorld } from '../packages/engine/src/founding';
+import { careerWorld } from '../packages/engine/src/career.testkit';
 import { clubManager } from '../packages/engine/src/managerMarket';
 import { matchForm, prepareMatch, simulateMatch } from '../packages/engine/src/match';
 import { effectiveGap } from '../packages/engine/src/match-rules';
@@ -41,13 +41,7 @@ const arg = (name: string, fallback: string) => {
 const SEEDS = Number(arg('seeds', '10'));
 const SEASONS = Number(arg('seasons', '10'));
 const OUT = arg('out', '');
-const FOUNDING = {
-  country: 'ENG' as const,
-  name: 'Probe Town',
-  color: '#3A7BC2',
-  seed: 'own-edge',
-  level: 'easy' as const,
-};
+const CAREER = { country: 'ENG' as const, seed: 'own-edge' };
 const round2 = (x: number) => Math.round(100 * x) / 100;
 
 /** Each tier-0 league's champion of a season whose rounds are all played, before it closes. */
@@ -81,9 +75,9 @@ function champions(w: World) {
 
 const t0 = Date.now();
 const built = cachedWorld(
-  `own-edge-probe:T467:${JSON.stringify(FOUNDING)}:${SEASONS}`,
+  `own-edge-probe:T467:${JSON.stringify(CAREER)}:${SEASONS}`,
   () => {
-    const w = createWorld(FOUNDING, ENABLED_RELEASE);
+    const w = careerWorld(CAREER, ENABLED_RELEASE);
     const titles = [];
     for (let s = 0; s < SEASONS && !w.bankrupt; s++) {
       while (w.round < 46 && !w.bankrupt) advanceRound(w, undefined, false);
@@ -94,7 +88,7 @@ const built = cachedWorld(
     }
     return { world: w, titles };
   },
-  { input: { founding: FOUNDING, seasons: SEASONS } },
+  { input: { career: CAREER, seasons: SEASONS } },
 );
 const buildSeconds = (Date.now() - t0) / 1000;
 const world = built.world;
@@ -271,7 +265,7 @@ function read(label: string, w: World) {
 function topCopy() {
   const w = structuredClone(world);
   const top = w.clubs
-    .filter((c) => c.country === FOUNDING.country && c.tier === 0)
+    .filter((c) => c.country === CAREER.country && c.tier === 0)
     .map((c) => ({ c, r: rating(w, c) }))
     .sort((a, b) => a.r - b.r || a.c.id.localeCompare(b.c.id));
   const club = top[Math.floor(top.length / 2)]!.c;
@@ -290,7 +284,7 @@ function topCopy() {
   return w;
 }
 
-const readings = [read('founding', world), read('top', topCopy())];
+const readings = [read('takeover', world), read('top', topCopy())];
 
 const titles = built.titles;
 const ppms = titles.map((t) => t.ppm);
@@ -302,8 +296,8 @@ const median = (xs: number[]) => {
 };
 const summary = {
   task: 'T467',
-  indicative: `one founding, ${SEEDS} seeds a fixture; no MATCH-28 equivalence claimed`,
-  founding: FOUNDING,
+  indicative: `one takeover, ${SEEDS} seeds a fixture; no MATCH-28 equivalence claimed`,
+  career: CAREER,
   seasons: SEASONS,
   model: activeMatchModel(world),
   readings,

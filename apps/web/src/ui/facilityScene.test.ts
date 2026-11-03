@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { createWorld, progressFacilityWorks } from '../../../../packages/engine/src/index';
+import { progressFacilityWorks } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { startWork } from '../../../../packages/engine/src/testing';
 import { facilityScene as resolveFacilityScene, type FacilityScene } from './facilityScene';
 import { createLoadedLocale } from '../presentation/locale';
@@ -67,13 +68,7 @@ describe('facility artwork follows the current club', () => {
   });
 
   it('changes facility artwork only when the actual work completes', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Art Fixture',
-      color: '#2e713d',
-      seed: 'art-upgrades',
-      level: 'easy',
-    });
+    const w = careerWorld({ country: 'ENG', seed: 'art-upgrades' });
     w.cash = '999999999999';
     w.stadium = 1;
     w.trainingGround = 2;

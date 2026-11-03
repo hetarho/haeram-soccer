@@ -4,7 +4,6 @@ import { expect, test, type Page } from '@playwright/test';
 import {
   activePlayers,
   advanceDays,
-  createWorld,
   currentDay,
   operate,
   ROUND_INTERVAL_DAYS,
@@ -12,6 +11,7 @@ import {
   talksRound,
   UNHAPPY_CONFIG,
 } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { encode } from '../../apps/web/src/adapters/persistence';
 import { eventCard, reviewInOffice } from './events';
 import { openClubhouse } from './competition-navigation';
@@ -24,13 +24,7 @@ import { startCareer } from './start';
  * season has just asked to renew, and the manager would fail to talk him round (→CLUB-27).
  */
 async function talking() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Contract Talks',
-    color: '#2a5d8f',
-    seed: 'contract-talks-journey',
-    level: 'easy' as const,
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'contract-talks-journey' });
   // Isolate contract decisions; ordinary unhappiness and transfer-request reports do not stop time.
   operate(w, {
     type: 'settings',

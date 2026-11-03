@@ -1,19 +1,9 @@
-import { SQUAD_TARGET } from './squad-size';
 import { continuousSquad } from './npc-continuity';
 import { generateQualities } from './aptitude';
-import {
-  COUNTRIES,
-  CATALOG_VERSION,
-  CATALOG_HASH,
-  country,
-  currency,
-  priceIndex,
-} from '../../catalogs/src/index';
+import { COUNTRIES, country } from '../../catalogs/src/index';
 import type {
   Club,
-  DifficultyLevel,
   Fixture,
-  Founding,
   Line,
   Manager,
   ManagerStyle,
@@ -23,14 +13,13 @@ import type {
   World,
   Tactic,
 } from '../../contracts/src/types';
-import { clamp, hash, integer, random, ratio, zeroMetrics, compareIds } from './primitives';
+import { clamp, hash, integer, random, zeroMetrics, compareIds } from './primitives';
 import { CURRENT_ENGINE_VERSION } from '../../contracts/src/versions';
 import { coachProspect, MANAGER_CAREER } from './coaching';
 import { isBanned, isUnavailable } from './discipline';
 import { MARKET_BANDS, STYLE_INFO, YOUTH_SELECTION_BONUS } from './styles';
-import { divisionFor, drawAgent, marketWageAt, settleClauses } from './contracts';
-import { operatingExpensesAt } from './finance';
-import { quote, footballQuote } from './quotes';
+import { divisionFor, drawAgent, marketWageAt } from './contracts';
+import { quote } from './quotes';
 import {
   adaptationStart,
   generateProfile,
@@ -81,20 +70,6 @@ export function joinClub(p: Player, joined: Joined, year: number) {
   delete p.unsettled;
   delete p.positionStarts;
 }
-/** What a difficulty level sets: cash × the founding budget and the founding XI's offset (→WEB-3). */
-export const LEVEL_CASH: Record<DifficultyLevel, number> = {
-  easy: 2,
-  normal: 1,
-  hard: 0.5,
-  extreme: 0.25,
-};
-export const LEVEL_OFFSET: Record<DifficultyLevel, number> = {
-  easy: 0,
-  normal: -2,
-  hard: -4,
-  extreme: -6,
-};
-export const DIFFICULTY_LEVELS = Object.keys(LEVEL_CASH) as DifficultyLevel[];
 export { quote, footballQuote, broadcastQuote } from './quotes';
 /**
  * A name from his country's pools (→WORLD-12). It always takes two draws of `r`, so neither the
@@ -209,10 +184,9 @@ export function makeManager(
     potential: career.potential,
   };
 }
-import { FOUNDING_YEAR } from './calendar';
 import { initialElo } from './elo';
 export { initialElo } from './elo';
-export { EUROPEAN_CUP_START, FOUNDING_YEAR } from './calendar';
+export { EUROPEAN_CUP_START } from './calendar';
 /** Amateur clubs per country below the professional pyramid; with the owner's club, a league of 16. */
 import { AMATEUR_CLUBS } from './league-fixtures';
 export { AMATEUR_CLUBS } from './league-fixtures';
@@ -344,135 +318,6 @@ export function generateClubs(seed: string, amateur = true): Club[] {
       });
     }
   return clubs;
-}
-export function createBase(input: Founding): World {
-  if (
-    !input.name.trim() ||
-    input.name.length > 60 ||
-    !/^#[0-9a-fA-F]{6}$/.test(input.color) ||
-    input.seed.length > 80 ||
-    !DIFFICULTY_LEVELS.includes(input.level)
-  )
-    throw new Error('창단 정보를 확인해 주세요.');
-  const year = FOUNDING_YEAR;
-  const selected = country(input.country);
-  const clubs = generateClubs(input.seed);
-  // The new club starts as an amateur club, one league below the professional game (→WEB-2).
-  const club: Club = {
-    id: `${input.country}:club`,
-    name: input.name.trim(),
-    short: input.name.replace(/\s/g, '').slice(0, 3).toUpperCase(),
-    country: input.country,
-    tier: selected.groups.length,
-    group: 0,
-    strength: 0,
-    reputation: 12,
-    fans: 800,
-    color: input.color,
-  };
-  clubs.push(club);
-  const manager = makeManager(input.country, input.seed, year);
-  // The founders cover the founding manager's formation: one per slot, then the bench (→CLUB-1).
-  const tactic = manager.philosophy;
-  const places = squadPlaces(tactic);
-  while (places.length < SQUAD_TARGET) places.push({ position: refillPlace(tactic, places) });
-  // A new club starts at its league's average club plus its level's offset (→CLUB-1, →WEB-3).
-  const peers = clubs
-    .filter((c) => c.country === club.country && c.representative && c.tier === club.tier)
-    .slice(0, AMATEUR_CLUBS);
-  const target =
-    Math.round(
-      peers.reduce((sum, c) => {
-        const style = clubStyle(c);
-        return sum + xiRating(lineup(npcSquad(input.seed, year, c), style), style);
-      }, 0) / peers.length,
-    ) + LEVEL_OFFSET[input.level];
-  const found = (base: number) =>
-    places.map((place, i) =>
-      makePlayer(
-        input.country,
-        input.seed,
-        `${club.id}:founder:${i}`,
-        year,
-        base,
-        place.position,
-        undefined,
-        club.tier,
-        place.role,
-        squadSurname(input.seed, club.id, i),
-      ),
-    );
-  let base = target;
-  for (let step = 0; step < 4; step++) {
-    const gap = target - xiRating(lineup(found(base), tactic), tactic);
-    if (!gap) break;
-    base += gap;
-  }
-  club.strength = base;
-  club.elo = initialElo(base);
-  const players = found(base);
-  // The founders sign on the founding day, each with his contract's clauses (→CLUB-29).
-  for (const p of players) {
-    p.clauses = settleClauses(input.seed, p, p.agent!, year, 0);
-    joinClub(p, 'founding', year);
-  }
-  // A club's first season pays the amateur level's floor of operating expenses (→ECON-30).
-  const operatingExpenses = operatingExpensesAt(input.country, year, club.tier);
-  // The founding season's fixed costs (→WEB-3): wages, upkeep and those operating expenses.
-  const baseline =
-    players.reduce((s, p) => s + BigInt(p.wage), 0n) +
-    BigInt(manager.wage) +
-    BigInt(footballQuote(input.country, year, 180)) +
-    BigInt(operatingExpenses);
-  const cash = ratio(baseline.toString(), BigInt(LEVEL_CASH[input.level] * 4), 4n);
-  return {
-    schema: 1,
-    engine: ENGINE_VERSION,
-    catalog: CATALOG_VERSION,
-    catalogHash: CATALOG_HASH,
-    id: `world:${hash(input.seed + input.name)}`,
-    seed: input.seed,
-    year,
-    round: 0,
-    revision: 0,
-    playerClub: club.id,
-    level: input.level,
-    clubs,
-    players,
-    manager,
-    tactic: manager.philosophy,
-    fixtures: [],
-    tables: {},
-    ownMatches: [],
-    history: [],
-    events: [
-      {
-        year,
-        round: 0,
-        kind: 'founding',
-        title: '클럽의 첫 페이지',
-        detail: `${club.name} 창단 · ${selected.name} 아마추어 리그`,
-        amount: cash,
-        currency: currency(input.country, year).code,
-      },
-    ],
-    cash,
-    income: '0',
-    expense: '0',
-    operatingExpenses,
-    currency: currency(input.country, year).code,
-    priceIndex: priceIndex(input.country, year).value,
-    stadium: 0,
-    trainingGround: 0,
-    academyFacility: 0,
-    ticket: 0.05,
-    campaigns: [],
-    cupWinners: {},
-    europe: [],
-    lastChampions: [],
-    lower: true,
-    receiptIds: [],
-  };
 }
 const npcCaches = new WeakMap<World, { year: number; clubs: Map<string, Player[]> }>();
 export function squad(w: World, c: Club): Player[] {

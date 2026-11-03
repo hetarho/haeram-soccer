@@ -1,51 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld, simulateSeason } from '../../../../packages/engine/src/index';
-import { professionalStart } from '../../../../packages/engine/src/testing';
-import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { finalZones } from './league';
 import { finalRows, seasonRecords, seasonSnapshots } from './seasonArchive';
 
 // Every season here is played on the pre-feature path: the archived tables, not the match model,
-// are the subject.
-const input = {
-  country: 'ENG' as const,
-  name: 'Haeram Archive',
-  color: '#24664f',
-  seed: 'season-archive',
-  level: 'normal' as const,
-};
+// are the subject. The amateur league's own table left with the founding start (T671).
+const input = { country: 'ENG' as const, seed: 'season-archive' };
 
 describe('closed season tables', () => {
-  it('reads an amateur season from its last snapshot only', () => {
+  it('rebuilds a professional table from the archived standings in the engine order', () => {
     const w = simulatedWorld(input, { seasons: 1 }, DISABLED_RELEASE),
       season = w.history[0];
     expect(seasonSnapshots(w, season).map((s) => s.round)).toEqual(
       Array.from({ length: 46 }, (_, i) => i + 1),
     );
-    const rows = finalRows(w, season, season.standings)!;
-    expect(rows).toHaveLength(16);
-    const ours = rows.findIndex(([club]) => w.clubs[club].id === w.playerClub);
-    expect(ours + 1).toBe(season.rank);
-    expect(rows[ours][1]).toBe(season.points);
-    // Won/drawn/lost come back from the round snapshots for every club, ours as archived.
-    const records = seasonRecords(w, season)!;
-    expect(records.get(rows[ours][0])).toEqual([season.won, season.drawn, season.lost]);
-    for (const [club, points] of rows) {
-      const [won, drawn] = records.get(club)!;
-      expect(won * 3 + drawn).toBe(points);
-    }
-    // The archived standings leave the amateur clubs out, so they are no table on their own.
-    delete w.rankHistory;
-    expect(finalRows(w, season, season.standings)).toBeUndefined();
-  });
-
-  it('rebuilds a professional table from the archived standings in the engine order', () => {
-    const w = cachedWorld('professional-season', () =>
-        simulateSeason(professionalStart(createWorld(input, DISABLED_RELEASE))),
-      ),
-      season = w.history[0];
     const kept = finalRows(w, season, season.standings)!;
     expect(kept).toHaveLength(24);
     expect(seasonRecords(w, season)?.size).toBe(24);

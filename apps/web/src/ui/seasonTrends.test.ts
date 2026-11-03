@@ -1,15 +1,10 @@
 import { expect, it } from 'vitest';
-import { createWorld, nextOwnFixture, simulateMatch } from '../../../../packages/engine/src/index';
+import { nextOwnFixture, simulateMatch } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { fixtureDay } from '../../../../packages/engine/src/calendar';
 import { matchSplit, seasonProgress } from './seasonTrends';
 it('uses the own perspective, weighted denominators and the season built up in playing order', () => {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Season',
-    color: '#24664f',
-    seed: 'season-analysis',
-    level: 'easy' as const,
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'season-analysis' });
   const record = simulateMatch(w, nextOwnFixture(w)!, false, true).record;
   const home = {
     ...record,

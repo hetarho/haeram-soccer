@@ -9,25 +9,17 @@ import {
   recordMatch,
   simulateMatch,
 } from './index';
-import { holdRows, professionalStart, startWork } from './testing';
+import { holdRows, startWork } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 /** The club on the pre-feature path: investment plans, not the match model, are the subject. */
 function world() {
-  const w = simulatedWorld(
-    {
-      country: 'ENG',
-      name: 'Investment United',
-      color: '#224433',
-      seed: 'investment-plans',
-      level: 'easy' as const,
-    },
-    {},
-    DISABLED_RELEASE,
-  );
+  const w = simulatedWorld({ country: 'ENG', seed: 'investment-plans' }, {}, DISABLED_RELEASE);
   w.cash = '999999999999';
+  // The first ground, so the ladder's first step is the work under test (→ECON-32).
+  w.stadium = 0;
   return w;
 }
 
@@ -142,7 +134,7 @@ describe('shared club investment forecasts', () => {
   );
 
   it('projects lower demand and possible gate losses at a dear ticket price', () => {
-    const w = professionalStart(world()),
+    const w = world(),
       cheap = gateProjection(holdRows(structuredClone(w), { ticket: 0.01 })),
       dear = gateProjection(holdRows(structuredClone(w), { ticket: 0.5 }));
     expect(dear.attendanceHigh).toBeLessThan(cheap.attendanceLow);

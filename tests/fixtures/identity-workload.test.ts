@@ -4,8 +4,9 @@ import { LOAD_CATALOG } from '../../packages/catalogs/src/index';
 import { canonical, validateWorld } from '../../packages/contracts/src/index';
 import { CREST_PALETTE, KIT_ROLES, SHIRT_PATTERNS } from '../../packages/contracts/src/identity';
 import { clubIdentitySchema } from '../../packages/contracts/src/identitySchema';
-import type { Founding, World } from '../../packages/contracts/src/types';
+import type { World } from '../../packages/contracts/src/types';
 import { advanceRound, clubOf } from '../../packages/engine/src/index';
+import type { CareerInput } from '../../packages/engine/src/career.testkit';
 import {
   appearanceSummary,
   assertAppearancesUnchanged,
@@ -19,15 +20,9 @@ import {
 } from './identity-workload';
 import { simulatedWorld } from './worlds';
 
-/** The active-management century's own founding (scripts/benchmark.ts), a few rounds in. */
-const FOUNDING: Founding = {
-  country: 'ENG',
-  name: 'Century Cooperative',
-  color: '#284e35',
-  seed: 'release-century-active-management',
-  level: 'easy',
-};
-const started = () => simulatedWorld(FOUNDING, { rounds: 3 });
+/** The active-management century's own start (scripts/benchmark.ts), a few rounds in. */
+const CAREER: CareerInput = { country: 'ENG', seed: 'release-century-active-management' };
+const started = () => simulatedWorld(CAREER, { rounds: 3 });
 
 /** Top-level keys whose canonical value differs between two worlds. */
 const changedKeys = (a: World, b: World) =>

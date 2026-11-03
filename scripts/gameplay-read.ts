@@ -1,5 +1,5 @@
 /**
- * T410 gameplay read of the released model (indicative, not a MATCH-28 verdict): one 1950 founding
+ * T410 gameplay read of the released model (indicative, not a MATCH-28 verdict): one 1950 takeover
  * simulated for 10 seasons (built once through `cachedWorld`), and per season and tier
  *   goals a match, home / draw / away shares, 0–0 share, biggest margin, the champions' points and
  *   their lead over second, the league top scorer's goals (season ledger), and the stronger side's
@@ -16,7 +16,7 @@ import { writeFileSync } from 'node:fs';
 import { activeMatchModel } from '../packages/contracts/src/match-model';
 import type { Fixture, World } from '../packages/contracts/src/types';
 import { simulateAggregate } from '../packages/engine/src/aggregate/engine';
-import { createWorld } from '../packages/engine/src/founding';
+import { careerWorld } from '../packages/engine/src/career.testkit';
 import { M } from '../packages/engine/src/grid/record';
 import type { GridResult } from '../packages/engine/src/grid/engine';
 import { advanceRound, closeSeason } from '../packages/engine/src/season';
@@ -34,13 +34,7 @@ const arg = (name: string, fallback: string) => {
 const SEASONS = Number(arg('seasons', '10'));
 const PER_PAIRING = Number(arg('per-pairing', '5'));
 const OUT = arg('out', 'artifacts/benchmarks/gameplay-read.json');
-const FOUNDING = {
-  country: 'ENG' as const,
-  name: 'Gameplay Town',
-  color: '#3A7BC2',
-  seed: 'gameplay-read',
-  level: 'normal' as const,
-};
+const CAREER = { country: 'ENG' as const, seed: 'gameplay-read' };
 const GAPS = [
   ['0-5', 0, 5],
   ['5-15', 5, 15],
@@ -151,9 +145,9 @@ function readSeason(w: World) {
 
 const started = Date.now();
 const built = cachedWorld(
-  `gameplay-read:${JSON.stringify(FOUNDING)}:${SEASONS}`,
+  `gameplay-read:${JSON.stringify(CAREER)}:${SEASONS}`,
   () => {
-    const w = createWorld(FOUNDING, ENABLED_RELEASE);
+    const w = careerWorld(CAREER, ENABLED_RELEASE);
     const seasons = [];
     for (let s = 0; s < SEASONS && !w.bankrupt; s++) {
       const t0 = Date.now();
@@ -173,7 +167,7 @@ const built = cachedWorld(
     }
     return { model: activeMatchModel(w), seasons };
   },
-  { input: { founding: FOUNDING, seasons: SEASONS } },
+  { input: { career: CAREER, seasons: SEASONS } },
 );
 const seasonSeconds = (Date.now() - started) / 1000;
 
@@ -203,8 +197,8 @@ const detailed = {
 
 const summary = {
   task: 'T410',
-  indicative: 'one founding, 10 seasons, 5 fixtures a pairing; no MATCH-28 equivalence claimed',
-  founding: FOUNDING,
+  indicative: 'one takeover, 10 seasons, 5 fixtures a pairing; no MATCH-28 equivalence claimed',
+  career: CAREER,
   identity: measurementIdentity('scripts/gameplay-read.ts'),
   ...built,
   detailed,

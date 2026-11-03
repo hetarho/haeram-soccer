@@ -25,7 +25,15 @@ import {
 } from './staff';
 import { addEvent } from './events';
 import { clubOf } from './player-state';
-import { FOUNDING_YEAR, makeManager } from './world';
+import { makeManager } from './world';
+import { TAKEOVER_DECADES } from '../../contracts/src/owner';
+
+/**
+ * Where a club missing from the market's map started counting: the world's first season, as
+ * history.ts's `HISTORY_START` (imported from contracts to keep `season.ts` out of the cycle).
+ * Every generated world lists every club, so no world reaches it.
+ */
+const MARKET_START = TAKEOVER_DECADES[0];
 import { ownLeagueClubs } from './season';
 import { managerCriteriaOf } from './hiring';
 import { moneyLabel } from './finance';
@@ -121,7 +129,7 @@ const cache = new Map<string, MarketManager>();
  * nothing is stored until he changes. His level follows the club's strength (±8).
  */
 export function clubManager(w: World, club: Club): MarketManager {
-  const [count, since] = w.managerMarket?.clubs[club.id] ?? [0, FOUNDING_YEAR];
+  const [count, since] = w.managerMarket?.clubs[club.id] ?? [0, MARKET_START];
   const key = `${w.seed}:club-manager:${club.id}:${count}`;
   const code = moneyCountry(club);
   // Before the takeover nobody's country prices him: his club's does (→WORLD-13); after it, the
@@ -439,7 +447,7 @@ export function takeManager(w: World, candidate: ManagerCandidate, replaced: Man
   if (candidate.club && !candidate.person) {
     const club = w.clubs.find((one) => one.id === candidate.club);
     const before = club && clubManager(w, club);
-    const [count] = m.clubs[candidate.club] ?? [0, FOUNDING_YEAR];
+    const [count] = m.clubs[candidate.club] ?? [0, MARKET_START];
     m.clubs[candidate.club] = [count + 1, w.year];
     // The club he left names its next manager, and its squad starts to learn him (→LEAGUE-12).
     if (club && before) cohesionAfterManager(club, before.style === clubManager(w, club).style);
@@ -554,7 +562,7 @@ export function refreshManagerMarket(w: World, relegated?: Set<string>) {
     const manager = clubManager(w, club);
     const sacked = sacking.has(club.id);
     if (!sacked && age(w, manager) < RETIREMENT_AGE) continue;
-    const [count] = m.clubs[club.id] ?? [0, FOUNDING_YEAR];
+    const [count] = m.clubs[club.id] ?? [0, MARKET_START];
     m.clubs[club.id] = [count + 1, w.year];
     // The squad starts to learn its next manager (→LEAGUE-12).
     cohesionAfterManager(club, manager.style === clubManager(w, club).style);
@@ -589,7 +597,7 @@ function renewWorldManagers(w: World, relegated: ReadonlySet<string>) {
     const manager = clubManager(w, club);
     const sacked = relegated.has(club.id) && r() < SACKING.relegated;
     if (!sacked && age(w, manager) < RETIREMENT_AGE) continue;
-    const [count] = m.clubs[club.id] ?? [0, FOUNDING_YEAR];
+    const [count] = m.clubs[club.id] ?? [0, MARKET_START];
     m.clubs[club.id] = [count + 1, w.year];
     cohesionAfterManager(club, manager.style === clubManager(w, club).style);
   }

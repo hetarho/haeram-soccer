@@ -291,7 +291,7 @@ describe('preview pitch drawing', () => {
           /^(react|\.\.\/presentation\/react|\.\/(identityPreview|figurePose|figurePainting|matchAppearance|numberTags|kitPainting|pitchPainting|usePitchSkin|KitPitchPreview\.module\.css)|(\.\.\/){4}packages\/(contracts\/src\/identity|engine\/src\/kit-selection))$/,
         );
       expect(source).not.toMatch(
-        /createWorld|simulateMatch|GameClient|command\(|localStorage|indexedDB|requestAnimationFrame|setInterval/,
+        /takeOver|generateHistory|simulateMatch|GameClient|command\(|localStorage|indexedDB|requestAnimationFrame|setInterval/,
       );
     }
   });

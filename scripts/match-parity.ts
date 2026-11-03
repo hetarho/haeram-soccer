@@ -39,24 +39,17 @@ import { gunzipSync, gzipSync } from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import { TD } from '../packages/contracts/src/detail';
 import { MATCH_MODEL_REVISION } from '../packages/contracts/src/match-model';
-import type {
-  Fixture,
-  Founding,
-  MatchRecord,
-  Player,
-  Tactic,
-  World,
-} from '../packages/contracts/src/types';
+import type { Fixture, MatchRecord, Player, Tactic, World } from '../packages/contracts/src/types';
 import {
   advanceRound,
   clamp,
-  createWorld,
   effectiveGap,
   matchForm,
   prepareMatch,
   rating,
   tacticalProfile,
 } from '../packages/engine/src/index';
+import { careerWorld, type CareerInput } from '../packages/engine/src/career.testkit';
 import {
   AGGREGATE_CONFIG,
   AGGREGATE_PARTICIPATION_CONFIG,
@@ -793,9 +786,9 @@ function pairingSample(s: MatchSample): MatchSample {
  */
 export function seasonSample(partition: Partition, round: number, index: number) {
   const season = conditionOf('season:league-20');
-  const p = CORPUS_CONFIG.conditions[0]!.params as { world: Omit<Founding, 'seed'> };
+  const p = CORPUS_CONFIG.conditions[0]!.params as { world: Omit<CareerInput, 'seed'> };
   const seed = `${CORPUS_CONFIG.partitions[partition].prefix}:r${round}:${season.id}:${index}`;
-  const w = withCandidateModel(createWorld({ ...p.world, seed }));
+  const w = withCandidateModel(careerWorld({ ...p.world, seed }));
   while (w.round < 46 && !w.bankrupt) advanceRound(w, undefined, false);
   const stats = w.npcSeason!;
   const leagues = stats.competitions.filter((c) => c.kind === 'league');

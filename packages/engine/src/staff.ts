@@ -248,7 +248,7 @@ export function staffImpact(w: World, role: StaffRole): string {
   return `${member ? '' : '공석 · '}${lines.join(' · ')}`;
 }
 
-/** Founding staff: one unpaid ability-50 member per post, the 단장 too, so a new club starts neutral. */
+/** A new club's staff: one unpaid ability-50 member per post, the 단장 too, so it starts neutral. */
 export function basicStaff(w: World): Staff[] {
   const code = clubOf(w).country;
   return STAFF_ROLES.map((role) => ({

@@ -11,12 +11,12 @@ import {
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
-import { FOUNDING } from './finance.testkit';
+import { CAREER } from './finance.testkit';
 
 describe('the league distribution', () => {
   it('keeps half the lost share for the one season after a relegation', () => {
     const relegated = () => {
-      const w = simulatedWorld(FOUNDING, { seasons: 1 }, DISABLED_RELEASE);
+      const w = simulatedWorld(CAREER, { seasons: 1 }, DISABLED_RELEASE);
       // The season just closed was played a division higher: the club went down into this one.
       const last = w.history.length - 1;
       w.history[last] = { ...w.history[last], tier: clubOf(w).tier - 1 };

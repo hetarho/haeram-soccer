@@ -1,8 +1,8 @@
 /** Explicit regeneration only: browser assertions load snapshots instead of running these builders. */
 import type { World } from '../../packages/contracts/src/types';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import {
   advanceRound,
-  createWorld,
   managerCandidates,
   managerTerm,
   operate,
@@ -27,15 +27,15 @@ function playOwnMatches(w: World, n = 1) {
 }
 
 export function buildManagerJourneyWorld(): World {
-  // manager-journey-2 wins the 1950 cup on the released model; manager-journey did before it.
-  for (const seed of ['manager-journey-2', 'manager-journey', 'manager-journey-4']) {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Tenure Journey',
-      color: '#2d5a3f',
-      seed,
-      level: 'easy',
-    });
+  // The first seed whose taken-over club wins the 1950 cup with its manager.
+  for (const seed of [
+    'manager-journey-2',
+    'manager-journey',
+    'manager-journey-4',
+    'manager-journey-5',
+    'manager-journey-6',
+  ]) {
+    const w = careerWorld({ country: 'ENG', seed });
     w.cash = '999999999999';
     for (const player of w.players)
       for (const key of Object.keys(player.attrs) as (keyof typeof player.attrs)[])
@@ -65,20 +65,11 @@ export function buildManagerJourneyWorld(): World {
     if (w.critical) throw new Error(`the journey career holds a blocking alert: ${w.critical}`);
     return w;
   }
-  throw new Error('no seeded journey career whose founding manager wins the cup');
+  throw new Error('no seeded journey career whose first manager wins the cup');
 }
 
 export function buildManagerActivationWorld(): World {
-  const w = createWorld(
-    {
-      country: 'ENG',
-      name: 'Activation Athletic',
-      color: '#4a3b2a',
-      seed: 'manager-activation',
-      level: 'easy',
-    },
-    DISABLED_RELEASE,
-  );
+  const w = careerWorld({ country: 'ENG', seed: 'manager-activation' }, DISABLED_RELEASE);
   w.cash = '999999999999';
   // Every business decision delegated, so the seeded seasons leave no owner answer pending.
   const responsibilities = w.settings!.responsibilities;

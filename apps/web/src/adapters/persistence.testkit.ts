@@ -1,4 +1,5 @@
-import type { Founding, World } from '../../../../packages/contracts/src/types';
+import type { World } from '../../../../packages/contracts/src/types';
+import type { CareerInput } from '../../../../packages/engine/src/career.testkit';
 import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { writeCheckpoint } from './checkpointWriter';
 import { decode, encode } from './persistence';
@@ -9,14 +10,8 @@ import {
   type StoragePort,
 } from './repository';
 
-export const FOUNDING: Founding = {
-  country: 'ENG',
-  name: 'Archive United',
-  color: '#126044',
-  seed: 'save-test',
-  level: 'normal',
-};
-export const world = () => simulatedWorld(FOUNDING);
+export const CAREER: CareerInput = { country: 'ENG', seed: 'save-test' };
+export const world = () => simulatedWorld(CAREER);
 // The original compact1 unsigned stream, used to exercise historical save compatibility.
 export function legacyIntegers(values: number[], width: number) {
   const count = values.length / width;

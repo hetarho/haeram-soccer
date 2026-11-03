@@ -1,19 +1,13 @@
 import { openPersonnel } from './personnel-navigation';
 import { expect, type Page } from '@playwright/test';
-import { createWorld } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { careerDate } from '../../packages/engine/src/person-careers';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { dismissMatchReport } from './events';
 import { aroundOffice } from './office';
 /** Marked synthetic career uses the ordinary portable checkpoint/worker boundary. */
 export function secondCareerFixture() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Synthetic Second Career',
-    color: '#224466',
-    seed: 'synthetic-second-career',
-    level: 'normal',
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'synthetic-second-career' });
   const player = w.players.find((p) => p.position === 'CM')!,
     person = w.people![player.id];
   player.born = w.year - 35;

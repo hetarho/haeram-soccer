@@ -16,7 +16,7 @@ import { club, paidIn, squadOf, toFinalRound } from './sponsors.testkit';
 
 const slot = (w: World, id: string) => sponsorSlots(w).find((view) => view.slot === id)!;
 
-/** A local contract signed at founding, the club then made far bigger than it signed as. */
+/** A local contract signed at the takeover, the club then made far bigger than it signed as. */
 function localGrown() {
   const w = club();
   operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
@@ -40,7 +40,7 @@ const localSecond = () =>
   });
 const localLast = () => cachedWorld('local-last', () => toFinalRound(localSecond()));
 
-/** A 1979 amateur club whose delegated staff have lived its first day. */
+/** A club taken over in 1979 whose delegated staff have lived its first day. */
 function delegatedSponsors() {
   const w = club({ year: 1979 });
   w.settings = staffAuthority(4);
@@ -129,7 +129,7 @@ describe('sponsor contracts by slot', () => {
       expect.objectContaining({ title: '운영팀이 후원 계약 3건을 맺었어요', attention: false }),
     ]);
     const kit = start.sponsors![1];
-    // A squad this strong wins the amateur league and goes up.
+    // A squad this strong wins its division and goes up.
     const w = cachedWorld('promoted', () => {
       const w = delegatedSponsors();
       squadOf(w, 95);

@@ -1,5 +1,6 @@
 import { chooseOption, selectOptions } from './select';
-import { createWorld, advanceDays } from '../../packages/engine/src/index';
+import { advanceDays } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsibility-fixtures';
 import { expect, test, type Page } from '@playwright/test';
 import { chooseLevel, configureResponsibilities, openOffice } from './events';
@@ -341,13 +342,7 @@ test('approvals waiting in the 결재함 never stop a running clock (→WEB-42)'
 test('restored match eve uses actual match actions instead of acknowledging the observation', async ({
   page,
 }) => {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Restored Eve',
-    color: '#224466',
-    seed: 'restored-eve',
-    level: 'easy',
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'restored-eve' });
   for (const key of Object.keys(w.settings!.responsibilities) as (keyof NonNullable<
     typeof w.settings
   >['responsibilities'])[])
@@ -430,13 +425,7 @@ for (const width of [390, 1280]) {
     page,
   }) => {
     await page.setViewportSize({ width, height: 844 });
-    const w = createWorld({
-      name: '보고 통일',
-      country: 'ENG',
-      color: '#224466',
-      seed: 'office-bulk',
-      level: 'easy',
-    });
+    const w = careerWorld({ country: 'ENG', seed: 'office-bulk' });
     for (const key of Object.keys(w.settings!.responsibilities) as (keyof NonNullable<
       typeof w.settings
     >['responsibilities'])[])

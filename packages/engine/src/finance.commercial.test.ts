@@ -4,11 +4,11 @@ import { holdRows } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
-import { FOUNDING, world } from './finance.testkit';
+import { CAREER, world } from './finance.testkit';
 
 describe('earned, auditable club finances', () => {
   it('earns a larger surplus from commercial choices in a season with identical sporting results', () => {
-    const unmanaged = simulatedWorld(FOUNDING, { seasons: 1 }, DISABLED_RELEASE);
+    const unmanaged = simulatedWorld(CAREER, { seasons: 1 }, DISABLED_RELEASE);
     const managed = cachedWorld('commercial-season', () => {
       const w = world();
       operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });

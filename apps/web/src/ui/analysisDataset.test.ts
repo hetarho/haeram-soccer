@@ -1,25 +1,15 @@
 import { expect, it } from 'vitest';
-import {
-  createWorld,
-  FOUNDING_YEAR,
-  nextOwnFixture,
-  simulateMatch,
-} from '../../../../packages/engine/src/index';
+import { nextOwnFixture, simulateMatch } from '../../../../packages/engine/src/index';
+import { careerWorld, CAREER_YEAR } from '../../../../packages/engine/src/career.testkit';
 import { analysisDataset } from './analysisDataset';
 it('exports only explicit owned periods and keeps original source identity and inactive scopes', () => {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'CSV',
-    color: '#24664f',
-    seed: 'csv',
-    level: 'easy' as const,
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'csv' });
   const record = simulateMatch(w, nextOwnFixture(w)!, false, true).record;
   const dataset = analysisDataset(
     w,
     'matches',
-    [record, { ...record, year: FOUNDING_YEAR + 1, id: 'future' }],
-    FOUNDING_YEAR,
+    [record, { ...record, year: CAREER_YEAR + 1, id: 'future' }],
+    CAREER_YEAR,
     'season',
   );
   expect(dataset.rows).toHaveLength(1);
@@ -27,11 +17,11 @@ it('exports only explicit owned periods and keeps original source identity and i
   expect(dataset.rows[0][dataset.headers.indexOf('home_goals')]).toBe(record.score.home);
   expect(dataset.rows[0].length).toBe(dataset.headers.length);
   w.players[0].status = 'retired';
-  expect(analysisDataset(w, 'players', [], FOUNDING_YEAR, 'season').rows).toHaveLength(
+  expect(analysisDataset(w, 'players', [], CAREER_YEAR, 'season').rows).toHaveLength(
     w.players.length - 1,
   );
-  const players = analysisDataset(w, 'players', [], FOUNDING_YEAR, 'career');
+  const players = analysisDataset(w, 'players', [], CAREER_YEAR, 'career');
   expect(players.rows).toHaveLength(w.players.length);
   expect(players.rows[0].length).toBe(players.headers.length);
-  expect(analysisDataset(w, 'seasons', [], FOUNDING_YEAR, 'season').rows).toEqual([]);
+  expect(analysisDataset(w, 'seasons', [], CAREER_YEAR, 'season').rows).toEqual([]);
 });

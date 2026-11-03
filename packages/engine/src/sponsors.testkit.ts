@@ -1,48 +1,22 @@
 import { ATTRIBUTES } from '../../contracts/src/player';
 import type { World } from '../../contracts/src/types';
-import { currency, priceIndex } from '../../catalogs/src/index';
-import { activePlayers, advanceRound, prepareSeason } from './index';
-import { professionalStart, staffAuthority } from './testing';
+import { activePlayers, advanceRound } from './index';
+import { staffAuthority } from './testing';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 /**
- * A club founded in 1950, moved to `year` and to the lowest professional division if asked; on the
- * pre-feature path, since sponsorship, not the match model, is the subject.
+ * A club of the lowest professional division taken over in `year` (1950 by default), on the
+ * pre-feature path, since sponsorship, not the match model, is the subject. Its squad stays as
+ * taken over, so results follow only what a test sets.
  */
-export function club({
-  year,
-  professional = false,
-}: { year?: number; professional?: boolean } = {}) {
+export function club({ year }: { year?: number } = {}) {
   const w = simulatedWorld(
-    {
-      country: 'ENG',
-      name: 'Slot Town',
-      color: '#335544',
-      seed: 'sponsors',
-      level: 'easy' as const,
-    },
+    { country: 'ENG', seed: 'sponsors', ...(year === undefined ? {} : { year }) },
     {},
     DISABLED_RELEASE,
   );
   w.settings = staffAuthority(2);
-  // The squad stays as founded, so results follow only what a test sets.
-  if (year) {
-    w.year = year;
-    // Fresh synthetic founding epoch; no played career is being moved.
-    delete w.people;
-    w.currency = currency('ENG', year).code;
-    w.priceIndex = priceIndex('ENG', year).value;
-    w.manager.since = year;
-    w.manager.until = year + 3;
-    for (const p of w.players) {
-      p.born = year - 24;
-      p.joined = year;
-      p.until = year + 2;
-    }
-  }
-  if (professional) professionalStart(w);
-  else if (year) prepareSeason(w);
   return w;
 }
 /** Base installments a slot's contract paid in a season, its bonuses apart. */

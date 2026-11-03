@@ -18,10 +18,10 @@ import { initializeCoaching } from './coaching-entry';
 import { coachWage, coachMatches, staffMember } from './staff';
 import { ratio } from './primitives';
 import { careerWorld } from './career.testkit';
-function world({ seed = 'playing-coach', fieldPlayer = false, atFounding = false } = {}) {
+function world({ seed = 'playing-coach', fieldPlayer = false, atTakeover = false } = {}) {
   const w = careerWorld({ seed });
   w.cash = w.income = '999999999999';
-  if (!atFounding) {
+  if (!atTakeover) {
     w.round = 35;
     w.calendar = { day: 245 };
   }
@@ -202,7 +202,7 @@ it('offers a playing coach only in ordinary hiring order and never automatically
 });
 
 it('preserves the player contract and complete saved career when a playing coach is released', async () => {
-  const { w, id } = world({ seed: 'coach-force', fieldPlayer: true, atFounding: true });
+  const { w, id } = world({ seed: 'coach-force', fieldPlayer: true, atTakeover: true });
   w.settings!.responsibilities.contracts = w.settings!.responsibilities.staff = 'direct';
   const proposal = stagePlayingCoach(w, id, 1, 2);
   expect(proposal.role).toBe('youth');

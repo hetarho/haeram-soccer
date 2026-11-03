@@ -13,7 +13,6 @@ import {
   captureSeasonClose,
   managerCandidates,
   operate,
-  prepareSeason,
   simulateSeason,
   type MatchModelRelease,
 } from '../../../../packages/engine/src/index';
@@ -23,24 +22,14 @@ import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
 import { checkpoint, encode, decode, recognizedLegacy } from './persistence';
 import { pack, unpack } from './packing';
-import { FOUNDING, legacyIntegers } from './persistence.testkit';
+import { CAREER, legacyIntegers } from './persistence.testkit';
 
 // The archive's history, not the match model, is the subject of the two round trips below: their
 // seasons are played on the pre-feature path.
 it('preserves first and second European phases and global standings in a historical checkpoint', async () => {
   const w = cachedWorld('season from 2000', () => {
-    const w = simulatedWorld(FOUNDING, {}, DISABLED_RELEASE);
-    w.year = 2000;
-    w.currency = 'GBP';
-    w.manager.since = 1997;
-    w.manager.until = 2003;
-    for (const p of w.players) {
-      p.born = 1978;
-      p.joined = w.year;
-    }
-    // This synthetic career starts in 2000, so enroll its actual identities at that epoch.
-    delete w.people;
-    prepareSeason(w);
+    // A career taken over in a world made fresh in 2000.
+    const w = simulatedWorld({ ...CAREER, year: 2000 }, {}, DISABLED_RELEASE);
     simulateSeason(w);
     return w;
   });
@@ -85,21 +74,11 @@ it('roundtrips one transferred league scorer with both real club contributions',
 
 describe('own-manager history checkpoints (→SAVE-24)', () => {
   /**
-   * A tracked career two rounds in, with a hire, a cup and a closed league finish recorded, founded
-   * under `release` (the switch as it stands unless given).
+   * A tracked career two rounds in, with a hire, a cup and a closed league finish recorded, taken
+   * over under `release` (the switch as it stands unless given).
    */
   function tracked(release?: MatchModelRelease): World {
-    const w = simulatedWorld(
-      {
-        country: 'ENG',
-        name: 'Saved Tenures',
-        color: '#446688',
-        seed: 'manager-save',
-        level: 'easy',
-      },
-      { rounds: 2 },
-      release,
-    );
+    const w = simulatedWorld({ country: 'ENG', seed: 'manager-save' }, { rounds: 2 }, release);
     w.cash = '999999999999';
     operate(w, { type: 'hire', id: managerCandidates(w).find((c) => c.source !== 'club')!.id });
     captureCupTitle(w, 'cup');

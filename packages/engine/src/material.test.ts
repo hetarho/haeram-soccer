@@ -3,7 +3,7 @@ import { TD } from '../../contracts/src/detail';
 import type { MatchMaterial, MatchRecord } from '../../contracts/src/types';
 import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
-import { FOUNDING } from './finance.testkit';
+import { CAREER } from './finance.testkit';
 import { playGrid } from './grid/engine';
 import { cellOf } from './grid/pitch';
 import { MaterialTally } from './grid/record';
@@ -141,7 +141,7 @@ describe('post-match material', () => {
   it('reduces material to season heat maps at the close', () => {
     // The pre-feature season, whatever the switch: this club plays no playoff on it, so the league
     // season is all its material (the candidate's playoff is the next case).
-    const w = simulatedWorld(FOUNDING, { rounds: 46 }, DISABLED_RELEASE);
+    const w = simulatedWorld(CAREER, { rounds: 46 }, DISABLED_RELEASE);
     const season = w.ownMatches.filter((m) => m.year === w.year);
     expect(season.length).toBeGreaterThan(0);
     // The saved own record keeps only the own lines and its material.
@@ -177,7 +177,7 @@ describe('post-match material', () => {
     // the close. Where it finishes is the football's to decide (T441's lanes moved it out), so it
     // takes the record of the club in the playoff's second place: tied there, it ranks at most one
     // place either way, still among the four the playoff takes after the direct places.
-    const w = simulatedWorld(FOUNDING, { rounds: 46 }, ENABLED_RELEASE);
+    const w = simulatedWorld(CAREER, { rounds: 46 }, ENABLED_RELEASE);
     const year = w.year;
     const cp = country(clubOf(w).country);
     const places = cp.groups[cp.groups.length - 1]!.length * 2;

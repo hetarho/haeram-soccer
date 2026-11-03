@@ -25,11 +25,11 @@ import {
   settleRound,
   SUPPORT_EXPENSES,
 } from './index';
-import { holdRows, professionalStart } from './testing';
+import { holdRows } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
-import { FOUNDING, world } from './finance.testkit';
+import { CAREER, world } from './finance.testkit';
 
 describe('operating expenses (→ECON-30)', () => {
   const entries = (w: World) =>
@@ -59,14 +59,11 @@ describe('operating expenses (→ECON-30)', () => {
   it('records the floor for a club’s first season and pays the recorded amount', () => {
     const w = world(),
       own = clubOf(w);
-    // Founded in the amateur league with no completed season: the amateur floor.
+    // Taken over in a fresh world with no completed season: the division's floor.
     expect(lastSeasonTurnover(w)).toBeUndefined();
     expect(w.operatingExpenses).toBe(operatingExpensesAt('ENG', w.year, own.tier));
     expect(seasonOperatingExpenses(w)).toBe(w.operatingExpenses);
     expect(operatingCosts(w).expenses).toBe(w.operatingExpenses);
-    // A professional start is a first season too, at that division's floor.
-    const pro = professionalStart(world());
-    expect(pro.operatingExpenses).toBe(operatingExpensesAt('ENG', pro.year, clubOf(pro).tier));
     // Fixed costs read the recorded amount, not whatever division or year the club is in later.
     own.tier = 0;
     const late = { ...w, year: 2010 };
@@ -123,7 +120,7 @@ describe('operating expenses (→ECON-30)', () => {
   });
 
   it("squad investment scales each round's operating expenses and the runway", () => {
-    const w = professionalStart(world()),
+    const w = world(),
       season = w.operatingExpenses!;
     w.cash = (BigInt(operatingCosts(w).annual) * 2n).toString();
     const at = (support: PolicyLevel) => ({ ...w, policy: { ...POLICY_DEFAULTS, support } }),
@@ -170,12 +167,12 @@ describe('operating expenses (→ECON-30)', () => {
   const shareOf = (turnover: string) =>
     ratio(turnover, BigInt(Math.round(EXPENSE_CONFIG.share * 10000)), 10000n);
   it('raises the floor from the first round after a promotion', () => {
-    const amateur = clubOf(world()).tier,
-      w = simulatedWorld(FOUNDING, { rounds: 46 }, DISABLED_RELEASE);
+    const start = clubOf(world()).tier,
+      w = simulatedWorld(CAREER, { rounds: 46 }, DISABLED_RELEASE);
     const before = operatingCosts(w).expenses;
     expect(entries(w)[0].amount).toBe(before);
-    // The amateur champions go up into the last professional division, after a season whose
-    // income is left out of the ledger so its turnover's share stays below the new floor.
+    // The champions of the last professional division go up, after a season whose income is
+    // left out of the ledger so its turnover's share stays below the new floor.
     w.tables[w.playerClub].points = 999;
     w.events = w.events.filter(
       (e) =>
@@ -188,9 +185,9 @@ describe('operating expenses (→ECON-30)', () => {
     w.income = '0';
     closeSeason(w);
     const tier = clubOf(w).tier;
-    expect(tier).toBe(amateur - 1);
+    expect(tier).toBe(start - 1);
     const floor = operatingExpensesAt('ENG', w.year, tier);
-    expect(BigInt(floor)).toBeGreaterThan(BigInt(operatingExpensesAt('ENG', w.year, amateur)));
+    expect(BigInt(floor)).toBeGreaterThan(BigInt(operatingExpensesAt('ENG', w.year, start)));
     expect(BigInt(shareOf(lastSeasonTurnover(w)!))).toBeLessThan(BigInt(floor));
     expect(w.operatingExpenses).toBe(floor);
     expect(operatingCosts(w).expenses).toBe(floor);
@@ -206,7 +203,7 @@ describe('operating expenses (→ECON-30)', () => {
   describe('after a completed season', () => {
     // One played season, closed with extra ledger entries of its final round.
     const close = (extra: Record<string, bigint> = {}) => {
-      const w = simulatedWorld(FOUNDING, { rounds: 46 }, DISABLED_RELEASE);
+      const w = simulatedWorld(CAREER, { rounds: 46 }, DISABLED_RELEASE);
       for (const [kind, amount] of Object.entries(extra)) {
         w.events.push({
           year: w.year,

@@ -1,5 +1,6 @@
 import { expect, type Page } from '@playwright/test';
-import { createWorld, operate, advanceDays, transferOffers } from '../../packages/engine/src/index';
+import { operate, advanceDays, transferOffers } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import type { World } from '../../packages/contracts/src/types';
 import { ratio } from '../../packages/engine/src/primitives';
 import { encode } from '../../apps/web/src/adapters/persistence';
@@ -7,13 +8,7 @@ import { startFlow } from './start';
 
 /** A portable checkpoint built through actual bid and settlement commands, never DOM state edits. */
 export function pendingAcquisitionCareer() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Pending Duties',
-    color: '#224466',
-    seed: 'responsibility-pending',
-    level: 'normal',
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'responsibility-pending' });
   w.cash = w.income = '999999999999';
   const settings = structuredClone(w.settings!);
   settings.responsibilities.staff = 'direct';

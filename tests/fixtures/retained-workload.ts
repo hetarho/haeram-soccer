@@ -1,5 +1,5 @@
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import {
-  createWorld,
   operate,
   simulateSeason,
   advanceDays,
@@ -18,18 +18,9 @@ import { RESPONSIBILITY_KEYS } from '../../packages/engine/src/responsibilities'
 import { stagePlayingCoach } from '../../packages/engine/src/testing';
 /** Marked synthetic announced candidates/funding; all subsequent contracts, employment time,
  * qualification and fixed promises use real transitions. The complete NPC registry is retained.
- * `release` founds it (default the switch as it stands). */
+ * `release` takes the club over (default the switch as it stands). */
 export function retainedWorkload(release: MatchModelRelease = MATCH_MODEL_RELEASE) {
-  const w = createWorld(
-    {
-      country: 'ENG',
-      name: 'Synthetic Retained Workload',
-      color: '#224466',
-      seed: 'retained-workload',
-      level: 'easy',
-    },
-    release,
-  );
+  const w = careerWorld({ country: 'ENG', seed: 'retained-workload' }, release);
   w.cash = w.income = '999999999999';
   const playing = w.players.find((p) => p.position === 'CM')!,
     former = w.players.find((p) => p.id !== playing.id)!;

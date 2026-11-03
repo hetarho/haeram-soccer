@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { SeasonArchive, World } from '../../../../packages/contracts/src/types';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import {
   boardPlaces,
   careerRecords,
@@ -14,14 +14,7 @@ import {
 } from './careerRecords';
 import { playerStatus } from './playerAnalysis';
 
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Book',
-    color: '#24664f',
-    seed: 'book',
-    level: 'easy' as const,
-  });
+const world = () => careerWorld({ country: 'ENG', seed: 'book' });
 const season = (year: number, fields: Partial<SeasonArchive> = {}): SeasonArchive => ({
   year,
   tier: 3,

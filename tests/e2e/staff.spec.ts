@@ -4,11 +4,11 @@ import { managerCard, openPersonnel } from './personnel-navigation';
 import { marketInfo } from './market';
 import {
   advanceRound,
-  createWorld,
   managerOffers,
   operate,
   simulateSeason,
 } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { test, expect, type Locator, type Page } from '@playwright/test';
 import {
@@ -247,13 +247,7 @@ test('an unrenewed firefighter leaves at the close and the alert opens the marke
   test.slow();
   // Build an actual closed-season direct-manager career. Its unanswered renewal is a real
   // decision; archive-only helpers must not delegate it or acknowledge it away.
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Haeram Athletic',
-    color: '#bf7956',
-    seed: 'short-contract',
-    level: 'easy',
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'short-contract' });
   w.settings = staffAuthority(2);
   const offer = managerOffers(w).find((offer) => offer.style === 'firefighter')!;
   operate(w, { type: 'hire', id: offer.id });
@@ -281,13 +275,7 @@ test('with the manager post delegated a resignation is filled at once and the cl
   // A manager at trust 0 resigns at a settled round (→STAFF-47); the rounds are played in Node
   // until he does, so the imported career holds the staff's appointment. Level 4 hands the
   // manager post to the staff and stops only for money, so nothing else explains a stop.
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Trust Floor',
-    color: '#224466',
-    seed: 'proud-0',
-    level: 'easy',
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'proud-0' });
   w.cash = '999999999999';
   w.settings = staffAuthority(4);
   const founding = w.manager;

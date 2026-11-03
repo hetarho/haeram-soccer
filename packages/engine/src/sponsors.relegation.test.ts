@@ -5,7 +5,7 @@ import { club, squadOf, toFinalRound } from './sponsors.testkit';
 
 /** A professional club with an indexed local contract of five seasons. */
 function indexedLocal() {
-  const w = club({ professional: true });
+  const w = club();
   operate(w, { type: 'sign-sponsor', slot: 'local', offer: 2 });
   return w;
 }

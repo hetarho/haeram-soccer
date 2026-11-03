@@ -1125,8 +1125,8 @@ export const CORPUS_CONFIG = {
   conditions: [
     condition('core', 'equal-top-tier', 'equal top-tier sides, modern era (MATCH-23)', {
       worldSeeds: ['grid-bands-1', 'grid-bands-2', 'grid-bands-3', 'grid-bands-4'],
-      /** Founding input of each world besides its seed. */
-      world: { country: 'ENG', name: 'Parity Pilot', color: '#2a5d8f', level: 'normal' },
+      /** Career input (`careerWorld`) of each world besides its seed. */
+      world: { country: 'ENG' },
       countries: ['ENG', 'ESP', 'GER', 'ITA'],
       maxRatingGap: 2,
       /**

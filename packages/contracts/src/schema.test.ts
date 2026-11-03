@@ -155,6 +155,17 @@ describe('owner interventions withdrawn (→SAVE-25)', () => {
     // Reading never writes: the save itself is left for the writer's next checkpoint.
     expect(older.intervention).toBe(2);
   });
+
+  it('drops the removed difficulty level from a checkpoint that still carries it', () => {
+    const w = world();
+    // A 0.8.0 checkpoint written while the world still kept the founding's level (→WEB-3 [x]):
+    // a takeover career has no level, and the world schema strips the key (→SAVE-26).
+    const older = { ...structuredClone(w), level: 'easy' } as World & { level: string };
+    const loaded = validateWorld(older, LOAD_CATALOG);
+    expect(loaded).not.toHaveProperty('level');
+    expect(loaded).toEqual(validateWorld(w, LOAD_CATALOG));
+    expect(older.level).toBe('easy');
+  });
 });
 
 describe('owner and takeover (→SAVE-27)', () => {

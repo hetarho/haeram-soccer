@@ -33,13 +33,7 @@ const noGlobalDictionary = () => {
 };
 describe('versioned lossless career relationships', () => {
   it('round trips complete generated origins, name templates and seeded scalar references', () => {
-    const world = simulatedWorld({
-      country: 'ENG',
-      name: 'Dictionary origins',
-      color: '#224466',
-      seed: 'career-dictionary',
-      level: 'easy',
-    });
+    const world = simulatedWorld({ country: 'ENG', seed: 'career-dictionary' });
     const context = {
       clubs: world.clubs.map((club) => club.id),
       playerClub: world.playerClub,

@@ -4,13 +4,8 @@ import { competitionLabel } from '../../apps/web/src/ui/format';
 import { canonical } from '../../packages/contracts/src/index';
 import { KIT_ROLES, type KitRole } from '../../packages/contracts/src/identity';
 import type { Fixture, World } from '../../packages/contracts/src/types';
-import {
-  createWorld,
-  currentDay,
-  identityOf,
-  nextOwnFixture,
-  operate,
-} from '../../packages/engine/src/index';
+import { currentDay, identityOf, nextOwnFixture, operate } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import { ALL_DELEGATED, reportKit } from './events';
 import { savedWorld, canvasPixels } from './club-identity-helpers';
@@ -28,13 +23,7 @@ const ownSide = (w: World, f: Fixture) => (f.home === w.playerClub ? 0 : 1);
 
 /** A new career with every business decision delegated, after `matches` own matches. */
 function career(matches: number) {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Kit Town',
-    color: '#bf7956',
-    seed: 'kit-prep-a',
-    level: 'easy',
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'kit-prep-a' });
   Object.assign(w.settings!.responsibilities, ALL_DELEGATED);
   for (let i = 0; i < matches; i++) advanceToNextMatch(w);
   return w;

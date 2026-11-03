@@ -13,52 +13,25 @@ import {
   operate,
   activePlayers,
   clubStyle,
-  DIFFICULTY_LEVELS,
   formationOf,
-  LEVEL_CASH,
-  LEVEL_OFFSET,
   npcSquad,
-  rating,
 } from './index';
-import type { World } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
 import { LINE_MINIMUM, lineOf, ovrAt } from './player';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { assertCapacities, input } from './world.testkit';
 describe('world progression', () => {
-  it('level offsets the founding XI and scales only the cash', () => {
-    const at = (level: 'easy' | 'normal' | 'hard' | 'extreme') =>
-      simulatedWorld({ ...input, level });
-    const normal = at('normal');
-    assertCapacities(normal);
-    expect(validateWorld(normal).id).toBe(normal.id);
-    const others = (w: World) => w.clubs.filter((club) => club.id !== w.playerClub);
-    const own = (w: World) => rating(w, clubOf(w));
-    const league = (w: World) => {
-      const peers = w.clubs.filter(
-        (club) =>
-          club.country === clubOf(w).country && club.representative && club.tier === clubOf(w).tier,
-      );
-      return peers.reduce((sum, club) => sum + rating(w, club), 0) / peers.length;
-    };
-    for (const level of DIFFICULTY_LEVELS) {
-      const w = at(level);
-      expect(w.level).toBe(level);
-      // Every rule and every other club stay as they are; only cash and the XI move (→WEB-3).
-      expect(others(w)).toEqual(others(normal));
-      expect(Math.abs(own(w) - (league(w) + LEVEL_OFFSET[level]))).toBeLessThanOrEqual(1.5);
-    }
-    // Cash is the founding budget times the level's multiple (2/1/0.5/0.25).
-    expect(LEVEL_CASH).toEqual({ easy: 2, normal: 1, hard: 0.5, extreme: 0.25 });
-    expect(BigInt(at('easy').cash)).toBeGreaterThan(BigInt(normal.cash));
-    expect(BigInt(at('extreme').cash)).toBeLessThan(BigInt(at('hard').cash));
+  it('a taken-over career keeps every division whole and validates', () => {
+    const w = simulatedWorld(input);
+    assertCapacities(w);
+    expect(validateWorld(w).id).toBe(w.id);
   });
-  it('founding squad covers the formation', () => {
+  it('the taken-over squad covers the formation (→CLUB-1)', () => {
     for (const seed of ['cover-1', 'cover-2', 'cover-3', 'cover-4', 'cover-5']) {
       const w = simulatedWorld({ ...input, seed });
       const active = activePlayers(w);
-      expect(active).toHaveLength(20);
+      expect(active.length).toBeGreaterThanOrEqual(20);
       for (const line of LINES)
         expect(active.filter((p) => lineOf(p.position) === line).length).toBeGreaterThanOrEqual(
           LINE_MINIMUM[line],

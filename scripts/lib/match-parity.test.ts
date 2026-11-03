@@ -3,11 +3,11 @@ import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../packages/contr
 import type { Fixture, MatchRecord, Tactic } from '../../packages/contracts/src/types';
 import {
   clubStyle,
-  createWorld,
   effectiveGap,
   matchForm,
   PRESS_LOAD_FATIGUE,
 } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
 import { inMatchFatigue } from '../../packages/engine/src/grid/changes';
 import { M } from '../../packages/engine/src/grid/record';
@@ -1152,13 +1152,7 @@ describe('aggregate measurement (T284)', () => {
   });
 
   it("conditions a fixture with prepareMatch's own arithmetic", () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Parity Pilot',
-      color: '#2a5d8f',
-      seed: 'grid-bands-1',
-      level: 'normal',
-    });
+    const w = careerWorld({ country: 'ENG', seed: 'grid-bands-1' });
     const clubs = w.clubs.filter((c) => c.tier === 0 && c.id !== w.playerClub);
     const press = clubs.find((c) => clubStyle(c) === 'press')!;
     const other = clubs.find((c) => clubStyle(c) === 'balanced')!;
@@ -1233,13 +1227,7 @@ describe('aggregate measurement (T284)', () => {
   it("counts a moved player's freshness from when he came on", () => {
     // T320 review: the planner restarted a player's fatigue clock when he only changed slot (a
     // keeper sent off, an outfielder in goal); the grid counts from his entry (`onMin`).
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Parity Pilot',
-      color: '#2a5d8f',
-      seed: 'grid-bands-1',
-      level: 'normal',
-    });
+    const w = careerWorld({ country: 'ENG', seed: 'grid-bands-1' });
     const clubs = w.clubs.filter((c) => c.tier === 0 && c.id !== w.playerClub);
     let moved = 0;
     for (let i = 0; i < 600 && moved < 2; i++) {

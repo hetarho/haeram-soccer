@@ -1,5 +1,6 @@
 /** Test-only browser worker: same production engine, explicit backend fault injection. */
-import { createWorld, MATCH_MODEL_RELEASE } from '../../packages/engine/src/index';
+import { MATCH_MODEL_RELEASE } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { buildGridSetup } from '../../packages/engine/src/grid/setup';
 import { playGrid } from '../../packages/engine/src/grid/engine';
 import { MOVEMENT_KERNEL_VALUES } from '../../packages/engine/src/grid/movement-kernel';
@@ -62,16 +63,7 @@ self.onmessage = async (event: MessageEvent<{ mode: MovementProbeMode }>) => {
         },
       }),
     );
-    const w = createWorld(
-      {
-        country: 'ENG',
-        name: 'Browser Movement',
-        color: '#234567',
-        seed: 'browser-movement-parity',
-        level: 'easy',
-      },
-      MATCH_MODEL_RELEASE,
-    );
+    const w = careerWorld({ country: 'ENG', seed: 'browser-movement-parity' }, MATCH_MODEL_RELEASE);
     const fixture = w.fixtures.find((f) => f.home === w.playerClub || f.away === w.playerClub)!;
     const result = playGrid(buildGridSetup(w, fixture, { observe: true, recordPlayers: true }));
     const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(valueKey(result)));

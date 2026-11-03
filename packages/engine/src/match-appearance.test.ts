@@ -8,7 +8,8 @@ import {
   type ShirtDesign,
 } from '../../contracts/src/identity';
 import { matchAppearanceSchema } from '../../contracts/src/identitySchema';
-import type { Fixture, Founding, MatchPlayback, World } from '../../contracts/src/types';
+import type { Fixture, MatchPlayback, World } from '../../contracts/src/types';
+import type { CareerInput } from './career.testkit';
 import { currentDay, fixtureDay, nextOwnFixture } from './calendar';
 import { identityOf } from './club-identity';
 import { playFixture } from './knockout';
@@ -20,13 +21,7 @@ import { operate } from './operations';
 import { advanceDays, recordMatch } from './season';
 import { clubOf } from './world';
 
-const FOUNDING: Founding = {
-  country: 'ENG',
-  name: 'Design Town',
-  color: '#223344',
-  seed: 'identity-command',
-  level: 'normal',
-};
+const CAREER: CareerInput = { country: 'ENG', seed: 'identity-command' };
 /** Lives the days up to and including `f`'s day; returns the playback captured for `f`. */
 function playTo(w: World, f: Fixture) {
   let playback: MatchPlayback | undefined;
@@ -63,7 +58,7 @@ const sporting = (w: World) =>
 
 describe('settled own-match appearance (→KIT-12, SAVE-22)', () => {
   it('freezes live and saved appearance across own edits', () => {
-    const w = simulatedWorld(FOUNDING);
+    const w = simulatedWorld(CAREER);
     const next = nextOwnFixture(w)!;
     const expected = appearanceForFixture(w, next);
     expect(expected.version).toBe(2);
@@ -85,7 +80,7 @@ describe('settled own-match appearance (→KIT-12, SAVE-22)', () => {
   });
 
   it('consumes only the named choice at settlement', () => {
-    const w = simulatedWorld(FOUNDING);
+    const w = simulatedWorld(CAREER);
     const league = nextOwnFixture(w)!;
     const role = unlikelyRole(w, league);
     operate(w, { type: 'match-kit', fixtureId: league.id, role });
@@ -112,7 +107,7 @@ describe('settled own-match appearance (→KIT-12, SAVE-22)', () => {
   });
 
   it('duplicate settlement never rewrites appearance', () => {
-    const w = simulatedWorld(FOUNDING);
+    const w = simulatedWorld(CAREER);
     const first = nextOwnFixture(w)!;
     const live = playTo(w, first);
     const frozen = canonical(recorded(w, first.id).appearance);
@@ -132,7 +127,7 @@ describe('settled own-match appearance (→KIT-12, SAVE-22)', () => {
   });
 
   it('version-2 appearance records worn kits and fallback', () => {
-    const w = simulatedWorld(FOUNDING);
+    const w = simulatedWorld(CAREER);
     const next = nextOwnFixture(w)!;
     const side = ownSide(w, next);
     const rivalId = side === 0 ? next.away : next.home;
@@ -199,7 +194,7 @@ describe('settled own-match appearance (→KIT-12, SAVE-22)', () => {
   });
 
   it('legacy records remain absent', () => {
-    const w = simulatedWorld(FOUNDING, { rounds: 2 });
+    const w = simulatedWorld(CAREER, { rounds: 2 });
     // Records from before appearances, as an older save holds them.
     for (const m of w.ownMatches) delete m.appearance;
     const legacy = new Set(w.ownMatches.map((m) => m.id));
@@ -212,7 +207,7 @@ describe('settled own-match appearance (→KIT-12, SAVE-22)', () => {
 
   it('kit choices leave grid results, counters and unavailability unchanged', () => {
     // Our cup tie on day 32 plays the grid engine; NPC ties and club business share its days.
-    const base = simulatedWorld(FOUNDING, { rounds: 4 });
+    const base = simulatedWorld(CAREER, { rounds: 4 });
     const tie = nextOwnFixture(base)!;
     expect(tie.kind).toBe('cup');
     const chosen = structuredClone(base);

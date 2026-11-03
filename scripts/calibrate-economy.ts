@@ -3,7 +3,9 @@ import { defaultSettings, RESPONSIBILITY_KEYS } from '../packages/engine/src/res
 /**
  * Economy calibration harness (ECON-29, ECON-9, CLUB-25; spec/ssot/ECON.md).
  *
- * Plays whole careers of ECON-29's reference club from the 1950 founding: every delegation on —
+ * Plays whole careers of ECON-29's reference club from a 1950 takeover (`careerWorld`, the lowest
+ * professional division's first club, one year of fixed costs in cash, until T668 rebuilds the
+ * reference careers on generated worlds): every delegation on —
  * the staff run training, the academy, sponsors and every staff post, the 단장's among them, and
  * the 단장 contract talks, the manager post, sales and signings from the shortlist and the
  * manager's requests (→STAFF-20, →CLUB-33) — no owner capital, and the stadium grown a level whenever the cash after the build still
@@ -20,16 +22,18 @@ import { defaultSettings, RESPONSIBILITY_KEYS } from '../packages/engine/src/res
  *                                                          60 seasons each (several minutes)
  *   pnpm exec tsx scripts/calibrate-economy.ts --quick    ENG only, default build, reference club
  *   options: --seasons N, --countries ENG,FRA, --builds default,trading, --modes greedy,none,
- *            --levels easy,normal,hard,extreme (difficulty levels, →LEAGUE-13; normal by default),
+ *            --tiers midsize,oil (the owner's wealth tiers, →LEAGUE-13; midsize by default),
  *            --seeds N (careers per setting), --first-seed N (the first seed's number), --log
  *            (per season), --out careers.json (keep the careers), --in a.json,b.json (report
  *            kept careers only)
  *
  * Careers run 60 seasons by default: the first 50 make the career averages, and seasons 51–60
- * (2000–2009) are the only top-flight 2000s a 1950 founding reaches. Money is compared in 1901 price
+ * (2000–2009) are the only top-flight 2000s a 1950 takeover reaches. Money is compared in 1901 price
  * units, each season's amounts divided by what one unit cost that year.
  */
-import type { Club, CountryCode, DifficultyLevel, World } from '../packages/contracts/src/types';
+import type { Club, CountryCode, World } from '../packages/contracts/src/types';
+import type { WealthTier } from '../packages/contracts/src/owner';
+import { CAREER_FUNDS, careerFunds, careerWorld } from '../packages/engine/src/career.testkit';
 import {
   activePlayers,
   advanceRound,
@@ -38,7 +42,6 @@ import {
   CATCHMENT_CONFIG,
   clubOf,
   closeSeason,
-  createWorld,
   facilityInvestmentPreview,
   fanFollowing,
   gateProjection,
@@ -82,8 +85,8 @@ const BUILDS = option('builds', quick ? 'default' : 'default,trading').split(','
 const FACILITY_MODES = option('modes', quick ? 'greedy' : 'greedy,none')
   .split(',')
   .map((mode) => mode === 'greedy');
-/** Difficulty levels the careers start at (→WEB-3, LEAGUE-13). */
-const LEVELS = option('levels', 'normal').split(',') as DifficultyLevel[];
+/** The owner's wealth tiers the careers start at (→OWNER-3, LEAGUE-13). */
+const TIERS = option('tiers', 'midsize').split(',') as WealthTier[];
 
 // ---- Targets ---------------------------------------------------------------------------------
 const BANDS = {
@@ -180,8 +183,8 @@ interface Career {
   build: string;
   greedy: boolean;
   seed: string;
-  /** The difficulty level it started at; careers kept before levels were normal. */
-  level?: DifficultyLevel;
+  /** The owner's wealth tier at the takeover; careers kept before the takeover had none. */
+  tier?: WealthTier;
   seasons: Season[];
   bankrupt?: number;
 }
@@ -252,19 +255,19 @@ function playCareer(
   build: string,
   greedy: boolean,
   seed: string,
-  level: DifficultyLevel,
+  tier: WealthTier,
 ): Career {
-  const w = createWorld({
+  const w = careerWorld({
     country: code,
-    name: 'Calibration Town',
-    color: '#335577',
     seed,
-    level,
-    // A preset is founded as the club's whole direction (→ECON-22, →WEB-15).
+    tier,
+    // A preset is taken as the club's whole direction (→ECON-22, →WEB-15).
     ...(build !== 'default' ? { preset: build } : {}),
   });
+  // One year of fixed costs, as the old founding's 보통 level gave.
+  w.cash = (careerFunds(w) / BigInt(CAREER_FUNDS)).toString();
   delegateAll(w);
-  const career: Career = { code, build, greedy, seed, level, seasons: [] };
+  const career: Career = { code, build, greedy, seed, tier, seasons: [] };
   const depth = country(code).groups.length;
   for (let n = 0; n < SEASONS && !w.bankrupt; n++) {
     const year = w.year,
@@ -426,11 +429,13 @@ function printLog(c: Career) {
 }
 
 // ---- Competitive balance (LEAGUE-13) -------------------------------------------------------------
-const LEVEL_BANDS: Record<DifficultyLevel, string> = {
-  easy: 'most careers win; median first title 35–50 seasons, fastest ≈25; 20–35% after; none bankrupt',
-  normal: 'about a third win; 20% or less after; none bankrupt',
-  hard: '1 in 5 or fewer win; 1 in 20 or fewer bankrupt',
-  extreme: 'half or fewer reach the top flight; 1 in 5 or fewer bankrupt',
+const TIER_BANDS: Record<WealthTier, string> = {
+  oil: 'most careers win, median first title within 10 seasons; 35% or less after; none bankrupt',
+  chaebol: 'about half win; 30% or less after; none bankrupt',
+  industrial: 'about a third win; 25% or less after; none bankrupt',
+  midsize: '1 in 5 or fewer win; the top flight in most careers; 1 in 20 or fewer bankrupt',
+  local: 'the top flight in about half the careers; 1 in 10 or fewer bankrupt',
+  selfmade: 'the top flight in 1 in 4 careers or fewer; 1 in 5 or fewer bankrupt',
 };
 const median = (values: number[]) => {
   if (!values.length) return NaN;
@@ -439,18 +444,18 @@ const median = (values: number[]) => {
   return sorted.length % 2 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2;
 };
 /**
- * Per level (→LEAGUE-13): careers with a top-flight title, seasons to the first (median, fastest),
- * the share of top-flight titles in the seasons after the first, top-flight seasons, careers that
- * reached the top flight, and bankruptcies.
+ * Per wealth tier (→LEAGUE-13): careers with a top-flight title, seasons to the first (median,
+ * fastest), the share of top-flight titles in the seasons after the first, top-flight seasons,
+ * careers that reached the top flight, and bankruptcies.
  */
 function balanceReport(careers: Career[]) {
-  console.log('\n### Competitive balance by level (LEAGUE-13)\n');
+  console.log('\n### Competitive balance by wealth tier (LEAGUE-13)\n');
   console.log(
-    '| level | careers | with a title | first title: median / fastest (season) | titles after the first | top-flight seasons (avg) | reached the top flight | bankrupt | band |',
+    '| tier | careers | with a title | first title: median / fastest (season) | titles after the first | top-flight seasons (avg) | reached the top flight | bankrupt | band |',
   );
   console.log('|---|---:|---:|---|---:|---:|---:|---:|---|');
-  for (const level of ['easy', 'normal', 'hard', 'extreme'] as DifficultyLevel[]) {
-    const group = careers.filter((c) => (c.level ?? 'normal') === level && c.greedy);
+  for (const tier of Object.keys(TIER_BANDS) as WealthTier[]) {
+    const group = careers.filter((c) => c.tier === tier && c.greedy);
     if (!group.length) continue;
     const firsts: number[] = [];
     let after = 0,
@@ -471,7 +476,7 @@ function balanceReport(careers: Career[]) {
     }
     const bankrupt = group.filter((c) => c.bankrupt !== undefined).length;
     console.log(
-      `| ${level} | ${group.length} | ${firsts.length} (${pct(firsts.length / group.length)}) | ${firsts.length ? `${median(firsts)} / ${Math.min(...firsts)}` : '-'} | ${after ? pct(afterTitles / after) : '-'} | ${(top / group.length).toFixed(1)} | ${reached} | ${bankrupt} | ${LEVEL_BANDS[level]} |`,
+      `| ${tier} | ${group.length} | ${firsts.length} (${pct(firsts.length / group.length)}) | ${firsts.length ? `${median(firsts)} / ${Math.min(...firsts)}` : '-'} | ${after ? pct(afterTitles / after) : '-'} | ${(top / group.length).toFixed(1)} | ${reached} | ${bankrupt} | ${TIER_BANDS[tier]} |`,
     );
   }
 }
@@ -733,23 +738,23 @@ if (saved)
   for (const file of saved.split(','))
     careers.push(...(JSON.parse(readFileSync(file, 'utf8')) as Career[]));
 else
-  for (const level of LEVELS)
+  for (const tier of TIERS)
     for (const code of COUNTRY_CODES)
       for (const build of BUILDS)
         for (const greedy of FACILITY_MODES)
           for (let i = FIRST_SEED; i < FIRST_SEED + SEEDS; i++) {
             const t = performance.now();
-            const career = playCareer(code, build, greedy, `economy-${code}-${i}`, level);
+            const career = playCareer(code, build, greedy, `economy-${code}-${i}`, tier);
             careers.push(career);
             console.error(
-              `${level} ${code} ${build} ${greedy ? 'reference' : 'no building'} seed ${i}: ${career.seasons.length} seasons in ${((performance.now() - t) / 1000).toFixed(0)} s`,
+              `${tier} ${code} ${build} ${greedy ? 'reference' : 'no building'} seed ${i}: ${career.seasons.length} seasons in ${((performance.now() - t) / 1000).toFixed(0)} s`,
             );
             if (LOG) printLog(career);
           }
 const out = option('out', '');
 if (out) writeFileSync(out, JSON.stringify(careers));
 console.log(
-  `# Economy calibration — ${careers.length} careers of ${SEASONS} seasons from the 1950 founding, every delegation on`,
+  `# Economy calibration — ${careers.length} careers of ${SEASONS} seasons from a 1950 takeover, every delegation on`,
 );
 report(careers);
 console.log(`\n_${((performance.now() - started) / 1000).toFixed(0)} s_`);

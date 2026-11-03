@@ -1,23 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
-import { canonical, validateWorld } from '../../contracts/src/index';
+import { canonical } from '../../contracts/src/index';
 import { CREST_PALETTE, type ClubIdentity } from '../../contracts/src/identity';
 import { clubIdentitySchema } from '../../contracts/src/identitySchema';
-import type { Founding, World } from '../../contracts/src/types';
+import type { World } from '../../contracts/src/types';
+import type { CareerInput } from './career.testkit';
 import { identityOf, installMissingIdentities } from './club-identity';
 import { ensureRepresentatives } from './europe';
 import { legacyCrestMap } from './identity-legacy';
-import { advanceDays, createWorld } from './index';
+import { advanceDays } from './index';
 import { clubOf } from './world';
 
-const INPUT: Founding = {
-  country: 'ENG',
-  name: 'Identity United',
-  color: '#3A7bC2',
-  seed: 'identity',
-  level: 'normal',
-};
-/** A deliberately custom founding design: three colours, mixed-case spelling, every region used. */
+const INPUT: CareerInput = { country: 'ENG', seed: 'identity' };
+/** A deliberately custom design: three colours, mixed-case spelling, every region used. */
 const CUSTOM: ClubIdentity = {
   version: 1,
   colours: ['#3A7bC2', '#F5E663', '#121212'],
@@ -34,9 +29,9 @@ const CUSTOM: ClubIdentity = {
     third: { pattern: 'checks', primary: '#121212', secondary: '#3A7bC2' },
   },
 };
-/** A fresh copy of the world founded with INPUT and no explicit identity. */
+/** A fresh copy of the career taken over with INPUT, its club keeping its generated identity. */
 const founded = () => simulatedWorld(INPUT);
-/** A compatible world from before identities: the same founding with every identity removed. */
+/** A compatible world from before identities: the same career with every identity removed. */
 function withoutIdentities(w: World) {
   for (const club of w.clubs) delete club.identity;
   return w;
@@ -44,55 +39,6 @@ function withoutIdentities(w: World) {
 /** The legacy crests computed afresh, not through the shared cache. */
 const legacyOf = (w: World) => legacyCrestMap({ ...w, clubs: w.clubs.slice() });
 const others = (w: World) => w.clubs.filter((club) => club.id !== w.playerClub);
-
-describe('explicit founding designs', () => {
-  it('founding installs the exact explicit draft', () => {
-    const identity = structuredClone(CUSTOM);
-    const w = createWorld({ ...INPUT, identity });
-    expect(clubOf(w).identity).toEqual(CUSTOM);
-    expect(clubOf(w).identity).not.toBe(identity);
-    expect(clubOf(w).color).toBe('#3A7bC2');
-    identity.kits.home.primary = '#000000';
-    expect(clubOf(w).identity).toEqual(CUSTOM);
-    expect(() => validateWorld(structuredClone(w))).not.toThrow();
-    // The draft changes nothing else: opponents, players, money and the calendar are the same.
-    const plain = founded();
-    for (const world of [w, plain]) delete clubOf(world).identity;
-    expect(canonical(w)).toBe(canonical(plain));
-  });
-
-  it.each<[string, unknown]>([
-    ['four colours', { ...CUSTOM, colours: ['#111111', '#222222', '#333333', '#444444'] }],
-    [
-      'a missing third shirt',
-      { ...CUSTOM, kits: { home: CUSTOM.kits.home, away: CUSTOM.kits.away } },
-    ],
-    ['an unknown field', { ...CUSTOM, sponsor: 'x' }],
-    ['a future version', { ...CUSTOM, version: 3 }],
-    [
-      'a named colour',
-      { ...CUSTOM, kits: { ...CUSTOM.kits, away: { pattern: 'plain', primary: 'red' } } },
-    ],
-    [
-      'a plain shirt with a secondary',
-      { ...CUSTOM, kits: { ...CUSTOM.kits, away: { ...CUSTOM.kits.away, secondary: '#ffffff' } } },
-    ],
-  ])('invalid explicit founding identity leaves no world: %s', (_, identity) => {
-    const before = JSON.stringify(identity);
-    expect(() => createWorld({ ...INPUT, identity: identity as ClubIdentity })).toThrow(
-      '구단 디자인',
-    );
-    expect(JSON.stringify(identity)).toBe(before);
-  });
-
-  it('explicit input colour must match representative primary', () => {
-    for (const color of ['#123456', '#3a7bc2'])
-      expect(() => createWorld({ ...INPUT, color, identity: CUSTOM })).toThrow('구단 디자인');
-    // Scripted callers that send only the colour still found a club, wearing that colour.
-    expect(INPUT.identity).toBeUndefined();
-    expect(clubOf(founded()).identity?.colours[0]).toBe('#3A7bC2');
-  });
-});
 
 describe('installing missing identities (→KIT-11, KIT-15)', () => {
   it('installs only missing identities and is idempotent', () => {
@@ -132,8 +78,11 @@ describe('installing missing identities (→KIT-11, KIT-15)', () => {
     });
     // An NPC crest keeps its palette primary beside the club's own stored colour.
     expect(others(w).some((club) => club.identity!.crest.primary !== club.color)).toBe(true);
-    // A new world is founded with exactly these identities.
-    expect(canonical(founded())).toBe(canonical(w));
+    // A new world installs exactly these identities as it is made, nobody's (→WORLD-13): the same
+    // installation with no own club first gives every club the identity the career holds.
+    const made = withoutIdentities(founded());
+    installMissingIdentities({ ...made, playerClub: '' });
+    expect(canonical(made.clubs)).toBe(canonical(founded().clubs));
   });
 
   it('own edits do not reroll opponents', () => {
@@ -159,9 +108,6 @@ describe('installing missing identities (→KIT-11, KIT-15)', () => {
     expect(others(w).map((club) => canonical(identityOf(w, club.id)))).toEqual(before);
     expect(installMissingIdentities(w)).toBe(false);
     expect(others(w).map((club) => canonical(club.identity))).toEqual(before);
-    // An explicit founding design leaves every opponent as a plain founding would.
-    const explicit = createWorld({ ...INPUT, identity: CUSTOM });
-    expect(others(explicit).map((club) => canonical(club.identity))).toEqual(before);
   });
 
   it('later European entrants keep all earlier identities', () => {

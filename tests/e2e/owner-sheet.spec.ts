@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { encode } from '../../apps/web/src/adapters/persistence';
-import { createWorld } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { withOwner } from '../../packages/engine/src/testing';
 import type { World } from '../../packages/contracts/src/types';
 import { acknowledgeEvents } from './events';
@@ -31,13 +31,7 @@ for (const viewport of [
     page,
   }) => {
     await page.setViewportSize(viewport);
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Owner Fixture',
-      color: '#335577',
-      seed: 'owner-sheet',
-      level: 'normal',
-    });
+    const w = careerWorld({ country: 'ENG', seed: 'owner-sheet' });
     // 팬 민심 under the floor for three rounds: 퇴진 압박 shows as a status, never a dialog.
     withOwner(w, { fanMood: 12, fanCrisis: { rounds: 3 } });
     await importCareer(page, w);
@@ -77,18 +71,12 @@ for (const viewport of [
   });
 }
 
-test('a founded career keeps the cash alone in the HUD', async ({ page }) => {
+test('a career without owner state keeps the cash alone in the HUD', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await importCareer(
-    page,
-    createWorld({
-      country: 'ENG',
-      name: 'Founded Fixture',
-      color: '#335577',
-      seed: 'owner-sheet-founded',
-      level: 'normal',
-    }),
-  );
+  // As a hand-built world holds it (T670's no-owner cases).
+  const ownerless = careerWorld({ country: 'ENG', seed: 'owner-sheet-founded' });
+  delete ownerless.owner;
+  await importCareer(page, ownerless);
   await expect(page.getByTestId('hud-cash')).toBeVisible();
   await expect(page.getByTestId('hud-fortune')).toHaveCount(0);
 });

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import type { MatchPlayback } from '../../../../packages/contracts/src/types';
 import type { GameClient } from './client';
 import { gameStore, initialClientState } from './store';
@@ -8,13 +8,7 @@ import { PACE_MS, ProgressionController, RESULT_NOTICE_MS } from './progression'
 import { useMatchView } from './matchView';
 import type { Reply, View } from './protocol';
 
-const w = createWorld({
-  country: 'ENG',
-  name: 'Clock Club',
-  color: '#24543b',
-  seed: 'clock-regression',
-  level: 'easy' as const,
-});
+const w = careerWorld({ country: 'ENG', seed: 'clock-regression' });
 function playback(id: string): MatchPlayback {
   return {
     record: { id } as MatchPlayback['record'],

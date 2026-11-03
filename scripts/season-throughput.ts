@@ -10,7 +10,7 @@
  * candidate model and the aggregate stages are loaded only when asked for.
  * - `--profile active-management` plays the runner's owner actions each season
  *   (scripts/match-model-baseline.ts `manage`); the default is the baseline world.
- * - `--candidate` activates the candidate match model from founding (tests/fixtures/worlds.ts).
+ * - `--candidate` activates the candidate match model from the takeover (tests/fixtures/worlds.ts).
  * - `--stages N` times the aggregate fixture's stages on the baseline world's first N non-own
  *   fixtures instead of seasons (trees with the aggregate path): per stage, the median over
  *   fixtures of each fixture's median of R repetitions.
@@ -27,7 +27,6 @@ import { fileURLToPath } from 'node:url';
 import {
   advanceRound,
   clubOf,
-  createWorld,
   managerCandidates,
   nextWork,
   debit,
@@ -39,6 +38,7 @@ import {
   simulateSeason,
   sponsorSlots,
 } from '../packages/engine/src/index';
+import { careerWorld } from '../packages/engine/src/career.testkit';
 import type { World } from '../packages/contracts/src/types';
 import * as match from '../packages/engine/src/match';
 
@@ -52,8 +52,8 @@ const count = (name: string, fallback: number) => {
   return n;
 };
 const PROFILES = {
-  baseline: { seed: 'release-century-baseline', name: 'Century Athletic' },
-  'active-management': { seed: 'release-century-active-management', name: 'Century Cooperative' },
+  baseline: { seed: 'release-century-baseline' },
+  'active-management': { seed: 'release-century-active-management' },
 } as const;
 type Profile = keyof typeof PROFILES;
 const r3 = (x: number) => Number(x.toFixed(3));
@@ -64,13 +64,7 @@ const median = (xs: readonly number[]) => {
 const load1 = () => Number(loadavg()[0]!.toFixed(2));
 
 function world(profile: Profile) {
-  return createWorld({
-    country: 'ENG',
-    name: PROFILES[profile].name,
-    color: '#284e35',
-    seed: PROFILES[profile].seed,
-    level: 'easy',
-  });
+  return careerWorld({ country: 'ENG', seed: PROFILES[profile].seed });
 }
 
 /** The active-management century workload's owner actions, as the runner plays them. */

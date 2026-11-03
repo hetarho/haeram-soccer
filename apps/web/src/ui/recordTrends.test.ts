@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { SeasonArchive } from '../../../../packages/contracts/src/types';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { eloOf, eloRank } from '../../../../packages/engine/src/ratings';
 import { ownLeagueIds } from './league';
 import { eloDetail, eloStanding, leaguePositionDetail, pyramidPosition } from './recordTrends';
@@ -92,13 +92,7 @@ describe('Elo bubble', () => {
 
 describe('Elo standing', () => {
   it('places our Elo among every club and against our league', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Standing',
-      color: '#24664f',
-      seed: 'elo-standing',
-      level: 'easy' as const,
-    });
+    const w = careerWorld({ country: 'ENG', seed: 'elo-standing' });
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     const league = ownLeagueIds(w).filter((id) => id !== own.id);
     const rival = w.clubs.find((c) => c.id === league[0])!,

@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { createWorld, makePlayer } from '../../packages/engine/src/index';
+import { makePlayer } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { retainPerson, openEmployment } from '../../packages/engine/src/person-careers';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { exportedCareer } from './career-fixtures';
@@ -15,13 +16,7 @@ for (const viewport of [
     page,
   }) => {
     await page.setViewportSize(viewport);
-    const world = createWorld({
-      country: 'ENG',
-      name: 'Synthetic Place Requests',
-      color: '#224433',
-      seed: 'place-requests',
-      level: 'easy',
-    });
+    const world = careerWorld({ country: 'ENG', seed: 'place-requests' });
     world.settings!.mode = 'manual';
     world.settings!.observations = { matchEve: false, windowOpen: false };
     world.manager.trust = 50;

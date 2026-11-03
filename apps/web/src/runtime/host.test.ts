@@ -682,8 +682,8 @@ describe('retained recruitment decision reads', () => {
 });
 
 it('consumes only an exact validated inspection without sharing a live world or reusing changed bytes', async () => {
-  const { createWorld } = await import('../../../../packages/engine/src/index');
-  const source = createWorld(input),
+  const { careerWorld } = await import('../../../../packages/engine/src/career.testkit');
+  const source = careerWorld(input),
     raw = await encode(source),
     host = new Host();
   const persistence = await import('../adapters/persistence');
@@ -695,7 +695,7 @@ it('consumes only an exact validated inspection without sharing a live world or 
     const metadata = await host.handle(
       req('inspect-metadata', -1, { type: 'inspect', raw, metadataOnly: true }),
     );
-    // It carries the model, which a founding records exactly when the release is on.
+    // It carries the model, which a takeover records exactly when the release is on.
     expect(metadata.worldMetadata).toEqual({
       id: source.id,
       revision: source.revision,
@@ -750,8 +750,8 @@ async function sealed(w: World) {
 }
 
 it('reports supported match-model metadata and refuses a future one without activating (→SAVE-23)', async () => {
-  const { createWorld } = await import('../../../../packages/engine/src/index');
-  const source = createWorld(input);
+  const { careerWorld } = await import('../../../../packages/engine/src/career.testkit');
+  const source = careerWorld(input);
   const matchModel: MatchModelState = {
     revision: MATCH_MODEL_REVISION,
     activated: { year: source.year, day: 0, revision: source.revision },

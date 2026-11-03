@@ -2,7 +2,7 @@ import { openPersonnel } from './personnel-navigation';
 import { openLeague } from './competition-navigation';
 import { expect, test } from '@playwright/test';
 import { encode } from '../../apps/web/src/adapters/persistence';
-import { createWorld } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { MANAGER_GONE } from '../../packages/engine/src/operations';
 import { horizontalOverflow, settle } from './layout';
 import { startCareer, startFlow } from './start';
@@ -132,13 +132,7 @@ test('floating warnings leave the HUD and content fixed on low and phone screens
   page,
 }) => {
   await page.setViewportSize({ width: 844, height: 390 });
-  const fixture = createWorld({
-    country: 'ENG',
-    name: 'Low Screen',
-    color: '#24543b',
-    seed: 'low-screen-hud',
-    level: 'normal' as const,
-  });
+  const fixture = careerWorld({ country: 'ENG', seed: 'low-screen-hud' });
   // Debt retains its status band; the manager choice floats above the current page.
   fixture.cash = '-1';
   fixture.critical = MANAGER_GONE;

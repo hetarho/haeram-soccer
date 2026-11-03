@@ -1028,7 +1028,6 @@ const worldSchema: z.ZodType<World> = z.object({
     )
     .optional(),
   playerClub: id,
-  level: z.enum(['easy', 'normal', 'hard', 'extreme']),
   clubs: z.array(club).min(10).max(1000),
   players: z.array(player).max(20000),
   hardStreak: z.number().int().nonnegative().optional(),

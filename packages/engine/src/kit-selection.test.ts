@@ -7,7 +7,7 @@ import {
   type GoalkeeperKit,
   type ShirtDesign,
 } from '../../contracts/src/identity';
-import type { Founding } from '../../contracts/src/types';
+import type { CareerInput } from './career.testkit';
 import { identityOf } from './club-identity';
 import { colourDistance } from './identity-legacy';
 import {
@@ -319,13 +319,7 @@ describe('goalkeeper kits (→KIT-8)', () => {
   });
 });
 
-const FOUNDING: Founding = {
-  country: 'ENG',
-  name: 'Kit Rovers',
-  color: '#3A7bC2',
-  seed: 'kits',
-  level: 'normal',
-};
+const CAREER: CareerInput = { country: 'ENG', seed: 'kits' };
 const OWN: ClubIdentity = {
   version: 1,
   colours: ['#3A7bC2', '#F5E663'],
@@ -339,7 +333,7 @@ const OWN: ClubIdentity = {
 
 describe('selection over saved identities (→KIT-6, KIT-13)', () => {
   it('forces the own club on both sides and leaves every saved identity unchanged', () => {
-    const w = simulatedWorld(FOUNDING);
+    const w = simulatedWorld(CAREER);
     const own = structuredClone(OWN);
     const rival = identityOf(w, w.clubs.find((club) => club.id !== w.playerClub)!.id);
     const before = [JSON.stringify(own), JSON.stringify(rival)];
@@ -361,7 +355,7 @@ describe('selection over saved identities (→KIT-6, KIT-13)', () => {
   });
 
   it('selection is unchanged by unrelated revision/read commands', () => {
-    const w = simulatedWorld(FOUNDING);
+    const w = simulatedWorld(CAREER);
     const rival = w.clubs.find((club) => club.id !== w.playerClub && !club.representative)!.id;
     const pick = () => selectMatchKits(identityOf(w, w.playerClub), identityOf(w, rival));
     const before = pick();

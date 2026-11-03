@@ -264,7 +264,7 @@ test('a shirt chosen for the next fixture and a waiting commission survive reloa
 }) => {
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
-  const w = delegatedCareer('identity-continuity-slots', 'Kit Keepers');
+  const w = delegatedCareer('identity-continuity-slots');
   const next = nextOwnFixture(w)!;
   const own = next.home === w.playerClub ? 0 : 1;
   const role = KIT_ROLES.find((r) => r !== appearanceForFixture(w, next).sides[own].role)!;
@@ -447,7 +447,7 @@ test('a refused adoption and a failed checkpoint keep the committed save, the dr
   await failableWrites(page);
   await watchIdentityCommands(page);
   await page.setViewportSize({ width: 390, height: 844 });
-  const w = delegatedCareer('identity-continuity-failures', 'Failsafe Kits');
+  const w = delegatedCareer('identity-continuity-failures');
   await importResponsibilityCareer(page, w);
   const view = await openDesign(page);
   // A first adoption commits, so the committed checkpoint has a verified previous copy (→SAVE-3).
@@ -531,7 +531,7 @@ for (const [name, write] of Object.entries(FUTURE_CHECKPOINTS))
     page,
   }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    const w = delegatedCareer('identity-continuity-future', 'Future Kits');
+    const w = delegatedCareer('identity-continuity-future');
     const older = await encode(w, 1, 0);
     const newer = await write(w, 2, 1);
     const stored = { active: newer, manifest: manifestOf(newer), previous: older };

@@ -8,7 +8,7 @@ import {
 import { closeMatchDetails, openMatchDetails, watchNext } from './watch';
 import { test, expect, type Page } from '@playwright/test';
 import { encode } from '../../apps/web/src/adapters/persistence';
-import { createWorld } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import type { World } from '../../packages/contracts/src/types';
 import { configureResponsibilities, matchReport } from './events';
 import { continueSlot } from './slots';
@@ -291,13 +291,7 @@ async function seed(page: Page, w: World) {
 }
 
 test('the office summary flags tired starters and offers no remedy (→WEB-44)', async ({ page }) => {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Haeram Athletic',
-    color: '#bf7956',
-    seed: 'fatigue-remedy',
-    level: 'easy' as const,
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'fatigue-remedy' });
   for (const player of w.players) player.fatigue = 55;
   await seed(page, w);
   await page.goto('/');

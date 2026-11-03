@@ -8,7 +8,8 @@ import {
   type MatchModelState,
   type NpcSeasonStats,
 } from '../../../../packages/contracts/src/match-model';
-import type { Founding, World } from '../../../../packages/contracts/src/types';
+import type { World } from '../../../../packages/contracts/src/types';
+import type { CareerInput } from '../../../../packages/engine/src/career.testkit';
 import {
   isSaveCompatibilityError,
   SaveCompatibilityError,
@@ -28,18 +29,12 @@ import {
   type SparseTable,
 } from './matchModelPacking';
 
-const FOUNDING: Founding = {
-  country: 'ENG',
-  name: 'Ledger Rovers',
-  color: '#2a4f7a',
-  seed: 'full-model-ledger',
-  level: 'normal',
-};
+const CAREER: CareerInput = { country: 'ENG', seed: 'full-model-ledger' };
 /**
- * Two unobserved rounds into the founded career, played before the full model (release off) so its
- * model data is only what a case adds; a fresh copy per call.
+ * Two unobserved rounds into the taken-over career, played before the full model (release off) so
+ * its model data is only what a case adds; a fresh copy per call.
  */
-const career = () => simulatedWorld(FOUNDING, { rounds: 2 }, DISABLED_RELEASE);
+const career = () => simulatedWorld(CAREER, { rounds: 2 }, DISABLED_RELEASE);
 const state = (w: World): MatchModelState => ({
   revision: MATCH_MODEL_REVISION,
   activated: { year: w.year, day: 9, revision: w.revision },

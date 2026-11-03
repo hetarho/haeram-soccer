@@ -46,15 +46,8 @@ const part = (
   metrics: m,
   detail: d,
 });
-/** A founded world, built once and shared (→ARCH-21); each call is a fresh copy. */
-const fresh = () =>
-  simulatedWorld({
-    country: 'ENG',
-    name: 'Synthetic Full Stats',
-    color: '#335544',
-    seed: 'full-stats-view',
-    level: 'normal',
-  });
+/** A taken-over world, built once and shared (→ARCH-21); each call is a fresh copy. */
+const fresh = () => simulatedWorld({ country: 'ENG', seed: 'full-stats-view' });
 function syntheticRead(w: World, change: Partial<FullStatsRead> = {}): FullStatsRead {
   const own = w.players[0]!,
     other = w.clubs.find((c) => c.id !== w.playerClub)!.id;

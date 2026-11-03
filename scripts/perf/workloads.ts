@@ -7,7 +7,7 @@
  * - `grid`: the detailed engine on one of `GRID_FIXTURES` top-tier fixtures a rep, in turn (setup
  *   built per rep, as an own match is: no observation, player records on);
  * - `aggregate`: `simulateAggregate` on the first `AGGREGATE_FIXTURES` fixtures without the own club;
- * - `day`: one automatic-play day of a founding (`advanceDays(w, 1)`); its reps are successive days,
+ * - `day`: one automatic-play day of a career (`advanceDays(w, 1)`); its reps are successive days,
  *   which the two sides step in lockstep so a pair is the same day on both.
  *
  * `digest()` hashes the recorded outputs (the world itself for `day`), which a result-identical
@@ -15,6 +15,8 @@
  */
 import { createHash } from 'node:crypto';
 import * as engine from '../../packages/engine/src/index';
+// A tree before T670 has no career testkit; such a baseline needs its own world builder here.
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { buildGridSetup } from '../../packages/engine/src/grid/setup';
 import { playGrid } from '../../packages/engine/src/grid/engine';
 import { simulateAggregate } from '../../packages/engine/src/aggregate/engine';
@@ -40,10 +42,7 @@ export function cpuMs(): number {
 }
 
 function world(seed: string): World {
-  return engine.createWorld(
-    { country: 'ENG', name: 'Perf Town', color: '#284e35', seed, level: 'easy' },
-    engine.MATCH_MODEL_RELEASE,
-  );
+  return careerWorld({ country: 'ENG', seed }, engine.MATCH_MODEL_RELEASE);
 }
 
 function otherFixtures(w: World, count: number, filter: (f: Fixture) => boolean): Fixture[] {

@@ -4,7 +4,7 @@ import { advanceOneRound } from './season-progression';
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
-import { createWorld } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { currentDay } from '../../packages/engine/src/calendar';
 import { configureResponsibilities } from './events';
 import { MANAGER_GONE } from '../../packages/engine/src/operations';
@@ -334,13 +334,8 @@ test('deleting the game in play stays on the slot screen, even with every slot e
   await expect(startFlow(page)).toContainText('슬롯 1 · 새 게임');
 });
 test('a new game beside a parked game shows none of its club, cash or bands', async ({ page }) => {
-  const fixture = createWorld({
-    country: 'ENG',
-    name: 'Parked Crisis',
-    color: '#bf7956',
-    seed: 'parked-crisis',
-    level: 'hard' as const,
-  });
+  const fixture = careerWorld({ country: 'ENG', seed: 'parked-crisis' });
+  const parkedClub = fixture.clubs.find((club) => club.id === fixture.playerClub)!.name;
   // In debt and without a manager: retain the cash band and the floating manager notice.
   fixture.cash = '-1';
   fixture.critical = MANAGER_GONE;
@@ -367,7 +362,7 @@ test('a new game beside a parked game shows none of its club, cash or bands', as
   await expect(startFlow(page)).toContainText('슬롯 2 · 새 게임');
   await expect(page.getByTestId('calendar')).toHaveText('1930 · A NEW OWNER');
   await expect(page.getByTestId('hud-cash')).toHaveCount(0);
-  await expect(page.getByText('Parked Crisis')).toHaveCount(0);
+  await expect(page.getByText(parkedClub)).toHaveCount(0);
   await expect(page.getByTestId('save-status')).toHaveCount(0);
   await expect(alarm).toHaveCount(0);
   await expect(notice).toHaveCount(0);

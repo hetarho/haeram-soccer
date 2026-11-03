@@ -28,21 +28,11 @@ import { checkpointContainerFor, type PackedManagerHistory } from './managerHist
 /**
  * A tracked career two rounds in whose facts hold every field shape: an owner hire, a resignation
  * with an interim, a person-linked manager, all three outcome kinds, and the first record treated
- * as settled before tracking (unattributed). Founded under `release`, the switch as it stands
+ * as settled before tracking (unattributed). Taken over under `release`, the switch as it stands
  * unless given.
  */
 function career(release?: MatchModelRelease): World {
-  const w = simulatedWorld(
-    {
-      country: 'ENG',
-      name: 'Packed Tenures',
-      color: '#335577',
-      seed: 'manager-packing',
-      level: 'easy',
-    },
-    { rounds: 2 },
-    release,
-  );
+  const w = simulatedWorld({ country: 'ENG', seed: 'manager-packing' }, { rounds: 2 }, release);
   w.cash = '999999999999';
   delete w.ownMatches[0]!.managerTenure;
   operate(w, { type: 'hire', id: managerCandidates(w).find((c) => c.source !== 'club')!.id });

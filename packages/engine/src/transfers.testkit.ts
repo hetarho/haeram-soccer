@@ -10,7 +10,7 @@ export const CLOSED = '이적시장이 닫혀 있어요. 자유계약 선수만 
 /** The market's club on the pre-feature path: transfers, not the match model, are the subject. */
 export function world(seed = 'transfer-market', fresh = false) {
   const found = () => careerWorld({ seed }, DISABLED_RELEASE);
-  // Founding costs most of a test that plays no match: each seed is founded once and copied.
+  // The takeover costs most of a test that plays no match: each seed is taken over once and copied.
   const w = fresh ? found() : cachedWorld(`founded:${seed}`, found);
   w.settings = staffAuthority(2);
   w.cash = '999999999999';

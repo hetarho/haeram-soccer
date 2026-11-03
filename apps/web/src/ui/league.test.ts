@@ -5,9 +5,9 @@ import type {
   TableRow,
   World,
 } from '../../../../packages/contracts/src/types';
-import { createWorld, advanceRound, groupKey, ranked } from '../../../../packages/engine/src/index';
+import { advanceRound, groupKey, ranked } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { fixturesFor } from '../../../../packages/engine/src/season';
-import { professionalStart } from '../../../../packages/engine/src/testing';
 import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import {
@@ -31,28 +31,21 @@ import {
   RESULT_POINTS,
 } from './league';
 
-const input = {
-  country: 'ENG' as const,
-  name: 'Haeram League',
-  color: '#24664f',
-  seed: 'league-insights',
-  level: 'normal' as const,
-};
-/** Our club promoted into the professional pyramid at founding. */
-const professional = () => cachedWorld('professional', () => professionalStart(createWorld(input)));
-/** The professional founding after four observed rounds. */
+const input = { country: 'ENG' as const, seed: 'league-insights' };
+/** Our club taken over in the lowest professional division. */
+const professional = () => cachedWorld('professional', () => careerWorld(input));
+/** That career after four observed rounds. */
 const fourRounds = () =>
   cachedWorld('professional-4-rounds', () => {
-    const w = professionalStart(createWorld(input));
+    const w = careerWorld(input);
     for (let i = 0; i < 4; i++) advanceRound(w);
     return w;
   });
 
 describe('league choice (WEB-65)', () => {
-  it('opens on the own league, amateur one included, and names any other in the address', () => {
-    const amateur = simulatedWorld(input);
-    expect(leagueIds(amateur)).toEqual(ownLeagueIds(amateur));
+  it('opens on the own league and names any other in the address', () => {
     const w = professional();
+    expect(leagueIds(w)).toEqual(ownLeagueIds(w));
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     expect(leagueIds(w, { code: own.country, tier: own.tier, group: own.group })).toEqual(
       ownLeagueIds(w),
@@ -145,34 +138,14 @@ describe('league insight facts', () => {
     expect(leagueRules(w, top)).toMatchObject({ automatic: 0, playoff: 0, relegation: 3 });
   });
 
-  it('sends up as many amateur clubs as the last division relegates, the last by play-off', () => {
-    // One League Two group drops two: the champions go up and 2nd–5th play off for the other.
-    const eng = simulatedWorld(input);
-    expect(leagueRules(eng, ownLeagueIds(eng))).toMatchObject({
-      automatic: 1,
-      playoff: 4,
-      relegation: 0,
-      lower: true,
-    });
-    // Three Serie C groups drop six: the top five go up and 6th–9th play off for the sixth.
-    const ita = simulatedWorld({ ...input, country: 'ITA' });
-    expect(leagueRules(ita, ownLeagueIds(ita))).toMatchObject({
-      automatic: 5,
-      playoff: 4,
-      relegation: 0,
-      lower: true,
-    });
-  });
-
   it("finds any club's own league and names where it plays, whoever opens its sheet", () => {
     const w = simulatedWorld(input),
       club = (id: string) => w.clubs.find((c) => c.id === id)!;
-    // Our amateur league is the clubs in its fixtures, representatives included.
+    // Our league is the clubs in its fixtures.
     const own = ownLeagueIds(w),
-      amateur = own.find((id) => id !== w.playerClub)!;
+      rival = own.find((id) => id !== w.playerClub)!;
     expect(leagueOf(w, club(w.playerClub))).toEqual(own);
-    expect(leagueOf(w, club(amateur))).toEqual(own);
-    expect(clubDivision(w, club(amateur))).toBe('아마추어 리그');
+    expect(leagueOf(w, club(rival))).toEqual(own);
     // A professional club abroad plays in its own division, named with its country.
     const german = w.clubs.find((c) => c.country === 'GER' && c.tier === 1 && !c.representative)!;
     const division = leagueOf(w, german);

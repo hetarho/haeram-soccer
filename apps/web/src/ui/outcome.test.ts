@@ -1,25 +1,14 @@
 import { lineOf } from '../../../../packages/engine/src/player';
 import { describe, expect, it } from 'vitest';
 import type { World } from '../../../../packages/contracts/src/types';
-import {
-  createWorld,
-  operate,
-  progressFacilityWorks,
-  settleRound,
-} from '../../../../packages/engine/src/index';
+import { operate, progressFacilityWorks, settleRound } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { addEvent } from '../../../../packages/engine/src/events';
 import { sellPlayer, startWork } from '../../../../packages/engine/src/testing';
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { describeOutcome, newEvents } from './outcome';
 
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Outcome',
-    color: '#24664f',
-    seed: 'outcome',
-    level: 'easy' as const,
-  });
+const world = () => careerWorld({ country: 'ENG', seed: 'outcome' });
 const after = (w: World, apply: (copy: World) => void) => {
   const copy = structuredClone(w);
   apply(copy);
@@ -32,6 +21,7 @@ describe('action outcome summaries', () => {
     // pass, and the round's summary names the new level.
     const before = world();
     before.cash = '100000000';
+    before.trainingGround = 0;
     startWork(before, 'training');
     const next = after(before, (w) => {
       w.facilityWorks!.training!.day -= 90;

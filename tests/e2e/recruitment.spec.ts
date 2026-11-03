@@ -1,12 +1,7 @@
 import { openPersonnel } from './personnel-navigation';
 import { marketRows, marketFilters, marketInfo, marketCandidate, closeMarketPanel } from './market';
-import {
-  createWorld,
-  makePlayer,
-  joinClub,
-  operate,
-  advanceDays,
-} from '../../packages/engine/src/index';
+import { makePlayer, joinClub, operate, advanceDays } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { movePerson } from '../../packages/engine/src/npc-continuity';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { worldMarketPage } from '../../packages/engine/src/world-market';
@@ -191,13 +186,7 @@ test('pages the global market by OVR, filters all scopes, and approaches a non-r
 }) => {
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
-  const world = createWorld({
-    country: 'ENG',
-    name: 'Synthetic Global Market',
-    color: '#224433',
-    seed: 'global-page-approach',
-    level: 'easy',
-  });
+  const world = careerWorld({ country: 'ENG', seed: 'global-page-approach' });
   world.cash = world.income = '999999999999';
   world.settings!.mode = 'manual';
   world.settings!.observations = { matchEve: false, windowOpen: false };
@@ -441,13 +430,7 @@ test('reaches the forty-player ceiling with eight loans and prevents any further
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   // Marked synthetic 32-player career; all eight subsequent loans use real public commands.
-  const setup = createWorld({
-    country: 'ENG',
-    name: 'Synthetic Capacity',
-    color: '#224433',
-    seed: 'recruitment-full-ui',
-    level: 'easy',
-  });
+  const setup = careerWorld({ country: 'ENG', seed: 'recruitment-full-ui' });
   while (setup.players.length < 32) {
     const player = makePlayer(
       'ENG',

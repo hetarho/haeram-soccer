@@ -1,18 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld } from '../../../../packages/engine/src/founding';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { recordRecentResult } from '../../../../packages/engine/src/recent-results';
 import { validateWorld } from '../../../../packages/contracts/src/schema';
 import { RECENT_RESULT_LIMIT } from '../../../../packages/contracts/src/recent-results';
 import { pack, unpack } from './packing';
 
 function world() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Recent results',
-    color: '#24664f',
-    seed: 'recent-results-packing',
-    level: 'easy',
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'recent-results-packing' });
   const played = {
     ...w.fixtures[0]!,
     score: { home: 2, away: 2 },

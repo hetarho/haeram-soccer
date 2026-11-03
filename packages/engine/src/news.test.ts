@@ -26,14 +26,7 @@ import { NEWS_PER_MATCH, type NewsItem } from './news';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
-const founding = (seed = 'news') =>
-  ({
-    country: 'ENG',
-    name: 'News United',
-    color: '#24664f',
-    seed,
-    level: 'easy',
-  }) as const;
+const founding = (seed = 'news') => ({ country: 'ENG', seed }) as const;
 const world = (seed = 'news') => simulatedWorld(founding(seed));
 const results = (w: World) =>
   w.ownMatches

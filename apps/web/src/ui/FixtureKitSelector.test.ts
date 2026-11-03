@@ -6,7 +6,7 @@ import { KIT_ROLES, type KitRole } from '../../../../packages/contracts/src/iden
 import type { Fixture, World } from '../../../../packages/contracts/src/types';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { identityOf } from '../../../../packages/engine/src/club-identity';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { selectMatchKits } from '../../../../packages/engine/src/kit-selection';
 import { appearanceForFixture } from '../../../../packages/engine/src/match-appearance';
 import { operate } from '../../../../packages/engine/src/operations';
@@ -19,16 +19,11 @@ import {
   type FixtureKitViewProps,
 } from './FixtureKitSelector';
 
-/** A founding whose next fixture is at home; a later league fixture has us away. */
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Kit Town',
-    color: '#bf7956',
-    seed: 'kit-prep-a',
-    level: 'easy',
-  });
+/** A career whose next fixture is at home; a later league fixture has us away. */
+const world = () => careerWorld({ country: 'ENG', seed: 'kit-prep-a' });
 const W = world();
+/** The taken-over club's generated name, escaped for a pattern. */
+const OWN = W.clubs.find((c) => c.id === W.playerClub)!.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const HOME = nextOwnFixture(W)!;
 const AWAY = W.fixtures.find((f) => !f.score && f.away === W.playerClub)!;
 const opponentOf = (f: Fixture) => (f.home === W.playerClub ? f.away : f.home);
@@ -85,7 +80,7 @@ describe('fixture kit preview (→KIT-6/7/8)', () => {
 
   it('names the fixture with its date, competition, both clubs and our venue', () => {
     const home = W.clubs.find((c) => c.id === HOME.away)!.name;
-    expect(fixtureKitContext(W, HOME)).toMatch(new RegExp(`Kit Town 대 ${home} · 우리 홈 경기$`));
+    expect(fixtureKitContext(W, HOME)).toMatch(new RegExp(`${OWN} 대 ${home} · 우리 홈 경기$`));
     expect(fixtureKitContext(W, AWAY)).toMatch(/ · 우리 원정 경기$/);
   });
 });
@@ -150,8 +145,10 @@ describe('fixture kit selector markup (→WEB-88)', () => {
     ]);
     expect(all.every((b) => b.disabled)).toBe(true);
     // Both sides' shirts and automatic keepers are shown before anything is committed.
-    expect(html).toMatch(/aria-label="Kit Town (홈|어웨이|세컨) 유니폼: /);
-    expect(html).toContain(`골키퍼 착용 색 ${automatic.sides[1].goalkeeper}`);
+    expect(html).toMatch(new RegExp(`aria-label="${OWN} (홈|어웨이|세컨) 유니폼: `));
+    // The keepers of the pairing shown: ours in our away shirt, theirs avoiding it.
+    const shown = fixtureKitAppearance(W, HOME, 'away');
+    expect(html).toContain(`골키퍼 착용 색 ${shown.sides[1].goalkeeper}`);
   });
 
   it('states the keeper fallback', () => {

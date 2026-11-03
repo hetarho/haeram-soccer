@@ -23,14 +23,7 @@ import { identityOf } from './club-identity';
 import { selectMatchKits } from './kit-selection';
 import { appearanceForFixture } from './match-appearance';
 import { operate } from './operations';
-const world = () =>
-  simulatedWorld({
-    country: 'FRA',
-    name: 'Century Forge',
-    seed: 'eras',
-    color: '#223344',
-    level: 'normal' as const,
-  });
+const world = () => simulatedWorld({ country: 'FRA', seed: 'eras' });
 describe('historical evolution', () => {
   it('activates actual competition milestones and lineages', () => {
     expect(europeanEras(1954)).toEqual([]);

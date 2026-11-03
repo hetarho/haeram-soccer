@@ -65,20 +65,14 @@ import {
   transferWindowDays,
   wageBill,
 } from './index';
-import { handTo, holdRows, professionalStart, staffAuthority } from './testing';
+import { handTo, holdRows, staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 // The constants (MARKET_CONFIG) follow the career calibration (→ECON-29), so these tests hold the
 // CLUB-25 targets, not the constants.
-const founding = {
-  country: 'ENG' as const,
-  name: 'Market Wages',
-  color: '#224433',
-  seed: 'market-wages',
-  level: 'normal' as const,
-};
+const founding = { country: 'ENG' as const, seed: 'market-wages' };
 /** The club on the pre-feature path: contracts, not the match model, are the subject. */
 function world(country: 'ENG' | 'ESP' = 'ENG') {
   const w = simulatedWorld({ ...founding, country }, {}, DISABLED_RELEASE);
@@ -95,10 +89,10 @@ const amount = (value: string) => Number(BigInt(value));
 /** Money in whole currency units, comparable across the 1971 decimalisation. */
 const major = (w: World, value: string) =>
   amount(value) / currency(clubOf(w).country, w.year).units;
-/** The club started in the lowest professional division, its founding season's 46 rounds played. */
+/** The club taken over in the lowest professional division, its first season's 46 rounds played. */
 const professionalSeason = () =>
   cachedWorld('professional-season', () => {
-    const w = professionalStart(world());
+    const w = world();
     while (w.round < 46) advanceRound(w, undefined, false);
     return w;
   });

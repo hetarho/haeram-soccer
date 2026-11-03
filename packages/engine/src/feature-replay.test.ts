@@ -79,13 +79,7 @@ for (const retained of [false])
   );
 
 describe('prospective full-model activation (→SAVE-23, HIST-17)', () => {
-  const founding = {
-    country: 'ENG' as const,
-    name: 'Feature Replay',
-    color: '#224466',
-    seed: 'feature-replay',
-    level: 'easy' as const,
-  };
+  const founding = { country: 'ENG' as const, seed: 'feature-replay' };
   let serial = 0;
   async function send(host: Host, body: Body) {
     const reply = await host.handle({
@@ -103,7 +97,7 @@ describe('prospective full-model activation (→SAVE-23, HIST-17)', () => {
   const load = (host: Host, raw: string) =>
     send(host, { type: 'inspect', raw, activate: true, upgrade: true });
   /**
-   * A supported career three rounds in that never activated (founded with the release off), then
+   * A supported career three rounds in that never activated (taken over with the release off), then
    * activated by its writer and played to an own result.
    */
   let built: Promise<{ before: World; at: World; host: Host }> | undefined;

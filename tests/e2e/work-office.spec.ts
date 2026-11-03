@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createWorld } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { RESPONSIBILITY_KEYS } from '../../packages/engine/src/responsibilities';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { exportedCareer } from './career-fixtures';
@@ -22,13 +22,7 @@ for (const width of [360, 390, 1280]) {
   }) => {
     test.slow();
     await page.setViewportSize({ width, height: 844 });
-    const w = createWorld({
-      name: 'Synthetic Work Office',
-      country: 'ENG',
-      color: '#224466',
-      seed: 'work-office',
-      level: 'easy',
-    });
+    const w = careerWorld({ country: 'ENG', seed: 'work-office' });
     w.settings!.mode = 'manual';
     w.settings!.observations.matchEve = false;
     for (const key of RESPONSIBILITY_KEYS) w.settings!.responsibilities[key] = 'delegated';

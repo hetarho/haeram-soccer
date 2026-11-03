@@ -151,13 +151,7 @@ function notifications(): SystemNotification[] {
   return JSON.parse(storage.getItem(NOTIFICATIONS_KEY) || '{"items":[]}').items;
 }
 
-const founding = {
-  country: 'ENG' as const,
-  name: 'Background Athletic',
-  color: '#223344',
-  seed: 'client-background',
-  level: 'normal' as const,
-};
+const founding = { country: 'ENG' as const, seed: 'client-background' };
 let storage: MemoryStorage;
 const clients: GameClient[] = [];
 /**
@@ -344,7 +338,7 @@ describe('background worker publication', () => {
         .filter((request) => request.body.type === 'save')
         .map((request) => request.generation);
     expect(commands.map((request) => request.expectedRevision)).toEqual([0, 1]);
-    // Founding, then the ticks' saves (folded when one was still building): every checkpoint
+    // The takeover, then the ticks' saves (folded when one was still building): every checkpoint
     // follows the last committed one.
     expect(generations).toEqual(generations.map((_, index) => index + 1));
     expect(generations.length).toBeGreaterThan(1);
@@ -642,7 +636,7 @@ describe('background worker publication', () => {
 
   it('activates an explicit import while ignoring unsolicited stale worker responses', async () => {
     const client = await start(),
-      replacement = simulatedWorld({ ...founding, seed: 'replacement', name: 'New Athletic' });
+      replacement = simulatedWorld({ ...founding, seed: 'replacement' });
     await client.importFile(await encode(replacement));
     expect(client.state.view?.world.id).toBe(replacement.id);
     expect(client.state.savedRevision).toBe(0);
@@ -1223,7 +1217,7 @@ describe('game slots', () => {
     slots.sync(client.state.view!.world);
     const firstRaw = await client.checkpoint();
     const imported = withoutIdentities(
-      simulatedWorld({ ...founding, name: 'Archive Rovers', seed: 'identityless-import' }),
+      simulatedWorld({ ...founding, seed: 'identityless-import' }),
     );
     await slots.importInto(1, await encode(imported));
     const w = client.state.view!.world;

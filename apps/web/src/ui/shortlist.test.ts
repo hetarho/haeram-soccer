@@ -2,23 +2,17 @@ import { describe, expect, it } from 'vitest';
 import { staffAuthority } from '../../../../packages/engine/src/testing';
 import type { World } from '../../../../packages/contracts/src/types';
 import {
-  createWorld,
   openShortlistWindow,
   seasonDayOf,
   transferOffers,
   transferWindowDays,
 } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { lineOf } from '../../../../packages/engine/src/player';
 import { directorDecisions, requestName, requestStakes, shortlistRows } from './shortlist';
 
 function club(seed = 'shortlist-ui') {
-  return createWorld({
-    country: 'ENG',
-    name: 'Scout Town',
-    color: '#224433',
-    seed,
-    level: 'easy' as const,
-  });
+  return careerWorld({ country: 'ENG', seed });
 }
 /** Leaves `count` active goalkeepers, the others sold. */
 function oneKeeper(w: World) {

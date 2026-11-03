@@ -6,7 +6,8 @@ import { advanceOneRound } from './season-progression';
 import { chooseOption } from './select';
 
 import { expect, test, type Page } from '@playwright/test';
-import { createWorld, simulateSeason } from '../../packages/engine/src/index';
+import { simulateSeason } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { continueSlot, seedSlot } from './slots';
 import { startCareer } from './start';
 import {
@@ -304,13 +305,7 @@ test('chooses a cup once and keeps its archived season through competition and c
   // that long met in every attempt. On the released model the two seasons ran past the slow
   // 90 s budget on CI Chromium (run 40243569140).
   test.setTimeout(180_000);
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Haeram Athletic',
-    color: '#bf7956',
-    seed: 'owner-workflow-regression',
-    level: 'easy',
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'owner-workflow-regression' });
   simulateSeason(w);
   simulateSeason(w);
   await page.setViewportSize({ width: 390, height: 844 });

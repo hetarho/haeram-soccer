@@ -5,13 +5,8 @@ import type {
   MatchRecord,
   SeasonArchive,
 } from '../../../../packages/contracts/src/types';
-import { currency, priceIndex } from '../../../../packages/catalogs/src/index';
-import {
-  advanceRound,
-  closeSeason,
-  createWorld,
-  prepareSeason,
-} from '../../../../packages/engine/src/index';
+import { advanceRound, closeSeason, prepareSeason } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { cupRoute, nationName, runLine, runResult, type TieRow } from './cupRoute';
@@ -306,21 +301,10 @@ describe('our cup road', () => {
   it('agrees with the archived runs of a played 1980 season, the Cup Winners Cup included', () => {
     // Played on the pre-feature path: the cup route, not the match model, is the subject.
     const world = cachedWorld('eng-1980-closed', () => {
-      const world = createWorld(
-        {
-          country: 'ENG',
-          name: 'Route Rovers',
-          color: '#2a4d3a',
-          seed: 'cup-route',
-          level: 'normal' as const,
-        },
+      const world = careerWorld(
+        { country: 'ENG', seed: 'cup-route', year: 1980 },
         DISABLED_RELEASE,
       );
-      world.year = 1980;
-      world.currency = currency('ENG', 1980).code;
-      world.priceIndex = priceIndex('ENG', 1980).value;
-      world.manager.until = 1983;
-      for (const p of world.players) p.until = 1982;
       // Last season's cup winners enter the Cup Winners Cup.
       world.lastChampions = [{ country: 'ENG', club: 'ENG:0:0:0', cup: world.playerClub }];
       prepareSeason(world);

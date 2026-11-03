@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { rating } from '../../../../packages/engine/src/world';
 import { ownLeagueIds } from './league';
 import { squadRegistration } from './squadRegistration';
@@ -12,14 +12,7 @@ import {
   teamStates,
 } from './teamState';
 
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'State',
-    color: '#24664f',
-    seed: 'state',
-    level: 'easy' as const,
-  });
+const world = () => careerWorld({ country: 'ENG', seed: 'state' });
 
 describe('team state', () => {
   it('is calm for a new club and keeps cash in the HUD', () => {

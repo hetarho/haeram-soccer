@@ -9,13 +9,7 @@ import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 /** One club the year before its currency changes, holding every kind of live amount. */
 function beforeChange(country: CountryCode, year: number, amount: string) {
-  const w = simulatedWorld({
-    country,
-    name: 'Ledger Rovers',
-    color: '#445566',
-    seed: `economy:${country}`,
-    level: 'normal' as const,
-  });
+  const w = simulatedWorld({ country, seed: `economy:${country}` });
   w.year = year - 1;
   w.currency = currency(country, year - 1).code;
   w.staff = [

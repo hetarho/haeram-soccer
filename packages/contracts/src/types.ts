@@ -58,8 +58,6 @@ export type CountryCode = 'ENG' | 'ESP' | 'GER' | 'ITA' | 'FRA' | 'POR' | 'NED' 
 export type Tactic = 'balanced' | 'possession' | 'counter' | 'press';
 /** The first team's training focus (→CLUB-11): 균형, 회복 or 하드 트레이닝. */
 export type TrainingFocus = 'balanced' | 'recovery' | 'hard';
-/** The four difficulty levels; each sets only the starting cash and squad (→WEB-3). */
-export type DifficultyLevel = 'easy' | 'normal' | 'hard' | 'extreme';
 /** The facility parts the owner builds separately (→ECON-32). */
 export type FacilityPart = 'stadium' | 'training' | 'academy';
 /** The academy's training focus, set by the youth director (→CLUB-31). */
@@ -1136,8 +1134,6 @@ export interface World {
   /** Actual league goals and appearances with round snapshots, for the current season. */
   scorerSeason?: GoalScorerSeason;
   playerClub: string;
-  /** The difficulty level the club was founded at (→WEB-3). */
-  level: DifficultyLevel;
   clubs: Club[];
   people?: Record<string, PersonCareer>;
   playingCoachProposals?: Record<string, PlayingCoachProposal>;
@@ -1288,17 +1284,6 @@ export interface DisciplineState {
   yellows: Record<string, Partial<Record<CompetitionKey, number>>>;
   bans: Ban[];
   out: Unavailable[];
-}
-export interface Founding {
-  country: CountryCode;
-  name: string;
-  color: string;
-  seed: string;
-  level: DifficultyLevel;
-  /** The direction preset chosen at founding (→WEB-15); absent is 기본 방향. */
-  preset?: string;
-  /** The previewed founding identity (→KIT-14); its first colour equals `color`. */
-  identity?: ClubIdentity;
 }
 export type Command =
   | { type: 'settings'; settings: GameSettings }

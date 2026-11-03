@@ -2,9 +2,8 @@ import { detectMediations } from '../../packages/engine/src/mediation';
 import { careerDate } from '../../packages/engine/src/person-careers';
 import { transferOffers } from '../../packages/engine/src/index';
 import { lineOf } from '../../packages/engine/src/player';
-import type { ClubPolicy, Founding, World, Command } from '../../packages/contracts/src/types';
+import type { ClubPolicy, World, Command } from '../../packages/contracts/src/types';
 import {
-  createWorld,
   prepareSeason,
   advanceRound,
   simulateSeason,
@@ -12,46 +11,40 @@ import {
   clubOf,
   policyOf,
 } from '../../packages/engine/src/index';
-import { currency, priceIndex } from '../../packages/catalogs/src/index';
+import { careerWorld, type CareerInput } from '../../packages/engine/src/career.testkit';
 import { staffAuthority, stagePlayingCoach } from '../../packages/engine/src/testing';
 import { DISABLED_RELEASE } from './releases';
 export interface FixtureDefinition {
   name: string;
-  input: Founding;
+  input: CareerInput;
   year?: number;
   cupQualification?: boolean;
   currentRules?: boolean;
   setup?: 'staff-playing-coach' | 'financial-conflict';
-  /** The dials the club holds as founded (→ECON-16); no command changes them in a career. */
+  /** The dials the club holds as taken over (→ECON-16); no command changes them in a career. */
   policy?: Partial<ClubPolicy>;
   commands: Command[];
   expected?: unknown;
+}
+/** The portable scenario's career: taken over on `year`'s first day, on the pre-feature model. */
+export function fixtureCareer(definition: Pick<FixtureDefinition, 'input' | 'year'>) {
+  return careerWorld(
+    { ...definition.input, ...(definition.year ? { year: definition.year } : {}) },
+    DISABLED_RELEASE,
+  );
 }
 export function runFixture(definition: FixtureDefinition) {
   // Freeze the portable v1 scenarios to their original authority, independently of new-game
   // defaults: the pre-feature match model they were recorded on (the released full model of new
   // careers, T286, is not part of portable v1) and, unless asked, the original settings.
-  const w = createWorld(definition.input, DISABLED_RELEASE);
+  const w = fixtureCareer(definition);
   if (!definition.currentRules) w.settings = staffAuthority(2);
-  if (definition.year) {
-    // A synthetic start epoch establishes identities there, rather than changing retained births.
-    delete w.people;
-    w.year = definition.year;
-    w.currency = currency(definition.input.country, w.year).code;
-    w.priceIndex = priceIndex(definition.input.country, w.year).value;
-    w.manager.since = w.year;
-    w.manager.until = w.year + 3;
-    for (const p of w.players) {
-      p.born = w.year - 24;
-      p.joined = w.year;
-      p.until = w.year + 2;
-    }
-  }
+  const code = clubOf(w).country;
   if (definition.cupQualification)
     w.lastChampions = [
       {
-        country: definition.input.country,
-        club: w.clubs.find((c) => c.country === definition.input.country && c.tier === 0)!.id,
+        country: code,
+        club: w.clubs.find((c) => c.country === code && c.tier === 0)!.id,
         cup: w.playerClub,
       },
     ];

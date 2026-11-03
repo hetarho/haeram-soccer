@@ -12,17 +12,21 @@
  * Money is nominal pounds of the season (the reader compares with each era's real fees).
  *
  *   pnpm exec tsx scripts/calibrate-transfers.ts                 4 ENG careers, 1950–2029
- *   options: --seeds N, --first-seed N, --seasons N, --countries ENG,ESP, --levels normal,
+ *   options: --seeds N, --first-seed N, --seasons N, --countries ENG,ESP, --tiers midsize,
  *            --out careers.json (keep the careers), --in a.json,b.json (report kept careers only)
+ *
+ * A career is a 1950 takeover (`careerWorld`: the lowest professional division's first club, one
+ * year of fixed costs in cash) until T668 rebuilds the reference careers on generated worlds.
  */
-import type { CountryCode, DifficultyLevel, World } from '../packages/contracts/src/types';
+import type { CountryCode, World } from '../packages/contracts/src/types';
+import type { WealthTier } from '../packages/contracts/src/owner';
+import { CAREER_FUNDS, careerFunds, careerWorld } from '../packages/engine/src/career.testkit';
 import { currency, country } from '../packages/catalogs/src/index';
 import {
   advanceRound,
   CASH_WARNING_ROUNDS,
   clubOf,
   closeSeason,
-  createWorld,
   defaultSettings,
   FACILITY_PARTS,
   facilityInvestmentPreview,
@@ -46,7 +50,7 @@ const SEASONS = Number(option('seasons', '80'));
 const SEEDS = Number(option('seeds', '4'));
 const FIRST_SEED = Number(option('first-seed', '0'));
 const COUNTRIES = option('countries', 'ENG').split(',') as CountryCode[];
-const LEVELS = option('levels', 'normal').split(',') as DifficultyLevel[];
+const TIERS = option('tiers', 'midsize').split(',') as WealthTier[];
 /** Keep every top-flight player of every summer in --out, to refit values without replaying. */
 const DUMP = args.includes('--dump-players');
 // Candidate constants for a run: --premium-span 10, --premium 1950:0.6,1980:1.9,2025:4.3
@@ -154,7 +158,8 @@ interface Season {
 interface Career {
   code: CountryCode;
   seed: string;
-  level: DifficultyLevel;
+  /** The owner's wealth tier at the takeover; careers kept before the takeover had none. */
+  tier?: WealthTier;
   seasons: Season[];
   facts: Fact[];
   bankrupt?: number;
@@ -210,10 +215,12 @@ function topFlightMarket(w: World): Pick<Season, 'market' | 'players'> {
   };
 }
 
-function playCareer(code: CountryCode, seed: string, level: DifficultyLevel): Career {
-  const w = createWorld({ country: code, name: 'Calibration Town', color: '#335577', seed, level });
+function playCareer(code: CountryCode, seed: string, wealth: WealthTier): Career {
+  const w = careerWorld({ country: code, seed, tier: wealth });
+  // One year of fixed costs, as the old founding's 보통 level gave.
+  w.cash = (careerFunds(w) / BigInt(CAREER_FUNDS)).toString();
   delegateAll(w);
-  const career: Career = { code, seed, level, seasons: [], facts: [] };
+  const career: Career = { code, seed, tier: wealth, seasons: [], facts: [] };
   let factsSeen = 0;
   for (let n = 0; n < SEASONS && !w.bankrupt; n++) {
     const year = w.year,
@@ -397,12 +404,12 @@ if (input) {
 } else {
   for (const code of COUNTRIES) {
     country(code);
-    for (const level of LEVELS)
+    for (const wealth of TIERS)
       for (let s = FIRST_SEED; s < FIRST_SEED + SEEDS; s++) {
         const started = Date.now();
-        careers.push(playCareer(code, `transfers-${code}-${s}`, level));
+        careers.push(playCareer(code, `transfers-${code}-${s}`, wealth));
         console.error(
-          `${code} ${level} seed ${s}: ${careers.at(-1)!.seasons.length} seasons in ${Math.round((Date.now() - started) / 1000)} s`,
+          `${code} ${wealth} seed ${s}: ${careers.at(-1)!.seasons.length} seasons in ${Math.round((Date.now() - started) / 1000)} s`,
         );
       }
   }

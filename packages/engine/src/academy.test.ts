@@ -28,10 +28,10 @@ import {
   settleTraining,
   simulateSeason,
   youthAdvice,
-  FOUNDING_YEAR,
 } from './index';
 import { holdRows, staffAuthority } from './testing';
 import { lastRound, world } from './academy.testkit';
+import { CAREER_YEAR } from './career.testkit';
 
 /** Runs the intake as the daily club business would on 15 March. */
 function intake(w: World) {
@@ -136,7 +136,7 @@ describe('youth academy intake', () => {
     const intakes = w.events.filter(
       (event) => event.kind === 'youth-intake' && event.title.includes('입단'),
     );
-    expect(intakes.map((event) => event.year)).toEqual([FOUNDING_YEAR, FOUNDING_YEAR + 1]);
+    expect(intakes.map((event) => event.year)).toEqual([CAREER_YEAR, CAREER_YEAR + 1]);
     expect(
       academyPlayers(w).every((player) => player.id.startsWith(`${w.playerClub}:academy:`)),
     ).toBe(true);

@@ -23,13 +23,7 @@ import { validateWorld } from './schema';
 import type { World } from './types';
 import { SaveCompatibilityError } from './versions';
 
-const founding = {
-  country: 'ENG' as const,
-  name: 'Identity Rovers',
-  color: '#224466',
-  seed: 'identity-contract',
-  level: 'easy' as const,
-};
+const founding = { country: 'ENG' as const, seed: 'identity-contract' };
 const world = () => careerWorld({ seed: founding.seed });
 /** A world saved before club identities: new worlds now install them all (→KIT-11). */
 const compatible = () => {

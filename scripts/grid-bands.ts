@@ -37,7 +37,6 @@ import {
 import type {
   Club,
   Fixture,
-  Founding,
   MatchRecord,
   Player,
   Tactic,
@@ -45,7 +44,6 @@ import type {
 } from '../packages/contracts/src/types';
 import {
   cohesionMultiplier,
-  createWorld,
   fatigueLoad,
   formationOf,
   integer,
@@ -55,6 +53,7 @@ import {
   rating,
   slotOvr,
 } from '../packages/engine/src/index';
+import { careerWorld, type CareerInput } from '../packages/engine/src/career.testkit';
 import { FORMATIONS } from '../packages/engine/src/player';
 import { npcMatchContext } from '../packages/engine/src/match';
 import { validateFullMatchRecord } from '../packages/engine/src/match-model';
@@ -111,13 +110,7 @@ const COUNTRIES = ['ENG', 'ESP', 'GER', 'ITA'];
 function pairs(): { w: World; home: Club; away: Club }[] {
   const out: { w: World; home: Club; away: Club }[] = [];
   for (let k = 1; k <= 4; k++) {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Grid Bands',
-      color: '#2a5d8f',
-      seed: `grid-bands-${k}`,
-      level: 'normal',
-    });
+    const w = careerWorld({ country: 'ENG', seed: `grid-bands-${k}` });
     for (const country of COUNTRIES) {
       const clubs = w.clubs
         .filter((c) => c.country === country && c.tier === 0 && c.id !== w.playerClub)
@@ -324,13 +317,7 @@ let calibrationWorld: World | undefined;
 const pools = new Map<number, Club[]>();
 /** A pool club of a strength in a synthetic world, as scripts/calibrate.ts draws them. */
 function poolClub(strength: number, u: number): { w: World; club: Club } {
-  calibrationWorld ??= createWorld({
-    country: 'ENG',
-    name: 'Calibration',
-    color: '#335577',
-    seed: 'calibration',
-    level: 'normal',
-  });
+  calibrationWorld ??= careerWorld({ country: 'ENG', seed: 'calibration', tier: 'midsize' });
   const w = calibrationWorld;
   const s = Math.max(15, Math.min(99, Math.round(strength)));
   let pool = pools.get(s);
@@ -362,12 +349,12 @@ export function coreFixturePairs() {
   if (corePairs) return corePairs;
   const p = CORPUS_CONFIG.conditions[0]!.params as {
     worldSeeds: string[];
-    world: Omit<Founding, 'seed'>;
+    world: Omit<CareerInput, 'seed'>;
     countries: string[];
     maxRatingGap: number;
   };
   corePairs = p.worldSeeds.flatMap((seed) => {
-    const w = createWorld({ ...p.world, seed });
+    const w = careerWorld({ ...p.world, seed });
     return p.countries.flatMap((country) => {
       const clubs = w.clubs
         .filter((c) => c.country === country && c.tier === 0 && c.id !== w.playerClub)
