@@ -15,7 +15,10 @@ import {
   TAKEOVER_DEBT,
 } from './owner-config';
 
-/** The SSOT's numbers (OWNER r2, ECON r43, CLUB r51); a retune changes the SSOT first. */
+/**
+ * The SSOT's numbers (OWNER r2, ECON r43, CLUB r51) and T686's measured retune of the tier
+ * multiples and the living rate, recorded for its update-ssot; any other retune changes the SSOT first.
+ */
 describe('owner settings (→OWNER, ECON-36–38, CLUB-1)', () => {
   it('sizes six tiers, richest first, as multiples of their anchor (→OWNER-3)', () => {
     expect(Object.keys(OWNER_TIERS)).toEqual([...WEALTH_TIER_IDS]);
@@ -29,11 +32,11 @@ describe('owner settings (→OWNER, ECON-36–38, CLUB-1)', () => {
     ]);
     expect(Object.values(OWNER_TIERS).map((tier) => [tier.label, tier.multiple])).toEqual([
       ['석유 재벌', 10],
-      ['재벌 총수', 1.3],
-      ['산업 자본가', 1.3],
-      ['중견 사업가', 1.3],
-      ['지역 유지', 1.3],
-      ['자수성가 축구팬', 1.3],
+      ['재벌 총수', 1.6],
+      ['산업 자본가', 1.6],
+      ['중견 사업가', 1.6],
+      ['지역 유지', 1.6],
+      ['자수성가 축구팬', 1.6],
     ]);
   });
 
@@ -63,7 +66,7 @@ describe('owner settings (→OWNER, ECON-36–38, CLUB-1)', () => {
       chance: 0.5,
       stake: { min: 0, max: 100, start: 0 },
     });
-    expect(OWNER_LIVING.rate).toBe(0.0025);
+    expect(OWNER_LIVING.rate).toBe(0.002);
     expect(OWNER_DIVIDEND).toEqual({ shares: [0, 25, 50, 75, 100], start: 0 });
   });
 

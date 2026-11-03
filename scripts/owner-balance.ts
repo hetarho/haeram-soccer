@@ -1,29 +1,42 @@
 /**
  * Owner balance harness (LEAGUE-13, ECON-29, OWNER-3/5/8/12, ECON-37/38; spec/ssot/LEAGUE.md).
  *
- * Plays LEAGUE-13's reference careers: a world lived from 1930 to its 1950/51 season by the day
- * loop (`generateHistory`, →WORLD-13), then a 1950 takeover in each country of the club at the
- * middle price of the tier's reach there (→OWNER-3; the dearer of the two middle clubs for an even
- * count, among those the tier's fortune pays for), 기본 방향, every business responsibility
- * delegated, and the season played round by round to its close until 2009/10 or the career's end
- * (→OWNER-16). The reference moves no owner money: stake 0%, no injection, dividend 0%. Careers
- * with five traits run beside, and `--policies` adds owners who inject and take dividends at fixed
- * simple policies. It prints LEAGUE-13's columns per tier, ECON-29's rows on the 중견 사업가 careers,
- * how the careers end (club bankruptcy, owner bankruptcy, 퇴진), and where the start's fortunes,
- * living costs, 팬 민심 and club prices land. Money is compared in 1901 price units of each season.
+ * Plays LEAGUE-13's reference careers (r13): a world lived from 1930 to its 1950/51 season by the
+ * day loop (`generateHistory`, →WORLD-13), then a 1950 takeover in each country of the median-priced
+ * club of the tier's price band there (→OWNER-3; the dearer of the two middle clubs for an even
+ * count; the nearest band holding a club of that country when its own holds none), 기본 방향, every
+ * business responsibility delegated, and the season played round by round to its close until
+ * 2009/10 or the career's end (→OWNER-16). The reference moves no owner money: stake 0%, no
+ * injection, dividend 0%; its bankrupt column counts the club's bankruptcy (→ECON-24), and the
+ * owner's fortune is measured beside it on a 50% dividend run (`--policies dividend`). Careers with
+ * five traits run beside, and `--policies` adds owners who inject and take dividends at fixed simple
+ * policies. It prints LEAGUE-13's columns per tier, ECON-29's rows on the 중견 사업가 careers,
+ * ECON-36's check of the first owned season against the books, how the careers end (club
+ * bankruptcy, owner bankruptcy, 퇴진), and where the start's fortunes, living costs, 팬 민심 and club
+ * prices land. Money is compared in 1901 price units of each season.
  *
  *   pnpm exec tsx scripts/owner-balance.ts            six tiers × ENG ESP FRA GER × 5 seeds, no traits
  *   options: --tiers oil,midsize   --countries ENG,FRA   --seeds N   --first-seed N
  *            --until YEAR (the last season played; 2009)   --traits none,five
- *            --policies none,dividend,patron,mixed   --build (ECON-29's facility rule)
- *            --out careers.json (keep the careers)   --in a.json,b.json (report kept careers only)
+ *            --policies none,dividend,dividend25,patron,mixed   --build (ECON-29's facility rule)
+ *            --purse-apart   --world-dir DIR (keep each seed's 1950 world)   --prepare (only that)
+ *            --out careers.json (keep the careers)   --in a.json,dir (report kept careers only;
+ *            --measured-rate R and --note TEXT say what they were played on)   --reach   --moods
  *            --log (one line a season on stderr)
  *
- * Policies: none, the reference; dividend, the 배당 dial at 50%; patron, a quarter of the fortune
- * above zero put in on each season's first day (within FFP); mixed, a tenth put in and the dial at
- * 50%. The business stake stays 0% in every policy.
+ * Policies: none, the reference; dividend, the 배당 dial at 50% (dividend25 at 25%); patron, a
+ * quarter of the fortune above zero put in on each season's first day (within FFP); mixed, a tenth
+ * put in and the dial at 50%. The business stake stays 0% in every policy.
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import type { CountryCode, World } from '../packages/contracts/src/types';
 import type { DividendShare, OwnerTrait, WealthTier } from '../packages/contracts/src/owner';
 import { careerEnded } from '../packages/contracts/src/owner';
@@ -38,6 +51,8 @@ import {
   tierFortune,
 } from '../packages/engine/src/club-value';
 import { pays } from '../packages/engine/src/listing';
+import { bookIncomeLines } from '../packages/engine/src/books';
+import { readGateDetail } from '../packages/engine/src/settlement';
 import { ffpRoom, livingCost, ownerCommand } from '../packages/engine/src/owner';
 import { defaultSettings, RESPONSIBILITY_KEYS } from '../packages/engine/src/responsibilities';
 import {
@@ -89,8 +104,10 @@ const MOODS = args.includes('--moods');
  */
 const PURSE_APART = args.includes('--purse-apart');
 /** The living-cost rates the owner's bankruptcy season is read at (→OWNER-8), the SSOT's first. */
-const LIVING_RATES = [OWNER_LIVING.rate, 0.005, 0.0025, 0.001, 0.0005];
+const LIVING_RATES = [...new Set([OWNER_LIVING.rate, 0.0025, 0.0015, 0.001, 0.0005])];
 const SSOT_LIVING = OWNER_LIVING.rate;
+/** --measured-rate: the living-cost rate kept careers were played at (`--in`), if not the SSOT's. */
+const MEASURED_LIVING = Number(option('measured-rate', String(SSOT_LIVING)));
 /** Sets the living-cost rate the engine reads (a measurement override, never a game setting). */
 const setLiving = (rate: number) => ((OWNER_LIVING as { rate: number }).rate = rate);
 const TAKEOVER_YEAR = 1950;
@@ -104,10 +121,11 @@ const CAREER = 50;
  */
 const FIVE: OwnerTrait[] = ['talisman', 'negotiator', 'networker', 'marketer', 'politician'];
 
-type Policy = 'none' | 'dividend' | 'patron' | 'mixed';
+type Policy = 'none' | 'dividend' | 'dividend25' | 'patron' | 'mixed';
 const POLICY: Record<Policy, { inject: number; dividend: DividendShare }> = {
   none: { inject: 0, dividend: 0 },
   dividend: { inject: 0, dividend: 50 },
+  dividend25: { inject: 0, dividend: 25 },
   patron: { inject: 0.25, dividend: 0 },
   mixed: { inject: 0.1, dividend: 50 },
 };
@@ -182,6 +200,11 @@ interface Season {
    */
   lifeShare?: number;
 }
+interface BookLines {
+  distribution: number;
+  gate: number;
+  commercial: number;
+}
 interface Career {
   code: CountryCode;
   tier: WealthTier;
@@ -202,6 +225,28 @@ interface Career {
     debt: number;
     cash: number;
     distribution: number;
+    /** The tier whose band the club came from (its own unless the country holds none there). */
+    band?: WealthTier;
+    /** The band's median was dearer than the fortune: the dearest club below it was taken. */
+    substitute?: boolean;
+    /** The books' last closed season: wages and operating expenses, units of that season. */
+    lastWages?: number;
+    lastCosts?: number;
+    /** The book's income lines for the takeover season before it (units; merit at the opening order). */
+    bookBefore?: BookLines;
+  };
+  /**
+   * ECON-36's check, the first owned season (units): the owned club's income lines and the lines a
+   * book would settle for the club as it stands at that close (→ECON-36).
+   */
+  first?: {
+    league: number;
+    cups: number;
+    leagueGate: number;
+    cupGate: number;
+    commercial: number;
+    other: number;
+    book: BookLines;
   };
   seasons: Season[];
   /** How the career ended before 2009/10, and in which season. */
@@ -214,44 +259,65 @@ const units = (code: string, year: number, amount: string | bigint) =>
   Number(amount) / unitOf(code, year);
 
 const worlds = new Map<string, string>();
+/** --world-dir DIR: keep each seed's 1950 world there as JSON, so parallel jobs live it once. */
+const WORLD_DIR = option('world-dir', '');
 /** The seed's world on 1 August 1950, lived from 1930, as JSON so each career starts from a copy. */
 function worldAt(seed: string): World {
   let json = worlds.get(seed);
+  const file = WORLD_DIR && `${WORLD_DIR}/${seed}-${TAKEOVER_YEAR}.json`;
+  if (!json && file && existsSync(file)) json = readFileSync(file, 'utf8');
   if (!json) {
     const t = performance.now();
     json = JSON.stringify(generateHistory(seed, TAKEOVER_YEAR));
-    worlds.set(seed, json);
     console.error(
       `${seed}: world to ${TAKEOVER_YEAR} in ${((performance.now() - t) / 1000).toFixed(0)} s`,
     );
+    if (file) {
+      mkdirSync(WORLD_DIR, { recursive: true });
+      writeFileSync(`${file}.part`, json);
+      renameSync(`${file}.part`, file);
+    }
   }
+  worlds.set(seed, json);
   return JSON.parse(json) as World;
 }
 
-/** The club at the middle price of the tier's reach in this country that its fortune pays for. */
+const TIER_ORDER = Object.keys(OWNER_TIERS) as WealthTier[];
+/**
+ * LEAGUE-13's reference club: the median-priced club of the tier's price band in this country (the
+ * dearer of the two middle ones); when the band holds no club of the country, the nearest band that
+ * does, the cheaper of two equally near. A median the fortune cannot pay gives way to the dearest
+ * club of the band it pays for (`substitute`).
+ */
 function pickClub(w: World, tier: WealthTier, code: CountryCode) {
   const priced = pricedClubs(w),
-    fortune = tierFortune(w, tier, priced);
-  const reach = reachOf(w, tier, priced).filter((entry) => entry.club.country === code);
-  const affordable = reach
-    .filter((entry) => pays(w, entry, fortune))
-    .sort((a, b) =>
-      BigInt(a.pricePounds) < BigInt(b.pricePounds)
-        ? -1
-        : BigInt(a.pricePounds) > BigInt(b.pricePounds)
-          ? 1
-          : a.club.id < b.club.id
-            ? -1
-            : 1,
-    );
-  // A country may hold no club in a tier's reach (FRA has no third tier above its lowest).
-  if (!affordable.length) return undefined;
-  return {
-    entry: affordable[affordable.length >> 1]!,
-    reach: reach.length,
-    anchor: tierAnchor(w, tier, priced),
-    fortune,
-  };
+    fortune = tierFortune(w, tier, priced),
+    own = TIER_ORDER.indexOf(tier);
+  const nearest = [...TIER_ORDER.keys()].sort(
+    (a, b) => Math.abs(a - own) - Math.abs(b - own) || b - a,
+  );
+  for (const index of nearest) {
+    const band = TIER_ORDER[index]!;
+    const clubs = reachOf(w, band, priced)
+      .filter((entry) => entry.club.country === code)
+      .reverse();
+    if (!clubs.length) continue;
+    const median = clubs[clubs.length >> 1]!;
+    const entry = pays(w, median, fortune)
+      ? median
+      : clubs.filter((e) => pays(w, e, fortune) && clubs.indexOf(e) < clubs.indexOf(median)).at(-1);
+    if (!entry) continue;
+    return {
+      entry,
+      band,
+      substitute: entry !== median,
+      reach: clubs.length,
+      places: clubs.map((e) => e.club.id),
+      anchor: tierAnchor(w, tier, priced),
+      fortune,
+    };
+  }
+  return undefined;
 }
 
 function delegateAll(w: World) {
@@ -283,9 +349,13 @@ function playCareer(
     books = club.books,
     last = books?.seasons.find((s) => s.year < w.year);
   const division = club.tier,
-    places = reachOf(w, tier)
-      .filter((e) => e.club.country === code)
-      .map((e) => e.club.id);
+    places = pick.places;
+  const linesIn = (lines: ReturnType<typeof bookIncomeLines>, year: number): BookLines => ({
+    distribution: units(code, year, lines.distribution),
+    gate: units(code, year, lines.gate),
+    commercial: units(code, year, lines.commercial),
+  });
+  const bookBefore = linesIn(bookIncomeLines(w, club), TAKEOVER_YEAR);
   takeOver(w, club.id, { tier, traits: traits === 'five' ? FIVE : [] });
   delegateAll(w);
   const apart = PURSE_APART && policy === 'none';
@@ -312,6 +382,11 @@ function playCareer(
       debt: units(code, TAKEOVER_YEAR, takeover.debt),
       cash: units(code, TAKEOVER_YEAR, w.cash),
       distribution: units(code, TAKEOVER_YEAR, divisionDistribution(code, TAKEOVER_YEAR, division)),
+      band: pick.band,
+      substitute: pick.substitute,
+      lastWages: last ? units(code, last.year, last.wages) : NaN,
+      lastCosts: last ? units(code, last.year, last.costs) : NaN,
+      bookBefore,
     },
     seasons: [],
   };
@@ -354,6 +429,19 @@ function playCareer(
       setLiving(0);
       lifeShare = living / Number(w.owner!.fortune);
     }
+    const firstSeason = !career.seasons.length;
+    const leagueMatches = firstSeason
+      ? new Set(w.fixtures.filter((f) => f.kind === 'league').map((f) => f.id))
+      : undefined;
+    const bookAtClose = firstSeason
+      ? linesIn(
+          bookIncomeLines(
+            w,
+            w.clubs.find((c) => c.id === club.id)!,
+          ),
+          year,
+        )
+      : undefined;
     closeSeason(w);
     w.revision++;
     const archive = w.history.at(-1)!,
@@ -374,6 +462,23 @@ function playCareer(
       if (isIncomeKind(event.kind)) sources[sourceOf(event.kind)] += amount;
       if (event.kind === 'facility') facilitySpend += amount;
       if (event.kind === 'owner-dividend') dividend += amount;
+    }
+    if (leagueMatches && bookAtClose) {
+      const lines = { league: 0, cups: 0, leagueGate: 0, cupGate: 0, commercial: 0, other: 0 };
+      for (const event of w.events.slice(firstEvent)) {
+        if (event.year !== year || !event.amount || !isIncomeKind(event.kind)) continue;
+        const amount = Number(event.amount) / unit,
+          source = sourceOf(event.kind);
+        if (event.kind === 'gate') {
+          const match = readGateDetail(event.detail)?.matchId;
+          lines[match && leagueMatches.has(match) ? 'leagueGate' : 'cupGate'] += amount;
+        } else if (['league-share', 'league-merit', 'parachute'].includes(event.kind))
+          lines.league += amount;
+        else if (source === 'competition') lines.cups += amount;
+        else if (source === 'commercial') lines.commercial += amount;
+        else if (source === 'other') lines.other += amount;
+      }
+      career.first = { ...lines, book: bookAtClose };
     }
     const season: Season = {
       year,
@@ -500,7 +605,7 @@ function livingReport(careers: Career[]) {
   if (!apart.length) return;
   console.log(
     '\n### Owner bankruptcy by living-cost rate a settlement (reference careers, read from the fortune left; ' +
-      `${SSOT_LIVING * 100}% is OWNER-8's)\n`,
+      `${SSOT_LIVING * 100}% is OWNER-8's; played at ${MEASURED_LIVING * 100}%)\n`,
   );
   console.log(
     `| tier | traits | careers | ${LIVING_RATES.map((r) => `${r * 100}%`).join(' | ')} |`,
@@ -512,7 +617,7 @@ function livingReport(careers: Career[]) {
       const seasons = group.flatMap((c) => {
         let total = 0;
         for (const [i, s] of c.seasons.entries()) {
-          total += ((s.lifeShare ?? 0) * rate) / SSOT_LIVING;
+          total += ((s.lifeShare ?? 0) * rate) / MEASURED_LIVING;
           if (total > 1) return [i + 1];
         }
         return [];
@@ -549,7 +654,8 @@ function startReport(careers: Career[]) {
     const divisions = new Map<number, number>();
     for (const c of group)
       divisions.set(c.start.division + 1, (divisions.get(c.start.division + 1) ?? 0) + 1);
-    const living = (c: Career) => c.start.fortune * SSOT_LIVING * (OWNER_BUSINESS.dates.length + 1);
+    const living = (c: Career) =>
+      c.start.fortune * MEASURED_LIVING * (OWNER_BUSINESS.dates.length + 1);
     console.log(
       `| ${tier} | ${group.length} | ${[...divisions]
         .sort((a, b) => a[0] - b[0])
@@ -653,6 +759,44 @@ function econReport(careers: Career[]) {
   }
 }
 
+/**
+ * ECON-36's check: the owned club's first-season income (turnover without sales or owner money)
+ * against its books' last season income, within ±25%; beside it each line against the line a book
+ * settles for the club as it stands at that close, and the book's lines at the takeover against
+ * those at the close (what the takeover itself changed), and the first season's wages against the
+ * books' last.
+ */
+function econ36Report(careers: Career[]) {
+  const rows = careers.filter((c) => c.first && Number.isFinite(c.start.lastIncome));
+  if (!rows.length) return;
+  const r = (a: number, b: number) => (b > 0 ? num(a / b, 2) : '-');
+  console.log(
+    '\n### ECON-36 — first owned season against the books (income in units of each season; ratios owned / book)\n',
+  );
+  console.log(
+    "| tier | country | seed | band | division | books' last income | first-season income | ratio | ±25% | league distribution | league gate | commercial | cups (share of income) | book at the takeover → close: gate, commercial | wages / books' last wages |",
+  );
+  console.log('|---|---|---|---|---:|---:|---:|---:|---|---:|---:|---:|---:|---|---:|');
+  const ratios = new Map<WealthTier, number[]>();
+  for (const c of rows) {
+    const f = c.first!,
+      s = c.seasons[0]!,
+      income = turnover(s),
+      ratio = income / c.start.lastIncome,
+      before = c.start.bookBefore;
+    ratios.set(c.tier, [...(ratios.get(c.tier) ?? []), ratio]);
+    console.log(
+      `| ${c.tier} | ${c.code} | ${c.seed.slice(-1)} | ${c.start.band ?? c.tier}${c.start.substitute ? '*' : ''} | ${c.start.division + 1} | ${num(c.start.lastIncome)} | ${num(income)} | ${num(ratio, 2)} | ${Math.abs(ratio - 1) <= 0.25 ? 'ok' : 'OUT'} | ${r(f.league, f.book.distribution)} | ${r(f.leagueGate, f.book.gate)} | ${r(f.commercial, f.book.commercial)} | ${pct((f.cups + f.cupGate) / income)} | ${before ? `${r(f.book.gate, before.gate)}, ${r(f.book.commercial, before.commercial)}` : '-'} | ${r(s.wages, c.start.lastWages ?? NaN)} |`,
+    );
+  }
+  console.log('\n| tier | careers | ratio median (min–max) | within ±25% |');
+  console.log('|---|---:|---|---:|');
+  for (const [tier, list] of ratios)
+    console.log(
+      `| ${tier} | ${list.length} | ${num(median(list), 2)} (${num(Math.min(...list), 2)}–${num(Math.max(...list), 2)}) | ${list.filter((x) => Math.abs(x - 1) <= 0.25).length} |`,
+    );
+}
+
 function careerList(careers: Career[]) {
   console.log('\n### Careers\n');
   console.log(
@@ -708,10 +852,21 @@ if (args.includes('--reach')) {
   for (let i = FIRST_SEED; i < FIRST_SEED + SEEDS; i++) reachReport(`owner-balance-${i}`);
   process.exit(0);
 }
+/** --prepare: only live the seeds' worlds into --world-dir. */
+if (args.includes('--prepare')) {
+  for (let i = FIRST_SEED; i < FIRST_SEED + SEEDS; i++) worldAt(`owner-balance-${i}`);
+  process.exit(0);
+}
 const saved = option('in', '');
 if (saved)
-  for (const file of saved.split(','))
-    careers.push(...(JSON.parse(readFileSync(file, 'utf8')) as Career[]));
+  for (const path of saved.split(','))
+    for (const file of statSync(path).isDirectory()
+      ? readdirSync(path)
+          .filter((name) => name.endsWith('.json'))
+          .sort()
+          .map((name) => `${path}/${name}`)
+      : [path])
+      careers.push(...(JSON.parse(readFileSync(file, 'utf8')) as Career[]));
 else
   for (let i = FIRST_SEED; i < FIRST_SEED + SEEDS; i++)
     for (const tier of TIERS)
@@ -740,10 +895,13 @@ console.log(
       '/',
     )}, living ${SSOT_LIVING * 100}% a settlement${PURSE_APART ? ', reference purse apart' : ''})`,
 );
+/** --note: what the kept careers were played on, when it is not the tree's settings (`--in`). */
+if (option('note', '')) console.log(`\n${option('note', '')}`);
 balanceReport(careers);
 livingReport(careers);
 startReport(careers);
 moodReport(careers);
 econReport(careers);
+econ36Report(careers);
 careerList(careers);
 console.log(`\n_${((performance.now() - started) / 1000).toFixed(0)} s_`);
