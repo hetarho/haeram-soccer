@@ -673,8 +673,9 @@
 | T682 | Profile and reduce repeated day-step Worker work | ARCH WEB SAVE | T681 | doing@261103.hr05 |
 | T683 | engine integration tests on takeover careers | ARCH OWNER WORLD HIST SAVE | T668 | todo |
 | T684 | web and fixture integration tests on takeover careers | ARCH KIT SAVE HIST LEAGUE | T683 | todo |
-| T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T684 | todo |
+| T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | todo |
 | T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
+| T687 | browser journeys on takeover careers | ARCH WEB OWNER KIT | T684 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -702,8 +703,8 @@
 - after the ot03 takeover lands on main: implement-task T678 (history view while the world is generated, WEB-115), then T679 (explore 1h: generation with the view against ARCH-28)
 - Measure T680 (hr04).
 - planning from T668's inbox suggests: update-ssot OWNER-8 living costs, OWNER-12 dividend and star-sale drivers, ECON-36 books, OWNER-3 reach
-- implement-task T683, then T684 (integration fixes on wip/ot03), the e2e fix task once the Chromium read of dfa39857 is in, the batch gate and the push to main; then T685, T686 (balance), T678, T679
 - hr05: implement-task T681 then T682 for the owner-approved automatic-play bottlenecks; preserve ot03 ownership.
+- implement-task T683, then T684 (integration fixes on wip/ot03) and T687 (20 Chromium journeys), the batch gate and the push to main; then T685, T686 (balance), T678, T679
 
 ## log
 - 261103 merge main into the takeover (hr03 news journal, career reads, IndexedDB-only saves; hr04 T680 plan): career reads and the first-season goal count only the owner's seasons (→HIST-21); a founded 0.7.0 career stays protected in every tab, never cleared (→SAVE-26/29); ot03

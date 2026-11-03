@@ -11,6 +11,8 @@ const baseURL = `http://127.0.0.1:${port}`;
 const CI = !!process.env.CI;
 export default defineConfig({
   testDir: 'tests/e2e',
+  // Sessions on a shared host take turns: one browser run at a time per clone.
+  globalSetup: './tests/e2e/global-lock.ts',
   timeout: CI ? 150000 : 30000,
   expect: { timeout: CI ? 30000 : 5000 },
   workers: 3,
