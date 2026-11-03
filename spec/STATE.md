@@ -673,7 +673,7 @@
 | T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
 | T681 | Reconcile client views once before store publication | ARCH WEB SAVE | T680 | doing@261103.hr05 |
 | T682 | Profile and reduce repeated day-step Worker work | ARCH WEB SAVE | T681 | doing@261103.hr05 |
-| T683 | engine integration tests on takeover careers | ARCH OWNER WORLD HIST SAVE | T668 | todo |
+| T683 | engine integration tests on takeover careers | ARCH OWNER WORLD HIST SAVE | T668 | doing@261103.ot03 |
 | T684 | web and fixture integration tests on takeover careers | ARCH KIT SAVE HIST LEAGUE | T683 | todo |
 | T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | todo |
 | T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
