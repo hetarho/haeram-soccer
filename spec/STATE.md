@@ -16,7 +16,6 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T03:19Z | T677 |
-| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T04:09Z | T668 |
 
 ## inbox
 - 261103 decided LEAGUE-13 OWNER-3 T668: which club a reference career takes over → the median-priced club of the tier's reach in that country that its fortune pays for, the dearer of the two middle ones (alt: the club nearest the anchor | a seeded draw from the reach). ot03
