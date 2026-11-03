@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r62 | Define the browser-demo rules for browser persistence and protocol.
+> r63 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -99,7 +99,13 @@
 - SAVE-26 [o] The takeover start (→OWNER, →WORLD-13) begins new careers at an incompatible rules 5.0.0 boundary; earlier-rule careers are never converted, their slots follow →WEB-62's release reset and their export files stay. ← a career founded in an amateur league has no owner fortune, traits, books or pre-takeover past to convert into
 - SAVE-27 [o] A career saves the owner's tier, traits, fortune, stake, dividend share, 팬 민심 and both crisis counts, the FFP window's injections, the takeover's facts and loan, and every club's books (→ECON-36) within the storage budget (→SAVE-4); the seasons played before the takeover are kept as season archives (→HIST-2), never as match detail.
 
+- SAVE-28 [o] Persist the fact-backed news journal and incremental read summaries (→!HIST-11/22) as optional, versioned save data.
+  - supported worlds without them remain loadable; writer activation reconstructs missing summaries once from retained facts, while read-only inspection never upgrades disk state.
+  - saved cursors and summary fields are bounded and validated; unsupported summary formats fail explicitly without replacing a committed checkpoint.
+  - export/import and checkpoint replay preserve the journal, record totals and stable IDs; existing generation ordering, recovery, size limits and original-fact retention remain →!SAVE-2/3/4/5.
+
 ## chg
+- r63 261103 SAVE-28+ optional versioned news journal and incremental summaries, one-time supported-save reconstruction and existing checkpoint safeguards
 - r62 261103 SAVE-26+ takeover rules 5.0.0 start new careers, earlier careers not converted; SAVE-27+ saved owner state, crisis counts, FFP window, takeover loan and every club's books; pre-takeover seasons as archives only
 - r61 261102 SAVE-10✎ device strategy-library compatibility line→removed; SAVE-15- device strategy library removed; SAVE-17✎ unapplied policy drafts stay session UI work→removed (no policy drafts); SAVE-25+ a career saved before the owner's interventions were removed opens with their state dropped (training orders and strain, care effects and win bonus, tactic requests and history, owner-set lineup), the values they set kept, the device strategy library removed
 - r60 261102 SAVE-10✎ catalog writer pin target 2026-demo-4→2026-demo-5; +a 2026-demo-4 world of any country moves too (only name pools changed, →WORLD-12)
