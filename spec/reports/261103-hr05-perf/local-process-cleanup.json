@@ -1,0 +1,16 @@
+{
+  "recordedAt": "2026-11-03T09:01:04.180Z",
+  "request": "Stop owned E2E-like server work, then end the local process and leave CI running remotely.",
+  "stoppedPreviewGroup": 3216375,
+  "stoppedPreviewPids": [
+    3216375,
+    3216376,
+    3216414,
+    3216415
+  ],
+  "verifiedRemainingOwnedPreviewProcesses": 0,
+  "ownedE2eBenchmarkBrowserRunners": 0,
+  "localCiWatcherStopped": true,
+  "remoteGitHubCiLeftRunning": true,
+  "notes": "Other-session compute and pre-existing development services were preserved. No more local heavy checks were started after the stop request."
+}

@@ -82,11 +82,14 @@
     "ab.json": "18807f3cb69e95c907f7ac915a66c981d1191a666852f31724ac3caa3ce49857",
     "aa.json": "13cba4272bf58772da7f5d73ffe113a2a9416d794e19d6f530a1dbce5e82a4a7",
     "view-ab.mjs": "cc7a28db223536d6ad983fbdafbfdf3f44c10bbb5cbf76a93f6145a2931544a1",
-    "view-check.mjs": "0d5a173e8ea072cd7fe6ae5fd524f5ca5a10bdc8b8a675b44e2f029d4f48916c"
+    "view-check.mjs": "0d5a173e8ea072cd7fe6ae5fd524f5ca5a10bdc8b8a675b44e2f029d4f48916c",
+    "ci-handoff.json": "63253b2882eb46637e8ec552ba793874db393ba6f1b060ef7443be3101436fec",
+    "local-process-cleanup.json": "595ca39182f49e8a60af73b5e4655f20fd28da05164db163e1f08918e30b6ffb"
   },
   "omitted": [
     "Original export, prepared checkpoint payloads, saved checkpoints and private fixture.v8 are intentionally excluded.",
     "Initial 365-day fresh browser pilot was interrupted to guarantee automatic-save coverage with 660 fresh days; excluded from the primary matrix.",
     "Initial unbatched store CPU results underflowed the timer; retained separately and excluded from CPU interpretation."
-  ]
+  ],
+  "handoffRecordedAt": "2026-11-03T09:01:04.180Z"
 }
