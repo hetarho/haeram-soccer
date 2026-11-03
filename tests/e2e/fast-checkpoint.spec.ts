@@ -2,7 +2,6 @@ import { expect, test } from '@playwright/test';
 import { createWorld } from '../../packages/engine/src/founding';
 import { initializeReadModels } from '../../packages/engine/src/read-models';
 import {
-  CHECKPOINT_LIMIT,
   INDEXED_CHECKPOINT_LIMIT,
   PORTABLE_FILE_LIMIT,
 } from '../../apps/web/src/adapters/repository';
@@ -40,11 +39,11 @@ test('saves and reloads a larger portable gzip checkpoint through IndexedDB', as
     });
   }
   initializeReadModels(w);
-  await importResponsibilityCareer(page, w, INDEXED_CHECKPOINT_LIMIT);
+  await importResponsibilityCareer(page, w);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료', { timeout: 90000 });
   const raw = await committedRaw(page);
   if (raw === null) throw new Error('저장된 체크포인트가 없습니다.');
-  expect(raw.length * 2).toBeGreaterThan(CHECKPOINT_LIMIT);
+  expect(raw.length * 2).toBeGreaterThan(3 * 1024 * 1024);
   expect(raw.length * 2).toBeLessThan(INDEXED_CHECKPOINT_LIMIT);
   expect(Buffer.byteLength(raw)).toBeLessThan(PORTABLE_FILE_LIMIT);
   expect(JSON.parse(raw).codec).toBe('gzip-cjk14');

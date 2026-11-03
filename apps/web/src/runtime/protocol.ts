@@ -1,4 +1,3 @@
-import { INDEXED_CHECKPOINT_LIMIT } from '../adapters/repository';
 import { newsItemSchema } from '../../../../packages/contracts/src/news';
 import type { NewsItem } from '../../../../packages/contracts/src/news';
 import type { WorldMarketPage } from '../../../../packages/contracts/src/types';
@@ -164,7 +163,6 @@ const command = z.discriminatedUnion('type', [
 ]);
 export const requestSchema = z.object({
   protocol: z.literal(1),
-  checkpointBudget: z.number().int().min(1).max(INDEXED_CHECKPOINT_LIMIT).optional(),
   session: z.string().min(1).max(100),
   requestId: z.string().min(1).max(100),
   expectedRevision: z.number().int().min(-1),
@@ -449,7 +447,6 @@ export interface CodecJob {
   /** The save request's ID, which the client waits on for the checkpoint. */
   id: string;
   world: World;
-  checkpointBudget?: number;
   generation: number;
   parentGeneration: number;
 }

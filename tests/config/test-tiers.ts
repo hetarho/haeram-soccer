@@ -12,7 +12,6 @@ export const TEST_GLOBS = [
 export const INTEGRATION_FILES = [
   'apps/web/src/adapters/newsJournal.test.ts',
   'apps/web/src/adapters/careerPacking.test.ts',
-  'apps/web/src/adapters/legacyReset.test.ts',
   'apps/web/src/adapters/managerHistoryPacking.test.ts',
   'apps/web/src/adapters/matchModelPacking.test.ts',
   'apps/web/src/adapters/packing.test.ts',

@@ -1,13 +1,10 @@
-import { INDEXED_CHECKPOINT_LIMIT } from '../adapters/repository';
 import type { NewsItem } from '../../../../packages/contracts/src/news';
 import type { WorldMarketQuery, WorldMarketTarget } from '../../../../packages/contracts/src/types';
 import type { Command, Founding, World } from '../../../../packages/contracts/src/types';
 import type { FullStatsScope } from '../../../../packages/contracts/src/match-model';
 import { SaveRepository, type SaveWorldMetadata } from '../adapters/repository';
 import { IndexedDbCheckpointKey } from '../adapters/previousStore';
-import { ACTIVE_SAVE_KEYS } from '../adapters/games';
 import {
-  CURRENT_ENGINE_VERSION,
   envelopeEngine,
   isEarlierEngine,
   SaveCompatibilityError,
@@ -109,7 +106,6 @@ export class GameClient {
   private saveWanted = false;
   /** Saves automatic progress no later than AUTOSAVE_MS after its first unsaved day. */
   private autosaveTimer?: number;
-  private indexedCheckpoints = false;
   private session = crypto.randomUUID();
   private serial = 0;
   private actionSerial = 0;
@@ -160,7 +156,6 @@ export class GameClient {
   };
   constructor(private notify: (state: ClientState) => void) {
     const indexed = IndexedDbCheckpointKey.available();
-    this.indexedCheckpoints = indexed;
     this.saves = new SaveRepository(
       localStorage,
       async (raw) => {
@@ -357,25 +352,6 @@ export class GameClient {
   }
   private async load() {
     await this.whenSaved();
-    if (!this.state.readonly) {
-      const [{ resetLegacy }, { IndexedDbParkedStore }, { removeStrategyLibrary }] =
-        await Promise.all([
-          import('../adapters/legacyReset'),
-          import('../adapters/games'),
-          import('../adapters/profile'),
-        ]);
-      // The strategy library of earlier versions is no longer read (→SAVE-25).
-      removeStrategyLibrary(localStorage);
-      const cleared = await resetLegacy(
-        localStorage,
-        IndexedDbParkedStore.available() ? new IndexedDbParkedStore() : undefined,
-        () => !this.state.readonly && !this.failed,
-      );
-      if (cleared > 0)
-        notificationStore.add(
-          `이전 규칙 커리어 ${cleared}개를 정리했어요. 새 경기 엔진(게임 버전 ${CURRENT_ENGINE_VERSION})으로 새 커리어를 시작하세요.`,
-        );
-    }
     const result = await this.saves.load();
     if (result) {
       const playback = this.state.playback,
@@ -513,7 +489,6 @@ export class GameClient {
       const head = this.head;
       this.worker.postMessage({
         protocol: 1,
-        ...(this.indexedCheckpoints ? { checkpointBudget: INDEXED_CHECKPOINT_LIMIT } : {}),
         session: this.session,
         requestId,
         expectedRevision: head?.world.revision ?? -1,
@@ -957,7 +932,6 @@ export class GameClient {
       this.autosaveTimer = undefined;
       await this.whenSaved();
       await this.saves.clearActive();
-      for (const key of ACTIVE_SAVE_KEYS) localStorage.removeItem(key);
       await this.saves.clearPrevious().catch(() => {});
       // Nothing left in this page — the slot index on leaving, a save — may bring it back either.
       this.state.view = undefined;

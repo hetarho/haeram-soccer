@@ -18,8 +18,26 @@ import { serve as serveHelper } from './fixtureHelper';
 import { HELPER_CONFIG, HelperPool, type HelperPort } from './helperPool';
 import type { CodecResult, Reply, Request } from './protocol';
 import { earlierRules, GameSlots } from './slots';
-import { ACTIVE_SAVE_KEYS, GameIndexStore, type ParkedStore } from '../adapters/games';
+import { GameIndexStore, type ParkedStore } from '../adapters/games';
 import { NOTIFICATIONS_KEY, type SystemNotification } from './store';
+
+vi.mock('../adapters/previousStore', () => ({
+  IndexedDbCheckpointKey: class {
+    static available() {
+      return true;
+    }
+    constructor(private key: 'active' | 'previous') {}
+    async read() {
+      return storage.getItem('indexed:' + this.key);
+    }
+    async write(raw: string) {
+      storage.setItem('indexed:' + this.key, raw);
+    }
+    async clear() {
+      storage.removeItem('indexed:' + this.key);
+    }
+  },
+}));
 
 class MemoryStorage implements StoragePort {
   data = new Map<string, string>();
@@ -429,7 +447,7 @@ describe('background worker publication', () => {
   it('retains memory progress and the last recoverable checkpoint when background saving fails', async () => {
     const client = await start(),
       manifest = storage.getItem('haeram-soccor:manifest')!;
-    storage.fail = 'haeram-soccor:manifest';
+    storage.fail = 'indexed:active';
     await client.command({ type: 'advance-days', days: 1 }, { background: true });
     await client.whenSaved();
     expect(client.state.error).toContain('저장 실패');
@@ -440,8 +458,7 @@ describe('background worker publication', () => {
     expect(client.state.processing).toBe(false);
     expect(client.state.busy).toBe(false);
     expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
-    const slot = JSON.parse(manifest).slot ? 'b' : 'a',
-      saved = await decode(storage.getItem(`haeram-soccor:slot:${slot}`)!);
+    const saved = await decode(storage.getItem('indexed:active')!);
     expect(saved.world.calendar?.day).toBe(0);
   });
 
@@ -453,7 +470,7 @@ describe('background worker publication', () => {
     if (!last.ok) throw new Error(last.error);
     const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
     expect(manifest.generation).toBe(last.envelope.generation);
-    expect(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'b' : 'a'}`)).toBe(last.raw);
+    expect(storage.getItem('indexed:active')).toBe(last.raw);
     expect(last.revision).toBe(client.state.view!.world.revision);
     expect(client.state.savedRevision).toBe(last.revision);
     expect(
@@ -488,7 +505,7 @@ describe('background worker publication', () => {
       worker = WorkerPort.instances[0],
       codec = CodecPort.instances[0],
       saves = () => worker.requests.filter((request) => request.body.type === 'save');
-    storage.fail = 'haeram-soccor:manifest';
+    storage.fail = 'indexed:active';
     await client.command({ type: 'advance-days', days: 1 }, { background: true });
     await client.whenSaved();
     expect(client.state.savedRevision).toBe(0);
@@ -653,10 +670,10 @@ async function legacyCheckpoint(withHistory = false) {
   delete legacy.hardStreak;
   delete legacy.players[0].developed;
   const raw = await encode(legacy, 7, 6);
-  storage.setItem('haeram-soccor:slot:a', raw);
+  storage.setItem('indexed:active', raw);
   storage.setItem(
     'haeram-soccor:manifest',
-    JSON.stringify({ slot: 0, worldId: legacy.id, generation: 7, parentGeneration: 6 }),
+    JSON.stringify({ worldId: legacy.id, generation: 7, parentGeneration: 6 }),
   );
   return { legacy, raw };
 }
@@ -674,10 +691,10 @@ function withoutIdentities(w: World) {
 async function identitylessCheckpoint() {
   const legacy = withoutIdentities(simulatedWorld(founding, { rounds: 2 }, DISABLED_RELEASE));
   const raw = await encode(legacy, 7, 6);
-  storage.setItem('haeram-soccor:slot:a', raw);
+  storage.setItem('indexed:active', raw);
   storage.setItem(
     'haeram-soccor:manifest',
-    JSON.stringify({ slot: 0, worldId: legacy.id, generation: 7, parentGeneration: 6 }),
+    JSON.stringify({ worldId: legacy.id, generation: 7, parentGeneration: 6 }),
   );
   return { legacy, raw };
 }
@@ -695,14 +712,12 @@ describe('supported-career identity adoption (→SAVE-21)', () => {
     expect(client.state.savedRevision).toBe(legacy.revision + 1);
     const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
     expect(manifest).toMatchObject({ worldId: legacy.id, generation: 8, parentGeneration: 7 });
-    const saved = (
-      await decode(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'b' : 'a'}`)!)
-    ).world;
+    const saved = (await decode(storage.getItem('indexed:active')!)).world;
     expect(saved.revision).toBe(legacy.revision + 1);
     expect(saved.clubs.every((club) => club.identity)).toBe(true);
     expect(saved.ownMatches.every((m) => !('appearance' in m))).toBe(true);
     // The career as it was stays the previous copy until a newer save commits.
-    expect(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'a' : 'b'}`)).toBe(raw);
+    expect(storage.getItem('indexed:previous')).toBe(raw);
     expect(notifications()).toMatchObject([{ text: SAVE_DATA_UPDATED, read: false }]);
     // Loading the adopted career again changes nothing and tells nothing more.
     const committed = new Map(storage.data);
@@ -715,21 +730,21 @@ describe('supported-career identity adoption (→SAVE-21)', () => {
     WorkerPort.release = DISABLED_RELEASE;
     const { legacy, raw } = await identitylessCheckpoint();
     const manifest = storage.getItem('haeram-soccor:manifest');
-    storage.fail = 'haeram-soccor:manifest';
+    storage.fail = 'indexed:active';
     const client = new GameClient(() => {});
     clients.push(client);
     await client.start();
     expect(client.state.error).toContain('갱신한 저장 데이터를 저장하지 못했어요');
     expect(client.state.saveFailed).toBe(true);
     expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
-    expect(storage.getItem('haeram-soccor:slot:a')).toBe(raw);
+    expect(storage.getItem('indexed:active')).toBe(raw);
     expect(notifications()).toEqual([]);
     // The adopted career stays in memory and exportable.
     const exported = (await decode((await client.exportFile())!)).world;
     expect(exported.id).toBe(legacy.id);
     expect(exported.revision).toBe(legacy.revision + 1);
     expect(exported.clubs.every((club) => club.identity)).toBe(true);
-    expect(canonical((await decode(storage.getItem('haeram-soccor:slot:a')!)).world)).toBe(
+    expect(canonical((await decode(storage.getItem('indexed:active')!)).world)).toBe(
       canonical(legacy),
     );
   });
@@ -742,10 +757,10 @@ describe('supported-career identity adoption (→SAVE-21)', () => {
 async function preModelCheckpoint() {
   const career = simulatedWorld(founding, { rounds: 2 }, DISABLED_RELEASE);
   const raw = await encode(career, 7, 6);
-  storage.setItem('haeram-soccor:slot:a', raw);
+  storage.setItem('indexed:active', raw);
   storage.setItem(
     'haeram-soccor:manifest',
-    JSON.stringify({ slot: 0, worldId: career.id, generation: 7, parentGeneration: 6 }),
+    JSON.stringify({ worldId: career.id, generation: 7, parentGeneration: 6 }),
   );
   return { career, raw };
 }
@@ -763,12 +778,12 @@ describe('full match-model activation (→SAVE-23)', () => {
     expect(client.state.savedRevision).toBe(career.revision + 1);
     const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
     expect(manifest).toMatchObject({ worldId: career.id, generation: 8, parentGeneration: 7 });
-    const saved = await decode(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'b' : 'a'}`)!);
+    const saved = await decode(storage.getItem('indexed:active')!);
     // A tracked career keeps its model data in the manager-history container (→SAVE-23/24).
     expect(saved.envelope.schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
     expect(saved.world.matchModel).toEqual(world.matchModel);
     // The career as it was stays the previous copy until a newer save commits.
-    expect(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'a' : 'b'}`)).toBe(raw);
+    expect(storage.getItem('indexed:previous')).toBe(raw);
     expect(notifications()).toMatchObject([{ text: SAVE_DATA_UPDATED, read: false }]);
     // Loading the activated career again changes nothing and tells nothing more.
     const committed = new Map(storage.data);
@@ -781,14 +796,14 @@ describe('full match-model activation (→SAVE-23)', () => {
     WorkerPort.release = ENABLED_RELEASE;
     const { career, raw } = await preModelCheckpoint();
     const manifest = storage.getItem('haeram-soccor:manifest');
-    storage.fail = 'haeram-soccor:manifest';
+    storage.fail = 'indexed:active';
     const client = new GameClient(() => {});
     clients.push(client);
     await client.start();
     expect(client.state.error).toContain('갱신한 저장 데이터를 저장하지 못했어요');
     expect(client.state.saveFailed).toBe(true);
     expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
-    expect(storage.getItem('haeram-soccor:slot:a')).toBe(raw);
+    expect(storage.getItem('indexed:active')).toBe(raw);
     expect(notifications()).toEqual([]);
     // The activated career stays in memory and exportable.
     const exported = await decode((await client.exportFile())!);
@@ -840,10 +855,10 @@ describe('full match-model activation (→SAVE-23)', () => {
 async function rules4Checkpoint() {
   const career = simulatedWorld(founding, { rounds: 2 });
   const raw = await encode({ ...structuredClone(career), engine: '4.0.0' }, 7, 6);
-  storage.setItem('haeram-soccor:slot:a', raw);
+  storage.setItem('indexed:active', raw);
   storage.setItem(
     'haeram-soccor:manifest',
-    JSON.stringify({ slot: 0, worldId: career.id, generation: 7, parentGeneration: 6 }),
+    JSON.stringify({ worldId: career.id, generation: 7, parentGeneration: 6 }),
   );
   return { career, raw };
 }
@@ -858,14 +873,14 @@ describe('rules-4.0.0 checkpoints in game version 0.7.0 (→SAVE-10)', () => {
     expect(client.state.view!.world.engine).toBe(CURRENT_ENGINE_VERSION);
     const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
     expect(manifest).toMatchObject({ worldId: career.id, generation: 8, parentGeneration: 7 });
-    const saved = await decode(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'b' : 'a'}`)!);
+    const saved = await decode(storage.getItem('indexed:active')!);
     // Only the version label and the world revision of the activation change.
     expect(saved.envelope.engine).toBe(CURRENT_ENGINE_VERSION);
     const expected = { ...career, engine: CURRENT_ENGINE_VERSION, revision: career.revision + 1 };
     initializeReadModels(expected);
     expect(canonical(saved.world)).toBe(canonical(expected));
     // The career as it was stays the previous copy until a newer save commits.
-    expect(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'a' : 'b'}`)).toBe(raw);
+    expect(storage.getItem('indexed:previous')).toBe(raw);
     // Loading it again changes nothing.
     const committed = new Map(storage.data);
     await client.reload();
@@ -952,15 +967,15 @@ describe('manager-history reads (→HIST-18, WEB-92)', () => {
 });
 
 describe('earlier-rules and future saves: compatibility recovery', () => {
-  it('resets recognized earlier gameplay on writer activation (→SAVE-18)', async () => {
+  it('protects unsupported indexed gameplay without an automatic beta reset', async () => {
     await legacyCheckpoint();
     const client = new GameClient(() => {});
     clients.push(client);
     await client.start();
-    expect(client.state.errorCode).toBeUndefined();
+    expect(client.state.errorCode).toBe('save-compatibility');
     expect(client.state.view).toBeUndefined();
-    expect(storage.getItem('haeram-soccor:slot:a')).toBeNull();
-    expect(storage.getItem('haeram-soccor:manifest')).toBeNull();
+    expect(storage.getItem('indexed:active')).not.toBeNull();
+    expect(storage.getItem('haeram-soccor:manifest')).not.toBeNull();
     expect(storage.getItem('haeram-soccor:device')).toBeNull();
   });
 
@@ -968,14 +983,14 @@ describe('earlier-rules and future saves: compatibility recovery', () => {
     'returns a typed error and exports the selected future checkpoint with manifest=%s',
     async (hasManifest) => {
       await legacyCheckpoint();
-      const old = storage.getItem('haeram-soccor:slot:a')!;
+      const old = storage.getItem('indexed:active')!;
       const future = JSON.stringify({ ...JSON.parse(old), engine: '9.0.0', generation: 8 });
-      storage.setItem('haeram-soccor:slot:b', future);
+      storage.setItem('indexed:previous', old);
+      storage.setItem('indexed:active', future);
       if (hasManifest)
         storage.setItem(
           'haeram-soccor:manifest',
           JSON.stringify({
-            slot: 1,
             worldId: JSON.parse(old).worldId,
             generation: 8,
             parentGeneration: 7,
@@ -983,8 +998,6 @@ describe('earlier-rules and future saves: compatibility recovery', () => {
         );
       else storage.removeItem('haeram-soccor:manifest');
       const before = new Map(storage.data);
-      // The independently recognized old predecessor may reset; the future bytes stay exact.
-      before.delete('haeram-soccor:slot:a');
       const client = new GameClient(() => {});
       clients.push(client);
       await client.start();
@@ -1012,12 +1025,11 @@ describe('earlier-rules and future saves: compatibility recovery', () => {
       expect(client.state.error).toBeUndefined();
       expect(client.state.view?.world.id).toBe(replacement.id);
       expect(JSON.parse(storage.getItem('haeram-soccor:manifest')!)).toEqual({
-        slot: 0,
         worldId: replacement.id,
         generation: 9,
         parentGeneration: 8,
       });
-      expect(storage.getItem('haeram-soccor:slot:b')).toBe(future);
+      expect(storage.getItem('indexed:previous')).toBe(future);
     },
   );
 
@@ -1025,8 +1037,7 @@ describe('earlier-rules and future saves: compatibility recovery', () => {
     const client = await start();
     await client.command({ type: 'advance-days', days: 1 });
     await client.whenSaved();
-    const selected = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
-    storage.setItem(`haeram-soccor:slot:${selected.slot ? 'b' : 'a'}`, 'corrupt');
+    storage.setItem('indexed:active', 'corrupt');
     client.dispose();
     clients.splice(clients.indexOf(client), 1);
     const restored = new GameClient(() => {});
@@ -1051,7 +1062,7 @@ describe('earlier-rules and future saves: compatibility recovery', () => {
   it('keeps an explicitly imported replacement exportable and retryable after future-save write failure', async () => {
     const { raw } = await legacyCheckpoint();
     const future = JSON.stringify({ ...JSON.parse(raw), engine: '9.0.0' });
-    storage.setItem('haeram-soccor:slot:a', future);
+    storage.setItem('indexed:active', future);
     const manifest = storage.getItem('haeram-soccor:manifest');
     const client = new GameClient(() => {});
     clients.push(client);
@@ -1060,14 +1071,14 @@ describe('earlier-rules and future saves: compatibility recovery', () => {
     await client.found(founding);
     expect(client.state.errorCode).toBe('save-compatibility');
     expect(client.state.view).toBeUndefined();
-    storage.fail = 'haeram-soccor:manifest';
+    storage.fail = 'indexed:active';
     const replacement = simulatedWorld({ ...founding, seed: 'explicit-recovery-quota' });
     initializeReadModels(replacement);
     await client.importFile(await encode(replacement));
     expect(client.state.error).toContain('Quota');
     expect(client.state.view?.world.id).toBe(replacement.id);
     expect(client.state.savedRevision).toBe(-1);
-    expect(storage.getItem('haeram-soccor:slot:a')).toBe(future);
+    expect(storage.getItem('indexed:active')).toBe(future);
     expect(storage.getItem('haeram-soccor:manifest')).toBe(manifest);
     expect(canonical((await decode((await client.exportFile())!)).world)).toBe(
       canonical(replacement),
@@ -1077,12 +1088,11 @@ describe('earlier-rules and future saves: compatibility recovery', () => {
     expect(client.state.error).toBeUndefined();
     expect(client.state.savedRevision).toBe(0);
     expect(JSON.parse(storage.getItem('haeram-soccor:manifest')!)).toEqual({
-      slot: 1,
       worldId: replacement.id,
       generation: 8,
       parentGeneration: 7,
     });
-    expect(storage.getItem('haeram-soccor:slot:a')).toBe(future);
+    expect(storage.getItem('indexed:previous')).toBe(future);
   });
 });
 
@@ -1135,7 +1145,11 @@ describe('game slots', () => {
     expect(index.slots[0]).toBeNull();
     expect([...parked.data.keys()]).toEqual([index.slots[1]!.id]);
     expect(await slots.remove(1)).toBe(true);
-    expect(ACTIVE_SAVE_KEYS.every((key) => storage.getItem(key) === null)).toBe(true);
+    expect(
+      ['haeram-soccor:manifest', 'indexed:active', 'indexed:previous'].every(
+        (key) => storage.getItem(key) === null,
+      ),
+    ).toBe(true);
     expect(slots.read()).toMatchObject({ active: null, slots: [null, null, null] });
   });
 
@@ -1213,8 +1227,7 @@ it('exports verified current bytes after storage corruption and never reuses ano
   const client = await start(),
     original = (await client.exportFile())!;
   const oldWorld = (await decode(original)).world;
-  const manifest = JSON.parse(storage.getItem('haeram-soccor:manifest')!);
-  storage.setItem(`haeram-soccor:slot:${manifest.slot ? 'b' : 'a'}`, 'external corruption');
+  storage.setItem('indexed:active', 'external corruption');
   expect(await client.exportFile()).toBe(original);
   const codec = CodecPort.instances[0];
   let release!: () => void;

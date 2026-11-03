@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type { World } from '../../../../packages/contracts/src/types';
 import type { EncodedPayload } from './compression';
 import { encode } from './persistence';
-import { INDEXED_CHECKPOINT_LIMIT, SLOT } from './repository';
+import { INDEXED_CHECKPOINT_LIMIT, ACTIVE } from './repository';
 const { encodePayload } = vi.hoisted(() => ({ encodePayload: vi.fn() }));
 vi.mock('./compression', () => ({ encodePayload, decodePayload: vi.fn() }));
 vi.mock('./packing', () => ({ pack: () => ({ synthetic: 'exact input' }), unpack: vi.fn() }));
@@ -21,11 +21,11 @@ describe('complete checkpoint encoding budgets', () => {
       accepts = predicate;
       return { codec: 'gzip-cjk14', payload: 'x' };
     });
-    const raw = await encode(world, 1, 0, INDEXED_CHECKPOINT_LIMIT);
+    const raw = await encode(world, 1, 0);
     const headerChars = raw.length - 1;
     const fits: EncodedPayload = {
       codec: 'gzip-cjk14',
-      payload: 'x'.repeat(INDEXED_CHECKPOINT_LIMIT / 2 - SLOT[0].length - headerChars),
+      payload: 'x'.repeat(INDEXED_CHECKPOINT_LIMIT / 2 - ACTIVE.length - headerChars),
     };
     expect(accepts!(fits)).toBe(true);
     expect(accepts!({ ...fits, payload: fits.payload + 'x' })).toBe(false);
@@ -36,15 +36,7 @@ describe('complete checkpoint encoding budgets', () => {
       accepts = predicate;
       return { codec: 'gzip-cjk14', payload: 'x' };
     });
-    await encode(world, 1, 0, INDEXED_CHECKPOINT_LIMIT);
+    await encode(world, 1, 0);
     expect(accepts!({ codec: 'gzip-cjk14', payload: '한'.repeat(3_000_000) })).toBe(false);
-  });
-  it('keeps compact callers unchanged and validates supplied storage budgets', async () => {
-    encodePayload.mockImplementation(async (_bytes, predicate) => {
-      expect(predicate).toBeUndefined();
-      return { codec: 'gzip-cjk14', payload: 'x' };
-    });
-    await encode(world);
-    await expect(encode(world, 1, 0, INDEXED_CHECKPOINT_LIMIT + 1)).rejects.toThrow('예산');
   });
 });

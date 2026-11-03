@@ -554,7 +554,6 @@
 | T671 | the founding leaves the engine: fixtures, web tests, e2e and scripts on takeovers | WEB WORLD CLUB SAVE ARCH | T670 | todo |
 | T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | doing@261103.ot03 |
 | T676 | Fast IndexedDB checkpoints within portable and fallback budgets | SAVE HIST ARCH | T674 | doing@261103.hr03 |
-| T677 | Remove legacy localStorage checkpoint layouts and startup cleanup | SAVE WEB ARCH | T674 | doing@261103.hr03 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -578,13 +577,14 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T677 (hr03), then complete T676 measurements and T675 final gate.
+- Complete T676 measurements and T675 final coordinator gate (hr03).
 - implement-task T675 (hr03); preserve ot03 takeover handoff below.
 - continue branch `wip/ot03` (dda53874: owner takeover T653–T664 and T669 done, main merged; its STATE is current): implement-task T665, then T666, T667, T668; batch gate once (Chromium), then merge into main and push. Report spec/reports/261103-ot03.md
 - read main CI after 1928053c (fix for 41524887826: position-badges, analysis, mobile-match-presentation)
 - on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (founding screen, `found` message, identity editor, ready-made crests), then T670 (engine tests on `careerWorld`), T671 (the founding leaves the engine), T672 (the amateur level, LEAGUE-16), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
 
 ## log
+- 261103 T677 done: remove legacy localStorage checkpoints, migration/fallback budgets and startup reset/strategy cleanup; IndexedDB fixtures updated, 30 affected unit cases and fast checks pass. hr03
 - 261103 WORLD r9 dependency restored verbatim from ot03 WIP: published T670–T672 already reference it; no owner code or task ownership changed. hr03
 - 261103 SAVE r65 WEB r205 tasked T677: user removes beta compatibility for legacy localStorage checkpoints; current device metadata remains. hr03
 - 261103 SAVE r64 tasked T676: separate IndexedDB/portable compression budget from the unchanged localStorage fallback, based on retained-career measurements. hr03
@@ -604,6 +604,3 @@
 - 261103 T648 done: the manager alone picks the tactic and the XI. The tactics/lineup/accept-condition commands, request scoring and history, setLineup/lineupPreset/selectedLineup, Manager.lastRequest/requestHistory/pending/conflicts, World.requested/lineup (dropped on load), the STAFF-14 request modifiers and the 우리만의 선발 milestone are gone; TacticsTalk, TacticalLab, tacticComparison and PlayerPreparationHost are deleted and the next-match report reads the manager's XI and matchday squad with the kit choice in its own 유니폼 section. Equivalence digests unchanged; unit 223/1936 green; golden regenerated (contract 47 green); e2e edited for the batch.
 - 261103 create-task OWNER@1 WEB@204 ECON@42 WORLD@8 LEAGUE@12 MATCH@47 KIT@8 SAVE@62 HIST@21 CLUB@50 ARCH@27 PLAYER@13 → T653–T668 (foundation T653; lanes takeover, owner-economy, traits, start-ui, owner-ui; main-session T654–T656; integration T664–T666; explore T654, T667, T668); ot03
 - 261103 ideation owner-wealth-and-takeover converted
-- 261103 update-ssot WEB r204 ECON r42 WORLD r8 LEAGUE r12 MATCH r47 KIT r8 SAVE r62 HIST r21 CLUB r50 ARCH r27 PLAYER r13: takeover start, amateur level removed, books and club value, owner bankruptcy and 퇴진, 승리의 부적 exception, rules 5.0.0; ot03
-- 261103 create-ssot OWNER r1: owner fortune, six wealth tiers, eight traits, quarterly business bet, living costs, injections within FFP, dividends, 팬 민심, 퇴진 압박, 구단주 파산 위기; ot03
-- 261103 T647 done: the owner no longer suggests or forces training. The coach-training command, orderTraining (with suggestion odds, strain and resignation), orders.ts, trainingOrders and staff strain/asked are gone; older saves drop them on load, and the squad's 하드 streak is now World.hardStreak. TrainingOrderSheet and every 제안·강행/개별 훈련/이 선수 훈련 entry are deleted. 훈련, 유소년, the player sheet and the market read the coaches' calls. Equivalence digests unchanged; unit 224/1937 green; e2e edited for the batch.

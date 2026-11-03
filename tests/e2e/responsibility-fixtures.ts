@@ -34,11 +34,7 @@ export function pendingAcquisitionCareer() {
   expect(w.bids?.filter((bid) => bid.status === 'countered')).toHaveLength(2);
   return w;
 }
-export async function importResponsibilityCareer(
-  page: Page,
-  world: World,
-  checkpointBudget?: number,
-) {
+export async function importResponsibilityCareer(page: Page, world: World) {
   await page.goto('/');
   await expect(page.getByRole('button', { name: '클럽 창단' })).toBeEnabled();
   await page
@@ -47,7 +43,7 @@ export async function importResponsibilityCareer(
     .setInputFiles({
       name: 'responsibilities.json',
       mimeType: 'application/json',
-      buffer: Buffer.from(await encode(world, 1, 0, checkpointBudget)),
+      buffer: Buffer.from(await encode(world, 1, 0)),
     });
   // A 35-round career on the released model: CI WebKit 40233059787 opened it in over 5 s.
   await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 15000 });

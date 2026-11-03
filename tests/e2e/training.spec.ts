@@ -1,3 +1,4 @@
+import { seedRawCheckpoint } from './checkpoint-storage';
 import { openPersonnel } from './personnel-navigation';
 import { watchNext } from './watch';
 import { expect, test, type Page } from '@playwright/test';
@@ -36,21 +37,7 @@ const FOCUS: Record<TrainingFocus, string> = {
 /** Puts a world in slot 1, to continue from the slot screen. */
 async function seed(page: Page, w: World) {
   const raw = await encode(w, 1, 0);
-  await page.addInitScript((raw) => {
-    // Once: a reload continues the game as saved.
-    if (localStorage.getItem('haeram-soccor:manifest')) return;
-    const envelope = JSON.parse(raw);
-    localStorage.setItem('haeram-soccor:slot:a', raw);
-    localStorage.setItem(
-      'haeram-soccor:manifest',
-      JSON.stringify({
-        slot: 0,
-        worldId: envelope.worldId,
-        generation: envelope.generation,
-        parentGeneration: envelope.parentGeneration,
-      }),
-    );
-  }, raw);
+  await seedRawCheckpoint(page, raw);
 }
 const founded = (seed: string) =>
   createWorld({

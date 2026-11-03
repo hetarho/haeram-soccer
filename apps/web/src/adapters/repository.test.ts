@@ -1,7 +1,6 @@
-import { describe, expect, it } from 'vitest';
-import { PreviousUnavailableError, writeCheckpoint } from './checkpointWriter';
+import { describe, expect, it, vi } from 'vitest';
+import { writeCheckpoint } from './checkpointWriter';
 import {
-  CHECKPOINT_LIMIT,
   INDEXED_CHECKPOINT_LIMIT,
   PORTABLE_FILE_LIMIT,
   SaveRepository,
@@ -10,10 +9,8 @@ import {
   type StoragePort,
 } from './repository';
 
-const MANIFEST = 'haeram-soccor:manifest',
-  A = 'haeram-soccor:slot:a',
-  B = 'haeram-soccor:slot:b';
-/** Every write in the order it happened, across localStorage and the IndexedDB keys. */
+const MANIFEST = 'haeram-soccor:manifest';
+/** Every write in the order it happened, across the manifest and IndexedDB keys. */
 type Log = string[];
 class Memory implements StoragePort {
   data = new Map<string, string>();
@@ -67,8 +64,8 @@ function checkpoint(generation: number, size = 100, worldId = 'w1') {
   };
   return JSON.stringify(envelope);
 }
-const manifestOf = (slot: number, generation: number, worldId = 'w1') =>
-  JSON.stringify({ slot, worldId, generation, parentGeneration: generation - 1 });
+const manifestOf = (generation: number, worldId = 'w1') =>
+  JSON.stringify({ worldId, generation, parentGeneration: generation - 1 });
 async function inspect(raw: string) {
   const envelope = JSON.parse(raw) as Envelope;
   if (!Number.isSafeInteger(envelope?.generation)) throw new Error('손상된 체크포인트');
@@ -83,9 +80,7 @@ function setup(indexed = true) {
     indexed
       ? new SaveRepository(storage, inspect, writeCheckpoint, previous, active)
       : new SaveRepository(storage, inspect, writeCheckpoint);
-  /** A repository of a browser without IndexedDB, which wrote the earlier slot:a/b layout. */
-  const legacy = () => new SaveRepository(storage, inspect, writeCheckpoint);
-  return { log, storage, previous, active, open, legacy };
+  return { log, storage, previous, active, open };
 }
 /** The payload size whose checkpoint takes about `bytes` of conservative UTF-16. */
 const sized = (bytes: number) => Math.floor(bytes / 2) - 300;
@@ -103,7 +98,6 @@ describe('save repository', () => {
     // No checkpoint is written to localStorage on this path.
     expect([...storage.data.keys()]).toEqual([MANIFEST]);
     expect(JSON.parse(storage.getItem(MANIFEST)!)).toEqual({
-      slot: 3,
       worldId: 'w1',
       generation: 2,
       parentGeneration: 1,
@@ -141,51 +135,10 @@ describe('save repository', () => {
     expect(previous.raw).toBe(checkpoint(1));
     expect((await open().load())?.envelope.generation).toBe(2);
   });
-  it('moves a game still in slot:a on its first commit, removing the key after the manifest', async () => {
-    const { log, storage, previous, active, open, legacy } = setup();
-    await legacy().commit(checkpoint(1));
-    expect(JSON.parse(storage.getItem(MANIFEST)!).slot).toBe(0);
-    const saves = open();
-    expect((await saves.load())?.envelope.generation).toBe(1);
-    // A failed active write leaves the legacy layout and its manifest as they were.
-    const before = new Map(storage.data);
-    active.fail = true;
-    await expect(saves.commit(checkpoint(2))).rejects.toThrow('Quota');
-    expect(storage.data).toEqual(before);
-    const kept = await open().load();
-    expect([kept?.envelope.generation, kept?.recovered]).toEqual([1, false]);
-    active.fail = false;
-    log.length = 0;
-    await saves.commit(checkpoint(2));
-    expect(log).toEqual(['previous', 'active', MANIFEST, `-${A}`]);
-    expect([previous.raw, active.raw]).toEqual([checkpoint(1), checkpoint(2)]);
-    expect(storage.getItem(A)).toBeNull();
-    expect(JSON.parse(storage.getItem(MANIFEST)!)).toMatchObject({ slot: 3, generation: 2 });
-    expect((await open().load())?.envelope.generation).toBe(2);
-  });
-  it('migrates a two-slot layout', async () => {
-    const { storage, previous, active, open, legacy } = setup();
-    const earlier = legacy();
-    await earlier.commit(checkpoint(1));
-    await earlier.commit(checkpoint(2));
-    expect(storage.getItem(B)).toBe(checkpoint(2));
-    const saves = open();
-    expect((await saves.load())?.envelope.generation).toBe(2);
-    await saves.commit(checkpoint(3));
-    expect([previous.raw, active.raw]).toEqual([checkpoint(2), checkpoint(3)]);
-    expect([storage.getItem(A), storage.getItem(B)]).toEqual([null, null]);
-    expect(JSON.parse(storage.getItem(MANIFEST)!)).toMatchObject({ slot: 3, generation: 3 });
-    expect((await open().load())?.envelope.generation).toBe(3);
-  });
   it("loads the manifest's source, else the newest valid copy, and writes nothing while loading", async () => {
     const { log, storage, previous, active, open } = setup();
-    // A move cut short before its manifest: slot:a is still the committed generation.
-    storage.data.set(A, checkpoint(1));
-    storage.data.set(MANIFEST, manifestOf(0, 1));
     active.raw = checkpoint(2);
     previous.raw = checkpoint(1);
-    const loaded = await open().load();
-    expect([loaded?.raw, loaded?.recovered]).toEqual([checkpoint(1), false]);
     // Without a manifest the newest valid copy wins.
     storage.data.delete(MANIFEST);
     const newest = open();
@@ -193,7 +146,7 @@ describe('save repository', () => {
     expect(newest.committedRaw()).toBe(checkpoint(2));
     // A manifest naming active reads it.
     storage.data.clear();
-    storage.data.set(MANIFEST, manifestOf(3, 2));
+    storage.data.set(MANIFEST, manifestOf(2));
     const declared = await open().load();
     expect([declared?.raw, declared?.recovered]).toEqual([checkpoint(2), false]);
     expect(log).toEqual([]);
@@ -226,43 +179,6 @@ describe('save repository', () => {
     expect(failed.hasStored()).toBe(true);
     expect(failed.recoveryRaw()).toBe('corrupt');
   });
-  it('falls back to two slots without IndexedDB while both fit', async () => {
-    const { log, storage, open } = setup(false);
-    const saves = open();
-    await saves.commit(checkpoint(1));
-    log.length = 0;
-    await saves.commit(checkpoint(2));
-    expect(log).toEqual([B, MANIFEST]);
-    expect(storage.getItem(A)).toBe(checkpoint(1));
-    expect(storage.getItem(B)).toBe(checkpoint(2));
-    expect(JSON.parse(storage.getItem(MANIFEST)!).slot).toBe(1);
-    storage.data.set(B, 'corrupt');
-    const loaded = await open().load();
-    expect(loaded?.envelope.generation).toBe(1);
-    expect(loaded?.recovered).toBe(true);
-  });
-  it('refuses to overwrite the committed checkpoint without IndexedDB when no previous copy fits', async () => {
-    const { storage, open } = setup(false);
-    const saves = open();
-    const size = sized(2_000_000);
-    await saves.commit(checkpoint(1, size));
-    const before = new Map(storage.data);
-    const refusal = saves.commit(checkpoint(2, size));
-    await expect(refusal).rejects.toBeInstanceOf(PreviousUnavailableError);
-    await expect(refusal).rejects.toMatchObject({
-      code: 'previous-unavailable',
-      message: '이 브라우저에서는 이전 저장본을 함께 둘 공간이 없어 저장하지 않았어요',
-    });
-    expect(storage.data).toEqual(before);
-    expect(saves.generationInfo).toEqual({ generation: 2, parentGeneration: 1 });
-  });
-  it('writes a first checkpoint without IndexedDB within the limit', async () => {
-    const { storage, open } = setup(false);
-    const raw = checkpoint(1, sized(2_000_000));
-    await open().commit(raw);
-    expect(storage.getItem(A)).toBe(raw);
-    expect((await open().load())?.envelope.generation).toBe(1);
-  });
   it('keeps two 2 MB checkpoints in IndexedDB beyond the localStorage total', async () => {
     const { storage, previous, active, open } = setup();
     const saves = open();
@@ -272,12 +188,12 @@ describe('save repository', () => {
     expect([previous.raw, active.raw]).toEqual([checkpoint(1, size), checkpoint(2, size)]);
     expect([...storage.data.keys()]).toEqual([MANIFEST]);
   });
-  it.each([true, false])('enforces the selected checkpoint budget (IndexedDB: %s)', async (idb) => {
-    const { storage, active, open } = setup(idb);
+  it('enforces the IndexedDB checkpoint budget', async () => {
+    const { storage, active, open } = setup();
     const saves = open();
     await saves.commit(checkpoint(1));
     const before = [new Map(storage.data), active.raw];
-    const limit = idb ? INDEXED_CHECKPOINT_LIMIT : CHECKPOINT_LIMIT;
+    const limit = INDEXED_CHECKPOINT_LIMIT;
     await expect(saves.commit(checkpoint(2, sized(limit) + 400))).rejects.toThrow('한도');
     expect([storage.data, active.raw]).toEqual(before);
     // The selected layout keeps a candidate just within its own bound.
@@ -287,7 +203,7 @@ describe('save repository', () => {
   it('keeps larger indexed active and previous copies but rejects an unexportable UTF-8 file before writing', async () => {
     const { storage, previous, active, open } = setup();
     const saves = open();
-    const big = sized(CHECKPOINT_LIMIT + 500_000);
+    const big = sized(3_500_000);
     await saves.commit(checkpoint(1, big));
     await saves.commit(checkpoint(2, big));
     expect(active.raw).toBe(checkpoint(2, big));
@@ -300,5 +216,42 @@ describe('save repository', () => {
     expect(raw.length * 2).toBeLessThan(INDEXED_CHECKPOINT_LIMIT);
     await expect(saves.commit(raw)).rejects.toThrow('한도');
     expect([storage.data, active.raw, previous.raw]).toEqual(before);
+  });
+  it('requires IndexedDB and never reads, migrates or removes old checkpoint or strategy keys', async () => {
+    const { storage, open } = setup(false);
+    const oldKeys = ['haeram-soccor:slot:a', 'haeram-soccor:slot:b', 'haeram-soccor:strategies'];
+    for (const key of oldKeys) storage.setItem(key, 'old data');
+    const before = new Map(storage.data);
+    await expect(open().load()).rejects.toThrow('IndexedDB');
+    await expect(open().commit(checkpoint(1))).rejects.toThrow('IndexedDB');
+    expect(storage.data).toEqual(before);
+    const indexed = setup();
+    for (const key of oldKeys) indexed.storage.setItem(key, 'old data');
+    expect(await indexed.open().load()).toBeNull();
+    await indexed.open().commit(checkpoint(1));
+    expect(oldKeys.map((key) => indexed.storage.getItem(key))).toEqual(
+      oldKeys.map(() => 'old data'),
+    );
+  });
+  it('loads the committed predecessor after an interrupted manifest write', async () => {
+    const { storage, active, previous, open } = setup();
+    const saves = open();
+    await saves.commit(checkpoint(1));
+    const set = vi.spyOn(storage, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError');
+    });
+    await expect(saves.commit(checkpoint(2))).rejects.toThrow('Quota');
+    expect(active.raw).toBe(checkpoint(2));
+    expect(previous.raw).toBe(checkpoint(1));
+    const recovery = open();
+    expect((await recovery.load())?.raw).toBe(checkpoint(1));
+    set.mockRestore();
+    await recovery.commit(checkpoint(2));
+    expect(previous.raw).toBe(checkpoint(1));
+  });
+  it('reports IndexedDB read failures without treating an existing game as empty', async () => {
+    const { active, open } = setup();
+    vi.spyOn(active, 'read').mockRejectedValue(new Error('IndexedDB access denied'));
+    await expect(open().load()).rejects.toThrow('IndexedDB access denied');
   });
 });

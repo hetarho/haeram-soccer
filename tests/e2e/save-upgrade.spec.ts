@@ -1,3 +1,4 @@
+import { idbGet, seedRawCheckpoint } from './checkpoint-storage';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { createWorld, advanceRound } from '../../packages/engine/src/index';
@@ -25,27 +26,7 @@ async function current() {
   return { world, raw: await encode(world, 1, 0) };
 }
 async function seed(page: Page, raw: string, other?: string) {
-  await page.addInitScript(
-    ({ raw, other }) => {
-      // Seeded once per tab: a reload after deleting must not bring the save back.
-      if (sessionStorage.getItem('seeded')) return;
-      sessionStorage.setItem('seeded', '1');
-      localStorage.setItem('haeram-soccor:slot:a', raw);
-      const active = other || raw,
-        envelope = JSON.parse(active);
-      if (other) localStorage.setItem('haeram-soccor:slot:b', other);
-      localStorage.setItem(
-        'haeram-soccor:manifest',
-        JSON.stringify({
-          slot: other ? 1 : 0,
-          worldId: envelope.worldId,
-          generation: envelope.generation,
-          parentGeneration: envelope.parentGeneration,
-        }),
-      );
-    },
-    { raw, other },
-  );
+  await seedRawCheckpoint(page, other || raw, other ? raw : undefined);
 }
 async function exportRaw(page: Page, recovery = false) {
   const menu = recovery ? undefined : await openSaveMenu(page);
@@ -58,39 +39,38 @@ async function exportRaw(page: Page, recovery = false) {
   return await readFile((await file.path())!, 'utf8');
 }
 
-test('recognized legacy gameplay resets on writer activation and new careers reload', async ({
+test('old localStorage saves and retired strategies are ignored and left untouched', async ({
   page,
 }) => {
-  // Earlier rules never tracked manager history, so they wrote only the older containers.
-  const world = withoutManagerHistory((await current()).world);
-  world.engine = '2.0.0';
-  const earlier = await encode(world);
-  await seed(page, earlier);
-  await page.addInitScript(() => {
-    localStorage.setItem('unrelated-preference', 'keep');
-    localStorage.setItem('haeram-soccor:strategies', '[]');
-  });
+  const oldKeys = ['haeram-soccor:slot:a', 'haeram-soccor:slot:b', 'haeram-soccor:strategies'];
+  await page.addInitScript((keys) => {
+    for (const key of keys) localStorage.setItem(key, 'retired bytes');
+  }, oldKeys);
   await page.goto('/');
-  await page
-    .getByRole('listitem', { name: '슬롯 1 · 빈 슬롯' })
-    .getByRole('button', { name: '새 게임', exact: true })
-    .click();
   await expect(page.getByRole('button', { name: '클럽 창단' })).toBeVisible();
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();
-  expect(await page.evaluate(() => localStorage.getItem('unrelated-preference'))).toBe('keep');
-  // The device strategy library of earlier versions goes when the writer starts (→SAVE-25).
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:strategies'))).toBeNull();
   await page.getByRole('button', { name: '클럽 창단' }).click();
-  await expect(page.getByTestId('club-hub')).toBeVisible();
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  // The new career's checkpoint is in IndexedDB, none in localStorage (→SAVE-3).
+  expect(await idbGet(page, 'checkpoints', 'active')).not.toBeNull();
   expect(
-    JSON.parse((await page.evaluate(() => localStorage.getItem('haeram-soccor:manifest')))!).slot,
-  ).toBe(3);
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();
+    await page.evaluate((keys) => keys.map((key) => localStorage.getItem(key)), oldKeys),
+  ).toEqual(oldKeys.map(() => 'retired bytes'));
   await page.reload();
   await expect(page.getByTestId('club-hub')).toBeVisible();
-  expect(JSON.parse(await exportRaw(page)).engine).toBe('0.7.0');
+});
+
+test('missing IndexedDB reports a storage error without writing localStorage checkpoints', async ({
+  page,
+}) => {
+  await page.addInitScript(() => Object.defineProperty(window, 'indexedDB', { value: undefined }));
+  await page.goto('/');
+  await expect(page.getByRole('alert')).toContainText('IndexedDB');
+  expect(
+    await page.evaluate(() =>
+      ['haeram-soccor:slot:a', 'haeram-soccor:slot:b', 'haeram-soccor:manifest'].map((key) =>
+        localStorage.getItem(key),
+      ),
+    ),
+  ).toEqual([null, null, null]);
 });
 
 test('a rules-4.0.0 save opens as game version 0.7.0, read-only tabs leaving it as stored', async ({
@@ -109,13 +89,12 @@ test('a rules-4.0.0 save opens as game version 0.7.0, read-only tabs leaving it 
   await page.goto('/journal');
   await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
   await expect(page.getByRole('status').filter({ hasText: '읽기 전용' }).first()).toBeVisible();
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBe(stored);
+  expect(await idbGet(page, 'checkpoints', 'active')).toBe(stored);
   await holder.close();
-  // Taking over as the writer activates it as 0.7.0 and commits it to IndexedDB, whose first
-  // commit moves the career out of localStorage (→SAVE-3).
+  // Writer handoff commits the updated IndexedDB checkpoint after read-only inspection.
   await expect
-    .poll(() => page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a')))
-    .toBeNull();
+    .poll(async () => JSON.parse((await idbGet(page, 'checkpoints', 'active'))!).engine)
+    .toBe('0.7.0');
   expect(JSON.parse(await exportRaw(page))).toMatchObject({ engine: '0.7.0', worldId: world.id });
   await page.reload();
   await expect(page.getByTestId('club-hub')).toBeVisible();
@@ -137,8 +116,8 @@ test('earlier rules import refused', async ({ page }) => {
   );
   // Nothing changed: no career opened and nothing was stored.
   await expect(page.getByTestId('club-hub')).toHaveCount(0);
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:b'))).toBeNull();
+  expect(await idbGet(page, 'checkpoints', 'active')).toBeNull();
+  expect(await idbGet(page, 'checkpoints', 'previous')).toBeNull();
 });
 
 test('future selected save stays protected and exports exactly instead of downgrading its predecessor', async ({
@@ -153,8 +132,8 @@ test('future selected save stays protected and exports exactly instead of downgr
   await expect(page.getByTestId('club-hub')).toHaveCount(0);
   const backup = await exportRaw(page, true);
   expect(backup).toBe(future);
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBe(raw);
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:b'))).toBe(future);
+  expect(await idbGet(page, 'checkpoints', 'previous')).toBe(raw);
+  expect(await idbGet(page, 'checkpoints', 'active')).toBe(future);
   expect(
     await page.evaluate(
       () => JSON.parse(localStorage.getItem('haeram-soccor:manifest')!).generation,
@@ -162,7 +141,10 @@ test('future selected save stays protected and exports exactly instead of downgr
   ).toBe(2);
 });
 
-test('readonly legacy stays intact until writer handoff', async ({ page, context }) => {
+test('unsupported indexed career stays protected after writer handoff', async ({
+  page,
+  context,
+}) => {
   const holder = await context.newPage();
   await holder.goto('/');
   await expect(holder.getByRole('button', { name: '클럽 창단' })).toBeVisible();
@@ -172,12 +154,9 @@ test('readonly legacy stays intact until writer handoff', async ({ page, context
   await seed(page, raw);
   await page.goto('/');
   await expect(page.getByRole('alert')).toContainText('규칙 2.0.0');
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBe(raw);
+  expect(await idbGet(page, 'checkpoints', 'active')).toBe(raw);
   await holder.close();
-  await page
-    .getByRole('listitem', { name: '슬롯 1 · 빈 슬롯' })
-    .getByRole('button', { name: '새 게임', exact: true })
-    .click();
-  await expect(page.getByRole('button', { name: '클럽 창단' })).toBeVisible();
-  expect(await page.evaluate(() => localStorage.getItem('haeram-soccor:slot:a'))).toBeNull();
+  await expect(page.getByRole('alert')).toContainText('규칙 2.0.0');
+  expect(await idbGet(page, 'checkpoints', 'active')).toBe(raw);
+  expect(await exportRaw(page, true)).toBe(raw);
 });

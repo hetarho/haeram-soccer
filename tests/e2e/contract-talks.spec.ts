@@ -1,3 +1,4 @@
+import { seedRawCheckpoint } from './checkpoint-storage';
 import { chooseOption } from './select';
 import { openPersonnel } from './personnel-navigation';
 import { advanceOneRound } from './season-progression';
@@ -77,19 +78,7 @@ async function talking() {
   };
 }
 async function seed(page: Page, raw: string) {
-  await page.addInitScript((raw) => {
-    const envelope = JSON.parse(raw);
-    localStorage.setItem('haeram-soccor:slot:a', raw);
-    localStorage.setItem(
-      'haeram-soccor:manifest',
-      JSON.stringify({
-        slot: 0,
-        worldId: envelope.worldId,
-        generation: envelope.generation,
-        parentGeneration: envelope.parentGeneration,
-      }),
-    );
-  }, raw);
+  await seedRawCheckpoint(page, raw);
 }
 
 test('declines a contract talk: the badge, then the transfer request', async ({

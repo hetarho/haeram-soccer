@@ -37,10 +37,10 @@ import {
   SAVE_CODECS,
   INDEXED_CHECKPOINT_LIMIT,
   PORTABLE_FILE_LIMIT,
-  SLOT,
+  ACTIVE,
   type Envelope,
 } from './repository';
-export { CHECKPOINT_LIMIT, TOTAL_LIMIT } from './repository';
+export { INDEXED_CHECKPOINT_LIMIT, PORTABLE_FILE_LIMIT } from './repository';
 export type { Envelope, StoragePort, SaveInspector, PreviousStore } from './repository';
 async function digest(bytes: Uint8Array) {
   return Array.from(
@@ -48,19 +48,7 @@ async function digest(bytes: Uint8Array) {
     (b) => b.toString(16).padStart(2, '0'),
   ).join('');
 }
-export async function encode(
-  w: World,
-  generation = 1,
-  parentGeneration = 0,
-  checkpointBudget?: number,
-): Promise<string> {
-  if (
-    checkpointBudget !== undefined &&
-    (!Number.isSafeInteger(checkpointBudget) ||
-      checkpointBudget < 1 ||
-      checkpointBudget > INDEXED_CHECKPOINT_LIMIT)
-  )
-    throw new Error('저장 예산이 올바르지 않습니다.');
+export async function encode(w: World, generation = 1, parentGeneration = 0): Promise<string> {
   const schema = checkpointContainerFor(w);
   const bytes = new TextEncoder().encode(canonical(pack(w)));
   const checksum = await digest(bytes);
@@ -76,18 +64,13 @@ export async function encode(
     checksum,
     payload: payload.payload,
   });
-  const payload = await encodePayload(
-    bytes,
-    checkpointBudget === undefined
-      ? undefined
-      : (candidate) => {
-          const raw = JSON.stringify(envelope(candidate));
-          return (
-            2 * (raw.length + SLOT[0].length) <= checkpointBudget &&
-            new TextEncoder().encode(raw).length <= PORTABLE_FILE_LIMIT
-          );
-        },
-  );
+  const payload = await encodePayload(bytes, (candidate) => {
+    const raw = JSON.stringify(envelope(candidate));
+    return (
+      2 * (raw.length + ACTIVE.length) <= INDEXED_CHECKPOINT_LIMIT &&
+      new TextEncoder().encode(raw).length <= PORTABLE_FILE_LIMIT
+    );
+  });
   return JSON.stringify(envelope(payload));
 }
 /**
@@ -233,14 +216,9 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
 }
 /**
  * The codec worker's checkpoint (→ARCH-13): encoded, then decoded and validated as a load would, so
- * only a candidate that loads is ever handed to the slot writer.
+ * only a candidate that loads is ever handed to the checkpoint writer.
  */
-export async function checkpoint(
-  w: World,
-  generation = 1,
-  parentGeneration = 0,
-  checkpointBudget?: number,
-) {
-  const raw = await encode(w, generation, parentGeneration, checkpointBudget);
+export async function checkpoint(w: World, generation = 1, parentGeneration = 0) {
+  const raw = await encode(w, generation, parentGeneration);
   return { raw, envelope: (await decode(raw)).envelope };
 }

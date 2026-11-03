@@ -1,5 +1,3 @@
-import { INDEXED_CHECKPOINT_LIMIT } from '../adapters/repository';
-import { requestSchema, type CodecJob } from './protocol';
 import { expect, it } from 'vitest';
 import { canonical } from '../../../../packages/contracts/src/index';
 import { facts } from '../../../../tests/fixtures/read-facts';
@@ -43,33 +41,4 @@ it('validates and answers bounded news pages as pure reads, including stale care
   );
   expect(filtered.newsPage?.items).toEqual([]);
   expect(canonical(w)).toBe(before);
-});
-
-it('bounds the requested storage budget and passes it unchanged to the codec without changing facts', async () => {
-  const host = new Host(),
-    w = facts();
-  w.id = 'budget-world';
-  w.revision = 0;
-  host.world = w;
-  const jobs: CodecJob[] = [];
-  host.codec = { postMessage: (job) => jobs.push(job) };
-  expect(
-    (
-      await host.handle({
-        ...req('fast', -1, { type: 'save' }),
-        checkpointBudget: INDEXED_CHECKPOINT_LIMIT,
-      })
-    ).ok,
-  ).toBe(true);
-  expect(jobs[0].checkpointBudget).toBe(INDEXED_CHECKPOINT_LIMIT);
-  expect((await host.handle(req('compact', -1, { type: 'save' }))).ok).toBe(true);
-  expect(jobs[1]).not.toHaveProperty('checkpointBudget');
-  expect(
-    requestSchema.safeParse({
-      ...req('oversize', -1, { type: 'save' }),
-      checkpointBudget: INDEXED_CHECKPOINT_LIMIT + 1,
-    }).success,
-  ).toBe(false);
-  expect(jobs).toHaveLength(2);
-  expect(w.revision).toBe(0);
 });

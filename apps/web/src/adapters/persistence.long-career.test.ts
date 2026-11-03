@@ -1,4 +1,3 @@
-import { INDEXED_CHECKPOINT_LIMIT } from './repository';
 import { expect, it } from 'vitest';
 import { canonical } from '../../../../packages/contracts/src/index';
 import { simulateSeason } from '../../../../packages/engine/src/index';
@@ -16,7 +15,7 @@ it('builds an IndexedDB codec checkpoint of a 10-season career that decodes to t
     return w;
   });
   expect(w.history).toHaveLength(10);
-  const { raw, envelope } = await checkpoint(w, 5, 4, INDEXED_CHECKPOINT_LIMIT);
+  const { raw, envelope } = await checkpoint(w, 5, 4);
   expect(envelope).toMatchObject({ worldId: w.id, generation: 5, parentGeneration: 4 });
   expect(JSON.parse(raw)).toEqual(envelope);
   expect(canonical((await decode(raw)).world)).toBe(canonical(w));

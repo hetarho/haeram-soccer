@@ -14,11 +14,7 @@ import { eventsInSeason } from '../packages/engine/src/season-index';
 import { tallies } from '../apps/web/src/runtime/playerTallies';
 import { decode, checkpoint } from '../apps/web/src/adapters/persistence';
 import { createWorld } from '../packages/engine/src/founding';
-import {
-  CHECKPOINT_LIMIT,
-  INDEXED_CHECKPOINT_LIMIT,
-  SLOT,
-} from '../apps/web/src/adapters/repository';
+import { INDEXED_CHECKPOINT_LIMIT, ACTIVE } from '../apps/web/src/adapters/repository';
 
 const arg = (flag: string) => process.argv[process.argv.indexOf(flag) + 1];
 const median = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)];
@@ -138,12 +134,7 @@ async function codec(w: World) {
     );
     const t = performance.now();
     try {
-      const { raw } = await checkpoint(
-        world,
-        1,
-        0,
-        process.argv.includes('--indexed') ? INDEXED_CHECKPOINT_LIMIT : undefined,
-      );
+      const { raw } = await checkpoint(world, 1, 0);
       const checkpointMs = performance.now() - t;
       const verificationStarted = performance.now();
       const restored = (await decode(raw)).world;
@@ -155,9 +146,7 @@ async function codec(w: World) {
           canonical({ ...restored, newsJournal: undefined, careerReads: undefined }) ===
           canonical(old),
         checkpointUtf16Bytes: raw.length * 2,
-        withinCheckpointLimit:
-          2 * (raw.length + SLOT[0].length) <=
-          (process.argv.includes('--indexed') ? INDEXED_CHECKPOINT_LIMIT : CHECKPOINT_LIMIT),
+        withinCheckpointLimit: 2 * (raw.length + ACTIVE.length) <= INDEXED_CHECKPOINT_LIMIT,
         encodeValidateMs: checkpointMs,
         independentVerificationMs: performance.now() - verificationStarted,
         summariesSurvive:

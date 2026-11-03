@@ -1,4 +1,3 @@
-import { INDEXED_CHECKPOINT_LIMIT } from '../adapters/repository';
 import { initializeReadModels } from '../../../../packages/engine/src/read-models';
 import { RESPONSIBILITY_KEYS, settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { signSponsor, sponsorSlots } from '../../../../packages/engine/src/sponsors';
@@ -286,7 +285,6 @@ describe('worker command protocol', () => {
     const saving = await h.handle({
       ...req('save', -1, { type: 'save' }),
       generation: 4,
-      checkpointBudget: INDEXED_CHECKPOINT_LIMIT,
     });
     expect(saving.ok).toBe(true);
     expect(saving.view).toBeUndefined();
@@ -297,7 +295,6 @@ describe('worker command protocol', () => {
       id: 'save',
       generation: 4,
       parentGeneration: 0,
-      checkpointBudget: INDEXED_CHECKPOINT_LIMIT,
     });
     const result = await build(jobs[0]);
     if (!result.ok) throw new Error(result.error);

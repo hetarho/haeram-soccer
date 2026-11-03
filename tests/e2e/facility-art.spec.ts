@@ -1,3 +1,4 @@
+import { seedRawCheckpoint } from './checkpoint-storage';
 import { openPersonnel } from './personnel-navigation';
 import { openClubhouse } from './competition-navigation';
 import { expect, test, type Locator, type Page } from '@playwright/test';
@@ -72,20 +73,7 @@ function artWorld(year: number, stadium = 0, trainingGround = 0, academyFacility
 
 async function load(page: Page, world: World) {
   const { raw } = await checkpoint(world, 1, 0);
-  await page.addInitScript((raw) => {
-    if (localStorage.getItem('haeram-soccor:manifest')) return;
-    const envelope = JSON.parse(raw);
-    localStorage.setItem('haeram-soccor:slot:a', raw);
-    localStorage.setItem(
-      'haeram-soccor:manifest',
-      JSON.stringify({
-        slot: 0,
-        worldId: envelope.worldId,
-        generation: envelope.generation,
-        parentGeneration: envelope.parentGeneration,
-      }),
-    );
-  }, raw);
+  await seedRawCheckpoint(page, raw);
   await page.goto('/');
   await continueSlot(page);
   await expect(page.getByTestId('club-hub')).toBeVisible();

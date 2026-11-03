@@ -137,14 +137,14 @@ export function adoptedCareer(legacy: World, release: MatchModelRelease = MATCH_
   return w;
 }
 
-/** The game-in-play manifest naming `raw` as the committed checkpoint in slot:a (→SAVE-3). */
+/** The game-in-play manifest naming `raw` as the committed IndexedDB checkpoint (→SAVE-3). */
 export function manifestOf(raw: string) {
   const { worldId, generation, parentGeneration } = JSON.parse(raw) as {
     worldId: string;
     generation: number;
     parentGeneration: number;
   };
-  return JSON.stringify({ slot: 0, worldId, generation, parentGeneration });
+  return JSON.stringify({ worldId, generation, parentGeneration });
 }
 
 /**

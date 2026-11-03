@@ -33,8 +33,6 @@ export const PHONE_VIEWPORTS = [
 export const KIT_LABEL: Record<KitRole, string> = { home: '홈', away: '어웨이', third: '세컨' };
 /** `SAVE_DATA_UPDATED` of runtime/client.ts, the writer's notice after an adoption is committed. */
 export const SAVE_DATA_UPDATED = '기존 기록을 보존하고 저장 데이터를 현재 형식으로 갱신했어요.';
-const SLOT_A = 'haeram-soccor:slot:a';
-const SLOT_B = 'haeram-soccor:slot:b';
 const MANIFEST = 'haeram-soccor:manifest';
 
 export const ownClub = (w: World) => w.clubs.find((club) => club.id === w.playerClub)!;
@@ -84,129 +82,24 @@ export const closeNotices = (inbox: Locator) =>
 export const notice = (inbox: Locator, text: string) =>
   inbox.getByRole('listitem').filter({ hasText: text });
 
-/**
- * The committed checkpoint the manifest names (→SAVE-3), raw: IndexedDB `checkpoints/active` for
- * `slot: 3`, else slot:a/b of a seeded or fallback layout.
- */
-export async function committedRaw(page: Page) {
-  const manifest = await page.evaluate((key) => localStorage.getItem(key), MANIFEST);
-  return activeOf(page, manifest);
-}
-async function activeOf(page: Page, manifest: string | null) {
-  const slot = (JSON.parse(manifest || 'null') as { slot?: number } | null)?.slot;
-  if (slot === 3) return idbGet(page, 'checkpoints', 'active');
-  return page.evaluate((key) => localStorage.getItem(key), slot === 1 ? SLOT_B : SLOT_A);
-}
+/** The game in play's IndexedDB active checkpoint. */
+export const committedRaw = (page: Page) => idbGet(page, 'checkpoints', 'active');
 /** The committed world, once the save status says every revision is on disk. */
 export async function savedWorld(page: Page) {
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   return (await decode((await committedRaw(page))!)).world;
 }
 
-/** One value of the app's IndexedDB store (database haeram-soccor, version 2). */
-export const idbGet = (page: Page, store: 'games' | 'checkpoints', key: string) =>
-  page.evaluate(
-    ({ store, key }) =>
-      new Promise<string | null>((resolve, reject) => {
-        const open = indexedDB.open('haeram-soccor', 2);
-        open.onupgradeneeded = () => {
-          for (const name of ['games', 'checkpoints'])
-            if (!open.result.objectStoreNames.contains(name)) open.result.createObjectStore(name);
-        };
-        open.onerror = () => reject(open.error);
-        open.onsuccess = () => {
-          const db = open.result;
-          const get = db.transaction(store, 'readonly').objectStore(store).get(key);
-          get.onsuccess = () => {
-            db.close();
-            resolve(typeof get.result === 'string' ? get.result : null);
-          };
-          get.onerror = () => {
-            db.close();
-            reject(get.error);
-          };
-        };
-      }),
-    { store, key },
-  );
-/**
- * The game in play's raw checkpoint storage: the active copy the manifest names (IndexedDB, or
- * slot:a as seeded before the first commit), the manifest and the IndexedDB previous copy.
- */
+export { idbGet, idbPut, seedCheckpoints } from './checkpoint-storage';
+import { idbGet } from './checkpoint-storage';
+/** Active, commit manifest and verified IndexedDB predecessor. */
 export async function checkpointStorage(page: Page) {
-  const manifest = await page.evaluate((key) => localStorage.getItem(key), MANIFEST);
   return {
-    active: await activeOf(page, manifest),
-    manifest,
+    active: await idbGet(page, 'checkpoints', 'active'),
+    manifest: await page.evaluate((key) => localStorage.getItem(key), MANIFEST),
     previous: await idbGet(page, 'checkpoints', 'previous'),
   };
 }
-/** The localStorage checkpoints of the earlier layout, gone once the game moved to IndexedDB. */
-export const localCheckpoints = (page: Page) =>
-  page.evaluate((keys) => keys.map((key) => localStorage.getItem(key)), [SLOT_A, SLOT_B]);
-/** Overwrites one value of the app's IndexedDB store, e.g. to corrupt the active copy. */
-export const idbPut = (page: Page, store: 'games' | 'checkpoints', key: string, value: string) =>
-  page.evaluate(
-    ({ store, key, value }) =>
-      new Promise<void>((resolve, reject) => {
-        const open = indexedDB.open('haeram-soccor', 2);
-        open.onerror = () => reject(open.error);
-        open.onsuccess = () => {
-          const db = open.result;
-          const tx = db.transaction(store, 'readwrite');
-          tx.objectStore(store).put(value, key);
-          tx.oncomplete = () => {
-            db.close();
-            resolve();
-          };
-          tx.onerror = tx.onabort = () => {
-            db.close();
-            reject(tx.error);
-          };
-        };
-      }),
-    { store, key, value },
-  );
-/**
- * Writes the game in play's checkpoints as the slot:a layout's writer would have left them (the
- * app moves them to IndexedDB on its first commit), from the static same-origin 404 page so no
- * app instance is running; the caller then opens the game.
- */
-export async function seedCheckpoints(
-  page: Page,
-  seed: { active: string; manifest: string; previous?: string },
-) {
-  await page.goto('/404.html');
-  await page.evaluate(
-    ({ active, manifest, previous, keys }) =>
-      new Promise<void>((resolve, reject) => {
-        localStorage.setItem(keys.active, active);
-        localStorage.setItem(keys.manifest, manifest);
-        if (previous === undefined) return resolve();
-        const open = indexedDB.open('haeram-soccor', 2);
-        open.onupgradeneeded = () => {
-          for (const name of ['games', 'checkpoints'])
-            if (!open.result.objectStoreNames.contains(name)) open.result.createObjectStore(name);
-        };
-        open.onerror = () => reject(open.error);
-        open.onsuccess = () => {
-          const db = open.result;
-          const tx = db.transaction('checkpoints', 'readwrite');
-          tx.objectStore('checkpoints').put(previous, 'previous');
-          tx.oncomplete = () => {
-            db.close();
-            resolve();
-          };
-          tx.onerror = tx.onabort = () => {
-            db.close();
-            reject(tx.error);
-          };
-        };
-      }),
-    { ...seed, keys: { active: SLOT_A, manifest: MANIFEST } },
-  );
-}
-
 const FAIL_FLAG = 'haeram-test:fail-writes';
 /**
  * Makes this page's writes of the active checkpoint, IndexedDB `checkpoints/active` (→SAVE-3),
