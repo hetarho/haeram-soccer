@@ -19,6 +19,7 @@
 | hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T02:56Z | T676 |
 
 ## inbox
+- 261103 decided SAVE-29 WEB-62 T677: user explicitly drops beta backward compatibility for old localStorage code → remove checkpoint slots/fallback/migration/reset/strategy cleanup; keep current preferences, notification/read markers, game index and manifest metadata, with no deletion or migration of existing browser keys. hr03
 - 261103 decided SAVE-2 SAVE-4 T676: the 84-season news journal pushes maximum-compression saves to 589 s, while identical-byte gzip is 1.10 s and its 6.11 MB file fits the existing 8 MiB import cap → IndexedDB checkpoints allow 6 MiB UTF-16 and budget-verified gzip; fallback remains 3 MiB / 3.5 MiB total, portable 8 MiB and decompressed 32 MiB unchanged (alt: keep maximum Brotli on every save | drop retained news). hr03
 - 261103 decided T673 T674 T675: headless loop preflight failed because its child cannot resolve GitHub although this session can → implement the three selected tasks in this authorized session, keeping the coordinator gate and task commits (alt: change child permission settings or wait). hr03
 - 261103 decided HIST-11 HIST-22 SAVE-28 T673 T674 T675: how to avoid repeating historical news/statistics work → persist incremental source-linked news/record summaries, index current-season finance and page retained news (alt: replace IndexedDB or recompute every read); preserve all original facts and current rules. hr03
@@ -504,9 +505,9 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 27 | 27 | - | 2 |
-| WEB | 204 | 204 | - | 0 |
+| WEB | 205 | 205 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
-| WORLD | 8 | 8 | - | 0 |
+| WORLD | 9 | 9 | - | 0 |
 | KIT | 9 | 9 | - | 0 |
 | CLUB | 50 | 50 | - | 0 |
 | MATCH | 47 | 47 | - | 0 |
@@ -515,7 +516,7 @@
 | ECON | 42 | 42 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 22 | 22 | - | 0 |
-| SAVE | 64 | 64 | - | 0 |
+| SAVE | 65 | 65 | - | 0 |
 | OWNER | 1 | 1 | - | 0 |
 | PLAYER | 13 | 13 | - | 0 |
 
@@ -554,6 +555,8 @@
 | T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | doing@261103.ot03 |
 | T676 | Fast IndexedDB checkpoints within portable and fallback budgets | SAVE HIST ARCH | T674 | doing@261103.hr03 |
 
+| T677 | Remove legacy localStorage checkpoint layouts and startup cleanup | SAVE WEB ARCH | T674 | todo |
+
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
@@ -576,12 +579,15 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- implement-task T677 (hr03), then complete T676 measurements and T675 final gate.
 - implement-task T675 (hr03); preserve ot03 takeover handoff below.
 - continue branch `wip/ot03` (dda53874: owner takeover T653–T664 and T669 done, main merged; its STATE is current): implement-task T665, then T666, T667, T668; batch gate once (Chromium), then merge into main and push. Report spec/reports/261103-ot03.md
 - read main CI after 1928053c (fix for 41524887826: position-badges, analysis, mobile-match-presentation)
 - on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (founding screen, `found` message, identity editor, ready-made crests), then T670 (engine tests on `careerWorld`), T671 (the founding leaves the engine), T672 (the amateur level, LEAGUE-16), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
 
 ## log
+- 261103 WORLD r9 dependency restored verbatim from ot03 WIP: published T670–T672 already reference it; no owner code or task ownership changed. hr03
+- 261103 SAVE r65 WEB r205 tasked T677: user removes beta compatibility for legacy localStorage checkpoints; current device metadata remains. hr03
 - 261103 SAVE r64 tasked T676: separate IndexedDB/portable compression budget from the unchanged localStorage fallback, based on retained-career measurements. hr03
 - 261103 T674 done: incremental career summaries, indexed seasonal finance, pure paged news RPC and older-news/filter UI; 14 focused unit cases and fast checks/build pass. hr03
 - 261103 T673 done: persisted incremental news journal, writer reconstruction, six unit cases and fast checks/build; integration deferred to final gate. hr03

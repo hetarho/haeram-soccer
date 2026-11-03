@@ -1,5 +1,5 @@
 # WORLD Fictional world and catalogs
-> r8 | Define the browser-demo rules for fictional world and catalogs.
+> r9 | Define the browser-demo rules for fictional world and catalogs.
 
 ## decisions
 - WORLD-1 [o] Playable associations: ENG ESP GER ITA FRA POR NED BEL. Other UEFA associations appear as representative clubs only.
@@ -34,7 +34,7 @@
   - a stored name is never redrawn: own players, retained people and recorded facts keep the name they carry (→=SAVE-10).
 
 - WORLD-13 [o] Every world is made in 1930 and lives from the 1930/31 season to the chosen decade's first season (→WEB-2) by the same day order (→LEAGUE-11), with nobody owning a club, behind a progress screen naming the season reached; the same seed and decade make the same world. ← the bought club arrives with a real past
-  - every fixture before the takeover plays on the path clubs nobody owns use (→MATCH-22); standings, cups, European results and honours are archived as in play (→HIST-2).
+  - every fixture before the takeover takes the results-only path (→MATCH-22); standings, cups, European results and honours are archived as in play (→HIST-2).
 - WORLD-14 [o] League football stops for the war: after the 1938/39 close the world moves to 1 August 1946 without playing 1939/40–1945/46. People age through the gap, contracts and books stand still (no income, no wages, no costs), clubs nobody owns rise or fall once (→LEAGUE-10), and the owner's business keeps settling and paying living costs each quarter (→OWNER-7/8). A takeover in the 1940s happens at the 1946 restart. ← the decades differ as they did
 - WORLD-15 [o] A generated club's strength is its division's level (professional tier t: 77−11t) + its stature (→LEAGUE-10) ± 3, within 15–92.
 
@@ -43,6 +43,7 @@
 - Person continuity: generated/retained player → qualifying retirement/coaching choice → the same person in staff/manager candidacy → linked actual career facts.
 
 ## chg
+- r9 261103 WORLD-13✎ fixtures before the takeover on the path clubs nobody owns use→the results-only path (→MATCH-22)
 - r8 261103 WORLD-5✎ the owner's club founded in the amateur league→an existing professional club he buys; WORLD-8✎ no fabricated pre-start background→the background is the seasons played since 1930; WORLD-9- amateur clubs and league removed; WORLD-13+ the world is made in 1930 and lives to the chosen decade; WORLD-14+ wartime stop 1939/40–1945/46; WORLD-15+ generated strength by tier and stature (from WORLD-9, amateur level dropped)
 - r7 261102 WORLD-12+ person names: per-country pools 6–8 given × 6–8 surnames→at least 100 × 200 in the country's spelling, no shared surname within a generated NPC or founding squad, name draws never shift other attributes
 - r6 261016 WORLD-11✎ NPC continuity scope open→retain high/very-high coaching prospects and all former own players, actual age/retirement/affiliation and unique cross-role identity; ordinary club-strength model unchanged
