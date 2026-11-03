@@ -19,6 +19,8 @@
 | hr05 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T05:50Z | 2026-11-03T06:15Z | T682 |
 
 ## inbox
+- 261103 decided OWNER-3 ECON-36 ECON-38 T685: the owner asked to fix the balance as far as possible, a 석유 재벌 free to buy any club below his reach → reach by price-rank bands (dearest 8%, 8–20, 20–35, 35–55, 55–80, cheapest 20%) so three-division countries hold every tier, living costs 0.25%, dividend −0.5 per 1%, star sale −4 once a window (T668's proposals), books opening with half a season of income, cash kept to one season and debt to 1.5 seasons of income, takeover loan 10 seasons (alt: keep division reaches and add 지역 유지 rules per country | recalibrate the books' income scale only and leave them unbounded | pay the inherited debt at the takeover from the owner's fortune). ot03
+- 261103 decided ARCH-30 T683 T684: 39 integration failures on dfa39857 (the takeover's migrated tests, never run, plus the merge with hr03's read models) → two fix tasks run before the push, engine files and web/fixture files, each case kept protecting what it protects (alt: one task for all 24 files | push and fix on main). ot03
 - 261103 decided WEB-115 T678: how the feats are found → engine `seasonDigest` reads the archives and the clubs' Elo at each season reached and carries only the season's greatest feat; only the European Cup lineage makes the treble and the European feats; a league run is carded at five and afterwards only when it becomes its country's longest; the war is one card on the 1946 restart (alt: the UI derives feats from the digests it received, which a reload mid-generation would cut short | a card for every season a run continues). ot03
 - 261103 decided WEB-115 ARCH-28: the details of the generation history view the owner asked for (real speed, Elo world ranking, feat cards, a relaxed budget) → Club Elo top 10; cards about 3 s, one at a time, greatest feat per season, unshown cards dropped at the next season; feats: war stop/restart, treble, European Cup three-peat, third 발롱도르 in a row, European Cup back-to-back, first European Cup, league run of five; the view may add at most 10% to generation; the later-decade budget 5 s a season played (alt: 6 minutes for 2000 | a closing 1930–2000 summary page before the club list | prepared worlds per decade, deferred). ot03
 - 261103 decided SAVE-29 WEB-62 T677: user explicitly drops beta backward compatibility for old localStorage code → remove checkpoint slots/fallback/migration/reset/strategy cleanup; keep current preferences, notification/read markers, game index and manifest metadata, with no deletion or migration of existing browser keys. hr03
@@ -513,13 +515,13 @@
 | KIT | 9 | 9 | - | 0 |
 | CLUB | 50 | 50 | - | 0 |
 | MATCH | 47 | 47 | - | 0 |
-| LEAGUE | 12 | 12 | - | 0 |
+| LEAGUE | 13 | 13 | - | 0 |
 | STAFF | 38 | 38 | - | 0 |
-| ECON | 42 | 42 | - | 0 |
+| ECON | 43 | 43 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 22 | 22 | - | 0 |
 | SAVE | 65 | 65 | - | 0 |
-| OWNER | 1 | 1 | - | 0 |
+| OWNER | 2 | 2 | - | 0 |
 | PLAYER | 13 | 13 | - | 0 |
 
 ## review
@@ -555,10 +557,14 @@
 | T670 | engine tests build careers by taking a club over | WEB WORLD ECON CLUB ARCH | T665 | todo |
 | T671 | the founding leaves the engine: fixtures, web tests, e2e and scripts on takeovers | WEB WORLD CLUB SAVE ARCH | T670 | todo |
 | T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | doing@261103.ot03 |
-| T678 | the world's history plays while it is generated | WEB ARCH WORLD HIST PLAYER EURO | T668 | todo |
+| T678 | the world's history plays while it is generated | WEB ARCH WORLD HIST PLAYER EURO | T686 | todo |
 | T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
 | T681 | Reconcile client views once before store publication | ARCH WEB SAVE | T680 | doing@261103.hr05 |
 | T682 | Profile and reduce repeated day-step Worker work | ARCH WEB SAVE | T681 | doing@261103.hr05 |
+| T683 | engine integration tests on takeover careers | ARCH OWNER WORLD HIST SAVE | T668 | todo |
+| T684 | web and fixture integration tests on takeover careers | ARCH KIT SAVE HIST LEAGUE | T683 | todo |
+| T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T684 | todo |
+| T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -582,6 +588,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- implement-task T683, then T684 (integration fixes on wip/ot03), the e2e fix task once the Chromium read of dfa39857 is in, the batch gate and the push to main; then T685, T686 (balance), T678, T679
 - hr05: implement-task T681 then T682 for the owner-approved automatic-play bottlenecks; preserve ot03 ownership.
 - after the ot03 takeover lands on main (T668 last): implement-task T678 (history view while the world is generated, WEB-115), then T679 (explore 1h: generation with the view against ARCH-28)
 - Continue the active ot03 takeover handoff; hr03 read/storage work is complete (spec/reports/261103-hr03.md).
@@ -590,6 +597,7 @@
 - on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (founding screen, `found` message, identity editor, ready-made crests), then T670 (engine tests on `careerWorld`), T671 (the founding leaves the engine), T672 (the amateur level, LEAGUE-16), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
 
 ## log
+- 261103 update-ssot OWNER r2 ECON r43 LEAGUE r13 (balance: price-band reach with every cheaper club buyable, living costs 0.25%, fan mood drops halved, bounded books, a 10-season takeover loan); create-task T683 T684 (integration fixes), T685 T686 (balance); T678 dep T668→T686; ot03
 - 261103 review/automatic-play-hotspots-261103 F1/F2 adopted by the owner and tasked as T681/T682; preserve gameplay and production pace options. hr05
 - 261103 T680 done: 8 x 365 browser days, x20 target unmet (fresh 8.68–9.32/s; retained 3.49–3.55/s), all equal-date facts/commits/reloads pass; main-page shareValue hotspot measured; report spec/reports/261103-hr04.md. hr04
 - 261103 T680 planned from user measurement request: compare current x10 and isolated 50 ms/day experiments on fresh and retained careers; ship no pace change. hr04
@@ -609,4 +617,3 @@
 - 261103 ot03 batch gate passed on 8887ace7 (typecheck, lint, format, unit, integration 147 files, contract 47, catalogs, presentation, build, Chromium 346/346); pushed main with T646–T652, the design close and the gate fixes
 - 261103 fix e2e gate: the ot03 Chromium batch's 12 failures follow the removals (7 milestones, a rested player's line reads 팀 훈련) and the closed match design (경기 상세 opened past the first sample, a closing sheet's fading copy is not open), plus two app fixes — the 결재함 names the playing-coach player in the browser projection without people, and on phones the speed chips stay on screen beside the matchup
 - 261103 fix operating-expense test: owner capital no longer exists (T650), so the turnover case checks player sales and compensation only; found by the ot03 batch gate (integration 1 of 1187)
-- 261103 T652 done: nothing unused is left beside what the reasons in T652's result keep. `intervention` (no supported save lacks settings, so no level mapping), `campaign`, `sponsor` and `club-identity` leave Command/protocol/engine/outcome, `World.intervention` is dropped on load; engine `intervention.ts` and `MilestoneCollection` deleted, 69 exports removed (sprite painter, queue filters, criteria schemas, round-simulator injection among them), 3 test conveniences moved to test helpers, 56 CSS classes, 28 messages ×12 packs, 7 unused locals; tests set authority through `testing.ts` `staffAuthority`/`handTo`. Equivalence digests unchanged; unit 222/1900 green; contract 47 green (golden unchanged); e2e edited for the batch.
