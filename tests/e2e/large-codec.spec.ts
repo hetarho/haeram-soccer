@@ -1,3 +1,4 @@
+import { initializeReadModels } from '../../packages/engine/src/read-models';
 import { seedRawCheckpoint } from './checkpoint-storage';
 import { INDEXED_CHECKPOINT_LIMIT } from '../../apps/web/src/adapters/repository';
 import { test, expect } from '@playwright/test';
@@ -35,6 +36,7 @@ test('large portable codec writes, loads and exports under production CSP', asyn
   expect(csp).toContain("script-src 'self'");
   expect(csp).not.toContain('unsafe-eval');
   const world = validateWorld(largeCodecWorld(), LOAD_CATALOG);
+  initializeReadModels(world);
   expect(Object.keys(world.people!).filter((id) => id.startsWith('synthetic:codec:'))).toHaveLength(
     12000,
   );

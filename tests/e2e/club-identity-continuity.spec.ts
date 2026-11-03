@@ -1,3 +1,4 @@
+import { initializeReadModels } from '../../packages/engine/src/read-models';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
@@ -376,6 +377,12 @@ test('a shirt chosen for the next fixture and a waiting commission survive reloa
  * recorded kit invented, the released full match model and manager tracking started there in its
  * container (→SAVE-23/24), and the original kept verbatim as the verified previous copy.
  */
+function expectedAdoption(legacy: World) {
+  const expected = adoptedCareer(legacy);
+  initializeReadModels(expected);
+  return expected;
+}
+
 async function expectAdopted(page: Page, legacy: World, original: string) {
   await expect.poll(() => committedRaw(page), { timeout: 20000 }).not.toBe(original);
   const { world, envelope } = await decode((await committedRaw(page))!);
@@ -384,7 +391,7 @@ async function expectAdopted(page: Page, legacy: World, original: string) {
     2,
     1,
   ]);
-  expect(canonical(world)).toBe(canonical(adoptedCareer(legacy)));
+  expect(canonical(world)).toBe(canonical(expectedAdoption(legacy)));
   const crests = legacyCrestMap(legacy);
   for (const club of world.clubs) {
     const before = legacy.clubs.find((c) => c.id === club.id)!;
@@ -542,7 +549,7 @@ test('a failed adoption write keeps the original checkpoint and still exports th
   ).toBeVisible();
   // The original is still the committed checkpoint, now also its verified previous copy.
   expect(await checkpointStorage(page)).toEqual({ active: raw, manifest, previous: raw });
-  expect(canonical(await exportWorld(page))).toBe(canonical(adoptedCareer(legacy)));
+  expect(canonical(await exportWorld(page))).toBe(canonical(expectedAdoption(legacy)));
   const inbox = await openNotices(page);
   await expect(notice(inbox, SAVE_DATA_UPDATED)).toHaveCount(0);
   await closeNotices(inbox);
