@@ -17,9 +17,12 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
-| nv04 | ihaelam-ui-MacBookPro | autopilot | 2026-11-03T15:42Z | 2026-11-03T15:42Z | - |
 
 ## inbox
+- 261104 decided ECON-36 CLUB-1 T686: the owned club's first season earned 1.9–5.7× its books' last income at the top (6 of 23 within ±25%) because a club nobody owns kept its founding following, never moved, while a buyer takes over the following its reputation commands → the books read that following (`clubFollowing` in books.ts' club view, unit-tested); 30 of 41 reference careers within ±25%, ten of the other eleven having changed division at the 1949 close (alt: move every club's stored following each season, more save data for the same figure | record the gap unaligned). nv04
+- 261104 decided OWNER-3 OWNER-8 LEAGUE-13 T686: no passive owner may be bankrupt within 15 seasons, but at 1.3× and 0.25% 14 of 38 were, the earliest in his 3rd season (a country's band median costs up to 1.28× the anchor) → `OWNER_TIERS` multiples 1.3 → 1.6 and `OWNER_LIVING.rate` 0.25% → 0.2%: none before the 17th, while a passive owner still uses 41–87% of his fortune in 20 seasons; `CLUB_BOOKS`, `TAKEOVER_DEBT`, `CLUB_VALUE` and `FAN_MOOD` unchanged as none reaches a missed band, one tuning pass (alt: 1.7× alone | 1.5× and 0.15% | the rate alone, which cannot save an owner left 2–3% of his fortune). nv04
+- 261104 decided LEAGUE-13 T686: the reference club when a country's band median costs more than the tier's fortune, or the band holds no club of the country → the dearest club of the band below the median; else the nearest band, the cheaper of two equally near (alt: the median of the affordable clubs | the country's cheapest club). nv04
+- 261104 suggest OWNER-3 OWNER-8 LEAGUE-13 ECON-29 ECON-30 ECON-36 CLUB-25 OWNER-12 T686: update-ssot from T686's limits — record 1.6× (OWNER-3) and 0.2% (OWNER-8) with LEAGUE-13's and ECON-29's measured lines; make the top of CLUB-25's wage curve payable by a giant (the strongest clubs pay 1.8–3.3× their 1950 income in wages, so 석유 재벌's reference is bankrupt in its first rounds in 6 of 8 careers); recalibrate ECON-30's operating share on the as-played reference (+18.9% of revenue with nothing to build, so every lower tier reaches the top flight in 3–8 seasons); give OWNER-12 a band for dividend 퇴진 (50%: 5 of 23, 25%: 1 of 19); leave division changers out of ECON-36's ±25% check; then re-read LEAGUE-13's title columns on 60 seasons. nv04
 - 261103 decided ARCH-30 T685 T686 T678 T679: owner authorizes autopilot continuation, an intermediate main push after the release gate passes, and preservation of all work remotely before 2026-11-04 09:30 Asia/Seoul. Resume the latest cv03 checkpoint rather than restart completed takeover tasks; unfinished or unverified work goes to wip/nv04 at the deadline, with actual validation limits retained (alt: restart from main or publish an unverified release). nv04
 - 261103 decided T685 ARCH-30: the cv03 read-only Git blocker is resolved in the recovered nv04 worktree using the verified acceptEdits runner and scoped Git allowlist; restore the preserved task to todo and finish artifact regeneration and validation before T686 (alt: restart the completed implementation). nv04
 - 261103 decided ARCH-30 PLAYER-18 PLAYER-27 T685: resume the stopped Claude ot03 handoff at the owner's request; merge main performance and award/wage work before balance, reconcile parallel PLAYER r14 changes as r15 without a new product policy; push next and wip/cv03 for the 22:00 KST handoff, leaving main release to its own gate (alt: restart T653 from main | deploy during the handoff). cv03
@@ -687,7 +690,6 @@
 |---|---|---|---|---|
 | T678 | the world's history plays while it is generated | WEB ARCH WORLD HIST PLAYER EURO | T686 | todo |
 | T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
-| T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | doing@261103.nv04 |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | todo |
 
 ## work
@@ -712,11 +714,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T686, then T678 and T679; repair any release-gate failures before the intermediate main push.
+- implement-task T678, then T679; repair any release-gate failures before the intermediate main push. T686's tuned values (OWNER-3 1.6×, OWNER-8 0.2%) await their update-ssot record (inbox suggest).
 - Deadline: 2026-11-04 09:30 Asia/Seoul; preserve all incomplete work on wip/nv04 before the deadline.
 - T689 scoring research follows only after the takeover release work, with its existing measurement and publication requirements.
 
 ## log
+- 261104 T686 done: books read the following a club's reputation commands (ECON-36: 30 of 41 first owned seasons within ±25%, was 6 of 23); tier multiples 1.3 → 1.6 and living 0.25% → 0.2% (no passive owner bankrupt before season 17); 석유 재벌's giants still bankrupt (wages 1.8–3.3× income) and lower tiers reach the top flight in every career — update-ssot proposed; golden and prepared worlds regenerated, 994 affected unit tests and fast checks pass. nv04
 - 261104 fix release gate (4651893a, 2 of 344 Chromium failed): match-core 360x740 — the finished 홈으로 hint wrapped to two lines and pushed 상세 리포트 5 px under the bottom menu, now "다음 일정과 구단을 확인해요" with the 결과 보기 hint's glyph count; recruitment poor-ui — 1930 takeovers open on bounded books' cash that pays every fee, so the journey imports a 1950 self-made careerWorld (two years of fixed costs) whose dearest fee is too dear and its loan is not. All assertions kept; fast checks pass; both journeys left to the host gate. nv04
 - 261104 T685 done: price-rank reach, 0.25% living costs, halved fan-mood drops, bounded NPC books, 10-season takeover loan (code in cv03 checkpoint 3d9bdffd); golden and prepared worlds regenerated, 1125 affected unit tests and fast checks pass; contract/integration/e2e left to the host gate. nv04
 - 261103 cv03 takeover: resume the stopped ot03 handoff on work/cv03-continuation; merge current main, preserving takeover, hr05 performance and bl03 awards/wages.
@@ -736,5 +739,3 @@
 - 261103 T680 done: 8 x 365 browser days, x20 target unmet (fresh 8.68–9.32/s; retained 3.49–3.55/s), all equal-date facts/commits/reloads pass; main-page shareValue hotspot measured; report spec/reports/261103-hr04.md. hr04
 - 261103 T680 planned from user measurement request: compare current x10 and isolated 50 ms/day experiments on fresh and retained careers; ship no pace change. hr04
 - 261103 hr03 CI 41577500074 passed all 9 jobs for published main source af513df9; exact-SHA REST receipt replaces the CLI public-HTML watcher's completed/null parse. No app code changed.
-- 261103 T675 done: unit 1917, integration 1176 (+4 skipped), contract 47; Chromium 349 executed, repaired 9 setup/expectation failures with 22/22 scoped reruns; final coordinator gate fde8c867 passes. hr03
-- 261103 T676 done: clean 84-season checkpoint gzip encode/validate 18.64 s, original facts/news/stats equal, UTF-16 4.08 MB / portable 6.11 MB; fallback portions superseded by user-approved T677. hr03

@@ -161,8 +161,8 @@ export function bookIncomeLines(w: World, club: Club, tierBefore?: number) {
  * its neutral default and every number comes from the owner's functions. Its fixtures are the
  * club's own, all the owner's functions read of them. Its supporters are the following its
  * reputation commands, as a buyer takes them over (→CLUB-1, ECON-37): the stored following of a
- * club nobody owns is its founding figure, never moved, and left a top club's book a quarter to a
- * third of the gate and about half the commercial income it earns once bought (T686).
+ * club nobody owns is its founding figure, never moved, and left a top club's book 22–42% of the
+ * gate and about half the commercial income it earns once bought (T686).
  */
 function clubView(w: World, club: Club, fixtures: Fixture[]): World {
   const { stadium } = facilityStage(w, club);
