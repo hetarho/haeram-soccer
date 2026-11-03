@@ -12,7 +12,6 @@ import {
   clubOf,
   currentDay,
   dailyMarket,
-  FOUNDING_YEAR,
   marketValue,
   operate,
   placeBid,
@@ -26,6 +25,7 @@ import {
 import { holdRows, sellPlayer, unreadAttention } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { CLOSED, incoming, on, world } from './transfers.testkit';
+import { CAREER_YEAR } from './career.testkit';
 
 const share = (amount: string, percent: number) =>
   ((BigInt(amount) * BigInt(percent)) / 100n || 1n).toString();
@@ -141,18 +141,18 @@ describe('transfer windows', () => {
       while (currentDay(w) < SEASON_END_DAY) advanceDays(w, 1);
       return w;
     });
-    expect(w).toMatchObject({ year: FOUNDING_YEAR, round: 46 });
+    expect(w).toMatchObject({ year: CAREER_YEAR, round: 46 });
     expect(transferWindow(w)).toMatchObject({ open: false, kind: 'summer', daysLeft: 1 });
     // The day after the final round closes the season and opens the next summer window.
     advanceDays(w, 1);
-    expect(w.year).toBe(FOUNDING_YEAR + 1);
+    expect(w.year).toBe(CAREER_YEAR + 1);
     expect(currentDay(w)).toBe(0);
     expect(transferWindow(w)).toMatchObject({ open: true, kind: 'summer', daysLeft: 31 });
     const opens = (w.inbox || []).filter((item) => item.kind === 'window-open');
     const closes = (w.inbox || []).filter((item) => item.kind === 'window-close');
     expect(opens.map((item) => [item.year, item.day, item.attention])).toEqual([
-      [FOUNDING_YEAR, 153, true],
-      [FOUNDING_YEAR + 1, 0, true],
+      [CAREER_YEAR, 153, true],
+      [CAREER_YEAR + 1, 0, true],
     ]);
     expect(closes.map((item) => [item.day, item.attention])).toEqual([
       [31, false],
@@ -345,7 +345,7 @@ describe('outgoing bids', () => {
     w.bids = [bid];
     expect(() => placeBid(w, 6, share(offers[6].fee, 500))).toThrow('이적시장이 닫혀');
     advanceDays(w, 1);
-    expect(w.year).toBe(FOUNDING_YEAR);
+    expect(w.year).toBe(CAREER_YEAR);
     expect(w.bids?.[0]).toMatchObject({ id: 'out:legacy', status: 'expired' });
     expect(validateWorld(w).id).toBe(w.id);
   });

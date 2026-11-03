@@ -13,7 +13,6 @@ import {
   activeTrainingFocus,
   ageGroupOf,
   autoTrainingAdvice,
-  createWorld,
   developAcademy,
   focusFor,
   makePlayer,
@@ -26,9 +25,10 @@ import {
   youthAdvice,
   youthFocus,
 } from './index';
+import { careerWorld } from './career.testkit';
 
 const world = (seed = 'coach-orders', country: 'ENG' | 'GER' = 'ENG') =>
-  createWorld({ country, name: 'Order Town', color: '#334455', seed, level: 'normal' as const });
+  careerWorld({ country, seed });
 let serial = 0;
 function prospect(
   w: World,

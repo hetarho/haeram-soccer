@@ -1,17 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import type { World, Position } from '../../contracts/src/types';
-import { createWorld, activePlayers, makePlayer, transferWindowDays, dailyMarket } from './index';
+import { activePlayers, makePlayer, transferWindowDays, dailyMarket } from './index';
 import { openNeed } from './replacements';
 import { movePerson } from './npc-continuity';
+import { careerWorld } from './career.testkit';
 function world() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Deadline Youth',
-    color: '#224433',
-    seed: 'deadline-youth',
-    level: 'easy',
-  });
+  const w = careerWorld({ seed: 'deadline-youth' });
   w.calendar = { day: transferWindowDays(w.year).winterClose };
   w.settings!.responsibilities.academy = 'delegated';
   w.cash = '0';

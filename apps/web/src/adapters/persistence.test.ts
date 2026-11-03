@@ -3,7 +3,6 @@ import { canonical } from '../../../../packages/contracts/src/index';
 import {
   advanceDays,
   advanceRound,
-  createIdentityDraft,
   createWorld,
   identityOf,
   installMissingIdentities,
@@ -21,11 +20,8 @@ import { appearanceForFixture } from '../../../../packages/engine/src/match-appe
 import {
   adoptedCareer,
   containerOneCheckpoint,
-  editActions,
   editedDesign,
-  FIRST_COLOUR,
   FOUNDED_DESIGN,
-  FOUNDING_ACTIONS,
   FUTURE_CHECKPOINTS,
   preIdentityCareer,
 } from '../../../../tests/fixtures/club-identity';
@@ -33,7 +29,6 @@ import { featureState } from '../../../../tests/fixtures/feature-state';
 import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
-import { reduceIdentityDraft } from '../ui/clubIdentityDraft';
 import { checkpoint, encode, decode, type PreviousStore, type StoragePort } from './persistence';
 import { MANIFEST, SLOT } from './repository';
 import { base64, pack, unpack } from './packing';
@@ -1017,17 +1012,13 @@ const continuityCareer = () =>
   });
 
 describe('club identity continuity fixtures (→KIT-12/15, SAVE-3/20/21/22)', () => {
-  it('the journey steps give its literal designs from any founding draft', () => {
-    for (const seed of ['identity-continuity-360', 'identity-continuity-390', 'save-test']) {
-      const draft = createIdentityDraft({ country: 'ENG', seed, color: FIRST_COLOUR });
-      expect(FOUNDING_ACTIONS.reduce(reduceIdentityDraft, draft)).toEqual(FOUNDED_DESIGN);
-    }
+  it('the journey designs are complete identities the strict schema keeps as written', () => {
     expect(clubIdentitySchema.parse(FOUNDED_DESIGN)).toEqual(FOUNDED_DESIGN);
     expect(FOUNDED_DESIGN.crest).not.toHaveProperty('secondary');
     for (const role of KIT_ROLES) {
-      const edited = editActions(role).reduce(reduceIdentityDraft, FOUNDED_DESIGN);
-      expect(edited).toEqual(editedDesign(role));
+      const edited = editedDesign(role);
       expect(clubIdentitySchema.parse(edited)).toEqual(edited);
+      expect(edited.kits[role]).not.toEqual(FOUNDED_DESIGN.kits[role]);
     }
   });
 

@@ -3,7 +3,6 @@ import { COUNTRIES } from '../../catalogs/src/index';
 import {
   activePlayers,
   clubOf,
-  createWorld,
   FRESH_FATIGUE,
   fatigueLoad,
   npcTactic,
@@ -11,8 +10,11 @@ import {
   rating,
   startingSquad,
 } from './index';
+import { careerWorld } from './career.testkit';
+import { createWorld } from './founding';
 
 describe('a fair start', () => {
+  // The founding's own squad is the subject: it leaves with the founding (T671).
   it.each(COUNTRIES.map((country) => country.code))(
     'founds an ordinary member of its league in %s',
     (code) => {
@@ -36,13 +38,7 @@ describe('a fair start', () => {
   it('charges nothing for ordinary match fitness and the excess beyond it', () => {
     expect(fatigueLoad(FRESH_FATIGUE)).toBe(0);
     expect(fatigueLoad(FRESH_FATIGUE + 12)).toBe(12);
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Fitness',
-      color: '#335577',
-      seed: 'fitness',
-      level: 'normal' as const,
-    });
+    const w = careerWorld({ seed: 'fitness' });
     const fresh = rating(w, clubOf(w));
     for (const player of activePlayers(w)) player.fatigue = FRESH_FATIGUE;
     expect(rating(w, clubOf(w))).toBe(fresh);
@@ -51,13 +47,7 @@ describe('a fair start', () => {
   });
 
   it('makes pressing clubs nobody owns carry their usual load', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Press Load',
-      color: '#335577',
-      seed: 'press-load',
-      level: 'normal' as const,
-    });
+    const w = careerWorld({ seed: 'press-load' });
     const pressing = w.clubs.find((c) => c.id !== w.playerClub && npcTactic(c) === 'press')!;
     const calm = w.clubs.find((c) => c.id !== w.playerClub && npcTactic(c) !== 'press')!;
     expect(startingSquad(w, pressing).every((p) => p.fatigue === PRESS_LOAD_FATIGUE)).toBe(true);

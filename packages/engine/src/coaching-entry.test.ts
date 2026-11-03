@@ -1,17 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { PersonCareer } from '../../contracts/src/types';
-import { createWorld } from './index';
 import { coachingEntryReady, decideCoachingIntention, intentionFromDraw } from './coaching-entry';
 import { careerDate } from './person-careers';
 import { recordRetirementAnnouncement, retirePerson } from './careers';
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Coaching Intention',
-    color: '#224466',
-    seed: 'intention',
-    level: 'easy',
-  });
+import { careerWorld } from './career.testkit';
+const world = () => careerWorld({ seed: 'intention' });
 function candidate(grade: 4 | 5 = 4) {
   const w = world(),
     p = w.players[0],

@@ -19,7 +19,7 @@ export { BANKRUPTCY_ROUNDS, CASH_WARNING_ROUNDS } from './settlement';
 
 export { operatingCost, credit, debit } from './transactions';
 /** Refusal for a bankrupt club: the career is over, only its records remain. */
-export const BANKRUPT_MESSAGE = '구단이 파산했어요. 기록을 내보내거나 새 클럽을 창단하세요.';
+export const BANKRUPT_MESSAGE = '구단이 파산했어요. 기록을 내보내거나 새 게임을 시작하세요.';
 /** The owner's commands, each handled by the domain that owns it. */
 export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'season' }>) {
   if (w.bankrupt && cmd.type !== 'read-inbox') throw new Error(BANKRUPT_MESSAGE);

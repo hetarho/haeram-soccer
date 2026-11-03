@@ -71,6 +71,5 @@ export function seasonDayOf(seasonYear: number, month: number, date: number) {
 export function seasonDayLabel(seasonYear: number, day: number) {
   return dateLabel(seasonYear, day);
 }
-/** The European Cup starts in 1955; every club is founded five seasons earlier (→WEB-2). */
+/** The European Cup starts in 1955 (→EURO). */
 export const EUROPEAN_CUP_START = 1955;
-export const FOUNDING_YEAR = EUROPEAN_CUP_START - 5;

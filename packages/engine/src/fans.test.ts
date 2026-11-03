@@ -5,7 +5,6 @@ import {
   BANKRUPT_MESSAGE,
   catchment,
   clubOf,
-  createWorld,
   driftFans,
   facilityBuiltUnits,
   facilityUpkeepUnits,
@@ -21,15 +20,9 @@ import {
   stature,
 } from './index';
 import { holdRows } from './testing';
+import { careerWorld } from './career.testkit';
 
-const world = (seed = 'fans-and-money') =>
-  createWorld({
-    country: 'ENG',
-    name: 'Gate Town',
-    color: '#224433',
-    seed,
-    level: 'easy' as const,
-  });
+const world = (seed = 'fans-and-money') => careerWorld({ seed });
 
 describe('supporters follow reputation, not the stadium', () => {
   it('drifts toward a following that grows with reputation and has no ceiling', () => {

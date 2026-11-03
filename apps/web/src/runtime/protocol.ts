@@ -32,7 +32,6 @@ import {
   type ClubSheetFacts,
 } from '../../../../packages/contracts/src/owner';
 import {
-  clubIdentitySchema,
   designStudioSchema,
   identityColoursSchema,
   kitRoleSchema,
@@ -189,20 +188,6 @@ export const requestSchema = z.object({
       activate: z.boolean().optional(),
       upgrade: z.boolean().optional(),
       raw: z.string().max(8 * 1024 * 1024),
-    }),
-    z.object({
-      type: z.literal('found'),
-      replace: z.boolean().optional(),
-      input: z.object({
-        country: z.enum(['ENG', 'ESP', 'GER', 'ITA', 'FRA', 'POR', 'NED', 'BEL']),
-        name: z.string().min(1).max(60),
-        color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
-        seed: z.string().max(80),
-        level: z.enum(['easy', 'normal', 'hard', 'extreme']),
-        preset: z.string().min(1).max(40).optional(),
-        // The previewed founding identity (→KIT-14); the engine checks it leads with `color`.
-        identity: clubIdentitySchema.optional(),
-      }),
     }),
     // A new game (→WEB-2, WORLD-13): the world generated to the chosen decade, held by the worker
     // unsaved until one of its clubs is taken over; `replace` starts it beside a game in play.

@@ -267,10 +267,10 @@ export const STORIES: Story[] = [
   ),
   story(
     'identity',
-    '엠블럼 · 유니폼 편집기',
+    '엠블럼 · 유니폼',
     '운영 · 시설',
-    ['ClubIdentityEditor', 'ClubCrest', 'KitSwatch', 'KitPitchPreview'],
-    '엠블럼 구성과 홈·원정·세 번째·골키퍼 유니폼을 실제 렌더러로 편집.',
+    ['ClubCrest', 'KitSwatch', 'KitPitchPreview'],
+    '생성된 구단의 엠블럼과 홈·원정·세컨 유니폼, 잔디 위 미리보기를 실제 렌더러로 표시.',
   ),
   story(
     'design',
@@ -328,13 +328,6 @@ export const STORIES: Story[] = [
     '기록 · 시작',
     ['SeasonReview', 'PastSeason', 'CupHistory'],
     '지난 시즌의 성과와 대회 기록.',
-  ),
-  story(
-    'founding',
-    '창단 화면',
-    '기록 · 시작',
-    ['ClubFounding'],
-    '새 게임의 국가·이름·난이도·운영 방향과 디자인 설정.',
   ),
   story(
     'start-flow',

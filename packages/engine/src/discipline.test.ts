@@ -7,7 +7,7 @@ import {
   serveBans,
   yellowWarning,
 } from './discipline';
-import { activePlayers, createWorld, ownLeagueClubs, ownStarters, startingSquad } from './index';
+import { activePlayers, ownLeagueClubs, ownStarters, startingSquad } from './index';
 import { matchdayRosters } from './aggregate/engine';
 import { currentDay } from './calendar';
 import { buildGridSetup, eraRules } from './grid/setup';
@@ -17,15 +17,10 @@ import { advanceRound } from './season';
 import { founded } from './season.testkit';
 import { squad } from './world';
 import { withCandidateModel } from '../../../tests/fixtures/worlds';
+import { careerWorld } from './career.testkit';
 
 function world() {
-  return createWorld({
-    country: 'ENG',
-    name: 'Booking Town',
-    color: '#553322',
-    seed: 'discipline',
-    level: 'normal',
-  });
+  return careerWorld({ seed: 'discipline' });
 }
 /** The own club's league fixtures of the season, in round order. */
 const leagueFixtures = (w: World) =>

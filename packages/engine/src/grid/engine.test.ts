@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
-import { createWorld } from '../index';
 import { validateFullMatchRecord } from '../match-model';
 import { playGrid } from './engine';
 import { BOX_CONFIG } from './box';
@@ -14,18 +13,10 @@ import { RESTART_CONFIG } from './restarts';
 import { buildGridSetup, type DecideRule } from './setup';
 import { createState } from './state';
 import type { TraceEntry } from './trace';
+import { careerWorld } from '../career.testkit';
 
 // The pre-feature path's world: `candidate` below opts a fixture into the model.
-const w = createWorld(
-  {
-    country: 'ENG',
-    name: 'Grid Engine Lab',
-    color: '#2a5d8f',
-    seed: 'grid-engine',
-    level: 'normal',
-  },
-  DISABLED_RELEASE,
-);
+const w = careerWorld({ seed: 'grid-engine' }, DISABLED_RELEASE);
 const [home, away] = w.clubs.filter(
   (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
 );

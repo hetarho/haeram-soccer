@@ -1,24 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
-import { createWorld, simulateSeason } from './founding';
+import { simulateSeason } from './founding';
 import { operate } from './operations';
 import { advanceDays, advanceRound, prepareRound } from './season';
 import { assertNextEvent } from './next-event';
 import { careerEnded, ENDED_MESSAGE } from './owner';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { careerWorld } from './career.testkit';
 
 /** A founded career stepped manually, so the next-event step is open to it. */
 const world = () => {
-  const w = createWorld(
-    {
-      country: 'ENG',
-      name: 'Proprietors Town',
-      color: '#335577',
-      seed: 'owner-foundation',
-      level: 'normal' as const,
-    },
-    DISABLED_RELEASE,
-  );
+  const w = careerWorld({ seed: 'owner-foundation' }, DISABLED_RELEASE);
   w.settings = { ...w.settings!, mode: 'manual' };
   return w;
 };

@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest';
 import fc from 'fast-check';
 import { validateWorld } from '../../contracts/src/schema';
 import { canonical } from '../../contracts/src/index';
+import { careerWorld } from './career.testkit';
 import {
-  createWorld,
   simulateSeason,
   fixturesFor,
   simulateMatch,
@@ -128,7 +128,7 @@ describe('world progression', () => {
   it('replaces retiring goalkeepers even when the remaining squad exceeds 18 players', () => {
     // The season up to its close, which retires the goalkeepers.
     const w = cachedWorld('retiring-goalkeepers-last-round', () => {
-      const w = createWorld(input);
+      const w = careerWorld({ seed: input.seed });
       w.cash = '999999999';
       for (const p of w.players) {
         p.born = w.year - (p.position === 'GK' ? 35 : 21);
@@ -157,12 +157,12 @@ describe('world progression', () => {
     expect(clubOf(w).fans).toBeGreaterThanOrEqual(5000000 * (1 - 0.001));
   });
   it('replays commands deterministically without browser time', () => {
-    const a = createWorld(input),
-      b = createWorld(input);
+    const a = careerWorld({ seed: input.seed }),
+      b = careerWorld({ seed: input.seed });
     advanceRound(a);
     advanceRound(b);
+    expect(a.round).toBe(1);
     expect(canonical(a)).toBe(canonical(b));
-    expect(clubOf(a).name).toBe(input.name);
   });
 });
 it('never assigns the single goal scorer an assist for the same goal', () => {

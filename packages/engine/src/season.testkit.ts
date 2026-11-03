@@ -1,6 +1,6 @@
 import { expect } from 'vitest';
 import type { Club, CountryCode, World } from '../../contracts/src/index';
-import { COUNTRIES, country, currency, priceIndex } from '../../catalogs/src/index';
+import { COUNTRIES, country } from '../../catalogs/src/index';
 import {
   advanceRound,
   closeSeason,
@@ -11,21 +11,30 @@ import {
   MATCH_MODEL_RELEASE,
   type MatchModelRelease,
   ownLeagueClubs,
-  prepareSeason,
   ranked,
 } from './index';
-import { professionalStart, staffAuthority } from './testing';
+import { staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import { careerWorld } from './career.testkit';
 
 /**
- * A club whose first season is `year`, with a squad and manager of that time, founded under
- * `release` (default the switch as it stands). An enabled release records the model before the
- * year moves, so a candidate founded in `year` is
- * `withCandidateModel(founded(year, DISABLED_RELEASE))`.
+ * A club taken over on `year`'s first day (default `CAREER_YEAR`) under `release` (default the
+ * switch as it stands), in a world made fresh that season. An enabled release records the model at
+ * the takeover, so a candidate of `year` is `withCandidateModel(founded(year, DISABLED_RELEASE))`.
  */
 export function founded(year?: number, release: MatchModelRelease = MATCH_MODEL_RELEASE) {
+  const w = careerWorld({ seed: 'season-archive', year }, release);
+  w.settings = staffAuthority(2);
+  return w;
+}
+
+/**
+ * The archive club founded in the amateur league under `release`: only the amateur level's own
+ * archive is its subject (T672 removes the level, T671 the founding).
+ */
+function amateurFounded(release: MatchModelRelease) {
   const w = createWorld(
     {
       country: 'ENG',
@@ -37,19 +46,6 @@ export function founded(year?: number, release: MatchModelRelease = MATCH_MODEL_
     release,
   );
   w.settings = staffAuthority(2);
-  if (!year) return w;
-  w.year = year;
-  delete w.people;
-  w.currency = currency('ENG', year).code;
-  w.priceIndex = priceIndex('ENG', year).value;
-  w.manager.since = year;
-  w.manager.until = year + 3;
-  for (const p of w.players) {
-    p.born = year - 24;
-    p.joined = year;
-    p.until = year + 2;
-  }
-  prepareSeason(w);
   return w;
 }
 
@@ -69,8 +65,8 @@ export function archiveLastRound(start: 'amateur' | 'professional' | 1980) {
       start === 1980
         ? founded(1980, DISABLED_RELEASE)
         : start === 'professional'
-          ? professionalStart(founded(undefined, DISABLED_RELEASE))
-          : founded(undefined, DISABLED_RELEASE),
+          ? founded(undefined, DISABLED_RELEASE)
+          : amateurFounded(DISABLED_RELEASE),
     ),
   );
 }
@@ -102,7 +98,7 @@ export function lastRound(code: CountryCode, professional = false) {
   // Exactly 46 round steps: one stays put once the club is bankrupt, which then never gets here.
   const w = professional
     ? cachedWorld(`professional-last-round-${code}`, () => {
-        const w = professionalStart(createWorld(exchangeFounding(code), DISABLED_RELEASE));
+        const w = careerWorld({ country: code, seed: 'amateur-exchange' }, DISABLED_RELEASE);
         for (let n = 0; n < 46; n++) advanceRound(w, undefined, false);
         return w;
       })

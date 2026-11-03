@@ -198,7 +198,7 @@
     "TENDENCY_CONFIG.anticipation.skills": "예측력에 패스 능력과 수비 능력의 평균이 더해지는 비중입니다.",
     "TENDENCY_CONFIG.freedom.floor": "자유도(공을 가졌을 때 자기 자리에서 얼마나 벗어나는지, 0–1)의 최솟값입니다. 감독이 아무리 엄격해도 이만큼은 움직입니다.",
     "TENDENCY_CONFIG.freedom.span": "자유도에서 감독 유연성 × 역할 창의성 × 판단력으로 더해질 수 있는 폭입니다. 올리면 자유로운 역할의 선수가 자리에서 훨씬 멀리 움직입니다.",
-    "TENDENCY_CONFIG.neutralFlexibility": "전술 성향이 없는 감독(창단 감독·임시 감독)이 주는 유연성 값(0–100 척도)입니다. 올리면 그런 감독 아래 선수들의 자유도가 커집니다.",
+    "TENDENCY_CONFIG.neutralFlexibility": "전술 성향이 없는 감독(학파 없는 감독·임시 감독)이 주는 유연성 값(0–100 척도)입니다. 올리면 그런 감독 아래 선수들의 자유도가 커집니다.",
     "TENDENCY_CONFIG.roleCreativity.shotStopper": "슈팅 스토퍼 골키퍼 역할의 창의성(0.2 = 자리 고정, 1 = 자유 역할)입니다. 자유도 계산에 곱해지며, 올리면 이 역할의 자유도가 커집니다.",
     "TENDENCY_CONFIG.roleCreativity.sweeperKeeper": "스위퍼 키퍼 역할의 창의성(0.2–1)입니다. 올리면 이 역할의 자유도가 커집니다.",
     "TENDENCY_CONFIG.roleCreativity.stopper": "스토퍼 센터백 역할의 창의성(0.2–1)입니다. 올리면 이 역할의 자유도가 커집니다.",

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld, operate, operatingCosts } from './index';
+import { operate, operatingCosts } from './index';
 import {
   answerPlayingCoach,
   playingCoachDepartureCost,
@@ -17,14 +17,9 @@ import { pendingDecisions } from './stopping';
 import { handoverSales, respondBid } from './transfers';
 import type { TransferBid } from '../../contracts/src/types';
 import { stagePlayingCoach } from './testing';
+import { careerWorld } from './career.testkit';
 function world(years: 1 | 2 = 2, term: 1 | 2 | 3 | 4 | 5 = 5) {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Dual Role',
-    color: '#224466',
-    seed: 'dual-life',
-    level: 'easy',
-  });
+  const w = careerWorld({ seed: 'dual-life' });
   w.cash = w.income = '999999999999';
   w.round = 35;
   w.calendar = { day: 245 };
@@ -47,7 +42,7 @@ function world(years: 1 | 2 = 2, term: 1 | 2 | 3 | 4 | 5 = 5) {
   answerPlayingCoach(w, p.id, true);
   return { w, id: p.id, quote, costs };
 }
-function bidFor(w: ReturnType<typeof createWorld>, id: string) {
+function bidFor(w: ReturnType<typeof careerWorld>, id: string) {
   w.year++;
   w.round = 0;
   w.calendar = { day: 0 };

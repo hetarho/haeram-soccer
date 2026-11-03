@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import type { MatchRecord, OwnerTrait, SeasonArchive, World } from '../../contracts/src/types';
-import { createWorld } from './founding';
 import { operate } from './operations';
 import {
   fanMoodAfterLeagueMatch,
@@ -17,19 +16,11 @@ import { activePlayers, clubOf, overall } from './player-state';
 import { recordTransfer } from './transfer-records';
 import { withOwner } from './testing';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { careerWorld } from './career.testkit';
 
 /** A taken-over career at 팬 민심 `mood`, holding `traits`. */
 function world(mood: number = FAN_MOOD.start, traits: OwnerTrait[] = []) {
-  const w = createWorld(
-    {
-      country: 'ENG',
-      name: 'Terrace United',
-      color: '#227744',
-      seed: 'fan-mood',
-      level: 'normal' as const,
-    },
-    DISABLED_RELEASE,
-  );
+  const w = careerWorld({ seed: 'fan-mood' }, DISABLED_RELEASE);
   withOwner(w, { fanMood: mood, traits, fortune: '100000000000' });
   w.income = '0';
   w.expense = '0';

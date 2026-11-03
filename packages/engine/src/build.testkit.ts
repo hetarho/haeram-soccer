@@ -1,12 +1,7 @@
 import { ATTRIBUTES, POSITIONS } from '../../contracts/src/player';
 import type { Fixture, Tactic, World } from '../../contracts/src/types';
-import {
-  createWorld,
-  MATCH_MODEL_RELEASE,
-  type MatchModelRelease,
-  npcTactic,
-  simulateMatch,
-} from './index';
+import { MATCH_MODEL_RELEASE, type MatchModelRelease, npcTactic, simulateMatch } from './index';
+import { careerWorld } from './career.testkit';
 
 interface Build {
   passing: number;
@@ -22,16 +17,7 @@ export function scenario(
   opponentTactic: Tactic = 'balanced',
   release: MatchModelRelease = MATCH_MODEL_RELEASE,
 ) {
-  const w = createWorld(
-    {
-      country: 'ENG',
-      name: 'Build Laboratory',
-      color: '#112233',
-      seed: 'build-samples',
-      level: 'normal' as const,
-    },
-    release,
-  );
+  const w = careerWorld({ seed: 'build-samples' }, release);
   w.manager.ability = 50;
   // Every outfielder plays every outfield position alike, so each tactic's formation reads the
   // build's qualities whoever fills a slot: finishing, passing, defending and stamina.

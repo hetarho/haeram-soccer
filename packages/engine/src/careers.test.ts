@@ -1,18 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { MatchRecord } from '../../contracts/src/types';
 import { retireAtClose } from './careers';
-import { activePlayers, createWorld } from './index';
+import { activePlayers } from './index';
 import { zeroMetrics } from './primitives';
+import { careerWorld } from './career.testkit';
 
 describe('career farewells (→HIST-13)', () => {
   it('counts a farewell appearance only with minutes played', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Farewell Town',
-      color: '#334455',
-      seed: 'farewell',
-      level: 'normal',
-    });
+    const w = careerWorld({ seed: 'farewell' });
     const p = activePlayers(w)[0];
     const line = (minutes: number) => {
       const metrics = zeroMetrics();

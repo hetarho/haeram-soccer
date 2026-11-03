@@ -1,12 +1,13 @@
 /**
  * Test helper (not exported from the engine index): a grid state between two top-tier NPC clubs
- * with chosen tactics, in a world founded under `release` (`createWorld`'s, the switch as it
- * stands, by default).
+ * with chosen tactics, in a career taken over under `release` (the switch as it stands, by
+ * default).
  */
 import type { Fixture, Tactic, World } from '../../../contracts/src/types';
-import { createWorld, MATCH_MODEL_RELEASE, type MatchModelRelease } from '../index';
+import { MATCH_MODEL_RELEASE, type MatchModelRelease } from '../index';
 import { buildGridSetup, type GridSetup } from './setup';
 import { createState, type GridState } from './state';
+import { careerWorld } from '../career.testkit';
 
 export interface Kit {
   w: World;
@@ -20,10 +21,7 @@ export function gridKit(
   seed = 'grid-lab',
   release: MatchModelRelease = MATCH_MODEL_RELEASE,
 ): Kit {
-  const w = createWorld(
-    { country: 'ENG', name: 'Grid Lab', color: '#2a5d8f', seed, level: 'normal' },
-    release,
-  );
+  const w = careerWorld({ seed }, release);
   const [home, away] = w.clubs.filter(
     (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
   );

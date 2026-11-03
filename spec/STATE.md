@@ -13,11 +13,19 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-03T00:00Z | T665 next on wip/ot03 |
+| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-03T00:27Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261103 decided ARCH-21 T670: engine tests whose subject is a career without owner state (owner commands and hooks standing aside, books never closing, a bankruptcy leaving `ended` unset, a schema without owner/loan) once every career is a takeover → a `careerWorld` with `owner` deleted, as a hand-built world holds it (alt: keep them on `createWorld` for T671 | drop the cases). ot03
+- 261103 decided T670 T671 T672: which engine tests stay on `createWorld` → the founding's own squad (`balance.test` "a fair start", `names.test` founding surnames), `identity-legacy.test` (crests frozen from the original module on founded worlds), the founding identity input (`club-identity`, `identity-operations`) and the amateur archive (`season.testkit` `amateurFounded`, `archiveLastRound('amateur')`); every `simulatedWorld(Founding…)` caller waits for T671's input change; tests that moved the own club into the amateur league to change league (`scoring`) or to get empty rounds (`calendar`) move it to another professional division instead, the top flight's 38 games in 46 rounds (alt: leave those two for T672). ot03
+- 261103 decided ARCH-21 T665: how runtime tests that played a founding on (`playOn`) get a played world once `found` goes → `startedWorld` in `host.testkit.ts`, the engine's own 1930 takeover the host makes (checked canonically equal on both releases), grown in a cached builder with the club funded first since a 1930 takeover holds no cash; the amateur-league projection test goes with the founding (the level is T672's) and the full-stats "no ledger" case removes the started career's ledger for the read (alt: wait for T670's `careerWorld` | keep founded played worlds, which `playOn`'s equality refuses). ot03
+- 261103 decided KIT-2 T665: the identity storage workload cycled the six ready-made crests → it keeps those six catalogue compositions as its own `CREST_COMPOSITIONS`, so its recorded designs and hashes stay (alt: cycle shapes, patterns and emblems apart, which re-records the workload). ot03
+- 261103 decided WEB-86 KIT-14 T665: what the editor's draft tests and story become → persistence keeps schema checks of its literal journey designs, the e2e import writes its newer design directly, and the design-system identity story shows the sample club's applied crest at three sizes, its three shirts and the pitch preview against the light example, marked Pending in UI-COVERAGE (alt: keep the draft reducer as a test helper nothing in the game reads). ot03
+- 261103 decided T665 T670 T671 T672: T665 (founding, difficulty, editor and amateur level end to end) cannot finish in one unit — 243 files build worlds with `createWorld`/`simulatedWorld(Founding)` → split into T665 founding screen, `found` message, identity editor and ready-made crests; T670 engine/contracts tests on a takeover test builder; T671 fixtures, web tests, e2e and scripts, then the founding deleted; T672 the amateur level with LEAGUE-16's test; T666–T668 wait on T672 (alt: one unit for all of it, which would stop mid-migration | a renamed founding builder for tests, which keeps the founding in the code). ot03
+- 261103 decided T670 ARCH-21: how tests get a career once the founding goes → `careerWorld`: a fresh 1950 world nobody owns (`historyWorld` with a test-only year) and a takeover of the lowest division's first club by an `oil` owner, funded with two years of fixed costs (alt: a lived world from `generateHistory`, seconds per test | the takeover's own cash 0, bankrupt at round 8). ot03
+- 261103 decided KIT-2 KIT-14 T665: KIT-2 still offered six ready-made crests, 랜덤 and 직접 꾸미기 while KIT-14 removed the founding crests and no editor is left → KIT r9: designers compose crests from the component catalogue; no ready-made crests or owner-side composition (alt: keep the six presets as designer templates, which nothing reads). ot03
 - 261103 decided MATCH-22 WORLD-13 T669: which worlds take the results-only path → every world with `playerClub` empty, whatever its match model, checked first in `simulateMatch` (alt: only worlds on the released model). ot03
 - 261103 decided MATCH-22 T669: results-only score model → per-side Poisson fitted to the full path by strength gap and mean strength (draws 22.3% vs 22.2%); penalty 7.5% / header 17% / outside 12%; 80% of non-penalty goals assisted (alt: a gap-only fit, ~0.24 goals low for strong equal sides). ot03
 - 261103 decided MATCH-26 HIST-3 T669: results-only record → no model, incidents or highlights; eleven lines a side with goals/assists/minutes, detail and xG zero (alt: a full record with zeroed counters, which MATCH-27's check rejects). ot03
@@ -595,7 +603,7 @@
 | WEB | 204 | 204 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
-| KIT | 8 | 4 | KIT-5✎ KIT-9✎ KIT-10✎ KIT-12✎ KIT-13✎ | 0 |
+| KIT | 9 | 9 | - | 0 |
 | CLUB | 50 | 50 | - | 0 |
 | MATCH | 48 | 48 | - | 0 |
 | LEAGUE | 12 | 12 | - | 0 |
@@ -620,10 +628,11 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T665 | remove founding, difficulty levels, the founding editor and the amateur level | WEB KIT WORLD LEAGUE ECON CLUB | T652 T664 | todo |
-| T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T665 | todo |
-| T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T665 | todo |
-| T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T665 | todo |
+| T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T672 | todo |
+| T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T672 | todo |
+| T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T672 | todo |
+| T671 | the founding leaves the engine: fixtures, web tests, e2e and scripts on takeovers | WEB WORLD CLUB SAVE ARCH | T670 | todo |
+| T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -647,10 +656,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (remove founding, difficulty levels, the founding editor and the amateur level), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
+- on branch `wip/ot03` (owner takeover; T653–T665, T669 and T670 done, main fa1ed566 merged): implement-task T671 (the founding leaves the engine; the tests T670 left on `createWorld` and every `simulatedWorld(Founding…)` caller are listed in T670's result), T672 (the amateur level, LEAGUE-16), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
 - read main CI after 1928053c/fa1ed566 (fix for 41524887826)
 
 ## log
+- 261103 T670 done: `careerWorld` (career.testkit.ts) takes a club over in a fresh world for every engine/contracts test; `historyWorld` takes a test-only year; `ownerlessWorld` and the lab world are fresh ownerless worlds; full-model-throughput and grid-throughput digests re-recorded for the start; founding-subject tests left on `createWorld` for T671; integration and contract edits await the batch; ot03
+- 261103 T665 done: protocol `found`, the founding screen, the identity editor, its draft reducer and the ready-made crests deleted; runtime tests start by `generate`+`take-over` (`startedHost`, `startedWorld`), client tests by `generate`/`takeOver`; founding wording reads for a takeover; integration and e2e edits await the batch; ot03
+- 261103 update-ssot KIT r9 (KIT-2: no ready-made crests, designers compose from the catalogue); create-task: T665 narrowed to the founding UI, T670–T672 split from it (engine tests, fixtures/web/e2e/scripts with the founding's deletion, the amateur level); T666–T668 dep T672; KIT row tasked 4→9 (the 261103 create-task consumed KIT@8, r9 goes to T665); ot03
 - 261103 T669 done (merged 1c218442): results-only fixtures before the takeover; generateHistory 2000 773.9 s → 30.9 s Node (≈124 s reference, ARCH-28 90 s needs ~27% more); ot03
 - 261103 T664 done: a new game is tier → traits → decade → generated world → club list → takeover on game version 0.8.0 (rules 5.0.0); worker generate/club-sheet/take-over, careerEnded routing, OwnerSheet/GameOver stories, founded 0.7.0 careers reset; e2e on tests/e2e/start.ts; ot03
 - 261103 update-ssot WORLD r9 MATCH r48: fixtures before the takeover take a results-only path; create-task T669 (explore 3h, parallel to T664); T664/T666 notes from the integration; ot03

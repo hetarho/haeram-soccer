@@ -1,17 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
 import type { InboxItem, World } from '../../contracts/src/types';
-import { createWorld, INBOX_LIMIT, operate, pushInbox, readInbox, FOUNDING_YEAR } from './index';
+import { INBOX_LIMIT, operate, pushInbox, readInbox } from './index';
 import { unreadAttention } from './testing';
+import { careerWorld, CAREER_YEAR } from './career.testkit';
 
 function world() {
-  return createWorld({
-    country: 'ENG',
-    name: 'Letters United',
-    color: '#334455',
-    seed: 'inbox',
-    level: 'easy' as const,
-  });
+  return careerWorld({ seed: 'inbox' });
 }
 const note = (w: World, attention: boolean, title = 'note') =>
   pushInbox(w, { kind: attention ? 'incoming-bid' : 'staff-report', title, detail: '', attention });
@@ -25,7 +20,7 @@ describe('owner inbox', () => {
       second = note(a, false);
     note(b, true);
     note(b, false);
-    expect(first).toMatchObject({ year: FOUNDING_YEAR, day: 5, attention: true });
+    expect(first).toMatchObject({ year: CAREER_YEAR, day: 5, attention: true });
     expect(first.read).toBeUndefined();
     expect(first.id).not.toBe(second.id);
     expect(a.inbox!.map((item) => item.id)).toEqual(b.inbox!.map((item) => item.id));

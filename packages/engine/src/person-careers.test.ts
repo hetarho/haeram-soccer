@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import { createWorld } from './index';
 import {
   careerDate,
   activeCoachingEmployment,
@@ -9,14 +8,8 @@ import {
   retainPerson,
   resolvePerson,
 } from './person-careers';
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Person Club',
-    color: '#224466',
-    seed: 'persons',
-    level: 'easy',
-  });
+import { careerWorld } from './career.testkit';
+const world = () => careerWorld({ seed: 'persons' });
 describe('retained person career registry', () => {
   it('keeps hot post checks correct across closure, different roles and registry replacement', () => {
     const w = world();

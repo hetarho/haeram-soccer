@@ -216,7 +216,7 @@ describe('club news builders on hand-made matches', () => {
     expect(at(1, 'first-win')).toMatchObject({
       weight: 'major',
       celebrate: true,
-      title: `${name}, 창단 첫 공식전 승리!`,
+      title: `${name}, 인수 후 첫 공식전 승리!`,
     });
     expect(at(2, 'first-win')).toBeUndefined();
     expect(at(3, 'wins-3')?.title).toBe(`${name}, 공식전 3연승`);

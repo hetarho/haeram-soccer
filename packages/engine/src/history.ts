@@ -23,14 +23,16 @@ export const HISTORY_START = TAKEOVER_DECADES[0];
  * 1 August 1930: every professional club of the playable countries (→WORLD-15), nobody's, on
  * the 1930/31 season's first day. The own-club fields wait for the takeover (→ECON-38): no
  * players, no money, and a placeholder manager who manages nothing. `release` is the internal
- * switch, which only tests and measurements pass (as for `createWorld`).
+ * switch, which only tests and measurements pass (as for `createWorld`). So is `year`: production
+ * always makes its world in 1930 (→WORLD-13); a test or measurement may make a fresh world, with
+ * nothing lived before it, on a later season's first day.
  */
 export function historyWorld(
   seed: string,
   release: MatchModelRelease = MATCH_MODEL_RELEASE,
+  year: number = HISTORY_START,
 ): World {
   if (!seed.trim() || seed.length > 80) throw new Error('시드를 확인해 주세요.');
-  const year = HISTORY_START;
   const clubs = generateClubs(seed, false);
   const code = clubs[0]!.country;
   const manager = makeManager(code, seed, year);

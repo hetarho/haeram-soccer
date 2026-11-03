@@ -6,7 +6,6 @@ import type { World } from '../../contracts/src/types';
 import {
   activePlayers,
   advanceDays,
-  FOUNDING_YEAR,
   operate,
   operatingCosts,
   seasonLength,
@@ -15,11 +14,12 @@ import {
   untouchableVerdict,
 } from './index';
 import { inBids, world } from './transfers.testkit';
+import { CAREER_YEAR } from './career.testkit';
 
 describe('transfer stance', () => {
   /** Runs one season of days and returns every incoming bid with the player it was for. */
   function season(w: World) {
-    for (let n = 0; n < seasonLength(w) - 1 && w.year === FOUNDING_YEAR; n++) advanceDays(w, 1);
+    for (let n = 0; n < seasonLength(w) - 1 && w.year === CAREER_YEAR; n++) advanceDays(w, 1);
     return inBids(w).map((bid) => ({ bid, player: w.players.find((p) => p.id === bid.playerId)! }));
   }
 

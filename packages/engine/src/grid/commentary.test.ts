@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld } from '../index';
 import { describe as narrate, type CommentaryEntry } from './commentary';
 import { playGrid } from './engine';
 import { cellName, cellOf, toEngine, type Point } from './pitch';
 import { buildGridSetup } from './setup';
+import { careerWorld } from '../career.testkit';
 
 const names: [string[], string[]] = [
   ['김민재', '손흥민', '이강인'],
@@ -138,13 +138,7 @@ describe('grid commentary', () => {
   });
 
   it('uses only verified terms over a whole match', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Commentary Lab',
-      color: '#2a5d8f',
-      seed: 'grid-commentary',
-      level: 'normal',
-    });
+    const w = careerWorld({ seed: 'grid-commentary' });
     const [home, away] = w.clubs.filter(
       (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
     );

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld } from '../../engine/src/index';
+import { careerWorld } from '../../engine/src/career.testkit';
 import { nextOwnFixture } from '../../engine/src/calendar';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { canonical } from './index';
@@ -30,7 +30,7 @@ const founding = {
   seed: 'identity-contract',
   level: 'easy' as const,
 };
-const world = () => createWorld(founding);
+const world = () => careerWorld({ seed: founding.seed });
 /** A world saved before club identities: new worlds now install them all (→KIT-11). */
 const compatible = () => {
   const w = world();

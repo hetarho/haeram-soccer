@@ -13,7 +13,6 @@ import {
   clubOf,
   COMPENSATION,
   contractSeason,
-  createWorld,
   dailyStaff,
   FREE_AGENTS,
   MANAGER_RENEWAL_MARGIN,
@@ -39,6 +38,7 @@ import { ratio } from './primitives';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import { careerWorld } from './career.testkit';
 
 const founding = (seed: string): Founding => ({
   country: 'ENG',
@@ -121,13 +121,13 @@ describe('manager market (STAFF-17)', () => {
 
   it('moves every four rounds within 4-8 free agents, the same for the same seed', () => {
     // One run comes from the shared cache, built in its own pass; the other is played here.
-    const a = simulatedWorld(
-        founding('moving'),
-        { rounds: MARKET_REFRESH_ROUNDS * 3 },
-        DISABLED_RELEASE,
-      ),
-      b = createWorld(founding('moving'), DISABLED_RELEASE);
-    for (let i = 0; i < MARKET_REFRESH_ROUNDS * 3; i++) advanceRound(b, undefined, false);
+    const played = () => {
+      const w = careerWorld({ seed: 'moving' }, DISABLED_RELEASE);
+      for (let i = 0; i < MARKET_REFRESH_ROUNDS * 3; i++) advanceRound(w, undefined, false);
+      return w;
+    };
+    const a = cachedWorld('market-moving', played),
+      b = played();
     expect(a.managerMarket).toBeDefined();
     expect(a.managerMarket!.round).toBe(MARKET_REFRESH_ROUNDS * 3);
     expect(a.managerMarket!.free.length).toBeGreaterThanOrEqual(FREE_AGENTS.min);

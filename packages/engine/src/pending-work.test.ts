@@ -1,24 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import type { TransferBid } from '../../contracts/src/types';
-import {
-  createWorld,
-  operate,
-  transferOffers,
-  contractTalks,
-  activePlayers,
-  advanceRound,
-} from './index';
+import { operate, transferOffers, contractTalks, activePlayers, advanceRound } from './index';
 import { pendingWorkPreview } from './pending-work';
 import { Host } from '../../../apps/web/src/runtime/host';
-const input = {
-  country: 'ENG' as const,
-  name: 'Handover',
-  color: '#224466',
-  seed: 'handover',
-  level: 'normal' as const,
-};
+import { careerWorld } from './career.testkit';
 function world() {
-  const w = createWorld(input);
+  const w = careerWorld({ seed: 'handover' });
   w.cash = w.income = '999999999999';
   w.calendar = { day: 1 };
   return w;
@@ -153,13 +140,9 @@ describe('explicit responsibility handover', () => {
     const request = {
       protocol: 1 as const,
       session: 'handover',
-      requestId: 'found',
-      expectedRevision: -1,
       generation: 1,
       parentGeneration: 0,
-      body: { type: 'found' as const, input },
     };
-    await host.handle(request);
     host.world = world();
     offers(host.world);
     const settings = structuredClone(host.world.settings!);

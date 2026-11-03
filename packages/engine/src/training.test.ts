@@ -14,7 +14,6 @@ import {
   activePlayers,
   advanceDays,
   advanceRound,
-  createWorld,
   developAnnually,
   developmentOutlook,
   focusFor,
@@ -24,8 +23,8 @@ import {
   settleTraining,
   trainingFocusInfo,
   trainingSummary,
-  FOUNDING_YEAR,
 } from './index';
+import { careerWorld, CAREER_YEAR } from './career.testkit';
 
 /**
  * Each focus's fatigue: the assistant's rule trains this young squad in good spirits 하드 below 15,
@@ -42,16 +41,7 @@ function world(focus: TrainingFocus = 'balanced') {
 
 /** The club on the pre-feature path: training, not the match model, is the subject. */
 function founded() {
-  const w = createWorld(
-    {
-      country: 'ENG',
-      name: 'Academy United',
-      color: '#224433',
-      seed: 'training-progress',
-      level: 'easy' as const,
-    },
-    DISABLED_RELEASE,
-  );
+  const w = careerWorld({ seed: 'training-progress' }, DISABLED_RELEASE);
   w.settings = staffAuthority(2);
   w.cash = '999999999';
   w.manager.youth = 60;
@@ -138,7 +128,7 @@ describe('earned player growth and training choices', () => {
     settleTraining(w);
     settleTraining(w);
     expect(canonical(w.players)).toBe(before);
-    expect(w.trainingAt).toBe(`${FOUNDING_YEAR}:1`);
+    expect(w.trainingAt).toBe(`${CAREER_YEAR}:1`);
     advanceRound(w, undefined, false);
     expect(development(w)).toBeGreaterThan(0);
     // The next round grows them again, whatever the assistant chose for it (→CLUB-11).
@@ -148,7 +138,7 @@ describe('earned player growth and training choices', () => {
         0,
       ),
     );
-    expect(w.trainingAt).toBe(`${FOUNDING_YEAR}:2`);
+    expect(w.trainingAt).toBe(`${CAREER_YEAR}:2`);
   });
 
   it('preserves focus, actual development and the boundary guard across export/import', async () => {
@@ -175,7 +165,7 @@ describe('earned player growth and training choices', () => {
     // A fresh squad of 20-year-olds in good spirits: the assistant trains them hard (→CLUB-13).
     expect(trainingSummary(restored).focus).toBe('hard');
     advanceRound(restored, undefined, false);
-    expect(restored.trainingAt).toBe(`${FOUNDING_YEAR}:1`);
+    expect(restored.trainingAt).toBe(`${CAREER_YEAR}:1`);
     expect(development(restored)).toBeGreaterThan(0);
     validateWorld(restored);
   });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld, staffCandidates, advanceEconomy } from './index';
+import { staffCandidates, advanceEconomy } from './index';
 import { coachingMarketPass, refreshCoachingMarket, settleNpcCoaching } from './coaching-market';
 import { careerDate, closeEmployment, coachingService, openEmployment } from './person-careers';
 import { initializeCoaching } from './coaching-entry';
@@ -7,20 +7,15 @@ import { coachWage } from './staff';
 import { currency } from '../../catalogs/src/index';
 import { ratio } from './primitives';
 import type { PersonCareer } from '../../contracts/src/types';
+import { careerWorld } from './career.testkit';
 function world() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'NPC Coaching Jobs',
-    color: '#224466',
-    seed: 'coach-jobs',
-    level: 'easy',
-  });
+  const w = careerWorld({ seed: 'coach-jobs' });
   const other = w.clubs.find((c) => c.id !== w.playerClub && c.country === 'ENG')!;
   w.clubs = w.clubs.filter((c) => c.id === w.playerClub || c.id === other.id);
   w.people = Object.fromEntries(Object.entries(w.people!).filter(([, p]) => p.formerOwn));
   return { w, other };
 }
-function candidate(w: ReturnType<typeof createWorld>, index = 0): PersonCareer {
+function candidate(w: ReturnType<typeof careerWorld>, index = 0): PersonCareer {
   const p = w.players[index],
     person = w.people![p.id];
   p.status = 'retired';
@@ -39,13 +34,7 @@ function candidate(w: ReturnType<typeof createWorld>, index = 0): PersonCareer {
 }
 describe('retained NPC coaching market', () => {
   it('keeps sorted per-role vacancy allocation and still draws for candidates after a role fills', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Ordered posts',
-      color: '#224466',
-      seed: 'ordered-posts',
-      level: 'easy',
-    });
+    const w = careerWorld({ seed: 'ordered-posts' });
     const others = w.clubs
       .filter((club) => club.id !== w.playerClub)
       .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))

@@ -14,7 +14,6 @@ import {
   addEvent,
   clubNews,
   advanceRound,
-  createWorld,
   identityOf,
   MATCH_MODEL_RELEASE,
 } from '../../../../packages/engine/src/index';
@@ -35,8 +34,7 @@ import {
 import { CATALOG_VERSION } from '../../../../packages/catalogs/src/index';
 import { KIT_FIXTURE_CHANGED } from '../../../../packages/engine/src/identity-operations';
 import { legacyCrestMap } from '../../../../packages/engine/src/identity-legacy';
-import { FOUNDING_YEAR } from '../../../../packages/engine/src/world';
-import { professionalStart, staffAuthority } from '../../../../packages/engine/src/testing';
+import { staffAuthority } from '../../../../packages/engine/src/testing';
 import { npcCompetition, trackingBoundary } from '../../../../packages/engine/src/npc-stats';
 import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../../tests/fixtures/releases';
@@ -45,7 +43,7 @@ import {
   withCandidateModel,
   withoutManagerHistory,
 } from '../../../../tests/fixtures/worlds';
-import { input, playOn, req } from './host.testkit';
+import { input, playOn, req, startedHost, startedWorld } from './host.testkit';
 import { HelperPool, type HelperJob, type HelperPort } from './helperPool';
 import { createFixtureHelper, serve as serveHelper } from './fixtureHelper';
 /** A host wired to a codec port that keeps each posted snapshot, cloned as postMessage would. */
@@ -57,8 +55,7 @@ function withCodec() {
 }
 describe('worker command protocol', () => {
   it('serializes commands, returns duplicate acknowledgment and rejects stale/session requests', async () => {
-    const h = new Host();
-    await h.handle(req('create', -1, { type: 'found', input }));
+    const { host: h } = await startedHost();
     const a = req('advance', 0, { type: 'command', command: { type: 'advance', rounds: 1 } });
     const [first, duplicate, stale] = await Promise.all([
       h.handle(a),
@@ -72,8 +69,7 @@ describe('worker command protocol', () => {
     expect((await h.handle({ ...a, session: 'expired', requestId: 'expired' })).ok).toBe(false);
   });
   it('accepts legacy stop hints on a clock command and refuses a withdrawn command', async () => {
-    const h = new Host();
-    await h.handle(req('create', -1, { type: 'found', input }));
+    const { host: h } = await startedHost();
     // Settle unrelated sponsor decisions before testing an allowed clock command.
     for (const slot of sponsorSlots(h.world!))
       if (slot.offers.length) signSponsor(h.world!, slot.slot, 0);
@@ -100,8 +96,7 @@ describe('worker command protocol', () => {
     expect(h.world!.settings).toEqual(settings);
   });
   it('validates commands before applying money or revisions and keeps complete archives behind projections', async () => {
-    const h = new Host();
-    const founded = await h.handle(req('create', -1, { type: 'found', input }));
+    const { host: h, reply: started } = await startedHost();
     const cash = h.world!.cash;
     expect(
       (
@@ -118,11 +113,10 @@ describe('worker command protocol', () => {
     const r = await h.handle(req('read', 0, { type: 'archive', year: 1901 }));
     expect(r.archive?.matches).toEqual([]);
     expect(r.view).toBeUndefined();
-    expect(founded.view?.world.fixtures.length).toBeLessThan(h.world!.fixtures.length);
+    expect(started.view?.world.fixtures.length).toBeLessThan(h.world!.fixtures.length);
   });
   it('ends a multi-day step on the day news arrives or our match is played', async () => {
-    const h = new Host();
-    await h.handle(req('create', -1, { type: 'found', input }));
+    const { host: h } = await startedHost();
     const before = h.world!.inbox?.length || 0;
     const step = await h.handle(
       req('long', 0, { type: 'command', command: { type: 'advance-days', days: 12 } }),
@@ -135,8 +129,7 @@ describe('worker command protocol', () => {
     if (!news) expect(w.calendar!.day).toBe(7);
   });
   it('keeps a celebrated headline under one ID while the projected event window slides', async () => {
-    const h = new Host();
-    await h.handle(req('create', -1, { type: 'found', input }));
+    const { host: h } = await startedHost();
     const w = h.world!;
     for (let i = 0; i < 160; i++) addEvent(w, 'note', `기록 ${i}`, '-');
     addEvent(w, 'promotion', '승격', '5부 2위 · 자동 승격');
@@ -155,8 +148,7 @@ describe('worker command protocol', () => {
     expect(second.view!.news).toEqual(clubNews(w));
   });
   it('persists off days and reaches the next owned fixture exactly once', async () => {
-    const h = new Host();
-    await h.handle(req('create', -1, { type: 'found', input }));
+    const { host: h } = await startedHost();
     // Explicit quiet authority fixture: this tests date persistence, not automatic hiring.
     h.world!.settings = staffAuthority(2);
     for (const slot of sponsorSlots(h.world!))
@@ -186,8 +178,7 @@ describe('worker command protocol', () => {
     expect(match.view?.world.rankHistory).toHaveLength(2);
   });
   it('publishes only the view parts that changed since the view the client holds (→ARCH-6)', async () => {
-    const h = new Host();
-    const founded = await h.handle(req('create', -1, { type: 'found', input }));
+    const { host: h, reply: founded } = await startedHost();
     expect(founded.view).toBeDefined();
     expect(founded.viewDelta).toBeUndefined();
     h.world!.settings = staffAuthority(2);
@@ -221,8 +212,7 @@ describe('worker command protocol', () => {
     expect(stale.viewDelta).toBeUndefined();
   });
   it("sends an own match day's clubs and discipline as patches that rebuild the same view (→ARCH-6)", async () => {
-    const h = new Host();
-    const founded = await h.handle(req('create', -1, { type: 'found', input }));
+    const { host: h, reply: founded } = await startedHost();
     // Every business is delegated, so no decision stops the days before our first match.
     h.world!.settings = {
       ...settingsOf(h.world!),
@@ -264,8 +254,7 @@ describe('worker command protocol', () => {
     throw new Error('no second own match in 40 days');
   });
   it('blocks automatic progression before applying days when a critical alert is pending', async () => {
-    const h = new Host();
-    await h.handle(req('create', -1, { type: 'found', input }));
+    const { host: h } = await startedHost();
     h.world!.critical = '감독 확인';
     const result = await h.handle(
       req('days', 0, { type: 'command', command: { type: 'advance-days', days: 3 } }),
@@ -277,7 +266,7 @@ describe('worker command protocol', () => {
   });
   it('hands the codec a snapshot of the current world and revision, whatever revision the client saw', async () => {
     const { host: h, jobs } = withCodec();
-    await h.handle(req('create', -1, { type: 'found', input }));
+    await startedHost(undefined, undefined, h);
     await h.handle(req('days', 0, { type: 'command', command: { type: 'advance-days', days: 2 } }));
     const revision = h.world!.revision;
     expect(revision).toBeGreaterThan(0);
@@ -303,8 +292,7 @@ describe('worker command protocol', () => {
     ).toEqual([]);
     // Nothing is posted without a world or a codec port.
     expect((await new Host().handle(req('none', -1, { type: 'save' }))).ok).toBe(false);
-    const unwired = new Host();
-    await unwired.handle(req('create', -1, { type: 'found', input }));
+    const { host: unwired } = await startedHost();
     expect((await unwired.handle(req('save', 0, { type: 'save' }))).error).toContain('저장 Worker');
   });
   it('returns a restorable checkpoint when next-match progression is cancelled between days', async () => {
@@ -313,7 +301,7 @@ describe('worker command protocol', () => {
       h.cancelled = true;
     });
     h.codec = { postMessage: (job) => jobs.push(structuredClone(job)) };
-    await h.handle(req('create', -1, { type: 'found', input }));
+    await startedHost(undefined, undefined, h);
     const result = await h.handle(
       req('match', 0, { type: 'command', command: { type: 'next-match' } }),
     );
@@ -333,9 +321,7 @@ describe('worker command protocol', () => {
     expect(restored.world?.receiptIds).toContain('match');
   });
   it('projects the complete own league schedule and round results without unrelated leagues', async () => {
-    const h = new Host();
-    await h.handle(req('create', -1, { type: 'found', input }));
-    professionalStart(h.world!);
+    const { host: h } = await startedHost();
     const result = await h.handle(
       req('round', 0, { type: 'command', command: { type: 'advance', rounds: 1 } }),
     );
@@ -357,27 +343,15 @@ describe('worker command protocol', () => {
     expect(next.score).toBeUndefined();
     expect(next.round).toBe(2);
   });
-  it('projects every amateur-league opponent fixture for a new club', async () => {
-    const h = new Host();
-    await h.handle(req('create', -1, { type: 'found', input }));
-    const result = await h.handle(
-      req('round', 0, { type: 'command', command: { type: 'advance', rounds: 1 } }),
-    );
-    const view = result.view!.world;
-    expect(view.fixtures).toHaveLength(16 * 15);
-    expect(view.fixtures.every((f) => f.kind === 'lower')).toBe(true);
-    expect(view.fixtures.filter((f) => f.round === 1 && f.score)).toHaveLength(8);
-    expect(nextOwnFixture(view)?.round).toBe(2);
-  });
   it('simulates a fast season without sending empty observation playback', async () => {
-    const h = new Host();
-    await h.handle(req('create', -1, { type: 'found', input }));
+    const { host: h } = await startedHost();
+    const year = h.world!.year;
     // The season command plays every round as `advanceRound(w, undefined, false)`: the first 45
     // are built once, the last and the close run here through the command.
     playOn(
       h,
-      cachedWorld('rich-45-rounds', () => {
-        const w = createWorld(input);
+      cachedWorld('rich-45-rounds-takeover', () => {
+        const w = startedWorld();
         w.cash = '999999999999';
         while (w.round < 45) advanceRound(w, undefined, false);
         return w;
@@ -388,11 +362,9 @@ describe('worker command protocol', () => {
     );
     expect(result.ok).toBe(true);
     expect(result.playback).toBeUndefined();
-    expect(result.view?.world.year).toBe(FOUNDING_YEAR + 1);
+    expect(result.view?.world.year).toBe(year + 1);
     expect(result.view?.world.history).toHaveLength(1);
-    expect(h.world!.ownMatches.some((m) => m.year === FOUNDING_YEAR && m.players.length > 0)).toBe(
-      true,
-    );
+    expect(h.world!.ownMatches.some((m) => m.year === year && m.players.length > 0)).toBe(true);
   });
 });
 
@@ -401,7 +373,7 @@ describe('next-fixture kit requests (→KIT-6, SAVE-6)', () => {
     req(id, revision, { type: 'command', command: { type: 'match-kit', fixtureId, role } });
   it('duplicate kit receipt has one effect and the saved checkpoint keeps the choice', async () => {
     const { host: h, jobs } = withCodec();
-    await h.handle(req('create', -1, { type: 'found', input }));
+    await startedHost(undefined, undefined, h);
     const next = nextOwnFixture(h.world!)!;
     const first = kit('kit', 0, next.id, 'third');
     const [chosen, duplicate] = await Promise.all([h.handle(first), h.handle(first)]);
@@ -422,8 +394,7 @@ describe('next-fixture kit requests (→KIT-6, SAVE-6)', () => {
     expect(h.world!.revision).toBe(2);
   });
   it('stale kit request does not overwrite newer work', async () => {
-    const h = new Host();
-    await h.handle(req('create', -1, { type: 'found', input }));
+    const { host: h } = await startedHost();
     const w = h.world!;
     const next = nextOwnFixture(w)!;
     expect((await h.handle(kit('newer', 0, next.id, 'away'))).ok).toBe(true);
@@ -554,15 +525,14 @@ describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
 
 describe('durable milestone projection', () => {
   it('keeps a cup win when recent UI records no longer contain it', async () => {
-    const host = new Host();
-    await host.handle(req('milestone-found', -1, { type: 'found', input }));
+    const { host } = await startedHost();
     // A cup win, then thirty cup matches without one: built once and cached.
     const {
       world: played,
       won,
       losses,
-    } = cachedWorld('cup-win-then-losses', () => {
-      const world = createWorld(input);
+    } = cachedWorld('cup-win-then-losses-takeover', () => {
+      const world = startedWorld();
       const fixture = nextOwnFixture(world)!;
       let won = false,
         losses = 0;
@@ -614,9 +584,8 @@ describe('durable milestone projection', () => {
 
 describe('career view projection', () => {
   it('omits lifetime registry in views, preserves canonical export and leaves revision and draws unchanged', async () => {
-    const h = new Host();
-    const found = await h.handle(req('career-found', -1, { type: 'found', input }));
-    expect(found.view!.world.people).toBeUndefined();
+    const { host: h, reply: started } = await startedHost();
+    expect(started.view!.world.people).toBeUndefined();
     const before = canonical(h.world!),
       revision = h.world!.revision;
     const exported = await h.handle(req('career-export', revision, { type: 'export' }));
@@ -631,18 +600,20 @@ describe('career view projection', () => {
 
 describe('complete statistics reads (→WEB-89, HIST-17)', () => {
   it('keeps the season ledger out of views and reads one competition on request', async () => {
-    const h = new Host(undefined, { release: DISABLED_RELEASE });
-    await h.handle(req('full-found', -1, { type: 'found', input }));
+    const { host: h } = await startedHost();
     const w = h.world!;
     const f = w.fixtures.find(
       (x) => x.kind === 'league' && x.home !== w.playerClub && x.away !== w.playerClub,
     )!;
     const scope = { type: 'full-stats', kind: 'league', groupKey: f.groupKey } as const;
-    // The pre-feature model keeps no ledger: the read answers with nothing, not zeros.
+    // A career on the pre-feature model keeps no ledger: the read answers with nothing, not zeros.
+    const ledger = w.npcSeason;
+    expect(ledger).toBeDefined();
+    delete w.npcSeason;
     const none = await h.handle(req('full-none', w.revision, scope));
     expect(none).toMatchObject({ ok: true });
     expect(none.fullStats).toBeUndefined();
-    withCandidateModel(w);
+    w.npcSeason = ledger;
     const played = simulateMatch(w, f);
     f.score = played.record.score;
     recordMatch(w, played, true);
@@ -668,8 +639,7 @@ describe('retained recruitment decision reads', () => {
     const { transferOffers, managerCandidates } =
       await import('../../../../packages/engine/src/index');
     const { lineOf } = await import('../../../../packages/engine/src/player');
-    const h = new Host();
-    await h.handle(req('mediation-found', -1, { type: 'found', input }));
+    const { host: h } = await startedHost();
     const w = h.world!;
     w.settings!.responsibilities.recruitment = 'direct';
     for (let i = 0; i < 23; i++) {
@@ -872,19 +842,14 @@ describe('prospective match-model activation (→SAVE-23)', () => {
     expect(canonical(again.world!.ownMatches.slice(0, source.ownMatches.length))).toBe(
       canonical(source.ownMatches),
     );
-    // A founding tracks from its first day, and the default switch founds with the model exactly
-    // when it is on; a release that is off founds and loads without it.
-    const founder = enabled();
-    await founder.handle(req('model-found', -1, { type: 'found', input }));
-    expect(founder.world!.matchModel?.coverage).toBe('founding');
-    const founded = new Host();
-    await founded.handle(req('default-found', -1, { type: 'found', input }));
-    expect(founded.world!.matchModel?.coverage).toBe(
-      MATCH_MODEL_RELEASE.enabled ? 'founding' : undefined,
-    );
-    const plain = disabled();
-    await plain.handle(req('plain-found', -1, { type: 'found', input }));
-    expect(plain.world!.matchModel).toBeUndefined();
+    // A takeover tracks from its first day, the career's founding moment (→OWNER-4); a release
+    // that is off loads an earlier career without the model.
+    const { host: taker } = await startedHost(undefined, undefined, enabled());
+    expect(taker.world!.matchModel).toMatchObject({
+      revision: MATCH_MODEL_REVISION,
+      coverage: 'founding',
+      activated: { year: taker.world!.year, day: 0 },
+    });
     const unchanged = disabled();
     expect((await load(unchanged, 'plain-load', await encode(source))).upgraded).toBeUndefined();
     expect(canonical(unchanged.world)).toBe(canonical(source));
@@ -1198,9 +1163,9 @@ function failingHelper(): HelperPort & { posted: number } {
   };
   return port;
 }
-/** Founds `input` for unattended play: staff decide every business category, nothing is observed. */
-async function foundDelegated(h: Host) {
-  await h.handle(req('create', -1, { type: 'found', input }));
+/** Starts a game for unattended play: staff decide every business category, nothing is observed. */
+async function startDelegated(h: Host) {
+  await startedHost(undefined, undefined, h);
   const settings = structuredClone(settingsOf(h.world!));
   for (const key of RESPONSIBILITY_KEYS) settings.responsibilities[key] = 'delegated';
   settings.observations = { matchEve: false, windowOpen: false };
@@ -1212,9 +1177,9 @@ async function foundDelegated(h: Host) {
   );
   expect(reply.ok, reply.error).toBe(true);
 }
-/** Founds `input` and plays it day by day through `advance-days` until our first match is played. */
+/** Starts a game and plays it day by day through `advance-days` until our first match is played. */
 async function throughFirstMatch(h: Host) {
-  await foundDelegated(h);
+  await startDelegated(h);
   for (let day = 0; !h.world!.ownMatches.length; day++) {
     expect(day).toBeLessThan(14);
     const reply = await h.handle(
@@ -1251,7 +1216,7 @@ describe('fixture helpers', () => {
   });
   it('holds reads while our match day waits for its helpers', async () => {
     const h = new Host();
-    await foundDelegated(h);
+    await startDelegated(h);
     let release!: () => void;
     const gate = new Promise<void>((resolve) => (release = resolve));
     const held: HelperPort & { jobs: HelperJob[] } = {
@@ -1278,7 +1243,7 @@ describe('fixture helpers', () => {
         expect((await step).ok).toBe(true);
         continue;
       }
-      const read = h.handle(req('read', -1, { type: 'archive', year: FOUNDING_YEAR }));
+      const read = h.handle(req('read', -1, { type: 'archive', year: h.world!.year }));
       void step.then(() => order.push('step'));
       void read.then(() => order.push('read'));
       await new Promise((resolve) => setTimeout(resolve, 0));

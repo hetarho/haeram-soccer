@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
 import {
   academyIntakeSize,
-  createWorld,
   developmentBase,
   facilityWork,
   gateProjection,
@@ -11,15 +10,10 @@ import {
   stadiumCapacity,
 } from './index';
 import { startWork } from './testing';
+import { careerWorld } from './career.testkit';
 
 const world = (seed = 'facility-parts') => {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Stand Town',
-    color: '#445533',
-    seed,
-    level: 'normal' as const,
-  });
+  const w = careerWorld({ seed });
   w.cash = '999999999999';
   return w;
 };
@@ -90,6 +84,9 @@ describe('facility works (→ECON-32)', () => {
 
   it('runs one work per part, the parts side by side, each with its own effect', () => {
     const w = world('facility-sides');
+    // The founding ground, whose next step is an expansion (a takeover in the lowest professional
+    // division stands one step up, CLUB-1).
+    w.stadium = 0;
     const base = developmentBase(w),
       intake = academyIntakeSize(w);
     for (const part of ['stadium', 'training', 'academy'] as const) startWork(w, part);

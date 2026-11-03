@@ -17,7 +17,6 @@ import {
   coachMatches,
   coachPickPreview,
   coachWage,
-  createWorld,
   dailyStaff,
   MANAGER_GONE,
   managerCandidates,
@@ -33,6 +32,7 @@ import {
   seasonStaff,
   STAFF_INFO,
   STAFF_ROLES,
+  STYLE_INFO,
   staffCandidates,
   staffEffects,
   staffQuote,
@@ -52,8 +52,7 @@ describe('coach hiring by 코치 기조 (STAFF-15)', () => {
     cachedWorld(`seed:${prefix}:${fits}`, () => {
       for (let i = 0; i < 200; i++) {
         const seed = `${prefix}-${i}`;
-        if (fits(staffCandidates(world(seed, createWorld), 'attack').map((offer) => offer.ability)))
-          return seed;
+        if (fits(staffCandidates(world(seed), 'attack').map((offer) => offer.ability))) return seed;
       }
       throw new Error(`no seed for ${prefix}`);
     });
@@ -354,14 +353,16 @@ describe('contract terms (STAFF-11, STAFF-14)', () => {
   it('lets no manager renew himself: a 1 April reminder, then he leaves at the close', () => {
     const w = world('no-self-renewal');
     w.manager.until = w.year + 1;
-    const { id, name } = w.manager,
+    const { id, name, style } = w.manager,
       { limit } = managerRenewal(w)!;
     expect(limit).toBeGreaterThan(1);
     w.calendar = { day: renewalDay(w.year) };
     dailyStaff(w);
+    // The manager taken over keeps his school, which the reminder names.
+    const school = style ? `${STYLE_INFO[style].label} ` : '';
     expect(ownReminder(w)).toMatchObject({
       attention: true,
-      title: `${name} 감독 계약이 이번 시즌 끝에 끝나요`,
+      title: `${school}${name} 감독 계약이 이번 시즌 끝에 끝나요`,
     });
     expect(ownReminder(w)!.detail).toContain(`· 1–${limit}시즌)`);
     w.year++;
@@ -388,9 +389,7 @@ describe('contract terms (STAFF-11, STAFF-14)', () => {
   it("lets delegated staff sign and renew coaches for 코치 기조's term", () => {
     const seed = cachedWorld('seed:delegated-terms', () =>
       Array.from({ length: 200 }, (_, i) => `delegated-terms-${i}`).find((candidate) =>
-        staffCandidates(world(candidate, createWorld), 'attack').some(
-          (offer) => offer.ability >= 65,
-        ),
+        staffCandidates(world(candidate), 'attack').some((offer) => offer.ability >= 65),
       ),
     )!;
     const w = world(seed);
@@ -539,9 +538,7 @@ describe('the 단장 (STAFF-20)', () => {
     ).toBe(true);
     expect(
       cachedWorld('scout-offers', () =>
-        Array.from({ length: 12 }, (_, i) =>
-          staffCandidates(world(`scouts-${i}`, createWorld), 'scout'),
-        ),
+        Array.from({ length: 12 }, (_, i) => staffCandidates(world(`scouts-${i}`), 'scout')),
       )
         .flat()
         .every((offer) => !offer.trait || offer.trait === 'spotter'),

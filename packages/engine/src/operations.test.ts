@@ -3,7 +3,6 @@ import { handTo, staffAuthority } from './testing';
 import {
   advanceRound,
   contractSeason,
-  createWorld,
   isDelegated,
   moneyLabel,
   operate,
@@ -15,18 +14,10 @@ import {
 } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { careerWorld } from './career.testkit';
 /** The club on the pre-feature path: owner operations, not the match model, are the subject. */
 const world = () => {
-  const w = createWorld(
-    {
-      country: 'ENG',
-      name: 'Owners Athletic',
-      color: '#125544',
-      seed: 'ops',
-      level: 'easy' as const,
-    },
-    DISABLED_RELEASE,
-  );
+  const w = careerWorld({ seed: 'ops' }, DISABLED_RELEASE);
   w.settings = staffAuthority(2);
   return w;
 };

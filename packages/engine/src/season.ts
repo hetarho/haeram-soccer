@@ -926,6 +926,16 @@ export function advanceRound(w: World, settlement?: Settlement, observe = true) 
   while (w.round === round && !careerEnded(w)) stepDay(w, capture, observe);
   return ownPlayback;
 }
+/** The season's remaining rounds unobserved, then its close (→LEAGUE-9). */
+export function simulateSeason(w: World) {
+  while (w.round < SEASON_ROUNDS && !careerEnded(w)) advanceRound(w, undefined, false);
+  // An ended career is over (→ECON-24, OWNER-16): its last season never closes, and a season after
+  // an owner's end at the close never starts.
+  if (careerEnded(w)) return w;
+  closeSeason(w);
+  w.revision++;
+  return w;
+}
 /**
  * A league round's matches as two phases: every fixture is computed from the world as it stands at
  * kick-off, then all are recorded in fixture order. Fixtures are independent (each club plays once

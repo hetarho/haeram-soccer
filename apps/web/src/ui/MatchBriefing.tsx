@@ -70,7 +70,7 @@ export function MatchBriefing({
       ovr: ourOvr,
       tactic: w.tactic,
       coach: w.manager.name,
-      school: w.manager.style ? STYLE_INFO[w.manager.style].label : '균형 · 창단 감독',
+      school: w.manager.style ? STYLE_INFO[w.manager.style].label : '균형 · 학파 없음',
       recent: brief.ownRecent,
       slot: (index: number) => xi[index]?.name.split(' ').at(-1) ?? '—',
       slotTitle: (index: number) => xi[index]?.name ?? '—',

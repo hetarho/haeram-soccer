@@ -6,7 +6,7 @@ import { BAND_EDGES, LANE_EDGES, type Point } from '../grid/pitch';
 import { M, RUNNING, Tally } from '../grid/record';
 import { createState, type GridState } from '../grid/state';
 import { gridKit } from '../grid/testkit';
-import { createWorld, ownLeagueClubs } from '../index';
+import { ownLeagueClubs } from '../index';
 import { INTERVAL_STAMPS, validateFullMatchRecord } from '../match-model';
 import { FORMATIONS, lineOf } from '../player';
 import { buildGridSetup, eraRules } from '../grid/setup';
@@ -32,19 +32,14 @@ import type {
   AggregateParticipation,
   AggregateSkillAccess,
 } from './types';
+import { careerWorld } from '../career.testkit';
 
 /**
  * Fixtures between clubs nobody owns in a freshly founded world (→ARCH-21: a founding, no
  * seasons), each replayed under its own ID so every replay draws its own streams.
  */
 function others(n: number, year?: number) {
-  const w: World = createWorld({
-    country: 'ENG',
-    name: 'Aggregate Town',
-    color: '#334466',
-    seed: 'aggregate-engine',
-    level: 'normal',
-  });
+  const w: World = careerWorld({ seed: 'aggregate-engine' });
   const league = new Set(ownLeagueClubs(w).map((c) => c.id));
   const pool = w.fixtures.filter(
     (f) => f.home !== w.playerClub && f.away !== w.playerClub && !league.has(f.home),

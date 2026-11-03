@@ -1,5 +1,5 @@
 import type { WorldMarketQuery, WorldMarketTarget } from '../../../../packages/contracts/src/types';
-import type { Command, Founding, World } from '../../../../packages/contracts/src/types';
+import type { Command, World } from '../../../../packages/contracts/src/types';
 import type { ClubListing, StartChoice } from '../../../../packages/contracts/src/owner';
 import type { FullStatsScope } from '../../../../packages/contracts/src/match-model';
 import { SaveRepository, type SaveWorldMetadata } from '../adapters/repository';
@@ -522,7 +522,6 @@ export class GameClient {
         timer: window.setTimeout(() => this.failWorker(), timeout),
         timeout,
         publishView:
-          body.type === 'found' ||
           body.type === 'take-over' ||
           body.type === 'command' ||
           body.type === 'ack-critical' ||
@@ -576,12 +575,8 @@ export class GameClient {
   }
   private async mutate(body: Body, automatic = false) {
     if (this.state.readonly) throw new Error('이 탭은 읽기 전용입니다.');
-    if (body.type === 'found' && this.saves.incompatibleCheckpoint && !body.replace)
-      throw new SaveCompatibilityError(
-        '호환되지 않는 기록을 내보낸 뒤 명시적으로 새 세계로 교체하세요.',
-      );
-    // A new career's first world, founded or taken over, is saved whole (→SAVE-3).
-    const starts = body.type === 'found' || body.type === 'take-over';
+    // A new career's first world, the club taken over, is saved whole (→SAVE-3).
+    const starts = body.type === 'take-over';
     if (starts) {
       this.state.savedRevision = -1;
       this.state.playback = undefined;
@@ -740,7 +735,7 @@ export class GameClient {
   }
   /**
    * Takes a club of the generated world over with the chosen direction (→ECON-38, WEB-15): the
-   * career's first world, saved at once like a founding.
+   * career's first world, saved at once.
    */
   takeOver(clubId: string, preset?: string) {
     return this.enqueue(async () => {
@@ -766,13 +761,6 @@ export class GameClient {
     if (!this.state.start) return;
     delete this.state.start;
     this.emit();
-  }
-  found(input: Founding, replace = false) {
-    return this.enqueue(async () => {
-      const reply = await this.mutate({ type: 'found', input, replace } as Body);
-      this.saveSoon();
-      return reply;
-    });
   }
   /**
    * `automatic` marks clock ticks, whose days are held until `reveal` shows them; every other
@@ -890,7 +878,7 @@ export class GameClient {
   /** Bounded market page, admitted through the same displayed-day read gate as other previews. */
   async worldMarket(query: Omit<WorldMarketQuery, 'world'> = {}) {
     const world = this.state.view?.world.id;
-    if (!world) throw new Error('먼저 클럽을 창단하세요.');
+    if (!world) throw new Error('먼저 구단을 인수하세요.');
     const reply = await this.read({ type: 'world-market', query: { ...query, world } });
     if (!reply.ok || !reply.worldMarket)
       throw new Error(reply.error ?? '이적시장 응답이 없습니다.');

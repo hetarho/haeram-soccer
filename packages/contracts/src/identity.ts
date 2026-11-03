@@ -189,13 +189,3 @@ export interface MatchAppearance {
   sides: [AppearanceSide, AppearanceSide];
   warnings: KitWarning[];
 }
-
-/** KIT-2: the six ready-made crest compositions, in order. */
-export const CREST_PRESETS: readonly Pick<CrestDesign, 'shape' | 'pattern' | 'emblem'>[] = [
-  { shape: 'shield', pattern: 'stripes', emblem: 'star' },
-  { shape: 'round', pattern: 'plain', emblem: 'ball' },
-  { shape: 'french', pattern: 'sash', emblem: 'crown' },
-  { shape: 'badge', pattern: 'halves', emblem: 'anchor' },
-  { shape: 'diamond', pattern: 'chevron', emblem: 'bolt' },
-  { shape: 'crown', pattern: 'band', emblem: 'tree' },
-];

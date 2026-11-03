@@ -22,9 +22,9 @@ import { facilityBuiltUnits } from './facility-model';
 import { fanFollowing } from './fans';
 import { footballQuote, quote } from './quotes';
 import { scaleBy } from './primitives';
-import { createWorld } from './founding';
 import { ownerlessWorld, withBooks } from './ownerless.testkit';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { careerWorld } from './career.testkit';
 
 const big = (amount: string) => BigInt(amount);
 /** The strongest club of a division of England. */
@@ -121,12 +121,11 @@ describe('club value (→ECON-37)', () => {
   });
 
   it('values the owner’s club on its own facilities, supporters, cash and loan', () => {
-    const w = createWorld(
-      { country: 'ENG', name: 'Valued Rovers', color: '#225588', seed: 'valued', level: 'normal' },
-      DISABLED_RELEASE,
-    );
+    const w = careerWorld({ seed: 'valued' }, DISABLED_RELEASE);
     const own = clubOf(w);
-    expect(facilityStage(w, own)).toEqual({ stadium: 0, trainingGround: 0, academyFacility: 0 });
+    // Its own facilities, as the takeover left them in the lowest professional division.
+    expect(facilityStage(w, own)).toEqual({ stadium: 1, trainingGround: 0, academyFacility: 0 });
+    expect(facilityStage(w, own).stadium).toBe(w.stadium);
     const before = big(clubValue(w, own));
     w.loan = { balance: '30000', installment: '6000', seasonsLeft: 5 };
     own.fans += 20000;

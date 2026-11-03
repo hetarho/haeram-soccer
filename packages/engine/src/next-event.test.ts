@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import {
-  createWorld,
   advanceDays,
   advanceRound,
   prepareSeason,
@@ -16,18 +15,10 @@ import { pendingDecisions, stoppingReasons } from './stopping';
 import { currency, priceIndex } from '../../catalogs/src/index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { careerWorld } from './career.testkit';
 /** Founded on the pre-feature path: the calendar's next event, not the match model, is the subject. */
 function world() {
-  const w = createWorld(
-    {
-      country: 'ENG',
-      name: 'Next Event',
-      color: '#224466',
-      seed: 'next-event',
-      level: 'normal',
-    },
-    DISABLED_RELEASE,
-  );
+  const w = careerWorld({ seed: 'next-event' }, DISABLED_RELEASE);
   w.cash = w.income = '999999999999';
   w.settings!.mode = 'manual';
   for (const key of RESPONSIBILITY_KEYS) w.settings!.responsibilities[key] = 'delegated';

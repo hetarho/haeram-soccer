@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Fixture, Player } from '../../../contracts/src/types';
 import { MATCH_MODEL_REVISIONS } from '../../../contracts/src/match-model';
-import { createWorld, isInjured, ownStarters, squad } from '../index';
+import { isInjured, ownStarters, squad } from '../index';
 import { clubManager } from '../managerMarket';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { bestRoleAt, FORMATIONS } from '../player';
@@ -9,14 +9,9 @@ import { MATCH_MOTION_CONFIG } from './playback';
 import { benchFor, buildGridSetup, eraRules, modelAtLeast, takersFor } from './setup';
 import { SPOTS } from './spots';
 import { playerTendencies } from './tendencies';
+import { careerWorld } from '../career.testkit';
 
-const w = createWorld({
-  country: 'ENG',
-  name: 'Grid Setup Lab',
-  color: '#2a5d8f',
-  seed: 'grid-setup',
-  level: 'normal' as const,
-});
+const w = careerWorld({ seed: 'grid-setup' });
 const own = w.fixtures.find((f) => f.home === w.playerClub)!;
 const npcClubs = w.clubs.filter(
   (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
@@ -163,16 +158,7 @@ describe('grid setup', () => {
     expect(modelAtLeast(b, 1)).toBe(true);
     expect(modelAtLeast(b, 2)).toBe(false);
     expect(b.tendencies).toBeUndefined();
-    const old = createWorld(
-      {
-        country: 'ENG',
-        name: 'Grid Setup Lab',
-        color: '#2a5d8f',
-        seed: 'grid-setup',
-        level: 'normal',
-      },
-      DISABLED_RELEASE,
-    );
+    const old = careerWorld({ seed: 'grid-setup' }, DISABLED_RELEASE);
     const c = buildGridSetup(old, own, { observe: false, recordPlayers: true });
     expect(modelAtLeast(c, 1)).toBe(false);
     expect(c.tendencies).toBeUndefined();

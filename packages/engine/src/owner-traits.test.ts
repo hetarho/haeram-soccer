@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import type { Fixture, OwnerTrait, World } from '../../contracts/src/types';
-import { createWorld } from './founding';
 import { OWNER_TRAITS } from './owner-config';
 import {
   askedFeeFactor,
@@ -31,18 +30,10 @@ import { sponsorOffers } from './sponsors';
 import { activePlayers, overall } from './player-state';
 import { withOwner } from './testing';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { careerWorld } from './career.testkit';
 
-/** A founded career: no owner, every trait standing aside. */
-const FOUNDED = createWorld(
-  {
-    country: 'ENG',
-    name: 'Trait Town',
-    color: '#446688',
-    seed: 'owner-traits',
-    level: 'normal' as const,
-  },
-  DISABLED_RELEASE,
-);
+/** A career taken over by an owner without traits: every trait standing aside. */
+const FOUNDED = careerWorld({ seed: 'owner-traits' }, DISABLED_RELEASE);
 const world = () => structuredClone(FOUNDED);
 /** The same career with an owner holding `traits`. */
 function owned(...traits: OwnerTrait[]) {
@@ -201,10 +192,13 @@ describe('협상의 달인', () => {
 describe('마당발', () => {
   const { candidates, ability } = OWNER_TRAITS.networker;
   const boosted = (base: number) => Math.min(99, base + ability);
+  /** The career taken over by an owner with 마당발: the takeover opens the manager market. */
+  const networked = () =>
+    careerWorld({ seed: 'owner-traits', traits: ['networker'] }, DISABLED_RELEASE);
 
   it('lists one more free-agent manager, each drawn abler at the same wage (→STAFF-17)', () => {
     const plain = world(),
-      wide = owned('networker');
+      wide = networked();
     const free = (w: World) => managerCandidates(w).filter((m) => m.source === 'free');
     const before = free(plain),
       after = free(wide);
@@ -224,7 +218,7 @@ describe('마당발', () => {
 
   it('keeps one more free agent through a market refresh, each new one abler', () => {
     const plain = world(),
-      wide = owned('networker');
+      wide = networked();
     refreshManagerMarket(plain);
     refreshManagerMarket(wide);
     const before = plain.managerMarket!.free,

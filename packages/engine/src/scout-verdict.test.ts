@@ -6,20 +6,14 @@ import { activePlayers, clubOf, formationOf, lineOfPlayer, slotOvr } from './pla
 import { recruitmentFit, type TransferOffer } from './recruitment';
 import { scoutVerdict, VERDICT_CONFIG } from './scout-verdict';
 import { shortLines } from './signings';
-import { createWorld } from './index';
 import { squad, startingSquad } from './world';
 import { transferOffers } from './ops-squad';
 import { worldMarketDetail } from './world-market';
 import { worldMarketFixture } from './world-market.testkit';
+import { careerWorld } from './career.testkit';
 
 function world() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Verdict United',
-    color: '#224433',
-    seed: 'scout-verdict',
-    level: 'easy' as const,
-  });
+  const w = careerWorld({ seed: 'scout-verdict' });
   w.cash = '999999999999';
   return w;
 }
@@ -95,7 +89,8 @@ describe("the scout's verdict (→CLUB-47)", () => {
     young.player.potential = 65;
     young.player.born = w.year - 24;
     expect(scoutVerdict(w, young, fitAt(w, young, 50, 60, main))!.grade).toBe('E');
-    // A short line: his line below its minimum.
+    // A short line: his line below its minimum, with none of the takeover's requests open.
+    delete w.shortlist;
     const same = activePlayers(w).filter((p) => lineOfPlayer(p) === line);
     for (const p of same.slice(0, same.length - LINE_MINIMUM[line] + 1)) p.status = 'sold';
     expect(shortLines(w).map((need) => need.line)).toContain(line);

@@ -5,7 +5,6 @@ import { cachedWorld } from '../../../tests/fixtures/worlds';
 import {
   advanceDays,
   completeRound,
-  createWorld,
   FIXTURE_READ_KEYS,
   MATCH_MODEL_RELEASE,
   ownFixture,
@@ -17,19 +16,19 @@ import {
   type RoundJob,
   type RoundJobResult,
 } from './index';
+import { careerWorld } from './career.testkit';
 
 /**
- * A founding with only two competitions' fixtures left: the own amateur league (its other
+ * A takeover with only two competitions' fixtures left: the own second-tier league (its other
  * fixtures keep every player line for the scorer table) and the national top flight (summary
  * lines). Synthetic: the other leagues simply do not play (→ARCH-21).
  */
 function smallWorld() {
-  const w = createWorld(
-    { country: 'BEL', name: 'Round Jobs', color: '#223344', seed: 'round-jobs', level: 'easy' },
-    MATCH_MODEL_RELEASE,
-  );
+  const w = careerWorld({ country: 'BEL', seed: 'round-jobs' }, MATCH_MODEL_RELEASE);
   const own = w.fixtures.find((f) => ownFixture(w, f))!.groupKey;
-  const top = w.fixtures.find((f) => f.kind === 'league' && f.country === 'BEL')!.groupKey;
+  const top = w.fixtures.find(
+    (f) => f.kind === 'league' && f.country === 'BEL' && f.groupKey !== own,
+  )!.groupKey;
   w.fixtures = w.fixtures.filter((f) => f.groupKey === own || f.groupKey === top);
   return w;
 }

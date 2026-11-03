@@ -9,7 +9,6 @@ import {
   affordable,
   COACH_CRITERIA_DEFAULT,
   coachCriteriaOf,
-  createWorld,
   dailyStaff,
   dailyMarket,
   DIRECTION_INFO,
@@ -32,15 +31,9 @@ import {
   transferWindowDays,
   untouchableVerdict,
 } from './index';
+import { careerWorld } from './career.testkit';
 
-const world = (seed = 'direction') =>
-  createWorld({
-    country: 'ENG',
-    name: 'Direction Town',
-    color: '#335577',
-    seed,
-    level: 'normal' as const,
-  });
+const world = (seed = 'direction') => careerWorld({ seed });
 /** Cash covering `rounds` rounds of the club's fixed costs. */
 const cashFor = (w: ReturnType<typeof world>, rounds: number) =>
   ((BigInt(operatingCosts(w).annual) * BigInt(rounds)) / 46n).toString();
@@ -276,14 +269,7 @@ describe('recruitment support policy', () => {
   it('founds a preset that names no support row at balanced', () => {
     const preset = BUILD_PRESETS[0];
     expect(preset.rows.direction).not.toHaveProperty('recruitmentSupport');
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Direction Town',
-      color: '#335577',
-      seed: 'support-config',
-      level: 'normal' as const,
-      preset: preset.id,
-    });
+    const w = careerWorld({ seed: 'support-config', preset: preset.id });
     expect(directionOf(w, 'recruitmentSupport')).toBe('balanced');
     expect(directionOf(w, 'finance')).toBe(preset.rows.direction!.finance);
   });

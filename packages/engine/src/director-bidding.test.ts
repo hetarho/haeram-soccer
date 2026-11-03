@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { staffAuthority } from './testing';
 import type { StaffTrait, World } from '../../contracts/src/types';
 import {
-  createWorld,
   basicStaff,
   transferOffers,
   placeBid,
@@ -13,14 +12,9 @@ import {
 } from './index';
 import { staffBidShare } from './director-bidding';
 import { STAFF_INFO, STAFF_TRAIT_INFO } from './staff';
+import { careerWorld } from './career.testkit';
 function world(trait?: StaffTrait) {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Bidding Town',
-    color: '#224433',
-    seed: 'director-bids',
-    level: 'easy',
-  });
+  const w = careerWorld({ seed: 'director-bids' });
   w.settings = staffAuthority(4);
   w.staff ??= basicStaff(w);
   const director = w.staff.find((s) => s.role === 'director')!;

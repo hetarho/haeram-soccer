@@ -1,19 +1,11 @@
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
-import { clubMilestones, createWorld } from './index';
+import { clubMilestones } from './index';
+import { careerWorld } from './career.testkit';
 
 /** The milestone club on the pre-feature path: club goals, not the match model, are the subject. */
 export function world(strong = false) {
-  const w = createWorld(
-    {
-      country: 'ENG',
-      name: 'Milestone United',
-      color: '#224433',
-      seed: 'milestone-career',
-      level: 'easy' as const,
-    },
-    DISABLED_RELEASE,
-  );
+  const w = careerWorld({ seed: 'milestone-career' }, DISABLED_RELEASE);
   w.cash = '999999999999';
   if (strong) {
     w.manager.ability = 100;

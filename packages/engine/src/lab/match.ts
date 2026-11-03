@@ -4,12 +4,12 @@
  */
 import type { Club, Fixture, MatchPlayback, World } from '../../../contracts/src/types';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
-import { createWorld } from '../founding';
 import { playGrid, type GridResult } from '../grid/engine';
 import { buildFrames } from '../grid/playback';
 import { buildGridSetup, type GridSetup } from '../grid/setup';
 import { appearanceForFixture } from '../match-appearance';
 import { LAB_CONFIG, type LabSide } from './sides';
+import { historyWorld } from '../history';
 
 export interface LabWorld {
   w: World;
@@ -23,18 +23,13 @@ export const LAB_HOST_NAMES = [
   { name: '우측 팀', short: '우측' },
 ] as const;
 
-/** The one world a lab worker builds once and plays every lab match in. */
+/**
+ * The one world a lab worker builds once and plays every lab match in: a world nobody owns a club
+ * in (→WORLD-13), since the lab sides play for two of its clubs and no own club is needed.
+ */
 export function createLabWorld(): LabWorld {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Match Lab',
-    color: '#2a5d8f',
-    seed: 'lab-world',
-    level: 'normal',
-  });
-  const [a, b] = w.clubs.filter(
-    (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
-  );
+  const w = historyWorld('lab-world');
+  const [a, b] = w.clubs.filter((c) => c.country === 'ENG' && c.tier === 0);
   const hosts: [Club, Club] = [a!, b!];
   hosts.forEach((club, side) => Object.assign(club, LAB_HOST_NAMES[side]));
   return { w, hosts };

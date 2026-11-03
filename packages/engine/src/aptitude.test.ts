@@ -2,9 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
 import { POSITIONS, type Grade } from '../../contracts/src/player';
 import { validateWorld } from '../../contracts/src/schema';
-import { createWorld, makePlayer } from './index';
+import { makePlayer } from './index';
 import { coachingGrade, generateQualities, managerialGrade } from './aptitude';
 import { gradeOf } from './player';
+import { careerWorld } from './career.testkit';
 
 const grades: Grade[] = [1, 2, 3, 4, 5];
 describe('fixed off-pitch aptitude', () => {
@@ -63,13 +64,7 @@ describe('fixed off-pitch aptitude', () => {
     );
   });
   it('keeps fixed aptitude independent of playing state and rejects invalid components', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Aptitude',
-      color: '#224466',
-      seed: 'aptitude',
-      level: 'easy',
-    });
+    const w = careerWorld({ seed: 'aptitude' });
     expect(w.players.every((p) => !!p.qualities)).toBe(true);
     const p = w.players[0];
     const grade = coachingGrade(p),

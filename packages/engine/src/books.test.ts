@@ -4,11 +4,10 @@ import { currency } from '../../catalogs/src/index';
 import { booksClose, clearDebt, keepsBooks, settleNpcBooks } from './books';
 import { facilityStage } from './club-value';
 import { historyWorld } from './history';
-import { createWorld } from './founding';
 import { evolveClubs } from './dynamics';
 import { operatingExpensesAt } from './finance';
-import { withOwner } from './testing';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { careerWorld } from './career.testkit';
 
 /** An ownerless world on its first season's first day, its tables as they stand (all level). */
 const world = (seed = 'npc-books') => historyWorld(seed, DISABLED_RELEASE);
@@ -99,23 +98,21 @@ describe('season books of clubs nobody owns (→ECON-36)', () => {
     expect(one.books!.debt).toBe('0');
   });
 
-  it('closes for every league club nobody owns, and never in a founded career', () => {
+  it('closes for every league club nobody owns, and never in a career without owner state', () => {
     const w = world();
     booksClose(w);
     const kept = w.clubs.filter((c: Club) => c.books);
     expect(kept.length).toBe(w.clubs.filter((c) => !c.representative).length);
     expect(kept.every((c) => !c.id.startsWith('euro:'))).toBe(true);
-    const founded = createWorld(
-      { country: 'ENG', name: 'Book Town', color: '#334455', seed: 'npc-books', level: 'normal' },
-      DISABLED_RELEASE,
-    );
-    booksClose(founded);
-    expect(founded.clubs.some((c) => c.books)).toBe(false);
+    const career = careerWorld({ seed: 'npc-books' }, DISABLED_RELEASE);
+    const unowned = structuredClone(career);
+    delete unowned.owner;
+    booksClose(unowned);
+    expect(unowned.clubs.some((c) => c.books)).toBe(false);
     // A taken-over career keeps books for every club but the owner's.
-    withOwner(founded);
-    booksClose(founded);
-    expect(founded.clubs.find((c) => c.id === founded.playerClub)!.books).toBeUndefined();
-    expect(founded.clubs.filter((c) => c.books).length).toBeGreaterThan(0);
+    booksClose(career);
+    expect(career.clubs.find((c) => c.id === career.playerClub)!.books).toBeUndefined();
+    expect(career.clubs.filter((c) => c.books).length).toBeGreaterThan(0);
   });
 
   it('reads a club nobody owns at its division and stature facility stage (→CLUB-1)', () => {

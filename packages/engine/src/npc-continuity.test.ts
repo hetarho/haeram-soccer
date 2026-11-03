@@ -1,17 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld, operate } from './index';
+import { operate } from './index';
 import { npcSquad, squad } from './world';
 import { materializePeople, movePerson, returnLoan } from './npc-continuity';
 import { coachingGrade } from './aptitude';
 import { validateWorld } from '../../contracts/src/schema';
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Continuity',
-    color: '#224466',
-    seed: 'continuity',
-    level: 'easy',
-  });
+import { careerWorld } from './career.testkit';
+const world = () => careerWorld({ seed: 'continuity' });
 describe('selected NPC continuity', () => {
   it('enrolls prospects without inspection and preserves identity over cohort rollover with seasonal attributes', () => {
     const w = world();

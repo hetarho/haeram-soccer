@@ -1,5 +1,4 @@
 import { encode } from '../../apps/web/src/adapters/persistence';
-import type { IdentityDraftAction } from '../../apps/web/src/ui/clubIdentityDraft';
 import type { ClubIdentity, KitRole } from '../../packages/contracts/src/identity';
 import type { Founding, World } from '../../packages/contracts/src/types';
 import { MANAGER_HISTORY_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
@@ -22,7 +21,7 @@ import { simulatedWorld, withoutManagerHistory } from './worlds';
  * envelope schema 1, as a writer before identities wrote it, and newer data is only ever refused.
  */
 
-/** The founding screen's first representative colour (T250). */
+/** The representative colour of the delegated test careers. */
 export const FIRST_COLOUR = '#bf7956';
 
 /**
@@ -40,38 +39,13 @@ export const FOUNDED_DESIGN: ClubIdentity = {
   },
 };
 
-/**
- * The editor steps the journey takes from a founding session's draft to `FOUNDED_DESIGN`, in its
- * order, as the editor's own draft actions. Any session's draft works: every field is set.
- */
-export const FOUNDING_ACTIONS: IdentityDraftAction[] = [
-  { type: 'colour', index: 0, colour: '#C8102E' },
-  { type: 'colour', index: 1, colour: '#1B2A49' },
-  // 프렌치 방패 · 왕관: french, sash, crown.
-  { type: 'crest-preset', index: 2 },
-  { type: 'crest-colour', region: 'primary', colour: '#C8102E' },
-  { type: 'crest-colour', region: 'secondary', colour: null },
-  ...(['home', 'away', 'third'] as const).flatMap((role): IdentityDraftAction[] => {
-    const shirt = FOUNDED_DESIGN.kits[role];
-    return [
-      { type: 'shirt-pattern', role, pattern: shirt.pattern },
-      { type: 'shirt-colour', role, region: 'primary', colour: shirt.primary },
-      { type: 'shirt-colour', role, region: 'secondary', colour: shirt.secondary! },
-      { type: 'shirt-colour', role, region: 'trim', colour: null },
-    ];
-  }),
-];
-
 /** The colour the later edit gives the shirt the settled match was played in. */
 export const EDITED_SHIRT_COLOUR = '#E0218A';
 
-/** The later edit: a three-colour crest and a new secondary for the shirt `role` was worn in. */
-export const editActions = (role: KitRole): IdentityDraftAction[] => [
-  { type: 'crest-colour', region: 'secondary', colour: '#1B2A49' },
-  { type: 'crest-colour', region: 'accent', colour: '#FFD100' },
-  { type: 'shirt-colour', role, region: 'secondary', colour: EDITED_SHIRT_COLOUR },
-];
-/** `FOUNDED_DESIGN` after `editActions(role)`, written out. */
+/**
+ * The later design: `FOUNDED_DESIGN` with a three-colour crest and a new secondary for the shirt
+ * `role` was worn in.
+ */
 export function editedDesign(role: KitRole): ClubIdentity {
   return {
     ...FOUNDED_DESIGN,

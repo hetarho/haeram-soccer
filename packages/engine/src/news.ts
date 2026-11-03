@@ -376,7 +376,7 @@ function milestoneNews(ctx: NewsContext, { p, score, versus, add }: MatchNews) {
       '기록',
       'good',
       'major',
-      `${name}, 창단 첫 공식전 승리!`,
+      `${name}, 인수 후 첫 공식전 승리!`,
       `${versus} ${score}`,
       true,
     );

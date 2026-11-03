@@ -1,20 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { LOAD_CATALOG } from '../../catalogs/src/index';
-import { createWorld } from '../../engine/src/index';
 import { addEvent } from '../../engine/src/events';
 import { careerDate } from '../../engine/src/person-careers';
 import { withOwner } from '../../engine/src/testing';
 import { validateWorld } from './schema';
 import type { World } from './types';
+import { careerWorld } from '../../engine/src/career.testkit';
 
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Withdrawn Rovers',
-    color: '#224466',
-    seed: 'withdrawn-interventions',
-    level: 'easy' as const,
-  });
+const world = () => careerWorld({ seed: 'withdrawn-interventions' });
 
 describe('owner interventions withdrawn (→SAVE-25)', () => {
   it('drops removed care state from an older save', () => {
@@ -208,10 +201,12 @@ describe('owner and takeover (→SAVE-27)', () => {
     expect(loaded.clubs.find((club) => club.id === other.id)!.books).toEqual(other.books);
     // A save of it reads back the same world.
     expect(validateWorld(JSON.parse(JSON.stringify(loaded)), LOAD_CATALOG)).toEqual(loaded);
-    // A founded career and an older save carry none of it and validate as before.
-    const founded = validateWorld(world(), LOAD_CATALOG);
-    for (const key of ['owner', 'loan', 'ended'] as const) expect(founded).not.toHaveProperty(key);
-    expect(founded.clubs.every((club) => club.books === undefined)).toBe(true);
+    // A save carrying none of it (an older one) validates as before.
+    const older = world();
+    delete older.owner;
+    const plain = validateWorld(older, LOAD_CATALOG);
+    for (const key of ['owner', 'loan', 'ended'] as const) expect(plain).not.toHaveProperty(key);
+    expect(plain.clubs.every((club) => club.books === undefined)).toBe(true);
   });
 
   it.each([

@@ -1,18 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { createWorld, transferOffers, transferWindowDays } from './index';
+import { transferOffers, transferWindowDays } from './index';
 import { detectMediations, delegatedMediations } from './mediation';
 import { pendingDecisions } from './stopping';
 import { pendingWorkPreview } from './pending-work';
 import { lineOf } from './player';
 import { canonical, validateWorld } from '../../contracts/src/index';
+import { careerWorld } from './career.testkit';
 function fixture() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Actual Mediation',
-    color: '#224466',
-    seed: 'mediation',
-    level: 'normal',
-  });
+  const w = careerWorld({ seed: 'mediation' });
   const offers = transferOffers(w),
     offer = offers.find((o) => o.available && lineOf(o.player.position) === 'MF')!;
   w.shortlist = {

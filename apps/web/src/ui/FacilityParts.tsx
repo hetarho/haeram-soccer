@@ -85,7 +85,7 @@ export function FacilityParts({ w }: { w: World }) {
                 data-testid={`stadium-step-${index}`}
               >
                 <b>{number(step.capacity)}</b>
-                <small>{step.work ? WORK_INFO[step.work].label : '창단'}</small>
+                <small>{step.work ? WORK_INFO[step.work].label : '기본'}</small>
               </li>
             ))}
           </ol>

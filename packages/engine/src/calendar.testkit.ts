@@ -4,28 +4,20 @@ import { canonical, type World } from '../../contracts/src/index';
 import {
   advanceDays,
   advanceRound,
-  createWorld,
   currentDay,
   MATCH_MODEL_RELEASE,
   type MatchModelRelease,
+  simulateSeason,
 } from './index';
-import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { careerWorld } from './career.testkit';
 
-/** The calendar club founded under `release` (default the switch as it stands). */
+/** The calendar club taken over under `release` (default the switch as it stands). */
 export function world(
   country: 'ENG' | 'BEL' = 'ENG',
   release: MatchModelRelease = MATCH_MODEL_RELEASE,
 ) {
-  const w = createWorld(
-    {
-      country,
-      name: 'Calendar United',
-      color: '#223344',
-      seed: 'calendar',
-      level: 'easy' as const,
-    },
-    release,
-  );
+  const w = careerWorld({ country, seed: 'calendar' }, release);
   w.settings = staffAuthority(2);
   w.cash = '999999999999';
   return w;
@@ -33,14 +25,8 @@ export function world(
 
 /** Day-by-day, round-by-round and season-command progression record the same facts. */
 export function recordsSameFacts(code: 'ENG' | 'ESP', seed: string) {
-  const input = {
-    country: code,
-    name: 'Order FC',
-    color: '#335577',
-    seed,
-    level: 'easy' as const,
-  };
-  const start = createWorld(input);
+  const input = { country: code, seed };
+  const start = careerWorld(input);
   const year = start.year;
   // Halfway through the second season, on its 23rd league match day.
   const done = (w: World) => w.year > year && w.round === 23;
@@ -50,7 +36,9 @@ export function recordsSameFacts(code: 'ENG' | 'ESP', seed: string) {
   // The season command plays the first season round by round and closes it once the final
   // round is played: the very calls the host's advance commands make, so the round and season
   // modes share it and part only in the second season.
-  const closed = simulatedWorld(input, { seasons: 1 });
+  const closed = cachedWorld(`calendar-closed:${code}:${seed}`, () =>
+    simulateSeason(careerWorld(input)),
+  );
   const rounds = structuredClone(closed);
   while (!done(rounds)) advanceRound(rounds, undefined, false);
   const season = structuredClone(closed);

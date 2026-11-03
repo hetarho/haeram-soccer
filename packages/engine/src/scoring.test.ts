@@ -5,31 +5,21 @@ import {
   advanceDays,
   advanceRound,
   clubOf,
-  createWorld,
   isScoringFixture,
   prepareSeason,
   rankedScorers,
   resolveTie,
   simulateMatch,
   simulateSeason,
-  FOUNDING_YEAR,
 } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { transferredScorerWorld } from '../../../tests/fixtures/transferred-scorer';
+import { careerWorld, CAREER_YEAR } from './career.testkit';
 
 /** The scorer race's club on the pre-feature path: the league's scorer ledger is the subject. */
 function world() {
-  const w = createWorld(
-    {
-      country: 'ENG',
-      name: 'Scoring United',
-      color: '#223344',
-      seed: 'goal-race',
-      level: 'easy' as const,
-    },
-    DISABLED_RELEASE,
-  );
+  const w = careerWorld({ seed: 'goal-race' }, DISABLED_RELEASE);
   w.cash = '999999999999';
   return w;
 }
@@ -180,24 +170,29 @@ describe('actual league scorer standings', () => {
       return w;
     });
     simulateSeason(w);
-    expect(w.scorerSeason!.year).toBe(FOUNDING_YEAR + 1);
+    expect(w.scorerSeason!.year).toBe(CAREER_YEAR + 1);
     expect(w.scorerSeason!.players).toEqual([]);
     expect(w.scorerSeason!.trackedSinceRound).toBe(1);
     expect(w.scorerSeason!.history).toEqual([{ round: 0, day: 0, rows: [] }]);
     expect(previous!.players.length).toBeGreaterThan(0);
-    w.lower = true;
-    clubOf(w).tier = 4;
+    // The own club changes places with a club of another division, which redraws the season.
+    const own = clubOf(w),
+      other = w.clubs.find(
+        (c) => c.country === own.country && c.tier !== own.tier && !c.representative,
+      )!;
+    [own.tier, own.group, other.tier, other.group] = [other.tier, other.group, own.tier, own.group];
+    const key = `${own.country}:${own.tier}:${own.group}`;
     prepareSeason(w);
     advanceRound(w, undefined, false);
-    expect(w.scorerSeason!.groupKey).toBe('lower');
-    const lowerClubs = new Set(
-      w.fixtures.filter((f) => f.kind === 'lower').flatMap((f) => [f.home, f.away]),
+    expect(w.scorerSeason!.groupKey).toBe(key);
+    const leagueClubs = new Set(
+      w.fixtures.filter((f) => f.groupKey === key).flatMap((f) => [f.home, f.away]),
     );
-    expect(lowerClubs.size).toBe(16);
-    expect(w.scorerSeason!.players.every((p) => lowerClubs.has(p.club))).toBe(true);
+    expect(leagueClubs.has(own.id)).toBe(true);
+    expect(w.scorerSeason!.players.every((p) => leagueClubs.has(p.club))).toBe(true);
     expect(w.scorerSeason!.players.reduce((sum, p) => sum + p.goals, 0)).toBe(
       w.fixtures
-        .filter((f) => f.kind === 'lower' && f.score)
+        .filter((f) => f.groupKey === key && f.score)
         .reduce((sum, f) => sum + f.score!.home + f.score!.away, 0),
     );
     validateWorld(w);

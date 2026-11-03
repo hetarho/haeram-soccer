@@ -6,7 +6,6 @@ import {
   advanceRound,
   candidateStyles,
   clubOf,
-  createWorld,
   gateProjection,
   managerOffers,
   managerStyleEffects,
@@ -46,6 +45,7 @@ import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { holdRows } from './testing';
+import { careerWorld } from './career.testkit';
 
 /** The club on the pre-feature path: strategy cards, not the match model, are the subject. */
 const world = (seed = 'build-cards') =>
@@ -82,10 +82,7 @@ const HELPS: Partial<Record<keyof BuildEffects, 1 | -1>> = {
 };
 /** A club founded with a direction preset (→WEB-15), on the founding day. */
 const founded = (preset: string, seed = `preset-${preset}`) =>
-  createWorld(
-    { country: 'ENG', name: 'Build FC', color: '#2a4d3c', seed, level: 'easy' as const, preset },
-    DISABLED_RELEASE,
-  );
+  careerWorld({ seed, preset }, DISABLED_RELEASE);
 
 describe('manager styles', () => {
   it('offers four different schools a season, each a stable seeded order of all eight', () => {
@@ -304,17 +301,7 @@ describe('club builds', () => {
     expect(plain.ticket).toBe(0.05);
     expect(plain.direction).toBeUndefined();
     expect(() =>
-      createWorld(
-        {
-          country: 'ENG',
-          name: 'Build FC',
-          color: '#2a4d3c',
-          seed: 'founding-direction',
-          level: 'easy' as const,
-          preset: 'galacticos',
-        },
-        DISABLED_RELEASE,
-      ),
+      careerWorld({ seed: 'founding-direction', preset: 'galacticos' }, DISABLED_RELEASE),
     ).toThrow('구단 방향');
   });
 

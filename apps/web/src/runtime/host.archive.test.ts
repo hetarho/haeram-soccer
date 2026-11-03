@@ -3,10 +3,10 @@ import { staffAuthority } from '../../../../packages/engine/src/testing';
 import { Host } from './host';
 import { canonical } from '../../../../packages/contracts/src/index';
 import type { ManagerHistoryPage } from '../../../../packages/contracts/src/manager-history-view';
+import type { GameSettings } from '../../../../packages/contracts/src/types';
 import {
   advanceDays,
   captureCupTitle,
-  createWorld,
   currentDay,
   domesticCupName,
   managerCandidates,
@@ -19,18 +19,33 @@ import { headToHead } from './headToHead';
 import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
-import { input, playOn, req } from './host.testkit';
+import { input, playOn, req, startedHost, startedWorld } from './host.testkit';
 import type { View } from './protocol';
 
 // Archive and history reads on the pre-feature path, careers and hosts alike: the reads, not the
 // match model, are the subject.
 const host = () => new Host(undefined, { release: DISABLED_RELEASE });
+/** A host with a game just started in it by `startedHost`. */
+const started = async () => (await startedHost(undefined, undefined, host())).host;
+/**
+ * The started game grown through its first season, built once and cached: the owner funds the club
+ * first, so the season ends with the career, not a bankruptcy (→ECON-24); `settings`, when given,
+ * says who decides through it.
+ */
+const playedSeason = (key: string, settings?: GameSettings) =>
+  cachedWorld(key, () => {
+    const w = startedWorld(undefined, undefined, DISABLED_RELEASE);
+    w.cash = '999999999999';
+    if (settings) w.settings = settings;
+    return simulateSeason(w);
+  });
+/** The started game's season with the owner deciding as a new career does. */
+const ownerSeason = () => playedSeason('takeover-season');
 
 describe('worker command protocol', () => {
   it('projects closed seasons without brackets and scorer tables and returns them in the archive', async () => {
-    const h = host();
-    await h.handle(req('create', -1, { type: 'found', input }));
-    playOn(h, simulatedWorld(input, { seasons: 1 }, DISABLED_RELEASE), DISABLED_RELEASE);
+    const h = await started();
+    playOn(h, ownerSeason(), DISABLED_RELEASE);
     const season = h.world!.history[0];
     expect(season.brackets?.length).toBeGreaterThan(0);
     expect(season.scorers?.length).toBeGreaterThan(0);
@@ -49,8 +64,7 @@ describe('worker command protocol', () => {
     expect(h.world!.history[0].brackets).toBe(season.brackets);
   });
   it('reads archives between queued simulation steps without revisions, receipts or a projection', async () => {
-    const h = host();
-    await h.handle(req('create', -1, { type: 'found', input }));
+    const h = await started();
     const w = h.world!,
       before = canonical(w),
       expected = {
@@ -83,19 +97,10 @@ describe('worker command protocol', () => {
     expect(w.receiptIds).not.toContain('archive');
   });
   it('reads the all-time head-to-head from every own match without queueing or projecting', async () => {
-    const h = host();
-    await h.handle(req('create', -1, { type: 'found', input }));
-    playOn(
-      h,
-      cachedWorld('legacy-season', () => {
-        const w = createWorld(input, DISABLED_RELEASE);
-        w.settings = staffAuthority(4);
-        return simulateSeason(w);
-      }),
-      DISABLED_RELEASE,
-    );
+    const h = await started();
+    playOn(h, playedSeason('takeover-delegated-season', staffAuthority(4)), DISABLED_RELEASE);
     const w = h.world!,
-      met = w.ownMatches.find((m) => m.kind === 'lower')!,
+      met = w.ownMatches.find((m) => m.kind === 'league')!,
       club = met.home === w.playerClub ? met.away : met.home,
       expected = headToHead(w.ownMatches, w.playerClub, club);
     expect(expected.played).toBe(
@@ -128,11 +133,10 @@ describe('worker command protocol', () => {
 });
 
 describe('the manager-history read (→HIST-18/19, WEB-92)', () => {
-  /** The founding grown through a season, its manager then replaced `hires` times today. */
+  /** The started game grown through a season, its manager then replaced `hires` times today. */
   async function career(hires = 0, untracked = false) {
-    const h = host();
-    await h.handle(req('create', -1, { type: 'found', input }));
-    playOn(h, simulatedWorld(input, { seasons: 1 }, DISABLED_RELEASE), DISABLED_RELEASE);
+    const h = await started();
+    playOn(h, ownerSeason(), DISABLED_RELEASE);
     const w = untracked ? withoutManagerHistory(h.world!) : h.world!;
     w.cash = '999999999999';
     for (let n = 0; n < hires; n++)
@@ -287,8 +291,7 @@ describe('the manager-history read (→HIST-18/19, WEB-92)', () => {
   });
 
   it('answers between queued simulation steps without revisions, receipts or a projection', async () => {
-    const h = host();
-    await h.handle(req('create', -1, { type: 'found', input }));
+    const h = await started();
     const w = h.world!;
     let advanced = false;
     const step = h
@@ -328,7 +331,8 @@ describe('the manager-history read (→HIST-18/19, WEB-92)', () => {
     expect(previous).toMatchObject({ id: founding.id, current: false });
     expect(previous?.kind === 'tenure' && previous.tenure?.ended).toBeDefined();
     // Our domestic final, decided the same week, is the new manager's honour at once.
-    const cup = w.cups!.find((c) => c.country === input.country)!;
+    const country = w.clubs.find((c) => c.id === w.playerClub)!.country;
+    const cup = w.cups!.find((c) => c.country === country)!;
     cup.winner = w.playerClub;
     captureCupTitle(w, 'cup');
     expect(view(h).managerHistoryKey).not.toBe(appointed);
@@ -337,7 +341,7 @@ describe('the manager-history read (→HIST-18/19, WEB-92)', () => {
       expect.objectContaining({
         kind: 'cup-title',
         competition: 'cup',
-        name: domesticCupName(input.country),
+        name: domesticCupName(country),
         season: { year: w.year, club: w.playerClub },
       }),
     ]);

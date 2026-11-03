@@ -1,50 +1,20 @@
 import type { Club, ClubBooks, World } from '../../contracts/src/types';
-import { createWorld } from './founding';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import type { MatchModelRelease } from './match-model';
+import { historyWorld } from './history';
+import { CAREER_YEAR } from './career.testkit';
 
 /**
  * A world nobody owns a club in, on a season's first day (→WORLD-13), as the takeover finds it,
- * made fast for unit tests: a founded 1950 world whose founded club, its players and their careers
- * leave again, so every professional club is for sale, no club keeps books and no season is
- * archived. A world the history runner made (`generateHistory`) is taken over in
- * `takeover.season.test.ts`.
+ * made fast for unit tests: a fresh world on `CAREER_YEAR`'s first day with nothing lived before
+ * it, so every professional club is for sale, no club keeps books and no season is archived. A
+ * world the history runner made (`generateHistory`) is taken over in `takeover.season.test.ts`.
  */
 export function ownerlessWorld(
   seed = 'ownerless',
   release: MatchModelRelease = DISABLED_RELEASE,
 ): World {
-  const w = createWorld(
-    { country: 'ENG', name: 'Vanished Athletic', color: '#445566', seed, level: 'normal' },
-    release,
-  );
-  const own = w.playerClub;
-  w.clubs = w.clubs.filter((c) => c.id !== own);
-  delete w.tables[own];
-  w.fixtures = w.fixtures.filter((f) => f.kind !== 'lower');
-  for (const id of Object.keys(w.people ?? {})) if (id.startsWith(`${own}:`)) delete w.people![id];
-  w.playerClub = '';
-  w.lower = false;
-  w.players = [];
-  w.staff = [];
-  w.academy = { players: [] };
-  w.events = [];
-  w.bids = [];
-  w.inbox = [];
-  w.cash = '0';
-  for (const key of [
-    'managerHistory',
-    'matchModel',
-    'npcSeason',
-    'shortlist',
-    'rankHistory',
-    'scorerSeason',
-    'build',
-    'policy',
-    'direction',
-  ] as const)
-    delete w[key];
-  return w;
+  return historyWorld(seed, release, CAREER_YEAR);
 }
 
 /** Hand-made books (→ECON-36): `cash` and `debt` with last season's income and wage bill. */

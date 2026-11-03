@@ -19,6 +19,8 @@ import type { CodecResult, Reply, Request } from './protocol';
 import { earlierRules, GameSlots } from './slots';
 import { ACTIVE_SAVE_KEYS, GameIndexStore, type ParkedStore } from '../adapters/games';
 import { NOTIFICATIONS_KEY, type SystemNotification } from './store';
+import { START } from './host.testkit';
+import { divisionName } from '../presentation/competitionLabels';
 
 class MemoryStorage implements StoragePort {
   data = new Map<string, string>();
@@ -158,12 +160,25 @@ const founding = {
 };
 let storage: MemoryStorage;
 const clients: GameClient[] = [];
-/** A writer with a founded club whose first checkpoint is committed. */
+/**
+ * Starts a game in `client` as a player does (→WEB-2, WEB-15): the runtime tests' `START` on `seed`
+ * generated, then the club the list names first that the fortune pays taken over; `replace` starts
+ * it beside a game in play. Resolves with the take-over reply.
+ */
+async function startGame(client: GameClient, seed = 'client-background', replace = false) {
+  await client.generate({ ...START, seed }, replace);
+  const club = client.state.start?.listings?.find((listing) => listing.affordable);
+  if (!club) throw new Error(client.state.start?.error ?? 'the fortune pays for no club');
+  return client.takeOver(club.clubId);
+}
+/** The own club's name in `w`. */
+const clubName = (w: World) => w.clubs.find((club) => club.id === w.playerClub)!.name;
+/** A writer with a club taken over whose first checkpoint is committed. */
 async function start(notify: (state: ClientState) => void = () => {}) {
   const client = new GameClient(notify);
   clients.push(client);
   await client.start();
-  await client.found(founding);
+  await startGame(client);
   await client.whenSaved();
   return client;
 }
@@ -1060,10 +1075,13 @@ describe('earlier-rules and future saves: compatibility recovery', () => {
       expect(client.state.errorCode).toBe('save-compatibility');
       expect(client.state.view).toBeUndefined();
       expect(await client.exportFile()).toBe(future);
-      await client.found(founding);
-      expect(client.state.errorCode).toBe('save-compatibility');
+      // A new game needs the explicit replacement: the start keeps the refusal, nothing is listed.
+      await client.generate({ ...START, seed: 'client-background' });
+      expect(client.state.start?.error).toContain('호환되지 않는 기록');
+      expect(client.state.start?.listings).toBeUndefined();
       expect(client.state.view).toBeUndefined();
       expect(storage.data).toEqual(before);
+      client.leaveStart();
       const replacement = simulatedWorld({ ...founding, seed: 'explicit-recovery' });
       await client.importFile(await encode(replacement));
       expect(client.state.error).toBeUndefined();
@@ -1114,9 +1132,10 @@ describe('earlier-rules and future saves: compatibility recovery', () => {
     clients.push(client);
     await client.start();
     expect(client.state.errorCode).toBe('save-compatibility');
-    await client.found(founding);
-    expect(client.state.errorCode).toBe('save-compatibility');
+    await client.generate({ ...START, seed: 'client-background' });
+    expect(client.state.start?.error).toContain('호환되지 않는 기록');
     expect(client.state.view).toBeUndefined();
+    client.leaveStart();
     storage.fail = 'haeram-soccor:manifest';
     const replacement = simulatedWorld({ ...founding, seed: 'explicit-recovery-quota' });
     await client.importFile(await encode(replacement));
@@ -1159,19 +1178,20 @@ describe('game slots', () => {
     const client = await start();
     const parked = new MemoryParked();
     const slots = new GameSlots(client, new GameIndexStore(storage), parked);
-    const first = client.state.view!.world.id;
+    const first = client.state.view!.world.id,
+      firstClub = clubName(client.state.view!.world);
     expect(slots.sync(client.state.view!.world)).toMatchObject({ active: 0 });
 
     await slots.prepare(1);
     expect(parked.data.size).toBe(1);
-    await client.found({ ...founding, name: 'Second Rovers', seed: 'second-slot' }, true);
+    await startGame(client, 'second-slot', true);
     const second = client.state.view!.world.id;
     expect(second).not.toBe(first);
     let index = slots.sync(client.state.view!.world, true);
     expect(index.active).toBe(1);
     expect(index.slots.map((entry) => entry?.summary.club)).toEqual([
-      'Background Athletic',
-      'Second Rovers',
+      firstClub,
+      clubName(client.state.view!.world),
       undefined,
     ]);
     await client.command({ type: 'advance-days', days: 1 });
@@ -1225,7 +1245,10 @@ describe('game slots', () => {
     expect(new GameIndexStore(storage).hasGames()).toBe(true);
     const index = slots.sync(client.state.view!.world);
     expect(index.active).toBe(0);
-    expect(index.slots[0]!.summary.division).toBe('아마추어 리그');
+    const own = client.state.view!.world.clubs.find(
+      (club) => club.id === client.state.view!.world.playerClub,
+    )!;
+    expect(index.slots[0]!.summary.division).toBe(divisionName(own.country, own.tier, own.group));
     // A slot listed without its parked checkpoint is reported, and the game in play stays.
     storage.setItem(
       'haeram-soccor:games',
@@ -1278,7 +1301,7 @@ it('exports verified current bytes after storage corruption and never reuses ano
     release = resolve;
   });
   try {
-    await client.found({ ...founding, seed: 'other-world-same-revision' }, true);
+    await startGame(client, 'other-world-same-revision', true);
     const current = (await decode((await client.exportFile())!)).world;
     expect(current.revision).toBe(oldWorld.revision);
     expect(current.id).not.toBe(oldWorld.id);

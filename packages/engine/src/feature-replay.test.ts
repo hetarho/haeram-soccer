@@ -8,11 +8,12 @@ import type { Body } from '../../../apps/web/src/runtime/protocol';
 import { decode, encode } from '../../../apps/web/src/adapters/persistence';
 import { retainedWorkload } from '../../../tests/fixtures/retained-workload';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
-import { createWorld, currentDay, advanceDays, fixtureDay, fullStatsRead } from './index';
+import { currentDay, advanceDays, fixtureDay, fullStatsRead } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { command, facts, readAndReload } from './feature-replay.testkit';
+import { careerWorld } from './career.testkit';
 
 // Each career is its own case with its own limit, in its own file so the two run side by side.
 // The new one takes about 11 s and keeps the config's limit; the retained one is in
@@ -26,16 +27,7 @@ for (const retained of [false])
       const seed = cachedWorld(`seed:${retained ? 'retained' : 'new'}`, () => {
         const seed = retained
           ? retainedWorkload().w
-          : createWorld(
-              {
-                country: 'ENG',
-                name: 'Feature Replay',
-                color: '#224466',
-                seed: 'feature-replay',
-                level: 'easy',
-              },
-              ENABLED_RELEASE,
-            );
+          : careerWorld({ seed: 'feature-replay' }, ENABLED_RELEASE);
         for (const key of RESPONSIBILITY_KEYS) seed.settings!.responsibilities[key] = 'delegated';
         // Cross the next seasonal boundary in the retained case, keeping its outstanding promise.
         if (retained) advanceDays(seed, 322 - currentDay(seed), undefined, false);

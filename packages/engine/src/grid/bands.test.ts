@@ -2,23 +2,18 @@ import { describe, expect, it } from 'vitest';
 import { TD } from '../../../contracts/src/detail';
 import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import type { Club, Tactic, World } from '../../../contracts/src/types';
-import { createWorld, rating } from '../index';
+import { rating } from '../index';
 import { validateFullMatchRecord } from '../match-model';
 import { playGrid } from './engine';
 import { M } from './record';
 import { buildGridSetup } from './setup';
+import { careerWorld } from '../career.testkit';
 
 const TACTICS: Tactic[] = ['possession', 'press', 'counter', 'balanced'];
 
 /** Equal top-tier sides of one world (ratings within 2), modern-era rules, the four tactics mixed. */
 function equalPairs(): { w: World; home: Club; away: Club }[] {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Grid Bands',
-    color: '#2a5d8f',
-    seed: 'grid-bands-1',
-    level: 'normal',
-  });
+  const w = careerWorld({ seed: 'grid-bands-1' });
   const out: { w: World; home: Club; away: Club }[] = [];
   for (const country of ['ENG', 'ESP', 'GER', 'ITA']) {
     const clubs = w.clubs

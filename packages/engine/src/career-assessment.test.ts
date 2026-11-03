@@ -1,15 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld } from './index';
 import { aptitudeLabel, careerAssessment } from './career-assessment';
 import { managerialEntryReady } from './manager-entry';
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Career Assessment',
-    color: '#224466',
-    seed: 'assessment',
-    level: 'easy',
-  });
+import { careerWorld } from './career.testkit';
+const world = () => careerWorld({ seed: 'assessment' });
 describe('qualitative career assessment', () => {
   it('uses exact own labels and the existing bounded scout ranges', () => {
     for (const ability of [undefined, 59, 60, 79, 80]) {

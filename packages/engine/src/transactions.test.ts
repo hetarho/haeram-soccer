@@ -1,17 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import fc from 'fast-check';
 import { canonical } from '../../contracts/src/index';
-import { createWorld } from './index';
 import { credit, debit } from './transactions';
+import { careerWorld } from './career.testkit';
 
 function world() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Ledger Town',
-    color: '#334455',
-    seed: 'transactions',
-    level: 'normal',
-  });
+  const w = careerWorld({ seed: 'transactions' });
   w.cash = '1000';
   w.income = '0';
   w.expense = '0';

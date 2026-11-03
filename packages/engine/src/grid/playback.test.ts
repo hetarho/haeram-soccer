@@ -8,7 +8,6 @@ import {
 } from '../../../contracts/src/match-model';
 import type { MatchFrame, MatchMotionSample } from '../../../contracts/src/types';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
-import { createWorld } from '../index';
 import { validateFullMatchRecord } from '../match-model';
 import { GRID_BALL_CONFIG } from './movement';
 import { playGrid } from './engine';
@@ -17,18 +16,10 @@ import { ballPath, buildFrames } from './playback';
 import { buildGridSetup, type DecideRule } from './setup';
 import { SHAPE_CONFIG } from './shape';
 import type { TraceEntry } from './trace';
+import { careerWorld } from '../career.testkit';
 
 // The pre-feature path's world: `candidate` opts a fixture into the model.
-const w = createWorld(
-  {
-    country: 'ENG',
-    name: 'Grid Playback Lab',
-    color: '#2a5d8f',
-    seed: 'grid-playback',
-    level: 'normal',
-  },
-  DISABLED_RELEASE,
-);
+const w = careerWorld({ seed: 'grid-playback' }, DISABLED_RELEASE);
 const [home, away] = w.clubs.filter(
   (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
 );

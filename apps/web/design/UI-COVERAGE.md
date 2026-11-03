@@ -74,9 +74,7 @@ Every module below was included in the source review; Card is the subsequent sha
 | [Chart.tsx](../src/ui/Chart.tsx)                               | – / – / –                 | chart, inset                                                                                                                                         | charts                                      |
 | [ClubCrest.tsx](../src/ui/ClubCrest.tsx)                       | – / – / –                 | Composed/default skin                                                                                                                                | identity                                    |
 | [ClubDesignView.tsx](../src/ui/ClubDesignView.tsx)             | 5 / – / –                 | panel, primary                                                                                                                                       | design                                      |
-| [ClubFounding.tsx](../src/ui/ClubFounding.tsx)                 | 6 / 2 / –                 | tile, disclosure, launch, primary                                                                                                                    | founding                                    |
 | [ClubHub.tsx](../src/ui/ClubHub.tsx)                           | 6 / – / –                 | link, stat-tile, primary                                                                                                                             | home, home-cards, office                    |
-| [ClubIdentityEditor.tsx](../src/ui/ClubIdentityEditor.tsx)     | 5 / 2 / –                 | inset                                                                                                                                                | identity                                    |
 | [ClubLink.tsx](../src/ui/ClubLink.tsx)                         | 1 / – / –                 | link                                                                                                                                                 | badges                                      |
 | [ClubListing.tsx](../src/ui/ClubListing.tsx)                   | 5 / 4 / –                 | sheet, inset, ticket, primary                                                                                                                        | start-flow                                  |
 | [ClubStaff.tsx](../src/ui/ClubStaff.tsx)                       | 10 / – / –                | primary, sheet, disclosure, panel, tile                                                                                                              | controls, staff                             |
@@ -213,7 +211,7 @@ StartFlow and ClubListing (T662) joined as the `start-flow` preview, and OwnerSh
 | investment          | ClubOperations, ClubNavigation, FinanceOutlook, FinancialBreakdown, FacilityParts                | Pending / pending     |
 | sponsors            | ClubOperations, BusinessWorkbench                                                                | Pending / pending     |
 | operations-identity | ClubOperations, ClubDesignView                                                                   | Pending / pending     |
-| identity            | ClubIdentityEditor, ClubCrest, KitSwatch, KitPitchPreview                                        | Inspected / inspected |
+| identity            | ClubCrest, KitSwatch, KitPitchPreview                                                            | Pending / pending     |
 | design              | ClubDesignView                                                                                   | Inspected / inspected |
 | policy              | DirectionFacts                                                                                   | Inspected / inspected |
 | facilities          | FacilityArt, FacilityOverview, FacilityParts                                                     | Inspected / inspected |
@@ -221,7 +219,6 @@ StartFlow and ClubListing (T662) joined as the `start-flow` preview, and OwnerSh
 | records             | RecordsRoom, ManagerHistory, TransferRecords, CompetitionRecords, SeasonAnalysis, AnalysisExport | Inspected / inspected |
 | career              | CareerRecordBook, ClubTrends                                                                     | Inspected / inspected |
 | season-review       | SeasonReview, PastSeason, CupHistory                                                             | Inspected / inspected |
-| founding            | ClubFounding                                                                                     | Inspected / inspected |
 | start-flow          | StartFlow, ClubListing                                                                           | Pending / pending     |
 | owner-sheet         | OwnerSheet, HudCash, CashAlarm                                                                   | Pending / pending     |
 | game-over           | GameOver                                                                                         | Pending / pending     |

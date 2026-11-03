@@ -1,17 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import type { Grade, PersonCareer, Position } from '../../contracts/src/types';
-import { createWorld, hireStaff, releaseStaff, staffCandidates } from './index';
+import { hireStaff, releaseStaff, staffCandidates } from './index';
 import { coachingProfile, coachingSpecialty, initializeCoaching } from './coaching-entry';
 import { careerDate } from './person-careers';
 import { retirePerson } from './careers';
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Coaching Candidates',
-    color: '#224466',
-    seed: 'coaching-candidates',
-    level: 'easy',
-  });
+import { careerWorld } from './career.testkit';
+const world = () => careerWorld({ seed: 'coaching-candidates' });
 function retire(w: ReturnType<typeof world>, index: number, grade: 4 | 5 = 4) {
   const p = w.players[index],
     person = w.people![p.id];
