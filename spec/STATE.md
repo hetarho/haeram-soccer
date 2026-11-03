@@ -544,7 +544,6 @@
 | T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T665 | todo |
 | T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T665 | todo |
 | T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T665 | todo |
-| T673 | Record news and update record counters when facts settle | HIST SAVE ARCH | - | doing@261103.hr03 |
 | T674 | Serve career statistics and current-season finance from maintained summaries | HIST SAVE ARCH | T673 | todo |
 | T675 | Verify long-career scaling and checkpoint continuity of incremental reads | HIST SAVE ARCH | T674 | todo |
 
@@ -570,11 +569,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T673, then T674 and T675 (hr03); preserve ot03 takeover handoff below.
+- implement-task T674, then T675 (hr03); preserve ot03 takeover handoff below.
 - continue branch `wip/ot03` (dda53874: owner takeover T653–T664 and T669 done, main merged; its STATE is current): implement-task T665, then T666, T667, T668; batch gate once (Chromium), then merge into main and push. Report spec/reports/261103-ot03.md
 - read main CI after 1928053c (fix for 41524887826: position-badges, analysis, mobile-match-presentation)
 
 ## log
+- 261103 T673 done: persisted incremental news journal, writer reconstruction, six unit cases and fast checks/build; integration deferred to final gate. hr03
 - 261103 HIST r22 SAVE r63 tasked: T673–T675 incremental news, statistics/finance reads and performance/continuity verification. hr03
 - 261103 update-ssot HIST SAVE start (hr03): incremental news and career read models; normalize ot03 doing cell to its existing T665 ID, branch handoff remains in next.
 - 261103 ot03 hand-off: main pushed with CI fix 1928053c and report; owner takeover work on wip/ot03 and wip/ot03-t669 for another session

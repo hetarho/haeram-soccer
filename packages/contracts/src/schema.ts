@@ -1,3 +1,4 @@
+import { newsJournalSchema } from './news';
 import { z } from 'zod';
 z.config({ jitless: true });
 import type { SponsorSlot, World } from './types';
@@ -1037,6 +1038,7 @@ const worldSchema: z.ZodType<World> = z.object({
   kitChoice: fixtureKitChoiceSchema.optional(),
   designCommission: designCommissionSchema.optional(),
   ownMatches: z.array(match).max(100000),
+  newsJournal: newsJournalSchema.optional(),
   matchModel: matchModelStateSchema.optional(),
   npcSeason: npcSeasonSchema.optional(),
   managerHistory: managerHistoryFactsSchema.optional(),
@@ -1226,6 +1228,25 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   assertIdentityFormatVersions(input);
   assertMatchModelFormat(input);
   const w = worldSchema.parse(input);
+  if (w.newsJournal) {
+    const j = w.newsJournal;
+    if (
+      j.matches > w.ownMatches.length ||
+      j.events > w.events.length ||
+      j.year > w.year ||
+      new Set(j.years).size !== j.years.length ||
+      Object.keys(j.seasons).length !== j.years.length ||
+      j.years.some(
+        (year, i) =>
+          year > w.year ||
+          (i > 0 && year <= j.years[i - 1]) ||
+          !j.seasons[year] ||
+          j.seasons[year].some((item) => item.year !== year) ||
+          new Set(j.seasons[year].map((item) => item.id)).size !== j.seasons[year].length,
+      )
+    )
+      throw new Error('뉴스 기록의 범위가 올바르지 않습니다.');
+  }
   // SAVE-25: the parse strips an older save's owner lineup and tactic requests (`lineup`,
   // `requested`, the manager's `lastRequest`, `requestHistory`, `pending` and `conflicts`).
   // An older save's coaches kept the strain and suggestion timing of withdrawn orders.

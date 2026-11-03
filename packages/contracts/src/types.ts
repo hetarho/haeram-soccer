@@ -1,3 +1,4 @@
+import type { NewsJournal } from './news';
 import type { ClubBuild } from './build';
 import type {
   ClubIdentity,
@@ -1181,6 +1182,8 @@ export interface World {
   /** The designer's drafts waiting for the owner's pick; absent when none was commissioned. */
   designCommission?: DesignCommission;
   ownMatches: MatchRecord[];
+  /** Source-linked headlines and incremental record counters; absent in older saves. */
+  newsJournal?: NewsJournal;
   /** The persisted match model and its counters' coverage (→SAVE-23); absent before activation. */
   matchModel?: MatchModelState;
   /** Current-season NPC aggregates under the full model (→HIST-17); absent before activation. */

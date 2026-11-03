@@ -1,3 +1,4 @@
+import { initializeNewsJournal } from '../../../../packages/engine/src/news';
 import { worldMarketPage, worldMarketDetail } from '../../../../packages/engine/src/world-market';
 import { mediationPreview } from '../../../../packages/engine/src/mediation';
 import { fullStatsRead } from '../../../../packages/engine/src/npc-stats';
@@ -369,6 +370,8 @@ export class Host {
       w.events.length,
       w.rankHistory?.length,
       w.history.length,
+      w.newsJournal?.events,
+      w.newsJournal?.matches,
     ].join(':');
     if (this.newsCache?.key !== key) this.newsCache = { key, news: clubNews(w) };
     return this.newsCache.news;
@@ -393,10 +396,17 @@ export class Host {
     const briefingClubs = new Set(next ? [next.home, next.away] : [w.playerClub]);
     // The season's complete statistics are read on request (`full-stats`), not sent every day, and
     // so are the manager-history facts.
-    const { people: _people, npcSeason: _season, managerHistory: _history, ...projected } = w;
+    const {
+      people: _people,
+      npcSeason: _season,
+      managerHistory: _history,
+      newsJournal: _news,
+      ...projected
+    } = w;
     void _people;
     void _season;
     void _history;
+    void _news;
     return {
       coaches: staffMarket(w),
       world: {
@@ -621,9 +631,15 @@ export class Host {
         const modelled = writer
           ? this.adoptModel(identified, identified !== result.world)
           : identified;
-        const activated = writer
+        let activated = writer
           ? this.adoptManagerHistory(modelled, modelled !== result.world)
           : modelled;
+        if (writer && !activated.newsJournal) {
+          const journalled = structuredClone(activated);
+          initializeNewsJournal(journalled);
+          if (activated === result.world) journalled.revision++;
+          activated = journalled;
+        }
         upgraded = activated !== result.world;
         if (r.body.metadataOnly) worldMetadata = worldMetadataOf(activated);
         else if (!r.body.activate) candidate = structuredClone(activated);
@@ -634,6 +650,7 @@ export class Host {
         if (this.world && !r.body.replace)
           throw new Error('현재 세계가 있습니다. 파일 내보내기 후 새 게임을 시작하세요.');
         this.world = createWorld(r.body.input, this.release);
+        initializeNewsJournal(this.world);
         changed = true;
       } else {
         const w = this.world;
