@@ -1,5 +1,4 @@
 import type { World } from '../../contracts/src/types';
-import { country } from '../../catalogs/src/index';
 import { clamp } from './primitives';
 import { findClub } from './world';
 export const REPUTATION_CONFIG = {
@@ -9,8 +8,8 @@ export const REPUTATION_CONFIG = {
   continentalMatch: 0.2,
   continentalTitle: 8,
 } as const;
-export const divisionLevel = (tier: number, depth: number) =>
-  tier >= depth ? 8 : Math.max(8, 75 - 15 * tier);
+/** A division's usual reputation (→LEAGUE-14): the top flight 75, 15 less per tier, at least 8. */
+export const divisionLevel = (tier: number) => Math.max(8, 75 - 15 * tier);
 export const finishTerm = (rank: number, clubs: number) =>
   clubs <= 1 ? 0 : REPUTATION_CONFIG.finish * (1 - (2 * (rank - 1)) / (clubs - 1));
 export function awardReputation(w: World, id: string, amount: number) {
@@ -22,7 +21,7 @@ export function awardReputation(w: World, id: string, amount: number) {
 export function settleReputation(w: World, finishes: ReadonlyMap<string, number>) {
   for (const club of w.clubs) {
     if (club.representative || club.id.startsWith('euro:')) continue;
-    const level = divisionLevel(club.tier, country(club.country).groups.length);
+    const level = divisionLevel(club.tier);
     club.reputation = clamp(
       club.reputation +
         REPUTATION_CONFIG.pull * (level - club.reputation) +

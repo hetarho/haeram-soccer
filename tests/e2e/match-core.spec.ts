@@ -13,12 +13,12 @@ import { expect, test, type Page } from '@playwright/test';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import {
   clubOf,
-  createWorld,
   lineupSummary,
   nextOwnFixture,
   startingSquad,
   tacticLabel,
 } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import { generateHistory } from '../../packages/engine/src/history';
 import { takeOver } from '../../packages/engine/src/takeover';
@@ -346,14 +346,8 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   await page.setViewportSize({ width: 390, height: 844 });
   // A settled revision-1 match keeps its recorded facts after a writer upgrades the career.
   // The archived replay exercises those historical goals, independent of the current model.
-  const world = createWorld(
-    {
-      country: 'ENG',
-      name: 'Goal Feedback',
-      color: '#224466',
-      seed: 'goal-feedback-221',
-      level: 'easy',
-    },
+  const world = careerWorld(
+    { country: 'ENG', seed: 'goal-feedback-221' },
     { revision: 'continuous-aggregate-1', enabled: true },
   );
   world.settings!.responsibilities.sales = 'delegated';

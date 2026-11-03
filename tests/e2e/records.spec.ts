@@ -152,6 +152,9 @@ for (const [label, viewport] of [
       for (const season of await seasons.locator('tbody tr').all()) {
         expect(await season.evaluate((element) => element.getBoundingClientRect().height)).toBe(44);
       }
+      // The owner's own seasons follow (→OWNER-17); a 1930 takeover has none before the owner.
+      await expect(page.getByRole('table', { name: '구단주 시즌' })).toContainText('1930/31');
+      await expect(page.getByRole('table', { name: '구단주 이전 시즌' })).toHaveCount(0);
       const row = page.getByRole('button', { name: '1930/31 구단 시즌 기록 보기', exact: true });
       // Centred, so the floating news button and the tab bar stay clear of the row.
       await row.evaluate((element) => element.scrollIntoView({ block: 'center' }));

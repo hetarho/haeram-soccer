@@ -49,7 +49,7 @@ export interface TieRow {
   kind: 'tie';
   label: string;
   opponent: string;
-  /** The opponent's division that season (2부, 아마추어) or, abroad, its nation. */
+  /** The opponent's division that season (2부) or, abroad, its nation. */
   tag?: string;
   legs: RouteLeg[];
   /** "홈 2–1" or "1차전 원정 1–0 · 2차전 홈 1–2 · 합계 2–2". */
@@ -195,9 +195,9 @@ export function cupRoute(
     let tag: string | undefined;
     if (key !== 'cup') tag = club && nationName(club.country);
     else if (archive.season?.standings.length) {
-      // Clubs below the professional pyramid play in no league table.
+      // Every cup entrant is a professional club in that season's standings (→LEAGUE-5).
       const row = archive.season.standings.find((entry) => w.clubs[entry[0]]?.id === opponent);
-      tag = row ? `${row[1] + 1}부` : '아마추어';
+      tag = row && `${row[1] + 1}부`;
     }
     const venue = (leg: RouteLeg) => `${leg.home ? '홈' : '원정'} ${leg.score[0]}–${leg.score[1]}`;
     const [ours, theirs] = legs.reduce<[number, number]>(

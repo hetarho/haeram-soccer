@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { currentDay } from '../../../../packages/engine/src/calendar';
 import type { Command, World } from '../../../../packages/contracts/src/types';
 import { GameClient } from './client';
@@ -13,13 +13,7 @@ import {
   type Pace,
 } from './progression';
 
-const base = createWorld({
-  country: 'ENG',
-  name: 'Ahead Club',
-  color: '#24543b',
-  seed: 'run-ahead',
-  level: 'easy' as const,
-});
+const base = careerWorld({ country: 'ENG', seed: 'run-ahead' });
 /** No observation stops, so only the pace and the step times shape the run. */
 function quiet() {
   const world = structuredClone(base);

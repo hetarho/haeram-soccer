@@ -14,19 +14,14 @@ import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { base64, pack, unbase64, unpack } from './packing';
 import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
-import type { Founding, World } from '../../../../packages/contracts/src/types';
+import type { World } from '../../../../packages/contracts/src/types';
+import type { CareerInput } from '../../../../packages/engine/src/career.testkit';
 import { packBitColumns } from './bitpacking';
 import { packCareerRows } from './careerPacking';
 import { MATCH_MODEL_REVISION } from '../../../../packages/contracts/src/match-model';
 
-const COMPACT: Founding = {
-  country: 'ENG',
-  name: 'Compact Athletic',
-  color: '#126044',
-  seed: 'compact-streams',
-  level: 'normal',
-};
-/** Two unobserved rounds into the founded career. */
+const COMPACT: CareerInput = { country: 'ENG', seed: 'compact-streams' };
+/** Two unobserved rounds into the taken-over career. */
 const career = () => simulatedWorld(COMPACT, { rounds: 2 });
 
 // Historical compact1 uses unsigned LEB128 columns and one interleaved actor stream.
@@ -410,16 +405,7 @@ describe('lossless career stream compaction', () => {
   });
 
   it('streams archived bracket ties and rejects counts that disagree with the stream', () => {
-    const w = simulatedWorld(
-      {
-        country: 'ENG',
-        name: 'Bracket Athletic',
-        color: '#126044',
-        seed: 'compact-brackets',
-        level: 'normal' as const,
-      },
-      { seasons: 1 },
-    );
+    const w = simulatedWorld({ country: 'ENG', seed: 'compact-brackets' }, { seasons: 1 });
     const rounds = w.history[0].brackets!.flatMap((b) => b.rounds);
     expect(rounds.length).toBeGreaterThan(0);
     const packed = pack(w);

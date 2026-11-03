@@ -1,18 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { clubMilestones, createWorld } from '../../../../packages/engine/src/index';
+import { clubMilestones } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import type { StoragePort } from '../adapters/repository';
 import type { ClientState } from './client';
 import type { View } from './protocol';
 import { NOTIFICATIONS_KEY, createGameStore, createNotificationStore, shareView } from './store';
 
 function view(): View {
-  const world = createWorld({
-    country: 'ENG',
-    name: 'Stable Athletic',
-    color: '#223344',
-    seed: 'stable-store',
-    level: 'normal' as const,
-  });
+  const world = careerWorld({ country: 'ENG', seed: 'stable-store' });
   return {
     world: { ...world, people: undefined },
     coaches: {},

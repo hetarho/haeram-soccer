@@ -12,7 +12,7 @@ import type {
   World,
 } from '../../../../packages/contracts/src/types';
 import { COUNTRIES } from '../../../../packages/catalogs/src/index';
-import { clubOf } from '../../../../packages/engine/src/player-state';
+import { clubOf, ownSeasons } from '../../../../packages/engine/src/player-state';
 import { fixtureDate } from '../../../../packages/engine/src/calendar';
 import { cupKey, domesticCupName } from '../../../../packages/engine/src/competition-keys';
 import { ownReached } from '../../../../packages/engine/src/knockout';
@@ -136,7 +136,8 @@ function ownStatus(w: World, rounds: KnockoutRound[], fixtures: Fixture[], enter
 function DomesticCup({ w, countryCode }: { w: World; countryCode: string }) {
   const cup = w.cups?.find((entry) => entry.country === countryCode);
   const name = cup?.name ?? domesticCupName(countryCode);
-  const titles = w.history.filter((h) =>
+  // Our titles from the takeover on; the club's before it stand in 시즌별 기록 (→HIST-21).
+  const titles = ownSeasons(w).filter((h) =>
     h.champions.some((entry) => entry.country === countryCode && entry.cup === w.playerClub),
   ).length;
   if (!cup)

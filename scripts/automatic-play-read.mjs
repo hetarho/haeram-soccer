@@ -1,6 +1,6 @@
 /**
  * T522: what the owner sees of automatic play in the production build (→WEB-18). Drives a preview
- * of `apps/web/dist` in Chromium with a 1950 ENG founding whose observation and decisions are
+ * of `apps/web/dist` in Chromium with a 1950 ENG takeover whose observation and decisions are
  * delegated, plays one season at x10 and a month each at x1/x2/x5, and records every shown day:
  * the gap since the previous one, stalls (a gap of at least 1.5 × the pace), days a second, the
  * main thread's long tasks and whether the fixture helpers ran. Writes reports/automatic-play-read
@@ -15,7 +15,8 @@ import { spawn, execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
-import { createWorld, operate } from '../packages/engine/src/index.ts';
+import { operate } from '../packages/engine/src/index.ts';
+import { careerWorld } from '../packages/engine/src/career.testkit.ts';
 import { encode } from '../apps/web/src/adapters/persistence.ts';
 
 const args = new Map(
@@ -41,15 +42,9 @@ function fingerprint(root) {
   return hash.digest('hex').slice(0, 16);
 }
 
-/** A delegated 1950 founding: no owner decisions and no match-eve observation stop the clock. */
-async function founding() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Automatic Read',
-    color: '#224466',
-    seed: 'automatic-play-read',
-    level: 'normal',
-  });
+/** A delegated 1950 takeover: no owner decisions and no match-eve observation stop the clock. */
+async function career() {
+  const w = careerWorld({ country: 'ENG', seed: 'automatic-play-read' });
   const settings = structuredClone(w.settings);
   for (const key of Object.keys(settings.responsibilities))
     settings.responsibilities[key] = 'delegated';
@@ -220,7 +215,7 @@ try {
     if (i > 100) throw new Error(`No preview at ${origin}`);
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
-  const raw = await founding();
+  const raw = await career();
   const browser = await chromium.launch();
   const runs = [];
   try {

@@ -345,7 +345,7 @@ test('colour steps take a main and optional sub and point colours once each, and
   await watchIdentityCommands(page);
   await page.setViewportSize({ width: 390, height: 844 });
   // A marked synthetic career that can pay the local designer, not the studio.
-  const w = delegatedCareer('identity-management-steps', 'Step Works');
+  const w = delegatedCareer('identity-management-steps');
   w.cash = (BigInt(designFee(w, 'studio')) - 1n).toString();
   expect(BIG(w.cash)).toBeGreaterThan(BIG(designFee(w, 'local')));
   await importResponsibilityCareer(page, w);

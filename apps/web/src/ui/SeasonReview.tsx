@@ -1,7 +1,7 @@
 import { useMemo, useState, type PointerEvent } from 'react';
 import { ClubCrest } from './ClubCrest';
 import type { World } from '../../../../packages/contracts/src/types';
-import { clubOf } from '../../../../packages/engine/src/player-state';
+import { clubOf, ownSeasons } from '../../../../packages/engine/src/player-state';
 import { number, seasonName, signed } from './format';
 import { Money } from './Money';
 import { divisionName } from './league';
@@ -174,8 +174,10 @@ export function SeasonReview({
   failed?: boolean;
   clubs?: number;
 }) {
-  const index = w.history.findIndex((h) => h.year === year),
-    season = index >= 0 ? w.history[index] : undefined;
+  // Only the club's own seasons have a review; the world's before the takeover kept no own figures.
+  const seasons = ownSeasons(w),
+    index = seasons.findIndex((h) => h.year === year),
+    season = index >= 0 ? seasons[index] : undefined;
   const matches = files?.matches;
   const stats = useMemo(() => (matches ? seasonStats(w, matches) : undefined), [w, matches]);
   const players = useMemo(() => new Set(w.players.map((p) => p.id)), [w.players]);
@@ -187,9 +189,9 @@ export function SeasonReview({
       </section>
     );
   const club = clubOf(w),
-    previous = index > 0 ? w.history[index - 1] : undefined,
+    previous = index > 0 ? seasons[index - 1] : undefined,
     // The division a closed season led to: the next season's, or the current one for the latest.
-    nextTier = w.history[index + 1]?.tier ?? club.tier,
+    nextTier = seasons[index + 1]?.tier ?? club.tier,
     // Amounts were recorded in the closed season's currency.
     format = (value: string) => <Money value={value} code={club.country} year={season.year} />,
     move = nextTier < season.tier ? 'up' : nextTier > season.tier ? 'down' : 'stay',

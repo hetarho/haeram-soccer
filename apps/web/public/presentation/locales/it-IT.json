@@ -20,7 +20,6 @@
     "shell.fortune": "Patrimonio del proprietario",
     "shell.fortuneDetails": "Patrimonio del proprietario {amount} · Vedi proprietario",
     "shell.owner": "Patron",
-    "shell.amateurLeague": "Campionato dilettanti",
     "shell.division": "Divisione {division}",
     "shell.readonly": "Sola lettura",
     "shell.readonlyNotice": "Stai giocando in un'altra scheda. Questa scheda è in sola lettura.",

@@ -195,7 +195,7 @@ export function Standings({
           )}
         </div>
       )}
-      {places && <ZoneLegend zones={places.zones} lower={places.lower} />}
+      {places && <ZoneLegend zones={places.zones} />}
     </div>
   );
 }
@@ -206,13 +206,10 @@ export function Standings({
  */
 export function ZoneLegend({
   zones,
-  lower,
   closed = false,
   className = s.legend,
 }: {
   zones: readonly (Zone | undefined)[];
-  /** The amateur league, whose top places go up into the professional game. */
-  lower: boolean;
   closed?: boolean;
   className?: string;
 }) {
@@ -221,7 +218,7 @@ export function ZoneLegend({
       {zones.includes('automatic') && (
         <span>
           <i className={s.autoDot} />
-          {lower ? '프로 진입' : '자동 승격'}
+          자동 승격
         </span>
       )}
       {zones.includes('playoff') && (
@@ -268,7 +265,7 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
   const rivalId = next && (next.home === w.playerClub ? next.away : next.home),
     rival = w.clubs.find((c) => c.id === rivalId),
     rivalTable = rivalId && w.tables[rivalId];
-  const leagueGame = next?.kind === 'league' || next?.kind === 'lower';
+  const leagueGame = next?.kind === 'league';
   return (
     <section data-surface="panel" className={s.overview} aria-label="우리 팀 리그 현황">
       <div className={s.overviewTitle}>
@@ -314,13 +311,7 @@ export function LeagueOverview({ w, onOpenLeague }: { w: World; onOpenLeague?: (
           </small>
         </div>
         <div>
-          <span>
-            {rules?.automatic
-              ? rules.lower
-                ? '프로 진입 경쟁'
-                : '자동 승격 경쟁'
-              : '선두와 승점 차'}
-          </span>
+          <span>{rules?.automatic ? '자동 승격 경쟁' : '선두와 승점 차'}</span>
           <strong>{!t.played ? '—' : !rules?.automatic && rank === 1 ? '선두' : `${gap}점`}</strong>
           <small>
             {!t.played

@@ -47,7 +47,7 @@ function leagueRounds(w: World, club: string, round: number) {
   if (!map) {
     map = new Map();
     for (const f of w.fixtures)
-      if (f.year === w.year && (f.kind === 'league' || f.kind === 'lower'))
+      if (f.year === w.year && f.kind === 'league')
         for (const id of [f.home, f.away]) {
           const rounds = map.get(id);
           if (rounds) rounds.push(f.round);
@@ -245,7 +245,7 @@ export function yellowWarning(w: World, p: Player) {
       (f) =>
         f.year === w.year &&
         !f.score &&
-        (f.kind === 'league' || f.kind === 'lower') &&
+        f.kind === 'league' &&
         (f.home === w.playerClub || f.away === w.playerClub),
     )
     .reduce((first, f) => Math.min(first, f.round), Infinity);

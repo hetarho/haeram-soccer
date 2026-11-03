@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { SeasonArchive, World } from '../../../../packages/contracts/src/types';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import {
   boardPlaces,
   careerRecords,
@@ -14,14 +14,7 @@ import {
 } from './careerRecords';
 import { playerStatus } from './playerAnalysis';
 
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Book',
-    color: '#24664f',
-    seed: 'book',
-    level: 'easy' as const,
-  });
+const world = () => careerWorld({ country: 'ENG', seed: 'book' });
 const season = (year: number, fields: Partial<SeasonArchive> = {}): SeasonArchive => ({
   year,
   tier: 3,
@@ -53,27 +46,53 @@ it('uses denominator-aware season records and retains inactive leaders without m
   expect(careerRecords(w).finish).toBeUndefined();
   expect(careerRecords(w).scorer).toBeUndefined();
   w.history = [
-    season(1902, { points: 40, gf: 40 }),
-    season(1901, { points: 30, played: 10, gf: 30 }),
+    season(1952, { points: 40, gf: 40 }),
+    season(1951, { points: 30, played: 10, gf: 30 }),
   ];
   w.players[0].career[0] = 7;
   w.players[0].status = 'retired';
   const before = JSON.stringify(w),
     records = careerRecords(w);
-  expect(records.points!.year).toBe(1901);
-  expect(records.attack!.year).toBe(1901);
-  expect(records.finish!.year).toBe(1901);
+  expect(records.points!.year).toBe(1951);
+  expect(records.attack!.year).toBe(1951);
+  expect(records.finish!.year).toBe(1951);
   expect(records.scorer!.status).toBe('retired');
-  expect(records.supporters!.year).toBe(1901);
+  expect(records.supporters!.year).toBe(1951);
   expect(JSON.stringify(w)).toBe(before);
 });
 
+it('starts the record book and the cabinet at the takeover (→HIST-21, WEB-28)', () => {
+  const w = world();
+  expect(w.owner!.takeover.year).toBe(1950);
+  // The world's seasons before the takeover keep every own-club field empty, honours aside.
+  const before = season(1948, {
+    tier: 0,
+    rank: 0,
+    points: 0,
+    played: 0,
+    gf: 0,
+    fans: 0,
+    europe: [{ kind: 'ucl', name: 'European Cup', winner: w.playerClub, field: 16 }],
+  });
+  w.history = [before, season(1949, { tier: 0, rank: 0, played: 0 }), season(1950, { tier: 2 })];
+  w.clubs.find((c) => c.id === w.playerClub)!.tier = 2;
+  const records = careerRecords(w),
+    cabinet = trophyCabinet(w);
+  expect(records.seasons).toBe(1);
+  expect(records.supporters!.year).toBe(1950);
+  expect(cabinet.seasons).toBe(1);
+  expect(cabinet.continental).toEqual([]);
+  // No move is read between the world's top-flight placeholder and the club's first season.
+  expect(cabinet.promotions).toEqual([]);
+  expect(cabinet.relegations).toEqual([]);
+});
+
 describe('division names', () => {
-  it('adds the regional group only where the division has groups, and names the amateur league', () => {
+  it('adds the regional group only where the division has groups', () => {
     expect(divisionName('ENG', 1, 0)).toBe('2부');
+    expect(divisionName('ENG', 3, 0)).toBe('4부');
     expect(divisionName('ITA', 2, 1)).toBe('3부 B조');
     expect(divisionName('ITA', 2)).toBe('3부');
-    expect(divisionName('ENG', 4, 0)).toBe('아마추어 리그');
   });
 });
 
@@ -88,12 +107,12 @@ describe('trophy cabinet', () => {
     const w = world();
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     w.history = [
-      // Amateur champions, then up into the fourth division.
-      season(1950, { tier: 4, rank: 1, runs: [] }),
-      season(1951, { tier: 3, rank: 1, runs: [{ key: 'cup', name: 'FA Cup', reached: '결승' }] }),
-      // One season in the third division, down again with the cup and a continental title.
+      // Fourth-division champions, then up into the third.
+      season(1950, { tier: 3, rank: 1, runs: [] }),
+      season(1951, { tier: 2, rank: 1, runs: [{ key: 'cup', name: 'FA Cup', reached: '결승' }] }),
+      // One season in the second division, down again with the cup and a continental title.
       season(1952, {
-        tier: 2,
+        tier: 1,
         rank: 22,
         runs: [{ key: 'cup', name: 'FA Cup', reached: '결승', champion: true }],
         europe: [
@@ -103,18 +122,18 @@ describe('trophy cabinet', () => {
       }),
       // A season closed before cup runs were recorded: its cup counts nowhere.
       season(1953, {
-        tier: 3,
+        tier: 2,
         rank: 1,
         europe: [won(w, 'ucl', 'European Cup'), won(w, 'super', 'UEFA Super Cup')],
       }),
     ];
     // The last archive is compared with the division played now.
-    own.tier = 2;
+    own.tier = 1;
     const cabinet = trophyCabinet(w);
     expect(cabinet.seasons).toBe(4);
     expect(cabinet.league).toEqual([
-      { tier: 3, label: '4부', years: [1951, 1953] },
-      { tier: 4, label: '아마추어 리그', years: [1950] },
+      { tier: 2, label: '3부', years: [1951, 1953] },
+      { tier: 3, label: '4부', years: [1950] },
     ]);
     expect(cabinet.promotions).toEqual([1950, 1951, 1953]);
     expect(cabinet.relegations).toEqual([1952]);
@@ -127,7 +146,7 @@ describe('trophy cabinet', () => {
     ]);
     // The highest division reached beats a better rank lower down.
     expect(cabinet.best?.year).toBe(1952);
-    own.tier = 3;
+    own.tier = 2;
     expect(trophyCabinet(w).promotions).toEqual([1950, 1951]);
   });
 

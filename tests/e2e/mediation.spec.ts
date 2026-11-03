@@ -3,13 +3,14 @@ import { marketInfo, marketCandidate, closeMarketPanel } from './market';
 import { approvalTray, dismissMatchReport, openOffice } from './events';
 import { test, expect, type Page } from '@playwright/test';
 import {
-  createWorld,
   transferOffers,
   operate,
   managerCandidates,
   prepareSeason,
   transferWindowDays,
 } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
+import type { World } from '../../packages/contracts/src/types';
 import { detectMediations, resolveMediation } from '../../packages/engine/src/mediation';
 import { judgePromises } from '../../packages/engine/src/promises';
 import { worldMarketPage } from '../../packages/engine/src/world-market';
@@ -18,13 +19,7 @@ import { lineOf } from '../../packages/engine/src/player';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { horizontalOverflow, settle } from './layout';
 function fixture() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Synthetic Mediation',
-    color: '#224466',
-    seed: 'synthetic-mediation',
-    level: 'normal',
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'synthetic-mediation' });
   w.settings!.responsibilities.recruitment = 'direct';
   w.settings!.mode = 'manual';
   w.settings!.observations.matchEve = true;
@@ -32,7 +27,7 @@ function fixture() {
   ask(w, 'MF');
   return w;
 }
-function ask(w: ReturnType<typeof createWorld>, line: 'MF' | 'GK') {
+function ask(w: World, line: 'MF' | 'GK') {
   const offer = transferOffers(w).find((o) => o.available && lineOf(o.player.position) === line)!;
   w.shortlist = {
     year: w.year,
@@ -43,7 +38,7 @@ function ask(w: ReturnType<typeof createWorld>, line: 'MF' | 'GK') {
   detectMediations(w);
   return w.mediations!.at(-1)!;
 }
-async function market(page: Page, w: ReturnType<typeof createWorld>) {
+async function market(page: Page, w: World) {
   await importResponsibilityCareer(page, w);
   await dismissMatchReport(page);
   await openPersonnel(page, 'players');

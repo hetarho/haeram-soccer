@@ -6,7 +6,7 @@ import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
 import type { World } from '../../packages/contracts/src/types';
 import { advanceRound, trackingBoundary } from '../../packages/engine/src/index';
 import {
-  ACTIVATION_FOUNDING,
+  ACTIVATION_CAREER,
   assertCompleteModel,
   modelEvidence,
   writerActivation,
@@ -14,8 +14,8 @@ import {
 import { DISABLED_RELEASE, ENABLED_RELEASE } from './releases';
 import { simulatedWorld } from './worlds';
 
-/** A supported career founded before the release, three rounds in on the pre-feature model. */
-const preRelease = () => simulatedWorld(ACTIVATION_FOUNDING, { rounds: 3 }, DISABLED_RELEASE);
+/** A supported career taken over before the release, three rounds in on the pre-feature model. */
+const preRelease = () => simulatedWorld(ACTIVATION_CAREER, { rounds: 3 }, DISABLED_RELEASE);
 /** The writer tab's load of `raw` under `release`, as the client sends it (→SAVE-3/23). */
 async function writerLoad(raw: string, release: typeof ENABLED_RELEASE) {
   const host = new Host(undefined, { release });
@@ -56,7 +56,7 @@ describe('full-model workload (T286; →SAVE-23, HIST-17)', () => {
   });
 
   it('reads complete aggregates and records from founding and from a mid-season activation', () => {
-    const founded = simulatedWorld(ACTIVATION_FOUNDING, { rounds: 3 }, ENABLED_RELEASE);
+    const founded = simulatedWorld(ACTIVATION_CAREER, { rounds: 3 }, ENABLED_RELEASE);
     const tracked = assertCompleteModel(founded, 'founding');
     expect(tracked.model).toMatchObject({ revision: MATCH_MODEL_REVISION, coverage: 'founding' });
     expect(tracked.npcSeason!.competitions).toBeGreaterThan(0);

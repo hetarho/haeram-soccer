@@ -56,7 +56,7 @@ describe('actual league scorer standings', () => {
     for (const player of season.players.filter((p) => p.club === w.playerClub)) {
       // League goals only: cup ties count for the club, not for the league's scorers.
       const goals = w.ownMatches
-        .filter((match) => match.kind === 'league' || match.kind === 'lower')
+        .filter((match) => match.kind === 'league')
         .reduce(
           (total, match) =>
             total + (match.players.find((p) => p.id === player.id)?.metrics[0] || 0),
@@ -212,7 +212,7 @@ describe('retained scorer transfers', () => {
     expect(rows[0].clubs).toHaveLength(2);
     const ownAppearances = w.ownMatches.filter(
       (match) =>
-        ['league', 'lower'].includes(match.kind) &&
+        match.kind === 'league' &&
         match.round <= 3 &&
         match.players.some((p) => p.id === playerId && p.metrics[10] > 0),
     ).length;

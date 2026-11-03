@@ -1,6 +1,6 @@
 import { lineOf } from '../../../../packages/engine/src/player';
 import { expect, it } from 'vitest';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import {
   appearanceCounts,
@@ -11,13 +11,7 @@ import {
   tallies,
 } from './playerAnalysis';
 it('uses minutes, scopes and role filters before sorting, without deleting inactive records', () => {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Rates',
-    color: '#24664f',
-    seed: 'rates',
-    level: 'easy' as const,
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'rates' });
   const [a, b, c] = w.players.filter((p) => lineOf(p.position) === 'FW');
   a.season[0] = 2;
   a.season[10] = 180;
@@ -44,13 +38,7 @@ it('uses minutes, scopes and role filters before sorting, without deleting inact
 });
 
 it('position filter counts 준수+', () => {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Positions',
-    color: '#24664f',
-    seed: 'positions',
-    level: 'easy' as const,
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'positions' });
   const p = w.players.find((one) => one.position === 'CB')!;
   p.positions = { CB: 3, LB: 2, DM: 1 };
   // Under each position he plays at 준수 or better, and under the line of each.
@@ -90,14 +78,7 @@ function played(
     incidents: subs.map(([player, other]) => ({ minute: 60, side: 0, kind: 'sub', player, other })),
   } as unknown as MatchRecord;
 }
-const club = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Appearances',
-    color: '#24664f',
-    seed: 'appearances',
-    level: 'easy' as const,
-  });
+const club = () => careerWorld({ country: 'ENG', seed: 'appearances' });
 
 it('counts one appearance per own match with minutes, substitutes included', () => {
   const w = club();

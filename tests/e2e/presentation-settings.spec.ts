@@ -355,13 +355,7 @@ async function expectMenuRegistryChoices(page: Page) {
 }
 
 function pausedPresentationWorld() {
-  const world = simulatedWorld({
-    country: 'ENG',
-    name: '화면 설정 FC',
-    color: '#2e713d',
-    seed: 'presentation-resource-only',
-    level: 'easy',
-  });
+  const world = simulatedWorld({ country: 'ENG', seed: 'presentation-resource-only' });
   world.settings!.mode = 'manual';
   world.settings!.observations.matchEve = true;
   world.events.push({

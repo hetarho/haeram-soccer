@@ -25,7 +25,6 @@ import type {
 import {
   activePlayers,
   clubOf,
-  createWorld,
   fixturesFor,
   integer,
   moraleStrength,
@@ -33,6 +32,7 @@ import {
   rating,
   simulateMatch,
 } from '../packages/engine/src/index';
+import { careerWorld } from '../packages/engine/src/career.testkit';
 import { playGrid } from '../packages/engine/src/grid/engine';
 import { buildGridSetup } from '../packages/engine/src/grid/setup';
 
@@ -91,13 +91,8 @@ function target(gap: number) {
 }
 
 // ---- World and clubs -------------------------------------------------------------------------
-const w = createWorld({
-  country: 'ENG',
-  name: 'Calibration',
-  color: '#335577',
-  seed: 'calibration',
-  level: 'normal',
-});
+// A takeover at ECON-29's reference reach until T668 rebuilds the reference careers.
+const w = careerWorld({ country: 'ENG', seed: 'calibration', tier: 'midsize' });
 let serial = 0;
 function makeClub(strength: number): Club {
   const club: Club = {
@@ -451,13 +446,7 @@ function shape(player: Player, level: number) {
  * others the summary; fatigue and morale stay fixed so each row is one steady state.
  */
 function ownSeasons(level: number, ability: number, morale: number, tactic: Tactic) {
-  const own = createWorld({
-    country: 'ENG',
-    name: 'Calibration Owners',
-    color: '#335577',
-    seed: 'calibration-own',
-    level: 'normal',
-  });
+  const own = careerWorld({ country: 'ENG', seed: 'calibration-own', tier: 'midsize' });
   for (const player of activePlayers(own)) shape(player, level);
   own.manager.ability = ability;
   own.morale = morale;

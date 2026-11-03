@@ -1,6 +1,6 @@
 import { baseEffects } from './bases';
 import type { Event, MatchRecord, SponsorSlot, World } from '../../contracts/src/types';
-import { country, currency } from '../../catalogs/src/index';
+import { currency } from '../../catalogs/src/index';
 import { activePlayers, clubOf, isOwnSeason, lastOwnSeason } from './player-state';
 import { broadcastQuote, footballQuote, quote } from './quotes';
 import { clamp, ratio, scaleBy } from './primitives';
@@ -29,21 +29,20 @@ export const FINANCE_CONFIG = {
 
 /**
  * League distributions (→ECON-28), measured against ECON-29 (spec/ssot/ECON.md): each
- * country's equal share a season by division, from the top flight down, the last entry being its
- * amateur league, in 1901 price units before the broadcasting index (→ECON-31); the champion's
- * total against the bottom club's; the share of the lost equal share a relegated club keeps for a
- * season.
+ * country's equal share a season by division, from the top flight down, in 1901 price units before
+ * the broadcasting index (→ECON-31); the champion's total against the bottom club's; the share of
+ * the lost equal share a relegated club keeps for a season.
  */
 export const DISTRIBUTION_CONFIG = {
   share: {
-    ENG: [12700, 900, 400, 220, 40],
-    ESP: [10500, 600, 30],
-    GER: [10500, 750, 330, 30],
-    ITA: [10500, 750, 330, 30],
-    FRA: [9100, 700, 300, 28],
-    POR: [7000, 400, 22],
-    NED: [7000, 400, 22],
-    BEL: [6400, 370, 22],
+    ENG: [12700, 900, 400, 220],
+    ESP: [10500, 600],
+    GER: [10500, 750, 330],
+    ITA: [10500, 750, 330],
+    FRA: [9100, 700, 300],
+    POR: [7000, 400],
+    NED: [7000, 400],
+    BEL: [6400, 370],
   } as Record<string, readonly number[]>,
   champion: { top: 1.6, below: 1.3 },
   parachute: 0.5,
@@ -54,21 +53,21 @@ export const DISTRIBUTION_CONFIG = {
  * matchday operations, travel, administration, medical care, kit and the club's staff. A season's
  * amount is the larger of `share` of the club's turnover over its last completed season and
  * `floor`, the division amount: each country's by division, from the top flight down, the last
- * entry being its amateur league, in 1901 price units before the football index. A club's first
- * season and a season after a relegation pay the division amount. The amount is set when the
- * season starts and paid in league-round installments with the wages.
+ * division's the lowest, in 1901 price units before the football index. A club's first season and
+ * a season after a relegation pay the division amount. The amount is set when the season starts
+ * and paid in league-round installments with the wages.
  */
 export const EXPENSE_CONFIG = {
   share: 0.35,
   floor: {
-    ENG: [8000, 900, 450, 300, 80],
-    ESP: [6600, 500, 60],
-    GER: [6600, 700, 350, 60],
-    ITA: [6600, 700, 350, 60],
-    FRA: [5700, 650, 330, 60],
-    POR: [4400, 340, 50],
-    NED: [4400, 340, 50],
-    BEL: [4000, 310, 50],
+    ENG: [8000, 900, 450, 300],
+    ESP: [6600, 500],
+    GER: [6600, 700, 350],
+    ITA: [6600, 700, 350],
+    FRA: [5700, 650, 330],
+    POR: [4400, 340],
+    NED: [4400, 340],
+    BEL: [4000, 310],
   } as Record<string, readonly number[]>,
 };
 
@@ -347,13 +346,12 @@ export function campaignEffectiveness(w: World, kind: string) {
   return focus * (0.65 + recentForm(w) * 0.45 + club.reputation / 500);
 }
 
-const LEAGUE_KINDS = ['league', 'lower'];
-/** Own league games this season: 46 in the English pyramid, 14 in the lower section. */
+/** Own league games this season: 46 in a 24-club division, 38 in a 20-club one (→ECON-19). */
 export function ownLeagueGames(w: World) {
   return Math.max(
     1,
     w.fixtures.filter(
-      (f) => LEAGUE_KINDS.includes(f.kind) && (f.home === w.playerClub || f.away === w.playerClub),
+      (f) => f.kind === 'league' && (f.home === w.playerClub || f.away === w.playerClub),
     ).length,
   );
 }
@@ -365,7 +363,7 @@ export function leagueMatchFactor(w: World) {
   return SEASON_ROUNDS / ownLeagueGames(w);
 }
 export function isLeagueMatch(kind: string) {
-  return LEAGUE_KINDS.includes(kind);
+  return kind === 'league';
 }
 
 /** A bigger name than ours draws more of our supporters, a smaller one fewer (→ECON-9). */
@@ -578,9 +576,9 @@ export function financialBreakdown(w: World) {
   };
 }
 
-/** A division as the ledger names it: 1부, 2부 … or the amateur league. */
-export function divisionLabel(code: string, tier: number) {
-  return tier >= country(code).groups.length ? '아마추어 리그' : `${tier + 1}부`;
+/** A division as the ledger names it: 1부, 2부 … */
+export function divisionLabel(tier: number) {
+  return `${tier + 1}부`;
 }
 /**
  * The equal share every club of a division earns in a season (→ECON-28), in this season's money on

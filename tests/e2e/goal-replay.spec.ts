@@ -1,7 +1,7 @@
 import { closeMatchDetails, openMatchDetails, presentedMinute, watchNext } from './watch';
 import { advanceToNextMatch } from '../../packages/engine/src/testing';
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { createWorld } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { horizontalOverflow } from './layout';
 import { committedRaw, openRecordedMatch } from './club-identity-helpers';
@@ -20,15 +20,9 @@ import {
 
 /** The mobile presentation journey's fixture: an early home goal, then more on the current model. */
 function goalWorld() {
-  const world = createWorld({
-    country: 'ENG',
-    name: 'Goal Feedback',
-    color: '#224466',
-    // As tests/e2e/mobile-match-presentation.spec.ts: on match-model revision 10 goal-feedback-2's
-    // first match opens 1′ home, then 65′ and 67′ home, 72′ away, 88′ home and 90′ away.
-    seed: 'goal-feedback-2',
-    level: 'easy',
-  });
+  // As tests/e2e/mobile-match-presentation.spec.ts: on match-model revision 10 goal-feedback-2's
+  // first match opens 1′ home, then 65′ and 67′ home, 72′ away, 88′ home and 90′ away.
+  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-2' });
   world.settings!.responsibilities.sales = 'delegated';
   return world;
 }

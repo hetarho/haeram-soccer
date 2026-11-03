@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { emptyPlayerDetail, emptyTeamDetail, TD } from '../../../../packages/contracts/src/detail';
 import type { MatchRecord } from '../../../../packages/contracts/src/types';
-import { advanceRound, createWorld } from '../../../../packages/engine/src/index';
+import { advanceRound } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { expectedPoints, seasonStats, share } from './seasonStats';
 
 describe('season analytics', () => {
@@ -15,15 +16,9 @@ describe('season analytics', () => {
   });
 
   it('measures the league season from recorded matches only', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Review Club',
-      color: '#3a6b4f',
-      seed: 'season-review',
-      level: 'easy' as const,
-    });
+    const w = careerWorld({ country: 'ENG', seed: 'season-review' });
     for (let round = 0; round < 6; round++) advanceRound(w, undefined, false);
-    const league = w.ownMatches.filter((m) => ['league', 'lower'].includes(m.kind));
+    const league = w.ownMatches.filter((m) => m.kind === 'league');
     const stats = seasonStats(w, w.ownMatches);
     const table = w.tables[w.playerClub];
     expect(stats.played).toBe(league.length);
@@ -46,13 +41,7 @@ describe('season analytics', () => {
   });
 
   it('leaves xG out for matches recorded before it existed', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Old Rules',
-      color: '#3a6b4f',
-      seed: 'old-rules',
-      level: 'easy' as const,
-    });
+    const w = careerWorld({ country: 'ENG', seed: 'old-rules' });
     for (let round = 0; round < 3; round++) advanceRound(w, undefined, false);
     for (const match of w.ownMatches) delete match.xg;
     const stats = seasonStats(w, w.ownMatches);

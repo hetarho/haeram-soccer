@@ -140,7 +140,7 @@ function book(w: World, kind: string, title: string, detail: string, amount: str
  */
 function settleDistribution(w: World) {
   const c = clubOf(w),
-    division = divisionLabel(c.country, c.tier),
+    division = divisionLabel(c.tier),
     paid = `${w.round}/${SEASON_ROUNDS}라운드 분할`;
   accrue(
     w,
@@ -151,7 +151,7 @@ function settleDistribution(w: World) {
   );
   const parachute = roundShare(parachutePayment(w), w.round);
   if (parachute === '0') return;
-  const from = divisionLabel(c.country, lastSeasonTier(w)!);
+  const from = divisionLabel(lastSeasonTier(w)!);
   accrue(
     w,
     'parachute',
@@ -229,7 +229,7 @@ export function settleRound(w: World) {
     w,
     'operating-expenses',
     '운영 경비',
-    `${floor ? `${divisionLabel(club.country, club.tier)} 최저 수준` : `직전 시즌 매출의 ${Math.round(EXPENSE_CONFIG.share * 100)}%`}${factor} · 경기 운영·원정·행정·의료·용품·직원 · ${w.round}/${SEASON_ROUNDS}라운드 분할`,
+    `${floor ? `${divisionLabel(club.tier)} 최저 수준` : `직전 시즌 매출의 ${Math.round(EXPENSE_CONFIG.share * 100)}%`}${factor} · 경기 운영·원정·행정·의료·용품·직원 · ${w.round}/${SEASON_ROUNDS}라운드 분할`,
     cost.payments.expenses,
   );
   // The takeover loan's installments keep one ledger line a season too (→ECON-38, ECON-10).

@@ -15,16 +15,7 @@ import { founded } from './season.testkit';
 describe('domestic cup settlement appearance (→KIT-12)', () => {
   it('records our cup tie through the shared capture with its named kit choice', () => {
     // Four rounds in, our first cup tie (day 32) is the next own fixture.
-    const w = simulatedWorld(
-      {
-        country: 'ENG',
-        name: 'Design Town',
-        color: '#223344',
-        seed: 'identity-command',
-        level: 'normal',
-      },
-      { rounds: 4 },
-    );
+    const w = simulatedWorld({ country: 'ENG', seed: 'identity-command' }, { rounds: 4 });
     const tie = nextOwnFixture(w)!;
     expect(tie.kind).toBe('cup');
     const side = tie.home === w.playerClub ? 0 : 1;

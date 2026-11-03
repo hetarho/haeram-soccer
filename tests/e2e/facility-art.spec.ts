@@ -2,8 +2,8 @@ import { openPersonnel } from './personnel-navigation';
 import { openClubhouse } from './competition-navigation';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { checkpoint } from '../../apps/web/src/adapters/persistence';
-import { currency } from '../../packages/catalogs/src/index';
-import { advanceDays, createWorld, operate, prepareSeason } from '../../packages/engine/src/index';
+import { advanceDays, operate } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { startWork } from '../../packages/engine/src/testing';
 import type { World } from '../../packages/contracts/src/types';
 import { continueSlot } from './slots';
@@ -39,34 +39,12 @@ const facilitySources = new Map(
 
 /** Synthetic presentation fixture, not a claim to have simulated the intervening seasons. */
 function artWorld(year: number, stadium = 0, trainingGround = 0, academyFacility = 0) {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Art Fixture',
-    color: '#2e713d',
-    seed: 'facility-art-browser',
-    level: 'easy',
-  });
-  const shift = year - w.year;
-  w.year = year;
-  // Fresh synthetic founding epoch; no played career is being moved.
-  delete w.people;
-  w.currency = currency('ENG', year).code;
-  for (const p of w.players) {
-    p.born += shift;
-    if (p.joined !== undefined) p.joined += shift;
-    p.until += shift;
-  }
-  if (w.manager.born !== undefined) w.manager.born += shift;
-  w.manager.until += shift;
-  for (const member of w.staff || []) {
-    if (member.born !== undefined) member.born += shift;
-    if (member.until !== undefined) member.until += shift;
-  }
+  // A club taken over in a world made fresh in `year`; its facilities set to the stages shown.
+  const w = careerWorld({ country: 'ENG', seed: 'facility-art-browser', year });
   w.stadium = stadium;
   w.trainingGround = trainingGround;
   w.academyFacility = academyFacility;
   w.cash = '999999999999';
-  prepareSeason(w);
   return w;
 }
 

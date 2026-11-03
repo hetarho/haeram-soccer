@@ -1,11 +1,7 @@
 import type { MatchPlayback, PlayerMotion, World } from '../../packages/contracts/src/types';
 import { advanceToNextMatch } from '../../packages/engine/src/testing';
-import {
-  advanceRound,
-  createWorld,
-  fullStatsRead,
-  MATCH_MODEL_RELEASE,
-} from '../../packages/engine/src/index';
+import { advanceRound, fullStatsRead, MATCH_MODEL_RELEASE } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
 import {
   deadBallBeats,
@@ -21,8 +17,8 @@ import { DISABLED_RELEASE, ENABLED_RELEASE } from './releases';
 
 /**
  * Marked synthetic fixture for the full-model continuity journey (T402, T286; →SAVE-22/23, HIST-17,
- * WEB-89/94/95, KIT-12). A supported career founded before the full model's release (founded here,
- * so it carries the current game version and no stored label)
+ * WEB-89/94/95, KIT-12). A supported career taken over before the full model's release (taken over
+ * here, so it carries the current game version and no stored label)
  * plays its first rounds on the pre-feature model and is saved without model data. With the
  * release switch on (since T286) the build imports it as it is and its writer load
  * (`Host.adoptModel`) records the full model mid-season at the next unplayed day; with the switch
@@ -89,16 +85,7 @@ export interface ContinuityCareer {
 }
 
 function career(seed: string): World {
-  const w = createWorld(
-    {
-      country: 'ENG',
-      name: 'Full Model Continuity',
-      color: '#2a4d6a',
-      seed,
-      level: 'easy',
-    },
-    DISABLED_RELEASE,
-  );
+  const w = careerWorld({ country: 'ENG', seed }, DISABLED_RELEASE);
   const settings = w.settings!;
   for (const key of Object.keys(
     settings.responsibilities,

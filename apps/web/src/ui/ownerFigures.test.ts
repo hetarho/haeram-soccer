@@ -2,7 +2,7 @@ import { createElement, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { SeasonArchive, World } from '../../../../packages/contracts/src/types';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { SEASON_END_DAY, seasonDayOf } from '../../../../packages/engine/src/calendar';
 import {
   FAN_MOOD,
@@ -57,15 +57,11 @@ vi.mock('./Dialog', () => ({
   Dialog: ({ children }: { children: ReactNode }) => createElement('section', null, children),
 }));
 
-/** A founded career (no owner), as every career before the takeover switch. */
+/** A career without owner state, as a hand-built world holds it (T670's no-owner cases). */
 function founded(country: 'ENG' | 'ESP' = 'ENG') {
-  return createWorld({
-    country,
-    name: 'Owner Town',
-    color: '#224466',
-    seed: `owner-ui-${country}`,
-    level: 'normal',
-  });
+  const w = careerWorld({ country, seed: `owner-ui-${country}` });
+  delete w.owner;
+  return w;
 }
 /** A career with a taken-over club's owner, the shape a takeover leaves (T653 `withOwner`). */
 function owned(country: 'ENG' | 'ESP' = 'ENG') {

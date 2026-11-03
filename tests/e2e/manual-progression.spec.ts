@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { createWorld, advanceDays, operate } from '../../packages/engine/src/index';
+import { advanceDays, operate } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import {
   nextOwnFixture,
   todayStamp,
@@ -15,13 +16,7 @@ import { leaveOffice, officeBar } from './office';
 for (const width of [1280, 390]) {
   test(`exclusive-controls ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Manual Controls',
-      color: '#224466',
-      seed: 'intervention-levels',
-      level: 'easy',
-    });
+    const w = careerWorld({ country: 'ENG', seed: 'intervention-levels' });
     await importResponsibilityCareer(page, w);
     await expect(page.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeVisible();
     await expect(page.getByRole('combobox', { name: '자동 진행 배속', exact: true })).toBeVisible();
@@ -45,13 +40,7 @@ for (const width of [1280, 390]) {
 
   test(`next-match-eve-with-all-delegated ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Manual Eve',
-      color: '#224466',
-      seed: 'intervention-levels',
-      level: 'easy',
-    });
+    const w = careerWorld({ country: 'ENG', seed: 'intervention-levels' });
     for (const key of Object.keys(w.settings!.responsibilities) as (keyof NonNullable<
       typeof w.settings
     >['responsibilities'])[])
@@ -175,13 +164,7 @@ for (const width of [1280, 390]) {
 for (const authority of ['direct', 'delegated'] as const) {
   test(`manual entry enables match report with all business ${authority}`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    const w = createWorld({
-      country: 'ENG',
-      name: `Mandatory ${authority}`,
-      color: '#224466',
-      seed: `mandatory-${authority}`,
-      level: 'easy',
-    });
+    const w = careerWorld({ country: 'ENG', seed: `mandatory-${authority}` });
     for (const key of Object.keys(w.settings!.responsibilities) as (keyof NonNullable<
       typeof w.settings
     >['responsibilities'])[])

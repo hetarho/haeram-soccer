@@ -8,14 +8,8 @@ import { MATCH_MODEL_RELEASE, type MatchModelRelease } from '../../../../package
 import { generateHistory } from '../../../../packages/engine/src/history';
 import { clubListings } from '../../../../packages/engine/src/listing';
 import { takeOver } from '../../../../packages/engine/src/takeover';
-/** A founding for the tests that still build worlds to import (T671 moves them to takeovers). */
-export const input = {
-  country: 'ENG' as const,
-  name: 'Worker Athletic',
-  color: '#223344',
-  seed: 'worker',
-  level: 'normal' as const,
-};
+/** The career (`careerWorld`, `simulatedWorld`) of the tests that build worlds to import. */
+export const input = { country: 'ENG' as const, seed: 'worker' };
 export const req = (id: string, revision: number, body: Body) => ({
   protocol: 1,
   session: 'session',

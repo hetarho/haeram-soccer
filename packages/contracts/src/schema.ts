@@ -248,7 +248,7 @@ const fixture = z.object({
   id,
   year: z.number().int(),
   round: z.number().int(),
-  kind: z.enum(['league', 'cup', 'europe', 'playoff', 'lower']),
+  kind: z.enum(['league', 'cup', 'europe', 'playoff']),
   home: id,
   away: id,
   country: text,
@@ -389,7 +389,7 @@ const npcSeasonSchema = z.strictObject({
   competitions: z
     .array(
       z.strictObject({
-        kind: z.enum(['league', 'cup', 'europe', 'playoff', 'lower']),
+        kind: z.enum(['league', 'cup', 'europe', 'playoff']),
         groupKey: id,
         clubs: z
           .array(
@@ -1028,7 +1028,6 @@ const worldSchema: z.ZodType<World> = z.object({
     )
     .optional(),
   playerClub: id,
-  level: z.enum(['easy', 'normal', 'hard', 'extreme']),
   clubs: z.array(club).min(10).max(1000),
   players: z.array(player).max(20000),
   hardStreak: z.number().int().nonnegative().optional(),
@@ -1163,7 +1162,6 @@ const worldSchema: z.ZodType<World> = z.object({
   cups: z.array(domesticCup).max(10).optional(),
   europe: z.array(tournament).max(10),
   lastChampions: champions,
-  lower: z.boolean(),
   critical: text.optional(),
   insolvent: z.number().int().min(1).max(46).optional(),
   bankrupt: z
@@ -1622,7 +1620,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   const owner = w.clubs.find((c) => c.id === w.playerClub)!;
   if (w.scorerSeason) {
     const season = w.scorerSeason;
-    const group = w.lower ? 'lower' : `${owner.country}:${owner.tier}:${owner.group}`;
+    const group = `${owner.country}:${owner.tier}:${owner.group}`;
     if (
       season.year !== w.year ||
       season.groupKey !== group ||
@@ -1640,7 +1638,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
         fixture.year !== w.year ||
         fixture.groupKey !== group ||
         fixture.round < season.trackedSinceRound ||
-        !['league', 'lower'].includes(fixture.kind)
+        fixture.kind !== 'league'
       )
         continue;
       for (const [club, count] of [

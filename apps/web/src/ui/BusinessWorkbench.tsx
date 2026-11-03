@@ -186,7 +186,7 @@ function MoneyWorkbench({
     1,
     w.fixtures.filter(
       (fixture) =>
-        ['league', 'lower'].includes(fixture.kind) &&
+        fixture.kind === 'league' &&
         (fixture.home === w.playerClub || fixture.away === w.playerClub),
     ).length,
   );

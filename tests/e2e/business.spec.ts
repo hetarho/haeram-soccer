@@ -2,7 +2,8 @@ import { watchNext } from './watch';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
-import { createWorld, advanceRound } from '../../packages/engine/src/index';
+import { advanceRound } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { startWork } from '../../packages/engine/src/testing';
 import { sponsorOffers, sponsorAnnual } from '../../packages/engine/src/operations';
 import {
@@ -136,14 +137,12 @@ for (const viewport of [
     await page.setViewportSize(viewport);
     // A career saved with a stand being added: no one starts a work now, but this one finishes on
     // its day (→ECON-32).
-    const fixture = createWorld({
-      country: 'ENG',
-      name: 'Facility Fixture',
-      color: '#335577',
-      seed: `facility-ui-${viewport.width}`,
-      level: 'easy' as const,
-    });
+    const fixture = careerWorld({ country: 'ENG', seed: `facility-ui-${viewport.width}` });
     fixture.cash = '100000000';
+    // The first ground and no training or academy facilities, so the ladders start from nothing.
+    fixture.stadium = 0;
+    fixture.trainingGround = 0;
+    fixture.academyFacility = 0;
     startWork(fixture, 'stadium');
     await importCareer(page, fixture, 'facility-under-way.json');
     await openBusiness(page, '투자');
@@ -202,7 +201,7 @@ test('pays sponsor installments only for league games after the actual contract'
   const settled = await exportWorld(page);
   const games = settled.fixtures.filter(
     (fixture) =>
-      ['league', 'lower'].includes(fixture.kind) &&
+      fixture.kind === 'league' &&
       (fixture.home === settled.playerClub || fixture.away === settled.playerClub),
   ).length;
   const payments = settled.events.filter((event) => event.kind === 'sponsor:local');
@@ -328,13 +327,7 @@ test('reads the ticket price taken over with and charges it at an actual home ga
 test('reads a genuine negative operating balance with no owner capital to add', async ({
   page,
 }) => {
-  const fixture = createWorld({
-    country: 'ENG',
-    name: 'Budget Fixture',
-    color: '#bf7956',
-    seed: 'business-budget-recovery',
-    level: 'hard' as const,
-  });
+  const fixture = careerWorld({ country: 'ENG', seed: 'business-budget-recovery' });
   // A price off the presets, as an older save keeps it (→ECON-17).
   fixture.ticket = 0.01;
   // Real costs, not an edited balance, take the club below zero within a round or two.
@@ -361,13 +354,7 @@ test('reads a genuine negative operating balance with no owner capital to add', 
 test('ends a bankrupt career on the game-over page and starts a new game from it', async ({
   page,
 }) => {
-  const fixture = createWorld({
-    country: 'ENG',
-    name: 'Bankrupt Fixture',
-    color: '#bf7956',
-    seed: 'business-bankruptcy',
-    level: 'hard' as const,
-  });
+  const fixture = careerWorld({ country: 'ENG', seed: 'business-bankruptcy' });
   // Debt deeper than half a season's fixed costs ends the career at the next settlement.
   fixture.cash = '-999999999';
   advanceRound(fixture, undefined, false);

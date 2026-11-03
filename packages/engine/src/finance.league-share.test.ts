@@ -12,17 +12,16 @@ import {
   roundShare,
   scaleOperatingExpenses,
 } from './index';
-import { professionalStart } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { world } from './finance.testkit';
 
 /**
- * A professional start after its 46 league rounds, played unobserved, with the round and the
- * season's operating-expenses entry after each one.
+ * A career in the last division after its 46 league rounds, played unobserved, with the round and
+ * the season's operating-expenses entry after each one.
  */
 function playedProfessional() {
   return cachedWorld('professional-season', () => {
-    const w = professionalStart(world());
+    const w = world();
     const rounds: { round: number; expenses: string | undefined }[] = [];
     for (let round = 1; round <= 46; round++) {
       advanceRound(w, undefined, false);
@@ -36,7 +35,7 @@ function playedProfessional() {
 
 describe('the league distribution', () => {
   it('pays the division’s equal share in league-round installments that sum to the season’s share', () => {
-    const share = leagueShare(professionalStart(world()));
+    const share = leagueShare(world());
     expect(BigInt(share)).toBeGreaterThan(0n);
     const { w } = playedProfessional();
     // One ledger entry a season, grown by every round's installment.
@@ -55,7 +54,7 @@ describe('operating expenses (→ECON-30)', () => {
     w.events.filter((e) => e.year === w.year && e.kind === 'operating-expenses');
 
   it('pays them each league round as a fixed cost on their own ledger line', () => {
-    const start = professionalStart(world()),
+    const start = world(),
       costs = operatingCosts(start);
     expect(BigInt(costs.annual)).toBe(
       [
@@ -85,7 +84,7 @@ describe('operating expenses (→ECON-30)', () => {
   });
 
   it('the default level books exactly the season amount per round', () => {
-    const w = professionalStart(world()),
+    const w = world(),
       season = w.operatingExpenses!,
       explicit = { ...w, policy: { ...POLICY_DEFAULTS } };
     expect(policyOf(w).support).toBe(3);

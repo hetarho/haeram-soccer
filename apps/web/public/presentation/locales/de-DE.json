@@ -20,7 +20,6 @@
     "shell.fortune": "Vermögen des Eigentümers",
     "shell.fortuneDetails": "Vermögen des Eigentümers {amount} · Eigentümer ansehen",
     "shell.owner": "Eigner",
-    "shell.amateurLeague": "Amateurliga",
     "shell.division": "Liga {division}",
     "shell.readonly": "Schreibgeschützt",
     "shell.readonlyNotice": "In einem anderen Tab wird gespielt. Dieser Tab ist schreibgeschützt.",

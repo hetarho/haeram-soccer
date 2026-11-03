@@ -4,19 +4,14 @@ import { describe, expect, it } from 'vitest';
 import { canonical } from '../../../../packages/contracts/src/index';
 import type { MatchAppearance } from '../../../../packages/contracts/src/identity';
 import type { MatchPlayback } from '../../../../packages/contracts/src/types';
-import { createWorld, simulateMatch } from '../../../../packages/engine/src/index';
+import { simulateMatch } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { chartLines, chartSeries, MatchCharts, seriesColour } from './MatchCharts';
 import { colourDistance, contrast } from './crests';
 import { describeShirt } from './kitPainting';
 import { matchLook, UNRECORDED_LOOK, type MatchLook } from './matchAppearance';
 
-const w = createWorld({
-  country: 'ENG',
-  name: 'Chart Club',
-  color: '#0b1f44',
-  seed: 'charts',
-  level: 'normal' as const,
-});
+const w = careerWorld({ country: 'ENG', seed: 'charts' });
 const playback = simulateMatch(
   w,
   w.fixtures.find((f) => f.home === w.playerClub)!,

@@ -20,7 +20,6 @@
     "shell.fortune": "Fortune du propriétaire",
     "shell.fortuneDetails": "Fortune du propriétaire {amount} · Voir le propriétaire",
     "shell.owner": "Proprio",
-    "shell.amateurLeague": "Championnat amateur",
     "shell.division": "Division {division}",
     "shell.readonly": "Lecture seule",
     "shell.readonlyNotice": "Une autre fenêtre joue déjà. Cet onglet est en lecture seule.",

@@ -49,17 +49,7 @@ import { careerWorld } from './career.testkit';
 
 /** The club on the pre-feature path: strategy cards, not the match model, are the subject. */
 const world = (seed = 'build-cards') =>
-  simulatedWorld(
-    {
-      country: 'ENG',
-      name: 'Build FC',
-      color: '#2a4d3c',
-      seed,
-      level: 'easy' as const,
-    },
-    {},
-    DISABLED_RELEASE,
-  );
+  simulatedWorld({ country: 'ENG', seed }, {}, DISABLED_RELEASE);
 /** Which way each card effect helps the club; owner capital is no gain to it (→ECON-22). */
 const HELPS: Partial<Record<keyof BuildEffects, 1 | -1>> = {
   academyIntake: 1,

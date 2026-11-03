@@ -20,7 +20,6 @@
     "shell.fortune": "ثروة المالك",
     "shell.fortuneDetails": "ثروة المالك {amount} · عرض المالك",
     "shell.owner": "المالك",
-    "shell.amateurLeague": "دوري الهواة",
     "shell.division": "الدرجة {division}",
     "shell.readonly": "للقراءة فقط",
     "shell.readonlyNotice": "اللعبة قيد التشغيل في علامة تبويب أخرى. هذه العلامة للقراءة فقط.",

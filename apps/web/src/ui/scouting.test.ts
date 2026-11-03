@@ -1,23 +1,18 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld, advanceRound } from '../../../../packages/engine/src/index';
+import { advanceRound } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { matchBriefing, resultFor } from './scouting';
 
-const input = {
-  country: 'ENG' as const,
-  name: 'Scouting',
-  color: '#24664f',
-  seed: 'scout',
-  level: 'easy' as const,
-};
+const input = { country: 'ENG' as const, seed: 'scout' };
 describe('match briefing', () => {
   it('shows no invented results before kickoff and never changes the world', () => {
-    const w = createWorld(input);
+    const w = careerWorld(input);
     const before = JSON.stringify(w);
     expect(matchBriefing(w)).toMatchObject({ ownRecent: [], theirRecent: [], meetings: [] });
     expect(JSON.stringify(w)).toBe(before);
   });
   it('reads retained opponent results even when its previous-season fixtures are outside the view', () => {
-    const w = createWorld(input);
+    const w = careerWorld(input);
     const { next, opponent } = matchBriefing(w)!;
     const other = w.clubs.find((club) => club.id !== opponent.id && club.id !== w.playerClub)!;
     const results = Array.from({ length: 10 }, (_, i) => ({
@@ -34,7 +29,7 @@ describe('match briefing', () => {
     expect(w.fixtures.some((fixture) => fixture.id === results[0]!.id)).toBe(false);
   });
   it("reads both sides' last ten settled results and our last ten meetings", () => {
-    const w = createWorld(input);
+    const w = careerWorld(input);
     for (let i = 0; i < 16; i++) advanceRound(w);
     const brief = matchBriefing(w)!;
     for (const [club, recent] of [

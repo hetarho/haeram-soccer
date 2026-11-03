@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import type { ClubIdentity, CrestDesign } from '../../../../packages/contracts/src/identity';
 import type { World } from '../../../../packages/contracts/src/types';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { GameIndexStore } from '../adapters/games';
 import { summarize } from '../runtime/slots';
 import { ClubCrest, CrestMark } from './ClubCrest';
@@ -102,13 +102,7 @@ describe('crest marks with one to three colours (→KIT-2/4)', () => {
 });
 
 describe('current crests wherever the own club is named (→WEB-49)', () => {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Crest Club',
-    color: '#24664f',
-    seed: 'identity-crest',
-    level: 'normal' as const,
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'identity-crest' });
   const own = w.clubs.find((club) => club.id === w.playerClub)!;
   const rival = w.clubs.find((club) => club.id !== w.playerClub)!;
   const next: ClubIdentity = {

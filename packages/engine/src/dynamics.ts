@@ -1,7 +1,6 @@
 import { clearDebt } from './books';
 import { cohesionAfterSummer } from './adaptation';
 import type { Club, World } from '../../contracts/src/types';
-import { country } from '../../catalogs/src/index';
 import { clamp, random } from './primitives';
 import { stature, tierLevel } from './world';
 import { pushInbox } from './inbox';
@@ -54,13 +53,7 @@ export function successBonus(w: World, c: Club) {
 export function levelOf(w: World, c: Club) {
   if (c.id.startsWith('euro:'))
     return 68 + stature(w.seed, c.id) + successBonus(w, c) + (c.project ?? 0);
-  const depth = country(c.country).groups.length;
-  return (
-    tierLevel(Math.min(c.tier, depth), c.tier >= depth) +
-    stature(w.seed, c.id) +
-    successBonus(w, c) +
-    (c.project ?? 0)
-  );
+  return tierLevel(c.tier) + stature(w.seed, c.id) + successBonus(w, c) + (c.project ?? 0);
 }
 
 /** Season close, after promotion and relegation; `tiers` holds each club's division before it. */

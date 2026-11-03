@@ -1,5 +1,6 @@
 import { expect, it } from 'vitest';
-import { createWorld, simulateMatch, nextOwnFixture } from '../../../../packages/engine/src/index';
+import { simulateMatch, nextOwnFixture } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { archivePlayback } from './replay';
 import {
   goalFrame,
@@ -10,13 +11,7 @@ import {
   sentOff,
 } from './moments';
 
-const w = createWorld({
-  country: 'ENG',
-  name: 'Moments',
-  color: '#24664f',
-  seed: 'moments',
-  level: 'easy' as const,
-});
+const w = careerWorld({ country: 'ENG', seed: 'moments' });
 const { record, frames } = simulateMatch(w, nextOwnFixture(w)!, true, true);
 const samples = frames.flatMap((frame, i) => (frame.motion || [frame]).map(() => ({ frame: i })));
 

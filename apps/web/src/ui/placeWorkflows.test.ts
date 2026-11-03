@@ -3,7 +3,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createStore } from 'zustand/vanilla';
 import type { World } from '../../../../packages/contracts/src/types';
-import { clubMilestones, createWorld, transferOffers } from '../../../../packages/engine/src/index';
+import { clubMilestones, transferOffers } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { sponsorSlots } from '../../../../packages/engine/src/operations';
 import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import type { ClientState, GameClient } from '../runtime/client';
@@ -202,13 +203,7 @@ describe('live place composition', () => {
 
 describe('rooms beside their people (→WEB-43/72)', () => {
   // The authoritative panels read a whole generated club; the artwork stays the stub above.
-  const world = createWorld({
-    name: 'Synthetic Rooms',
-    country: 'ENG',
-    color: '#224466',
-    seed: 'personnel-rooms',
-    level: 'easy',
-  });
+  const world = careerWorld({ country: 'ENG', seed: 'personnel-rooms' });
   const controller = {
     store: createStore(() => ({ running: false, pace: 'x1', reason: '' })),
   } as unknown as ProgressionController;

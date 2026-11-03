@@ -2,12 +2,8 @@ import type {
   RecruitmentMediation,
   ReinforcementPromise,
 } from '../../packages/contracts/src/types';
-import {
-  createWorld,
-  makePlayer,
-  noteSigning,
-  prepareSeason,
-} from '../../packages/engine/src/index';
+import { makePlayer, noteSigning, prepareSeason } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import {
   atCareerDate,
   closeEmployment,
@@ -21,13 +17,7 @@ import { stagePlayingCoach } from '../../packages/engine/src/testing';
 import { transferWindowDays } from '../../packages/engine/src/transfers';
 /** Small, explicitly synthetic canonical facts exercise every optional feature field. */
 export function featureState() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Synthetic Feature State',
-    color: '#224466',
-    seed: 'feature-state',
-    level: 'normal',
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'feature-state' });
   const npc = Object.values(w.people!).find((p) => !p.formerOwn)!;
   w.people = Object.fromEntries(
     Object.entries(w.people!).filter(([, p]) => p.formerOwn || p.id === npc.id),

@@ -11,7 +11,7 @@ import {
 import { delegateSales, reportKit } from './events';
 import { expect, test } from '@playwright/test';
 import { chooseLevel } from './events';
-import { createWorld } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
 import {
@@ -33,13 +33,7 @@ test('surveys every management destination during uninterrupted calendar play', 
 }) => {
   // This survey waits for real dates across every management destination.
   test.slow();
-  const world = createWorld({
-    country: 'ENG',
-    name: 'Calendar Audit',
-    color: '#224466',
-    seed: 'calendar-audit',
-    level: 'easy',
-  });
+  const world = careerWorld({ country: 'ENG', seed: 'calendar-audit' });
   for (const key of Object.keys(world.settings!.responsibilities) as (keyof NonNullable<
     typeof world.settings
   >['responsibilities'])[])
@@ -204,18 +198,12 @@ test('keeps browsing available and management edits locked over real automatic t
 });
 
 /**
- * Marked synthetic career founded the way the build founds it (on the released full model since
- * T286), every responsibility delegated so nothing holds the watch: a reference run in Node plays
- * the same seeded match the page watches.
+ * Marked synthetic career taken over in Node (on the released full model since T286), every
+ * responsibility delegated so nothing holds the watch: a reference run in Node plays the same
+ * seeded match the page watches.
  */
 function paceCareer() {
-  const world = createWorld({
-    country: 'ENG',
-    name: 'Preparation Pace',
-    color: '#224466',
-    seed: 'stable-pace',
-    level: 'easy',
-  });
+  const world = careerWorld({ country: 'ENG', seed: 'stable-pace' });
   for (const key of Object.keys(world.settings!.responsibilities) as (keyof NonNullable<
     typeof world.settings
   >['responsibilities'])[])

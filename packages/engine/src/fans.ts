@@ -1,5 +1,4 @@
 import type { Club, World } from '../../contracts/src/types';
-import { country } from '../../catalogs/src/index';
 import { clubOf } from './player-state';
 import { stature } from './world';
 
@@ -42,14 +41,12 @@ export function fansAfterMatch(fans: number, win: boolean, winFans = 1) {
 /**
  * How many local supporters a club can draw on (→ECON-9): an ordinary club's catchment in its
  * division, scaled by the town its country's clubs stand for and by its stature (→LEAGUE-10).
- * Aimed at ENG average league gates of 20–45k in the top flight, 8–20k in the second tier, 4–10k
- * in the third and 0.3–2k in the amateur league (→ECON-9); spec/ssot/ECON.md has what was measured.
+ * Aimed at ENG average league gates of 20–45k in the top flight, 8–20k in the second tier and
+ * 4–10k in the third (→ECON-9); spec/ssot/ECON.md has what was measured.
  */
 export const CATCHMENT_CONFIG = {
-  /** An ordinary club's catchment by professional division, from the top flight down. */
+  /** An ordinary club's catchment by division, from the top flight down. */
   division: [60000, 28000, 14000, 8000] as readonly number[],
-  /** An ordinary amateur club's catchment. */
-  amateur: 2500,
   /** The town behind a club, against England's, following each country's football index. */
   city: {
     ENG: 1,
@@ -66,11 +63,8 @@ export const CATCHMENT_CONFIG = {
 };
 /** The most local supporters a club can draw on, whatever its following. */
 export function catchment(w: World, club: Club = clubOf(w)) {
-  const amateur = club.tier >= country(club.country).groups.length,
-    division = CATCHMENT_CONFIG.division;
-  const base = amateur
-    ? CATCHMENT_CONFIG.amateur
-    : division[Math.min(club.tier, division.length - 1)];
+  const division = CATCHMENT_CONFIG.division,
+    base = division[Math.min(club.tier, division.length - 1)];
   const size = Math.max(0.5, 1 + stature(w.seed, club.id) * CATCHMENT_CONFIG.stature);
   return Math.round(base * (CATCHMENT_CONFIG.city[club.country] ?? 1) * size);
 }

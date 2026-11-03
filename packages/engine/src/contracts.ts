@@ -47,7 +47,8 @@ import { BALLON_DOR_CONFIG, ballonDorPremium } from './ballon-dor';
 
 /**
  * The division a player's ability suits in a country, between tiers where it falls between their
- * levels: where a market player plays, so where his asking fee is set.
+ * levels: where a market player plays, so where his asking fee is set. Ability below the last
+ * division's level reaches at most one step deeper, the price scale's floor (→CLUB-25).
  */
 export function divisionFor(code: string, ability: number) {
   const top = tierLevel(0);

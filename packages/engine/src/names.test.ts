@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { COUNTRIES } from '../../catalogs/src/index';
 import type { Club } from '../../contracts/src/types';
-import { createWorld } from './index';
 import { makePlayer, npcSquad, personName, SURNAME_STRIDE } from './world';
 import { random } from './primitives';
 
@@ -38,19 +37,6 @@ describe('person names (→WORLD-12)', () => {
           last = new Map(squad.map((p) => [p.id, p.name]));
         }
       }
-  });
-
-  it('gives the founding squad distinct surnames', () => {
-    for (const country of ['ENG', 'BEL'] as const) {
-      const w = createWorld({
-        country,
-        name: 'Names',
-        color: '#224433',
-        seed: 'names',
-        level: 'normal',
-      });
-      expect(new Set(w.players.map((p) => surnameOf(p.name))).size).toBe(w.players.length);
-    }
   });
 
   it('makes repeated full names rare across a world', () => {

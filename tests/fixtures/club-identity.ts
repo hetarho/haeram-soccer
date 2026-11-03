@@ -1,31 +1,28 @@
 import { encode } from '../../apps/web/src/adapters/persistence';
 import type { ClubIdentity, KitRole } from '../../packages/contracts/src/identity';
-import type { Founding, World } from '../../packages/contracts/src/types';
+import type { World } from '../../packages/contracts/src/types';
 import { MANAGER_HISTORY_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
 import {
   activateMatchModel,
-  createWorld,
   ensureManagerHistory,
   identityOf,
   installMissingIdentities,
   MATCH_MODEL_RELEASE,
   type MatchModelRelease,
 } from '../../packages/engine/src/index';
+import { careerWorld, type CareerInput } from '../../packages/engine/src/career.testkit';
 import { DISABLED_RELEASE } from './releases';
 import { simulatedWorld, withoutManagerHistory } from './worlds';
 
 /**
  * Marked synthetic fixtures for the club-identity continuity journeys (T254; →KIT-9/12/15,
- * →SAVE-3/20/21/22). Worlds come from the real createWorld, settlement and codec paths. Nothing
+ * →SAVE-3/20/21/22). Worlds come from the real takeover, settlement and codec paths. Nothing
  * here relabels gameplay rules or skips validation: an older container is today's payload under
  * envelope schema 1, as a writer before identities wrote it, and newer data is only ever refused.
  */
 
-/** The representative colour of the delegated test careers. */
-export const FIRST_COLOUR = '#bf7956';
-
 /**
- * The design the continuity journey founds: a one-colour crest and three patterned shirts.
+ * The design the continuity journey applies: a one-colour crest and three patterned shirts.
  * Upper case on purpose: the stored spelling is kept (KIT-1).
  */
 export const FOUNDED_DESIGN: ClubIdentity = {
@@ -58,29 +55,23 @@ export function editedDesign(role: KitRole): ClubIdentity {
 }
 
 /** A new career with every business decision delegated, so seeded play meets no owner stop. */
-export function delegatedCareer(seed: string, name: string) {
-  const w = createWorld({ country: 'ENG', name, color: FIRST_COLOUR, seed, level: 'easy' });
+export function delegatedCareer(seed: string) {
+  const w = careerWorld({ country: 'ENG', seed });
   const responsibilities = w.settings!.responsibilities;
   for (const key of Object.keys(responsibilities) as (keyof typeof responsibilities)[])
     responsibilities[key] = 'delegated';
   return w;
 }
 
-export const LEGACY_FOUNDING: Founding = {
-  country: 'ENG',
-  name: 'Legacy Kit Athletic',
-  color: '#385577',
-  seed: 'identity-legacy',
-  level: 'easy',
-};
+export const LEGACY_CAREER: CareerInput = { country: 'ENG', seed: 'identity-legacy' };
 /**
- * A current-rules career as it was saved before club identities: founded and played two rounds on
- * the pre-feature match model, as every career before the full model's release was (→SAVE-23),
+ * A current-rules career as it was saved before club identities: taken over and played two rounds
+ * on the pre-feature match model, as every career before the full model's release was (→SAVE-23),
  * then every identity, recorded appearance and pending kit choice taken away, and the manager
  * history that came later still (→SAVE-24).
  */
 export function preIdentityCareer(): World {
-  const w = withoutManagerHistory(simulatedWorld(LEGACY_FOUNDING, { rounds: 2 }, DISABLED_RELEASE));
+  const w = withoutManagerHistory(simulatedWorld(LEGACY_CAREER, { rounds: 2 }, DISABLED_RELEASE));
   for (const club of w.clubs) delete club.identity;
   for (const match of w.ownMatches) delete match.appearance;
   delete w.kitChoice;

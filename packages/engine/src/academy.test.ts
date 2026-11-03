@@ -28,10 +28,10 @@ import {
   settleTraining,
   simulateSeason,
   youthAdvice,
-  FOUNDING_YEAR,
 } from './index';
 import { holdRows, staffAuthority } from './testing';
 import { lastRound, world } from './academy.testkit';
+import { CAREER_YEAR } from './career.testkit';
 
 /** Runs the intake as the daily club business would on 15 March. */
 function intake(w: World) {
@@ -136,7 +136,7 @@ describe('youth academy intake', () => {
     const intakes = w.events.filter(
       (event) => event.kind === 'youth-intake' && event.title.includes('입단'),
     );
-    expect(intakes.map((event) => event.year)).toEqual([FOUNDING_YEAR, FOUNDING_YEAR + 1]);
+    expect(intakes.map((event) => event.year)).toEqual([CAREER_YEAR, CAREER_YEAR + 1]);
     expect(
       academyPlayers(w).every((player) => player.id.startsWith(`${w.playerClub}:academy:`)),
     ).toBe(true);
@@ -195,7 +195,7 @@ describe('academy development', () => {
 
 describe('promotion and release', () => {
   it('promotes into the first team with a small wage and a three-year contract', () => {
-    // An amateur squad earns the minimum wage, so the prospect is a little weaker than it.
+    // A last-division squad earns little, so the prospect is a little weaker than it.
     const w = world(),
       player = prospect(w, 'CM', 17, 25),
       squad = activePlayers(w).length;

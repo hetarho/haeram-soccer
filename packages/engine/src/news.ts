@@ -94,14 +94,16 @@ function goalStory(p: Played) {
   return { deficit, lead, decisive, equaliser, early, first };
 }
 
-/** Promotion and relegation places of the club's current division. */
+/**
+ * Promotion and relegation places of the club's current division; the last division relegates
+ * nobody (→LEAGUE-16).
+ */
 function zones(w: World) {
   const own = clubOf(w),
     profile = country(own.country);
-  if (w.lower) return { promotion: 1, relegation: 0 };
   return {
     promotion: own.tier > 0 ? profile.automatic[own.tier - 1] : 0,
-    relegation: own.tier < profile.groups.length - 1 ? profile.moves[own.tier] : 2,
+    relegation: own.tier < profile.groups.length - 1 ? profile.moves[own.tier] : 0,
   };
 }
 

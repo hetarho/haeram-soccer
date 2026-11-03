@@ -1,7 +1,7 @@
 import { watchNext } from './watch';
 import { expect, test, type Locator } from '@playwright/test';
 import { expectHomeBounds, settle, viewGeometry } from './layout';
-import { createWorld } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { activePlayers } from '../../packages/engine/src/world';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { chooseOption } from './select';
@@ -33,13 +33,7 @@ for (const viewport of [
     page,
   }) => {
     await page.setViewportSize(viewport);
-    const world = createWorld({
-      country: 'ENG',
-      name: 'Synthetic Thin Squad',
-      color: '#24543b',
-      seed: 'thin-squad-alert',
-      level: 'easy',
-    });
+    const world = careerWorld({ country: 'ENG', seed: 'thin-squad-alert' });
     for (const player of activePlayers(world).slice(19)) player.status = 'sold';
     world.cash = '999999999';
     world.manager.trust = 80;

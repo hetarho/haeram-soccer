@@ -7,7 +7,7 @@
  * Only read leaves are imported (catalogs, calendar, quotes, primitives, owner-config): the UI
  * never reaches the day loop (→ARCH-4); `careerOver` is the contracts' `careerEnded`.
  */
-import { COUNTRIES, country, currency, priceIndex } from '../../../../packages/catalogs/src/index';
+import { COUNTRIES, currency, priceIndex } from '../../../../packages/catalogs/src/index';
 import {
   careerEnded,
   type DividendShare,
@@ -15,7 +15,7 @@ import {
   type OwnerState,
   type OwnerTrait,
 } from '../../../../packages/contracts/src/owner';
-import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
+import type { World } from '../../../../packages/contracts/src/types';
 import {
   SEASON_END_DAY,
   currentDay,
@@ -31,6 +31,7 @@ import {
   OWNER_TIERS,
   OWNER_TRAITS,
 } from '../../../../packages/engine/src/owner-config';
+import { ownSeasons } from '../../../../packages/engine/src/player-state';
 import { ratio } from '../../../../packages/engine/src/primitives';
 import { quote } from '../../../../packages/engine/src/quotes';
 import type { ClientState } from '../runtime/client';
@@ -306,7 +307,6 @@ export interface FanMover {
   change?: number;
   direction: 'up' | 'down' | 'none';
 }
-const leagueKinds = new Set<MatchRecord['kind']>(['league', 'lower']);
 /**
  * What moved 팬 민심 last (→OWNER-12), newest first, read from what the world records: the latest
  * own league result, the drift each settled round brings, this season's injections and the last
@@ -318,7 +318,7 @@ export function fanMovers(w: World): FanMover[] {
   const movers: FanMover[] = [];
   const direction = (change: number) => (change > 0 ? 'up' : change < 0 ? 'down' : 'none');
   const match = w.ownMatches
-    .filter((m) => m.year === w.year && leagueKinds.has(m.kind))
+    .filter((m) => m.year === w.year && m.kind === 'league')
     .sort((a, b) => a.round - b.round)
     .at(-1);
   if (match) {
@@ -418,11 +418,6 @@ export function ownerLock(state: ClientState, connected: boolean): string | unde
   return undefined;
 }
 
-/** The seasons a career counts: from the takeover on, or every season of a founded club. */
-function careerSeasons(w: World) {
-  const from = w.owner?.takeover.year;
-  return from === undefined ? w.history : w.history.filter((season) => season.year >= from);
-}
 export interface GameOverFacts {
   cause: EndCause;
   title: string;
@@ -443,7 +438,8 @@ export interface GameOverFacts {
 export function gameOverFacts(w: World): GameOverFacts {
   const own = ownClub(w);
   const cause = endCause(w) ?? 'club';
-  const seasons = careerSeasons(w);
+  // The seasons a career counts: from the takeover on, or every season of a founded club.
+  const seasons = ownSeasons(w);
   const best = seasons.reduce<(typeof seasons)[number] | undefined>(
     (top, season) =>
       !top || season.tier < top.tier || (season.tier === top.tier && season.rank < top.rank)
@@ -481,9 +477,7 @@ export function gameOverFacts(w: World): GameOverFacts {
     season,
     line,
     seasons: seasons.length,
-    best: best
-      ? `${best.tier >= country(own.country).groups.length ? '아마추어' : `${best.tier + 1}부`} ${best.rank}위`
-      : '—',
+    best: best ? `${best.tier + 1}부 ${best.rank}위` : '—',
     titles,
     peak,
   };

@@ -4,7 +4,7 @@ import type { World } from '../../contracts/src/types';
 import { currency, priceIndex } from '../../catalogs/src/index';
 import { takeOver } from './takeover';
 import { divisionPlaces } from './club-value';
-import { simulateSeason } from './founding';
+import { simulateSeason } from './season';
 import { squad } from './world';
 import { generateHistory, historyWorld, liveHistory } from './history';
 import { clubManager } from './managerMarket';

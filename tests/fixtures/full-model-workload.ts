@@ -1,28 +1,23 @@
 import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
-import type { Founding, World } from '../../packages/contracts/src/types';
+import type { World } from '../../packages/contracts/src/types';
 import {
   activateMatchModel,
   MATCH_MODEL_RELEASE,
   type MatchModelRelease,
 } from '../../packages/engine/src/index';
+import type { CareerInput } from '../../packages/engine/src/career.testkit';
 
 /**
  * Marked synthetic full-model workload for the storage benchmark and the continuity journey (T286;
- * →SAVE-4/23, HIST-17, MATCH-26/27). The century profiles of `scripts/benchmark.ts` found with the
+ * →SAVE-4/23, HIST-17, MATCH-26/27). The century profiles of `scripts/benchmark.ts` start with the
  * release switch as it stands, so a released switch tracks them from their first day; this module
  * reads what their checkpoints hold of the model (`modelEvidence`, `assertCompleteModel`) and
  * describes the supported career the release activates mid-season at a writer load
- * (`ACTIVATION_FOUNDING`, `writerActivation`). Every world comes from the real engine paths.
+ * (`ACTIVATION_CAREER`, `writerActivation`). Every world comes from the real engine paths.
  */
 
-/** The mid-season activation profile's founding: a supported career founded before the release. */
-export const ACTIVATION_FOUNDING: Founding = {
-  country: 'ENG',
-  name: 'Century Activation',
-  color: '#284e35',
-  seed: 'release-activation',
-  level: 'easy',
-};
+/** The mid-season activation profile's start: a supported career taken over before the release. */
+export const ACTIVATION_CAREER: CareerInput = { country: 'ENG', seed: 'release-activation' };
 
 /**
  * The writer load's activation of `w` (`Host.adoptModel`, →SAVE-23): a copy one revision on with

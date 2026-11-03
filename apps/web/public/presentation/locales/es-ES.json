@@ -20,7 +20,6 @@
     "shell.fortune": "Fortuna del propietario",
     "shell.fortuneDetails": "Fortuna del propietario {amount} · Ver propietario",
     "shell.owner": "Dueño",
-    "shell.amateurLeague": "Liga amateur",
     "shell.division": "División {division}",
     "shell.readonly": "Solo lectura",
     "shell.readonlyNotice": "Se está jugando en otra pestaña. Esta pestaña es de solo lectura.",

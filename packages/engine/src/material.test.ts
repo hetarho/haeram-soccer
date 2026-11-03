@@ -3,7 +3,7 @@ import { TD } from '../../contracts/src/detail';
 import type { MatchMaterial, MatchRecord } from '../../contracts/src/types';
 import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
-import { FOUNDING } from './finance.testkit';
+import { CAREER } from './finance.testkit';
 import { playGrid } from './grid/engine';
 import { cellOf } from './grid/pitch';
 import { MaterialTally } from './grid/record';
@@ -141,7 +141,7 @@ describe('post-match material', () => {
   it('reduces material to season heat maps at the close', () => {
     // The pre-feature season, whatever the switch: this club plays no playoff on it, so the league
     // season is all its material (the candidate's playoff is the next case).
-    const w = simulatedWorld(FOUNDING, { rounds: 46 }, DISABLED_RELEASE);
+    const w = simulatedWorld(CAREER, { rounds: 46 }, DISABLED_RELEASE);
     const season = w.ownMatches.filter((m) => m.year === w.year);
     expect(season.length).toBeGreaterThan(0);
     // The saved own record keeps only the own lines and its material.
@@ -173,18 +173,21 @@ describe('post-match material', () => {
   });
 
   it("the promotion playoff's material is reduced at the close", () => {
-    // On the candidate this club plays the lower promotion playoff, which `promote` plays inside
-    // the close. Where it finishes is the football's to decide (T441's lanes moved it out), so it
-    // takes the record of the club in the playoff's second place: tied there, it ranks at most one
-    // place either way, still among the four the playoff takes after the direct places.
-    const w = simulatedWorld(FOUNDING, { rounds: 46 }, ENABLED_RELEASE);
+    // On the candidate this club plays its division's promotion playoff, which `promote` plays
+    // inside the close. Where it finishes is the football's to decide, so it takes the record of
+    // the club in the playoff's second place: tied there, it ranks at most one place either way,
+    // still among the four the playoff takes after the direct places.
+    const w = simulatedWorld(CAREER, { rounds: 46 }, ENABLED_RELEASE);
     const year = w.year;
-    const cp = country(clubOf(w).country);
-    const places = cp.groups[cp.groups.length - 1]!.length * 2;
-    const amateurs = w.clubs.filter((c) =>
-      w.fixtures.some((f) => f.kind === 'lower' && (f.home === c.id || f.away === c.id)),
+    const own = clubOf(w),
+      cp = country(own.country),
+      automatic = cp.automatic[own.tier - 1]!;
+    const division = w.clubs.filter(
+      (c) => c.country === own.country && c.tier === own.tier && !c.representative,
     );
-    w.tables[w.playerClub] = { ...w.tables[ranked(w, amateurs)[places]!.id]! };
+    w.tables[w.playerClub] = { ...w.tables[ranked(w, division)[automatic + 1]!.id]! };
+    // Its ties are named by the boundary it plays for, read before the close moves any club.
+    const ties = `${year}:promotion:${own.country}:${own.tier - 1}:`;
     const touches = (heat: Record<string, number[]> = {}) =>
       Object.values(heat)
         .flat()
@@ -197,7 +200,7 @@ describe('post-match material', () => {
 
     // Whichever ties it played: its semi-final, and the final when it wins that (the football
     // decides which, so T445's second balls changed them).
-    const playoff = w.ownMatches.filter((m) => m.id.startsWith(`${year}:lower-promotion:`));
+    const playoff = w.ownMatches.filter((m) => m.id.startsWith(ties));
     expect(playoff.length).toBeGreaterThan(0);
     for (const m of playoff) {
       expect(m.material).toBeUndefined();

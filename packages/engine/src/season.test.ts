@@ -19,7 +19,7 @@ import { advanceDays, advanceRound, recordMatch, resolveTie } from './season';
 import { archiveLastRound, closedSeason, founded } from './season.testkit';
 
 describe('closed season archive', () => {
-  it.each(['amateur', 'professional'] as const)(
+  it.each(['professional'] as const)(
     'keeps the %s league scorers, the rank after every round and the Elo spread',
     (start) => {
       const { w, live, season } = closedSeason(archiveLastRound(start));
@@ -114,13 +114,7 @@ describe('closed season archive', () => {
 
 describe('league settlement appearance (→KIT-12)', () => {
   it('captures the own league result, observed or not, and nothing for other matches', () => {
-    const base = simulatedWorld({
-      country: 'ENG',
-      name: 'Design Town',
-      color: '#223344',
-      seed: 'identity-command',
-      level: 'normal',
-    });
+    const base = simulatedWorld({ country: 'ENG', seed: 'identity-command' });
     const next = nextOwnFixture(base)!;
     const expected = appearanceForFixture(base, next);
     for (const observe of [true, false]) {
@@ -187,7 +181,6 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
     const cupTie = cup.fixtures.find((f) => !isOwn(w, f))!;
     const others: [Fixture, DecideRule | undefined][] = [
       [w.fixtures.find((f) => f.kind === 'league' && !isOwn(w, f))!, undefined],
-      [w.fixtures.find((f) => f.kind === 'lower' && !isOwn(w, f))!, undefined],
       [cupTie, tieRule(cupTie, cup.fixtures, false)],
       [w.europe[0]!.fixtures[0]!, undefined],
       [playoff(w), { awayGoals: false }],
@@ -238,7 +231,6 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
       'cup',
       'europe',
       'league',
-      'lower',
     ]);
     expect(() => validateWorld(s)).not.toThrow();
     const tie = playoff(s);

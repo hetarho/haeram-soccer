@@ -19,19 +19,13 @@ import { finishCups } from './cups';
 import { careerDate } from './person-careers';
 import { currentDay } from './calendar';
 
-const FOUNDING = {
-  country: 'ENG' as const,
-  name: 'Tenure Athletic',
-  color: '#224466',
-  seed: 'manager-capture',
-  level: 'easy' as const,
-};
+const CAREER = { country: 'ENG' as const, seed: 'manager-capture' };
 /**
- * A founded career with money for hires; `delegated` hands the manager post to the staff. On the
+ * A career with money for hires; `delegated` hands the manager post to the staff. On the
  * pre-feature path: manager attribution, not the match model, is the subject.
  */
 function founded(delegated = false) {
-  const w = simulatedWorld(FOUNDING, {}, DISABLED_RELEASE);
+  const w = simulatedWorld(CAREER, {}, DISABLED_RELEASE);
   w.cash = '999999999999';
   if (delegated) {
     w.settings = staffAuthority(4);

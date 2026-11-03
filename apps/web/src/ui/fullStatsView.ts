@@ -11,7 +11,7 @@ import { playerTotals } from '../../../../packages/engine/src/npc-stats';
 import type { GameClient } from '../runtime/client';
 import { per90 as per90Text, type PlayerAdvanced } from './advanced';
 import { seasonName } from './format';
-import { ownLeague, sameLeague, type LeagueChoice } from './league';
+import { ownLeague, type LeagueChoice } from './league';
 import { appearanceText, performanceRows, type PlayerTally } from './playerAnalysis';
 
 /**
@@ -35,11 +35,9 @@ const GOALS = 0,
   SAVES = 9,
   MINUTES = 10;
 
-/** The league a lens shows as a read scope: ours (the amateur league while we play in it) or any. */
+/** The league a lens shows as a read scope: ours or any chosen one. */
 export function leagueStatsScope(w: World, league?: LeagueChoice): FullStatsScope {
-  const own = ownLeague(w),
-    chosen = league ?? own;
-  if (w.lower && sameLeague(chosen, own)) return { kind: 'lower', groupKey: 'lower' };
+  const chosen = league ?? ownLeague(w);
   return { kind: 'league', groupKey: `${chosen.code}:${chosen.tier}:${chosen.group}` };
 }
 
@@ -292,7 +290,7 @@ export function useFullStats(
 ): FullStatsState {
   const on = activeMatchModel(w) !== undefined && scope !== undefined;
   const [attempt, setAttempt] = useState(0);
-  const settled = scope?.kind === 'league' || scope?.kind === 'lower' ? w.round : w.revision;
+  const settled = scope?.kind === 'league' ? w.round : w.revision;
   const name = on ? `${w.id}:${w.year}:${scope.kind}:${scope.groupKey}` : undefined,
     key = name && `${name}:${settled}:${attempt}`;
   const [held, setHeld] = useState<

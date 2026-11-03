@@ -193,12 +193,10 @@ export interface NpcSeasonStats {
  * out: they settle at the close into the ledger the next season replaces, and every country's
  * barrage shares one group key.
  */
-export const FULL_STATS_KINDS = [
-  'league',
-  'lower',
-  'cup',
-  'europe',
-] as const satisfies readonly Exclude<Fixture['kind'], 'playoff'>[];
+export const FULL_STATS_KINDS = ['league', 'cup', 'europe'] as const satisfies readonly Exclude<
+  Fixture['kind'],
+  'playoff'
+>[];
 export interface FullStatsScope {
   kind: (typeof FULL_STATS_KINDS)[number];
   groupKey: string;

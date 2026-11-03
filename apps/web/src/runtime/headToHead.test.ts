@@ -33,9 +33,9 @@ const shootout = (side: 0 | 1): Highlight => ({
 describe('all-time head-to-head', () => {
   it('counts every competition from our side and leaves other fixtures out', () => {
     const matches = [
-      match(1950, 'lower', US, RIVAL, [2, 0]),
-      match(1950, 'lower', RIVAL, US, [3, 1]),
-      match(1950, 'lower', US, OTHER, [5, 0]),
+      match(1950, 'league', US, RIVAL, [2, 0]),
+      match(1950, 'league', RIVAL, US, [3, 1]),
+      match(1950, 'league', US, OTHER, [5, 0]),
       match(1951, 'league', RIVAL, US, [0, 4]),
       match(1951, 'cup', US, RIVAL, [1, 1], [shootout(0)]),
       match(1952, 'europe', RIVAL, US, [2, 2]),

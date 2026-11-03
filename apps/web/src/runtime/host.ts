@@ -61,6 +61,8 @@ import { decode, encode } from '../adapters/persistence';
 import { clubMilestones } from '../../../../packages/engine/src/goals';
 import { financialBreakdown } from '../../../../packages/engine/src/finance';
 import { transferLedger } from '../../../../packages/engine/src/transfer-records';
+import { seasonsBeforeOwner } from '../../../../packages/engine/src/club-past';
+import { ownSeasons } from '../../../../packages/engine/src/player-state';
 import {
   requestSchema,
   worldMetadataOf,
@@ -125,8 +127,10 @@ function managerHistorySource(w: World): ManagerHistorySource {
     code = own.country,
     facts = w.managerHistory;
   const division = (tier: number, group: number) => ({ country: code, tier, group });
-  const seasons: ManagerHistorySeason[] = w.history.map((h, index) => {
-    const next = w.history[index + 1] ?? (h.year === w.year - 1 ? own : undefined),
+  // Only the club's own seasons: the world's before the takeover had no manager of ours (→HIST-21).
+  const archived = ownSeasons(w);
+  const seasons: ManagerHistorySeason[] = archived.map((h, index) => {
+    const next = archived[index + 1] ?? (h.year === w.year - 1 ? own : undefined),
       domestic = h.champions.find((entry) => entry.country === code)?.cup;
     return {
       year: h.year,
@@ -275,6 +279,7 @@ export class Host {
   private inspected?: { raw: string; result: Awaited<ReturnType<typeof decode>> };
   private newsCache?: { key: string; news: View['news'] };
   private ledgerCache?: { events: World['events']; end: number; ledger: View['transferLedger'] };
+  private preOwnerCache?: { key: string; seasons: View['preOwner'] };
   /** Numbers, retains and diffs the views this host publishes. */
   private views = new ViewPublisher();
   cancelled = false;
@@ -404,6 +409,22 @@ export class Host {
       this.ledgerCache = { events: w.events, end, ledger: transferLedger(w) };
     return this.ledgerCache.ledger;
   }
+  /**
+   * The bought club's seasons before the takeover (→HIST-21): the view's archive leaves out the
+   * standings and brackets they are read from, and they never change once the owner has bought it,
+   * so they are read again only for another career or a load.
+   */
+  private preOwner(w: World): View['preOwner'] {
+    const takeover = w.owner?.takeover;
+    if (!takeover) return undefined;
+    const before = w.history.findIndex((season) => season.year >= takeover.year),
+      key = [w.id, takeover.year, takeover.clubId, before < 0 ? w.history.length : before].join(
+        ':',
+      );
+    if (this.preOwnerCache?.key !== key)
+      this.preOwnerCache = { key, seasons: seasonsBeforeOwner(w) };
+    return this.preOwnerCache.seasons;
+  }
   private view(w = this.world): View | undefined {
     if (!w) return;
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
@@ -447,10 +468,7 @@ export class Host {
         ],
         ownMatches: w.ownMatches.slice(-30),
         fixtures: w.fixtures.filter(
-          (f) =>
-            f.home === w.playerClub ||
-            f.away === w.playerClub ||
-            (w.lower ? f.kind === 'lower' : f.groupKey === ownGroup),
+          (f) => f.home === w.playerClub || f.away === w.playerClub || f.groupKey === ownGroup,
         ),
         // Brackets and scorer tables come with the archive request; the small rank series and Elo
         // spread stay for the records charts.
@@ -486,6 +504,7 @@ export class Host {
       news: this.news(w),
       managerHistoryKey: managerHistoryKey(w),
       transferLedger: this.transferLedger(w),
+      ...(w.owner ? { preOwner: this.preOwner(w) } : {}),
     };
   }
   /** The view for a reply (→ARCH-6): this world's view, whole or as the changes since `base`. */

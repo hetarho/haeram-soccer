@@ -20,7 +20,7 @@ export interface HeadToHead {
   lost: number;
   gf: number;
   ga: number;
-  /** Meetings per competition kind; the amateur league counts as league. */
+  /** Meetings per competition kind. */
   league: number;
   cup: number;
   europe: number;
@@ -89,7 +89,7 @@ export function headToHead(matches: readonly Played[], own: string, club: string
       if (!record.biggestLoss || wider(meeting, record.biggestLoss) > 0)
         record.biggestLoss = meeting;
     } else record.drawn++;
-    record[m.kind === 'lower' ? 'league' : m.kind]++;
+    record[m.kind]++;
   }
   if (meetings.length) record.first = meetings[0].year;
   record.recent = meetings.slice(-10);

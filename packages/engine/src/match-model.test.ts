@@ -259,13 +259,7 @@ describe('the full match record (→MATCH-13, MATCH-27)', () => {
 });
 
 describe('prospective activation (→SAVE-23, HIST-17)', () => {
-  const founding = {
-    country: 'ENG' as const,
-    name: 'Model Athletic',
-    color: '#224466',
-    seed: 'match-model',
-    level: 'normal' as const,
-  };
+  const founding = { country: 'ENG' as const, seed: 'match-model' };
   it('records the model from founding or from the next unplayed day', () => {
     // Careers started before the release, then activated by it.
     const founded = careerWorld({ seed: founding.seed }, DISABLED_RELEASE);
@@ -331,13 +325,7 @@ describe('prospective activation (→SAVE-23, HIST-17)', () => {
 });
 
 describe('match-model revision 2 (→SAVE-23, T435)', () => {
-  const founding = {
-    country: 'ENG' as const,
-    name: 'Revision Athletic',
-    color: '#224466',
-    seed: 'match-model-2',
-    level: 'normal' as const,
-  };
+  const founding = { country: 'ENG' as const, seed: 'match-model-2' };
   const [first, second] = MATCH_MODEL_REVISIONS;
   const REVISION_1: MatchModelRelease = { revision: first, enabled: true };
   const REVISION_2: MatchModelRelease = { revision: second, enabled: true };
@@ -404,13 +392,7 @@ describe('match-model revision 2 (→SAVE-23, T435)', () => {
 });
 
 describe('match-model revision 3 (→MATCH-2, SAVE-23, T466)', () => {
-  const founding = {
-    country: 'ENG' as const,
-    name: 'Symmetry Athletic',
-    color: '#224466',
-    seed: 'match-model-3',
-    level: 'normal' as const,
-  };
+  const founding = { country: 'ENG' as const, seed: 'match-model-3' };
   const [first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth] =
     MATCH_MODEL_REVISIONS;
   const REVISION_2: MatchModelRelease = { revision: second, enabled: true };

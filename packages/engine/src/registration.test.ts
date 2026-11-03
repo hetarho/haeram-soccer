@@ -11,18 +11,18 @@ import type { CountryCode, Player } from '../../contracts/src/types';
 import { careerWorld } from './career.testkit';
 function fixture(code: CountryCode, year: number, tier: number, count: number) {
   const w = careerWorld({ country: code, seed: 'registration' });
-  const own = clubOf(w),
-    depth = country(code).groups.length;
+  const own = clubOf(w);
+  // The own club swaps places with a club of the division asked for, so every division keeps its
+  // capacity (→LEAGUE-2).
   const displaced = w.clubs.find(
     (c) => c.country === code && c.tier === tier && !c.representative && c.id !== own.id,
   );
   if (displaced) {
-    displaced.tier = depth;
-    displaced.group = 0;
+    displaced.tier = own.tier;
+    displaced.group = own.group;
   }
   own.tier = tier;
   own.group = 0;
-  w.lower = tier >= depth;
   w.year = year;
   w.currency = currency(code, year).code;
   w.priceIndex = priceIndex(code, year).value;
@@ -49,7 +49,7 @@ function candidate(w: ReturnType<typeof fixture>, age = 24, position: Player['po
 }
 describe('season-specific squad registration', () => {
   it('accepts forty serialized players, retains counted over-limit squads and rejects forty-one', () => {
-    const full = fixture('ENG', 1950, country('ENG').groups.length, 40);
+    const full = fixture('ENG', 1950, country('ENG').groups.length - 1, 40);
     expect(validateWorld(JSON.parse(canonical(full))).players).toHaveLength(40);
     full.players.push(candidate(full));
     movePerson(full, full.players.at(-1)!, full.playerClub, true);

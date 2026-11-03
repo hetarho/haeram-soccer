@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { canonical } from '../../packages/contracts/src/index';
-import { createWorld, nextOwnFixture } from '../../packages/engine/src/index';
+import { nextOwnFixture } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { savedWorld } from './club-identity-helpers';
@@ -38,13 +39,7 @@ for (const width of [360, 1380])
     test.slow();
     await page.setViewportSize({ width, height: width === 360 ? 740 : 920 });
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    const world = createWorld({
-      country: 'ENG',
-      name: 'Theme Match',
-      color: '#224466',
-      seed: 'match-theme-details',
-      level: 'easy',
-    });
+    const world = careerWorld({ country: 'ENG', seed: 'match-theme-details' });
     world.settings!.mode = 'manual';
     world.settings!.responsibilities.sales = 'delegated';
     // The shirts the watched fixture's sides wear: the scoreboard's halves follow them (→WEB-50).

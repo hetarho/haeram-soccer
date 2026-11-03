@@ -1,6 +1,6 @@
 import { ATTRIBUTES } from '../../contracts/src/player';
 import { describe, expect, it } from 'vitest';
-import { currency, footballIndex, priceIndex } from '../../catalogs/src/index';
+import { country, currency, footballIndex, priceIndex } from '../../catalogs/src/index';
 import type {
   AgentRating,
   BallonDorPlace,
@@ -65,20 +65,14 @@ import {
   transferWindowDays,
   wageBill,
 } from './index';
-import { handTo, holdRows, professionalStart, staffAuthority } from './testing';
+import { handTo, holdRows, staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 // The constants (MARKET_CONFIG) follow the career calibration (→ECON-29), so these tests hold the
 // CLUB-25 targets, not the constants.
-const founding = {
-  country: 'ENG' as const,
-  name: 'Market Wages',
-  color: '#224433',
-  seed: 'market-wages',
-  level: 'normal' as const,
-};
+const founding = { country: 'ENG' as const, seed: 'market-wages' };
 /** The club on the pre-feature path: contracts, not the match model, are the subject. */
 function world(country: 'ENG' | 'ESP' = 'ENG') {
   const w = simulatedWorld({ ...founding, country }, {}, DISABLED_RELEASE);
@@ -95,10 +89,18 @@ const amount = (value: string) => Number(BigInt(value));
 /** Money in whole currency units, comparable across the 1971 decimalisation. */
 const major = (w: World, value: string) =>
   amount(value) / currency(clubOf(w).country, w.year).units;
-/** The club started in the lowest professional division, its founding season's 46 rounds played. */
+/** The club taken over in the lowest professional division, its first season's 46 rounds played. */
 const professionalSeason = () =>
   cachedWorld('professional-season', () => {
-    const w = professionalStart(world());
+    const w = world();
+    while (w.round < 46) advanceRound(w, undefined, false);
+    return w;
+  });
+/** A third-division club's first season at its last round: the lowest division that relegates. */
+const thirdDivisionSeason = () =>
+  cachedWorld('third-division-season', () => {
+    const w = simulatedWorld({ ...founding, club: 'ENG:2:0:0' }, {}, DISABLED_RELEASE);
+    w.settings = staffAuthority(2);
     while (w.round < 46) advanceRound(w, undefined, false);
     return w;
   });
@@ -215,7 +217,8 @@ describe('market values (→CLUB-25)', () => {
     // A stronger player suits a higher division, so his club asks more than ours would value him.
     expect(divisionFor(code, 80)).toBeLessThan(divisionFor(code, 50));
     expect(divisionFor(code, 99)).toBe(0);
-    expect(divisionFor(code, 10)).toBe(clubOf(w).tier);
+    // Ability below the last division's level is priced one step deeper, never further.
+    expect(divisionFor(code, 10)).toBe(country(code).groups.length);
     holdRows(w, { policy: { recruitment: 5 } });
     for (const { player, fee } of transferOffers(w).slice(1)) {
       const value = marketValueAt(code, w.year, divisionFor(code, overall(player)), player);
@@ -1122,7 +1125,8 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
   });
 
   it('cuts the clause wages at the close that relegates the club', () => {
-    const w = professionalSeason();
+    // The last division relegates nobody (→LEAGUE-16), so the club plays the one above it.
+    const w = thirdDivisionSeason();
     // The own club finishes last of its division.
     const league = ownLeagueClubs(w).filter((c) => c.id !== w.playerClub);
     league.forEach((c, i) => (w.tables[c.id].points = 200 - i));

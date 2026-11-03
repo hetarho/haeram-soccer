@@ -33,7 +33,6 @@ export function worldMarketFixture(): World {
     revision: 1,
     calendar: { day: 3 },
     playerClub: 'own',
-    level: 'easy',
     clubs,
     players: squadPlaces('balanced').map((slot, i) =>
       makePlayer('ENG', 'market-unit', `own:${i}`, 1950, 40, slot.position, 22, 0),
@@ -58,7 +57,6 @@ export function worldMarketFixture(): World {
     cupWinners: {},
     europe: [],
     lastChampions: [],
-    lower: false,
     receiptIds: [],
   };
 }

@@ -1,7 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld, simulateSeason } from '../../../../packages/engine/src/index';
-import { professionalStart } from '../../../../packages/engine/src/testing';
-import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { finalZones } from './league';
@@ -9,43 +6,15 @@ import { finalRows, seasonRecords, seasonSnapshots } from './seasonArchive';
 
 // Every season here is played on the pre-feature path: the archived tables, not the match model,
 // are the subject.
-const input = {
-  country: 'ENG' as const,
-  name: 'Haeram Archive',
-  color: '#24664f',
-  seed: 'season-archive',
-  level: 'normal' as const,
-};
+const input = { country: 'ENG' as const, seed: 'season-archive' };
 
 describe('closed season tables', () => {
-  it('reads an amateur season from its last snapshot only', () => {
+  it('rebuilds a professional table from the archived standings in the engine order', () => {
     const w = simulatedWorld(input, { seasons: 1 }, DISABLED_RELEASE),
       season = w.history[0];
     expect(seasonSnapshots(w, season).map((s) => s.round)).toEqual(
       Array.from({ length: 46 }, (_, i) => i + 1),
     );
-    const rows = finalRows(w, season, season.standings)!;
-    expect(rows).toHaveLength(16);
-    const ours = rows.findIndex(([club]) => w.clubs[club].id === w.playerClub);
-    expect(ours + 1).toBe(season.rank);
-    expect(rows[ours][1]).toBe(season.points);
-    // Won/drawn/lost come back from the round snapshots for every club, ours as archived.
-    const records = seasonRecords(w, season)!;
-    expect(records.get(rows[ours][0])).toEqual([season.won, season.drawn, season.lost]);
-    for (const [club, points] of rows) {
-      const [won, drawn] = records.get(club)!;
-      expect(won * 3 + drawn).toBe(points);
-    }
-    // The archived standings leave the amateur clubs out, so they are no table on their own.
-    delete w.rankHistory;
-    expect(finalRows(w, season, season.standings)).toBeUndefined();
-  });
-
-  it('rebuilds a professional table from the archived standings in the engine order', () => {
-    const w = cachedWorld('professional-season', () =>
-        simulateSeason(professionalStart(createWorld(input, DISABLED_RELEASE))),
-      ),
-      season = w.history[0];
     const kept = finalRows(w, season, season.standings)!;
     expect(kept).toHaveLength(24);
     expect(seasonRecords(w, season)?.size).toBe(24);
@@ -70,7 +39,7 @@ describe('closed season tables', () => {
     const top = finalZones('ENG', 0, 20);
     expect(top.zones.filter(Boolean)).toEqual(['relegation', 'relegation', 'relegation']);
     expect(top.zones.slice(-3)).toEqual(['relegation', 'relegation', 'relegation']);
-    // Regional groups send their winner up and three more to the play-off; amateurs never drop.
+    // Regional groups send their winner up and three more to the play-off.
     expect(finalZones('ITA', 2, 20).zones.slice(0, 5)).toEqual([
       'automatic',
       'playoff',
@@ -78,10 +47,10 @@ describe('closed season tables', () => {
       'playoff',
       undefined,
     ]);
-    // The amateur league sends up as many clubs as the last division drops, the last by play-off.
-    const amateur = finalZones('ENG', 4, 16);
-    expect(amateur.lower).toBe(true);
-    expect(amateur.zones.filter(Boolean)).toEqual([
+    // The last division relegates nobody (→LEAGUE-16): England's fourth tier only goes up.
+    expect(finalZones('ENG', 3, 24).zones.filter(Boolean)).toEqual([
+      'automatic',
+      'automatic',
       'automatic',
       'playoff',
       'playoff',
@@ -90,25 +59,14 @@ describe('closed season tables', () => {
     ]);
   });
 
-  it('marks a closed Italian amateur season for the six places three Serie C groups open', () => {
+  it('marks a closed Italian third-division group: its winner up, three to the play-off, none down', () => {
     const w = simulatedWorld({ ...input, country: 'ITA' }, { seasons: 1 }, DISABLED_RELEASE),
       season = w.history[0];
+    expect(season.tier).toBe(2);
     const rows = finalRows(w, season, season.standings)!;
-    expect(rows).toHaveLength(16);
-    const { zones, lower } = finalZones('ITA', season.tier, rows.length);
-    expect(lower).toBe(true);
-    expect(zones.slice(0, 10)).toEqual([
-      'automatic',
-      'automatic',
-      'automatic',
-      'automatic',
-      'automatic',
-      'playoff',
-      'playoff',
-      'playoff',
-      'playoff',
-      undefined,
-    ]);
-    expect(zones.filter(Boolean)).toHaveLength(9);
+    expect(rows).toHaveLength(20);
+    const { zones } = finalZones('ITA', season.tier, rows.length);
+    expect(zones.slice(0, 5)).toEqual(['automatic', 'playoff', 'playoff', 'playoff', undefined]);
+    expect(zones.filter(Boolean)).toHaveLength(4);
   });
 });

@@ -9,7 +9,7 @@ import {
 } from '../../../../packages/contracts/src/versions';
 import { country } from '../../../../packages/catalogs/src/index';
 import { seasonDate } from '../../../../packages/engine/src/calendar';
-import { clubOf } from '../../../../packages/engine/src/player-state';
+import { clubOf, ownSeasons } from '../../../../packages/engine/src/player-state';
 import {
   GameIndexStore,
   IndexedDbParkedStore,
@@ -39,7 +39,8 @@ export function summarize(w: World): SlotSummary {
     country: country(club.country).name,
     division: divisionName(club.country, club.tier, club.group),
     date: seasonDate(w),
-    seasons: w.history.length + 1,
+    // The career's season in progress, counted from the takeover (→HIST-21).
+    seasons: ownSeasons(w).length + 1,
     crest: { ...crestOf(w, w.playerClub) },
   };
 }

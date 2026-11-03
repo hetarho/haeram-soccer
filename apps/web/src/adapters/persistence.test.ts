@@ -3,12 +3,12 @@ import { canonical } from '../../../../packages/contracts/src/index';
 import {
   advanceDays,
   advanceRound,
-  createWorld,
   identityOf,
   installMissingIdentities,
   operate,
   simulateSeason,
 } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { applyClubIdentity } from '../../../../packages/engine/src/identity-operations';
 import { historyWorld, liveHistory } from '../../../../packages/engine/src/history';
 import { pricedClubs, tierFortune } from '../../../../packages/engine/src/club-value';
@@ -66,7 +66,7 @@ import {
 import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
 import { KIT_ROLES, type ClubIdentity } from '../../../../packages/contracts/src/identity';
 import { clubIdentitySchema } from '../../../../packages/contracts/src/identitySchema';
-import { FOUNDING, legacyIntegers, Saves, world } from './persistence.testkit';
+import { CAREER, legacyIntegers, Saves, world } from './persistence.testkit';
 class Memory implements StoragePort {
   data = new Map<string, string>();
   fail = '';
@@ -94,7 +94,7 @@ const observed = (rounds: number): World =>
  */
 const unmodelled = (rounds = 0): World =>
   rounds === 0
-    ? simulatedWorld(FOUNDING, {}, DISABLED_RELEASE)
+    ? simulatedWorld(CAREER, {}, DISABLED_RELEASE)
     : cachedWorld(`unmodelled:${rounds}`, () => {
         const w = unmodelled(rounds - 1);
         advanceRound(w);
@@ -175,7 +175,7 @@ describe('recoverable persistence', () => {
     await expect(decode(await encode(w))).rejects.toThrow('순위 추이');
   });
   it('roundtrips compact actual scorer history and legacy saves without scorer tracking', async () => {
-    const w = simulatedWorld(FOUNDING, { rounds: 4 });
+    const w = simulatedWorld(CAREER, { rounds: 4 });
     expect(w.scorerSeason!.history).toHaveLength(5);
     expect(canonical((await decode(await encode(w))).world)).toBe(canonical(w));
     const legacy = structuredClone(w);
@@ -185,7 +185,7 @@ describe('recoverable persistence', () => {
     expect(canonical(loaded)).toBe(canonical(legacy));
   });
   it('reads legacy inline events and preserves optional fields in dictionary-packed financial receipts', () => {
-    const w = simulatedWorld(FOUNDING, { rounds: 1 });
+    const w = simulatedWorld(CAREER, { rounds: 1 });
     w.events.push({
       year: w.year,
       round: w.round,
@@ -209,7 +209,7 @@ describe('recoverable persistence', () => {
     expect(() => unpack(broken)).toThrow('통계 누락');
   });
   it('reads legacy varint match statistics without the optional bit column encoding', () => {
-    const w = simulatedWorld(FOUNDING, { rounds: 2 });
+    const w = simulatedWorld(CAREER, { rounds: 2 });
     const packed = pack(w);
     const values = w.ownMatches.flatMap((match) => [
       ...match.metrics[0],
@@ -247,7 +247,7 @@ describe('recoverable persistence', () => {
     expect(canonical(unpack(packed))).toBe(canonical(w));
   });
   it('rejects scorer totals and historical player references that contradict actual fixtures', async () => {
-    const w = simulatedWorld(FOUNDING, { rounds: 1 });
+    const w = simulatedWorld(CAREER, { rounds: 1 });
     const goals = structuredClone(w);
     goals.scorerSeason!.players[0].goals++;
     await expect(decode(await encode(goals))).rejects.toThrow('득점 순위와 실제 경기');
@@ -468,7 +468,7 @@ describe('compatible rule upgrades', () => {
 
   it('moves a 2026-demo-4 career outside England, whose catalog changed only names (→WORLD-12)', async () => {
     const legacy = {
-      ...simulatedWorld({ ...FOUNDING, country: 'ITA' }),
+      ...simulatedWorld({ ...CAREER, country: 'ITA' }),
       catalog: '2026-demo-4',
       catalogHash: PRIOR_CATALOG_HASHES['2026-demo-4'],
     };
@@ -482,7 +482,7 @@ describe('compatible rule upgrades', () => {
   });
 
   it('refuses a career outside England saved before its money was re-levelled (→ECON-35)', async () => {
-    const italian = simulatedWorld({ ...FOUNDING, country: 'ITA' });
+    const italian = simulatedWorld({ ...CAREER, country: 'ITA' });
     expect(canonical((await decode(await encode(italian))).world)).toBe(canonical(italian));
     for (const catalog of PARITY_LEVEL_CATALOGS) {
       const legacy = { ...italian, catalog, catalogHash: PRIOR_CATALOG_HASHES[catalog] };
@@ -995,17 +995,11 @@ class MemoryPrevious implements PreviousStore {
     this.value = null;
   }
 }
-/** The continuity journey's career: founded in FOUNDED_DESIGN, its first own match settled. */
+/** The continuity journey's career: FOUNDED_DESIGN applied, its first own match settled. */
 const continuityCareer = () =>
   cachedWorld('continuity-career', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Continuity Kit FC',
-      color: FOUNDED_DESIGN.colours[0],
-      seed: 'identity-continuity',
-      level: 'easy',
-      identity: FOUNDED_DESIGN,
-    });
+    const w = careerWorld({ country: 'ENG', seed: 'identity-continuity' });
+    applyClubIdentity(w, structuredClone(FOUNDED_DESIGN));
     const next = nextOwnFixture(w)!;
     advanceDays(w, fixtureDay(next) - currentDay(w), undefined, false);
     return w;
@@ -1022,7 +1016,7 @@ describe('club identity continuity fixtures (→KIT-12/15, SAVE-3/20/21/22)', ()
     }
   });
 
-  it('a founded design, its settled match and a later edit round-trip with the earlier appearance frozen', async () => {
+  it('an applied design, its settled match and a later edit round-trip with the earlier appearance frozen', async () => {
     const w = continuityCareer();
     expect(w.ownMatches.length).toBeGreaterThan(0);
     const record = w.ownMatches.at(-1)!;

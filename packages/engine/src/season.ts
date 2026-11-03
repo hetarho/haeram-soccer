@@ -41,9 +41,9 @@ import type {
   TableRow,
   World,
 } from '../../contracts/src/types';
-import { COUNTRIES, country } from '../../catalogs/src/index';
+import { COUNTRIES } from '../../catalogs/src/index';
 import { addMetrics, clamp, random, zeroMetrics, compareIds } from './primitives';
-import { activePlayers, clubOf, ownSeasons } from './player-state';
+import { activePlayers, clubOf } from './player-state';
 import { addEvent } from './events';
 import { joinClub, makePlayer, ownStarters, refillPosition, rating } from './world';
 import { lineOf } from './player';
@@ -107,22 +107,20 @@ import {
   recordScorers,
   snapshotScorers,
 } from './scoring';
-import { groupKey, amateurOpponents, buildSeasonFixtures, emptyTable } from './league-fixtures';
+import { groupKey, buildSeasonFixtures, emptyTable } from './league-fixtures';
 export { emptyTable } from './league-fixtures';
 export { groupKey, fixturesFor } from './league-fixtures';
 
 /**
- * The average strength of the other clubs in the division the own club plays in, its league group
- * or the amateur clubs it meets: the level their squads are generated at, the scale `makePlayer`
- * rates a player on. It reads the clubs as they are, so after the close's promotions it is the
- * division the club will play in, before its fixtures exist.
+ * The average strength of the other clubs in the division the own club plays in, or its league
+ * group: the level their squads are generated at, the scale `makePlayer` rates a player on. It
+ * reads the clubs as they are, so after the close's promotions it is the division the club will
+ * play in, before its fixtures exist.
  */
 export function divisionStrength(w: World) {
   const own = clubOf(w),
     key = groupKey(own);
-  const peers = w.lower
-    ? amateurOpponents(w)
-    : w.clubs.filter((c) => c.id !== own.id && !c.representative && groupKey(c) === key);
+  const peers = w.clubs.filter((c) => c.id !== own.id && !c.representative && groupKey(c) === key);
   return peers.length
     ? peers.reduce((sum, c) => sum + c.strength, 0) / peers.length
     : rating(w, own);
@@ -175,22 +173,11 @@ export function leagueFinishes(w: World) {
     });
   return finishes;
 }
-/**
- * The own league's clubs in world order: the amateur league's are those in its fixtures, found in
- * one pass (testing each club against every fixture took most of a season and of a policy-board
- * render).
- */
+/** The own league's clubs in world order: its division's, or its group's. */
 export function ownLeagueClubs(w: World) {
   if (!hasOwner(w)) return [];
-  if (!w.lower) {
-    const key = groupKey(clubOf(w));
-    return w.clubs.filter((c) => groupKey(c) === key && !c.representative);
-  }
-  return lowerLeagueClubs(w);
-}
-function lowerLeagueClubs(w: World) {
-  const ids = new Set(w.fixtures.flatMap((f) => (f.kind === 'lower' ? [f.home, f.away] : [])));
-  return w.clubs.filter((c) => ids.has(c.id));
+  const key = groupKey(clubOf(w));
+  return w.clubs.filter((c) => groupKey(c) === key && !c.representative);
 }
 /** Preserve the league membership at this point, even after promotion or relegation. */
 export function snapshotStandings(w: World) {
@@ -378,25 +365,11 @@ function tournament(w: World, clubs: Club[], key: string) {
   return list[0];
 }
 /**
- * The amateur clubs going up while the own club plays in the amateur league (→LEAGUE-6): one for
- * each club the last division relegates (two a group), every place but the last by the table just
- * played and the last by a playoff of the next four.
+ * Promotion and relegation between the professional tiers (→LEAGUE-2/3/4); the last division
+ * relegates nobody (→LEAGUE-16): its promotion places go up and the division above relegates
+ * into it, so every division keeps its capacity.
  */
-function amateurEntrants(w: World) {
-  const cp = country(clubOf(w).country),
-    places = cp.groups[cp.groups.length - 1].length * 2;
-  const order = ranked(w, lowerLeagueClubs(w));
-  return {
-    country: cp.code,
-    clubs: [
-      ...order.slice(0, places - 1),
-      tournament(w, order.slice(places - 1, places + 3), 'lower-promotion'),
-    ],
-  };
-}
 export function promote(w: World) {
-  // The amateur table is the season just played: settle it before any club moves.
-  const amateurs = w.lower ? amateurEntrants(w) : undefined;
   const transfers: { club: Club; tier: number }[] = [];
   for (const cp of COUNTRIES) {
     for (let tier = 0; tier < cp.groups.length - 1; tier++) {
@@ -457,54 +430,6 @@ export function promote(w: World) {
   }
   for (const t of transfers) t.club.tier = t.tier;
   for (const cp of COUNTRIES) {
-    const last = cp.groups.length - 1;
-    // Where no amateur league is played, the strongest amateur clubs go up.
-    const reservePool =
-      amateurs?.country === cp.code
-        ? [...amateurs.clubs]
-        : w.clubs
-            .filter((c) => c.country === cp.code && c.representative && c.tier === last + 1)
-            .sort((a, b) => b.strength - a.strength || (a.id < b.id ? -1 : 1));
-    for (let group = 0; group < cp.groups[last].length; group++) {
-      const members = w.clubs.filter(
-        (c) => c.country === cp.code && c.tier === last && c.group === group && !c.representative,
-      );
-      const previous = w.history.at(-1)!.standings;
-      const candidates = members.filter((c) =>
-        previous.some((row) => w.clubs[row[0]].id === c.id && row[1] === last && row[2] === group),
-      );
-      const drops = ranked(w, candidates).slice(-Math.min(2, candidates.length));
-      for (let i = 0; i < drops.length; i++) {
-        const c = drops[i],
-          entry = reservePool.shift();
-        if (!entry) continue;
-        c.tier = last + 1;
-        c.group = 0;
-        c.representative = c.id !== w.playerClub;
-        entry.tier = last;
-        entry.group = group;
-        entry.representative = false;
-        if (entry.id === w.playerClub) {
-          w.lower = false;
-          const returning = ownSeasons(w).some((h) => h.tier <= last);
-          addEvent(
-            w,
-            'promotion',
-            returning ? '프로 무대로 복귀' : '프로 무대 입성',
-            `${entry.name} · ${last + 1}부`,
-          );
-        }
-        if (c.id === w.playerClub) {
-          w.lower = true;
-          addEvent(
-            w,
-            'relegation',
-            '다시 시작하는 계절',
-            '아마추어 리그에서 프로 복귀에 도전합니다.',
-          );
-        }
-      }
-    }
     for (let tier = 0; tier < cp.groups.length; tier++) {
       const members = w.clubs
         .filter((c) => c.country === cp.code && c.tier === tier && !c.representative)

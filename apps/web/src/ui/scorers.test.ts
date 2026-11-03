@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest';
 import type { GoalScorer, GoalScorerSeason } from '../../../../packages/contracts/src/types';
 import {
   advanceRound,
-  createWorld,
   rankedScorers as engineRanking,
 } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { rankedScorers, scorerTrend } from './scorers';
 
 const player = (id: string, goals: number, appearances: number): GoalScorer => ({
@@ -80,13 +80,7 @@ describe('scoring race facts', () => {
   });
 
   it('agrees with live engine ranking for the complete league after a round', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: '득점 경쟁',
-      color: '#28654b',
-      seed: 'scoring-race-ui',
-      level: 'normal' as const,
-    });
+    const w = careerWorld({ country: 'ENG', seed: 'scoring-race-ui' });
     advanceRound(w);
     const season = w.scorerSeason!;
     const ranked = rankedScorers(season.players);

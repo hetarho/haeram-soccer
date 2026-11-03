@@ -6,7 +6,6 @@ import { decode } from '../../apps/web/src/adapters/persistence';
 import {
   activePlayers,
   autoTrainingAdvice,
-  createWorld,
   daysUntilNextMatch,
   developmentOutlook,
   makePlayer,
@@ -14,6 +13,7 @@ import {
   trainingFocusInfo,
 } from '../../packages/engine/src/index';
 import { encode } from '../../apps/web/src/adapters/persistence';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import type { TrainingFocus, World } from '../../packages/contracts/src/types';
 import { expectHomeBounds } from './layout';
 import {
@@ -55,14 +55,7 @@ async function seed(page: Page, w: World) {
     );
   }, raw);
 }
-const founded = (seed: string) =>
-  createWorld({
-    country: 'ENG',
-    name: 'Haeram Athletic',
-    color: '#bf7956',
-    seed,
-    level: 'easy' as const,
-  });
+const founded = (seed: string) => careerWorld({ country: 'ENG', seed });
 
 async function exportWorld(page: Page): Promise<World> {
   await page.getByRole('button', { name: '설정', exact: true }).click();

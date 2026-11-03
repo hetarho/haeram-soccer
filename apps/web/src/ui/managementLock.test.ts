@@ -2,7 +2,8 @@ import { createElement, type ReactElement, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createStore } from 'zustand/vanilla';
-import { clubMilestones, createWorld, transferOffers } from '../../../../packages/engine/src/index';
+import { clubMilestones, transferOffers } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { sponsorSlots } from '../../../../packages/engine/src/operations';
 import { identityOf } from '../../../../packages/engine/src/club-identity';
 import type { ClientState, GameClient } from '../runtime/client';
@@ -80,13 +81,7 @@ vi.mock('./worldMarket', async (original) => ({
   }),
 }));
 
-const world = createWorld({
-  country: 'ENG',
-  name: 'Calendar Lock',
-  color: '#224466',
-  seed: 'calendar-lock',
-  level: 'easy',
-});
+const world = careerWorld({ country: 'ENG', seed: 'calendar-lock' });
 world.cash = '999999999999';
 const controller = {
   store: createStore(() => ({ running: true, pace: 'x1', reason: '' })),

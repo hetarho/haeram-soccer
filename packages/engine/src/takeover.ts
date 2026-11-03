@@ -188,7 +188,6 @@ export function takeOver(
     roster = squad(w, club).map((p) => structuredClone(p));
 
   w.playerClub = club.id;
-  w.lower = false;
   invalidateNpcSquads(w);
   // The manager stays with his school, style and level (→OWNER-4); his formation is the squad's.
   const manager: Manager = clubManager(w, club);
@@ -273,7 +272,7 @@ export function takeOver(
     w,
     'takeover',
     '구단 인수',
-    `${club.name} 인수 · ${country(code).name} ${divisionLabel(code, club.tier)}`,
+    `${club.name} 인수 · ${country(code).name} ${divisionLabel(club.tier)}`,
     price,
   );
 

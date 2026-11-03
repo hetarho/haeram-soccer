@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { advanceToNextMatch } from '../../packages/engine/src/testing';
 import type { PlayerMotion, World } from '../../packages/contracts/src/types';
-import { createWorld } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { presentationSamples } from '../../apps/web/src/ui/presentationClock';
 import { withCandidateModel } from '../fixtures/worlds';
 import { horizontalOverflow } from './layout';
@@ -18,20 +18,14 @@ import {
 /**
  * Both sides through a delivered set piece in observation (→MATCH-12, MATCH-17, MATCH-18, T348),
  * from the walk-in to its recorded kick (T359) to the second ball. Marked synthetic career: a fresh
- * founding on the released match model (`withCandidateModel` keeps it explicit whatever the switch
+ * takeover on the released match model (`withCandidateModel` keeps it explicit whatever the switch
  * says), every responsibility delegated so nothing holds the watch. The
  * scene is the engine's own recorded one: a reference run of the same seeded match finds the first
  * delivery the defenders keep their set-piece jobs through, and the page is paused on those
  * recorded samples.
  */
 function career(seed: string): World {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Set Piece Defence',
-    color: '#224466',
-    seed,
-    level: 'easy',
-  });
+  const w = careerWorld({ country: 'ENG', seed });
   const settings = w.settings!;
   for (const key of Object.keys(
     settings.responsibilities,

@@ -33,7 +33,7 @@ function selectTheme(id: string) {
 }
 
 // Synthetic archive-only input: no founding, simulation or persisted game is needed for rendering.
-function cabinetWorld(code = 'ENG', tiers = [0, 1, 2, 3, 4]): World {
+function cabinetWorld(code = 'ENG', tiers = [0, 1, 2, 3]): World {
   return {
     playerClub: 'own',
     clubs: [{ id: 'own', country: code, tier: 0 }],
@@ -70,7 +70,6 @@ describe('competition trophy selection', () => {
         'league-tier-2',
         'league-tier-3',
         'league-tier-4',
-        'league-amateur',
         'cup',
         'continental',
         'continental-cwc',
@@ -83,16 +82,17 @@ describe('competition trophy selection', () => {
         'best',
       ];
       expect(images).toEqual(names.map((name) => `/art/trophies/${id}/${name}.webp`));
-      expect(new Set(images).size).toBe(15);
+      expect(new Set(images).size).toBe(14);
     },
   );
 
-  it('identifies amateur titles using the country pyramid instead of a fixed tier number', () => {
+  it('draws every title of a shorter pyramid by its own division (→LEAGUE-16)', () => {
     const markup = renderToStaticMarkup(
-      createElement(TrophyCabinet, { w: cabinetWorld('ESP', [0, 1, 2]) }),
+      createElement(TrophyCabinet, { w: cabinetWorld('ESP', [0, 1]) }),
     );
-    expect(markup).toContain('/pixel/league-amateur.webp');
-    expect(markup).not.toContain('/pixel/league-tier-3.webp');
+    expect(markup).toContain('/pixel/league.webp');
+    expect(markup).toContain('/pixel/league-tier-2.webp');
+    expect(markup).not.toContain('/pixel/league-amateur.webp');
   });
 
   it('retains the selected silhouette when the honour is unearned', () => {

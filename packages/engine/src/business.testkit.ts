@@ -5,17 +5,7 @@ import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 /** The business club on the pre-feature path: the business, not the match model, is the subject. */
 export function world(country: 'ENG' | 'BEL' = 'ENG', seed = 'business') {
-  const w = simulatedWorld(
-    {
-      country,
-      name: 'Ledger Town',
-      color: '#335544',
-      seed,
-      level: 'easy' as const,
-    },
-    {},
-    DISABLED_RELEASE,
-  );
+  const w = simulatedWorld({ country, seed }, {}, DISABLED_RELEASE);
   w.settings = staffAuthority(2);
   return w;
 }

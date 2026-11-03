@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { ClubIdentity } from '../../../../packages/contracts/src/identity';
 import type { World } from '../../../../packages/contracts/src/types';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { legacyCrestMap } from '../../../../packages/engine/src/identity-legacy';
 import {
   CREST_COMBINATIONS,
@@ -12,8 +12,12 @@ import {
   crestOf,
 } from './crests';
 
-const world = (color = '#24664f', seed = 'crests') =>
-  createWorld({ country: 'ENG', name: 'Crest Club', color, seed, level: 'normal' as const });
+/** A taken-over career; `color`, when given, repaints the own club's stored colour. */
+const world = (color?: string, seed = 'crests') => {
+  const w = careerWorld({ country: 'ENG', seed });
+  if (color) w.clubs.find((club) => club.id === w.playerClub)!.color = color;
+  return w;
+};
 /** A compatible world from before club identities: the legacy lookup decides every crest. */
 const bare = (w: World): World => ({
   ...w,
@@ -50,7 +54,7 @@ describe('club crests', () => {
         expect(contrast(crest.primary, crest.secondary!)).toBeGreaterThanOrEqual(1.8);
   });
 
-  it('is stable per seed and keeps the founding colour', () => {
+  it('is stable per seed and keeps the own colour', () => {
     const a = bare(world('#d62828')),
       b = bare(world('#d62828'));
     const id = a.clubs[40].id;
@@ -70,7 +74,10 @@ describe('club crests', () => {
   it('reads applied identities, which a new world installs as the exact legacy crests', () => {
     const w = world();
     expect(w.clubs.every((club) => club.identity)).toBe(true);
-    expect(Object.fromEntries(crestMap(w))).toEqual(Object.fromEntries(legacyCrestMap(bare(w))));
+    // The world installs them as it is made, nobody's (→WORLD-13); the bought club keeps its own.
+    expect(Object.fromEntries(crestMap(w))).toEqual(
+      Object.fromEntries(legacyCrestMap({ ...bare(w), playerClub: '' })),
+    );
     for (const club of [w.clubs[0], w.clubs[40], w.clubs.at(-1)!])
       expect(crestOf(w, club.id)).toBe(club.identity!.crest);
     expect(crestOf(w, 'nowhere')).toEqual(crestOf(w, undefined));

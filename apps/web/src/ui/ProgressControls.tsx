@@ -53,9 +53,7 @@ export const ProgressOverview = memo(function ProgressOverview({
       data-testid={compact ? 'mini-clock' : undefined}
     >
       <header className={p.calendarSummary} data-ui="calendar-header">
-        <small>
-          {w.lower ? t('shell.amateurLeague') : t('shell.division', { division: club.tier + 1 })}
-        </small>
+        <small>{t('shell.division', { division: club.tier + 1 })}</small>
       </header>
       {round && (
         <div

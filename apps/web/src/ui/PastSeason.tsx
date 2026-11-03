@@ -76,7 +76,7 @@ function FinalTable({
   const code = league?.code ?? clubOf(w).country,
     tier = league?.tier ?? season.tier,
     group = league?.group ?? season.group,
-    { zones, lower } = finalZones(code, tier, rows.length);
+    { zones } = finalZones(code, tier, rows.length);
   return (
     <section data-surface="sheet" className={r.table} aria-label="최종 순위표">
       <h3>최종 순위표</h3>
@@ -143,7 +143,7 @@ function FinalTable({
           </tbody>
         </table>
       </div>
-      <ZoneLegend zones={zones} lower={lower} closed className={r.zones} />
+      <ZoneLegend zones={zones} closed className={r.zones} />
       <p className={r.footnote}>
         구역은 그 시즌 디비전의 승강 규칙이에요.
         {!records &&
@@ -158,7 +158,7 @@ function OwnMatches({ w, season, read }: { w: World; season: SeasonArchive; read
   const [report, setReport] = useState<MatchRecord>();
   if (!read?.files) return <Pending read={read} />;
   const games = read.files.matches
-    .filter((m) => m.kind === 'league' || m.kind === 'lower')
+    .filter((m) => m.kind === 'league')
     .sort((a, b) => a.round - b.round || a.id.localeCompare(b.id));
   const results = games.map((m) => {
     const home = m.home === w.playerClub,
@@ -239,7 +239,7 @@ function SeasonRanks({
   const ranks = season.ranks,
     code = clubOf(w).country,
     name = clubOf(w).name;
-  // The league's size comes with the archived standings; an amateur league never kept one.
+  // The league's size comes with the archived standings.
   if (ranks?.length && !read?.files) return <Pending read={read} />;
   const places = Math.max(clubs ?? 0, ...(ranks ?? [])),
     axis = rankAxis(ranks?.length ?? 0, places);

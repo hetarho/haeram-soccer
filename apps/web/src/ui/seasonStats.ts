@@ -2,9 +2,6 @@ import type { MatchRecord, World } from '../../../../packages/contracts/src/type
 import { PD, PLAYER_DETAIL_SIZE, TD } from '../../../../packages/contracts/src/detail';
 import { sideLines } from './advanced';
 
-/** League fixtures decide the table, so the review measures the season on them. */
-const LEAGUE = new Set(['league', 'lower']);
-
 function poisson(lambda: number, goals: number) {
   let p = Math.exp(-lambda);
   for (let k = 1; k <= goals; k++) p *= lambda / k;
@@ -106,8 +103,9 @@ export function seasonStats(
   w: Pick<World, 'playerClub' | 'clubs' | 'players'>,
   matches: readonly MatchRecord[],
 ): SeasonStats {
+  // League fixtures decide the table, so the review measures the season on them.
   const league = matches
-    .filter((m) => LEAGUE.has(m.kind))
+    .filter((m) => m.kind === 'league')
     .sort((a, b) => a.round - b.round || (a.id < b.id ? -1 : 1));
   const name = (id: string) => w.clubs.find((c) => c.id === id)?.name || id;
   const stats: SeasonStats = {

@@ -46,15 +46,8 @@ const part = (
   metrics: m,
   detail: d,
 });
-/** A founded world, built once and shared (→ARCH-21); each call is a fresh copy. */
-const fresh = () =>
-  simulatedWorld({
-    country: 'ENG',
-    name: 'Synthetic Full Stats',
-    color: '#335544',
-    seed: 'full-stats-view',
-    level: 'normal',
-  });
+/** A taken-over world, built once and shared (→ARCH-21); each call is a fresh copy. */
+const fresh = () => simulatedWorld({ country: 'ENG', seed: 'full-stats-view' });
 function syntheticRead(w: World, change: Partial<FullStatsRead> = {}): FullStatsRead {
   const own = w.players[0]!,
     other = w.clubs.find((c) => c.id !== w.playerClub)!.id;
@@ -279,15 +272,14 @@ describe('complete statistics in existing views (→WEB-89, HIST-6, HIST-17)', (
     expect(recordCounters(base)).toBe('basic');
   });
 
-  it('reads our league, the amateur league or any chosen league', () => {
+  it('reads our league or any chosen league', () => {
     const w = fresh();
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
-    expect(leagueStatsScope({ ...w, lower: false })).toEqual({
+    expect(leagueStatsScope(w)).toEqual({
       kind: 'league',
       groupKey: `${own.country}:${own.tier}:${own.group}`,
     });
-    expect(leagueStatsScope({ ...w, lower: true })).toEqual({ kind: 'lower', groupKey: 'lower' });
-    expect(leagueStatsScope({ ...w, lower: true }, { code: 'GER', tier: 0, group: 0 })).toEqual({
+    expect(leagueStatsScope(w, { code: 'GER', tier: 0, group: 0 })).toEqual({
       kind: 'league',
       groupKey: 'GER:0:0',
     });

@@ -4,10 +4,10 @@ import type { World } from '../../../../packages/contracts/src/types';
 import {
   advanceDays,
   completeRound,
-  createWorld,
   MATCH_MODEL_RELEASE,
   prepareRound,
 } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { currentDay, seasonLength } from '../../../../packages/engine/src/calendar';
 import { movePerson } from '../../../../packages/engine/src/npc-continuity';
 import { findClub, squad } from '../../../../packages/engine/src/world';
@@ -43,16 +43,7 @@ function transfer(w: World) {
 describe('incremental fixture helpers through campaign transitions', () => {
   it('matches a complete season, a retained-player transfer, reload and the next season', async () => {
     // Synthetic funding avoids bankruptcy while every club, fixture and business day is simulated.
-    let reference = createWorld(
-      {
-        country: 'BEL',
-        name: 'Replica Season',
-        color: '#234567',
-        seed: 'replica-season',
-        level: 'easy',
-      },
-      MATCH_MODEL_RELEASE,
-    );
+    let reference = careerWorld({ country: 'BEL', seed: 'replica-season' }, MATCH_MODEL_RELEASE);
     reference.cash = '99999999999';
     let helped = structuredClone(reference);
     const year = reference.year,

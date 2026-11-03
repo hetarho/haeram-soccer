@@ -7,7 +7,6 @@ import { join } from 'node:path';
 import { brotliCompressSync, constants as zlib } from 'node:zlib';
 import {
   activeTrainingFocus,
-  createWorld,
   nextWork,
   debit,
   startFacilityWork,
@@ -18,7 +17,6 @@ import {
   clubOf,
   operatingCost,
   policyOf,
-  FOUNDING_YEAR,
   managerCandidates,
   managerHireCost,
   managerPayoff,
@@ -26,6 +24,7 @@ import {
   sponsorSlots,
   trackingBoundary,
 } from '../packages/engine/src/index';
+import { careerWorld, CAREER_YEAR } from '../packages/engine/src/career.testkit';
 import { COUNTRIES, LOAD_CATALOG } from '../packages/catalogs/src/index';
 import { canonical, validateWorld, type World } from '../packages/contracts/src/index';
 import { managerHistoryDateKey } from '../packages/contracts/src/manager-history';
@@ -50,7 +49,7 @@ import {
 import { payloadBytes } from '../apps/web/src/adapters/compression';
 import { pack } from '../apps/web/src/adapters/packing';
 import {
-  ACTIVATION_FOUNDING,
+  ACTIVATION_CAREER,
   assertCompleteModel,
   modelEvidence,
   writerActivation,
@@ -64,9 +63,9 @@ import { DISABLED_RELEASE } from '../tests/fixtures/releases';
  * phase measures under `.tmp/benchmark/<computation and execution identity>/`, so phases with different computation dependencies or execution environments
  * never mix, and `report` assembles them and fails unless every phase ran on this source.
  * `--smoke` runs two seasons a profile into a directory of its own and writes no report.
- * T286: the century profiles found with the release switch as it stands (`createWorld`'s default),
+ * T286: the century profiles start with the release switch as it stands (`careerWorld`'s default),
  * so a released switch tracks them on the full model from their first day, and `activation` loads
- * a supported career founded before the release through the worker host's writer path, which
+ * a supported career taken over before the release through the worker host's writer path, which
  * activates it mid-season (→SAVE-23).
  */
 const PHASES = [
@@ -97,8 +96,8 @@ const SEASONS = smoke ? 2 : 100;
 const HALF = SEASONS / 2;
 /** The season after whose close the mid-career branch plays its active round. */
 const MID_SEASON = HALF - 1;
-const ERA_END = smoke ? FOUNDING_YEAR + 2 : 2025;
-const ERA_HALF = smoke ? FOUNDING_YEAR + 1 : 1988;
+const ERA_END = smoke ? CAREER_YEAR + 2 : 2025;
+const ERA_HALF = smoke ? CAREER_YEAR + 1 : 1988;
 /** Whole seasons the activation profile plays on the pre-feature model before its writer load. */
 const PRE_RELEASE_SEASONS = smoke ? 1 : 10;
 /** Seasons it then closes on the full model after the activated season. */
@@ -347,13 +346,7 @@ function loadPhase<T>(phase: Phase): PhaseResult<T> {
 }
 
 const profileWorld = (variant: Variant) =>
-  createWorld({
-    country: 'ENG',
-    name: variant === 'baseline' ? 'Century Athletic' : 'Century Cooperative',
-    color: '#284e35',
-    seed: 'release-century-' + variant,
-    level: 'easy',
-  });
+  careerWorld({ country: 'ENG', seed: 'release-century-' + variant });
 const checkpointLabel = (variant: Variant) =>
   variant === 'active-management'
     ? `${variant} century active round 23`
@@ -632,19 +625,18 @@ async function secondHalf(variant: Variant): Promise<ProfileData> {
   const leagueClubs = w.clubs.filter(
     (club, index) => !club.representative && club.tier < leagueTiers(index),
   ).length;
-  const ownIndex = w.clubs.findIndex((club) => club.id === w.playerClub);
   if (
     w.history.length !== SEASONS ||
     w.history.some(
       (season, index) =>
-        season.year !== FOUNDING_YEAR + index ||
+        season.year !== CAREER_YEAR + index ||
         season.champions.length !== COUNTRIES.length ||
-        // Every league club once, plus the own club in a season it spent in the amateur league.
+        // Every league club once, and nobody below the last professional division (→LEAGUE-16).
         season.standings.filter((row) => row[1] < leagueTiers(row[0])).length !== leagueClubs ||
-        season.standings.some((row) => row[1] >= leagueTiers(row[0]) && row[0] !== ownIndex),
+        season.standings.some((row) => row[1] >= leagueTiers(row[0])),
     ) ||
-    !w.ownMatches.some((match) => match.year === FOUNDING_YEAR) ||
-    !w.events.some((event) => event.kind === 'founding')
+    !w.ownMatches.some((match) => match.year === CAREER_YEAR) ||
+    !w.events.some((event) => event.kind === 'takeover')
   )
     throw new Error('Century own-club/global archival coverage failed');
   saveWorld(`${variant}-century`, w);
@@ -760,7 +752,7 @@ async function writerLoad(raw: string) {
  * every newer own record complete, the pre-feature ones as they were.
  */
 async function activation() {
-  const legacy = createWorld(ACTIVATION_FOUNDING, DISABLED_RELEASE);
+  const legacy = careerWorld(ACTIVATION_CAREER, DISABLED_RELEASE);
   for (let n = 0; n < PRE_RELEASE_SEASONS; n++) simulateSeason(legacy);
   for (let round = 0; round < 23; round++) advanceRound(legacy, undefined, false);
   const before = retainedFacts(legacy);
@@ -794,7 +786,7 @@ async function activation() {
   await measure(continued, `activation ${ACTIVATED_SEASONS} seasons later round 23`);
   return {
     released: true,
-    founding: ACTIVATION_FOUNDING,
+    career: ACTIVATION_CAREER,
     preReleaseSeasons: PRE_RELEASE_SEASONS,
     activatedSeasons: ACTIVATED_SEASONS,
     writerLoadMs: loadMs,
@@ -831,14 +823,8 @@ async function retained() {
 // Separate era probe crosses the 2024 transition after a century without claiming an unbounded
 // storage guarantee: up to ERA_HALF in its first phase, then on from the world it kept.
 function eraFirst() {
-  const era = createWorld({
-    country: 'FRA',
-    name: 'Era Laboratory',
-    color: '#3f5566',
-    seed: 'era-probe',
-    level: 'easy',
-  });
-  for (let year = FOUNDING_YEAR; year < ERA_HALF; year++) simulateSeason(era);
+  const era = careerWorld({ country: 'FRA', seed: 'era-probe' });
+  for (let year = CAREER_YEAR; year < ERA_HALF; year++) simulateSeason(era);
   saveWorld('era-half', era);
   return {};
 }
@@ -854,7 +840,7 @@ function eraProbe() {
   )
     throw new Error('2024 era archival gate failed');
   return {
-    eraProbe: { seasons: ERA_END - FOUNDING_YEAR, year: era.year, passed: true },
+    eraProbe: { seasons: ERA_END - CAREER_YEAR, year: era.year, passed: true },
     engine: era.engine,
     catalog: era.catalog,
     catalogHash: era.catalogHash,
@@ -1008,9 +994,9 @@ function report() {
     losslessRoundtrip: true,
     resumedSeasonReplay: true,
     managerHistoryRoundTrip: true,
-    completeModelFromFounding: MATCH_MODEL_RELEASE.enabled,
+    completeModelFromTakeover: MATCH_MODEL_RELEASE.enabled,
     passed: true,
-    scope: `Two representative ${SEASONS}-season workloads, with real youth/recovery round training in the active profile, a settled round-23 checkpoint after the century in both profiles, an own design applied through the club-identity command at each active season start (${identityEvidence.edits} edits) and a pending match-kit choice in the active round-23 checkpoint that both resumed careers wear and use up, recorded appearances compared before and after every such command, eight-country archive/capacity checks and a separate ${FOUNDING_YEAR}–${ERA_END} era probe. Both careers track their own managers from the founding; the active one also hires a free manager every tenth season and four times a century appoints, replaces and reappoints on one day, beside the interims contract ends leave. At the century and the round after it, every tenure, outcome source, date and record link round-trips the checkpoint exactly, and the records room's paged manager-history read covers every tenure and attributed match. Every checkpoint must round-trip the complete canonical world without loss; save limits and history retention remain unchanged. Throughput includes codec/replay checks; peak heap is sampled at checkpoints. No claim that all seeds/actions fit indefinitely. Direct engine harness records but does not stop at UI warnings.`,
+    scope: `Two representative ${SEASONS}-season workloads, with real youth/recovery round training in the active profile, a settled round-23 checkpoint after the century in both profiles, an own design applied through the club-identity command at each active season start (${identityEvidence.edits} edits) and a pending match-kit choice in the active round-23 checkpoint that both resumed careers wear and use up, recorded appearances compared before and after every such command, eight-country archive/capacity checks and a separate ${CAREER_YEAR}–${ERA_END} era probe. Both careers track their own managers from the takeover; the active one also hires a free manager every tenth season and four times a century appoints, replaces and reappoints on one day, beside the interims contract ends leave. At the century and the round after it, every tenure, outcome source, date and record link round-trips the checkpoint exactly, and the records room's paged manager-history read covers every tenure and attributed match. Every checkpoint must round-trip the complete canonical world without loss; save limits and history retention remain unchanged. Throughput includes codec/replay checks; peak heap is sampled at checkpoints. No claim that all seeds/actions fit indefinitely. Direct engine harness records but does not stop at UI warnings.`,
   };
   if (smoke) {
     console.log(JSON.stringify(report, null, 2));

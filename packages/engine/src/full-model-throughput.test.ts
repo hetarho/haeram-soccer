@@ -184,7 +184,7 @@ describe('complete-result throughput (T285)', () => {
   it('follows lineup, availability and tactic changes like a fresh world', () => {
     const w = founded(2024);
     const f = w.fixtures
-      .filter((x) => own(w, x) && (x.kind === 'league' || x.kind === 'lower'))
+      .filter((x) => own(w, x) && x.kind === 'league')
       .sort((a, b) => a.round - b.round)[0]!;
     const side = f.home === w.playerClub ? 0 : 1;
     const play = (world: World) => simulateAggregate(world, f);

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
-import { simulateSeason } from './founding';
+import { simulateSeason } from './season';
 import { operate } from './operations';
 import { advanceDays, advanceRound, prepareRound } from './season';
 import { assertNextEvent } from './next-event';

@@ -18,16 +18,16 @@ import {
   operatingCosts,
   ownLeagueGames,
 } from './index';
-import { professionalStart, staffAuthority } from './testing';
+import { staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { finance, world } from './business.testkit';
 
 describe('league income sized for a 46-game season', () => {
   it('keeps the 46-game English pyramid unchanged and scales shorter leagues per match', () => {
-    const eng = professionalStart(world('ENG'));
+    const eng = world('ENG');
     expect(ownLeagueGames(eng)).toBe(46);
     expect(leagueMatchFactor(eng)).toBe(1);
-    const bel = professionalStart(world('BEL'));
+    const bel = world('BEL');
     expect(ownLeagueGames(bel)).toBe(28);
     expect(leagueMatchFactor(bel)).toBeCloseTo(46 / 28, 10);
     const gate = gateProjection(bel);
@@ -38,13 +38,11 @@ describe('league income sized for a 46-game season', () => {
       footballQuote(club.country, bel.year, gate.attendanceHigh * gate.perFan * (46 / 28)),
     );
     // Hosting costs follow the actual match, not the season size.
-    expect(gate.costHigh).toBe(gateProjection(professionalStart(world('BEL'))).costHigh);
-    // A new club's 16-club amateur league plays 30 games, each paying 46/30.
-    expect(ownLeagueGames(world('ENG'))).toBe(30);
+    expect(gate.costHigh).toBe(gateProjection(world('BEL')).costHigh);
   });
 
   it('pays no league result bonus and an unscaled cup one on the broadcasting index', () => {
-    const w = professionalStart(world('BEL'));
+    const w = world('BEL');
     const fixture = w.fixtures.find((f) => f.home === w.playerClub)!;
     const won = { ...fixture, score: { home: 2, away: 0 } } as unknown as Parameters<
       typeof matchBonus

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { SeasonArchive } from '../../../../packages/contracts/src/types';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { eloOf, eloRank } from '../../../../packages/engine/src/ratings';
 import { ownLeagueIds } from './league';
 import { eloDetail, eloStanding, leaguePositionDetail, pyramidPosition } from './recordTrends';
@@ -41,14 +41,14 @@ const season = (
 describe('league position bubble', () => {
   // Italy: 20 and 20 clubs in the top two divisions, three groups of 20 in the third.
   const seasons = [
-    season(1950, 3, 0, 3, 50),
+    season(1950, 2, 0, 3, 50),
     season(1951, 2, 1, 1, 71),
     season(1952, 1, 0, 18, 40),
     season(1953, 2, 2, 7, 55),
   ];
-  it('names the amateur league, regional groups only where they exist and the move that followed', () => {
+  it('names regional groups only where they exist and the move that followed', () => {
     expect(leaguePositionDetail('ITA', seasons, 0, 2)).toBe(
-      '1950/51 · 아마추어 리그 3위 · 승점 50 · 피라미드 103위 · 승격',
+      '1950/51 · 3부 A조 3위 · 승점 50 · 피라미드 43위',
     );
     expect(leaguePositionDetail('ITA', seasons, 1, 2)).toBe(
       '1951/52 · 3부 B조 1위 · 승점 71 · 피라미드 41위 · 우승 · 승격',
@@ -72,7 +72,7 @@ describe('league position bubble', () => {
   it('counts every club in the divisions above', () => {
     expect(pyramidPosition('ENG', { tier: 0, rank: 1 })).toBe(1);
     expect(pyramidPosition('ENG', { tier: 2, rank: 5 })).toBe(49);
-    expect(pyramidPosition('ENG', { tier: 4, rank: 2 })).toBe(94);
+    expect(pyramidPosition('ENG', { tier: 3, rank: 2 })).toBe(70);
   });
 });
 
@@ -92,13 +92,7 @@ describe('Elo bubble', () => {
 
 describe('Elo standing', () => {
   it('places our Elo among every club and against our league', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Standing',
-      color: '#24664f',
-      seed: 'elo-standing',
-      level: 'easy' as const,
-    });
+    const w = careerWorld({ country: 'ENG', seed: 'elo-standing' });
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     const league = ownLeagueIds(w).filter((id) => id !== own.id);
     const rival = w.clubs.find((c) => c.id === league[0])!,

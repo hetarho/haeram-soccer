@@ -11,15 +11,9 @@ import { lineOf } from './player';
 import { shortLines, SIGNING_CONFIG } from './signings';
 import { promotionAge } from './academy';
 
-const FOUNDING = {
-  country: 'ENG',
-  name: 'Twenty Rovers',
-  color: '#224433',
-  seed: 'squad-target',
-  level: 'easy',
-} as const;
+const CAREER = { country: 'ENG', seed: 'squad-target' } as const;
 /** The club on the pre-feature path: the squad target, not the match model, is the subject. */
-const world = (rounds = 0) => simulatedWorld(FOUNDING, { rounds }, DISABLED_RELEASE);
+const world = (rounds = 0) => simulatedWorld(CAREER, { rounds }, DISABLED_RELEASE);
 function prospect(w: World, id: string, position: Position, age = 18, skill = 1) {
   const p = makePlayer(
     'ENG',

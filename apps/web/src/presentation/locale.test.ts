@@ -125,6 +125,15 @@ describe('locale messages', () => {
     }
   });
 
+  it('names no amateur league: every division is professional (→WORLD-9 [x], LEAGUE-16)', () => {
+    const { t } = createLoadedLocale(koreanRegistry, korean);
+    expect(t('shell.division', { division: 4 })).toBe('4부');
+    for (const entry of registry.entries) {
+      const pack = readResource(entry.resource) as LocalePack;
+      expect(pack.messages, entry.id).not.toHaveProperty(['shell.amateurLeague']);
+    }
+  });
+
   it('preserves current Korean shell copy', () => {
     const { t } = createLoadedLocale(koreanRegistry, korean);
     expect(['dashboard', 'league', 'history'].map((key) => t(`navigation.${key}`))).toEqual([

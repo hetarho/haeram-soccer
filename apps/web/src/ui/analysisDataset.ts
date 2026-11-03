@@ -1,5 +1,6 @@
 import { ATTRIBUTES } from '../../../../packages/contracts/src/player';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
+import { ownSeasons } from '../../../../packages/engine/src/player-state';
 import type { CsvCell } from '../adapters/csv';
 import type { PlayerScope } from './playerAnalysis';
 export type AnalysisDataset = 'matches' | 'players' | 'seasons';
@@ -145,7 +146,8 @@ export function analysisDataset(
       'income_minor',
       'expense_minor',
     ],
-    rows: w.history.map((h) => [
+    // The club's own completed seasons (→WEB-29, HIST-21): the world's before the takeover kept none.
+    rows: ownSeasons(w).map((h) => [
       ...identity,
       h.year,
       h.tier + 1,

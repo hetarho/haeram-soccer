@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { validateWorld } from '../../contracts/src/schema';
-import { FOUNDING_YEAR } from './index';
+import { CAREER_YEAR } from './career.testkit';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { assertCapacities, input } from './world.testkit';
@@ -31,7 +31,7 @@ describe('world progression', () => {
         ),
       ).toBe(season.gf);
     }
-    expect(w.year).toBe(FOUNDING_YEAR + 4);
-    expect(w.history[0].year).toBe(FOUNDING_YEAR);
+    expect(w.year).toBe(CAREER_YEAR + 4);
+    expect(w.history[0].year).toBe(CAREER_YEAR);
   });
 });

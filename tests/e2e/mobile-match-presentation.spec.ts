@@ -1,7 +1,7 @@
 import { watchNext } from './watch';
 import { advanceToNextMatch } from '../../packages/engine/src/testing';
 import { expect, test, type Page } from '@playwright/test';
-import { createWorld } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { configureResponsibilities } from './events';
 import { expectBallSideScoreboard, horizontalOverflow } from './layout';
@@ -55,13 +55,7 @@ for (const { id: themeId } of readPresentationBaselines().themeRegistry.entries)
 for (const width of [360, 390]) {
   test(`fixed pitch ratio ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
-    const world = createWorld({
-      country: 'ENG',
-      name: 'Mobile Pitch',
-      color: '#224466',
-      seed: 'mobile-pitch',
-      level: 'easy',
-    });
+    const world = careerWorld({ country: 'ENG', seed: 'mobile-pitch' });
     world.settings!.responsibilities.sales = 'delegated';
     await importResponsibilityCareer(page, world);
     const date = await page.getByTestId('game-date').boundingBox();
@@ -96,13 +90,7 @@ for (const width of [360, 390]) {
 test('mobile result-only continuation preserves the exiting card position', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.setViewportSize({ width: 390, height: 844 });
-  const world = createWorld({
-    country: 'ENG',
-    name: 'Mobile Events',
-    color: '#224466',
-    seed: 'intervention-levels',
-    level: 'easy',
-  });
+  const world = careerWorld({ country: 'ENG', seed: 'intervention-levels' });
   const settings = world.settings!;
   settings.mode = 'manual';
   settings.observations.windowOpen = false;
@@ -169,17 +157,11 @@ test('mobile result-only continuation preserves the exiting card position', asyn
 
 /** An early home goal for presentation checks; later goals follow the current model. */
 function goalWorld() {
-  const world = createWorld({
-    country: 'ENG',
-    name: 'Goal Feedback',
-    color: '#224466',
-    // On match-model revision 10 (T596, T599, T600) goal-feedback-2's first match opens 1′ home,
-    // then 65′ and 67′ home, 72′ away, 88′ home and 90′ away (goal-feedback-28 on revision 9 with
-    // T580's pass side, opening 4′ home; goal-feedback-15 on revision 8, T561; goal-feedback-14 on
-    // revision 7, T548; goal-feedback-8 on revision 6, T542; T579).
-    seed: 'goal-feedback-2',
-    level: 'easy',
-  });
+  // On match-model revision 10 (T596, T599, T600) goal-feedback-2's first match opens 1′ home,
+  // then 65′ and 67′ home, 72′ away, 88′ home and 90′ away (goal-feedback-28 on revision 9 with
+  // T580's pass side, opening 4′ home; goal-feedback-15 on revision 8, T561; goal-feedback-14 on
+  // revision 7, T548; goal-feedback-8 on revision 6, T542; T579).
+  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-2' });
   world.settings!.responsibilities.sales = 'delegated';
   return world;
 }

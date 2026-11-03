@@ -20,7 +20,6 @@
     "shell.fortune": "구단주 자금",
     "shell.fortuneDetails": "구단주 자금 {amount} · 구단주 정보 보기",
     "shell.owner": "구단주",
-    "shell.amateurLeague": "아마추어 리그",
     "shell.division": "{division}부",
     "shell.readonly": "읽기 전용",
     "shell.readonlyNotice": "다른 탭이 플레이 중입니다. 이 탭은 읽기 전용입니다.",

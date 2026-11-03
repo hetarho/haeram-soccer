@@ -1,13 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { advanceDays, advanceRound, operate } from './index';
-import { professionalStart } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { world } from './finance.testkit';
 
 describe('earned, auditable club finances', () => {
   it('earns sponsor money once per played league match instead of receiving a full annual grant', () => {
     const start = () => {
-      const w = professionalStart(world());
+      const w = world();
       operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
       return w;
     };

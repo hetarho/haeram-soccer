@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r21 | Define the browser-demo rules for durable metrics and history.
+> r22 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -12,7 +12,10 @@
 - HIST-8 [o] No automatic expiry/pruning of retained facts, data uploads or silent loss on save/import; per-match maps and reports follow their defined lifetime (→HIST-16). Capacity errors keep the current save and offer export.
 - HIST-9 [o] Validate 100-season own-club and global summary retention within the ARCH save budget.
 - HIST-10 [o] Milestone completion derives from retained matches, events, player development, facility work (→ECON-32) and season archives. It grants no synthetic cash, performance multiplier or repeatable claim reward; viewing, importing and reloading the same career reproduce the same completed milestones.
-- HIST-11 [o] Club news is derived from retained facts on every read and never stored: the same career always produces the same feed with stable item IDs. ← news must never contradict the record, and storing it would only duplicate facts
+- HIST-11 [o] Club news is recorded once when its source fact settles, with stable source-derived item IDs and the names and values at that time. Reads return stored items without replaying the career. ← decades of history must not increase the work of producing the next headline
+  - update the required record counters from each newly settled own match; record thresholds and headline selection below stay unchanged.
+  - retain generated headlines across seasons; normal daily publication carries a bounded recent feed, with older items available on request. A page limit never deletes stored news.
+  - supported careers without the news journal rebuild their available headlines and record counters once from retained source facts; repeat loads and reads do not create duplicate news. Original facts remain available for validation and explicit reconstruction.
   - every own match yields one result line (comeback, ≥88′ winner or equaliser, a two-goal lead thrown away, rout, heavy defeat, clean win or the plain result, with possession, shots and xG), then at most 4 more items ranked by weight; major items and celebrations always stay.
   - sources: streaks across seasons, home/away runs, the opening five, possession and first-goal splits, xG against the result and finishing gaps, season highs and lows, player braces, hat-tricks, one-man shows, debut and academy first goals, scoring runs, droughts and milestones, keepers' saves, defensive actions and advanced counters;
   - round standings (top of the table, leads, promotion and relegation zones, three-place climbs);
@@ -32,7 +35,7 @@
   - our country's cup and every continental competition except the Super Cup as a bracket from the first round of 32 or fewer clubs (qualifiers skipped) to the final: each tie its two clubs, both legs and how it was decided (penalties, away goals).
   - the Ballon d'Or podium (→PLAYER-27): for each of the three places the player's stable identity, name, club, position, goals, assists, appearances and points, kept in the season itself so every view reads it without the archive request.
   - a field is written only when the season was tracked whole; seasons closed before rules 1.12.0 keep finals only. Scorers and brackets reach the screen through the season archive request, not every update.
-  - derived on read, never stored: a cup run's stages from match ids and calendar slots, titles by club and nation, doubles, trebles and runs of titles from the archived champions and finals, the head-to-head with any club from every own match, appearance counts from retained match participation, and a player's Ballon d'Or wins and podium places from the archived podiums by his stable identity.
+  - derived on read, never stored: a cup run's stages from match ids and calendar slots, titles by club and nation, doubles, trebles and runs of titles from the archived champions and finals, the head-to-head with any club from every own match, and a player's Ballon d'Or wins and podium places from the archived podiums by his stable identity.
   - an appearance counts one recorded match with minutes played > 0, whether starting or coming on as a substitute (→MATCH-20). Minutes / 90 is a denominator for per-90 rates, never the appearance count; a substitute who does not play gains no appearance.
 
 - HIST-14 [o] Retain a person's linked playing, coaching and management career across role changes and clubs.
@@ -78,11 +81,18 @@
 
 - HIST-21 [o] The bought club's seasons before the takeover show in its records as its history before the owner — league finishes, cup runs and honours from the season archives (→HIST-2) — kept apart from the owner's era, whose own-club metrics (→HIST-1) start at the takeover; each season close of the owner's era also keeps the owner's record (→OWNER-17). ← fans read a club's past, and judge the owner by his own seasons
 
+- HIST-22 [o] Career totals, streaks, record maxima, player appearances/cards and current-season financial summaries are updated from newly settled facts and read without scanning older seasons.
+  - separate season-scoped counters from career counters; reset only season counters at rollover, preserving cross-season runs and career totals.
+  - repeated settlement, viewing, saving, reloading and importing never count a fact twice. Existing contributions, competition scopes and denominators stay unchanged.
+  - source matches, events and season archives remain retained under →!HIST-1/2/8; supported older careers may reconstruct missing summaries once.
+
 ## flow
 
 - Career/mediation outcomes → retained person links and commitments → fact-backed profiles, decisions and derived news.
 
+
 ## chg
+- r22 261103 HIST-11✎ regenerate on read and never store→record source-linked news once and retain across seasons with bounded publication; HIST-13✎ appearance counts derived on read→incremental retained-participation totals; HIST-22+ incremental season/career read summaries with reconstruction and duplicate protection
 - r21 261103 HIST-5✎ founding the first entry→the takeover the first entry of the owner's era; HIST-21+ pre-takeover seasons shown as the club's history before the owner, the owner's era from the takeover with the owner's season record
 - r20 261102 HIST-5✎ tactics application/refusal removed from appended facts, facts already recorded stay; HIST-11✎ owner requests removed from club events; HIST-14✎ once-per-player coaching encouragement and response removed
 - r19 261102 HIST-11✎ closed season's honours→+its Ballon d'Or podium, our player's win celebrated; HIST-13✎ +the season keeps the Ballon d'Or podium (identity, name, club, position, goals, assists, appearances, points) and a player's wins/podiums derived on read

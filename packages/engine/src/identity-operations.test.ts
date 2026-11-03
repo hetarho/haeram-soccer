@@ -9,26 +9,19 @@ import {
   type KitRole,
   type ShirtDesign,
 } from '../../contracts/src/identity';
-import type { Fixture, Founding, World } from '../../contracts/src/types';
+import type { Fixture, World } from '../../contracts/src/types';
 import { nextOwnFixture } from './calendar';
+import type { CareerInput } from './career.testkit';
 import { identityOf } from './club-identity';
-import { createWorld } from './founding';
 import { applyClubIdentity, KIT_FIXTURE_CHANGED } from './identity-operations';
 import { selectMatchKits } from './kit-selection';
 import { BANKRUPT_MESSAGE, operate } from './operations';
 import { advanceDays } from './season';
 import { pendingDecisions, stoppingReasons } from './stopping';
-import { professionalStart } from './testing';
 import { clubOf } from './world';
 
-const FOUNDING: Founding = {
-  country: 'ENG',
-  name: 'Design Town',
-  color: '#223344',
-  seed: 'identity-command',
-  level: 'normal',
-};
-/** A three-colour design in mixed-case spelling, with a primary unlike the founding colour. */
+const CAREER: CareerInput = { country: 'ENG', seed: 'identity-command' };
+/** A three-colour design in mixed-case spelling, with a primary unlike the club's colour. */
 const DESIGN: ClubIdentity = {
   version: 1,
   colours: ['#C8102e', '#FfFfFf', '#0b1f44'],
@@ -85,7 +78,7 @@ const side = (club: string, crest: AppearanceSide['crest']): AppearanceSide => (
 
 describe('applying a design to the own club (→KIT-9, KIT-13)', () => {
   it('applies a deep copied identity and primary alias', () => {
-    const w = simulatedWorld(FOUNDING);
+    const w = simulatedWorld(CAREER);
     const previous = clubOf(w).identity!;
     const before = canonical(previous);
     const identity = design();
@@ -104,7 +97,7 @@ describe('applying a design to the own club (→KIT-9, KIT-13)', () => {
   });
 
   it('applies and normalises a version-2 identity', () => {
-    const w = simulatedWorld(FOUNDING);
+    const w = simulatedWorld(CAREER);
     const before = untouched(w);
     // A draft carrying an entry that sets nothing beside real parts and a goalkeeper kit.
     const draft: ClubIdentity = {
@@ -128,20 +121,10 @@ describe('applying a design to the own club (→KIT-9, KIT-13)', () => {
     // Only a goalkeeper kit, its parts all empty: still version 2, without `parts`.
     apply(w, { ...design(), version: 2, parts: {}, goalkeeper: structuredClone(KEEPER) });
     expect(clubOf(w).identity).toEqual({ ...DESIGN, version: 2, goalkeeper: KEEPER });
-    // Founding takes the confirmed version-2 draft the same way, and refuses an invalid one.
-    const founded = createWorld({ ...FOUNDING, color: DESIGN.colours[0], identity: draft });
-    expect(clubOf(founded).identity).toEqual(own);
-    expect(() =>
-      createWorld({
-        ...FOUNDING,
-        color: DESIGN.colours[0],
-        identity: { ...design(), version: 2, parts: { away: {} } },
-      }),
-    ).toThrow('구단 디자인을 확인해');
   });
 
   it('malformed edit leaves canonical world unchanged', () => {
-    const w = simulatedWorld(FOUNDING);
+    const w = simulatedWorld(CAREER);
     const before = canonical(w);
     const malformed: unknown[] = [
       undefined,
@@ -188,7 +171,7 @@ describe('applying a design to the own club (→KIT-9, KIT-13)', () => {
   });
 
   it('changes only the own identity and colour', () => {
-    const w = simulatedWorld(FOUNDING, { rounds: 2 });
+    const w = simulatedWorld(CAREER, { rounds: 2 });
     expect(w.ownMatches.length).toBeGreaterThan(0);
     const match = w.ownMatches.at(-1)!;
     // A recorded appearance holding the own club's current crest object itself.
@@ -210,7 +193,7 @@ describe('applying a design to the own club (→KIT-9, KIT-13)', () => {
   });
 
   it('cosmetic edits preserve sporting outcomes', () => {
-    const base = simulatedWorld(FOUNDING);
+    const base = simulatedWorld(CAREER);
     const edited = structuredClone(base);
     apply(edited, design());
     expect(clubOf(edited).color).not.toBe(clubOf(base).color);
@@ -272,13 +255,12 @@ function earlierTie(w: World, kind: 'cup' | 'europe') {
 
 describe('the next-fixture kit command (→KIT-6, KIT-7)', () => {
   it('chooses for a league/cup/continental next own fixture', () => {
-    const cup = simulatedWorld(FOUNDING),
-      europe = simulatedWorld(FOUNDING);
+    const cup = simulatedWorld(CAREER),
+      europe = simulatedWorld(CAREER);
     earlierTie(cup, 'cup');
     earlierTie(europe, 'europe');
     const worlds = [
-      [simulatedWorld(FOUNDING), 'lower'],
-      [professionalStart(simulatedWorld(FOUNDING)), 'league'],
+      [simulatedWorld(CAREER), 'league'],
       [cup, 'cup'],
       [europe, 'europe'],
     ] as const;
@@ -297,7 +279,7 @@ describe('the next-fixture kit command (→KIT-6, KIT-7)', () => {
   });
 
   it('null restores automatic selection', () => {
-    const w = simulatedWorld(FOUNDING);
+    const w = simulatedWorld(CAREER);
     const league = nextOwnFixture(w)!;
     const revision = w.revision;
     choose(w, league.id, 'third');
@@ -314,7 +296,7 @@ describe('the next-fixture kit command (→KIT-6, KIT-7)', () => {
   });
 
   it('stale/missing/settled/NPC fixture leaves the world unchanged', () => {
-    const w = simulatedWorld(FOUNDING, { rounds: 2 });
+    const w = simulatedWorld(CAREER, { rounds: 2 });
     const league = nextOwnFixture(w)!;
     const settled = w.fixtures.find((f) => f.score && isOwn(w, f))!;
     const npc = w.fixtures.find((f) => !f.score && !isOwn(w, f))!;
@@ -343,7 +325,7 @@ describe('the next-fixture kit command (→KIT-6, KIT-7)', () => {
   });
 
   it('choice does not edit saved shirt designs', () => {
-    const w = simulatedWorld(FOUNDING);
+    const w = simulatedWorld(CAREER);
     const next = nextOwnFixture(w)!;
     const designs = w.clubs.map((club) => canonical(club.identity));
     const kits = clubOf(w).identity!.kits;
@@ -353,7 +335,7 @@ describe('the next-fixture kit command (→KIT-6, KIT-7)', () => {
   });
 
   it('accepts a clashing manual role without a stop; the selector warns on its own', () => {
-    const w = simulatedWorld(FOUNDING);
+    const w = simulatedWorld(CAREER);
     const next = nextOwnFixture(w)!;
     const side = next.home === w.playerClub ? 0 : 1;
     const rival = w.clubs.find((club) => club.id === (side === 0 ? next.away : next.home))!;
@@ -381,7 +363,7 @@ describe('the next-fixture kit command (→KIT-6, KIT-7)', () => {
   });
 
   it('a kit choice changes no sporting outcome', () => {
-    const base = simulatedWorld(FOUNDING);
+    const base = simulatedWorld(CAREER);
     const chosen = structuredClone(base);
     choose(chosen, nextOwnFixture(chosen)!.id, 'third');
     for (const w of [base, chosen]) advanceDays(w, 7, undefined, false);

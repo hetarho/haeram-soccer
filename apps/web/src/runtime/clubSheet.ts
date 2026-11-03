@@ -6,32 +6,10 @@ import { clubManager } from '../../../../packages/engine/src/managerMarket';
 import { facilityStage } from '../../../../packages/engine/src/club-value';
 import { stadiumCapacity } from '../../../../packages/engine/src/facility-model';
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
-import { compareIds } from '../../../../packages/engine/src/primitives';
+import { archivedFinish } from '../../../../packages/engine/src/club-past';
 
 /** Last finishes a sheet lists, newest first. */
 const SHEET_SEASONS = 5;
-
-/**
- * A club's place in its division of an archived season (→HIST-2): its row among the rows of its
- * country, division and group, by points, goal difference, goals and club ID — the order the
- * archive's tables are read in (club-value `divisionPlaces`).
- */
-function archivedFinish(w: World, standings: number[][], index: number) {
-  const row = standings.find((entry) => entry[0] === index);
-  if (!row) return undefined;
-  const code = w.clubs[index]?.country;
-  const group = standings
-    .filter((entry) => w.clubs[entry[0]!]?.country === code && entry[1] === row[1])
-    .filter((entry) => entry[2] === row[2])
-    .sort(
-      (a, b) =>
-        b[3]! - a[3]! ||
-        b[4]! - b[5]! - (a[4]! - a[5]!) ||
-        b[4]! - a[4]! ||
-        compareIds(w.clubs[a[0]!]?.id ?? '', w.clubs[b[0]!]?.id ?? ''),
-    );
-  return { division: row[1]!, place: group.indexOf(row) + 1 };
-}
 
 /**
  * The sheet of `clubId` in a world nobody owns yet (→WEB-15, ECON-38): its fielded squad, the
@@ -55,7 +33,7 @@ export function clubSheetFacts(w: World, clubId: string): ClubSheetFacts | undef
     }
     europe += season.europe.filter((entry) => entry.winner === clubId).length;
     const finish = archivedFinish(w, season.standings, index);
-    if (finish) seasons.push({ year: season.year, ...finish });
+    if (finish) seasons.push({ year: season.year, division: finish.tier, place: finish.place });
   }
   return {
     ...(club.identity ? { crest: club.identity.crest } : {}),

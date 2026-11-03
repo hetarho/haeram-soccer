@@ -1,19 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { canonical } from '../../../../packages/contracts/src/index';
 import { openEmployment } from '../../../../packages/engine/src/person-careers';
 import { personCareer } from './personCareer';
 import { Host } from './host';
 import { requestSchema } from './protocol';
 import { req, startedHost } from './host.testkit';
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Career Reads',
-    color: '#224466',
-    seed: 'career-read',
-    level: 'normal',
-  });
+const world = () => careerWorld({ country: 'ENG', seed: 'career-read' });
 const request = (id: string, person: string) => ({
   protocol: 1,
   session: 'read-career',

@@ -5,13 +5,8 @@ import type {
   MatchRecord,
   SeasonArchive,
 } from '../../../../packages/contracts/src/types';
-import { currency, priceIndex } from '../../../../packages/catalogs/src/index';
-import {
-  advanceRound,
-  closeSeason,
-  createWorld,
-  prepareSeason,
-} from '../../../../packages/engine/src/index';
+import { advanceRound, closeSeason, prepareSeason } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { cupRoute, nationName, runLine, runResult, type TieRow } from './cupRoute';
@@ -31,7 +26,7 @@ const club = (id: string, country: string): Club => ({
 const OWN = 'ENG:club';
 const clubs = [
   club(OWN, 'ENG'),
-  club('ENG:reserve:2', 'ENG'),
+  club('ENG:3:0:2', 'ENG'),
   club('ENG:1:0:3', 'ENG'),
   club('ENG:0:0:5', 'ENG'),
   club('euro:4', 'GRE'),
@@ -88,7 +83,8 @@ const season = (
 describe('our cup road', () => {
   it('reads a domestic run in playing order with tiers, scorers, xG and the shoot-out', () => {
     const standings = [
-      [at(OWN), 4, 0, 50, 40, 30],
+      [at(OWN), 3, 0, 50, 40, 30],
+      [at('ENG:3:0:2'), 3, 0, 45, 35, 30],
       [at('ENG:1:0:3'), 1, 0, 60, 50, 40],
       [at('ENG:0:0:5'), 0, 0, 70, 60, 20],
     ];
@@ -98,7 +94,7 @@ describe('our cup road', () => {
         '1987:cup:ENG:k0:4',
         5,
         OWN,
-        'ENG:reserve:2',
+        'ENG:3:0:2',
         [3, 1],
         [
           goal(58, 0, 'Arthur Brooks'),
@@ -117,12 +113,12 @@ describe('our cup road', () => {
         [goal(80, 1, 'Henry Turner'), shootout(1)],
       ),
       // Other competitions and seasons stay out of the road.
-      match('1987:ENG:4:0:3:1', 4, OWN, 'ENG:reserve:2', [5, 0]),
-      match('1986:cup:ENG:k0:1', 5, OWN, 'ENG:reserve:2', [1, 0]),
+      match('1987:ENG:3:0:3:1', 4, OWN, 'ENG:3:0:2', [5, 0]),
+      match('1986:cup:ENG:k0:1', 5, OWN, 'ENG:3:0:2', [1, 0]),
     ];
     const rows = cupRoute(w, 1987, 'cup', { season: season([], standings), matches }) as TieRow[];
     expect(rows.map((row) => [row.label, row.opponent, row.tag, row.result, row.decided])).toEqual([
-      ['1라운드', 'ENG:reserve:2', '아마추어', '진출', undefined],
+      ['1라운드', 'ENG:3:0:2', '4부', '진출', undefined],
       ['64강', 'ENG:1:0:3', '2부', '진출', '승부차기 승'],
       ['32강', 'ENG:0:0:5', '1부', '탈락', undefined],
     ]);
@@ -306,21 +302,10 @@ describe('our cup road', () => {
   it('agrees with the archived runs of a played 1980 season, the Cup Winners Cup included', () => {
     // Played on the pre-feature path: the cup route, not the match model, is the subject.
     const world = cachedWorld('eng-1980-closed', () => {
-      const world = createWorld(
-        {
-          country: 'ENG',
-          name: 'Route Rovers',
-          color: '#2a4d3a',
-          seed: 'cup-route',
-          level: 'normal' as const,
-        },
+      const world = careerWorld(
+        { country: 'ENG', seed: 'cup-route', year: 1980 },
         DISABLED_RELEASE,
       );
-      world.year = 1980;
-      world.currency = currency('ENG', 1980).code;
-      world.priceIndex = priceIndex('ENG', 1980).value;
-      world.manager.until = 1983;
-      for (const p of world.players) p.until = 1982;
       // Last season's cup winners enter the Cup Winners Cup.
       world.lastChampions = [{ country: 'ENG', club: 'ENG:0:0:0', cup: world.playerClub }];
       prepareSeason(world);

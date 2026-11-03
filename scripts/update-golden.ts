@@ -1,19 +1,15 @@
 import { writeFileSync } from 'node:fs';
 import { ENGINE_VERSION } from '../packages/engine/src/world';
 import { CATALOG_VERSION } from '../packages/catalogs/src/index';
-import { runFixture, type FixtureDefinition } from '../tests/fixtures/run';
+import { fixtureCareer, runFixture, type FixtureDefinition } from '../tests/fixtures/run';
 if (!process.argv.includes('--write'))
   throw new Error('Use --write only after reviewing intentional engine/catalog changes');
-const input = {
-  country: 'ENG' as const,
-  name: 'Synthetic Archives',
-  color: '#234a31',
-  seed: 'portable-release-1',
-  level: 'easy' as const,
-};
+const input = { country: 'ENG' as const, seed: 'portable-release-1' };
+// The squad member the staff propose as a playing coach (`run.ts`'s staff-playing-coach setup).
+const playingCoach = fixtureCareer({ input }).players[6]!.id;
 const definitions: FixtureDefinition[] = [
   {
-    name: 'founding-and-commercial-decisions',
+    name: 'takeover-and-commercial-decisions',
     input,
     policy: { localInvest: 3 },
     commands: [
@@ -65,7 +61,7 @@ const definitions: FixtureDefinition[] = [
     input,
     currentRules: true,
     setup: 'staff-playing-coach',
-    commands: [{ type: 'answer-playing-coach', player: 'ENG:club:founder:6', accept: true }],
+    commands: [{ type: 'answer-playing-coach', player: playingCoach, accept: true }],
   },
   {
     name: 'financial-mediation-fixed-reinforcement-promise',

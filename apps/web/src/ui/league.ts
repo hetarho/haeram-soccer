@@ -27,10 +27,6 @@ export interface LeagueRound {
 
 export function ownLeagueIds(w: World): string[] {
   const own = w.clubs.find((c) => c.id === w.playerClub)!;
-  if (w.lower)
-    return [
-      ...new Set(w.fixtures.filter((f) => f.kind === 'lower').flatMap((f) => [f.home, f.away])),
-    ];
   return w.clubs
     .filter(
       (c) =>
@@ -43,8 +39,8 @@ export function ownLeagueIds(w: World): string[] {
 }
 
 /**
- * The clubs a club shares a league table with this season: ours (the amateur league while we play
- * in it), else its professional division. Representatives outside our league play in none.
+ * The clubs a club shares a league table with this season: its division, or its group.
+ * Continental representatives play in none.
  */
 export function leagueOf(w: World, club: Club): string[] {
   const own = ownLeagueIds(w);
@@ -75,8 +71,7 @@ export const ABROAD: Record<string, string> = {
 };
 /**
  * Where a club plays as a fan would say it: "2부" at home, "독일 1부" or "이탈리아 3부 B조"
- * abroad, "아마추어 리그" below the professional game and "해외 클럽 · 그리스" for continental
- * representatives.
+ * abroad and "해외 클럽 · 그리스" for continental representatives.
  */
 export function clubDivision(w: World, club: Club) {
   const profile = COUNTRIES.find((c) => c.code === club.country);
@@ -113,7 +108,7 @@ export function ownLeague(w: World): LeagueChoice {
 }
 export const sameLeague = (a: LeagueChoice, b: LeagueChoice) =>
   a.code === b.code && a.tier === b.tier && a.group === b.group;
-/** The clubs of a league this season; without a choice, the own league (amateur one included). */
+/** The clubs of a league this season; without a choice, the own league. */
 export function leagueIds(w: World, league?: LeagueChoice): string[] {
   if (!league || sameLeague(league, ownLeague(w))) return ownLeagueIds(w);
   return w.clubs
@@ -138,11 +133,7 @@ export function parseLeague(value: string | null): LeagueChoice | undefined {
 export function leagueFixtures(w: World, ids: string[]): Fixture[] {
   const clubs = new Set(ids);
   return w.fixtures.filter(
-    (f) =>
-      f.year === w.year &&
-      (f.kind === 'league' || f.kind === 'lower') &&
-      clubs.has(f.home) &&
-      clubs.has(f.away),
+    (f) => f.year === w.year && f.kind === 'league' && clubs.has(f.home) && clubs.has(f.away),
   );
 }
 
@@ -400,38 +391,22 @@ export function leagueOverviewModel(w: World) {
 }
 
 /**
- * The promotion and relegation places of a division under its country's rules: `tier` beyond the
- * professional divisions is the amateur league.
+ * The promotion and relegation places of a division under its country's rules; the last division
+ * relegates nobody (→LEAGUE-16).
  */
 export function divisionRules(code: string, tier: number) {
-  const cp = country(code),
-    lower = tier >= cp.groups.length;
+  const cp = country(code);
   const regional = (cp.groups[tier]?.length || 0) > 1;
-  // The amateur league fills the places its exchange opens (two per last-division group): all
-  // but the last by rank, the last by a play-off of the next four (→LEAGUE-6).
-  const automatic = lower
-    ? 2 * cp.groups[cp.groups.length - 1].length - 1
-    : tier === 0
-      ? 0
-      : regional
-        ? 1
-        : cp.automatic[tier - 1];
-  const playoff = lower
-    ? 4
-    : tier > 0 && cp.moves[tier - 1] > cp.automatic[tier - 1]
-      ? regional
-        ? 3
-        : 4
-      : 0;
-  const relegation = lower ? 0 : cp.moves[tier] || 2;
-  return { automatic, playoff, relegation, lower, cp };
+  const automatic = tier === 0 ? 0 : regional ? 1 : cp.automatic[tier - 1];
+  const playoff = tier > 0 && cp.moves[tier - 1] > cp.automatic[tier - 1] ? (regional ? 3 : 4) : 0;
+  const relegation = cp.moves[tier] ?? 0;
+  return { automatic, playoff, relegation, cp };
 }
 
 export type Zone = 'automatic' | 'playoff' | 'relegation';
 /**
  * The places of a table of `clubs` rows, live or closed, under the rules of the division it is
- * played in (for a closed season, not the tier the club plays in today). `lower` marks the
- * amateur league, whose top place goes up into the professional game.
+ * played in (for a closed season, not the tier the club plays in today).
  */
 export function finalZones(code: string, tier: number, clubs: number) {
   const rules = divisionRules(code, tier);
@@ -444,7 +419,7 @@ export function finalZones(code: string, tier: number, clubs: number) {
           ? 'relegation'
           : undefined,
   );
-  return { zones, lower: rules.lower };
+  return { zones };
 }
 
 export function leagueRules(w: World, ids: string[]) {

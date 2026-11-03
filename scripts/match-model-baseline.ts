@@ -33,18 +33,12 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { arch, cpus, loadavg, platform, totalmem } from 'node:os';
 import { dirname } from 'node:path';
-import type {
-  Fixture,
-  Founding,
-  MatchPlayback,
-  MatchRecord,
-  World,
-} from '../packages/contracts/src/types';
+import type { Fixture, MatchPlayback, MatchRecord, World } from '../packages/contracts/src/types';
 import * as engine from '../packages/engine/src/index';
+import { careerWorld, type CareerInput } from '../packages/engine/src/career.testkit';
 import {
   advanceRound,
   clubOf,
-  createWorld,
   isScoringFixture,
   managerCandidates,
   nextWork,
@@ -293,14 +287,8 @@ console.error(`match-model baseline (${settings.mode}): source ${source.sha256.s
 // ---- Isolated fixtures and settlement on the century baseline world --------------------------------
 // The pre-feature path careers founded before the release keep; the candidate path is measured
 // on the same world through `simulateAggregate` and on a copy carrying the model.
-const world = createWorld(
-  {
-    country: 'ENG',
-    name: 'Century Athletic',
-    color: '#284e35',
-    seed: PERFORMANCE_CONFIG.profiles.baseline,
-    level: 'easy',
-  },
+const world = careerWorld(
+  { country: 'ENG', seed: PERFORMANCE_CONFIG.profiles.baseline },
   DISABLED_RELEASE,
 );
 const ordered = [...world.fixtures].sort((a, b) => a.round - b.round || (a.id < b.id ? -1 : 1));
@@ -488,14 +476,8 @@ function manage(w: World, season: number) {
 }
 const seasons: Record<string, unknown>[] = [];
 for (const [profile, seed] of Object.entries(PERFORMANCE_CONFIG.profiles)) {
-  const founded = createWorld(
-    {
-      country: 'ENG',
-      name: profile === 'baseline' ? 'Century Athletic' : 'Century Cooperative',
-      color: '#284e35',
-      seed,
-      level: 'easy',
-    },
+  const founded = careerWorld(
+    { country: 'ENG', seed },
     candidateModel ? ENABLED_RELEASE : DISABLED_RELEASE,
   );
   // The candidate model from founding: complete statistics tracked from the first day.
@@ -551,7 +533,7 @@ for (const [profile, seed] of Object.entries(PERFORMANCE_CONFIG.profiles)) {
 // ---- Pilot parity sample of the core condition --------------------------------------------------------
 const params = core.params as {
   worldSeeds: string[];
-  world: Omit<Founding, 'seed'>;
+  world: Omit<CareerInput, 'seed'>;
   countries: string[];
   maxRatingGap: number;
   pairing: string;
@@ -561,7 +543,7 @@ const params = core.params as {
 if (params.pairing !== 'world-country-roster' || params.tactics !== 'club')
   throw new Error(`the runner builds only world-country-roster pairs playing their clubs' tactics`);
 const pairs = params.worldSeeds.flatMap((seed) => {
-  const w = createWorld({ ...params.world, seed }, DISABLED_RELEASE);
+  const w = careerWorld({ ...params.world, seed }, DISABLED_RELEASE);
   return params.countries.flatMap((country) => {
     const clubs = w.clubs
       .filter((c) => c.country === country && c.tier === 0 && c.id !== w.playerClub)

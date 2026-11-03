@@ -1,16 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { Command } from '../../../../packages/contracts/src/types';
-import { createWorld, operate } from '../../../../packages/engine/src/index';
+import { operate } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import type { GameClient } from '../runtime/client';
 import { applyResponsibilitySettings, decisionOwner, RESPONSIBILITY_LABELS } from './intervention';
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Responsibility Town',
-    color: '#225588',
-    seed: 'intervention',
-    level: 'normal',
-  });
+const world = () => careerWorld({ country: 'ENG', seed: 'intervention' });
 describe('central business responsibility presentation', () => {
   it('labels exactly seven decisions and distinguishes acquisition from sale authority', () => {
     const w = world();

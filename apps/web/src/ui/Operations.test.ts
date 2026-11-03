@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ClientState, GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
-import { createWorld } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { OperationsView } from './Operations';
 
 vi.mock('./OfficeBar', () => ({
@@ -17,13 +17,7 @@ vi.mock('./FacilityOverview', () => ({
 
 afterEach(() => vi.unstubAllGlobals());
 
-const world = createWorld({
-  name: 'Overview Address',
-  country: 'ENG',
-  color: '#224466',
-  seed: 'overview-address',
-  level: 'easy',
-});
+const world = careerWorld({ country: 'ENG', seed: 'overview-address' });
 const office = () =>
   renderToStaticMarkup(
     createElement(OperationsView, {

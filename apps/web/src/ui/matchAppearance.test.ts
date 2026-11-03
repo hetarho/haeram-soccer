@@ -4,7 +4,8 @@ import { canonical } from '../../../../packages/contracts/src/index';
 import type { ClubIdentity, MatchAppearance } from '../../../../packages/contracts/src/identity';
 import type { PlayerMotion, PlayerMotionState } from '../../../../packages/contracts/src/types';
 import { identityOf } from '../../../../packages/engine/src/club-identity';
-import { createWorld, simulateMatch } from '../../../../packages/engine/src/index';
+import { simulateMatch } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { applyClubIdentity } from '../../../../packages/engine/src/identity-operations';
 import {
   keepersBySample,
@@ -15,16 +16,10 @@ import {
   type PresentedSample,
 } from './matchAppearance';
 
-const FOUNDING = {
-  country: 'ENG',
-  name: 'Look Town',
-  color: '#223344',
-  seed: 'match-look',
-  level: 'normal',
-} as const;
-/** A founding after one round: its own match settled with a recorded appearance. */
+const CAREER = { country: 'ENG', seed: 'match-look' } as const;
+/** A career after one round: its own match settled with a recorded appearance. */
 const played = () => {
-  const w = simulatedWorld(FOUNDING, { rounds: 1 });
+  const w = simulatedWorld(CAREER, { rounds: 1 });
   const record = w.ownMatches.at(-1)!;
   expect(record.appearance).toBeDefined();
   return { w, record };
@@ -252,7 +247,7 @@ describe('the actual keeper in each sample (→KIT-8)', () => {
   });
 
   it('finds a keeper on the pitch in every sample of a real observed match', () => {
-    const w = createWorld({ ...FOUNDING, seed: 'match-look-keepers' });
+    const w = careerWorld({ ...CAREER, seed: 'match-look-keepers' });
     const playback = simulateMatch(
       w,
       w.fixtures.find((f) => f.home === w.playerClub)!,

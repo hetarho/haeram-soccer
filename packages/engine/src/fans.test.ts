@@ -75,10 +75,9 @@ describe('supporters follow reputation, not the stadium', () => {
   it('sizes the catchment by division, stature and country', () => {
     const w = world(),
       club = clubOf(w);
-    const sizes = [0, 1, 2, 3, 4].map((tier) => catchment(w, { ...club, tier }));
+    // England's four divisions, each smaller than the one above (→ECON-9).
+    const sizes = [0, 1, 2, 3].map((tier) => catchment(w, { ...club, tier }));
     for (let i = 1; i < sizes.length; i++) expect(sizes[i]).toBeLessThan(sizes[i - 1]);
-    // The amateur league holds a few thousand at most (→ECON-9: 0.3–2k gates).
-    expect(sizes[4]).toBeLessThan(5_000);
     const top = w.clubs.filter((c) => c.country === 'ENG' && c.tier === 0 && !c.representative);
     const giant = top.reduce((a, b) => (stature(w.seed, a.id) >= stature(w.seed, b.id) ? a : b));
     const small = top.reduce((a, b) => (stature(w.seed, a.id) <= stature(w.seed, b.id) ? a : b));

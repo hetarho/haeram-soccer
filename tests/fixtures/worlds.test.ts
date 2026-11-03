@@ -1,21 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { advanceRound, createWorld, MATCH_MODEL_RELEASE } from '../../packages/engine/src/index';
+import { advanceRound, MATCH_MODEL_RELEASE } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { canonical } from '../../packages/contracts/src/index';
 import { cachedWorld } from './cached-world';
 import { DISABLED_RELEASE, ENABLED_RELEASE } from './releases';
 import { simulatedWorld } from './worlds';
 
-const input = {
-  country: 'ENG',
-  name: 'Cached World',
-  color: '#224466',
-  seed: 'cached-world',
-  level: 'normal',
-} as const;
+const input = { country: 'ENG', seed: 'cached-world' } as const;
 
 describe('shared test worlds', () => {
   it('gives the world the inline calls give, as a fresh copy each time', () => {
-    const direct = createWorld(input);
+    const direct = careerWorld(input);
     for (let n = 0; n < 2; n++) advanceRound(direct, undefined, false);
     const a = simulatedWorld(input, { rounds: 2 }),
       b = simulatedWorld(input, { rounds: 2 });
@@ -51,7 +46,7 @@ describe('shared test worlds', () => {
     try {
       for (const enabled of [initial, !initial, initial]) {
         release.enabled = enabled;
-        const founded = cachedWorld('default-release', () => createWorld(input));
+        const founded = cachedWorld('default-release', () => careerWorld(input));
         expect(founded.matchModel !== undefined).toBe(enabled);
       }
     } finally {

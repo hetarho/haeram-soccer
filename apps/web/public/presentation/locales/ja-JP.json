@@ -20,7 +20,6 @@
     "shell.fortune": "オーナー資産",
     "shell.fortuneDetails": "オーナー資産 {amount} · オーナー情報を見る",
     "shell.owner": "オーナー",
-    "shell.amateurLeague": "アマチュアリーグ",
     "shell.division": "{division}部",
     "shell.readonly": "読み取り専用",
     "shell.readonlyNotice": "別のタブでプレイ中です。このタブは読み取り専用です。",

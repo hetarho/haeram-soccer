@@ -5,7 +5,8 @@ import { describeShirt } from '../../apps/web/src/ui/kitPainting';
 import { UNRECORDED_LOOK } from '../../apps/web/src/ui/matchAppearance';
 import type { ShirtDesign } from '../../packages/contracts/src/identity';
 import { applyClubIdentity } from '../../packages/engine/src/identity-operations';
-import { createWorld, identityOf, nextOwnFixture, operate } from '../../packages/engine/src/index';
+import { identityOf, nextOwnFixture, operate } from '../../packages/engine/src/index';
+import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { colourDistance } from '../../packages/engine/src/identity-legacy';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import { colourArea, torsoShare, wornFigures, type CanvasImage } from '../fixtures/figure-evidence';
@@ -54,13 +55,7 @@ const figures = async (page: Page, shirt: ShirtDesign) => wornFigures(await fram
 
 /** A new career that wears STRIPES against CHECKS in its first fixture, chosen and saved as owner decisions. */
 function observedCareer() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Kit Town',
-    color: '#bf7956',
-    seed: 'kit-observe',
-    level: 'easy',
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'kit-observe' });
   Object.assign(w.settings!.responsibilities, ALL_DELEGATED);
   const own = identityOf(w, w.playerClub);
   // The own club wears STRIPES at home, applied as an adopted designer draft is (→KIT-9).
@@ -157,13 +152,7 @@ test('a design adopted while the match is paused mid-match leaves its recorded s
 test('an old imported record says 유니폼 미기록 and never draws today’s design', async ({
   page,
 }) => {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Kit Town',
-    color: '#bf7956',
-    seed: 'kit-legacy',
-    level: 'easy',
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'kit-legacy' });
   Object.assign(w.settings!.responsibilities, ALL_DELEGATED);
   advanceToNextMatch(w);
   // Recorded before kits were: the snapshot is absent, as in an older career.

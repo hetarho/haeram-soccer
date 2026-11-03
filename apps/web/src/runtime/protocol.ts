@@ -30,6 +30,7 @@ import {
   WEALTH_TIER_IDS,
   type ClubListing,
   type ClubSheetFacts,
+  type PreOwnerSeason,
 } from '../../../../packages/contracts/src/owner';
 import {
   designStudioSchema,
@@ -307,6 +308,11 @@ export interface View {
    * cannot rank; absent from views made before it.
    */
   transferLedger?: TransferLedgerEntry[];
+  /**
+   * The bought club's seasons before the takeover (→HIST-21), read from the archived standings and
+   * brackets the projected world leaves out; absent in a founded career.
+   */
+  preOwner?: PreOwnerSeason[];
 }
 /**
  * Published views each side keeps, so a reply can still name the base a client holds after a

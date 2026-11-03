@@ -1,15 +1,10 @@
 import { expect, it } from 'vitest';
-import { createWorld, nextOwnFixture, simulateMatch } from '../../../../packages/engine/src/index';
+import { nextOwnFixture, simulateMatch } from '../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { fixtureDay } from '../../../../packages/engine/src/calendar';
 import { ownSeasonFixtures } from './fixtures';
 it('merges settled records once, excludes other clubs/seasons and keeps real calendar ordering', () => {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Fixtures',
-    color: '#24664f',
-    seed: 'fixtures',
-    level: 'easy' as const,
-  });
+  const w = careerWorld({ country: 'ENG', seed: 'fixtures' });
   const next = nextOwnFixture(w)!;
   const record = simulateMatch(w, next, false, true).record;
   const initial = ownSeasonFixtures(w).length;

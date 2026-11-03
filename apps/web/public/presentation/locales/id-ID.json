@@ -20,7 +20,6 @@
     "shell.fortune": "Kekayaan pemilik",
     "shell.fortuneDetails": "Kekayaan pemilik {amount} · Lihat pemilik",
     "shell.owner": "Pemilik",
-    "shell.amateurLeague": "Liga amatir",
     "shell.division": "Divisi {division}",
     "shell.readonly": "Hanya baca",
     "shell.readonlyNotice": "Gim sedang dimainkan di tab lain. Tab ini hanya untuk membaca.",

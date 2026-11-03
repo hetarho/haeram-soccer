@@ -5,7 +5,7 @@
  *   pnpm exec tsx scripts/day-bench.ts [--country ENG] [--seed perf-261027] [--matches 5]
  *     [--tree <checkout>] [--json out.json]
  *
- * Plays a fresh 1950 founding of `--country` day by day exactly as automatic play does
+ * Plays a fresh 1950 takeover in `--country` day by day exactly as automatic play does
  * (`advanceDays(w, 1, undefined, false)`), times every day, and stops after the first own match
  * day (the JIT warm-up, dropped) plus `--matches` measured own match days. Prints per-kind medians
  * (own match days, other days that still take ≥ 50 ms, quiet days) and a sha256 of the canonical
@@ -34,6 +34,10 @@ if (!Number.isInteger(matches) || matches < 1)
 
 const engine = await import(pathToFileURL(join(tree, 'packages/engine/src/index.ts')).href);
 const contracts = await import(pathToFileURL(join(tree, 'packages/contracts/src/index.ts')).href);
+// The tree's own test career (T670); a tree before it has none, so it needs its own day-bench.
+const career = await import(
+  pathToFileURL(join(tree, 'packages/engine/src/career.testkit.ts')).href
+);
 
 const median = (xs: number[]) => {
   if (!xs.length) return NaN;
@@ -42,10 +46,7 @@ const median = (xs: number[]) => {
 };
 const r1 = (x: number) => Number(x.toFixed(1));
 
-const w = engine.createWorld(
-  { country, name: 'Perf Town', color: '#284e35', seed, level: 'easy' },
-  engine.MATCH_MODEL_RELEASE,
-);
+const w = career.careerWorld({ country, seed }, engine.MATCH_MODEL_RELEASE);
 const own: number[] = [];
 const busy: number[] = []; // days without our match that still take ≥ 50 ms (other fixtures)
 const quiet: number[] = [];

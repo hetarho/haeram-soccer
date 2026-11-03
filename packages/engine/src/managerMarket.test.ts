@@ -1,12 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import type {
-  Founding,
-  Manager,
-  ManagerStyle,
-  ManagerTrait,
-  World,
-} from '../../contracts/src/types';
+import type { Manager, ManagerStyle, ManagerTrait, World } from '../../contracts/src/types';
 import {
   advanceRound,
   clubManager,
@@ -38,15 +32,9 @@ import { ratio } from './primitives';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
-import { careerWorld } from './career.testkit';
+import { careerWorld, type CareerInput } from './career.testkit';
 
-const founding = (seed: string): Founding => ({
-  country: 'ENG',
-  name: 'Market FC',
-  color: '#334455',
-  seed,
-  level: 'easy' as const,
-});
+const founding = (seed: string): CareerInput => ({ country: 'ENG', seed });
 /** The club on the pre-feature path: the manager market, not the match model, is the subject. */
 const world = (seed = 'market') => simulatedWorld(founding(seed), {}, DISABLED_RELEASE);
 

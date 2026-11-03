@@ -60,7 +60,7 @@ export const cardCounts = perOwnMatches((w: Matches) => {
 export const leagueReds = perOwnMatches((w: Matches) => {
   const reds: Record<string, number> = {};
   for (const m of w.ownMatches)
-    if (m.year === w.year && (m.kind === 'league' || m.kind === 'lower'))
+    if (m.year === w.year && m.kind === 'league')
       for (const incident of m.incidents ?? [])
         if (card(incident.kind)?.[1]) reds[incident.player] = (reds[incident.player] ?? 0) + 1;
   return reds;

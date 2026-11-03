@@ -45,17 +45,7 @@ async function saved(engine: string) {
   // Earlier rules never recorded the match model or tracked manager history, so their
   // checkpoints use the old containers.
   const w = withoutManagerHistory(
-    simulatedWorld(
-      {
-        country: 'ENG',
-        name: 'Legacy',
-        color: '#123456',
-        seed: 'reset',
-        level: 'easy',
-      },
-      {},
-      DISABLED_RELEASE,
-    ),
+    simulatedWorld({ country: 'ENG', seed: 'reset' }, {}, DISABLED_RELEASE),
   );
   w.engine = engine;
   return encode(w);
@@ -272,13 +262,8 @@ it('unknown envelope never grants legacy reset permission', async () => {
 it('clears a founded rules-4.0.0-line career in its match-model and manager-history containers (→SAVE-26)', async () => {
   // A 0.7.0 career and one still labelled 4.0.0, as they were written: the full match model and
   // the managers' history, in the containers only that line wrote among earlier rules.
-  const founded = simulatedWorld({
-    country: 'ENG',
-    name: 'Founded',
-    color: '#123456',
-    seed: 'rules-four',
-    level: 'easy',
-  });
+  // Today's career relabelled, its containers the ones that line wrote.
+  const founded = simulatedWorld({ country: 'ENG', seed: 'rules-four' });
   for (const engine of ['0.7.0', '4.0.0']) {
     const raw = await encode({ ...structuredClone(founded), engine });
     expect(JSON.parse(raw).schema).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
