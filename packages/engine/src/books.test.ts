@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import type { Club, World } from '../../contracts/src/types';
 import { currency } from '../../catalogs/src/index';
+import { fanFollowing } from './fans';
 import {
+  bookIncomeLines,
   booksClose,
   booksOpen,
   clearDebt,
@@ -168,6 +170,24 @@ describe('season books of clubs nobody owns (→ECON-36)', () => {
     booksClose(career);
     expect(career.clubs.find((c) => c.id === career.playerClub)!.books).toBeUndefined();
     expect(career.clubs.filter((c) => c.books).length).toBeGreaterThan(0);
+  });
+
+  it('reads the following its reputation commands, never the stored founding figure (→CLUB-1)', () => {
+    const w = world();
+    const top = club(w, 'ENG', 0);
+    w.clubs = [top];
+    w.fixtures = w.fixtures.filter((f) => f.home === top.id || f.away === top.id);
+    const lines = (fans: number) => {
+      top.fans = fans;
+      return bookIncomeLines(w, top);
+    };
+    const stale = lines(800),
+      followed = lines(fanFollowing(top.reputation));
+    expect(lines(5_000_000)).toEqual(followed);
+    expect(stale).toEqual(followed);
+    // A top club's following fills more seats and draws better sponsors than its founding figure.
+    expect(followed.gate).toBeGreaterThan(0n);
+    expect(fanFollowing(top.reputation)).toBeGreaterThan(18_000);
   });
 
   it('reads a club nobody owns at its division and stature facility stage (→CLUB-1)', () => {

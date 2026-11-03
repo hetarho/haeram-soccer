@@ -20,7 +20,7 @@ import { marketWageAt } from './market-prices';
 import { ranked } from './season';
 import { groupKey } from './league-fixtures';
 import { squad } from './world';
-import { facilityStage } from './club-value';
+import { clubFollowing, facilityStage } from './club-value';
 import { DEFAULT_TICKET } from './presets';
 import { ratio, scaleBy } from './primitives';
 import { seasonAfter } from './wartime';
@@ -135,12 +135,23 @@ function seasonBook(w: World, club: Club, books: ClubBooks, season: SeasonIndex)
 
 /** Opening cash and closing books use exactly the same season-income scales. */
 function seasonIncome(w: World, club: Club, tierBefore: number | undefined, season: SeasonIndex) {
+  const lines = incomeLines(w, club, tierBefore, season);
+  return lines.distribution + lines.gate + lines.commercial;
+}
+function incomeLines(w: World, club: Club, tierBefore: number | undefined, season: SeasonIndex) {
   const view = clubView(w, club, season.fixtures.get(club.id) ?? []);
-  return (
-    distribution(view, club, tierBefore, season.leagues.get(groupKey(club))!) +
-    gateIncome(view, club) +
-    commercial(view)
-  );
+  return {
+    distribution: distribution(view, club, tierBefore, season.leagues.get(groupKey(club))!),
+    gate: gateIncome(view, club),
+    commercial: commercial(view),
+  };
+}
+/**
+ * The income lines a book would settle for `club` this season (→ECON-36), read for measuring the
+ * books against an owned club's own season; nothing is written.
+ */
+export function bookIncomeLines(w: World, club: Club, tierBefore?: number) {
+  return incomeLines(w, club, tierBefore, seasonIndex(w));
 }
 
 /**
@@ -148,12 +159,17 @@ function seasonIncome(w: World, club: Club, tierBefore: number | undefined, seas
  * owner's place, at the default ticket price, at its facility stage (→ECON-38, CLUB-1), with no
  * squad, history, campaign, sponsor, policy or build of its own, so every own-club setting is at
  * its neutral default and every number comes from the owner's functions. Its fixtures are the
- * club's own, all the owner's functions read of them.
+ * club's own, all the owner's functions read of them. Its supporters are the following its
+ * reputation commands, as a buyer takes them over (→CLUB-1, ECON-37): the stored following of a
+ * club nobody owns is its founding figure, never moved, and left a top club's book a quarter to a
+ * third of the gate and about half the commercial income it earns once bought (T686).
  */
 function clubView(w: World, club: Club, fixtures: Fixture[]): World {
   const { stadium } = facilityStage(w, club);
+  const fans = clubFollowing(w, club);
   return {
     ...w,
+    clubs: fans === club.fans ? w.clubs : w.clubs.map((c) => (c === club ? { ...c, fans } : c)),
     fixtures,
     playerClub: club.id,
     ticket: DEFAULT_TICKET,
