@@ -2,12 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
 import { LOAD_CATALOG } from '../../packages/catalogs/src/index';
 import { canonical, validateWorld } from '../../packages/contracts/src/index';
-import {
-  CREST_PALETTE,
-  CREST_PRESETS,
-  KIT_ROLES,
-  SHIRT_PATTERNS,
-} from '../../packages/contracts/src/identity';
+import { CREST_PALETTE, KIT_ROLES, SHIRT_PATTERNS } from '../../packages/contracts/src/identity';
 import { clubIdentitySchema } from '../../packages/contracts/src/identitySchema';
 import type { Founding, World } from '../../packages/contracts/src/types';
 import { advanceRound, clubOf } from '../../packages/engine/src/index';
@@ -16,6 +11,7 @@ import {
   assertAppearancesUnchanged,
   assertConsumedChoice,
   assertPendingChoice,
+  CREST_COMPOSITIONS,
   identityWorkload,
   recordedAppearances,
   seasonIdentity,
@@ -143,7 +139,7 @@ describe('identity workload is deterministic', () => {
       );
     expect(
       new Set(cycle.map(({ crest }) => `${crest.shape}/${crest.pattern}/${crest.emblem}`)),
-    ).toEqual(new Set(CREST_PRESETS.map((p) => `${p.shape}/${p.pattern}/${p.emblem}`)));
+    ).toEqual(new Set(CREST_COMPOSITIONS.map((p) => `${p.shape}/${p.pattern}/${p.emblem}`)));
     expect(cycle.slice(0, 3).map((design) => design.colours.length)).toEqual([1, 2, 3]);
     // 24 palette colours, 14 patterns, 6 compositions and 3 colour counts meet again at 168.
     expect(canonical(seasonIdentity(168))).toBe(canonical(designs[0]));

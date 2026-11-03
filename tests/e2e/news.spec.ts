@@ -117,7 +117,7 @@ test('celebrates in one lower line, with headlines collected in the clock news b
   await newsButton(page).click();
   const sheet = page.getByRole('dialog', { name: '알림·뉴스', exact: true });
   await sheet.getByRole('tab', { name: /^뉴스/ }).click();
-  await expect(sheet).toContainText('창단 첫 공식전 승리');
+  await expect(sheet).toContainText('인수 후 첫 공식전 승리');
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(newsButton(page)).toHaveAttribute('aria-label', /^알림·뉴스/);
 });

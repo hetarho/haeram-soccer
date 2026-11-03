@@ -10,7 +10,6 @@ import { clubManager } from '../../../../packages/engine/src/managerMarket';
 import { nextEventDays } from '../../../../packages/engine/src/next-event';
 import { stoppingReasons } from '../../../../packages/engine/src/stopping';
 import {
-  createWorld,
   advanceRound,
   advanceDays,
   prepareRound,
@@ -511,7 +510,7 @@ export class Host {
         if (!sheet) throw new Error('인수할 수 없는 구단입니다.');
         return { requestId: request.requestId, ok: true, clubSheet: sheet };
       }
-      if (!w) throw new Error('먼저 클럽을 창단하세요.');
+      if (!w) throw new Error('먼저 구단을 인수하세요.');
       if (body.type === 'world-market')
         return {
           requestId: request.requestId,
@@ -602,7 +601,7 @@ export class Host {
    */
   private save(r: Request): Reply {
     const w = this.world;
-    if (!w) throw new Error('먼저 클럽을 창단하세요.');
+    if (!w) throw new Error('먼저 구단을 인수하세요.');
     if (!this.codec) throw new Error('저장 Worker가 연결되지 않았습니다.');
     this.codec.postMessage({
       id: r.requestId,
@@ -659,11 +658,6 @@ export class Host {
         if (r.body.activate) this.world = activated;
         if (upgraded) raw = await encode(activated, r.generation, r.parentGeneration);
         envelope = result.envelope;
-      } else if (r.body.type === 'found') {
-        if (this.world && !r.body.replace)
-          throw new Error('현재 세계가 있습니다. 파일 내보내기 후 새 게임을 시작하세요.');
-        this.world = createWorld(r.body.input, this.release);
-        changed = true;
       } else if (r.body.type === 'generate') {
         if (this.world && !r.body.replace)
           throw new Error('현재 세계가 있습니다. 파일 내보내기 후 새 게임을 시작하세요.');
@@ -697,7 +691,7 @@ export class Host {
         changed = true;
       } else {
         const w = this.world;
-        if (!w) throw new Error('먼저 클럽을 창단하세요.');
+        if (!w) throw new Error('먼저 구단을 인수하세요.');
         if (r.body.type === 'command') {
           const cmd = r.body.command;
           // Only the inbox can be read once the career has ended (→OWNER-16, ECON-24).

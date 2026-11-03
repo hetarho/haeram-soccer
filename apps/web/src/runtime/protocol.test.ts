@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { BUILD_PRESETS } from '../../../../packages/engine/src/build';
 import { KIT_ROLES } from '../../../../packages/contracts/src/identity';
-import { createIdentityDraft } from '../../../../packages/engine/src/club-identity';
+import { identityOf } from '../../../../packages/engine/src/club-identity';
 import { MATCH_MODEL_REVISION } from '../../../../packages/contracts/src/match-model';
-import type { World } from '../../../../packages/contracts/src/types';
+import type { Club, World } from '../../../../packages/contracts/src/types';
 import {
   CURRENT_ENGINE_VERSION,
   isSaveCompatibilityError,
@@ -30,8 +30,8 @@ const request = (body: unknown) => ({
 });
 
 describe('the worker protocol (→ECON-25, WEB-15)', () => {
-  it('refuses every command that would change the direction after founding', () => {
-    // Cards, dials, the ticket price and direction rows stay as founded (→ECON-16/17/22/25).
+  it('refuses every command that would change the direction after the takeover', () => {
+    // Cards, dials, the ticket price and direction rows stay as chosen (→ECON-16/17/22/25).
     for (const command of [
       { type: 'build', build: { youth: 'elite' } },
       { type: 'policy', key: 'globalMarketing', level: 5 },
@@ -44,29 +44,34 @@ describe('the worker protocol (→ECON-25, WEB-15)', () => {
       ).toBe(false);
   });
 
-  it('founds with any preset as the direction, or none', () => {
-    const found = (preset?: string) =>
+  it('takes a club over with any preset as the direction, or none', () => {
+    const takeOver = (preset?: string) =>
       requestSchema.safeParse(
         request({
-          type: 'found',
-          input: {
-            country: 'ENG',
-            name: 'Club',
-            color: '#224466',
-            seed: 'seed',
-            level: 'easy' as const,
-            ...(preset !== undefined ? { preset } : {}),
-          },
+          type: 'take-over',
+          clubId: 'ENG:club',
+          ...(preset !== undefined ? { preset } : {}),
         }),
       ).success;
-    expect(found()).toBe(true);
-    for (const preset of BUILD_PRESETS) expect(found(preset.id)).toBe(true);
-    expect(found('')).toBe(false);
+    expect(takeOver()).toBe(true);
+    for (const preset of BUILD_PRESETS) expect(takeOver(preset.id)).toBe(true);
+    expect(takeOver('')).toBe(false);
+  });
+
+  it('refuses a founding: a career starts with a takeover (→WEB-2)', () => {
+    const founding = {
+      type: 'found',
+      input: { country: 'ENG', name: 'Club', color: '#224466', seed: 'seed', level: 'easy' },
+    };
+    expect(requestSchema.safeParse(request(founding)).success).toBe(false);
+    expect(requestSchema.safeParse(request({ ...founding, replace: true })).success).toBe(false);
   });
 });
 
 it('refuses the withdrawn design, intervention and sponsor commands (→KIT-9, WEB-45, ECON-8)', () => {
-  const identity = createIdentityDraft({ country: 'ENG', seed: 'design', color: '#3A7bC2' });
+  // A club's applied identity in a world of one club.
+  const club = { id: 'ENG:club', color: '#3A7bC2' } as Club;
+  const identity = identityOf({ seed: 'design', clubs: [club], playerClub: '' }, club.id);
   const accepts = (command: unknown) =>
     requestSchema.safeParse(request({ type: 'command', command })).success;
   expect(accepts({ type: 'club-identity', identity })).toBe(false);

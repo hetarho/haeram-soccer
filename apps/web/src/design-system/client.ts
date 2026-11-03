@@ -43,7 +43,6 @@ export function previewRuntime(sample: Sample, notify: (message: string) => void
   const client = {
     state,
     command,
-    found: command,
     save: async () => {
       await command();
     },

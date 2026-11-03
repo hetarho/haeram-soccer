@@ -2,8 +2,7 @@ import { openPersonnel } from './personnel-navigation';
 import { openLeague } from './competition-navigation';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
-import { reduceIdentityDraft } from '../../apps/web/src/ui/clubIdentityDraft';
-import type { DesignStudio } from '../../packages/contracts/src/identity';
+import type { ClubIdentity, DesignStudio } from '../../packages/contracts/src/identity';
 import type { World } from '../../packages/contracts/src/types';
 import { currentDay, DESIGNERS, designFee, redrawFee } from '../../packages/engine/src/index';
 import { delegatedCareer } from '../fixtures/club-identity';
@@ -301,11 +300,14 @@ test('an imported file brings its own design and none of the drafts waiting in t
   await commission(page, view, [ROYAL, GOLD]);
   // The same game comes back from a file whose applied crest has changed since then.
   const { world } = await decode(raw);
-  const newer = reduceIdentityDraft(ownClub(world).identity!, {
-    type: 'kit-colour',
-    role: 'home',
-    colour: '#123456',
-  });
+  // A designer's later draft in a new home colour, its crest led by it (→KIT-10).
+  const older = ownClub(world).identity!;
+  const newer: ClubIdentity = {
+    ...older,
+    colours: ['#123456', ...older.colours.slice(1)] as ClubIdentity['colours'],
+    crest: { ...older.crest, primary: '#123456' },
+    kits: { ...older.kits, home: { ...older.kits.home, primary: '#123456' } },
+  };
   ownClub(world).identity = newer;
   ownClub(world).color = newer.colours[0];
   await (

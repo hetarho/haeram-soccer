@@ -5,6 +5,7 @@ import { openEmployment } from '../../../../packages/engine/src/person-careers';
 import { personCareer } from './personCareer';
 import { Host } from './host';
 import { requestSchema } from './protocol';
+import { req, startedHost } from './host.testkit';
 const world = () =>
   createWorld({
     country: 'ENG',
@@ -57,28 +58,14 @@ describe('on-demand retained person career', () => {
     expect(personCareer(w, npc.id)!.ownPlayingTotals).toBeUndefined();
   });
   it('uses canonical details while ordinary views omit the registry and answers ahead of queued mutation', async () => {
-    const h = new Host();
-    const input = {
-      country: 'ENG' as const,
-      name: 'Canonical career',
-      color: '#224466',
-      seed: 'read-project',
-      level: 'normal' as const,
-    };
-    const found = await h.handle({
-      ...request('found', 'unused'),
-      body: { type: 'found', input },
-      expectedRevision: -1,
-    });
-    expect(found.view!.world.people).toBeUndefined();
+    const { host: h, reply: started } = await startedHost('read-project');
+    expect(started.view!.world.people).toBeUndefined();
     const w = h.world!,
-      id = w.players[0].id;
-    const pending = h.handle({
-      ...request('step', 'unused'),
-      body: { type: 'command', command: { type: 'advance-days', days: 3 } },
-      expectedRevision: w.revision,
-    });
-    const reply = await h.handle(request('while-running', id));
+      id = w.players.find((p) => w.people?.[p.id])!.id;
+    const pending = h.handle(
+      req('step', w.revision, { type: 'command', command: { type: 'advance-days', days: 3 } }),
+    );
+    const reply = await h.handle(req('while-running', -1, { type: 'person-career', person: id }));
     expect(reply.personCareer!.person.id).toBe(id);
     expect(w.receiptIds).not.toContain('while-running');
     await pending;

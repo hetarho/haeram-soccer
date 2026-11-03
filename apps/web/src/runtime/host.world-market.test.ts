@@ -1,16 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { Host } from './host';
-import { input, req } from './host.testkit';
+import { req, startedHost } from './host.testkit';
 import { worldMarketOffer } from '../../../../packages/engine/src/world-market';
 import { squad } from '../../../../packages/engine/src/world';
 
 /** Integration: real host/engine world and serialized commands. Run only at the host batch gate. */
 describe('world market worker integration', () => {
   it('keeps ordinary views bounded, reads without receipts/views, and settles an identity bid once', async () => {
-    const host = new Host();
-    const founded = await host.handle(req('found', -1, { type: 'found', input }));
+    const { host, reply: founded } = await startedHost();
     expect(founded.ok).toBe(true);
     const w = host.world!;
+    const country = w.clubs.find((c) => c.id === w.playerClub)!.country;
     const before = structuredClone(w);
     const page = await host.handle(
       req('market', -1, {
@@ -34,7 +33,7 @@ describe('world market worker integration', () => {
         )
       ).ok,
     ).toBe(false);
-    const club = w.clubs.find((c) => c.id !== w.playerClub && c.country !== input.country)!;
+    const club = w.clubs.find((c) => c.id !== w.playerClub && c.country !== country)!;
     const player = squad(w, club)[0];
     const target = { world: w.id, kind: 'club' as const, clubId: club.id, playerId: player.id };
     const detail = await host.handle(

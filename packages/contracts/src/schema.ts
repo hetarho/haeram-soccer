@@ -1708,7 +1708,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       throw new Error('최근 득점 순위 추이 지표 손상');
   }
   if (!['ENG', 'ESP', 'GER', 'ITA', 'FRA', 'POR', 'NED', 'BEL'].includes(owner.country))
-    throw new Error('지원하지 않는 창단 국가');
+    throw new Error('지원하지 않는 국가');
   if (w.sponsor) legacySponsor(w, owner.country, catalog);
   if (w.sponsors && new Set(w.sponsors.map((s) => s.slot)).size !== w.sponsors.length)
     throw new Error('후원 계약 손상');

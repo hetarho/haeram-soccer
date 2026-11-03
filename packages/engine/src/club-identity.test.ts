@@ -1,20 +1,10 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { canonical, validateWorld } from '../../contracts/src/index';
-import {
-  CREST_PALETTE,
-  CREST_PRESETS,
-  CREST_SHAPES,
-  type ClubIdentity,
-} from '../../contracts/src/identity';
+import { CREST_PALETTE, type ClubIdentity } from '../../contracts/src/identity';
 import { clubIdentitySchema } from '../../contracts/src/identitySchema';
 import type { Founding, World } from '../../contracts/src/types';
-import {
-  createIdentityDraft,
-  identityOf,
-  installMissingIdentities,
-  presetCrests,
-} from './club-identity';
+import { identityOf, installMissingIdentities } from './club-identity';
 import { ensureRepresentatives } from './europe';
 import { legacyCrestMap } from './identity-legacy';
 import { advanceDays, createWorld } from './index';
@@ -55,45 +45,7 @@ function withoutIdentities(w: World) {
 const legacyOf = (w: World) => legacyCrestMap({ ...w, clubs: w.clubs.slice() });
 const others = (w: World) => w.clubs.filter((club) => club.id !== w.playerClub);
 
-describe('founding drafts (→KIT-14)', () => {
-  it('default drafts are deterministic and complete', () => {
-    const random = vi.spyOn(Math, 'random');
-    const draft = createIdentityDraft(INPUT);
-    expect(random).not.toHaveBeenCalled();
-    random.mockRestore();
-    expect(createIdentityDraft({ ...INPUT })).toEqual(draft);
-    expect(clubIdentitySchema.parse(draft)).toEqual(draft);
-    // The requested primary in its own spelling, with the secondary the own legacy crest wears.
-    const legacy = legacyOf(founded()).get('ENG:club')!;
-    expect(draft.colours).toEqual(['#3A7bC2', legacy.secondary]);
-    const [primary, secondary] = draft.colours as [string, string];
-    expect(draft.kits).toEqual({
-      home: { pattern: 'stripes', primary, secondary },
-      away: { pattern: 'plain', primary: '#ffffff', trim: primary },
-      third: { pattern: 'plain', primary: '#0b1f44', trim: secondary },
-    });
-    expect(presetCrests(draft.colours)).toContainEqual(draft.crest);
-    // Six complete ready-made crests, one per outer shape, in the contract's order.
-    const presets = presetCrests(draft.colours);
-    expect(presets.map(({ shape, pattern, emblem }) => ({ shape, pattern, emblem }))).toEqual(
-      CREST_PRESETS,
-    );
-    expect(presets.map((crest) => crest.shape).sort()).toEqual([...CREST_SHAPES].sort());
-    for (const crest of presets) expect(crest).toMatchObject({ primary, secondary });
-    // Seed and country choose among all six templates; the name and level never matter.
-    const shapes = new Set(
-      Array.from(
-        { length: 40 },
-        (_, i) => createIdentityDraft({ ...INPUT, seed: `s${i}` }).crest.shape,
-      ),
-    );
-    expect(shapes.size).toBe(6);
-    expect(createIdentityDraft({ ...INPUT, name: 'Other', level: 'easy' } as Founding)).toEqual(
-      draft,
-    );
-    expect(() => createIdentityDraft({ ...INPUT, color: 'red' })).toThrow();
-  });
-
+describe('explicit founding designs', () => {
   it('founding installs the exact explicit draft', () => {
     const identity = structuredClone(CUSTOM);
     const w = createWorld({ ...INPUT, identity });

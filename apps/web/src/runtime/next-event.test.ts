@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { Host } from './host';
-import type { Body, Reply } from './protocol';
+import type { Reply } from './protocol';
 import { RESPONSIBILITY_KEYS } from '../../../../packages/engine/src/responsibilities';
 import {
   currentDay,
@@ -10,26 +10,14 @@ import {
 import { transferOffers } from '../../../../packages/engine/src/ops-squad';
 import { ratio, random } from '../../../../packages/engine/src/primitives';
 import { pendingDecisions, stoppingReasons } from '../../../../packages/engine/src/stopping';
-const input = {
-  country: 'ENG' as const,
-  name: 'Worker Next Event',
-  color: '#224466',
-  seed: 'worker-next-event',
-  level: 'normal' as const,
-};
-const req = (id: string, revision: number, body: Body) => ({
-  protocol: 1 as const,
-  session: 'next-event',
-  requestId: id,
-  expectedRevision: revision,
-  generation: 1,
-  parentGeneration: 0,
-  body,
-});
+import { req, startedHost } from './host.testkit';
 async function host() {
   const progress: Reply[] = [];
-  const h = new Host((reply) => progress.push(reply));
-  await h.handle(req('found', -1, { type: 'found', input }));
+  const { host: h } = await startedHost(
+    'worker-next-event',
+    undefined,
+    new Host((reply) => progress.push(reply)),
+  );
   h.world!.cash = h.world!.income = '999999999999';
   h.world!.settings!.mode = 'manual';
   for (const key of RESPONSIBILITY_KEYS) h.world!.settings!.responsibilities[key] = 'delegated';

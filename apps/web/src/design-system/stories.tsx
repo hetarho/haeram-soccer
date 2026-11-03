@@ -64,9 +64,13 @@ import Rich from '../ui/Rich';
 import { RecruitmentDesk } from '../ui/RecruitmentDesk';
 import { StyleCard } from '../ui/StyleCard';
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
-import { ClubIdentityEditor } from '../ui/ClubIdentityEditor';
 import { ClubDesignView } from '../ui/ClubDesignView';
-import { createIdentityDraft } from '../../../../packages/engine/src/club-identity';
+import { identityOf } from '../../../../packages/engine/src/club-identity';
+import { KIT_ROLES } from '../../../../packages/contracts/src/identity';
+import { ClubCrest } from '../ui/ClubCrest';
+import { KitSwatch } from '../ui/KitSwatch';
+import { KitPitchPreview } from '../ui/KitPitchPreview';
+import { editorPreviewAppearance, KIT_ROLE_LABELS } from '../ui/identityPreview';
 import { DirectionAreas } from '../ui/DirectionFacts';
 import { FacilityOverview } from '../ui/FacilityOverview';
 import { FacilityParts } from '../ui/FacilityParts';
@@ -75,7 +79,6 @@ import { FinanceOutlook } from '../ui/FinanceOutlook';
 import { CareerRecordBook, TrophyCabinet, ClubLeaders } from '../ui/CareerRecordBook';
 import { ClubTrends, SeasonTable } from '../ui/ClubTrends';
 import { SeasonReview } from '../ui/SeasonReview';
-import { ClubFounding } from '../ui/ClubFounding';
 import { StartFlow } from '../ui/StartFlow';
 import { canAfford, takeoverYear, type ClubSheetFacts } from '../ui/startChoices';
 import type {
@@ -490,12 +493,39 @@ function Charts() {
   );
 }
 
+/** The sample club's applied identity, as generated (→KIT-2/11), in each identity component. */
 function Identity({ runtime }: { runtime: Runtime }) {
-  const club = runtime.view.world.clubs.find((club) => club.id === runtime.view.world.playerClub)!;
-  const [value, setValue] = useState(() =>
-    createIdentityDraft({ country: 'ENG', color: club.color, seed: 'design-system' }),
+  const w = runtime.view.world;
+  const club = w.clubs.find((club) => club.id === w.playerClub)!;
+  const identity = identityOf(w, club.id);
+  const preview = editorPreviewAppearance(identity, 'home', 'light');
+  return (
+    <>
+      <Section title="ClubCrest">
+        <div className="ds-row">
+          {[24, 44, 72].map((size) => (
+            <ClubCrest key={size} w={w} id={club.id} size={size} label={`${club.name} 엠블럼`} />
+          ))}
+        </div>
+      </Section>
+      <Section title="KitSwatch">
+        <div className="ds-row">
+          {KIT_ROLES.map((role) => (
+            <KitSwatch
+              key={role}
+              shirt={identity.kits[role]}
+              label={`${KIT_ROLE_LABELS[role]} 유니폼`}
+              size={64}
+              number={10}
+            />
+          ))}
+        </div>
+      </Section>
+      <Section title="KitPitchPreview">
+        <KitPitchPreview appearance={preview.appearance} labels={preview.labels} />
+      </Section>
+    </>
   );
-  return <ClubIdentityEditor value={value} onChange={setValue} />;
 }
 function Dialogs() {
   const [opened, setOpened] = useState('');
@@ -1207,9 +1237,6 @@ export default function StoryRenderer({
         break;
       case 'season-review':
         content = <SeasonReview w={w} year={w.history[0]?.year ?? w.year} />;
-        break;
-      case 'founding':
-        content = <ClubFounding client={client} state={state} onBack={noop} />;
         break;
       case 'start-flow':
         content = <StartFlowStory runtime={runtime} notify={notify} />;

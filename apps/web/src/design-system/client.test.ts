@@ -9,7 +9,7 @@ afterEach(() => {
 const sample = () => ({ view: { world: { id: 'preview-world' } }, playback: {} }) as Sample;
 
 describe('sample client boundary', () => {
-  it('keeps command/save/founding actions and the clock entirely in memory', async () => {
+  it('keeps command and save actions and the clock entirely in memory', async () => {
     const fetch = vi.fn();
     vi.stubGlobal('fetch', fetch);
     const fixture = sample(),

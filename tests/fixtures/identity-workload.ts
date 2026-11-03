@@ -2,11 +2,11 @@ import { createHash } from 'node:crypto';
 import { canonical } from '../../packages/contracts/src/index';
 import {
   CREST_PALETTE,
-  CREST_PRESETS,
   DESIGN_STUDIOS,
   KIT_ROLES,
   SHIRT_PATTERNS,
   type ClubIdentity,
+  type CrestDesign,
   type IdentityColours,
   type KitRole,
   type ShirtDesign,
@@ -19,7 +19,7 @@ import { selectMatchKits } from '../../packages/engine/src/kit-selection';
 /**
  * T255: the marked synthetic cosmetic workload of the active-management century (KIT-9/6/12/13).
  * At each season's start the owner applies a complete own design through the real `club-identity`
- * command, cycling the 24-colour crest palette, the fourteen shirt patterns and the six ready-made
+ * command, cycling the 24-colour crest palette, the fourteen shirt patterns and six catalogue
  * crest compositions by season number alone; before the final active checkpoint the owner chooses
  * a shirt for the real next own fixture through the real `match-kit` command. Every command is
  * checked as it runs: recorded appearances stay exactly as they were, the design applied last is
@@ -28,6 +28,19 @@ import { selectMatchKits } from '../../packages/engine/src/kit-selection';
  */
 
 const colour = (index: number) => CREST_PALETTE[index % CREST_PALETTE.length];
+
+/**
+ * Six crest compositions of the component catalogue, one per outer shape (KIT-2). They are the
+ * workload's own cycle, kept as the ready-made crests were so the recorded designs stay the same.
+ */
+export const CREST_COMPOSITIONS: readonly Pick<CrestDesign, 'shape' | 'pattern' | 'emblem'>[] = [
+  { shape: 'shield', pattern: 'stripes', emblem: 'star' },
+  { shape: 'round', pattern: 'plain', emblem: 'ball' },
+  { shape: 'french', pattern: 'sash', emblem: 'crown' },
+  { shape: 'badge', pattern: 'halves', emblem: 'anchor' },
+  { shape: 'diamond', pattern: 'chevron', emblem: 'bolt' },
+  { shape: 'crown', pattern: 'band', emblem: 'tree' },
+];
 
 /** A shirt of `pattern`: plain shows no secondary, every other pattern requires it (KIT-4). */
 function shirt(pattern: ShirtPattern, primary: string, secondary: string, trim?: string) {
@@ -51,7 +64,7 @@ export function seasonIdentity(n: number): ClubIdentity {
   const count = 1 + (n % 3);
   const colours = [main, second, accent].slice(0, count) as IdentityColours;
   const crest: ClubIdentity['crest'] = {
-    ...CREST_PRESETS[n % CREST_PRESETS.length],
+    ...CREST_COMPOSITIONS[n % CREST_COMPOSITIONS.length],
     primary: main,
   };
   if (count > 1) crest.secondary = second;
@@ -154,7 +167,7 @@ export interface IdentityWorkloadEvidence {
   paletteSize: number;
   /** Distinct shirt patterns worn by the saved designs, in catalogue order. */
   shirtPatterns: ShirtPattern[];
-  /** Distinct ready-made crest compositions applied, of `crestCompositionCount`. */
+  /** Distinct crest compositions applied, of `crestCompositionCount`. */
   crestCompositions: number;
   crestCompositionCount: number;
   /** Applied designs by their number of representative colours. */
@@ -215,7 +228,7 @@ export function identityWorkload(resume?: IdentityWorkloadState) {
     ])
       palette.add(value);
     for (const role of KIT_ROLES) patterns.add(identity.kits[role].pattern);
-    compositions.add(n % CREST_PRESETS.length);
+    compositions.add(n % CREST_COMPOSITIONS.length);
     counts[String(identity.colours.length) as '1' | '2' | '3']++;
   }
   for (const n of resume?.seasons ?? []) note(seasonIdentity(n), n);
@@ -339,7 +352,7 @@ export function identityWorkload(resume?: IdentityWorkloadState) {
         paletteSize: CREST_PALETTE.length,
         shirtPatterns: SHIRT_PATTERNS.filter((pattern) => patterns.has(pattern)),
         crestCompositions: compositions.size,
-        crestCompositionCount: CREST_PRESETS.length,
+        crestCompositionCount: CREST_COMPOSITIONS.length,
         representativeColourCounts: { ...counts },
         designsSha256: createHash('sha256').update(designs.join('\n')).digest('hex'),
         appearanceChecks,

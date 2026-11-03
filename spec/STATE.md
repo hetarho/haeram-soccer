@@ -13,11 +13,14 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-03T00:26Z | - |
+| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-03T00:27Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 
 ## inbox
+- 261103 decided ARCH-21 T665: how runtime tests that played a founding on (`playOn`) get a played world once `found` goes → `startedWorld` in `host.testkit.ts`, the engine's own 1930 takeover the host makes (checked canonically equal on both releases), grown in a cached builder with the club funded first since a 1930 takeover holds no cash; the amateur-league projection test goes with the founding (the level is T672's) and the full-stats "no ledger" case removes the started career's ledger for the read (alt: wait for T670's `careerWorld` | keep founded played worlds, which `playOn`'s equality refuses). ot03
+- 261103 decided KIT-2 T665: the identity storage workload cycled the six ready-made crests → it keeps those six catalogue compositions as its own `CREST_COMPOSITIONS`, so its recorded designs and hashes stay (alt: cycle shapes, patterns and emblems apart, which re-records the workload). ot03
+- 261103 decided WEB-86 KIT-14 T665: what the editor's draft tests and story become → persistence keeps schema checks of its literal journey designs, the e2e import writes its newer design directly, and the design-system identity story shows the sample club's applied crest at three sizes, its three shirts and the pitch preview against the light example, marked Pending in UI-COVERAGE (alt: keep the draft reducer as a test helper nothing in the game reads). ot03
 - 261103 decided T665 T670 T671 T672: T665 (founding, difficulty, editor and amateur level end to end) cannot finish in one unit — 243 files build worlds with `createWorld`/`simulatedWorld(Founding)` → split into T665 founding screen, `found` message, identity editor and ready-made crests; T670 engine/contracts tests on a takeover test builder; T671 fixtures, web tests, e2e and scripts, then the founding deleted; T672 the amateur level with LEAGUE-16's test; T666–T668 wait on T672 (alt: one unit for all of it, which would stop mid-migration | a renamed founding builder for tests, which keeps the founding in the code). ot03
 - 261103 decided T670 ARCH-21: how tests get a career once the founding goes → `careerWorld`: a fresh 1950 world nobody owns (`historyWorld` with a test-only year) and a takeover of the lowest division's first club by an `oil` owner, funded with two years of fixed costs (alt: a lived world from `generateHistory`, seconds per test | the takeover's own cash 0, bankrupt at round 8). ot03
 - 261103 decided KIT-2 KIT-14 T665: KIT-2 still offered six ready-made crests, 랜덤 and 직접 꾸미기 while KIT-14 removed the founding crests and no editor is left → KIT r9: designers compose crests from the component catalogue; no ready-made crests or owner-side composition (alt: keep the six presets as designer templates, which nothing reads). ot03
@@ -623,7 +626,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T665 | remove the founding screen, the found message, the identity editor and ready-made crests | WEB KIT HIST | T652 T664 | todo |
 | T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T672 | todo |
 | T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T672 | todo |
 | T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T672 | todo |
@@ -653,10 +655,11 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (founding screen, `found` message, identity editor, ready-made crests), then T670 (engine tests on `careerWorld`), T671 (the founding leaves the engine), T672 (the amateur level, LEAGUE-16), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
+- on branch `wip/ot03` (owner takeover; T653–T665 and T669 done, main fa1ed566 merged): implement-task T670 (engine tests on `careerWorld`), T671 (the founding leaves the engine), T672 (the amateur level, LEAGUE-16), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
 - read main CI after 1928053c/fa1ed566 (fix for 41524887826)
 
 ## log
+- 261103 T665 done: protocol `found`, the founding screen, the identity editor, its draft reducer and the ready-made crests deleted; runtime tests start by `generate`+`take-over` (`startedHost`, `startedWorld`), client tests by `generate`/`takeOver`; founding wording reads for a takeover; integration and e2e edits await the batch; ot03
 - 261103 update-ssot KIT r9 (KIT-2: no ready-made crests, designers compose from the catalogue); create-task: T665 narrowed to the founding UI, T670–T672 split from it (engine tests, fixtures/web/e2e/scripts with the founding's deletion, the amateur level); T666–T668 dep T672; KIT row tasked 4→9 (the 261103 create-task consumed KIT@8, r9 goes to T665); ot03
 - 261103 T669 done (merged 1c218442): results-only fixtures before the takeover; generateHistory 2000 773.9 s → 30.9 s Node (≈124 s reference, ARCH-28 90 s needs ~27% more); ot03
 - 261103 T664 done: a new game is tier → traits → decade → generated world → club list → takeover on game version 0.8.0 (rules 5.0.0); worker generate/club-sheet/take-over, careerEnded routing, OwnerSheet/GameOver stories, founded 0.7.0 careers reset; e2e on tests/e2e/start.ts; ot03
