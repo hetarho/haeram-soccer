@@ -13,7 +13,9 @@ import {
   assertConsumedChoice,
   assertPendingChoice,
   CREST_COMPOSITIONS,
+  fanMoodAfterAdoption,
   identityWorkload,
+  isIdentityMoodEvent,
   recordedAppearances,
   seasonIdentity,
   type WorkloadKitChoice,
@@ -33,7 +35,10 @@ const changedKeys = (a: World, b: World) =>
         canonical((b as unknown as Record<string, unknown>)[key] ?? null),
     )
     .sort();
-/** Sporting, money, date and history facts: every cosmetic field, receipt and revision left out. */
+/**
+ * Sporting, money, date and history facts: every cosmetic field, receipt and revision left out, and
+ * the adoption's 팬 민심 drop with its event (→KIT-9, OWNER-12), whose count the read models track.
+ */
 const sporting = (w: World) =>
   canonical({
     ...w,
@@ -42,6 +47,10 @@ const sporting = (w: World) =>
     kitChoice: undefined,
     clubs: w.clubs.map((club) => ({ ...club, identity: undefined, color: undefined })),
     ownMatches: w.ownMatches.map((match) => ({ ...match, appearance: undefined })),
+    owner: w.owner && { ...w.owner, fanMood: undefined },
+    events: w.events.filter((event) => !isIdentityMoodEvent(event)),
+    newsJournal: w.newsJournal && { ...w.newsJournal, events: undefined },
+    careerReads: w.careerReads && { ...w.careerReads, events: undefined },
   });
 /** The world as a load reads it, as the benchmark compares checkpoints. */
 const loaded = (w: World) => canonical(validateWorld(w, LOAD_CATALOG));
@@ -59,8 +68,16 @@ describe('identity workload stays cosmetic (→KIT-13)', () => {
     const workload = identityWorkload();
     workload.edit(w, 0);
     const choice = workload.chooseKit(w);
-    // Exactly three top-level fields differ: the clubs, the stored choice and the revision.
-    expect(changedKeys(before, w)).toEqual(['clubs', 'kitChoice', 'revision']);
+    // Exactly these top-level fields differ: the clubs, the stored choice and the revision, and the
+    // adoption's one stated effect (→KIT-9, OWNER-12): the owner's 팬 민심 with its event.
+    expect(changedKeys(before, w)).toEqual(['clubs', 'events', 'kitChoice', 'owner', 'revision']);
+    expect({ ...w.owner, fanMood: undefined }).toEqual({ ...before.owner, fanMood: undefined });
+    expect(w.owner!.fanMood).toBe(fanMoodAfterAdoption(w, before.owner!.fanMood));
+    expect(w.owner!.fanMood).toBeLessThan(before.owner!.fanMood);
+    expect(w.events.slice(0, before.events.length)).toEqual(before.events);
+    const added = w.events.slice(before.events.length);
+    expect(added).toHaveLength(1);
+    expect(isIdentityMoodEvent(added[0])).toBe(true);
     expect(w.revision).toBe(before.revision + 2);
     expect(w.receiptIds).toEqual(before.receiptIds);
     expect(w.kitChoice).toEqual({ fixtureId: choice.fixtureId, role: choice.role });
@@ -93,9 +110,10 @@ describe('identity workload stays cosmetic (→KIT-13)', () => {
       'calendar',
       'history',
       'ownMatches',
-      'events',
       'inbox',
       'people',
+      'newsJournal',
+      'careerReads',
     ] as const)
       expect(canonical(w[key] ?? null), key).toBe(canonical(before[key] ?? null));
   });

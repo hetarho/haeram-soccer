@@ -236,8 +236,14 @@ afterEach(() => {
 });
 
 describe('fixture helpers', () => {
-  /** The writer lock as the shared stub grants it, on a device with `cores` logical cores. */
+  /**
+   * The writer lock as the shared stub grants it, on a device with `cores` logical cores. A second
+   * call is another device: its storage starts empty, so its client starts a game of its own rather
+   * than loading the one the earlier device saved.
+   */
   function withCores(cores: number | undefined) {
+    storage = new MemoryStorage();
+    vi.stubGlobal('localStorage', storage);
     vi.stubGlobal('navigator', {
       hardwareConcurrency: cores,
       locks: {
@@ -288,6 +294,8 @@ describe('fixture helpers', () => {
     HelperWorker.instances[1]!.onerror?.();
     expect(HelperWorker.instances.every((helper) => helper.terminated)).toBe(true);
     expect(WorkerPort.instances[0]!.host.helpers?.active).toBe(false);
+    // Another device with the cores, whose browser refuses the helper workers.
+    withCores(HELPER_CONFIG.minCores);
     vi.stubGlobal('Worker', function BlockedHelpers(url: URL) {
       if (String(url).endsWith('fixtureHelper.ts')) throw new Error('blocked');
       return FakeWorker(url);

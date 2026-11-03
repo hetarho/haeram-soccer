@@ -17,9 +17,13 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | hr05 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T05:50Z | 2026-11-03T06:15Z | T682 |
-| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T07:55Z | T684 |
+| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T07:55Z | - |
 
 ## inbox
+- 261103 decided KIT-9 KIT-13 OWNER-12 ARCH-21 T684: the identity workload's "design edit changed non-cosmetic facts" on a takeover career → adopting a draft truly changes one fact, the owner's 팬 민심 (−20 with one `fan-mood` event), as KIT-9 states, so the workload allows exactly that drop and event and adds the owner's other fields to the facts an edit may not move; the read models were not the cause (alt: strip events and read models from the comparison, which would let any event through | run the workload on a world without an owner, which no career is). ot03
+- 261103 decided ARCH-21 T684: helper-pool cases started a second client on the first one's saved game → each `withCores` call is another device with empty storage (alt: pass `replace` to take the first device's game over). ot03
+- 261103 decided LEAGUE-5 ARCH-21 T684: GER/FRA cups draw 32강 after the first round since the amateur clubs left them → the expected rounds derive from the first round's entrants and the power of two after it, checked equal to the country's professional clubs (alt: pin GER/FRA to 32 and ENG to 64 by hand). ot03
+- 261103 suggest OWNER-12 SAVE-4 T684: `scripts/benchmark.ts`'s active-management century adopts a design every season, now −20 팬 민심 each time (season starts settle near 43 → 23, above the 15 퇴진 floor, but a losing run or a relegation could cross it) → the next storage benchmark checks the century still reaches its end without 구단주 퇴진, or adopts a design less often. ot03
 - 261103 decided ARCH-21 OWNER-4 T683: cases built on the neutral founding manager (no school, three seasons left) on a takeover career, whose manager keeps his school and may be a firefighter on a one-season term → each case's setup drops his school or gives him three seasons left, as the founding manager stood, and the case says why (alt: seeds whose taken-over manager happens to fit | turn the cases into OWNER-4 checks, losing the neutral-manager rule's coverage). ot03
 - 261103 decided ARCH-21 T683: `tests/fixtures/transferred-scorer.ts` left its striker 15th of the takeover's 24-club division, outside the archived top ten the scorer case reads → seed `transferred-scorer-d` (6th on the pre-feature path), found by a season-per-seed scan in Node as T224 re-pinned it; T684's two web users of the fixture run on it (alt: strengthen the buyer further | read the live scorer table only, dropping the archive check). ot03
 - 261103 suggest ECON-9 ECON-36 T686: a 1950 ENG lowest-division takeover (seed `business`: 9,247 supporters against a 7,040 catchment, 5,000 seats) takes 223,265 at its first home gate against 14,986 of fixed costs a round, about 15 rounds' costs from one gate → T686 reads gate income against wages in the early decades. ot03
@@ -676,7 +680,6 @@
 | T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
 | T681 | Reconcile client views once before store publication | ARCH WEB SAVE | T680 | doing@261103.hr05 |
 | T682 | Profile and reduce repeated day-step Worker work | ARCH WEB SAVE | T681 | doing@261103.hr05 |
-| T684 | web and fixture integration tests on takeover careers | ARCH KIT SAVE HIST LEAGUE | T683 | doing@261103.ot03 |
 | T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | todo |
 | T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
 | T687 | browser journeys on takeover careers | ARCH WEB OWNER KIT | T684 | todo |
@@ -703,11 +706,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T684, then T687 (the takeover's integration and browser fixes; T683 re-pinned `tests/fixtures/transferred-scorer.ts` to seed d, which T684's two web users read), T685 and T686 (balance), T678 and T679 (history view); each loop pushes its work to `next` after the quick batch (ot03)
+- implement-task T687 (the takeover's browser journeys), then T685 and T686 (balance), T678 and T679 (history view); each loop pushes its work to `next` after the quick batch (ot03)
 - release (→ARCH-30 r29): the last session working merges `main` into `next`, runs `pnpm run verify:batch` once (browser journeys only there), merges `next` into `main` and pushes (deploy); hr05 started under push: main and may push main itself, the release merges it in
 - hr05: implement-task T681 then T682 for the owner-approved automatic-play bottlenecks
 
 ## log
+- 261103 T684 done: the 12 web and fixture integration cases pass on takeover careers (4 files, no production change, no behaviour bug): the identity workload expects an adoption's stated 팬 민심 drop and its one event (→KIT-9, OWNER-12) and still holds every other fact, the read models unmoved; the helper cases start each device with empty storage; the cup rounds derive from the professional entrants (64 after England's first round, 32 after Germany's and France's); persistence.history passes on T683's seed d; ot03
 - 261103 T683 done: the 27 engine integration cases pass on takeover careers (18 files, no production change, no takeover or merge bug): setups stand in for the founding's facts (a school-less manager, three seasons left, a small ground and following, nobody retiring), expectations follow the takeover's rules (OWNER-4's schooled manager, CLUB-1's generated fillers, CLUB-27's unhappy player, the own league group and first played round), `transferred-scorer` re-pinned to seed d; ot03
 - 261103 update-ssot ARCH r29 (owner: every session gathers on `next`, only the last one runs the full suite with e2e and pushes main); cfg push and plan main→next; ARCH r29 no-op for code (process only); ot03
 - 261103 create-task T687: the 20 Chromium journeys failing on dfa39857 (324 passed), before the push; T685 dep T684→T687; ot03
@@ -727,4 +731,3 @@
 - 261103 update-ssot KIT r9 (KIT-2: no ready-made crests, designers compose from the catalogue); create-task: T665 narrowed to the founding UI, T670–T672 split from it (engine tests, fixtures/web/e2e/scripts with the founding's deletion, the amateur level); T666–T668 dep T672; KIT row tasked 4→9 (the 261103 create-task consumed KIT@8, r9 goes to T665); ot03
 - 261103 T680 planned from user measurement request: compare current x10 and isolated 50 ms/day experiments on fresh and retained careers; ship no pace change. hr04
 - 261103 hr03 CI 41577500074 passed all 9 jobs for published main source af513df9; exact-SHA REST receipt replaces the CLI public-HTML watcher's completed/null parse. No app code changed.
-- 261103 T675 done: unit 1917, integration 1176 (+4 skipped), contract 47; Chromium 349 executed, repaired 9 setup/expectation failures with 22/22 scoped reruns; final coordinator gate fde8c867 passes. hr03

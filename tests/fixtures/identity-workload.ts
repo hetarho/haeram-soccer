@@ -15,6 +15,7 @@ import {
 import type { Fixture, World } from '../../packages/contracts/src/types';
 import { clubOf, identityOf, nextOwnFixture, operate } from '../../packages/engine/src/index';
 import { selectMatchKits } from '../../packages/engine/src/kit-selection';
+import { FAN_MOOD } from '../../packages/engine/src/owner-config';
 
 /**
  * T255: the marked synthetic cosmetic workload of the active-management century (KIT-9/6/12/13).
@@ -24,7 +25,8 @@ import { selectMatchKits } from '../../packages/engine/src/kit-selection';
  * a shirt for the real next own fixture through the real `match-kit` command. Every command is
  * checked as it runs: recorded appearances stay exactly as they were, the design applied last is
  * the one the matches since then wore, and the facts the cosmetic command may not touch (date,
- * cash, records) stay put. Nothing here draws randomness or reads the clock.
+ * cash, records) stay put; an adoption lowers only the owner's 팬 민심, with its one event, as
+ * KIT-9 states. Nothing here draws randomness or reads the clock.
  */
 
 const colour = (index: number) => CREST_PALETTE[index % CREST_PALETTE.length];
@@ -119,7 +121,11 @@ export function appearanceSummary(w: World) {
   };
 }
 
-/** The facts a cosmetic command must leave alone, cheap enough to compare at every command. */
+/**
+ * The facts a cosmetic command must leave alone, cheap enough to compare at every command. The
+ * owner's 팬 민심 and the events are checked apart: adopting a design is a stated 팬 민심 driver
+ * (→KIT-9, OWNER-12), so `fanMoodAfter` allows exactly that drop and its one event.
+ */
 function untouchedStamp(w: World) {
   return canonical({
     year: w.year,
@@ -133,10 +139,44 @@ function untouchedStamp(w: World) {
     fixtures: w.fixtures.length,
     history: w.history.length,
     ownMatches: w.ownMatches.length,
-    events: w.events.length,
+    owner: w.owner ? { ...w.owner, fanMood: undefined } : null,
     inbox: w.inbox?.length ?? 0,
     receipts: w.receiptIds,
   });
+}
+
+/** The 팬 민심 event an adopted design records (→KIT-9, OWNER-12). */
+export const isIdentityMoodEvent = (event: World['events'][number]) =>
+  event.kind === 'fan-mood' && event.title === '구단 정체성 변경';
+
+/**
+ * 팬 민심 once a design is adopted at `mood`: the identity driver, scaled by 팬들의 친구 and kept
+ * within 0–100 to hundredths, as the engine moves it (→OWNER-5/12).
+ */
+export function fanMoodAfterAdoption(w: World, mood: number) {
+  const scaled = w.owner!.traits.includes('fansFriend')
+    ? FAN_MOOD.identity * FAN_MOOD.friendly
+    : FAN_MOOD.identity;
+  return Math.round(Math.min(FAN_MOOD.max, Math.max(FAN_MOOD.min, mood + scaled)) * 100) / 100;
+}
+
+/**
+ * Throws unless the command left 팬 민심 and the events as they were, except that adopting a
+ * design on a career with an owner lowers 팬 민심 by the identity driver and records that one event.
+ */
+function fanMoodAfter(
+  w: World,
+  before: { events: number; mood?: number },
+  adopts: boolean,
+  context: string,
+) {
+  const moved = adopts && w.owner !== undefined;
+  const expected = moved ? fanMoodAfterAdoption(w, before.mood!) : before.mood;
+  if (w.owner?.fanMood !== expected)
+    throw new Error(`${context} moved 팬 민심 to ${w.owner?.fanMood}, not ${expected}`);
+  const added = w.events.slice(before.events);
+  if (added.length !== (moved ? 1 : 0) || !added.every(isIdentityMoodEvent))
+    throw new Error(`${context} recorded events other than its 팬 민심 change`);
 }
 
 const ownSide = (w: World, fixture: Pick<Fixture, 'home'>) =>
@@ -250,14 +290,19 @@ export function identityWorkload(resume?: IdentityWorkloadState) {
     }
   }
 
-  /** Runs one cosmetic command and checks that it left recorded and sporting facts alone. */
-  function command(w: World, run: () => void, context: string) {
+  /**
+   * Runs one cosmetic command and checks that it left recorded and sporting facts alone; an
+   * adoption (`adopts`) also lowers 팬 민심 as KIT-9 states.
+   */
+  function command(w: World, run: () => void, context: string, adopts = false) {
     const before = recordedAppearances(w),
       stamp = untouchedStamp(w),
-      revision = w.revision;
+      revision = w.revision,
+      mood = { events: w.events.length, mood: w.owner?.fanMood };
     run();
     assertAppearancesUnchanged(w, before, context);
     if (untouchedStamp(w) !== stamp) throw new Error(`${context} changed non-cosmetic facts`);
+    fanMoodAfter(w, mood, adopts, context);
     if (w.revision !== revision + 1) throw new Error(`${context} did not count one revision`);
     appearanceChecks++;
     appearancesCompared += before.length;
@@ -285,6 +330,7 @@ export function identityWorkload(resume?: IdentityWorkloadState) {
           operate(w, { type: 'adopt-design', draft: 0 });
         },
         `season ${n} design edit`,
+        true,
       );
       const own = clubOf(w);
       if (canonical(own.identity) !== canonical(identity) || own.color !== identity.colours[0])
