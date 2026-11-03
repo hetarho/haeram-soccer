@@ -20,6 +20,7 @@
 | cv03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T09:33Z | 2026-11-03T09:33Z | - |
 
 ## inbox
+- 261103 parked T685 ARCH-30: unit Git metadata is read-only: installed vibe check cannot snapshot the source (git add -A: unable to create temporary file, Read-only file system), so no task commit is possible here. The cv03 host must regenerate portable/prepared worlds, finish the task checks and commit the preserved implementation with Git write access before T686; no push or shared report/active lifecycle action was attempted. cv03
 - 261103 decided ARCH-30 PLAYER-18 PLAYER-27 T685: resume the stopped Claude ot03 handoff at the owner's request; merge main performance and award/wage work before balance, reconcile parallel PLAYER r14 changes as r15 without a new product policy; push next and wip/cv03 for the 22:00 KST handoff, leaving main release to its own gate (alt: restart T653 from main | deploy during the handoff). cv03
 - 261103 decided CLUB-25 CLUB-26 T690: exceptional-player wages → ordinary wages unchanged through OVR80, convex scarcity to ×2 at 95, top-flight wage demands phased in at 85–90; recent winner ×2 and +0.4 per extra recent win, podium ×1.4 (alt: fame only leaves unawarded elite players cheap; an aggressive variant produces excessive outliers). Selected after 144000 sensitivity cases, 576 retention decisions and 40 whole-season outcomes across six paired future streams; ordinary ratios preserved, 98 newly unaffordable contracts, no forecast bankruptcies. bl03
 - 261103 decided PLAYER-27 T688: owner delegates trophy/team-led awards and requests the award change committed on main first → bounded production (120 max, raw scale 80), European/league/cup honours 180/120/45 and top-six finish 80/60/45/30/20/10; preserve past podiums (alt: unlimited goals plus larger trophies, which another 169-goal season can still swamp). bl03
@@ -685,7 +686,7 @@
 |---|---|---|---|---|
 | T678 | the world's history plays while it is generated | WEB ARCH WORLD HIST PLAYER EURO | T686 | todo |
 | T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
-| T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | doing@261103.cv03 |
+| T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | blocked@261103 |
 | T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | todo |
 
@@ -711,11 +712,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T685, then T686, T678 and T679; continue the stopped ot03 takeover handoff on work/cv03-continuation.
+- Finish T685 from preserved working edits: host regenerates portable/prepared worlds and commits with Git write access (unit .git is read-only); then T686, T678 and T679 on work/cv03-continuation.
 - Deadline 2026-11-03 22:00 Asia/Seoul: leave commits, reports and every unfinished change on the remote next and wip/cv03 branches for another device.
 - Preserve T689 scoring experiments and limits from spec/reports/261103-bl03/scoring.md; publish next without a main deployment.
 
 ## log
+- 261103 T685 implementation preserved for cv03 host: 1125 changed unit tests pass; commit/snapshot blocked by read-only Git metadata, artifact regeneration and final integrated checks remain host-owned.
 - 261103 cv03 takeover: resume the stopped ot03 handoff on work/cv03-continuation; merge current main, preserving takeover, hr05 performance and bl03 awards/wages.
 - 261103 bl03 publication: owner explicitly requests immediate push without further tests; retain the post-sync 1176 passing integration cases, four skips and one long-career timeout. T689 remains todo with its experiments detached and backed up; no scoring implementation released.
 - 261103 T690 done: progressive elite wages and repeated award premiums; 144000 sensitivity cases, 576 retention decisions, 40 full-season outcomes, 35 unit and 36 contract integration tests plus fast checks passed. bl03
@@ -735,4 +737,3 @@
 - 261103 hr03 CI 41577500074 passed all 9 jobs for published main source af513df9; exact-SHA REST receipt replaces the CLI public-HTML watcher's completed/null parse. No app code changed.
 - 261103 T675 done: unit 1917, integration 1176 (+4 skipped), contract 47; Chromium 349 executed, repaired 9 setup/expectation failures with 22/22 scoped reruns; final coordinator gate fde8c867 passes. hr03
 - 261103 T676 done: clean 84-season checkpoint gzip encode/validate 18.64 s, original facts/news/stats equal, UTF-16 4.08 MB / portable 6.11 MB; fallback portions superseded by user-approved T677. hr03
-- 261103 T677 done: remove legacy localStorage checkpoints, migration/fallback budgets and startup reset/strategy cleanup; IndexedDB fixtures updated, 30 affected unit cases and fast checks pass. hr03
