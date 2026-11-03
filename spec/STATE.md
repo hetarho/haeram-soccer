@@ -687,7 +687,7 @@
 |---|---|---|---|---|
 | T678 | the world's history plays while it is generated | WEB ARCH WORLD HIST PLAYER EURO | T686 | todo |
 | T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
-| T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | todo |
+| T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | doing@261103.nv04 |
 | T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | todo |
 
