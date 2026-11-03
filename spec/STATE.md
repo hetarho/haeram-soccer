@@ -8,7 +8,8 @@
 - level: mid
 - lang: ko   # user's language — interviews, confirmations, reports
 - docs: en  # doc language
-- push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
+- push: next   # every session gathers its work on next; only the last session working releases next into main (→ARCH-30)
+- plan: next   # planning is numbered and published on next too
 
 ## active
 | tag | host | mode | since | at | doing |
@@ -508,7 +509,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 28 | 28 | - | 2 |
+| ARCH | 29 | 29 | - | 2 |
 | WEB | 206 | 206 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
@@ -589,6 +590,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- release (→ARCH-30 r29): sessions push code to `next` only; the last session working merges `main` into `next`, runs `pnpm run verify:batch` once, merges `next` into `main` and pushes (deploy). hr05 started under push: main and may still push main itself; the release merges it in
 - implement-task T683, then T684 (integration fixes on wip/ot03) and T687 (20 Chromium journeys), the batch gate and the push to main; then T685, T686 (balance), T678, T679
 - hr05: implement-task T681 then T682 for the owner-approved automatic-play bottlenecks; preserve ot03 ownership.
 - after the ot03 takeover lands on main (T668 last): implement-task T678 (history view while the world is generated, WEB-115), then T679 (explore 1h: generation with the view against ARCH-28)
@@ -598,6 +600,7 @@
 - on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (founding screen, `found` message, identity editor, ready-made crests), then T670 (engine tests on `careerWorld`), T671 (the founding leaves the engine), T672 (the amateur level, LEAGUE-16), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
 
 ## log
+- 261103 update-ssot ARCH r29 (owner: every session gathers on `next`, only the last one runs the full suite with e2e and pushes main); cfg push and plan main→next; ARCH r29 no-op for code (process only); ot03
 - 261103 create-task T687: the 20 Chromium journeys failing on dfa39857 (324 passed), before the push; T685 dep T684→T687; ot03
 - 261103 fix e2e: one browser run at a time per clone — a Playwright globalSetup (tests/e2e/global-lock.ts) takes a lock in the git common directory, so sessions' journeys, from the batch or by hand, take turns instead of overloading the shared host; CI and E2E_LOCK=off skip it; smoke-tested (a second run waited for the first, a dead run's lock reclaimed); ot03
 - 261103 update-ssot OWNER r2 ECON r43 LEAGUE r13 (balance: price-band reach with every cheaper club buyable, living costs 0.25%, fan mood drops halved, bounded books, a 10-season takeover loan); create-task T683 T684 (integration fixes), T685 T686 (balance); T678 dep T668→T686; ot03
@@ -617,4 +620,3 @@
 - 261103 update-ssot HIST SAVE start (hr03): incremental news and career read models; normalize ot03 doing cell to its existing T665 ID, branch handoff remains in next.
 - 261103 ot03 hand-off: main pushed with CI fix 1928053c and report; owner takeover work on wip/ot03 and wip/ot03-t669 for another session
 - 261103 fix CI 41524887826: position badges scroll a family's first market row up the list (random seed put it below the 360px fold), the goal-cue check reads the cue the page recorded inside its 1 s hold (and the ball-side scoreboard check waits out the page entrance WebKit resampled), and formation slots centre with `translate` so a pressed slot no longer jumps off the mouseup in Firefox (app fix, unit test)
-- 261103 ot03 batch gate passed on 8887ace7 (typecheck, lint, format, unit, integration 147 files, contract 47, catalogs, presentation, build, Chromium 346/346); pushed main with T646–T652, the design close and the gate fixes
