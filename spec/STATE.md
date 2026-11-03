@@ -17,7 +17,6 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
-| nv04 | ihaelam-ui-MacBookPro | autopilot | 2026-11-03T19:13Z | 2026-11-03T19:13Z | - |
 
 ## inbox
 - 261104 decided ARCH-30 MATCH-23 T689: start T689's 2 h scoring run at 05:15 KST while T678, T679 and their update-ssot sit 3 commits ahead of main awaiting the release gate? → no: the unit ends without work so the host's gate and the takeover's intermediate main push run first, as the owner orders T689 after the takeover release and the 09:10 KST stop leaves room for gate fixes only if the gate starts now; T689 stays todo, re-run on the released source with its acceptance unchanged (alt: run it now and push the gate to about 07:30 KST | close it on bl03's partial exit, which the owner's "retains its existing measurement requirements" rules out). nv04
