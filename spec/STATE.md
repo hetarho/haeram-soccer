@@ -563,7 +563,8 @@
 | T682 | Profile and reduce repeated day-step Worker work | ARCH WEB SAVE | T681 | doing@261103.hr05 |
 | T683 | engine integration tests on takeover careers | ARCH OWNER WORLD HIST SAVE | T668 | todo |
 | T684 | web and fixture integration tests on takeover careers | ARCH KIT SAVE HIST LEAGUE | T683 | todo |
-| T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T684 | todo |
+| T687 | browser journeys on takeover careers | ARCH WEB OWNER KIT | T684 | todo |
+| T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | todo |
 | T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
 
 ## work
@@ -588,7 +589,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T683, then T684 (integration fixes on wip/ot03), the e2e fix task once the Chromium read of dfa39857 is in, the batch gate and the push to main; then T685, T686 (balance), T678, T679
+- implement-task T683, then T684 (integration fixes on wip/ot03) and T687 (20 Chromium journeys), the batch gate and the push to main; then T685, T686 (balance), T678, T679
 - hr05: implement-task T681 then T682 for the owner-approved automatic-play bottlenecks; preserve ot03 ownership.
 - after the ot03 takeover lands on main (T668 last): implement-task T678 (history view while the world is generated, WEB-115), then T679 (explore 1h: generation with the view against ARCH-28)
 - Continue the active ot03 takeover handoff; hr03 read/storage work is complete (spec/reports/261103-hr03.md).
@@ -597,6 +598,7 @@
 - on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (founding screen, `found` message, identity editor, ready-made crests), then T670 (engine tests on `careerWorld`), T671 (the founding leaves the engine), T672 (the amateur level, LEAGUE-16), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
 
 ## log
+- 261103 create-task T687: the 20 Chromium journeys failing on dfa39857 (324 passed), before the push; T685 dep T684→T687; ot03
 - 261103 fix e2e: one browser run at a time per clone — a Playwright globalSetup (tests/e2e/global-lock.ts) takes a lock in the git common directory, so sessions' journeys, from the batch or by hand, take turns instead of overloading the shared host; CI and E2E_LOCK=off skip it; smoke-tested (a second run waited for the first, a dead run's lock reclaimed); ot03
 - 261103 update-ssot OWNER r2 ECON r43 LEAGUE r13 (balance: price-band reach with every cheaper club buyable, living costs 0.25%, fan mood drops halved, bounded books, a 10-season takeover loan); create-task T683 T684 (integration fixes), T685 T686 (balance); T678 dep T668→T686; ot03
 - 261103 review/automatic-play-hotspots-261103 F1/F2 adopted by the owner and tasked as T681/T682; preserve gameplay and production pace options. hr05
@@ -616,4 +618,3 @@
 - 261103 ot03 hand-off: main pushed with CI fix 1928053c and report; owner takeover work on wip/ot03 and wip/ot03-t669 for another session
 - 261103 fix CI 41524887826: position badges scroll a family's first market row up the list (random seed put it below the 360px fold), the goal-cue check reads the cue the page recorded inside its 1 s hold (and the ball-side scoreboard check waits out the page entrance WebKit resampled), and formation slots centre with `translate` so a pressed slot no longer jumps off the mouseup in Firefox (app fix, unit test)
 - 261103 ot03 batch gate passed on 8887ace7 (typecheck, lint, format, unit, integration 147 files, contract 47, catalogs, presentation, build, Chromium 346/346); pushed main with T646–T652, the design close and the gate fixes
-- 261103 fix e2e gate: the ot03 Chromium batch's 12 failures follow the removals (7 milestones, a rested player's line reads 팀 훈련) and the closed match design (경기 상세 opened past the first sample, a closing sheet's fading copy is not open), plus two app fixes — the 결재함 names the playing-coach player in the browser projection without people, and on phones the speed chips stay on screen beside the matchup
